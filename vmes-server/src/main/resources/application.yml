@@ -1,0 +1,74 @@
+management:
+  security.enabled: false
+  context-path: /manage
+  add-application-context-header: false
+
+server:
+  tomcat:
+    remote_ip_header: x-forwarded-for
+    protocol_header: x-forwarded-proto
+    port-header: X-Forwarded-Port
+  use-forward-headers: true
+
+endpoints:
+  shutdown.enabled: false
+
+error:
+  whitelabel.enabled: true
+
+spring:
+  profiles.active: dev
+
+  application:
+    name: vmes-server
+
+  aop:
+    auto: true
+    proxy-target-class: true
+
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    serialization:
+      write_dates_as_timestamps: true
+
+  http:
+    encoding:
+      charset: utf-8
+      force: true
+
+  cache:
+    type: redis
+    cache-names: redisCache
+    expire-time-seconds: 300
+
+  resources:
+    static-locations: ${ui-path}
+
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    maxActive: 30
+    initialSize: 5
+    maxWait: 60000
+    minIdle: 5
+    maxIdle: 20
+    timeBetweenEvictionRunsMillis: 60000
+    minEvictableIdleTimeMillis: 1200000
+    poolPreparedStatements: true
+    maxOpenPreparedStatements: 20
+    filters: stat,wall
+
+
+#mybatis
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/**/*.xml
+  #实体扫描，多个package用逗号或者分号分隔
+  typeAliasesPackage: com.xy.vmes.**
+  typeEnumsPackage: com.xy.vmes.**
+  global-config:
+    id-type: 2
+    field-strategy: 2
+    db-type: mysql
+    db-column-underline: true
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: false
