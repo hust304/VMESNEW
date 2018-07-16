@@ -4,5 +4,5 @@ com.yvan.spring.autoconfig.RedisCacheAutoConfiguration,\
 com.yvan.spring.autoconfig.FreemarkerAutoConfiguration,\
 com.yvan.spring.autoconfig.FreemarkerFunctionAutoConfiguration,\
 com.yvan.mybatis.MyBatisConfiguration,\
-com.yvan.mybatis.MyBatisConfigurationAfter
-
+com.yvan.mybatis.MyBatisConfigurationAfter,\
+com.yvan.druid.DruidAutoConfiguration

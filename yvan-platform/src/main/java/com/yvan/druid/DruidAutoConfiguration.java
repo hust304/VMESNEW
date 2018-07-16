@@ -95,8 +95,8 @@ public class DruidAutoConfiguration {
         //servletRegistrationBean.addInitParameter("deny","*");
 
         //登录查看信息的账号密码.
-        servletRegistrationBean.addInitParameter("loginUsername", "good5you");
-        servletRegistrationBean.addInitParameter("loginPassword", "7788414");
+        servletRegistrationBean.addInitParameter("loginUsername", "vmes");
+        servletRegistrationBean.addInitParameter("loginPassword", "123456");
         //是否能够重置数据.
         servletRegistrationBean.addInitParameter("resetEnable", "true");
         return servletRegistrationBean;
