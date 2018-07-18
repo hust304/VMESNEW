@@ -115,4 +115,29 @@ public class FileUtils {
         return hs;
     }
 
+
+
+    /**获取文件大小 返回 KB 保留3位小数  没有文件时返回0
+     * @param filepath 文件完整路径，包括文件名
+     * @return
+     */
+    public static Double getFilesize(String filepath){
+        File backupath = new File(filepath);
+        return Double.valueOf(backupath.length())/1000.000;
+    }
+
+
+    /**
+     * 创建目录
+     * @param destDirName 目标目录名
+     * @return
+     */
+    public static Boolean createDir(String destDirName) {
+        File dir = new File(destDirName);
+        if(!dir.getParentFile().exists()){				//判断有没有父路径，就是判断文件整个路径是否存在
+            return dir.getParentFile().mkdirs();		//不存在就全部创建
+        }
+        return false;
+    }
+
 }

@@ -50,4 +50,18 @@ public class HttpUtils {
         pagination.setOpenSort(false);
         return pagination;
     }
+
+    /**
+     * 从当前请求中获取分页方法和内容
+     */
+    public static PageData parsePageData() {
+        HttpServletRequest request = currentRequest();
+        PageData pd = new PageData(request);
+        return pd;
+    }
+
+    public static Object copyToEntity(PageData pd, Class objectClass) {
+
+        return null;
+    }
 }
