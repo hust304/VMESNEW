@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+说明：部门表 Mapper.xml
+创建人：自动创建
+创建时间：2018-07-18
+ -->
+<mapper namespace="com.xy.vmes.demo.dao.EmployeeMapper">
+
+    <!--表名 -->
+    <sql id="tableName">
+	sys_employee
+    </sql>
+
+    <!-- 字段 -->
+    <sql id="Field">
+		name name,<!-- 员工名字 -->
+		birthday birthday,<!-- 出生年月 -->
+		gender gender,<!-- 性别 -->
+		phonenum phonenum,<!-- 手机号码 -->
+		jobtitle jobtitle,<!-- 职位 -->
+		createby createby,<!-- 创建人id -->
+		serial_no serialNo,<!-- 员工号 -->
+		add_date addDate,<!-- 添加时间 -->
+		update_date updateDate,<!-- 修改时间 -->
+		avatar avatar,<!-- 员工头像 -->
+		idcard idcard,<!-- 身份证 -->
+		password password,<!-- 密码 -->
+		rid rid,<!-- 角色id -->
+		status status,<!-- 使用状态 1:正常 0:停用 -->
+		companyid companyid,<!-- 公司ID-组织架构一级部门ID -->
+		id id <!-- id -->
+    </sql>
+
+    <!-- 字段值 -->
+    <sql id="FieldValue">
+		#{name},<!-- 员工名字 -->
+		#{birthday},<!-- 出生年月 -->
+		#{gender},<!-- 性别 -->
+		#{phonenum},<!-- 手机号码 -->
+		#{jobtitle},<!-- 职位 -->
+		#{createby},<!-- 创建人id -->
+		#{serialNo},<!-- 员工号 -->
+		#{addDate},<!-- 添加时间 -->
+		#{updateDate},<!-- 修改时间 -->
+		#{avatar},<!-- 员工头像 -->
+		#{idcard},<!-- 身份证 -->
+		#{password},<!-- 密码 -->
+		#{rid},<!-- 角色id -->
+		#{status},<!-- 使用状态 1:正常 0:停用 -->
+		#{companyid},<!-- 公司ID-组织架构一级部门ID -->
+		#{id} <!-- id -->
+    </sql>
+
+
+    <!-- 字段值 -->
+    <sql id="Column">
+        '员工名字'  name,
+        '出生年月'  birthday,
+        '性别'  gender,
+        '手机号码'  phonenum,
+        '职位'  jobtitle,
+        '创建人id'  createby,
+        '员工号'  serialNo,
+        '添加时间'  addDate,
+        '修改时间'  updateDate,
+        '员工头像'  avatar,
+        '身份证'  idcard,
+        '密码'  password,
+        '角色id'  rid,
+        '使用状态 1:正常 0:停用'  status,
+        '公司ID-组织架构一级部门ID'  companyid,
+        'id' id
+    </sql>
+
+    <!-- 通过ID获取数据 -->
+    <select id="findColumnList"  resultType="java.util.LinkedHashMap">
+        select
+        <include refid="Column"></include>
+        from dual
+    </select>
+
+    <!-- 通过ID获取数据 -->
+    <select id="findDataList"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
+        select
+        <include refid="Field"></include>
+        from
+        <include refid="tableName"></include>
+        <if test="PageData!= null"><!-- 关键词检索 -->
+            where 1=1
+            <if test="PageData.keywords!= null and PageData.keywords != ''"><!-- 关键词检索 -->
+                and
+                (
+                <!--	根据需求自己加检索条件
+						字段1 LIKE CONCAT(CONCAT('%', #{PageData.keywords}),'%')
+						 or
+						字段2 LIKE CONCAT(CONCAT('%', #{PageData.keywords}),'%')
+					-->
+                )
+            </if>
+        </if>
+    </select>
+
+
+    <!-- 新增-->
+    <insert id="save" parameterType="com.xy.vmes.entity.Employee">
+        insert into
+        <include refid="tableName"></include>
+        (
+        <include refid="Field"></include>
+        ) values (
+        <include refid="FieldValue"></include>
+        )
+    </insert>
+
+    <!-- 删除-->
+    <delete id="delete" parameterType="com.xy.vmes.entity.Employee">
+        delete from
+        <include refid="tableName"></include>
+        where
+        id = #{id}
+    </delete>
+
+    <!-- 修改 -->
+    <update id="update" parameterType="com.xy.vmes.entity.Employee">
+        update
+        <include refid="tableName"></include>
+        set
+		name = #{name}, <!-- 员工名字 -->
+		birthday = #{birthday}, <!-- 出生年月 -->
+		gender = #{gender}, <!-- 性别 -->
+		phonenum = #{phonenum}, <!-- 手机号码 -->
+		jobtitle = #{jobtitle}, <!-- 职位 -->
+		createby = #{createby}, <!-- 创建人id -->
+		serial_no = #{serialNo}, <!-- 员工号 -->
+		add_date = #{addDate}, <!-- 添加时间 -->
+		update_date = #{updateDate}, <!-- 修改时间 -->
+		avatar = #{avatar}, <!-- 员工头像 -->
+		idcard = #{idcard}, <!-- 身份证 -->
+		password = #{password}, <!-- 密码 -->
+		rid = #{rid}, <!-- 角色id -->
+		status = #{status}, <!-- 使用状态 1:正常 0:停用 -->
+		companyid = #{companyid}, <!-- 公司ID-组织架构一级部门ID -->
+        id = #{id}
+        where
+        id = #{id}
+    </update>
+
+    <!-- 通过ID获取数据 -->
+    <select id="findById" parameterType="com.yvan.PageData" resultType="com.xy.vmes.entity.Employee">
+        select
+        <include refid="Field"></include>
+        from
+        <include refid="tableName"></include>
+        where
+        id = #{id}
+    </select>
+
+    <!-- 列表 -->
+    <select id="datalistPage" parameterType="com.yvan.PageData" resultType="com.xy.vmes.entity.Employee">
+        select
+        <include refid="Field"></include>
+        from
+        <include refid="tableName"></include>
+        <if test="PageData!= null"><!-- 关键词检索 -->
+            where 1=1
+            <if test="PageData.keywords!= null and PageData.keywords != ''"><!-- 关键词检索 -->
+                and
+                (
+                <!--	根据需求自己加检索条件
+						字段1 LIKE CONCAT(CONCAT('%', #{PageData.keywords}),'%')
+						 or
+						字段2 LIKE CONCAT(CONCAT('%', #{PageData.keywords}),'%')
+					-->
+                )
+            </if>
+        </if>
+    </select>
+
+    <!-- 列表(全部) -->
+    <select id="dataList" parameterType="com.yvan.PageData" resultType="com.xy.vmes.entity.Employee">
+        select
+        <include refid="Field"></include>
+        from
+        <include refid="tableName"></include>
+        <if test="PageData!= null"><!-- 关键词检索 -->
+            where 1=1
+            <if test="PageData.keywords!= null and PageData.keywords != ''"><!-- 关键词检索 -->
+                and
+                (
+                <!--	根据需求自己加检索条件
+						字段1 LIKE CONCAT(CONCAT('%', #{PageData.keywords}),'%')
+						 or
+						字段2 LIKE CONCAT(CONCAT('%', #{PageData.keywords}),'%')
+					-->
+                )
+            </if>
+        </if>
+    </select>
+
+    <!-- 批量删除 -->
+    <delete id="deleteByIds" parameterType="String">
+        delete from
+        <include refid="tableName"></include>
+        where
+        id in
+        <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+		#{item}
+        </foreach>
+    </delete>
+
+</mapper>

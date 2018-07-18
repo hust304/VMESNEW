@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+说明：部门表 Mapper.xml
+创建人：自动创建
+创建时间：2018-07-18
+ -->
+<mapper namespace="com.xy.vmes.deecoop.dao.DepartmentMapper">
+
+    <!--表名 -->
+    <sql id="tableName">
+	vmes_department
+    </sql>
+
+    <!-- 字段 -->
+    <sql id="Field">
+		pid pid,<!-- 上级id-根root -->
+		code code,<!-- 部门编码 -->
+		name name,<!-- 部门名称 -->
+		isleaf isleaf,<!-- 是否叶子节点(1:叶子节点0:非叶子节点) 数据字典:sys_isleaf -->
+		layer layer,<!-- 部门级别(最大支持5层) -->
+		serial_number serialNumber,<!-- 部门排列序号 -->
+		organize_type organizeType,<!-- 组织类型(1:公司 2:部门) 数据字典:sys_organize_type -->
+		company_type companyType,<!-- 公司类型 数据字典:sys_company_type -->
+		dept_type deptType,<!-- 部门类型 数据字典:sys_department_type -->
+		long_name longName,<!-- 部门长名称(中间使用-链接) -->
+		long_code longCode,<!-- 部门长编码(中间使用-链接) -->
+		company_validity_date companyValidityDate,<!-- 有效期(yyyy-mm-dd) -->
+		company_user_count companyUserCount,<!-- 系统用户数 -->
+		isdisable isdisable,<!-- 是否禁用(1:已禁用 0:启用) 数据字典:sys_isdisable -->
+		cdate cdate,<!-- 创建时间 -->
+		cuser cuser,<!-- 创建人账号 -->
+		udate udate,<!-- 修改时间 -->
+		uuser uuser,<!-- 修改人账号 -->
+		id_0 id0,<!-- 根root节点ID -->
+		id_1 id1,<!-- 一级节点ID -->
+		id_2 id2,<!-- 二级节点ID -->
+		id_3 id3,<!-- 三级节点ID -->
+		id_4 id4,<!-- 四级节点ID -->
+		id_5 id5,<!-- 五级节点ID -->
+		id id <!-- id -->
+    </sql>
+
+    <!-- 字段值 -->
+    <sql id="FieldValue">
+		#{pid},<!-- 上级id-根root -->
+		#{code},<!-- 部门编码 -->
+		#{name},<!-- 部门名称 -->
+		#{isleaf},<!-- 是否叶子节点(1:叶子节点0:非叶子节点) 数据字典:sys_isleaf -->
+		#{layer},<!-- 部门级别(最大支持5层) -->
+		#{serialNumber},<!-- 部门排列序号 -->
+		#{organizeType},<!-- 组织类型(1:公司 2:部门) 数据字典:sys_organize_type -->
+		#{companyType},<!-- 公司类型 数据字典:sys_company_type -->
+		#{deptType},<!-- 部门类型 数据字典:sys_department_type -->
+		#{longName},<!-- 部门长名称(中间使用-链接) -->
+		#{longCode},<!-- 部门长编码(中间使用-链接) -->
+		#{companyValidityDate},<!-- 有效期(yyyy-mm-dd) -->
+		#{companyUserCount},<!-- 系统用户数 -->
+		#{isdisable},<!-- 是否禁用(1:已禁用 0:启用) 数据字典:sys_isdisable -->
+		#{cdate},<!-- 创建时间 -->
+		#{cuser},<!-- 创建人账号 -->
+		#{udate},<!-- 修改时间 -->
+		#{uuser},<!-- 修改人账号 -->
+		#{id0},<!-- 根root节点ID -->
+		#{id1},<!-- 一级节点ID -->
+		#{id2},<!-- 二级节点ID -->
+		#{id3},<!-- 三级节点ID -->
+		#{id4},<!-- 四级节点ID -->
+		#{id5},<!-- 五级节点ID -->
+		#{id} <!-- id -->
+    </sql>
+
+
+    <!-- 字段值 -->
+    <sql id="Column">
+        '上级id-根root'  pid,
+        '部门编码'  code,
+        '部门名称'  name,
+        '是否叶子节点(1:叶子节点0:非叶子节点) 数据字典:sys_isleaf'  isleaf,
+        '部门级别(最大支持5层)'  layer,
+        '部门排列序号'  serialNumber,
+        '组织类型(1:公司 2:部门) 数据字典:sys_organize_type'  organizeType,
+        '公司类型 数据字典:sys_company_type'  companyType,
+        '部门类型 数据字典:sys_department_type'  deptType,
+        '部门长名称(中间使用-链接)'  longName,
+        '部门长编码(中间使用-链接)'  longCode,
+        '有效期(yyyy-mm-dd)'  companyValidityDate,
+        '系统用户数'  companyUserCount,
+        '是否禁用(1:已禁用 0:启用) 数据字典:sys_isdisable'  isdisable,
+        '创建时间'  cdate,
+        '创建人账号'  cuser,
+        '修改时间'  udate,
+        '修改人账号'  uuser,
+        '根root节点ID'  id0,
+        '一级节点ID'  id1,
+        '二级节点ID'  id2,
+        '三级节点ID'  id3,
+        '四级节点ID'  id4,
+        '五级节点ID'  id5,
+        'id' id
+    </sql>
+
+    <!-- 通过ID获取数据 -->
+    <select id="findColumnList"  resultType="java.util.LinkedHashMap">
+        select
+        <include refid="Column"></include>
+        from dual
+    </select>
+
+    <!-- 通过ID获取数据 -->
+    <select id="findDataList"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
+        select
+        <include refid="Field"></include>
+        from
+        <include refid="tableName"></include>
+        <if test="PageData!= null"><!-- 关键词检索 -->
+            where 1=1
+            <if test="PageData.keywords!= null and PageData.keywords != ''"><!-- 关键词检索 -->
+                and
+                (
+                <!--	根据需求自己加检索条件
+						字段1 LIKE CONCAT(CONCAT('%', #{PageData.keywords}),'%')
+						 or
+						字段2 LIKE CONCAT(CONCAT('%', #{PageData.keywords}),'%')
+					-->
+                )
+            </if>
+        </if>
+    </select>
+
+
+    <!-- 新增-->
+    <insert id="save" parameterType="com.xy.vmes.entity.Department">
+        insert into
+        <include refid="tableName"></include>
+        (
+        <include refid="Field"></include>
+        ) values (
+        <include refid="FieldValue"></include>
+        )
+    </insert>
+
+    <!-- 删除-->
+    <delete id="delete" parameterType="com.xy.vmes.entity.Department">
+        delete from
+        <include refid="tableName"></include>
+        where
+        id = #{id}
+    </delete>
+
+    <!-- 修改 -->
+    <update id="update" parameterType="com.xy.vmes.entity.Department">
+        update
+        <include refid="tableName"></include>
+        set
+		pid = #{pid}, <!-- 上级id-根root -->
+		code = #{code}, <!-- 部门编码 -->
+		name = #{name}, <!-- 部门名称 -->
+		isleaf = #{isleaf}, <!-- 是否叶子节点(1:叶子节点0:非叶子节点) 数据字典:sys_isleaf -->
+		layer = #{layer}, <!-- 部门级别(最大支持5层) -->
+		serial_number = #{serialNumber}, <!-- 部门排列序号 -->
+		organize_type = #{organizeType}, <!-- 组织类型(1:公司 2:部门) 数据字典:sys_organize_type -->
+		company_type = #{companyType}, <!-- 公司类型 数据字典:sys_company_type -->
+		dept_type = #{deptType}, <!-- 部门类型 数据字典:sys_department_type -->
+		long_name = #{longName}, <!-- 部门长名称(中间使用-链接) -->
+		long_code = #{longCode}, <!-- 部门长编码(中间使用-链接) -->
+		company_validity_date = #{companyValidityDate}, <!-- 有效期(yyyy-mm-dd) -->
+		company_user_count = #{companyUserCount}, <!-- 系统用户数 -->
+		isdisable = #{isdisable}, <!-- 是否禁用(1:已禁用 0:启用) 数据字典:sys_isdisable -->
+		cdate = #{cdate}, <!-- 创建时间 -->
+		cuser = #{cuser}, <!-- 创建人账号 -->
+		udate = #{udate}, <!-- 修改时间 -->
+		uuser = #{uuser}, <!-- 修改人账号 -->
+		id_0 = #{id0}, <!-- 根root节点ID -->
+		id_1 = #{id1}, <!-- 一级节点ID -->
+		id_2 = #{id2}, <!-- 二级节点ID -->
+		id_3 = #{id3}, <!-- 三级节点ID -->
+		id_4 = #{id4}, <!-- 四级节点ID -->
+		id_5 = #{id5}, <!-- 五级节点ID -->
+        id = #{id}
+        where
+        id = #{id}
+    </update>
+
+    <!-- 通过ID获取数据 -->
+    <select id="findById" parameterType="com.yvan.PageData" resultType="com.xy.vmes.entity.Department">
+        select
+        <include refid="Field"></include>
+        from
+        <include refid="tableName"></include>
+        where
+        id = #{id}
+    </select>
+
+    <!-- 列表 -->
+    <select id="datalistPage" parameterType="com.yvan.PageData" resultType="com.xy.vmes.entity.Department">
+        select
+        <include refid="Field"></include>
+        from
+        <include refid="tableName"></include>
+        <if test="PageData!= null"><!-- 关键词检索 -->
+            where 1=1
+            <if test="PageData.keywords!= null and PageData.keywords != ''"><!-- 关键词检索 -->
+                and
+                (
+                <!--	根据需求自己加检索条件
+						字段1 LIKE CONCAT(CONCAT('%', #{PageData.keywords}),'%')
+						 or
+						字段2 LIKE CONCAT(CONCAT('%', #{PageData.keywords}),'%')
+					-->
+                )
+            </if>
+        </if>
+    </select>
+
+    <!-- 列表(全部) -->
+    <select id="dataList" parameterType="com.yvan.PageData" resultType="com.xy.vmes.entity.Department">
+        select
+        <include refid="Field"></include>
+        from
+        <include refid="tableName"></include>
+        <if test="PageData!= null"><!-- 关键词检索 -->
+            where 1=1
+            <if test="PageData.keywords!= null and PageData.keywords != ''"><!-- 关键词检索 -->
+                and
+                (
+                <!--	根据需求自己加检索条件
+						字段1 LIKE CONCAT(CONCAT('%', #{PageData.keywords}),'%')
+						 or
+						字段2 LIKE CONCAT(CONCAT('%', #{PageData.keywords}),'%')
+					-->
+                )
+            </if>
+        </if>
+    </select>
+
+    <!-- 批量删除 -->
+    <delete id="deleteByIds" parameterType="String">
+        delete from
+        <include refid="tableName"></include>
+        where
+        id in
+        <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+		#{item}
+        </foreach>
+    </delete>
+
+</mapper>
