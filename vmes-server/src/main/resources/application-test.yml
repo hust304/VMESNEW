@@ -24,4 +24,4 @@ spring:
     port: 6379
     password: riw11119owow
 
-ui-path: /home/vmes/htdocs/vmes.deecoop.cn
+ui-path: file:/home/vmes/htdocs/vmes.deecoop.cn
