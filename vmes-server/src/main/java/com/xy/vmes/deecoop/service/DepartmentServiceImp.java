@@ -127,7 +127,12 @@ public class DepartmentServiceImp implements DepartmentService {
         return departmentMapper.findDataList(pd);
     }
 
-    public Department findDepartmentById(String id) {
+    /**
+     * 创建人：陈刚
+     * 创建时间：2018-07-18
+     *
+     */
+    public Department findDepartmentById(String id) throws RestException {
         if (id == null || id.trim().length() == 0) {return null;}
 
         PageData findMap = new PageData();
@@ -137,7 +142,7 @@ public class DepartmentServiceImp implements DepartmentService {
         try {
             objectList = this.dataList(findMap);
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RestException("", e.getMessage());
         }
 
         if (objectList != null && objectList.size() > 0) {return objectList.get(0);}
@@ -145,7 +150,12 @@ public class DepartmentServiceImp implements DepartmentService {
         return null;
     }
 
-    public List<Department> findDepartmentListByPid(String pid) {
+    /**
+     * 创建人：陈刚
+     * 创建时间：2018-07-18
+     *
+     */
+    public List<Department> findDepartmentListByPid(String pid) throws RestException {
         List<Department> objectList = new ArrayList<Department>();
         if (pid == null || pid.trim().length() == 0) {return objectList;}
 
@@ -154,7 +164,7 @@ public class DepartmentServiceImp implements DepartmentService {
         try {
             objectList = this.dataList(findMap);
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RestException("", e.getMessage());
         }
 
         return objectList;

@@ -83,8 +83,19 @@ public interface DepartmentService {
     */
     List<Map> findDataList(PageData pd) throws Exception;
 
-    public Department findDepartmentById(String id);
-    public List<Department> findDepartmentListByPid(String pid);
+    /**
+     * 创建人：陈刚
+     * 创建时间：2018-07-18
+     *
+     */
+    Department findDepartmentById(String id) throws RestException;
+
+    /**
+     * 创建人：陈刚
+     * 创建时间：2018-07-18
+     *
+     */
+    List<Department> findDepartmentListByPid(String pid) throws RestException;
 
     /**
      * 根据部门对象<Department>当前部门节点下面所有节点生成树形结构
@@ -97,8 +108,6 @@ public interface DepartmentService {
      * 3. (pid,code,name,layer) 不可同时为空
      *     pid is not null pid对应的部门+pid下面所有子部门
      *     pid is null (code,layer) is not null or (name,layer) is not null
-     *
-     *
      *
      * 创建人：陈刚
      * 创建时间：2018-07-18
