@@ -67,7 +67,6 @@ mybatis-plus:
   global-config:
     id-type: 2
     field-strategy: 2
-    db-type: mysql
     db-column-underline: true
   configuration:
     map-underscore-to-camel-case: true
