@@ -2,7 +2,6 @@ package com.xy.vmes.service;
 
 import com.xy.vmes.entity.Department;
 import com.xy.vmes.entity.TreeEntity;
-import com.yvan.Tree;
 import com.yvan.platform.RestException;
 import java.util.List;
 
