@@ -114,6 +114,8 @@ public class DepartmentTreeServiceImp implements DepartmentTreeService {
         String pidQuery = "pid in (" + pids + ")";
 
         PageData findMap = new PageData();
+        //isdisable:是否禁用(1:已禁用 0:启用)
+        findMap.put("isdisable", "0");
         findMap.put("queryStr", pidQuery);
         List<Department> childList = null;
         try {
