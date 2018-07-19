@@ -1,0 +1,27 @@
+yvan:
+  security:
+    salt: 12345
+    token-expire: 1440  #默认授权时长(一整天)
+    token-expire-remember: 43200  #默认授权时长（一个月）
+  debug: true
+  static_version: v20180504
+  static_domain: /static
+  upload_domain: /static
+
+server:
+  port: 8080
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/deecoop?autoReconnect=true&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false
+    username: vmes
+    password: owi123Q@WE!
+
+  redis:
+    key_prefix: vmes
+    host: 127.0.0.1
+    port: 6379
+    password: riw11119owow
+
+ui-path: /home/vmes/htdocs/vmes.deecoop.cn
