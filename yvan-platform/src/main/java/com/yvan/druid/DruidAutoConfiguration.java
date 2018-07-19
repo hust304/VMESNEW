@@ -50,6 +50,7 @@ public class DruidAutoConfiguration {
         datasource.setDriverClassName(properties.getDriverClassName());
 
         //configuration
+        datasource.setDbType("MYSQL");
         datasource.setInitialSize(properties.getInitialSize());
         datasource.setMinIdle(properties.getMinIdle());
         datasource.setMaxActive(properties.getMaxActive());
