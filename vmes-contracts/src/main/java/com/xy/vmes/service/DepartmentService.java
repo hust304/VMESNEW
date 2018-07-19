@@ -115,6 +115,14 @@ public interface DepartmentService {
      * @return
      */
     public Tree<Department> findTree(Department object);
+
+    /**
+     * 获取部门id字符串-(','分隔的字符串)
+     * 创建人：陈刚
+     * 创建时间：2018-07-19
+     *
+     */
+    String findDeptidByDeptList(List<Department> objectList);
 }
 
 

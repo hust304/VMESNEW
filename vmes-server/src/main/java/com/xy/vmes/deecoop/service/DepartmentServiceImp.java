@@ -237,6 +237,31 @@ public class DepartmentServiceImp implements DepartmentService {
     }
 
 
+    /**
+     * 获取部门id字符串-(','分隔的字符串)
+     * 创建人：陈刚
+     * 创建时间：2018-07-19
+     *
+     */
+    public String findDeptidByDeptList(List<Department> objectList) {
+        StringBuffer strBuf = new StringBuffer();
+        if (objectList == null || objectList.size() == 0) {return strBuf.toString();}
+
+        for (Department dept : objectList) {
+            strBuf.append(dept.getId().trim());
+            strBuf.append(",");
+        }
+
+        String strTemp = strBuf.toString();
+        if (strTemp.trim().length() > 0 && strTemp.indexOf(",") != -1) {
+            strTemp = strTemp.substring(0, strTemp.lastIndexOf(","));
+            return strTemp;
+        }
+
+        return strBuf.toString();
+    }
+
+
 }
 
 
