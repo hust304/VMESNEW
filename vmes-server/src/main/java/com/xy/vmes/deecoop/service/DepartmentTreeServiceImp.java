@@ -8,6 +8,7 @@ import com.yvan.PageData;
 import com.yvan.common.util.StringUtil;
 import com.yvan.platform.RestException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +23,7 @@ import java.util.List;
  * 创建人：陈刚
  * 创建时间：2018-07-19
  */
+@Service
 public class DepartmentTreeServiceImp implements DepartmentTreeService {
 
     @Autowired
@@ -77,7 +79,7 @@ public class DepartmentTreeServiceImp implements DepartmentTreeService {
      * 创建时间：2018-07-19
      *
      */
-    public void findDeptTree(String pids) throws RestException {
+    public void findDeptTree(String pids) {
         if (pids == null || pids.trim().length() == 0) {
             throw new RestException("", "参数错误:部门pid为空或空字符串！");
         }

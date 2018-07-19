@@ -111,10 +111,10 @@ public interface DepartmentService {
      * 创建人：陈刚
      * 创建时间：2018-07-18
      *
-     * @param object 允许为空-<Department>对象(vmes_department:系统部门表)
+     * @param detp 允许为空-<Department>对象(vmes_department:系统部门表)
      * @return
      */
-    public Tree<Department> findTree(Department object);
+    public Tree<Department> findTree(Department detp);
 
     /**
      * 获取部门id字符串-(','分隔的字符串)
