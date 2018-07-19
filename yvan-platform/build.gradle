@@ -55,7 +55,6 @@ dependencies {
     compile 'org.apache.poi:poi-ooxml:3.17'
 
     compile 'itext:itext:4.2.0'
-    compile 'com.google.code.gson:Gson:2.5'
 }
 
 artifacts {

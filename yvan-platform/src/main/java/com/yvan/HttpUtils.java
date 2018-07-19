@@ -3,6 +3,7 @@ package com.yvan;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.yvan.platform.HttpParameterParser;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -63,5 +64,39 @@ public class HttpUtils {
     public static Object copyToEntity(PageData pd, Class objectClass) {
 
         return null;
+    }
+
+    public static String currentHost() {
+        HttpServletRequest request = currentRequest();
+        if (request == null) {
+            return "";
+        }
+
+        String host = request.getHeader("X-Forwarded-Host");
+        if (!StringUtils.isEmpty(host)) {
+            return host;
+        }
+        return request.getHeader("Host");
+    }
+
+    public static String currentRemoteIp() {
+        HttpServletRequest request = currentRequest();
+        if (request == null) {
+            return "";
+        }
+
+        if (request.getHeader("x-forwarded-for") != null) {
+            return request.getHeader("x-forwarded-for");
+        }
+        return request.getRemoteAddr();
+    }
+
+    public static String currentUrl() {
+        HttpServletRequest request = currentRequest();
+        if (request == null) {
+            return "";
+        }
+
+        return request.getScheme() + "://" + currentHost() + request.getRequestURI();
     }
 }
