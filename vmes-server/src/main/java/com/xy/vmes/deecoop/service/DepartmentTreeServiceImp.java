@@ -61,10 +61,13 @@ public class DepartmentTreeServiceImp implements DepartmentTreeService {
 
     /**
      * 根据部门对象<Department>当前部门节点下面所有节点生成树形结构
+     * 查询次数: 从当前节点到最低层叶子节点-总共部门层级数
+     *
      * 1. 该方法为递归调用
      * 2. 递归执行次数: count := 0 获取当前节点--
      * 3. 根据(pids)获取下一层<Department>List
      * 4. 递归结束条件(递归执行次数 > 6 or 查询无子节点)
+     * 5. 递归调用结束后生成(list_0,list_1,...,list_5)结构体
      *
      * @param pids  (','分隔的字符串)
      * @return
