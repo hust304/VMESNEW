@@ -83,6 +83,10 @@ public interface DepartmentMapper extends BaseMapper<Department> {
     */
     @Select("findDataList")
     List<Map> findDataList(PageData pd);
+
+
+	Department findDepartmentById(String id);
+	List<Department> findDepartmentListByPid(String pid);
 }
 
 

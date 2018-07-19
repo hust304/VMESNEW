@@ -45,18 +45,18 @@ public class Department{
 	public void setIsleaf(String isleaf) {
 		this.isleaf = isleaf;
 	}
-	private int layer;				//部门级别(最大支持5层)
-	public int getLayer() {
+	private Integer layer;				//部门级别(最大支持5层)
+	public Integer getLayer() {
 		return layer;
 	}
-	public void setLayer(int layer) {
+	public void setLayer(Integer layer) {
 		this.layer = layer;
 	}
-	private int serialNumber;				//部门排列序号
-	public int getSerialNumber() {
+	private Integer serialNumber;				//部门排列序号
+	public Integer getSerialNumber() {
 		return serialNumber;
 	}
-	public void setSerialNumber(int serialNumber) {
+	public void setSerialNumber(Integer serialNumber) {
 		this.serialNumber = serialNumber;
 	}
 	private String organizeType;			//组织类型(1:公司 2:部门) 数据字典:sys_organize_type
@@ -101,11 +101,11 @@ public class Department{
 	public void setCompanyValidityDate(Date companyValidityDate) {
 		this.companyValidityDate = companyValidityDate;
 	}
-	private int companyUserCount;				//系统用户数
-	public int getCompanyUserCount() {
+	private Integer companyUserCount;				//系统用户数
+	public Integer getCompanyUserCount() {
 		return companyUserCount;
 	}
-	public void setCompanyUserCount(int companyUserCount) {
+	public void setCompanyUserCount(Integer companyUserCount) {
 		this.companyUserCount = companyUserCount;
 	}
 	private String isdisable;			//是否禁用(1:已禁用 0:启用) 数据字典:sys_isdisable
