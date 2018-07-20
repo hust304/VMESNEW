@@ -198,9 +198,9 @@ public class DepartmentServiceImp implements DepartmentService {
             findMap.put("pid", "root");
         } else if (detp != null) {
             //1. 参数非空判断
-            if (detp.getPid() != null && detp.getPid().trim().length() > 0) {
+            if (detp.getId() != null && detp.getId().trim().length() > 0) {
                 findMap = new PageData();
-                findMap.put("id", detp.getPid().trim());
+                findMap.put("id", detp.getId().trim());
             } else if (detp.getId1() != null && detp.getId1().trim().length() > 0
                     && detp.getCode() != null && detp.getCode().trim().length() > 0
                     && detp.getLayer() != null

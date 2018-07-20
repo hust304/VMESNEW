@@ -37,7 +37,12 @@ public class TreeLoadController {
         PageData mapObj = HttpUtils.parsePageData();
 
         //递归调用获得(当前部门+当前部门下所有子部门)List结构体
-        Tree<Department> treeObj = departmentService.findTree(null);
+        Department detp = new Department();
+        //detp.setId1("1");
+        //detp.setName("公司1");
+        //detp.setLayer(Integer.valueOf(1));
+        detp = null;
+        Tree<Department> treeObj = departmentService.findTree(detp);
 
         return null;
     }

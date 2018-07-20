@@ -107,8 +107,11 @@ public class DepartmentTreeServiceImp implements DepartmentTreeService {
                 this.execute_layer = deptObj.getLayer();
                 this.findLayerList(objectList, this.execute_layer);
 
+                //execute_layer递归执行所在层 +1
+                this.execute_layer = Integer.valueOf(this.execute_layer.intValue() + 1);
                 //执行次数+1
                 this.count = Integer.valueOf(this.count.intValue() + 1);
+
             } catch (Exception e) {
                 throw new RestException("", e.getMessage());
             }
@@ -137,8 +140,14 @@ public class DepartmentTreeServiceImp implements DepartmentTreeService {
             return;
         }
 
+        //当前childList 放入List结构体中
+        this.findLayerList(childList, this.execute_layer);
         //execute_layer递归执行所在层 +1
         this.execute_layer = Integer.valueOf(this.execute_layer.intValue() + 1);
+
+        //执行次数+1
+        this.count = Integer.valueOf(this.count.intValue() + 1);
+
         //子部门<Department>List-生成id字符串(','分隔的字符串)
         String chid_ids = departmentService.findDeptidByDeptList(childList);
         //递归调用: findDeptTree()
