@@ -1,7 +1,7 @@
 package com.xy.vmes.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
-import com.xy.vmes.entity.Employee;
+import com.xy.vmes.entity.User;
 import com.yvan.PageData;
 
 import java.util.LinkedHashMap;
@@ -13,26 +13,26 @@ import java.util.Map;
 * 创建人：自动生成
 * 创建时间：2018-07-20
 */
-public interface EmployeeService {
+public interface UserService {
 
 
     /**
     * 创建人：自动创建
     * 创建时间：2018-07-20
     */
-    void save(Employee employee) throws Exception;
+    void save(User user) throws Exception;
 
     /**
     * 创建人：自动创建
     * 创建时间：2018-07-20
     */
-    void delete(Employee employee) throws Exception;
+    void delete(User user) throws Exception;
 
     /**
     * 创建人：自动创建
     * 创建时间：2018-07-20
     */
-    void update(Employee employee) throws Exception;
+    void update(User user) throws Exception;
 
     /**
     * 创建人：自动创建
@@ -43,25 +43,25 @@ public interface EmployeeService {
     * 创建人：自动创建
     * 创建时间：2018-07-20
     */
-    Employee selectById(String id) throws Exception;
+    User selectById(String id) throws Exception;
 
     /**
     * 创建人：自动创建
     * 创建时间：2018-07-20
     */
-    Employee findById(PageData pd) throws Exception;
+    User findById(PageData pd) throws Exception;
 
     /**
     * 创建人：自动创建
     * 创建时间：2018-07-20
     */
-    List<Employee> dataListPage(PageData pd,Pagination pg) throws Exception;
+    List<User> dataListPage(PageData pd,Pagination pg) throws Exception;
 
     /**
     * 创建人：自动创建
     * 创建时间：2018-07-20
     */
-    List<Employee> dataList(PageData pd) throws Exception;
+    List<User> dataList(PageData pd) throws Exception;
 
     /**
     * 创建人：自动创建
