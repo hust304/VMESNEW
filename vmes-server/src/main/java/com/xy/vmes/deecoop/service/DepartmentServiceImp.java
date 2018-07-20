@@ -178,7 +178,7 @@ public class DepartmentServiceImp implements DepartmentService {
      * (允许为空)Department.name  当前部门名称
      * (允许为空)Department.id1   当前部门(id_1)-公司id
      * (允许为空)Department.layer 当前部门级别
-     * 3. (pid,code,name,layer) 不可同时为空
+     * 3. (id,id1,code,name,layer) 不可同时为空
      * pid is not null pid对应的部门+pid下面所有子部门
      * pid is null (code,layer) is not null or (name,layer) is not null
      * <p>

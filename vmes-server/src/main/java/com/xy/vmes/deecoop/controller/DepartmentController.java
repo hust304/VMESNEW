@@ -256,13 +256,6 @@ public class DepartmentController {
 
     }
 
-    @GetMapping("/department/treeLoad")
-    public void deptTreeLoad() {
-        PageData mapObj = HttpUtils.parsePageData();
-
-        Tree<Department> treeObj = departmentService.findTree(null);
-    }
-
 }
 
 
