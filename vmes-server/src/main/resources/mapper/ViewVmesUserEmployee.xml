@@ -5,7 +5,7 @@
 创建人：陈刚
 创建时间：2018-07-20
  -->
-<mapper namespace="com.xy.vmes.deecoop.dao.ViewVmesUserEmployee">
+<mapper namespace="com.xy.vmes.deecoop.dao.ViewVmesUserEmployeeMapper">
     <!--视图名 -->
     <sql id="viewName">
         v_vmes_user_employee
@@ -157,7 +157,6 @@
                             </otherwise>
                         </choose>
                     </if>
-
 
                     <!--queryStr 自定义sql查询语句-->
                     <if test="queryStr != null and queryStr!=''" >
