@@ -135,11 +135,6 @@ public class DepartmentTreeServiceImp implements DepartmentTreeService {
             throw new RestException("", e.getMessage());
         }
 
-        //递归结束条件: 递归执行次数 > 6 or 查询无子节点
-        if (count > 6 || childList == null || childList.size() == 0) {
-            return;
-        }
-
         //当前childList 放入List结构体中
         this.findLayerList(childList, this.execute_layer);
         //execute_layer递归执行所在层 +1
@@ -150,8 +145,14 @@ public class DepartmentTreeServiceImp implements DepartmentTreeService {
 
         //子部门<Department>List-生成id字符串(','分隔的字符串)
         String chid_ids = departmentService.findDeptidByDeptList(childList);
-        //递归调用: findDeptTree()
-        this.findDeptTree(chid_ids);
+
+        //递归结束条件: 递归执行次数 > 6 or 查询无子节点
+        if (count > 6 || childList == null || childList.size() == 0) {
+            return;
+        } else {
+            //递归调用: findDeptTree()
+            this.findDeptTree(chid_ids);
+        }
     }
 
     /**
