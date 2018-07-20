@@ -220,11 +220,13 @@
         from
             <include refid="tableName"></include>
         <choose>
-            <!--isQueryAll 是否查询全部
+            <!--
+                mapSize (0 or is null) 无查询参数-业务层传入
+                isQueryAll 是否查询全部
                 fasle: (false or is null) 无查询条件-查询结果集返回空或list.size()==0
                 true : 无查询条件-返回全部业务表数据
             -->
-            <when test="PageData == null and 'true' != isQueryAll ">
+            <when test="(mapSize == null || mapSize == 0) and 'true' != isQueryAll ">
                 where 1=2
             </when>
             <otherwise>
@@ -289,9 +291,10 @@
 
                     <!--queryStr 自定义sql查询语句-->
                     <if test="queryStr != null and queryStr!=''" >
-                        and #{queryStr}
+                        and ${queryStr}
                     </if>
                 </where>
+
             </otherwise>
         </choose>
     </select>

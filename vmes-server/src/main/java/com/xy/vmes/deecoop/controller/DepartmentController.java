@@ -7,6 +7,7 @@ import com.xy.vmes.service.DepartmentService;
 import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
+import com.yvan.Tree;
 import com.yvan.springmvc.ResultModel;
 import com.yvan.template.ExcelAjaxTemplate;
 import lombok.extern.slf4j.Slf4j;
@@ -255,6 +256,12 @@ public class DepartmentController {
 
     }
 
+    @GetMapping("/department/treeLoad")
+    public void deptTreeLoad() {
+        PageData mapObj = HttpUtils.parsePageData();
+
+        Tree<Department> treeObj = departmentService.findTree(null);
+    }
 
 }
 

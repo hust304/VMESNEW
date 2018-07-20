@@ -88,13 +88,13 @@ public interface DepartmentService {
      * 创建人：陈刚
      * 创建时间：2018-07-18
      */
-    Department findDepartmentById(String id);
+    Department findDepartment(PageData mapObj);
 
     /**
      * 创建人：陈刚
      * 创建时间：2018-07-18
      */
-    List<Department> findDepartmentListByPid(String pid);
+    List<Department> findDepartmentList(PageData mapObj);
 
     /**
      * 根据部门对象<Department>当前部门节点下面所有节点生成树形结构

@@ -135,17 +135,12 @@ public class DepartmentServiceImp implements DepartmentService {
      * 创建人：陈刚
      * 创建时间：2018-07-18
      */
-    public Department findDepartmentById(String id) {
-        if (id == null || id.trim().length() == 0) {
-            return null;
-        }
-
-        PageData findMap = new PageData();
-        findMap.put("id", id.trim());
+    public Department findDepartment(PageData mapObj) {
+        if (mapObj == null || mapObj.size() == 0) {return null;}
 
         List<Department> objectList = null;
         try {
-            objectList = this.dataList(findMap);
+            objectList = this.dataList(mapObj);
         } catch (Exception e) {
             throw new RestException("", e.getMessage());
         }
@@ -161,16 +156,12 @@ public class DepartmentServiceImp implements DepartmentService {
      * 创建人：陈刚
      * 创建时间：2018-07-18
      */
-    public List<Department> findDepartmentListByPid(String pid) {
-        List<Department> objectList = new ArrayList<Department>();
-        if (pid == null || pid.trim().length() == 0) {
-            return objectList;
-        }
+    public List<Department> findDepartmentList(PageData mapObj) {
+        if (mapObj == null || mapObj.size() == 0) {return null;}
 
-        PageData findMap = new PageData();
-        findMap.put("pid", pid.trim());
+        List<Department> objectList = null;
         try {
-            objectList = this.dataList(findMap);
+            objectList = this.dataList(mapObj);
         } catch (Exception e) {
             throw new RestException("", e.getMessage());
         }
@@ -244,6 +235,12 @@ public class DepartmentServiceImp implements DepartmentService {
         }
 
         //2. 根据参数查询(vmes_department:系统部门表)--获得返回树结构根节点
+        //isdisable:是否禁用(1:已禁用 0:启用)
+        findMap.put("isdisable", "0");
+        if (findMap != null && findMap.size() > 0) {
+            findMap.put("mapSize", Integer.valueOf(findMap.size()));
+        }
+
         List<Department> objectList = this.dataList(findMap);
         if (objectList == null || objectList.size() == 0) {
             String msgStr = "参数错误:Department(pid,code,name,layer) 查询无数据，请与管理员联系！";

@@ -85,9 +85,15 @@ public class DepartmentTreeServiceImp implements DepartmentTreeService {
         }
 
         //1. count := 0 获取当前节点<Department>(vmes_department:系统部门表)对象
+        PageData findMap = new PageData();
         if (count == 0) {
             try {
-                Department deptObj = departmentService.findDepartmentById(pids);
+                //Department deptObj = departmentService.findDepartmentById(pids);
+                //isdisable:是否禁用(1:已禁用 0:启用)
+                findMap.put("isdisable", "0");
+                findMap.put("id", pids);
+                findMap.put("mapSize", Integer.valueOf(findMap.size()));
+                Department deptObj = departmentService.findDepartment(findMap);
                 if (deptObj == null) {
                     return;
                 }
@@ -110,13 +116,15 @@ public class DepartmentTreeServiceImp implements DepartmentTreeService {
 
         //2. 根据pids获取下一层<Department>List
         pids = StringUtil.stringTrimSpace(pids);
-        pids = "'" + pids.replace(",", "','") + ",";
+        pids = "'" + pids.replace(",", "','") + "'";
         String pidQuery = "pid in (" + pids + ")";
 
-        PageData findMap = new PageData();
+        findMap = new PageData();
         //isdisable:是否禁用(1:已禁用 0:启用)
         findMap.put("isdisable", "0");
         findMap.put("queryStr", pidQuery);
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+
         List<Department> childList = null;
         try {
             childList = departmentService.dataList(findMap);

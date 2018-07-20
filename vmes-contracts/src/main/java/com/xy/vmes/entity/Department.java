@@ -9,7 +9,7 @@ import java.math.BigDecimal;
  * 创建时间：2018-07-18
  */
 public class Department{
-	
+
 	private String id;			//
 	public String getId() {
 		return id;
