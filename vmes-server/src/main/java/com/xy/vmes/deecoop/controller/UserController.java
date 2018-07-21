@@ -41,7 +41,7 @@ public class UserController {
 
 
     /**
-    * 创建人：自动创建
+    * 创建人：陈刚
     * 创建时间：2018-07-20
     */
     @GetMapping("/user/selectById/{id}")
@@ -103,7 +103,7 @@ public class UserController {
         Map result = new HashMap();
         try {
             PageData pd = HttpUtils.parsePageData();
-            User user = (User)HttpUtils.copyToEntity(pd,User.class);
+            User user = (User)HttpUtils.pageData2Entity(pd, new User());
             userService.save(user);
             result.put("code",0);
             result.put("msg","执行成功！");
@@ -129,7 +129,7 @@ public class UserController {
         Map result = new HashMap();
         try {
             PageData pd = HttpUtils.parsePageData();
-            User user = (User)HttpUtils.copyToEntity(pd,User.class);
+            User user = (User)HttpUtils.pageData2Entity(pd, new User());
             userService.update(user);
             result.put("code",0);
             result.put("msg","执行成功！");
@@ -155,7 +155,7 @@ public class UserController {
         Map result = new HashMap();
         try {
             PageData pd = HttpUtils.parsePageData();
-            User user = (User)HttpUtils.copyToEntity(pd,User.class);
+            User user = (User)HttpUtils.pageData2Entity(pd, new User());
             userService.delete(user);
             result.put("code",0);
             result.put("msg","执行成功！");

@@ -82,7 +82,7 @@ public class DepartmentController {
         Map result = new HashMap();
         try {
             PageData pd = HttpUtils.parsePageData();
-            Department department = (Department) HttpUtils.copyToEntity(pd, Department.class);
+            Department department = (Department) HttpUtils.pageData2Entity(pd, new Department());
             departmentService.save(department);
             result.put("code", 0);
             result.put("msg", "执行成功！");
@@ -108,7 +108,7 @@ public class DepartmentController {
         Map result = new HashMap();
         try {
             PageData pd = HttpUtils.parsePageData();
-            Department department = (Department) HttpUtils.copyToEntity(pd, Department.class);
+            Department department = (Department) HttpUtils.pageData2Entity(pd, new Department());
             departmentService.update(department);
             result.put("code", 0);
             result.put("msg", "执行成功！");
@@ -134,7 +134,7 @@ public class DepartmentController {
         Map result = new HashMap();
         try {
             PageData pd = HttpUtils.parsePageData();
-            Department department = (Department) HttpUtils.copyToEntity(pd, Department.class);
+            Department department = (Department) HttpUtils.pageData2Entity(pd, new Department());
             departmentService.delete(department);
             result.put("code", 0);
             result.put("msg", "执行成功！");

@@ -7,6 +7,7 @@ import com.xy.vmes.service.DepartmentService;
 import com.xy.vmes.service.DepartmentTreeService;
 import com.yvan.PageData;
 import com.yvan.Tree;
+import com.yvan.HttpUtils;
 import com.yvan.platform.RestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -135,12 +136,13 @@ public class DepartmentServiceImp implements DepartmentService {
      * 创建人：陈刚
      * 创建时间：2018-07-18
      */
-    public Department findDepartment(PageData mapObj) {
-        if (mapObj == null || mapObj.size() == 0) {return null;}
+    public Department findDepartment(Department object) {
+        if (object == null) {return null;}
 
         List<Department> objectList = null;
         try {
-            objectList = this.dataList(mapObj);
+            PageData pageData = HttpUtils.entity2PageData(object, new PageData());
+            objectList = this.dataList(pageData);
         } catch (Exception e) {
             throw new RestException("", e.getMessage());
         }
@@ -156,12 +158,13 @@ public class DepartmentServiceImp implements DepartmentService {
      * 创建人：陈刚
      * 创建时间：2018-07-18
      */
-    public List<Department> findDepartmentList(PageData mapObj) {
-        if (mapObj == null || mapObj.size() == 0) {return null;}
+    public List<Department> findDepartmentList(Department object) {
+        if (object == null) {return null;}
 
         List<Department> objectList = null;
         try {
-            objectList = this.dataList(mapObj);
+            PageData pageData = HttpUtils.entity2PageData(object, new PageData());
+            objectList = this.dataList(pageData);
         } catch (Exception e) {
             throw new RestException("", e.getMessage());
         }
@@ -191,57 +194,54 @@ public class DepartmentServiceImp implements DepartmentService {
      * @return
      */
     public Tree<Department> findTree(Department detp) {
-        PageData findMap = null;
+        Department findObj = null;
 
         if (detp == null) {
-            findMap = new PageData();
-            findMap.put("pid", "root");
+            findObj = new Department();
+            findObj.setPid("root");
         } else if (detp != null) {
             //1. 参数非空判断
             if (detp.getId() != null && detp.getId().trim().length() > 0) {
-                findMap = new PageData();
-                findMap.put("id", detp.getId().trim());
+                findObj = new Department();
+                findObj.setId(detp.getId().trim());
             } else if (detp.getId1() != null && detp.getId1().trim().length() > 0
                     && detp.getCode() != null && detp.getCode().trim().length() > 0
                     && detp.getLayer() != null
                     ) {
-                findMap = new PageData();
-                findMap.put("id1", detp.getId1().trim());
-                findMap.put("code", detp.getCode().trim());
-                findMap.put("layer", detp.getLayer());
+                findObj = new Department();
+                findObj.setId1(detp.getId1().trim());
+                findObj.setCode(detp.getCode().trim());
+                findObj.setLayer(detp.getLayer());
             } else if (detp.getId1() != null && detp.getId1().trim().length() > 0
                     && detp.getName() != null && detp.getName().trim().length() > 0
                     && detp.getLayer() != null
                     ) {
-                findMap = new PageData();
-                findMap.put("id1", detp.getId1().trim());
-                findMap.put("name", detp.getName().trim());
-                findMap.put("layer", detp.getLayer());
+                findObj = new Department();
+                findObj.setId1(detp.getId1().trim());
+                findObj.setName(detp.getName().trim());
+                findObj.setLayer(detp.getLayer());
             } else if (detp.getId1() != null && detp.getId1().trim().length() > 0
                     && detp.getCode() != null && detp.getCode().trim().length() > 0
                     && detp.getName() != null && detp.getName().trim().length() > 0
                     && detp.getLayer() != null
                     ) {
-                findMap = new PageData();
-                findMap.put("id1", detp.getId1().trim());
-                findMap.put("code", detp.getCode().trim());
-                findMap.put("name", detp.getName().trim());
-                findMap.put("layer", detp.getLayer());
+                findObj = new Department();
+                findObj.setId1(detp.getId1().trim());
+                findObj.setCode(detp.getCode().trim());
+                findObj.setName(detp.getName().trim());
+                findObj.setLayer(detp.getLayer());
             }
         }
 
-        if (findMap == null || findMap.size() == 0) {
+        if (findObj == null) {
             throw new RestException("", "参数错误:Department(pid,id_1,code,name,layer) 参数为空或空字符串，请与管理员联系！");
         }
 
         //2. 根据参数查询(vmes_department:系统部门表)--获得返回树结构根节点
         //isdisable:是否禁用(1:已禁用 0:启用)
-        findMap.put("isdisable", "0");
-        if (findMap != null && findMap.size() > 0) {
-            findMap.put("mapSize", Integer.valueOf(findMap.size()));
-        }
+        findObj.setIsdisable("0");
 
-        List<Department> objectList = this.dataList(findMap);
+        List<Department> objectList = this.findDepartmentList(findObj);
         if (objectList == null || objectList.size() == 0) {
             String msgStr = "参数错误:Department(pid,code,name,layer) 查询无数据，请与管理员联系！";
             throw new RestException("", msgStr);

@@ -4,6 +4,7 @@ import com.xy.vmes.entity.Department;
 import com.xy.vmes.entity.TreeEntity;
 import com.xy.vmes.service.DepartmentService;
 import com.xy.vmes.service.DepartmentTreeService;
+import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.common.util.StringUtil;
 import com.yvan.platform.RestException;
@@ -85,15 +86,13 @@ public class DepartmentTreeServiceImp implements DepartmentTreeService {
         }
 
         //1. count := 0 获取当前节点<Department>(vmes_department:系统部门表)对象
-        PageData findMap = new PageData();
+        Department findObj = new Department();
         if (count == 0) {
             try {
-                //Department deptObj = departmentService.findDepartmentById(pids);
                 //isdisable:是否禁用(1:已禁用 0:启用)
-                findMap.put("isdisable", "0");
-                findMap.put("id", pids);
-                findMap.put("mapSize", Integer.valueOf(findMap.size()));
-                Department deptObj = departmentService.findDepartment(findMap);
+                findObj.setIsdisable("0");
+                findObj.setId(pids);
+                Department deptObj = departmentService.findDepartment(findObj);
                 if (deptObj == null) {
                     return;
                 }
@@ -122,15 +121,14 @@ public class DepartmentTreeServiceImp implements DepartmentTreeService {
         pids = "'" + pids.replace(",", "','") + "'";
         String pidQuery = "pid in (" + pids + ")";
 
-        findMap = new PageData();
+        findObj = new Department();
         //isdisable:是否禁用(1:已禁用 0:启用)
-        findMap.put("isdisable", "0");
-        findMap.put("queryStr", pidQuery);
-        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+        findObj.setIsdisable("0");
+        findObj.setQueryStr(pidQuery);
 
         List<Department> childList = null;
         try {
-            childList = departmentService.dataList(findMap);
+            childList = departmentService.findDepartmentList(findObj);
         } catch (Exception e) {
             throw new RestException("", e.getMessage());
         }

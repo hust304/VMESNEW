@@ -103,7 +103,7 @@ public class EmployeeController {
         Map result = new HashMap();
         try {
             PageData pd = HttpUtils.parsePageData();
-            Employee employee = (Employee)HttpUtils.copyToEntity(pd,Employee.class);
+            Employee employee = (Employee)HttpUtils.pageData2Entity(pd, new Employee());
             employeeService.save(employee);
             result.put("code",0);
             result.put("msg","执行成功！");
@@ -129,7 +129,7 @@ public class EmployeeController {
         Map result = new HashMap();
         try {
             PageData pd = HttpUtils.parsePageData();
-            Employee employee = (Employee)HttpUtils.copyToEntity(pd,Employee.class);
+            Employee employee = (Employee)HttpUtils.pageData2Entity(pd, new Employee());
             employeeService.update(employee);
             result.put("code",0);
             result.put("msg","执行成功！");
@@ -155,7 +155,7 @@ public class EmployeeController {
         Map result = new HashMap();
         try {
             PageData pd = HttpUtils.parsePageData();
-            Employee employee = (Employee)HttpUtils.copyToEntity(pd,Employee.class);
+            Employee employee = (Employee)HttpUtils.pageData2Entity(pd, new Employee());
             employeeService.delete(employee);
             result.put("code",0);
             result.put("msg","执行成功！");
