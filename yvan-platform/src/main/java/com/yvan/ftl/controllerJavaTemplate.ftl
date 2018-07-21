@@ -26,9 +26,9 @@ import java.util.*;
 
 
 /**
-* 说明：${TITLE} Controller
-* 创建人：自动创建
-* 创建时间：${nowDate?string("yyyy-MM-dd")}
+* 说明：Controller
+* @author ${author}
+* @date ${nowDate?string("yyyy-MM-dd")}
 */
 @RestController
 @Slf4j
@@ -41,8 +41,8 @@ public class ${objectName}Controller {
 
 
     /**
-    * 创建人：自动创建
-    * 创建时间：${nowDate?string("yyyy-MM-dd")}
+    * @author ${author}
+    * @date ${nowDate?string("yyyy-MM-dd")}
     */
     @GetMapping("/${objectNameLower}/selectById/{id}")
     public String selectById(@PathVariable("id") String id) {
@@ -68,8 +68,8 @@ public class ${objectName}Controller {
 
 
     /**
-    * 创建人：自动创建
-    * 创建时间：${nowDate?string("yyyy-MM-dd")}
+    * @author ${author}
+    * @date ${nowDate?string("yyyy-MM-dd")}
     */
     @PostMapping("/${objectNameLower}/findById")
     public String findById() {
@@ -94,8 +94,8 @@ public class ${objectName}Controller {
     }
 
     /**
-    * 创建人：自动创建
-    * 创建时间：${nowDate?string("yyyy-MM-dd")}
+    * @author ${author}
+    * @date ${nowDate?string("yyyy-MM-dd")}
     */
     @PostMapping("/${objectNameLower}/save")
     public String save() {
@@ -103,7 +103,7 @@ public class ${objectName}Controller {
         Map result = new HashMap();
         try {
             PageData pd = HttpUtils.parsePageData();
-            ${objectName} ${objectNameLower} = (${objectName})HttpUtils.copyToEntity(pd,${objectName}.class);
+            ${objectName} ${objectNameLower} = (${objectName})HttpUtils.pageData2Entity(pd, new ${objectName}());
             ${objectNameLower}Service.save(${objectNameLower});
             result.put("code",0);
             result.put("msg","执行成功！");
@@ -120,8 +120,8 @@ public class ${objectName}Controller {
     }
 
     /**
-    * 创建人：自动创建
-    * 创建时间：${nowDate?string("yyyy-MM-dd")}
+    * @author ${author}
+    * @date ${nowDate?string("yyyy-MM-dd")}
     */
     @PostMapping("/${objectNameLower}/update")
     public String update() {
@@ -129,7 +129,7 @@ public class ${objectName}Controller {
         Map result = new HashMap();
         try {
             PageData pd = HttpUtils.parsePageData();
-            ${objectName} ${objectNameLower} = (${objectName})HttpUtils.copyToEntity(pd,${objectName}.class);
+            ${objectName} ${objectNameLower} = (${objectName})HttpUtils.pageData2Entity(pd, new ${objectName}());
             ${objectNameLower}Service.update(${objectNameLower});
             result.put("code",0);
             result.put("msg","执行成功！");
@@ -146,8 +146,8 @@ public class ${objectName}Controller {
     }
 
     /**
-    * 创建人：自动创建
-    * 创建时间：${nowDate?string("yyyy-MM-dd")}
+    * @author ${author}
+    * @date ${nowDate?string("yyyy-MM-dd")}
     */
     @PostMapping("/${objectNameLower}/delete")
     public String delete() {
@@ -155,7 +155,7 @@ public class ${objectName}Controller {
         Map result = new HashMap();
         try {
             PageData pd = HttpUtils.parsePageData();
-            ${objectName} ${objectNameLower} = (${objectName})HttpUtils.copyToEntity(pd,${objectName}.class);
+            ${objectName} ${objectNameLower} = (${objectName})HttpUtils.pageData2Entity(pd, new ${objectName}());
             ${objectNameLower}Service.delete(${objectNameLower});
             result.put("code",0);
             result.put("msg","执行成功！");
@@ -173,8 +173,8 @@ public class ${objectName}Controller {
 
 
     /**
-    * 创建人：自动创建
-    * 创建时间：${nowDate?string("yyyy-MM-dd")}
+    * @author ${author}
+    * @date ${nowDate?string("yyyy-MM-dd")}
     */
     @GetMapping("/${objectNameLower}/deleteById/{id}")
     public String deleteById(@PathVariable("id") String id) {
@@ -197,8 +197,8 @@ public class ${objectName}Controller {
     }
 
     /**
-    * 创建人：自动创建
-    * 创建时间：${nowDate?string("yyyy-MM-dd")}
+    * @author ${author}
+    * @date ${nowDate?string("yyyy-MM-dd")}
     */
     @PostMapping("/${objectNameLower}/dataListPage")
     public String dataListPage() {
@@ -224,8 +224,8 @@ public class ${objectName}Controller {
     }
 
     /**
-    * 创建人：自动创建
-    * 创建时间：${nowDate?string("yyyy-MM-dd")}
+    * @author ${author}
+    * @date ${nowDate?string("yyyy-MM-dd")}
     */
     @PostMapping("/${objectNameLower}/dataList")
     public String dataList() {
@@ -250,8 +250,8 @@ public class ${objectName}Controller {
     }
 
     /**
-    * 创建人：自动创建
-    * 创建时间：${nowDate?string("yyyy-MM-dd")}
+    * @author ${author}
+    * @date ${nowDate?string("yyyy-MM-dd")}
     */
     @GetMapping("/${objectNameLower}/excelExport")
     public void excelExport() {

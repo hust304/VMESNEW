@@ -56,10 +56,10 @@ public class CreateCodeUtil {
         }
 
         String ftlPath = path+"yvan-platform/src/main/java/com/yvan/ftl/";
+        String filePath = path+"vmes-contracts/src/main/java/com/xy/vmes/entity/"+objectName+".java";
 
         /*生成实体类*/
         root.put("classPath", "com.xy.vmes.entity");
-        String filePath = path+"vmes-contracts/src/main/java/com/xy/vmes/entity/"+objectName+".java";
         Freemarker.printFile("entityTemplate.ftl", root, filePath,  ftlPath);
 
         /*生成Mapper java*/
