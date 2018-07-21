@@ -19,9 +19,10 @@ public class CreateCodeUtil {
 
         PageData pd = new PageData();
 
-        String objectName = "Department";//类名
-        String tableName = "vmes_department";//表名
-        String title = "部门表";
+        String objectName = "Dictionary";//类名
+        String tableName = "vmes_dictionary";//表名
+        String title = "vmes_dictionary:字典大类表";
+        String author = "陈刚";
         String projectName = "deecoop";//项目名
 
 
@@ -34,14 +35,17 @@ public class CreateCodeUtil {
         pd.put("table",tableName);//表名
         List<String[]> fieldList = DbFH.getColumnParameterLsit(DbFH.getFHCon(pd),pd.getString("table"),pd.getString("databaseName")); //读取字段信息
 
-
-
-        Map<String,Object> root = new HashMap<String,Object>();		//创建数据模型
-        root.put("fieldList", fieldList);                           //表字段信息
-        root.put("TITLE", title);									//说明
-        root.put("objectName", objectName);							//类名
-        root.put("objectNameLower", DbFH.toLowerCaseFirstOne(objectName));		//类名(首字母小写)
-        root.put("table", tableName);								//表名
+        Map<String,Object> root = new HashMap<String,Object>();
+        //表字段信息
+        root.put("fieldList", fieldList);
+        //说明
+        root.put("TITLE", title);
+        //创建人
+        root.put("author", author);
+        //类名
+        root.put("objectName", objectName);
+        root.put("objectNameLower", DbFH.toLowerCaseFirstOne(objectName));
+        root.put("table", tableName);
         root.put("nowDate", new Date());
         root.put("projectName", projectName);
 
@@ -51,28 +55,32 @@ public class CreateCodeUtil {
             path = File.separator + path;
         }
 
-//        path = C:\\Users\\46368\\git\\VMESNEW\\
         String ftlPath = path+"yvan-platform/src/main/java/com/yvan/ftl/";
 
         /*生成实体类*/
         root.put("classPath", "com.xy.vmes.entity");
         String filePath = path+"vmes-contracts/src/main/java/com/xy/vmes/entity/"+objectName+".java";
         Freemarker.printFile("entityTemplate.ftl", root, filePath,  ftlPath);
+
         /*生成Mapper java*/
         root.put("classPath", "com.xy.vmes."+projectName+".dao");
         filePath = path+"vmes-server/src/main/java/com/xy/vmes/"+projectName+"/dao/"+objectName+"Mapper.java";
         Freemarker.printFile("mapperJavaTemplate.ftl", root, filePath, ftlPath);
+
         /*生成mybatis xml*/
         filePath = path+"vmes-server/src/main/resources/mapper/"+objectName+"Mapper.xml";
         Freemarker.printFile("mapperMysqlTemplate.ftl", root, filePath, ftlPath);
+
         /*生成Service java*/
         root.put("classPath", "com.xy.vmes.service");
         filePath = path+"vmes-contracts/src/main/java/com/xy/vmes/service/"+objectName+"Service.java";
         Freemarker.printFile("serviceJavaTemplate.ftl", root, filePath, ftlPath);
+
         /*生成ServiceImp java*/
         root.put("classPath", "com.xy.vmes."+projectName+".service");
         filePath = path+"vmes-server/src/main/java/com/xy/vmes/"+projectName+"/service/"+objectName+"ServiceImp.java";
         Freemarker.printFile("serviceImpJavaTemplate.ftl", root, filePath, ftlPath);
+
         /*生成Controller java*/
         root.put("classPath", "com.xy.vmes."+projectName+".controller");
         filePath = path+"vmes-server/src/main/java/com/xy/vmes/"+projectName+"/controller/"+objectName+"Controller.java";
