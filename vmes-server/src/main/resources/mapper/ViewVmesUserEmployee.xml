@@ -7,7 +7,7 @@
  -->
 <mapper namespace="com.xy.vmes.deecoop.dao.ViewVmesUserEmployeeMapper">
     <!--视图名 -->
-    <sql id="viewName">
+    <sql id="tableName">
         v_vmes_user_employee
     </sql>
 
