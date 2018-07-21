@@ -1,6 +1,8 @@
 package com.xy.vmes.service;
 
 import com.xy.vmes.entity.ViewVmesUserEmployee;
+import com.xy.vmes.entity.User;
+import com.xy.vmes.entity.Employee;
 import com.yvan.PageData;
 
 import java.util.List;
@@ -16,4 +18,16 @@ public interface UserEmployeeService {
      * 创建时间：2018-07-20
      */
     List<ViewVmesUserEmployee> findViewUserEmployList(PageData mapObj);
+
+    /**
+     * 创建人：陈刚
+     * 创建时间：2018-07-20
+     */
+    User viewObject2User(ViewVmesUserEmployee viewObject, User object);
+
+    /**
+     * 创建人：陈刚
+     * 创建时间：2018-07-20
+     */
+    Employee viewObject2Employee(ViewVmesUserEmployee viewObject, Employee object);
 }
