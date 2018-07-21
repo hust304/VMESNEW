@@ -17,7 +17,7 @@ public interface UserEmployeeService {
      * 创建人：陈刚
      * 创建时间：2018-07-20
      */
-    List<ViewVmesUserEmployee> findViewUserEmployList(PageData mapObj);
+    List<ViewVmesUserEmployee> findViewUserEmployList(ViewVmesUserEmployee object);
 
     /**
      * 创建人：陈刚

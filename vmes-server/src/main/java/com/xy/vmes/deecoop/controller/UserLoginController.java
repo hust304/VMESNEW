@@ -2,12 +2,19 @@ package com.xy.vmes.deecoop.controller;
 
 
 import com.xy.vmes.service.UserEmployeeService;
+import com.xy.vmes.entity.ViewVmesUserEmployee;
+import com.yvan.HttpUtils;
+import com.yvan.PageData;
+import com.yvan.platform.RestException;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+import java.util.UUID;
 
 /**
  * 说明：用户登录退出系统 Controller
@@ -24,6 +31,9 @@ public class UserLoginController {
 
     /**
      * 系统用户登录(web,手机)端-通用登录接口
+     * Redis缓存Key(前缀):uuid_用户ID_deecoop
+     * Redis缓存Key:uuid_用户ID_deecoop_userID
+     *
      * 1. (用户账号, 密码MD5)-查询(v_vmes_user_employee)
      * 2. (用户账号, 密码MD5)-系统中存在
      * 3. 生成新的Redis会话(生成新的uuid)
@@ -44,10 +54,17 @@ public class UserLoginController {
     @GetMapping("/userLogin/sysUserLogin")
     public String departmentTreeLoad() {
         //1. (用户账号, 密码MD5)-查询(v_vmes_user_employee)
-        //2. (用户账号, 密码MD5)-系统中存在
-        //  RedisKey: uuid_系统用户ID_deecoop
-        //      uuid: 登录会话
+        PageData pageData = HttpUtils.parsePageData();
+        ViewVmesUserEmployee findObj = (ViewVmesUserEmployee)HttpUtils.pageData2Entity(pageData, new ViewVmesUserEmployee());
+        List<ViewVmesUserEmployee> objectList = userEmployService.findViewUserEmployList(findObj);
+        if (objectList == null || objectList.size() == 0) {
+            throw new RestException("", "当前(用户,密码)输入错误，请重新输入！");
+        }
+
+        //(用户账号, 密码MD5)-系统中存在--RedisKey: uuid_系统用户ID_deecoop
         //3. 生成新的Redis会话(生成新的uuid)
+        String uuid = UUID.randomUUID().toString().replaceAll("-","");
+
         //4. 生成新的uuid-与Redis缓存中的Key比较
         //5. 生成新的uuid-与Redis缓存中的历史(uuid)-不同(在其他终端登录)
         //6. 清空历史Redis缓存Key(系统用户ID)z字符串匹配

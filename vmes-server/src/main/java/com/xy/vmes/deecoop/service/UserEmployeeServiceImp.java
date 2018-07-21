@@ -5,6 +5,7 @@ import com.xy.vmes.entity.Employee;
 import com.xy.vmes.entity.User;
 import com.xy.vmes.entity.ViewVmesUserEmployee;
 import com.xy.vmes.service.UserEmployeeService;
+import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.platform.RestException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,15 +23,16 @@ public class UserEmployeeServiceImp implements UserEmployeeService {
      * 创建人：陈刚
      * 创建时间：2018-07-20
      *
-     * @param mapObj
+     * @param object
      */
     @Override
-    public List<ViewVmesUserEmployee> findViewUserEmployList(PageData mapObj) {
+    public List<ViewVmesUserEmployee> findViewUserEmployList(ViewVmesUserEmployee object) {
         List<ViewVmesUserEmployee> objectList = new ArrayList<ViewVmesUserEmployee>();
-        if (mapObj == null || mapObj.size() == 0) {return objectList;}
+        if (object == null) {return objectList;}
 
         try {
-            objectList = viewUserEmployeeMapper.findViewUserEmployList(mapObj);
+            PageData pageData = HttpUtils.entity2PageData(object, new PageData());
+            objectList = viewUserEmployeeMapper.findViewUserEmployList(pageData);
         } catch (Exception e) {
             throw new RestException("", e.getMessage());
         }
