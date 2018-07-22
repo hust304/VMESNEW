@@ -4,192 +4,250 @@ import java.util.*;
 import java.math.BigDecimal;
 
 /** 
- * 创建人：陈刚
- * 创建时间：2018-07-20
+ * 说明：vmes_employee:员工表 实体类
+ * @author 陈刚
+ * @date 2018-07-22
  */
-public class Employee{
-	
-	private String id;			//
-	public String getId() {
-		return id;
-	}
+public class Employee implements java.io.Serializable {
+	private static final long serialVersionUID = 1L;
+
+	//
+	private String id;
+	//系统用户ID
+	private String userId;
+	//公司ID-组织架构
+	private String companyId;
+	//员工编号
+	private String code;
+	//员工类型 数据字典:sys_employee_type
+	private String type;
+	//员工姓名
+	private String name;
+	//员工英文名
+	private String nameEn;
+	//员工照片
+	private String photo;
+	//员工图片
+	private String icon;
+	//手机号码
+	private String mobile;
+	//邮箱地址
+	private String email;
+	//性别(1:男0:女) 数据字典:sys_employee_sex
+	private String sex;
+	//出生日期(yyyy-mm-dd)
+	private Date birthday;
+	//入职日期(yyyy-mm-dd)
+	private Date entryDate;
+	//籍贯
+	private String nativePlace;
+	//政治面貌 数据字典:sys_employee_political
+	private String political;
+	//身份证号
+	private String identityNumber;
+	//婚姻状况(1:已婚 0:未婚) 数据字典:sys_employee_marital
+	private String marital;
+	//是否禁用(1:已禁用 0:启用) 数据字典:sys_isdisable
+	private String isdisable;
+	//创建时间
+	private Date cdate;
+	//创建人账号
+	private String cuser;
+	//修改时间
+	private Date udate;
+	//修改人账号
+	private String uuser;
+	//预留字段
+	private String column1;
+	//预留字段
+	private String column2;
+	//预留字段
+	private String column3;
+	//是否查询全部
+	//fasle: (false or is null) 无查询条件-查询结果集返回空或list.size()==0
+	//true : 无查询条件-返回全部业务表数据
+	private Boolean isQueryAll = Boolean.FALSE;
+
+	//是否考虑自己在业务表中是否存在
+	//false: (false or is null) 无需考虑自己在业务表中是否存在
+	//true : 需要考虑自己在业务表中是否存在
+	private Boolean isSelfExist = Boolean.FALSE;
+	private String queryStr;
+
+
 	public void setId(String id) {
 		this.id = id;
 	}
-	private String userId;			//系统用户ID
-	public String getUserId() {
-		return userId;
+	public String getId() {
+		return id;
 	}
 	public void setUserId(String userId) {
 		this.userId = userId;
 	}
-	private String companyId;			//公司ID-组织架构
-	public String getCompanyId() {
-		return companyId;
+	public String getUserId() {
+		return userId;
 	}
 	public void setCompanyId(String companyId) {
 		this.companyId = companyId;
 	}
-	private String code;			//员工编号
-	public String getCode() {
-		return code;
+	public String getCompanyId() {
+		return companyId;
 	}
 	public void setCode(String code) {
 		this.code = code;
 	}
-	private String type;			//员工类型 数据字典:sys_employee_type
-	public String getType() {
-		return type;
+	public String getCode() {
+		return code;
 	}
 	public void setType(String type) {
 		this.type = type;
 	}
-	private String name;			//员工姓名
-	public String getName() {
-		return name;
+	public String getType() {
+		return type;
 	}
 	public void setName(String name) {
 		this.name = name;
 	}
-	private String nameEn;			//员工英文名
-	public String getNameEn() {
-		return nameEn;
+	public String getName() {
+		return name;
 	}
 	public void setNameEn(String nameEn) {
 		this.nameEn = nameEn;
 	}
-	private String photo;			//员工照片
-	public String getPhoto() {
-		return photo;
+	public String getNameEn() {
+		return nameEn;
 	}
 	public void setPhoto(String photo) {
 		this.photo = photo;
 	}
-	private String icon;			//员工图片
-	public String getIcon() {
-		return icon;
+	public String getPhoto() {
+		return photo;
 	}
 	public void setIcon(String icon) {
 		this.icon = icon;
 	}
-	private String mobile;			//手机号码
-	public String getMobile() {
-		return mobile;
+	public String getIcon() {
+		return icon;
 	}
 	public void setMobile(String mobile) {
 		this.mobile = mobile;
 	}
-	private String email;			//邮箱地址
-	public String getEmail() {
-		return email;
+	public String getMobile() {
+		return mobile;
 	}
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	private String sex;			//性别(1:男0:女) 数据字典:sys_employee_sex
-	public String getSex() {
-		return sex;
+	public String getEmail() {
+		return email;
 	}
 	public void setSex(String sex) {
 		this.sex = sex;
 	}
-	private Date birthday;			//出生日期(yyyy-mm-dd)
-	public Date getBirthday() {
-		return birthday;
+	public String getSex() {
+		return sex;
 	}
 	public void setBirthday(Date birthday) {
 		this.birthday = birthday;
 	}
-	private Date entryDate;			//入职日期(yyyy-mm-dd)
-	public Date getEntryDate() {
-		return entryDate;
+	public Date getBirthday() {
+		return birthday;
 	}
 	public void setEntryDate(Date entryDate) {
 		this.entryDate = entryDate;
 	}
-	private String nativePlace;			//籍贯
-	public String getNativePlace() {
-		return nativePlace;
+	public Date getEntryDate() {
+		return entryDate;
 	}
 	public void setNativePlace(String nativePlace) {
 		this.nativePlace = nativePlace;
 	}
-	private String political;			//政治面貌 数据字典:sys_employee_political
-	public String getPolitical() {
-		return political;
+	public String getNativePlace() {
+		return nativePlace;
 	}
 	public void setPolitical(String political) {
 		this.political = political;
 	}
-	private String identityNumber;			//身份证号
-	public String getIdentityNumber() {
-		return identityNumber;
+	public String getPolitical() {
+		return political;
 	}
 	public void setIdentityNumber(String identityNumber) {
 		this.identityNumber = identityNumber;
 	}
-	private String marital;			//婚姻状况(1:已婚 0:未婚) 数据字典:sys_employee_marital
-	public String getMarital() {
-		return marital;
+	public String getIdentityNumber() {
+		return identityNumber;
 	}
 	public void setMarital(String marital) {
 		this.marital = marital;
 	}
-	private String isdisable;			//是否禁用(1:已禁用 0:启用) 数据字典:sys_isdisable
-	public String getIsdisable() {
-		return isdisable;
+	public String getMarital() {
+		return marital;
 	}
 	public void setIsdisable(String isdisable) {
 		this.isdisable = isdisable;
 	}
-	private Date cdate;			//创建时间
-	public Date getCdate() {
-		return cdate;
+	public String getIsdisable() {
+		return isdisable;
 	}
 	public void setCdate(Date cdate) {
 		this.cdate = cdate;
 	}
-	private String cuser;			//创建人账号
-	public String getCuser() {
-		return cuser;
+	public Date getCdate() {
+		return cdate;
 	}
 	public void setCuser(String cuser) {
 		this.cuser = cuser;
 	}
-	private Date udate;			//修改时间
-	public Date getUdate() {
-		return udate;
+	public String getCuser() {
+		return cuser;
 	}
 	public void setUdate(Date udate) {
 		this.udate = udate;
 	}
-	private String uuser;			//修改人账号
-	public String getUuser() {
-		return uuser;
+	public Date getUdate() {
+		return udate;
 	}
 	public void setUuser(String uuser) {
 		this.uuser = uuser;
 	}
-	private String column1;			//预留字段
-	public String getColumn1() {
-		return column1;
+	public String getUuser() {
+		return uuser;
 	}
 	public void setColumn1(String column1) {
 		this.column1 = column1;
 	}
-	private String column2;			//预留字段
-	public String getColumn2() {
-		return column2;
+	public String getColumn1() {
+		return column1;
 	}
 	public void setColumn2(String column2) {
 		this.column2 = column2;
 	}
-	private String column3;			//预留字段
-	public String getColumn3() {
-		return column3;
+	public String getColumn2() {
+		return column2;
 	}
 	public void setColumn3(String column3) {
 		this.column3 = column3;
+	}
+	public String getColumn3() {
+		return column3;
+	}
+	public Boolean getIsQueryAll() {
+		return isQueryAll;
+	}
+	public void setIsQueryAll(Boolean isQueryAll) {
+		this.isQueryAll = isQueryAll;
+	}
+	public Boolean getIsSelfExist() {
+		return isSelfExist;
+	}
+	public void setIsSelfExist(Boolean isSelfExist) {
+		this.isSelfExist = isSelfExist;
+	}
+	public String getQueryStr() {
+		return queryStr;
+	}
+	public void setQueryStr(String queryStr) {
+		this.queryStr = queryStr;
 	}
 
 }
