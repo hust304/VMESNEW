@@ -181,7 +181,49 @@
                             </otherwise>
                         </choose>
                     </if>
+                    <if test="pid != null and pid!=''" >
+                        and pid=#{pid}
+                    </if>
+                    <if test="name != null and name!=''" >
+                        and name=#{name}
+                    </if>
+                    <if test="code != null and code!=''" >
+                        and code=#{code}
+                    </if>
+                    <if test="layer != null" >
+                        and layer=#{layer}
+                    </if>
+                    <if test="organizeType != null and organizeType!=''" >
+                        and organizeType=#{organizeType}
+                    </if>
+                    <if test="companyType != null and companyType!=''" >
+                        and companyType=#{companyType}
+                    </if>
+                    <if test="deptType != null and deptType!=''" >
+                        and deptType=#{deptType}
+                    </if>
+                    <if test="isdisable != null and isdisable!=''" >
+                        and isdisable=#{isdisable}
+                    </if>
 
+                    <if test="id0 != null and id0!=''" >
+                        and id_0=#{id0}
+                    </if>
+                    <if test="id1 != null and id1!=''" >
+                        and id_1=#{id1}
+                    </if>
+                    <if test="id2 != null and id2!=''" >
+                        and id_2=#{id2}
+                    </if>
+                    <if test="id3 != null and id3!=''" >
+                        and id_3=#{id3}
+                    </if>
+                    <if test="id4 != null and id4!=''" >
+                        and id_4=#{id4}
+                    </if>
+                    <if test="id5 != null and id5!=''" >
+                        and id_5=#{id5}
+                    </if>
 
                     <!--queryStr 自定义sql查询语句-->
                     <if test="queryStr != null and queryStr!=''" >

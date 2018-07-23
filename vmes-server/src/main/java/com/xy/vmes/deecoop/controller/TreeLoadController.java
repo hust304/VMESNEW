@@ -42,7 +42,7 @@ public class TreeLoadController {
         //detp.setName("公司1");
         //detp.setLayer(Integer.valueOf(1));
         detp = null;
-//        Tree<Department> treeObj = departmentService.findTree(detp);
+        Tree<Department> treeObj = departmentService.findTree(detp);
 
         return null;
     }
