@@ -13,64 +13,37 @@ import java.util.Map;
 
 /**
 * 说明：${TITLE} Mapper.java
-* 创建人：自动创建
+* 创建人：${author} 自动创建
 * 创建时间：${nowDate?string("yyyy-MM-dd")}
 */
 @Mapper
 @Repository
 public interface ${objectName}Mapper extends BaseMapper<${objectName}> {
 
-    /**
-    * 创建人：自动创建
-    * 创建时间：${nowDate?string("yyyy-MM-dd")}
-    */
-    @Insert("save")
-    void save(${objectName} ${objectNameLower});
-
-    /**
-    * 创建人：自动创建
-    * 创建时间：${nowDate?string("yyyy-MM-dd")}
-    */
-    @Delete("delete")
-    void delete(${objectName} ${objectNameLower});
 
 	/**
-	* 创建人：自动创建
-	* 创建时间：${nowDate?string("yyyy-MM-dd")}
-	*/
-    @Update("update")
-    void update(${objectName} ${objectNameLower});
-
-	/**
-	* 创建人：自动创建
-	* 创建时间：${nowDate?string("yyyy-MM-dd")}
-	*/
-    @Select("findById")
-	${objectName} findById(PageData pd);
-
-	/**
-	* 创建人：自动创建
+	* 创建人：${author} 自动创建，禁止修改
 	* 创建时间：${nowDate?string("yyyy-MM-dd")}
 	*/
     @Select("datalistPage")
     List<${objectName}> dataListPage(PageData pd,Pagination pg);
 
     /**
-    * 创建人：自动创建
+    * 创建人：${author} 自动创建，禁止修改
     * 创建时间：${nowDate?string("yyyy-MM-dd")}
     */
 	@Select("dataList")
 	List<${objectName}> dataList(PageData pd);
 
 	/**
-	* 创建人：自动创建
+	* 创建人：${author} 自动创建，禁止修改
 	* 创建时间：${nowDate?string("yyyy-MM-dd")}
 	*/
 	@Delete("deleteByIds")
 	void deleteByIds(String[] ids);
 
     /**
-    * 创建人：自动创建
+    * 创建人：${author} 自动创建，禁止修改
     * 创建时间：${nowDate?string("yyyy-MM-dd")}
     */
     @Select("findColumnList")
@@ -78,11 +51,15 @@ public interface ${objectName}Mapper extends BaseMapper<${objectName}> {
 
 
     /**
-    * 创建人：自动创建
+    * 创建人：${author} 自动创建，禁止修改
     * 创建时间：${nowDate?string("yyyy-MM-dd")}
     */
     @Select("findDataList")
     List<Map> findDataList(PageData pd);
+
+
+
+    /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 }
 
 

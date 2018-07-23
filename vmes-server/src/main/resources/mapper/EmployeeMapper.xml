@@ -131,69 +131,7 @@
     </select>
 
 
-    <!-- 新增-->
-    <insert id="save" parameterType="com.xy.vmes.entity.Employee">
-        insert into
-        <include refid="tableName"></include>
-        (
-        <include refid="Field"></include>
-        ) values (
-        <include refid="FieldValue"></include>
-        )
-    </insert>
 
-    <!-- 删除-->
-    <delete id="delete" parameterType="com.xy.vmes.entity.Employee">
-        delete from
-        <include refid="tableName"></include>
-        where
-        id = #{id}
-    </delete>
-
-    <!-- 修改 -->
-    <update id="update" parameterType="com.xy.vmes.entity.Employee">
-        update
-        <include refid="tableName"></include>
-        set
-		user_id = #{userId}, <!-- 系统用户ID -->
-		company_id = #{companyId}, <!-- 公司ID-组织架构 -->
-		code = #{code}, <!-- 员工编号 -->
-		type = #{type}, <!-- 员工类型 数据字典:sys_employee_type -->
-		name = #{name}, <!-- 员工姓名 -->
-		name_en = #{nameEn}, <!-- 员工英文名 -->
-		photo = #{photo}, <!-- 员工照片 -->
-		icon = #{icon}, <!-- 员工图片 -->
-		mobile = #{mobile}, <!-- 手机号码 -->
-		email = #{email}, <!-- 邮箱地址 -->
-		sex = #{sex}, <!-- 性别(1:男0:女) 数据字典:sys_employee_sex -->
-		birthday = #{birthday}, <!-- 出生日期(yyyy-mm-dd) -->
-		entry_date = #{entryDate}, <!-- 入职日期(yyyy-mm-dd) -->
-		native_place = #{nativePlace}, <!-- 籍贯 -->
-		political = #{political}, <!-- 政治面貌 数据字典:sys_employee_political -->
-		identity_number = #{identityNumber}, <!-- 身份证号 -->
-		marital = #{marital}, <!-- 婚姻状况(1:已婚 0:未婚) 数据字典:sys_employee_marital -->
-		isdisable = #{isdisable}, <!-- 是否禁用(1:已禁用 0:启用) 数据字典:sys_isdisable -->
-		cdate = #{cdate}, <!-- 创建时间 -->
-		cuser = #{cuser}, <!-- 创建人账号 -->
-		udate = #{udate}, <!-- 修改时间 -->
-		uuser = #{uuser}, <!-- 修改人账号 -->
-		column_1 = #{column1}, <!-- 预留字段 -->
-		column_2 = #{column2}, <!-- 预留字段 -->
-		column_3 = #{column3}, <!-- 预留字段 -->
-        id = #{id}
-        where
-        id = #{id}
-    </update>
-
-    <!-- 通过ID获取数据 -->
-    <select id="findById" parameterType="com.yvan.PageData" resultType="com.xy.vmes.entity.Employee">
-        select
-        <include refid="Field"></include>
-        from
-        <include refid="tableName"></include>
-        where
-        id = #{id}
-    </select>
 
     <!-- 列表 -->
     <select id="datalistPage" parameterType="com.yvan.PageData" resultType="com.xy.vmes.entity.Employee">

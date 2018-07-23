@@ -66,33 +66,6 @@ public class EmployeeController {
     }
 
 
-
-    /**
-    * 创建人：自动创建
-    * 创建时间：2018-07-20
-    */
-    @PostMapping("/employee/findById")
-    public String findById() {
-        Gson gosn = new Gson();
-        Map result = new HashMap();
-        try {
-            PageData pd = HttpUtils.parsePageData();
-            Employee employee = employeeService.findById(pd);
-            result.put("code",0);
-            result.put("msg","执行成功！");
-            result.put("result",employee);
-        }catch (Exception e){
-            e.printStackTrace();
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            logger.error("################employee/findById################# 执行异常:"+sw.toString());
-            result.put("code",1);
-            result.put("msg","执行异常！");
-            result.put("result",sw.toString());
-        }
-        return gosn.toJson(result);
-    }
-
     /**
     * 创建人：自动创建
     * 创建时间：2018-07-20
@@ -145,31 +118,6 @@ public class EmployeeController {
         return gosn.toJson(result);
     }
 
-    /**
-    * 创建人：自动创建
-    * 创建时间：2018-07-20
-    */
-    @PostMapping("/employee/delete")
-    public String delete() {
-        Gson gosn = new Gson();
-        Map result = new HashMap();
-        try {
-            PageData pd = HttpUtils.parsePageData();
-            Employee employee = (Employee)HttpUtils.pageData2Entity(pd, new Employee());
-            employeeService.delete(employee);
-            result.put("code",0);
-            result.put("msg","执行成功！");
-        }catch (Exception e){
-            e.printStackTrace();
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            logger.error("################employee/delete################# 执行异常:"+sw.toString());
-            result.put("code",1);
-            result.put("msg","执行异常！");
-            result.put("result",sw.toString());
-        }
-        return gosn.toJson(result);
-    }
 
 
     /**

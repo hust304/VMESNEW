@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 
 /** 
  * 说明：${TITLE} 实体类
- * @author ${author}
+ * @author ${author} 自动生成
  * @date ${nowDate?string("yyyy-MM-dd")}
  */
 @TableName("${table}")
@@ -35,6 +35,7 @@ public class ${objectName} implements Serializable {
 	private String ${var[1]};
 </#if>
 </#list>
+
 
 
 <#list fieldList as var>
@@ -68,5 +69,8 @@ public class ${objectName} implements Serializable {
 	}
 	</#if>
 </#list>
+
+/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+
 
 }

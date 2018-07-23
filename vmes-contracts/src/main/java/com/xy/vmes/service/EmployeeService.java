@@ -22,11 +22,6 @@ public interface EmployeeService {
     */
     void save(Employee employee) throws Exception;
 
-    /**
-    * 创建人：自动创建
-    * 创建时间：2018-07-20
-    */
-    void delete(Employee employee) throws Exception;
 
     /**
     * 创建人：自动创建
@@ -45,11 +40,7 @@ public interface EmployeeService {
     */
     Employee selectById(String id) throws Exception;
 
-    /**
-    * 创建人：自动创建
-    * 创建时间：2018-07-20
-    */
-    Employee findById(PageData pd) throws Exception;
+
 
     /**
     * 创建人：自动创建
@@ -63,11 +54,6 @@ public interface EmployeeService {
     */
     List<Employee> dataList(PageData pd) throws Exception;
 
-    /**
-    * 创建人：自动创建
-    * 创建时间：2018-07-20
-    */
-    void deleteByIds(String[] ids) throws Exception;
 
     /**
     * 创建人：自动创建

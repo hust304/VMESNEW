@@ -2,17 +2,17 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <!--
 说明：${TITLE} Mapper.xml
-创建人：自动创建
+创建人：${author} 自动创建
 创建时间：${nowDate?string("yyyy-MM-dd")}
  -->
 <mapper namespace="${classPath}.${objectName}Mapper">
 
-    <!--表名 -->
+    <!--表名 自动创建，禁止修改-->
     <sql id="tableName">
 	${table}
     </sql>
 
-    <!-- 字段 -->
+    <!-- 字段 自动创建，禁止修改-->
     <sql id="Field">
 	<#list fieldList as var>
 		<#if var[7] == "否">
@@ -26,7 +26,7 @@
 	</#list>
     </sql>
 
-    <!-- 字段值 -->
+    <!-- 字段值 自动创建，禁止修改-->
     <sql id="FieldValue">
 	<#list fieldList as var>
 		<#if var[7] == "否">
@@ -41,7 +41,7 @@
     </sql>
 
 
-    <!-- 字段值 -->
+    <!-- 字段值 自动创建，禁止修改-->
     <sql id="Column">
     <#list fieldList as var>
         <#if var[7] == "否">
@@ -55,14 +55,14 @@
     </#list>
     </sql>
 
-    <!-- 通过ID获取数据 -->
+    <!-- 自动创建，禁止修改 -->
     <select id="findColumnList"  resultType="java.util.LinkedHashMap">
         select
         <include refid="Column"></include>
         from dual
     </select>
 
-    <!-- 通过ID获取数据 -->
+    <!-- 自动创建，禁止修改 -->
     <select id="findDataList"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
         select
         <include refid="Field"></include>
@@ -83,52 +83,7 @@
         </if>
     </select>
 
-
-    <!-- 新增-->
-    <insert id="save" parameterType="com.xy.vmes.entity.${objectName}">
-        insert into
-        <include refid="tableName"></include>
-        (
-        <include refid="Field"></include>
-        ) values (
-        <include refid="FieldValue"></include>
-        )
-    </insert>
-
-    <!-- 删除-->
-    <delete id="delete" parameterType="com.xy.vmes.entity.${objectName}">
-        delete from
-        <include refid="tableName"></include>
-        where
-        id = ${r"#{"}id${r"}"}
-    </delete>
-
-    <!-- 修改 -->
-    <update id="update" parameterType="com.xy.vmes.entity.${objectName}">
-        update
-        <include refid="tableName"></include>
-        set
-	<#list fieldList as var>
-		<#if var[7] == "否">
-		${var[0]} = ${r"#{"}${var[1]}${r"}"}, <!-- ${var[3]} -->
-		</#if>
-	</#list>
-        id = ${r"#{"}id${r"}"}
-        where
-        id = ${r"#{"}id${r"}"}
-    </update>
-
-    <!-- 通过ID获取数据 -->
-    <select id="findById" parameterType="com.yvan.PageData" resultType="com.xy.vmes.entity.${objectName}">
-        select
-        <include refid="Field"></include>
-        from
-        <include refid="tableName"></include>
-        where
-        id = ${r"#{"}id${r"}"}
-    </select>
-
-    <!-- 列表 -->
+    <!-- 列表 自动创建，禁止修改-->
     <select id="datalistPage" parameterType="com.yvan.PageData" resultType="com.xy.vmes.entity.${objectName}">
         select
         <include refid="Field"></include>
@@ -149,7 +104,7 @@
         </if>
     </select>
 
-    <!-- 列表(全部) -->
+    <!-- 列表(全部) 自动创建，禁止修改-->
     <select id="dataList" parameterType="com.yvan.PageData" resultType="com.xy.vmes.entity.${objectName}">
         select
             <include refid="Field"></include>
@@ -192,7 +147,7 @@
         </choose>
     </select>
 
-    <!-- 批量删除 -->
+    <!-- 批量删除 自动创建，禁止修改-->
     <delete id="deleteByIds" parameterType="String">
         delete from
         <include refid="tableName"></include>
@@ -202,5 +157,11 @@
 		${r"#{item}"}
         </foreach>
     </delete>
+
+
+
+    <!-- ***************************************************以上为自动生成代码禁止修改，请在下面添加业务代码************************************************* -->
+
+
 
 </mapper>

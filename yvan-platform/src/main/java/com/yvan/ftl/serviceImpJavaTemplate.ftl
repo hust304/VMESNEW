@@ -16,7 +16,7 @@ import java.util.Map;
 
 /**
 * 说明：${TITLE} 实现类
-* 创建人：自动创建
+* 创建人：${author} 自动创建
 * 创建时间：${nowDate?string("yyyy-MM-dd")}
 */
 @Service
@@ -28,7 +28,7 @@ public class ${objectName}ServiceImp implements ${objectName}Service {
     private ${objectName}Mapper ${objectNameLower}Mapper;
 
     /**
-    * 创建人：自动创建
+    * 创建人：${author} 自动创建，禁止修改
     * 创建时间：${nowDate?string("yyyy-MM-dd")}
     */
     @Override
@@ -36,17 +36,9 @@ public class ${objectName}ServiceImp implements ${objectName}Service {
         ${objectNameLower}Mapper.save(${objectNameLower});
     }
 
-    /**
-    * 创建人：自动创建
-    * 创建时间：${nowDate?string("yyyy-MM-dd")}
-    */
-    @Override
-    public void delete(${objectName} ${objectNameLower}) throws Exception{
-        ${objectNameLower}Mapper.delete(${objectNameLower});
-    }
 
     /**
-    * 创建人：自动创建
+    * 创建人：${author} 自动创建，禁止修改
     * 创建时间：${nowDate?string("yyyy-MM-dd")}
     */
     @Override
@@ -55,7 +47,7 @@ public class ${objectName}ServiceImp implements ${objectName}Service {
     }
 
     /**
-    * 创建人：自动创建
+    * 创建人：${author} 自动创建，禁止修改
     * 创建时间：${nowDate?string("yyyy-MM-dd")}
     */
     @Override
@@ -65,7 +57,7 @@ public class ${objectName}ServiceImp implements ${objectName}Service {
     }
 
     /**
-    * 创建人：自动创建
+    * 创建人：${author} 自动创建，禁止修改
     * 创建时间：${nowDate?string("yyyy-MM-dd")}
     */
     @Override
@@ -73,17 +65,9 @@ public class ${objectName}ServiceImp implements ${objectName}Service {
         ${objectNameLower}Mapper.deleteById(id);
     }
 
-    /**
-    * 创建人：自动创建
-    * 创建时间：${nowDate?string("yyyy-MM-dd")}
-    */
-    @Override
-    public ${objectName} findById(PageData pd) throws Exception{
-        return ${objectNameLower}Mapper.findById(pd);
-    }
 
     /**
-    * 创建人：自动创建
+    * 创建人：${author} 自动创建，禁止修改
     * 创建时间：${nowDate?string("yyyy-MM-dd")}
     */
     @Override
@@ -92,7 +76,7 @@ public class ${objectName}ServiceImp implements ${objectName}Service {
     }
 
     /**
-    * 创建人：自动创建
+    * 创建人：${author} 自动创建，禁止修改
     * 创建时间：${nowDate?string("yyyy-MM-dd")}
     */
     @Override
@@ -101,7 +85,7 @@ public class ${objectName}ServiceImp implements ${objectName}Service {
     }
 
     /**
-    * 创建人：自动创建
+    * 创建人：${author} 自动创建，禁止修改
     * 创建时间：${nowDate?string("yyyy-MM-dd")}
     */
     @Override
@@ -110,7 +94,7 @@ public class ${objectName}ServiceImp implements ${objectName}Service {
     }
 
     /**
-    * 创建人：自动创建
+    * 创建人：${author} 自动创建，禁止修改
     * 创建时间：${nowDate?string("yyyy-MM-dd")}
     */
     @Override
@@ -119,7 +103,7 @@ public class ${objectName}ServiceImp implements ${objectName}Service {
     }
 
     /**
-    * 创建人：自动创建
+    * 创建人：${author} 自动创建，禁止修改
     * 创建时间：${nowDate?string("yyyy-MM-dd")}
     */
     @Override
@@ -127,6 +111,8 @@ public class ${objectName}ServiceImp implements ${objectName}Service {
         return ${objectNameLower}Mapper.findDataList(pd);
     }
 
+
+    /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 }
 
 

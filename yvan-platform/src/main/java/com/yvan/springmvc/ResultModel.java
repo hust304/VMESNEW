@@ -11,8 +11,14 @@ import java.util.LinkedHashMap;
  */
 public class ResultModel extends LinkedHashMap<String, Object> {
 
+    public ResultModel(){
+        set("code", 0);
+        set("msg", "执行成功!");
+    }
+
     public ResultModel putMsg(String msg) {
-        return set("msg", msg);
+        set("msg", msg);
+        return this;
     }
 
     public ResultModel putTitle(String title) {
@@ -26,6 +32,28 @@ public class ResultModel extends LinkedHashMap<String, Object> {
     public Object getData() {
         return get("data");
     }
+
+
+    public ResultModel putCode(Object code) {
+        set("code", code);
+        return this;
+    }
+
+    public Object getCode() {
+        get("code");
+        return this;
+    }
+
+    public ResultModel putResult(Object result) {
+        set("result", result);
+        return this;
+    }
+
+    public Object getResult() {
+        get("result");
+        return this;
+    }
+
 
     public ResultModel putTotal(int total) {
         return set("total", total);

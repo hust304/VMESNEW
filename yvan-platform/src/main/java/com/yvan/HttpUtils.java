@@ -35,7 +35,13 @@ public class HttpUtils {
 
     public static HttpServletResponse currentResponse() {
         try {
-            return ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getResponse();
+            HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getResponse();
+            response.addHeader("Access-Control-Allow-Origin", "*");
+            response.addHeader("Access-Control-Allow-Methods", "*");
+            response.addHeader("Access-Control-Max-Age", "100");
+            response.addHeader("Access-Control-Allow-Headers", "Content-Type");
+            response.addHeader("Access-Control-Allow-Credentials", "false");
+            return response;
         } catch (Exception e) {
             return null;
         }

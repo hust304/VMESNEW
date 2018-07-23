@@ -1,5 +1,8 @@
 package com.yvan.filter;
 
+import com.yvan.cache.RedisConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
 
 import javax.servlet.*;
@@ -13,10 +16,10 @@ import java.io.IOException;
 @Configuration
 public class ComonFilter implements Filter {
 
-
+    private Logger logger = LoggerFactory.getLogger(ComonFilter.class);
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        System.out.println("ComonFilter.init()");
+        logger.info("过滤器初始化.......ComonFilter.init()");
     }
 
     @Override

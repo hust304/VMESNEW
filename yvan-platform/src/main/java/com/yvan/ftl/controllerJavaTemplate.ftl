@@ -27,7 +27,7 @@ import java.util.*;
 
 /**
 * 说明：Controller
-* @author ${author}
+* @author ${author} 自动生成
 * @date ${nowDate?string("yyyy-MM-dd")}
 */
 @RestController
@@ -41,250 +41,149 @@ public class ${objectName}Controller {
 
 
     /**
-    * @author ${author}
+    * @author ${author} 自动创建，禁止修改
     * @date ${nowDate?string("yyyy-MM-dd")}
     */
     @GetMapping("/${objectNameLower}/selectById/{id}")
-    public String selectById(@PathVariable("id") String id) {
-        Gson gosn = new Gson();
-        Map result = new HashMap();
-        try {
-            ${objectName} ${objectNameLower} = ${objectNameLower}Service.selectById(id);
-            result.put("code",0);
-            result.put("msg","执行成功！");
-            result.put("result",${objectNameLower});
-        }catch (Exception e){
-            e.printStackTrace();
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            logger.error("################${objectNameLower}/selectById################# 执行异常:"+sw.toString());
-            result.put("code",1);
-            result.put("msg","执行异常！");
-            result.put("result",sw.toString());
-        }
-        return gosn.toJson(result);
+    public ResultModel selectById(@PathVariable("id") String id) {
+
+        logger.info("################${objectNameLower}/dataList 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        HttpServletResponse response  = HttpUtils.currentResponse();
+        ResultModel model = new ResultModel();
+        ${objectName} ${objectNameLower} = ${objectNameLower}Service.selectById(id);
+        model.putResult(${objectNameLower});
+        Long endTime = System.currentTimeMillis();
+        logger.info("################${objectNameLower}/dataList 执行结束 总耗时"+(endTime-startTime)/1000+"s ################# ");
+        return model;
     }
 
 
 
     /**
-    * @author ${author}
-    * @date ${nowDate?string("yyyy-MM-dd")}
-    */
-    @PostMapping("/${objectNameLower}/findById")
-    public String findById() {
-        Gson gosn = new Gson();
-        Map result = new HashMap();
-        try {
-            PageData pd = HttpUtils.parsePageData();
-            ${objectName} ${objectNameLower} = ${objectNameLower}Service.findById(pd);
-            result.put("code",0);
-            result.put("msg","执行成功！");
-            result.put("result",${objectNameLower});
-        }catch (Exception e){
-            e.printStackTrace();
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            logger.error("################${objectNameLower}/findById################# 执行异常:"+sw.toString());
-            result.put("code",1);
-            result.put("msg","执行异常！");
-            result.put("result",sw.toString());
-        }
-        return gosn.toJson(result);
-    }
-
-    /**
-    * @author ${author}
+    * @author ${author} 自动创建，禁止修改
     * @date ${nowDate?string("yyyy-MM-dd")}
     */
     @PostMapping("/${objectNameLower}/save")
-    public String save() {
-        Gson gosn = new Gson();
-        Map result = new HashMap();
-        try {
-            PageData pd = HttpUtils.parsePageData();
-            ${objectName} ${objectNameLower} = (${objectName})HttpUtils.pageData2Entity(pd, new ${objectName}());
-            ${objectNameLower}Service.save(${objectNameLower});
-            result.put("code",0);
-            result.put("msg","执行成功！");
-        }catch (Exception e){
-            e.printStackTrace();
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            logger.error("################${objectNameLower}/save################# 执行异常:"+sw.toString());
-            result.put("code",1);
-            result.put("msg","执行异常！");
-            result.put("result",sw.toString());
-        }
-        return gosn.toJson(result);
+    public ResultModel save() {
+
+        logger.info("################${objectNameLower}/dataList 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        HttpServletResponse response  = HttpUtils.currentResponse();
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+        ${objectName} ${objectNameLower} = (${objectName})HttpUtils.pageData2Entity(pd, new ${objectName}());
+        ${objectNameLower}Service.save(${objectNameLower});
+        Long endTime = System.currentTimeMillis();
+        logger.info("################${objectNameLower}/dataList 执行结束 总耗时"+(endTime-startTime)/1000+"s ################# ");
+        return model;
     }
 
     /**
-    * @author ${author}
+    * @author ${author} 自动创建，禁止修改
     * @date ${nowDate?string("yyyy-MM-dd")}
     */
     @PostMapping("/${objectNameLower}/update")
-    public String update() {
-        Gson gosn = new Gson();
-        Map result = new HashMap();
-        try {
-            PageData pd = HttpUtils.parsePageData();
-            ${objectName} ${objectNameLower} = (${objectName})HttpUtils.pageData2Entity(pd, new ${objectName}());
-            ${objectNameLower}Service.update(${objectNameLower});
-            result.put("code",0);
-            result.put("msg","执行成功！");
-        }catch (Exception e){
-            e.printStackTrace();
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            logger.error("################${objectNameLower}/update################# 执行异常:"+sw.toString());
-            result.put("code",1);
-            result.put("msg","执行异常！");
-            result.put("result",sw.toString());
-        }
-        return gosn.toJson(result);
-    }
+    public ResultModel update() {
 
-    /**
-    * @author ${author}
-    * @date ${nowDate?string("yyyy-MM-dd")}
-    */
-    @PostMapping("/${objectNameLower}/delete")
-    public String delete() {
-        Gson gosn = new Gson();
-        Map result = new HashMap();
-        try {
-            PageData pd = HttpUtils.parsePageData();
-            ${objectName} ${objectNameLower} = (${objectName})HttpUtils.pageData2Entity(pd, new ${objectName}());
-            ${objectNameLower}Service.delete(${objectNameLower});
-            result.put("code",0);
-            result.put("msg","执行成功！");
-        }catch (Exception e){
-            e.printStackTrace();
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            logger.error("################${objectNameLower}/delete################# 执行异常:"+sw.toString());
-            result.put("code",1);
-            result.put("msg","执行异常！");
-            result.put("result",sw.toString());
-        }
-        return gosn.toJson(result);
+        logger.info("################${objectNameLower}/dataList 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        HttpServletResponse response  = HttpUtils.currentResponse();
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+        ${objectName} ${objectNameLower} = (${objectName})HttpUtils.pageData2Entity(pd, new ${objectName}());
+        ${objectNameLower}Service.update(${objectNameLower});
+        Long endTime = System.currentTimeMillis();
+        logger.info("################${objectNameLower}/dataList 执行结束 总耗时"+(endTime-startTime)/1000+"s ################# ");
+        return model;
     }
 
 
     /**
-    * @author ${author}
+    * @author ${author} 自动创建，禁止修改
     * @date ${nowDate?string("yyyy-MM-dd")}
     */
     @GetMapping("/${objectNameLower}/deleteById/{id}")
-    public String deleteById(@PathVariable("id") String id) {
-        Gson gosn = new Gson();
-        Map result = new HashMap();
-        try {
-            ${objectNameLower}Service.deleteById(id);
-            result.put("code",0);
-            result.put("msg","执行成功！");
-        }catch (Exception e){
-            e.printStackTrace();
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            logger.error("################${objectNameLower}/deleteById################# 执行异常:"+sw.toString());
-            result.put("code",1);
-            result.put("msg","执行异常！");
-            result.put("result",sw.toString());
-        }
-        return gosn.toJson(result);
+    public ResultModel deleteById(@PathVariable("id") String id) {
+
+        logger.info("################${objectNameLower}/dataList 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        HttpServletResponse response  = HttpUtils.currentResponse();
+        ResultModel model = new ResultModel();
+        ${objectNameLower}Service.deleteById(id);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################${objectNameLower}/dataList 执行结束 总耗时"+(endTime-startTime)/1000+"s ################# ");
+        return model;
     }
 
     /**
-    * @author ${author}
+    * @author ${author} 自动创建，禁止修改
     * @date ${nowDate?string("yyyy-MM-dd")}
     */
     @PostMapping("/${objectNameLower}/dataListPage")
-    public String dataListPage() {
-        Gson gosn = new Gson();
-        Map result = new HashMap();
-        try {
-            PageData pd = HttpUtils.parsePageData();
-            Pagination pg = HttpUtils.parsePagination();
-            List<${objectName}> ${objectNameLower}List = ${objectNameLower}Service.dataListPage(pd,pg);
-            result.put("code",0);
-            result.put("msg","执行成功！");
-            result.put("result",${objectNameLower}List);
-        }catch (Exception e){
-            e.printStackTrace();
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            logger.error("################${objectNameLower}/dataListPage################# 执行异常:"+sw.toString());
-            result.put("code",1);
-            result.put("msg","执行异常！");
-            result.put("result",sw.toString());
-        }
-        return gosn.toJson(result);
+    public ResultModel dataListPage() {
+
+        logger.info("################${objectNameLower}/dataList 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        HttpServletResponse response  = HttpUtils.currentResponse();
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+        Pagination pg = HttpUtils.parsePagination();
+        List<${objectName}> ${objectNameLower}List = ${objectNameLower}Service.dataListPage(pd,pg);
+        model.putResult(${objectNameLower}List);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################${objectNameLower}/dataList 执行结束 总耗时"+(endTime-startTime)/1000+"s ################# ");
+        return model;
     }
 
     /**
-    * @author ${author}
+    * @author ${author} 自动创建，禁止修改
     * @date ${nowDate?string("yyyy-MM-dd")}
     */
     @PostMapping("/${objectNameLower}/dataList")
-    public String dataList() {
-        Gson gosn = new Gson();
-        Map result = new HashMap();
-        try {
-            PageData pd = HttpUtils.parsePageData();
-            List<${objectName}> ${objectNameLower}List = ${objectNameLower}Service.dataList(pd);
-            result.put("code",0);
-            result.put("msg","执行成功！");
-            result.put("result",${objectNameLower}List);
-        }catch (Exception e){
-            e.printStackTrace();
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            logger.error("################${objectNameLower}/dataList################# 执行异常:"+sw.toString());
-            result.put("code",1);
-            result.put("msg","执行异常！");
-            result.put("result",sw.toString());
-        }
+    public ResultModel dataList() {
+
+        logger.info("################${objectNameLower}/dataList 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        HttpServletResponse response  = HttpUtils.currentResponse();
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+        List<${objectName}> ${objectNameLower}List = ${objectNameLower}Service.dataList(pd);
+        model.putResult(${objectNameLower}List);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################${objectNameLower}/dataList 执行结束 总耗时"+(endTime-startTime)/1000+"s ################# ");
         return gosn.toJson(result);
     }
 
     /**
-    * @author ${author}
+    * @author ${author} 自动创建，禁止修改
     * @date ${nowDate?string("yyyy-MM-dd")}
     */
     @GetMapping("/${objectNameLower}/excelExport")
     public void excelExport() {
 
+        logger.info("################${objectNameLower}/dataList 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
         HttpServletRequest request  = HttpUtils.currentRequest();
-        response.addHeader("Access-Control-Allow-Origin","*");
-        response.addHeader("Access-Control-Allow-Methods","*");
-        response.addHeader("Access-Control-Max-Age","100");
-        response.addHeader("Access-Control-Allow-Headers", "Content-Type");
-        response.addHeader("Access-Control-Allow-Credentials","false");
-        try {
-                ExcelUtil.buildDefaultExcelDocument( request, response,new ExcelAjaxTemplate() {
-                    @Override
-                    public void execute(HttpServletRequest request, HSSFWorkbook workbook) throws Exception {
-                        // TODO Auto-generated method stub
-                        PageData pd = HttpUtils.parsePageData();
-                        List<LinkedHashMap> titles = ${objectNameLower}Service.findColumnList();
-                        request.setAttribute("titles", titles.get(0));
-                        List<Map> varList = ${objectNameLower}Service.findDataList(pd);
-                        request.setAttribute("varList", varList);
-                    }
-                });
-            }catch(Exception e) {
-                e.printStackTrace();
-                StringWriter sw = new StringWriter();
-                e.printStackTrace(new PrintWriter(sw));
-                logger.error("################${objectNameLower}/excelExport################# 执行异常:"+sw.toString());
-            }
 
+        ExcelUtil.buildDefaultExcelDocument( request, response,new ExcelAjaxTemplate() {
+            @Override
+            public void execute(HttpServletRequest request, HSSFWorkbook workbook) throws Exception {
+                // TODO Auto-generated method stub
+                PageData pd = HttpUtils.parsePageData();
+                List<LinkedHashMap> titles = ${objectNameLower}Service.findColumnList();
+                request.setAttribute("titles", titles.get(0));
+                List<Map> varList = ${objectNameLower}Service.findDataList(pd);
+                    request.setAttribute("varList", varList);
+                }
+        });
+        Long endTime = System.currentTimeMillis();
+        logger.info("################${objectNameLower}/dataList 执行结束 总耗时"+(endTime-startTime)/1000+"s ################# ");
     }
 
 
+    /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 }
 

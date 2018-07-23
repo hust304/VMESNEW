@@ -20,33 +20,7 @@ import java.util.Map;
 @Repository
 public interface EmployeeMapper extends BaseMapper<Employee> {
 
-    /**
-    * 创建人：自动创建
-    * 创建时间：2018-07-20
-    */
-    @Insert("save")
-    void save(Employee employee);
 
-    /**
-    * 创建人：自动创建
-    * 创建时间：2018-07-20
-    */
-    @Delete("delete")
-    void delete(Employee employee);
-
-	/**
-	* 创建人：自动创建
-	* 创建时间：2018-07-20
-	*/
-    @Update("update")
-    void update(Employee employee);
-
-	/**
-	* 创建人：自动创建
-	* 创建时间：2018-07-20
-	*/
-    @Select("findById")
-	Employee findById(PageData pd);
 
 	/**
 	* 创建人：自动创建
@@ -62,12 +36,6 @@ public interface EmployeeMapper extends BaseMapper<Employee> {
 	@Select("dataList")
 	List<Employee> dataList(PageData pd);
 
-	/**
-	* 创建人：自动创建
-	* 创建时间：2018-07-20
-	*/
-	@Delete("deleteByIds")
-	void deleteByIds(String[] ids);
 
     /**
     * 创建人：自动创建

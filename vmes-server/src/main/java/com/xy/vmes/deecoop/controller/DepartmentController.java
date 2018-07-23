@@ -50,9 +50,7 @@ public class DepartmentController {
     public ResultModel selectById(@PathVariable("id") String id) {
         ResultModel model = new ResultModel();
         Department department = departmentService.selectById(id);
-        model.set("code", 0);
-        model.set("msg", "执行成功");
-        model.set("result", department);
+        model.putResult(department);
         return model;
     }
 
@@ -63,12 +61,17 @@ public class DepartmentController {
      */
     @PostMapping("/department/findById")
     public ResultModel findById() {
+        logger.info("################${objectNameLower}/dataList 执行结束 ################# ");
+        Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         Department department = departmentService.findById(pd);
         model.put("code", 0);
         model.put("msg", "执行成功！");
         model.put("result", department);
+        Long endTime = System.currentTimeMillis();
+
+        logger.info("################${objectNameLower}/dataList 执行结束 总耗时"+(endTime-startTime)/1000+"s ################# ");
         return model;
     }
 

@@ -10,6 +10,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Wrapper;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,16 +34,7 @@ public class EmployeeServiceImp implements EmployeeService {
     */
     @Override
     public void save(Employee employee) throws Exception{
-        employeeMapper.save(employee);
-    }
-
-    /**
-    * 创建人：自动创建
-    * 创建时间：2018-07-20
-    */
-    @Override
-    public void delete(Employee employee) throws Exception{
-        employeeMapper.delete(employee);
+        employeeMapper.insert(employee);
     }
 
     /**
@@ -51,7 +43,7 @@ public class EmployeeServiceImp implements EmployeeService {
     */
     @Override
     public void update(Employee employee) throws Exception{
-        employeeMapper.update(employee);
+        employeeMapper.updateById(employee);
     }
 
     /**
@@ -78,15 +70,6 @@ public class EmployeeServiceImp implements EmployeeService {
     * 创建时间：2018-07-20
     */
     @Override
-    public Employee findById(PageData pd) throws Exception{
-        return employeeMapper.findById(pd);
-    }
-
-    /**
-    * 创建人：自动创建
-    * 创建时间：2018-07-20
-    */
-    @Override
     public List<Employee> dataListPage(PageData pd,Pagination pg) throws Exception{
         return employeeMapper.dataListPage(pd,pg);
     }
@@ -100,14 +83,6 @@ public class EmployeeServiceImp implements EmployeeService {
         return employeeMapper.dataList(pd);
     }
 
-    /**
-    * 创建人：自动创建
-    * 创建时间：2018-07-20
-    */
-    @Override
-    public void deleteByIds(String[] ids) throws Exception{
-        employeeMapper.deleteByIds(ids);
-    }
 
     /**
     * 创建人：自动创建
