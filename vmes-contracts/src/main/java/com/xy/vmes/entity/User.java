@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 
 /** 
  * 说明：vmes_user:系统用户表 实体类
- * @author 陈刚
+ * @author 陈刚 自动生成
  * @date 2018-07-23
  */
 @TableName("vmes_user")
@@ -61,6 +61,8 @@ public class User implements Serializable {
 	//预留字段
 	@TableField("column_3")
 	private String column3;
+
+
 
 	public void setId(String id) {
 		this.id = id;
@@ -152,5 +154,8 @@ public class User implements Serializable {
 	public String getColumn3() {
 		return column3;
 	}
+
+/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+
 
 }

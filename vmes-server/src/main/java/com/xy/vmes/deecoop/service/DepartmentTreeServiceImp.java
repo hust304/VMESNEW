@@ -93,7 +93,8 @@ public class DepartmentTreeServiceImp implements DepartmentTreeService {
                 findObj.setIsdisable("0");
                 findObj.setId(pids);
                 PageData pageData = HttpUtils.entity2PageData(findObj, new PageData());
-                Department deptObj = departmentService.findDepartment(pageData);
+//                Department deptObj = departmentService.findDepartment(pageData);
+                Department deptObj = null;
                 if (deptObj == null) {
                     return;
                 }
@@ -130,7 +131,7 @@ public class DepartmentTreeServiceImp implements DepartmentTreeService {
 
         List<Department> childList = null;
         try {
-            childList = departmentService.findDepartmentList(pageData);
+//            childList = departmentService.findDepartmentList(pageData);
         } catch (Exception e) {
             throw new RestException("", e.getMessage());
         }
@@ -144,14 +145,14 @@ public class DepartmentTreeServiceImp implements DepartmentTreeService {
         this.count = Integer.valueOf(this.count.intValue() + 1);
 
         //子部门<Department>List-生成id字符串(','分隔的字符串)
-        String chid_ids = departmentService.findDeptidByDeptList(childList);
+//        String chid_ids = departmentService.findDeptidByDeptList(childList);
 
         //递归结束条件: 递归执行次数 > 6 or 查询无子节点
         if (count > 6 || childList == null || childList.size() == 0) {
             return;
         } else {
             //递归调用: findDeptTree()
-            this.findDeptTree(chid_ids);
+//            this.findDeptTree(chid_ids);
         }
     }
 

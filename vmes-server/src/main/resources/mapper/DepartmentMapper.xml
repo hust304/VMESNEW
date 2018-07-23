@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <!--
-说明：部门表 Mapper.xml
-创建人：自动创建
-创建时间：2018-07-18
+说明：vmes_department:系统部门表 Mapper.xml
+创建人：陈刚 自动创建
+创建时间：2018-07-23
  -->
 <mapper namespace="com.xy.vmes.deecoop.dao.DepartmentMapper">
 
-    <!--表名 -->
+    <!--表名 自动创建，禁止修改-->
     <sql id="tableName">
 	vmes_department
     </sql>
 
-    <!-- 字段 -->
+    <!-- 字段 自动创建，禁止修改-->
     <sql id="Field">
 		pid pid,<!-- 上级id-根root -->
 		code code,<!-- 部门编码 -->
@@ -41,7 +41,7 @@
 		id id <!-- id -->
     </sql>
 
-    <!-- 字段值 -->
+    <!-- 字段值 自动创建，禁止修改-->
     <sql id="FieldValue">
 		#{pid},<!-- 上级id-根root -->
 		#{code},<!-- 部门编码 -->
@@ -71,7 +71,7 @@
     </sql>
 
 
-    <!-- 字段值 -->
+    <!-- 字段值 自动创建，禁止修改-->
     <sql id="Column">
         '上级id-根root'  pid,
         '部门编码'  code,
@@ -100,14 +100,14 @@
         'id' id
     </sql>
 
-    <!-- 通过ID获取数据 -->
+    <!-- 自动创建，禁止修改 -->
     <select id="findColumnList"  resultType="java.util.LinkedHashMap">
         select
         <include refid="Column"></include>
         from dual
     </select>
 
-    <!-- 通过ID获取数据 -->
+    <!-- 自动创建，禁止修改 -->
     <select id="findDataList"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
         select
         <include refid="Field"></include>
@@ -128,71 +128,7 @@
         </if>
     </select>
 
-
-    <!-- 新增-->
-    <insert id="save" parameterType="com.xy.vmes.entity.Department">
-        insert into
-        <include refid="tableName"></include>
-        (
-        <include refid="Field"></include>
-        ) values (
-        <include refid="FieldValue"></include>
-        )
-    </insert>
-
-    <!-- 删除-->
-    <delete id="delete" parameterType="com.xy.vmes.entity.Department">
-        delete from
-        <include refid="tableName"></include>
-        where
-        id = #{id}
-    </delete>
-
-    <!-- 修改 -->
-    <update id="update" parameterType="com.xy.vmes.entity.Department">
-        update
-        <include refid="tableName"></include>
-        set
-		pid = #{pid}, <!-- 上级id-根root -->
-		code = #{code}, <!-- 部门编码 -->
-		name = #{name}, <!-- 部门名称 -->
-		isleaf = #{isleaf}, <!-- 是否叶子节点(1:叶子节点0:非叶子节点) 数据字典:sys_isleaf -->
-		layer = #{layer}, <!-- 部门级别(最大支持5层) -->
-		serial_number = #{serialNumber}, <!-- 部门排列序号 -->
-		organize_type = #{organizeType}, <!-- 组织类型(1:公司 2:部门) 数据字典:sys_organize_type -->
-		company_type = #{companyType}, <!-- 公司类型 数据字典:sys_company_type -->
-		dept_type = #{deptType}, <!-- 部门类型 数据字典:sys_department_type -->
-		long_name = #{longName}, <!-- 部门长名称(中间使用-链接) -->
-		long_code = #{longCode}, <!-- 部门长编码(中间使用-链接) -->
-		company_validity_date = #{companyValidityDate}, <!-- 有效期(yyyy-mm-dd) -->
-		company_user_count = #{companyUserCount}, <!-- 系统用户数 -->
-		isdisable = #{isdisable}, <!-- 是否禁用(1:已禁用 0:启用) 数据字典:sys_isdisable -->
-		cdate = #{cdate}, <!-- 创建时间 -->
-		cuser = #{cuser}, <!-- 创建人账号 -->
-		udate = #{udate}, <!-- 修改时间 -->
-		uuser = #{uuser}, <!-- 修改人账号 -->
-		id_0 = #{id0}, <!-- 根root节点ID -->
-		id_1 = #{id1}, <!-- 一级节点ID -->
-		id_2 = #{id2}, <!-- 二级节点ID -->
-		id_3 = #{id3}, <!-- 三级节点ID -->
-		id_4 = #{id4}, <!-- 四级节点ID -->
-		id_5 = #{id5}, <!-- 五级节点ID -->
-        id = #{id}
-        where
-        id = #{id}
-    </update>
-
-    <!-- 通过ID获取数据 -->
-    <select id="findById" parameterType="com.yvan.PageData" resultType="com.xy.vmes.entity.Department">
-        select
-        <include refid="Field"></include>
-        from
-        <include refid="tableName"></include>
-        where
-        id = #{id}
-    </select>
-
-    <!-- 列表 -->
+    <!-- 列表 自动创建，禁止修改-->
     <select id="datalistPage" parameterType="com.yvan.PageData" resultType="com.xy.vmes.entity.Department">
         select
         <include refid="Field"></include>
@@ -213,7 +149,7 @@
         </if>
     </select>
 
-    <!-- 列表(全部) -->
+    <!-- 列表(全部) 自动创建，禁止修改-->
     <select id="dataList" parameterType="com.yvan.PageData" resultType="com.xy.vmes.entity.Department">
         select
             <include refid="Field"></include>
@@ -241,65 +177,22 @@
                                 <![CDATA[ and id <> #{id} ]]>
                             </when>
                             <otherwise>
-                                and id=#{id}
+                                and id = #{id}
                             </otherwise>
                         </choose>
                     </if>
-                    <if test="pid != null and pid!=''" >
-                        and pid=#{pid}
-                    </if>
-                    <if test="name != null and name!=''" >
-                        and name=#{name}
-                    </if>
-                    <if test="code != null and code!=''" >
-                        and code=#{code}
-                    </if>
-                    <if test="layer != null" >
-                        and layer=#{layer}
-                    </if>
-                    <if test="organizeType != null and organizeType!=''" >
-                        and organizeType=#{organizeType}
-                    </if>
-                    <if test="companyType != null and companyType!=''" >
-                        and companyType=#{companyType}
-                    </if>
-                    <if test="deptType != null and deptType!=''" >
-                        and deptType=#{deptType}
-                    </if>
-                    <if test="isdisable != null and isdisable!=''" >
-                        and isdisable=#{isdisable}
-                    </if>
 
-                    <if test="id0 != null and id0!=''" >
-                        and id_0=#{id0}
-                    </if>
-                    <if test="id1 != null and id1!=''" >
-                        and id_1=#{id1}
-                    </if>
-                    <if test="id2 != null and id2!=''" >
-                        and id_2=#{id2}
-                    </if>
-                    <if test="id3 != null and id3!=''" >
-                        and id_3=#{id3}
-                    </if>
-                    <if test="id4 != null and id4!=''" >
-                        and id_4=#{id4}
-                    </if>
-                    <if test="id5 != null and id5!=''" >
-                        and id_5=#{id5}
-                    </if>
 
                     <!--queryStr 自定义sql查询语句-->
                     <if test="queryStr != null and queryStr!=''" >
                         and ${queryStr}
                     </if>
                 </where>
-
             </otherwise>
         </choose>
     </select>
 
-    <!-- 批量删除 -->
+    <!-- 批量删除 自动创建，禁止修改-->
     <delete id="deleteByIds" parameterType="String">
         delete from
         <include refid="tableName"></include>
@@ -309,5 +202,11 @@
 		#{item}
         </foreach>
     </delete>
+
+
+
+    <!-- ***************************************************以上为自动生成代码禁止修改，请在下面添加业务代码************************************************* -->
+
+
 
 </mapper>

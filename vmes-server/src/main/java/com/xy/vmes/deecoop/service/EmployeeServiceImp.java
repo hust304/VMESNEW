@@ -10,18 +10,17 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Wrapper;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
-* 说明：部门表 实现类
-* 创建人：自动创建
-* 创建时间：2018-07-20
+* 说明：vmes_employee:员工表 实现类
+* 创建人：陈刚 自动创建
+* 创建时间：2018-07-23
 */
 @Service
-@Transactional(readOnly = true)
+@Transactional(readOnly = false)
 public class EmployeeServiceImp implements EmployeeService {
 
 
@@ -29,17 +28,18 @@ public class EmployeeServiceImp implements EmployeeService {
     private EmployeeMapper employeeMapper;
 
     /**
-    * 创建人：自动创建
-    * 创建时间：2018-07-20
+    * 创建人：陈刚 自动创建，禁止修改
+    * 创建时间：2018-07-23
     */
     @Override
     public void save(Employee employee) throws Exception{
         employeeMapper.insert(employee);
     }
 
+
     /**
-    * 创建人：自动创建
-    * 创建时间：2018-07-20
+    * 创建人：陈刚 自动创建，禁止修改
+    * 创建时间：2018-07-23
     */
     @Override
     public void update(Employee employee) throws Exception{
@@ -47,27 +47,28 @@ public class EmployeeServiceImp implements EmployeeService {
     }
 
     /**
-    * 创建人：自动创建
-    * 创建时间：2018-07-20
+    * 创建人：陈刚 自动创建，禁止修改
+    * 创建时间：2018-07-23
     */
     @Override
-    @Cacheable(cacheNames = "employee", key = "''+#id")
+    //@Cacheable(cacheNames = "employee", key = "''+#id")
     public Employee selectById(String id) throws Exception{
         return employeeMapper.selectById(id);
     }
 
     /**
-    * 创建人：自动创建
-    * 创建时间：2018-07-20
+    * 创建人：陈刚 自动创建，禁止修改
+    * 创建时间：2018-07-23
     */
     @Override
     public void deleteById(String id) throws Exception{
         employeeMapper.deleteById(id);
     }
 
+
     /**
-    * 创建人：自动创建
-    * 创建时间：2018-07-20
+    * 创建人：陈刚 自动创建，禁止修改
+    * 创建时间：2018-07-23
     */
     @Override
     public List<Employee> dataListPage(PageData pd,Pagination pg) throws Exception{
@@ -75,18 +76,17 @@ public class EmployeeServiceImp implements EmployeeService {
     }
 
     /**
-    * 创建人：自动创建
-    * 创建时间：2018-07-20
+    * 创建人：陈刚 自动创建，禁止修改
+    * 创建时间：2018-07-23
     */
     @Override
     public List<Employee> dataList(PageData pd) throws Exception{
         return employeeMapper.dataList(pd);
     }
 
-
     /**
-    * 创建人：自动创建
-    * 创建时间：2018-07-20
+    * 创建人：陈刚 自动创建，禁止修改
+    * 创建时间：2018-07-23
     */
     @Override
     public List<LinkedHashMap> findColumnList() throws Exception{
@@ -94,14 +94,16 @@ public class EmployeeServiceImp implements EmployeeService {
     }
 
     /**
-    * 创建人：自动创建
-    * 创建时间：2018-07-20
+    * 创建人：陈刚 自动创建，禁止修改
+    * 创建时间：2018-07-23
     */
     @Override
     public List<Map> findDataList(PageData pd) throws Exception{
         return employeeMapper.findDataList(pd);
     }
 
+
+    /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 }
 
 

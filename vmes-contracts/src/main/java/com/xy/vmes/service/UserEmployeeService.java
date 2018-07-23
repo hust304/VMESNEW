@@ -6,6 +6,7 @@ import com.xy.vmes.entity.Employee;
 import com.yvan.PageData;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 说明：用户-员工 接口类
@@ -17,7 +18,7 @@ public interface UserEmployeeService {
      * 创建人：陈刚
      * 创建时间：2018-07-20
      */
-    List<ViewVmesUserEmployee> findViewUserEmployList(ViewVmesUserEmployee object);
+    List<Map<String, Object>> findViewUserEmployList(PageData object);
 
     /**
      * 创建人：陈刚

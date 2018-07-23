@@ -9,77 +9,63 @@ import java.util.List;
 import java.util.Map;
 
 /**
-* 说明：部门表 接口类
-* 创建人：自动生成
-* 创建时间：2018-07-20
+* 说明：vmes_user:系统用户表 接口类
+* 创建人：陈刚 自动生成
+* 创建时间：2018-07-23
 */
 public interface UserService {
 
 
     /**
-    * 创建人：自动创建
-    * 创建时间：2018-07-20
+    * 创建人：陈刚 自动创建，禁止修改
+    * 创建时间：2018-07-23
     */
     void save(User user) throws Exception;
 
     /**
-    * 创建人：自动创建
-    * 创建时间：2018-07-20
-    */
-    void delete(User user) throws Exception;
-
-    /**
-    * 创建人：自动创建
-    * 创建时间：2018-07-20
+    * 创建人：陈刚 自动创建，禁止修改
+    * 创建时间：2018-07-23
     */
     void update(User user) throws Exception;
 
     /**
-    * 创建人：自动创建
-    * 创建时间：2018-07-20
+    * 创建人：陈刚 自动创建，禁止修改
+    * 创建时间：2018-07-23
     */
     void deleteById(String id) throws Exception;
+
     /**
-    * 创建人：自动创建
-    * 创建时间：2018-07-20
+    * 创建人：陈刚 自动创建，禁止修改
+    * 创建时间：2018-07-23
     */
     User selectById(String id) throws Exception;
 
     /**
-    * 创建人：自动创建
-    * 创建时间：2018-07-20
-    */
-    User findById(PageData pd) throws Exception;
-
-    /**
-    * 创建人：自动创建
-    * 创建时间：2018-07-20
+    * 创建人：陈刚 自动创建，禁止修改
+    * 创建时间：2018-07-23
     */
     List<User> dataListPage(PageData pd,Pagination pg) throws Exception;
 
     /**
-    * 创建人：自动创建
-    * 创建时间：2018-07-20
+    * 创建人：陈刚 自动创建，禁止修改
+    * 创建时间：2018-07-23
     */
     List<User> dataList(PageData pd) throws Exception;
 
     /**
-    * 创建人：自动创建
-    * 创建时间：2018-07-20
-    */
-    void deleteByIds(String[] ids) throws Exception;
-
-    /**
-    * 创建人：自动创建
-    * 创建时间：2018-07-20
+    * 创建人：陈刚 自动创建，禁止修改
+    * 创建时间：2018-07-23
     */
     List<LinkedHashMap> findColumnList() throws Exception;
 
     /**
-    * 创建人：自动创建
-    * 创建时间：2018-07-20
+    * 创建人：陈刚 自动创建，禁止修改
+    * 创建时间：2018-07-23
     */
     List<Map> findDataList(PageData pd) throws Exception;
+
+
+    /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 }
 
 

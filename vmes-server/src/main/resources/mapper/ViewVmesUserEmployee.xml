@@ -6,131 +6,50 @@
 创建时间：2018-07-20
  -->
 <mapper namespace="com.xy.vmes.deecoop.dao.ViewVmesUserEmployeeMapper">
-    <!--视图名 -->
-    <sql id="tableName">
-        v_vmes_user_employee
-    </sql>
-
-    <!-- 表字段 对象属性 -->
-    <sql id="Field">
-        id id,
-
-        <!-- vmes_user:系统用户表 -->
-        user_id user_id, <!-- 系统用户ID -->
-        user_employ_id user_employId, <!-- 员工ID -->
-        user_company_id user_companyId, <!-- 公司ID-组织架构 -->
-        user_code user_userCode, <!-- 账号(系统登录账号) -->
-        password password, <!-- 密码(MD5加密) -->
-
-        open_id openId, <!-- 用户微信ID -->
-        user_name userName, <!-- 姓名 -->
-        user_isdisable user_isdisable, <!-- 是否禁用 -->
-        user_cdate user_cdate, <!-- 创建时间 -->
-        user_cuser user_cuser, <!-- 创建人账号 -->
-
-        user_udate user_udate, <!-- 修改时间 -->
-        user_uuser user_uuser, <!-- 修改人账号 -->
-        user_column_1 user_column1, <!-- 预留字段 -->
-        user_column_2 user_column2, <!-- 预留字段 -->
-        user_column_3 user_column3, <!-- 预留字段 -->
-
-        <!--vmes_employee:员工表-->
-        employ_id employ_id, <!-- 员工表ID -->
-        employ_user_id employ_userId, <!-- 员工表系统用户ID -->
-        employ_company_id employ_companyId, <!-- 公司ID-组织架构 -->
-        employ_code employ_code, <!-- 员工编号 -->
-        employ_type employ_type, <!-- 员工类型 -->
-
-        employ_name employ_name, <!-- 员工姓名 -->
-        employ_name_en employ_nameEn, <!-- 员工英文名 -->
-        photo photo, <!-- 员工照片 -->
-        icon icon, <!-- 员工图片 -->
-        mobile mobile, <!-- 手机号码 -->
-
-        email email, <!-- 邮箱地址 -->
-        sex sex, <!-- 性别 -->
-        birthday birthday, <!-- 出生日期 -->
-        entry_date entryDate, <!-- 入职日期 -->
-        native_place nativePlace, <!-- 籍贯 -->
-
-        political political, <!-- 政治面貌 -->
-        identity_number identityNumber, <!-- 身份证号 -->
-        marital marital, <!-- 婚姻状况-->
-        employ_isdisable employ_isdisable, <!-- 是否禁用 -->
-        employ_cdate employ_cdate, <!-- 创建时间 -->
-
-        employ_cuser employ_cuser, <!-- 创建人账号 -->
-        employ_udate employ_udate, <!-- 修改时间 -->
-        employ_uuser employ_uuser, <!-- 修改人账号 -->
-        employ_column_1 employ_column1, <!-- 预留字段 -->
-        employ_column_2 employ_column2, <!-- 预留字段 -->
-
-        employ_column_3 employ_column3 <!-- 预留字段 -->
-    </sql>
-
-
-    <!-- 字段值 -->
-    <sql id="FieldValue">
-        #{id},
-        <!-- vmes_user:系统用户表 -->
-        #{user_id},
-        #{user_employId},
-        #{user_companyId},
-        #{user_userCode},
-        #{password},
-
-        #{openId},
-        #{userName},
-        #{user_isdisable},
-        #{user_cdate},
-        #{user_cuser},
-
-        #{user_udate},
-        #{user_uuser},
-        #{user_column1},
-        #{user_column2},
-        #{user_column3},
-
-        <!--vmes_employee:员工表-->
-        #{employ_id},
-        #{employ_userId},
-        #{employ_companyId},
-        #{employ_code},
-        #{employ_type},
-
-        #{employ_name},
-        #{employ_nameEn},
-        #{photo},
-        #{icon},
-        #{mobile},
-
-        #{email},
-        #{sex},
-        #{birthday},
-        #{entryDate},
-        #{nativePlace},
-
-        #{political},
-        #{identityNumber},
-        #{marital},
-        #{employ_isdisable},
-        #{employ_cdate},
-
-        #{employ_cuser},
-        #{employ_udate},
-        #{employ_uuser},
-        #{employ_column1},
-        #{employ_column2},
-
-        #{employ_column3},
-    </sql>
-
-
-    <select id="findViewUserEmployList" parameterType="com.yvan.PageData" resultType="com.xy.vmes.entity.ViewVmesUserEmployee">
+    <select id="findViewUserEmployList" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
-        <include refid="Field"></include>
-        from
-        <include refid="tableName"></include>
+            uuid() as id,
+            a.id as user_id,
+            a.employ_id as user_employ_id,
+            a.company_id as user_company_id,
+            a.user_code,
+            a.password,
+
+            a.open_id,
+            a.user_name,
+            a.isdisable as user_isdisable,
+            a.cdate as user_cdate,
+            a.cuser as user_cuser,
+
+            a.udate as user_udate,
+            a.uuser as user_uuser,
+            a.column_1 as user_column_1,
+            a.column_2 as user_column_2,
+            a.column_3 as user_column_3,
+
+            b.id as employ_id,
+            b.code as employ_code,
+            b.type as employ_type,
+            b.user_id as employ_user_id,
+            b.company_id as employ_company_id,
+            b.name as employ_name,
+            b.name_en as employ_name_en,
+
+            b.photo,b.icon,b.mobile,b.email,b.sex,
+            b.birthday,b.entry_date,b.native_place,b.political,b.identity_number,
+
+            b.marital,
+            b.isdisable as employ_isdisable,
+            b.cdate as employ_cdate,
+            b.cuser as employ_cuser,
+            b.udate as employ_udate,
+
+            b.uuser as employ_uuser,
+            b.column_1 as employ_column_1,
+            b.column_2 as employ_column_2,
+            b.column_3 as employ_column_3
+        from deecoop.vmes_user a
+            left join deecoop.vmes_employee b on a.employ_id = b.id
         <choose>
             <when test="(mapSize == null || mapSize == 0) and 'true' != isQueryAll ">
                 where 1=2
@@ -144,7 +63,7 @@
                         and user_companyId = #{user_companyId}
                     </if>
                     <if test="user_userCode != null and user_userCode != ''" >
-                        and user_userCode = #{user_userCode}
+                        and user_code = #{user_userCode}
                     </if>
                     <if test="password != null and password != ''" >
                         and password = #{password}

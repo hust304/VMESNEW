@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 
 /** 
  * 说明：vmes_department:系统部门表 实体类
- * @author 陈刚
+ * @author 陈刚 自动生成
  * @date 2018-07-23
  */
 @TableName("vmes_department")
@@ -91,6 +91,8 @@ public class Department implements Serializable {
 	//五级节点ID
 	@TableField("id_5")
 	private String id5;
+
+
 
 	public void setId(String id) {
 		this.id = id;
@@ -242,5 +244,8 @@ public class Department implements Serializable {
 	public String getId5() {
 		return id5;
 	}
+
+/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+
 
 }

@@ -7,6 +7,7 @@ import com.xy.vmes.service.${objectName}Service;
 import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
+import com.yvan.springmvc.ResultModel;
 import com.yvan.template.ExcelAjaxTemplate;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -45,7 +46,7 @@ public class ${objectName}Controller {
     * @date ${nowDate?string("yyyy-MM-dd")}
     */
     @GetMapping("/${objectNameLower}/selectById/{id}")
-    public ResultModel selectById(@PathVariable("id") String id) {
+    public ResultModel selectById(@PathVariable("id") String id)  throws Exception {
 
         logger.info("################${objectNameLower}/dataList 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -54,7 +55,7 @@ public class ${objectName}Controller {
         ${objectName} ${objectNameLower} = ${objectNameLower}Service.selectById(id);
         model.putResult(${objectNameLower});
         Long endTime = System.currentTimeMillis();
-        logger.info("################${objectNameLower}/dataList 执行结束 总耗时"+(endTime-startTime)/1000+"s ################# ");
+        logger.info("################${objectNameLower}/dataList 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -65,7 +66,7 @@ public class ${objectName}Controller {
     * @date ${nowDate?string("yyyy-MM-dd")}
     */
     @PostMapping("/${objectNameLower}/save")
-    public ResultModel save() {
+    public ResultModel save()  throws Exception {
 
         logger.info("################${objectNameLower}/dataList 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -75,7 +76,7 @@ public class ${objectName}Controller {
         ${objectName} ${objectNameLower} = (${objectName})HttpUtils.pageData2Entity(pd, new ${objectName}());
         ${objectNameLower}Service.save(${objectNameLower});
         Long endTime = System.currentTimeMillis();
-        logger.info("################${objectNameLower}/dataList 执行结束 总耗时"+(endTime-startTime)/1000+"s ################# ");
+        logger.info("################${objectNameLower}/dataList 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -84,7 +85,7 @@ public class ${objectName}Controller {
     * @date ${nowDate?string("yyyy-MM-dd")}
     */
     @PostMapping("/${objectNameLower}/update")
-    public ResultModel update() {
+    public ResultModel update()  throws Exception {
 
         logger.info("################${objectNameLower}/dataList 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -94,7 +95,7 @@ public class ${objectName}Controller {
         ${objectName} ${objectNameLower} = (${objectName})HttpUtils.pageData2Entity(pd, new ${objectName}());
         ${objectNameLower}Service.update(${objectNameLower});
         Long endTime = System.currentTimeMillis();
-        logger.info("################${objectNameLower}/dataList 执行结束 总耗时"+(endTime-startTime)/1000+"s ################# ");
+        logger.info("################${objectNameLower}/dataList 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -104,7 +105,7 @@ public class ${objectName}Controller {
     * @date ${nowDate?string("yyyy-MM-dd")}
     */
     @GetMapping("/${objectNameLower}/deleteById/{id}")
-    public ResultModel deleteById(@PathVariable("id") String id) {
+    public ResultModel deleteById(@PathVariable("id") String id)  throws Exception {
 
         logger.info("################${objectNameLower}/dataList 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -112,7 +113,7 @@ public class ${objectName}Controller {
         ResultModel model = new ResultModel();
         ${objectNameLower}Service.deleteById(id);
         Long endTime = System.currentTimeMillis();
-        logger.info("################${objectNameLower}/dataList 执行结束 总耗时"+(endTime-startTime)/1000+"s ################# ");
+        logger.info("################${objectNameLower}/dataList 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -121,7 +122,7 @@ public class ${objectName}Controller {
     * @date ${nowDate?string("yyyy-MM-dd")}
     */
     @PostMapping("/${objectNameLower}/dataListPage")
-    public ResultModel dataListPage() {
+    public ResultModel dataListPage()  throws Exception {
 
         logger.info("################${objectNameLower}/dataList 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -132,7 +133,7 @@ public class ${objectName}Controller {
         List<${objectName}> ${objectNameLower}List = ${objectNameLower}Service.dataListPage(pd,pg);
         model.putResult(${objectNameLower}List);
         Long endTime = System.currentTimeMillis();
-        logger.info("################${objectNameLower}/dataList 执行结束 总耗时"+(endTime-startTime)/1000+"s ################# ");
+        logger.info("################${objectNameLower}/dataList 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -141,7 +142,7 @@ public class ${objectName}Controller {
     * @date ${nowDate?string("yyyy-MM-dd")}
     */
     @PostMapping("/${objectNameLower}/dataList")
-    public ResultModel dataList() {
+    public ResultModel dataList()  throws Exception {
 
         logger.info("################${objectNameLower}/dataList 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -151,8 +152,8 @@ public class ${objectName}Controller {
         List<${objectName}> ${objectNameLower}List = ${objectNameLower}Service.dataList(pd);
         model.putResult(${objectNameLower}List);
         Long endTime = System.currentTimeMillis();
-        logger.info("################${objectNameLower}/dataList 执行结束 总耗时"+(endTime-startTime)/1000+"s ################# ");
-        return gosn.toJson(result);
+        logger.info("################${objectNameLower}/dataList 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
     }
 
     /**
@@ -160,7 +161,7 @@ public class ${objectName}Controller {
     * @date ${nowDate?string("yyyy-MM-dd")}
     */
     @GetMapping("/${objectNameLower}/excelExport")
-    public void excelExport() {
+    public void excelExport()  throws Exception {
 
         logger.info("################${objectNameLower}/dataList 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -179,7 +180,7 @@ public class ${objectName}Controller {
                 }
         });
         Long endTime = System.currentTimeMillis();
-        logger.info("################${objectNameLower}/dataList 执行结束 总耗时"+(endTime-startTime)/1000+"s ################# ");
+        logger.info("################${objectNameLower}/dataList 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
     }
 
 

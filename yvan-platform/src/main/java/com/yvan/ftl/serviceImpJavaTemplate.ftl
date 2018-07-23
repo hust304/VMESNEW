@@ -20,7 +20,7 @@ import java.util.Map;
 * 创建时间：${nowDate?string("yyyy-MM-dd")}
 */
 @Service
-@Transactional(readOnly = true)
+@Transactional(readOnly = false)
 public class ${objectName}ServiceImp implements ${objectName}Service {
 
 
@@ -33,7 +33,7 @@ public class ${objectName}ServiceImp implements ${objectName}Service {
     */
     @Override
     public void save(${objectName} ${objectNameLower}) throws Exception{
-        ${objectNameLower}Mapper.save(${objectNameLower});
+        ${objectNameLower}Mapper.insert(${objectNameLower});
     }
 
 
@@ -43,7 +43,7 @@ public class ${objectName}ServiceImp implements ${objectName}Service {
     */
     @Override
     public void update(${objectName} ${objectNameLower}) throws Exception{
-        ${objectNameLower}Mapper.update(${objectNameLower});
+        ${objectNameLower}Mapper.updateById(${objectNameLower});
     }
 
     /**
@@ -51,7 +51,7 @@ public class ${objectName}ServiceImp implements ${objectName}Service {
     * 创建时间：${nowDate?string("yyyy-MM-dd")}
     */
     @Override
-    @Cacheable(cacheNames = "${objectNameLower}", key = "''+#id")
+    //@Cacheable(cacheNames = "${objectNameLower}", key = "''+#id")
     public ${objectName} selectById(String id) throws Exception{
         return ${objectNameLower}Mapper.selectById(id);
     }
@@ -82,15 +82,6 @@ public class ${objectName}ServiceImp implements ${objectName}Service {
     @Override
     public List<${objectName}> dataList(PageData pd) throws Exception{
         return ${objectNameLower}Mapper.dataList(pd);
-    }
-
-    /**
-    * 创建人：${author} 自动创建，禁止修改
-    * 创建时间：${nowDate?string("yyyy-MM-dd")}
-    */
-    @Override
-    public void deleteByIds(String[] ids) throws Exception{
-        ${objectNameLower}Mapper.deleteByIds(ids);
     }
 
     /**

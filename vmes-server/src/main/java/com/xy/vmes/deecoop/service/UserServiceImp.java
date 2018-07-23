@@ -15,12 +15,12 @@ import java.util.List;
 import java.util.Map;
 
 /**
-* 说明：部门表 实现类
-* 创建人：自动创建
-* 创建时间：2018-07-20
+* 说明：vmes_user:系统用户表 实现类
+* 创建人：陈刚 自动创建
+* 创建时间：2018-07-23
 */
 @Service
-@Transactional(readOnly = true)
+@Transactional(readOnly = false)
 public class UserServiceImp implements UserService {
 
 
@@ -28,63 +28,47 @@ public class UserServiceImp implements UserService {
     private UserMapper userMapper;
 
     /**
-    * 创建人：自动创建
-    * 创建时间：2018-07-20
+    * 创建人：陈刚 自动创建，禁止修改
+    * 创建时间：2018-07-23
     */
     @Override
     public void save(User user) throws Exception{
-        userMapper.save(user);
+        userMapper.insert(user);
     }
 
-    /**
-    * 创建人：自动创建
-    * 创建时间：2018-07-20
-    */
-    @Override
-    public void delete(User user) throws Exception{
-        userMapper.delete(user);
-    }
 
     /**
-    * 创建人：自动创建
-    * 创建时间：2018-07-20
+    * 创建人：陈刚 自动创建，禁止修改
+    * 创建时间：2018-07-23
     */
     @Override
     public void update(User user) throws Exception{
-        userMapper.update(user);
+        userMapper.updateById(user);
     }
 
     /**
-    * 创建人：自动创建
-    * 创建时间：2018-07-20
+    * 创建人：陈刚 自动创建，禁止修改
+    * 创建时间：2018-07-23
     */
     @Override
-    @Cacheable(cacheNames = "user", key = "''+#id")
+    //@Cacheable(cacheNames = "user", key = "''+#id")
     public User selectById(String id) throws Exception{
         return userMapper.selectById(id);
     }
 
     /**
-    * 创建人：自动创建
-    * 创建时间：2018-07-20
+    * 创建人：陈刚 自动创建，禁止修改
+    * 创建时间：2018-07-23
     */
     @Override
     public void deleteById(String id) throws Exception{
         userMapper.deleteById(id);
     }
 
-    /**
-    * 创建人：自动创建
-    * 创建时间：2018-07-20
-    */
-    @Override
-    public User findById(PageData pd) throws Exception{
-        return userMapper.findById(pd);
-    }
 
     /**
-    * 创建人：自动创建
-    * 创建时间：2018-07-20
+    * 创建人：陈刚 自动创建，禁止修改
+    * 创建时间：2018-07-23
     */
     @Override
     public List<User> dataListPage(PageData pd,Pagination pg) throws Exception{
@@ -92,8 +76,8 @@ public class UserServiceImp implements UserService {
     }
 
     /**
-    * 创建人：自动创建
-    * 创建时间：2018-07-20
+    * 创建人：陈刚 自动创建，禁止修改
+    * 创建时间：2018-07-23
     */
     @Override
     public List<User> dataList(PageData pd) throws Exception{
@@ -101,17 +85,8 @@ public class UserServiceImp implements UserService {
     }
 
     /**
-    * 创建人：自动创建
-    * 创建时间：2018-07-20
-    */
-    @Override
-    public void deleteByIds(String[] ids) throws Exception{
-        userMapper.deleteByIds(ids);
-    }
-
-    /**
-    * 创建人：自动创建
-    * 创建时间：2018-07-20
+    * 创建人：陈刚 自动创建，禁止修改
+    * 创建时间：2018-07-23
     */
     @Override
     public List<LinkedHashMap> findColumnList() throws Exception{
@@ -119,14 +94,16 @@ public class UserServiceImp implements UserService {
     }
 
     /**
-    * 创建人：自动创建
-    * 创建时间：2018-07-20
+    * 创建人：陈刚 自动创建，禁止修改
+    * 创建时间：2018-07-23
     */
     @Override
     public List<Map> findDataList(PageData pd) throws Exception{
         return userMapper.findDataList(pd);
     }
 
+
+    /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 }
 
 

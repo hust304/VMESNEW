@@ -18,6 +18,7 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -79,13 +80,14 @@ public class UserLoginController {
         }
 
         //1. (用户账号, 密码MD5)-查询(v_vmes_user_employee)
-        ViewVmesUserEmployee findObj = (ViewVmesUserEmployee)HttpUtils.pageData2Entity(pageData, new ViewVmesUserEmployee());
-        List<ViewVmesUserEmployee> objectList = userEmployService.findViewUserEmployList(findObj);
+        //ViewVmesUserEmployee findObj = (ViewVmesUserEmployee)HttpUtils.pageData2Entity(pageData, new ViewVmesUserEmployee());
+        pageData.put("mapSize", Integer.valueOf(pageData.size()));
+        List<Map<String, Object>> objectList = userEmployService.findViewUserEmployList(pageData);
         if (objectList == null || objectList.size() == 0) {
             throw new RestException("", "当前(用户,密码)输入错误，请重新输入！");
         }
 
-        ViewVmesUserEmployee viewUserEmploy = objectList.get(0);
+        Map<String, Object> userEmployMap = objectList.get(0);
         Jedis jedis = redisClient.getJedisPool().getResource();
         if (jedis == null) {
             throw new RestException("", "Redis 缓存错误(jedis is null)，请与管理员联系！");
@@ -96,7 +98,7 @@ public class UserLoginController {
         String new_uuid = Conv.createUuid();
         String redis_uuid = "";
         try{
-            redis_uuid = redisClient.findRedisUuidByUserID(jedis, viewUserEmploy.getUser_id());
+            redis_uuid = redisClient.findRedisUuidByUserID(jedis, userEmployMap.get("user_id").toString());
             if (redis_uuid != null && redis_uuid.trim().length() > 0) {redis_uuid = redis_uuid.toLowerCase();}
         } catch (Exception e) {
             throw new RestException("", e.getMessage());
@@ -108,11 +110,11 @@ public class UserLoginController {
         String RedisKey = "";
         if (redis_uuid != null && redis_uuid.trim().length() > 0
                 && !new_uuid.trim().equals(redis_uuid.trim())) {
-            redisClient.removeByUserID(jedis, viewUserEmploy.getUser_id());
+            redisClient.removeByUserID(jedis, userEmployMap.get("user_id").toString());
         }
 
         // 生成新的uuid-生成新的Redis缓存数据
-        RedisKey = new_uuid + ":" + viewUserEmploy.getUser_id() + ":" + "deecoop";
+        RedisKey = new_uuid + ":" + userEmployMap.get("user_id").toString() + ":" + "deecoop";
 
         // 缓存业务数据
         //Redis缓存Key:(uuid:用户ID:deecoop:userLoginMap)

@@ -7,7 +7,6 @@ import com.xy.vmes.service.DepartmentService;
 import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
-import com.yvan.Tree;
 import com.yvan.springmvc.ResultModel;
 import com.yvan.template.ExcelAjaxTemplate;
 import lombok.extern.slf4j.Slf4j;
@@ -28,10 +27,10 @@ import java.util.*;
 
 
 /**
- * 说明：部门表 Controller
- * 创建人：自动创建
- * 创建时间：2018-07-18
- */
+* 说明：Controller
+* @author 陈刚 自动生成
+* @date 2018-07-23
+*/
 @RestController
 @Slf4j
 public class DepartmentController {
@@ -43,209 +42,133 @@ public class DepartmentController {
 
 
     /**
-     * 创建人：自动创建
-     * 创建时间：2018-07-18
-     */
+    * @author 陈刚 自动创建，禁止修改
+    * @date 2018-07-23
+    */
     @GetMapping("/department/selectById/{id}")
-    public ResultModel selectById(@PathVariable("id") String id) {
+    public ResultModel selectById(@PathVariable("id") String id)  throws Exception {
+
+        logger.info("################department/dataList 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         Department department = departmentService.selectById(id);
         model.putResult(department);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################department/dataList 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
 
+
     /**
-     * 创建人：自动创建
-     * 创建时间：2018-07-18
-     */
-    @PostMapping("/department/findById")
-    public ResultModel findById() {
-        logger.info("################${objectNameLower}/dataList 执行结束 ################# ");
+    * @author 陈刚 自动创建，禁止修改
+    * @date 2018-07-23
+    */
+    @PostMapping("/department/save")
+    public ResultModel save()  throws Exception {
+
+        logger.info("################department/dataList 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
+        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
-        Department department = departmentService.findById(pd);
-        model.put("code", 0);
-        model.put("msg", "执行成功！");
-        model.put("result", department);
+        Department department = (Department)HttpUtils.pageData2Entity(pd, new Department());
+        departmentService.save(department);
         Long endTime = System.currentTimeMillis();
-
-        logger.info("################${objectNameLower}/dataList 执行结束 总耗时"+(endTime-startTime)/1000+"s ################# ");
+        logger.info("################department/dataList 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
     /**
-     * 创建人：自动创建
-     * 创建时间：2018-07-18
-     */
-    @PostMapping("/department/save")
-    public String save() {
-        Gson gosn = new Gson();
-        Map result = new HashMap();
-        try {
-            PageData pd = HttpUtils.parsePageData();
-            Department department = (Department) HttpUtils.pageData2Entity(pd, new Department());
-            departmentService.save(department);
-            result.put("code", 0);
-            result.put("msg", "执行成功！");
-        } catch (Exception e) {
-            e.printStackTrace();
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            logger.error("################department/save################# 执行异常:" + sw.toString());
-            result.put("code", 1);
-            result.put("msg", "执行异常！");
-            result.put("result", sw.toString());
-        }
-        return gosn.toJson(result);
-    }
-
-    /**
-     * 创建人：自动创建
-     * 创建时间：2018-07-18
-     */
+    * @author 陈刚 自动创建，禁止修改
+    * @date 2018-07-23
+    */
     @PostMapping("/department/update")
-    public String update() {
-        Gson gosn = new Gson();
-        Map result = new HashMap();
-        try {
-            PageData pd = HttpUtils.parsePageData();
-            Department department = (Department) HttpUtils.pageData2Entity(pd, new Department());
-            departmentService.update(department);
-            result.put("code", 0);
-            result.put("msg", "执行成功！");
-        } catch (Exception e) {
-            e.printStackTrace();
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            logger.error("################department/update################# 执行异常:" + sw.toString());
-            result.put("code", 1);
-            result.put("msg", "执行异常！");
-            result.put("result", sw.toString());
-        }
-        return gosn.toJson(result);
-    }
+    public ResultModel update()  throws Exception {
 
-    /**
-     * 创建人：自动创建
-     * 创建时间：2018-07-18
-     */
-    @PostMapping("/department/delete")
-    public String delete() {
-        Gson gosn = new Gson();
-        Map result = new HashMap();
-        try {
-            PageData pd = HttpUtils.parsePageData();
-            Department department = (Department) HttpUtils.pageData2Entity(pd, new Department());
-            departmentService.delete(department);
-            result.put("code", 0);
-            result.put("msg", "执行成功！");
-        } catch (Exception e) {
-            e.printStackTrace();
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            logger.error("################department/delete################# 执行异常:" + sw.toString());
-            result.put("code", 1);
-            result.put("msg", "执行异常！");
-            result.put("result", sw.toString());
-        }
-        return gosn.toJson(result);
+        logger.info("################department/dataList 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        HttpServletResponse response  = HttpUtils.currentResponse();
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+        Department department = (Department)HttpUtils.pageData2Entity(pd, new Department());
+        departmentService.update(department);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################department/dataList 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
     }
 
 
     /**
-     * 创建人：自动创建
-     * 创建时间：2018-07-18
-     */
+    * @author 陈刚 自动创建，禁止修改
+    * @date 2018-07-23
+    */
     @GetMapping("/department/deleteById/{id}")
-    public String deleteById(@PathVariable("id") String id) {
-        Gson gosn = new Gson();
-        Map result = new HashMap();
-        try {
-            departmentService.deleteById(id);
-            result.put("code", 0);
-            result.put("msg", "执行成功！");
-        } catch (Exception e) {
-            e.printStackTrace();
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            logger.error("################department/deleteById################# 执行异常:" + sw.toString());
-            result.put("code", 1);
-            result.put("msg", "执行异常！");
-            result.put("result", sw.toString());
-        }
-        return gosn.toJson(result);
+    public ResultModel deleteById(@PathVariable("id") String id)  throws Exception {
+
+        logger.info("################department/dataList 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        HttpServletResponse response  = HttpUtils.currentResponse();
+        ResultModel model = new ResultModel();
+        departmentService.deleteById(id);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################department/dataList 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
     }
 
     /**
-     * 创建人：自动创建
-     * 创建时间：2018-07-18
-     */
+    * @author 陈刚 自动创建，禁止修改
+    * @date 2018-07-23
+    */
     @PostMapping("/department/dataListPage")
-    public String dataListPage() {
-        Gson gosn = new Gson();
-        Map result = new HashMap();
-        try {
-            PageData pd = HttpUtils.parsePageData();
-            Pagination pg = HttpUtils.parsePagination();
-            List<Department> departmentList = departmentService.dataListPage(pd, pg);
-            result.put("code", 0);
-            result.put("msg", "执行成功！");
-            result.put("result", departmentList);
-        } catch (Exception e) {
-            e.printStackTrace();
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            logger.error("################department/dataListPage################# 执行异常:" + sw.toString());
-            result.put("code", 1);
-            result.put("msg", "执行异常！");
-            result.put("result", sw.toString());
-        }
-        return gosn.toJson(result);
+    public ResultModel dataListPage()  throws Exception {
+
+        logger.info("################department/dataList 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        HttpServletResponse response  = HttpUtils.currentResponse();
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+        Pagination pg = HttpUtils.parsePagination();
+        List<Department> departmentList = departmentService.dataListPage(pd,pg);
+        model.putResult(departmentList);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################department/dataList 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
     }
 
     /**
-     * 创建人：自动创建
-     * 创建时间：2018-07-18
-     */
+    * @author 陈刚 自动创建，禁止修改
+    * @date 2018-07-23
+    */
     @PostMapping("/department/dataList")
-    public String dataList() {
-        Gson gosn = new Gson();
-        Map result = new HashMap();
-        try {
-            PageData pd = HttpUtils.parsePageData();
-            List<Department> departmentList = departmentService.dataList(pd);
-            result.put("code", 0);
-            result.put("msg", "执行成功！");
-            result.put("result", departmentList);
-        } catch (Exception e) {
-            e.printStackTrace();
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            logger.error("################department/dataList################# 执行异常:" + sw.toString());
-            result.put("code", 1);
-            result.put("msg", "执行异常！");
-            result.put("result", sw.toString());
-        }
-        return gosn.toJson(result);
+    public ResultModel dataList()  throws Exception {
+
+        logger.info("################department/dataList 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        HttpServletResponse response  = HttpUtils.currentResponse();
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+        List<Department> departmentList = departmentService.dataList(pd);
+        model.putResult(departmentList);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################department/dataList 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
     }
 
     /**
-     * 创建人：自动创建
-     * 创建时间：2018-07-18
-     */
+    * @author 陈刚 自动创建，禁止修改
+    * @date 2018-07-23
+    */
     @GetMapping("/department/excelExport")
-    public void excelExport() throws Exception {
+    public void excelExport()  throws Exception {
 
-        HttpServletResponse response = HttpUtils.currentResponse();
-        HttpServletRequest request = HttpUtils.currentRequest();
-        response.addHeader("Access-Control-Allow-Origin", "*");
-        response.addHeader("Access-Control-Allow-Methods", "*");
-        response.addHeader("Access-Control-Max-Age", "100");
-        response.addHeader("Access-Control-Allow-Headers", "Content-Type");
-        response.addHeader("Access-Control-Allow-Credentials", "false");
-        ExcelUtil.buildDefaultExcelDocument(request, response, new ExcelAjaxTemplate() {
+        logger.info("################department/dataList 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        HttpServletResponse response  = HttpUtils.currentResponse();
+        HttpServletRequest request  = HttpUtils.currentRequest();
+
+        ExcelUtil.buildDefaultExcelDocument( request, response,new ExcelAjaxTemplate() {
             @Override
             public void execute(HttpServletRequest request, HSSFWorkbook workbook) throws Exception {
                 // TODO Auto-generated method stub
@@ -253,11 +176,15 @@ public class DepartmentController {
                 List<LinkedHashMap> titles = departmentService.findColumnList();
                 request.setAttribute("titles", titles.get(0));
                 List<Map> varList = departmentService.findDataList(pd);
-                request.setAttribute("varList", varList);
-            }
+                    request.setAttribute("varList", varList);
+                }
         });
-
+        Long endTime = System.currentTimeMillis();
+        logger.info("################department/dataList 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
     }
+
+
+    /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 }
 

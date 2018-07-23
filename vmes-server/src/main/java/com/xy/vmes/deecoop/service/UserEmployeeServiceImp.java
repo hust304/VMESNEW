@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class UserEmployeeServiceImp implements UserEmployeeService {
@@ -26,13 +27,12 @@ public class UserEmployeeServiceImp implements UserEmployeeService {
      * @param object
      */
     @Override
-    public List<ViewVmesUserEmployee> findViewUserEmployList(ViewVmesUserEmployee object) {
-        List<ViewVmesUserEmployee> objectList = new ArrayList<ViewVmesUserEmployee>();
+    public List<Map<String, Object>> findViewUserEmployList(PageData object) {
+        List<Map<String, Object>> objectList = new ArrayList<Map<String, Object>>();
         if (object == null) {return objectList;}
 
         try {
-            PageData pageData = HttpUtils.entity2PageData(object, new PageData());
-            objectList = viewUserEmployeeMapper.findViewUserEmployList(pageData);
+            objectList = viewUserEmployeeMapper.findViewUserEmployList(object);
         } catch (Exception e) {
             throw new RestException("", e.getMessage());
         }
