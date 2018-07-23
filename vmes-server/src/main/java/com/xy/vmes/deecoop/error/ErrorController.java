@@ -5,6 +5,7 @@ import com.yvan.YvanUtil;
 import com.yvan.springmvc.JsonView;
 import com.yvan.springmvc.ResultModel;
 import org.apache.commons.io.IOUtils;
+
 import org.apache.shiro.authz.UnauthenticatedException;
 import org.apache.shiro.authz.UnauthorizedException;
 import org.joda.time.DateTime;
@@ -147,16 +148,16 @@ public class ErrorController {
 
     @RequestMapping("/error/500")
     public ModelAndView error500() {
-        return new ModelAndView(new JsonView(new ResultModel().success(false).putMsg("服务器异常")));
+        return new ModelAndView(new JsonView(new ResultModel().set("code","500").success(false).putMsg("服务器异常！")));
     }
 
     @RequestMapping("/error/401")
     public ModelAndView error401() {
-        return new ModelAndView(new JsonView(new ResultModel().success(false).putMsg("无权限")));
+        return new ModelAndView(new JsonView(new ResultModel().set("code","401").success(false).putMsg("无权限，SessionID过期或不存在！")));
     }
 
     @RequestMapping("/error/404")
     public ModelAndView error404() {
-        return new ModelAndView(new JsonView(new ResultModel().success(false).putMsg("请求不存在")));
+        return new ModelAndView(new JsonView(new ResultModel().set("code","404").success(false).putMsg("请求路径不存在！")));
     }
 }
