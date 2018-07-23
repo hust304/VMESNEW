@@ -1,31 +1,44 @@
 package com.xy.vmes.entity;
 
+import com.baomidou.mybatisplus.annotations.TableField;
+import com.baomidou.mybatisplus.annotations.TableName;
+
+import java.io.Serializable;
 import java.util.*;
 import java.math.BigDecimal;
 
 /** 
  * 说明：vmes_role:角色表 实体类
  * @author 陈刚
- * @date 2018-07-22
+ * @date 2018-07-23
  */
-public class Role implements java.io.Serializable {
+@TableName("vmes_role")
+public class Role implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	//
+	@TableField("id")
 	private String id;
 	//公司ID-组织架构
+	@TableField("company_id")
 	private String companyId;
 	//角色名称
+	@TableField("name")
 	private String name;
 	//是否禁用(1:已禁用 0:启用) 数据字典:sys_isdisable
+	@TableField("isdisable")
 	private String isdisable;
 	//创建时间
+	@TableField("cdate")
 	private Date cdate;
 	//创建人账号
+	@TableField("cuser")
 	private String cuser;
 	//修改时间
+	@TableField("udate")
 	private Date udate;
 	//修改人账号
+	@TableField("uuser")
 	private String uuser;
 	//是否查询全部
 	//fasle: (false or is null) 无查询条件-查询结果集返回空或list.size()==0

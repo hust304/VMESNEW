@@ -1,37 +1,53 @@
 package com.xy.vmes.entity;
 
+import com.baomidou.mybatisplus.annotations.TableField;
+import com.baomidou.mybatisplus.annotations.TableName;
+
+import java.io.Serializable;
 import java.util.*;
 import java.math.BigDecimal;
 
 /** 
  * 说明：vmes_post:岗位表 实体类
  * @author 陈刚
- * @date 2018-07-22
+ * @date 2018-07-23
  */
-public class Post implements java.io.Serializable {
+@TableName("vmes_post")
+public class Post implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	//
+	@TableField("id")
 	private String id;
 	//公司ID-组织架构
+	@TableField("company_id")
 	private String companyId;
 	//岗位名称
+	@TableField("name")
 	private String name;
 	//岗位级别(0-7)
+	@TableField("layer")
 	private Integer layer;
 	//是否兼岗(Y:兼岗N:主岗) 数据字典:sys_isplurality
+	@TableField("isplurality")
 	private String isplurality;
 	//是否禁用(1:已禁用 0:启用) 数据字典:sys_isdisable
+	@TableField("isdisable")
 	private String isdisable;
 	//创建时间
+	@TableField("cdate")
 	private Date cdate;
 	//创建人账号
+	@TableField("cuser")
 	private String cuser;
 	//修改时间
+	@TableField("udate")
 	private Date udate;
 	//修改人账号
+	@TableField("uuser")
 	private String uuser;
 	//所属部门ID
+	@TableField("dept_id")
 	private String deptId;
 	//是否查询全部
 	//fasle: (false or is null) 无查询条件-查询结果集返回空或list.size()==0

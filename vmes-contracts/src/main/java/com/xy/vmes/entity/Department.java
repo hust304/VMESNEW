@@ -1,65 +1,95 @@
 package com.xy.vmes.entity;
 
+import com.baomidou.mybatisplus.annotations.TableField;
+import com.baomidou.mybatisplus.annotations.TableName;
+
+import java.io.Serializable;
 import java.util.*;
 import java.math.BigDecimal;
 
 /** 
  * 说明：vmes_department:系统部门表 实体类
  * @author 陈刚
- * @date 2018-07-22
+ * @date 2018-07-23
  */
-public class Department implements java.io.Serializable {
+@TableName("vmes_department")
+public class Department implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	//
+	@TableField("id")
 	private String id;
 	//上级id-根root
+	@TableField("pid")
 	private String pid;
 	//部门编码
+	@TableField("code")
 	private String code;
 	//部门名称
+	@TableField("name")
 	private String name;
 	//是否叶子节点(1:叶子节点0:非叶子节点) 数据字典:sys_isleaf
+	@TableField("isleaf")
 	private String isleaf;
 	//部门级别(最大支持5层)
+	@TableField("layer")
 	private Integer layer;
 	//部门排列序号
+	@TableField("serial_number")
 	private Integer serialNumber;
 	//组织类型(1:公司 2:部门) 数据字典:sys_organize_type
+	@TableField("organize_type")
 	private String organizeType;
 	//公司类型 数据字典:sys_company_type
+	@TableField("company_type")
 	private String companyType;
 	//部门类型 数据字典:sys_department_type
+	@TableField("dept_type")
 	private String deptType;
 	//部门长名称(中间使用-链接)
+	@TableField("long_name")
 	private String longName;
 	//部门长编码(中间使用-链接)
+	@TableField("long_code")
 	private String longCode;
 	//有效期(yyyy-mm-dd)
+	@TableField("company_validity_date")
 	private Date companyValidityDate;
 	//系统用户数
+	@TableField("company_user_count")
 	private Integer companyUserCount;
 	//是否禁用(1:已禁用 0:启用) 数据字典:sys_isdisable
+	@TableField("isdisable")
 	private String isdisable;
 	//创建时间
+	@TableField("cdate")
 	private Date cdate;
 	//创建人账号
+	@TableField("cuser")
 	private String cuser;
 	//修改时间
+	@TableField("udate")
 	private Date udate;
 	//修改人账号
+	@TableField("uuser")
 	private String uuser;
 	//根root节点ID
+	@TableField("id_0")
 	private String id0;
 	//一级节点ID
+	@TableField("id_1")
 	private String id1;
 	//二级节点ID
+	@TableField("id_2")
 	private String id2;
 	//三级节点ID
+	@TableField("id_3")
 	private String id3;
 	//四级节点ID
+	@TableField("id_4")
 	private String id4;
 	//五级节点ID
+	@TableField("id_5")
 	private String id5;
 	//是否查询全部
 	//fasle: (false or is null) 无查询条件-查询结果集返回空或list.size()==0

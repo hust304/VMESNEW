@@ -1,5 +1,9 @@
 package ${classPath};
 
+import com.baomidou.mybatisplus.annotations.TableField;
+import com.baomidou.mybatisplus.annotations.TableName;
+
+import java.io.Serializable;
 import java.util.*;
 import java.math.BigDecimal;
 
@@ -9,7 +13,7 @@ import java.math.BigDecimal;
  * @date ${nowDate?string("yyyy-MM-dd")}
  */
 @TableName("${table}")
-public class ${objectName} implements java.io.Serializable {
+public class ${objectName} implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 <#list fieldList as var>

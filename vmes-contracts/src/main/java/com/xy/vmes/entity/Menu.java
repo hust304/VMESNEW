@@ -1,59 +1,86 @@
 package com.xy.vmes.entity;
 
+import com.baomidou.mybatisplus.annotations.TableField;
+import com.baomidou.mybatisplus.annotations.TableName;
+
+import java.io.Serializable;
 import java.util.*;
 import java.math.BigDecimal;
 
 /** 
- * 说明：vmes_menu:系统功能菜单 实体类
+ * 说明：vmes_menu:系统功能菜单表 实体类
  * @author 陈刚
- * @date 2018-07-22
+ * @date 2018-07-23
  */
-public class Menu implements java.io.Serializable {
+@TableName("vmes_menu")
+public class Menu implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	//
+	@TableField("id")
 	private String id;
 	//上级id-根root
+	@TableField("pid")
 	private String pid;
 	//公司ID-组织架构
+	@TableField("company_id")
 	private String companyId;
 	//菜单编号(表名,类名)
+	@TableField("model_code")
 	private String modelCode;
 	//菜单名称
+	@TableField("name")
 	private String name;
 	//菜单顺序
+	@TableField("serial_number")
 	private Integer serialNumber;
 	//菜单图标
+	@TableField("icon")
 	private String icon;
 	//
+	@TableField("type")
 	private String type;
 	//模块List链接地址
+	@TableField("url")
 	private String url;
 	//是否叶子节点(1:叶子节点0:非叶子节点) 数据字典:sys_isleaf
+	@TableField("isleaf")
 	private String isleaf;
 	//菜单级别(最大支持4层)
+	@TableField("layer")
 	private Integer layer;
 	//是否禁用(1:已禁用 0:启用) 数据字典:sys_isdisable
+	@TableField("isdisable")
 	private String isdisable;
 	//创建时间
+	@TableField("cdate")
 	private Date cdate;
 	//创建人账号
+	@TableField("cuser")
 	private String cuser;
 	//修改时间
+	@TableField("udate")
 	private Date udate;
 	//修改人账号
+	@TableField("uuser")
 	private String uuser;
 	//根root节点ID
+	@TableField("id_0")
 	private String id0;
 	//一级节点ID
+	@TableField("id_1")
 	private String id1;
 	//二级节点ID
+	@TableField("id_2")
 	private String id2;
 	//三级节点ID
+	@TableField("id_3")
 	private String id3;
 	//四级节点ID
+	@TableField("id_4")
 	private String id4;
 	//五级节点ID
+	@TableField("id_5")
 	private String id5;
 	//是否查询全部
 	//fasle: (false or is null) 无查询条件-查询结果集返回空或list.size()==0

@@ -1,67 +1,98 @@
 package com.xy.vmes.entity;
 
+import com.baomidou.mybatisplus.annotations.TableField;
+import com.baomidou.mybatisplus.annotations.TableName;
+
+import java.io.Serializable;
 import java.util.*;
 import java.math.BigDecimal;
 
 /** 
  * 说明：vmes_employee:员工表 实体类
  * @author 陈刚
- * @date 2018-07-22
+ * @date 2018-07-23
  */
-public class Employee implements java.io.Serializable {
+@TableName("vmes_employee")
+public class Employee implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	//
+	@TableField("id")
 	private String id;
 	//系统用户ID
+	@TableField("user_id")
 	private String userId;
 	//公司ID-组织架构
+	@TableField("company_id")
 	private String companyId;
 	//员工编号
+	@TableField("code")
 	private String code;
 	//员工类型 数据字典:sys_employee_type
+	@TableField("type")
 	private String type;
 	//员工姓名
+	@TableField("name")
 	private String name;
 	//员工英文名
+	@TableField("name_en")
 	private String nameEn;
 	//员工照片
+	@TableField("photo")
 	private String photo;
 	//员工图片
+	@TableField("icon")
 	private String icon;
 	//手机号码
+	@TableField("mobile")
 	private String mobile;
 	//邮箱地址
+	@TableField("email")
 	private String email;
 	//性别(1:男0:女) 数据字典:sys_employee_sex
+	@TableField("sex")
 	private String sex;
 	//出生日期(yyyy-mm-dd)
+	@TableField("birthday")
 	private Date birthday;
 	//入职日期(yyyy-mm-dd)
+	@TableField("entry_date")
 	private Date entryDate;
 	//籍贯
+	@TableField("native_place")
 	private String nativePlace;
 	//政治面貌 数据字典:sys_employee_political
+	@TableField("political")
 	private String political;
 	//身份证号
+	@TableField("identity_number")
 	private String identityNumber;
 	//婚姻状况(1:已婚 0:未婚) 数据字典:sys_employee_marital
+	@TableField("marital")
 	private String marital;
 	//是否禁用(1:已禁用 0:启用) 数据字典:sys_isdisable
+	@TableField("isdisable")
 	private String isdisable;
 	//创建时间
+	@TableField("cdate")
 	private Date cdate;
 	//创建人账号
+	@TableField("cuser")
 	private String cuser;
 	//修改时间
+	@TableField("udate")
 	private Date udate;
 	//修改人账号
+	@TableField("uuser")
 	private String uuser;
 	//预留字段
+	@TableField("column_1")
 	private String column1;
 	//预留字段
+	@TableField("column_2")
 	private String column2;
 	//预留字段
+	@TableField("column_3")
 	private String column3;
 	//是否查询全部
 	//fasle: (false or is null) 无查询条件-查询结果集返回空或list.size()==0
