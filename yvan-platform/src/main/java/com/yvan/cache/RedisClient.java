@@ -1,6 +1,5 @@
 package com.yvan.cache;
 
-import com.google.gson.Gson;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
@@ -10,12 +9,11 @@ import redis.clients.jedis.JedisPool;
 public class RedisClient {
     private JedisPool jedisPool;
 
-    public void set(String key, Object value) {
+    public void set(String key, String value) {
         Jedis jedis = null;
-        Gson gson = new Gson();
         try {
             jedis = jedisPool.getResource();
-            jedis.set(key, gson.toJson(value));
+            jedis.set(key, value);
         }catch (Exception e){
             e.printStackTrace();
         }finally {
@@ -34,7 +32,7 @@ public class RedisClient {
         Jedis jedis = null;
         try {
             jedis = jedisPool.getResource();
-            jedis.set(key, value, "NX", "EX", 300);
+            jedis.set(key, value, "NX", "EX", exptime);
         } catch (Exception e){
             e.printStackTrace();
         }finally {
@@ -56,6 +54,11 @@ public class RedisClient {
         }
         return null;
     }
+
+    public void removeUserCache(Jedis jedis, String userid) {
+
+    }
+
     public JedisPool getJedisPool() {
         return jedisPool;
     }
