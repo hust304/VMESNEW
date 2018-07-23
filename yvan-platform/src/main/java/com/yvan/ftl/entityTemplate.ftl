@@ -8,21 +8,26 @@ import java.math.BigDecimal;
  * @author ${author}
  * @date ${nowDate?string("yyyy-MM-dd")}
  */
+@TableName("${table}")
 public class ${objectName} implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;
 
 <#list fieldList as var>
 <#if var[4] == 'Integer'>
 	//${var[3]}
+	@TableField("${var[0]}")
 	private Integer ${var[1]};
 <#elseif var[4] == 'BigDecimal'>
 	//${var[3]}
+	@TableField("${var[0]}")
 	private BigDecimal ${var[1]};
 <#elseif var[4] == 'Date'>
 	//${var[3]}
+	@TableField("${var[0]}")
 	private Date ${var[1]};
 <#else>
 	//${var[3]}
+	@TableField("${var[0]}")
 	private String ${var[1]};
 </#if>
 </#list>

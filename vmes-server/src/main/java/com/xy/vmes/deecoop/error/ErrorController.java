@@ -16,8 +16,6 @@ import org.springframework.boot.web.servlet.ErrorPage;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
@@ -159,6 +157,6 @@ public class ErrorController {
 
     @RequestMapping("/error/404")
     public ModelAndView error404() {
-        return new ModelAndView(new JsonView(new ResultModel().success(false).putMsg("页面不存在")));
+        return new ModelAndView(new JsonView(new ResultModel().success(false).putMsg("请求不存在")));
     }
 }

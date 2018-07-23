@@ -19,6 +19,7 @@ public class StartMain {
     public static void main(String[] args) throws Exception {
         SpringApplication application = new SpringApplication(StartMain.class);
         application.run(args);
+
     }
 
 }
