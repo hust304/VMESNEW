@@ -130,7 +130,7 @@ public class HttpUtils {
         for (int i = 0; i < fields.length; i++) {
             Field field = fields[i];
             String paraKey = field.getName().trim();
-            String strTemp = "isQueryAll,isSelfExist,queryStr";
+            String strTemp = "serialVersionUID,isQueryAll,isSelfExist,queryStr";
             if (strTemp.indexOf(paraKey) != -1) {continue;}
 
             try {
