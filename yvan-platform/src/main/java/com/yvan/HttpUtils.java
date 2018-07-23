@@ -130,7 +130,7 @@ public class HttpUtils {
         for (int i = 0; i < fields.length; i++) {
             Field field = fields[i];
             String paraKey = field.getName().trim();
-            String strTemp = "serialVersionUID,isQueryAll,isSelfExist,queryStr";
+            String strTemp = "serialVersionUID";
             if (strTemp.indexOf(paraKey) != -1) {continue;}
 
             try {
@@ -145,26 +145,6 @@ public class HttpUtils {
             }
         }
         pageData.put("mapSize", Integer.valueOf(pageData.size()));
-
-        for (int i = 0; i < fields.length; i++) {
-            Field field = fields[i];
-            String paraKey = field.getName().trim();
-            String strTemp = "isQueryAll,isSelfExist,queryStr";
-            if (strTemp.indexOf(paraKey) != -1) {
-                try {
-                    PropertyDescriptor descriptor = new PropertyDescriptor(paraKey, clazz);
-                    Method method = descriptor.getReadMethod();
-                    Object value = method.invoke(entityObj);
-                    if (value != null) {
-                        pageData.put(paraKey, value.toString());
-                    }
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
         return pageData;
     }
 

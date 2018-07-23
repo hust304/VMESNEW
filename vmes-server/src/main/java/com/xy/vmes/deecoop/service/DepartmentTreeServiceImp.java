@@ -92,7 +92,8 @@ public class DepartmentTreeServiceImp implements DepartmentTreeService {
                 //isdisable:是否禁用(1:已禁用 0:启用)
                 findObj.setIsdisable("0");
                 findObj.setId(pids);
-                Department deptObj = departmentService.findDepartment(findObj);
+                PageData pageData = HttpUtils.entity2PageData(findObj, new PageData());
+                Department deptObj = departmentService.findDepartment(pageData);
                 if (deptObj == null) {
                     return;
                 }
@@ -121,14 +122,15 @@ public class DepartmentTreeServiceImp implements DepartmentTreeService {
         pids = "'" + pids.replace(",", "','") + "'";
         String pidQuery = "pid in (" + pids + ")";
 
-        findObj = new Department();
+        PageData pageData = new PageData();
         //isdisable:是否禁用(1:已禁用 0:启用)
-        findObj.setIsdisable("0");
-        findObj.setQueryStr(pidQuery);
+        pageData.put("isdisable", "0");
+        pageData.put("queryStr", pidQuery);
+        pageData.put("mapSize", Integer.valueOf(pageData.size()));
 
         List<Department> childList = null;
         try {
-            childList = departmentService.findDepartmentList(findObj);
+            childList = departmentService.findDepartmentList(pageData);
         } catch (Exception e) {
             throw new RestException("", e.getMessage());
         }

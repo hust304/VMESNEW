@@ -136,13 +136,12 @@ public class DepartmentServiceImp implements DepartmentService {
      * 创建人：陈刚
      * 创建时间：2018-07-18
      */
-    public Department findDepartment(Department object) {
+    public Department findDepartment(PageData object) {
         if (object == null) {return null;}
 
         List<Department> objectList = null;
         try {
-            PageData pageData = HttpUtils.entity2PageData(object, new PageData());
-            objectList = this.dataList(pageData);
+            objectList = this.dataList(object);
         } catch (Exception e) {
             throw new RestException("", e.getMessage());
         }
@@ -158,13 +157,12 @@ public class DepartmentServiceImp implements DepartmentService {
      * 创建人：陈刚
      * 创建时间：2018-07-18
      */
-    public List<Department> findDepartmentList(Department object) {
+    public List<Department> findDepartmentList(PageData object) {
         if (object == null) {return null;}
 
         List<Department> objectList = null;
         try {
-            PageData pageData = HttpUtils.entity2PageData(object, new PageData());
-            objectList = this.dataList(pageData);
+            objectList = this.dataList(object);
         } catch (Exception e) {
             throw new RestException("", e.getMessage());
         }
@@ -241,7 +239,8 @@ public class DepartmentServiceImp implements DepartmentService {
         //isdisable:是否禁用(1:已禁用 0:启用)
         findObj.setIsdisable("0");
 
-        List<Department> objectList = this.findDepartmentList(findObj);
+        PageData pageData = HttpUtils.entity2PageData(findObj, new PageData());
+        List<Department> objectList = this.findDepartmentList(pageData);
         if (objectList == null || objectList.size() == 0) {
             String msgStr = "参数错误:Department(pid,code,name,layer) 查询无数据，请与管理员联系！";
             throw new RestException("", msgStr);
