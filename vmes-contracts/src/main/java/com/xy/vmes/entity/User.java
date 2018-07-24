@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 /** 
  * 说明：vmes_user:系统用户表 实体类
  * @author 陈刚 自动生成
- * @date 2018-07-23
+ * @date 2018-07-24
  */
 @TableName("vmes_user")
 public class User implements Serializable {
@@ -22,6 +22,9 @@ public class User implements Serializable {
 	//员工ID
 	@TableField("employ_id")
 	private String employId;
+	//部门ID
+	@TableField("dept_id")
+	private String deptId;
 	//公司ID-组织架构
 	@TableField("company_id")
 	private String companyId;
@@ -34,6 +37,12 @@ public class User implements Serializable {
 	//用户微信ID
 	@TableField("open_id")
 	private String openId;
+	//手机号码
+	@TableField("mobile")
+	private String mobile;
+	//邮箱地址
+	@TableField("email")
+	private String email;
 	//姓名
 	@TableField("user_name")
 	private String userName;
@@ -76,6 +85,12 @@ public class User implements Serializable {
 	public String getEmployId() {
 		return employId;
 	}
+	public void setDeptId(String deptId) {
+		this.deptId = deptId;
+	}
+	public String getDeptId() {
+		return deptId;
+	}
 	public void setCompanyId(String companyId) {
 		this.companyId = companyId;
 	}
@@ -99,6 +114,18 @@ public class User implements Serializable {
 	}
 	public String getOpenId() {
 		return openId;
+	}
+	public void setMobile(String mobile) {
+		this.mobile = mobile;
+	}
+	public String getMobile() {
+		return mobile;
+	}
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	public String getEmail() {
+		return email;
 	}
 	public void setUserName(String userName) {
 		this.userName = userName;
