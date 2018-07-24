@@ -119,7 +119,7 @@ public class UserLoginController {
         String securityCode = pageData.get("securityCode").toString().trim();
         String old_securityCode = redisClient.get(com.yvan.common.Common.REDIS_SECURITY_CODE);
         if (!securityCode.equalsIgnoreCase(old_securityCode)) {
-            throw new RestException("", "验证码已经过期，请重新输入验证码！");
+            throw new RestException("", "验证码输入错误或已经过期，请重新输入验证码！");
         }
 
         //1. (用户账号, 密码MD5)-
