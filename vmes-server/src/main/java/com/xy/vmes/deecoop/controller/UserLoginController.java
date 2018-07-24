@@ -55,6 +55,14 @@ public class UserLoginController {
      * 当前用户角色(userRoles-角色ID','分隔的字符串)
      * 当前用户菜单树Json(userMenuTree-当前用户所有角色关联的模块-生成菜单树Json字符串)
      *
+     * 返回值: JsonString
+     * {
+     *     result:Success 成功-fail 失败
+     *     msg:成功或失败信息
+     *     RedisUuid: 当前Redis会话ID
+     *     RedisKey: Redis缓存Key(uuid:用户ID:deecoop)
+     *     RedisUserLoginKey: Redis缓存用户登录信息Map
+     * }
      * 创建人：陈刚
      * 创建时间：2018-07-20
      */
@@ -85,8 +93,9 @@ public class UserLoginController {
         if (objectList == null || objectList.size() == 0) {
             throw new RestException("", "当前(用户,密码)输入错误，请重新输入！");
         }
-
         Map<String, Object> userEmployMap = objectList.get(0);
+        String userID = userEmployMap.get("userID").toString().toLowerCase();
+
         Jedis jedis = redisClient.getJedisPool().getResource();
         if (jedis == null) {
             throw new RestException("", "Redis 缓存错误(jedis is null)，请与管理员联系！");
@@ -97,7 +106,7 @@ public class UserLoginController {
         String new_uuid = Conv.createUuid();
         String redis_uuid = "";
         try{
-            redis_uuid = redisClient.findRedisUuidByUserID(jedis, userEmployMap.get("userID").toString());
+            redis_uuid = redisClient.findRedisUuidByUserID(jedis, userID);
             if (redis_uuid != null && redis_uuid.trim().length() > 0) {redis_uuid = redis_uuid.toLowerCase();}
         } catch (Exception e) {
             throw new RestException("", e.getMessage());
@@ -109,11 +118,11 @@ public class UserLoginController {
         String RedisKey = "";
         if (redis_uuid != null && redis_uuid.trim().length() > 0
                 && !new_uuid.trim().equals(redis_uuid.trim())) {
-            redisClient.removeByUserID(jedis, userEmployMap.get("userID").toString());
+            redisClient.removeByUserID(jedis, userID);
         }
 
         //新的uuid-生成新的Redis缓存Key-(uuid:用户ID:deecoop)
-        RedisKey = new_uuid + ":" + userEmployMap.get("userID").toString() + ":" + "deecoop";
+        RedisKey = new_uuid + ":" + userID + ":" + "deecoop";
 
         Map<String, Object> redisMap = new HashMap<String, Object>();
         //userEmployMap 缓存到Map<String, Object> 中
@@ -121,8 +130,14 @@ public class UserLoginController {
 
         //缓存业务数据
         //Redis缓存Key:(uuid:用户ID:deecoop:userLoginMap)
-        RedisKey = RedisKey + ":" + com.yvan.common.Common.REDIS_USERLOGINMAP;
-        redisClient.set(RedisKey, new Gson().toJson(redisMap));
+        String Redis_userLogin_Key = RedisKey + ":" + com.yvan.common.Common.REDIS_USERLOGINMAP;
+        redisClient.set(Redis_userLogin_Key, new Gson().toJson(redisMap));
+
+
+        //登录结果
+        //RedisUuid(uuid)
+        //RedisKey(uuid:用户ID:deecoop)
+        //RedisUserLoginKey(用户-员工-角色Map)
 
         return null;
     }

@@ -1,9 +1,13 @@
 package com.yvan.filter;
 
+import com.yvan.cache.RedisClient;
 import com.yvan.cache.RedisConfiguration;
+import com.yvan.platform.RestException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import redis.clients.jedis.Jedis;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
@@ -17,6 +21,10 @@ import java.io.IOException;
 public class ComonFilter implements Filter {
 
     private Logger logger = LoggerFactory.getLogger(ComonFilter.class);
+
+    @Autowired
+    RedisClient redisClient;
+
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         logger.info("过滤器初始化.......ComonFilter.init()");
@@ -32,8 +40,10 @@ public class ComonFilter implements Filter {
 
 
         String uri = httpRequest.getRequestURI();
+        uri = uri.toLowerCase();
+
         //请求地址中含有字符串“login”和“error”的不参与sessionId校验
-        if(uri.indexOf("login")<0&&uri.indexOf("error")<0){
+        if(uri.indexOf("login".toLowerCase()) < 0 && uri.indexOf("error".toLowerCase()) < 0){
             if (!checkSession(httpRequest, httpResponse)) {
                 httpResponse.sendRedirect(((HttpServletRequest)request).getContextPath() + "/error/401");
                 return;
@@ -44,9 +54,28 @@ public class ComonFilter implements Filter {
 
     public boolean checkSession(HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
         //检查是否sessionId，且sessionId是否过期
+        String RedisUuid = httpRequest.getAttribute("RedisUuid").toString();
+        String userID = httpRequest.getAttribute("userID").toString();
 
+        if (RedisUuid == null || RedisUuid.trim().length() == 0) {}
+        if (userID == null || userID.trim().length() == 0) {}
 
-        return  true;
+        RedisUuid = RedisUuid.toLowerCase();
+        userID = userID.toLowerCase();
+
+        Jedis jedis = redisClient.getJedisPool().getResource();
+        if (jedis == null) {
+            throw new RestException("", "Redis 缓存错误(jedis is null)，请与管理员联系！");
+        }
+
+        String HistoryRedisUuid = redisClient.findRedisUuidByUserID(jedis, userID);
+        if (HistoryRedisUuid == null || HistoryRedisUuid.trim().length() == 0) {
+            return false;
+        } else if (!HistoryRedisUuid.toLowerCase().equals(RedisUuid)) {
+            return false;
+        }
+
+        return true;
     }
 
     @Override
