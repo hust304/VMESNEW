@@ -53,9 +53,9 @@ public interface DepartmentTreeService {
     /**
      * 根据已知的部门List<Department>-生成树形结构
      * @param deptList
-     * @param maxLayer
+     * @param layer
      */
-    void findDeptTreeByDeptList(List<Department> deptList, Integer maxLayer);
+    void findDeptTreeByDeptList(List<Department> deptList, Integer layer);
 
     /**
      * 创建人：陈刚
