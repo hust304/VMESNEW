@@ -2,7 +2,6 @@ package com.xy.vmes.deecoop.controller;
 
 
 import com.xy.vmes.service.UserEmployeeService;
-import com.xy.vmes.entity.ViewVmesUserEmployee;
 import com.yvan.Conv;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
@@ -15,8 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
+import com.google.gson.Gson;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -59,7 +59,7 @@ public class UserLoginController {
      * 创建时间：2018-07-20
      */
     @GetMapping("/userLogin/sysUserLogin")
-    public String departmentTreeLoad() {
+    public String sysUserLogin() {
         StringBuffer msgBuf = new StringBuffer();
 
         //非空判断
@@ -67,10 +67,10 @@ public class UserLoginController {
         if (pageData == null || pageData.size() == 0) {
             msgBuf.append("参数错误：用户登录参数(pageData)为空！</br>");
         } else {
-            if (pageData.get("user_userCode") == null || pageData.get("user_userCode").toString().trim().length() == 0 ) {
+            if (pageData.get("userCode") == null || pageData.get("userCode").toString().trim().length() == 0 ) {
                 msgBuf.append("参数错误：账号输入为空或空字符串，账号为必填项不可为空！</br>");
             }
-            if (pageData.get("password") == null || pageData.get("password").toString().trim().length() == 0 ) {
+            if (pageData.get("userPassword") == null || pageData.get("userPassword").toString().trim().length() == 0 ) {
                 msgBuf.append("参数错误：密码输入为空或空字符串，密码为必填项不可为空！</br>");
             }
         }
@@ -79,8 +79,7 @@ public class UserLoginController {
             throw new RestException("", msgBuf.toString());
         }
 
-        //1. (用户账号, 密码MD5)-查询(v_vmes_user_employee)
-        //ViewVmesUserEmployee findObj = (ViewVmesUserEmployee)HttpUtils.pageData2Entity(pageData, new ViewVmesUserEmployee());
+        //1. (用户账号, 密码MD5)-
         pageData.put("mapSize", Integer.valueOf(pageData.size()));
         List<Map<String, Object>> objectList = userEmployService.findViewUserEmployList(pageData);
         if (objectList == null || objectList.size() == 0) {
@@ -98,7 +97,7 @@ public class UserLoginController {
         String new_uuid = Conv.createUuid();
         String redis_uuid = "";
         try{
-            redis_uuid = redisClient.findRedisUuidByUserID(jedis, userEmployMap.get("user_id").toString());
+            redis_uuid = redisClient.findRedisUuidByUserID(jedis, userEmployMap.get("userID").toString());
             if (redis_uuid != null && redis_uuid.trim().length() > 0) {redis_uuid = redis_uuid.toLowerCase();}
         } catch (Exception e) {
             throw new RestException("", e.getMessage());
@@ -110,15 +109,20 @@ public class UserLoginController {
         String RedisKey = "";
         if (redis_uuid != null && redis_uuid.trim().length() > 0
                 && !new_uuid.trim().equals(redis_uuid.trim())) {
-            redisClient.removeByUserID(jedis, userEmployMap.get("user_id").toString());
+            redisClient.removeByUserID(jedis, userEmployMap.get("userID").toString());
         }
 
-        // 生成新的uuid-生成新的Redis缓存数据
-        RedisKey = new_uuid + ":" + userEmployMap.get("user_id").toString() + ":" + "deecoop";
+        //新的uuid-生成新的Redis缓存Key-(uuid:用户ID:deecoop)
+        RedisKey = new_uuid + ":" + userEmployMap.get("userID").toString() + ":" + "deecoop";
 
-        // 缓存业务数据
+        Map<String, Object> redisMap = new HashMap<String, Object>();
+        //userEmployMap 缓存到Map<String, Object> 中
+        redisMap = userEmployService.userEmployMap2RedisMap(userEmployMap, redisMap);
+
+        //缓存业务数据
         //Redis缓存Key:(uuid:用户ID:deecoop:userLoginMap)
         RedisKey = RedisKey + ":" + com.yvan.common.Common.REDIS_USERLOGINMAP;
+        redisClient.set(RedisKey, new Gson().toJson(redisMap));
 
         return null;
     }

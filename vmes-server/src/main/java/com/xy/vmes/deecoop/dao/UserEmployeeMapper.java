@@ -16,7 +16,7 @@ import java.util.Map;
  */
 @Mapper
 @Repository
-public interface ViewVmesUserEmployeeMapper extends BaseMapper<ViewVmesUserEmployee> {
+public interface UserEmployeeMapper {
 
     /**
      * 创建人：陈刚

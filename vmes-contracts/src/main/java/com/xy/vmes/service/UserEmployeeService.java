@@ -31,4 +31,10 @@ public interface UserEmployeeService {
      * 创建时间：2018-07-20
      */
     Employee viewObject2Employee(ViewVmesUserEmployee viewObject, Employee object);
+
+    /**
+     * 创建人：陈刚
+     * 创建时间：2018-07-24
+     */
+    Map<String, Object> userEmployMap2RedisMap(Map<String, Object> objectMap, Map<String, Object> redisMap);
 }
