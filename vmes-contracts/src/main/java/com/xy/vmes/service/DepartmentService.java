@@ -109,6 +109,16 @@ public interface DepartmentService {
      *
      */
     String findDeptidByDeptList(List<Department> objectList);
+
+    /**
+     * 获取部门最大级别-遍历部门List<Department>
+     *
+     * 创建人：陈刚
+     * 创建时间：2018-07-24
+     * @param objectList
+     * @return
+     */
+    Integer findMaxLayerByDeptList(List<Department> objectList);
 }
 
 

@@ -257,6 +257,28 @@ public class DepartmentServiceImp implements DepartmentService {
 
         return strBuf.toString();
     }
+
+    /**
+     * 获取部门最大级别-遍历部门List<Department>
+     *
+     * 创建人：陈刚
+     * 创建时间：2018-07-24
+     * @param objectList
+     * @return
+     */
+    public Integer findMaxLayerByDeptList(List<Department> objectList) {
+        if (objectList == null || objectList.size() == 0) {return null;}
+        int maxLayer = 0;
+
+        for (Department object : objectList) {
+            if (object.getLayer() != null && object.getLayer().intValue() > maxLayer) {
+                maxLayer = object.getLayer().intValue();
+            }
+        }
+
+        if (maxLayer > 0) {return Integer.valueOf(maxLayer);}
+        return null;
+    }
 }
 
 

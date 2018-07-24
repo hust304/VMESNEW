@@ -50,6 +50,12 @@ public interface DepartmentTreeService {
      */
     void findDeptTree(String pids);
 
+    /**
+     * 根据已知的部门List<Department>-生成树形结构
+     * @param deptList
+     * @param maxLayer
+     */
+    void findDeptTreeByDeptList(List<Department> deptList, Integer maxLayer);
 
     /**
      * 创建人：陈刚

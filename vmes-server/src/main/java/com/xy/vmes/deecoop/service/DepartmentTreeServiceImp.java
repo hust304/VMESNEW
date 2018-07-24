@@ -11,8 +11,7 @@ import com.yvan.platform.RestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * 当前部门节点和该部门节点下所有子部门-的树形结构
@@ -156,6 +155,88 @@ public class DepartmentTreeServiceImp implements DepartmentTreeService {
     }
 
     /**
+     * 根据已知的部门List<Department>-生成树形结构
+     * 1. 该方法为递归调用
+     * 2. 递归结束条件(部门级别layer == 0)
+     * 3. 递归调用结束后生成(list_0,list_1,...,list_5)结构体
+     *
+     * @param deptList
+     * @param layer
+     */
+    public void findDeptTreeByDeptList(List<Department> deptList, Integer layer) {
+        if (deptList == null || deptList.size() == 0) {return;}
+        if (layer == null) {return;}
+
+        //获得每一层的id字符串Map
+        Map<String, String> mapObj = new LinkedHashMap<String, String>();
+        for (Department object : deptList) {
+            if (layer.intValue() == 0) {
+                String id = object.getId0();
+                mapObj.put(id, id);
+            } else if (layer.intValue() == 1) {
+                String id = object.getId1();
+                mapObj.put(id, id);
+            } else if (layer.intValue() == 2) {
+                String id = object.getId2();
+                mapObj.put(id, id);
+            } else if (layer.intValue() == 3) {
+                String id = object.getId3();
+                mapObj.put(id, id);
+            } else if (layer.intValue() == 4) {
+                String id = object.getId4();
+                mapObj.put(id, id);
+            } else if (layer.intValue() == 5) {
+                String id = object.getId5();
+                mapObj.put(id, id);
+            }
+        }
+
+        //遍历Map获得id字符串(通过','逗号分隔的字符串)
+        StringBuffer ids = new StringBuffer();
+        for (Iterator iterator = mapObj.keySet().iterator(); iterator.hasNext();) {
+            String mapKey = (String) iterator.next();
+            ids.append(mapKey);
+            ids.append(",");
+        }
+        String isTemp = ids.toString();
+        //去掉最后一个','
+        if (isTemp.lastIndexOf(",") != -1) {
+            isTemp = isTemp.substring(0, isTemp.lastIndexOf(","));
+        }
+
+        String id_str = StringUtil.stringTrimSpace(isTemp);
+        id_str = "'" + id_str.replace(",", "','") + "'";
+        String pidQuery = "id in (" + id_str + ")";
+
+        //查询部门表-获得每一层的id-部门集合List<Department>
+        PageData pageData = new PageData();
+        //isdisable:是否禁用(1:已禁用 0:启用)
+        pageData.put("isdisable", "0");
+        pageData.put("queryStr", pidQuery);
+        pageData.put("mapSize", Integer.valueOf(pageData.size()));
+
+        List<Department> objList = null;
+        try {
+            objList = departmentService.findDepartmentList(pageData);
+            //按照(Department.serialNumber)部门排列序号-升序排序
+            this.orderAcsBySerialNumber(objList);
+        } catch (Exception e) {
+            throw new RestException("", e.getMessage());
+        }
+
+        //当前objList 放入List结构体中
+        this.findLayerList(objList, layer);
+
+        //递归结束条件(部门级别layer == 0)
+        if (layer == 0) {
+            return;
+        } else {
+            //递归调用: findDeptTreeByDeptList()
+            this.findDeptTreeByDeptList(deptList, (layer - 1));
+        }
+    }
+
+    /**
      * 创建人：陈刚
      * 创建时间：2018-07-19
      */
@@ -233,6 +314,17 @@ public class DepartmentTreeServiceImp implements DepartmentTreeService {
     }
 
     ///////////////////////////////////////////////////////////////////////////
+    //重写排序方法: 按照(Department.serialNumber)升序排序
+    private void orderAcsBySerialNumber(List<Department> objectList) {
+        Collections.sort(objectList, new Comparator<Object>() {
+            public int compare(Object arg0, Object arg1) {
+                Department object_0 = (Department)arg0;
+                Department object_1 = (Department)arg1;
+                return object_0.getSerialNumber().compareTo(object_1.getSerialNumber());
+            }
+        });
+    }
+
     private void findLayerList(List<Department> objectList, Integer execute_layer) {
         if (objectList == null || objectList.size() == 0) {return;}
         if (execute_layer == null || -1 == execute_layer.intValue()) {return;}
