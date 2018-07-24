@@ -1,7 +1,5 @@
 package com.xy.vmes.deecoop.dao;
 
-import com.baomidou.mybatisplus.mapper.BaseMapper;
-import com.xy.vmes.entity.ViewVmesUserEmployee;
 import com.yvan.PageData;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;

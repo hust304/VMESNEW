@@ -1,21 +1,18 @@
 package com.xy.vmes.deecoop.service;
 
 import com.xy.vmes.deecoop.dao.UserEmployeeMapper;
-import com.xy.vmes.entity.Employee;
 import com.xy.vmes.entity.User;
-import com.xy.vmes.entity.ViewVmesUserEmployee;
+import com.xy.vmes.entity.Employee;
 import com.xy.vmes.service.UserEmployeeService;
 import com.yvan.PageData;
+import com.yvan.common.util.DateFormat;
 import com.yvan.platform.RestException;
 import com.yvan.common.Common;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class UserEmployeeServiceImp implements UserEmployeeService {
@@ -46,46 +43,97 @@ public class UserEmployeeServiceImp implements UserEmployeeService {
      * 创建人：陈刚
      * 创建时间：2018-07-20
      *
-     * @param viewObject
+     * @param mapObject
      * @param object
      */
     @Override
-    public User viewObject2User(ViewVmesUserEmployee viewObject, User object) {
+    public User mapObject2User(Map<String, Object> mapObject, User object) {
         if (object == null) {object = new User();}
-        if (viewObject == null) {return object;}
+        if (mapObject == null) {return object;}
 
-        //user_id--id
-        object.setId(viewObject.getUser_id());
-        //员工ID user_employId
-        object.setEmployId(viewObject.getUser_employId());
-        //公司ID-组织架构 user_companyId
-        object.setCompanyId(viewObject.getUser_companyId());
-        //账号(系统登录账号) user_userCode
-        object.setUserCode(viewObject.getUser_userCode());
-        //密码(MD5加密)password
-        object.setPassword(viewObject.getPassword());
+        //userID--id
+        if (mapObject.get("userID") != null) {
+            object.setId(mapObject.get("userID").toString().trim());
+        }
+        //员工ID userEmployID
+        if (mapObject.get("userEmployID") != null) {
+            object.setEmployId(mapObject.get("userEmployID").toString().trim());
+        }
+        //userDeptID
+        if (mapObject.get("userDeptID") != null) {
+            object.setDeptId(mapObject.get("userDeptID").toString().trim());
+        }
+        //公司ID-组织架构 userCompanyID
+        if (mapObject.get("userCompanyID") != null) {
+            object.setCompanyId(mapObject.get("userCompanyID").toString().trim());
+        }
+        //账号(系统登录账号) userCode
+        if (mapObject.get("userCode") != null) {
+            object.setUserCode(mapObject.get("userCode").toString().trim());
+        }
 
-        //用户微信ID openId
-        object.setOpenId(viewObject.getOpenId());
+        //密码(MD5加密)userPassword
+        if (mapObject.get("userPassword") != null) {
+            object.setPassword(mapObject.get("userPassword").toString().trim());
+        }
+        //用户微信ID userOpenID
+        if (mapObject.get("userOpenID") != null) {
+            object.setOpenId(mapObject.get("userOpenID").toString().trim());
+        }
+        //手机号码 userMobile
+        if (mapObject.get("userMobile") != null) {
+            object.setMobile(mapObject.get("userMobile").toString().trim());
+        }
+        //邮箱地址 userEmail
+        if (mapObject.get("userEmail") != null) {
+            object.setEmail(mapObject.get("userEmail").toString().trim());
+        }
         //姓名 userName
-        object.setUserName(viewObject.getUserName());
-        //是否禁用 user_isdisable
-        object.setIsdisable(viewObject.getUser_isdisable());
-        //创建时间 user_cdate
-        object.setCdate(viewObject.getUser_cdate());
-        //创建人账号user_cuser
-        object.setCuser(viewObject.getUser_cuser());
+        if (mapObject.get("userName") != null) {
+            object.setUserName(mapObject.get("userName").toString().trim());
+        }
 
-        //修改时间user_udate
-        object.setUdate(viewObject.getUser_udate());
-        //修改人账号user_uuser
-        object.setUuser(viewObject.getUser_uuser());
-        //预留字段user_column1
-        object.setColumn1(viewObject.getUser_column1());
-        //预留字段user_column2
-        object.setColumn2(viewObject.getUser_column2());
-        //预留字段user_column3
-        object.setColumn3(viewObject.getUser_column3());
+        //是否禁用 userIsdisable
+        if (mapObject.get("userIsdisable") != null) {
+            object.setIsdisable(mapObject.get("userIsdisable").toString().trim());
+        }
+        //创建时间 userCdate
+        if (mapObject.get("userCdate") != null) {
+            String dateStr = mapObject.get("userCdate").toString().trim();
+            Date date = DateFormat.dateString2Date(dateStr, DateFormat.DEFAULT_DATETIME_FORMAT);
+            if (date != null) {
+                object.setCdate(date);
+            }
+        }
+        //创建人账号 userCuser
+        if (mapObject.get("userCuser") != null) {
+            object.setCuser(mapObject.get("userCuser").toString().trim());
+        }
+
+        //修改时间 userUdate
+        if (mapObject.get("userUdate") != null) {
+            String dateStr = mapObject.get("userUdate").toString().trim();
+            Date date = DateFormat.dateString2Date(dateStr, DateFormat.DEFAULT_DATETIME_FORMAT);
+            if (date != null) {
+                object.setUdate(date);
+            }
+        }
+        //修改人账号 userUuser
+        if (mapObject.get("userUuser") != null) {
+            object.setUuser(mapObject.get("userUuser").toString().trim());
+        }
+        //预留字段 userColumn1
+        if (mapObject.get("userColumn1") != null) {
+            object.setColumn1(mapObject.get("userColumn1").toString().trim());
+        }
+        //预留字段 userColumn2
+        if (mapObject.get("userColumn2") != null) {
+            object.setColumn2(mapObject.get("userColumn2").toString().trim());
+        }
+        //预留字段 userColumn3
+        if (mapObject.get("userColumn3") != null) {
+            object.setColumn3(mapObject.get("userColumn3").toString().trim());
+        }
 
         return object;
     }
@@ -94,71 +142,139 @@ public class UserEmployeeServiceImp implements UserEmployeeService {
      * 创建人：陈刚
      * 创建时间：2018-07-20
      *
-     * @param viewObject
+     * @param mapObject
      * @param object
      */
     @Override
-    public Employee viewObject2Employee(ViewVmesUserEmployee viewObject, Employee object) {
+    public Employee mapObject2Employee(Map<String, Object> mapObject, Employee object) {
         if (object == null) {object = new Employee();}
-        if (viewObject == null) {return object;}
+        if (mapObject == null) {return object;}
 
-        //employ_id;
-        object.setId(viewObject.getEmploy_id());
-        //系统用户ID employ_userId
-        object.setUserId(viewObject.getEmploy_userId());
-        //公司ID-组织架构 employ_companyId
-        object.setCompanyId(viewObject.getEmploy_companyId());
-        //员工编号 employ_code
-        object.setCode(viewObject.getEmploy_code());
-        //员工类型 employ_type
-        object.setType(viewObject.getEmploy_type());
+        //employID;
+        if (mapObject.get("employID") != null) {
+            object.setId(mapObject.get("employID").toString().trim());
+        }
+        //员工编号 employCode
+        if (mapObject.get("employCode") != null) {
+            object.setCode(mapObject.get("employCode").toString().trim());
+        }
+        //员工类型 employType
+        if (mapObject.get("employType") != null) {
+            object.setType(mapObject.get("employType").toString().trim());
+        }
+        //系统用户ID employUserID
+        if (mapObject.get("employUserID") != null) {
+            object.setUserId(mapObject.get("employUserID").toString().trim());
+        }
+        //公司ID-组织架构 employCompanyID
+        if (mapObject.get("employCompanyID") != null) {
+            object.setCompanyId(mapObject.get("employCompanyID").toString().trim());
+        }
+        //员工姓名 employName
+        if (mapObject.get("employName") != null) {
+            object.setName(mapObject.get("employName").toString().trim());
+        }
+        //员工英文名 employNameEn
+        if (mapObject.get("employNameEn") != null) {
+            object.setNameEn(mapObject.get("employNameEn").toString().trim());
+        }
 
-        //员工姓名employ_name
-        object.setName(viewObject.getEmploy_name());
-        //员工英文名employ_nameEn
-        object.setNameEn(viewObject.getEmploy_nameEn());
-        //员工照片photo
-        object.setPhoto(viewObject.getPhoto());
-        //员工图片icon
-        object.setIcon(viewObject.getIcon());
-        //手机号码mobile
-        object.setMobile(viewObject.getMobile());
+        //员工照片 photo
+        if (mapObject.get("photo") != null) {
+            object.setPhoto(mapObject.get("photo").toString().trim());
+        }
+        //员工图片 icon
+        if (mapObject.get("icon") != null) {
+            object.setIcon(mapObject.get("icon").toString().trim());
+        }
+        //手机号码 mobile
+        if (mapObject.get("mobile") != null) {
+            object.setMobile(mapObject.get("mobile").toString().trim());
+        }
+        //邮箱地址 email
+        if (mapObject.get("email") != null) {
+            object.setEmail(mapObject.get("email").toString().trim());
+        }
+        //性别 sex
+        if (mapObject.get("sex") != null) {
+            object.setSex(mapObject.get("sex").toString().trim());
+        }
 
-        //邮箱地址email
-        object.setEmail(viewObject.getEmail());
-        //性别sex
-        object.setSex(viewObject.getSex());
-        //出生日期birthday
-        object.setBirthday(viewObject.getBirthday());
-        //入职日期entryDate
-        object.setEntryDate(viewObject.getEntryDate());
-        //籍贯nativePlace
-        object.setNativePlace(viewObject.getNativePlace());
-
+        //出生日期 birthday
+        if (mapObject.get("birthday") != null) {
+            String dateStr = mapObject.get("birthday").toString().trim();
+            Date date = DateFormat.dateString2Date(dateStr, DateFormat.DEFAULT_DATETIME_FORMAT);
+            if (date != null) {
+                object.setBirthday(date);
+            }
+        }
+        //入职日期 entryDate
+        if (mapObject.get("entryDate") != null) {
+            String dateStr = mapObject.get("entryDate").toString().trim();
+            Date date = DateFormat.dateString2Date(dateStr, DateFormat.DEFAULT_DATETIME_FORMAT);
+            if (date != null) {
+                object.setEntryDate(date);
+            }
+        }
+        //籍贯 nativePlace
+        if (mapObject.get("nativePlace") != null) {
+            object.setNativePlace(mapObject.get("nativePlace").toString().trim());
+        }
         //政治面貌 political
-        object.setPolitical(viewObject.getPolitical());
-        //身份证号identityNumber
-        object.setIdentityNumber(viewObject.getIdentityNumber());
-        //婚姻状况marital
-        object.setMarital(viewObject.getMarital());
-        //是否禁用employ_isdisable
-        object.setIsdisable(viewObject.getEmploy_isdisable());
-        //创建时间employ_cdate
-        object.setCdate(viewObject.getEmploy_cdate());
+        if (mapObject.get("political") != null) {
+            object.setPolitical(mapObject.get("political").toString().trim());
+        }
+        //身份证号 identityNumber
+        if (mapObject.get("identityNumber") != null) {
+            object.setIdentityNumber(mapObject.get("identityNumber").toString().trim());
+        }
 
-        //创建人账号employ_cuser
-        object.setCuser(viewObject.getEmploy_cuser());
-        //修改时间employ_udate
-        object.setUdate(viewObject.getEmploy_udate());
-        //修改人账号employ_uuser
-        object.setUuser(viewObject.getEmploy_uuser());
-        //预留字段employ_column1
-        object.setColumn1(viewObject.getEmploy_column1());
-        //预留字段employ_column2
-        object.setColumn2(viewObject.getEmploy_column2());
+        //婚姻状况 marital
+        if (mapObject.get("marital") != null) {
+            object.setMarital(mapObject.get("marital").toString().trim());
+        }
+        //是否禁用 employIsdisable
+        if (mapObject.get("employIsdisable") != null) {
+            object.setIsdisable(mapObject.get("employIsdisable").toString().trim());
+        }
+        //创建时间 employCdate
+        if (mapObject.get("employCdate") != null) {
+            String dateStr = mapObject.get("employCdate").toString().trim();
+            Date date = DateFormat.dateString2Date(dateStr, DateFormat.DEFAULT_DATETIME_FORMAT);
+            if (date != null) {
+                object.setCdate(date);
+            }
+        }
+        //创建人账号
+        if (mapObject.get("employCuser") != null) {
+            object.setCuser(mapObject.get("employCuser").toString().trim());
+        }
+        //修改时间 employUdate
+        if (mapObject.get("employUdate") != null) {
+            String dateStr = mapObject.get("employUdate").toString().trim();
+            Date date = DateFormat.dateString2Date(dateStr, DateFormat.DEFAULT_DATETIME_FORMAT);
+            if (date != null) {
+                object.setUdate(date);
+            }
+        }
 
-        //预留字段employ_column3
-        object.setColumn3(viewObject.getEmploy_column3());
+        //修改人账号 employUuser
+        if (mapObject.get("employUuser") != null) {
+            object.setUuser(mapObject.get("employUuser").toString().trim());
+        }
+        //预留字段 employColumn1
+        if (mapObject.get("employColumn1") != null) {
+            object.setColumn1(mapObject.get("employColumn1").toString().trim());
+        }
+        //预留字段 employColumn2
+        if (mapObject.get("employColumn2") != null) {
+            object.setColumn2(mapObject.get("employColumn2").toString().trim());
+        }
+
+        //预留字段 employColumn3
+        if (mapObject.get("employColumn3") != null) {
+            object.setColumn3(mapObject.get("employColumn3").toString().trim());
+        }
 
         return object;
     }

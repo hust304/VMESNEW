@@ -9,20 +9,25 @@
     <select id="findViewUserEmployList" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
             uuid() as id,
+
             a.id as userID,
             a.employ_id as userEmployID,
+            a.dept_id as userDeptID,
             a.company_id as userCompanyID,
             a.user_code as userCode,
-            a.password as userPassword,
 
+            a.password as userPassword,
             a.open_id as userOpenID,
+            a.mobile as userMobile,
+            a.email as userEmail,
             a.user_name as userName,
+
             a.isdisable as userIsdisable,
             a.cdate as userCdate,
             a.cuser as userCuser,
-
             a.udate as userUdate,
             a.uuser as userUuser,
+
             a.column_1 as userColumn1,
             a.column_2 as userColumn2,
             a.column_3 as userColumn3,
@@ -32,21 +37,31 @@
             b.type as employType,
             b.user_id as employUserID,
             b.company_id as employCompanyID,
+
             b.name as employName,
             b.name_en as employNameEn,
+            b.photo,
+            b.icon,
+            b.mobile,
 
-            b.photo,b.icon,b.mobile,b.email,b.sex,
-            b.birthday,b.entry_date,b.native_place,b.political,b.identity_number,
+            b.email,
+            b.sex,
+            b.birthday,
+            b.entry_date as entryDate,
+            b.native_place as nativePlace,
 
+            b.political,
+            b.identity_number as identityNumber,
             b.marital,
             b.isdisable as employIsdisable,
             b.cdate as employCdate,
+
             b.cuser as employCuser,
             b.udate as employUdate,
-
             b.uuser as employUuser,
             b.column_1 as employColumn1,
             b.column_2 as employColumn2,
+
             b.column_3 as employColumn3
         from deecoop.vmes_user a
             left join deecoop.vmes_employee b on a.employ_id = b.id

@@ -1,6 +1,5 @@
 package com.xy.vmes.service;
 
-import com.xy.vmes.entity.ViewVmesUserEmployee;
 import com.xy.vmes.entity.User;
 import com.xy.vmes.entity.Employee;
 import com.yvan.PageData;
@@ -24,13 +23,13 @@ public interface UserEmployeeService {
      * 创建人：陈刚
      * 创建时间：2018-07-20
      */
-    User viewObject2User(ViewVmesUserEmployee viewObject, User object);
+    User mapObject2User(Map<String, Object> mapObject, User object);
 
     /**
      * 创建人：陈刚
      * 创建时间：2018-07-20
      */
-    Employee viewObject2Employee(ViewVmesUserEmployee viewObject, Employee object);
+    Employee mapObject2Employee(Map<String, Object> mapObject, Employee object);
 
     /**
      * 创建人：陈刚
