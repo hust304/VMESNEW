@@ -1,4 +1,4 @@
-package com.xy.vmes.deecoop.controller;
+package com.xy.vmes.deecoop.system.controller;
 
 import com.xy.vmes.entity.Department;
 import com.xy.vmes.service.DepartmentService;

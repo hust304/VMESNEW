@@ -1,4 +1,4 @@
-package com.xy.vmes.deecoop.service;
+package com.xy.vmes.deecoop.system.service;
 
 import com.xy.vmes.entity.Department;
 import com.xy.vmes.entity.TreeEntity;

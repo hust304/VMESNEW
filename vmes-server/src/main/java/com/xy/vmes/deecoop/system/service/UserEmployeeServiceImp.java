@@ -1,6 +1,6 @@
-package com.xy.vmes.deecoop.service;
+package com.xy.vmes.deecoop.system.service;
 
-import com.xy.vmes.deecoop.dao.UserEmployeeMapper;
+import com.xy.vmes.deecoop.system.dao.UserEmployeeMapper;
 import com.xy.vmes.entity.User;
 import com.xy.vmes.entity.Employee;
 import com.xy.vmes.service.UserEmployeeService;

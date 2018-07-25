@@ -23,7 +23,7 @@ public class CreateCodeUtil {
         String tableName = "vmes_user";//表名
         String title = "vmes_user:系统用户表";
         String author = "陈刚";
-        String projectName = "deecoop";//项目名
+        String projectName = "deecoop.system";//项目名
 
 
         pd.put("dbtype","mysql");//数据库类型

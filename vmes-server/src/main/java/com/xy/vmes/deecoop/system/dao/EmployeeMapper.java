@@ -1,4 +1,4 @@
-package com.xy.vmes.deecoop.dao;
+package com.xy.vmes.deecoop.system.dao;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;

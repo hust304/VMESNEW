@@ -1,4 +1,4 @@
-package com.xy.vmes.deecoop.dao;
+package com.xy.vmes.deecoop.system.dao;
 
 import com.yvan.PageData;
 import org.apache.ibatis.annotations.Mapper;

@@ -5,7 +5,7 @@
 创建人：陈刚 自动创建
 创建时间：2018-07-23
  -->
-<mapper namespace="com.xy.vmes.deecoop.dao.EmployeeMapper">
+<mapper namespace="com.xy.vmes.deecoop.system.dao.EmployeeMapper">
 
     <!--表名 自动创建，禁止修改-->
     <sql id="tableName">

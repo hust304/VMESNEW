@@ -1,7 +1,7 @@
-package com.xy.vmes.deecoop.service;
+package com.xy.vmes.deecoop.system.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
-import com.xy.vmes.deecoop.dao.DepartmentMapper;
+import com.xy.vmes.deecoop.system.dao.DepartmentMapper;
 import com.xy.vmes.entity.Department;
 import com.xy.vmes.service.DepartmentService;
 import com.xy.vmes.service.DepartmentTreeService;

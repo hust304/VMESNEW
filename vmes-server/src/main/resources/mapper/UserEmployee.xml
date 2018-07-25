@@ -5,7 +5,7 @@
 创建人：陈刚
 创建时间：2018-07-20
  -->
-<mapper namespace="com.xy.vmes.deecoop.dao.UserEmployeeMapper">
+<mapper namespace="com.xy.vmes.deecoop.system.dao.UserEmployeeMapper">
     <select id="findViewUserEmployList" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
             uuid() as id,
