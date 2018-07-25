@@ -17,6 +17,7 @@ import redis.clients.jedis.Jedis;
 import com.google.gson.Gson;
 
 import javax.servlet.http.HttpServletResponse;
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -105,6 +106,9 @@ public class UserLoginController {
             if (pageData.get("securityCode") == null || pageData.get("securityCode").toString().trim().length() == 0 ) {
                 msgBuf.append("参数错误：验证码入为空或空字符串，验证码为必填项不可为空！</br>");
             }
+            if (pageData.get("securityCodeKey") == null || pageData.get("securityCodeKey").toString().trim().length() == 0 ) {
+                msgBuf.append("参数错误：验证码(Redis缓存Key)为空或空字符串！</br>");
+            }
         }
 
         if (msgBuf.toString().trim().length() > 0) {
@@ -117,14 +121,23 @@ public class UserLoginController {
             throw new RestException("", "Redis 缓存错误(jedis is null)，请与管理员联系！");
         }
         String securityCode = pageData.get("securityCode").toString().trim();
-        String old_securityCode = redisClient.get(com.yvan.common.Common.REDIS_SECURITY_CODE);
+        String old_securityCode = redisClient.get(pageData.get("securityCodeKey").toString().trim());
         if (!securityCode.equalsIgnoreCase(old_securityCode)) {
             throw new RestException("", "验证码输入错误或已经过期，请重新输入验证码！");
         }
 
         //1. (用户账号, 密码MD5)-
-        pageData.put("mapSize", Integer.valueOf(pageData.size()));
-        List<Map<String, Object>> objectList = userEmployService.findViewUserEmployList(pageData);
+        String userCode = pageData.get("userCode").toString().trim();
+        String userPassword = pageData.get("userPassword").toString().trim();
+        String queryStr = " (a.user_code = ''{0}'' or a.mobile = ''{0}'') and a.password = ''{1}'' ";
+        queryStr = MessageFormat.format(queryStr,
+                userCode,
+                userPassword);
+
+        PageData findMap = new PageData();
+        findMap.put("queryStr", queryStr);
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+        List<Map<String, Object>> objectList = userEmployService.findViewUserEmployList(findMap);
         if (objectList == null || objectList.size() == 0) {
             throw new RestException("", "当前(用户,密码)输入错误，请重新输入！");
         }
@@ -197,11 +210,14 @@ public class UserLoginController {
         }
 
         //Redis-验证码-缓存1分钟(60 * 1000)
-        redisClient.setWithExpireTime(com.yvan.common.Common.REDIS_SECURITY_CODE, SecurityCode, 1 * 60 * 1000);
+        String RedisCodeKey = Conv.createUuid() + ":" + com.yvan.common.Common.REDIS_SECURITY_CODE;
+        redisClient.setWithExpireTime(RedisCodeKey, SecurityCode, 1 * 60 * 1000);
 
         Map<String, String> mapObj = new HashMap<String, String>();
-        mapObj.put("result", "success");
+        mapObj.put("code", "0");
+        mapObj.put("result", "");
         mapObj.put("securityCode", SecurityCode);
+        mapObj.put("securityCodeKey", RedisCodeKey);
 
         if (mapObj != null && mapObj.size() > 0) {
             return new Gson().toJson(mapObj);
