@@ -83,6 +83,12 @@
                     <if test="userPassword != null and userPassword != ''" >
                         and a.password = #{userPassword}
                     </if>
+                    <if test="userMobile != null and userMobile != ''" >
+                        and a.mobile = #{userMobile}
+                    </if>
+                    <if test="userEmail != null and userEmail != ''" >
+                        and a.email = #{userEmail}
+                    </if>
                     <if test="userIsdisable != null and userIsdisable != ''" >
                         and a.isdisable = #{userIsdisable}
                     </if>

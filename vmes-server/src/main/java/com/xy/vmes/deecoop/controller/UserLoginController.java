@@ -1,6 +1,7 @@
 package com.xy.vmes.deecoop.controller;
 
 
+import com.xy.vmes.entity.User;
 import com.xy.vmes.service.UserEmployeeService;
 import com.yvan.Conv;
 import com.yvan.HttpUtils;
@@ -135,6 +136,8 @@ public class UserLoginController {
                 userPassword);
 
         PageData findMap = new PageData();
+        //isdisable:是否禁用(1:已禁用 0:启用)
+        findMap.put("userIsdisable", "0");
         findMap.put("queryStr", queryStr);
         findMap.put("mapSize", Integer.valueOf(findMap.size()));
         List<Map<String, Object>> objectList = userEmployService.findViewUserEmployList(findMap);
@@ -226,7 +229,151 @@ public class UserLoginController {
         return new String();
     }
 
+    /**
+     * 修改系统用户登录密码
+     *
+     * 创建人：陈刚
+     * 创建时间：2018-07-25
+     *
+     * @return
+     */
+    @GetMapping("/userLogin/changePassWord")
+    public String changePassWord() {
+        StringBuffer msgBuf = new StringBuffer();
+        //非空判断
+        PageData pageData = HttpUtils.parsePageData();
+        if (pageData == null || pageData.size() == 0) {
+            msgBuf.append("参数错误：用户登录参数(pageData)为空！</br>");
+        } else {
+            if (pageData.get("userID") == null || pageData.get("userID").toString().trim().length() == 0 ) {
+                msgBuf.append("参数错误：系统用户ID为空或空字符串！</br>");
+            }
+            if (pageData.get("password_1") == null || pageData.get("password_1").toString().trim().length() == 0 ) {
+                msgBuf.append("参数错误：新密码输入为空或空字符串，新密码为必填项不可为空！</br>");
+            }
+            if (pageData.get("password_2") == null || pageData.get("password_2").toString().trim().length() == 0 ) {
+                msgBuf.append("参数错误：再次输入新密码为空或空字符串，再次输入新密码为必填项不可为空！</br>");
+            }
+        }
 
+        if (msgBuf.toString().trim().length() > 0) {
+            throw new RestException("", msgBuf.toString());
+        }
+
+        String userID = pageData.get("userID").toString().trim();
+        String password_1 = pageData.get("password_1").toString().trim();
+        String password_2 = pageData.get("password_2").toString().trim();
+        if (password_1.equals(password_2)) {
+            throw new RestException("", "两次新密码输入不一致，请重新输入密码！<br/>");
+        }
+
+        PageData findMap = new PageData();
+        //isdisable:是否禁用(1:已禁用 0:启用)
+        findMap.put("userIsdisable", "0");
+        findMap.put("userID", userID);
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+        List<Map<String, Object>> objectList = userEmployService.findViewUserEmployList(findMap);
+        if (objectList == null || objectList.size() == 0) {
+            throw new RestException("", "userID:" + userID + " 系统中不存在，请与管理员联系！<br/>");
+        }
+        Map<String, Object> userEmployMap = objectList.get(0);
+
+        User userDB = new User();
+        userDB = userEmployService.mapObject2User(userEmployMap, userDB);
+        userDB.setPassword(password_1);
+
+        Map<String, String> mapObj = new HashMap<String, String>();
+        mapObj.put("code", "0");
+        mapObj.put("result", "");
+
+        if (mapObj != null && mapObj.size() > 0) {
+            return new Gson().toJson(mapObj);
+        }
+
+        return new String();
+    }
+
+    /**
+     * 系统用户找回密码
+     *
+     * 创建人：陈刚
+     * 创建时间：2018-07-25
+     * @return
+     */
+    @GetMapping("/userLogin/findPassWord")
+    public String findPassWord() {
+        //非空判断
+        PageData pageData = HttpUtils.parsePageData();
+        if (pageData == null || pageData.size() == 0) {
+            throw new RestException("", "参数错误：用户登录参数(pageData)为空！</br>");
+        }
+
+        String type = (String)pageData.get("type");
+        String mobile = (String)pageData.get("mobile");
+        String email = (String)pageData.get("email");
+        String userCode = (String)pageData.get("userCode");
+
+        if (type == null || type.trim().length() == 0) {
+            throw new RestException("", "参数错误：密码找回方式为空或空字符串，密码找回方式为必填项不可为空！</br>");
+        }
+        //type (mobile, email)取值范围
+        StringBuffer msgBuf = new StringBuffer();
+        if ("mobile".equals(type.toLowerCase())) {
+            if (mobile == null || mobile.trim().length() == 0) {
+                msgBuf.append("参数错误：手机号为空或空字符串，手机号为必填项不可为空！</br>");
+            }
+        } else if ("email".equals(type.toLowerCase())) {
+            if (userCode == null || userCode.trim().length() == 0) {
+                msgBuf.append("参数错误：账号手机为空或空字符串，账号手机为必填项不可为空！</br>");
+            }
+            if (email == null || email.trim().length() == 0) {
+                msgBuf.append("参数错误：邮箱地址为空或空字符串，邮箱地址为必填项不可为空！</br>");
+            }
+        }
+        if (msgBuf.toString().trim().length() > 0) {
+            throw new RestException("", msgBuf.toString());
+        }
+
+        //获取查询条件
+        msgBuf = new StringBuffer();
+        PageData findMap = new PageData();
+        //isdisable:是否禁用(1:已禁用 0:启用)
+        findMap.put("userIsdisable", "0");
+        if ("mobile".equals(type.toLowerCase())) {
+            findMap.put("userMobile", mobile);
+            msgBuf.append("手机号:" + mobile + "<br/>");
+        } else if ("email".equals(type.toLowerCase())) {
+            String queryStr = " (a.user_code = ''{0}'' or a.mobile = ''{0}'') ";
+            queryStr = MessageFormat.format(queryStr, userCode);
+            findMap.put("queryStr", queryStr);
+            findMap.put("userEmail", email);
+
+            msgBuf.append("账号手机:" + userCode + "<br/>");
+            msgBuf.append("邮箱地址:" + email + "<br/>");
+        }
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+        List<Map<String, Object>> objectList = userEmployService.findViewUserEmployList(findMap);
+        if (objectList == null || objectList.size() == 0) {
+            throw new RestException("", msgBuf.toString() + "系统中不存在，请与管理员联系！<br/>");
+        }
+        Map<String, Object> userEmployMap = objectList.get(0);
+
+        if ("mobile".equals(type.toLowerCase())) {
+            //TODO 重置密码(新密码)-手机短信(mobile)
+        } else if ("email".equals(type.toLowerCase())) {
+            //TODO 重置密码(新密码)-邮件发给(email)
+        }
+
+        Map<String, String> mapObj = new HashMap<String, String>();
+        mapObj.put("code", "0");
+        mapObj.put("result", "");
+
+        if (mapObj != null && mapObj.size() > 0) {
+            return new Gson().toJson(mapObj);
+        }
+
+        return new String();
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     //测试代码
