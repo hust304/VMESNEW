@@ -6,5 +6,4 @@ com.yvan.spring.autoconfig.FreemarkerFunctionAutoConfiguration,\
 com.yvan.mybatis.MyBatisConfiguration,\
 com.yvan.mybatis.MyBatisConfigurationAfter,\
 com.yvan.druid.DruidAutoConfiguration,\
-com.yvan.cache.RedisConfiguration,\
 com.yvan.filter.ComonFilter

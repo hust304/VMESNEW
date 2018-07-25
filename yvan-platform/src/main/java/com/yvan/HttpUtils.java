@@ -35,6 +35,7 @@ public class HttpUtils {
 
     public static HttpServletResponse currentResponse() {
         try {
+            //设置跨域请求参数
             HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getResponse();
             response.addHeader("Access-Control-Allow-Origin", "*");
             response.addHeader("Access-Control-Allow-Methods", "*");
