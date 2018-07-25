@@ -31,8 +31,6 @@ public class ComonFilter implements Filter {
 
     private Logger logger = LoggerFactory.getLogger(ComonFilter.class);
 
-    @Autowired
-    RedisClient redisClient;
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -50,6 +48,7 @@ public class ComonFilter implements Filter {
 
         String uri = httpRequest.getRequestURI();
         uri = uri.toLowerCase();
+
 
         //请求地址中含有字符串“login”和“error”的不参与sessionId校验
         if(uri.indexOf("login".toLowerCase()) < 0 && uri.indexOf("error".toLowerCase()) < 0){
@@ -71,7 +70,8 @@ public class ComonFilter implements Filter {
 
         RedisUuid = RedisUuid.toLowerCase();
         userID = userID.toLowerCase();
-
+        RedisClient redisClient = new RedisClient();
+        redisClient.setJedisPool(jedisPool());
         Jedis jedis = redisClient.getJedisPool().getResource();
         if (jedis == null) {
             throw new RestException("", "Redis 缓存错误(jedis is null)，请与管理员联系！");
