@@ -32,8 +32,20 @@ public interface CoderuleService {
     * 创建时间：2018-07-26
     */
     List<Coderule> dataList(PageData pd) throws Exception;
+    /**
+     * 创建人：陈刚
+     * 创建时间：2018-07-26
+     */
     List<Map<String, Object>> findDataList(PageData pd) throws Exception;
+    /**
+     * 创建人：陈刚
+     * 创建时间：2018-07-26
+     */
     Coderule findCoderule(PageData pd);
+    /**
+     * 创建人：陈刚
+     * 创建时间：2018-07-26
+     */
     Map<String, Object> findCoderuleMap(PageData pd);
     /**
      * 创建人：陈刚
@@ -48,7 +60,7 @@ public interface CoderuleService {
      * 参数说明:
      *   <SysCoderuleEntity>object
      *     (不可为空)SysCoderuleEntity.tableName  业务名称(表名)
-     *     (不可为空)SysCoderuleEntity.did1                       一级部门ID
+     *     (不可为空)SysCoderuleEntity.companyID  公司ID
      *     (不可为空)SysCoderuleEntity.firstName  第一个编码名称
      *     (不可为空)SysCoderuleEntity.type       类别(表名:=produce_workflow 有意义)
      *     (允许为空)SysCoderuleEntity.separator  分隔符

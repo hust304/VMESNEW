@@ -69,6 +69,10 @@ public class CoderuleServiceImp implements CoderuleService {
         return coderuleMapper.findDataList(pd);
     }
 
+    /**
+     * 创建人：陈刚
+     * 创建时间：2018-07-26
+     */
     public Coderule findCoderule(PageData pd) {
         List<Coderule> objectList = null;
         try {
@@ -81,6 +85,10 @@ public class CoderuleServiceImp implements CoderuleService {
         return objectList.get(0);
     }
 
+    /**
+     * 创建人：陈刚
+     * 创建时间：2018-07-26
+     */
     public Map<String, Object> findCoderuleMap(PageData pd) {
         List<Map<String, Object>> objectList = null;
         try {
@@ -93,6 +101,10 @@ public class CoderuleServiceImp implements CoderuleService {
         return objectList.get(0);
     }
 
+    /**
+     * 创建人：陈刚
+     * 创建时间：2018-07-26
+     */
     public Integer updateCoderule(PageData pd) throws Exception {
         return coderuleMapper.updateCoderule(pd);
     }
@@ -104,7 +116,7 @@ public class CoderuleServiceImp implements CoderuleService {
      * 参数说明:
      *   <SysCoderuleEntity>object
      *     (不可为空)SysCoderuleEntity.tableName  业务名称(表名)
-     *     (不可为空)SysCoderuleEntity.did1                       一级部门ID
+     *     (不可为空)SysCoderuleEntity.companyID  公司ID
      *     (不可为空)SysCoderuleEntity.firstName  第一个编码名称
      *     (不可为空)SysCoderuleEntity.type       类别(表名:=produce_workflow 有意义)
      *     (允许为空)SysCoderuleEntity.separator  分隔符
