@@ -9,8 +9,8 @@ import java.math.BigDecimal;
 
 /** 
  * 说明：vmes_user:系统用户表 实体类
- * @author 陈刚 自动生成
- * @date 2018-07-24
+ * @author 刘威 自动生成
+ * @date 2018-07-26
  */
 @TableName("vmes_user")
 public class User implements Serializable {

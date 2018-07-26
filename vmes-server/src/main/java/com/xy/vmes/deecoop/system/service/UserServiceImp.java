@@ -1,0 +1,110 @@
+package com.xy.vmes.deecoop.system.service;
+
+import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.deecoop.system.dao.UserMapper;
+import com.xy.vmes.entity.User;
+import com.xy.vmes.service.UserService;
+import com.yvan.PageData;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+* 说明：vmes_user:系统用户表 实现类
+* 创建人：刘威 自动创建
+* 创建时间：2018-07-26
+*/
+@Service
+@Transactional(readOnly = false)
+public class UserServiceImp implements UserService {
+
+
+    @Autowired
+    private UserMapper userMapper;
+
+    /**
+    * 创建人：刘威 自动创建，禁止修改
+    * 创建时间：2018-07-26
+    */
+    @Override
+    public void save(User user) throws Exception{
+        userMapper.insert(user);
+    }
+
+
+    /**
+    * 创建人：刘威 自动创建，禁止修改
+    * 创建时间：2018-07-26
+    */
+    @Override
+    public void update(User user) throws Exception{
+        userMapper.updateById(user);
+    }
+
+    /**
+    * 创建人：刘威 自动创建，禁止修改
+    * 创建时间：2018-07-26
+    */
+    @Override
+    //@Cacheable(cacheNames = "user", key = "''+#id")
+    public User selectById(String id) throws Exception{
+        return userMapper.selectById(id);
+    }
+
+    /**
+    * 创建人：刘威 自动创建，禁止修改
+    * 创建时间：2018-07-26
+    */
+    @Override
+    public void deleteById(String id) throws Exception{
+        userMapper.deleteById(id);
+    }
+
+
+    /**
+    * 创建人：刘威 自动创建，禁止修改
+    * 创建时间：2018-07-26
+    */
+    @Override
+    public List<User> dataListPage(PageData pd,Pagination pg) throws Exception{
+        return userMapper.dataListPage(pd,pg);
+    }
+
+    /**
+    * 创建人：刘威 自动创建，禁止修改
+    * 创建时间：2018-07-26
+    */
+    @Override
+    public List<User> dataList(PageData pd) throws Exception{
+        return userMapper.dataList(pd);
+    }
+
+    /**
+    * 创建人：刘威 自动创建，禁止修改
+    * 创建时间：2018-07-26
+    */
+    @Override
+    public List<LinkedHashMap> findColumnList() throws Exception{
+        return userMapper.findColumnList();
+    }
+
+    /**
+    * 创建人：刘威 自动创建，禁止修改
+    * 创建时间：2018-07-26
+    */
+    @Override
+    public List<Map> findDataList(PageData pd) throws Exception{
+        return userMapper.findDataList(pd);
+    }
+
+
+    /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+}
+
+
+
