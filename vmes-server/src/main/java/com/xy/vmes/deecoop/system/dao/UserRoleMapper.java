@@ -2,7 +2,7 @@ package com.xy.vmes.deecoop.system.dao;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
-import com.xy.vmes.entity.User;
+import com.xy.vmes.entity.UserRole;
 import com.yvan.PageData;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
@@ -12,13 +12,13 @@ import java.util.List;
 import java.util.Map;
 
 /**
-* 说明：vmes_user:系统用户表 Mapper.java
+* 说明：vmes_user_role:用户角色表 Mapper.java
 * 创建人：刘威 自动创建
 * 创建时间：2018-07-26
 */
 @Mapper
 @Repository
-public interface UserMapper extends BaseMapper<User> {
+public interface UserRoleMapper extends BaseMapper<UserRole> {
 
 
 	/**
@@ -26,14 +26,14 @@ public interface UserMapper extends BaseMapper<User> {
 	* 创建时间：2018-07-26
 	*/
     @Select("datalistPage")
-    List<User> dataListPage(PageData pd,Pagination pg);
+    List<UserRole> dataListPage(PageData pd,Pagination pg);
 
     /**
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-07-26
     */
 	@Select("dataList")
-	List<User> dataList(PageData pd);
+	List<UserRole> dataList(PageData pd);
 
 	/**
 	* 创建人：刘威 自动创建，禁止修改
@@ -61,41 +61,13 @@ public interface UserMapper extends BaseMapper<User> {
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
-
-	/**
-	 * 判断用户手机号是否存在
-	 *
-	 * 创建人：刘威
-	 * 创建时间：2018-07-26
-	 */
-	@Select("isExistMobile")
-	List<User> isExistMobile(PageData pd);
-
-
-	/**
-	 * 批量修改用户信息为禁用状态
-	 *
-	 * 创建人：刘威
-	 * 创建时间：2018-07-26
-	 */
-	@Select("updateToDisableByIds")
-	void updateToDisableByIds(String[] ids);
-
-
 	/**
 	 * 创建人：刘威
 	 * 创建时间：2018-07-26
 	 */
-	@Select("getColumnList")
-	List<LinkedHashMap> getColumnList();
+	@Select("deleteRoleByUserId")
+	void deleteRoleByUserId(String userId);
 
-
-	/**
-	 * 创建人：刘威
-	 * 创建时间：2018-07-26
-	 */
-	@Select("getDataList")
-	List<Map> getDataList(PageData pd);
 
 }
 

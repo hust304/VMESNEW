@@ -48,14 +48,14 @@ public class ${objectName}Controller {
     @GetMapping("/${objectNameLower}/selectById/{id}")
     public ResultModel selectById(@PathVariable("id") String id)  throws Exception {
 
-        logger.info("################${objectNameLower}/dataList 执行开始 ################# ");
+        logger.info("################${objectNameLower}/selectById 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         ${objectName} ${objectNameLower} = ${objectNameLower}Service.selectById(id);
         model.putResult(${objectNameLower});
         Long endTime = System.currentTimeMillis();
-        logger.info("################${objectNameLower}/dataList 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################${objectNameLower}/selectById 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -68,7 +68,7 @@ public class ${objectName}Controller {
     @PostMapping("/${objectNameLower}/save")
     public ResultModel save()  throws Exception {
 
-        logger.info("################${objectNameLower}/dataList 执行开始 ################# ");
+        logger.info("################${objectNameLower}/save 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
@@ -76,7 +76,7 @@ public class ${objectName}Controller {
         ${objectName} ${objectNameLower} = (${objectName})HttpUtils.pageData2Entity(pd, new ${objectName}());
         ${objectNameLower}Service.save(${objectNameLower});
         Long endTime = System.currentTimeMillis();
-        logger.info("################${objectNameLower}/dataList 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################${objectNameLower}/save 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -87,7 +87,7 @@ public class ${objectName}Controller {
     @PostMapping("/${objectNameLower}/update")
     public ResultModel update()  throws Exception {
 
-        logger.info("################${objectNameLower}/dataList 执行开始 ################# ");
+        logger.info("################${objectNameLower}/update 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
@@ -95,7 +95,7 @@ public class ${objectName}Controller {
         ${objectName} ${objectNameLower} = (${objectName})HttpUtils.pageData2Entity(pd, new ${objectName}());
         ${objectNameLower}Service.update(${objectNameLower});
         Long endTime = System.currentTimeMillis();
-        logger.info("################${objectNameLower}/dataList 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################${objectNameLower}/update 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -107,13 +107,13 @@ public class ${objectName}Controller {
     @GetMapping("/${objectNameLower}/deleteById/{id}")
     public ResultModel deleteById(@PathVariable("id") String id)  throws Exception {
 
-        logger.info("################${objectNameLower}/dataList 执行开始 ################# ");
+        logger.info("################${objectNameLower}/deleteById 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         ${objectNameLower}Service.deleteById(id);
         Long endTime = System.currentTimeMillis();
-        logger.info("################${objectNameLower}/dataList 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################${objectNameLower}/deleteById 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -124,7 +124,7 @@ public class ${objectName}Controller {
     @PostMapping("/${objectNameLower}/dataListPage")
     public ResultModel dataListPage()  throws Exception {
 
-        logger.info("################${objectNameLower}/dataList 执行开始 ################# ");
+        logger.info("################${objectNameLower}/dataListPage 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
@@ -133,7 +133,7 @@ public class ${objectName}Controller {
         List<${objectName}> ${objectNameLower}List = ${objectNameLower}Service.dataListPage(pd,pg);
         model.putResult(${objectNameLower}List);
         Long endTime = System.currentTimeMillis();
-        logger.info("################${objectNameLower}/dataList 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################${objectNameLower}/dataListPage 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -163,7 +163,7 @@ public class ${objectName}Controller {
     @GetMapping("/${objectNameLower}/excelExport")
     public void excelExport()  throws Exception {
 
-        logger.info("################${objectNameLower}/dataList 执行开始 ################# ");
+        logger.info("################${objectNameLower}/excelExport 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
         HttpServletRequest request  = HttpUtils.currentRequest();
@@ -180,7 +180,7 @@ public class ${objectName}Controller {
                 }
         });
         Long endTime = System.currentTimeMillis();
-        logger.info("################${objectNameLower}/dataList 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################${objectNameLower}/excelExport 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
     }
 
 

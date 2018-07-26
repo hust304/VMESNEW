@@ -1,5 +1,7 @@
 package com.yvan;
 
+import org.apache.commons.lang.StringUtils;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -44,6 +46,16 @@ public class PageData extends HashMap implements Map{
 			}
 			returnMap.put(name, value); 
 		}
+		String  sessionToken =  request.getHeader("sessionToken");
+		if(!StringUtils.isEmpty(sessionToken)){
+			String[] atrrs = sessionToken.split(":");
+			if(atrrs.length==3){
+				String userId = atrrs[1];
+				returnMap.put("cuser", userId);
+				returnMap.put("uuser", userId);
+			}
+		}
+
 		map = returnMap;
 	}
 	

@@ -10,6 +10,8 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
+import com.yvan.Conv;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +35,9 @@ public class ${objectName}ServiceImp implements ${objectName}Service {
     */
     @Override
     public void save(${objectName} ${objectNameLower}) throws Exception{
+        ${objectNameLower}.setId(Conv.createUuid());
+        ${objectNameLower}.setCdate(new Date());
+        ${objectNameLower}.setUdate(new Date());
         ${objectNameLower}Mapper.insert(${objectNameLower});
     }
 
@@ -43,6 +48,7 @@ public class ${objectName}ServiceImp implements ${objectName}Service {
     */
     @Override
     public void update(${objectName} ${objectNameLower}) throws Exception{
+        ${objectNameLower}.setUdate(new Date());
         ${objectNameLower}Mapper.updateById(${objectNameLower});
     }
 

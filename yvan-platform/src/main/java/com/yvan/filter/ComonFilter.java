@@ -48,16 +48,16 @@ public class ComonFilter implements Filter {
 
         String uri = httpRequest.getRequestURI();
         uri = uri.toLowerCase();
-
-
-        //请求地址中含有字符串“login”和“error”的不参与sessionId校验
-        if(uri.indexOf("login".toLowerCase()) < 0 && uri.indexOf("error".toLowerCase()) < 0){
-            if (!checkSession(httpRequest, httpResponse)) {
-                httpResponse.sendRedirect(((HttpServletRequest)request).getContextPath() + "/error/401");
-                return;
-            }
-        }
-        chain.doFilter(request, response);
+        ModifyParametersWrapper mParametersWrapper = new ModifyParametersWrapper(httpRequest);
+        mParametersWrapper.putHeader("sessionToken", "1111111:1:deecoop");
+//        //请求地址中含有字符串“login”和“error”的不参与sessionId校验
+//        if(uri.indexOf("login".toLowerCase()) < 0 && uri.indexOf("error".toLowerCase()) < 0){
+//            if (!checkSession(httpRequest, httpResponse)) {
+//                httpResponse.sendRedirect(((HttpServletRequest)request).getContextPath() + "/error/401");
+//                return;
+//            }
+//        }
+        chain.doFilter(mParametersWrapper, httpResponse);
     }
 
     public boolean checkSession(HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
