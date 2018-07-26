@@ -1,18 +1,23 @@
 package com.xy.vmes.deecoop.system.controller;
 
 
+import com.xy.vmes.entity.Employee;
 import com.xy.vmes.entity.User;
 import com.xy.vmes.service.UserEmployeeService;
+import com.xy.vmes.service.UserService;
 import com.yvan.Conv;
 import com.yvan.HttpUtils;
+import com.yvan.MD5Utils;
 import com.yvan.PageData;
 import com.yvan.cache.RedisClient;
 import com.yvan.platform.RestException;
+import com.yvan.springmvc.ResultModel;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import redis.clients.jedis.Jedis;
 import com.google.gson.Gson;
@@ -47,6 +52,8 @@ public class UserLoginController {
 
     @Autowired
     private UserEmployeeService userEmployService;
+    @Autowired
+    private UserService userService;
 
     @Autowired
     RedisClient redisClient;
@@ -69,22 +76,27 @@ public class UserLoginController {
      * 当前用户角色(userRoles-角色ID','分隔的字符串)
      * 当前用户菜单树Json(userMenuTree-当前用户所有角色关联的模块-生成菜单树Json字符串)
      *
-     * 返回值: JsonString
-     * {
-     *     result:success 成功-fail 失败
-     *     msg:成功或失败信息
-     *     RedisUuid: 当前Redis会话ID
-     *     RedisKey: Redis缓存Key(uuid:用户ID:deecoop)
-     *     RedisUserLoginKey: Redis缓存用户登录信息Map
-     * }
+     * 返回值 <ResultModel>
+     *     ResultModel.code
+     *     ResultModel.msg
+     *     ResultModel.result<Map<String, Object>>
+     *         sessionID:会话ID
+     *         user:用户信息()
+     *         employ:员工信息()
+     *         dept部门信息()
+     *         userRole用户角色()
+     *         userMenu菜单权限()
+     *         userButton按钮权限()
+     *
      * 创建人：陈刚
      * 创建时间：2018-07-20
      */
-    @GetMapping("/userLogin/sysUserLogin")
-    public String sysUserLogin() {
-        StringBuffer msgBuf = new StringBuffer();
+    @GetMapping("/userLogin/loginIn")
+    public ResultModel loginIn() {
+        ResultModel model = new ResultModel();
 
         //非空判断
+        StringBuffer msgBuf = new StringBuffer();
         PageData pageData = HttpUtils.parsePageData();
         if (pageData == null || pageData.size() == 0) {
             msgBuf.append("参数错误：用户登录参数(pageData)为空！</br>");
@@ -105,7 +117,9 @@ public class UserLoginController {
         }
 
         if (msgBuf.toString().trim().length() > 0) {
-            throw new RestException("", msgBuf.toString());
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgBuf.toString());
+            return model;
         }
 
         //验证码-是否过期
@@ -116,12 +130,15 @@ public class UserLoginController {
         String securityCode = pageData.get("securityCode").toString().trim();
         String old_securityCode = redisClient.get(pageData.get("securityCodeKey").toString().trim());
         if (!securityCode.equalsIgnoreCase(old_securityCode)) {
-            throw new RestException("", "验证码输入错误或已经过期，请重新输入验证码！");
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("验证码输入错误或已经过期，请重新输入验证码！");
+            return model;
         }
 
         //1. (用户账号, 密码MD5)-
         String userCode = pageData.get("userCode").toString().trim();
         String userPassword = pageData.get("userPassword").toString().trim();
+        userPassword = MD5Utils.MD5(userPassword);
         String queryStr = " (a.user_code = ''{0}'' or a.mobile = ''{0}'') and a.password = ''{1}'' ";
         queryStr = MessageFormat.format(queryStr,
                 userCode,
@@ -134,7 +151,9 @@ public class UserLoginController {
         findMap.put("mapSize", Integer.valueOf(findMap.size()));
         List<Map<String, Object>> objectList = userEmployService.findViewUserEmployList(findMap);
         if (objectList == null || objectList.size() == 0) {
-            throw new RestException("", "当前(用户,密码)输入错误，请重新输入！");
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("当前(用户,密码)输入错误，请重新输入！");
+            return model;
         }
         Map<String, Object> userEmployMap = objectList.get(0);
         String userID = userEmployMap.get("userID").toString().toLowerCase();
@@ -163,39 +182,52 @@ public class UserLoginController {
         //新的uuid-生成新的Redis缓存Key-(uuid:用户ID:deecoop)
         RedisKey = new_uuid + ":" + userID + ":" + "deecoop";
 
-        Map<String, Object> redisMap = new HashMap<String, Object>();
-        //userEmployMap 缓存到Map<String, Object> 中
-        redisMap = userEmployService.userEmployMap2RedisMap(userEmployMap, redisMap);
+        Map<String, Object> dataMap = new HashMap<String, Object>();
+        //sessionID:会话ID
+        dataMap.put("sessionID", RedisKey);
+        //user:用户信息()
+        User user = new User();
+        user = userEmployService.mapObject2User(userEmployMap, user);
+        dataMap.put("user", user);
+
+        //employ:员工信息()
+        Employee employ = new Employee();
+        employ = userEmployService.mapObject2Employee(userEmployMap, employ);
+        dataMap.put("employ", employ);
+
+        //dept部门信息()
+        //userRole用户角色()
+        //userMenu菜单权限()
+        //userButton按钮权限()
 
         //缓存业务数据
         //Redis缓存Key:(uuid:用户ID:deecoop:userLoginMap)
         String Redis_userLogin_Key = RedisKey + ":" + com.yvan.common.Common.REDIS_USERLOGINMAP;
-        redisClient.set(Redis_userLogin_Key, new Gson().toJson(redisMap));
+        redisClient.set(Redis_userLogin_Key, new Gson().toJson(dataMap));
 
+        model.putCode(Integer.valueOf(0));
+        model.putResult(dataMap);
 
-        //登录结果
-        //RedisUuid(uuid)
-        //RedisKey(uuid:用户ID:deecoop)
-        //RedisUserLoginKey(用户-员工-角色Map)
-
-        return null;
+        return model;
     }
 
     /**
      * 1. 生成4位验证码
      * 2. 验证码-Redis缓存Key:(securityCode)
      * 3. 验证码-返回页面
-     * 返回值: JsonString
-     * {
-     *    securityCode: 验证码
-     * }
+     * 返回值 <ResultModel>
+     *     ResultModel.code
+     *     ResultModel.msg
+     *     ResultModel.result<Map<String, Object>>
+     *         securityCode:验证码
+     *         securityCodeKey:(uuid:securityCode)
+     *
      * 创建人：陈刚
      * 创建时间：2018-07-24
      */
     @GetMapping("/userLogin/createSecurityCode")
-    public String createSecurityCode() {
-        HttpServletResponse httpResponse = HttpUtils.currentResponse();
-
+    public ResultModel createSecurityCode() {
+        //HttpServletResponse httpResponse = HttpUtils.currentResponse();
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         String SecurityCode = drawImg(output);
 
@@ -208,17 +240,13 @@ public class UserLoginController {
         String RedisCodeKey = Conv.createUuid() + ":" + com.yvan.common.Common.REDIS_SECURITY_CODE;
         redisClient.setWithExpireTime(RedisCodeKey, SecurityCode, 1 * 60 * 1000);
 
-        Map<String, String> mapObj = new HashMap<String, String>();
-        mapObj.put("code", "0");
-        mapObj.put("result", "");
-        mapObj.put("securityCode", SecurityCode);
-        mapObj.put("securityCodeKey", RedisCodeKey);
+        Map<String, Object> dataMap = new HashMap<String, Object>();
+        dataMap.put("securityCode", SecurityCode);
+        dataMap.put("securityCodeKey", RedisCodeKey);
 
-        if (mapObj != null && mapObj.size() > 0) {
-            return new Gson().toJson(mapObj);
-        }
-
-        return new String();
+        ResultModel model = new ResultModel();
+        model.putResult(dataMap);
+        return model;
     }
 
     /**
@@ -229,10 +257,12 @@ public class UserLoginController {
      *
      * @return
      */
-    @GetMapping("/userLogin/changePassWord")
-    public String changePassWord() {
-        StringBuffer msgBuf = new StringBuffer();
+    @PostMapping("/userLogin/changePassWord")
+    public ResultModel changePassWord() throws Exception {
+        ResultModel model = new ResultModel();
+
         //非空判断
+        StringBuffer msgBuf = new StringBuffer();
         PageData pageData = HttpUtils.parsePageData();
         if (pageData == null || pageData.size() == 0) {
             msgBuf.append("参数错误：用户登录参数(pageData)为空！</br>");
@@ -240,24 +270,20 @@ public class UserLoginController {
             if (pageData.get("userID") == null || pageData.get("userID").toString().trim().length() == 0 ) {
                 msgBuf.append("参数错误：系统用户ID为空或空字符串！</br>");
             }
-            if (pageData.get("password_1") == null || pageData.get("password_1").toString().trim().length() == 0 ) {
-                msgBuf.append("参数错误：新密码输入为空或空字符串，新密码为必填项不可为空！</br>");
-            }
-            if (pageData.get("password_2") == null || pageData.get("password_2").toString().trim().length() == 0 ) {
-                msgBuf.append("参数错误：再次输入新密码为空或空字符串，再次输入新密码为必填项不可为空！</br>");
+            if (pageData.get("password") == null || pageData.get("password").toString().trim().length() == 0 ) {
+                msgBuf.append("参数错误：密码输入为空或空字符串，密码为必填项不可为空！</br>");
             }
         }
 
         if (msgBuf.toString().trim().length() > 0) {
-            throw new RestException("", msgBuf.toString());
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgBuf.toString());
+            return model;
         }
 
         String userID = pageData.get("userID").toString().trim();
-        String password_1 = pageData.get("password_1").toString().trim();
-        String password_2 = pageData.get("password_2").toString().trim();
-        if (password_1.equals(password_2)) {
-            throw new RestException("", "两次新密码输入不一致，请重新输入密码！<br/>");
-        }
+        String password = pageData.get("password").toString().trim();
+        password = MD5Utils.MD5(password);
 
         PageData findMap = new PageData();
         //isdisable:是否禁用(1:已禁用 0:启用)
@@ -266,23 +292,21 @@ public class UserLoginController {
         findMap.put("mapSize", Integer.valueOf(findMap.size()));
         List<Map<String, Object>> objectList = userEmployService.findViewUserEmployList(findMap);
         if (objectList == null || objectList.size() == 0) {
-            throw new RestException("", "userID:" + userID + " 系统中不存在，请与管理员联系！<br/>");
+            //throw new RestException("", "userID:" + userID + " 系统中不存在，请与管理员联系！<br/>");
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("userID:" + userID + " 系统中不存在，请与管理员联系！<br/>");
+            return model;
         }
         Map<String, Object> userEmployMap = objectList.get(0);
 
         User userDB = new User();
         userDB = userEmployService.mapObject2User(userEmployMap, userDB);
-        userDB.setPassword(password_1);
+        userDB.setPassword(password);
+        userService.update(userDB);
 
-        Map<String, String> mapObj = new HashMap<String, String>();
-        mapObj.put("code", "0");
-        mapObj.put("result", "");
-
-        if (mapObj != null && mapObj.size() > 0) {
-            return new Gson().toJson(mapObj);
-        }
-
-        return new String();
+        model.putCode(Integer.valueOf(0));
+        model.putMsg("登录密码修改成功！");
+        return model;
     }
 
     /**
@@ -292,12 +316,16 @@ public class UserLoginController {
      * 创建时间：2018-07-25
      * @return
      */
-    @GetMapping("/userLogin/findPassWord")
-    public String findPassWord() {
+    @PostMapping("/userLogin/findPassWord")
+    public ResultModel findPassWord() throws Exception {
+        ResultModel model = new ResultModel();
+
         //非空判断
         PageData pageData = HttpUtils.parsePageData();
         if (pageData == null || pageData.size() == 0) {
-            throw new RestException("", "参数错误：用户登录参数(pageData)为空！</br>");
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("参数错误：用户登录参数(pageData)为空！</br>");
+            return model;
         }
 
         String type = (String)pageData.get("type");
@@ -306,7 +334,10 @@ public class UserLoginController {
         String userCode = (String)pageData.get("userCode");
 
         if (type == null || type.trim().length() == 0) {
-            throw new RestException("", "参数错误：密码找回方式为空或空字符串，密码找回方式为必填项不可为空！</br>");
+            //throw new RestException("", "参数错误：密码找回方式为空或空字符串，密码找回方式为必填项不可为空！</br>");
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("参数错误：密码找回方式为空或空字符串！</br>");
+            return model;
         }
         //type (mobile, email)取值范围
         StringBuffer msgBuf = new StringBuffer();
@@ -323,7 +354,10 @@ public class UserLoginController {
             }
         }
         if (msgBuf.toString().trim().length() > 0) {
-            throw new RestException("", msgBuf.toString());
+            //throw new RestException("", msgBuf.toString());
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgBuf.toString());
+            return model;
         }
 
         //获取查询条件
@@ -346,25 +380,31 @@ public class UserLoginController {
         findMap.put("mapSize", Integer.valueOf(findMap.size()));
         List<Map<String, Object>> objectList = userEmployService.findViewUserEmployList(findMap);
         if (objectList == null || objectList.size() == 0) {
-            throw new RestException("", msgBuf.toString() + "系统中不存在，请与管理员联系！<br/>");
+            //throw new RestException("", msgBuf.toString() + "系统中不存在，请与管理员联系！<br/>");
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgBuf.toString() + "系统中不存在，请与管理员联系！<br/>");
+            return model;
         }
         Map<String, Object> userEmployMap = objectList.get(0);
+        User userDB = new User();
+        userDB = userEmployService.mapObject2User(userEmployMap, userDB);
+
+        //获取默认新密码:
+        String default_password = MD5Utils.MD5(com.yvan.common.Common.DEFAULT_PASSWORD);
+        userDB.setPassword(default_password);
 
         if ("mobile".equals(type.toLowerCase())) {
             //TODO 重置密码(新密码)-手机短信(mobile)
+
         } else if ("email".equals(type.toLowerCase())) {
             //TODO 重置密码(新密码)-邮件发给(email)
         }
 
-        Map<String, String> mapObj = new HashMap<String, String>();
-        mapObj.put("code", "0");
-        mapObj.put("result", "");
+        userService.update(userDB);
 
-        if (mapObj != null && mapObj.size() > 0) {
-            return new Gson().toJson(mapObj);
-        }
-
-        return new String();
+        model.putCode(Integer.valueOf(0));
+        model.putMsg("密码重置成功！");
+        return model;
     }
 
     ////////////////////////////////////////////////////////////////////////////

@@ -1,8 +1,8 @@
 package com.xy.vmes.deecoop.system.service;
 
 import com.xy.vmes.deecoop.system.dao.UserEmployeeMapper;
-import com.xy.vmes.entity.User;
 import com.xy.vmes.entity.Employee;
+import com.xy.vmes.entity.User;
 import com.xy.vmes.service.UserEmployeeService;
 import com.yvan.PageData;
 import com.yvan.common.util.DateFormat;
@@ -287,24 +287,24 @@ public class UserEmployeeServiceImp implements UserEmployeeService {
         if (redisMap == null) {redisMap = new HashMap<String, Object>();}
         if (objectMap == null || objectMap.size() == 0) {return redisMap;}
 
-        //用户信息(userID,userCode,companyID,
-        if (objectMap.get("userID") != null && objectMap.get("userID").toString().trim().length() > 0) {
-            redisMap.put(Common.REDIS_USER_ID, objectMap.get("userID").toString().trim());
-        }
-        if (objectMap.get("userCode") != null && objectMap.get("userCode").toString().trim().length() > 0) {
-            redisMap.put(Common.REDIS_USER_CODE, objectMap.get("userCode").toString().trim());
-        }
-        if (objectMap.get("userCompanyID") != null && objectMap.get("userCompanyID").toString().trim().length() > 0) {
-            redisMap.put(Common.REDIS_COMPANYID, objectMap.get("userCompanyID").toString().trim());
-        }
-
-        //员工信息(employID,employName,)
-        if (objectMap.get("employID") != null && objectMap.get("employID").toString().trim().length() > 0) {
-            redisMap.put(Common.REDIS_EMPLOYID, objectMap.get("employID").toString().trim());
-        }
-        if (objectMap.get("employName") != null && objectMap.get("employName").toString().trim().length() > 0) {
-            redisMap.put(Common.REDIS_EMPLOYNAME, objectMap.get("employName").toString().trim());
-        }
+//        //用户信息(userID,userCode,companyID,
+//        if (objectMap.get("userID") != null && objectMap.get("userID").toString().trim().length() > 0) {
+//            redisMap.put(Common.REDIS_USER_ID, objectMap.get("userID").toString().trim());
+//        }
+//        if (objectMap.get("userCode") != null && objectMap.get("userCode").toString().trim().length() > 0) {
+//            redisMap.put(Common.REDIS_USER_CODE, objectMap.get("userCode").toString().trim());
+//        }
+//        if (objectMap.get("userCompanyID") != null && objectMap.get("userCompanyID").toString().trim().length() > 0) {
+//            redisMap.put(Common.REDIS_COMPANYID, objectMap.get("userCompanyID").toString().trim());
+//        }
+//
+//        //员工信息(employID,employName,)
+//        if (objectMap.get("employID") != null && objectMap.get("employID").toString().trim().length() > 0) {
+//            redisMap.put(Common.REDIS_EMPLOYID, objectMap.get("employID").toString().trim());
+//        }
+//        if (objectMap.get("employName") != null && objectMap.get("employName").toString().trim().length() > 0) {
+//            redisMap.put(Common.REDIS_EMPLOYNAME, objectMap.get("employName").toString().trim());
+//        }
 
         return null;
     }
