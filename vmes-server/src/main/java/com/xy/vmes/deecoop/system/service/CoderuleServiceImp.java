@@ -6,10 +6,12 @@ import com.xy.vmes.entity.CoderuleEntity;
 import com.xy.vmes.entity.Department;
 import com.xy.vmes.service.CoderuleService;
 import com.xy.vmes.service.DepartmentService;
+import com.yvan.Conv;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.common.Common;
 import com.yvan.common.util.DateFormat;
+import com.yvan.platform.RestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -133,7 +135,7 @@ public class CoderuleServiceImp implements CoderuleService {
      * @param object  生成编码-通用编码规则需要的参数对象
      * @return
      */
-    public String findCoderule(CoderuleEntity object) throws Exception {
+    public String findCoderule(CoderuleEntity object) {
         if (object.getTableName() == null || object.getTableName().trim().length() == 0) {return new String();}
         if (object.getCompanyID() == null || object.getCompanyID().trim().length() == 0) {return new String();}
         if (object.getFirstName() == null || object.getFirstName().trim().length() == 0) {return new String();}
@@ -178,11 +180,13 @@ public class CoderuleServiceImp implements CoderuleService {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            if (companyNumber.trim().length() > 0) {
-                companyNumber = companyNumber.toLowerCase();
-                if (!"company".equals(object.getFirstName().trim())) {
-                    companyNumber = separator + companyNumber;
-                }
+            if (companyNumber.trim().length() == 0) {
+                throw new RestException("", "(公司ID:" + object.getCompanyID() + ")无企业编码，请与管理员联系！");
+            }
+
+            companyNumber = companyNumber.toLowerCase();
+            if (!"company".equals(object.getFirstName().trim())) {
+                companyNumber = separator + companyNumber;
             }
         }
 
@@ -221,9 +225,12 @@ public class CoderuleServiceImp implements CoderuleService {
         }
         findMap.put("mapSize", Integer.valueOf(findMap.size()));
 
+        Coderule coderuleDB = null;
         Map<String, Object> objectMap = this.findCoderuleMap(findMap);
-        Coderule coderuleDB = new Coderule();
-        coderuleDB = (Coderule) HttpUtils.pageData2Entity(objectMap, coderuleDB);
+        if (objectMap != null && objectMap.size() > 0) {
+            coderuleDB = new Coderule();
+            coderuleDB = (Coderule) HttpUtils.pageData2Entity(objectMap, coderuleDB);
+        }
         Long sysNewCode = this.findNewCode(coderuleDB, object.getLength().intValue());
 
         //2. 获取最新流水号编码
@@ -253,22 +260,38 @@ public class CoderuleServiceImp implements CoderuleService {
         //5. 插入数据库(sys_codeRule)
         if (coderuleDB == null) {
             Coderule addObject = new Coderule();
+            addObject.setId(Conv.createUuid());
             addObject.setTableName(object.getTableName().trim());
             addObject.setCompanyId(object.getCompanyID().trim());
             addObject.setCode(newCode);
             addObject.setBusinessCode(businessCode);
             addObject.setCdate(new Date());
+            addObject.setVersion(Integer.valueOf(0));
             if (object.getType() != null && object.getType().trim().length() > 0) {
                 addObject.setType(object.getType().trim());
             }
-            this.save(addObject);
+
+            try {
+                this.save(addObject);
+            } catch (Exception e) {
+                throw new RestException("", e.getMessage());
+            }
         } else {
             PageData pageData = new PageData();
             pageData = HttpUtils.entity2PageData(coderuleDB, pageData);
             pageData.put("udate", new Date());
             pageData.put("code", newCode);
             pageData.put("businessCode", businessCode);
-            this.updateCoderule(pageData);
+            Integer updateValue = null;
+            try {
+                updateValue = this.updateCoderule(pageData);
+            } catch (Exception e) {
+                throw new RestException("", e.getMessage());
+            }
+
+            if (updateValue != null && 1 != updateValue.intValue()) {
+                throw new RestException("", "系统繁忙请稍后操作！");
+            }
         }
 
         return businessCode;

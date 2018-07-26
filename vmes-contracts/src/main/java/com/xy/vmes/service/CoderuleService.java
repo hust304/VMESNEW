@@ -77,7 +77,7 @@ public interface CoderuleService {
      * @param object  生成编码-通用编码规则需要的参数对象
      * @return
      */
-    String findCoderule(CoderuleEntity object) throws Exception;
+    String findCoderule(CoderuleEntity object);
 
 }
 

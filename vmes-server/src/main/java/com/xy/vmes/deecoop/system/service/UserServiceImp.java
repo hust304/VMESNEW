@@ -120,32 +120,29 @@ public class UserServiceImp implements UserService {
      */
     public String createCoder(String companyID) {
         String businessCode = null;
-        try {
-            //(企业编号+前缀字符+日期字符+流水号)-(company+prefix+date+code)
-            //material.
-            //(无需+前缀字符+无需+流水号)-W000142
-            CoderuleEntity object = new CoderuleEntity();
-            //tableName 业务名称(表名)
-            object.setTableName("vmes_user");
-            //companyID 公司ID
-            object.setCompanyID(companyID);
-            //length 指定位数(5)
-            object.setLength(Integer.valueOf(Common.CODE_RULE_LENGTH_DEFAULT));
-            //firstName 第一个编码名称
-            object.setFirstName("company");
 
-            //separator 分隔符
-            //object.setSeparator("-");
-            //filling 填充字符(0)
-            object.setFilling(Common.CODE_RULE_DEFAULT_FILLING);
+        //(企业编号+前缀字符+日期字符+流水号)-(company+prefix+date+code)
+        //material.
+        //(无需+前缀字符+无需+流水号)-W000142
+        CoderuleEntity object = new CoderuleEntity();
+        //tableName 业务名称(表名)
+        object.setTableName("vmes_user");
+        //companyID 公司ID
+        object.setCompanyID(companyID);
+        //length 指定位数(6)
+        object.setLength(Integer.valueOf(6));
+        //firstName 第一个编码名称
+        object.setFirstName("company");
 
-            //isNeedCompany 是否需要企业编号
-            object.setIsNeedCompany(Boolean.TRUE);
+        //separator 分隔符
+        //object.setSeparator("-");
+        //filling 填充字符(0)
+        object.setFilling(Common.CODE_RULE_DEFAULT_FILLING);
 
-            businessCode = coderuleService.findCoderule(object);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        //isNeedCompany 是否需要企业编号
+        object.setIsNeedCompany(Boolean.TRUE);
+
+        businessCode = coderuleService.findCoderule(object);
 
         return businessCode;
     }

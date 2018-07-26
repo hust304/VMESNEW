@@ -62,27 +62,27 @@ public class ComonFilter implements Filter {
 
     public boolean checkSession(HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
         //检查是否sessionId，且sessionId是否过期
-        String RedisUuid = httpRequest.getAttribute("RedisUuid").toString();
-        String userID = httpRequest.getAttribute("userID").toString();
+        String RedisUuid = (String)httpRequest.getAttribute("RedisUuid");
+        String userID = (String)httpRequest.getAttribute("userID");
 
-        if (RedisUuid == null || RedisUuid.trim().length() == 0) {}
-        if (userID == null || userID.trim().length() == 0) {}
-
-        RedisUuid = RedisUuid.toLowerCase();
-        userID = userID.toLowerCase();
-        RedisClient redisClient = new RedisClient();
-        redisClient.setJedisPool(jedisPool());
-        Jedis jedis = redisClient.getJedisPool().getResource();
-        if (jedis == null) {
-            throw new RestException("", "Redis 缓存错误(jedis is null)，请与管理员联系！");
-        }
-
-        String HistoryRedisUuid = redisClient.findRedisUuidByUserID(jedis, userID);
-        if (HistoryRedisUuid == null || HistoryRedisUuid.trim().length() == 0) {
-            return false;
-        } else if (!HistoryRedisUuid.toLowerCase().equals(RedisUuid)) {
-            return false;
-        }
+//        if (RedisUuid == null || RedisUuid.trim().length() == 0) {}
+//        if (userID == null || userID.trim().length() == 0) {}
+//
+//        RedisUuid = RedisUuid.toLowerCase();
+//        userID = userID.toLowerCase();
+//        RedisClient redisClient = new RedisClient();
+//        redisClient.setJedisPool(jedisPool());
+//        Jedis jedis = redisClient.getJedisPool().getResource();
+//        if (jedis == null) {
+//            throw new RestException("", "Redis 缓存错误(jedis is null)，请与管理员联系！");
+//        }
+//
+//        String HistoryRedisUuid = redisClient.findRedisUuidByUserID(jedis, userID);
+//        if (HistoryRedisUuid == null || HistoryRedisUuid.trim().length() == 0) {
+//            return false;
+//        } else if (!HistoryRedisUuid.toLowerCase().equals(RedisUuid)) {
+//            return false;
+//        }
 
         return true;
     }

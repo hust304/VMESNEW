@@ -7,6 +7,8 @@ import com.xy.vmes.service.UserService;
 import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
+import com.yvan.platform.ResponseCode;
+import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
 import com.yvan.template.ExcelAjaxTemplate;
 import lombok.extern.slf4j.Slf4j;
@@ -185,7 +187,14 @@ public class UserController {
 
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+    @GetMapping("/user/createCode")
+    public void createCode() {
+        PageData pageData = HttpUtils.parsePageData();
+        String companyID = "1";
 
+        String code = userService.createCoder(companyID);;
+        System.out.println("code:" + code);
+    }
 }
 
 
