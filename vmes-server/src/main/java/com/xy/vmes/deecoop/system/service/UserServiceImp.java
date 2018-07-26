@@ -132,17 +132,15 @@ public class UserServiceImp implements UserService {
             //length 指定位数(5)
             object.setLength(Integer.valueOf(Common.CODE_RULE_LENGTH_DEFAULT));
             //firstName 第一个编码名称
-            object.setFirstName("prefix");
+            object.setFirstName("company");
 
             //separator 分隔符
             //object.setSeparator("-");
             //filling 填充字符(0)
             object.setFilling(Common.CODE_RULE_DEFAULT_FILLING);
 
-            //isNeedPrefix 是否需要前缀
-            object.setIsNeedPrefix(Boolean.TRUE);
-            //prefix 前缀字符
-            object.setPrefix("C");
+            //isNeedCompany 是否需要企业编号
+            object.setIsNeedCompany(Boolean.TRUE);
 
             businessCode = coderuleService.findCoderule(object);
         } catch (Exception e) {
