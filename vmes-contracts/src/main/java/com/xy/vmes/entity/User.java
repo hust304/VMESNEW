@@ -46,6 +46,9 @@ public class User implements Serializable {
 	//姓名
 	@TableField("user_name")
 	private String userName;
+	//界面样式风格
+	@TableField("page_style")
+	private String pageStyle;
 	//是否禁用(1:已禁用 0:启用) 数据字典:sys_isdisable
 	@TableField("isdisable")
 	private String isdisable;
@@ -132,6 +135,12 @@ public class User implements Serializable {
 	}
 	public String getUserName() {
 		return userName;
+	}
+	public void setPageStyle(String pageStyle) {
+		this.pageStyle = pageStyle;
+	}
+	public String getPageStyle() {
+		return pageStyle;
 	}
 	public void setIsdisable(String isdisable) {
 		this.isdisable = isdisable;
