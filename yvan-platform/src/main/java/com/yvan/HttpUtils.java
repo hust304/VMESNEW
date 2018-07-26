@@ -17,6 +17,7 @@ import java.math.BigDecimal;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -78,7 +79,7 @@ public class HttpUtils {
         return pd;
     }
 
-    public static Object pageData2Entity(PageData mapObj, Object entityObj) {
+    public static Object pageData2Entity(Map mapObj, Object entityObj) {
         if (mapObj == null) {
             throw new RestException("", "参数错误: PageData 对象为空！");
         }
