@@ -187,14 +187,7 @@ public class UserController {
 
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
-    @GetMapping("/user/createCode")
-    public void createCode() {
-        PageData pageData = HttpUtils.parsePageData();
-        String companyID = "1";
 
-        String code = userService.createCoder(companyID);;
-        System.out.println("code:" + code);
-    }
 }
 
 
