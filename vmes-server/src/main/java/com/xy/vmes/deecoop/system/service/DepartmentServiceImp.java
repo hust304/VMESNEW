@@ -131,7 +131,6 @@ public class DepartmentServiceImp implements DepartmentService {
      */
     public String createCoder(String companyID) {
         //(企业编号+前缀字符+日期字符+流水号)-(company+prefix+date+code)
-        //material.
         //(无需+前缀字符+无需+流水号)-W000142
         CoderuleEntity object = new CoderuleEntity();
         //tableName 业务名称(表名)
