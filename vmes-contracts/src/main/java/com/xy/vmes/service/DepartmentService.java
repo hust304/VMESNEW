@@ -68,16 +68,57 @@ public interface DepartmentService {
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
     /**
+     * 生成部门编码
+     *
+     * 创建人：陈刚
+     * 创建时间：2018-07-27
+     *
+     * @param companyID  公司ID-组织架构ID
+     * @return
+     */
+    String createCoder(String companyID);
+
+    /**
+     * 创建人：陈刚
+     * 创建时间：2018-07-27
+     * @param object
+     * @return
+     */
+    String checkColumnByAdd(Department object);
+
+    /**
+     * 创建人：陈刚
+     * 创建时间：2018-07-27
+     * @param object
+     * @return
+     */
+    String checkColumnByEdit(Department object);
+
+    /**
+     * 组织名称同一层级是否相同
+     *
+     * @param pid   (不可为空)
+     * @param id    (允许为空)-(添加时is null, 修改时 is not null)
+     * @param name  (不可为空)
+     * @return
+     *     true : 组织名称存在名称相同
+     *     false: 组织名称不存在名称相同(默认值)
+     */
+    boolean isExistByName(String pid, String id, String name);
+
+    /**
      * 创建人：陈刚
      * 创建时间：2018-07-18
      */
     Department findDepartment(PageData object);
+    Department findDepartmentById(String id);
 
     /**
      * 创建人：陈刚
      * 创建时间：2018-07-18
      */
     List<Department> findDepartmentList(PageData object);
+    List<Department> findDepartmentListByPid(String pid);
 
     /**
      * 根据部门对象<Department>当前部门节点下面所有节点生成树形结构
@@ -119,6 +160,51 @@ public interface DepartmentService {
      * @return
      */
     Integer findMaxLayerByDeptList(List<Department> objectList);
+
+    /**
+     * 遍历List<Department>-获取(长名称,长编码)- 通过'-'练级的字符串
+     * @param objectList
+     * @return Map<key, String>
+     *     "LongName"
+     *     "LongCode"
+     */
+    Map<String, String> findLongNameCode(List<Department> objectList);
+    /**
+     * 根据父节点<Department>对象-(id_0,id_1,...,id_5)
+     * 查询获得组织架构路径List<Department>
+     *
+     * @param paterObject
+     * @return Map<key, String>
+     *     "LongName"
+     *     "LongCode"
+     */
+    List<Department> findPathListByPater(Department paterObject);
+
+    /**
+     * 根据父pid父节点<Department>对象-(id_0,id_1,...,id_5)-查询获得组织架构路径List<Department>
+     * 遍历List<Department>-获取(长名称,长编码)- 通过'-'练级的字符串
+     *
+     * @param pid
+     * @return Map<key, String>
+     *     "LongName"
+     *     "LongCode"
+     */
+    Map<String, String> findLongNameCodeByPid(String pid);
+
+    /**
+     * 根据父节点<Department>对象-(id_0,id_1,...,id_5)-查询获得组织架构路径List<Department>
+     * 遍历List<Department>-获取(长名称,长编码)- 通过'-'练级的字符串
+     *
+     * @param Pater
+     * @return Map<key, String>
+     *     "LongName"
+     *     "LongCode"
+     */
+    Map<String, String> findLongNameCodeByPater(Department Pater);
+    Department paterObject2ObjectDB(Department paterObject, Department objectDB);
+    Department id2DepartmentByLayer(String id, Integer layer, Department objectDB);
+    Department clearDepartmentByPath(Department objectDB);
+    Department object2objectDB(Department object, Department objectDB);
 }
 
 

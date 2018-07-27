@@ -198,13 +198,13 @@ public class DepartmentTreeServiceImp implements DepartmentTreeService {
             ids.append(mapKey);
             ids.append(",");
         }
-        String isTemp = ids.toString();
+        String idsTemp = ids.toString();
         //去掉最后一个','
-        if (isTemp.lastIndexOf(",") != -1) {
-            isTemp = isTemp.substring(0, isTemp.lastIndexOf(","));
+        if (idsTemp.lastIndexOf(",") != -1) {
+            idsTemp = idsTemp.substring(0, idsTemp.lastIndexOf(","));
         }
 
-        String id_str = StringUtil.stringTrimSpace(isTemp);
+        String id_str = StringUtil.stringTrimSpace(idsTemp);
         id_str = "'" + id_str.replace(",", "','") + "'";
         String pidQuery = "id in (" + id_str + ")";
 
