@@ -232,7 +232,7 @@ public class DepartmentController {
         String msgStr = departmentService.checkColumnByAdd(deptObj);
         if (msgStr.trim().length() > 0) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("msgStr");
+            model.putMsg(msgStr);
             return model;
         }
 
@@ -320,7 +320,7 @@ public class DepartmentController {
         String msgStr = departmentService.checkColumnByEdit(deptObj);
         if (msgStr.trim().length() > 0) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("msgStr");
+            model.putMsg(msgStr);
             return model;
         }
 
@@ -348,7 +348,7 @@ public class DepartmentController {
             deptDB = departmentService.object2objectDB(deptObj, deptDB);
             deptDB = departmentService.clearDepartmentByPath(deptDB);
             deptDB = departmentService.id2DepartmentByLayer(deptDB.getId(),
-                    Integer.valueOf(deptDB.getLayer().intValue() + 1),
+                    Integer.valueOf(paterObj.getLayer().intValue() + 1),
                     deptDB);
             deptDB = departmentService.paterObject2ObjectDB(paterObj, deptDB);
 

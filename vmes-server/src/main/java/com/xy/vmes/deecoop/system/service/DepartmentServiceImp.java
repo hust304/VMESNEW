@@ -45,7 +45,6 @@ public class DepartmentServiceImp implements DepartmentService {
     public void save(Department department) throws Exception{
         department.setIsdisable("0");
         department.setCdate(new Date());
-        department.setUdate(new Date());
         departmentMapper.insert(department);
     }
 
@@ -136,7 +135,7 @@ public class DepartmentServiceImp implements DepartmentService {
         //(无需+前缀字符+无需+流水号)-W000142
         CoderuleEntity object = new CoderuleEntity();
         //tableName 业务名称(表名)
-        object.setTableName("vmes_user");
+        object.setTableName("vmes_department");
         //companyID 公司ID
         object.setCompanyID(companyID);
         //length 指定位数(5)
@@ -471,7 +470,7 @@ public class DepartmentServiceImp implements DepartmentService {
             }
             if (object.getCode() != null && object.getCode().trim().length() > 0) {
                 LongCodeBuf.append(object.getCode().trim());
-                LongNameBuf.append("-");
+                LongCodeBuf.append("-");
             }
         }
 
