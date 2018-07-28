@@ -68,6 +68,14 @@ public interface DepartmentService {
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
     /**
+     * 批量修改组织架构信息为禁用状态
+     *
+     * 创建人：陈刚
+     * 创建时间：2018-07-27
+     */
+    void updateDisableByIds(String[] ids) throws Exception;
+
+    /**
      * 生成部门编码
      *
      * 创建人：陈刚
@@ -205,6 +213,16 @@ public interface DepartmentService {
     Department id2DepartmentByLayer(String id, Integer layer, Department objectDB);
     Department clearDepartmentByPath(Department objectDB);
     Department object2objectDB(Department object, Department objectDB);
+
+    /**
+     * check部门列表List<Department>是否允许删除
+     *
+     * 创建人：陈刚
+     * 创建时间：2018-07-27
+     * @param objectList
+     * @return
+     */
+    String checkDeleteDeptByList(List<Department> objectList);
 }
 
 

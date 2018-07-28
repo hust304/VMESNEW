@@ -60,6 +60,14 @@ public interface DepartmentMapper extends BaseMapper<Department> {
 
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+	/**
+	 * 批量修改组织架构信息为禁用状态
+	 *
+	 * 创建人：陈刚
+	 * 创建时间：2018-07-27
+	 */
+	@Select("updateDisableByIds")
+	void updateDisableByIds(String[] ids);
 }
 
 

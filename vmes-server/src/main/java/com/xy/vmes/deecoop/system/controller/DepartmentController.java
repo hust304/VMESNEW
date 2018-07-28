@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.entity.Department;
 import com.xy.vmes.service.DepartmentService;
 import com.yvan.*;
+import com.yvan.common.util.StringUtil;
 import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
 import com.yvan.template.ExcelAjaxTemplate;
@@ -369,6 +370,105 @@ public class DepartmentController {
             //设置部门级别
             deptDB.setLayer(Integer.valueOf(paterObj.getLayer().intValue() + 1));
             departmentService.update(deptDB);
+        } catch (Exception e) {
+            throw new RestException("", e.getMessage());
+        }
+
+        return model;
+    }
+
+    /**修改组织架构(禁用)状态
+     *
+     * @author 陈刚
+     * @date 2018-07-27
+     */
+    @PostMapping("/department/updateDeptDisable")
+    public ResultModel updateDeptDisable() {
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        //1. 非空判断
+        if (pageData == null || pageData.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("参数错误：用户登录参数(pageData)为空！</br>");
+            return model;
+        }
+
+        String id = (String)pageData.get("id");
+        String isdisable = (String)pageData.get("isdisable");
+
+        String msgStr = new String();
+        if (id == null || id.trim().length() == 0) {
+            msgStr = msgStr + "id为空或空字符串！<br/>";
+        }
+        if (isdisable == null || isdisable.trim().length() == 0) {
+            msgStr = msgStr + "isdisable为空或空字符串！<br/>";
+        }
+        if (msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
+
+        try {
+            Department objectDB = departmentService.findDepartmentById(id);
+            objectDB.setIsdisable(isdisable);
+            objectDB.setUdate(new Date());
+            departmentService.update(objectDB);
+        } catch (Exception e) {
+            throw new RestException("", e.getMessage());
+        }
+
+        return model;
+    }
+
+
+    /**删除组织架构(组织类型:部门)
+     *
+     * @author 陈刚
+     * @date 2018-07-27
+     */
+    @PostMapping("/department/deleteDepartments")
+    public ResultModel deleteDepartments() {
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        //1. 非空判断
+        if (pageData == null || pageData.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("参数错误：用户登录参数(pageData)为空！</br>");
+            return model;
+        }
+
+        String deptIds = (String)pageData.get("deptIds");
+        if (deptIds == null || deptIds.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("参数错误：请至少选择一行数据！</br>");
+            return model;
+        }
+
+        String id_str = StringUtil.stringTrimSpace(deptIds);
+        id_str = "'" + id_str.replace(",", "','") + "'";
+        String pidQuery = "id in (" + id_str + ")";
+
+        //查询部门表-获得每一层的id-部门集合List<Department>
+        PageData findMap = new PageData();
+        //isdisable:是否禁用(1:已禁用 0:启用)
+        findMap.put("isdisable", "0");
+        findMap.put("queryStr", pidQuery);
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+        List<Department> objectList = departmentService.findDepartmentList(findMap);
+
+        String msgStr = departmentService.checkDeleteDeptByList(objectList);
+        if (msgStr != null && msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
+
+        String[] id_arry = id_str.split(",");
+        try {
+            departmentService.updateByIds(id_arry);
         } catch (Exception e) {
             throw new RestException("", e.getMessage());
         }

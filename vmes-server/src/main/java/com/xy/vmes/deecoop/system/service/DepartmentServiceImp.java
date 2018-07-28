@@ -121,6 +121,16 @@ public class DepartmentServiceImp implements DepartmentService {
     private DepartmentTreeService deptTreeService;
 
     /**
+     * 批量修改组织架构信息为禁用状态
+     *
+     * 创建人：陈刚
+     * 创建时间：2018-07-27
+     */
+    public void updateDisableByIds(String[] ids) throws Exception {
+        departmentMapper.updateDisableByIds(ids);
+    }
+
+    /**
      * 生成部门编码
      *
      * 创建人：陈刚
@@ -653,6 +663,31 @@ public class DepartmentServiceImp implements DepartmentService {
         objectDB.setIsdisable(object.getIsdisable());
 
         return objectDB;
+    }
+
+    /**
+     * check部门列表List<Department>是否允许删除
+     *
+     * 创建人：陈刚
+     * 创建时间：2018-07-27
+     * @param objectList
+     * @return
+     */
+    public String checkDeleteDeptByList(List<Department> objectList) {
+        if (objectList == null || objectList.size() == 0) {return new String();}
+
+        StringBuffer msgBuf = new StringBuffer();
+        String msgTemp = "第&nbsp;{0}&nbsp;行:&nbsp;状态为(启用)不可删除！<br/>";
+        for (int i = 0; i < objectList.size(); i++) {
+            Department object = objectList.get(i);
+            //isdisable:是否禁用(1:已禁用 0:启用)
+            if (object.getIsdisable() != null && "0".equals(object.getIsdisable().trim())) {
+                String str_isnull = MessageFormat.format(msgTemp, Integer.valueOf(i+1).toString());
+                msgBuf.append(str_isnull);
+            }
+        }
+
+        return  msgBuf.toString();
     }
 }
 
