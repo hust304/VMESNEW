@@ -468,7 +468,7 @@ public class DepartmentController {
 
         String[] id_arry = id_str.split(",");
         try {
-            departmentService.updateByIds(id_arry);
+            departmentService.updateDisableByIds(id_arry);
         } catch (Exception e) {
             throw new RestException("", e.getMessage());
         }
