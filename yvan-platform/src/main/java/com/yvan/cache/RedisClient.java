@@ -98,6 +98,19 @@ public class RedisClient {
         }
     }
 
+    public void removeByUuid(Jedis jedis, String uuid) {
+        if (jedis == null) {return;}
+        if (uuid == null || uuid.trim().length() == 0) {return;}
+
+        Set<String> keySet = jedis.keys(uuid + "*");
+        for (Iterator iterator = keySet.iterator(); iterator.hasNext();) {
+            String key = (String) iterator.next();
+            if(jedis.exists(key)){
+                jedis.del(key);
+            }
+        }
+    }
+
     public JedisPool getJedisPool() {
         return jedisPool;
     }

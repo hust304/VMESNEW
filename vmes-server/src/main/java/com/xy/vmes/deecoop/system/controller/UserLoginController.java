@@ -24,9 +24,7 @@ import com.google.gson.Gson;
 
 import javax.servlet.http.HttpServletResponse;
 import java.text.MessageFormat;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
@@ -35,7 +33,6 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.Random;
 
 import javax.imageio.ImageIO;
 
@@ -407,8 +404,130 @@ public class UserLoginController {
         return model;
     }
 
+    /**
+     * 系统用户退出系统
+     *
+     * 创建人：陈刚
+     * 创建时间：2018-07-25
+     * @return
+     */
+    @PostMapping("/userLogin/loginOut")
+    public ResultModel loginOut() {
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        //1. 非空判断
+        if (pageData == null || pageData.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("参数错误：用户登录参数(pageData)为空！</br>");
+            return model;
+        }
+
+        String sessionID = (String)pageData.get("sessionID");
+        if (sessionID == null || sessionID.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("sessionID为空或空字符串！<br/>");
+            return model;
+        }
+
+        Jedis jedis = redisClient.getJedisPool().getResource();
+        if (jedis == null) {
+            throw new RestException("", "Redis 缓存错误(jedis is null)，请与管理员联系！");
+        }
+
+        String[] str_arry = sessionID.split(":");
+        String uuid = str_arry[0];
+        redisClient.removeByUuid(jedis, uuid);
+
+        return model;
+    }
+
     ////////////////////////////////////////////////////////////////////////////
     //测试代码
+
+    /**
+     * 获取全部含有(userID)的Redis缓存key
+     * Redis缓存Key:(uuid:用户ID:deecoop)
+     * @return
+     */
+    @GetMapping("/userLogin/test_findAllRedisKeyByUserID")
+    public ResultModel test_findAllRedisKeyByUserID() {
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        //1. 非空判断
+        if (pageData == null || pageData.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("参数错误：用户登录参数(pageData)为空！</br>");
+            return model;
+        }
+
+        String userID = (String)pageData.get("userID");
+        if (userID == null || userID.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("userID为空或空字符串！<br/>");
+            return model;
+        }
+
+        Jedis jedis = redisClient.getJedisPool().getResource();
+        if (jedis == null) {
+            throw new RestException("", "Redis 缓存错误(jedis is null)，请与管理员联系！");
+        }
+
+        StringBuffer msgBuf = new StringBuffer();
+        String strTemp = ":" + userID + ":deecoop";
+        Set<String> keySet = jedis.keys("*" + strTemp + "*");
+        for (Iterator iterator = keySet.iterator(); iterator.hasNext();) {
+            String key = (String) iterator.next();
+            msgBuf.append(key);
+            msgBuf.append("--");
+        }
+
+        model.putMsg(msgBuf.toString());
+        return model;
+    }
+
+    /**
+     * 获取全部含有(uuid)的Redis缓存key
+     * Redis缓存Key:(uuid:用户ID:deecoop)
+     * @return
+     */
+    @GetMapping("/userLogin/test_findAllRedisKeyByUuid")
+    public ResultModel test_findAllRedisKeyByUuid() {
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        //1. 非空判断
+        if (pageData == null || pageData.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("参数错误：用户登录参数(pageData)为空！</br>");
+            return model;
+        }
+
+        String uuid = (String)pageData.get("uuid");
+        if (uuid == null || uuid.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("uuid为空或空字符串！<br/>");
+            return model;
+        }
+
+        Jedis jedis = redisClient.getJedisPool().getResource();
+        if (jedis == null) {
+            throw new RestException("", "Redis 缓存错误(jedis is null)，请与管理员联系！");
+        }
+
+        StringBuffer msgBuf = new StringBuffer();
+        Set<String> keySet = jedis.keys(uuid + "*");
+        for (Iterator iterator = keySet.iterator(); iterator.hasNext();) {
+            String key = (String) iterator.next();
+            msgBuf.append(key);
+            msgBuf.append("--");
+        }
+
+        model.putMsg(msgBuf.toString());
+        return model;
+    }
+
     @GetMapping("/userLogin/sysToApplicationPage")
     public String sysToApplicationPage() {
         PageData pageData = HttpUtils.parsePageData();
