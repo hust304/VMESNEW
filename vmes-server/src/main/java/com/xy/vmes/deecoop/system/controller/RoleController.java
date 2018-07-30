@@ -193,6 +193,40 @@ public class RoleController {
      * @author 陈刚
      * @date 2018-07-30
      */
+    @PostMapping("/role/listPageRoles")
+    public ResultModel listPageRoles() {
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        List<LinkedHashMap> titles = new ArrayList<LinkedHashMap>();
+        try {
+            titles = roleService.getColumnList();
+        } catch (Exception e) {
+            throw new RestException("", e.getMessage());
+        }
+
+        List<Map<String, Object>> varList = new ArrayList<Map<String, Object>>();
+        try {
+            pageData.put("cuser", null);
+            pageData.put("uuser", null);
+            varList = roleService.getDataList(pageData);
+        } catch (Exception e) {
+            throw new RestException("", e.getMessage());
+        }
+
+        Map mapObj = new HashMap();
+        mapObj.put("titles",titles);
+        mapObj.put("varList",varList);
+
+        model.putResult(mapObj);
+        return model;
+    }
+
+    /**添加角色
+     *
+     * @author 陈刚
+     * @date 2018-07-30
+     */
     @PostMapping("/role/addRole")
     public ResultModel addRole() {
         ResultModel model = new ResultModel();

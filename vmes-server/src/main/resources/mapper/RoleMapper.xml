@@ -163,6 +163,72 @@
 
 
     <!-- ***************************************************以上为自动生成代码禁止修改，请在下面添加业务代码************************************************* -->
+    <sql id="RoleColumn">
+        'id' id,
+        '公司ID' companyID,
+        '所属公司' companyName,
+        '角色名称' roleName,
+        '创建时间' cdate,
+        '创建人' cuseName,
+        '创建人账号' cuse,
+        '是否启用' isdisable
+    </sql>
+    <select id="getColumnList"  resultType="java.util.LinkedHashMap">
+        select
+            <include refid="RoleColumn" />
+        from dual
+    </select>
+
+    <sql id="RoleField">
+        a.id,
+        a.company_id companyID,
+        b.name companyName,
+        a.name roleName,
+        a.cdate,
+        a.cuser,
+        c.user_name cuseName,
+        a.isdisable
+    </sql>
+    <select id="getDataList" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+            <include refid="RoleField" />
+        from vmes_role a
+            left join vmes_department b on a.company_id = b.id and b.isdisable = '0'
+            left join vmes_user c on (a.cuser = c.user_code and a.company_id = c.company_id) and c.isdisable = '0'
+        <where>
+            <!--isSelfExist 是否考虑自己在业务表中是否存在
+                false: (false or is null) 无需考虑自己在业务表中是否存在
+                true : 需要考虑自己在业务表中是否存在
+            -->
+            <if test="id != null and id !=''" >
+                and a.id = #{id}
+            </if>
+            <if test="companyID != null and companyID != ''" >
+                and a.company_id = #{companyID}
+            </if>
+            <if test="companyName != null and companyName != ''" >
+                and b.name = #{companyName}
+            </if>
+            <if test="roleName != null and roleName != ''" >
+                and a.name = #{roleName}
+            </if>
+            <if test="cuser != null and cuser != ''" >
+                and a.cuser = #{cuser}
+            </if>
+            <if test="cuseName != null and cuseName != ''" >
+                and c.user_name = #{cuseName}
+            </if>
+            <if test="isdisable != null and isdisable != ''" >
+                and a.isdisable = #{isdisable}
+            </if>
+
+            <!--queryStr 自定义sql查询语句-->
+            <if test="queryStr != null and queryStr != ''" >
+                and ${queryStr}
+            </if>
+        </where>
+    </select>
+
     <update id="updateDisableByIds" parameterType="java.lang.String" >
         update <include refid="tableName" />
         set isdisable = 1
@@ -172,6 +238,7 @@
             #{item}
         </foreach>
     </update>
+
 
 
 </mapper>

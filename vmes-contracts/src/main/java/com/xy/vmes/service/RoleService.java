@@ -67,6 +67,18 @@ public interface RoleService {
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
     /**
+     * 创建人：陈刚 自动创建，禁止修改
+     * 创建时间：2018-07-30
+     */
+    List<LinkedHashMap> getColumnList() throws Exception;
+
+    /**
+     * 创建人：陈刚 自动创建，禁止修改
+     * 创建时间：2018-07-30
+     */
+    List<Map<String, Object>> getDataList(PageData pd) throws Exception;
+
+    /**
      * 批量修改角色信息为禁用状态
      *
      * 创建人：陈刚
