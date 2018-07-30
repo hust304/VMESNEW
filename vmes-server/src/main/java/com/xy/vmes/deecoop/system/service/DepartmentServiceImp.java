@@ -288,8 +288,6 @@ public class DepartmentServiceImp implements DepartmentService {
 
         PageData findMap = new PageData();
         findMap.put("id", id);
-        //是否禁用(1:已禁用 0:启用) 数据字典:sys_isdisable
-        findMap.put("isdisable", "0");
         findMap.put("mapSize", Integer.valueOf(findMap.size()));
 
         List<Department> objectList = this.findDepartmentList(findMap);
