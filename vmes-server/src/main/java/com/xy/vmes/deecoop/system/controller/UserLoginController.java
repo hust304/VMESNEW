@@ -4,6 +4,7 @@ package com.xy.vmes.deecoop.system.controller;
 import com.xy.vmes.entity.Employee;
 import com.xy.vmes.entity.User;
 import com.xy.vmes.service.UserEmployeeService;
+import com.xy.vmes.service.UserLoginService;
 import com.xy.vmes.service.UserService;
 import com.yvan.Conv;
 import com.yvan.HttpUtils;
@@ -51,7 +52,8 @@ public class UserLoginController {
     private UserEmployeeService userEmployService;
     @Autowired
     private UserService userService;
-
+    @Autowired
+    private UserLoginService userLoginService;
     @Autowired
     RedisClient redisClient;
 
@@ -76,14 +78,18 @@ public class UserLoginController {
      * 返回值 <ResultModel>
      *     ResultModel.code
      *     ResultModel.msg
-     *     ResultModel.result<Map<String, Object>>
-     *         sessionID:会话ID
-     *         user:用户信息()
-     *         employ:员工信息()
-     *         dept部门信息()
-     *         userRole用户角色()
-     *         userMenu菜单权限()
-     *         userButton按钮权限()
+     *     ResultModel.result
+     *     ResultModel.sessionID(Redis缓存Key:uuid:用户ID:deecoop:userLoginMap)
+
+     * Redis缓存Key:   (uuid:用户ID:deecoop:userLoginMap)
+     * Redis缓存Value: JsonString--Map<String, String>
+     *     "user":       用户信息<User> ToJsonString
+     *     "employ":     员工信息<Employee> ToJsonString
+     *     "dept":       部门信息<Department> ToJsonString
+     *     "userRole":   用户角色
+     *     "userMenu":   菜单权限
+     *     "userButton": 按钮权限
+     *
      *
      * 创建人：陈刚
      * 创建时间：2018-07-20
@@ -179,18 +185,18 @@ public class UserLoginController {
         //新的uuid-生成新的Redis缓存Key-(uuid:用户ID:deecoop)
         RedisKey = new_uuid + ":" + userID + ":" + "deecoop";
 
-        Map<String, Object> dataMap = new HashMap<String, Object>();
+        Map<String, String> dataMap = new HashMap<String, String>();
         //sessionID:会话ID
         dataMap.put("sessionID", RedisKey);
         //user:用户信息()
         User user = new User();
         user = userEmployService.mapObject2User(userEmployMap, user);
-        dataMap.put("user", user);
+        dataMap.put("user", new Gson().toJson(user));
 
         //employ:员工信息()
         Employee employ = new Employee();
         employ = userEmployService.mapObject2Employee(userEmployMap, employ);
-        dataMap.put("employ", employ);
+        dataMap.put("employ", new Gson().toJson(employ));
 
         //dept部门信息()
         //userRole用户角色()
@@ -203,7 +209,7 @@ public class UserLoginController {
         redisClient.set(Redis_userLogin_Key, new Gson().toJson(dataMap));
 
         model.putCode(Integer.valueOf(0));
-        model.putResult(dataMap);
+        model.set("sessionID", RedisKey);
 
         return model;
     }
@@ -224,9 +230,7 @@ public class UserLoginController {
      */
     @GetMapping("/userLogin/createSecurityCode")
     public ResultModel createSecurityCode() {
-        //HttpServletResponse httpResponse = HttpUtils.currentResponse();
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
-        String SecurityCode = drawImg(output);
+        String SecurityCode = this.drawImg(new ByteArrayOutputStream());
 
         Jedis jedis = redisClient.getJedisPool().getResource();
         if (jedis == null) {
@@ -383,8 +387,7 @@ public class UserLoginController {
             return model;
         }
         Map<String, Object> userEmployMap = objectList.get(0);
-        User userDB = new User();
-        userDB = userEmployService.mapObject2User(userEmployMap, userDB);
+        User userDB = userEmployService.mapObject2User(userEmployMap, new User());
 
         //获取默认新密码:
         String default_password = MD5Utils.MD5(com.yvan.common.Common.DEFAULT_PASSWORD);
