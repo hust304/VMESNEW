@@ -166,8 +166,10 @@
     <sql id="RoleColumn">
         'id' id,
         '公司ID' companyID,
+        '公司编码' companyCode,
         '所属公司' companyName,
         '角色名称' roleName,
+
         '创建时间' cdate,
         '创建人' cuseName,
         '创建人账号' cuse,
@@ -182,8 +184,10 @@
     <sql id="RoleField">
         a.id,
         a.company_id companyID,
+        b.code companyCode,
         b.name companyName,
         a.name roleName,
+
         a.cdate,
         a.cuser,
         c.user_name cuseName,
@@ -205,6 +209,9 @@
             </if>
             <if test="companyID != null and companyID != ''" >
                 and a.company_id = #{companyID}
+            </if>
+            <if test="companyCode != null and companyCode != ''" >
+                and b.code = #{companyCode}
             </if>
             <if test="companyName != null and companyName != ''" >
                 and b.name = #{companyName}
