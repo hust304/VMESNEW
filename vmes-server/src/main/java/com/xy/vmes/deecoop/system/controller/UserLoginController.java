@@ -126,10 +126,6 @@ public class UserLoginController {
         }
 
         //验证码-是否过期
-        Jedis jedis = redisClient.getJedisPool().getResource();
-        if (jedis == null) {
-            throw new RestException("", "Redis 缓存错误(jedis is null)，请与管理员联系！");
-        }
         String securityCode = pageData.get("securityCode").toString().trim();
         String old_securityCode = redisClient.get(pageData.get("securityCodeKey").toString().trim());
         if (!securityCode.equalsIgnoreCase(old_securityCode)) {
@@ -167,7 +163,7 @@ public class UserLoginController {
         String new_uuid = Conv.createUuid();
         String redis_uuid = "";
         try{
-            redis_uuid = redisClient.findRedisUuidByUserID(jedis, userID);
+            redis_uuid = redisClient.findRedisUuidByUserID(userID);
             if (redis_uuid != null && redis_uuid.trim().length() > 0) {redis_uuid = redis_uuid.toLowerCase();}
         } catch (Exception e) {
             throw new RestException("", e.getMessage());
@@ -176,14 +172,11 @@ public class UserLoginController {
         //生成新的uuid-与Redis缓存中的Key比较
         //生成新的uuid-与Redis缓存中的历史(uuid)-不同(在其他终端登录)
         //清空历史Redis缓存Key(系统用户ID)字符串匹配
-        String RedisKey = "";
         if (redis_uuid != null && redis_uuid.trim().length() > 0
                 && !new_uuid.trim().equals(redis_uuid.trim())) {
-            redisClient.removeByUserID(jedis, userID);
+            redisClient.removeByUserID(userID);
         }
 
-        //新的uuid-生成新的Redis缓存Key-(uuid:用户ID:deecoop)
-        RedisKey = new_uuid + ":" + userID + ":" + "deecoop";
 
         Map<String, String> dataMap = new HashMap<String, String>();
         //sessionID:会话ID
@@ -205,7 +198,7 @@ public class UserLoginController {
 
         //缓存业务数据
         //Redis缓存Key:(uuid:用户ID:deecoop:userLoginMap)
-        String Redis_userLogin_Key = RedisKey + ":" + com.yvan.common.Common.REDIS_USERLOGINMAP;
+        String Redis_userLogin_Key = new_uuid + ":" + userID + ":" + "deecoop" + ":" + com.yvan.common.Common.REDIS_USERLOGINMAP;
         redisClient.set(Redis_userLogin_Key, new Gson().toJson(dataMap));
 
         model.putCode(Integer.valueOf(0));
@@ -231,11 +224,6 @@ public class UserLoginController {
     @GetMapping("/userLogin/createSecurityCode")
     public ResultModel createSecurityCode() {
         String SecurityCode = this.drawImg(new ByteArrayOutputStream());
-
-        Jedis jedis = redisClient.getJedisPool().getResource();
-        if (jedis == null) {
-            throw new RestException("", "Redis 缓存错误(jedis is null)，请与管理员联系！");
-        }
 
         //Redis-验证码-缓存1分钟(60 * 1000)
         String RedisCodeKey = Conv.createUuid() + ":" + com.yvan.common.Common.REDIS_SECURITY_CODE;
@@ -433,14 +421,9 @@ public class UserLoginController {
             return model;
         }
 
-        Jedis jedis = redisClient.getJedisPool().getResource();
-        if (jedis == null) {
-            throw new RestException("", "Redis 缓存错误(jedis is null)，请与管理员联系！");
-        }
-
         String[] str_arry = sessionID.split(":");
         String uuid = str_arry[0];
-        redisClient.removeByUuid(jedis, uuid);
+        redisClient.removeByUuid(uuid);
 
         return model;
     }
@@ -478,13 +461,22 @@ public class UserLoginController {
         }
 
         StringBuffer msgBuf = new StringBuffer();
-        String strTemp = ":" + userID + ":deecoop";
-        Set<String> keySet = jedis.keys("*" + strTemp + "*");
-        for (Iterator iterator = keySet.iterator(); iterator.hasNext();) {
-            String key = (String) iterator.next();
-            msgBuf.append(key);
-            msgBuf.append("--");
+        try {
+            String strTemp = ":" + userID + ":deecoop";
+            Set<String> keySet = jedis.keys("*" + strTemp + "*");
+            for (Iterator iterator = keySet.iterator(); iterator.hasNext();) {
+                String key = (String) iterator.next();
+                msgBuf.append(key);
+                msgBuf.append("--");
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            if (jedis != null) {
+                jedis.close();
+            }
         }
+
 
         model.putMsg(msgBuf.toString());
         return model;
@@ -520,44 +512,23 @@ public class UserLoginController {
         }
 
         StringBuffer msgBuf = new StringBuffer();
-        Set<String> keySet = jedis.keys(uuid + "*");
-        for (Iterator iterator = keySet.iterator(); iterator.hasNext();) {
-            String key = (String) iterator.next();
-            msgBuf.append(key);
-            msgBuf.append("--");
+        try {
+            Set<String> keySet = jedis.keys(uuid + "*");
+            for (Iterator iterator = keySet.iterator(); iterator.hasNext();) {
+                String key = (String) iterator.next();
+                msgBuf.append(key);
+                msgBuf.append("--");
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            if (jedis != null) {
+                jedis.close();
+            }
         }
 
         model.putMsg(msgBuf.toString());
         return model;
-    }
-
-    @GetMapping("/userLogin/sysToApplicationPage")
-    public String sysToApplicationPage() {
-        PageData pageData = HttpUtils.parsePageData();
-
-        //检查是否sessionId，且sessionId是否过期
-        String RedisUuid = pageData.get("RedisUuid").toString().trim();
-        String userID = pageData.get("userID").toString().trim();
-
-        if (RedisUuid == null || RedisUuid.trim().length() == 0) {}
-        if (userID == null || userID.trim().length() == 0) {}
-
-        RedisUuid = RedisUuid.toLowerCase();
-        userID = userID.toLowerCase();
-
-        Jedis jedis = redisClient.getJedisPool().getResource();
-        if (jedis == null) {
-            throw new RestException("", "Redis 缓存错误(jedis is null)，请与管理员联系！");
-        }
-
-        String HistoryRedisUuid = redisClient.findRedisUuidByUserID(jedis, userID);
-        if (HistoryRedisUuid == null || HistoryRedisUuid.trim().length() == 0) {
-            throw new RestException("", "userID:" + userID + " 没有登录！");
-        } else if (!HistoryRedisUuid.toLowerCase().equals(RedisUuid)) {
-            throw new RestException("", "userID:" + userID + " 会话已经过期！");
-        }
-
-        return "true";
     }
 
     private String drawImg(ByteArrayOutputStream output){
