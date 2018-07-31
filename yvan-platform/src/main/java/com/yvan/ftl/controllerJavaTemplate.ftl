@@ -27,7 +27,7 @@ import java.util.*;
 
 
 /**
-* 说明：Controller
+* 说明：${TITLE}Controller
 * @author ${author} 自动生成
 * @date ${nowDate?string("yyyy-MM-dd")}
 */

@@ -1,7 +1,11 @@
 package com.yvan;
 
+import com.google.gson.Gson;
+import com.yvan.platform.JsonWapper;
 import org.apache.commons.lang.StringUtils;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -23,28 +27,31 @@ public class PageData extends HashMap implements Map{
 	HttpServletRequest request;
 	public PageData(HttpServletRequest request){
 		this.request = request;
-		Map properties = request.getParameterMap();
-		Map returnMap = new HashMap(); 
-		Iterator entries = properties.entrySet().iterator(); 
+		Map properties = getRequestPayload(request);
+		if(properties.isEmpty()){
+			properties = request.getParameterMap();
+		}
+		Map returnMap = new HashMap();
+		Iterator entries = properties.entrySet().iterator();
 		Entry entry;
-		String name = "";  
-		String value = "";  
+		String name = "";
+		String value = "";
 		while (entries.hasNext()) {
 			entry = (Entry) entries.next();
-			name = (String) entry.getKey(); 
-			Object valueObj = entry.getValue(); 
-			if(null == valueObj){ 
-				value = ""; 
-			}else if(valueObj instanceof String[]){ 
+			name = (String) entry.getKey();
+			Object valueObj = entry.getValue();
+			if(null == valueObj){
+				value = "";
+			}else if(valueObj instanceof String[]){
 				String[] values = (String[])valueObj;
-				for(int i=0;i<values.length;i++){ 
+				for(int i=0;i<values.length;i++){
 					 value = values[i] + ",";
 				}
-				value = value.substring(0, value.length()-1); 
+				value = value.substring(0, value.length()-1);
 			}else{
-				value = valueObj.toString(); 
+				value = valueObj.toString();
 			}
-			returnMap.put(name, value); 
+			returnMap.put(name, value);
 		}
 		String  sessionToken =  request.getHeader("sessionToken");
 		if(!StringUtils.isEmpty(sessionToken)){
@@ -58,6 +65,46 @@ public class PageData extends HashMap implements Map{
 
 		map = returnMap;
 	}
+
+
+	public static Map getRequestPayload(HttpServletRequest req) {
+
+		StringBuilder sb = new StringBuilder();
+
+		try {
+
+			BufferedReader reader = req.getReader();
+
+			char[]buff = new char[1024];
+
+			int len;
+
+			while((len = reader.read(buff)) != -1) {
+
+
+				sb.append(buff,0, len);
+
+			}
+
+		} catch (IOException e) {
+
+			e.printStackTrace();
+
+		}
+
+
+//		Gson gson = new Gson();
+//		Map map = gson.fromJson(sb.toString(), Map.class);
+//		JsonWapper jsonWapper = new JsonWapper(sb.toString());
+//		Map map = jsonWapper.asObject(Map.class);
+		if(StringUtils.isEmpty(sb.toString())){
+			return new HashMap();
+		}
+		Map map = YvanUtil.jsonToObj(sb.toString(), Map.class);
+		return map==null?new HashMap():map;
+
+	}
+
 	
 	public PageData() {
 		map = new HashMap();
