@@ -15,7 +15,7 @@
     <!-- 字段 自动创建，禁止修改-->
     <sql id="Field">
 		pid pid,<!-- 上级id-根root -->
-		code code,<!-- 字典编码(英文名称) -->
+		code code,<!-- 字典编码 -->
 		name name,<!-- 字典名称 -->
 		serial_number serialNumber,<!-- 字典排列序号 -->
 		layer layer,<!-- 字典级别(最大支持5层)-头2层系统默认 -->
@@ -36,13 +36,15 @@
 		uuser uuser,<!-- 修改人账号 -->
 		isglobal isglobal,<!-- 是否是全局数据字典  0：否  1：是 -->
 		company_id companyId,<!-- 所属公司 -->
+		name_en nameEn,<!-- 英文名称 -->
+		remark remark,<!-- 备注 -->
 		id id <!-- id -->
     </sql>
 
     <!-- 字段值 自动创建，禁止修改-->
     <sql id="FieldValue">
 		#{pid},<!-- 上级id-根root -->
-		#{code},<!-- 字典编码(英文名称) -->
+		#{code},<!-- 字典编码 -->
 		#{name},<!-- 字典名称 -->
 		#{serialNumber},<!-- 字典排列序号 -->
 		#{layer},<!-- 字典级别(最大支持5层)-头2层系统默认 -->
@@ -63,6 +65,8 @@
 		#{uuser},<!-- 修改人账号 -->
 		#{isglobal},<!-- 是否是全局数据字典  0：否  1：是 -->
 		#{companyId},<!-- 所属公司 -->
+		#{nameEn},<!-- 英文名称 -->
+		#{remark},<!-- 备注 -->
 		#{id} <!-- id -->
     </sql>
 
@@ -70,7 +74,7 @@
     <!-- 字段值 自动创建，禁止修改-->
     <sql id="Column">
         '上级id-根root'  pid,
-        '字典编码(英文名称)'  code,
+        '字典编码'  code,
         '字典名称'  name,
         '字典排列序号'  serialNumber,
         '字典级别(最大支持5层)-头2层系统默认'  layer,
@@ -91,6 +95,8 @@
         '修改人账号'  uuser,
         '是否是全局数据字典  0：否  1：是'  isglobal,
         '所属公司'  companyId,
+        '英文名称'  nameEn,
+        '备注'  remark,
         'id' id
     </sql>
 
@@ -201,7 +207,7 @@
     <!-- 字段 自动创建，可以修改-->
     <sql id="Field1">
         pid pid,<!-- 上级id-根root -->
-        code code,<!-- 字典编码(英文名称) -->
+        code code,<!-- 字典编码 -->
         name name,<!-- 字典名称 -->
         serial_number serialNumber,<!-- 字典排列序号 -->
         layer layer,<!-- 字典级别(最大支持5层)-头2层系统默认 -->
@@ -222,13 +228,15 @@
         uuser uuser,<!-- 修改人账号 -->
         isglobal isglobal,<!-- 是否是全局数据字典  0：否  1：是 -->
         company_id companyId,<!-- 所属公司 -->
+        name_en nameEn,<!-- 英文名称 -->
+        remark remark,<!-- 备注 -->
         id id <!-- id -->
     </sql>
 
     <!-- 字段值 自动创建，可以修改-->
     <sql id="Column1">
             '上级id-根root'  pid,
-            '字典编码(英文名称)'  code,
+            '字典编码'  code,
             '字典名称'  name,
             '字典排列序号'  serialNumber,
             '字典级别(最大支持5层)-头2层系统默认'  layer,
@@ -249,6 +257,8 @@
             '修改人账号'  uuser,
             '是否是全局数据字典  0：否  1：是'  isglobal,
             '所属公司'  companyId,
+            '英文名称'  nameEn,
+            '备注'  remark,
             'id' id
     </sql>
 
@@ -278,5 +288,19 @@
             )
         </if>
     </select>
+
+
+
+    <!-- 自动创建，可以修改-->
+    <update id="updateToDisableByIds" parameterType="java.lang.String" >
+        update
+        <include refid="tableName"></include>
+        set isdisable = 1
+        where
+        id in
+        <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+        #{item}
+        </foreach>
+    </update>
 
 </mapper>

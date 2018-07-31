@@ -148,7 +148,14 @@ public class DictionaryServiceImp implements DictionaryService {
         return dictionaryMapper.getDataList(pd);
     }
 
-
+    /**
+    * 创建人：刘威 自动创建，可以修改
+    * 创建时间：2018-07-31
+    */
+    @Override
+    public void updateToDisableByIds(String[] ids)throws Exception{
+            dictionaryMapper.updateToDisableByIds(ids);
+    }
 }
 
 

@@ -22,7 +22,7 @@ public class Dictionary implements Serializable {
 	//上级id-根root
 	@TableField("pid")
 	private String pid;
-	//字典编码(英文名称)
+	//字典编码
 	@TableField("code")
 	private String code;
 	//字典名称
@@ -85,6 +85,12 @@ public class Dictionary implements Serializable {
 	//所属公司
 	@TableField("company_id")
 	private String companyId;
+	//英文名称
+	@TableField("name_en")
+	private String nameEn;
+	//备注
+	@TableField("remark")
+	private String remark;
 
 
 
@@ -225,6 +231,18 @@ public class Dictionary implements Serializable {
 	}
 	public String getCompanyId() {
 		return companyId;
+	}
+	public void setNameEn(String nameEn) {
+		this.nameEn = nameEn;
+	}
+	public String getNameEn() {
+		return nameEn;
+	}
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
+	public String getRemark() {
+		return remark;
 	}
 
 /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/

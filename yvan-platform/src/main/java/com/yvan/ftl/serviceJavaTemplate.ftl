@@ -92,6 +92,12 @@ public interface ${objectName}Service {
     */
     List<Map> getDataList(PageData pd) throws Exception;
 
+    /**
+    * 创建人：${author} 自动创建，可以修改
+    * 创建时间：${nowDate?string("yyyy-MM-dd")}
+    */
+    void updateToDisableByIds(String[] ids)throws Exception;
+
 }
 
 

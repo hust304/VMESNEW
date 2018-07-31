@@ -294,7 +294,7 @@ public class UserController {
         PageData pd = HttpUtils.parsePageData();
         Map result = new HashMap();
 
-        String userIds = pd.getString("userIds");
+        String userIds = pd.getString("ids");
         String[] ids = userIds.split(",");
 
         userService.updateToDisableByIds(ids);

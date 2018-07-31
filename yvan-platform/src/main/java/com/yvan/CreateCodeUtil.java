@@ -82,9 +82,9 @@ public class CreateCodeUtil {
         Freemarker.printFile("serviceImpJavaTemplate.ftl", root, filePath, ftlPath);
 
         //生成Controller java
-        root.put("classPath", "com.xy.vmes."+projectName+".controller");
-        filePath = path+"vmes-server/src/main/java/com/xy/vmes/"+projectName.replace(".","/")+"/controller/"+objectName+"Controller.java";
-        Freemarker.printFile("controllerJavaTemplate.ftl", root, filePath, ftlPath);
+//        root.put("classPath", "com.xy.vmes."+projectName+".controller");
+//        filePath = path+"vmes-server/src/main/java/com/xy/vmes/"+projectName.replace(".","/")+"/controller/"+objectName+"Controller.java";
+//        Freemarker.printFile("controllerJavaTemplate.ftl", root, filePath, ftlPath);
 
 
 //        Gson gosn = new Gson();

@@ -148,7 +148,14 @@ public class ${objectName}ServiceImp implements ${objectName}Service {
         return ${objectNameLower}Mapper.getDataList(pd);
     }
 
-
+    /**
+    * 创建人：${author} 自动创建，可以修改
+    * 创建时间：${nowDate?string("yyyy-MM-dd")}
+    */
+    @Override
+    public void updateToDisableByIds(String[] ids)throws Exception{
+            ${objectNameLower}Mapper.updateToDisableByIds(ids);
+    }
 }
 
 

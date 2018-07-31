@@ -75,6 +75,14 @@ public interface DictionaryMapper extends BaseMapper<Dictionary> {
     */
     @Select("getDataList")
     List<Map> getDataList(PageData pd);
+
+
+    /**
+    * 创建人：刘威 自动创建，可以修改
+    * 创建时间：2018-07-31
+    */
+    @Select("updateToDisableByIds")
+    void updateToDisableByIds(String[] ids);
 }
 
 

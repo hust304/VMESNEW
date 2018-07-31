@@ -214,4 +214,18 @@
         </if>
     </select>
 
+
+
+    <!-- 自动创建，可以修改-->
+    <update id="updateToDisableByIds" parameterType="java.lang.String" >
+        update
+        <include refid="tableName"></include>
+        set isdisable = 1
+        where
+        id in
+        <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+        ${r"#{item}"}
+        </foreach>
+    </update>
+
 </mapper>

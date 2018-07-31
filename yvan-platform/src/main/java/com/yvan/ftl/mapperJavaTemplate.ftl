@@ -75,6 +75,14 @@ public interface ${objectName}Mapper extends BaseMapper<${objectName}> {
     */
     @Select("getDataList")
     List<Map> getDataList(PageData pd);
+
+
+    /**
+    * 创建人：${author} 自动创建，可以修改
+    * 创建时间：${nowDate?string("yyyy-MM-dd")}
+    */
+    @Select("updateToDisableByIds")
+    void updateToDisableByIds(String[] ids);
 }
 
 

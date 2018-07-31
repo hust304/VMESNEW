@@ -224,7 +224,45 @@ public class DictionaryController {
     }
 
 
+    /**
+     * @author 刘威
+     * @date 2018-07-31
+     */
+    @PostMapping("/dictionary/updateDictionary")
+    public ResultModel updateDictionary()  throws Exception {
 
+        logger.info("################dictionary/updateDictionary 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        HttpServletResponse response  = HttpUtils.currentResponse();
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+        Dictionary dictionary = (Dictionary)HttpUtils.pageData2Entity(pd, new Dictionary());
+        dictionaryService.update(dictionary);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################dictionary/updateDictionary 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+    /**
+     * @author 刘威
+     * @date 2018-07-31
+     */
+    @PostMapping("/dictionary/deleteDictionarys")
+    public ResultModel deleteDictionarys()  throws Exception {
+
+        logger.info("################dictionary/deleteDictionarys 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        HttpServletResponse response  = HttpUtils.currentResponse();
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+        String dictionaryIds = pd.getString("ids");
+        String[] ids = dictionaryIds.split(",");
+        dictionaryService.updateToDisableByIds(ids);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################dictionary/deleteDictionarys 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
 
 
 
