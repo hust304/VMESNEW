@@ -73,6 +73,10 @@ public class User implements Serializable {
 	//预留字段
 	@TableField("column_3")
 	private String column3;
+	//用户类型
+	@TableField("user_type")
+	private String userType;
+
 
 
 
@@ -189,6 +193,12 @@ public class User implements Serializable {
 	}
 	public String getColumn3() {
 		return column3;
+	}
+	public void setUserType(String userType) {
+		this.userType = userType;
+	}
+	public String getUserType() {
+		return userType;
 	}
 
 /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/

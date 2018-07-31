@@ -32,6 +32,7 @@
 		column_1 column1,<!-- 预留字段 -->
 		column_2 column2,<!-- 预留字段 -->
 		column_3 column3,<!-- 预留字段 -->
+        user_type userType,<!-- 用户类型 -->
 		id id <!-- id -->
     </sql>
 
@@ -55,6 +56,7 @@
 		#{column1},<!-- 预留字段 -->
 		#{column2},<!-- 预留字段 -->
 		#{column3},<!-- 预留字段 -->
+        #{userType},<!-- 用户类型 -->
 		#{id} <!-- id -->
     </sql>
 
@@ -79,6 +81,7 @@
         '预留字段'  column1,
         '预留字段'  column2,
         '预留字段'  column3,
+        '用户类型'  userType,
         'id' id
     </sql>
 
@@ -217,6 +220,7 @@
     <sql id="Column1">
         '账号'  userCode,
         '姓名'  userName,
+        '用户类型' userType,
         '手机号'  mobile,
         '邮箱'  email,
         '是否启用'  isdisable,
@@ -232,6 +236,7 @@
     <sql id="Field1">
         vmesuser.user_code userCode,<!-- 账号(系统登录账号) -->
         vmesuser.user_name userName,<!-- 姓名 -->
+        vmesuser.user_type userType,<!-- 用户类型 -->
         vmesuser.mobile mobile,<!-- 手机号码 -->
         vmesuser.email email,<!-- 邮箱地址 -->
         vmesuser.isdisable isdisable,<!-- 是否禁用(1:已禁用 0:启用) 数据字典:sys_isdisable -->
