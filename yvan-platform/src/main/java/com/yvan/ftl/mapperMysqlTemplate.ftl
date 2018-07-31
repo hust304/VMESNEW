@@ -68,18 +68,16 @@
         <include refid="Field"></include>
         from
         <include refid="tableName"></include>
-        <if test="PageData!= null"><!-- 关键词检索 -->
+        <if test="keywords!= null and keywords != ''"><!-- 关键词检索 -->
             where 1=1
-            <if test="PageData.keywords!= null and PageData.keywords != ''"><!-- 关键词检索 -->
-                and
-                (
-                <!--	根据需求自己加检索条件
-						字段1 LIKE CONCAT(CONCAT('%', ${r"#{PageData.keywords})"},'%')
+            and
+            (
+            <!--	根据需求自己加检索条件
+						字段1 LIKE CONCAT(CONCAT('%', ${r"#{keywords})"},'%')
 						 or
-						字段2 LIKE CONCAT(CONCAT('%', ${r"#{PageData.keywords})"},'%')
+						字段2 LIKE CONCAT(CONCAT('%', ${r"#{keywords})"},'%')
 					-->
-                )
-            </if>
+            )
         </if>
     </select>
 
@@ -89,18 +87,16 @@
         <include refid="Field"></include>
         from
         <include refid="tableName"></include>
-        <if test="PageData!= null"><!-- 关键词检索 -->
+        <if test="keywords!= null and keywords != ''"><!-- 关键词检索 -->
             where 1=1
-            <if test="PageData.keywords!= null and PageData.keywords != ''"><!-- 关键词检索 -->
-                and
-                (
-                <!--	根据需求自己加检索条件
-						字段1 LIKE CONCAT(CONCAT('%', ${r"#{PageData.keywords})"},'%')
+            and
+            (
+            <!--	根据需求自己加检索条件
+						字段1 LIKE CONCAT(CONCAT('%', ${r"#{keywords})"},'%')
 						 or
-						字段2 LIKE CONCAT(CONCAT('%', ${r"#{PageData.keywords})"},'%')
+						字段2 LIKE CONCAT(CONCAT('%', ${r"#{keywords})"},'%')
 					-->
-                )
-            </if>
+            )
         </if>
     </select>
 
@@ -117,7 +113,7 @@
                 fasle: (false or is null) 无查询条件-查询结果集返回空或list.size()==0
                 true : 无查询条件-返回全部业务表数据
             -->
-            <when test="(PageData.mapSize == null || PageData.mapSize == 0) and 'true' != PageData.isQueryAll ">
+            <when test="(mapSize == null || mapSize == 0) and 'true' != isQueryAll ">
                 where 1=2
             </when>
             <otherwise>
@@ -126,9 +122,9 @@
                         false: (false or is null) 无需考虑自己在业务表中是否存在
                         true : 需要考虑自己在业务表中是否存在
                     -->
-                    <if test="PageData.id != null and PageData.id!=''" >
+                    <if test="id != null and id!=''" >
                         <choose>
-                            <when test="'true' == PageData.isSelfExist">
+                            <when test="'true' == isSelfExist">
                                 <![CDATA[ and id <> ${r"#{"}id${r"}"} ]]>
                             </when>
                             <otherwise>
@@ -139,7 +135,7 @@
 
 
                     <!--queryStr 自定义sql查询语句-->
-                    <if test="PageData.queryStr != null and PageData.queryStr!=''" >
+                    <if test="queryStr != null and queryStr!=''" >
                         and ${r"${"}queryStr${r"}"}
                     </if>
                 </where>
@@ -163,5 +159,59 @@
     <!-- ***************************************************以上为自动生成代码禁止修改，请在下面添加业务代码************************************************* -->
 
 
+    <!-- 字段 自动创建，可以修改-->
+    <sql id="Field1">
+    <#list fieldList as var>
+        <#if var[7] == "否">
+        ${var[0]} ${var[1]},<!-- ${var[3]} -->
+        </#if>
+    </#list>
+    <#list fieldList as var>
+        <#if var[7] == "是">
+        ${var[0]} ${var[1]} <!-- ${var[1]} -->
+        </#if>
+    </#list>
+    </sql>
+
+    <!-- 字段值 自动创建，可以修改-->
+    <sql id="Column1">
+    <#list fieldList as var>
+        <#if var[7] == "否">
+            '${var[3]}'  ${var[1]},
+        </#if>
+    </#list>
+    <#list fieldList as var>
+        <#if var[7] == "是">
+            '${var[1]}' ${var[1]}
+        </#if>
+    </#list>
+    </sql>
+
+
+    <!-- 自动创建，可以修改 -->
+    <select id="getColumnList"  resultType="java.util.LinkedHashMap">
+        select
+        <include refid="Column1"></include>
+        from dual
+    </select>
+
+    <!-- 自动创建，可以修改 -->
+    <select id="getDataList"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
+        select
+        <include refid="Field1"></include>
+        from
+        <include refid="tableName1"></include>
+        <if test="keywords!= null and keywords != ''"><!-- 关键词检索 -->
+            where 1=1
+            and
+            (
+            <!--	根据需求自己加检索条件
+						字段1 LIKE CONCAT(CONCAT('%', ${r"#{keywords})"},'%')
+						 or
+						字段2 LIKE CONCAT(CONCAT('%', ${r"#{keywords})"},'%')
+					-->
+            )
+        </if>
+    </select>
 
 </mapper>

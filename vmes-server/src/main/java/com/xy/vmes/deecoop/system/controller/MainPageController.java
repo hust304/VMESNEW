@@ -100,12 +100,12 @@ public class MainPageController {
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         String userDefinedMenus = pd.getString("userDefinedMenus");
-//        userDefinedMenus ="{\"userDefinedMenus\":[{\"userId\":\"1\",\"menuId\":\"1\",\"serialNumber\":\"1\"}," +
-//                "{\"userId\":\"1\",\"menuId\":1532599975000,\"serialNumber\":\"2\"}," +
-//                "{\"userId\":\"1\",\"menuId\":1532601003000,\"serialNumber\":\"3\"}," +
-//                "{\"userId\":\"1\",\"menuId\":1532600923000,\"serialNumber\":\"4\"}," +
-//                "{\"userId\":\"1\",\"menuId\":1532600802000,\"serialNumber\":\"5\"}," +
-//                "{\"userId\":\"1\",\"menuId\":1532601034000,\"serialNumber\":\"6\"}]}";
+//        userDefinedMenus ="{\"userDefinedMenus\":[{\"userId\":\"2\",\"menuId\":\"1\",\"serialNumber\":\"1\"}," +
+//                "{\"userId\":\"2\",\"menuId\":1532599975000,\"serialNumber\":\"2\"}," +
+//                "{\"userId\":\"2\",\"menuId\":1532601003000,\"serialNumber\":\"3\"}," +
+//                "{\"userId\":\"2\",\"menuId\":1532600923000,\"serialNumber\":\"4\"}," +
+//                "{\"userId\":\"2\",\"menuId\":1532600802000,\"serialNumber\":\"5\"}," +
+//                "{\"userId\":\"2\",\"menuId\":1532601034000,\"serialNumber\":\"6\"}]}";
         JsonWapper jsonWapper = new JsonWapper(userDefinedMenus);
         List<Map> userDefinedMenusList = (List<Map>)jsonWapper.get("userDefinedMenus");
         if(userDefinedMenusList!=null&&userDefinedMenusList.size()>0){

@@ -109,26 +109,46 @@ public class ${objectName}ServiceImp implements ${objectName}Service {
     }
 
 
-        /**
-        * 创建人：${author} 自动创建，禁止修改
-        * 创建时间：${nowDate?string("yyyy-MM-dd")}
-        */
-        @Override
-        public void deleteByColumnMap(Map columnMap) throws Exception{
-            ${objectNameLower}Mapper.deleteByMap(columnMap);
-        }
+    /**
+    * 创建人：${author} 自动创建，禁止修改
+    * 创建时间：${nowDate?string("yyyy-MM-dd")}
+    */
+    @Override
+    public void deleteByColumnMap(Map columnMap) throws Exception{
+        ${objectNameLower}Mapper.deleteByMap(columnMap);
+    }
 
-        /**
-        * 创建人：${author} 自动创建，禁止修改
-        * 创建时间：${nowDate?string("yyyy-MM-dd")}
-        */
-        @Override
-        public List<${objectName}> selectByColumnMap(Map columnMap) throws Exception{
-        List<${objectName}> ${objectNameLower}List =  ${objectNameLower}Mapper.selectByMap(columnMap);
-            return ${objectNameLower}List;
-        }
+    /**
+    * 创建人：${author} 自动创建，禁止修改
+    * 创建时间：${nowDate?string("yyyy-MM-dd")}
+    */
+    @Override
+    public List<${objectName}> selectByColumnMap(Map columnMap) throws Exception{
+    List<${objectName}> ${objectNameLower}List =  ${objectNameLower}Mapper.selectByMap(columnMap);
+        return ${objectNameLower}List;
+    }
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+
+    /**
+    * 创建人：${author} 自动创建，可以修改
+    * 创建时间：${nowDate?string("yyyy-MM-dd")}
+    */
+    @Override
+    public List<LinkedHashMap> getColumnList() throws Exception{
+        return ${objectNameLower}Mapper.getColumnList();
+    }
+
+    /**
+    * 创建人：${author} 自动创建，可以修改
+    * 创建时间：${nowDate?string("yyyy-MM-dd")}
+    */
+    @Override
+    public List<Map> getDataList(PageData pd) throws Exception{
+        return ${objectNameLower}Mapper.getDataList(pd);
+    }
+
+
 }
 
 

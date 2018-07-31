@@ -60,6 +60,21 @@ public interface ${objectName}Mapper extends BaseMapper<${objectName}> {
 
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+
+    /**
+    * 创建人：${author} 自动创建，可以修改
+    * 创建时间：${nowDate?string("yyyy-MM-dd")}
+    */
+    @Select("getColumnList")
+    List<LinkedHashMap> getColumnList();
+
+
+    /**
+    * 创建人：${author} 自动创建，可以修改
+    * 创建时间：${nowDate?string("yyyy-MM-dd")}
+    */
+    @Select("getDataList")
+    List<Map> getDataList(PageData pd);
 }
 
 
