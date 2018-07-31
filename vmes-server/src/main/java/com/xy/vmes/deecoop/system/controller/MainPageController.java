@@ -107,12 +107,12 @@ public class MainPageController {
 //                "{\"userId\":\"3\",\"menuId\":1532600923000,\"serialNumber\":\"4\"}," +
 //                "{\"userId\":\"3\",\"menuId\":1532600802000,\"serialNumber\":\"5\"}," +
 //                "{\"userId\":\"3\",\"menuId\":1532601034000,\"serialNumber\":\"6\"}]}";
-        userDefinedMenus ="[{\"userId\":\"3\",\"menuId\":\"1\",\"serialNumber\":\"1\"}," +
-                "{\"userId\":\"3\",\"menuId\":1532599975000,\"serialNumber\":\"2\"}," +
-                "{\"userId\":\"3\",\"menuId\":1532601003000,\"serialNumber\":\"3\"}," +
-                "{\"userId\":\"3\",\"menuId\":1532600923000,\"serialNumber\":\"4\"}," +
-                "{\"userId\":\"3\",\"menuId\":1532600802000,\"serialNumber\":\"5\"}," +
-                "{\"userId\":\"3\",\"menuId\":1532601034000,\"serialNumber\":\"6\"}]";
+//        userDefinedMenus ="[{\"userId\":\"3\",\"menuId\":\"1\",\"serialNumber\":\"1\"}," +
+//                "{\"userId\":\"3\",\"menuId\":1532599975000,\"serialNumber\":\"2\"}," +
+//                "{\"userId\":\"3\",\"menuId\":1532601003000,\"serialNumber\":\"3\"}," +
+//                "{\"userId\":\"3\",\"menuId\":1532600923000,\"serialNumber\":\"4\"}," +
+//                "{\"userId\":\"3\",\"menuId\":1532600802000,\"serialNumber\":\"5\"}," +
+//                "{\"userId\":\"3\",\"menuId\":1532601034000,\"serialNumber\":\"6\"}]";
 
         List userDefinedMenusList = YvanUtil.jsonToList(userDefinedMenus);
         if(userDefinedMenusList!=null&&userDefinedMenusList.size()>0){

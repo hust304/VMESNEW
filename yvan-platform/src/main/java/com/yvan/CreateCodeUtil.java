@@ -19,9 +19,9 @@ public class CreateCodeUtil {
 
         PageData pd = new PageData();
 
-        String objectName = "UserDefinedMenu";//类名
-        String tableName = "vmes_user_defined_menu";//表名
-        String title = "用户自定义菜单";
+        String objectName = "Dictionary";//类名
+        String tableName = "vmes_dictionary";//表名
+        String title = "数据字典";
         String author = "刘威";
         String projectName = "deecoop.system";//项目名
 
@@ -82,9 +82,9 @@ public class CreateCodeUtil {
         Freemarker.printFile("serviceImpJavaTemplate.ftl", root, filePath, ftlPath);
 
         //生成Controller java
-//        root.put("classPath", "com.xy.vmes."+projectName+".controller");
-//        filePath = path+"vmes-server/src/main/java/com/xy/vmes/"+projectName.replace(".","/")+"/controller/"+objectName+"Controller.java";
-//        Freemarker.printFile("controllerJavaTemplate.ftl", root, filePath, ftlPath);
+        root.put("classPath", "com.xy.vmes."+projectName+".controller");
+        filePath = path+"vmes-server/src/main/java/com/xy/vmes/"+projectName.replace(".","/")+"/controller/"+objectName+"Controller.java";
+        Freemarker.printFile("controllerJavaTemplate.ftl", root, filePath, ftlPath);
 
 
 //        Gson gosn = new Gson();

@@ -1,8 +1,10 @@
 package com.yvan;
 
 import com.google.gson.Gson;
+import com.yvan.cache.RedisClient;
 import com.yvan.platform.JsonWapper;
 import org.apache.commons.lang.StringUtils;
+import redis.clients.jedis.Jedis;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -53,18 +55,22 @@ public class PageData extends HashMap implements Map{
 			}
 			returnMap.put(name, value);
 		}
-		String  sessionToken =  request.getHeader("sessionToken");
-		if(!StringUtils.isEmpty(sessionToken)){
-			String[] atrrs = sessionToken.split(":");
-			if(atrrs.length==3){
+		String  sessionID =  request.getHeader("sessionID");
+		if(!StringUtils.isEmpty(sessionID)){
+			String[] atrrs = sessionID.split(":");
+			if(atrrs.length==4){
 				String userId = atrrs[1];
 				returnMap.put("cuser", userId);
 				returnMap.put("uuser", userId);
+				returnMap.put("currentUserId", userId);
+				returnMap.put("sessionID",sessionID);
 			}
 		}
 
 		map = returnMap;
 	}
+
+
 
 
 	public static Map getRequestPayload(HttpServletRequest req) {
