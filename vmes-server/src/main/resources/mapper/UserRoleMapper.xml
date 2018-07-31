@@ -130,7 +130,15 @@
                             </otherwise>
                         </choose>
                     </if>
-
+                    <if test="userId != null and userId != ''" >
+                        and user_id=#{userId}
+                    </if>
+                    <if test="roleId != null and roleId != ''" >
+                        and role_id=#{roleId}
+                    </if>
+                    <if test="isdisable != null and isdisable != ''" >
+                        and isdisable=#{isdisable}
+                    </if>
 
                     <!--queryStr 自定义sql查询语句-->
                     <if test="queryStr != null and queryStr!=''" >
@@ -156,13 +164,28 @@
 
     <!-- ***************************************************以上为自动生成代码禁止修改，请在下面添加业务代码************************************************* -->
 
-    <!-- 通过userId删除角色信息 刘威-->
+    <!-- 通过userId删除用户角色信息 刘威-->
     <delete id="deleteRoleByUserId" parameterType="java.lang.String">
         delete from
         <include refid="tableName"></include>
         where
         user_id = #{userId}
     </delete>
+
+    <!-- 通过roleId删除用户角色信息 -->
+    <delete id="deleteUserRoleByRoleId" parameterType="java.lang.String">
+        delete from
+            <include refid="tableName"/>
+        where
+            role_id = #{roleId}
+    </delete>
+
+    <update id="updateDisableByRoleId" parameterType="java.lang.String" >
+        update <include refid="tableName" />
+            set isdisable = 1
+        where
+            role_id = #{roleId}
+    </update>
 
 
 </mapper>

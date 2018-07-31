@@ -66,13 +66,33 @@ public interface UserRoleService {
 
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
-
+    List<UserRole> findUserRoleList(PageData object);
 
     /**
      * 创建人：刘威
      * 创建时间：2018-07-26
      */
     void deleteRoleByUserId(String userId) throws Exception;
+
+    /**
+     * 创建人：陈刚
+     * 创建时间：2018-07-31
+     */
+    void deleteUserRoleByRoleId(String roleId) throws Exception;
+    /**
+     * 添加用户角色
+     * 创建人：陈刚
+     * 创建时间：2018-07-31
+     */
+    void addUserRoleByUserIds(String roleId, String userIds);
+
+    /**
+     * 修改禁用属性(isdisable)
+     * 根据角色ID-修改用户角色
+     * 创建人：陈刚
+     * 创建时间：2018-07-31
+     */
+    void updateDisableByRoleId(String roleId);
 
 }
 
