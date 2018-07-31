@@ -16,7 +16,6 @@ import java.util.List;
  * 创建时间：2018-07-31
  */
 public interface MenuTreeService {
-    List<Menu> getList_0();
     List<Menu> getList_1();
     List<Menu> getList_2();
     List<Menu> getList_3();
@@ -45,7 +44,7 @@ public interface MenuTreeService {
      * @throws RestException
      *
      * 创建人：陈刚
-     * 创建时间：2018-07-19
+     * 创建时间：2018-07-31
      *
      */
     void findMenuTree(String pids);

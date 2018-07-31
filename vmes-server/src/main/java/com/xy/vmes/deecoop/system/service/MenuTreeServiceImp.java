@@ -1,9 +1,8 @@
 package com.xy.vmes.deecoop.system.service;
 
-import com.xy.vmes.entity.Department;
-import com.xy.vmes.entity.TreeEntity;
-import com.xy.vmes.service.DepartmentService;
-import com.xy.vmes.service.DepartmentTreeService;
+import com.xy.vmes.entity.Menu;
+import com.xy.vmes.service.MenuTreeService;
+import com.xy.vmes.service.MenuService;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.common.util.StringUtil;
@@ -13,21 +12,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 
-/**
- * 当前部门节点和该部门节点下所有子部门-的树形结构
- * 1. 查询(vmes_department:系统部门表)-查询次数(当前部门节点-最低层叶子部门节点)层数
- * 2. 每次递归查询pid-(通过','逗号分隔的字符串)-得到下一层部门节点List集合-存入对应的层的List结构体中
- * 3. 递归结束条件()
- *
- * 部门树结构生成
- * 创建人：陈刚
- * 创建时间：2018-07-19
- */
 @Service
-public class DepartmentTreeServiceImp implements DepartmentTreeService {
-
+public class MenuTreeServiceImp implements MenuTreeService {
     @Autowired
-    private DepartmentService departmentService;
+    private MenuService menuService;
 
     //最大部门级别-系统最大支持6层-部门级别[0-5](0:默认层)
     private Integer maxLayer;
@@ -36,38 +24,37 @@ public class DepartmentTreeServiceImp implements DepartmentTreeService {
     //当前递归执行所在层
     private Integer execute_layer;
 
-    private List<Department> list_0;
-    private List<Department> list_1;
-    private List<Department> list_2;
-    private List<Department> list_3;
-    private List<Department> list_4;
-    private List<Department> list_5;
+    private List<Menu> list_0;
+    private List<Menu> list_1;
+    private List<Menu> list_2;
+    private List<Menu> list_3;
+    private List<Menu> list_4;
+    private List<Menu> list_5;
 
     /**
      * 初始化方法
      * 创建人：陈刚
-     * 创建时间：2018-07-19
+     * 创建时间：2018-07-31
      */
     public void initialization() {
         this.maxLayer = Integer.valueOf(6);
         this.count = Integer.valueOf(0);
         this.execute_layer = Integer.valueOf(-1);
 
-        list_0 = new ArrayList<Department>();
-        list_1 = new ArrayList<Department>();
-        list_2 = new ArrayList<Department>();
-        list_3 = new ArrayList<Department>();
-        list_4 = new ArrayList<Department>();
-        list_5 = new ArrayList<Department>();
+        list_1 = new ArrayList<Menu>();
+        list_2 = new ArrayList<Menu>();
+        list_3 = new ArrayList<Menu>();
+        list_4 = new ArrayList<Menu>();
+        list_5 = new ArrayList<Menu>();
     }
 
     /**
-     * 根据部门对象<Department>当前部门节点下面所有节点生成树形结构
-     * 查询次数: 从当前节点到最低层叶子节点-总共部门层级数
+     * 根据菜单对象<Menu>当前菜单节点下面所有节点生成树形结构
+     * 查询次数: 从当前节点到最低层叶子节点-总共菜单层级数
      *
      * 1. 该方法为递归调用
      * 2. 递归执行次数: count := 0 获取当前节点--
-     * 3. 根据(pids)获取下一层<Department>List
+     * 3. 根据(pids)获取下一层<Menu>List
      * 4. 递归结束条件(递归执行次数 > 6 or 查询无子节点)
      * 5. 递归调用结束后生成(list_0,list_1,...,list_5)结构体
      *
@@ -76,23 +63,23 @@ public class DepartmentTreeServiceImp implements DepartmentTreeService {
      * @throws RestException
      *
      * 创建人：陈刚
-     * 创建时间：2018-07-19
+     * 创建时间：2018-07-31
      *
      */
-    public void findDeptTree(String pids) {
+    public void findMenuTree(String pids) {
         if (pids == null || pids.trim().length() == 0) {
             throw new RestException("", "参数错误:部门pid为空或空字符串！");
         }
 
-        //1. count := 0 获取当前节点<Department>(vmes_department:系统部门表)对象
-        Department findObj = new Department();
+        //1. count := 0 获取当前节点<Menu>(vmes_Menu:系统部门表)对象
+        Menu findObj = new Menu();
         if (count == 0) {
             try {
                 //isdisable:是否禁用(1:已禁用 0:启用)
                 findObj.setIsdisable("0");
                 findObj.setId(pids);
                 PageData pageData = HttpUtils.entity2PageData(findObj, new PageData());
-                Department deptObj = departmentService.findDepartment(pageData);
+                Menu deptObj = menuService.findMenu(pageData);
                 if (deptObj == null) {
                     return;
                 }
@@ -101,7 +88,7 @@ public class DepartmentTreeServiceImp implements DepartmentTreeService {
                 }
 
                 //放入List结构体中
-                List<Department> objectList = new ArrayList<Department>();
+                List<Menu> objectList = new ArrayList<Menu>();
                 objectList.add(deptObj);
                 this.execute_layer = deptObj.getLayer();
                 this.findLayerList(objectList, this.execute_layer);
@@ -116,7 +103,7 @@ public class DepartmentTreeServiceImp implements DepartmentTreeService {
             }
         }
 
-        //2. 根据pids获取下一层<Department>List
+        //2. 根据pids获取下一层<Menu>List
         pids = StringUtil.stringTrimSpace(pids);
         pids = "'" + pids.replace(",", "','") + "'";
         String pidQuery = "pid in (" + pids + ")";
@@ -127,9 +114,9 @@ public class DepartmentTreeServiceImp implements DepartmentTreeService {
         pageData.put("queryStr", pidQuery);
         pageData.put("mapSize", Integer.valueOf(pageData.size()));
 
-        List<Department> childList = null;
+        List<Menu> childList = null;
         try {
-            childList = departmentService.findDepartmentList(pageData);
+            childList = menuService.findMenuList(pageData);
         } catch (Exception e) {
             throw new RestException("", e.getMessage());
         }
@@ -142,34 +129,30 @@ public class DepartmentTreeServiceImp implements DepartmentTreeService {
         //执行次数+1
         this.count = Integer.valueOf(this.count.intValue() + 1);
 
-        //子部门<Department>List-生成id字符串(','分隔的字符串)
-        String chid_ids = departmentService.findDeptidByDeptList(childList);
+        //子部门<Menu>List-生成id字符串(','分隔的字符串)
+        String chid_ids = menuService.findMenuidByMenuList(childList);
 
         //递归结束条件: 递归执行次数 > 6 or 查询无子节点
         if (count > 6 || childList == null || childList.size() == 0) {
             return;
         } else {
             //递归调用: findDeptTree()
-            this.findDeptTree(chid_ids);
+            this.findMenuTree(chid_ids);
         }
     }
 
     /**
-     * 根据已知的部门List<Department>-生成树形结构
-     * 1. 该方法为递归调用
-     * 2. 递归结束条件(部门级别layer == 0)
-     * 3. 递归调用结束后生成(list_0,list_1,...,list_5)结构体
-     *
-     * @param deptList
+     * 根据已知的菜单List<Menu>-生成树形结构
+     * @param menuList
      * @param layer
      */
-    public void findDeptTreeByDeptList(List<Department> deptList, Integer layer) {
-        if (deptList == null || deptList.size() == 0) {return;}
+    public void findMenuTreeByList(List<Menu> menuList, Integer layer) {
+        if (menuList == null || menuList.size() == 0) {return;}
         if (layer == null) {return;}
 
         //获得每一层的id字符串Map
         Map<String, String> mapObj = new LinkedHashMap<String, String>();
-        for (Department object : deptList) {
+        for (Menu object : menuList) {
             if (layer.intValue() == 0) {
                 String id = object.getId0();
                 mapObj.put(id, id);
@@ -184,9 +167,6 @@ public class DepartmentTreeServiceImp implements DepartmentTreeService {
                 mapObj.put(id, id);
             } else if (layer.intValue() == 4) {
                 String id = object.getId4();
-                mapObj.put(id, id);
-            } else if (layer.intValue() == 5) {
-                String id = object.getId5();
                 mapObj.put(id, id);
             }
         }
@@ -208,17 +188,17 @@ public class DepartmentTreeServiceImp implements DepartmentTreeService {
         id_str = "'" + id_str.replace(",", "','") + "'";
         String pidQuery = "id in (" + id_str + ")";
 
-        //查询部门表-获得每一层的id-部门集合List<Department>
+        //查询部门表-获得每一层的id-部门集合List<Menu>
         PageData pageData = new PageData();
         //isdisable:是否禁用(1:已禁用 0:启用)
         pageData.put("isdisable", "0");
         pageData.put("queryStr", pidQuery);
         pageData.put("mapSize", Integer.valueOf(pageData.size()));
 
-        List<Department> objList = null;
+        List<Menu> objList = null;
         try {
-            objList = departmentService.findDepartmentList(pageData);
-            //按照(Department.serialNumber)部门排列序号-升序排序
+            objList = menuService.findMenuList(pageData);
+            //按照(Menu.serialNumber)部门排列序号-升序排序
             this.orderAcsBySerialNumber(objList);
         } catch (Exception e) {
             throw new RestException("", e.getMessage());
@@ -231,101 +211,64 @@ public class DepartmentTreeServiceImp implements DepartmentTreeService {
         if (layer == 0) {
             return;
         } else {
-            //递归调用: findDeptTreeByDeptList()
-            this.findDeptTreeByDeptList(deptList, (layer - 1));
+            //递归调用: findMenuTreeByList()
+            this.findMenuTreeByList(menuList, (layer - 1));
         }
     }
 
-    /**
-     * 创建人：陈刚
-     * 创建时间：2018-07-19
-     */
-    public TreeEntity dept2Tree(Department dept, TreeEntity tree) {
-        if (tree == null) {tree = new TreeEntity();}
-        if (dept == null) {return tree;}
-
-        //id 当前节点ID
-        if (dept.getId() != null && dept.getId().trim().length() > 0) {
-            tree.setId(dept.getId().trim());
-        }
-        //label当前节点名称
-        if (dept.getName() != null && dept.getName().trim().length() > 0) {
-            tree.setLabel(dept.getName().trim());
-        }
-        //layer 当前节点-部门级别
-        if (dept.getLayer() != null) {
-            tree.setLayer(dept.getLayer());
-        }
-
-        return tree;
-    }
-
-
-    public List<Department> getList_0() {
+    public List<Menu> getList_0() {
         return list_0;
     }
-
-    public void setList_0(List<Department> list_0) {
+    public void setList_0(List<Menu> list_0) {
         this.list_0 = list_0;
     }
-
-    public List<Department> getList_1() {
+    public List<Menu> getList_1() {
         return list_1;
     }
-
-    public void setList_1(List<Department> list_1) {
+    public void setList_1(List<Menu> list_1) {
         this.list_1 = list_1;
     }
-
-    public List<Department> getList_2() {
+    public List<Menu> getList_2() {
         return list_2;
     }
-
-    public void setList_2(List<Department> list_2) {
+    public void setList_2(List<Menu> list_2) {
         this.list_2 = list_2;
     }
-
-    public List<Department> getList_3() {
+    public List<Menu> getList_3() {
         return list_3;
     }
-
-    public void setList_3(List<Department> list_3) {
+    public void setList_3(List<Menu> list_3) {
         this.list_3 = list_3;
     }
-
-    public List<Department> getList_4() {
+    public List<Menu> getList_4() {
         return list_4;
     }
-
-    public void setList_4(List<Department> list_4) {
+    public void setList_4(List<Menu> list_4) {
         this.list_4 = list_4;
     }
-
-    public List<Department> getList_5() {
+    public List<Menu> getList_5() {
         return list_5;
     }
-
-    public void setList_5(List<Department> list_5) {
+    public void setList_5(List<Menu> list_5) {
         this.list_5 = list_5;
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    //重写排序方法: 按照(Department.serialNumber)升序排序
-    private void orderAcsBySerialNumber(List<Department> objectList) {
+    //重写排序方法: 按照(Menu.serialNumber)升序排序
+    private void orderAcsBySerialNumber(List<Menu> objectList) {
         Collections.sort(objectList, new Comparator<Object>() {
             public int compare(Object arg0, Object arg1) {
-                Department object_0 = (Department)arg0;
-                Department object_1 = (Department)arg1;
+                Menu object_0 = (Menu)arg0;
+                Menu object_1 = (Menu)arg1;
                 return object_0.getSerialNumber().compareTo(object_1.getSerialNumber());
             }
         });
     }
 
-    private void findLayerList(List<Department> objectList, Integer execute_layer) {
+    private void findLayerList(List<Menu> objectList, Integer execute_layer) {
         if (objectList == null || objectList.size() == 0) {return;}
         if (execute_layer == null || -1 == execute_layer.intValue()) {return;}
 
-        if (0 == execute_layer.intValue()) {this.setList_0(objectList);}
         if (1 == execute_layer.intValue()) {this.setList_1(objectList);}
         if (2 == execute_layer.intValue()) {this.setList_2(objectList);}
         if (3 == execute_layer.intValue()) {this.setList_3(objectList);}

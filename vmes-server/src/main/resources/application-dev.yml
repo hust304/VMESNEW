@@ -9,7 +9,7 @@ yvan:
   upload_domain: /static
 
 server:
-  port: 8081
+  port: 8080
 
 spring:
   datasource:
