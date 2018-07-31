@@ -19,10 +19,10 @@ public class CreateCodeUtil {
 
         PageData pd = new PageData();
 
-        String objectName = "Coderule";//类名
-        String tableName = "vmes_coderule";//表名
-        String title = "vmes_coderule:系统编码规则表";
-        String author = "陈刚";
+        String objectName = "UserDefinedMenu";//类名
+        String tableName = "vmes_user_defined_menu";//表名
+        String title = "用户自定义菜单";
+        String author = "刘威";
         String projectName = "deecoop.system";//项目名
 
 
@@ -70,16 +70,16 @@ public class CreateCodeUtil {
         //生成mybatis xml
         filePath = path+"vmes-server/src/main/resources/mapper/"+objectName+"Mapper.xml";
         Freemarker.printFile("mapperMysqlTemplate.ftl", root, filePath, ftlPath);
-//
-//        //生成Service java
-//        root.put("classPath", "com.xy.vmes.service");
-//        filePath = path+"vmes-contracts/src/main/java/com/xy/vmes/service/"+objectName+"Service.java";
-//        Freemarker.printFile("serviceJavaTemplate.ftl", root, filePath, ftlPath);
-//
-//        //生成ServiceImp java
-//        root.put("classPath", "com.xy.vmes."+projectName+".service");
-//        filePath = path+"vmes-server/src/main/java/com/xy/vmes/"+projectName.replace(".","/")+"/service/"+objectName+"ServiceImp.java";
-//        Freemarker.printFile("serviceImpJavaTemplate.ftl", root, filePath, ftlPath);
+
+        //生成Service java
+        root.put("classPath", "com.xy.vmes.service");
+        filePath = path+"vmes-contracts/src/main/java/com/xy/vmes/service/"+objectName+"Service.java";
+        Freemarker.printFile("serviceJavaTemplate.ftl", root, filePath, ftlPath);
+
+        //生成ServiceImp java
+        root.put("classPath", "com.xy.vmes."+projectName+".service");
+        filePath = path+"vmes-server/src/main/java/com/xy/vmes/"+projectName.replace(".","/")+"/service/"+objectName+"ServiceImp.java";
+        Freemarker.printFile("serviceImpJavaTemplate.ftl", root, filePath, ftlPath);
 
         //生成Controller java
 //        root.put("classPath", "com.xy.vmes."+projectName+".controller");

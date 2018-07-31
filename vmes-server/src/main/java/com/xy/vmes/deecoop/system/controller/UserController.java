@@ -30,7 +30,7 @@ import java.util.*;
 
 
 /**
- * 说明：Controller
+ * 说明：用户管理Controller
  * @author 刘威 自动生成
  * @date 2018-07-26
  */
@@ -320,7 +320,7 @@ public class UserController {
 
         Map result = new HashMap();
         List<LinkedHashMap> titles = userService.getColumnList();
-        result.put("titles",titles);
+        result.put("titles",titles.get(0));
         List<Map> varList = userService.getDataList(pd);
         result.put("varList",varList);
         model.putResult(result);
@@ -328,6 +328,35 @@ public class UserController {
         Long endTime = System.currentTimeMillis();
         logger.info("################user/listPageUsers 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
+    }
+
+
+
+    /**
+     * @author 刘威 自动创建，禁止修改
+     * @date 2018-07-26
+     */
+    @GetMapping("/user/exportExcelUsers")
+    public void exportExcelUsers()  throws Exception {
+
+        logger.info("################user/exportExcelUsers 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        HttpServletResponse response  = HttpUtils.currentResponse();
+        HttpServletRequest request  = HttpUtils.currentRequest();
+
+        ExcelUtil.buildDefaultExcelDocument( request, response,new ExcelAjaxTemplate() {
+            @Override
+            public void execute(HttpServletRequest request, HSSFWorkbook workbook) throws Exception {
+                // TODO Auto-generated method stub
+                PageData pd = HttpUtils.parsePageData();
+                List<LinkedHashMap> titles = userService.getColumnList();
+                request.setAttribute("titles", titles.get(0));
+                List<Map> varList = userService.getDataList(pd);
+                request.setAttribute("varList", varList);
+            }
+        });
+        Long endTime = System.currentTimeMillis();
+        logger.info("################user/exportExcelUsers 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
     }
 
 

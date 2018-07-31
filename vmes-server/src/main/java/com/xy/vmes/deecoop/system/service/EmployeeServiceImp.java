@@ -4,11 +4,13 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.deecoop.system.dao.EmployeeMapper;
 import com.xy.vmes.entity.Employee;
 import com.xy.vmes.service.EmployeeService;
+import com.yvan.Conv;
 import com.yvan.PageData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +34,9 @@ public class EmployeeServiceImp implements EmployeeService {
     */
     @Override
     public void save(Employee employee) throws Exception{
+        employee.setId(Conv.createUuid());
+        employee.setCdate(new Date());
+        employee.setUdate(new Date());
         employeeMapper.insert(employee);
     }
 
@@ -42,6 +47,7 @@ public class EmployeeServiceImp implements EmployeeService {
     */
     @Override
     public void update(Employee employee) throws Exception{
+        employee.setUdate(new Date());
         employeeMapper.updateById(employee);
     }
 
