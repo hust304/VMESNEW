@@ -1,6 +1,7 @@
 package com.xy.vmes.deecoop.system.controller;
 
 
+import com.xy.vmes.common.util.RedisUtils;
 import com.xy.vmes.entity.Employee;
 import com.xy.vmes.entity.User;
 import com.xy.vmes.service.UserEmployeeService;
@@ -163,7 +164,7 @@ public class UserLoginController {
         String new_uuid = Conv.createUuid();
         String redis_uuid = "";
         try{
-            redis_uuid = redisClient.findRedisUuidByUserID(userID);
+            redis_uuid = RedisUtils.findRedisUuidByUserID(redisClient, userID);
             if (redis_uuid != null && redis_uuid.trim().length() > 0) {redis_uuid = redis_uuid.toLowerCase();}
         } catch (Exception e) {
             throw new RestException("", e.getMessage());
@@ -174,7 +175,7 @@ public class UserLoginController {
         //清空历史Redis缓存Key(系统用户ID)字符串匹配
         if (redis_uuid != null && redis_uuid.trim().length() > 0
                 && !new_uuid.trim().equals(redis_uuid.trim())) {
-            redisClient.removeByUserID(userID);
+            RedisUtils.removeByUserID(redisClient, userID);
         }
 
 
@@ -423,7 +424,7 @@ public class UserLoginController {
 
         String[] str_arry = sessionID.split(":");
         String uuid = str_arry[0];
-        redisClient.removeByUuid(uuid);
+        RedisUtils.removeByUuid(redisClient, uuid);
 
         return model;
     }
