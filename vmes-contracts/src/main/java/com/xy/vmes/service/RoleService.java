@@ -90,14 +90,16 @@ public interface RoleService {
     Role findRoleById(String id);
 
     /**
-     * check角色列表List<Role>是否允许删除
+     * check角色ID是否允许删除
+     * 当前角色ID(用户角色,角色菜单,角色按钮)-是否使用
      *
      * 创建人：陈刚
      * 创建时间：2018-07-30
-     * @param objectList
+     * @param roleIds
      * @return
      */
-    String checkDeleteRoleByList(List<Role> objectList);
+    String checkDeleteRoleByRoleIds(String roleIds);
+
 }
 
 

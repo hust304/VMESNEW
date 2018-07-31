@@ -3,7 +3,13 @@ package com.xy.vmes.deecoop.system.service;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.deecoop.system.dao.RoleMapper;
 import com.xy.vmes.entity.Role;
+import com.xy.vmes.entity.RoleButton;
+import com.xy.vmes.entity.RoleMenu;
+import com.xy.vmes.entity.UserRole;
+import com.xy.vmes.service.RoleButtonService;
+import com.xy.vmes.service.RoleMenuService;
 import com.xy.vmes.service.RoleService;
+import com.xy.vmes.service.UserRoleService;
 import com.yvan.PageData;
 import com.yvan.platform.RestException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +33,12 @@ public class RoleServiceImp implements RoleService {
 
     @Autowired
     private RoleMapper roleMapper;
+    @Autowired
+    private UserRoleService userRoleService;
+    @Autowired
+    private RoleMenuService roleMenuService;
+    @Autowired
+    private RoleButtonService roleButtonService;
 
     /**
     * 创建人：陈刚 自动创建，禁止修改
@@ -163,24 +175,48 @@ public class RoleServiceImp implements RoleService {
     }
 
     /**
-     * check角色列表List<Role>是否允许删除
+     * check角色ID是否允许删除
+     * 当前角色ID(用户角色,角色菜单,角色按钮)-是否使用
      *
      * 创建人：陈刚
      * 创建时间：2018-07-30
-     * @param objectList
+     * @param roleIds
      * @return
      */
-    public String checkDeleteRoleByList(List<Role> objectList) {
-        if (objectList == null || objectList.size() == 0) {return new String();}
+    public String checkDeleteRoleByRoleIds(String roleIds) {
+        if (roleIds == null || roleIds.trim().length() == 0) {return new String();}
 
+        String msgTemp = "第&nbsp;{0}&nbsp;行:&nbsp;角色在({1})中使用不可禁用！<br/>";
         StringBuffer msgBuf = new StringBuffer();
-        String msgTemp = "第&nbsp;{0}&nbsp;行:&nbsp;状态为(启用)不可删除！<br/>";
-        for (int i = 0; i < objectList.size(); i++) {
-            Role object = objectList.get(i);
-            //isdisable:是否禁用(1:已禁用 0:启用)
-            if (object.getIsdisable() != null && "0".equals(object.getIsdisable().trim())) {
-                String str_isnull = MessageFormat.format(msgTemp, Integer.valueOf(i+1).toString());
-                msgBuf.append(str_isnull);
+
+        String[] roleid_arry = roleIds.split(",");
+        PageData findMap = new PageData();
+        for (int i = 0; i < roleid_arry.length; i++) {
+            String roleID = roleid_arry[i];
+
+            findMap.put("isdisable", "0");
+            findMap.put("roleId", roleID);
+            findMap.put("mapSize", Integer.valueOf(findMap.size()));
+
+            //1. 当前角色ID(用户角色)
+            List<UserRole> list_1 = userRoleService.findUserRoleList(findMap);
+            if (list_1 != null && list_1.size() > 0) {
+                String msg_1 = MessageFormat.format(msgTemp, (i+1), "用户角色");
+                msgBuf.append(msg_1);
+            }
+
+            //2. 当前角色ID(角色菜单)
+            List<RoleMenu> list_2 = roleMenuService.findRoleMenuList(findMap);
+            if (list_2 != null && list_2.size() > 0) {
+                String msg_2 = MessageFormat.format(msgTemp, (i+1), "角色菜单");
+                msgBuf.append(msg_2);
+            }
+
+            //3. 当前角色ID(角色按钮)
+            List<RoleButton> list_3 = roleButtonService.findRoleButtonList(findMap);
+            if (list_3 != null && list_3.size() > 0) {
+                String msg_3 = MessageFormat.format(msgTemp, (i+1), "角色按钮");
+                msgBuf.append(msg_3);
             }
         }
 

@@ -4,7 +4,10 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.google.gson.Gson;
 import com.xy.vmes.entity.Department;
 import com.xy.vmes.entity.Role;
+import com.xy.vmes.service.RoleButtonService;
+import com.xy.vmes.service.RoleMenuService;
 import com.xy.vmes.service.RoleService;
+import com.xy.vmes.service.UserRoleService;
 import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
@@ -42,6 +45,12 @@ public class RoleController {
 
     @Autowired
     private RoleService roleService;
+    @Autowired
+    private UserRoleService userRoleService;
+    @Autowired
+    private RoleMenuService roleMenuService;
+    @Autowired
+    private RoleButtonService roleButtonService;
 
 
     /**
@@ -335,6 +344,14 @@ public class RoleController {
             return model;
         }
 
+        //2.当前角色ID(用户角色,角色菜单,角色按钮)-是否使用
+        msgStr = roleService.checkDeleteRoleByRoleIds(id);
+        if (msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
+
         try {
             Role objectDB = roleService.findRoleById(id);
             objectDB.setIsdisable(isdisable);
@@ -373,26 +390,26 @@ public class RoleController {
         String id_str = StringUtil.stringTrimSpace(ids);
         String[] id_arry = id_str.split(",");
 
-//        id_str = "'" + id_str.replace(",", "','") + "'";
-//        String pidQuery = "id in (" + id_str + ")";
-//
-//        //查询部门表-获得每一层的id-部门集合List<Department>
-//        PageData findMap = new PageData();
-//        //isdisable:是否禁用(1:已禁用 0:启用)
-//        findMap.put("isdisable", "0");
-//        findMap.put("queryStr", pidQuery);
-//        findMap.put("mapSize", Integer.valueOf(findMap.size()));
-//        List<Role> objectList = roleService.findRoleList(findMap);
-//
-//        String msgStr = roleService.checkDeleteRoleByList(objectList);
-//        if (msgStr != null && msgStr.trim().length() > 0) {
-//            model.putCode(Integer.valueOf(1));
-//            model.putMsg(msgStr);
-//            return model;
-//        }
+        //2.当前角色ID(用户角色,角色菜单,角色按钮)-是否使用
+        String msgStr = roleService.checkDeleteRoleByRoleIds(id_str);
+        if (msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
 
         try {
+            for (int i = 0; i < id_arry.length; i++) {
+                String roleID = id_arry[i];
+                //1. 当前角色ID-禁用(用户角色)
+                userRoleService.updateDisableByRoleId(roleID);
+                //2. 当前角色ID-禁用(角色菜单)
+                roleMenuService.updateDisableByRoleId(roleID);
+                //3. 当前角色ID-禁用(角色按钮)
+                roleButtonService.updateDisableByRoleId(roleID);
+            }
             roleService.updateDisableByIds(id_arry);
+
         } catch (Exception e) {
             throw new RestException("", e.getMessage());
         }
@@ -435,6 +452,46 @@ public class RoleController {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
+        //1. 非空判断
+        if (pageData == null || pageData.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("参数错误：用户登录参数(pageData)为空！</br>");
+            return model;
+        }
+
+        String msgStr = new String();
+        String roleID = (String)pageData.get("roleID");
+        if (roleID == null || roleID.trim().length() == 0) {
+            msgStr = msgStr + "roleID为空或空字符串！<br/>";
+        }
+        String userIds = (String)pageData.get("isdisable");
+        if (userIds == null || userIds.trim().length() == 0) {
+            msgStr = msgStr + "userIds为空或空字符串！<br/>";
+        }
+        if (msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
+
+        //2.当前角色ID(用户角色,角色菜单,角色按钮)-是否使用
+        msgStr = roleService.checkDeleteRoleByRoleIds(roleID);
+        if (msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
+
+        //3. 删除角色用户(当前角色)
+        try {
+            userRoleService.deleteUserRoleByRoleId(roleID);
+        } catch (Exception e) {
+            throw new RestException("", e.getMessage());
+        }
+
+        //4. 添加角色用户(当前角色)
+        userRoleService.addUserRoleByUserIds(roleID, userIds);
+
         return model;
     }
     /**角色批量绑定菜单
@@ -446,6 +503,45 @@ public class RoleController {
     public ResultModel saveRoleMeuns() {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
+
+        //1. 非空判断
+        if (pageData == null || pageData.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("参数错误：用户登录参数(pageData)为空！</br>");
+            return model;
+        }
+
+        String msgStr = new String();
+        String roleID = (String)pageData.get("roleID");
+        if (roleID == null || roleID.trim().length() == 0) {
+            msgStr = msgStr + "roleID为空或空字符串！<br/>";
+        }
+        String meunIds = (String)pageData.get("meunIds");
+        if (meunIds == null || meunIds.trim().length() == 0) {
+            msgStr = msgStr + "meunIds为空或空字符串！<br/>";
+        }
+        if (msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
+
+        //2.当前角色ID(用户角色,角色菜单,角色按钮)-是否使用
+        msgStr = roleService.checkDeleteRoleByRoleIds(roleID);
+        if (msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
+
+        //3. 删除角色菜单(当前角色)
+        try {
+            roleMenuService.deleteRoleMenuByRoleId(roleID);
+        } catch (Exception e) {
+            throw new RestException("", e.getMessage());
+        }
+        //4. 添加角色菜单(当前角色)
+        roleMenuService.addRoleMenuByMeunIds(roleID, meunIds);
 
         return model;
     }
@@ -496,6 +592,45 @@ public class RoleController {
     public ResultModel saveRoleMeunsButtons() {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
+
+        //1. 非空判断
+        if (pageData == null || pageData.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("参数错误：用户登录参数(pageData)为空！</br>");
+            return model;
+        }
+
+        String msgStr = new String();
+        String roleID = (String)pageData.get("roleID");
+        if (roleID == null || roleID.trim().length() == 0) {
+            msgStr = msgStr + "roleID为空或空字符串！<br/>";
+        }
+        String buttonIds = (String)pageData.get("buttonIds");
+        if (buttonIds == null || buttonIds.trim().length() == 0) {
+            msgStr = msgStr + "buttonIds为空或空字符串！<br/>";
+        }
+        if (msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
+
+        //2.当前角色ID(用户角色,角色菜单,角色按钮)-是否使用
+        msgStr = roleService.checkDeleteRoleByRoleIds(roleID);
+        if (msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
+
+        //3. 删除角色按钮(当前角色)
+        try {
+            roleButtonService.deleteRoleButtonByRoleId(roleID);
+        } catch (Exception e) {
+            throw new RestException("", e.getMessage());
+        }
+        //4. 添加角色按钮(当前角色)
+        roleButtonService.addRoleButtonByMeunIds(roleID, buttonIds);
 
         return model;
     }
