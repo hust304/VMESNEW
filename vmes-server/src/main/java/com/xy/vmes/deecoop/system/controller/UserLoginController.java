@@ -187,7 +187,7 @@ public class UserLoginController {
 
         Map<String, String> dataMap = new HashMap<String, String>();
         //sessionID:会话ID
-        dataMap.put("sessionID", RedisKey);
+        //dataMap.put("sessionID", RedisKey);
         //user:用户信息()
         User user = new User();
         user = userEmployService.mapObject2User(userEmployMap, user);
@@ -209,7 +209,7 @@ public class UserLoginController {
         redisClient.set(Redis_userLogin_Key, new Gson().toJson(dataMap));
 
         model.putCode(Integer.valueOf(0));
-        model.set("sessionID", RedisKey);
+        model.set("sessionID", Redis_userLogin_Key);
 
         return model;
     }
