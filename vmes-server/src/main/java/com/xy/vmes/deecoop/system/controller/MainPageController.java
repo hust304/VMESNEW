@@ -10,6 +10,7 @@ import com.yvan.HttpUtils;
 import com.yvan.MD5Utils;
 import com.yvan.PageData;
 import com.yvan.YvanUtil;
+import com.yvan.platform.JsonArrayWapper;
 import com.yvan.platform.JsonWapper;
 import com.yvan.springmvc.ResultModel;
 import lombok.extern.slf4j.Slf4j;
@@ -100,14 +101,20 @@ public class MainPageController {
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         String userDefinedMenus = pd.getString("userDefinedMenus");
-//        userDefinedMenus ="{\"userDefinedMenus\":[{\"userId\":\"2\",\"menuId\":\"1\",\"serialNumber\":\"1\"}," +
-//                "{\"userId\":\"2\",\"menuId\":1532599975000,\"serialNumber\":\"2\"}," +
-//                "{\"userId\":\"2\",\"menuId\":1532601003000,\"serialNumber\":\"3\"}," +
-//                "{\"userId\":\"2\",\"menuId\":1532600923000,\"serialNumber\":\"4\"}," +
-//                "{\"userId\":\"2\",\"menuId\":1532600802000,\"serialNumber\":\"5\"}," +
-//                "{\"userId\":\"2\",\"menuId\":1532601034000,\"serialNumber\":\"6\"}]}";
-        JsonWapper jsonWapper = new JsonWapper(userDefinedMenus);
-        List<Map> userDefinedMenusList = (List<Map>)jsonWapper.get("userDefinedMenus");
+//        userDefinedMenus ="{\"userDefinedMenus\":[{\"userId\":\"3\",\"menuId\":\"1\",\"serialNumber\":\"1\"}," +
+//                "{\"userId\":\"3\",\"menuId\":1532599975000,\"serialNumber\":\"2\"}," +
+//                "{\"userId\":\"3\",\"menuId\":1532601003000,\"serialNumber\":\"3\"}," +
+//                "{\"userId\":\"3\",\"menuId\":1532600923000,\"serialNumber\":\"4\"}," +
+//                "{\"userId\":\"3\",\"menuId\":1532600802000,\"serialNumber\":\"5\"}," +
+//                "{\"userId\":\"3\",\"menuId\":1532601034000,\"serialNumber\":\"6\"}]}";
+        userDefinedMenus ="[{\"userId\":\"3\",\"menuId\":\"1\",\"serialNumber\":\"1\"}," +
+                "{\"userId\":\"3\",\"menuId\":1532599975000,\"serialNumber\":\"2\"}," +
+                "{\"userId\":\"3\",\"menuId\":1532601003000,\"serialNumber\":\"3\"}," +
+                "{\"userId\":\"3\",\"menuId\":1532600923000,\"serialNumber\":\"4\"}," +
+                "{\"userId\":\"3\",\"menuId\":1532600802000,\"serialNumber\":\"5\"}," +
+                "{\"userId\":\"3\",\"menuId\":1532601034000,\"serialNumber\":\"6\"}]";
+
+        List userDefinedMenusList = YvanUtil.jsonToList(userDefinedMenus);
         if(userDefinedMenusList!=null&&userDefinedMenusList.size()>0){
             for(int i=0;i<userDefinedMenusList.size();i++){
                 String josnObj = YvanUtil.toJson(userDefinedMenusList.get(i));

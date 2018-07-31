@@ -267,11 +267,19 @@
             where 1=1
             and
             (
-            <!--	根据需求自己加检索条件
-                    字段1 LIKE CONCAT(CONCAT('%', #{keywords}),'%')
-                     or
-                    字段2 LIKE CONCAT(CONCAT('%', #{keywords}),'%')
-                -->
+            <!--	根据需求自己加检索条件-->
+            vmesuser.user_code LIKE CONCAT(CONCAT('%', #{userCode}),'%')
+            or
+            vmesuser.user_name LIKE CONCAT(CONCAT('%', #{userName}),'%')
+            or
+            vmesuser.mobile LIKE CONCAT(CONCAT('%', #{mobile}),'%')
+            or
+            vmesuser.isdisable = #{isdisable})
+            or
+            vmesuser.email LIKE CONCAT(CONCAT('%', #{email}),'%')
+            or
+            vmesuser.user_type LIKE CONCAT(CONCAT('%', #{userType}),'%')
+
             )
         </if>
     </select>
