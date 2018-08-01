@@ -6,6 +6,7 @@ import com.xy.vmes.entity.Employee;
 import com.xy.vmes.entity.User;
 import com.xy.vmes.service.UserEmployeeService;
 import com.xy.vmes.service.UserLoginService;
+import com.xy.vmes.service.UserRoleService;
 import com.xy.vmes.service.UserService;
 import com.yvan.Conv;
 import com.yvan.HttpUtils;
@@ -53,7 +54,9 @@ public class UserLoginController {
     @Autowired
     private UserService userService;
     @Autowired
-    private UserLoginService userLoginService;
+    private UserRoleService userRoleService;
+    //@Autowired
+    //private UserLoginService userLoginService;
     @Autowired
     RedisClient redisClient;
 
@@ -86,7 +89,7 @@ public class UserLoginController {
      *     "user":       用户信息<User> ToJsonString
      *     "employ":     员工信息<Employee> ToJsonString
      *     "dept":       部门信息<Department> ToJsonString
-     *     "userRole":   用户角色
+     *     "userRole":   用户角色(当前用户)-(角色ID','分隔的字符串)
      *     "userMenu":   菜单权限
      *     "userButton": 按钮权限
      *
@@ -192,7 +195,11 @@ public class UserLoginController {
         dataMap.put("employ", YvanUtil.toJson(employ));
 
         //dept部门信息()
-        //userRole用户角色()
+
+        //userRole用户角色(角色ID','分隔的字符串)
+        String roleIds = userRoleService.findRoleIdsByByUserID(user.getId());
+        dataMap.put("userRole", roleIds);
+
         //userMenu菜单权限()
         //userButton按钮权限()
 

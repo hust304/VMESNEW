@@ -94,6 +94,34 @@ public interface UserRoleService {
      */
     void updateDisableByRoleId(String roleId);
 
+
+    /**
+     * 根据userID-获取全部用户角色List<UserRole>
+     * 创建人：陈刚
+     * 创建时间：2018-08-01
+     *
+     * @param userID
+     * @return
+     */
+    List<UserRole> findUserRoleByUserID(String userID);
+
+    /**
+     * 获取角色ID(','逗号分隔的字符串)
+     * 创建人：陈刚
+     * 创建时间：2018-08-01
+     *
+     * @param objectList
+     * @return
+     */
+    String findRoleIdsByUserRoleList(List<UserRole> objectList);
+
+    /**
+     * 根据userID-获取角色ID(','逗号分隔的字符串)
+     * @param userID
+     * @return
+     */
+    String findRoleIdsByByUserID(String userID);
+
 }
 
 

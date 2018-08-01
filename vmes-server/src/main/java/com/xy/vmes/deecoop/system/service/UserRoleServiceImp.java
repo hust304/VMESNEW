@@ -171,6 +171,67 @@ public class UserRoleServiceImp implements UserRoleService {
     public void updateDisableByRoleId(String roleId) {
         userRoleMapper.updateDisableByRoleId(roleId);
     }
+
+    /**
+     * 根据userID-获取全部用户角色List<UserRole>
+     * 创建人：陈刚
+     * 创建时间：2018-08-01
+     *
+     * @param userID
+     * @return
+     */
+    public List<UserRole> findUserRoleByUserID(String userID) {
+        List<UserRole> objectList = new ArrayList<UserRole>();
+        if (userID == null || userID.trim().length() == 0) {return objectList;}
+
+        PageData findMap = new PageData();
+        findMap.put("userId", userID);
+        //是否禁用(1:已禁用 0:启用) 数据字典:sys_isdisable
+        findMap.put("isdisable", "0");
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+
+        return this.findUserRoleList(findMap);
+    }
+
+    /**
+     * 获取角色ID(','逗号分隔的字符串)
+     * 创建人：陈刚
+     * 创建时间：2018-08-01
+     *
+     * @param objectList
+     * @return
+     */
+    public String findRoleIdsByUserRoleList(List<UserRole> objectList) {
+        StringBuffer strBuf = new StringBuffer();
+        if (objectList == null || objectList.size() == 0) {return strBuf.toString();}
+
+        for (UserRole object : objectList) {
+            if (object.getRoleId() != null && object.getRoleId().trim().length() > 0)  {
+                strBuf.append(object.getRoleId().trim());
+                strBuf.append(",");
+            }
+        }
+
+        String strTemp = strBuf.toString();
+        if (strTemp.trim().length() > 0 && strTemp.indexOf(",") != -1) {
+            strTemp = strTemp.substring(0, strTemp.lastIndexOf(","));
+            return strTemp;
+        }
+
+        return strBuf.toString();
+    }
+
+    /**
+     * 根据userID-获取角色ID(','逗号分隔的字符串)
+     * @param userID
+     * @return
+     */
+    public String findRoleIdsByByUserID(String userID) {
+        if (userID == null || userID.trim().length() == 0) {return new String();}
+        List<UserRole> objectList = this.findUserRoleByUserID(userID);
+        return findRoleIdsByUserRoleList(objectList);
+    }
+
 }
 
 
