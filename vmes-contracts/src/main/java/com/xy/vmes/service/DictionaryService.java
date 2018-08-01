@@ -98,6 +98,11 @@ public interface DictionaryService {
     */
     void updateToDisableByIds(String[] ids)throws Exception;
 
+    /**
+     * 创建人：刘威
+     * 创建时间：2018-08-01
+     */
+    List<Map> getTreeList(PageData pd)throws Exception;
 }
 
 

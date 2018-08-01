@@ -65,8 +65,8 @@
         <include refid="Field"></include>
         from
         <include refid="tableName"></include>
+        where 1=1
         <if test="keywords!= null and keywords != ''"><!-- 关键词检索 -->
-            where 1=1
             and
             (
             <!--	根据需求自己加检索条件
@@ -84,8 +84,8 @@
         <include refid="Field"></include>
         from
         <include refid="tableName"></include>
+        where 1=1
         <if test="keywords!= null and keywords != ''"><!-- 关键词检索 -->
-            where 1=1
             and
             (
             <!--	根据需求自己加检索条件
@@ -192,19 +192,7 @@
         <include refid="Field1"></include>
         from vmes_user_defined_menu usermenu
         left join vmes_menu menu on menu.id = usermenu.menu_id
-
-        <if test="userId!= null and userId != ''"><!-- 关键词检索 -->
-            where 1=1
-            and
-            (
-            usermenu.user_id  =  #{userId}
-            <!--	根据需求自己加检索条件
-                    字段1 LIKE CONCAT(CONCAT('%', #{keywords}),'%')
-                     or
-                    字段2 LIKE CONCAT(CONCAT('%', #{keywords}),'%')
-                -->
-            )
-        </if>
+        where usermenu.user_id  =  #{currentUserId}
         order by usermenu.serial_number ASC
     </select>
 

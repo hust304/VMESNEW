@@ -49,7 +49,7 @@ public class ComonFilter implements Filter {
         String uri = httpRequest.getRequestURI();
         uri = uri.toLowerCase();
         ModifyParametersWrapper mParametersWrapper = new ModifyParametersWrapper(httpRequest);
-        mParametersWrapper.putHeader("sessionID", "1111111:1:deecoop:userLoginMap");
+        mParametersWrapper.putHeader("sessionID", "admin:0:deecoop:userLoginMap");
 //        //请求地址中含有字符串“login”和“error”的不参与sessionId校验
 //        if(uri.indexOf("login".toLowerCase()) < 0 && uri.indexOf("error".toLowerCase()) < 0){
 //            if (!checkSession(httpRequest, httpResponse)) {

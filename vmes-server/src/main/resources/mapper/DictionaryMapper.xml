@@ -206,59 +206,19 @@
 
     <!-- 字段 自动创建，可以修改-->
     <sql id="Field1">
-        pid pid,<!-- 上级id-根root -->
         code code,<!-- 字典编码 -->
         name name,<!-- 字典名称 -->
-        serial_number serialNumber,<!-- 字典排列序号 -->
-        layer layer,<!-- 字典级别(最大支持5层)-头2层系统默认 -->
-        column_1 column1,<!-- 预留字段 -->
-        column_2 column2,<!-- 预留字段 -->
-        column_3 column3,<!-- 预留字段 -->
-        id_0 id0,<!-- 根root节点ID-默认层(智能云管家) -->
-        id_1 id1,<!-- (company:公司 system:系统) -->
-        id_2 id2,<!-- 一级节点ID -->
-        id_3 id3,<!-- 二级节点ID -->
-        id_4 id4,<!-- 三级节点ID -->
-        id_5 id5,<!-- 四级节点ID -->
-        id_6 id6,<!-- 五级节点ID -->
-        isdisable isdisable,<!-- 是否禁用(1:已禁用 0:启用) 数据字典:sys_isdisable -->
-        cdate cdate,<!-- 创建时间 -->
-        cuser cuser,<!-- 创建人账号 -->
-        udate udate,<!-- 修改时间 -->
-        uuser uuser,<!-- 修改人账号 -->
-        isglobal isglobal,<!-- 是否是全局数据字典  0：否  1：是 -->
-        company_id companyId,<!-- 所属公司 -->
-        name_en nameEn,<!-- 英文名称 -->
         remark remark,<!-- 备注 -->
+        isdisable isdisable,<!-- 是否禁用(1:已禁用 0:启用) 数据字典:sys_isdisable -->
         id id <!-- id -->
     </sql>
 
     <!-- 字段值 自动创建，可以修改-->
     <sql id="Column1">
-            '上级id-根root'  pid,
             '字典编码'  code,
             '字典名称'  name,
-            '字典排列序号'  serialNumber,
-            '字典级别(最大支持5层)-头2层系统默认'  layer,
-            '预留字段'  column1,
-            '预留字段'  column2,
-            '预留字段'  column3,
-            '根root节点ID-默认层(智能云管家)'  id0,
-            '(company:公司 system:系统)'  id1,
-            '一级节点ID'  id2,
-            '二级节点ID'  id3,
-            '三级节点ID'  id4,
-            '四级节点ID'  id5,
-            '五级节点ID'  id6,
-            '是否禁用(1:已禁用 0:启用) 数据字典:sys_isdisable'  isdisable,
-            '创建时间'  cdate,
-            '创建人账号'  cuser,
-            '修改时间'  udate,
-            '修改人账号'  uuser,
-            '是否是全局数据字典  0：否  1：是'  isglobal,
-            '所属公司'  companyId,
-            '英文名称'  nameEn,
             '备注'  remark,
+            '是否禁用' isdisable,
             'id' id
     </sql>
 
@@ -275,18 +235,24 @@
         select
         <include refid="Field1"></include>
         from
-        <include refid="tableName1"></include>
-        <if test="keywords!= null and keywords != ''"><!-- 关键词检索 -->
-            where 1=1
-            and
-            (
-            <!--	根据需求自己加检索条件
-						字段1 LIKE CONCAT(CONCAT('%', #{keywords}),'%')
-						 or
-						字段2 LIKE CONCAT(CONCAT('%', #{keywords}),'%')
-					-->
-            )
+        <include refid="tableName"></include>
+        where 1=1
+        <if test="currentUserId != 0"><!-- 超级管理员 -->
+            and company_id in (select company_id from vmes_user where id = #{currentUserId})
         </if>
+        <if test="name!= null and name != ''"><!-- 关键词检索 -->
+            and name LIKE CONCAT(CONCAT('%', #{name}),'%')
+        </if>
+        <if test="code!= null and code != ''"><!-- 关键词检索 -->
+            and code LIKE CONCAT(CONCAT('%', #{code}),'%')
+        </if>
+        <if test="pid!= null and pid != ''"><!-- 关键词检索 -->
+            and pid = #{pid}
+        </if>
+        <if test="isdisable!= null and isdisable != ''"><!-- 关键词检索 -->
+            and isdisable = #{isdisable}
+        </if>
+        order by code ASC
     </select>
 
 
@@ -302,5 +268,32 @@
         #{item}
         </foreach>
     </update>
+
+    <!-- 自动创建，可以修改 -->
+    <select id="getTreeList"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
+        select
+        id,pid,NAME
+        from
+        <include refid="tableName"></include>
+        where
+        ( 1=1
+        <if test="currentUserId != 0"><!-- 超级管理员 -->
+            and company_id in (select company_id from vmes_user where id = #{currentUserId})
+        </if>
+        <if test="name!= null and name != ''"><!-- 关键词检索 -->
+            and name LIKE CONCAT(CONCAT('%', #{name}),'%')
+        </if>
+        <if test="code!= null and code != ''"><!-- 关键词检索 -->
+            and code LIKE CONCAT(CONCAT('%', #{code}),'%')
+        </if>
+        <if test="pid!= null and pid != ''"><!-- 关键词检索 -->
+            and pid = #{pid}
+        </if>
+        <if test="isdisable!= null and isdisable != ''"><!-- 关键词检索 -->
+            and isdisable = #{isdisable}
+        </if>
+        ) or id = 'root'
+        order by code ASC
+    </select>
 
 </mapper>

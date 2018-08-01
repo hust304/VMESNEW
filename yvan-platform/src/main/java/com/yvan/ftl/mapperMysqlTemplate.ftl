@@ -68,8 +68,8 @@
         <include refid="Field"></include>
         from
         <include refid="tableName"></include>
+        where 1=1
         <if test="keywords!= null and keywords != ''"><!-- 关键词检索 -->
-            where 1=1
             and
             (
             <!--	根据需求自己加检索条件
@@ -87,8 +87,8 @@
         <include refid="Field"></include>
         from
         <include refid="tableName"></include>
+        where 1=1
         <if test="keywords!= null and keywords != ''"><!-- 关键词检索 -->
-            where 1=1
             and
             (
             <!--	根据需求自己加检索条件
@@ -200,9 +200,9 @@
         select
         <include refid="Field1"></include>
         from
-        <include refid="tableName1"></include>
+        <include refid="tableName"></include>
+        where 1=1
         <if test="keywords!= null and keywords != ''"><!-- 关键词检索 -->
-            where 1=1
             and
             (
             <!--	根据需求自己加检索条件

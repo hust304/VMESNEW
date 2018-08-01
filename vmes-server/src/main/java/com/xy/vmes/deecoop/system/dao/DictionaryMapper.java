@@ -83,6 +83,13 @@ public interface DictionaryMapper extends BaseMapper<Dictionary> {
     */
     @Select("updateToDisableByIds")
     void updateToDisableByIds(String[] ids);
+
+    /**
+     * 创建人：刘威
+     * 创建时间：2018-08-01
+     */
+    @Select("getTreeList")
+    List<Map> getTreeList(PageData pd);
 }
 
 

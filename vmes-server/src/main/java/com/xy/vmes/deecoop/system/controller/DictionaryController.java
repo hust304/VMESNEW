@@ -12,9 +12,11 @@ import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.YvanUtil;
 import com.yvan.cache.RedisClient;
+import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
 import com.yvan.template.ExcelAjaxTemplate;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -200,7 +202,7 @@ public class DictionaryController {
      * @author 刘威
      * @date 2018-07-31
      */
-    @PostMapping("/dictionary/addDictionary")
+    @GetMapping("/dictionary/addDictionary")
     public ResultModel addDictionary()  throws Exception {
 
         logger.info("################dictionary/addDictionary 执行开始 ################# ");
@@ -211,8 +213,46 @@ public class DictionaryController {
         Dictionary dictionary = (Dictionary)HttpUtils.pageData2Entity(pd, new Dictionary());
         String sessionID = pd.getString("sessionID");
         User user = RedisUtils.getUserInfoBySessionID(redisClient,sessionID);
+        if(user==null){
+            user = userService.selectById(pd.getString("currentUserId"));
+        }
         dictionary.setCompanyId(user.getCompanyId());
-        if("admin".equals(user.getUserName())){
+        if(StringUtils.isEmpty(pd.getString("pid"))){
+            dictionary.setPid("root");//root节点
+            dictionary.setId0("root");
+            dictionary.setLayer(1);
+        }else{
+            Dictionary pDictionary = dictionaryService.selectById(pd.getString("pid"));
+            dictionary.setId0("root");
+            dictionary.setId1(pDictionary.getId1());
+            dictionary.setId2(pDictionary.getId2());
+            dictionary.setId3(pDictionary.getId3());
+            dictionary.setId4(pDictionary.getId4());
+            dictionary.setId5(pDictionary.getId5());
+            dictionary.setId6(pDictionary.getId6());
+            dictionary.setLayer(pDictionary.getLayer()+1);
+            dictionary.setPid(pDictionary.getId());
+            if(pDictionary.getLayer()==1){
+                dictionary.setId1(pDictionary.getId());
+            }else if(pDictionary.getLayer()==2){
+                dictionary.setId2(pDictionary.getId());
+            }else if(pDictionary.getLayer()==3){
+                dictionary.setId3(pDictionary.getId());
+            }else if(pDictionary.getLayer()==4){
+                dictionary.setId4(pDictionary.getId());
+            }else if(pDictionary.getLayer()==5){
+                dictionary.setId5(pDictionary.getId());
+            }else if(pDictionary.getLayer()==6){
+                dictionary.setId6(pDictionary.getId());
+            }else {
+                model.putCode(1);
+                model.putMsg("数据字典最高层级不能超过7层!");
+                return model;
+            }
+        }
+
+
+        if("admin".equals(user.getUserCode())){
             dictionary.setIsglobal("1");//超级管理员创建的数据字典都是全局设置
         }else {
             dictionary.setIsglobal("0");//非全局设置
@@ -228,7 +268,7 @@ public class DictionaryController {
      * @author 刘威
      * @date 2018-07-31
      */
-    @PostMapping("/dictionary/updateDictionary")
+    @GetMapping("/dictionary/updateDictionary")
     public ResultModel updateDictionary()  throws Exception {
 
         logger.info("################dictionary/updateDictionary 执行开始 ################# ");
@@ -248,7 +288,7 @@ public class DictionaryController {
      * @author 刘威
      * @date 2018-07-31
      */
-    @PostMapping("/dictionary/deleteDictionarys")
+    @GetMapping("/dictionary/deleteDictionarys")
     public ResultModel deleteDictionarys()  throws Exception {
 
         logger.info("################dictionary/deleteDictionarys 执行开始 ################# ");
@@ -264,6 +304,82 @@ public class DictionaryController {
         return model;
     }
 
+
+    /**
+     * @author 刘威
+     * @date 2018-07-31
+     */
+    @GetMapping("/dictionary/listPageDictionarys")
+    public ResultModel listPageDictionarys()  throws Exception {
+
+        logger.info("################dictionary/listPageDictionarys 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        HttpServletResponse response  = HttpUtils.currentResponse();
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+        Map result = new HashMap();
+        List<LinkedHashMap> titles =dictionaryService.getColumnList();
+        result.put("titles",titles.get(0));
+        List<Map> varList = dictionaryService.getDataList(pd);
+        result.put("varList",varList);
+        model.putResult(result);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################dictionary/listPageDictionarys 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+    /**
+     * @author 刘威
+     * @date 2018-08-01
+     */
+    @GetMapping("/dictionary/exportExcelDictionarys")
+    public void exportExcelDictionarys()  throws Exception {
+
+        logger.info("################dictionary/exportExcelDictionarys 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        HttpServletResponse response  = HttpUtils.currentResponse();
+        HttpServletRequest request  = HttpUtils.currentRequest();
+
+        ExcelUtil.buildDefaultExcelDocument( request, response,new ExcelAjaxTemplate() {
+            @Override
+            public void execute(HttpServletRequest request, HSSFWorkbook workbook) throws Exception {
+                // TODO Auto-generated method stub
+                PageData pd = HttpUtils.parsePageData();
+                List<LinkedHashMap> titles = dictionaryService.getColumnList();
+                request.setAttribute("titles", titles.get(0));
+                List<Map> varList = dictionaryService.getDataList(pd);
+                request.setAttribute("varList", varList);
+            }
+        });
+        Long endTime = System.currentTimeMillis();
+        logger.info("################dictionary/exportExcelDictionarys 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+    }
+
+
+    /**
+     * @author 刘威
+     * @date 2018-07-31
+     */
+    @GetMapping("/dictionary/treeDictionarys")
+    public ResultModel treeDictionarys()  throws Exception {
+
+        logger.info("################dictionary/treeDictionarys 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        HttpServletResponse response  = HttpUtils.currentResponse();
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+        Map result = new HashMap();
+
+        List<Map> treeList = dictionaryService.getTreeList(pd);
+        result.put("treeList",treeList);
+        model.putResult(result);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################dictionary/treeDictionarys 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
 
 
 }

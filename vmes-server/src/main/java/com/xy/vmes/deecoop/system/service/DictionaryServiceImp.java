@@ -156,6 +156,15 @@ public class DictionaryServiceImp implements DictionaryService {
     public void updateToDisableByIds(String[] ids)throws Exception{
             dictionaryMapper.updateToDisableByIds(ids);
     }
+
+    /**
+     * 创建人：刘威
+     * 创建时间：2018-08-01
+     */
+    @Override
+    public List<Map>  getTreeList(PageData pd)throws Exception{
+        return  dictionaryMapper.getTreeList(pd);
+    }
 }
 
 
