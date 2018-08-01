@@ -41,6 +41,7 @@ public class MenuTreeServiceImp implements MenuTreeService {
         this.count = Integer.valueOf(0);
         this.execute_layer = Integer.valueOf(-1);
 
+        list_0 = new ArrayList<Menu>();
         list_1 = new ArrayList<Menu>();
         list_2 = new ArrayList<Menu>();
         list_3 = new ArrayList<Menu>();
@@ -133,7 +134,7 @@ public class MenuTreeServiceImp implements MenuTreeService {
         String chid_ids = menuService.findMenuidByMenuList(childList);
 
         //递归结束条件: 递归执行次数 > 6 or 查询无子节点
-        if (count > 6 || childList == null || childList.size() == 0) {
+        if (count > 6 || childList == null || childList.size() == 1) {
             return;
         } else {
             //递归调用: findDeptTree()
@@ -207,8 +208,11 @@ public class MenuTreeServiceImp implements MenuTreeService {
         //当前objList 放入List结构体中
         this.findLayerList(objList, layer);
 
-        //递归结束条件(部门级别layer == 0)
-        if (layer == 0) {
+        //执行次数+1
+        this.count = Integer.valueOf(this.count.intValue() + 1);
+
+        //递归结束条件(部门级别layer == 1)
+        if (layer == 1) {
             return;
         } else {
             //递归调用: findMenuTreeByList()
@@ -269,6 +273,7 @@ public class MenuTreeServiceImp implements MenuTreeService {
         if (objectList == null || objectList.size() == 0) {return;}
         if (execute_layer == null || -1 == execute_layer.intValue()) {return;}
 
+        if (execute_layer.intValue() == 0) {this.setList_0(objectList);}
         if (1 == execute_layer.intValue()) {this.setList_1(objectList);}
         if (2 == execute_layer.intValue()) {this.setList_2(objectList);}
         if (3 == execute_layer.intValue()) {this.setList_3(objectList);}

@@ -1,7 +1,9 @@
 package com.xy.vmes.deecoop.system.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.common.util.DateFormat;
 import com.xy.vmes.deecoop.system.dao.RoleMenuMapper;
+import com.xy.vmes.entity.Menu;
 import com.xy.vmes.entity.RoleMenu;
 import com.xy.vmes.service.RoleMenuService;
 import com.yvan.PageData;
@@ -172,6 +174,144 @@ public class RoleMenuServiceImp implements RoleMenuService {
      */
     public List<Map<String, Object>> findRoleMenuMapList(PageData pd) {
         return roleMenuMapper.findRoleMenuMapList(pd);
+    }
+
+    /**
+     * 创建人：陈刚
+     * 创建时间：2018-07-31
+     */
+    public Menu mapObject2Menu(Map<String, Object> mapObject, Menu object) {
+        if (object == null) {object = new Menu();}
+        if (mapObject == null) {return object;}
+
+        //b.id as menuId,
+        if (mapObject.get("menuId") != null) {
+            object.setId(mapObject.get("menuId").toString().trim());
+        }
+        //b.pid as menuPid,
+        if (mapObject.get("menuPid") != null) {
+            object.setPid(mapObject.get("menuPid").toString().trim());
+        }
+        //b.company_id as menuCompanyId,
+        if (mapObject.get("menuCompanyId") != null) {
+            object.setCompanyId(mapObject.get("menuCompanyId").toString().trim());
+        }
+        //b.code as menuCode,
+        if (mapObject.get("menuCode") != null) {
+            object.setCode(mapObject.get("menuCode").toString().trim());
+        }
+        //b.name as menuName,
+        if (mapObject.get("menuName") != null) {
+            object.setName(mapObject.get("menuName").toString().trim());
+        }
+        //b.name_en as menuNameEn,
+        if (mapObject.get("menuNameEn") != null) {
+            object.setNameEn(mapObject.get("menuNameEn").toString().trim());
+        }
+        //b.serial_numbe as menuSerialNumber,
+        if (mapObject.get("menuSerialNumber") != null) {
+            try {
+                object.setSerialNumber(Integer.valueOf(mapObject.get("menuSerialNumber").toString().trim()) );
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+        }
+
+        //b.icon as menuIcon,
+        if (mapObject.get("menuIcon") != null) {
+            object.setIcon(mapObject.get("menuIcon").toString().trim());
+        }
+        //b.type as menuType,
+        if (mapObject.get("menuType") != null) {
+            object.setType(mapObject.get("menuType").toString().trim());
+        }
+        //b.url as menuUrl,
+        if (mapObject.get("menuUrl") != null) {
+            object.setUrl(mapObject.get("menuUrl").toString().trim());
+        }
+        //b.isleaf as menuIsleaf,
+        if (mapObject.get("menuIsleaf") != null) {
+            object.setIsleaf(mapObject.get("menuIsleaf").toString().trim());
+        }
+        //b.layer as menuLayer,
+        if (mapObject.get("menuLayer") != null) {
+            try {
+                object.setLayer(Integer.valueOf(mapObject.get("menuLayer").toString().trim()) );
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+        }
+        //b.isdisable as menuIsdisable,
+        if (mapObject.get("menuIsdisable") != null) {
+            object.setIsdisable(mapObject.get("menuIsdisable").toString().trim());
+        }
+        //b.cdate as menuCdate,
+        if (mapObject.get("menuCdate") != null) {
+            String dateStr = mapObject.get("menuCdate").toString().trim();
+            Date date = DateFormat.dateString2Date(dateStr, DateFormat.DEFAULT_DATETIME_FORMAT);
+            if (date != null) {
+                object.setCdate(date);
+            }
+        }
+        //b.cuser as menuCuser,
+        if (mapObject.get("menuCuser") != null) {
+            object.setCuser(mapObject.get("menuCuser").toString().trim());
+        }
+
+        //b.udate as menuUdate,
+        if (mapObject.get("menuUdate") != null) {
+            String dateStr = mapObject.get("menuUdate").toString().trim();
+            Date date = DateFormat.dateString2Date(dateStr, DateFormat.DEFAULT_DATETIME_FORMAT);
+            if (date != null) {
+                object.setCdate(date);
+            }
+        }
+        //b.uuser as menuUuser,
+        if (mapObject.get("menuUuser") != null) {
+            object.setUuser(mapObject.get("menuUuser").toString().trim());
+        }
+        //b.id_0 as menuId0,
+        if (mapObject.get("menuId0") != null) {
+            object.setId0(mapObject.get("menuId0").toString().trim());
+        }
+        //b.id_1 as menuId1,
+        if (mapObject.get("menuId1") != null) {
+            object.setId1(mapObject.get("menuId1").toString().trim());
+        }
+        //b.id_2 as menuId2,
+        if (mapObject.get("menuId2") != null) {
+            object.setId2(mapObject.get("menuId2").toString().trim());
+        }
+
+        //b.id_3 as menuId3,
+        if (mapObject.get("menuId3") != null) {
+            object.setId3(mapObject.get("menuId3").toString().trim());
+        }
+        //b.id_4 as menuId4,
+        if (mapObject.get("menuId4") != null) {
+            object.setId4(mapObject.get("menuId4").toString().trim());
+        }
+        //b.id_5 as menuId5
+        if (mapObject.get("menuId5") != null) {
+            object.setId5(mapObject.get("menuId5").toString().trim());
+        }
+
+        return object;
+    }
+
+    public List<Menu> mapList2MenuList(List<Map<String, Object>> mapList, List<Menu> objectList) {
+        if (objectList == null) {
+            objectList = new ArrayList<Menu>();
+        }
+        if (mapList == null || mapList.size() == 0) {return objectList;}
+
+        for (Map<String, Object> mapObj : mapList) {
+            Menu object = new Menu();
+            object = this.mapObject2Menu(mapObj, object);
+            objectList.add(object);
+        }
+
+        return objectList;
     }
 }
 

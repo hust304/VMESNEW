@@ -2,9 +2,10 @@ package com.xy.vmes.deecoop.system.controller;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.StringUtil;
-import com.xy.vmes.entity.Department;
 import com.xy.vmes.entity.Menu;
 import com.xy.vmes.service.MenuService;
+import com.xy.vmes.service.MenuTreeService;
+import com.xy.vmes.service.RoleMenuService;
 import com.yvan.Conv;
 import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
@@ -41,7 +42,10 @@ public class MenuController {
 
     @Autowired
     private MenuService menuService;
-
+    @Autowired
+    private RoleMenuService roleMenuService;
+    @Autowired
+    private MenuTreeService menuTreeService;
 
     /**
     * @author 陈刚 自动创建，禁止修改
@@ -486,6 +490,8 @@ public class MenuController {
 
     /**
      * 菜单树
+     * 1. 从Redis缓存中获取-当前用户(角色ID)-','逗号分隔的字符串
+     * 2. (角色ID字符串)-获取菜单List<Meun>
      *
      * @author 陈刚
      * @date 2018-08-01
@@ -496,6 +502,29 @@ public class MenuController {
         PageData pageData = HttpUtils.parsePageData();
 
         try {
+            //用户角色(当前用户)-(角色ID','分隔的字符串)
+            String userRole = "";
+            userRole = StringUtil.stringTrimSpace(userRole);
+
+            String queryStr = "";
+            if (userRole != null && userRole.trim().length() > 0) {
+                String strTemp = "'" + userRole.replace(",", "','" + ",");
+                queryStr = "a.role_id in (" + strTemp + ")";
+            }
+            PageData findMap = new PageData();
+            findMap.put("isdisable", "0");
+            findMap.put("menuIsdisable", "0");
+            findMap.put("queryStr", queryStr);
+            findMap.put("mapSize", Integer.valueOf(findMap.size()));
+
+            List<Map<String, Object>> mapList = roleMenuService.findRoleMenuMapList(findMap);
+            List<Menu> menuList = roleMenuService.mapList2MenuList(mapList, new ArrayList<Menu>());
+            //遍历菜单List<Menu>-获取菜单最大级别
+            Integer maxLayer = menuService.findMaxLayerByMenuList(menuList);
+
+
+            menuTreeService.initialization();
+            menuTreeService.findMenuTreeByList(menuList, maxLayer);
 
         } catch (Exception e) {
             throw new RestException("", e.getMessage());

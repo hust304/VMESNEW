@@ -227,6 +227,9 @@ public class DepartmentTreeServiceImp implements DepartmentTreeService {
         //当前objList 放入List结构体中
         this.findLayerList(objList, layer);
 
+        //执行次数+1
+        this.count = Integer.valueOf(this.count.intValue() + 1);
+
         //递归结束条件(部门级别layer == 0)
         if (layer == 0) {
             return;
