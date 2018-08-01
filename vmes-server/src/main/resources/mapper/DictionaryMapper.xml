@@ -113,17 +113,22 @@
         <include refid="Field"></include>
         from
         <include refid="tableName"></include>
-        <if test="keywords!= null and keywords != ''"><!-- 关键词检索 -->
-            where 1=1
-            and
-            (
-            <!--	根据需求自己加检索条件
-						字段1 LIKE CONCAT(CONCAT('%', #{keywords}),'%')
-						 or
-						字段2 LIKE CONCAT(CONCAT('%', #{keywords}),'%')
-					-->
-            )
-        </if>
+        <where>
+            <!--queryStr 自定义sql查询语句-->
+            <if test="queryStr != null and queryStr!=''" >
+                and ${queryStr}
+            </if>
+            <if test="keywords!= null and keywords != ''"><!-- 关键词检索 -->
+                and
+                (
+                <!--	根据需求自己加检索条件
+                            字段1 LIKE CONCAT(CONCAT('%', #{keywords}),'%')
+                             or
+                            字段2 LIKE CONCAT(CONCAT('%', #{keywords}),'%')
+                        -->
+                )
+            </if>
+        </where>
     </select>
 
     <!-- 列表 自动创建，禁止修改-->
@@ -132,17 +137,22 @@
         <include refid="Field"></include>
         from
         <include refid="tableName"></include>
-        <if test="keywords!= null and keywords != ''"><!-- 关键词检索 -->
-            where 1=1
-            and
-            (
-            <!--	根据需求自己加检索条件
-						字段1 LIKE CONCAT(CONCAT('%', #{keywords}),'%')
-						 or
-						字段2 LIKE CONCAT(CONCAT('%', #{keywords}),'%')
-					-->
-            )
-        </if>
+        <where>
+            <!--queryStr 自定义sql查询语句-->
+            <if test="queryStr != null and queryStr!=''" >
+                and ${queryStr}
+            </if>
+            <if test="keywords!= null and keywords != ''"><!-- 关键词检索 -->
+                and
+                (
+                <!--	根据需求自己加检索条件
+                            字段1 LIKE CONCAT(CONCAT('%', #{keywords}),'%')
+                             or
+                            字段2 LIKE CONCAT(CONCAT('%', #{keywords}),'%')
+                        -->
+                )
+            </if>
+        </where>
     </select>
 
     <!-- 列表(全部) 自动创建，禁止修改-->
@@ -291,6 +301,9 @@
         </if>
         <if test="isdisable!= null and isdisable != ''"><!-- 关键词检索 -->
             and isdisable = #{isdisable}
+        </if>
+        <if test="queryStr != null and queryStr!=''" ><!-- 自定义查询 -->
+            and ${queryStr}
         </if>
         ) or id = 'root'
         order by code ASC

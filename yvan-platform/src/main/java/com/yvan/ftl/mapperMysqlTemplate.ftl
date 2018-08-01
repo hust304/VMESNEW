@@ -68,21 +68,22 @@
         <include refid="Field"></include>
         from
         <include refid="tableName"></include>
-        where 1=1
-        <!--queryStr 自定义sql查询语句-->
-        <if test="queryStr != null and queryStr!=''" >
-            and ${r"${"}queryStr${r"}"}
-        </if>
-        <if test="keywords!= null and keywords != ''"><!-- 关键词检索 -->
-            and
-            (
-            <!--	根据需求自己加检索条件
-						字段1 LIKE CONCAT(CONCAT('%', ${r"#{keywords})"},'%')
-						 or
-						字段2 LIKE CONCAT(CONCAT('%', ${r"#{keywords})"},'%')
-					-->
-            )
-        </if>
+        <where>
+            <!--queryStr 自定义sql查询语句-->
+            <if test="queryStr != null and queryStr!=''" >
+                and ${r"${"}queryStr${r"}"}
+            </if>
+            <if test="keywords!= null and keywords != ''"><!-- 关键词检索 -->
+                and
+                (
+                <!--	根据需求自己加检索条件
+                            字段1 LIKE CONCAT(CONCAT('%', ${r"#{keywords})"},'%')
+                             or
+                            字段2 LIKE CONCAT(CONCAT('%', ${r"#{keywords})"},'%')
+                        -->
+                )
+            </if>
+        </where>
     </select>
 
     <!-- 列表 自动创建，禁止修改-->
@@ -91,21 +92,22 @@
         <include refid="Field"></include>
         from
         <include refid="tableName"></include>
-        where 1=1
-        <!--queryStr 自定义sql查询语句-->
-        <if test="queryStr != null and queryStr!=''" >
-            and ${r"${"}queryStr${r"}"}
-        </if>
-        <if test="keywords!= null and keywords != ''"><!-- 关键词检索 -->
-            and
-            (
-            <!--	根据需求自己加检索条件
-						字段1 LIKE CONCAT(CONCAT('%', ${r"#{keywords})"},'%')
-						 or
-						字段2 LIKE CONCAT(CONCAT('%', ${r"#{keywords})"},'%')
-					-->
-            )
-        </if>
+        <where>
+            <!--queryStr 自定义sql查询语句-->
+            <if test="queryStr != null and queryStr!=''" >
+                and ${r"${"}queryStr${r"}"}
+            </if>
+            <if test="keywords!= null and keywords != ''"><!-- 关键词检索 -->
+                and
+                (
+                <!--	根据需求自己加检索条件
+                            字段1 LIKE CONCAT(CONCAT('%', ${r"#{keywords})"},'%')
+                             or
+                            字段2 LIKE CONCAT(CONCAT('%', ${r"#{keywords})"},'%')
+                        -->
+                )
+            </if>
+        </where>
     </select>
 
     <!-- 列表(全部) 自动创建，禁止修改-->
@@ -209,21 +211,22 @@
         <include refid="Field1"></include>
         from
         <include refid="tableName"></include>
-        where 1=1
-        <!--queryStr 自定义sql查询语句-->
-        <if test="queryStr != null and queryStr!=''" >
-            and ${r"${"}queryStr${r"}"}
-        </if>
-        <if test="keywords!= null and keywords != ''"><!-- 关键词检索 -->
-            and
-            (
-            <!--	根据需求自己加检索条件
-						字段1 LIKE CONCAT(CONCAT('%', ${r"#{keywords})"},'%')
-						 or
-						字段2 LIKE CONCAT(CONCAT('%', ${r"#{keywords})"},'%')
-					-->
-            )
-        </if>
+        <where>
+            <!--queryStr 自定义sql查询语句-->
+            <if test="queryStr != null and queryStr!=''" >
+                and ${r"${"}queryStr${r"}"}
+            </if>
+            <if test="keywords!= null and keywords != ''"><!-- 关键词检索 -->
+                and
+                (
+                <!--	根据需求自己加检索条件
+                            字段1 LIKE CONCAT(CONCAT('%', ${r"#{keywords})"},'%')
+                             or
+                            字段2 LIKE CONCAT(CONCAT('%', ${r"#{keywords})"},'%')
+                        -->
+                )
+            </if>
+        </where>
     </select>
 
 

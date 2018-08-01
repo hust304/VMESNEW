@@ -77,17 +77,22 @@
         <include refid="Field"></include>
         from
         <include refid="tableName"></include>
-        where 1=1
-        <if test="keywords!= null and keywords != ''"><!-- 关键词检索 -->
-            and
-            (
-            <!--	根据需求自己加检索条件
-						字段1 LIKE CONCAT(CONCAT('%', #{keywords}),'%')
-						 or
-						字段2 LIKE CONCAT(CONCAT('%', #{keywords}),'%')
-					-->
-            )
-        </if>
+        <where>
+            <!--queryStr 自定义sql查询语句-->
+            <if test="queryStr != null and queryStr!=''" >
+                and ${queryStr}
+            </if>
+            <if test="keywords!= null and keywords != ''"><!-- 关键词检索 -->
+                and
+                (
+                <!--	根据需求自己加检索条件
+                            字段1 LIKE CONCAT(CONCAT('%', #{keywords}),'%')
+                             or
+                            字段2 LIKE CONCAT(CONCAT('%', #{keywords}),'%')
+                        -->
+                )
+            </if>
+        </where>
     </select>
 
     <!-- 列表 自动创建，禁止修改-->
@@ -96,17 +101,22 @@
         <include refid="Field"></include>
         from
         <include refid="tableName"></include>
-        where 1=1
-        <if test="keywords!= null and keywords != ''"><!-- 关键词检索 -->
-            and
-            (
-            <!--	根据需求自己加检索条件
-						字段1 LIKE CONCAT(CONCAT('%', #{keywords}),'%')
-						 or
-						字段2 LIKE CONCAT(CONCAT('%', #{keywords}),'%')
-					-->
-            )
-        </if>
+        <where>
+            <!--queryStr 自定义sql查询语句-->
+            <if test="queryStr != null and queryStr!=''" >
+                and ${queryStr}
+            </if>
+            <if test="keywords!= null and keywords != ''"><!-- 关键词检索 -->
+                and
+                (
+                <!--	根据需求自己加检索条件
+                            字段1 LIKE CONCAT(CONCAT('%', #{keywords}),'%')
+                             or
+                            字段2 LIKE CONCAT(CONCAT('%', #{keywords}),'%')
+                        -->
+                )
+            </if>
+        </where>
     </select>
 
     <!-- 列表(全部) 自动创建，禁止修改-->
@@ -207,25 +217,29 @@
         from
         vmes_post post
         left join vmes_department department on department.id = post.dept_id
-        where 1=1
-        <if test="currentUserId != 0"><!-- 超级管理员 -->
-            and post.company_id in (select company_id from vmes_user where id = #{currentUserId})
-        </if>
-        <if test="deptId != null and deptId != ''"><!-- 关键词检索 -->
-            and post.dept_id LIKE CONCAT(CONCAT('%', #{deptId}),'%')
-        </if>
-        <if test="code != null and code != ''"><!-- 关键词检索 -->
-            and post.code LIKE CONCAT(CONCAT('%', #{code}),'%')
-        </if>
-        <if test="name != null and name != ''"><!-- 关键词检索 -->
-            and post.name LIKE CONCAT(CONCAT('%', #{name}),'%')
-        </if>
-        <if test="deptName != null and deptName != ''"><!-- 关键词检索 -->
-            and department.name LIKE CONCAT(CONCAT('%', #{deptName}),'%')
-        </if>
-        <if test="isdisable != null and isdisable != ''"><!-- 关键词检索 -->
-            and post.isdisable = #{isdisable}
-        </if>
+        <where>
+            <if test="currentUserId != 0"><!-- 超级管理员 -->
+                and post.company_id in (select company_id from vmes_user where id = #{currentUserId})
+            </if>
+            <if test="deptId != null and deptId != ''"><!-- 关键词检索 -->
+                and post.dept_id LIKE CONCAT(CONCAT('%', #{deptId}),'%')
+            </if>
+            <if test="code != null and code != ''"><!-- 关键词检索 -->
+                and post.code LIKE CONCAT(CONCAT('%', #{code}),'%')
+            </if>
+            <if test="name != null and name != ''"><!-- 关键词检索 -->
+                and post.name LIKE CONCAT(CONCAT('%', #{name}),'%')
+            </if>
+            <if test="deptName != null and deptName != ''"><!-- 关键词检索 -->
+                and department.name LIKE CONCAT(CONCAT('%', #{deptName}),'%')
+            </if>
+            <if test="isdisable != null and isdisable != ''"><!-- 关键词检索 -->
+                and post.isdisable = #{isdisable}
+            </if>
+            <if test="queryStr != null and queryStr!=''" ><!-- 自定义查询 -->
+                and ${queryStr}
+            </if>
+        </where>
     </select>
 
 
