@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 /** 
  * 说明：vmes_department:系统部门表 实体类
  * @author 陈刚 自动生成
- * @date 2018-07-23
+ * @date 2018-08-01
  */
 @TableName("vmes_department")
 public class Department implements Serializable {
@@ -28,6 +28,9 @@ public class Department implements Serializable {
 	//部门名称
 	@TableField("name")
 	private String name;
+	//英文名称
+	@TableField("name_en")
+	private String nameEn;
 	//是否叶子节点(1:叶子节点0:非叶子节点) 数据字典:sys_isleaf
 	@TableField("isleaf")
 	private String isleaf;
@@ -52,6 +55,9 @@ public class Department implements Serializable {
 	//部门长编码(中间使用-链接)
 	@TableField("long_code")
 	private String longCode;
+	//公司简称
+	@TableField("company_shortname")
+	private String companyShortname;
 	//有效期(yyyy-mm-dd)
 	@TableField("company_validity_date")
 	private Date companyValidityDate;
@@ -118,6 +124,12 @@ public class Department implements Serializable {
 	public String getName() {
 		return name;
 	}
+	public void setNameEn(String nameEn) {
+		this.nameEn = nameEn;
+	}
+	public String getNameEn() {
+		return nameEn;
+	}
 	public void setIsleaf(String isleaf) {
 		this.isleaf = isleaf;
 	}
@@ -165,6 +177,12 @@ public class Department implements Serializable {
 	}
 	public String getLongCode() {
 		return longCode;
+	}
+	public void setCompanyShortname(String companyShortname) {
+		this.companyShortname = companyShortname;
+	}
+	public String getCompanyShortname() {
+		return companyShortname;
 	}
 	public void setCompanyValidityDate(Date companyValidityDate) {
 		this.companyValidityDate = companyValidityDate;

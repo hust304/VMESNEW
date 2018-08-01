@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 /** 
  * 说明：vmes_menu:系统功能菜单 实体类
  * @author 陈刚 自动生成
- * @date 2018-07-31
+ * @date 2018-08-01
  */
 @TableName("vmes_menu")
 public class Menu implements Serializable {
@@ -25,12 +25,15 @@ public class Menu implements Serializable {
 	//公司ID-组织架构
 	@TableField("company_id")
 	private String companyId;
-	//菜单编号(表名,类名)
-	@TableField("model_code")
-	private String modelCode;
+	//菜单编号
+	@TableField("code")
+	private String code;
 	//菜单名称
 	@TableField("name")
 	private String name;
+	//英文名称
+	@TableField("name_en")
+	private String nameEn;
 	//菜单顺序
 	@TableField("serial_number")
 	private Integer serialNumber;
@@ -103,17 +106,23 @@ public class Menu implements Serializable {
 	public String getCompanyId() {
 		return companyId;
 	}
-	public void setModelCode(String modelCode) {
-		this.modelCode = modelCode;
+	public void setCode(String code) {
+		this.code = code;
 	}
-	public String getModelCode() {
-		return modelCode;
+	public String getCode() {
+		return code;
 	}
 	public void setName(String name) {
 		this.name = name;
 	}
 	public String getName() {
 		return name;
+	}
+	public void setNameEn(String nameEn) {
+		this.nameEn = nameEn;
+	}
+	public String getNameEn() {
+		return nameEn;
 	}
 	public void setSerialNumber(Integer serialNumber) {
 		this.serialNumber = serialNumber;
