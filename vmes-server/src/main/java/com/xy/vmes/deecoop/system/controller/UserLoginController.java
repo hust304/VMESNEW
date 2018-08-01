@@ -1,6 +1,6 @@
 package com.xy.vmes.deecoop.system.controller;
 
-
+import com.xy.vmes.common.util.Common;
 import com.xy.vmes.common.util.RedisUtils;
 import com.xy.vmes.entity.Employee;
 import com.xy.vmes.entity.User;
@@ -198,7 +198,7 @@ public class UserLoginController {
 
         //缓存业务数据
         //Redis缓存Key:(uuid:用户ID:deecoop:userLoginMap)
-        String Redis_userLogin_Key = new_uuid + ":" + userID + ":" + "deecoop" + ":" + com.yvan.common.Common.REDIS_USERLOGINMAP;
+        String Redis_userLogin_Key = new_uuid + ":" + userID + ":" + "deecoop" + ":" + Common.REDIS_USERLOGINMAP;
         redisClient.set(Redis_userLogin_Key, YvanUtil.toJson(dataMap));
 
         model.putCode(Integer.valueOf(0));
@@ -226,7 +226,7 @@ public class UserLoginController {
         String SecurityCode = this.drawImg(new ByteArrayOutputStream());
 
         //Redis-验证码-缓存1分钟(60 * 1000)
-        String RedisCodeKey = Conv.createUuid() + ":" + com.yvan.common.Common.REDIS_SECURITY_CODE;
+        String RedisCodeKey = Conv.createUuid() + ":" + Common.REDIS_SECURITY_CODE;
         redisClient.setWithExpireTime(RedisCodeKey, SecurityCode, 1 * 60 * 1000);
 
         Map<String, Object> dataMap = new HashMap<String, Object>();
@@ -378,7 +378,7 @@ public class UserLoginController {
         User userDB = userEmployService.mapObject2User(userEmployMap, new User());
 
         //获取默认新密码:
-        String default_password = MD5Utils.MD5(com.yvan.common.Common.DEFAULT_PASSWORD);
+        String default_password = MD5Utils.MD5(Common.DEFAULT_PASSWORD);
         userDB.setPassword(default_password);
 
         if ("mobile".equals(type.toLowerCase())) {
