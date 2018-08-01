@@ -11,6 +11,7 @@ import com.yvan.Conv;
 import com.yvan.HttpUtils;
 import com.yvan.MD5Utils;
 import com.yvan.PageData;
+import com.yvan.YvanUtil;
 import com.yvan.cache.RedisClient;
 import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
@@ -22,9 +23,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import redis.clients.jedis.Jedis;
-import com.google.gson.Gson;
 
-import javax.servlet.http.HttpServletResponse;
 import java.text.MessageFormat;
 import java.util.*;
 import java.awt.Color;
@@ -185,12 +184,12 @@ public class UserLoginController {
         //user:用户信息()
         User user = new User();
         user = userEmployService.mapObject2User(userEmployMap, user);
-        dataMap.put("user", new Gson().toJson(user));
+        dataMap.put("user", YvanUtil.toJson(user));
 
         //employ:员工信息()
         Employee employ = new Employee();
         employ = userEmployService.mapObject2Employee(userEmployMap, employ);
-        dataMap.put("employ", new Gson().toJson(employ));
+        dataMap.put("employ", YvanUtil.toJson(employ));
 
         //dept部门信息()
         //userRole用户角色()
@@ -200,7 +199,7 @@ public class UserLoginController {
         //缓存业务数据
         //Redis缓存Key:(uuid:用户ID:deecoop:userLoginMap)
         String Redis_userLogin_Key = new_uuid + ":" + userID + ":" + "deecoop" + ":" + com.yvan.common.Common.REDIS_USERLOGINMAP;
-        redisClient.set(Redis_userLogin_Key, new Gson().toJson(dataMap));
+        redisClient.set(Redis_userLogin_Key, YvanUtil.toJson(dataMap));
 
         model.putCode(Integer.valueOf(0));
         model.set("sessionID", Redis_userLogin_Key);
