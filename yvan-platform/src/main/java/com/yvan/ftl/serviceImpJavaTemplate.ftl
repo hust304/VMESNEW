@@ -71,6 +71,14 @@ public class ${objectName}ServiceImp implements ${objectName}Service {
         ${objectNameLower}Mapper.deleteById(id);
     }
 
+    /**
+    * 创建人：${author} 自动创建，禁止修改
+    * 创建时间：${nowDate?string("yyyy-MM-dd")}
+    */
+    @Override
+    public void deleteByIds(String[] ids) throws Exception{
+        ${objectNameLower}Mapper.deleteByIds(ids);
+    }
 
     /**
     * 创建人：${author} 自动创建，禁止修改
@@ -153,8 +161,17 @@ public class ${objectName}ServiceImp implements ${objectName}Service {
     * 创建时间：${nowDate?string("yyyy-MM-dd")}
     */
     @Override
+    public List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception{
+        return ${objectNameLower}Mapper.getDataListPage(pd,pg);
+    }
+
+    /**
+    * 创建人：${author} 自动创建，可以修改
+    * 创建时间：${nowDate?string("yyyy-MM-dd")}
+    */
+    @Override
     public void updateToDisableByIds(String[] ids)throws Exception{
-            ${objectNameLower}Mapper.updateToDisableByIds(ids);
+        ${objectNameLower}Mapper.updateToDisableByIds(ids);
     }
 }
 

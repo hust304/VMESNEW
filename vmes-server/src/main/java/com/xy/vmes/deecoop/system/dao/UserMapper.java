@@ -97,6 +97,13 @@ public interface UserMapper extends BaseMapper<User> {
 	@Select("getDataList")
 	List<Map> getDataList(PageData pd);
 
+	/**
+	 * 创建人：刘威
+	 * 创建时间：2018-07-26
+	 */
+	@Select("getDataList")
+	List<Map> getDataListPage(PageData pd,Pagination pg);
+
 }
 
 

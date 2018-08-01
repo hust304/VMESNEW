@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+说明：vmes_employ_post:员工岗位关系表 Mapper.xml
+创建人：刘威 自动创建
+创建时间：2018-08-01
+ -->
+<mapper namespace="com.xy.vmes.deecoop.system.dao.EmployPostMapper">
+
+    <!--表名 自动创建，禁止修改-->
+    <sql id="tableName">
+	vmes_employ_post
+    </sql>
+
+    <!-- 字段 自动创建，禁止修改-->
+    <sql id="Field">
+		employ_id employId,<!-- 员工ID -->
+		post_id postId,<!-- 岗位ID -->
+		isplurality isplurality,<!-- 是否兼岗(Y:兼岗N:主岗) 数据字典:sys_isplurality -->
+		isdisable isdisable,<!-- 是否禁用(1:已禁用 0:启用) 数据字典:sys_isdisable -->
+		cdate cdate,<!-- 创建时间 -->
+		cuser cuser,<!-- 创建人账号 -->
+		udate udate,<!-- 修改时间 -->
+		uuser uuser,<!-- 修改人账号 -->
+		id id <!-- id -->
+    </sql>
+
+    <!-- 字段值 自动创建，禁止修改-->
+    <sql id="FieldValue">
+		#{employId},<!-- 员工ID -->
+		#{postId},<!-- 岗位ID -->
+		#{isplurality},<!-- 是否兼岗(Y:兼岗N:主岗) 数据字典:sys_isplurality -->
+		#{isdisable},<!-- 是否禁用(1:已禁用 0:启用) 数据字典:sys_isdisable -->
+		#{cdate},<!-- 创建时间 -->
+		#{cuser},<!-- 创建人账号 -->
+		#{udate},<!-- 修改时间 -->
+		#{uuser},<!-- 修改人账号 -->
+		#{id} <!-- id -->
+    </sql>
+
+
+    <!-- 字段值 自动创建，禁止修改-->
+    <sql id="Column">
+        '员工ID'  employId,
+        '岗位ID'  postId,
+        '是否兼岗(Y:兼岗N:主岗) 数据字典:sys_isplurality'  isplurality,
+        '是否禁用(1:已禁用 0:启用) 数据字典:sys_isdisable'  isdisable,
+        '创建时间'  cdate,
+        '创建人账号'  cuser,
+        '修改时间'  udate,
+        '修改人账号'  uuser,
+        'id' id
+    </sql>
+
+    <!-- 自动创建，禁止修改 -->
+    <select id="findColumnList"  resultType="java.util.LinkedHashMap">
+        select
+        <include refid="Column"></include>
+        from dual
+    </select>
+
+    <!-- 自动创建，禁止修改 -->
+    <select id="findDataList"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
+        select
+        <include refid="Field"></include>
+        from
+        <include refid="tableName"></include>
+        where 1=1
+        <!--queryStr 自定义sql查询语句-->
+        <if test="queryStr != null and queryStr!=''" >
+            and FreeMarker template error (DEBUG mode; use RETHROW in production!):
+The following has evaluated to null or missing:
+==> queryStr  [in template "mapperMysqlTemplate.ftl" at line 74, column 19]
+
+----
+Tip: If the failing expression is known to be legally refer to something that's sometimes null or missing, either specify a default value like myOptionalVar!myDefault, or use <#if myOptionalVar??>when-present<#else>when-missing</#if>. (These only cover the last step of the expression; to cover the whole expression, use parenthesis: (myOptionalVar.foo)!myDefault, (myOptionalVar.foo)??
+----
+
+----
+FTL stack trace ("~" means nesting-related):
+	- Failed at: ${queryStr}  [in template "mapperMysqlTemplate.ftl" at line 74, column 17]
+----
+
+Java stack trace (for programmers):
+----
+freemarker.core.InvalidReferenceException: [... Exception message was already printed; see it above ...]
+	at freemarker.core.InvalidReferenceException.getInstance(InvalidReferenceException.java:134)
+	at freemarker.core.EvalUtil.coerceModelToTextualCommon(EvalUtil.java:465)
+	at freemarker.core.EvalUtil.coerceModelToStringOrMarkup(EvalUtil.java:387)
+	at freemarker.core.EvalUtil.coerceModelToStringOrMarkup(EvalUtil.java:356)
+	at freemarker.core.DollarVariable.calculateInterpolatedStringOrMarkup(DollarVariable.java:96)
+	at freemarker.core.DollarVariable.accept(DollarVariable.java:59)
+	at freemarker.core.Environment.visit(Environment.java:326)
+	at freemarker.core.Environment.visit(Environment.java:332)
+	at freemarker.core.Environment.process(Environment.java:305)
+	at freemarker.template.Template.process(Template.java:378)
+	at com.yvan.Freemarker.printFile(Freemarker.java:54)
+	at com.yvan.CreateCodeUtil.CreateCode(CreateCodeUtil.java:72)
+	at com.yvan.CreateCodeUtil.main(CreateCodeUtil.java:95)

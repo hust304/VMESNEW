@@ -2,7 +2,7 @@ package com.xy.vmes.deecoop.system.dao;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
-import com.xy.vmes.entity.Dictionary;
+import com.xy.vmes.entity.Post;
 import com.yvan.PageData;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
@@ -12,39 +12,39 @@ import java.util.List;
 import java.util.Map;
 
 /**
-* 说明：数据字典 Mapper.java
+* 说明：vmes_post:岗位管理 Mapper.java
 * 创建人：刘威 自动创建
-* 创建时间：2018-07-31
+* 创建时间：2018-08-01
 */
 @Mapper
 @Repository
-public interface DictionaryMapper extends BaseMapper<Dictionary> {
+public interface PostMapper extends BaseMapper<Post> {
 
 
 	/**
 	* 创建人：刘威 自动创建，禁止修改
-	* 创建时间：2018-07-31
+	* 创建时间：2018-08-01
 	*/
     @Select("datalistPage")
-    List<Dictionary> dataListPage(PageData pd,Pagination pg);
+    List<Post> dataListPage(PageData pd,Pagination pg);
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-07-31
+    * 创建时间：2018-08-01
     */
 	@Select("dataList")
-	List<Dictionary> dataList(PageData pd);
+	List<Post> dataList(PageData pd);
 
 	/**
 	* 创建人：刘威 自动创建，禁止修改
-	* 创建时间：2018-07-31
+	* 创建时间：2018-08-01
 	*/
 	@Delete("deleteByIds")
 	void deleteByIds(String[] ids);
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-07-31
+    * 创建时间：2018-08-01
     */
     @Select("findColumnList")
     List<LinkedHashMap> findColumnList();
@@ -52,7 +52,7 @@ public interface DictionaryMapper extends BaseMapper<Dictionary> {
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-07-31
+    * 创建时间：2018-08-01
     */
     @Select("findDataList")
     List<Map> findDataList(PageData pd);
@@ -63,7 +63,7 @@ public interface DictionaryMapper extends BaseMapper<Dictionary> {
 
     /**
     * 创建人：刘威 自动创建，可以修改
-    * 创建时间：2018-07-31
+    * 创建时间：2018-08-01
     */
     @Select("getColumnList")
     List<LinkedHashMap> getColumnList();
@@ -71,31 +71,24 @@ public interface DictionaryMapper extends BaseMapper<Dictionary> {
 
     /**
     * 创建人：刘威 自动创建，可以修改
-    * 创建时间：2018-07-31
+    * 创建时间：2018-08-01
     */
     @Select("getDataList")
     List<Map> getDataList(PageData pd);
 
     /**
      * 创建人：刘威 自动创建，可以修改
-     * 创建时间：2018-07-31
+     * 创建时间：2018-08-01
      */
     @Select("getDataList")
     List<Map> getDataListPage(PageData pd,Pagination pg);
 
     /**
     * 创建人：刘威 自动创建，可以修改
-    * 创建时间：2018-07-31
+    * 创建时间：2018-08-01
     */
     @Select("updateToDisableByIds")
     void updateToDisableByIds(String[] ids);
-
-    /**
-     * 创建人：刘威
-     * 创建时间：2018-08-01
-     */
-    @Select("getTreeList")
-    List<Map> getTreeList(PageData pd);
 }
 
 

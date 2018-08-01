@@ -19,10 +19,10 @@ public class CreateCodeUtil {
 
         PageData pd = new PageData();
 
-        String objectName = "Menu";//类名
-        String tableName = "vmes_menu";//表名
-        String title = "vmes_menu:系统功能菜单";
-        String author = "陈刚";
+        String objectName = "EmployPost";//类名
+        String tableName = "vmes_employ_post";//表名
+        String title = "vmes_employ_post:员工岗位关系表";
+        String author = "刘威";
         String projectName = "deecoop.system";//项目名
 
 
@@ -58,33 +58,33 @@ public class CreateCodeUtil {
         String ftlPath = path+"yvan-platform/src/main/java/com/yvan/ftl/";
         String filePath = path+"vmes-contracts/src/main/java/com/xy/vmes/entity/"+objectName+".java";
 
-//        //生成实体类
-//        root.put("classPath", "com.xy.vmes.entity");
-//        Freemarker.printFile("entityTemplate.ftl", root, filePath,  ftlPath);
-//
-//        //生成Mapper java
-//        root.put("classPath", "com.xy.vmes."+projectName+".dao");
-//        filePath = path+"vmes-server/src/main/java/com/xy/vmes/"+projectName.replace(".","/")+"/dao/"+objectName+"Mapper.java";
-//        Freemarker.printFile("mapperJavaTemplate.ftl", root, filePath, ftlPath);
-//
-//        //生成mybatis xml
-//        filePath = path+"vmes-server/src/main/resources/mapper/"+objectName+"Mapper.xml";
-//        Freemarker.printFile("mapperMysqlTemplate.ftl", root, filePath, ftlPath);
-//
-//        //生成Service java
-//        root.put("classPath", "com.xy.vmes.service");
-//        filePath = path+"vmes-contracts/src/main/java/com/xy/vmes/service/"+objectName+"Service.java";
-//        Freemarker.printFile("serviceJavaTemplate.ftl", root, filePath, ftlPath);
-//
-//        //生成ServiceImp java
-//        root.put("classPath", "com.xy.vmes."+projectName+".service");
-//        filePath = path+"vmes-server/src/main/java/com/xy/vmes/"+projectName.replace(".","/")+"/service/"+objectName+"ServiceImp.java";
-//        Freemarker.printFile("serviceImpJavaTemplate.ftl", root, filePath, ftlPath);
+        //生成实体类
+        root.put("classPath", "com.xy.vmes.entity");
+        Freemarker.printFile("entityTemplate.ftl", root, filePath,  ftlPath);
+
+        //生成Mapper java
+        root.put("classPath", "com.xy.vmes."+projectName+".dao");
+        filePath = path+"vmes-server/src/main/java/com/xy/vmes/"+projectName.replace(".","/")+"/dao/"+objectName+"Mapper.java";
+        Freemarker.printFile("mapperJavaTemplate.ftl", root, filePath, ftlPath);
+
+        //生成mybatis xml
+        filePath = path+"vmes-server/src/main/resources/mapper/"+objectName+"Mapper.xml";
+        Freemarker.printFile("mapperMysqlTemplate.ftl", root, filePath, ftlPath);
+
+        //生成Service java
+        root.put("classPath", "com.xy.vmes.service");
+        filePath = path+"vmes-contracts/src/main/java/com/xy/vmes/service/"+objectName+"Service.java";
+        Freemarker.printFile("serviceJavaTemplate.ftl", root, filePath, ftlPath);
+
+        //生成ServiceImp java
+        root.put("classPath", "com.xy.vmes."+projectName+".service");
+        filePath = path+"vmes-server/src/main/java/com/xy/vmes/"+projectName.replace(".","/")+"/service/"+objectName+"ServiceImp.java";
+        Freemarker.printFile("serviceImpJavaTemplate.ftl", root, filePath, ftlPath);
 
         //生成Controller java
-        root.put("classPath", "com.xy.vmes."+projectName+".controller");
-        filePath = path+"vmes-server/src/main/java/com/xy/vmes/"+projectName.replace(".","/")+"/controller/"+objectName+"Controller.java";
-        Freemarker.printFile("controllerJavaTemplate.ftl", root, filePath, ftlPath);
+//        root.put("classPath", "com.xy.vmes."+projectName+".controller");
+//        filePath = path+"vmes-server/src/main/java/com/xy/vmes/"+projectName.replace(".","/")+"/controller/"+objectName+"Controller.java";
+//        Freemarker.printFile("controllerJavaTemplate.ftl", root, filePath, ftlPath);
 
 
 //        Gson gosn = new Gson();

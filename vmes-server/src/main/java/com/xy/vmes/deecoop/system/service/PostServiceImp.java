@@ -1,9 +1,9 @@
 package com.xy.vmes.deecoop.system.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
-import com.xy.vmes.deecoop.system.dao.DictionaryMapper;
-import com.xy.vmes.entity.Dictionary;
-import com.xy.vmes.service.DictionaryService;
+import com.xy.vmes.deecoop.system.dao.PostMapper;
+import com.xy.vmes.entity.Post;
+import com.xy.vmes.service.PostService;
 import com.yvan.PageData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -17,162 +17,162 @@ import java.util.List;
 import java.util.Map;
 
 /**
-* 说明：数据字典 实现类
+* 说明：vmes_post:岗位管理 实现类
 * 创建人：刘威 自动创建
-* 创建时间：2018-07-31
+* 创建时间：2018-08-01
 */
 @Service
 @Transactional(readOnly = false)
-public class DictionaryServiceImp implements DictionaryService {
+public class PostServiceImp implements PostService {
 
 
     @Autowired
-    private DictionaryMapper dictionaryMapper;
+    private PostMapper postMapper;
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-07-31
+    * 创建时间：2018-08-01
     */
     @Override
-    public void save(Dictionary dictionary) throws Exception{
-        dictionary.setId(Conv.createUuid());
-        dictionary.setCdate(new Date());
-        dictionary.setUdate(new Date());
-        dictionaryMapper.insert(dictionary);
+    public void save(Post post) throws Exception{
+        post.setId(Conv.createUuid());
+        post.setCdate(new Date());
+        post.setUdate(new Date());
+        postMapper.insert(post);
     }
 
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-07-31
+    * 创建时间：2018-08-01
     */
     @Override
-    public void update(Dictionary dictionary) throws Exception{
-        dictionary.setUdate(new Date());
-        dictionaryMapper.updateById(dictionary);
+    public void update(Post post) throws Exception{
+        post.setUdate(new Date());
+        postMapper.updateById(post);
     }
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-07-31
+    * 创建时间：2018-08-01
     */
     @Override
-    //@Cacheable(cacheNames = "dictionary", key = "''+#id")
-    public Dictionary selectById(String id) throws Exception{
-        return dictionaryMapper.selectById(id);
+    //@Cacheable(cacheNames = "post", key = "''+#id")
+    public Post selectById(String id) throws Exception{
+        return postMapper.selectById(id);
     }
 
     /**
-    * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-07-31
-    */
+     * 创建人：刘威 自动创建，禁止修改
+     * 创建时间：2018-08-01
+     */
     @Override
     public void deleteById(String id) throws Exception{
-        dictionaryMapper.deleteById(id);
+        postMapper.deleteById(id);
+    }
+
+    /**
+     * 创建人：刘威 自动创建，禁止修改
+     * 创建时间：2018-08-01
+     */
+    @Override
+    public void deleteByIds(String[] ids) throws Exception{
+        postMapper.deleteByIds(ids);
     }
 
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-07-31
+    * 创建时间：2018-08-01
     */
     @Override
-    public List<Dictionary> dataListPage(PageData pd,Pagination pg) throws Exception{
-        return dictionaryMapper.dataListPage(pd,pg);
+    public List<Post> dataListPage(PageData pd,Pagination pg) throws Exception{
+        return postMapper.dataListPage(pd,pg);
     }
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-07-31
+    * 创建时间：2018-08-01
     */
     @Override
-    public List<Dictionary> dataList(PageData pd) throws Exception{
-        return dictionaryMapper.dataList(pd);
+    public List<Post> dataList(PageData pd) throws Exception{
+        return postMapper.dataList(pd);
     }
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-07-31
+    * 创建时间：2018-08-01
     */
     @Override
     public List<LinkedHashMap> findColumnList() throws Exception{
-        return dictionaryMapper.findColumnList();
+        return postMapper.findColumnList();
     }
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-07-31
+    * 创建时间：2018-08-01
     */
     @Override
     public List<Map> findDataList(PageData pd) throws Exception{
-        return dictionaryMapper.findDataList(pd);
+        return postMapper.findDataList(pd);
     }
 
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-07-31
+    * 创建时间：2018-08-01
     */
     @Override
     public void deleteByColumnMap(Map columnMap) throws Exception{
-        dictionaryMapper.deleteByMap(columnMap);
+        postMapper.deleteByMap(columnMap);
     }
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-07-31
+    * 创建时间：2018-08-01
     */
     @Override
-    public List<Dictionary> selectByColumnMap(Map columnMap) throws Exception{
-    List<Dictionary> dictionaryList =  dictionaryMapper.selectByMap(columnMap);
-        return dictionaryList;
+    public List<Post> selectByColumnMap(Map columnMap) throws Exception{
+    List<Post> postList =  postMapper.selectByMap(columnMap);
+        return postList;
     }
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
     /**
     * 创建人：刘威 自动创建，可以修改
-    * 创建时间：2018-07-31
+    * 创建时间：2018-08-01
     */
     @Override
     public List<LinkedHashMap> getColumnList() throws Exception{
-        return dictionaryMapper.getColumnList();
+        return postMapper.getColumnList();
     }
 
     /**
     * 创建人：刘威 自动创建，可以修改
-    * 创建时间：2018-07-31
+    * 创建时间：2018-08-01
     */
     @Override
     public List<Map> getDataList(PageData pd) throws Exception{
-        return dictionaryMapper.getDataList(pd);
+        return postMapper.getDataList(pd);
     }
 
     /**
      * 创建人：刘威 自动创建，可以修改
-     * 创建时间：2018-07-31
+     * 创建时间：2018-08-01
      */
     @Override
     public List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception{
-        return dictionaryMapper.getDataListPage(pd,pg);
+        return postMapper.getDataListPage(pd,pg);
     }
 
     /**
     * 创建人：刘威 自动创建，可以修改
-    * 创建时间：2018-07-31
+    * 创建时间：2018-08-01
     */
     @Override
     public void updateToDisableByIds(String[] ids)throws Exception{
-            dictionaryMapper.updateToDisableByIds(ids);
-    }
-
-    /**
-     * 创建人：刘威
-     * 创建时间：2018-08-01
-     */
-    @Override
-    public List<Map>  getTreeList(PageData pd)throws Exception{
-        return  dictionaryMapper.getTreeList(pd);
+            postMapper.updateToDisableByIds(ids);
     }
 }
 

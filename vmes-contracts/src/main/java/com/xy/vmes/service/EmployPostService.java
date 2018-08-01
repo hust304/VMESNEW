@@ -1,7 +1,7 @@
 package com.xy.vmes.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
-import com.xy.vmes.entity.Dictionary;
+import com.xy.vmes.entity.EmployPost;
 import com.yvan.PageData;
 
 import java.util.LinkedHashMap;
@@ -9,72 +9,78 @@ import java.util.List;
 import java.util.Map;
 
 /**
-* 说明：数据字典 接口类
+* 说明：vmes_employ_post:员工岗位关系表 接口类
 * 创建人：刘威 自动生成
-* 创建时间：2018-07-31
+* 创建时间：2018-08-01
 */
-public interface DictionaryService {
+public interface EmployPostService {
 
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-07-31
+    * 创建时间：2018-08-01
     */
-    void save(Dictionary dictionary) throws Exception;
+    void save(EmployPost employPost) throws Exception;
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-07-31
+    * 创建时间：2018-08-01
     */
-    void update(Dictionary dictionary) throws Exception;
+    void update(EmployPost employPost) throws Exception;
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-07-31
+    * 创建时间：2018-08-01
     */
     void deleteById(String id) throws Exception;
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-07-31
+    * 创建时间：2018-08-01
     */
-    Dictionary selectById(String id) throws Exception;
+    void deleteByIds(String[] ids) throws Exception;
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-07-31
+    * 创建时间：2018-08-01
     */
-    List<Dictionary> dataListPage(PageData pd,Pagination pg) throws Exception;
+    EmployPost selectById(String id) throws Exception;
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-07-31
+    * 创建时间：2018-08-01
     */
-    List<Dictionary> dataList(PageData pd) throws Exception;
+    List<EmployPost> dataListPage(PageData pd,Pagination pg) throws Exception;
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-07-31
+    * 创建时间：2018-08-01
+    */
+    List<EmployPost> dataList(PageData pd) throws Exception;
+
+    /**
+    * 创建人：刘威 自动创建，禁止修改
+    * 创建时间：2018-08-01
     */
     List<LinkedHashMap> findColumnList() throws Exception;
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-07-31
+    * 创建时间：2018-08-01
     */
     List<Map> findDataList(PageData pd) throws Exception;
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-07-31
+    * 创建时间：2018-08-01
     */
     void deleteByColumnMap(Map columnMap) throws Exception;
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-07-31
+    * 创建时间：2018-08-01
     */
-    List<Dictionary> selectByColumnMap(Map columnMap) throws Exception;
+    List<EmployPost> selectByColumnMap(Map columnMap) throws Exception;
 
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
@@ -82,33 +88,28 @@ public interface DictionaryService {
 
     /**
     * 创建人：刘威 自动创建，可以修改
-    * 创建时间：2018-07-31
+    * 创建时间：2018-08-01
     */
     List<LinkedHashMap> getColumnList() throws Exception;
 
     /**
     * 创建人：刘威 自动创建，可以修改
-    * 创建时间：2018-07-31
+    * 创建时间：2018-08-01
     */
     List<Map> getDataList(PageData pd) throws Exception;
 
     /**
-     * 创建人：刘威 自动创建，可以修改
-     * 创建时间：2018-07-31
-     */
+    * 创建人：刘威 自动创建，可以修改
+    * 创建时间：2018-08-01
+    */
     List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception;
 
     /**
     * 创建人：刘威 自动创建，可以修改
-    * 创建时间：2018-07-31
+    * 创建时间：2018-08-01
     */
     void updateToDisableByIds(String[] ids)throws Exception;
 
-    /**
-     * 创建人：刘威
-     * 创建时间：2018-08-01
-     */
-    List<Map> getTreeList(PageData pd)throws Exception;
 }
 
 

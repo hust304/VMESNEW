@@ -195,6 +195,15 @@ public class UserServiceImp implements UserService {
         return userMapper.getDataList(pd);
     }
 
+    /**
+     * 创建人：刘威
+     * 创建时间：2018-07-26
+     */
+    @Override
+    public List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception{
+        return userMapper.getDataListPage(pd,pg);
+    }
+
 }
 
 

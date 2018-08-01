@@ -38,6 +38,12 @@ public interface ${objectName}Service {
     * 创建人：${author} 自动创建，禁止修改
     * 创建时间：${nowDate?string("yyyy-MM-dd")}
     */
+    void deleteByIds(String[] ids) throws Exception;
+
+    /**
+    * 创建人：${author} 自动创建，禁止修改
+    * 创建时间：${nowDate?string("yyyy-MM-dd")}
+    */
     ${objectName} selectById(String id) throws Exception;
 
     /**
@@ -91,6 +97,12 @@ public interface ${objectName}Service {
     * 创建时间：${nowDate?string("yyyy-MM-dd")}
     */
     List<Map> getDataList(PageData pd) throws Exception;
+
+    /**
+    * 创建人：${author} 自动创建，可以修改
+    * 创建时间：${nowDate?string("yyyy-MM-dd")}
+    */
+    List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception;
 
     /**
     * 创建人：${author} 自动创建，可以修改

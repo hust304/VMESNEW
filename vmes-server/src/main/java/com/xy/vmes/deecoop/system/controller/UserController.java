@@ -317,11 +317,12 @@ public class UserController {
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
+        Pagination pg = HttpUtils.parsePagination();
 
         Map result = new HashMap();
         List<LinkedHashMap> titles = userService.getColumnList();
         result.put("titles",titles.get(0));
-        List<Map> varList = userService.getDataList(pd);
+        List<Map> varList = userService.getDataListPage(pd,pg);
         result.put("varList",varList);
         model.putResult(result);
 

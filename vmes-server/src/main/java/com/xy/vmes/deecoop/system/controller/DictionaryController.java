@@ -49,7 +49,7 @@ public class DictionaryController {
     @Autowired
     private UserService userService;
     @Autowired
-    RedisClient redisClient;
+    private RedisClient redisClient;
 
     /**
     * @author 刘威 自动创建，禁止修改
@@ -317,10 +317,11 @@ public class DictionaryController {
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
+        Pagination pg = HttpUtils.parsePagination();
         Map result = new HashMap();
         List<LinkedHashMap> titles =dictionaryService.getColumnList();
         result.put("titles",titles.get(0));
-        List<Map> varList = dictionaryService.getDataList(pd);
+        List<Map> varList = dictionaryService.getDataListPage(pd,pg);
         result.put("varList",varList);
         model.putResult(result);
 
