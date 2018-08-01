@@ -7,10 +7,9 @@ import com.xy.vmes.entity.CoderuleEntity;
 import com.xy.vmes.service.CoderuleService;
 import com.xy.vmes.service.UserService;
 import com.yvan.Conv;
-import com.yvan.common.Common;
+import com.xy.vmes.common.util.Common;
 import com.yvan.PageData;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

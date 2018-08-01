@@ -16,8 +16,9 @@
     <sql id="Field">
 		pid pid,<!-- 上级id-根root -->
 		company_id companyId,<!-- 公司ID-组织架构 -->
-		model_code modelCode,<!-- 菜单编号(表名,类名) -->
+		code code,<!-- 菜单编号 -->
 		name name,<!-- 菜单名称 -->
+        name_en nameEn,<!-- 英文名称 -->
 		serial_number serialNumber,<!-- 菜单顺序 -->
 		icon icon,<!-- 菜单图标 -->
 		type type,<!--  -->
@@ -42,8 +43,9 @@
     <sql id="FieldValue">
 		#{pid},<!-- 上级id-根root -->
 		#{companyId},<!-- 公司ID-组织架构 -->
-		#{modelCode},<!-- 菜单编号(表名,类名) -->
+		#{code},<!-- 菜单编号-->
 		#{name},<!-- 菜单名称 -->
+        #{nameEn},<!-- 英文名称 -->
 		#{serialNumber},<!-- 菜单顺序 -->
 		#{icon},<!-- 菜单图标 -->
 		#{type},<!--  -->
@@ -69,8 +71,9 @@
     <sql id="Column">
         '上级id-根root'  pid,
         '公司ID-组织架构'  companyId,
-        '菜单编号(表名,类名)'  modelCode,
+        '菜单编号'  code,
         '菜单名称'  name,
+        '英文名称'  nameEn,
         '菜单顺序'  serialNumber,
         '菜单图标'  icon,
         ''  type,
@@ -175,8 +178,8 @@
                     <if test="companyId != null and companyId != ''" >
                         and company_id=#{companyId}
                     </if>
-                    <if test="modelCode != null and modelCode != ''" >
-                        and model_code=#{modelCode}
+                    <if test="code != null and code != ''" >
+                        and code=#{code}
                     </if>
                     <if test="pid != null and pid != ''" >
                         and pid=#{pid}

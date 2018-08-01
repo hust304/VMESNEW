@@ -76,6 +76,21 @@ public interface MenuService {
     void updateDisableByIds(String[] ids) throws Exception;
 
     /**
+     * 创建人：陈刚
+     * 创建时间：2018-07-31
+     * @param object
+     * @return
+     */
+    String checkColumnByAdd(Menu object);
+    /**
+     * 创建人：陈刚
+     * 创建时间：2018-07-31
+     * @param object
+     * @return
+     */
+    String checkColumnByEdit(Menu object);
+
+    /**
      * 查询菜单表(vmes_menu)
      * @param object
      * @return
@@ -154,8 +169,21 @@ public interface MenuService {
      */
     Integer findMaxLayerByMenuList(List<Menu> objectList);
 
+    Menu id2MenuByLayer(String id, Integer layer, Menu objectDB);
+    Menu paterObject2ObjectDB(Menu paterObject, Menu objectDB);
+    Menu clearMenuByPath(Menu objectDB);
+    Menu object2objectDB(Menu object, Menu objectDB);
 
-
+    /**
+     * check菜单ID是否允许删除
+     * 菜单ID(菜单按钮)-是否使用
+     *
+     * 创建人：陈刚
+     * 创建时间：2018-07-30
+     * @param ids
+     * @return
+     */
+    String checkDeleteMenuByIds(String ids);
 }
 
 

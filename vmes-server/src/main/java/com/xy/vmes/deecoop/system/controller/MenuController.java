@@ -1,10 +1,11 @@
 package com.xy.vmes.deecoop.system.controller;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
-import com.google.gson.Gson;
+import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.Department;
 import com.xy.vmes.entity.Menu;
 import com.xy.vmes.service.MenuService;
+import com.yvan.Conv;
 import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
@@ -23,8 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.text.MessageFormat;
 import java.util.*;
 
 
@@ -188,6 +188,26 @@ public class MenuController {
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
     /**
+     * 菜单列表分页
+     *
+     * @author 陈刚
+     * @date 2018-08-01
+     */
+    @PostMapping("/menu/listPageMenus")
+    public ResultModel listPageMenus() {
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        try {
+
+        } catch (Exception e) {
+            throw new RestException("", e.getMessage());
+        }
+
+        return model;
+    }
+
+    /**
      * 新增菜单
      *
      * @author 陈刚
@@ -198,8 +218,58 @@ public class MenuController {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
-        try {
+        //1. 非空判断
+        if (pageData == null || pageData.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("参数错误：用户登录参数(pageData)为空！</br>");
+            return model;
+        }
 
+        Menu menuObj = (Menu)HttpUtils.pageData2Entity(pageData, new Menu());
+        if (menuObj == null) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("参数错误：Map 转 菜单对象Menu 异常！</br>");
+            return model;
+        }
+
+        String msgStr = menuService.checkColumnByAdd(menuObj);
+        if (msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
+
+        //pid 获取父节点对象<Menu>
+        Menu paterObj = menuService.findMenuById(menuObj.getPid());
+        if (paterObj == null) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("(pid:"+ menuObj.getPid() + ")系统中无数据，请与管理员联系！</br>");
+            return model;
+        }
+
+        //2. (菜单名称)在同一层名称不可重复
+        if (menuService.isExistByName(menuObj.getPid(), null, menuObj.getName())) {
+            String msgTemp = "上级菜单名称: {0}<br/>菜单名称: {1}<br/>在系统中已经重复！</br>";
+            String str_isnull = MessageFormat.format(msgTemp,
+                    paterObj.getName(),
+                    menuObj.getName());
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(str_isnull);
+            return model;
+        }
+
+        try {
+            String id = Conv.createUuid();
+            menuObj.setId(id);
+            menuObj = menuService.id2MenuByLayer(id,
+                    Integer.valueOf(paterObj.getLayer().intValue() + 1),
+                    menuObj);
+            menuObj = menuService.paterObject2ObjectDB(paterObj, menuObj);
+
+            //设置菜单级别
+            menuObj.setLayer(Integer.valueOf(paterObj.getLayer().intValue() + 1));
+
+            menuService.save(menuObj);
         } catch (Exception e) {
             throw new RestException("", e.getMessage());
         }
@@ -218,8 +288,58 @@ public class MenuController {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
-        try {
+        //1. 非空判断
+        if (pageData == null || pageData.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("参数错误：用户登录参数(pageData)为空！</br>");
+            return model;
+        }
 
+        Menu menuObj = (Menu)HttpUtils.pageData2Entity(pageData, new Menu());
+        if (menuObj == null) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("参数错误：Map 转 菜单对象Menu 异常！</br>");
+            return model;
+        }
+
+        String msgStr = menuService.checkColumnByEdit(menuObj);
+        if (msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
+
+        //pid 获取父节点对象<Menu>
+        Menu paterObj = menuService.findMenuById(menuObj.getPid());
+        if (paterObj == null) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("(pid:"+ menuObj.getPid() + ")系统中无数据，请与管理员联系！</br>");
+            return model;
+        }
+
+        //2. (菜单名称)在同一层名称不可重复
+        if (menuService.isExistByName(menuObj.getPid(), menuObj.getId(), menuObj.getName())) {
+            String msgTemp = "上级菜单名称: {0}<br/>菜单名称: {1}<br/>在系统中已经重复！</br>";
+            msgTemp = MessageFormat.format(msgTemp,
+                    paterObj.getName(),
+                    menuObj.getName());
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgTemp);
+            return model;
+        }
+
+        try {
+            Menu menuDB = menuService.findMenuById(menuObj.getId());
+            menuDB = menuService.object2objectDB(menuObj, menuDB);
+            menuDB = menuService.clearMenuByPath(menuDB);
+            menuDB = menuService.id2MenuByLayer(menuDB.getId(),
+                    Integer.valueOf(paterObj.getLayer().intValue() + 1),
+                    menuDB);
+            menuDB = menuService.paterObject2ObjectDB(paterObj, menuDB);
+
+            //设置部门级别
+            menuDB.setLayer(Integer.valueOf(paterObj.getLayer().intValue() + 1));
+            menuService.update(menuDB);
         } catch (Exception e) {
             throw new RestException("", e.getMessage());
         }
@@ -237,8 +357,42 @@ public class MenuController {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
-        try {
+        //1. 非空判断
+        if (pageData == null || pageData.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("参数错误：用户登录参数(pageData)为空！</br>");
+            return model;
+        }
 
+        String id = (String)pageData.get("id");
+        String isdisable = (String)pageData.get("isdisable");
+
+        String msgStr = new String();
+        if (id == null || id.trim().length() == 0) {
+            msgStr = msgStr + "id为空或空字符串！<br/>";
+        }
+        if (isdisable == null || isdisable.trim().length() == 0) {
+            msgStr = msgStr + "isdisable为空或空字符串！<br/>";
+        }
+        if (msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
+
+        //2. 当前菜单ID(菜单按钮)中是否使用中
+        msgStr = menuService.checkDeleteMenuByIds(id);
+        if (msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
+
+        try {
+            Menu objectDB = menuService.findMenuById(id);
+            objectDB.setIsdisable(isdisable);
+            objectDB.setUdate(new Date());
+            menuService.update(objectDB);
         } catch (Exception e) {
             throw new RestException("", e.getMessage());
         }
@@ -256,6 +410,51 @@ public class MenuController {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
+        //1. 非空判断
+        if (pageData == null || pageData.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("参数错误：用户登录参数(pageData)为空！</br>");
+            return model;
+        }
+
+        String menuIds = (String)pageData.get("menuIds");
+        if (menuIds == null || menuIds.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("参数错误：请至少选择一行数据！</br>");
+            return model;
+        }
+
+        String id_str = StringUtil.stringTrimSpace(menuIds);
+        String[] id_arry = id_str.split(",");
+
+        //2. 当前菜单ID(菜单按钮)中是否使用中
+        String msgStr = menuService.checkDeleteMenuByIds(id_str);
+        if (msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
+
+        try {
+            menuService.updateDisableByIds(id_arry);
+        } catch (Exception e) {
+            throw new RestException("", e.getMessage());
+        }
+
+        return model;
+    }
+
+    /**
+     * 菜单Excel导出
+     *
+     * @author 陈刚
+     * @date 2018-08-01
+     */
+    @PostMapping("/menu/exportExcelMenus")
+    public ResultModel exportExcelMenus() {
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
         try {
 
         } catch (Exception e) {
@@ -264,6 +463,47 @@ public class MenuController {
 
         return model;
     }
+
+    /**
+     * 菜单Excel导入
+     *
+     * @author 陈刚
+     * @date 2018-08-01
+     */
+    @PostMapping("/menu/importExcelMenus")
+    public ResultModel importExcelMenus() {
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        try {
+
+        } catch (Exception e) {
+            throw new RestException("", e.getMessage());
+        }
+
+        return model;
+    }
+
+    /**
+     * 菜单树
+     *
+     * @author 陈刚
+     * @date 2018-08-01
+     */
+    @PostMapping("/menu/treeMeuns")
+    public ResultModel treeMeuns() {
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        try {
+
+        } catch (Exception e) {
+            throw new RestException("", e.getMessage());
+        }
+
+        return model;
+    }
+
 
 }
 

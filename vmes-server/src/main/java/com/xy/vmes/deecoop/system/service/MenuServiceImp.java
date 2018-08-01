@@ -2,7 +2,8 @@ package com.xy.vmes.deecoop.system.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.deecoop.system.dao.MenuMapper;
-import com.xy.vmes.entity.Menu;
+import com.xy.vmes.entity.*;
+import com.xy.vmes.service.MenuButtonService;
 import com.xy.vmes.service.MenuService;
 import com.xy.vmes.service.MenuTreeService;
 import com.yvan.HttpUtils;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.MessageFormat;
 import java.util.*;
 
 import com.yvan.Conv;
@@ -25,10 +27,10 @@ import com.yvan.Conv;
 @Service
 @Transactional(readOnly = false)
 public class MenuServiceImp implements MenuService {
-
-
     @Autowired
     private MenuMapper menuMapper;
+    @Autowired
+    private MenuButtonService menuButtonService;
 
     /**
     * 创建人：陈刚 自动创建，禁止修改
@@ -122,6 +124,54 @@ public class MenuServiceImp implements MenuService {
      */
     public void updateDisableByIds(String[] ids) throws Exception {
         menuMapper.updateDisableByIds(ids);
+    }
+
+    /**
+     * 创建人：陈刚
+     * 创建时间：2018-07-31
+     * @param object
+     * @return
+     */
+    public String checkColumnByAdd(Menu object) {
+        if (object == null) {return new String();}
+
+        StringBuffer msgBuf = new StringBuffer();
+        String column_isnull = "({0})输入为空或空字符串，({0})是必填字段不可为空！<br/>";
+
+        if (object.getPid() == null || object.getPid().trim().length() == 0) {
+            msgBuf.append("pid为空或空字符串！<br/>");
+        }
+        if (object.getName() == null || object.getName().trim().length() == 0) {
+            String str_isnull = MessageFormat.format(column_isnull, "菜单名称");
+            msgBuf.append(str_isnull);
+        }
+
+        return msgBuf.toString();
+    }
+    /**
+     * 创建人：陈刚
+     * 创建时间：2018-07-31
+     * @param object
+     * @return
+     */
+    public String checkColumnByEdit(Menu object) {
+        if (object == null) {return new String();}
+
+        StringBuffer msgBuf = new StringBuffer();
+        String column_isnull = "({0})输入为空或空字符串，({0})是必填字段不可为空！<br/>";
+
+        if (object.getId() == null || object.getId().trim().length() == 0) {
+            msgBuf.append("id为空或空字符串！<br/>");
+        }
+        if (object.getPid() == null || object.getPid().trim().length() == 0) {
+            msgBuf.append("pid为空或空字符串！<br/>");
+        }
+        if (object.getName() == null || object.getName().trim().length() == 0) {
+            String str_isnull = MessageFormat.format(column_isnull, "菜单名称");
+            msgBuf.append(str_isnull);
+        }
+
+        return msgBuf.toString();
     }
 
     /**
@@ -339,6 +389,116 @@ public class MenuServiceImp implements MenuService {
 
         if (maxLayer > 0) {return Integer.valueOf(maxLayer);}
         return null;
+    }
+
+    public Menu id2MenuByLayer(String id, Integer layer, Menu objectDB) {
+        if (objectDB == null) {objectDB = new Menu();}
+        if (id == null || id.trim().length() == 0) {return objectDB;}
+        if (layer == null) {return objectDB;}
+
+        if (0 == layer.intValue()) {
+            objectDB.setId0(id);
+        } else if (1 == layer.intValue()) {
+            objectDB.setId1(id);
+        } else if (2 == layer.intValue()) {
+            objectDB.setId2(id);
+        } else if (3 == layer.intValue()) {
+            objectDB.setId3(id);
+        } else if (4 == layer.intValue()) {
+            objectDB.setId4(id);
+        } else if (layer.intValue() == 5) {
+            objectDB.setId5(id);
+        }
+
+        return objectDB;
+    }
+
+    public Menu paterObject2ObjectDB(Menu paterObject, Menu objectDB) {
+        if (objectDB == null) {objectDB = new Menu();}
+        if (paterObject == null) {return objectDB;}
+
+        if (paterObject.getId0() != null && paterObject.getId0().trim().length() > 0) {
+            objectDB.setId0(paterObject.getId0().trim());
+        }
+        if (paterObject.getId1() != null && paterObject.getId1().trim().length() > 0) {
+            objectDB.setId1(paterObject.getId1().trim());
+        }
+        if (paterObject.getId2() != null && paterObject.getId2().trim().length() > 0) {
+            objectDB.setId2(paterObject.getId2().trim());
+        }
+        if (paterObject.getId3() != null && paterObject.getId3().trim().length() > 0) {
+            objectDB.setId3(paterObject.getId3().trim());
+        }
+        if (paterObject.getId4() != null && paterObject.getId4().trim().length() > 0) {
+            objectDB.setId4(paterObject.getId4().trim());
+        }
+        if (paterObject.getId5() != null && paterObject.getId5().trim().length() > 0) {
+            objectDB.setId5(paterObject.getId5().trim());
+        }
+
+        return objectDB;
+    }
+
+    public Menu clearMenuByPath(Menu objectDB) {
+        if (objectDB == null) {objectDB = new Menu();}
+
+        objectDB.setId0(null);
+        objectDB.setId1(null);
+        objectDB.setId2(null);
+        objectDB.setId3(null);
+        objectDB.setId4(null);
+        objectDB.setId5(null);
+        objectDB.setLayer(null);
+
+        return objectDB;
+    }
+
+    public Menu object2objectDB(Menu object, Menu objectDB) {
+        if (objectDB == null) {objectDB = new Menu();}
+        if (object == null) {return objectDB;}
+
+        objectDB.setPid(object.getPid());
+        objectDB.setName(object.getName());
+        objectDB.setSerialNumber(object.getSerialNumber());
+        objectDB.setUrl(object.getUrl());
+        objectDB.setIsdisable(object.getIsdisable());
+
+        return objectDB;
+    }
+
+    /**
+     * check菜单ID是否允许删除
+     * 菜单ID(菜单按钮)-是否使用
+     *
+     * 创建人：陈刚
+     * 创建时间：2018-07-30
+     * @param ids
+     * @return
+     */
+    public String checkDeleteMenuByIds(String ids) {
+        if (ids == null || ids.trim().length() == 0) {return new String();}
+
+        String msgTemp = "第&nbsp;{0}&nbsp;行:&nbsp;菜单在({1})中使用不可禁用！<br/>";
+        StringBuffer msgBuf = new StringBuffer();
+
+        String[] menuid_arry = ids.split(",");
+        PageData findMap = new PageData();
+        for (int i = 0; i < menuid_arry.length; i++) {
+            String menuid = menuid_arry[i];
+
+            findMap.put("isdisable", "0");
+            findMap.put("roleId", menuid);
+            findMap.put("mapSize", Integer.valueOf(findMap.size()));
+
+            //当前菜单ID(菜单按钮)
+            List<MenuButton> list = menuButtonService.findMenuButtonList(findMap);
+            if (list != null && list.size() > 0) {
+                String msg_3 = MessageFormat.format(msgTemp, (i+1), "菜单按钮");
+                msgBuf.append(msg_3);
+            }
+        }
+
+        return  msgBuf.toString();
     }
 }
 

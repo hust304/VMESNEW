@@ -7,11 +7,10 @@ import com.xy.vmes.entity.Department;
 import com.xy.vmes.service.CoderuleService;
 import com.xy.vmes.service.DepartmentService;
 import com.xy.vmes.service.DepartmentTreeService;
-import com.yvan.Conv;
 import com.yvan.PageData;
 import com.yvan.Tree;
 import com.yvan.HttpUtils;
-import com.yvan.common.Common;
+import com.xy.vmes.common.util.Common;
 import com.yvan.platform.RestException;
 
 import org.springframework.beans.factory.annotation.Autowired;
