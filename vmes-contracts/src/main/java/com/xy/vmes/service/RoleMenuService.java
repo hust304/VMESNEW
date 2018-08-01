@@ -87,6 +87,13 @@ public interface RoleMenuService {
      * 创建时间：2018-07-31
      */
     void updateDisableByRoleId(String roleId);
+
+    /**
+     * 角色菜单-关联菜单表-<Map>
+     * @param pd
+     * @return
+     */
+    List<Map<String, Object>> findRoleMenuMapList(PageData pd);
 }
 
 

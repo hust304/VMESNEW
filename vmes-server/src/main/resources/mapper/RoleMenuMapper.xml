@@ -178,5 +178,63 @@
         role_id = #{roleId}
     </update>
 
+    <select id="findRoleMenuMapList" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+            a.id
+            a.role_id as roleId
+            a.menu_id as menuId
+            a.isdisable as isdisable
+
+            b.id as menuId,
+            b.pid as menuPid,
+            b.company_id as menuCompanyId,
+            b.code as menuCode,
+            b.name as menuName,
+
+            b.name_en as menuNameEn,
+            b.serial_numbe as menuSerialNumber,
+            b.icon as menuIcon,
+            b.type as menuType,
+            b.url as menuUrl,
+
+            b.isleaf as menuIsleaf,
+            b.layer as menuLayer,
+            b.isdisable as menuIsdisable,
+            b.cdate as menuCdate,
+            b.cuser as menuCuser,
+
+            b.udate as menuUdate,
+            b.uuser as menuUuser,
+            b.id_0 as menuId0,
+            b.id_1 as menuId1,
+            b.id_2 as menuId2,
+
+            b.id_3 as menuId3,
+            b.id_4 as menuId4,
+            b.id_5 as menuId5
+        from vmes_role_menu a
+            left join vmes_menu b on a.menu_id = b.id
+        <choose>
+            <when test="(mapSize == null || mapSize == 0) and 'true' != isQueryAll ">
+                where 1=2
+            </when>
+            <otherwise>
+                <where>
+                    <if test="isdisable != null and isdisable != ''" >
+                        and a.isdisable = #{isdisable}
+                    </if>
+                    <if test="menuIsdisable != null and menuIsdisable != ''" >
+                        and b.isdisable = #{menuIsdisable}
+                    </if>
+
+                    <!--queryStr 自定义sql查询语句-->
+                    <if test="queryStr != null and queryStr!=''" >
+                        and ${queryStr}
+                    </if>
+                </where>
+            </otherwise>
+        </choose>
+    </select>
+
 
 </mapper>

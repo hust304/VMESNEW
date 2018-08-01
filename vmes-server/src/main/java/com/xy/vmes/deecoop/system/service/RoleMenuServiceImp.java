@@ -164,6 +164,15 @@ public class RoleMenuServiceImp implements RoleMenuService {
     public void updateDisableByRoleId(String roleId) {
         roleMenuMapper.updateDisableByRoleId(roleId);
     }
+
+    /**
+     * 角色菜单-关联菜单表-<Map>
+     * @param pd
+     * @return
+     */
+    public List<Map<String, Object>> findRoleMenuMapList(PageData pd) {
+        return roleMenuMapper.findRoleMenuMapList(pd);
+    }
 }
 
 
