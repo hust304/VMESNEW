@@ -258,12 +258,23 @@ public class PostController {
         return model;
     }
 
-    private boolean checkExsitOnlineEmployee(String id) {
+    private boolean checkExsitOnlineEmployee(String postId) throws Exception {
+        PageData pd = new PageData();
+        pd.putQueryStr("post_id = '"+postId+"' and isdisable = 0 ");
+        List<Map> varList = employPostService.getDataList(pd);
+        if(varList!=null&&varList.size()>0){
+            return true;
+        }
         return false;
     }
 
-    private boolean checkExsitEmployee(String id) {
-
+    private boolean checkExsitEmployee(String postId) throws Exception  {
+        PageData pd = new PageData();
+        pd.putQueryStr("post_id = '"+postId+"'");
+        List<Map> varList = employPostService.getDataList(pd);
+        if(varList!=null&&varList.size()>0){
+            return true;
+        }
         return false;
     }
 

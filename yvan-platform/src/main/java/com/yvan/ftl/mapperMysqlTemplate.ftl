@@ -71,7 +71,7 @@
         where 1=1
         <!--queryStr 自定义sql查询语句-->
         <if test="queryStr != null and queryStr!=''" >
-            and ${queryStr}
+            and ${r"${"}queryStr${r"}"}
         </if>
         <if test="keywords!= null and keywords != ''"><!-- 关键词检索 -->
             and
@@ -94,7 +94,7 @@
         where 1=1
         <!--queryStr 自定义sql查询语句-->
         <if test="queryStr != null and queryStr!=''" >
-            and ${queryStr}
+            and ${r"${"}queryStr${r"}"}
         </if>
         <if test="keywords!= null and keywords != ''"><!-- 关键词检索 -->
             and
@@ -212,7 +212,7 @@
         where 1=1
         <!--queryStr 自定义sql查询语句-->
         <if test="queryStr != null and queryStr!=''" >
-            and ${queryStr}
+            and ${r"${"}queryStr${r"}"}
         </if>
         <if test="keywords!= null and keywords != ''"><!-- 关键词检索 -->
             and

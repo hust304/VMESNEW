@@ -137,6 +137,11 @@ public class PageData extends HashMap implements Map{
 	public Object put(Object key, Object value) {
 		return map.put(key, value);
 	}
+
+	public Object putQueryStr(Object value) {
+		return map.put("queryStr", value);
+	}
+
 	
 	@Override
 	public Object remove(Object key) {
