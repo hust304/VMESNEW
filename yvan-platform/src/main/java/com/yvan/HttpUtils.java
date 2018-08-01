@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.yvan.platform.HttpParameterParser;
 import com.yvan.platform.RestException;
-import com.yvan.common.util.DateFormat;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -113,7 +112,7 @@ public class HttpUtils {
                             Integer valueObj = Integer.valueOf(mapValue);
                             field.set(entityObj, valueObj);
                         } else if (attribute.indexOf("java.util.Date") != -1) {
-                            Date valueObj = DateFormat.dateString2Date(mapValue, DateFormat.DEFAULT_DATETIME_FORMAT);
+                            Date valueObj = DateUtils.fromDateTime(mapValue);
                             field.set(entityObj, valueObj);
                         } else if (attribute.indexOf("java.math.BigDecimal") != -1) {
                             BigDecimal valueObj = new BigDecimal(mapValue);

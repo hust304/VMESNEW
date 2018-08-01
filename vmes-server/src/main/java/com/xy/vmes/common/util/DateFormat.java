@@ -1,7 +1,7 @@
-package com.yvan.common.util;
+package com.xy.vmes.common.util;
 
-import java.util.Date;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class DateFormat {
     /**缺省日期格式*/

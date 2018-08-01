@@ -5,7 +5,7 @@ import com.xy.vmes.service.MenuTreeService;
 import com.xy.vmes.service.MenuService;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
-import com.yvan.common.util.StringUtil;
+import com.xy.vmes.common.util.StringUtil;
 import com.yvan.platform.RestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

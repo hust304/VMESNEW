@@ -6,7 +6,7 @@ import com.xy.vmes.entity.UserRole;
 import com.xy.vmes.service.UserRoleService;
 import com.yvan.Conv;
 import com.yvan.PageData;
-import com.yvan.common.util.StringUtil;
+import com.xy.vmes.common.util.StringUtil;
 import com.yvan.platform.RestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

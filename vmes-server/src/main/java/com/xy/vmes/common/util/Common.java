@@ -1,4 +1,4 @@
-package com.yvan.common;
+package com.xy.vmes.common.util;
 
 public class Common {
     public final static String REDIS_SECURITY_CODE = "securityCode";
@@ -44,5 +44,4 @@ public class Common {
     //2:日期字符串
     //3:编码流水号
     public static final String CODE_RULE_DEFAULT = "{0}{1}{2}{3}";
-
 }

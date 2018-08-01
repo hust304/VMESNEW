@@ -1,4 +1,4 @@
-package com.yvan.common.util;
+package com.xy.vmes.common.util;
 
 public class StringUtil {
     /**

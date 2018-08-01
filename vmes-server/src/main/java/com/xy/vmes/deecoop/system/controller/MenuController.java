@@ -2,11 +2,13 @@ package com.xy.vmes.deecoop.system.controller;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.google.gson.Gson;
+import com.xy.vmes.entity.Department;
 import com.xy.vmes.entity.Menu;
 import com.xy.vmes.service.MenuService;
 import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
+import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
 import com.yvan.template.ExcelAjaxTemplate;
 import lombok.extern.slf4j.Slf4j;
@@ -175,8 +177,8 @@ public class MenuController {
                 PageData pd = HttpUtils.parsePageData();
                 List<LinkedHashMap> titles = menuService.findColumnList();
                 request.setAttribute("titles", titles.get(0));
-                List<Map> varList = menuService.findDataList(pd);
-                    request.setAttribute("varList", varList);
+                //List<Map> varList = menuService.findDataList(pd);
+                    //request.setAttribute("varList", varList);
                 }
         });
         Long endTime = System.currentTimeMillis();
@@ -185,6 +187,83 @@ public class MenuController {
 
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+    /**
+     * 新增菜单
+     *
+     * @author 陈刚
+     * @date 2018-08-01
+     */
+    @PostMapping("/menu/addMenu")
+    public ResultModel addMenu() {
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        try {
+
+        } catch (Exception e) {
+            throw new RestException("", e.getMessage());
+        }
+
+        return model;
+    }
+
+    /**
+     * 修改菜单
+     *
+     * @author 陈刚
+     * @date 2018-08-01
+     */
+    @PostMapping("/menu/updateMenu")
+    public ResultModel updateMenu() {
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        try {
+
+        } catch (Exception e) {
+            throw new RestException("", e.getMessage());
+        }
+
+        return model;
+    }
+
+    /**修改菜单(禁用)状态
+     *
+     * @author 陈刚
+     * @date 2018-08-01
+     */
+    @PostMapping("/department/updateMenuDisable")
+    public ResultModel updateMenuDisable() {
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        try {
+
+        } catch (Exception e) {
+            throw new RestException("", e.getMessage());
+        }
+
+        return model;
+    }
+
+    /**删除菜单
+     *
+     * @author 陈刚
+     * @date 2018-08-01
+     */
+    @PostMapping("/department/deleteMenus")
+    public ResultModel deleteMenus() {
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        try {
+
+        } catch (Exception e) {
+            throw new RestException("", e.getMessage());
+        }
+
+        return model;
+    }
 
 }
 
