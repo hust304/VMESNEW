@@ -290,7 +290,7 @@ public class MenuServiceImp implements MenuService {
      * (允许为空)Menu.layer      当前菜单级别
      * 3. (id,companyId,name,layer) 不可同时为空
      * id is not null id对应的菜单+id下面所有子菜单
-     * id is null (companyId,name,layer) is not null or (name,layer) is not null
+     * id is null (companyId,name,layer) is not null
      * <p>
      * <p>
      * <p>
@@ -300,7 +300,7 @@ public class MenuServiceImp implements MenuService {
      * @param menu 允许为空-<Menu>对象(vmes_menu:系统菜单表)
      * @return
      */
-    public Tree<Menu> findTree(Menu menu) {
+    public Tree<Menu> findMenuTree(Menu menu) {
         Menu findObj = null;
 
         if (menu == null) {

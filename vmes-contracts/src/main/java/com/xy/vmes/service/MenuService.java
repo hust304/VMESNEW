@@ -132,24 +132,25 @@ public interface MenuService {
      * 根据菜单对象<Menu>当前菜单节点下面所有节点生成树形结构
      * 1. <Menu>对象为空时-生成整棵树-(pid:=root)开始-菜单级别(0-5)
      * 2. <Menu>对象is not null
-     * (允许为空)Menu.id    当前菜单id
-     * (允许为空)Menu.code  当前菜单编码
-     * (允许为空)Menu.name  当前菜单名称
-     * (允许为空)Menu.id1   当前菜单(id_1)-公司id
-     * (允许为空)Menu.layer 当前菜单级别
-     * 3. (id,id1,code,name,layer) 不可同时为空
-     * pid is not null pid对应的菜单+pid下面所有子菜单
-     * pid is null (code,layer) is not null or (name,layer) is not null
+     * (允许为空)Menu.id         当前菜单id
+     * (允许为空)Menu.companyId  当前菜单(companyId)-公司id
+     * (允许为空)Menu.name       当前菜单名称
+     * (允许为空)Menu.layer      当前菜单级别
+     * 3. (id,companyId,name,layer) 不可同时为空
+     * id is not null id对应的菜单+id下面所有子菜单
+     * id is null (companyId,name,layer) is not null
      * <p>
      * <p>
      * <p>
      * 创建人：陈刚
      * 创建时间：2018-07-18
      *
-     * @param detp 允许为空-<Menu>对象(vmes_Menu:系统菜单表)
+     * @param menu 允许为空-<Menu>对象(vmes_menu:系统菜单表)
      * @return
      */
-    Tree<Menu> findTree(Menu detp);
+    Tree<Menu> findMenuTree(Menu menu);
+
+    //Tree<Menu> findMenuTree(Menu menu);
 
     /**
      * 获取菜单id字符串-(','分隔的字符串)
