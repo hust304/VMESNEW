@@ -1,6 +1,7 @@
 package com.xy.vmes.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.entity.Role;
 import com.xy.vmes.entity.UserRole;
 import com.yvan.PageData;
 
@@ -67,6 +68,12 @@ public interface UserRoleService {
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
     List<UserRole> findUserRoleList(PageData object);
+    /**
+     * 用户角色-关联角色表
+     * @param pd
+     * @return
+     */
+    List<Map<String, Object>> findUserRoleMapList(PageData pd);
 
     /**
      * 创建人：刘威
@@ -94,33 +101,19 @@ public interface UserRoleService {
      */
     void updateDisableByRoleId(String roleId);
 
-
-    /**
-     * 根据userID-获取全部用户角色List<UserRole>
-     * 创建人：陈刚
-     * 创建时间：2018-08-01
-     *
-     * @param userID
-     * @return
-     */
-    List<UserRole> findUserRoleByUserID(String userID);
-
-    /**
-     * 获取角色ID(','逗号分隔的字符串)
-     * 创建人：陈刚
-     * 创建时间：2018-08-01
-     *
-     * @param objectList
-     * @return
-     */
-    String findRoleIdsByUserRoleList(List<UserRole> objectList);
-
     /**
      * 根据userID-获取角色ID(','逗号分隔的字符串)
      * @param userID
      * @return
      */
     String findRoleIdsByByUserID(String userID);
+
+    /**
+     * 创建人：陈刚
+     * 创建时间：2018-07-31
+     */
+    Role userRoleMap2Role(Map<String, Object> mapObject, Role object);
+    List<Role> userRoleMap2RoleList(List<Map<String, Object>> mapList, List<Role> objectList);
 
 }
 

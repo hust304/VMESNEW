@@ -1,8 +1,11 @@
 package com.xy.vmes.deecoop.system.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.common.util.DateFormat;
 import com.xy.vmes.deecoop.system.dao.UserRoleMapper;
+import com.xy.vmes.entity.Role;
 import com.xy.vmes.entity.UserRole;
+import com.xy.vmes.service.RoleService;
 import com.xy.vmes.service.UserRoleService;
 import com.yvan.Conv;
 import com.yvan.PageData;
@@ -23,9 +26,10 @@ import java.util.*;
 @Transactional(readOnly = false)
 public class UserRoleServiceImp implements UserRoleService {
 
-
     @Autowired
     private UserRoleMapper userRoleMapper;
+    @Autowired
+    private RoleService roleService;
 
     /**
     * 创建人：刘威 自动创建，禁止修改
@@ -108,6 +112,17 @@ public class UserRoleServiceImp implements UserRoleService {
 
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+    /**
+     * 用户角色-关联角色表
+     * @param pd
+     * @return
+     */
+    public List<Map<String, Object>> findUserRoleMapList(PageData pd) {
+        return userRoleMapper.findUserRoleMapList(pd);
+    }
+
+
+
     public List<UserRole> findUserRoleList(PageData object) {
         List<UserRole> objectList = new ArrayList<UserRole>();
         if (object == null) {return objectList;}
@@ -173,63 +188,95 @@ public class UserRoleServiceImp implements UserRoleService {
     }
 
     /**
-     * 根据userID-获取全部用户角色List<UserRole>
-     * 创建人：陈刚
-     * 创建时间：2018-08-01
-     *
-     * @param userID
-     * @return
-     */
-    public List<UserRole> findUserRoleByUserID(String userID) {
-        List<UserRole> objectList = new ArrayList<UserRole>();
-        if (userID == null || userID.trim().length() == 0) {return objectList;}
-
-        PageData findMap = new PageData();
-        findMap.put("userId", userID);
-        //是否禁用(1:已禁用 0:启用) 数据字典:sys_isdisable
-        findMap.put("isdisable", "0");
-        findMap.put("mapSize", Integer.valueOf(findMap.size()));
-
-        return this.findUserRoleList(findMap);
-    }
-
-    /**
-     * 获取角色ID(','逗号分隔的字符串)
-     * 创建人：陈刚
-     * 创建时间：2018-08-01
-     *
-     * @param objectList
-     * @return
-     */
-    public String findRoleIdsByUserRoleList(List<UserRole> objectList) {
-        StringBuffer strBuf = new StringBuffer();
-        if (objectList == null || objectList.size() == 0) {return strBuf.toString();}
-
-        for (UserRole object : objectList) {
-            if (object.getRoleId() != null && object.getRoleId().trim().length() > 0)  {
-                strBuf.append(object.getRoleId().trim());
-                strBuf.append(",");
-            }
-        }
-
-        String strTemp = strBuf.toString();
-        if (strTemp.trim().length() > 0 && strTemp.indexOf(",") != -1) {
-            strTemp = strTemp.substring(0, strTemp.lastIndexOf(","));
-            return strTemp;
-        }
-
-        return strBuf.toString();
-    }
-
-    /**
      * 根据userID-获取角色ID(','逗号分隔的字符串)
      * @param userID
      * @return
      */
     public String findRoleIdsByByUserID(String userID) {
         if (userID == null || userID.trim().length() == 0) {return new String();}
-        List<UserRole> objectList = this.findUserRoleByUserID(userID);
-        return findRoleIdsByUserRoleList(objectList);
+
+        PageData findMap = new PageData();
+        findMap.put("userId", userID);
+        findMap.put("isdisable", "0");
+        findMap.put("roleIsdisable", "0");
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+
+        List<Map<String, Object>> mapList = this.findUserRoleMapList(findMap);
+        List<Role> roleList = this.userRoleMap2RoleList(mapList, new ArrayList<Role>());
+
+        return roleService.findRoleIdsByRoleList(roleList);
+    }
+
+    /**
+     * 创建人：陈刚
+     * 创建时间：2018-07-31
+     */
+    public Role userRoleMap2Role(Map<String, Object> mapObject, Role object) {
+        if (object == null) {object = new Role();}
+        if (mapObject == null) {return object;}
+
+        //b.id as roleId,
+        if (mapObject.get("roleId") != null) {
+            object.setId(mapObject.get("roleId").toString().trim());
+        }
+        //b.company_id as roleCompanyId,
+        if (mapObject.get("roleCompanyId") != null) {
+            object.setCompanyId(mapObject.get("roleCompanyId").toString().trim());
+        }
+        //b.name as roleName,
+        if (mapObject.get("roleName") != null) {
+            object.setName(mapObject.get("roleName").toString().trim());
+        }
+        //b.name_en as roleNameEn,
+        if (mapObject.get("roleNameEn") != null) {
+            object.setNameEn(mapObject.get("roleNameEn").toString().trim());
+        }
+        //b.isdisable as roleIsdisable,
+        if (mapObject.get("roleIsdisable") != null) {
+            object.setIsdisable(mapObject.get("roleIsdisable").toString().trim());
+        }
+
+        //b.cdate as roleCdate,
+        if (mapObject.get("roleCdate") != null) {
+            String dateStr = mapObject.get("roleCdate").toString().trim();
+            Date date = DateFormat.dateString2Date(dateStr, DateFormat.DEFAULT_DATETIME_FORMAT);
+            if (date != null) {
+                object.setCdate(date);
+            }
+        }
+        //b.cuser as roleCuser,
+        if (mapObject.get("roleCuser") != null) {
+            object.setCuser(mapObject.get("roleCuser").toString().trim());
+        }
+        //b.udate as roleUdate,
+        if (mapObject.get("roleUdate") != null) {
+            String dateStr = mapObject.get("roleUdate").toString().trim();
+            Date date = DateFormat.dateString2Date(dateStr, DateFormat.DEFAULT_DATETIME_FORMAT);
+            if (date != null) {
+                object.setUdate(date);
+            }
+        }
+        //b.uuser as roleUuser
+        if (mapObject.get("roleUuser") != null) {
+            object.setUuser(mapObject.get("roleUuser").toString().trim());
+        }
+
+        return object;
+    }
+
+    public List<Role> userRoleMap2RoleList(List<Map<String, Object>> mapList, List<Role> objectList) {
+        if (objectList == null) {
+            objectList = new ArrayList<Role>();
+        }
+        if (mapList == null || mapList.size() == 0) {return objectList;}
+
+        for (Map<String, Object> mapObj : mapList) {
+            Role object = new Role();
+            object = this.userRoleMap2Role(mapObj, object);
+            objectList.add(object);
+        }
+
+        return objectList;
     }
 
 }

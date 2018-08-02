@@ -60,6 +60,12 @@ public interface UserRoleMapper extends BaseMapper<UserRole> {
 
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+	/**
+	 * 创建人：陈刚
+	 * 创建时间：2018-07-31
+	 */
+	@Select("findUserRoleMapList")
+	List<Map<String, Object>> findUserRoleMapList(PageData pd);
 
 	/**
 	 * 创建人：刘威

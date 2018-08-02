@@ -187,5 +187,49 @@
             role_id = #{roleId}
     </update>
 
+    <select id="findUserRoleMapList" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+            a.id,
+            a.user_id as userId,
+            a.isdisable as isdisable,
+
+            b.id as roleId,
+            b.company_id as roleCompanyId,
+            b.name as roleName,
+            b.name_en as roleNameEn,
+            b.isdisable as roleIsdisable,
+
+            b.cdate as roleCdate,
+            b.cuser as roleCuser,
+            b.udate as roleUdate,
+            b.uuser as roleUuser
+        from vmes_user_role a
+            left join vmes_role b on a.role_id = b.id
+        <choose>
+            <when test="(mapSize == null || mapSize == 0) and 'true' != isQueryAll ">
+                where 1=2
+            </when>
+            <otherwise>
+                <where>
+                    <if test="userId != null and userId != ''" >
+                        and a.user_id = #{isdisable}
+                    </if>
+                    <if test="isdisable != null and isdisable != ''" >
+                        and a.isdisable = #{isdisable}
+                    </if>
+                    <if test="roleIsdisable != null and roleIsdisable != ''" >
+                        and b.isdisable = #{menuIsdisable}
+                    </if>
+
+                    <!--queryStr 自定义sql查询语句-->
+                    <if test="queryStr != null and queryStr!=''" >
+                        and ${queryStr}
+                    </if>
+                </where>
+            </otherwise>
+        </choose>
+
+    </select>
+
 
 </mapper>
