@@ -280,7 +280,6 @@ public class PostController {
                 }
             }
         }
-
         if(postSet.contains(postId)){
             return true;
         }

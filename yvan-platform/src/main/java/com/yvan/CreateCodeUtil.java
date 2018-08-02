@@ -19,9 +19,9 @@ public class CreateCodeUtil {
 
         PageData pd = new PageData();
 
-        String objectName = "EmployPost";//类名
-        String tableName = "vmes_employ_post";//表名
-        String title = "vmes_employ_post:员工岗位关系表";
+        String objectName = "Employee";//类名
+        String tableName = "vmes_employee";//表名
+        String title = "vmes_employee:员工管理";
         String author = "刘威";
         String projectName = "deecoop.system";//项目名
 

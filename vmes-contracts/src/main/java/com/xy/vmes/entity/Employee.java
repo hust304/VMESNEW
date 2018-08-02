@@ -8,9 +8,9 @@ import java.util.*;
 import java.math.BigDecimal;
 
 /** 
- * 说明：vmes_employee:员工表 实体类
- * @author 陈刚 自动生成
- * @date 2018-07-23
+ * 说明：vmes_employee:员工管理 实体类
+ * @author 刘威 自动生成
+ * @date 2018-08-02
  */
 @TableName("vmes_employee")
 public class Employee implements Serializable {

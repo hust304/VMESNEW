@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <!--
-说明：vmes_employee:员工表 Mapper.xml
-创建人：陈刚 自动创建
-创建时间：2018-07-23
+说明：vmes_employee:员工管理 Mapper.xml
+创建人：刘威 自动创建
+创建时间：2018-08-02
  -->
 <mapper namespace="com.xy.vmes.deecoop.system.dao.EmployeeMapper">
 
@@ -116,19 +116,22 @@
         <include refid="Field"></include>
         from
         <include refid="tableName"></include>
-        <if test="PageData!= null"><!-- 关键词检索 -->
-            where 1=1
+        <where>
+            <!--queryStr 自定义sql查询语句-->
+            <if test="queryStr != null and queryStr!=''" >
+                and ${queryStr}
+            </if>
             <if test="keywords!= null and keywords != ''"><!-- 关键词检索 -->
                 and
                 (
                 <!--	根据需求自己加检索条件
-						字段1 LIKE CONCAT(CONCAT('%', #{keywords}),'%')
-						 or
-						字段2 LIKE CONCAT(CONCAT('%', #{keywords}),'%')
-					-->
+                            字段1 LIKE CONCAT(CONCAT('%', #{keywords}),'%')
+                             or
+                            字段2 LIKE CONCAT(CONCAT('%', #{keywords}),'%')
+                        -->
                 )
             </if>
-        </if>
+        </where>
     </select>
 
     <!-- 列表 自动创建，禁止修改-->
@@ -137,19 +140,22 @@
         <include refid="Field"></include>
         from
         <include refid="tableName"></include>
-        <if test="PageData!= null"><!-- 关键词检索 -->
-            where 1=1
+        <where>
+            <!--queryStr 自定义sql查询语句-->
+            <if test="queryStr != null and queryStr!=''" >
+                and ${queryStr}
+            </if>
             <if test="keywords!= null and keywords != ''"><!-- 关键词检索 -->
                 and
                 (
                 <!--	根据需求自己加检索条件
-						字段1 LIKE CONCAT(CONCAT('%', #{keywords}),'%')
-						 or
-						字段2 LIKE CONCAT(CONCAT('%', #{keywords}),'%')
-					-->
+                            字段1 LIKE CONCAT(CONCAT('%', #{keywords}),'%')
+                             or
+                            字段2 LIKE CONCAT(CONCAT('%', #{keywords}),'%')
+                        -->
                 )
             </if>
-        </if>
+        </where>
     </select>
 
     <!-- 列表(全部) 自动创建，禁止修改-->
@@ -196,7 +202,7 @@
     </select>
 
     <!-- 批量删除 自动创建，禁止修改-->
-    <delete id="deleteByIds" parameterType="String">
+    <delete id="deleteByIds" parameterType="java.lang.String">
         delete from
         <include refid="tableName"></include>
         where
@@ -211,5 +217,110 @@
     <!-- ***************************************************以上为自动生成代码禁止修改，请在下面添加业务代码************************************************* -->
 
 
+    <!-- 字段 自动创建，可以修改-->
+    <sql id="Field1">
+        user_id userId,<!-- 系统用户ID -->
+        company_id companyId,<!-- 公司ID-组织架构 -->
+        code code,<!-- 员工编号 -->
+        type type,<!-- 员工类型 数据字典:sys_employee_type -->
+        name name,<!-- 员工姓名 -->
+        name_en nameEn,<!-- 员工英文名 -->
+        photo photo,<!-- 员工照片 -->
+        icon icon,<!-- 员工图片 -->
+        mobile mobile,<!-- 手机号码 -->
+        email email,<!-- 邮箱地址 -->
+        sex sex,<!-- 性别(1:男0:女) 数据字典:sys_employee_sex -->
+        birthday birthday,<!-- 出生日期(yyyy-mm-dd) -->
+        entry_date entryDate,<!-- 入职日期(yyyy-mm-dd) -->
+        native_place nativePlace,<!-- 籍贯 -->
+        political political,<!-- 政治面貌 数据字典:sys_employee_political -->
+        identity_number identityNumber,<!-- 身份证号 -->
+        marital marital,<!-- 婚姻状况(1:已婚 0:未婚) 数据字典:sys_employee_marital -->
+        isdisable isdisable,<!-- 是否禁用(1:已禁用 0:启用) 数据字典:sys_isdisable -->
+        cdate cdate,<!-- 创建时间 -->
+        cuser cuser,<!-- 创建人账号 -->
+        udate udate,<!-- 修改时间 -->
+        uuser uuser,<!-- 修改人账号 -->
+        column_1 column1,<!-- 预留字段 -->
+        column_2 column2,<!-- 预留字段 -->
+        column_3 column3,<!-- 预留字段 -->
+        id id <!-- id -->
+    </sql>
+
+    <!-- 字段值 自动创建，可以修改-->
+    <sql id="Column1">
+            '系统用户ID'  userId,
+            '公司ID-组织架构'  companyId,
+            '员工编号'  code,
+            '员工类型 数据字典:sys_employee_type'  type,
+            '员工姓名'  name,
+            '员工英文名'  nameEn,
+            '员工照片'  photo,
+            '员工图片'  icon,
+            '手机号码'  mobile,
+            '邮箱地址'  email,
+            '性别(1:男0:女) 数据字典:sys_employee_sex'  sex,
+            '出生日期(yyyy-mm-dd)'  birthday,
+            '入职日期(yyyy-mm-dd)'  entryDate,
+            '籍贯'  nativePlace,
+            '政治面貌 数据字典:sys_employee_political'  political,
+            '身份证号'  identityNumber,
+            '婚姻状况(1:已婚 0:未婚) 数据字典:sys_employee_marital'  marital,
+            '是否禁用(1:已禁用 0:启用) 数据字典:sys_isdisable'  isdisable,
+            '创建时间'  cdate,
+            '创建人账号'  cuser,
+            '修改时间'  udate,
+            '修改人账号'  uuser,
+            '预留字段'  column1,
+            '预留字段'  column2,
+            '预留字段'  column3,
+            'id' id
+    </sql>
+
+
+    <!-- 自动创建，可以修改 -->
+    <select id="getColumnList"  resultType="java.util.LinkedHashMap">
+        select
+        <include refid="Column1"></include>
+        from dual
+    </select>
+
+    <!-- 自动创建，可以修改 -->
+    <select id="getDataList"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
+        select
+        <include refid="Field1"></include>
+        from
+        <include refid="tableName"></include>
+        <where>
+            <!--queryStr 自定义sql查询语句-->
+            <if test="queryStr != null and queryStr!=''" >
+                and ${queryStr}
+            </if>
+            <if test="keywords!= null and keywords != ''"><!-- 关键词检索 -->
+                and
+                (
+                <!--	根据需求自己加检索条件
+                            字段1 LIKE CONCAT(CONCAT('%', #{keywords}),'%')
+                             or
+                            字段2 LIKE CONCAT(CONCAT('%', #{keywords}),'%')
+                        -->
+                )
+            </if>
+        </where>
+    </select>
+
+
+
+    <!-- 自动创建，可以修改-->
+    <update id="updateToDisableByIds" parameterType="java.lang.String" >
+        update
+        <include refid="tableName"></include>
+        set isdisable = 1
+        where
+        id in
+        <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+        #{item}
+        </foreach>
+    </update>
 
 </mapper>
