@@ -180,9 +180,9 @@
 
     <select id="findRoleMenuMapList" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
-            a.id
-            a.role_id as roleId
-            a.isdisable as isdisable
+            a.id,
+            a.role_id as roleId,
+            a.isdisable as isdisable,
 
             b.id as menuId,
             b.pid as menuPid,
@@ -191,7 +191,7 @@
             b.name as menuName,
 
             b.name_en as menuNameEn,
-            b.serial_numbe as menuSerialNumber,
+            b.serial_number as menuSerialNumber,
             b.icon as menuIcon,
             b.type as menuType,
             b.url as menuUrl,

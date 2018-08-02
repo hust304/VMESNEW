@@ -512,7 +512,7 @@ public class MenuController {
 
             String queryStr = "";
             if (userRole != null && userRole.trim().length() > 0) {
-                String strTemp = "'" + userRole.replace(",", "','" + ",");
+                String strTemp = "'" + userRole.replace(",", "','" + ",") + "'";
                 queryStr = "a.role_id in (" + strTemp + ")";
             }
             PageData findMap = new PageData();
