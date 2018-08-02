@@ -247,18 +247,27 @@ public class DepartmentTreeServiceImp implements DepartmentTreeService {
         if (tree == null) {tree = new TreeEntity();}
         if (dept == null) {return tree;}
 
+        //(必须)title当前节点名称
+        if (dept.getName() != null && dept.getName().trim().length() > 0) {
+            tree.setTitle(dept.getName().trim());
+        }
+        //(必须)path当前节点编码
+        if (dept.getCode() != null && dept.getCode().trim().length() > 0) {
+            tree.setPath(dept.getCode().trim());
+        }
         //id 当前节点ID
         if (dept.getId() != null && dept.getId().trim().length() > 0) {
             tree.setId(dept.getId().trim());
         }
-        //label当前节点名称
-        if (dept.getName() != null && dept.getName().trim().length() > 0) {
-            tree.setLabel(dept.getName().trim());
+        //pid当前节点父ID
+        if (dept.getPid() != null && dept.getPid().trim().length() > 0) {
+            tree.setPid(dept.getPid().trim());
         }
         //layer 当前节点-部门级别
         if (dept.getLayer() != null) {
             tree.setLayer(dept.getLayer());
         }
+        //icon当前节点图标
 
         return tree;
     }

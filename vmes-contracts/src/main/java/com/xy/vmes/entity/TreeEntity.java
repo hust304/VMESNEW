@@ -10,29 +10,47 @@ import java.util.List;
  * 创建时间：2018-07-18
  */
 public class TreeEntity {
+    //(必须)当前节点名称
+    private String title;
+    //(必须)当前节点编码
+    private String path;
     //当前节点ID
     private String id;
-    //当前节点名称
-    private String label;
+    //当前节点父ID
+    private String pid;
     //当前节点级别
     private Integer layer;
+    //菜单顺序
+    private Integer serialNumber;
     //当前节点图标
     private String icon;
-    //当前节点子节点
-    private List<TreeEntity> childList = new ArrayList<TreeEntity>();
+    //(必须)当前节点子节点
+    private List<TreeEntity> children = new ArrayList<TreeEntity>();
 
 
+    public String getTitle() {
+        return title;
+    }
+    public void setTitle(String title) {
+        this.title = title;
+    }
+    public String getPath() {
+        return path;
+    }
+    public void setPath(String path) {
+        this.path = path;
+    }
     public String getId() {
         return id;
     }
     public void setId(String id) {
         this.id = id;
     }
-    public String getLabel() {
-        return label;
+    public String getPid() {
+        return pid;
     }
-    public void setLabel(String label) {
-        this.label = label;
+    public void setPid(String pid) {
+        this.pid = pid;
     }
     public Integer getLayer() {
         return layer;
@@ -46,10 +64,16 @@ public class TreeEntity {
     public void setIcon(String icon) {
         this.icon = icon;
     }
-    public List<TreeEntity> getChildList() {
-        return childList;
+    public List<TreeEntity> getChildren() {
+        return children;
     }
-    public void setChildList(List<TreeEntity> childList) {
-        this.childList = childList;
+    public void setChildren(List<TreeEntity> children) {
+        this.children = children;
+    }
+    public Integer getSerialNumber() {
+        return serialNumber;
+    }
+    public void setSerialNumber(Integer serialNumber) {
+        this.serialNumber = serialNumber;
     }
 }

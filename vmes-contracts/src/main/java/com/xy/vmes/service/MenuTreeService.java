@@ -1,9 +1,11 @@
 package com.xy.vmes.service;
 
 import com.xy.vmes.entity.Menu;
+import com.xy.vmes.entity.TreeEntity;
 import com.yvan.platform.RestException;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 当前菜单节点和该菜单节点下所有子菜单-的树形结构
@@ -55,4 +57,40 @@ public interface MenuTreeService {
      * @param layer
      */
     void findMenuTreeByList(List<Menu> menuList, Integer layer);
+
+    /**
+     * 递归调用-生成菜单树
+     * 1. 从树的最低层向上生成树结构
+     * 2. 菜单树默认根节点(pid:root,layer:0,name:智能云管家)
+     * 3. 菜单级别(1-5)
+     * 4. 递归结束条件(菜单级别:=1)-(layer == 1)
+     *
+     * @param layer     最大级别
+     * @param childMap  当前层-子结构体
+     * @param treeList  菜单树-结构体
+     * @return
+     */
+    List<TreeEntity> creatMenuTree(Integer layer, Map<String, List<TreeEntity>> childMap, List<TreeEntity> treeList);
+
+    /**
+     * 创建人：陈刚
+     * 创建时间：2018-07-19
+     */
+    TreeEntity menu2Tree(Menu menu, TreeEntity tree);
+
+    /**
+     * 遍历当前菜单层List<Menu>-获取pid节点Map<pid, List<Menu>
+     * @param menuList  当前菜单层List<Menu>
+     * @param nodeMap   Map<pid, List<Menu>
+     * @return
+     */
+    Map<String, List<TreeEntity>> menuList2Map(List<Menu> menuList, Map<String, List<TreeEntity>> nodeMap);
+
+    /**
+     * 菜单List<Menu>转换成-树结构体List<TreeEntity>
+     * @param menuList  菜单List<Menu>
+     * @param treeList  树结构体List<TreeEntity>
+     * @return
+     */
+    List<TreeEntity> menuList2TreeList(List<Menu> menuList, List<TreeEntity> treeList);
 }

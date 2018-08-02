@@ -1,6 +1,7 @@
 package com.xy.vmes.deecoop.system.service;
 
 import com.xy.vmes.entity.Menu;
+import com.xy.vmes.entity.TreeEntity;
 import com.xy.vmes.service.MenuTreeService;
 import com.xy.vmes.service.MenuService;
 import com.yvan.HttpUtils;
@@ -209,15 +210,153 @@ public class MenuTreeServiceImp implements MenuTreeService {
         this.findLayerList(objList, layer);
 
         //执行次数+1
-        this.count = Integer.valueOf(this.count.intValue() + 1);
+        //this.count = Integer.valueOf(this.count.intValue() + 1);
 
-        //递归结束条件(部门级别layer == 1)
+        //递归结束条件(菜单级别layer == 1)
         if (layer == 1) {
             return;
         } else {
             //递归调用: findMenuTreeByList()
             this.findMenuTreeByList(menuList, (layer - 1));
         }
+    }
+
+    /**
+     * 递归调用-生成菜单树
+     * 1. 从树的最低层向上生成树结构
+     * 2. 菜单树默认根节点(pid:root,layer:0,name:智能云管家)
+     * 3. 菜单级别(1-5)
+     * 4. 递归结束条件(菜单级别:=1)-(layer == 1)
+     *
+     * @param layer     最大级别
+     * @param childMap  当前层-子结构体
+     * @param treeList  菜单树-结构体
+     * @return
+     */
+    public List<TreeEntity> creatMenuTree(Integer layer, Map<String, List<TreeEntity>> childMap, List<TreeEntity> treeList) {
+        if (treeList == null) {treeList = new ArrayList<TreeEntity>();}
+        if (layer == null) {return treeList;}
+
+        //1. 获取当前层-菜单List<Menu>
+        List<Menu> menuList = this.findListByLayer(layer);
+
+        // 2. 获取当前菜单层 Map<pid, List<TreeEntity>>
+        Map<String, List<TreeEntity>> nodeMap = this.menuList2Map(menuList, null);
+
+        //3. chileMap 挂接到当前层节点上
+        if (menuList != null && menuList.size() > 0 && childMap != null && childMap.size() > 0) {
+            List<TreeEntity> nodeList = this.menuList2TreeList(menuList, null);
+            for (TreeEntity node : nodeList) {
+                String pid = node.getId();
+                List<TreeEntity> childList = childMap.get(pid);
+                if (childList != null && childList.size() > 0) {
+                    node.setChildren(childList);
+                }
+            }
+
+            treeList = nodeList;
+        }
+
+        //递归结束条件(菜单级别layer == 1)
+        if (layer == 1
+            || (menuList == null || menuList.size() == 0)
+        ) {
+            return treeList;
+        } else  {
+            //递归调用: creatMenuTree()
+            return this.creatMenuTree(Integer.valueOf(layer.intValue()-1), nodeMap, treeList);
+        }
+    }
+
+    /**
+     * 创建人：陈刚
+     * 创建时间：2018-07-19
+     */
+    public TreeEntity menu2Tree(Menu menu, TreeEntity tree) {
+        if (tree == null) {tree = new TreeEntity();}
+        if (menu == null) {return tree;}
+
+        //(必须)title当前节点名称
+        if (menu.getName() != null && menu.getName().trim().length() > 0) {
+            tree.setTitle(menu.getName().trim());
+        }
+        //(必须)path当前节点编码
+        if (menu.getCode() != null && menu.getCode().trim().length() > 0) {
+            tree.setPath(menu.getCode().trim());
+        }
+        //id 当前节点ID
+        if (menu.getId() != null && menu.getId().trim().length() > 0) {
+            tree.setId(menu.getId().trim());
+        }
+        //pid当前节点父ID
+        if (menu.getPid() != null && menu.getPid().trim().length() > 0) {
+            tree.setPid(menu.getPid().trim());
+        }
+        //serialNumber菜单顺序
+        if (menu.getSerialNumber() != null) {
+            tree.setSerialNumber(menu.getSerialNumber());
+        }
+        //layer 当前节点-部门级别
+        if (menu.getLayer() != null) {
+            tree.setLayer(menu.getLayer());
+        }
+        //icon当前节点图标
+        if (menu.getIcon() != null && menu.getIcon().trim().length() > 0) {
+            tree.setIcon(menu.getIcon().trim());
+        }
+
+        return tree;
+    }
+
+    /**
+     * 遍历当前菜单层List<Menu>-获取pid节点Map<pid, List<TreeEntity>
+     * @param menuList  当前菜单层List<Menu>
+     * @return
+     */
+    public Map<String, List<TreeEntity>> menuList2Map(List<Menu> menuList, Map<String, List<TreeEntity>> nodeMap) {
+        if (nodeMap == null) {nodeMap = new HashMap<String, List<TreeEntity>>();}
+        if (menuList == null || menuList.size() == 0) {return nodeMap;}
+
+        //1. 遍历菜单层List<Menu>-生成Map<pid, List<TreeEntity>
+        for (Menu object : menuList) {
+            TreeEntity node = this.menu2Tree(object, new TreeEntity());
+            String pid = object.getPid();
+            List<TreeEntity> nodeList = nodeMap.get(pid);
+            if(nodeList == null) {
+                nodeList = new ArrayList<TreeEntity>();
+                nodeMap.put(pid, nodeList);
+            }
+            nodeList.add(node);
+        }
+
+        if (nodeMap.size() == 0) {return nodeMap;}
+        //2. 遍历Map<pid, List<TreeEntity> - TreeEntity.serialNumber 升序排列
+        for (Iterator iterator = nodeMap.keySet().iterator(); iterator.hasNext();) {
+            String mapKey = (String) iterator.next();
+            List<TreeEntity> objectList = nodeMap.get(mapKey);
+            this.orderAcsTreeBySerialNumber(objectList);
+        }
+
+        return nodeMap;
+    }
+
+    /**
+     * 菜单List<Menu>转换成-树结构体List<TreeEntity>
+     * @param menuList  菜单List<Menu>
+     * @param treeList  树结构体List<TreeEntity>
+     * @return
+     */
+    public List<TreeEntity> menuList2TreeList(List<Menu> menuList, List<TreeEntity> treeList) {
+        if (treeList == null) {treeList = new ArrayList<TreeEntity>();}
+        if (menuList == null || menuList.size() == 0) {return treeList;}
+
+        for (Menu object : menuList) {
+            TreeEntity node = this.menu2Tree(object, new TreeEntity());
+            treeList.add(node);
+        }
+        this.orderAcsTreeBySerialNumber(treeList);
+
+        return treeList;
     }
 
     public List<Menu> getList_0() {
@@ -268,16 +407,53 @@ public class MenuTreeServiceImp implements MenuTreeService {
             }
         });
     }
+    private void orderAcsTreeBySerialNumber(List<TreeEntity> objectList) {
+        Collections.sort(objectList, new Comparator<Object>() {
+            public int compare(Object arg0, Object arg1) {
+                TreeEntity object_0 = (TreeEntity)arg0;
+                TreeEntity object_1 = (TreeEntity)arg1;
+                return object_0.getSerialNumber().compareTo(object_1.getSerialNumber());
+            }
+        });
+    }
 
     private void findLayerList(List<Menu> objectList, Integer execute_layer) {
         if (objectList == null || objectList.size() == 0) {return;}
         if (execute_layer == null || -1 == execute_layer.intValue()) {return;}
 
-        if (execute_layer.intValue() == 0) {this.setList_0(objectList);}
-        if (1 == execute_layer.intValue()) {this.setList_1(objectList);}
-        if (2 == execute_layer.intValue()) {this.setList_2(objectList);}
-        if (3 == execute_layer.intValue()) {this.setList_3(objectList);}
-        if (4 == execute_layer.intValue()) {this.setList_4(objectList);}
-        if (5 == execute_layer.intValue()) {this.setList_5(objectList);}
+        if (0 == execute_layer.intValue()) {
+            this.setList_0(objectList);
+        } else if (1 == execute_layer.intValue()) {
+            this.setList_1(objectList);
+        } else if (2 == execute_layer.intValue()) {
+            this.setList_2(objectList);
+        } else if (3 == execute_layer.intValue()) {
+            this.setList_3(objectList);
+        } else if (4 == execute_layer.intValue()) {
+            this.setList_4(objectList);
+        } else if (5 == execute_layer.intValue()) {
+            this.setList_5(objectList);
+        }
+    }
+
+    private List<Menu> findListByLayer(Integer execute_layer) {
+        List<Menu> objectList = new ArrayList<Menu>();
+        if (execute_layer == null || -1 == execute_layer.intValue()) {return objectList;}
+
+        if (0 == execute_layer.intValue() && this.getList_0() != null) {
+            return this.getList_0();
+        } else if (1 == execute_layer.intValue() && this.getList_1() != null) {
+            return this.getList_1();
+        } else if (2 == execute_layer.intValue() && this.getList_2() != null) {
+            return this.getList_2();
+        } else if (3 == execute_layer.intValue() && this.getList_3() != null) {
+            return this.getList_3();
+        } else if (4 == execute_layer.intValue() && this.getList_4() != null) {
+            return this.getList_4();
+        } else if (5 == execute_layer.intValue() && this.getList_5() != null) {
+            return this.getList_5();
+        }
+
+        return new ArrayList<Menu>();
     }
 }

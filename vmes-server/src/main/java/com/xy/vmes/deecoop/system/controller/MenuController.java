@@ -3,13 +3,11 @@ package com.xy.vmes.deecoop.system.controller;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.Menu;
+import com.xy.vmes.entity.TreeEntity;
 import com.xy.vmes.service.MenuService;
 import com.xy.vmes.service.MenuTreeService;
 import com.xy.vmes.service.RoleMenuService;
-import com.yvan.Conv;
-import com.yvan.ExcelUtil;
-import com.yvan.HttpUtils;
-import com.yvan.PageData;
+import com.yvan.*;
 import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
 import com.yvan.template.ExcelAjaxTemplate;
@@ -507,6 +505,7 @@ public class MenuController {
 
         try {
             //用户角色(当前用户)-(角色ID','分隔的字符串)
+            //String userRole = "ce6fd6bdfa0f42798007a1ec5fe84717";  //测试数据-真实环境无此代码
             String userRole = "";
             userRole = StringUtil.stringTrimSpace(userRole);
 
@@ -526,9 +525,12 @@ public class MenuController {
             //遍历菜单List<Menu>-获取菜单最大级别
             Integer maxLayer = menuService.findMaxLayerByMenuList(menuList);
 
-
             menuTreeService.initialization();
             menuTreeService.findMenuTreeByList(menuList, maxLayer);
+            List<TreeEntity> treeList = menuTreeService.creatMenuTree(maxLayer, null, null);
+
+            String treeJsonStr = YvanUtil.toJson(treeList);
+            //System.out.println("treeJsonStr: " + treeJsonStr);
 
         } catch (Exception e) {
             throw new RestException("", e.getMessage());
