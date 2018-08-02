@@ -259,10 +259,18 @@ public class PostController {
         return model;
     }
 
+
+
     private boolean checkExsitOnlineEmployee(String postId,Set<String> postOnlineSet) throws Exception {
         PageData pd = new PageData();
         pd.putQueryStr(" isdisable = 0 ");
         return checkExsitEmployee(postId,postOnlineSet,pd);
+    }
+
+    private boolean checkExsitDownlineEmployee(String postId,Set<String> postDownlineSet) throws Exception {
+        PageData pd = new PageData();
+        pd.putQueryStr(" isdisable = 1 ");
+        return checkExsitEmployee(postId,postDownlineSet,pd);
     }
 
     private boolean checkExsitEmployee(String postId,Set<String> postSet,PageData pd) throws Exception  {
@@ -303,7 +311,7 @@ public class PostController {
         List<String> updateIdsList = new ArrayList<String>();
         List<String> deleteIdsList = new ArrayList<String>();
         Set<String> postOnlineSet = null;
-        Set<String> postSet = null;
+        Set<String> postDownlineSet = null;
         if(ids!=null&&ids.length>0){
             for(int i=0;i<ids.length;i++){
                 //岗位的删除和禁用要先判断该岗位下是否挂载在职人员，如果有不能删除禁用
@@ -312,8 +320,8 @@ public class PostController {
                     model.putMsg("该岗位下面存在未离职员工不能删除！");
                     return model;
                 }else {
-                    //岗位的删除和禁用要先判断该岗位下是否挂载人员，如果有只能禁用，如果没有可以删除
-                    if(checkExsitEmployee(ids[i],postSet,null)){
+                    //岗位的删除和禁用要先判断该岗位下是否挂载不在职人员，如果有只能禁用，如果没有可以删除
+                    if(checkExsitDownlineEmployee(ids[i],postDownlineSet)){
                         updateIdsList.add(ids[i]);
                     }else {
                         deleteIdsList.add(ids[i]);
