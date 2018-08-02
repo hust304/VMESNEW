@@ -241,10 +241,11 @@ public class PostController {
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
+        Set<String> postOnlineSet = null;
         if(!StringUtils.isEmpty(pd.getString("isdisable"))){
             if("1".equals(pd.getString("isdisable"))){
                 //岗位的删除和禁用要先判断该岗位下是否挂载人员，如果有不能删除禁用
-                if(checkExsitOnlineEmployee(pd.getString("id"))){
+                if(checkExsitOnlineEmployee(pd.getString("id"),postOnlineSet)){
                     model.putCode(1);
                     model.putMsg("该岗位下面存在未离职员工不能禁用！");
                     return model;
@@ -258,21 +259,29 @@ public class PostController {
         return model;
     }
 
-    private boolean checkExsitOnlineEmployee(String postId) throws Exception {
+    private boolean checkExsitOnlineEmployee(String postId,Set<String> postOnlineSet) throws Exception {
         PageData pd = new PageData();
-        pd.putQueryStr("post_id = '"+postId+"' and isdisable = 0 ");
-        List<Map> varList = employPostService.getDataList(pd);
-        if(varList!=null&&varList.size()>0){
-            return true;
-        }
-        return false;
+        pd.putQueryStr(" isdisable = 0 ");
+        return checkExsitEmployee(postId,postOnlineSet,pd);
     }
 
-    private boolean checkExsitEmployee(String postId) throws Exception  {
-        PageData pd = new PageData();
-        pd.putQueryStr("post_id = '"+postId+"'");
-        List<Map> varList = employPostService.getDataList(pd);
-        if(varList!=null&&varList.size()>0){
+    private boolean checkExsitEmployee(String postId,Set<String> postSet,PageData pd) throws Exception  {
+        if(pd==null){
+            pd = new PageData();
+        }
+        if(postSet==null){
+            postSet = new HashSet<String>();
+            List<Map> varList = employPostService.getDataList(pd);
+            if(varList!=null&&varList.size()>0){
+                for(int i=0;i<varList.size();i++){
+                    if(varList.get(i)!=null&&varList.get(i).get("postId")!=null){
+                        postSet.add(varList.get(i).get("postId").toString());
+                    }
+                }
+            }
+        }
+
+        if(postSet.contains(postId)){
             return true;
         }
         return false;
@@ -294,17 +303,18 @@ public class PostController {
         String[] ids = dictionaryIds.split(",");
         List<String> updateIdsList = new ArrayList<String>();
         List<String> deleteIdsList = new ArrayList<String>();
-
+        Set<String> postOnlineSet = null;
+        Set<String> postSet = null;
         if(ids!=null&&ids.length>0){
             for(int i=0;i<ids.length;i++){
                 //岗位的删除和禁用要先判断该岗位下是否挂载在职人员，如果有不能删除禁用
-                if(checkExsitOnlineEmployee(ids[i])){
+                if(checkExsitOnlineEmployee(ids[i],postOnlineSet)){
                     model.putCode(1);
                     model.putMsg("该岗位下面存在未离职员工不能删除！");
                     return model;
                 }else {
                     //岗位的删除和禁用要先判断该岗位下是否挂载人员，如果有只能禁用，如果没有可以删除
-                    if(checkExsitEmployee(ids[i])){
+                    if(checkExsitEmployee(ids[i],postSet,null)){
                         updateIdsList.add(ids[i]);
                     }else {
                         deleteIdsList.add(ids[i]);
