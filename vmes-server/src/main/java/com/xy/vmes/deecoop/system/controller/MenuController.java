@@ -217,7 +217,7 @@ public class MenuController {
      * @author 陈刚
      * @date 2018-08-01
      */
-    @PostMapping("/menu/addMenu")
+    @GetMapping("/menu/addMenu")
     public ResultModel addMenu() {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
@@ -269,6 +269,10 @@ public class MenuController {
                     Integer.valueOf(paterObj.getLayer().intValue() + 1),
                     menuObj);
             menuObj = menuService.paterObject2ObjectDB(paterObj, menuObj);
+
+            //获取菜单编码
+            String code = menuService.createCoder("1");
+            menuObj.setCode(code);
 
             //设置菜单级别
             menuObj.setLayer(Integer.valueOf(paterObj.getLayer().intValue() + 1));
@@ -341,7 +345,7 @@ public class MenuController {
                     menuDB);
             menuDB = menuService.paterObject2ObjectDB(paterObj, menuDB);
 
-            //设置部门级别
+            //设置菜单级别
             menuDB.setLayer(Integer.valueOf(paterObj.getLayer().intValue() + 1));
             menuService.update(menuDB);
         } catch (Exception e) {
