@@ -217,7 +217,7 @@ public class MenuController {
      * @author 陈刚
      * @date 2018-08-01
      */
-    @GetMapping("/menu/addMenu")
+    @PostMapping("/menu/addMenu")
     public ResultModel addMenu() {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
