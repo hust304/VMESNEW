@@ -161,7 +161,9 @@ public class MainPageController {
     }
 
     public static void main(String[] args) throws Exception {
-
+//        String mobile = "12345123456";
+//        String password = mobile.substring(mobile.length()-6,mobile.length());
+//        System.out.println(password);
 //        String userDefinedMenus ="{\"userDefinedMenus\":[{\"userId\":\"1\",\"menuId\":\"1\",\"serialNumber\":\"1\"}," +
 //                "{\"userId\":\"1\",\"menuId\":1532599975000,\"serialNumber\":\"2\"}," +
 //                "{\"userId\":\"1\",\"menuId\":1532601003000,\"serialNumber\":\"3\"}," +

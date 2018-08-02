@@ -235,7 +235,7 @@
     <update id="updateToDisableByIds" parameterType="java.lang.String" >
         update
         <include refid="tableName"></include>
-        set isdisable = 1
+        set isdisable = 1 ,udate = now()
         where
         id in
         <foreach item="item" index="index" collection="array" open="(" separator="," close=")">

@@ -208,8 +208,36 @@ public class UserController {
         PageData pd = HttpUtils.parsePageData();
         //新增用户信息
         User user = (User)HttpUtils.pageData2Entity(pd, new User());
-        user.setPassword(MD5Utils.MD5(user.getPassword()));
-        Department department = departmentService.selectById(user.getDeptId());
+
+        String mobile = user.getMobile();
+        if(StringUtils.isEmpty(mobile)){
+            model.putCode(2);
+            model.putMsg("该用户手机号不能为空！");
+            return model;
+        }
+        mobile = mobile.trim();
+        user.setMobile(mobile);
+        //如果用户设置了密码那就用设置的密码加密，如果没有设置密码，那么就用手机号后六位进行加密作为默认密码
+        if(StringUtils.isEmpty(user.getPassword())){
+            String password = mobile.substring(mobile.length()-6,mobile.length());
+            if(password!=null&&password.length()==6){
+                user.setPassword(MD5Utils.MD5(password));
+            }else{
+                model.putCode(2);
+                model.putMsg("输入手机号长度错误！");
+                return model;
+            }
+        }else{
+            user.setPassword(MD5Utils.MD5(user.getPassword()));
+        }
+
+        String deptId = pd.getString("deptId");
+        if(StringUtils.isEmpty(deptId)){
+            model.putCode(4);
+            model.putMsg("所属部门不能为空！");
+            return model;
+        }
+        Department department = departmentService.selectById(deptId);
         String companyId = department.getId1();
         if(!StringUtils.isEmpty(companyId)){
             user.setCompanyId(companyId);
@@ -254,11 +282,20 @@ public class UserController {
         //修改用户信息
         User user = (User)HttpUtils.pageData2Entity(pd, new User());
         user.setPassword(MD5Utils.MD5(user.getPassword()));
+        String mobile = user.getMobile();
+        if(StringUtils.isEmpty(mobile)){
+            model.putCode(2);
+            model.putMsg("该用户手机号不能为空！");
+            return model;
+        }
+
         if(isExistMobile(pd)){
             model.putCode(1);
             model.putMsg("该用户手机号已存在！");
             return model;
         }
+        mobile = mobile.trim();
+        user.setMobile(mobile);
         userService.update(user);
         //删除用户角色信息
         userRoleService.deleteRoleByUserId(user.getId());
@@ -292,7 +329,6 @@ public class UserController {
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
-        Map result = new HashMap();
 
         String userIds = pd.getString("ids");
         String[] ids = userIds.split(",");

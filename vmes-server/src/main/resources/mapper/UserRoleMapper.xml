@@ -182,7 +182,7 @@
 
     <update id="updateDisableByRoleId" parameterType="java.lang.String" >
         update <include refid="tableName" />
-            set isdisable = 1
+            set isdisable = 1,udate = now()
         where
             role_id = #{roleId}
     </update>

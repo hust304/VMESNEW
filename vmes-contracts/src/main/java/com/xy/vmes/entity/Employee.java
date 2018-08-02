@@ -28,7 +28,7 @@ public class Employee implements Serializable {
 	//员工编号
 	@TableField("code")
 	private String code;
-	//员工类型 数据字典:sys_employee_type
+	//员工类型 数据字典:vmes_dictionary
 	@TableField("type")
 	private String type;
 	//员工姓名
@@ -49,28 +49,31 @@ public class Employee implements Serializable {
 	//邮箱地址
 	@TableField("email")
 	private String email;
-	//性别(1:男0:女) 数据字典:sys_employee_sex
+	//性别(1:男0:女) 
 	@TableField("sex")
 	private String sex;
 	//出生日期(yyyy-mm-dd)
 	@TableField("birthday")
 	private Date birthday;
+	//离职日期(yyyy-mm-dd)
+	@TableField("leave_date")
+	private Date leaveDate;
 	//入职日期(yyyy-mm-dd)
 	@TableField("entry_date")
 	private Date entryDate;
 	//籍贯
 	@TableField("native_place")
 	private String nativePlace;
-	//政治面貌 数据字典:sys_employee_political
+	//政治面貌 数据字典:vmes_dictionary
 	@TableField("political")
 	private String political;
 	//身份证号
 	@TableField("identity_number")
 	private String identityNumber;
-	//婚姻状况(1:已婚 0:未婚) 数据字典:sys_employee_marital
+	//婚姻状况(1:已婚 0:未婚) 
 	@TableField("marital")
 	private String marital;
-	//是否禁用(1:已禁用 0:启用) 数据字典:sys_isdisable
+	//是否禁用(1:已禁用 0:启用) 
 	@TableField("isdisable")
 	private String isdisable;
 	//创建时间
@@ -174,6 +177,12 @@ public class Employee implements Serializable {
 	}
 	public Date getBirthday() {
 		return birthday;
+	}
+	public void setLeaveDate(Date leaveDate) {
+		this.leaveDate = leaveDate;
+	}
+	public Date getLeaveDate() {
+		return leaveDate;
 	}
 	public void setEntryDate(Date entryDate) {
 		this.entryDate = entryDate;

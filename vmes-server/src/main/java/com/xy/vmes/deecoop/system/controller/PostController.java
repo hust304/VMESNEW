@@ -3,8 +3,10 @@ package com.xy.vmes.deecoop.system.controller;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.google.gson.Gson;
 import com.xy.vmes.common.util.RedisUtils;
+import com.xy.vmes.entity.Department;
 import com.xy.vmes.entity.Post;
 import com.xy.vmes.entity.User;
+import com.xy.vmes.service.DepartmentService;
 import com.xy.vmes.service.EmployPostService;
 import com.xy.vmes.service.PostService;
 import com.xy.vmes.service.UserService;
@@ -51,6 +53,8 @@ public class PostController {
     private RedisClient redisClient;
     @Autowired
     private EmployPostService employPostService;
+    @Autowired
+    private DepartmentService departmentService;
 
     /**
     * @author 刘威 自动创建，禁止修改
@@ -212,16 +216,26 @@ public class PostController {
         PageData pd = HttpUtils.parsePageData();
         Post post = (Post)HttpUtils.pageData2Entity(pd, new Post());
         String sessionID = pd.getString("sessionID");
-        User user = RedisUtils.getUserInfoBySessionID(redisClient,sessionID);
-        if(user==null){
-            user = userService.selectById(pd.getString("currentUserId"));
-        }
-        if(StringUtils.isEmpty(pd.getString("deptId"))){
+//        User user = RedisUtils.getUserInfoBySessionID(redisClient,sessionID);
+//        if(user==null){
+//            user = userService.selectById(pd.getString("currentUserId"));
+//        }
+        String deptId = pd.getString("deptId");
+        if(StringUtils.isEmpty(deptId)){
             model.putCode(1);
             model.putMsg("所属部门不能为空！");
             return model;
         }
-        post.setCompanyId(user.getCompanyId());
+        Department department = departmentService.selectById(deptId);
+
+        String companyId = department.getId1();
+        if(!StringUtils.isEmpty(companyId)){
+            post.setCompanyId(companyId);
+        }else{
+            //如果没有公司ID，那么就是创建根节点下
+            post.setCompanyId(department.getId0());
+        }
+
         postService.save(post);
         Long endTime = System.currentTimeMillis();
         logger.info("################post/addPost 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");

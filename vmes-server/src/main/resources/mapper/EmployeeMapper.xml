@@ -5,7 +5,7 @@
 创建人：刘威 自动创建
 创建时间：2018-08-02
  -->
-<mapper namespace="com.xy.vmes.deecoop.system.dao.EmployeeMapper">
+<mapper namespace="com.xy.vmes.entity.EmployeeMapper">
 
     <!--表名 自动创建，禁止修改-->
     <sql id="tableName">
@@ -17,21 +17,22 @@
 		user_id userId,<!-- 系统用户ID -->
 		company_id companyId,<!-- 公司ID-组织架构 -->
 		code code,<!-- 员工编号 -->
-		type type,<!-- 员工类型 数据字典:sys_employee_type -->
+		type type,<!-- 员工类型 数据字典:vmes_dictionary -->
 		name name,<!-- 员工姓名 -->
 		name_en nameEn,<!-- 员工英文名 -->
 		photo photo,<!-- 员工照片 -->
 		icon icon,<!-- 员工图片 -->
 		mobile mobile,<!-- 手机号码 -->
 		email email,<!-- 邮箱地址 -->
-		sex sex,<!-- 性别(1:男0:女) 数据字典:sys_employee_sex -->
+		sex sex,<!-- 性别(1:男0:女)  -->
 		birthday birthday,<!-- 出生日期(yyyy-mm-dd) -->
+		leave_date leaveDate,<!-- 离职日期(yyyy-mm-dd) -->
 		entry_date entryDate,<!-- 入职日期(yyyy-mm-dd) -->
 		native_place nativePlace,<!-- 籍贯 -->
-		political political,<!-- 政治面貌 数据字典:sys_employee_political -->
+		political political,<!-- 政治面貌 数据字典:vmes_dictionary -->
 		identity_number identityNumber,<!-- 身份证号 -->
-		marital marital,<!-- 婚姻状况(1:已婚 0:未婚) 数据字典:sys_employee_marital -->
-		isdisable isdisable,<!-- 是否禁用(1:已禁用 0:启用) 数据字典:sys_isdisable -->
+		marital marital,<!-- 婚姻状况(1:已婚 0:未婚)  -->
+		isdisable isdisable,<!-- 是否禁用(1:已禁用 0:启用)  -->
 		cdate cdate,<!-- 创建时间 -->
 		cuser cuser,<!-- 创建人账号 -->
 		udate udate,<!-- 修改时间 -->
@@ -47,21 +48,22 @@
 		#{userId},<!-- 系统用户ID -->
 		#{companyId},<!-- 公司ID-组织架构 -->
 		#{code},<!-- 员工编号 -->
-		#{type},<!-- 员工类型 数据字典:sys_employee_type -->
+		#{type},<!-- 员工类型 数据字典:vmes_dictionary -->
 		#{name},<!-- 员工姓名 -->
 		#{nameEn},<!-- 员工英文名 -->
 		#{photo},<!-- 员工照片 -->
 		#{icon},<!-- 员工图片 -->
 		#{mobile},<!-- 手机号码 -->
 		#{email},<!-- 邮箱地址 -->
-		#{sex},<!-- 性别(1:男0:女) 数据字典:sys_employee_sex -->
+		#{sex},<!-- 性别(1:男0:女)  -->
 		#{birthday},<!-- 出生日期(yyyy-mm-dd) -->
+		#{leaveDate},<!-- 离职日期(yyyy-mm-dd) -->
 		#{entryDate},<!-- 入职日期(yyyy-mm-dd) -->
 		#{nativePlace},<!-- 籍贯 -->
-		#{political},<!-- 政治面貌 数据字典:sys_employee_political -->
+		#{political},<!-- 政治面貌 数据字典:vmes_dictionary -->
 		#{identityNumber},<!-- 身份证号 -->
-		#{marital},<!-- 婚姻状况(1:已婚 0:未婚) 数据字典:sys_employee_marital -->
-		#{isdisable},<!-- 是否禁用(1:已禁用 0:启用) 数据字典:sys_isdisable -->
+		#{marital},<!-- 婚姻状况(1:已婚 0:未婚)  -->
+		#{isdisable},<!-- 是否禁用(1:已禁用 0:启用)  -->
 		#{cdate},<!-- 创建时间 -->
 		#{cuser},<!-- 创建人账号 -->
 		#{udate},<!-- 修改时间 -->
@@ -78,21 +80,22 @@
         '系统用户ID'  userId,
         '公司ID-组织架构'  companyId,
         '员工编号'  code,
-        '员工类型 数据字典:sys_employee_type'  type,
+        '员工类型 数据字典:vmes_dictionary'  type,
         '员工姓名'  name,
         '员工英文名'  nameEn,
         '员工照片'  photo,
         '员工图片'  icon,
         '手机号码'  mobile,
         '邮箱地址'  email,
-        '性别(1:男0:女) 数据字典:sys_employee_sex'  sex,
+        '性别(1:男0:女) '  sex,
         '出生日期(yyyy-mm-dd)'  birthday,
+        '离职日期(yyyy-mm-dd)'  leaveDate,
         '入职日期(yyyy-mm-dd)'  entryDate,
         '籍贯'  nativePlace,
-        '政治面貌 数据字典:sys_employee_political'  political,
+        '政治面貌 数据字典:vmes_dictionary'  political,
         '身份证号'  identityNumber,
-        '婚姻状况(1:已婚 0:未婚) 数据字典:sys_employee_marital'  marital,
-        '是否禁用(1:已禁用 0:启用) 数据字典:sys_isdisable'  isdisable,
+        '婚姻状况(1:已婚 0:未婚) '  marital,
+        '是否禁用(1:已禁用 0:启用) '  isdisable,
         '创建时间'  cdate,
         '创建人账号'  cuser,
         '修改时间'  udate,
@@ -222,21 +225,22 @@
         user_id userId,<!-- 系统用户ID -->
         company_id companyId,<!-- 公司ID-组织架构 -->
         code code,<!-- 员工编号 -->
-        type type,<!-- 员工类型 数据字典:sys_employee_type -->
+        type type,<!-- 员工类型 数据字典:vmes_dictionary -->
         name name,<!-- 员工姓名 -->
         name_en nameEn,<!-- 员工英文名 -->
         photo photo,<!-- 员工照片 -->
         icon icon,<!-- 员工图片 -->
         mobile mobile,<!-- 手机号码 -->
         email email,<!-- 邮箱地址 -->
-        sex sex,<!-- 性别(1:男0:女) 数据字典:sys_employee_sex -->
+        sex sex,<!-- 性别(1:男0:女)  -->
         birthday birthday,<!-- 出生日期(yyyy-mm-dd) -->
+        leave_date leaveDate,<!-- 离职日期(yyyy-mm-dd) -->
         entry_date entryDate,<!-- 入职日期(yyyy-mm-dd) -->
         native_place nativePlace,<!-- 籍贯 -->
-        political political,<!-- 政治面貌 数据字典:sys_employee_political -->
+        political political,<!-- 政治面貌 数据字典:vmes_dictionary -->
         identity_number identityNumber,<!-- 身份证号 -->
-        marital marital,<!-- 婚姻状况(1:已婚 0:未婚) 数据字典:sys_employee_marital -->
-        isdisable isdisable,<!-- 是否禁用(1:已禁用 0:启用) 数据字典:sys_isdisable -->
+        marital marital,<!-- 婚姻状况(1:已婚 0:未婚)  -->
+        isdisable isdisable,<!-- 是否禁用(1:已禁用 0:启用)  -->
         cdate cdate,<!-- 创建时间 -->
         cuser cuser,<!-- 创建人账号 -->
         udate udate,<!-- 修改时间 -->
@@ -252,21 +256,22 @@
             '系统用户ID'  userId,
             '公司ID-组织架构'  companyId,
             '员工编号'  code,
-            '员工类型 数据字典:sys_employee_type'  type,
+            '员工类型 数据字典:vmes_dictionary'  type,
             '员工姓名'  name,
             '员工英文名'  nameEn,
             '员工照片'  photo,
             '员工图片'  icon,
             '手机号码'  mobile,
             '邮箱地址'  email,
-            '性别(1:男0:女) 数据字典:sys_employee_sex'  sex,
+            '性别(1:男0:女) '  sex,
             '出生日期(yyyy-mm-dd)'  birthday,
+            '离职日期(yyyy-mm-dd)'  leaveDate,
             '入职日期(yyyy-mm-dd)'  entryDate,
             '籍贯'  nativePlace,
-            '政治面貌 数据字典:sys_employee_political'  political,
+            '政治面貌 数据字典:vmes_dictionary'  political,
             '身份证号'  identityNumber,
-            '婚姻状况(1:已婚 0:未婚) 数据字典:sys_employee_marital'  marital,
-            '是否禁用(1:已禁用 0:启用) 数据字典:sys_isdisable'  isdisable,
+            '婚姻状况(1:已婚 0:未婚) '  marital,
+            '是否禁用(1:已禁用 0:启用) '  isdisable,
             '创建时间'  cdate,
             '创建人账号'  cuser,
             '修改时间'  udate,
@@ -315,7 +320,7 @@
     <update id="updateToDisableByIds" parameterType="java.lang.String" >
         update
         <include refid="tableName"></include>
-        set isdisable = 1
+        set isdisable = 1,leave_date = now(),udate = now()
         where
         id in
         <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
