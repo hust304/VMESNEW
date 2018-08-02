@@ -8,9 +8,9 @@ import java.util.*;
 import java.math.BigDecimal;
 
 /** 
- * 说明：vmes_role:角色 实体类
+ * 说明：vmes_role:角色表 实体类
  * @author 陈刚 自动生成
- * @date 2018-07-30
+ * @date 2018-08-02
  */
 @TableName("vmes_role")
 public class Role implements Serializable {
@@ -25,6 +25,9 @@ public class Role implements Serializable {
 	//角色名称
 	@TableField("name")
 	private String name;
+	//英文名称
+	@TableField("name_en")
+	private String nameEn;
 	//是否禁用(1:已禁用 0:启用) 数据字典:sys_isdisable
 	@TableField("isdisable")
 	private String isdisable;
@@ -60,6 +63,12 @@ public class Role implements Serializable {
 	}
 	public String getName() {
 		return name;
+	}
+	public void setNameEn(String nameEn) {
+		this.nameEn = nameEn;
+	}
+	public String getNameEn() {
+		return nameEn;
 	}
 	public void setIsdisable(String isdisable) {
 		this.isdisable = isdisable;

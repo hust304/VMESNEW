@@ -182,7 +182,6 @@
         select
             a.id
             a.role_id as roleId
-            a.menu_id as menuId
             a.isdisable as isdisable
 
             b.id as menuId,

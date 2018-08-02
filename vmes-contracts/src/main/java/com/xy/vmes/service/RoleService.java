@@ -2,6 +2,7 @@ package com.xy.vmes.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.entity.Role;
+import com.xy.vmes.entity.UserRole;
 import com.yvan.PageData;
 
 import java.util.LinkedHashMap;
@@ -99,6 +100,16 @@ public interface RoleService {
      * @return
      */
     String checkDeleteRoleByRoleIds(String roleIds);
+
+    /**
+     * 获取角色ID(','逗号分隔的字符串)
+     * 创建人：陈刚
+     * 创建时间：2018-08-01
+     *
+     * @param objectList
+     * @return
+     */
+    String findRoleIdsByRoleList(List<Role> objectList);
 
 }
 
