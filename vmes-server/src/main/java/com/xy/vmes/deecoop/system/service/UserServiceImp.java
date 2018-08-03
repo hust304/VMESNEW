@@ -2,13 +2,20 @@ package com.xy.vmes.deecoop.system.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.deecoop.system.dao.UserMapper;
+import com.xy.vmes.entity.Employee;
 import com.xy.vmes.entity.User;
 import com.xy.vmes.entity.CoderuleEntity;
+import com.xy.vmes.entity.UserRole;
 import com.xy.vmes.service.CoderuleService;
+import com.xy.vmes.service.EmployeeService;
+import com.xy.vmes.service.UserRoleService;
 import com.xy.vmes.service.UserService;
 import com.yvan.Conv;
 import com.xy.vmes.common.util.Common;
+import com.yvan.MD5Utils;
 import com.yvan.PageData;
+import com.yvan.platform.RestException;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +39,10 @@ public class UserServiceImp implements UserService {
     private UserMapper userMapper;
     @Autowired
     private CoderuleService coderuleService;
+    @Autowired
+    private EmployeeService employeeService;
+    @Autowired
+    private UserRoleService userRoleService;
 
     /**
      * 创建人：刘威 自动创建，禁止修改
@@ -210,6 +221,53 @@ public class UserServiceImp implements UserService {
     @Override
     public List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception{
         return userMapper.getDataListPage(pd,pg);
+    }
+
+
+    /**
+     * 创建人：刘威
+     * 创建时间：2018-08-03
+     */
+    @Override
+    public void createUserAndRole(PageData pd, Employee employee ) throws Exception {
+        String roleId = pd.getString("roleId");
+        if(!StringUtils.isEmpty(roleId)){
+            User user = new User();
+            if(isExistMobile(pd)){
+                throw  new RestException("10","用户中该手机号已存在，请修改手机号！");
+            }
+
+            user.setUserCode(createCoder(employee.getCompanyId()));
+            user.setCompanyId(employee.getCompanyId());
+            user.setDeptId(pd.getString("deptId"));
+            user.setEmail(employee.getEmail());
+            user.setEmployId(employee.getId());
+            user.setMobile(employee.getMobile());
+            user.setUserType("内部用户");
+            user.setCuser(pd.getString("cuser"));
+            user.setUuser(pd.getString("uuser"));
+            //使用手机号后六位进行加密作为默认密码
+            String mobile = employee.getMobile();
+            String password = mobile.substring(mobile.length()-6,mobile.length());
+            if(password!=null&&password.length()==6){
+                user.setPassword(MD5Utils.MD5(password));
+            }else{
+                throw  new RestException("11","输入手机号长度错误！");
+            }
+            save(user);
+
+            //修改员工表用户ID
+            employee.setUserId(user.getId());
+            employeeService.update(employee);
+
+            //新增用户角色信息
+            UserRole userRole = new UserRole();
+            userRole.setRoleId(pd.getString("roleId"));
+            userRole.setUserId(user.getId());
+            userRole.setCuser(pd.getString("cuser"));
+            userRole.setUuser(pd.getString("uuser"));
+            userRoleService.save(userRole);
+        }
     }
 
 }

@@ -1,6 +1,7 @@
 package com.xy.vmes.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.entity.Employee;
 import com.xy.vmes.entity.User;
 import com.yvan.PageData;
 
@@ -118,6 +119,12 @@ public interface UserService {
      * 创建时间：2018-07-26
      */
     List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception;
+
+    /**
+     * 创建人：刘威
+     * 创建时间：2018-08-03
+     */
+    void createUserAndRole(PageData pd, Employee employee ) throws Exception;
 
 }
 

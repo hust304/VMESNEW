@@ -5,6 +5,8 @@ import com.google.gson.Gson;
 import com.xy.vmes.entity.*;
 import com.xy.vmes.service.*;
 import com.yvan.*;
+import com.yvan.platform.ResponseCode;
+import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
 import com.yvan.template.ExcelAjaxTemplate;
 import lombok.extern.slf4j.Slf4j;
@@ -201,13 +203,13 @@ public class EmployeeController {
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 
-//    private boolean isExistMobile(PageData pd) throws Exception {
-//        List<Map> varList = employeeService.findDataList(pd);
-//        if(varList!=null&&varList.size()>0){
-//            return true;
-//        }
-//        return false;
-//    }
+    private boolean isExistColumn(PageData pd) throws Exception {
+        List<Map> varList = employeeService.findDataList(pd);
+        if(varList!=null&&varList.size()>0){
+            return true;
+        }
+        return false;
+    }
 
     private boolean isExistMobile(PageData pd) throws Exception {
         boolean isExist = userService.isExistMobile(pd);
@@ -215,9 +217,9 @@ public class EmployeeController {
     }
 
 
-    private EmployPost getMainEmployPost(String employeeId) throws Exception {
+    private EmployPost getMainEmployPost(String employId) throws Exception {
         Map columnMap = new HashMap();
-        columnMap.put("employ_id",employeeId);
+        columnMap.put("employ_id",employId);
         columnMap.put("isplurality","0");
         columnMap.put("isdisable","0");
         List<EmployPost> employPostList = employPostService.selectByColumnMap(columnMap);
@@ -254,12 +256,20 @@ public class EmployeeController {
         mobile = mobile.trim();
         Post post = postService.selectById(postId);
         String  companyId = post.getCompanyId();
-        String  deptId = post.getDeptId();
-
-
 
         //新增员工信息
         Employee employee = (Employee)HttpUtils.pageData2Entity(pd, new Employee());
+
+        //公司内部的工号唯一性校验
+        PageData pdExist = new PageData();
+        pdExist.putQueryStr("code = '"+employee.getCode()+"' and company_id = '"+companyId+"'");
+        if(isExistColumn(pdExist)){
+            model.putCode(3);
+            model.putMsg("工号已存在，请重新输入！");
+            return model;
+        }
+        employee.setMobile(mobile);
+        employee.setCompanyId(companyId);
         employeeService.save(employee);
         //新增员工主岗信息
         EmployPost employPost = new EmployPost();
@@ -267,56 +277,26 @@ public class EmployeeController {
         employPost.setPostId(postId);
         employPost.setCuser(pd.getString("cuser"));
         employPost.setUuser(pd.getString("uuser"));
+        employPost.setIsplurality("0");//主岗
         employPostService.save(employPost);
 
         //新增用户信息
-        String roleId = pd.getString("roleId");
-        User user = new User();
-        if(!StringUtils.isEmpty(roleId)){
-
-            if(isExistMobile(pd)){
-                model.putCode(3);
-                model.putMsg("用户中该手机号已存在，请修改手机号！");
-                return model;
-            }
-
-            user.setUserCode(userService.createCoder(companyId));
-            user.setCompanyId(companyId);
-            user.setDeptId(deptId);
-            user.setEmail(employee.getEmail());
-            user.setEmployId(employee.getId());
-            user.setMobile(employee.getMobile());
-            user.setUserType("内部用户");
-            user.setCuser(pd.getString("cuser"));
-            user.setUuser(pd.getString("uuser"));
-            //使用手机号后六位进行加密作为默认密码
-            String password = mobile.substring(mobile.length()-6,mobile.length());
-            if(password!=null&&password.length()==6){
-                user.setPassword(MD5Utils.MD5(password));
-            }else{
-                model.putCode(4);
-                model.putMsg("输入手机号长度错误！");
-                return model;
-            }
-            userService.save(user);
-
-            //修改员工表用户ID
-            employee.setUserId(user.getId());
-            employeeService.update(employee);
-
-            //新增用户角色信息
-            UserRole userRole = new UserRole();
-            userRole.setRoleId(pd.getString("roleId"));
-            userRole.setUserId(user.getId());
-            userRole.setCuser(pd.getString("cuser"));
-            userRole.setUuser(pd.getString("uuser"));
-            userRoleService.save(userRole);
+        String  deptId = post.getDeptId();
+        pd.put("deptId",deptId);
+        try {
+            userService.createUserAndRole(pd,employee);
+        }catch (RestException e){
+            model.putCode(e.getCode());
+            model.putMsg(e.getMessage());
+            return model;
         }
 
         Long endTime = System.currentTimeMillis();
         logger.info("################employee/addEmployeeAndUser 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
+
+
 
 
     /**
@@ -337,63 +317,34 @@ public class EmployeeController {
             model.putMsg("手机号不能为空！");
             return model;
         }
-        mobile = mobile.trim();
 
-        //新增员工信息
+
+        //修改员工信息
         Employee employee = (Employee)HttpUtils.pageData2Entity(pd, new Employee());
+        employee.setId(pd.getString("employId"));
+        mobile = mobile.trim();
+        employee.setMobile(mobile);
         employeeService.update(employee);
 
-        String employeeId = employee.getId();
-        //获取员工主岗信息，找到当前员工所在部门
-        EmployPost employPost = getMainEmployPost(employeeId);
-        Post post = postService.selectById(employPost.getPostId());
-        String deptId = post.getDeptId();
 
-        employee = employeeService.selectById(employeeId);
-        String roleId = pd.getString("roleId");
+        //获取员工主岗信息，找到当前员工所在部门
+        String employId = employee.getId();
+        employee = employeeService.selectById(employId);
+
+        //判断是否拥有用户信息，如果没有则新增，如果有则修改
         String userId = employee.getUserId();
         if(StringUtils.isEmpty(userId)){
             //新增用户信息
-            User user = new User();
-            if(!StringUtils.isEmpty(roleId)){
-                //校验输入的手机号是否存在
-                if(isExistMobile(pd)){
-                    model.putCode(3);
-                    model.putMsg("用户中该手机号已存在，请修改手机号！");
-                    return model;
-                }
-
-                user.setUserCode(userService.createCoder(employee.getCompanyId()));
-                user.setCompanyId(employee.getCompanyId());
-                user.setDeptId(deptId);
-                user.setEmail(employee.getEmail());
-                user.setEmployId(employee.getId());
-                user.setMobile(employee.getMobile());
-                user.setUserType("内部用户");
-                user.setCuser(pd.getString("cuser"));
-                user.setUuser(pd.getString("uuser"));
-                //使用手机号后六位进行加密作为默认密码
-                String password = mobile.substring(mobile.length()-6,mobile.length());
-                if(password!=null&&password.length()==6){
-                    user.setPassword(MD5Utils.MD5(password));
-                }else{
-                    model.putCode(4);
-                    model.putMsg("输入手机号长度错误！");
-                    return model;
-                }
-                userService.save(user);
-
-                //修改员工表用户ID
-                employee.setUserId(user.getId());
-                employeeService.update(employee);
-
-                //新增用户角色信息
-                UserRole userRole = new UserRole();
-                userRole.setRoleId(pd.getString("roleId"));
-                userRole.setUserId(user.getId());
-                userRole.setCuser(pd.getString("cuser"));
-                userRole.setUuser(pd.getString("uuser"));
-                userRoleService.save(userRole);
+            EmployPost employPost = getMainEmployPost(employId);
+            Post post = postService.selectById(employPost.getPostId());
+            String deptId = post.getDeptId();
+            pd.put("deptId",deptId);
+            try {
+                userService.createUserAndRole(pd,employee);
+            }catch (RestException e){
+                model.putCode(e.getCode());
+                model.putMsg(e.getMessage());
+                return model;
             }
         }else {
             //修改用户信息
@@ -485,7 +436,7 @@ public class EmployeeController {
         }
         String employPostId = pd.getString("employPostId");
         if(StringUtils.isEmpty(employPostId) ){
-            model.putCode(4);
+            model.putCode(3);
             model.putMsg("员工岗位ID不能为空！");
             return model;
         }
@@ -495,8 +446,11 @@ public class EmployeeController {
         String[] employIds = new String[1];
         employIds[0] = employPost.getEmployId();
         employPost.setIsdisable(isdisable);
+        employPost.setUuser(pd.getString("uuser"));
         employee.setIsdisable(isdisable);
+        employee.setUuser(pd.getString("uuser"));
         user.setIsdisable(isdisable);
+        user.setUuser(pd.getString("uuser"));
         //如果是兼岗，只需要禁用开启当前兼岗即可
         if ("1".equals(isplurality)){
             employPostService.update(employPost);
@@ -506,44 +460,134 @@ public class EmployeeController {
             if("1".equals(isdisable)){
                 employPostService.updateToDisableByEmployIds(employIds);//同时禁用该员工的主岗和兼岗
             }else {
-                employPostService.update(employPost);
+                employPostService.update(employPost);//启用员工主岗
             }
             employeeService.update(employee);//禁用启用员工
             userService.update(user);//禁用启用用户
         }
 
-
-
-
-//        String employeePostStates = pd.getString("employeePostStates");
-
-//        employeePostStates ="[{\"employeeId\":\"3\",\"postId\":\"1\",\"isplurality\":\"1\",\"isdisable\":\"1\"}," +
-//                "{\"employeeId\":\"3\",\"postId\":1532599975000,\"isplurality\":\"0\",\"isdisable\":\"1\"}," +
-//                "{\"employeeId\":\"3\",\"postId\":1532601003000,\"isplurality\":\"0\",\"isdisable\":\"0\"}," +
-//                "{\"employeeId\":\"3\",\"postId\":1532600923000,\"isplurality\":\"0\",\"isdisable\":\"0\"}," +
-//                "{\"employeeId\":\"3\",\"postId\":1532600802000,\"isplurality\":\"0\",\"isdisable\":\"0\"}," +
-//                "{\"employeeId\":\"3\",\"postId\":1532601034000,\"isplurality\":\"1\",\"isdisable\":\"1\"}]";
-//
-//        List employeePostStatesList = YvanUtil.jsonToList(employeePostStates);
-//        if(employeePostStatesList!=null&&employeePostStatesList.size()>0){
-//            for(int i=0;i<employeePostStatesList.size();i++){
-//                Map employeePostStatesMap = (Map)employeePostStatesList.get(i);
-//                if(employeePostStatesMap!=null&&employeePostStatesMap.get("isplurality")!=null){
-//                    //如果是兼岗，只需要禁用开启当前兼岗即可
-//                    if("1".equals(employeePostStatesMap.get("isplurality").toString())){
-//
-//                    }
-//                    //如果是主岗，只需要禁用的同时要禁用兼岗，启用时只需启用主岗
-//                    else{
-//
-//
-//                    }
-//                }
-//            }
-//        }
-
         Long endTime = System.currentTimeMillis();
         logger.info("################employee/updateEmployeePostState 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+    /**
+     * 变更员工岗位（只变更主岗，先禁用后新增）（支持批量操作）
+     * @author 刘威
+     * @date 2018-08-02
+     */
+    @GetMapping("/employee/updateForChangeEmployeePost")
+    public ResultModel updateForChangeEmployeePost()  throws Exception {
+
+        logger.info("################employee/updateForChangeEmployeePost 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        HttpServletResponse response  = HttpUtils.currentResponse();
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+
+        String employPosts = pd.getString("employPosts");
+
+//        employPosts ="[{\"employPostId\":\"3\",\"postId\":\"1\"}," +
+//                "{\"employPostId\":\"3\",\"postId\":1532599975000}," +
+//                "{\"employPostId\":\"3\",\"postId\":1532601003000}," +
+//                "{\"employPostId\":\"3\",\"postId\":1532600923000}," +
+//                "{\"employPostId\":\"3\",\"postId\":1532600802000}," +
+//                "{\"employPostId\":\"3\",\"postId\":1532601034000}]";
+
+        List employPostsList = YvanUtil.jsonToList(employPosts);
+        if(employPostsList!=null&&employPostsList.size()>0){
+            for(int i=0;i<employPostsList.size();i++){
+                Map employPostsMap = (Map)employPostsList.get(i);
+                if(employPostsMap!=null){
+                    if(employPostsMap.get("employPostId")!=null && employPostsMap.get("postId")!=null){
+                        //先禁用
+                        EmployPost employPost = employPostService.selectById(employPostsMap.get("employPostId").toString());
+                        employPost.setIsdisable("1");
+                        employPost.setUuser(pd.getString("uuser"));
+                        employPostService.update(employPost);
+                        //后新增
+                        EmployPost employPostNew = new EmployPost();
+                        employPostNew.setPostId(employPostsMap.get("postId").toString());
+                        employPostNew.setEmployId(employPost.getEmployId());
+                        employPostNew.setIsplurality(employPost.getIsplurality());
+                        employPostNew.setCuser(pd.getString("cuser"));
+                        employPostNew.setUuser(pd.getString("uuser"));
+                        employPostService.save(employPost);
+                    }
+                }
+            }
+        }
+        Long endTime = System.currentTimeMillis();
+        logger.info("################employee/updateForChangeEmployeePost 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+
+    /**
+     * 变更员工岗位（只变更主岗，先禁用后新增）（支持批量操作）
+     * @author 刘威
+     * @date 2018-08-02
+     */
+    @GetMapping("/employee/addEmployToUser")
+    public ResultModel addEmployToUser()  throws Exception {
+
+        logger.info("################employee/addEmployToUser 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        HttpServletResponse response  = HttpUtils.currentResponse();
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+        StringBuffer msg = new StringBuffer();
+        int success = 0;
+        int error = 0;
+
+        String employRoles = pd.getString("employRoles");
+
+//        employRoles ="[{\"employId\":\"3\",\"roleId\":\"1\"}," +
+//                "{\"employId\":\"3\",\"roleId\":1532599975000}," +
+//                "{\"employId\":\"3\",\"roleId\":1532601003000}," +
+//                "{\"employId\":\"3\",\"roleId\":1532600923000}," +
+//                "{\"employId\":\"3\",\"roleId\":1532600802000}," +
+//                "{\"employId\":\"3\",\"roleId\":1532601034000}]";
+
+        List employRolesList = YvanUtil.jsonToList(employRoles);
+        if(employRolesList!=null&&employRolesList.size()>0){
+            for(int i=0;i<employRolesList.size();i++){
+                Map employRolesMap = (Map)employRolesList.get(i);
+                if(employRolesMap!=null){
+                    if(employRolesMap.get("employId")!=null && employRolesMap.get("roleId")!=null){
+                        Employee employee = employeeService.selectById(employRolesMap.get("employId").toString());
+                        String msgHeader = "员工："+employee.getName()+"("+employee.getCode()+")    ";
+                        //判断当前员工是否已经拥有账号信息，如果没有则新增，如果有则提示已存在
+                        if(StringUtils.isEmpty(employee.getUserId())){
+                            //获取当前员工主岗信息
+                            EmployPost employPost = getMainEmployPost(employee.getId());
+                            Post post = postService.selectById(employPost.getPostId());
+                            String deptId = post.getDeptId();
+                            pd.put("deptId",deptId);
+                            pd.put("roleId",employRolesMap.get("roleId").toString());
+                            try {
+                                //新增用户信息
+                                userService.createUserAndRole(pd,employee);
+                                msg.append(msgHeader+"创建账号成功！");
+                                success = success + 1;
+                            }catch (RestException e){
+                                msg.append(msgHeader+"创建账号失败，失败原因如下："+e.getMessage());
+                                error = error + 1;
+                            }
+                        }else {
+                            msg.append(msgHeader+"创建账号失败，失败原因如下：当前员工账号已存在");
+                            error = error + 1;
+                        }
+                    }
+                }
+            }
+        }
+        msg.append("合计： 创建成功"+success+"个,创建失败"+error+"个");
+        model.putMsg(msg.toString());
+        Long endTime = System.currentTimeMillis();
+        logger.info("################employee/addEmployToUser 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 

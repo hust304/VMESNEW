@@ -31,12 +31,12 @@ public enum ResponseCode {
 	ILLEGAL_URL("109","不合法的域名"),
 	NOT_AUTH("110","没有权限访问"),
 	ERR_INVALID_SESSION("1001","session_token已过期");
-	
-	
+
+
 	private String code;
-	
+
 	private String error;
-	
+
 	private ResponseCode(String code,String error){
 		this.code=code;
 		this.error = error;
