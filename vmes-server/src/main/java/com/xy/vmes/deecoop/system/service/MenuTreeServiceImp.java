@@ -135,7 +135,7 @@ public class MenuTreeServiceImp implements MenuTreeService {
         String chid_ids = menuService.findMenuidByMenuList(childList);
 
         //递归结束条件: 递归执行次数 > 6 or 查询无子节点
-        if (count > 6 || childList == null || childList.size() == 1) {
+        if (count > 6 || childList == null || childList.size() == 0) {
             return;
         } else {
             //递归调用: findDeptTree()
@@ -213,7 +213,7 @@ public class MenuTreeServiceImp implements MenuTreeService {
         //this.count = Integer.valueOf(this.count.intValue() + 1);
 
         //递归结束条件(菜单级别layer == 1)
-        if (layer == 1) {
+        if (layer == 0) {
             return;
         } else {
             //递归调用: findMenuTreeByList()
@@ -240,31 +240,39 @@ public class MenuTreeServiceImp implements MenuTreeService {
         //1. 获取当前层-菜单List<Menu>
         List<Menu> menuList = this.findListByLayer(layer);
 
-        // 2. 获取当前菜单层 Map<pid, List<TreeEntity>>
-        Map<String, List<TreeEntity>> nodeMap = this.menuList2Map(menuList, null);
+        //递归结束条件(菜单级别layer == 0)
+        if (layer == 0) {
+            return treeList;
+        } else if (menuList == null || menuList.size() == 0) {
+            //递归调用: creatMenuTree()
+            return this.creatMenuTree(Integer.valueOf(layer.intValue()-1), childMap, treeList);
+        } else {
+            //递归当前层所有节点List<TreeEntity>
+            List<TreeEntity> nodeList = menuList2TreeList(menuList, null);
 
-        //3. chileMap 挂接到当前层节点上
-        if (menuList != null && menuList.size() > 0 && childMap != null && childMap.size() > 0) {
-            List<TreeEntity> nodeList = this.menuList2TreeList(menuList, null);
-            for (TreeEntity node : nodeList) {
-                String pid = node.getId();
-                List<TreeEntity> childList = childMap.get(pid);
-                if (childList != null && childList.size() > 0) {
-                    node.setChildren(childList);
+            //获取childMap--Map<pid, List<TreeEntity>>
+            if (childMap == null || childMap.size() == 0) {
+                //获取当前菜单层 Map<pid, List<TreeEntity>>
+                childMap = this.treeList2Map(nodeList, null);
+            } else if (childMap != null && childMap.size() > 0) {
+                //chileMap 挂接到当前层节点上
+                for (TreeEntity node : nodeList) {
+                    String pid = node.getId();
+                    List<TreeEntity> childList = childMap.get(pid);
+                    if (childList != null && childList.size() > 0) {
+                        node.setChildren(childList);
+                    }
                 }
+
+                //生成新的childMap
+                if (childMap != null && childMap.size() > 0) {childMap.clear();}
+                childMap = this.treeList2Map(nodeList, childMap);
+
+                treeList = nodeList;
             }
 
-            treeList = nodeList;
-        }
-
-        //递归结束条件(菜单级别layer == 1)
-        if (layer == 1
-            || (menuList == null || menuList.size() == 0)
-        ) {
-            return treeList;
-        } else  {
             //递归调用: creatMenuTree()
-            return this.creatMenuTree(Integer.valueOf(layer.intValue()-1), nodeMap, treeList);
+            return this.creatMenuTree(Integer.valueOf(layer.intValue()-1), childMap, treeList);
         }
     }
 
@@ -309,24 +317,24 @@ public class MenuTreeServiceImp implements MenuTreeService {
     }
 
     /**
-     * 遍历当前菜单层List<Menu>-获取pid节点Map<pid, List<TreeEntity>
-     * @param menuList  当前菜单层List<Menu>
+     * 遍历当前菜单层List<TreeEntity>-获取pid节点Map<pid, List<Menu>
+     * @param menuList  当前菜单层List<TreeEntity>
+     * @param nodeMap   Map<pid, List<TreeEntity>
      * @return
      */
-    public Map<String, List<TreeEntity>> menuList2Map(List<Menu> menuList, Map<String, List<TreeEntity>> nodeMap) {
+    public Map<String, List<TreeEntity>> treeList2Map(List<TreeEntity> menuList, Map<String, List<TreeEntity>> nodeMap) {
         if (nodeMap == null) {nodeMap = new HashMap<String, List<TreeEntity>>();}
         if (menuList == null || menuList.size() == 0) {return nodeMap;}
 
-        //1. 遍历菜单层List<Menu>-生成Map<pid, List<TreeEntity>
-        for (Menu object : menuList) {
-            TreeEntity node = this.menu2Tree(object, new TreeEntity());
-            String pid = object.getPid();
-            List<TreeEntity> nodeList = nodeMap.get(pid);
-            if(nodeList == null) {
-                nodeList = new ArrayList<TreeEntity>();
-                nodeMap.put(pid, nodeList);
+        //1. 遍历菜单层List<TreeEntity>-生成Map<pid, List<TreeEntity>
+        for (TreeEntity node : menuList) {
+            String pid = node.getPid();
+            List<TreeEntity> nodeChildList = nodeMap.get(pid);
+            if(nodeChildList == null) {
+                nodeChildList = new ArrayList<TreeEntity>();
+                nodeMap.put(pid, nodeChildList);
             }
-            nodeList.add(node);
+            nodeChildList.add(node);
         }
 
         if (nodeMap.size() == 0) {return nodeMap;}

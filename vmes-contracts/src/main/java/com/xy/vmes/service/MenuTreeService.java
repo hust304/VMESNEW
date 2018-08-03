@@ -79,12 +79,12 @@ public interface MenuTreeService {
     TreeEntity menu2Tree(Menu menu, TreeEntity tree);
 
     /**
-     * 遍历当前菜单层List<Menu>-获取pid节点Map<pid, List<Menu>
-     * @param menuList  当前菜单层List<Menu>
-     * @param nodeMap   Map<pid, List<Menu>
+     * 遍历当前菜单层List<TreeEntity>-获取pid节点Map<pid, List<Menu>
+     * @param menuList  当前菜单层List<TreeEntity>
+     * @param nodeMap   Map<pid, List<TreeEntity>
      * @return
      */
-    Map<String, List<TreeEntity>> menuList2Map(List<Menu> menuList, Map<String, List<TreeEntity>> nodeMap);
+    Map<String, List<TreeEntity>> treeList2Map(List<TreeEntity> menuList, Map<String, List<TreeEntity>> nodeMap);
 
     /**
      * 菜单List<Menu>转换成-树结构体List<TreeEntity>

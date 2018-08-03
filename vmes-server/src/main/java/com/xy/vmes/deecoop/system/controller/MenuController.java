@@ -531,6 +531,7 @@ public class MenuController {
 
             String treeJsonStr = YvanUtil.toJson(treeList);
             //System.out.println("treeJsonStr: " + treeJsonStr);
+            model.putResult(treeJsonStr);
 
         } catch (Exception e) {
             throw new RestException("", e.getMessage());
