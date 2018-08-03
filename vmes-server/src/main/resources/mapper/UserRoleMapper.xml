@@ -218,7 +218,7 @@
                         and a.isdisable = #{isdisable}
                     </if>
                     <if test="roleIsdisable != null and roleIsdisable != ''" >
-                        and b.isdisable = #{menuIsdisable}
+                        and b.isdisable = #{roleIsdisable}
                     </if>
 
                     <!--queryStr 自定义sql查询语句-->
