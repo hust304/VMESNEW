@@ -212,6 +212,16 @@
         </if>
     </select>
 
+    <!-- 刘威 2018-08-03-->
+    <update id="updateToDisableByEmployIds" parameterType="java.lang.String" >
+        update
+        <include refid="tableName"></include>
+        set isdisable = 1,udate = now()
+        where isdisable =0 and employ_id in
+        <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
 
     <!-- 批量修改用户信息为禁用状态 刘威-->
     <update id="updateToDisableByIds" parameterType="java.lang.String" >

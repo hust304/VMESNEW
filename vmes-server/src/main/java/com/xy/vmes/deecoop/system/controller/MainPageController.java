@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
@@ -49,7 +50,7 @@ public class MainPageController {
      * @author 刘威 修改用户密码
      * @date 2018-07-27
      */
-    @GetMapping("/mainPage/changePassWord")
+    @PostMapping("/mainPage/changePassWord")
     public ResultModel changePassWord()  throws Exception {
 
         logger.info("################mainPage/changePassWord 执行开始 ################# ");
@@ -71,7 +72,7 @@ public class MainPageController {
      * @author 刘威 修改界面样式
      * @date 2018-07-27
      */
-    @GetMapping("/mainPage/changePageStyle")
+    @PostMapping("/mainPage/changePageStyle")
     public ResultModel changePageStyle()  throws Exception {
 
         logger.info("################mainPage/changePageStyle 执行开始 ################# ");
@@ -92,7 +93,7 @@ public class MainPageController {
      * @author 刘威 保存用户自定义菜单
      * @date 2018-07-27
      */
-    @GetMapping("/mainPage/saveUserDefinedMenu")
+    @PostMapping("/mainPage/saveUserDefinedMenu")
     public ResultModel saveUserDefinedMenu()  throws Exception {
 
         logger.info("################mainPage/saveUserDefinedMenu 执行开始 ################# ");
@@ -139,7 +140,7 @@ public class MainPageController {
      * @author 刘威  查询用户自定义菜单
      * @date 2018-07-27
      */
-    @GetMapping("/mainPage/listUserDefinedMenu")
+    @PostMapping("/mainPage/listUserDefinedMenu")
     public ResultModel listUserDefinedMenu()  throws Exception {
 
         logger.info("################mainPage/listUserDefinedMenu 执行开始 ################# ");

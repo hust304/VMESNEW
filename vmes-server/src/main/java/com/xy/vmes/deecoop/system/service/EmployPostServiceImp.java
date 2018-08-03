@@ -174,6 +174,15 @@ public class EmployPostServiceImp implements EmployPostService {
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
+    /**
+     * 创建人：刘威
+     * 创建时间：2018-08-03
+     */
+    @Override
+    public void  updateToDisableByEmployIds(String[] ids) throws Exception{
+        employPostMapper.updateToDisableByEmployIds(ids);
+    }
+
 
 }
 

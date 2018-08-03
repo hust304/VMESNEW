@@ -95,19 +95,6 @@ public interface EmployeeMapper extends BaseMapper<Employee> {
 
 
 
-    /**
-     * 创建人：刘威
-     * 创建时间：2018-08-03
-     */
-    @Select("updateUserToDisableByIds")
-    void updateUserToDisableByIds(String[] ids);
-
-    /**
-     * 创建人：刘威
-     * 创建时间：2018-08-03
-     */
-    @Select("updatePostToDisableByIds")
-    void updatePostToDisableByIds(String[] ids);
 }
 
 

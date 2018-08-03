@@ -4,10 +4,7 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.google.gson.Gson;
 import com.xy.vmes.entity.*;
 import com.xy.vmes.service.*;
-import com.yvan.ExcelUtil;
-import com.yvan.HttpUtils;
-import com.yvan.MD5Utils;
-import com.yvan.PageData;
+import com.yvan.*;
 import com.yvan.springmvc.ResultModel;
 import com.yvan.template.ExcelAjaxTemplate;
 import lombok.extern.slf4j.Slf4j;
@@ -232,7 +229,7 @@ public class EmployeeController {
 
     /**
      * @author 刘威 新增员工信息同时需要根据情况新增用户信息
-     * @date 2018-07-26
+     * @date 2018-08-02
      */
     @GetMapping("/employee/addEmployeeAndUser")
     public ResultModel addEmployeeAndUser()  throws Exception {
@@ -324,7 +321,7 @@ public class EmployeeController {
 
     /**
      * @author 刘威 修改员工信息同时修改或新增用户信息（手机号，邮箱，角色）
-     * @date 2018-07-26
+     * @date 2018-08-02
      */
     @GetMapping("/employee/updateEmployeeAndUser")
     public ResultModel updateEmployeeAndUser()  throws Exception {
@@ -435,7 +432,7 @@ public class EmployeeController {
 
     /**
      * @author 刘威  禁用员工信息包含主岗兼岗，同时禁用员工账号（支持批量删除，不支持物理删除）
-     * @date 2018-07-26
+     * @date 2018-08-02
      */
     @GetMapping("/employee/deleteEmployees")
     public ResultModel deleteEmployees()  throws Exception {
@@ -449,18 +446,106 @@ public class EmployeeController {
 
         String employeeIds = pd.getString("ids");
         String[] ids = employeeIds.split(",");
-
+        //禁用员工信息
         employeeService.updateToDisableByIds(ids);
-
-        employeeService.updateUserToDisableByIds(ids);
-
-        employeeService.updatePostToDisableByIds(ids);
+        //禁用用户信息
+        userService.updateToDisableByEmployIds(ids);
+        //禁用用户岗位信息
+        employPostService.updateToDisableByEmployIds(ids);
 
         Long endTime = System.currentTimeMillis();
         logger.info("################employee/deleteEmployees 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
+
+    /**
+     * @author 刘威  单独启用禁用员工信息包含主岗兼岗，同时禁用员工账号
+     * @date 2018-08-02
+     */
+    @GetMapping("/employee/updateEmployeePostState")
+    public ResultModel updateEmployeePostState()  throws Exception {
+
+        logger.info("################employee/updateEmployeePostState 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        HttpServletResponse response  = HttpUtils.currentResponse();
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+        String isplurality = pd.getString("isplurality");
+        if(StringUtils.isEmpty(isplurality) ){
+            model.putCode(1);
+            model.putMsg("是否兼岗不能为空！");
+            return model;
+        }
+        String isdisable = pd.getString("isdisable");
+        if(StringUtils.isEmpty(isdisable) ){
+            model.putCode(2);
+            model.putMsg("是否禁用不能为空！");
+            return model;
+        }
+        String employPostId = pd.getString("employPostId");
+        if(StringUtils.isEmpty(employPostId) ){
+            model.putCode(4);
+            model.putMsg("员工岗位ID不能为空！");
+            return model;
+        }
+        EmployPost employPost = employPostService.selectById(employPostId);
+        Employee employee = employeeService.selectById(employPost.getEmployId());
+        User user = userService.selectById(employee.getUserId());
+        String[] employIds = new String[1];
+        employIds[0] = employPost.getEmployId();
+        employPost.setIsdisable(isdisable);
+        employee.setIsdisable(isdisable);
+        user.setIsdisable(isdisable);
+        //如果是兼岗，只需要禁用开启当前兼岗即可
+        if ("1".equals(isplurality)){
+            employPostService.update(employPost);
+        }
+        //如果是主岗，只需要禁用的同时要禁用兼岗、员工、用户，启用时只需启用主岗
+        else {
+            if("1".equals(isdisable)){
+                employPostService.updateToDisableByEmployIds(employIds);//同时禁用该员工的主岗和兼岗
+            }else {
+                employPostService.update(employPost);
+            }
+            employeeService.update(employee);//禁用启用员工
+            userService.update(user);//禁用启用用户
+        }
+
+
+
+
+//        String employeePostStates = pd.getString("employeePostStates");
+
+//        employeePostStates ="[{\"employeeId\":\"3\",\"postId\":\"1\",\"isplurality\":\"1\",\"isdisable\":\"1\"}," +
+//                "{\"employeeId\":\"3\",\"postId\":1532599975000,\"isplurality\":\"0\",\"isdisable\":\"1\"}," +
+//                "{\"employeeId\":\"3\",\"postId\":1532601003000,\"isplurality\":\"0\",\"isdisable\":\"0\"}," +
+//                "{\"employeeId\":\"3\",\"postId\":1532600923000,\"isplurality\":\"0\",\"isdisable\":\"0\"}," +
+//                "{\"employeeId\":\"3\",\"postId\":1532600802000,\"isplurality\":\"0\",\"isdisable\":\"0\"}," +
+//                "{\"employeeId\":\"3\",\"postId\":1532601034000,\"isplurality\":\"1\",\"isdisable\":\"1\"}]";
+//
+//        List employeePostStatesList = YvanUtil.jsonToList(employeePostStates);
+//        if(employeePostStatesList!=null&&employeePostStatesList.size()>0){
+//            for(int i=0;i<employeePostStatesList.size();i++){
+//                Map employeePostStatesMap = (Map)employeePostStatesList.get(i);
+//                if(employeePostStatesMap!=null&&employeePostStatesMap.get("isplurality")!=null){
+//                    //如果是兼岗，只需要禁用开启当前兼岗即可
+//                    if("1".equals(employeePostStatesMap.get("isplurality").toString())){
+//
+//                    }
+//                    //如果是主岗，只需要禁用的同时要禁用兼岗，启用时只需启用主岗
+//                    else{
+//
+//
+//                    }
+//                }
+//            }
+//        }
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################employee/updateEmployeePostState 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
 
 }
 

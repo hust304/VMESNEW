@@ -176,6 +176,14 @@ public class UserServiceImp implements UserService {
         userMapper.updateToDisableByIds(ids);
     }
 
+    /**
+     * 创建人：刘威
+     * 创建时间：2018-08-03
+     */
+    @Override
+    public void  updateToDisableByEmployIds(String[] ids) throws Exception{
+        userMapper.updateToDisableByEmployIds(ids);
+    }
 
     /**
      * 创建人：刘威

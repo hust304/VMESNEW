@@ -95,7 +95,11 @@ public interface UserService {
      */
     void updateToDisableByIds(String[] ids) throws Exception;
 
-
+    /**
+     * 创建人：刘威
+     * 创建时间：2018-08-03
+     */
+    void updateToDisableByEmployIds(String[] ids) throws Exception;
 
     /**
      * 创建人：刘威

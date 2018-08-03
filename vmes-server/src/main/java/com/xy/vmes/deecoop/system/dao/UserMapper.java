@@ -81,6 +81,12 @@ public interface UserMapper extends BaseMapper<User> {
 	@Select("updateToDisableByIds")
 	void updateToDisableByIds(String[] ids);
 
+	/**
+	 * 创建人：刘威
+	 * 创建时间：2018-08-03
+	 */
+	@Select("updateToDisableByEmployIds")
+	void updateToDisableByEmployIds(String[] ids);
 
 	/**
 	 * 创建人：刘威

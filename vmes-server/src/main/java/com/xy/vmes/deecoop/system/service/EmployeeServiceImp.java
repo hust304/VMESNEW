@@ -177,23 +177,6 @@ public class EmployeeServiceImp implements EmployeeService {
 
 
 
-    /**
-     * 创建人：刘威
-     * 创建时间：2018-08-03
-     */
-    @Override
-    public void  updateUserToDisableByIds(String[] ids) throws Exception{
-        employeeMapper.updateUserToDisableByIds(ids);
-    }
-
-    /**
-     * 创建人：刘威
-     * 创建时间：2018-08-03
-     */
-    @Override
-    public void  updatePostToDisableByIds(String[] ids) throws Exception{
-        employeeMapper.updatePostToDisableByIds(ids);
-    }
 }
 
 
