@@ -1,6 +1,7 @@
 package com.xy.vmes.deecoop.system.controller;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.common.util.RedisUtils;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.Menu;
 import com.xy.vmes.entity.TreeEntity;
@@ -8,6 +9,7 @@ import com.xy.vmes.service.MenuService;
 import com.xy.vmes.service.MenuTreeService;
 import com.xy.vmes.service.RoleMenuService;
 import com.yvan.*;
+import com.yvan.cache.RedisClient;
 import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
 import com.yvan.template.ExcelAjaxTemplate;
@@ -189,6 +191,9 @@ public class MenuController {
 
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+    @Autowired
+    RedisClient redisClient;
+
     /**
      * 菜单列表分页
      *
@@ -504,9 +509,27 @@ public class MenuController {
         PageData pageData = HttpUtils.parsePageData();
 
         try {
+            String sessionID = HttpUtils.currentRequest().getHeader("sessionID");
+            if (sessionID == null || sessionID.trim().length() == 0) {
+                model.putCode(Integer.valueOf(1));
+                model.putMsg("(sessionID)为空或空字符串，请于管理员联系！");
+                return model;
+            }
+
             //用户角色(当前用户)-(角色ID','分隔的字符串)
-            //String userRole = "ce6fd6bdfa0f42798007a1ec5fe84717";  //测试数据-真实环境无此代码
             String userRole = "";
+            try {
+                userRole = RedisUtils.getUserRoleInfoBySessionID(redisClient, sessionID);
+            } catch (Exception e) {
+                throw new RestException("", e.getMessage());
+            }
+            if (userRole.trim().length() == 0) {
+                model.putCode(Integer.valueOf(1));
+                model.putMsg("当前用户无配置角色(用户角色)，请于管理员联系！");
+                return model;
+            }
+
+            //String userRole = "ce6fd6bdfa0f42798007a1ec5fe84717";  //测试数据-真实环境无此代码
             userRole = StringUtil.stringTrimSpace(userRole);
 
             String queryStr = "";
