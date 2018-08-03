@@ -136,42 +136,63 @@ public class EmployeeServiceImp implements EmployeeService {
         return employeeList;
     }
 
-    /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
     /**
-    * 创建人：刘威 自动创建，可以修改
-    * 创建时间：2018-08-02
-    */
+     * 创建人：刘威 自动创建，禁止修改
+     * 创建时间：2018-08-02
+     */
     @Override
     public List<LinkedHashMap> getColumnList() throws Exception{
         return employeeMapper.getColumnList();
     }
 
     /**
-    * 创建人：刘威 自动创建，可以修改
-    * 创建时间：2018-08-02
-    */
+     * 创建人：刘威 自动创建，禁止修改
+     * 创建时间：2018-08-02
+     */
     @Override
     public List<Map> getDataList(PageData pd) throws Exception{
         return employeeMapper.getDataList(pd);
     }
 
     /**
-    * 创建人：刘威 自动创建，可以修改
-    * 创建时间：2018-08-02
-    */
+     * 创建人：刘威 自动创建，禁止修改
+     * 创建时间：2018-08-02
+     */
     @Override
     public List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception{
         return employeeMapper.getDataListPage(pd,pg);
     }
 
     /**
-    * 创建人：刘威 自动创建，可以修改
-    * 创建时间：2018-08-02
-    */
+     * 创建人：刘威 自动创建，禁止修改
+     * 创建时间：2018-08-02
+     */
     @Override
     public void updateToDisableByIds(String[] ids)throws Exception{
         employeeMapper.updateToDisableByIds(ids);
+    }
+
+    /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+
+
+
+    /**
+     * 创建人：刘威
+     * 创建时间：2018-08-03
+     */
+    @Override
+    public void  updateUserToDisableByIds(String[] ids) throws Exception{
+        employeeMapper.updateUserToDisableByIds(ids);
+    }
+
+    /**
+     * 创建人：刘威
+     * 创建时间：2018-08-03
+     */
+    @Override
+    public void  updatePostToDisableByIds(String[] ids) throws Exception{
+        employeeMapper.updatePostToDisableByIds(ids);
     }
 }
 

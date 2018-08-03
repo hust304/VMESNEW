@@ -82,33 +82,35 @@ public interface PostService {
     */
     List<Post> selectByColumnMap(Map columnMap) throws Exception;
 
-
-    /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
-
-
     /**
-    * 创建人：刘威 自动创建，可以修改
-    * 创建时间：2018-08-01
-    */
+     * 创建人：刘威 自动创建，禁止修改
+     * 创建时间：2018-08-01
+     */
     List<LinkedHashMap> getColumnList() throws Exception;
 
     /**
-    * 创建人：刘威 自动创建，可以修改
-    * 创建时间：2018-08-01
-    */
+     * 创建人：刘威 自动创建，禁止修改
+     * 创建时间：2018-08-01
+     */
     List<Map> getDataList(PageData pd) throws Exception;
 
     /**
-     * 创建人：刘威 自动创建，可以修改
+     * 创建人：刘威 自动创建，禁止修改
      * 创建时间：2018-08-01
      */
     List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception;
 
     /**
-    * 创建人：刘威 自动创建，可以修改
-    * 创建时间：2018-08-01
-    */
+     * 创建人：刘威 自动创建，禁止修改
+     * 创建时间：2018-08-01
+     */
     void updateToDisableByIds(String[] ids)throws Exception;
+
+
+
+    /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+
+
 
 }
 

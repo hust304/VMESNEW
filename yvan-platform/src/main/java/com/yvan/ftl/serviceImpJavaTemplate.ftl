@@ -136,10 +136,9 @@ public class ${objectName}ServiceImp implements ${objectName}Service {
         return ${objectNameLower}List;
     }
 
-    /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
     /**
-    * 创建人：${author} 自动创建，可以修改
+    * 创建人：${author} 自动创建，禁止修改
     * 创建时间：${nowDate?string("yyyy-MM-dd")}
     */
     @Override
@@ -148,7 +147,7 @@ public class ${objectName}ServiceImp implements ${objectName}Service {
     }
 
     /**
-    * 创建人：${author} 自动创建，可以修改
+    * 创建人：${author} 自动创建，禁止修改
     * 创建时间：${nowDate?string("yyyy-MM-dd")}
     */
     @Override
@@ -157,7 +156,7 @@ public class ${objectName}ServiceImp implements ${objectName}Service {
     }
 
     /**
-    * 创建人：${author} 自动创建，可以修改
+    * 创建人：${author} 自动创建，禁止修改
     * 创建时间：${nowDate?string("yyyy-MM-dd")}
     */
     @Override
@@ -166,13 +165,15 @@ public class ${objectName}ServiceImp implements ${objectName}Service {
     }
 
     /**
-    * 创建人：${author} 自动创建，可以修改
+    * 创建人：${author} 自动创建，禁止修改
     * 创建时间：${nowDate?string("yyyy-MM-dd")}
     */
     @Override
     public void updateToDisableByIds(String[] ids)throws Exception{
         ${objectNameLower}Mapper.updateToDisableByIds(ids);
     }
+
+    /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 }
 
 

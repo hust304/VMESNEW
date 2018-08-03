@@ -136,43 +136,45 @@ public class EmployPostServiceImp implements EmployPostService {
         return employPostList;
     }
 
-    /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
-
     /**
-    * 创建人：刘威 自动创建，可以修改
-    * 创建时间：2018-08-01
-    */
+     * 创建人：刘威 自动创建，禁止修改
+     * 创建时间：2018-08-01
+     */
     @Override
     public List<LinkedHashMap> getColumnList() throws Exception{
         return employPostMapper.getColumnList();
     }
 
     /**
-    * 创建人：刘威 自动创建，可以修改
-    * 创建时间：2018-08-01
-    */
+     * 创建人：刘威 自动创建，禁止修改
+     * 创建时间：2018-08-01
+     */
     @Override
     public List<Map> getDataList(PageData pd) throws Exception{
         return employPostMapper.getDataList(pd);
     }
 
     /**
-    * 创建人：刘威 自动创建，可以修改
-    * 创建时间：2018-08-01
-    */
+     * 创建人：刘威 自动创建，禁止修改
+     * 创建时间：2018-08-01
+     */
     @Override
     public List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception{
         return employPostMapper.getDataListPage(pd,pg);
     }
 
     /**
-    * 创建人：刘威 自动创建，可以修改
-    * 创建时间：2018-08-01
-    */
+     * 创建人：刘威 自动创建，禁止修改
+     * 创建时间：2018-08-01
+     */
     @Override
     public void updateToDisableByIds(String[] ids)throws Exception{
         employPostMapper.updateToDisableByIds(ids);
     }
+
+    /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+
+
 }
 
 

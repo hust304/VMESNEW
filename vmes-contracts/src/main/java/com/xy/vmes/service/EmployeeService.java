@@ -83,33 +83,46 @@ public interface EmployeeService {
     List<Employee> selectByColumnMap(Map columnMap) throws Exception;
 
 
-    /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
-
-
     /**
-    * 创建人：刘威 自动创建，可以修改
-    * 创建时间：2018-08-02
-    */
+     * 创建人：刘威 自动创建，禁止修改
+     * 创建时间：2018-08-02
+     */
     List<LinkedHashMap> getColumnList() throws Exception;
 
     /**
-    * 创建人：刘威 自动创建，可以修改
-    * 创建时间：2018-08-02
-    */
+     * 创建人：刘威 自动创建，禁止修改
+     * 创建时间：2018-08-02
+     */
     List<Map> getDataList(PageData pd) throws Exception;
 
     /**
-    * 创建人：刘威 自动创建，可以修改
-    * 创建时间：2018-08-02
-    */
+     * 创建人：刘威 自动创建，禁止修改
+     * 创建时间：2018-08-02
+     */
     List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception;
 
     /**
-    * 创建人：刘威 自动创建，可以修改
-    * 创建时间：2018-08-02
-    */
+     * 创建人：刘威 自动创建，禁止修改
+     * 创建时间：2018-08-02
+     */
     void updateToDisableByIds(String[] ids)throws Exception;
 
+    /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+
+
+
+
+    /**
+     * 创建人：刘威
+     * 创建时间：2018-08-03
+     */
+    void updateUserToDisableByIds(String[] ids) throws Exception;
+
+    /**
+     * 创建人：刘威
+     * 创建时间：2018-08-03
+     */
+    void updatePostToDisableByIds(String[] ids) throws Exception;
 }
 
 

@@ -128,28 +128,26 @@ public class DictionaryServiceImp implements DictionaryService {
         return dictionaryList;
     }
 
-    /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
-
     /**
-    * 创建人：刘威 自动创建，可以修改
-    * 创建时间：2018-07-31
-    */
+     * 创建人：刘威 自动创建，禁止修改
+     * 创建时间：2018-07-31
+     */
     @Override
     public List<LinkedHashMap> getColumnList() throws Exception{
         return dictionaryMapper.getColumnList();
     }
 
     /**
-    * 创建人：刘威 自动创建，可以修改
-    * 创建时间：2018-07-31
-    */
+     * 创建人：刘威 自动创建，禁止修改
+     * 创建时间：2018-07-31
+     */
     @Override
     public List<Map> getDataList(PageData pd) throws Exception{
         return dictionaryMapper.getDataList(pd);
     }
 
     /**
-     * 创建人：刘威 自动创建，可以修改
+     * 创建人：刘威 自动创建，禁止修改
      * 创建时间：2018-07-31
      */
     @Override
@@ -158,13 +156,17 @@ public class DictionaryServiceImp implements DictionaryService {
     }
 
     /**
-    * 创建人：刘威 自动创建，可以修改
-    * 创建时间：2018-07-31
-    */
+     * 创建人：刘威 自动创建，禁止修改
+     * 创建时间：2018-07-31
+     */
     @Override
     public void updateToDisableByIds(String[] ids)throws Exception{
-            dictionaryMapper.updateToDisableByIds(ids);
+        dictionaryMapper.updateToDisableByIds(ids);
     }
+
+    /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+
+
 
     /**
      * 创建人：刘威

@@ -58,11 +58,8 @@ public interface ${objectName}Mapper extends BaseMapper<${objectName}> {
     List<Map> findDataList(PageData pd);
 
 
-
-    /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
-
     /**
-    * 创建人：${author} 自动创建，可以修改
+    * 创建人：${author} 自动创建，禁止修改
     * 创建时间：${nowDate?string("yyyy-MM-dd")}
     */
     @Select("getColumnList")
@@ -70,7 +67,7 @@ public interface ${objectName}Mapper extends BaseMapper<${objectName}> {
 
 
     /**
-    * 创建人：${author} 自动创建，可以修改
+    * 创建人：${author} 自动创建，禁止修改
     * 创建时间：${nowDate?string("yyyy-MM-dd")}
     */
     @Select("getDataList")
@@ -78,7 +75,7 @@ public interface ${objectName}Mapper extends BaseMapper<${objectName}> {
 
 
     /**
-    * 创建人：${author} 自动创建，可以修改
+    * 创建人：${author} 自动创建，禁止修改
     * 创建时间：${nowDate?string("yyyy-MM-dd")}
     */
     @Select("getDataList")
@@ -86,11 +83,13 @@ public interface ${objectName}Mapper extends BaseMapper<${objectName}> {
 
 
     /**
-    * 创建人：${author} 自动创建，可以修改
+    * 创建人：${author} 自动创建，禁止修改
     * 创建时间：${nowDate?string("yyyy-MM-dd")}
     */
     @Select("updateToDisableByIds")
     void updateToDisableByIds(String[] ids);
+
+    /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 }
 
 

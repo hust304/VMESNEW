@@ -452,9 +452,9 @@ public class EmployeeController {
 
         employeeService.updateToDisableByIds(ids);
 
-//        employeeService.updateUserToDisableByIds(ids);
-//
-//        employeeService.updatePostToDisableByIds(ids);
+        employeeService.updateUserToDisableByIds(ids);
+
+        employeeService.updatePostToDisableByIds(ids);
 
         Long endTime = System.currentTimeMillis();
         logger.info("################employee/deleteEmployees 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
