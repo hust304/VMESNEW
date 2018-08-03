@@ -134,6 +134,7 @@ public class UserServiceImp implements UserService {
      * @param companyID  公司ID-组织架构ID
      * @return
      */
+    @Override
     public String createCoder(String companyID) {
         //(企业编号+前缀字符+日期字符+流水号)-(company+prefix+date+code)
         //(企业编号+无需+无需+流水号)-W000142

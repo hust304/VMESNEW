@@ -127,6 +127,8 @@ public class PostController {
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         postService.deleteById(id);
+//        String code = postService.createCoder(id);
+//        model.putCode(code);
         Long endTime = System.currentTimeMillis();
         logger.info("################post/deleteById 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
@@ -235,7 +237,7 @@ public class PostController {
             //如果没有公司ID，那么就是创建根节点下
             post.setCompanyId(department.getId0());
         }
-
+        post.setCode(postService.createCoder(companyId));
         postService.save(post);
         Long endTime = System.currentTimeMillis();
         logger.info("################post/addPost 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
