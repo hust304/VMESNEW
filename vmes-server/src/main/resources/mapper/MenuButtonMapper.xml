@@ -3,7 +3,7 @@
 <!--
 说明：vmes_menu_button:菜单按钮表 Mapper.xml
 创建人：陈刚 自动创建
-创建时间：2018-08-01
+创建时间：2018-08-03
  -->
 <mapper namespace="com.xy.vmes.deecoop.system.dao.MenuButtonMapper">
 
@@ -145,7 +145,18 @@
                             </otherwise>
                         </choose>
                     </if>
-
+                    <if test="menuId != null and menuId != ''" >
+                        and menu_id = ${menuId}
+                    </if>
+                    <if test="code != null and code != ''" >
+                        and code = ${code}
+                    </if>
+                    <if test="name != null and name != ''" >
+                        and name = ${name}
+                    </if>
+                    <if test="isdisable != null and isdisable != ''" >
+                        and isdisable = ${isdisable}
+                    </if>
 
                     <!--queryStr 自定义sql查询语句-->
                     <if test="queryStr != null and queryStr!=''" >
@@ -170,6 +181,8 @@
 
 
     <!-- ***************************************************以上为自动生成代码禁止修改，请在下面添加业务代码************************************************* -->
+
+
     <!-- 字段 自动创建，可以修改-->
     <sql id="Field1">
         company_id companyId,<!-- 公司ID-组织架构 -->
@@ -199,6 +212,7 @@
             '修改人账号'  uuser,
             'id' id
     </sql>
+
 
     <!-- 自动创建，可以修改 -->
     <select id="getColumnList"  resultType="java.util.LinkedHashMap">
@@ -231,11 +245,13 @@
         </where>
     </select>
 
+
+
     <!-- 自动创建，可以修改-->
     <update id="updateToDisableByIds" parameterType="java.lang.String" >
         update
         <include refid="tableName"></include>
-        set isdisable = 1
+        set isdisable = 1 ,udate = now()
         where
         id in
         <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
@@ -246,16 +262,17 @@
     <!-- 通过menuId删除菜单按钮信息 -->
     <delete id="deleteMenuButtonByMenuId" parameterType="java.lang.String">
         delete from
-            <include refid="tableName"/>
+        <include refid="tableName"/>
         where
-            menu_id = #{menuId}
+        menu_id = #{menuId}
     </delete>
 
     <update id="updateDisableByMenuId" parameterType="java.lang.String" >
         update <include refid="tableName" />
-            set isdisable = 1
+        set isdisable = 1
         where
-            menu_id = #{menuId}
+        menu_id = #{menuId}
     </update>
+
 
 </mapper>

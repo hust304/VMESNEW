@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 /** 
  * 说明：vmes_menu_button:菜单按钮表 实体类
  * @author 陈刚 自动生成
- * @date 2018-08-01
+ * @date 2018-08-03
  */
 @TableName("vmes_menu_button")
 public class MenuButton implements Serializable {
@@ -34,6 +34,9 @@ public class MenuButton implements Serializable {
 	//英文名称
 	@TableField("name_en")
 	private String nameEn;
+	//按钮顺序
+	@TableField("serial_number")
+	private Integer serialNumber;
 	//是否禁用(1:已禁用 0:启用) 数据字典:sys_isdisable
 	@TableField("isdisable")
 	private String isdisable;
@@ -87,6 +90,12 @@ public class MenuButton implements Serializable {
 	}
 	public String getNameEn() {
 		return nameEn;
+	}
+	public void setSerialNumber(Integer serialNumber) {
+		this.serialNumber = serialNumber;
+	}
+	public Integer getSerialNumber() {
+		return serialNumber;
 	}
 	public void setIsdisable(String isdisable) {
 		this.isdisable = isdisable;
