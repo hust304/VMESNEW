@@ -155,6 +155,7 @@ public class MenuTreeServiceImp implements MenuTreeService {
         //获得每一层的id字符串Map
         Map<String, String> mapObj = new LinkedHashMap<String, String>();
         for (Menu object : menuList) {
+            if (object.getLayer().intValue() != layer.intValue()) {continue;}
             if (layer.intValue() == 0) {
                 String id = object.getId0();
                 mapObj.put(id, id);
@@ -169,6 +170,9 @@ public class MenuTreeServiceImp implements MenuTreeService {
                 mapObj.put(id, id);
             } else if (layer.intValue() == 4) {
                 String id = object.getId4();
+                mapObj.put(id, id);
+            } else if (5 == layer.intValue()) {
+                String id = object.getId5();
                 mapObj.put(id, id);
             }
         }
