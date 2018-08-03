@@ -274,8 +274,8 @@ public class MenuController {
             menuObj = menuService.paterObject2ObjectDB(paterObj, menuObj);
 
             //获取菜单编码
-            String code = menuService.createCoder("1");
-            menuObj.setCode(code);
+            //String code = menuService.createCoder("1");
+            //menuObj.setCode(code);
 
             //设置菜单级别
             menuObj.setLayer(Integer.valueOf(paterObj.getLayer().intValue() + 1));
