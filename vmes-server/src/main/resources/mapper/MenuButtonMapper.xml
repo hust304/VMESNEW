@@ -146,16 +146,16 @@
                         </choose>
                     </if>
                     <if test="menuId != null and menuId != ''" >
-                        and menu_id = ${menuId}
+                        and menu_id = #{menuId}
                     </if>
                     <if test="code != null and code != ''" >
-                        and code = ${code}
+                        and code = #{code}
                     </if>
                     <if test="name != null and name != ''" >
-                        and name = ${name}
+                        and name = #{name}
                     </if>
                     <if test="isdisable != null and isdisable != ''" >
-                        and isdisable = ${isdisable}
+                        and isdisable = #{isdisable}
                     </if>
 
                     <!--queryStr 自定义sql查询语句-->

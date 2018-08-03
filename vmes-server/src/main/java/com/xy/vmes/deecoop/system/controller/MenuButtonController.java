@@ -200,7 +200,7 @@ public class MenuButtonController {
      * @author 陈刚
      * @date 2018-08-03
      */
-    @GetMapping("/button/addMeunButton")
+    @PostMapping("/button/addMeunButton")
     public ResultModel addMeunButton() {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
@@ -273,7 +273,7 @@ public class MenuButtonController {
      * @author 陈刚
      * @date 2018-08-03
      */
-    @GetMapping("/button/updateMeunButton")
+    @PostMapping("/button/updateMeunButton")
     public ResultModel updateMeunButton() {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
@@ -391,7 +391,7 @@ public class MenuButtonController {
      * @author 陈刚
      * @date 2018-08-03
      */
-    @GetMapping("/button/deleteMeunButtons")
+    @PostMapping("/button/deleteMeunButtons")
     public ResultModel deleteMeunButtons() {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
