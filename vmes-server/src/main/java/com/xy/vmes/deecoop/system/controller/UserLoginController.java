@@ -97,7 +97,7 @@ public class UserLoginController {
      * 创建人：陈刚
      * 创建时间：2018-07-20
      */
-    @GetMapping("/userLogin/loginIn")
+    @PostMapping("/userLogin/loginIn")
     public ResultModel loginIn() {
         ResultModel model = new ResultModel();
 
@@ -228,7 +228,7 @@ public class UserLoginController {
      * 创建人：陈刚
      * 创建时间：2018-07-24
      */
-    @GetMapping("/userLogin/createSecurityCode")
+    @PostMapping("/userLogin/createSecurityCode")
     public ResultModel createSecurityCode() {
         String SecurityCode = this.drawImg(new ByteArrayOutputStream());
 
