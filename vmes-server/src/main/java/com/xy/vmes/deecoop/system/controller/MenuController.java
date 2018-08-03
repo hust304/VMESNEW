@@ -510,6 +510,7 @@ public class MenuController {
 
         try {
             String sessionID = HttpUtils.currentRequest().getHeader("sessionID");
+            //String sessionID = "03e0fb6b62ea442db5f94b607217bd2f:0:deecoop:userLoginMap";
             if (sessionID == null || sessionID.trim().length() == 0) {
                 model.putCode(Integer.valueOf(1));
                 model.putMsg("(sessionID)为空或空字符串，请于管理员联系！");
