@@ -88,16 +88,15 @@ public class RedisUtils {
     }
 
 
-    public static UserRole getUserRoleInfoBySessionID(RedisClient redisClient, String sessionID) {
+    public static String getUserRoleInfoBySessionID(RedisClient redisClient, String sessionID) {
         Jedis jedis = null;
         try {
             jedis = redisClient.getJedisPool().getResource();
             String sessionJson = jedis.get(sessionID);
             if(!StringUtils.isEmpty(sessionJson)){
                 Map sessionMap = YvanUtil.jsonToMap(sessionJson);
-                if(sessionMap.get("userRole")!=null){
-                    String userRoleJson =   sessionMap.get("userRole").toString();
-                    UserRole userRole = YvanUtil.jsonToObj(userRoleJson, UserRole.class);
+                if(sessionMap.get("userRole") != null){
+                    String userRole = sessionMap.get("userRole").toString();
                     return userRole;
                 }
             }
