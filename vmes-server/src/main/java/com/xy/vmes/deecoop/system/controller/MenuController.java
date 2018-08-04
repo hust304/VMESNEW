@@ -510,7 +510,7 @@ public class MenuController {
 
         try {
             String sessionID = HttpUtils.currentRequest().getHeader("sessionID");
-            //String sessionID = "03e0fb6b62ea442db5f94b607217bd2f:0:deecoop:userLoginMap";
+            //String sessionID = "03e0fb6b62ea442db5f94b607217bd2f:0:deecoop:userLoginMap";  //测试代码-真实环境无此代码
             if (sessionID == null || sessionID.trim().length() == 0) {
                 model.putCode(Integer.valueOf(1));
                 model.putMsg("(sessionID)为空或空字符串，请于管理员联系！");
@@ -542,6 +542,7 @@ public class MenuController {
             findMap.put("isdisable", "0");
             findMap.put("menuIsdisable", "0");
             findMap.put("queryStr", queryStr);
+            findMap.put("orderStr", "b.layer asc,b.serial_number asc");
             findMap.put("mapSize", Integer.valueOf(findMap.size()));
 
             List<Map<String, Object>> mapList = roleMenuService.findRoleMenuMapList(findMap);
