@@ -84,6 +84,9 @@
                 )
             </if>
         </where>
+        <if test="orderStr != null and orderStr != ''" >
+            order by ${r"${"}orderStr${r"}"}
+        </if>
     </select>
 
     <!-- 列表 自动创建，禁止修改-->
@@ -132,7 +135,7 @@
                         false: (false or is null) 无需考虑自己在业务表中是否存在
                         true : 需要考虑自己在业务表中是否存在
                     -->
-                    <if test="id != null and id!=''" >
+                    <if test="id != null and id != ''" >
                         <choose>
                             <when test="'true' == isSelfExist">
                                 <![CDATA[ and id <> ${r"#{"}id${r"}"} ]]>
@@ -145,12 +148,15 @@
 
 
                     <!--queryStr 自定义sql查询语句-->
-                    <if test="queryStr != null and queryStr!=''" >
+                    <if test="queryStr != null and queryStr != ''" >
                         and ${r"${"}queryStr${r"}"}
                     </if>
                 </where>
             </otherwise>
         </choose>
+        <if test="orderStr != null and orderStr != ''" >
+            order by ${r"${"}orderStr${r"}"}
+        </if>
     </select>
 
     <!-- 批量删除 自动创建，禁止修改-->
@@ -213,7 +219,7 @@
         <include refid="tableName"></include>
         <where>
             <!--queryStr 自定义sql查询语句-->
-            <if test="queryStr != null and queryStr!=''" >
+            <if test="queryStr != null and queryStr != ''" >
                 and ${r"${"}queryStr${r"}"}
             </if>
             <if test="keywords!= null and keywords != ''"><!-- 关键词检索 -->
@@ -227,6 +233,9 @@
                 )
             </if>
         </where>
+        <if test="orderStr != null and orderStr != ''" >
+            order by ${r"${"}orderStr${r"}"}
+        </if>
     </select>
 
 

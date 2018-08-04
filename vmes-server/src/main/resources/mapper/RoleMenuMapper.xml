@@ -147,6 +147,9 @@
                 </where>
             </otherwise>
         </choose>
+        <if test="orderStr != null and orderStr != ''" >
+            order by ${orderStr}
+        </if>
     </select>
 
     <!-- 批量删除 自动创建，禁止修改-->
@@ -233,6 +236,9 @@
                 </where>
             </otherwise>
         </choose>
+        <if test="orderStr != null and orderStr != ''" >
+            order by ${orderStr}
+        </if>
     </select>
 
 
