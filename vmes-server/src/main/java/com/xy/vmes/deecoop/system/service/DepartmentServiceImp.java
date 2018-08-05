@@ -294,6 +294,16 @@ public class DepartmentServiceImp implements DepartmentService {
 
         return null;
     }
+    public Department findDepartmentByRoot() {
+        PageData findMap = new PageData();
+        findMap.put("pid", "root");
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+
+        List<Department> objectList = this.findDepartmentList(findMap);
+        if (objectList != null && objectList.size() > 0) {return objectList.get(0);}
+
+        return null;
+    }
 
     /**
      * 创建人：陈刚
@@ -324,6 +334,27 @@ public class DepartmentServiceImp implements DepartmentService {
         objectList = this.findDepartmentList(findMap);
 
         return objectList;
+    }
+
+    public Integer findMaxSerialNumber(String pid) {
+        if (pid == null || pid.trim().length() == 0) {return Integer.valueOf(0);}
+
+        PageData findMap = new PageData();
+        findMap.put("pid", pid);
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+
+        List<Department> objectList = null;
+        try {
+            objectList = this.findDepartmentList(findMap);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if (objectList != null && objectList.size() > 0) {
+            return Integer.valueOf(objectList.size());
+        }
+
+        return Integer.valueOf(0);
     }
 
     /**

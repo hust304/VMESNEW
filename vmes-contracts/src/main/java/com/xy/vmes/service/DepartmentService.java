@@ -120,6 +120,7 @@ public interface DepartmentService {
      */
     Department findDepartment(PageData object);
     Department findDepartmentById(String id);
+    Department findDepartmentByRoot();
 
     /**
      * 创建人：陈刚
@@ -127,6 +128,7 @@ public interface DepartmentService {
      */
     List<Department> findDepartmentList(PageData object);
     List<Department> findDepartmentListByPid(String pid);
+    Integer findMaxSerialNumber(String pid);
 
     /**
      * 根据部门对象<Department>当前部门节点下面所有节点生成树形结构

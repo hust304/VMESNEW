@@ -22,10 +22,10 @@ public class Department implements Serializable {
 	//上级id-根root
 	@TableField("pid")
 	private String pid;
-	//部门编码
+	//组织编码
 	@TableField("code")
 	private String code;
-	//部门名称
+	//组织名称
 	@TableField("name")
 	private String name;
 	//英文名称

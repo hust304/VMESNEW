@@ -17,6 +17,7 @@
 		pid pid,<!-- 上级id-根root -->
 		code code,<!-- 部门编码 -->
 		name name,<!-- 部门名称 -->
+        name_en nameEn,<!-- 英文名称 -->
 		isleaf isleaf,<!-- 是否叶子节点(1:叶子节点0:非叶子节点) 数据字典:sys_isleaf -->
 		layer layer,<!-- 部门级别(最大支持5层) -->
 		serial_number serialNumber,<!-- 部门排列序号 -->
@@ -25,7 +26,8 @@
 		dept_type deptType,<!-- 部门类型 数据字典:sys_department_type -->
 		long_name longName,<!-- 部门长名称(中间使用-链接) -->
 		long_code longCode,<!-- 部门长编码(中间使用-链接) -->
-		company_validity_date companyValidityDate,<!-- 有效期(yyyy-mm-dd) -->
+        company_shortname companyShortname,
+        company_validity_date companyValidityDate,<!-- 有效期(yyyy-mm-dd) -->
 		company_user_count companyUserCount,<!-- 系统用户数 -->
 		isdisable isdisable,<!-- 是否禁用(1:已禁用 0:启用) 数据字典:sys_isdisable -->
 		cdate cdate,<!-- 创建时间 -->
@@ -46,6 +48,7 @@
 		#{pid},<!-- 上级id-根root -->
 		#{code},<!-- 部门编码 -->
 		#{name},<!-- 部门名称 -->
+        #{nameEn},
 		#{isleaf},<!-- 是否叶子节点(1:叶子节点0:非叶子节点) 数据字典:sys_isleaf -->
 		#{layer},<!-- 部门级别(最大支持5层) -->
 		#{serialNumber},<!-- 部门排列序号 -->
@@ -54,7 +57,8 @@
 		#{deptType},<!-- 部门类型 数据字典:sys_department_type -->
 		#{longName},<!-- 部门长名称(中间使用-链接) -->
 		#{longCode},<!-- 部门长编码(中间使用-链接) -->
-		#{companyValidityDate},<!-- 有效期(yyyy-mm-dd) -->
+        #{companyShortname},
+        #{companyValidityDate},<!-- 有效期(yyyy-mm-dd) -->
 		#{companyUserCount},<!-- 系统用户数 -->
 		#{isdisable},<!-- 是否禁用(1:已禁用 0:启用) 数据字典:sys_isdisable -->
 		#{cdate},<!-- 创建时间 -->
@@ -76,6 +80,7 @@
         '上级id-根root'  pid,
         '部门编码'  code,
         '部门名称'  name,
+        '英文名称' nameEn,
         '是否叶子节点(1:叶子节点0:非叶子节点) 数据字典:sys_isleaf'  isleaf,
         '部门级别(最大支持5层)'  layer,
         '部门排列序号'  serialNumber,
@@ -84,6 +89,7 @@
         '部门类型 数据字典:sys_department_type'  deptType,
         '部门长名称(中间使用-链接)'  longName,
         '部门长编码(中间使用-链接)'  longCode,
+        '企业简称' ,companyShortname,
         '有效期(yyyy-mm-dd)'  companyValidityDate,
         '系统用户数'  companyUserCount,
         '是否禁用(1:已禁用 0:启用) 数据字典:sys_isdisable'  isdisable,
@@ -194,13 +200,13 @@
                         and layer=#{layer}
                     </if>
                     <if test="organizeType != null and organizeType!=''" >
-                        and organizeType=#{organizeType}
+                        and organize_type=#{organizeType}
                     </if>
                     <if test="companyType != null and companyType!=''" >
-                        and companyType=#{companyType}
+                        and company_type=#{companyType}
                     </if>
                     <if test="deptType != null and deptType!=''" >
-                        and deptType=#{deptType}
+                        and dept_type=#{deptType}
                     </if>
                     <if test="isdisable != null and isdisable!=''" >
                         and isdisable=#{isdisable}
