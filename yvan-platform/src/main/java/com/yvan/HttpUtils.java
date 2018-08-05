@@ -112,7 +112,12 @@ public class HttpUtils {
                             Integer valueObj = Integer.valueOf(mapValue);
                             field.set(entityObj, valueObj);
                         } else if (attribute.indexOf("java.util.Date") != -1) {
-                            Date valueObj = DateUtils.fromDateTime(mapValue);
+                            Date valueObj = new Date();
+                            if (mapValue != null && mapValue.trim().length() == "yyyy-MM-dd".length()) {
+                                valueObj = DateUtils.fromDate(mapValue);
+                            } else if (mapValue != null && mapValue.trim().length() == "yyyy-MM-dd HH:mm:ss".length()) {
+                                valueObj = DateUtils.fromDateTime(mapValue);
+                            }
                             field.set(entityObj, valueObj);
                         } else if (attribute.indexOf("java.math.BigDecimal") != -1) {
                             BigDecimal valueObj = new BigDecimal(mapValue);
