@@ -44,5 +44,5 @@ public interface CompanyService {
     boolean isExistByCode(String pid, String id, String code);
 
     Department object2objectDB(Department object, Department objectDB);
-    Integer findMaxSerialNumber(String pid);
+    //Integer findMaxSerialNumber(String pid);
 }

@@ -179,8 +179,14 @@ public class CompanyServiceImp implements CompanyService {
         //companyUserCount企业用户数
         objectDB.setCompanyUserCount(object.getCompanyUserCount());
 
+        //isdisable是否禁用(1:已禁用 0:启用)
+        if (object.getIsdisable() != null && object.getIsdisable().trim().length() > 0) {
+            objectDB.setIsdisable(object.getIsdisable().trim());
+        }
         //companyShortname 企业简称
-        objectDB.setCompanyShortname(object.getCompanyShortname());
+        if (object.getCompanyShortname() != null && object.getCompanyShortname().trim().length() > 0) {
+            objectDB.setCompanyShortname(object.getCompanyShortname());
+        }
         //serialNumber显示顺序
         if (object.getSerialNumber() != null) {
             objectDB.setSerialNumber(object.getSerialNumber());
@@ -189,24 +195,24 @@ public class CompanyServiceImp implements CompanyService {
         return objectDB;
     }
 
-    public Integer findMaxSerialNumber(String pid) {
-        if (pid == null || pid.trim().length() == 0) {return Integer.valueOf(0);}
-
-        PageData findMap = new PageData();
-        findMap.put("pid", pid);
-        findMap.put("mapSize", Integer.valueOf(findMap.size()));
-
-        List<Department> objectList = null;
-        try {
-            objectList = departmentService.findDepartmentList(findMap);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        if (objectList != null && objectList.size() > 0) {
-            return Integer.valueOf(objectList.size());
-        }
-
-        return Integer.valueOf(0);
-    }
+//    public Integer findMaxSerialNumber(String pid) {
+//        if (pid == null || pid.trim().length() == 0) {return Integer.valueOf(0);}
+//
+//        PageData findMap = new PageData();
+//        findMap.put("pid", pid);
+//        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+//
+//        List<Department> objectList = null;
+//        try {
+//            objectList = departmentService.findDepartmentList(findMap);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//
+//        if (objectList != null && objectList.size() > 0) {
+//            return Integer.valueOf(objectList.size());
+//        }
+//
+//        return Integer.valueOf(0);
+//    }
 }
