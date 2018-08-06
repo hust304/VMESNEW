@@ -43,7 +43,7 @@ public class CompanyController {
      * @date 2018-08-06
      */
     @PostMapping("/company/addCompanyAdmin")
-    public ResultModel addCompanyAdmin() {
+    public ResultModel addCompanyAdmin() throws Exception {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
@@ -98,52 +98,48 @@ public class CompanyController {
             return model;
         }
 
-        try {
-            String id = Conv.createUuid();
-            companyObj.setId(id);
-            companyObj = departmentService.id2DepartmentByLayer(id,
-                    Integer.valueOf(rootObj.getLayer().intValue() + 1),
-                    companyObj);
-            companyObj = departmentService.paterObject2ObjectDB(rootObj, companyObj);
+        //3. 创建(企业-企业管理员)信息
+        String id = Conv.createUuid();
+        companyObj.setId(id);
+        companyObj = departmentService.id2DepartmentByLayer(id,
+                Integer.valueOf(rootObj.getLayer().intValue() + 1),
+                companyObj);
+        companyObj = departmentService.paterObject2ObjectDB(rootObj, companyObj);
 
-            //获取(长名称,长编码)- 通过'-'连接的字符串
-            Map<String, String> longNameCodeMpa = departmentService.findLongNameCodeByPater(rootObj);
-            if (longNameCodeMpa != null
-                    && longNameCodeMpa.get("LongName") != null
-                    && longNameCodeMpa.get("LongName").trim().length() > 0
-                    ) {
-                companyObj.setLongName(longNameCodeMpa.get("LongName").trim() + "-" + companyObj.getName());
-            }
-            if (longNameCodeMpa != null
-                    && longNameCodeMpa.get("LongCode") != null
-                    && longNameCodeMpa.get("LongCode").trim().length() > 0
-                    ) {
-                companyObj.setLongCode(longNameCodeMpa.get("LongCode").trim() + "-" + companyObj.getCode());
-            }
-            //该企业-在组织表级别
-            companyObj.setLayer(Integer.valueOf(rootObj.getLayer().intValue() + 1));
-            companyObj.setPid(rootObj.getId());
-            //organizeType组织类型(1:公司 2:部门)
-            companyObj.setOrganizeType("1");
-            //排列顺序serialNumber
-            if (companyObj.getSerialNumber() == null) {
-                Integer maxCount = departmentService.findMaxSerialNumber(rootObj.getId());
-                companyObj.setSerialNumber(Integer.valueOf(maxCount.intValue() + 1));
-            }
-
-            departmentService.save(companyObj);
-
-            //创建(企业管理员)账户
-            User user = new User();
-            user.setCompanyId(companyObj.getId());
-            String userCode = userService.createCoder(companyObj.getId());
-            user.setUserCode(userCode);
-            user.setPassword(MD5Utils.MD5(Common.DEFAULT_PASSWORD));
-            userService.save(user);
-
-        } catch (Exception e) {
-            throw new RestException("", e.getMessage());
+        //获取(长名称,长编码)- 通过'-'连接的字符串
+        Map<String, String> longNameCodeMpa = departmentService.findLongNameCodeByPater(rootObj);
+        if (longNameCodeMpa != null
+                && longNameCodeMpa.get("LongName") != null
+                && longNameCodeMpa.get("LongName").trim().length() > 0
+                ) {
+            companyObj.setLongName(longNameCodeMpa.get("LongName").trim() + "-" + companyObj.getName());
         }
+        if (longNameCodeMpa != null
+                && longNameCodeMpa.get("LongCode") != null
+                && longNameCodeMpa.get("LongCode").trim().length() > 0
+                ) {
+            companyObj.setLongCode(longNameCodeMpa.get("LongCode").trim() + "-" + companyObj.getCode());
+        }
+        //该企业-在组织表级别
+        companyObj.setLayer(Integer.valueOf(rootObj.getLayer().intValue() + 1));
+        companyObj.setPid(rootObj.getId());
+        //organizeType组织类型(1:公司 2:部门)
+        companyObj.setOrganizeType("1");
+        //排列顺序serialNumber
+        if (companyObj.getSerialNumber() == null) {
+            Integer maxCount = departmentService.findMaxSerialNumber(rootObj.getId());
+            companyObj.setSerialNumber(Integer.valueOf(maxCount.intValue() + 1));
+        }
+
+        departmentService.save(companyObj);
+
+        //创建(企业管理员)账户
+        User user = new User();
+        user.setCompanyId(companyObj.getId());
+        String userCode = userService.createCoder(companyObj.getId());
+        user.setUserCode(userCode);
+        user.setPassword(MD5Utils.MD5(Common.DEFAULT_PASSWORD));
+        userService.save(user);
 
         return model;
     }
@@ -154,7 +150,7 @@ public class CompanyController {
      * @date 2018-08-06
      */
     @PostMapping("/company/updateCompany")
-    public ResultModel updateCompany() {
+    public ResultModel updateCompany() throws Exception {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
@@ -209,29 +205,26 @@ public class CompanyController {
             return model;
         }
 
-        try {
-            Department companyDB = departmentService.findDepartmentById(companyObj.getId());
-            companyDB = companyService.object2objectDB(companyObj, companyDB);
+        //3. 修改企业信息
+        Department companyDB = departmentService.findDepartmentById(companyObj.getId());
+        companyDB = companyService.object2objectDB(companyObj, companyDB);
 
-            //获取(长名称,长编码)- 通过'-'连接的字符串
-            Map<String, String> longNameCodeMpa = departmentService.findLongNameCodeByPater(rootObj);
-            if (longNameCodeMpa != null
-                    && longNameCodeMpa.get("LongName") != null
-                    && longNameCodeMpa.get("LongName").trim().length() > 0
-                    ) {
-                companyDB.setLongName(longNameCodeMpa.get("LongName").trim() + "-" + companyDB.getName());
-            }
-            if (longNameCodeMpa != null
-                    && longNameCodeMpa.get("LongCode") != null
-                    && longNameCodeMpa.get("LongCode").trim().length() > 0
-                    ) {
-                companyDB.setLongCode(longNameCodeMpa.get("LongCode").trim() + "-" + companyDB.getCode());
-            }
-
-            departmentService.update(companyDB);
-        } catch (Exception e) {
-            throw new RestException("", e.getMessage());
+        //获取(长名称,长编码)- 通过'-'连接的字符串
+        Map<String, String> longNameCodeMpa = departmentService.findLongNameCodeByPater(rootObj);
+        if (longNameCodeMpa != null
+                && longNameCodeMpa.get("LongName") != null
+                && longNameCodeMpa.get("LongName").trim().length() > 0
+                ) {
+            companyDB.setLongName(longNameCodeMpa.get("LongName").trim() + "-" + companyDB.getName());
         }
+        if (longNameCodeMpa != null
+                && longNameCodeMpa.get("LongCode") != null
+                && longNameCodeMpa.get("LongCode").trim().length() > 0
+                ) {
+            companyDB.setLongCode(longNameCodeMpa.get("LongCode").trim() + "-" + companyDB.getCode());
+        }
+
+        departmentService.update(companyDB);
 
         return model;
     }
@@ -245,12 +238,6 @@ public class CompanyController {
     public ResultModel updateAdmin() {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
-
-        try {
-
-        } catch (Exception e) {
-            throw new RestException("", e.getMessage());
-        }
 
         return model;
     }
@@ -279,7 +266,7 @@ public class CompanyController {
      * @date 2018-08-06
      */
     @PostMapping("/company/deleteCompanyAdmins")
-    public ResultModel deleteCompanyAdmins() {
+    public ResultModel deleteCompanyAdmins() throws Exception {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
@@ -308,14 +295,10 @@ public class CompanyController {
             return model;
         }
 
-        try {
-            //禁用企业
-            departmentService.updateDisableByIds(id_arry);
-            //禁用企业管理员
-            userService.updateDisableByCompanyIds(id_arry);
-        } catch (Exception e) {
-            throw new RestException("", e.getMessage());
-        }
+        //禁用企业
+        departmentService.updateDisableByIds(id_arry);
+        //禁用企业管理员
+        userService.updateDisableByCompanyIds(id_arry);
 
         return model;
     }
@@ -330,10 +313,6 @@ public class CompanyController {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
-        try {
-        } catch (Exception e) {
-            throw new RestException("", e.getMessage());
-        }
 
         return model;
     }
@@ -348,10 +327,6 @@ public class CompanyController {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
-        try {
-        } catch (Exception e) {
-            throw new RestException("", e.getMessage());
-        }
 
         return model;
     }

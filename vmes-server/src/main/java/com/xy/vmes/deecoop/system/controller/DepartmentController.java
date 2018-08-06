@@ -212,7 +212,7 @@ public class DepartmentController {
      * @date 2018-07-27
      */
     @PostMapping("/department/addDepartment")
-    public ResultModel addDepartment() {
+    public ResultModel addDepartment() throws Exception {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
@@ -256,39 +256,36 @@ public class DepartmentController {
             return model;
         }
 
-        try {
-            String id = Conv.createUuid();
-            deptObj.setId(id);
-            deptObj = departmentService.id2DepartmentByLayer(id,
-                    Integer.valueOf(paterObj.getLayer().intValue() + 1),
-                    deptObj);
-            deptObj = departmentService.paterObject2ObjectDB(paterObj, deptObj);
+        //3. 创建部门信息
+        String id = Conv.createUuid();
+        deptObj.setId(id);
+        deptObj = departmentService.id2DepartmentByLayer(id,
+                Integer.valueOf(paterObj.getLayer().intValue() + 1),
+                deptObj);
+        deptObj = departmentService.paterObject2ObjectDB(paterObj, deptObj);
 
-            //获取部门编码
-            String code = departmentService.createCoder("1");
-            deptObj.setCode(code);
+        //获取部门编码
+        String code = departmentService.createCoder("1");
+        deptObj.setCode(code);
 
-            //获取(长名称,长编码)- 通过'-'连接的字符串
-            Map<String, String> longNameCodeMpa = departmentService.findLongNameCodeByPater(paterObj);
-            if (longNameCodeMpa != null
-                && longNameCodeMpa.get("LongName") != null
-                && longNameCodeMpa.get("LongName").trim().length() > 0
-            ) {
-                deptObj.setLongName(longNameCodeMpa.get("LongName").trim() + "-" + deptObj.getName());
-            }
-            if (longNameCodeMpa != null
-                && longNameCodeMpa.get("LongCode") != null
-                && longNameCodeMpa.get("LongCode").trim().length() > 0
-            ) {
-                deptObj.setLongCode(longNameCodeMpa.get("LongCode").trim() + "-" + deptObj.getCode());
-            }
-            //设置部门级别
-            deptObj.setLayer(Integer.valueOf(paterObj.getLayer().intValue() + 1));
-
-            departmentService.save(deptObj);
-        } catch (Exception e) {
-            throw new RestException("", e.getMessage());
+        //获取(长名称,长编码)- 通过'-'连接的字符串
+        Map<String, String> longNameCodeMpa = departmentService.findLongNameCodeByPater(paterObj);
+        if (longNameCodeMpa != null
+            && longNameCodeMpa.get("LongName") != null
+            && longNameCodeMpa.get("LongName").trim().length() > 0
+        ) {
+            deptObj.setLongName(longNameCodeMpa.get("LongName").trim() + "-" + deptObj.getName());
         }
+        if (longNameCodeMpa != null
+            && longNameCodeMpa.get("LongCode") != null
+            && longNameCodeMpa.get("LongCode").trim().length() > 0
+        ) {
+            deptObj.setLongCode(longNameCodeMpa.get("LongCode").trim() + "-" + deptObj.getCode());
+        }
+        //设置部门级别
+        deptObj.setLayer(Integer.valueOf(paterObj.getLayer().intValue() + 1));
+
+        departmentService.save(deptObj);
 
         return model;
     }
@@ -300,7 +297,7 @@ public class DepartmentController {
      * @date 2018-07-27
      */
     @PostMapping("/department/updateDepartment")
-    public ResultModel updateDepartment() {
+    public ResultModel updateDepartment() throws Exception {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
@@ -344,35 +341,32 @@ public class DepartmentController {
             return model;
         }
 
-        try {
-            Department deptDB = departmentService.findDepartmentById(deptObj.getId());
-            deptDB = departmentService.object2objectDB(deptObj, deptDB);
-            deptDB = departmentService.clearDepartmentByPath(deptDB);
-            deptDB = departmentService.id2DepartmentByLayer(deptDB.getId(),
-                    Integer.valueOf(paterObj.getLayer().intValue() + 1),
-                    deptDB);
-            deptDB = departmentService.paterObject2ObjectDB(paterObj, deptDB);
+        //3. 修改部门信息
+        Department deptDB = departmentService.findDepartmentById(deptObj.getId());
+        deptDB = departmentService.object2objectDB(deptObj, deptDB);
+        deptDB = departmentService.clearDepartmentByPath(deptDB);
+        deptDB = departmentService.id2DepartmentByLayer(deptDB.getId(),
+                Integer.valueOf(paterObj.getLayer().intValue() + 1),
+                deptDB);
+        deptDB = departmentService.paterObject2ObjectDB(paterObj, deptDB);
 
-            //获取(长名称,长编码)- 通过'-'连接的字符串
-            Map<String, String> longNameCodeMpa = departmentService.findLongNameCodeByPater(paterObj);
-            if (longNameCodeMpa != null
-                    && longNameCodeMpa.get("LongName") != null
-                    && longNameCodeMpa.get("LongName").trim().length() > 0
-                    ) {
-                deptDB.setLongName(longNameCodeMpa.get("LongName").trim() + "-" + deptDB.getName());
-            }
-            if (longNameCodeMpa != null
-                    && longNameCodeMpa.get("LongCode") != null
-                    && longNameCodeMpa.get("LongCode").trim().length() > 0
-                    ) {
-                deptDB.setLongCode(longNameCodeMpa.get("LongCode").trim() + "-" + deptDB.getCode());
-            }
-            //设置部门级别
-            deptDB.setLayer(Integer.valueOf(paterObj.getLayer().intValue() + 1));
-            departmentService.update(deptDB);
-        } catch (Exception e) {
-            throw new RestException("", e.getMessage());
+        //获取(长名称,长编码)- 通过'-'连接的字符串
+        Map<String, String> longNameCodeMpa = departmentService.findLongNameCodeByPater(paterObj);
+        if (longNameCodeMpa != null
+                && longNameCodeMpa.get("LongName") != null
+                && longNameCodeMpa.get("LongName").trim().length() > 0
+                ) {
+            deptDB.setLongName(longNameCodeMpa.get("LongName").trim() + "-" + deptDB.getName());
         }
+        if (longNameCodeMpa != null
+                && longNameCodeMpa.get("LongCode") != null
+                && longNameCodeMpa.get("LongCode").trim().length() > 0
+                ) {
+            deptDB.setLongCode(longNameCodeMpa.get("LongCode").trim() + "-" + deptDB.getCode());
+        }
+        //设置部门级别
+        deptDB.setLayer(Integer.valueOf(paterObj.getLayer().intValue() + 1));
+        departmentService.update(deptDB);
 
         return model;
     }
@@ -383,7 +377,7 @@ public class DepartmentController {
      * @date 2018-07-27
      */
     @PostMapping("/department/updateDeptDisable")
-    public ResultModel updateDeptDisable() {
+    public ResultModel updateDeptDisable() throws Exception {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
@@ -418,14 +412,11 @@ public class DepartmentController {
             return model;
         }
 
-        try {
-            Department objectDB = departmentService.findDepartmentById(id);
-            objectDB.setIsdisable(isdisable);
-            objectDB.setUdate(new Date());
-            departmentService.update(objectDB);
-        } catch (Exception e) {
-            throw new RestException("", e.getMessage());
-        }
+        //3. 修改组织架构(禁用)状态
+        Department objectDB = departmentService.findDepartmentById(id);
+        objectDB.setIsdisable(isdisable);
+        objectDB.setUdate(new Date());
+        departmentService.update(objectDB);
 
         return model;
     }
@@ -437,7 +428,7 @@ public class DepartmentController {
      * @date 2018-07-27
      */
     @PostMapping("/department/deleteDepartments")
-    public ResultModel deleteDepartments() {
+    public ResultModel deleteDepartments() throws Exception {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
@@ -466,11 +457,7 @@ public class DepartmentController {
             return model;
         }
 
-        try {
-            departmentService.updateDisableByIds(id_arry);
-        } catch (Exception e) {
-            throw new RestException("", e.getMessage());
-        }
+        departmentService.updateDisableByIds(id_arry);
 
         return model;
     }

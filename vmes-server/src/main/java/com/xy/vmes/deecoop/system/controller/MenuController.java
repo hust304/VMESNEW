@@ -205,11 +205,6 @@ public class MenuController {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
-        try {
-
-        } catch (Exception e) {
-            throw new RestException("", e.getMessage());
-        }
 
         return model;
     }
@@ -221,7 +216,7 @@ public class MenuController {
      * @date 2018-08-01
      */
     @PostMapping("/menu/addMenu")
-    public ResultModel addMenu() {
+    public ResultModel addMenu() throws Exception {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
@@ -265,25 +260,22 @@ public class MenuController {
             return model;
         }
 
-        try {
-            String id = Conv.createUuid();
-            menuObj.setId(id);
-            menuObj = menuService.id2MenuByLayer(id,
-                    Integer.valueOf(paterObj.getLayer().intValue() + 1),
-                    menuObj);
-            menuObj = menuService.paterObject2ObjectDB(paterObj, menuObj);
+        //3. 添加菜单
+        String id = Conv.createUuid();
+        menuObj.setId(id);
+        menuObj = menuService.id2MenuByLayer(id,
+                Integer.valueOf(paterObj.getLayer().intValue() + 1),
+                menuObj);
+        menuObj = menuService.paterObject2ObjectDB(paterObj, menuObj);
 
-            //获取菜单编码
-            //String code = menuService.createCoder("1");
-            //menuObj.setCode(code);
+        //获取菜单编码
+        //String code = menuService.createCoder("1");
+        //menuObj.setCode(code);
 
-            //设置菜单级别
-            menuObj.setLayer(Integer.valueOf(paterObj.getLayer().intValue() + 1));
+        //设置菜单级别
+        menuObj.setLayer(Integer.valueOf(paterObj.getLayer().intValue() + 1));
 
-            menuService.save(menuObj);
-        } catch (Exception e) {
-            throw new RestException("", e.getMessage());
-        }
+        menuService.save(menuObj);
 
         return model;
     }
@@ -295,7 +287,7 @@ public class MenuController {
      * @date 2018-08-01
      */
     @PostMapping("/menu/updateMenu")
-    public ResultModel updateMenu() {
+    public ResultModel updateMenu() throws Exception {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
@@ -339,21 +331,18 @@ public class MenuController {
             return model;
         }
 
-        try {
-            Menu menuDB = menuService.findMenuById(menuObj.getId());
-            menuDB = menuService.object2objectDB(menuObj, menuDB);
-            menuDB = menuService.clearMenuByPath(menuDB);
-            menuDB = menuService.id2MenuByLayer(menuDB.getId(),
-                    Integer.valueOf(paterObj.getLayer().intValue() + 1),
-                    menuDB);
-            menuDB = menuService.paterObject2ObjectDB(paterObj, menuDB);
+        //3. 修改菜单属性值
+        Menu menuDB = menuService.findMenuById(menuObj.getId());
+        menuDB = menuService.object2objectDB(menuObj, menuDB);
+        menuDB = menuService.clearMenuByPath(menuDB);
+        menuDB = menuService.id2MenuByLayer(menuDB.getId(),
+                Integer.valueOf(paterObj.getLayer().intValue() + 1),
+                menuDB);
+        menuDB = menuService.paterObject2ObjectDB(paterObj, menuDB);
 
-            //设置菜单级别
-            menuDB.setLayer(Integer.valueOf(paterObj.getLayer().intValue() + 1));
-            menuService.update(menuDB);
-        } catch (Exception e) {
-            throw new RestException("", e.getMessage());
-        }
+        //设置菜单级别
+        menuDB.setLayer(Integer.valueOf(paterObj.getLayer().intValue() + 1));
+        menuService.update(menuDB);
 
         return model;
     }
@@ -364,7 +353,7 @@ public class MenuController {
      * @date 2018-08-01
      */
     @PostMapping("/department/updateMenuDisable")
-    public ResultModel updateMenuDisable() {
+    public ResultModel updateMenuDisable() throws Exception {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
@@ -399,14 +388,11 @@ public class MenuController {
             return model;
         }
 
-        try {
-            Menu objectDB = menuService.findMenuById(id);
-            objectDB.setIsdisable(isdisable);
-            objectDB.setUdate(new Date());
-            menuService.update(objectDB);
-        } catch (Exception e) {
-            throw new RestException("", e.getMessage());
-        }
+        //3. 修改菜单(禁用)状态
+        Menu objectDB = menuService.findMenuById(id);
+        objectDB.setIsdisable(isdisable);
+        objectDB.setUdate(new Date());
+        menuService.update(objectDB);
 
         return model;
     }
@@ -417,7 +403,7 @@ public class MenuController {
      * @date 2018-08-01
      */
     @PostMapping("/department/deleteMenus")
-    public ResultModel deleteMenus() {
+    public ResultModel deleteMenus() throws Exception {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
@@ -446,11 +432,8 @@ public class MenuController {
             return model;
         }
 
-        try {
-            menuService.updateDisableByIds(id_arry);
-        } catch (Exception e) {
-            throw new RestException("", e.getMessage());
-        }
+        //3. 禁用菜单
+        menuService.updateDisableByIds(id_arry);
 
         return model;
     }
@@ -486,11 +469,6 @@ public class MenuController {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
-        try {
-
-        } catch (Exception e) {
-            throw new RestException("", e.getMessage());
-        }
 
         return model;
     }
@@ -509,18 +487,12 @@ public class MenuController {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
-        try {
-            String sessionID = HttpUtils.currentRequest().getHeader("sessionID");
-            //String sessionID = "c0d5f53e95a848899f93810732c80004:0:deecoop:userLoginMap";  //测试代码-真实环境无此代码
-            if (sessionID == null || sessionID.trim().length() == 0) {
-                model.putCode(Integer.valueOf(1));
-                model.putMsg("(sessionID)为空或空字符串，请于管理员联系！");
-                return model;
-            }
-
-            //用户角色(当前用户)-(角色ID','分隔的字符串)
+            //1. 获取当前登录用户所有角色ID
+            // 用户角色(当前用户)-(角色ID','分隔的字符串)
             String userRole = "";
             try {
+                //String sessionID = "c0d5f53e95a848899f93810732c80004:0:deecoop:userLoginMap";  //测试代码-真实环境无此代码
+                String sessionID = (String)pageData.get("sessionID");
                 userRole = RedisUtils.getUserRoleInfoBySessionID(redisClient, sessionID);
             } catch (Exception e) {
                 throw new RestException("", e.getMessage());
@@ -534,6 +506,7 @@ public class MenuController {
             //String userRole = "ce6fd6bdfa0f42798007a1ec5fe84717";  //测试数据-真实环境无此代码
             userRole = StringUtil.stringTrimSpace(userRole);
 
+            //2. 获取当前用户角色所有菜单List
             String queryStr = "";
             if (userRole != null && userRole.trim().length() > 0) {
                 String strTemp = "'" + userRole.replace(",", "','" + ",") + "'";
@@ -551,6 +524,7 @@ public class MenuController {
             //遍历菜单List<Menu>-获取菜单最大级别
             Integer maxLayer = menuService.findMaxLayerByMenuList(menuList);
 
+            //3. 生成菜单树
             menuTreeService.initialization();
             menuTreeService.findMenuTreeByList(menuList, maxLayer);
             List<TreeEntity> treeList = menuTreeService.creatMenuTree(maxLayer, null, null);
@@ -558,10 +532,6 @@ public class MenuController {
             String treeJsonStr = YvanUtil.toJson(treeList);
             //System.out.println("treeJsonStr: " + treeJsonStr);
             model.putResult(treeJsonStr);
-
-        } catch (Exception e) {
-            throw new RestException("", e.getMessage());
-        }
 
         return model;
     }

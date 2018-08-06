@@ -201,7 +201,7 @@ public class MenuButtonController {
      * @date 2018-08-03
      */
     @PostMapping("/button/addMeunButton")
-    public ResultModel addMeunButton() {
+    public ResultModel addMeunButton() throws Exception {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
@@ -256,13 +256,10 @@ public class MenuButtonController {
             return model;
         }
 
-        try {
-            Integer maxCount = menuButtonService.findMaxSerialNumber(buttonObj.getMenuId());
-            buttonObj.setSerialNumber(Integer.valueOf(maxCount.intValue() + 1));
-            menuButtonService.save(buttonObj);
-        } catch (Exception e) {
-            throw new RestException("", e.getMessage());
-        }
+        //3. 添加(菜单)按钮
+        Integer maxCount = menuButtonService.findMaxSerialNumber(buttonObj.getMenuId());
+        buttonObj.setSerialNumber(Integer.valueOf(maxCount.intValue() + 1));
+        menuButtonService.save(buttonObj);
 
         return model;
     }
@@ -274,7 +271,7 @@ public class MenuButtonController {
      * @date 2018-08-03
      */
     @PostMapping("/button/updateMeunButton")
-    public ResultModel updateMeunButton() {
+    public ResultModel updateMeunButton() throws Exception {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
@@ -329,13 +326,10 @@ public class MenuButtonController {
             return model;
         }
 
-        try {
-            Integer maxCount = menuButtonService.findMaxSerialNumber(buttonObj.getMenuId());
-            buttonObj.setSerialNumber(Integer.valueOf(maxCount.intValue() + 1));
-            menuButtonService.update(buttonObj);
-        } catch (Exception e) {
-            throw new RestException("", e.getMessage());
-        }
+        //修改(菜单)按钮
+        Integer maxCount = menuButtonService.findMaxSerialNumber(buttonObj.getMenuId());
+        buttonObj.setSerialNumber(Integer.valueOf(maxCount.intValue() + 1));
+        menuButtonService.update(buttonObj);
 
         return model;
     }
@@ -346,7 +340,7 @@ public class MenuButtonController {
      * @date 2018-08-03
      */
     @PostMapping("/button/updateMeunButtonDisable")
-    public ResultModel updateMenuDisable() {
+    public ResultModel updateMenuDisable() throws Exception {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
@@ -373,14 +367,11 @@ public class MenuButtonController {
             return model;
         }
 
-        try {
-            MenuButton objectDB = menuButtonService.findMenuButtonById(id);
-            objectDB.setIsdisable(isdisable);
-            objectDB.setUdate(new Date());
-            menuButtonService.update(objectDB);
-        } catch (Exception e) {
-            throw new RestException("", e.getMessage());
-        }
+        //2. 修改按钮(禁用)状态
+        MenuButton objectDB = menuButtonService.findMenuButtonById(id);
+        objectDB.setIsdisable(isdisable);
+        objectDB.setUdate(new Date());
+        menuButtonService.update(objectDB);
 
         return model;
     }

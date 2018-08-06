@@ -237,7 +237,7 @@ public class RoleController {
      * @date 2018-07-30
      */
     @PostMapping("/role/addRole")
-    public ResultModel addRole() {
+    public ResultModel addRole() throws Exception {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
@@ -255,14 +255,11 @@ public class RoleController {
             return model;
         }
 
-        try {
-            Role role = new Role();
-            role.setIsdisable("0");
-            role.setName(name);
-            roleService.save(role);
-        } catch (Exception e) {
-            throw new RestException("", e.getMessage());
-        }
+        //2. 添加角色
+        Role role = new Role();
+        role.setIsdisable("0");
+        role.setName(name);
+        roleService.save(role);
 
         return model;
     }
@@ -273,7 +270,7 @@ public class RoleController {
      * @date 2018-07-30
      */
     @PostMapping("/role/updateRole")
-    public ResultModel updateRole() {
+    public ResultModel updateRole() throws Exception {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
@@ -300,13 +297,10 @@ public class RoleController {
             return model;
         }
 
-        try {
-            Role objectDB = roleService.findRoleById(id);
-            objectDB.setName(name);
-            roleService.update(objectDB);
-        } catch (Exception e) {
-            throw new RestException("", e.getMessage());
-        }
+        //2. 修改角色
+        Role objectDB = roleService.findRoleById(id);
+        objectDB.setName(name);
+        roleService.update(objectDB);
 
         return model;
     }
@@ -317,7 +311,7 @@ public class RoleController {
      * @date 2018-07-30
      */
     @PostMapping("/role/updateRoleDisable")
-    public ResultModel updateRoleDisable() {
+    public ResultModel updateRoleDisable() throws Exception {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
@@ -352,13 +346,10 @@ public class RoleController {
             return model;
         }
 
-        try {
-            Role objectDB = roleService.findRoleById(id);
-            objectDB.setIsdisable(isdisable);
-            roleService.update(objectDB);
-        } catch (Exception e) {
-            throw new RestException("", e.getMessage());
-        }
+        //修改角色(禁用)状态
+        Role objectDB = roleService.findRoleById(id);
+        objectDB.setIsdisable(isdisable);
+        roleService.update(objectDB);
 
         return model;
     }
@@ -369,7 +360,7 @@ public class RoleController {
      * @date 2018-07-30
      */
     @PostMapping("/role/deleteRoles")
-    public ResultModel deleteRoles() {
+    public ResultModel deleteRoles() throws Exception {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
@@ -398,21 +389,21 @@ public class RoleController {
             return model;
         }
 
-        try {
-            for (int i = 0; i < id_arry.length; i++) {
-                String roleID = id_arry[i];
+        for (int i = 0; i < id_arry.length; i++) {
+            String roleID = id_arry[i];
+            try {
                 //1. 当前角色ID-禁用(用户角色)
                 userRoleService.updateDisableByRoleId(roleID);
                 //2. 当前角色ID-禁用(角色菜单)
                 roleMenuService.updateDisableByRoleId(roleID);
                 //3. 当前角色ID-禁用(角色按钮)
                 roleButtonService.updateDisableByRoleId(roleID);
-            }
-            roleService.updateDisableByIds(id_arry);
 
-        } catch (Exception e) {
-            throw new RestException("", e.getMessage());
+            } catch (Exception e) {
+                throw new RestException("", e.getMessage());
+            }
         }
+        roleService.updateDisableByIds(id_arry);
 
         return model;
     }
@@ -448,7 +439,7 @@ public class RoleController {
      * @date 2018-07-30
      */
     @PostMapping("/role/saveRoleUsers")
-    public ResultModel saveRoleUsers() {
+    public ResultModel saveRoleUsers() throws Exception {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
@@ -483,11 +474,7 @@ public class RoleController {
         }
 
         //3. 删除角色用户(当前角色)
-        try {
-            userRoleService.deleteUserRoleByRoleId(roleID);
-        } catch (Exception e) {
-            throw new RestException("", e.getMessage());
-        }
+        userRoleService.deleteUserRoleByRoleId(roleID);
 
         //4. 添加角色用户(当前角色)
         userRoleService.addUserRoleByUserIds(roleID, userIds);
@@ -500,7 +487,7 @@ public class RoleController {
      * @date 2018-07-30
      */
     @PostMapping("/role/saveRoleMeuns")
-    public ResultModel saveRoleMeuns() {
+    public ResultModel saveRoleMeuns() throws Exception {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
@@ -535,11 +522,8 @@ public class RoleController {
         }
 
         //3. 删除角色菜单(当前角色)
-        try {
-            roleMenuService.deleteRoleMenuByRoleId(roleID);
-        } catch (Exception e) {
-            throw new RestException("", e.getMessage());
-        }
+        roleMenuService.deleteRoleMenuByRoleId(roleID);
+
         //4. 添加角色菜单(当前角色)
         roleMenuService.addRoleMenuByMeunIds(roleID, meunIds);
 
@@ -589,7 +573,7 @@ public class RoleController {
      * @date 2018-07-30
      */
     @PostMapping("/role/saveRoleMeunsButtons")
-    public ResultModel saveRoleMeunsButtons() {
+    public ResultModel saveRoleMeunsButtons() throws Exception {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
@@ -624,11 +608,8 @@ public class RoleController {
         }
 
         //3. 删除角色按钮(当前角色)
-        try {
-            roleButtonService.deleteRoleButtonByRoleId(roleID);
-        } catch (Exception e) {
-            throw new RestException("", e.getMessage());
-        }
+        roleButtonService.deleteRoleButtonByRoleId(roleID);
+
         //4. 添加角色按钮(当前角色)
         roleButtonService.addRoleButtonByMeunIds(roleID, buttonIds);
 
