@@ -484,8 +484,6 @@ public class UserLoginController {
             }
         }
 
-
-        model.putMsg(msgBuf.toString());
         return model;
     }
 
@@ -538,6 +536,63 @@ public class UserLoginController {
         return model;
     }
 
+    /**
+     * 获取全部含有(uuid)的Redis缓存key
+     * Redis缓存Key:(uuid:用户ID:deecoop)
+     * @return
+     */
+    @GetMapping("/userLogin/test_removeRedisKeyByUserID")
+    public ResultModel test_removeRedisKeyByUserID() {
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        //1. 非空判断
+        if (pageData == null || pageData.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("参数错误：用户登录参数(pageData)为空！</br>");
+            return model;
+        }
+
+        String userID = (String)pageData.get("userID");
+        if (userID == null || userID.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("userID为空或空字符串！<br/>");
+            return model;
+        }
+
+        RedisUtils.removeByUserID(redisClient, userID);
+        return model;
+    }
+
+    /**
+     * 获取全部含有(uuid)的Redis缓存key
+     * Redis缓存Key:(uuid:用户ID:deecoop)
+     * @return
+     */
+    @GetMapping("/userLogin/test_removeRedisKeyByUuid")
+    public ResultModel test_removeRedisKeyByUuid() {
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        //1. 非空判断
+        if (pageData == null || pageData.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("参数错误：用户登录参数(pageData)为空！</br>");
+            return model;
+        }
+
+        String uuid = (String)pageData.get("uuid");
+        if (uuid == null || uuid.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("uuid为空或空字符串！<br/>");
+            return model;
+        }
+
+        RedisUtils.removeByUuid(redisClient, uuid);
+        return model;
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////
     private String drawImg(ByteArrayOutputStream output){
         String code = "";
         for(int i=0; i<4; i++){
