@@ -410,6 +410,14 @@ public class DepartmentController {
             return model;
         }
 
+        //2. 当前组织节点下是否含有(子节点-岗位)
+        msgStr = departmentService.checkDeleteDeptByIds(id);
+        if (msgStr != null && msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
+
         try {
             Department objectDB = departmentService.findDepartmentById(id);
             objectDB.setIsdisable(isdisable);
@@ -450,23 +458,13 @@ public class DepartmentController {
         String id_str = StringUtil.stringTrimSpace(deptIds);
         String[] id_arry = id_str.split(",");
 
-//        id_str = "'" + id_str.replace(",", "','") + "'";
-//        String pidQuery = "id in (" + id_str + ")";
-//
-//        //查询部门表-获得每一层的id-部门集合List<Department>
-//        PageData findMap = new PageData();
-//        //isdisable:是否禁用(1:已禁用 0:启用)
-//        findMap.put("isdisable", "0");
-//        findMap.put("queryStr", pidQuery);
-//        findMap.put("mapSize", Integer.valueOf(findMap.size()));
-//        List<Department> objectList = departmentService.findDepartmentList(findMap);
-//
-//        String msgStr = departmentService.checkDeleteDeptByList(objectList);
-//        if (msgStr != null && msgStr.trim().length() > 0) {
-//            model.putCode(Integer.valueOf(1));
-//            model.putMsg(msgStr);
-//            return model;
-//        }
+        //2. 当前组织节点下是否含有(子节点-岗位)
+        String msgStr = departmentService.checkDeleteDeptByIds(id_str);
+        if (msgStr != null && msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
 
         try {
             departmentService.updateDisableByIds(id_arry);

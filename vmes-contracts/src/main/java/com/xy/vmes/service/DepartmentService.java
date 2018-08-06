@@ -218,13 +218,15 @@ public interface DepartmentService {
 
     /**
      * check部门列表List<Department>是否允许删除
+     * 当前组织节点下是否含有子节点
+     * 当前节点下是否含有岗位
      *
      * 创建人：陈刚
-     * 创建时间：2018-07-27
-     * @param objectList
+     * 创建时间：2018-08-06
+     * @param ids
      * @return
      */
-    String checkDeleteDeptByList(List<Department> objectList);
+    String checkDeleteDeptByIds(String ids);
 }
 
 

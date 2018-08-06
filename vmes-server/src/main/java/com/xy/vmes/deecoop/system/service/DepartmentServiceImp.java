@@ -4,9 +4,11 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.deecoop.system.dao.DepartmentMapper;
 import com.xy.vmes.entity.CoderuleEntity;
 import com.xy.vmes.entity.Department;
+import com.xy.vmes.entity.Post;
 import com.xy.vmes.service.CoderuleService;
 import com.xy.vmes.service.DepartmentService;
 import com.xy.vmes.service.DepartmentTreeService;
+import com.xy.vmes.service.PostService;
 import com.yvan.PageData;
 import com.yvan.Tree;
 import com.yvan.HttpUtils;
@@ -30,9 +32,10 @@ import java.util.*;
 @Transactional(readOnly = false)
 public class DepartmentServiceImp implements DepartmentService {
 
-
     @Autowired
     private DepartmentMapper departmentMapper;
+    @Autowired
+    private PostService postService;
     @Autowired
     private CoderuleService coderuleService;
 
@@ -695,23 +698,36 @@ public class DepartmentServiceImp implements DepartmentService {
 
     /**
      * check部门列表List<Department>是否允许删除
+     * 当前组织节点下是否含有子节点
+     * 当前节点下是否含有岗位
      *
      * 创建人：陈刚
-     * 创建时间：2018-07-27
-     * @param objectList
+     * 创建时间：2018-08-06
+     * @param ids
      * @return
      */
-    public String checkDeleteDeptByList(List<Department> objectList) {
-        if (objectList == null || objectList.size() == 0) {return new String();}
+    public String checkDeleteDeptByIds(String ids) {
+        if (ids == null || ids.trim().length() == 0) {return new String();}
+
+        String msgTemp_1 = "第&nbsp;{0}&nbsp;行:&nbsp;存在子企业或子部门不可禁用！<br/>";
+        String msgTemp_2 = "第&nbsp;{0}&nbsp;行:&nbsp;存在岗位不可禁用！<br/>";
 
         StringBuffer msgBuf = new StringBuffer();
-        String msgTemp = "第&nbsp;{0}&nbsp;行:&nbsp;状态为(启用)不可删除！<br/>";
-        for (int i = 0; i < objectList.size(); i++) {
-            Department object = objectList.get(i);
-            //isdisable:是否禁用(1:已禁用 0:启用)
-            if (object.getIsdisable() != null && "0".equals(object.getIsdisable().trim())) {
-                String str_isnull = MessageFormat.format(msgTemp, Integer.valueOf(i+1).toString());
-                msgBuf.append(str_isnull);
+        String[] id_arry = ids.split(",");
+        for (int i = 0; i < id_arry.length; i++) {
+            String id = id_arry[i];
+            List<Department> childList = this.findDepartmentListByPid(id);
+            //1. 查询当前组织节点下是否含有子节点
+            if (childList != null && childList.size() > 0) {
+                String msg_Str = MessageFormat.format(msgTemp_1, (i+1));
+                msgBuf.append(msg_Str);
+            }
+
+            //2. 当前节点下是否含有岗位
+            List<Post> postList = postService.findPostListByDeptId(id);
+            if (postList != null && postList.size() > 0) {
+                String msg_Str = MessageFormat.format(msgTemp_2, (i+1));
+                msgBuf.append(msg_Str);
             }
         }
 
