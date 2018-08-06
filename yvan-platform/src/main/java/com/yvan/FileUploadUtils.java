@@ -36,34 +36,60 @@ public class FileUploadUtils {
   public static String uploadFile(MultipartFile multipartFile, String absolutePath,
                                                                 String relativePath, long maxSize, String[] includesuffixs)
         throws Exception {
-  String realAbsolutePath = initPath(absolutePath + relativePath);
-  String fileName = multipartFile.getOriginalFilename();
-  if (StringUtils.isEmpty(fileName)) {
-    return null;
-  }
-  String[] split = fileName.split("\\.");
-  String suffix = split.length >= 2 ? split[split.length - 1] : "temp";
-  canUpload(multipartFile, suffix, maxSize, includesuffixs);
-  String filePrefix =
-          new Long(System.currentTimeMillis()).toString() + UUID.randomUUID().toString()
-                  .substring(0, 3);
-  String destFileName = realAbsolutePath +"/"+ filePrefix + "." + suffix;
-  File destFile = new File(destFileName);
-  InputStream stream = null;
-  try {
-    stream = multipartFile.getInputStream();
-    saveFileFromInputStream(stream, destFile);
-    logger.info("上传文件:" + destFileName);
-  } catch (Exception e) {
-    logger.error("上传文件出错", e);
-    return null;
-  } finally {
-    if (stream != null) {
-      stream.close();
-    }
-  }
-  return destFileName.replace(absolutePath, "");
+
+    String filePrefix =
+            new Long(System.currentTimeMillis()).toString() + UUID.randomUUID().toString()
+                    .substring(0, 3);
+    return uploadFile(multipartFile,absolutePath,relativePath,filePrefix,maxSize,includesuffixs);
 }
+
+
+  /***
+   * 上传图片
+   * @param multipartFile
+   * @param absolutePath
+   * @param relativePath
+   * @param filePrefix
+   * @param maxSize
+   * @param includesuffixs
+   * @return
+   * @throws Exception
+   */
+  public static String uploadFile(MultipartFile multipartFile, String absolutePath,
+                                  String relativePath,String  filePrefix,long maxSize, String[] includesuffixs)
+          throws Exception {
+    String realAbsolutePath = initPath(absolutePath + relativePath);
+    String fileName = multipartFile.getOriginalFilename();
+    if (StringUtils.isEmpty(fileName)) {
+      return null;
+    }
+    String[] split = fileName.split("\\.");
+    String suffix = split.length >= 2 ? split[split.length - 1] : "temp";
+    canUpload(multipartFile, suffix, maxSize, includesuffixs);
+    String destFileName = realAbsolutePath +"/"+ filePrefix + "." + suffix;
+    File destFile = new File(destFileName);
+    if(!destFile.getParentFile().exists()){				//判断有没有父路径，就是判断文件整个路径是否存在
+      destFile.getParentFile().mkdirs();				//不存在就全部创建
+    }
+    InputStream stream = null;
+    try {
+      stream = multipartFile.getInputStream();
+      saveFileFromInputStream(stream, destFile);
+      logger.info("上传文件:" + destFileName);
+    } catch (Exception e) {
+      logger.error("上传文件出错", e);
+      return null;
+    } finally {
+      if (stream != null) {
+        stream.close();
+      }
+    }
+    return destFileName.replace(absolutePath, "");
+  }
+
+
+
+
 
 public static String uploadByteFile(byte[] bytes, String absolutePath,
                                         String relativePath, long maxSize, String[] includesuffixs){
