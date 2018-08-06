@@ -86,13 +86,15 @@ public class UserLoginController {
 
      * Redis缓存Key:   (uuid:用户ID:deecoop:userLoginMap)
      * Redis缓存Value: JsonString--Map<String, String>
-     *     "user":       用户信息<User> ToJsonString
-     *     "employ":     员工信息<Employee> ToJsonString
-     *     "dept":       部门信息<Department> ToJsonString
-     *     "userRole":   用户角色(当前用户)-(角色ID','分隔的字符串)
-     *     "userMenu":   菜单权限
-     *     "userButton": 按钮权限
-     *
+     *     userID:    用户ID
+     *     userCode:  系统账号
+     *     userName:  姓名
+     *     companyId: 企业ID
+     *     deptId:    部门ID
+     *     postId:    岗位ID
+     *     roleIds:   角色ID
+     *     userMenu:  用户菜单树
+     *     userMain:  用户主页
      *
      * 创建人：陈刚
      * 创建时间：2018-07-20
@@ -182,23 +184,28 @@ public class UserLoginController {
 
 
         Map<String, String> dataMap = new HashMap<String, String>();
-        //sessionID:会话ID
-        //dataMap.put("sessionID", RedisKey);
+        Map<String, String> RedisMap = new HashMap<String, String>();
+
         //user:用户信息()
         User user = new User();
         user = userEmployService.mapObject2User(userEmployMap, user);
-        dataMap.put("user", YvanUtil.toJson(user));
+        RedisMap.put("user", YvanUtil.toJson(user));
+        dataMap.put("userID", user.getId());
+        dataMap.put("userCode", user.getUserCode());
+        dataMap.put("companyId", user.getCompanyId());
 
         //employ:员工信息()
         Employee employ = new Employee();
         employ = userEmployService.mapObject2Employee(userEmployMap, employ);
-        dataMap.put("employ", YvanUtil.toJson(employ));
+        RedisMap.put("employ", YvanUtil.toJson(employ));
+        dataMap.put("userName", employ.getName());
 
-        //dept部门信息()
+        //deptId部门id-postId岗位ID
 
         //userRole用户角色(角色ID','分隔的字符串)
         String roleIds = userRoleService.findRoleIdsByByUserID(user.getId());
-        dataMap.put("userRole", roleIds);
+        dataMap.put("roleIds", roleIds);
+        RedisMap.put("roleIds", roleIds);
 
         //userMenu菜单权限()
         //userButton按钮权限()
@@ -206,7 +213,7 @@ public class UserLoginController {
         //缓存业务数据
         //Redis缓存Key:(uuid:用户ID:deecoop:userLoginMap)
         String Redis_userLogin_Key = new_uuid + ":" + userID + ":" + "deecoop" + ":" + Common.REDIS_USERLOGINMAP;
-        redisClient.set(Redis_userLogin_Key, YvanUtil.toJson(dataMap));
+        redisClient.set(Redis_userLogin_Key, YvanUtil.toJson(RedisMap));
 
         model.putCode(Integer.valueOf(0));
         model.putResult(YvanUtil.toJson(dataMap));
