@@ -110,6 +110,15 @@ public interface UserMapper extends BaseMapper<User> {
 	@Select("getDataList")
 	List<Map> getDataListPage(PageData pd,Pagination pg);
 
+	/**
+	 * 批量修改(企业管理员)为禁用状态
+	 *
+	 * 创建人：陈刚
+	 * 创建时间：2018-08-06
+	 */
+	@Select("updateDisableByCompanyIds")
+	void updateDisableByCompanyIds(String[] companyIds);
+
 }
 
 

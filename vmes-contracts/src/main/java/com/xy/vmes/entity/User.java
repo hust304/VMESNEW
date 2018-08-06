@@ -73,7 +73,7 @@ public class User implements Serializable {
 	//预留字段
 	@TableField("column_3")
 	private String column3;
-	//用户类型
+	//用户类型(0:超级管理员1:企业管理员2:普通用户)数据字典:sys_usertype
 	@TableField("user_type")
 	private String userType;
 

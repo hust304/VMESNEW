@@ -126,6 +126,24 @@ public interface UserService {
      */
     void createUserAndRole(PageData pd, Employee employee ) throws Exception;
 
+    User findUser(PageData object);
+    List<User> findUserList(PageData object);
+
+    /**
+     * 获取企业管理员
+     *
+     * @param companyID  企业id
+     * @return
+     */
+    User findCompanyAdmin(String companyID);
+
+    /**
+     * 批量修改(企业管理员)为禁用状态
+     *
+     * 创建人：陈刚
+     * 创建时间：2018-08-06
+     */
+    void updateDisableByCompanyIds(String[] companyIds);
 }
 
 

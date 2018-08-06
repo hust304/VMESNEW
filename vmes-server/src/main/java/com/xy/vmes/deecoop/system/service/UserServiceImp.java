@@ -2,10 +2,7 @@ package com.xy.vmes.deecoop.system.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.deecoop.system.dao.UserMapper;
-import com.xy.vmes.entity.Employee;
-import com.xy.vmes.entity.User;
-import com.xy.vmes.entity.CoderuleEntity;
-import com.xy.vmes.entity.UserRole;
+import com.xy.vmes.entity.*;
 import com.xy.vmes.service.CoderuleService;
 import com.xy.vmes.service.EmployeeService;
 import com.xy.vmes.service.UserRoleService;
@@ -269,6 +266,66 @@ public class UserServiceImp implements UserService {
             userRole.setUuser(pd.getString("uuser"));
             userRoleService.save(userRole);
         }
+    }
+
+    public User findUser(PageData object) {
+        if (object == null) {return null;}
+
+        List<User> objectList = null;
+        try {
+            objectList = this.dataList(object);
+        } catch (Exception e) {
+            throw new RestException("", e.getMessage());
+        }
+
+        if (objectList != null && objectList.size() > 0) {
+            return objectList.get(0);
+        }
+
+        return null;
+    }
+
+    public List<User> findUserList(PageData object) {
+        if (object == null) {return null;}
+
+        List<User> objectList = null;
+        try {
+            objectList = this.dataList(object);
+        } catch (Exception e) {
+            throw new RestException("", e.getMessage());
+        }
+
+        return objectList;
+    }
+
+    /**
+     * 获取企业管理员
+     *
+     * @param companyID  企业id
+     * @return
+     */
+    public User findCompanyAdmin(String companyID) {
+        if (companyID == null || companyID.trim().length() == 0) {return null;}
+
+        PageData findMap = new PageData();
+        findMap.put("companyId", companyID);
+        //用户类型(0:超级管理员1:企业管理员2:普通用户)
+        findMap.put("userType", "1");
+        //是否禁用(1:已禁用 0:启用)
+        findMap.put("isdisable", "0");
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+
+        return this.findUser(findMap);
+    }
+
+    /**
+     * 批量修改(企业管理员)为禁用状态
+     *
+     * 创建人：陈刚
+     * 创建时间：2018-08-06
+     */
+    public void updateDisableByCompanyIds(String[] companyIds) {
+        userMapper.updateDisableByCompanyIds(companyIds);
     }
 
 }

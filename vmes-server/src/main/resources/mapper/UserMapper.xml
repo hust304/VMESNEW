@@ -172,7 +172,22 @@
                             </otherwise>
                         </choose>
                     </if>
+                    <if test="companyId != null and companyId != ''" >
+                        and company_id = #{companyId}
+                    </if>
+                    <if test="deptId != null and deptId != ''" >
+                        and dept_id = #{deptId}
+                    </if>
 
+                    <if test="userCode != null and userCode != ''" >
+                        and user_code = #{userCode}
+                    </if>
+                    <if test="isdisable != null and isdisable != ''" >
+                        and isdisable = #{isdisable}
+                    </if>
+                    <if test="userType != null and userType != ''" >
+                        and user_type = #{userType}
+                    </if>
 
                     <!--queryStr 自定义sql查询语句-->
                     <if test="queryStr != null and queryStr!=''" >
@@ -317,6 +332,16 @@
         </where>
         order by vmesuser.user_code ASC
     </select>
+
+    <update id="updateDisableByCompanyIds" parameterType="java.lang.String" >
+        update <include refid="tableName" />
+            set isdisable = '1', company_id = null
+        where
+            user_type = '1' and company_id in
+            <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </update>
 
 
 
