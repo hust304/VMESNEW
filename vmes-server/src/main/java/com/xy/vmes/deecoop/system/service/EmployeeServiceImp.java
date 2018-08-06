@@ -175,7 +175,14 @@ public class EmployeeServiceImp implements EmployeeService {
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
-
+    /**
+     * 创建人：刘威
+     * 创建时间：2018-08-06
+     */
+    @Override
+    public List<Map> selectEmployeeAndUserById(PageData pd) throws Exception{
+        return employeeMapper.selectEmployeeAndUserById(pd);
+    }
 
 }
 

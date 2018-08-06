@@ -109,7 +109,11 @@ public interface EmployeeService {
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
-
+    /**
+     * 创建人：刘威
+     * 创建时间：2018-08-06
+     */
+    List<Map> selectEmployeeAndUserById(PageData pd) throws Exception;
 }
 
 

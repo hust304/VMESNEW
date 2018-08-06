@@ -94,6 +94,12 @@ public interface EmployeeMapper extends BaseMapper<Employee> {
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 
+    /**
+     * 创建人：
+     * 创建时间：2018-08-02
+     */
+    @Select("selectEmployeeAndUserById")
+    List<Map> selectEmployeeAndUserById(PageData pd);
 
 }
 
