@@ -458,6 +458,7 @@ public class EmployeeController {
         //如果是主岗，只需要禁用的同时要禁用兼岗、员工、用户，启用时只需启用主岗
         else {
             if("1".equals(isdisable)){
+                employee.setLeaveDate(new Date());//设置离职日期
                 employPostService.updateToDisableByEmployIds(employIds);//同时禁用该员工的主岗和兼岗
             }else {
                 employPostService.update(employPost);//启用员工主岗
@@ -526,7 +527,7 @@ public class EmployeeController {
 
 
     /**
-     * 变更员工岗位（只变更主岗，先禁用后新增）（支持批量操作）
+     *  开通员工用户账号（支持批量操作）
      * @author 刘威
      * @date 2018-08-02
      */
@@ -588,6 +589,150 @@ public class EmployeeController {
         model.putMsg(msg.toString());
         Long endTime = System.currentTimeMillis();
         logger.info("################employee/addEmployToUser 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+
+    /**
+     * 设置员工兼岗（支持批量操作）
+     * @author 刘威
+     * @date 2018-08-02
+     */
+    @GetMapping("/employee/addEmployeePluralityPost")
+    public ResultModel addEmployeePluralityPost()  throws Exception {
+
+        logger.info("################employee/addEmployeePluralityPost 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        HttpServletResponse response  = HttpUtils.currentResponse();
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+
+
+        String employPluralityPosts = pd.getString("employPluralityPosts");
+
+//        employRoles ="[{\"employId\":\"3\",\"postId\":\"1\"}," +
+//                "{\"employId\":\"3\",\"postId\":1532599975000}," +
+//                "{\"employId\":\"3\",\"postId\":1532601003000}," +
+//                "{\"employId\":\"3\",\"postId\":1532600923000}," +
+//                "{\"employId\":\"3\",\"postId\":1532600802000}," +
+//                "{\"employId\":\"3\",\"postId\":1532601034000}]";
+
+        List employPluralityPostsList = YvanUtil.jsonToList(employPluralityPosts);
+        if(employPluralityPostsList!=null&&employPluralityPostsList.size()>0){
+            for(int i=0;i<employPluralityPostsList.size();i++){
+                Map employPluralityPostsMap = (Map)employPluralityPostsList.get(i);
+                if(employPluralityPostsMap!=null){
+                    if(employPluralityPostsMap.get("employId")!=null && employPluralityPostsMap.get("postId")!=null){
+                        Employee employee = employeeService.selectById(employPluralityPostsMap.get("employId").toString());
+                        //新增员工兼岗信息
+                        EmployPost employPost = new EmployPost();
+                        employPost.setEmployId(employee.getId());
+                        employPost.setPostId(employPluralityPostsMap.get("postId").toString());
+                        employPost.setCuser(pd.getString("cuser"));
+                        employPost.setUuser(pd.getString("uuser"));
+                        employPost.setIsplurality("1");//兼岗
+                        employPostService.save(employPost);
+                    }
+                }
+            }
+        }
+        Long endTime = System.currentTimeMillis();
+        logger.info("################employee/addEmployeePluralityPost 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+
+
+    /**
+     * @author 刘威 员工信息列表查询分页
+     * @date 2018-07-26
+     */
+    @GetMapping("/employee/listPageEmployees")
+    public ResultModel listPageEmployees()  throws Exception {
+
+        logger.info("################employee/listPageEmployees 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        HttpServletResponse response  = HttpUtils.currentResponse();
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+        Pagination pg = HttpUtils.parsePagination();
+
+        Map result = new HashMap();
+        List<LinkedHashMap> titles = employeeService.getColumnList();
+        result.put("titles",titles.get(0));
+        List<Map> varList = employeeService.getDataListPage(pd,pg);
+        result.put("varList",varList);
+        model.putResult(result);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################employee/listPageEmployees 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+    /**
+     * @author 刘威 自动创建，禁止修改
+     * @date 2018-07-26
+     */
+    @GetMapping("/employee/exportExcelEmployees")
+    public void exportExcelUsers()  throws Exception {
+
+        logger.info("################employee/exportExcelEmployees 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        HttpServletResponse response  = HttpUtils.currentResponse();
+        HttpServletRequest request  = HttpUtils.currentRequest();
+
+        ExcelUtil.buildDefaultExcelDocument( request, response,new ExcelAjaxTemplate() {
+            @Override
+            public void execute(HttpServletRequest request, HSSFWorkbook workbook) throws Exception {
+                // TODO Auto-generated method stub
+                PageData pd = HttpUtils.parsePageData();
+                List<LinkedHashMap> titles = employeeService.getColumnList();
+                request.setAttribute("titles", titles.get(0));
+                List<Map> varList = employeeService.getDataList(pd);
+                request.setAttribute("varList", varList);
+            }
+        });
+        Long endTime = System.currentTimeMillis();
+        logger.info("################employee/exportExcelEmployees 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+    }
+
+
+
+    /**
+     * @author 刘威 通过ID查询
+     * @date 2018-07-26
+     */
+    @GetMapping("/employee/selectEmployeeAndUserById/{employPostId}")
+    public ResultModel selectEmployeeAndUserById(@PathVariable("employPostId") String employPostId)  throws Exception {
+
+        logger.info("################employee/selectEmployeeAndUserById 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        HttpServletResponse response  = HttpUtils.currentResponse();
+        ResultModel model = new ResultModel();
+        if(StringUtils.isEmpty(employPostId)){
+            model.putCode(1);
+            model.putMsg("查询失败，参数employPostId为空！");
+            return model;
+        }
+
+        PageData pd = new PageData();
+        pd.put("employPostId",employPostId);
+        Map result = new HashMap();
+        List<Map> varList = employeeService.selectEmployeeAndUserById(pd);
+        if(varList!=null&&varList.size()>0){
+            result.put("varList",varList.get(0));
+            model.putResult(result);
+        }else{
+            model.putCode(2);
+            model.putMsg("没有查询到数据！");
+            return model;
+        }
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################employee/selectEmployeeAndUserById 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
