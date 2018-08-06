@@ -209,6 +209,7 @@ public class UserLoginController {
         redisClient.set(Redis_userLogin_Key, YvanUtil.toJson(dataMap));
 
         model.putCode(Integer.valueOf(0));
+        model.putResult(YvanUtil.toJson(dataMap));
         model.set("sessionID", Redis_userLogin_Key);
 
         return model;
@@ -484,6 +485,7 @@ public class UserLoginController {
             }
         }
 
+        model.putMsg(msgBuf.toString());
         return model;
     }
 

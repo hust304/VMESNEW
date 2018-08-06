@@ -49,21 +49,24 @@ public class ComonFilter implements Filter {
         String uri = httpRequest.getRequestURI();
         uri = uri.toLowerCase();
         ModifyParametersWrapper mParametersWrapper = new ModifyParametersWrapper(httpRequest);
-        mParametersWrapper.putHeader("sessionID", "admin:0:deecoop:userLoginMap");
-//        //请求地址中含有字符串“login”和“error”的不参与sessionId校验
-//        if(uri.indexOf("login".toLowerCase()) < 0 && uri.indexOf("error".toLowerCase()) < 0){
-//            if (!checkSession(httpRequest, httpResponse)) {
-//                httpResponse.sendRedirect(((HttpServletRequest)request).getContextPath() + "/error/401");
-//                return;
-//            }
-//        }
+//        mParametersWrapper.putHeader("sessionID", "admin:0:deecoop:userLoginMap");
+        //请求地址中含有字符串“login”和“error”的不参与sessionId校验
+        if(uri.indexOf("login".toLowerCase()) < 0 && uri.indexOf("error".toLowerCase()) < 0){
+            if (!checkSession(httpRequest, httpResponse)) {
+                httpResponse.sendRedirect(((HttpServletRequest)request).getContextPath() + "/error/401");
+                return;
+            }
+        }
         chain.doFilter(mParametersWrapper, httpResponse);
     }
 
     public boolean checkSession(HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
         //检查是否sessionId，且sessionId是否过期
-        String RedisUuid = (String)httpRequest.getAttribute("RedisUuid");
-        String userID = (String)httpRequest.getAttribute("userID");
+        String sessionID = httpRequest.getHeader("sessionID");
+        //System.out.print("*******"+sessionID);
+
+//        String RedisUuid = (String)httpRequest.getAttribute("RedisUuid");
+//        String userID = (String)httpRequest.getAttribute("userID");
 
 //        if (RedisUuid == null || RedisUuid.trim().length() == 0) {}
 //        if (userID == null || userID.trim().length() == 0) {}

@@ -503,6 +503,7 @@ public class MenuController {
      * @author 陈刚
      * @date 2018-08-01
      */
+    //@GetMapping("/menu/treeMeuns")
     @PostMapping("/menu/treeMeuns")
     public ResultModel treeMeuns() {
         ResultModel model = new ResultModel();
@@ -510,7 +511,7 @@ public class MenuController {
 
         try {
             String sessionID = HttpUtils.currentRequest().getHeader("sessionID");
-            //String sessionID = "03e0fb6b62ea442db5f94b607217bd2f:0:deecoop:userLoginMap";  //测试代码-真实环境无此代码
+            //String sessionID = "c0d5f53e95a848899f93810732c80004:0:deecoop:userLoginMap";  //测试代码-真实环境无此代码
             if (sessionID == null || sessionID.trim().length() == 0) {
                 model.putCode(Integer.valueOf(1));
                 model.putMsg("(sessionID)为空或空字符串，请于管理员联系！");
