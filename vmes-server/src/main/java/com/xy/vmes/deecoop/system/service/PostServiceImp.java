@@ -8,16 +8,14 @@ import com.xy.vmes.entity.Post;
 import com.xy.vmes.service.CoderuleService;
 import com.xy.vmes.service.PostService;
 import com.yvan.PageData;
+import com.yvan.platform.RestException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
+import java.util.*;
+
 import com.yvan.Conv;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
 * 说明：vmes_post:岗位管理 实现类
@@ -214,6 +212,47 @@ public class PostServiceImp implements PostService {
         object.setIsNeedCompany(Boolean.TRUE);
 
         return coderuleService.findCoderule(object);
+    }
+
+    public Post findPost(PageData object) {
+        if (object == null) {return null;}
+
+        List<Post> objectList = null;
+        try {
+            objectList = this.dataList(object);
+        } catch (Exception e) {
+            throw new RestException("", e.getMessage());
+        }
+
+        if (objectList != null && objectList.size() > 0) {
+            return objectList.get(0);
+        }
+
+        return null;
+    }
+    public List<Post> findPostList(PageData object) {
+        if (object == null) {return null;}
+
+        List<Post> objectList = null;
+        try {
+            objectList = this.dataList(object);
+        } catch (Exception e) {
+            throw new RestException("", e.getMessage());
+        }
+
+        return objectList;
+    }
+
+    public List<Post> findPostListByDeptId(String deptId) {
+        if (deptId == null || deptId.trim().length() == 0) {return null;}
+
+        PageData findMap = new PageData();
+        findMap.put("deptId", deptId);
+        //是否禁用(1:已禁用 0:启用)
+        findMap.put("isdisable", "0");
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+
+        return this.findPostList(findMap);
     }
 
 }

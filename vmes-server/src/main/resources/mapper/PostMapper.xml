@@ -162,7 +162,7 @@
                         and name = #{name}
                     </if>
                     <if test="code != null and code != ''" >
-                        and name = #{code}
+                        and code = #{code}
                     </if>
                     <if test="layer != null" >
                         and layer = #{layer}
