@@ -45,4 +45,16 @@ public interface CompanyService {
 
     Department object2objectDB(Department object, Department objectDB);
     //Integer findMaxSerialNumber(String pid);
+
+    /**
+     * check企业ID是否允许删除
+     * 当前企业ID(子节点)-是否使用
+     *
+     * 创建人：陈刚
+     * 创建时间：2018-08-06
+     * @param ids
+     * @return
+     */
+    String checkDeleteCompanyByIds(String ids);
+
 }

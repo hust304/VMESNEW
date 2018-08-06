@@ -1,6 +1,7 @@
 package com.xy.vmes.deecoop.system.controller;
 
 import com.xy.vmes.common.util.Common;
+import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.Department;
 import com.xy.vmes.entity.User;
 import com.xy.vmes.service.CompanyService;
@@ -246,6 +247,7 @@ public class CompanyController {
         PageData pageData = HttpUtils.parsePageData();
 
         try {
+
         } catch (Exception e) {
             throw new RestException("", e.getMessage());
         }
@@ -258,18 +260,18 @@ public class CompanyController {
      * @author 陈刚
      * @date 2018-08-06
      */
-    @PostMapping("/company/updateCompanyDisable")
-    public ResultModel updateCompanyDisable() {
-        ResultModel model = new ResultModel();
-        PageData pageData = HttpUtils.parsePageData();
-
-        try {
-        } catch (Exception e) {
-            throw new RestException("", e.getMessage());
-        }
-
-        return model;
-    }
+//    @PostMapping("/company/updateCompanyDisable")
+//    public ResultModel updateCompanyDisable() {
+//        ResultModel model = new ResultModel();
+//        PageData pageData = HttpUtils.parsePageData();
+//
+//        try {
+//        } catch (Exception e) {
+//            throw new RestException("", e.getMessage());
+//        }
+//
+//        return model;
+//    }
 
     /**删除企业信息-有关联数据不可禁用户和删除
      *
@@ -281,7 +283,36 @@ public class CompanyController {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
+        //1. 非空判断
+        if (pageData == null || pageData.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("参数错误：用户登录参数(pageData)为空！</br>");
+            return model;
+        }
+
+        String companyIds = (String)pageData.get("companyIds");
+        if (companyIds == null || companyIds.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("参数错误：请至少选择一行数据！</br>");
+            return model;
+        }
+
+        String id_str = StringUtil.stringTrimSpace(companyIds);
+        String[] id_arry = id_str.split(",");
+
+        //2. 当前企业节点下是否含有子节点
+        String msgStr = companyService.checkDeleteCompanyByIds(id_str);
+        if (msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
+
         try {
+            //禁用企业
+            departmentService.updateDisableByIds(id_arry);
+            //禁用企业管理员
+            userService.updateDisableByCompanyIds(id_arry);
         } catch (Exception e) {
             throw new RestException("", e.getMessage());
         }

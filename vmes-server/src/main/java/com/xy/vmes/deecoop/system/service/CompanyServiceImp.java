@@ -88,11 +88,11 @@ public class CompanyServiceImp implements CompanyService {
             String str_isnull = MessageFormat.format(column_isnull, "企业性质");
             msgBuf.append(str_isnull);
         }
-        //companyValidityDate有效期
-        if (object.getCompanyValidityDate() == null) {
-            String str_isnull = MessageFormat.format(column_isnull, "有效期");
-            msgBuf.append(str_isnull);
-        }
+//        //companyValidityDate有效期
+//        if (object.getCompanyValidityDate() == null) {
+//            String str_isnull = MessageFormat.format(column_isnull, "有效期");
+//            msgBuf.append(str_isnull);
+//        }
         //companyUserCount企业用户数
         if (object.getCompanyUserCount() == null) {
             String str_isnull = MessageFormat.format(column_isnull, "企业用户数");
@@ -215,4 +215,34 @@ public class CompanyServiceImp implements CompanyService {
 //
 //        return Integer.valueOf(0);
 //    }
+
+    /**
+     * check企业ID是否允许删除
+     * 当前企业ID(子节点)-是否使用
+     *
+     * 创建人：陈刚
+     * 创建时间：2018-08-06
+     * @param ids
+     * @return
+     */
+    public String checkDeleteCompanyByIds(String ids) {
+        if (ids == null || ids.trim().length() == 0) {return new String();}
+        String[] id_arry = ids.split(",");
+
+        String msgTemp = "第&nbsp;{0}&nbsp;行:&nbsp;存在子企业或部门不可禁用！<br/>";
+        StringBuffer msgBuf = new StringBuffer();
+        for (int i = 0; i < id_arry.length; i++) {
+            String id = id_arry[i];
+
+            //当前企业ID(子节点)-是否使用
+            List<Department> deptList = departmentService.findDepartmentListByPid(id);
+            if (deptList != null && deptList.size() > 0) {
+                String msg_Str = MessageFormat.format(msgTemp, (i+1));
+                msgBuf.append(msg_Str);
+            }
+        }
+
+        return  msgBuf.toString();
+    }
+
 }
