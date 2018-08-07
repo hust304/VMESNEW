@@ -205,7 +205,7 @@ public class UserLoginController {
         //userRole用户角色(角色ID','分隔的字符串)
         String roleIds = userRoleService.findRoleIdsByByUserID(user.getId());
         dataMap.put("roleIds", roleIds);
-        RedisMap.put("roleIds", roleIds);
+        RedisMap.put("userRole", roleIds);
 
         //userMenu菜单权限()
         //userButton按钮权限()
@@ -600,6 +600,31 @@ public class UserLoginController {
         RedisUtils.removeByUuid(redisClient, uuid);
         return model;
     }
+
+    @GetMapping("/userLogin/test_findRedisJsonStringBySessionID")
+    public ResultModel test_findRedisJsonStringBySessionID() {
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        //1. 非空判断
+        if (pageData == null || pageData.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("参数错误：用户登录参数(pageData)为空！</br>");
+            return model;
+        }
+
+        String sessionID = (String)pageData.get("sessionID");
+        if (sessionID == null || sessionID.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("uuid为空或空字符串！<br/>");
+            return model;
+        }
+
+        String jsonString = RedisUtils.getRedisJsonStringBySessionID(redisClient, sessionID);
+        model.putMsg(jsonString);
+        return model;
+    }
+
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
     private String drawImg(ByteArrayOutputStream output){

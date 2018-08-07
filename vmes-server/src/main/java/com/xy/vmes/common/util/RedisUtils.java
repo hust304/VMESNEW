@@ -238,4 +238,19 @@ public class RedisUtils {
             }
         }
     }
+
+    public static String getRedisJsonStringBySessionID(RedisClient redisClient, String sessionID) {
+        Jedis jedis = null;
+        String sessionJson = "";
+        try {
+            jedis = redisClient.getJedisPool().getResource();
+            sessionJson = jedis.get(sessionID);
+        } catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            if (jedis != null)
+                jedis.close();
+        }
+        return sessionJson;
+    }
 }
