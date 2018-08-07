@@ -97,6 +97,9 @@ public class Department implements Serializable {
 	//五级节点ID
 	@TableField("id_5")
 	private String id5;
+	//备注
+	@TableField("remark")
+	private String remark;
 
 
 
@@ -262,7 +265,12 @@ public class Department implements Serializable {
 	public String getId5() {
 		return id5;
 	}
-
+	public String getRemark() {
+		return remark;
+	}
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
 /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 
