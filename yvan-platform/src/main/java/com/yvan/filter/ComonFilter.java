@@ -66,7 +66,7 @@ public class ComonFilter implements Filter {
         //sessionID: (uuid:用户ID:deecoop:userLoginMap)
         String sessionID = httpRequest.getHeader("sessionID");
         if (sessionID == null || sessionID.trim().length() == 0) {
-            throw new RestException("", "sessionID为空或空字符串！");
+            return false;
         }
 
         //String sessionID = "227d18412b194ec38f5fff6d0cfcd6fb:0:deecoop:userLoginMap";
@@ -90,7 +90,7 @@ public class ComonFilter implements Filter {
 
     @Override
     public void destroy() {
-        System.out.println("ComonFilter.destroy()");
+        System.out.println("****************************************ComonFilter.destroy()");
     }
 
 
