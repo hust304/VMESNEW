@@ -284,6 +284,11 @@ public class DepartmentController {
         }
         //设置部门级别
         deptObj.setLayer(Integer.valueOf(paterObj.getLayer().intValue() + 1));
+        //设置默认部门顺序
+        if (deptObj.getSerialNumber() == null) {
+            Integer maxCount = departmentService.findMaxSerialNumber(deptObj.getPid());
+            deptObj.setSerialNumber(Integer.valueOf(maxCount.intValue() + 1));
+        }
 
         departmentService.save(deptObj);
 
@@ -366,6 +371,11 @@ public class DepartmentController {
         }
         //设置部门级别
         deptDB.setLayer(Integer.valueOf(paterObj.getLayer().intValue() + 1));
+        //设置默认部门顺序
+        if (deptObj.getSerialNumber() == null) {
+            Integer maxCount = departmentService.findMaxSerialNumber(deptObj.getPid());
+            deptDB.setSerialNumber(Integer.valueOf(maxCount.intValue() + 1));
+        }
         departmentService.update(deptDB);
 
         return model;

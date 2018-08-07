@@ -186,10 +186,10 @@ public class DepartmentServiceImp implements DepartmentService {
             String str_isnull = MessageFormat.format(column_isnull, "部门名称");
             msgBuf.append(str_isnull);
         }
-        if (object.getSerialNumber() == null) {
-            String str_isnull = MessageFormat.format(column_isnull, "显示顺序");
-            msgBuf.append(str_isnull);
-        }
+//        if (object.getSerialNumber() == null) {
+//            String str_isnull = MessageFormat.format(column_isnull, "显示顺序");
+//            msgBuf.append(str_isnull);
+//        }
         if (object.getDeptType() == null || object.getDeptType().trim().length() == 0) {
             String str_isnull = MessageFormat.format(column_isnull, "部门类型");
             msgBuf.append(str_isnull);
@@ -220,10 +220,10 @@ public class DepartmentServiceImp implements DepartmentService {
             String str_isnull = MessageFormat.format(column_isnull, "部门名称");
             msgBuf.append(str_isnull);
         }
-        if (object.getSerialNumber() == null) {
-            String str_isnull = MessageFormat.format(column_isnull, "显示顺序");
-            msgBuf.append(str_isnull);
-        }
+//        if (object.getSerialNumber() == null) {
+//            String str_isnull = MessageFormat.format(column_isnull, "显示顺序");
+//            msgBuf.append(str_isnull);
+//        }
         if (object.getDeptType() == null || object.getDeptType().trim().length() == 0) {
             String str_isnull = MessageFormat.format(column_isnull, "部门类型");
             msgBuf.append(str_isnull);
@@ -688,11 +688,13 @@ public class DepartmentServiceImp implements DepartmentService {
 
         objectDB.setPid(object.getPid());
         objectDB.setName(object.getName());
-        objectDB.setSerialNumber(object.getSerialNumber());
         objectDB.setOrganizeType("2");
         objectDB.setDeptType(object.getDeptType());
         objectDB.setIsdisable(object.getIsdisable());
 
+        if (object.getSerialNumber() != null) {
+            objectDB.setSerialNumber(object.getSerialNumber());
+        }
         return objectDB;
     }
 
