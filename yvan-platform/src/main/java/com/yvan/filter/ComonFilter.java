@@ -20,6 +20,8 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  * Created by 46368 on 2018/7/23.
@@ -30,7 +32,6 @@ import java.io.IOException;
 public class ComonFilter implements Filter {
 
     private Logger logger = LoggerFactory.getLogger(ComonFilter.class);
-
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -49,7 +50,6 @@ public class ComonFilter implements Filter {
         String uri = httpRequest.getRequestURI();
         uri = uri.toLowerCase();
         ModifyParametersWrapper mParametersWrapper = new ModifyParametersWrapper(httpRequest);
-//        mParametersWrapper.putHeader("sessionID", "admin:0:deecoop:userLoginMap");
         //请求地址中含有字符串“login”和“error”的不参与sessionId校验
         if(uri.indexOf("login".toLowerCase()) < 0 && uri.indexOf("error".toLowerCase()) < 0){
             if (!checkSession(httpRequest, httpResponse)) {
@@ -61,31 +61,29 @@ public class ComonFilter implements Filter {
     }
 
     public boolean checkSession(HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
-        //检查是否sessionId，且sessionId是否过期
+        //System.out.println("*********************************** in checkSession()");
+        //1. 客户端-获取历史sessionID
+        //sessionID: (uuid:用户ID:deecoop:userLoginMap)
         String sessionID = httpRequest.getHeader("sessionID");
-        //System.out.print("*******"+sessionID);
+        if (sessionID == null || sessionID.trim().length() == 0) {
+            throw new RestException("", "sessionID为空或空字符串！");
+        }
 
-//        String RedisUuid = (String)httpRequest.getAttribute("RedisUuid");
-//        String userID = (String)httpRequest.getAttribute("userID");
+        //String sessionID = "227d18412b194ec38f5fff6d0cfcd6fb:0:deecoop:userLoginMap";
+        System.out.println("Client:sessionID: " + sessionID);
 
-//        if (RedisUuid == null || RedisUuid.trim().length() == 0) {}
-//        if (userID == null || userID.trim().length() == 0) {}
-//
-//        RedisUuid = RedisUuid.toLowerCase();
-//        userID = userID.toLowerCase();
-//        RedisClient redisClient = new RedisClient();
-//        redisClient.setJedisPool(jedisPool());
-//        Jedis jedis = redisClient.getJedisPool().getResource();
-//        if (jedis == null) {
-//            throw new RestException("", "Redis 缓存错误(jedis is null)，请与管理员联系！");
-//        }
-//
-//        String HistoryRedisUuid = redisClient.findRedisUuidByUserID(jedis, userID);
-//        if (HistoryRedisUuid == null || HistoryRedisUuid.trim().length() == 0) {
-//            return false;
-//        } else if (!HistoryRedisUuid.toLowerCase().equals(RedisUuid)) {
-//            return false;
-//        }
+        String[] str_arry = sessionID.split(":");
+        String uuid = str_arry[0];
+        String userID = str_arry[1];
+        System.out.println("userID: " + userID);
+
+        //2. 通过(userID)-Redis缓存中获取最新的会话id(uuid)
+        String uuid_new = this.findRedisUuidByUserID(userID);
+        if (uuid_new == null || uuid_new.trim().length() == 0) {
+            return false;
+        } else if (!uuid_new.toLowerCase().equals(uuid.toLowerCase())) {
+            return false;
+        }
 
         return true;
     }
@@ -119,5 +117,33 @@ public class ComonFilter implements Filter {
         RedisClient redisClient = new RedisClient();
         redisClient.setJedisPool(pool);
         return redisClient;
+    }
+
+    private String findRedisUuidByUserID(String userID) {
+        if (userID == null || userID.trim().length() == 0) {return null;}
+
+
+        Jedis jedis = null;
+        try {
+            RedisClient redisClient = new RedisClient();
+            redisClient.setJedisPool(this.jedisPool());
+            jedis = redisClient.getJedisPool().getResource();
+
+            String strTemp = ":" + userID + ":deecoop";
+            Set<String> keySet = jedis.keys("*" + strTemp + "*");
+            if (keySet != null && keySet.size() > 0) {
+                for (Iterator iterator = keySet.iterator(); iterator.hasNext();) {
+                    String key = (String) iterator.next();
+                    String[] strArry = key.split(":");
+                    if (strArry.length > 0) {return strArry[0];}
+                }
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            if (jedis != null) jedis.close();
+        }
+
+        return null;
     }
 }

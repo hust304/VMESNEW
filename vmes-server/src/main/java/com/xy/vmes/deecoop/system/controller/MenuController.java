@@ -503,11 +503,12 @@ public class MenuController {
             try {
                 //String sessionID = "c0d5f53e95a848899f93810732c80004:0:deecoop:userLoginMap";  //测试代码-真实环境无此代码
                 String sessionID = (String)pageData.get("sessionID");
+                System.out.println("treeMeuns()-sessionID: " + sessionID);
                 userRole = RedisUtils.getUserRoleInfoBySessionID(redisClient, sessionID);
             } catch (Exception e) {
                 throw new RestException("", e.getMessage());
             }
-            if (userRole.trim().length() == 0) {
+            if (userRole == null || userRole.trim().length() == 0) {
                 model.putCode(Integer.valueOf(1));
                 model.putMsg("当前用户无配置角色(用户角色)，请于管理员联系！");
                 return model;
