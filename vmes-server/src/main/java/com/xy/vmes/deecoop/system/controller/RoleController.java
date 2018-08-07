@@ -203,31 +203,52 @@ public class RoleController {
      * @date 2018-07-30
      */
     @PostMapping("/role/listPageRoles")
-    public ResultModel listPageRoles() {
+    public ResultModel listPageRoles() throws Exception{
         ResultModel model = new ResultModel();
-        PageData pageData = HttpUtils.parsePageData();
+        PageData pd = HttpUtils.parsePageData();
+        Pagination pg = HttpUtils.parsePagination();
 
-        List<LinkedHashMap> titles = new ArrayList<LinkedHashMap>();
-        try {
-            titles = roleService.getColumnList();
-        } catch (Exception e) {
-            throw new RestException("", e.getMessage());
-        }
+//        List<LinkedHashMap> titles = new ArrayList<LinkedHashMap>();
+//        titles = roleService.getColumnList();
+//
+//        List<Map<String, Object>> varList = new ArrayList<Map<String, Object>>();
+//
+//        varList = roleService.getDataList(pageData);
+//
+//        Map mapObj = new HashMap();
+//        mapObj.put("titles",titles);
+//        mapObj.put("varList",varList);
+//
+//        model.putResult(mapObj);
 
-        List<Map<String, Object>> varList = new ArrayList<Map<String, Object>>();
-        try {
-            pageData.put("cuser", null);
-            pageData.put("uuser", null);
-            varList = roleService.getDataList(pageData);
-        } catch (Exception e) {
-            throw new RestException("", e.getMessage());
-        }
 
-        Map mapObj = new HashMap();
-        mapObj.put("titles",titles);
-        mapObj.put("varList",varList);
 
-        model.putResult(mapObj);
+//        Map result = new HashMap();
+//
+//        List<LinkedHashMap> titles = roleService.getColumnList();
+//
+//        LinkedHashMap titlesLinkedMap = new LinkedHashMap();
+//        List<String> titlesHideList = new ArrayList<String>();
+//        if(titles!=null&&titles.size()>0){
+//            LinkedHashMap<String, String> titlesMap = titles.get(0);
+//            for (Map.Entry<String, String> entry : titlesMap.entrySet()) {
+//                if(entry.getKey().indexOf("_hide")>0){
+//                    titlesLinkedMap.put(entry.getKey().replace("_hide",""),entry.getValue());
+//                    titlesHideList.add(entry.getKey().replace("_hide",""));
+//                }else{
+//                    titlesLinkedMap.put(entry.getKey(),entry.getValue());
+//                }
+//            }
+//        }
+//        result.put("hideTitles",titlesHideList);
+//        result.put("titles",titlesLinkedMap);
+//
+//        List<Map> varList = roleService.getDataListPage(pd,pg);
+//        result.put("varList",varList);
+//        model.putResult(result);
+
+
+
         return model;
     }
 

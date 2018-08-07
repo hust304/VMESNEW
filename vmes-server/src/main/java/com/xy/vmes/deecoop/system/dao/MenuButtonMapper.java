@@ -78,7 +78,7 @@ public interface MenuButtonMapper extends BaseMapper<MenuButton> {
     * 创建人：陈刚 自动创建，禁止修改
     * 创建时间：2018-08-03
     */
-    @Select("getDataList")
+    @Select("getDataListPage")
     List<Map> getDataListPage(PageData pd,Pagination pg);
 
 

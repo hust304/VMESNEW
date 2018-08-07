@@ -270,16 +270,16 @@
             '是否在职'  isdisable,
             '创建时间'  cdate,
             '创建人账号'  cuser,
-            '岗位ID' postId,
+            '岗位ID' postId_hide,
             '岗位名称' postName,
-            '部门ID' deptId,
+            '部门ID' deptId_hide,
             '部门名称' deptName,
-            '用户ID' userId,
+            '用户ID' userId_hide,
             '用户账号' userCode,
-            '角色ID' roleId,
+            '角色ID' roleId_hide,
             '角色名称' roleName,
-            'employPostId' employPostId
-            'employeeId' employeeId
+            'employPostId' employPostId_hide,
+            'employeeId' employeeId_hide
     </sql>
 
 
