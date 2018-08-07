@@ -157,7 +157,7 @@ public class EmployeeController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-08-02
     */
-    @PostMapping("/employee/dataList")
+    @GetMapping("/employee/dataList")
     public ResultModel dataList()  throws Exception {
 
         logger.info("################employee/dataList 执行开始 ################# ");
@@ -664,22 +664,39 @@ public class EmployeeController {
 
         LinkedHashMap titlesLinkedMap = new LinkedHashMap();
         List<String> titlesHideList = new ArrayList<String>();
+        Map<String, String> varModelMap = new HashMap<String, String>();
         if(titles!=null&&titles.size()>0){
             LinkedHashMap<String, String> titlesMap = titles.get(0);
             for (Map.Entry<String, String> entry : titlesMap.entrySet()) {
                 if(entry.getKey().indexOf("_hide")>0){
                     titlesLinkedMap.put(entry.getKey().replace("_hide",""),entry.getValue());
                     titlesHideList.add(entry.getKey().replace("_hide",""));
+                    varModelMap.put(entry.getKey().replace("_hide",""),"");
                 }else{
                     titlesLinkedMap.put(entry.getKey(),entry.getValue());
+                    varModelMap.put(entry.getKey(),"");
                 }
             }
         }
         result.put("hideTitles",titlesHideList);
         result.put("titles",titlesLinkedMap);
 
+
+        List<Map> varMapList = new ArrayList();
         List<Map> varList = employeeService.getDataListPage(pd,pg);
-        result.put("varList",varList);
+        if(varList!=null&&varList.size()>0){
+            for(int i=0;i<varList.size();i++){
+                Map map = varList.get(i);
+                Map<String, String> varMap = new HashMap<String, String>();
+                varMap.putAll(varModelMap);
+                for (Map.Entry<String, String> entry : varMap.entrySet()) {
+                    varMap.put(entry.getKey(),map.get(entry.getKey())!=null?map.get(entry.getKey()).toString():"");
+                }
+                varMapList.add(varMap);
+            }
+        }
+        result.put("varList",varMapList);
+
         model.putResult(result);
 
         Long endTime = System.currentTimeMillis();
