@@ -1,7 +1,6 @@
 package com.xy.vmes.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
-import com.xy.vmes.entity.Menu;
 import com.xy.vmes.entity.MenuButton;
 import com.yvan.PageData;
 
@@ -184,6 +183,7 @@ public interface MenuButtonService {
      */
     boolean isExistByCode(String menuId, String id, String code);
     Integer findMaxSerialNumber(String menuId);
+    MenuButton object2objectDB(MenuButton object, MenuButton objectDB);
 }
 
 

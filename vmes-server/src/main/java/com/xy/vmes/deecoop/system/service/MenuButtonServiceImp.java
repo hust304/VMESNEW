@@ -3,13 +3,11 @@ package com.xy.vmes.deecoop.system.service;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.system.dao.MenuButtonMapper;
-import com.xy.vmes.entity.Menu;
 import com.xy.vmes.entity.MenuButton;
 import com.xy.vmes.service.MenuButtonService;
 import com.yvan.PageData;
 import com.yvan.platform.RestException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -410,6 +408,20 @@ public class MenuButtonServiceImp implements MenuButtonService {
         }
 
         return Integer.valueOf(0);
+    }
+
+    public MenuButton object2objectDB(MenuButton object, MenuButton objectDB) {
+        if (objectDB == null) {objectDB = new MenuButton();}
+        if (object == null) {return objectDB;}
+
+        objectDB.setName(object.getName());
+        objectDB.setCode(object.getCode());
+        //serialNumber按钮顺序
+        if (object.getSerialNumber() != null) {
+            objectDB.setSerialNumber(object.getSerialNumber());
+        }
+
+        return objectDB;
     }
 }
 

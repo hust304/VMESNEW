@@ -256,9 +256,13 @@ public class MenuButtonController {
             return model;
         }
 
+        //设置按钮默认顺序
+        if (buttonObj.getSerialNumber() == null) {
+            Integer maxCount = menuButtonService.findMaxSerialNumber(buttonObj.getMenuId());
+            buttonObj.setSerialNumber(Integer.valueOf(maxCount.intValue() + 1));
+        }
+
         //3. 添加(菜单)按钮
-        Integer maxCount = menuButtonService.findMaxSerialNumber(buttonObj.getMenuId());
-        buttonObj.setSerialNumber(Integer.valueOf(maxCount.intValue() + 1));
         menuButtonService.save(buttonObj);
 
         return model;
@@ -326,10 +330,17 @@ public class MenuButtonController {
             return model;
         }
 
+        MenuButton objectDB = menuButtonService.findMenuButtonById(buttonObj.getId());
+        objectDB = menuButtonService.object2objectDB(buttonObj, objectDB);
+
+        //设置按钮默认顺序
+        if (buttonObj.getSerialNumber() == null) {
+            Integer maxCount = menuButtonService.findMaxSerialNumber(buttonObj.getMenuId());
+            objectDB.setSerialNumber(Integer.valueOf(maxCount.intValue() + 1));
+        }
+
         //修改(菜单)按钮
-        Integer maxCount = menuButtonService.findMaxSerialNumber(buttonObj.getMenuId());
-        buttonObj.setSerialNumber(Integer.valueOf(maxCount.intValue() + 1));
-        menuButtonService.update(buttonObj);
+        menuButtonService.update(objectDB);
 
         return model;
     }
