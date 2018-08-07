@@ -333,6 +333,45 @@
         order by vmesuser.user_code ASC
     </select>
 
+
+    <!-- 列表表体数据查询 -->
+    <select id="getDataListPage"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
+        select
+        <include refid="Field1"></include>
+        from vmes_user vmesuser
+        left join vmes_department company on company.id = vmesuser.company_id
+        <where>
+            <if test="currentUserId != 0"><!-- 超级管理员 -->
+                and company_id in (select company_id from vmes_user where id = #{currentUserId})
+            </if>
+            <if test="userCode!= null and userCode != ''"><!-- 关键词检索 -->
+                and vmesuser.user_code LIKE CONCAT(CONCAT('%', #{userCode}),'%')
+            </if>
+            <if test="userName!= null and userName != ''"><!-- 关键词检索 -->
+                and vmesuser.user_name LIKE CONCAT(CONCAT('%', #{userName}),'%')
+            </if>
+            <if test="mobile!= null and mobile != ''"><!-- 关键词检索 -->
+                and vmesuser.mobile LIKE CONCAT(CONCAT('%', #{mobile}),'%')
+            </if>
+            <if test="email!= null and email != ''"><!-- 关键词检索 -->
+                and vmesuser.email LIKE CONCAT(CONCAT('%', #{email}),'%')
+            </if>
+            <if test="userType!= null and userType != ''"><!-- 关键词检索 -->
+                and vmesuser.user_type LIKE CONCAT(CONCAT('%', #{userType}),'%')
+            </if>
+            <if test="isdisable!= null and isdisable != ''"><!-- 关键词检索 -->
+                and vmesuser.isdisable = #{isdisable}
+            </if>
+            <if test="deptId!= null and deptId != ''"><!-- 关键词检索 -->
+                and vmesuser.dept_id = #{deptId}
+            </if>
+            <if test="queryStr != null and queryStr!=''" ><!-- 自定义查询 -->
+                and ${queryStr}
+            </if>
+        </where>
+        order by vmesuser.user_code ASC
+    </select>
+
     <update id="updateDisableByCompanyIds" parameterType="java.lang.String" >
         update <include refid="tableName" />
             set isdisable = '1', company_id = null

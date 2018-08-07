@@ -319,8 +319,25 @@ public class DictionaryController {
         PageData pd = HttpUtils.parsePageData();
         Pagination pg = HttpUtils.parsePagination();
         Map result = new HashMap();
+
         List<LinkedHashMap> titles =dictionaryService.getColumnList();
-        result.put("titles",titles.get(0));
+
+        LinkedHashMap titlesLinkedMap = new LinkedHashMap();
+        List<String> titlesHideList = new ArrayList<String>();
+        if(titles!=null&&titles.size()>0){
+            LinkedHashMap<String, String> titlesMap = titles.get(0);
+            for (Map.Entry<String, String> entry : titlesMap.entrySet()) {
+                if(entry.getKey().indexOf("_hide")>0){
+                    titlesLinkedMap.put(entry.getKey().replace("_hide",""),entry.getValue());
+                    titlesHideList.add(entry.getKey().replace("_hide",""));
+                }else{
+                    titlesLinkedMap.put(entry.getKey(),entry.getValue());
+                }
+            }
+        }
+        result.put("hideTitles",titlesHideList);
+        result.put("titles",titlesLinkedMap);
+
         List<Map> varList = dictionaryService.getDataListPage(pd,pg);
         result.put("varList",varList);
         model.putResult(result);

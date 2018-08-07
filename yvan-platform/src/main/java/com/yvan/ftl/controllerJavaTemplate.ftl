@@ -186,6 +186,76 @@ public class ${objectName}Controller {
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
+
+    /**
+    * @author ${author} 自动创建，可以修改
+    * @date ${nowDate?string("yyyy-MM-dd")}
+    */
+    @GetMapping("/${objectNameLower}/listPagePosts")
+    public ResultModel listPage${objectName}s()  throws Exception {
+
+        logger.info("################${objectNameLower}/listPage${objectName}s 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        HttpServletResponse response  = HttpUtils.currentResponse();
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+        Pagination pg = HttpUtils.parsePagination();
+        Map result = new HashMap();
+        List<LinkedHashMap> titles = ${objectNameLower}Service.getColumnList();
+
+        LinkedHashMap titlesLinkedMap = new LinkedHashMap();
+        List<String> titlesHideList = new ArrayList<String>();
+        if(titles!=null&&titles.size()>0){
+            LinkedHashMap<String, String> titlesMap = titles.get(0);
+            for (Map.Entry<String, String> entry : titlesMap.entrySet()) {
+                if(entry.getKey().indexOf("_hide")>0){
+                    titlesLinkedMap.put(entry.getKey().replace("_hide",""),entry.getValue());
+                    titlesHideList.add(entry.getKey().replace("_hide",""));
+                }else{
+                    titlesLinkedMap.put(entry.getKey(),entry.getValue());
+                }
+            }
+        }
+        result.put("hideTitles",titlesHideList);
+        result.put("titles",titlesLinkedMap);
+
+
+        List<Map> varList = ${objectNameLower}Service.getDataListPage(pd,pg);
+        result.put("varList",varList);
+        model.putResult(result);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################${objectNameLower}/listPage${objectName}s 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+    /**
+    * @author ${author} 自动创建，可以修改
+    * @date ${nowDate?string("yyyy-MM-dd")}
+    */
+    @GetMapping("/${objectNameLower}/exportExcelPosts")
+    public void exportExcelPosts()  throws Exception {
+
+        logger.info("################post/exportExcel${objectName}s 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        HttpServletResponse response  = HttpUtils.currentResponse();
+        HttpServletRequest request  = HttpUtils.currentRequest();
+
+        ExcelUtil.buildDefaultExcelDocument( request, response,new ExcelAjaxTemplate() {
+            @Override
+            public void execute(HttpServletRequest request, HSSFWorkbook workbook) throws Exception {
+                // TODO Auto-generated method stub
+                PageData pd = HttpUtils.parsePageData();
+                List<LinkedHashMap> titles = ${objectNameLower}Service.getColumnList();
+                request.setAttribute("titles", titles.get(0));
+                List<Map> varList = ${objectNameLower}Service.getDataList(pd);
+                request.setAttribute("varList", varList);
+            }
+        });
+        Long endTime = System.currentTimeMillis();
+        logger.info("################post/exportExcel${objectName}s 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+    }
+
 }
 
 

@@ -238,6 +238,32 @@
         </if>
     </select>
 
+    <!-- 自动创建，可以修改 -->
+    <select id="getDataListPage"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
+        select
+        <include refid="Field1"></include>
+        from
+        <include refid="tableName"></include>
+        <where>
+            <!--queryStr 自定义sql查询语句-->
+            <if test="queryStr != null and queryStr != ''" >
+                and ${r"${"}queryStr${r"}"}
+            </if>
+            <if test="keywords!= null and keywords != ''"><!-- 关键词检索 -->
+                and
+                (
+                <!--	根据需求自己加检索条件
+                            字段1 LIKE CONCAT(CONCAT('%', ${r"#{keywords})"},'%')
+                             or
+                            字段2 LIKE CONCAT(CONCAT('%', ${r"#{keywords})"},'%')
+                        -->
+                )
+            </if>
+        </where>
+        <if test="orderStr != null and orderStr != ''" >
+            order by ${r"${"}orderStr${r"}"}
+        </if>
+    </select>
 
 
     <!-- 自动创建，可以修改-->

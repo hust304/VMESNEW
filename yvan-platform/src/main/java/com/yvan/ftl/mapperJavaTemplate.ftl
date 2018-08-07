@@ -78,7 +78,7 @@ public interface ${objectName}Mapper extends BaseMapper<${objectName}> {
     * 创建人：${author} 自动创建，禁止修改
     * 创建时间：${nowDate?string("yyyy-MM-dd")}
     */
-    @Select("getDataList")
+    @Select("getDataListPage")
     List<Map> getDataListPage(PageData pd,Pagination pg);
 
 

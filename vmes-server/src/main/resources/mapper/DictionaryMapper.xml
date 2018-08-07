@@ -229,7 +229,7 @@
             '字典名称'  name,
             '备注'  remark,
             '是否禁用' isdisable,
-            'id' id
+            'id' id_hide
     </sql>
 
 
@@ -246,25 +246,52 @@
         <include refid="Field1"></include>
         from
         <include refid="tableName"></include>
-        where 1=1
-        <if test="currentUserId != 0"><!-- 超级管理员 -->
-            and company_id in (select company_id from vmes_user where id = #{currentUserId})
-        </if>
-        <if test="name!= null and name != ''"><!-- 关键词检索 -->
-            and name LIKE CONCAT(CONCAT('%', #{name}),'%')
-        </if>
-        <if test="code!= null and code != ''"><!-- 关键词检索 -->
-            and code LIKE CONCAT(CONCAT('%', #{code}),'%')
-        </if>
-        <if test="pid!= null and pid != ''"><!-- 关键词检索 -->
-            and pid = #{pid}
-        </if>
-        <if test="isdisable!= null and isdisable != ''"><!-- 关键词检索 -->
-            and isdisable = #{isdisable}
-        </if>
+        <where>
+            <if test="currentUserId != 0"><!-- 超级管理员 -->
+                and company_id in (select company_id from vmes_user where id = #{currentUserId})
+            </if>
+            <if test="name!= null and name != ''"><!-- 关键词检索 -->
+                and name LIKE CONCAT(CONCAT('%', #{name}),'%')
+            </if>
+            <if test="code!= null and code != ''"><!-- 关键词检索 -->
+                and code LIKE CONCAT(CONCAT('%', #{code}),'%')
+            </if>
+            <if test="pid!= null and pid != ''"><!-- 关键词检索 -->
+                and pid = #{pid}
+            </if>
+            <if test="isdisable!= null and isdisable != ''"><!-- 关键词检索 -->
+                and isdisable = #{isdisable}
+            </if>
+        </where>
         order by code ASC
     </select>
 
+
+    <!-- 自动创建，可以修改 -->
+    <select id="getDataListPage"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
+        select
+        <include refid="Field1"></include>
+        from
+        <include refid="tableName"></include>
+        <where>
+            <if test="currentUserId != 0"><!-- 超级管理员 -->
+                and company_id in (select company_id from vmes_user where id = #{currentUserId})
+            </if>
+            <if test="name!= null and name != ''"><!-- 关键词检索 -->
+                and name LIKE CONCAT(CONCAT('%', #{name}),'%')
+            </if>
+            <if test="code!= null and code != ''"><!-- 关键词检索 -->
+                and code LIKE CONCAT(CONCAT('%', #{code}),'%')
+            </if>
+            <if test="pid!= null and pid != ''"><!-- 关键词检索 -->
+                and pid = #{pid}
+            </if>
+            <if test="isdisable!= null and isdisable != ''"><!-- 关键词检索 -->
+                and isdisable = #{isdisable}
+            </if>
+        </where>
+        order by code ASC
+    </select>
 
 
     <!-- 自动创建，可以修改-->

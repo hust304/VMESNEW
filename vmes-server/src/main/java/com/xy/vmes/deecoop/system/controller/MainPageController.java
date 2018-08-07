@@ -22,10 +22,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 说明：主页 Controller
@@ -151,7 +148,23 @@ public class MainPageController {
 
         Map result = new HashMap();
         List<LinkedHashMap> titles = userDefinedMenuService.getColumnList();
-        result.put("titles",titles.get(0));
+
+        LinkedHashMap titlesLinkedMap = new LinkedHashMap();
+        List<String> titlesHideList = new ArrayList<String>();
+        if(titles!=null&&titles.size()>0){
+            LinkedHashMap<String, String> titlesMap = titles.get(0);
+            for (Map.Entry<String, String> entry : titlesMap.entrySet()) {
+                if(entry.getKey().indexOf("_hide")>0){
+                    titlesLinkedMap.put(entry.getKey().replace("_hide",""),entry.getValue());
+                    titlesHideList.add(entry.getKey().replace("_hide",""));
+                }else{
+                    titlesLinkedMap.put(entry.getKey(),entry.getValue());
+                }
+            }
+        }
+        result.put("hideTitles",titlesHideList);
+        result.put("titles",titlesLinkedMap);
+
         List<Map> varList = userDefinedMenuService.getDataList(pd);
         result.put("varList",varList);
         model.putResult(result);

@@ -346,6 +346,61 @@
     </select>
 
 
+    <!-- 自动创建，可以修改 -->
+    <select id="getDataListPage"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
+        select
+        <include refid="Field1"></include>
+        from
+        vmes_employee  employee
+        left join vmes_employ_post  employpost on employpost.employ_id = employee.id
+        left join vmes_post post on post.id = employpost.post_id
+        left join vmes_department dept on dept.id = post.dept_id
+        left join vmes_user vmesuser on vmesuser.id = employee.user_id
+        left join vmes_user_role userrole on userrole.user_id = vmesuser.id
+        left join vmes_role role on role.id = userrole.role_id
+
+        <where>
+            <!--queryStr 自定义sql查询语句-->
+            <if test="queryStr != null and queryStr!=''" >
+                and ${queryStr}
+            </if>
+            <if test="isdisable!= null and isdisable != ''"><!-- 默认值是0 -->
+                and employee.isdisable = #{isdisable}
+            </if>
+            <if test="isplurality!= null and isplurality != ''"><!-- 默认值是0 -->
+                and employee.isplurality = #{isplurality}
+            </if>
+            <if test="postId!= null and postId != ''"><!-- 默认值是0 -->
+                and post.id = #{postId}
+            </if>
+            <if test="deptId!= null and deptId != '' and layer != null and layer != ''"><!-- 关键词检索 -->
+                and dept.id_${layer} = #{deptId}
+            </if>
+            <if test="postName!= null and postName != ''"><!-- 关键词检索 -->
+                and post.name LIKE CONCAT(CONCAT('%', #{postName}),'%')
+            </if>
+            <if test="code!= null and code != ''"><!-- 关键词检索 -->
+                and employee.code LIKE CONCAT(CONCAT('%', #{code}),'%')
+            </if>
+            <if test="name!= null and name != ''"><!-- 关键词检索 -->
+                and employee.name LIKE CONCAT(CONCAT('%', #{name}),'%')
+            </if>
+            <if test="mobile!= null and mobile != ''"><!-- 关键词检索 -->
+                and employee.mobile LIKE CONCAT(CONCAT('%', #{mobile}),'%')
+            </if>
+            <if test="identityNumber!= null and identityNumber != ''"><!-- 关键词检索 -->
+                and employee.identity_number LIKE CONCAT(CONCAT('%', #{identityNumber}),'%')
+            </if>
+            <if test="entryDateEnd!= null and entryDateEnd != ''"><!-- 关键词检索 -->
+                <![CDATA[ and  employee.entry_date <= #{entryDateEnd} ]]>
+            </if>
+            <if test="entryDateStart!= null and entryDateStart != ''"><!-- 关键词检索 -->
+                <![CDATA[ and  employee.entry_date >= #{entryDateStart} ]]>
+            </if>
+        </where>
+        order by employee.code asc
+    </select>
+
 
     <!-- 自动创建，可以修改-->
     <update id="updateToDisableByIds" parameterType="java.lang.String" >

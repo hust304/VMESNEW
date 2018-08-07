@@ -76,7 +76,7 @@ public interface PostMapper extends BaseMapper<Post> {
      * 创建人：刘威 自动创建，禁止修改
      * 创建时间：2018-08-01
      */
-    @Select("getDataList")
+    @Select("getDataListPage")
     List<Map> getDataListPage(PageData pd,Pagination pg);
 
     /**
