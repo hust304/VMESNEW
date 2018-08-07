@@ -274,6 +274,11 @@ public class MenuController {
 
         //设置菜单级别
         menuObj.setLayer(Integer.valueOf(paterObj.getLayer().intValue() + 1));
+        //设置菜单默认显示顺序
+        if (menuObj.getSerialNumber() == null) {
+            Integer maxCount = menuService.findMaxSerialNumberByPid(menuObj.getPid());
+            menuObj.setSerialNumber(Integer.valueOf(maxCount.intValue() + 1));
+        }
 
         menuService.save(menuObj);
 
@@ -342,6 +347,11 @@ public class MenuController {
 
         //设置菜单级别
         menuDB.setLayer(Integer.valueOf(paterObj.getLayer().intValue() + 1));
+        //设置菜单默认显示顺序
+        if (menuObj.getSerialNumber() == null) {
+            Integer maxCount = menuService.findMaxSerialNumberByPid(menuObj.getPid());
+            menuObj.setSerialNumber(Integer.valueOf(maxCount.intValue() + 1));
+        }
         menuService.update(menuDB);
 
         return model;

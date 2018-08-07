@@ -427,6 +427,23 @@ public class MenuServiceImp implements MenuService {
         return null;
     }
 
+    public Integer findMaxSerialNumberByPid(String pid) {
+        if (pid == null || pid.trim().length() == 0) {return Integer.valueOf(0);}
+
+        PageData findMap = new PageData();
+        findMap.put("pid", pid);
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+        List<Menu> objectList = null;
+        try {
+            objectList = this.findMenuList(findMap);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (objectList != null && objectList.size() > 0) {return Integer.valueOf(objectList.size());}
+
+        return Integer.valueOf(0);
+    }
+
     public Menu id2MenuByLayer(String id, Integer layer, Menu objectDB) {
         if (objectDB == null) {objectDB = new Menu();}
         if (id == null || id.trim().length() == 0) {return objectDB;}
@@ -495,9 +512,13 @@ public class MenuServiceImp implements MenuService {
 
         objectDB.setPid(object.getPid());
         objectDB.setName(object.getName());
-        objectDB.setSerialNumber(object.getSerialNumber());
         objectDB.setUrl(object.getUrl());
         objectDB.setIsdisable(object.getIsdisable());
+
+        //serialNumber 菜单顺序
+        if (object.getSerialNumber() != null) {
+            objectDB.setSerialNumber(object.getSerialNumber());
+        }
 
         return objectDB;
     }
@@ -536,6 +557,7 @@ public class MenuServiceImp implements MenuService {
 
         return  msgBuf.toString();
     }
+
 }
 
 

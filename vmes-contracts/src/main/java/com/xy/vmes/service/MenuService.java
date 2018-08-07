@@ -179,6 +179,7 @@ public interface MenuService {
      * @return
      */
     Integer findMaxLayerByMenuList(List<Menu> objectList);
+    Integer findMaxSerialNumberByPid(String pid);
 
     Menu id2MenuByLayer(String id, Integer layer, Menu objectDB);
     Menu paterObject2ObjectDB(Menu paterObject, Menu objectDB);
