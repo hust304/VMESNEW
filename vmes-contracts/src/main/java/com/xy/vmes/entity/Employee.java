@@ -97,7 +97,9 @@ public class Employee implements Serializable {
 	//预留字段
 	@TableField("column_3")
 	private String column3;
-
+	//备注
+	@TableField("remark")
+	private String remark;
 
 
 	public void setId(String id) {
@@ -262,8 +264,13 @@ public class Employee implements Serializable {
 	public String getColumn3() {
 		return column3;
 	}
-
-/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+	public String getRemark() {
+		return remark;
+	}
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
+	/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 
 }

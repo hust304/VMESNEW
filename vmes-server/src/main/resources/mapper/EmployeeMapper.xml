@@ -40,6 +40,7 @@
 		column_1 column1,<!-- 预留字段 -->
 		column_2 column2,<!-- 预留字段 -->
 		column_3 column3,<!-- 预留字段 -->
+        remark remark,
 		id id <!-- id -->
     </sql>
 
@@ -71,7 +72,8 @@
 		#{column1},<!-- 预留字段 -->
 		#{column2},<!-- 预留字段 -->
 		#{column3},<!-- 预留字段 -->
-		#{id} <!-- id -->
+        #{remark},
+        #{id} <!-- id -->
     </sql>
 
 
@@ -103,6 +105,7 @@
         '预留字段'  column1,
         '预留字段'  column2,
         '预留字段'  column3,
+        '备注' remark,
         'id' id
     </sql>
 
