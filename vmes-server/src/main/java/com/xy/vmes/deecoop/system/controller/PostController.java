@@ -6,10 +6,7 @@ import com.xy.vmes.common.util.RedisUtils;
 import com.xy.vmes.entity.Department;
 import com.xy.vmes.entity.Post;
 import com.xy.vmes.entity.User;
-import com.xy.vmes.service.DepartmentService;
-import com.xy.vmes.service.EmployPostService;
-import com.xy.vmes.service.PostService;
-import com.xy.vmes.service.UserService;
+import com.xy.vmes.service.*;
 import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
@@ -55,6 +52,8 @@ public class PostController {
     private EmployPostService employPostService;
     @Autowired
     private DepartmentService departmentService;
+    @Autowired
+    private CoderuleService coderuleService;
 
     /**
     * @author 刘威 自动创建，禁止修改
@@ -237,7 +236,13 @@ public class PostController {
             //如果没有公司ID，那么就是创建根节点下
             post.setCompanyId(department.getId0());
         }
-        post.setCode(postService.createCoder(companyId));
+        String code = coderuleService.createCoder(companyId,"vmes_post","P");
+        if(StringUtils.isEmpty(code)){
+            model.putCode(2);
+            model.putMsg("编码规则创建异常，请重新操作！");
+            return model;
+        }
+        post.setCode(code);
         postService.save(post);
         Long endTime = System.currentTimeMillis();
         logger.info("################post/addPost 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");

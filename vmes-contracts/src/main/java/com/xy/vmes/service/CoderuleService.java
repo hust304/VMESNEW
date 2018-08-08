@@ -79,6 +79,54 @@ public interface CoderuleService {
      */
     String findCoderule(CoderuleEntity object);
 
+
+    /**
+     * 获取流水号：前缀+6位流水号，如P000001
+     * 创建人：刘威
+     * @param companyID   公司ID
+     * @param tableName   表名
+     * @param prefix      前缀名称
+     * @return
+     */
+    String createCoder(String companyID,String tableName,String prefix);
+
+
+
+    /**
+     * 获取流水号：企业编码+6位流水号，如DEECOOP000001
+     * 创建人：刘威
+     * @param companyID   公司ID
+     * @param tableName   表名
+     * @return
+     */
+    String createCoder(String companyID,String tableName);
+
+
+
+
+
+    /**
+     * 获取流水号：公司编码+日期（yyyyMMdd）+3位流水号，如DEECOOP20180808001
+     * 创建人：刘威
+     * @param companyID   公司ID
+     * @param tableName   表名
+     * @param dateFormat  日期格式
+     * @return
+     */
+    String createCoderByDate(String companyID,String tableName,String dateFormat);
+
+
+    /**
+     * 获取流水号：前缀+日期（yyyyMMdd）+3位流水号，如P20180808001
+     * 创建人：刘威
+     * @param companyID   公司ID
+     * @param tableName   表名
+     * @param dateFormat  日期格式
+     * @param prefix      前缀名称
+     * @return
+     */
+    String createCoderByDate(String companyID,String tableName,String dateFormat,String prefix);
+
 }
 
 

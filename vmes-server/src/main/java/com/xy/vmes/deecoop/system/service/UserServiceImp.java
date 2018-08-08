@@ -122,39 +122,39 @@ public class UserServiceImp implements UserService {
 
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
-    /**
-     * 生成用户编码
-     *
-     * 创建人：陈刚
-     * 创建时间：2018-07-26
-     *
-     * @param companyID  公司ID-组织架构ID
-     * @return
-     */
-    @Override
-    public String createCoder(String companyID) {
-        //(企业编号+前缀字符+日期字符+流水号)-(company+prefix+date+code)
-        //(企业编号+无需+无需+流水号)-W000142
-        CoderuleEntity object = new CoderuleEntity();
-        //tableName 业务名称(表名)
-        object.setTableName("vmes_user");
-        //companyID 公司ID
-        object.setCompanyID(companyID);
-        //length 指定位数(6)
-        object.setLength(Integer.valueOf(6));
-        //firstName 第一个编码名称
-        object.setFirstName("company");
-
-        //separator 分隔符
-        //object.setSeparator("-");
-        //filling 填充字符(0)
-        object.setFilling(Common.CODE_RULE_DEFAULT_FILLING);
-
-        //isNeedCompany 是否需要企业编号
-        object.setIsNeedCompany(Boolean.TRUE);
-
-        return coderuleService.findCoderule(object);
-    }
+//    /**
+//     * 生成用户编码
+//     *
+//     * 创建人：陈刚
+//     * 创建时间：2018-07-26
+//     *
+//     * @param companyID  公司ID-组织架构ID
+//     * @return
+//     */
+//    @Override
+//    public String createCoder(String companyID) {
+//        //(企业编号+前缀字符+日期字符+流水号)-(company+prefix+date+code)
+//        //(企业编号+无需+无需+流水号)-W000142
+//        CoderuleEntity object = new CoderuleEntity();
+//        //tableName 业务名称(表名)
+//        object.setTableName("vmes_user");
+//        //companyID 公司ID
+//        object.setCompanyID(companyID);
+//        //length 指定位数(6)
+//        object.setLength(Integer.valueOf(6));
+//        //firstName 第一个编码名称
+//        object.setFirstName("company");
+//
+//        //separator 分隔符
+//        //object.setSeparator("-");
+//        //filling 填充字符(0)
+//        object.setFilling(Common.CODE_RULE_DEFAULT_FILLING);
+//
+//        //isNeedCompany 是否需要企业编号
+//        object.setIsNeedCompany(Boolean.TRUE);
+//
+//        return coderuleService.findCoderule(object);
+//    }
 
 
 
@@ -234,8 +234,11 @@ public class UserServiceImp implements UserService {
             if(isExistMobile(pd)){
                 throw  new RestException("10","用户中该手机号已存在，请修改手机号！");
             }
-
-            user.setUserCode(createCoder(employee.getCompanyId()));
+            String code = coderuleService.createCoder(employee.getCompanyId(),"vmes_user");
+            if(StringUtils.isEmpty(code)){
+                throw  new RestException("11","编码规则创建异常，请重新操作！");
+            }
+            user.setUserCode(code);
             user.setCompanyId(employee.getCompanyId());
             user.setDeptId(pd.getString("deptId"));
             user.setEmail(employee.getEmail());
@@ -250,7 +253,7 @@ public class UserServiceImp implements UserService {
             if(password!=null&&password.length()==6){
                 user.setPassword(MD5Utils.MD5(password));
             }else{
-                throw  new RestException("11","输入手机号长度错误！");
+                throw  new RestException("12","输入手机号长度错误！");
             }
             save(user);
 

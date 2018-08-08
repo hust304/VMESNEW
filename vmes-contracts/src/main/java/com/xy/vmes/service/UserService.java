@@ -67,16 +67,16 @@ public interface UserService {
 
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
-    /**
-     * 生成用户编码
-     *
-     * 创建人：陈刚
-     * 创建时间：2018-07-26
-     *
-     * @param companyID  公司ID-组织架构ID
-     * @return
-     */
-    String createCoder(String companyID);
+//    /**
+//     * 生成用户编码
+//     *
+//     * 创建人：陈刚
+//     * 创建时间：2018-07-26
+//     *
+//     * @param companyID  公司ID-组织架构ID
+//     * @return
+//     */
+//    String createCoder(String companyID);
 
 
 

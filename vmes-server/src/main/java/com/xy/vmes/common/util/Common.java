@@ -19,10 +19,12 @@ public class Common {
     //业务编码规则-(默认)填充字符
     public static final String CODE_RULE_DEFAULT_FILLING = "0";
     //业务编码规则-最大业务流水号长度(5位)
+    public static final int CODE_RULE_LENGTH_6 = 6;
     public static final int CODE_RULE_LENGTH_5 = 5;
+    public static final int CODE_RULE_LENGTH_4 = 4;
     //业务编码规则-最小业务流水号长度(3位)
     public static final int CODE_RULE_LENGTH_3 = 3;
-    public static final int CODE_RULE_LENGTH_DEFAULT = CODE_RULE_LENGTH_5;
+    public static final int CODE_RULE_LENGTH_DEFAULT = CODE_RULE_LENGTH_6;
 
     //业务编码规则-前补零
     public static final String CODE_RULE_BEFORE = "before";
@@ -44,4 +46,12 @@ public class Common {
     //2:日期字符串
     //3:编码流水号
     public static final String CODE_RULE_DEFAULT = "{0}{1}{2}{3}";
+
+
+    public static final String FIRST_NAME_COMPANY = "company";
+    public static final String FIRST_NAME_PREFIX = "prefix";
+    public static final String FIRST_NAME_DATE = "date";
+    public static final String FIRST_NAME_CODE = "code";
+
+
 }

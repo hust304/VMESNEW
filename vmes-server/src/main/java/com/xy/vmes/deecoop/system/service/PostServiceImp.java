@@ -178,41 +178,43 @@ public class PostServiceImp implements PostService {
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
-    /**
-     * 生成岗位编码
-     *
-     * 创建人：刘威
-     * 创建时间：2018-07-26
-     *
-     * @param companyID  公司ID-组织架构ID
-     * @return
-     */
-    @Override
-    public String createCoder(String companyID) {
-        //(企业编号+前缀字符+日期字符+流水号)-(company+prefix+date+code)
-        //(企业编号+无需+无需+流水号)-W000142
-        CoderuleEntity object = new CoderuleEntity();
-        //tableName 业务名称(表名)
-        object.setTableName("vmes_post");
-        //companyID 公司ID
-        object.setCompanyID(companyID);
-        //length 指定位数(6)
-        object.setLength(Integer.valueOf(6));
-        //firstName 第一个编码名称
-        object.setFirstName("company");
-
-        object.setPrefix("P");
-
-        //separator 分隔符
-        //object.setSeparator("-");
-        //filling 填充字符(0)
-        object.setFilling(Common.CODE_RULE_DEFAULT_FILLING);
-
-        //isNeedCompany 是否需要企业编号
-        object.setIsNeedCompany(Boolean.TRUE);
-
-        return coderuleService.findCoderule(object);
-    }
+//    /**
+//     * 生成岗位编码
+//     *
+//     * 创建人：刘威
+//     * 创建时间：2018-07-26
+//     *
+//     * @param companyID  公司ID-组织架构ID
+//     * @return
+//     */
+//    @Override
+//    public String createCoder(String companyID) {
+//        //(企业编号+前缀字符+日期字符+流水号)-(company+prefix+date+code)
+//        //(无需+前缀字符+无需+流水号)-W000142
+//        CoderuleEntity object = new CoderuleEntity();
+//        //tableName 业务名称(表名)
+//        object.setTableName("vmes_post");
+//        //companyID 公司ID
+//        object.setCompanyID(companyID);
+//        //length 指定位数(5)
+//        object.setLength(Common.CODE_RULE_LENGTH_DEFAULT);
+//        //firstName 第一个编码名称
+//        object.setFirstName("prefix");
+//
+//        //separator 分隔符
+//        //object.setSeparator("-");
+//        //filling 填充字符(0)
+//        object.setFilling(Common.CODE_RULE_DEFAULT_FILLING);
+//
+//        //isNeedPrefix 是否需要前缀
+//        object.setIsNeedPrefix(Boolean.TRUE);
+//        object.setIsNeedDate(Boolean.TRUE);
+//        object.setDateFormat("");
+//        //prefix 前缀字符
+//        object.setPrefix("P");
+//
+//        return coderuleService.findCoderule(object);
+//    }
 
     public Post findPost(PageData object) {
         if (object == null) {return null;}

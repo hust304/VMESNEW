@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import com.xy.vmes.entity.Department;
 import com.xy.vmes.entity.User;
 import com.xy.vmes.entity.UserRole;
+import com.xy.vmes.service.CoderuleService;
 import com.xy.vmes.service.DepartmentService;
 import com.xy.vmes.service.UserRoleService;
 import com.xy.vmes.service.UserService;
@@ -46,6 +47,8 @@ public class UserController {
     private UserRoleService userRoleService;
     @Autowired
     private DepartmentService departmentService;
+    @Autowired
+    private CoderuleService coderuleService;
 
     /**
      * @author 刘威 自动创建，禁止修改
@@ -211,7 +214,7 @@ public class UserController {
 
         String mobile = user.getMobile();
         if(StringUtils.isEmpty(mobile)){
-            model.putCode(2);
+            model.putCode(1);
             model.putMsg("该用户手机号不能为空！");
             return model;
         }
@@ -233,7 +236,7 @@ public class UserController {
 
         String deptId = pd.getString("deptId");
         if(StringUtils.isEmpty(deptId)){
-            model.putCode(4);
+            model.putCode(3);
             model.putMsg("所属部门不能为空！");
             return model;
         }
@@ -241,7 +244,13 @@ public class UserController {
         String companyId = department.getId1();
         if(!StringUtils.isEmpty(companyId)){
             user.setCompanyId(companyId);
-            user.setUserCode(userService.createCoder(companyId));
+            String code = coderuleService.createCoder(companyId,"vmes_user");
+            if(StringUtils.isEmpty(code)){
+                model.putCode(4);
+                model.putMsg("编码规则创建异常，请重新操作！");
+                return model;
+            }
+            user.setUserCode(code);
         }else{
             //如果没有公司ID，那么就是创建根节点下的管理员账号，这个时候定义的用户名就是账号
             user.setCompanyId(department.getId0());
@@ -249,7 +258,7 @@ public class UserController {
         }
 
         if(isExistMobile(pd)){
-            model.putCode(1);
+            model.putCode(5);
             model.putMsg("该用户手机号已存在！");
             return model;
         }
