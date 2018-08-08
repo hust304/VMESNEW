@@ -68,6 +68,18 @@ public interface MenuService {
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
     /**
+     * 创建人：陈刚
+     * 创建时间：2018-08-08
+     */
+    List<LinkedHashMap<String, String>> getColumnList() throws Exception;
+
+    /**
+     * 创建人：陈刚
+     * 创建时间：2018-08-08
+     */
+    List<Map<String, Object>> getDataListPage(PageData pd, Pagination pg) throws Exception;
+
+    /**
      * 生成菜单编码
      *
      * 创建人：陈刚
@@ -76,7 +88,7 @@ public interface MenuService {
      * @param companyID  公司ID-组织架构ID
      * @return
      */
-    String createCoder(String companyID);
+    //String createCoder(String companyID);
     /**
      * 批量修改菜单信息为禁用状态
      *

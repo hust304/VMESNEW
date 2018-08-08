@@ -68,6 +68,19 @@ public interface MenuMapper extends BaseMapper<Menu> {
 	 */
 	@Select("updateDisableByIds")
 	void updateDisableByIds(String[] ids);
+
+	/**
+	 * 创建人：陈刚
+	 * 创建时间：2018-07-30
+	 */
+	@Select("getColumnList")
+	List<LinkedHashMap<String, String>> getColumnList();
+	/**
+	 * 创建人：陈刚
+	 * 创建时间：2018-07-30
+	 */
+	@Select("getDataListPage")
+	List<Map<String, Object>> getDataListPage(PageData pd, Pagination pg);
 }
 
 
