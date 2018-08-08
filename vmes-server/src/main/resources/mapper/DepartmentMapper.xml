@@ -354,8 +354,8 @@
             <if test="name != null and name != ''"><!-- 关键词检索 -->
                 and a.name LIKE CONCAT(CONCAT('%', #{name}),'%')
             </if>
-            <if test="id4 != null and id4!=''" >
-                and a.organize_type = #{id4}
+            <if test="organizeType != null and organizeType != ''" >
+                and a.organize_type = #{organizeType}
             </if>
 
         </where>

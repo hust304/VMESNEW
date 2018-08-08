@@ -176,16 +176,22 @@
 
     <!-- ***************************************************以上为自动生成代码禁止修改，请在下面添加业务代码************************************************* -->
     <sql id="RoleColumn">
-        'id' id,
-        '公司ID' companyID,
-        '公司编码' companyCode,
-        '所属公司' companyName,
-        '角色名称' roleName,
+        <!--查询隐藏字段-->
+        'id' id_hide,
+        'companyID' companyID_hide,
+        'nameEn' nameEn_hide,
+        'isdisable' isdisable_hide,
+        'cdate' cdate_hide,
 
-        '创建时间' cdate,
-        '创建人' cuseName,
-        '创建人账号' cuse,
-        '是否启用' isdisable
+        'cuser' cuser_hide,
+        'udate' udate_hide,
+        'uuser' uuser_hide,
+
+        <!--查询显示字段-->
+        '角色编码' code,
+        '角色名称' name,
+        '是否启用' isdisableName
+
     </sql>
     <select id="getColumnList"  resultType="java.util.LinkedHashMap">
         select
@@ -194,51 +200,42 @@
     </select>
 
     <sql id="RoleField">
-        a.id,
-        a.company_id companyID,
-        b.code companyCode,
-        b.name companyName,
-        a.name roleName,
+        <!--查询隐藏字段-->
+        id id,
+        company_id companyID,
+        name_en nameEn,
+        isdisable,
+        DATE_FORMAT(cdate,'%Y-%m-%d %T') cdate,
+        cuser,
+        DATE_FORMAT(udate,'%Y-%m-%d %T') udate,
+        uuser,
 
-        a.cdate,
-        a.cuser,
-        c.user_name cuseName,
-        a.isdisable
+        <!--查询显示字段-->
+        code code,
+        name name,
+        CASE
+            WHEN a.isdisable = '0' THEN '已启用'
+            WHEN a.isdisable = '1' THEN '已禁用'
+        ELSE null
+        END isdisableName
     </sql>
-    <select id="getDataList" parameterType="com.yvan.PageData" resultType="java.util.Map">
+    <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
             <include refid="RoleField" />
-        from vmes_role a
-            left join vmes_department b on a.company_id = b.id and b.isdisable = '0'
-            left join vmes_user c on (a.cuser = c.user_code and a.company_id = c.company_id) and c.isdisable = '0'
+        from vmes_role
         <where>
             <!--isSelfExist 是否考虑自己在业务表中是否存在
                 false: (false or is null) 无需考虑自己在业务表中是否存在
                 true : 需要考虑自己在业务表中是否存在
             -->
-            <if test="id != null and id !=''" >
-                and a.id = #{id}
+            <if test="code != null and code != ''"><!-- 关键词检索 -->
+                and code LIKE CONCAT(CONCAT('%', #{code}),'%')
             </if>
-            <if test="companyID != null and companyID != ''" >
-                and a.company_id = #{companyID}
-            </if>
-            <if test="companyCode != null and companyCode != ''" >
-                and b.code = #{companyCode}
-            </if>
-            <if test="companyName != null and companyName != ''" >
-                and b.name = #{companyName}
-            </if>
-            <if test="roleName != null and roleName != ''" >
-                and a.name = #{roleName}
-            </if>
-            <if test="cuser != null and cuser != ''" >
-                and a.cuser = #{cuser}
-            </if>
-            <if test="cuseName != null and cuseName != ''" >
-                and c.user_name = #{cuseName}
+            <if test="name != null and name != ''"><!-- 关键词检索 -->
+                and name LIKE CONCAT(CONCAT('%', #{name}),'%')
             </if>
             <if test="isdisable != null and isdisable != ''" >
-                and a.isdisable = #{isdisable}
+                and isdisable = #{isdisable}
             </if>
 
             <!--queryStr 自定义sql查询语句-->

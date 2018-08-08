@@ -505,7 +505,7 @@ public class DepartmentController {
         mapObj.put("titles",titlesLinkedMap);
 
         //2. 分页查询数据List
-        List<Map> varMapList = new ArrayList();
+        List<Map<String, String>> varMapList = new ArrayList<Map<String, String>>();
         PageData pd = HttpUtils.parsePageData();
         Pagination pg = HttpUtils.parsePagination();
         List<Map<String, Object>> varList = departmentService.getDataListPage(pd, pg);
