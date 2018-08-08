@@ -2,16 +2,16 @@ package com.xy.vmes.deecoop.system.controller;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.google.gson.Gson;
+import com.xy.vmes.common.util.RedisUtils;
 import com.xy.vmes.entity.Department;
 import com.xy.vmes.entity.Role;
-import com.xy.vmes.service.RoleButtonService;
-import com.xy.vmes.service.RoleMenuService;
-import com.xy.vmes.service.RoleService;
-import com.xy.vmes.service.UserRoleService;
+import com.xy.vmes.entity.User;
+import com.xy.vmes.service.*;
 import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.xy.vmes.common.util.StringUtil;
+import com.yvan.cache.RedisClient;
 import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
 import com.yvan.template.ExcelAjaxTemplate;
@@ -51,7 +51,10 @@ public class RoleController {
     private RoleMenuService roleMenuService;
     @Autowired
     private RoleButtonService roleButtonService;
-
+    @Autowired
+    private CoderuleService coderuleService;
+    @Autowired
+    RedisClient redisClient;
 
     /**
     * @author 陈刚 自动创建，禁止修改
@@ -272,10 +275,45 @@ public class RoleController {
             model.putMsg("(角色名称)输入为空或空字符串，(角色名称)是必填字段不可为空！<br/>");
             return model;
         }
+        String sessionID = (String)pageData.get("sessionID");
+        if (name == null || name.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("sessionID 为空或空字符串！<br/>");
+            return model;
+        }
 
-        //2. 添加角色
+        //2. sessionID-获取当前登录用户
+        User user = RedisUtils.getUserInfoBySessionID(redisClient, sessionID);
+        if (user == null) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("sessionID:" + sessionID + "&nbsp;Redis缓存获取User对象失败！");
+            return model;
+        }
+
+        //userType用户类型(0:超级管理员1:企业管理员2:普通用户)
+        if ("0".equals(user.getUserType())) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("账号:" + user.getUserCode() + " 当前账号为超级管理员，不可添加角色操作！");
+            return model;
+        } else if (user.getCompanyId() == null || user.getCompanyId().trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("账号:" + user.getUserCode() + "&nbsp;无公司id(CompanyId)，请与管理员联系！");
+            return model;
+        }
+
+        //获取角色编码
+        String code = null;
+        code = coderuleService.createCoder(user.getCompanyId().trim(), "vmes_role", "R");
+        if (code == null || code.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("账号:" + user.getUserCode() + "&nbsp;生成角色编码失败，请与管理员联系！");
+            return model;
+        }
+
+        //3. 添加角色
         Role role = new Role();
-        role.setIsdisable("0");
+        role.setCompanyId(user.getCompanyId().trim());
+        role.setCode(code);
         role.setName(name);
         roleService.save(role);
 
