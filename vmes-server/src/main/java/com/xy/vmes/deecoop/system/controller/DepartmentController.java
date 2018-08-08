@@ -472,6 +472,60 @@ public class DepartmentController {
         return model;
     }
 
+    /**组织管理分页查询List
+     *
+     * @author 陈刚
+     * @date 2018-08-08
+     */
+    @PostMapping("/department/listPageDepartments")
+    public ResultModel listPageDepartments() throws Exception {
+        ResultModel model = new ResultModel();
+        Map<String, Object> mapObj = new HashMap<String, Object>();
+
+
+        //1. 查询遍历List列表
+        LinkedHashMap<String, String> titlesLinkedMap = new LinkedHashMap<String, String>();
+        List<String> titlesHideList = new ArrayList<String>();
+        Map<String, String> varModelMap = new HashMap<String, String>();
+        List<LinkedHashMap<String, String>> titleList = departmentService.getColumnList();
+        if(titleList != null && titleList.size() >0 ){
+            LinkedHashMap<String, String> titlesMap = titleList.get(0);
+            for (Map.Entry<String, String> entry : titlesMap.entrySet()) {
+                if(entry.getKey().indexOf("_hide") != -1){
+                    titlesLinkedMap.put(entry.getKey().replace("_hide",""), entry.getValue());
+                    titlesHideList.add(entry.getKey().replace("_hide",""));
+                    varModelMap.put(entry.getKey().replace("_hide",""), "");
+                }else{
+                    titlesLinkedMap.put(entry.getKey(), entry.getValue());
+                    varModelMap.put(entry.getKey(), "");
+                }
+            }
+        }
+        mapObj.put("hideTitles",titlesHideList);
+        mapObj.put("titles",titlesLinkedMap);
+
+        //2. 分页查询数据List
+        List<Map> varMapList = new ArrayList();
+        PageData pd = HttpUtils.parsePageData();
+        Pagination pg = HttpUtils.parsePagination();
+        List<Map<String, Object>> varList = departmentService.getDataListPage(pd, pg);
+        if(varList != null && varList.size() > 0){
+            for(int i=0; i < varList.size(); i++){
+                Map<String, Object> map = varList.get(i);
+                Map<String, String> varMap = new HashMap<String, String>();
+                varMap.putAll(varModelMap);
+                for (Map.Entry<String, String> entry : varMap.entrySet()) {
+                    varMap.put(entry.getKey(), map.get(entry.getKey()) != null ? map.get(entry.getKey()).toString() : "");
+                }
+                varMapList.add(varMap);
+            }
+        }
+        mapObj.put("varList",varMapList);
+
+        model.putResult(mapObj);
+        return model;
+    }
+
 }
 
 

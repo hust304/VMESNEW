@@ -123,6 +123,24 @@ public class DepartmentServiceImp implements DepartmentService {
     private DepartmentTreeService deptTreeService;
 
     /**
+     * 创建人：陈刚
+     * 创建时间：2018-08-08
+     */
+    @Override
+    public List<LinkedHashMap<String, String>> getColumnList() throws Exception{
+        return departmentMapper.getColumnList();
+    }
+
+    /**
+     * 创建人：陈刚
+     * 创建时间：2018-08-08
+     */
+    @Override
+    public List<Map<String, Object>> getDataListPage(PageData pd, Pagination pg) throws Exception{
+        return departmentMapper.getDataListPage(pd, pg);
+    }
+
+    /**
      * 批量修改组织架构信息为禁用状态
      *
      * 创建人：陈刚

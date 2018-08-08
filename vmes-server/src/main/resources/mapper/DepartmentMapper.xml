@@ -270,5 +270,96 @@
             </foreach>
     </update>
 
+    <!-- 组织管理 分页List查询-->
+    <sql id="Field1">
+        <!--查询隐藏字段-->
+        a.id id,
+        a.pid pid,
+        a.name_en nameEn,
+        a.serial_number serialNumber,
+        a.organize_type organizeType,
+
+        a.company_type companyType,
+        a.dept_type deptType,
+        a.long_name longName,
+        a.long_code longCode,
+        a.isdisable isdisable,
+
+        DATE_FORMAT(a.cdate,'%Y-%m-%d %T') cdate,
+        a.cuser cuser,
+        a.uuser uuser,
+        <!--查询显示字段-->
+        a.code code,
+        a.name name,
+        CASE
+            WHEN a.organize_type = '1' THEN '公司'
+            WHEN a.organize_type = '2' THEN '部门'
+        ELSE null
+        END organizeTypename
+
+        a.layer layer,
+        b.name paterName,
+
+        DATE_FORMAT(a.udate,'%Y-%m-%d %T') udate,
+        a.remark remark,
+        CASE
+            WHEN a.isdisable = '0' THEN '已启用'
+            WHEN a.isdisable = '1' THEN '已禁用'
+        ELSE null
+        END isdisableName
+    </sql>
+    <sql id="Column1">
+        <!--查询隐藏字段-->
+        'id' id_hide,
+        'pid' pid_hide,
+        'nameEn' nameEn_hide,
+        'serialNumber' serialNumber_hide,
+        'organizeType' organizeType_hide,
+
+        'companyType' companyType_hide,
+        'deptType' deptType_hide,
+        'longName' longName_hide,
+        'longCode' longCode_hide,
+        'isdisable' isdisable_hide,
+
+        'cdate' cdate_hide,
+        'cuser' cuser_hide,
+        'uuser' uuser_hide,
+        <!--查询显示字段-->
+        '组织编码' code,
+        '组织名称' name,
+        '组织类型' organizeTypename,
+        '组织层级' layer,
+        '上级组织' paterName,
+
+        '更改时间' udate,
+        '备注' remark,
+        '是否启用' isdisableName
+    </sql>
+
+    <select id="getColumnList"  resultType="java.util.LinkedHashMap">
+        select
+            <include refid="Column1"/>
+        from dual
+    </select>
+
+    <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select <include refid="Field1"/>
+        from vmes_department a
+            left join vmes_department b on a.pid = b.id
+        <where>
+            <if test="code != null and code != ''"><!-- 关键词检索 -->
+                and a.code LIKE CONCAT(CONCAT('%', #{code}),'%')
+            </if>
+            <if test="name != null and name != ''"><!-- 关键词检索 -->
+                and a.name LIKE CONCAT(CONCAT('%', #{name}),'%')
+            </if>
+            <if test="id4 != null and id4!=''" >
+                and a.organize_type = #{id4}
+            </if>
+
+        </where>
+    </select>
+
 
 </mapper>
