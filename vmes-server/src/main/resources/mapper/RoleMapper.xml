@@ -15,7 +15,9 @@
     <!-- 字段 自动创建，禁止修改-->
     <sql id="Field">
 		company_id companyId,<!-- 公司ID-组织架构 -->
-		name name,<!-- 角色名称 -->
+        code code,
+        name name,<!-- 角色名称 -->
+        name_en nameEn,
 		isdisable isdisable,<!-- 是否禁用(1:已禁用 0:启用) 数据字典:sys_isdisable -->
 		cdate cdate,<!-- 创建时间 -->
 		cuser cuser,<!-- 创建人账号 -->
@@ -27,8 +29,10 @@
     <!-- 字段值 自动创建，禁止修改-->
     <sql id="FieldValue">
 		#{companyId},<!-- 公司ID-组织架构 -->
+        #{code},
 		#{name},<!-- 角色名称 -->
-		#{isdisable},<!-- 是否禁用(1:已禁用 0:启用) 数据字典:sys_isdisable -->
+        #{nameEn},
+        #{isdisable},<!-- 是否禁用(1:已禁用 0:启用) 数据字典:sys_isdisable -->
 		#{cdate},<!-- 创建时间 -->
 		#{cuser},<!-- 创建人账号 -->
 		#{udate},<!-- 修改时间 -->
@@ -40,7 +44,9 @@
     <!-- 字段值 自动创建，禁止修改-->
     <sql id="Column">
         '公司ID-组织架构'  companyId,
+        '角色编码' code,
         '角色名称'  name,
+        '英文名称'  nameEn,
         '是否禁用(1:已禁用 0:启用) 数据字典:sys_isdisable'  isdisable,
         '创建时间'  cdate,
         '创建人账号'  cuser,
@@ -132,6 +138,9 @@
                     </if>
                     <if test="companyId != null and companyId != ''" >
                         and company_id = #{companyId}
+                    </if>
+                    <if test="code != null and code != ''" >
+                        and code = #{code}
                     </if>
                     <if test="name != null and name != ''" >
                         and name = #{name}

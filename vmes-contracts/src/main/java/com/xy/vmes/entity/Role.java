@@ -22,6 +22,9 @@ public class Role implements Serializable {
 	//公司ID-组织架构
 	@TableField("company_id")
 	private String companyId;
+	//角色编码
+	@TableField("code")
+	private String code;
 	//角色名称
 	@TableField("name")
 	private String name;
@@ -100,8 +103,13 @@ public class Role implements Serializable {
 	public String getUuser() {
 		return uuser;
 	}
-
-/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+	public String getCode() {
+		return code;
+	}
+	public void setCode(String code) {
+		this.code = code;
+	}
+	/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 
 }
