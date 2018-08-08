@@ -1,5 +1,8 @@
 package com.xy.vmes.common.util;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Common {
     public final static String REDIS_SECURITY_CODE = "securityCode";
     //public final static String REDIS_USER = "user";
@@ -53,5 +56,26 @@ public class Common {
     public static final String FIRST_NAME_DATE = "date";
     public static final String FIRST_NAME_CODE = "code";
 
+    ///////////////--系统日志--///////////////////////////////////////////////////////////////////
+    //Controller类名与业务表对应关系
+    public static final Map<String, String> SYSLOGINFO_CLASSNAME2TABLENAME_MAP = new HashMap<String, String>() {{
+        //put("类名称", "表名");
+        put("DepartmentController", "vmes_department");
+        put("CompanyController", "vmes_department");
+        put("DictionaryController", "vmes_dictionary");
+        put("EmployeeController", "vmes_employee");
+        put("MenuButtonController", "vmes_menu_button");
+        put("MenuController", "vmes_menu");
+        put("PostController", "vmes_post");
+        put("RoleController", "vmes_role");
+        put("UserController", "vmes_user");
+    }};
+
+    //Controller操作方法前缀
+    public static final Map<String, String> SYSLOGINFO_METHODPREFIX_MAP = new HashMap<String, String>() {{
+        put("add", "add");
+        put("update", "update");
+        put("delete", "delete");
+    }};
 
 }
