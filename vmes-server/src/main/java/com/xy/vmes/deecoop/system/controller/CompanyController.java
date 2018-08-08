@@ -4,6 +4,7 @@ import com.xy.vmes.common.util.Common;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.Department;
 import com.xy.vmes.entity.User;
+import com.xy.vmes.service.CoderuleService;
 import com.xy.vmes.service.CompanyService;
 import com.xy.vmes.service.DepartmentService;
 import com.xy.vmes.service.UserService;
@@ -11,7 +12,6 @@ import com.yvan.Conv;
 import com.yvan.HttpUtils;
 import com.yvan.MD5Utils;
 import com.yvan.PageData;
-import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +36,8 @@ public class CompanyController {
     private DepartmentService departmentService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private CoderuleService coderuleService;
 
     /**添加企业信息-同时创建企业账号或企业管理员
      *
@@ -136,7 +138,7 @@ public class CompanyController {
         //创建(企业管理员)账户
         User user = new User();
         user.setCompanyId(companyObj.getId());
-        String userCode = userService.createCoder(companyObj.getId());
+        String userCode = coderuleService.createCoder(companyObj.getId(), "vmes_user");
         user.setUserCode(userCode);
         user.setPassword(MD5Utils.MD5(Common.DEFAULT_PASSWORD));
         userService.save(user);
