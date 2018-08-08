@@ -25,7 +25,7 @@ public class MenuButton implements Serializable {
 	//菜单表ID
 	@TableField("menu_id")
 	private String menuId;
-	//按钮编码(按钮属性值)
+	//按钮编码
 	@TableField("code")
 	private String code;
 	//按钮名称
@@ -34,6 +34,8 @@ public class MenuButton implements Serializable {
 	//英文名称
 	@TableField("name_en")
 	private String nameEn;
+	//按钮属性值
+	private String value;
 	//按钮顺序
 	@TableField("serial_number")
 	private Integer serialNumber;
@@ -127,8 +129,13 @@ public class MenuButton implements Serializable {
 	public String getUuser() {
 		return uuser;
 	}
-
-/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+	public String getValue() {
+		return value;
+	}
+	public void setValue(String value) {
+		this.value = value;
+	}
+	/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 
 }

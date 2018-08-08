@@ -63,7 +63,7 @@ public interface MenuButtonMapper extends BaseMapper<MenuButton> {
     * 创建时间：2018-08-03
     */
     @Select("getColumnList")
-    List<LinkedHashMap> getColumnList();
+    List<LinkedHashMap<String, String>> getColumnList();
 
 
     /**
@@ -79,7 +79,7 @@ public interface MenuButtonMapper extends BaseMapper<MenuButton> {
     * 创建时间：2018-08-03
     */
     @Select("getDataListPage")
-    List<Map> getDataListPage(PageData pd,Pagination pg);
+    List<Map<String, Object>> getDataListPage(PageData pd, Pagination pg);
 
 
     /**

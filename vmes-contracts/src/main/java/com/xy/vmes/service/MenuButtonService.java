@@ -87,7 +87,7 @@ public interface MenuButtonService {
     * 创建人：陈刚 自动创建，禁止修改
     * 创建时间：2018-08-03
     */
-    List<LinkedHashMap> getColumnList() throws Exception;
+    List<LinkedHashMap<String, String>> getColumnList() throws Exception;
 
     /**
     * 创建人：陈刚 自动创建，禁止修改
@@ -99,7 +99,7 @@ public interface MenuButtonService {
     * 创建人：陈刚 自动创建，禁止修改
     * 创建时间：2018-08-03
     */
-    List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception;
+    List<Map<String, Object>> getDataListPage(PageData pd,Pagination pg) throws Exception;
 
     /**
     * 创建人：陈刚 自动创建，禁止修改
