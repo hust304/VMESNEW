@@ -322,12 +322,13 @@ public class DictionaryController {
 
         List<LinkedHashMap> titles =dictionaryService.getColumnList();
 
-        LinkedHashMap<String, String> titlesLinkedMap = new LinkedHashMap<String, String>();
+        List<LinkedHashMap> titlesList = new ArrayList<LinkedHashMap>();
         List<String> titlesHideList = new ArrayList<String>();
         Map<String, String> varModelMap = new HashMap<String, String>();
         if(titles!=null&&titles.size()>0){
             LinkedHashMap<String, String> titlesMap = titles.get(0);
             for (Map.Entry<String, String> entry : titlesMap.entrySet()) {
+                LinkedHashMap titlesLinkedMap = new LinkedHashMap();
                 if(entry.getKey().indexOf("_hide")>0){
                     titlesLinkedMap.put(entry.getKey().replace("_hide",""),entry.getValue());
                     titlesHideList.add(entry.getKey().replace("_hide",""));
@@ -336,10 +337,11 @@ public class DictionaryController {
                     titlesLinkedMap.put(entry.getKey(),entry.getValue());
                     varModelMap.put(entry.getKey(),"");
                 }
+                titlesList.add(titlesLinkedMap);
             }
         }
         result.put("hideTitles",titlesHideList);
-        result.put("titles",titlesLinkedMap);
+        result.put("titles",titlesList);
 
         List<Map> varMapList = new ArrayList();
         List<Map> varList = dictionaryService.getDataListPage(pd,pg);
