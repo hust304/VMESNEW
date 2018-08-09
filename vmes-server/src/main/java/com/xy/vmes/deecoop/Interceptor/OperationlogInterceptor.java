@@ -1,10 +1,12 @@
 package com.xy.vmes.deecoop.Interceptor;
 
 import com.xy.vmes.entity.Loginfo;
-import com.xy.vmes.service.DepartmentService;
 import com.xy.vmes.service.LoginfoService;
 import com.yvan.PageData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -17,7 +19,10 @@ import javax.servlet.http.HttpServletResponse;
  * 写入日志表(vmes_loginfo)
  *
  */
+@Component
 public class OperationlogInterceptor implements HandlerInterceptor {
+    private Logger logger = LoggerFactory.getLogger(OperationlogInterceptor.class);
+
     @Autowired
     private LoginfoService loginfoService;
 
@@ -46,8 +51,10 @@ public class OperationlogInterceptor implements HandlerInterceptor {
      * @throws Exception
      */
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
+        logger.info("操作日志拦截器-OperationlogInterceptor.afterCompletion()-执行开始");
         //获取Controller方法调用全路径
-        String method_path = (String)handler;
+        String method_path = "";
+        if (handler != null) {method_path = handler.toString();}
         if (method_path == null || method_path.trim().length() == 0) {return;}
 
         //获取调用方法名称前缀
@@ -77,6 +84,7 @@ public class OperationlogInterceptor implements HandlerInterceptor {
         loginfoDB.setCuser(cuserId);
 
         loginfoService.save(loginfoDB);
+        logger.info("操作日志拦截器-OperationlogInterceptor.afterCompletion()-执行结束");
 
     }
 }

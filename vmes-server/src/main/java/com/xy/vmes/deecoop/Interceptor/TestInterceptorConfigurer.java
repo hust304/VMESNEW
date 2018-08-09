@@ -23,8 +23,8 @@ public class TestInterceptorConfigurer extends WebMvcConfigurerAdapter {
 //        registry.addInterceptor(testInterceptor1).addPathPatterns("/*/test_findAllRedisKeyByUserID");
 //        registry.addInterceptor(testInterceptor2).addPathPatterns("/*/test_findAllRedisKeyByUuid");
 
-        registry.addInterceptor(testInterceptor1).addPathPatterns("/*/test*");
+        //registry.addInterceptor(testInterceptor1).addPathPatterns("/*/test*");
 
-        super.addInterceptors(registry);
+        //super.addInterceptors(registry);
     }
 }

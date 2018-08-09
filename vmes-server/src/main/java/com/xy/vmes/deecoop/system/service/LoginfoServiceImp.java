@@ -72,6 +72,10 @@ public class LoginfoServiceImp implements LoginfoService {
      */
     public String findMethodPrefix(String methodPath) {
         if (methodPath == null || methodPath.trim().length() == 0) {return new String();}
+        if (methodPath.indexOf("throws java.lang.Exception") != -1) {
+            methodPath = methodPath.replace("throws java.lang.Exception", "");
+        }
+
         int maxLength = methodPath.length();
         int beginIndex = methodPath.lastIndexOf(".") + 1;
 
@@ -83,12 +87,12 @@ public class LoginfoServiceImp implements LoginfoService {
         if (method.trim().length() == 0) {return new String();}
 
         //2. 获取调用方法前缀
-        String prefix = new String();
         Map<String, String> methodPrefixMap = Common.SYSLOGINFO_METHODPREFIX_MAP;
         for (Iterator iterator = methodPrefixMap.keySet().iterator(); iterator.hasNext();) {
             String mapKey = (String) iterator.next();
+            String mapValue = methodPrefixMap.get(mapKey);
             if (method.indexOf(mapKey) != -1) {
-                return prefix;
+                return mapValue;
             }
         }
 
