@@ -260,7 +260,6 @@
         'type' type_hide,
         'isleaf' isleaf_hide,
         'layer' layer_hide,
-        'isdisable' isdisable_hide,
         'cdate' cdate_hide,
         'cuser' cuser_hide,
         'udate' udate_hide,
@@ -270,7 +269,7 @@
         '菜单名称' name,
         '显示顺序' serialNumber,
         '资源路径' url,
-        '状态' isdisableName
+        '状态' isdisable
     </sql>
     <select id="getColumnList"  resultType="java.util.LinkedHashMap">
         select
@@ -289,7 +288,6 @@
         type type,
         isleaf isleaf,
         layer layer,
-        isdisable isdisable,
         DATE_FORMAT(cdate,'%Y-%m-%d %T') cdate,
         cuser cuser,
         DATE_FORMAT(udate,'%Y-%m-%d %T') udate,
@@ -299,11 +297,14 @@
         name name,
         serial_number serialNumber,
         url url,
+        isdisable isdisable
+        <!--
         CASE
             WHEN isdisable = '0' THEN '已启用'
             WHEN isdisable = '1' THEN '已禁用'
         ELSE null
         END isdisableName
+        -->
     </sql>
 
     <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">

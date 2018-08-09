@@ -275,6 +275,7 @@ public class RoleController {
             model.putMsg("(角色名称)输入为空或空字符串，(角色名称)是必填字段不可为空！<br/>");
             return model;
         }
+        //String sessionID = "659e8eb2281846f18f3ed09d90818784:0:deecoop:userLoginMap";
         String sessionID = (String)pageData.get("sessionID");
         if (name == null || name.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
