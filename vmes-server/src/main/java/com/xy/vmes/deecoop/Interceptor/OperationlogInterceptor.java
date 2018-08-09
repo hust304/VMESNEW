@@ -60,6 +60,16 @@ public class OperationlogInterceptor implements HandlerInterceptor {
         String cuserId = (String)pageData.get("cuser");
 
         Loginfo loginfoDB = loginfoService.createLoginfo(null);
+        String id = (String)pageData.get("id");
+        if (id != null && id.trim().length() > 0) {
+            loginfoDB.setBusinessId(id);
+        }
+
+        String ids = (String)pageData.get("ids");
+        if (ids != null && ids.trim().length() > 0) {
+            loginfoDB.setOperateValue(ids);
+        }
+
         loginfoDB.setType("operate");
         loginfoDB.setSource("web");
         loginfoDB.setTableName(tableName);
