@@ -50,6 +50,9 @@ public class ComonFilter implements Filter {
         String uri = httpRequest.getRequestURI();
         uri = uri.toLowerCase();
         ModifyParametersWrapper mParametersWrapper = new ModifyParametersWrapper(httpRequest);
+
+//        String sessionID = "227d18412b194ec38f5fff6d0cfcd6fb:0:deecoop:userLoginMap";
+//        mParametersWrapper.putHeader("sessionID",sessionID);
         //请求地址中含有字符串“login”和“error”的不参与sessionId校验
         if(uri.indexOf("login".toLowerCase()) < 0 && uri.indexOf("error".toLowerCase()) < 0){
             if (!checkSession(httpRequest, httpResponse)) {
@@ -65,11 +68,11 @@ public class ComonFilter implements Filter {
         //1. 客户端-获取历史sessionID
         //sessionID: (uuid:用户ID:deecoop:userLoginMap)
         String sessionID = httpRequest.getHeader("sessionID");
+
         if (sessionID == null || sessionID.trim().length() == 0) {
             return false;
         }
 
-        //String sessionID = "227d18412b194ec38f5fff6d0cfcd6fb:0:deecoop:userLoginMap";
         System.out.println("Client:sessionID: " + sessionID);
 
         String[] str_arry = sessionID.split(":");

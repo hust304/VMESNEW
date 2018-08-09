@@ -135,7 +135,7 @@ public class CoderuleServiceImp implements CoderuleService {
      * @param object  生成编码-通用编码规则需要的参数对象
      * @return
      */
-    public String findCoderule(CoderuleEntity object) {
+    public String findCoderule(CoderuleEntity object){
         if (object.getTableName() == null || object.getTableName().trim().length() == 0) {return new String();}
         if (object.getCompanyID() == null || object.getCompanyID().trim().length() == 0) {return new String();}
         if (object.getFirstName() == null || object.getFirstName().trim().length() == 0) {return new String();}
