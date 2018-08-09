@@ -8,11 +8,22 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 @Configuration
 public class TestInterceptorConfigurer extends WebMvcConfigurerAdapter {
     @Autowired
-    private TestInterceptor testInterceptor;
+    private TestInterceptor1 testInterceptor1;
+    @Autowired
+    private TestInterceptor2 testInterceptor2;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(testInterceptor).addPathPatterns("/**");
+//        registry.addInterceptor(testInterceptor1).addPathPatterns(
+//                "/*/test_findAllRedisKeyByUserID",
+//                "/*/test_findAllRedisKeyByUuid").excludePathPatterns(
+//                "/*/test_findAllRedisKeyByUuid"
+//        );
+
+//        registry.addInterceptor(testInterceptor1).addPathPatterns("/*/test_findAllRedisKeyByUserID");
+//        registry.addInterceptor(testInterceptor2).addPathPatterns("/*/test_findAllRedisKeyByUuid");
+
+        registry.addInterceptor(testInterceptor1).addPathPatterns("/*/test*");
 
         super.addInterceptors(registry);
     }
