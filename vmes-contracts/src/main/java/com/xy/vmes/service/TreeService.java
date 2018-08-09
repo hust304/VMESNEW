@@ -13,5 +13,5 @@ public interface TreeService {
      * @param objectList  (业务数据List-全部有效业务数据)-(菜单,组织架构,字典)
      * @return
      */
-    TreeEntity findTree(String id, List<TreeEntity> objectList);
+    TreeEntity listSwitchTree(String id, List<TreeEntity> objectList);
 }
