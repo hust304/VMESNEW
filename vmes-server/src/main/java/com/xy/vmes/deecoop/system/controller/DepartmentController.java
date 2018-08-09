@@ -449,14 +449,14 @@ public class DepartmentController {
             return model;
         }
 
-        String deptIds = (String)pageData.get("deptIds");
-        if (deptIds == null || deptIds.trim().length() == 0) {
+        String ids = (String)pageData.get("ids");
+        if (ids == null || ids.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("参数错误：请至少选择一行数据！</br>");
             return model;
         }
 
-        String id_str = StringUtil.stringTrimSpace(deptIds);
+        String id_str = StringUtil.stringTrimSpace(ids);
         String[] id_arry = id_str.split(",");
 
         //2. 当前组织节点下是否含有(子节点-岗位)

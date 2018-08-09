@@ -462,14 +462,14 @@ public class MenuController {
             return model;
         }
 
-        String menuIds = (String)pageData.get("menuIds");
-        if (menuIds == null || menuIds.trim().length() == 0) {
+        String ids = (String)pageData.get("ids");
+        if (ids == null || ids.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("参数错误：请至少选择一行数据！</br>");
             return model;
         }
 
-        String id_str = StringUtil.stringTrimSpace(menuIds);
+        String id_str = StringUtil.stringTrimSpace(ids);
         String[] id_arry = id_str.split(",");
 
         //2. 当前菜单ID(菜单按钮)中是否使用中
