@@ -366,8 +366,8 @@ public class RoleController {
      * @author 陈刚
      * @date 2018-07-30
      */
-    @PostMapping("/role/updateRoleDisable")
-    public ResultModel updateRoleDisable() throws Exception {
+    @PostMapping("/role/updateDisableRole")
+    public ResultModel updateDisableRole() throws Exception {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 

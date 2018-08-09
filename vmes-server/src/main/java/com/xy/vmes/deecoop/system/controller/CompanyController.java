@@ -249,8 +249,8 @@ public class CompanyController {
      * @author 陈刚
      * @date 2018-08-06
      */
-//    @PostMapping("/company/updateCompanyDisable")
-//    public ResultModel updateCompanyDisable() {
+//    @PostMapping("/company/updateDisableCompany")
+//    public ResultModel updateDisableCompany() {
 //        ResultModel model = new ResultModel();
 //        PageData pageData = HttpUtils.parsePageData();
 //

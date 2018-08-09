@@ -400,8 +400,8 @@ public class MenuController {
      * @author 陈刚
      * @date 2018-08-01
      */
-    @PostMapping("/department/updateMenuDisable")
-    public ResultModel updateMenuDisable() throws Exception {
+    @PostMapping("/department/updateDisableMenu")
+    public ResultModel updateDisableMenu() throws Exception {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 

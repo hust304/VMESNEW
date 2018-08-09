@@ -386,8 +386,8 @@ public class DepartmentController {
      * @author 陈刚
      * @date 2018-07-27
      */
-    @PostMapping("/department/updateDeptDisable")
-    public ResultModel updateDeptDisable() throws Exception {
+    @PostMapping("/department/updateDisableDept")
+    public ResultModel updateDisableDept() throws Exception {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 

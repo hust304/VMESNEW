@@ -350,8 +350,8 @@ public class MenuButtonController {
      * @author 陈刚
      * @date 2018-08-03
      */
-    @PostMapping("/button/updateMeunButtonDisable")
-    public ResultModel updateMenuDisable() throws Exception {
+    @PostMapping("/button/updateDisableMeunButton")
+    public ResultModel updateDisableMeunButton() throws Exception {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
