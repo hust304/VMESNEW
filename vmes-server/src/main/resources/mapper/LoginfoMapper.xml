@@ -114,7 +114,7 @@
 
     <select id="getDataListPage"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
         select
-        <include refid="Field1"></include>
+        <include refid="Field"></include>
         from
         <include refid="tableName"></include>
         <where>
