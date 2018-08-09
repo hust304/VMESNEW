@@ -36,7 +36,7 @@ public class Loginfo implements Serializable {
 	private String tableName;
 	//业务操作类型 (add,update,delete)
 	@TableField("operate")
-	private Integer operate;
+	private String operate;
 	//备注
 	@TableField("remark")
 	private String remark;
@@ -88,10 +88,10 @@ public class Loginfo implements Serializable {
 	public String getTableName() {
 		return tableName;
 	}
-	public void setOperate(Integer operate) {
+	public void setOperate(String operate) {
 		this.operate = operate;
 	}
-	public Integer getOperate() {
+	public String getOperate() {
 		return operate;
 	}
 	public void setRemark(String remark) {
@@ -118,8 +118,6 @@ public class Loginfo implements Serializable {
 	public String getOperateValue() {
 		return operateValue;
 	}
-
-/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 
 }

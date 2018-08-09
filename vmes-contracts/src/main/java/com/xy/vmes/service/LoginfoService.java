@@ -39,6 +39,28 @@ public interface LoginfoService {
     */
     List<Map<String, Object>> getDataListPage(PageData pd, Pagination pg) throws Exception;
 
+    /**
+     * 获取调用方法名称前缀：
+     * 根据Controller调用方法全路径名称(com.xy.vmes.deecoop.system.controller.DepartmentController.addDepartment())
+     * @param methodPath
+     * @return
+     */
+    String findMethodPrefix(String methodPath);
+
+    /**
+     * 获取业务表名：
+     * 根据Controller调用方法全路径名称(com.xy.vmes.deecoop.system.controller.DepartmentController.addDepartment())
+     * @param methodPath
+     * @return
+     */
+    String findTable(String methodPath);
+
+    /**
+     * 创建新的日志对象<Loginfo>
+     * @return
+     */
+    Loginfo createLoginfo(Loginfo object);
+
 }
 
 

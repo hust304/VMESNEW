@@ -1,5 +1,6 @@
 package com.xy.vmes.deecoop.Interceptor;
 
+import com.yvan.PageData;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -28,8 +29,12 @@ public class TestInterceptor1 implements HandlerInterceptor {
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
         System.out.println("TestInterceptor1.afterCompletion: 事件完成后");
         //handler 获取调用方法全路径
-        //String funName = handler.toString();
-        //System.out.println("funName: " + funName);
+        String funName = handler.toString();
+        System.out.println("funName: " + funName);
+
+        //获取调用参数
+        PageData pageData = new PageData(request);
+        System.out.println("**********************************");
 
     }
 }
