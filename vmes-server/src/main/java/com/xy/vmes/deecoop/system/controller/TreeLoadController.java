@@ -1,16 +1,21 @@
 package com.xy.vmes.deecoop.system.controller;
 
-import com.xy.vmes.entity.Department;
-import com.xy.vmes.service.DepartmentService;
-import com.yvan.HttpUtils;
+import com.xy.vmes.common.util.TreeUtil;
+import com.xy.vmes.entity.Menu;
+import com.xy.vmes.entity.TreeEntity;
+import com.xy.vmes.service.MenuService;
+import com.xy.vmes.service.MenuTreeService;
 import com.yvan.PageData;
-import com.yvan.Tree;
+import com.yvan.YvanUtil;
+import com.yvan.springmvc.ResultModel;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * 说明：树形结构 Controller (部门,菜单,字典)树形结构
@@ -23,8 +28,9 @@ public class TreeLoadController {
     private Logger logger = LoggerFactory.getLogger(TreeLoadController.class);
 
     @Autowired
-    private DepartmentService departmentService;
-
+    private MenuService menuService;
+    @Autowired
+    MenuTreeService menuTreeService;
     /**
      * 获得部门树形结构
      * 当前部门节点下面所有子节点树形结构
@@ -32,18 +38,22 @@ public class TreeLoadController {
      * 创建人：陈刚
      * 创建时间：2018-07-20
      */
-    @GetMapping("/treeLoad/departmentTreeLoad")
-    public String departmentTreeLoad() {
-        PageData mapObj = HttpUtils.parsePageData();
+    @GetMapping("/treeLoad/menuTreeLoad")
+    public ResultModel menuTreeLoad() {
+        ResultModel model = new ResultModel();
 
-        //递归调用获得(当前部门+当前部门下所有子部门)List结构体
-        Department detp = new Department();
-        //detp.setId1("1");
-        //detp.setName("公司1");
-        //detp.setLayer(Integer.valueOf(1));
-        detp = null;
-        Tree<Department> treeObj = departmentService.findTree(detp);
+        PageData findMap = new PageData();
+        findMap.put("isQueryAll", "true");
 
-        return null;
+        List<Menu> objectList = menuService.findMenuList(findMap);
+        for (Menu menu : objectList) {
+            TreeEntity tree = menuTreeService.menu2Tree(menu, null);
+        }
+        List<TreeEntity> treeList = menuTreeService.menuList2TreeList(objectList,null);
+
+        TreeEntity treeObject = TreeUtil.listSwitchTree(null, treeList);
+        System.out.println("treeJson: " + YvanUtil.toJson(treeObject));
+
+        return model;
     }
 }
