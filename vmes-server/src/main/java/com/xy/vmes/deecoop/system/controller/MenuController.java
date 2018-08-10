@@ -324,6 +324,9 @@ public class MenuController {
         //String code = menuService.createCoder("1");
         //menuObj.setCode(code);
 
+        //设定上级节点ID
+        menuObj.setPid(paterObj.getId());
+
         //设置菜单级别
         menuObj.setLayer(Integer.valueOf(paterObj.getLayer().intValue() + 1));
         //设置菜单默认显示顺序
@@ -408,6 +411,8 @@ public class MenuController {
                 menuDB);
         menuDB = menuService.paterObject2ObjectDB(paterObj, menuDB);
 
+        //设定上级节点ID
+        menuDB.setPid(paterObj.getId());
         //设置菜单级别
         menuDB.setLayer(Integer.valueOf(paterObj.getLayer().intValue() + 1));
         //设置菜单默认显示顺序

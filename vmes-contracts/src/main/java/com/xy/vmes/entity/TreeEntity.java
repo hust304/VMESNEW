@@ -11,9 +11,9 @@ import java.util.List;
  */
 public class TreeEntity {
     //(必须)当前节点名称
-    private String title;
+    private String name;
     //(必须)当前节点编码
-    private String path;
+    private String url;
     //当前节点ID
     private String id;
     //当前节点父ID
@@ -28,17 +28,17 @@ public class TreeEntity {
     private List<TreeEntity> children = new ArrayList<TreeEntity>();
 
 
-    public String getTitle() {
-        return title;
+    public String getName() {
+        return name;
     }
-    public void setTitle(String title) {
-        this.title = title;
+    public void setName(String name) {
+        this.name = name;
     }
-    public String getPath() {
-        return path;
+    public String getUrl() {
+        return url;
     }
-    public void setPath(String path) {
-        this.path = path;
+    public void setUrl(String url) {
+        this.url = url;
     }
     public String getId() {
         return id;
