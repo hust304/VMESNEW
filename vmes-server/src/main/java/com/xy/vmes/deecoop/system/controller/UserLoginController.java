@@ -149,8 +149,8 @@ public class UserLoginController {
                 userPassword);
 
         PageData findMap = new PageData();
-        //isdisable:是否禁用(1:已禁用 0:启用)
-        findMap.put("userIsdisable", "0");
+        //isdisable:是否禁用(0:已禁用 1:启用)
+        findMap.put("userIsdisable", "1");
         findMap.put("queryStr", queryStr);
         findMap.put("mapSize", Integer.valueOf(findMap.size()));
         List<Map<String, Object>> objectList = userEmployService.findViewUserEmployList(findMap);
@@ -456,6 +456,7 @@ public class UserLoginController {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
+        pageData = null;
         //1. 非空判断
         if (pageData == null || pageData.size() == 0) {
             model.putCode(Integer.valueOf(1));
