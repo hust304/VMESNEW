@@ -49,7 +49,7 @@ public class User implements Serializable {
 	//界面样式风格
 	@TableField("page_style")
 	private String pageStyle;
-	//是否禁用(1:已禁用 0:启用) 数据字典:sys_isdisable
+	//是否禁用(0:已禁用 1:启用) 数据字典:sys_isdisable
 	@TableField("isdisable")
 	private String isdisable;
 	//创建时间

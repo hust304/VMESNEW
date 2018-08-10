@@ -28,7 +28,7 @@ public class EmployPost implements Serializable {
 	//是否兼岗(Y:兼岗N:主岗) 数据字典:sys_isplurality
 	@TableField("isplurality")
 	private String isplurality;
-	//是否禁用(1:已禁用 0:启用) 数据字典:sys_isdisable
+	//是否禁用(0:已禁用 1:启用) 数据字典:sys_isdisable
 	@TableField("isdisable")
 	private String isdisable;
 	//创建时间

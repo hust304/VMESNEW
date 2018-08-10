@@ -39,7 +39,7 @@ public class MenuButton implements Serializable {
 	//按钮顺序
 	@TableField("serial_number")
 	private Integer serialNumber;
-	//是否禁用(1:已禁用 0:启用) 数据字典:sys_isdisable
+	//是否禁用(0:已禁用 1:启用) 数据字典:sys_isdisable
 	@TableField("isdisable")
 	private String isdisable;
 	//创建时间

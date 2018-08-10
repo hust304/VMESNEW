@@ -64,7 +64,7 @@ public class Department implements Serializable {
 	//系统用户数
 	@TableField("company_user_count")
 	private Integer companyUserCount;
-	//是否禁用(1:已禁用 0:启用) 数据字典:sys_isdisable
+	//是否禁用(0:已禁用 1:启用) 数据字典:sys_isdisable
 	@TableField("isdisable")
 	private String isdisable;
 	//创建时间

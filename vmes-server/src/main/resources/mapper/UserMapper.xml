@@ -24,7 +24,7 @@
 		email email,<!-- 邮箱地址 -->
 		user_name userName,<!-- 姓名 -->
 		page_style pageStyle,<!-- 界面样式风格 -->
-		isdisable isdisable,<!-- 是否禁用(1:已禁用 0:启用) 数据字典:sys_isdisable -->
+		isdisable isdisable,<!-- 是否禁用(0:已禁用 1:启用) 数据字典:sys_isdisable -->
 		cdate cdate,<!-- 创建时间 -->
 		cuser cuser,<!-- 创建人账号 -->
 		udate udate,<!-- 修改时间 -->
@@ -48,7 +48,7 @@
 		#{email},<!-- 邮箱地址 -->
 		#{userName},<!-- 姓名 -->
 		#{pageStyle},<!-- 界面样式风格 -->
-		#{isdisable},<!-- 是否禁用(1:已禁用 0:启用) 数据字典:sys_isdisable -->
+		#{isdisable},<!-- 是否禁用(0:已禁用 1:启用) 数据字典:sys_isdisable -->
 		#{cdate},<!-- 创建时间 -->
 		#{cuser},<!-- 创建人账号 -->
 		#{udate},<!-- 修改时间 -->
@@ -73,7 +73,7 @@
         '邮箱地址'  email,
         '姓名'  userName,
         '界面样式风格'  pageStyle,
-        '是否禁用(1:已禁用 0:启用) 数据字典:sys_isdisable'  isdisable,
+        '是否禁用(0:已禁用 1:启用) 数据字典:sys_isdisable'  isdisable,
         '创建时间'  cdate,
         '创建人账号'  cuser,
         '修改时间'  udate,
@@ -277,7 +277,7 @@
         vmesuser.user_type userType,<!-- 用户类型 -->
         vmesuser.mobile mobile,<!-- 手机号码 -->
         vmesuser.email email,<!-- 邮箱地址 -->
-        vmesuser.isdisable isdisable,<!-- 是否禁用(1:已禁用 0:启用) 数据字典:sys_isdisable -->
+        vmesuser.isdisable isdisable,<!-- 是否禁用(0:已禁用 1:启用) 数据字典:sys_isdisable -->
         vmesuser.employ_id employId,<!-- 员工ID -->
         vmesuser.dept_id deptId,<!-- 部门ID -->
         vmesuser.company_id companyId,<!-- 公司ID-组织架构 -->

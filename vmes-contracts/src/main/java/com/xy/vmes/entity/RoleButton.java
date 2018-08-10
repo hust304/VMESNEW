@@ -25,7 +25,7 @@ public class RoleButton implements Serializable {
 	//按钮ID
 	@TableField("button_id")
 	private String buttonId;
-	//是否禁用(1:已禁用 0:启用) 数据字典:sys_isdisable
+	//是否禁用(0:已禁用 1:启用) 数据字典:sys_isdisable
 	@TableField("isdisable")
 	private String isdisable;
 	//创建时间

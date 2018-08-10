@@ -73,7 +73,7 @@ public class Employee implements Serializable {
 	//婚姻状况(1:已婚 0:未婚) 
 	@TableField("marital")
 	private String marital;
-	//是否禁用(1:已禁用 0:启用) 
+	//是否禁用(0:已禁用 1:启用)
 	@TableField("isdisable")
 	private String isdisable;
 	//创建时间

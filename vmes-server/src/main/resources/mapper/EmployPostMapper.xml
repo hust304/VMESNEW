@@ -17,7 +17,7 @@
 		employ_id employId,<!-- 员工ID -->
 		post_id postId,<!-- 岗位ID -->
 		isplurality isplurality,<!-- 是否兼岗(Y:兼岗N:主岗) 数据字典:sys_isplurality -->
-		isdisable isdisable,<!-- 是否禁用(1:已禁用 0:启用) 数据字典:sys_isdisable -->
+		isdisable isdisable,<!-- 是否禁用(0:已禁用 1:启用) 数据字典:sys_isdisable -->
 		cdate cdate,<!-- 创建时间 -->
 		cuser cuser,<!-- 创建人账号 -->
 		udate udate,<!-- 修改时间 -->
@@ -30,7 +30,7 @@
 		#{employId},<!-- 员工ID -->
 		#{postId},<!-- 岗位ID -->
 		#{isplurality},<!-- 是否兼岗(Y:兼岗N:主岗) 数据字典:sys_isplurality -->
-		#{isdisable},<!-- 是否禁用(1:已禁用 0:启用) 数据字典:sys_isdisable -->
+		#{isdisable},<!-- 是否禁用(0:已禁用 1:启用) 数据字典:sys_isdisable -->
 		#{cdate},<!-- 创建时间 -->
 		#{cuser},<!-- 创建人账号 -->
 		#{udate},<!-- 修改时间 -->
@@ -44,7 +44,7 @@
         '员工ID'  employId,
         '岗位ID'  postId,
         '是否兼岗(Y:兼岗N:主岗) 数据字典:sys_isplurality'  isplurality,
-        '是否禁用(1:已禁用 0:启用) 数据字典:sys_isdisable'  isdisable,
+        '是否禁用(0:已禁用 1:启用) 数据字典:sys_isdisable'  isdisable,
         '创建时间'  cdate,
         '创建人账号'  cuser,
         '修改时间'  udate,
@@ -184,7 +184,7 @@
             '员工ID'  employId,
             '岗位ID'  postId,
             '是否兼岗(Y:兼岗N:主岗) 数据字典:sys_isplurality'  isplurality,
-            '是否禁用(1:已禁用 0:启用) 数据字典:sys_isdisable'  isdisable,
+            '是否禁用(0:已禁用 1:启用) 数据字典:sys_isdisable'  isdisable,
             '创建时间'  cdate,
             '创建人账号'  cuser,
             '修改时间'  udate,

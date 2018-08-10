@@ -17,7 +17,7 @@
 		user_id userId,<!-- 用户ID -->
 		menu_id menuId,<!-- 菜单ID -->
 		serial_number serialNumber,<!-- 自定义菜单顺序 -->
-		isdisable isdisable,<!-- 是否禁用(1:已禁用 0:启用) 数据字典:sys_isdisable -->
+		isdisable isdisable,<!-- 是否禁用(0:已禁用 1:启用) 数据字典:sys_isdisable -->
 		cdate cdate,<!-- 创建时间 -->
 		cuser cuser,<!-- 创建人账号 -->
 		udate udate,<!-- 修改时间 -->
@@ -30,7 +30,7 @@
 		#{userId},<!-- 用户ID -->
 		#{menuId},<!-- 菜单ID -->
 		#{serialNumber},<!-- 自定义菜单顺序 -->
-		#{isdisable},<!-- 是否禁用(1:已禁用 0:启用) 数据字典:sys_isdisable -->
+		#{isdisable},<!-- 是否禁用(0:已禁用 1:启用) 数据字典:sys_isdisable -->
 		#{cdate},<!-- 创建时间 -->
 		#{cuser},<!-- 创建人账号 -->
 		#{udate},<!-- 修改时间 -->
@@ -44,7 +44,7 @@
         '用户ID'  userId,
         '菜单ID'  menuId,
         '自定义菜单顺序'  serialNumber,
-        '是否禁用(1:已禁用 0:启用) 数据字典:sys_isdisable'  isdisable,
+        '是否禁用(0:已禁用 1:启用) 数据字典:sys_isdisable'  isdisable,
         '创建时间'  cdate,
         '创建人账号'  cuser,
         '修改时间'  udate,

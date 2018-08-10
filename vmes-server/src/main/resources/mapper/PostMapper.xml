@@ -19,7 +19,7 @@
 		name_en nameEn,<!-- 英文名称 -->
 		code code,<!-- 岗位编码 -->
 		layer layer,<!-- 岗位级别(0-7) -->
-		isdisable isdisable,<!-- 是否禁用(1:已禁用 0:启用) 数据字典:sys_isdisable -->
+		isdisable isdisable,<!-- 是否禁用(0:已禁用 1:启用) 数据字典:sys_isdisable -->
 		cdate cdate,<!-- 创建时间 -->
 		cuser cuser,<!-- 创建人账号 -->
 		udate udate,<!-- 修改时间 -->
@@ -36,7 +36,7 @@
 		#{nameEn},<!-- 英文名称 -->
 		#{code},<!-- 岗位编码 -->
 		#{layer},<!-- 岗位级别(0-7) -->
-		#{isdisable},<!-- 是否禁用(1:已禁用 0:启用) 数据字典:sys_isdisable -->
+		#{isdisable},<!-- 是否禁用(0:已禁用 1:启用) 数据字典:sys_isdisable -->
 		#{cdate},<!-- 创建时间 -->
 		#{cuser},<!-- 创建人账号 -->
 		#{udate},<!-- 修改时间 -->
@@ -200,7 +200,7 @@
     <sql id="Field1">
         post.code code,<!-- 岗位编码 -->
         post.name name,<!-- 岗位名称 -->
-        post.isdisable isdisable,<!-- 是否禁用(1:已禁用 0:启用) 数据字典:sys_isdisable -->
+        post.isdisable isdisable,<!-- 是否禁用(0:已禁用 1:启用) 数据字典:sys_isdisable -->
         post.udate udate,<!-- 修改时间 -->
         post.dept_id deptId,<!-- 所属部门ID -->
         department.name deptName,<!-- 所属部门 -->

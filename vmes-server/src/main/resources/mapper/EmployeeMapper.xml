@@ -32,7 +32,7 @@
 		political political,<!-- 政治面貌 数据字典:vmes_dictionary -->
 		identity_number identityNumber,<!-- 身份证号 -->
 		marital marital,<!-- 婚姻状况(1:已婚 0:未婚)  -->
-		isdisable isdisable,<!-- 是否禁用(1:已禁用 0:启用)  -->
+		isdisable isdisable,<!-- 是否禁用(0:已禁用 1:启用)  -->
 		cdate cdate,<!-- 创建时间 -->
 		cuser cuser,<!-- 创建人账号 -->
 		udate udate,<!-- 修改时间 -->
@@ -64,7 +64,7 @@
 		#{political},<!-- 政治面貌 数据字典:vmes_dictionary -->
 		#{identityNumber},<!-- 身份证号 -->
 		#{marital},<!-- 婚姻状况(1:已婚 0:未婚)  -->
-		#{isdisable},<!-- 是否禁用(1:已禁用 0:启用)  -->
+		#{isdisable},<!-- 是否禁用(0:已禁用 1:启用)  -->
 		#{cdate},<!-- 创建时间 -->
 		#{cuser},<!-- 创建人账号 -->
 		#{udate},<!-- 修改时间 -->
@@ -97,7 +97,7 @@
         '政治面貌 数据字典:vmes_dictionary'  political,
         '身份证号'  identityNumber,
         '婚姻状况(1:已婚 0:未婚) '  marital,
-        '是否禁用(1:已禁用 0:启用) '  isdisable,
+        '是否禁用(0:已禁用 1:启用) '  isdisable,
         '创建时间'  cdate,
         '创建人账号'  cuser,
         '修改时间'  udate,
