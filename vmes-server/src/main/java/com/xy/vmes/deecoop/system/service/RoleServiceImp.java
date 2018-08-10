@@ -47,7 +47,6 @@ public class RoleServiceImp implements RoleService {
     @Override
     public void save(Role role) throws Exception{
         role.setId(Conv.createUuid());
-        role.setIsdisable("0");
         role.setCdate(new Date());
         roleMapper.insert(role);
     }
@@ -194,7 +193,7 @@ public class RoleServiceImp implements RoleService {
         for (int i = 0; i < roleid_arry.length; i++) {
             String roleID = roleid_arry[i];
 
-            findMap.put("isdisable", "0");
+            findMap.put("isdisable", "1");
             findMap.put("roleId", roleID);
             findMap.put("mapSize", Integer.valueOf(findMap.size()));
 

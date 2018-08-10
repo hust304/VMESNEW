@@ -237,8 +237,8 @@ public class MenuButtonServiceImp implements MenuButtonService {
         StringBuffer deleteIds = new StringBuffer();
         for (MenuButton object : objectList) {
             String id = object.getId();
-            //是否禁用(1:已禁用 0:启用) 数据字典:sys_isdisable
-            if ("0".equals(object.getIsdisable())) {
+            //是否禁用(0:已禁用 1:启用) 数据字典:sys_isdisable
+            if ("1".equals(object.getIsdisable())) {
                 updateIds.append(id);
                 updateIds.append(",");
             } else {

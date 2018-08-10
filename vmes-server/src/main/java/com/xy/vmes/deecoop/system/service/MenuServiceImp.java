@@ -297,8 +297,8 @@ public class MenuServiceImp implements MenuService {
 
         PageData findMap = new PageData();
         findMap.put("pid", pid);
-        //是否禁用(1:已禁用 0:启用) 数据字典:sys_isdisable
-        findMap.put("isdisable", "0");
+        //是否禁用(0:已禁用 1:启用) 数据字典:sys_isdisable
+        findMap.put("isdisable", "1");
         findMap.put("mapSize", Integer.valueOf(findMap.size()));
         objectList = this.findMenuList(findMap);
 
@@ -381,8 +381,8 @@ public class MenuServiceImp implements MenuService {
         }
 
         //2. 根据参数查询(vmes_menu:系统部门表)--获得返回树结构根节点
-        //isdisable:是否禁用(1:已禁用 0:启用)
-        findObj.setIsdisable("0");
+        //isdisable:是否禁用(0:已禁用 1:启用)
+        findObj.setIsdisable("1");
 
         PageData pageData = HttpUtils.entity2PageData(findObj, new PageData());
         List<Menu> objectList = this.findMenuList(pageData);
@@ -561,7 +561,7 @@ public class MenuServiceImp implements MenuService {
         for (int i = 0; i < menuid_arry.length; i++) {
             String menuid = menuid_arry[i];
 
-            findMap.put("isdisable", "0");
+            findMap.put("isdisable", "1");
             findMap.put("roleId", menuid);
             findMap.put("mapSize", Integer.valueOf(findMap.size()));
 

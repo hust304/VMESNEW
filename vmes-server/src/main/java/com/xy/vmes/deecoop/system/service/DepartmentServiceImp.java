@@ -45,7 +45,6 @@ public class DepartmentServiceImp implements DepartmentService {
     */
     @Override
     public void save(Department department) throws Exception{
-        department.setIsdisable("0");
         department.setCdate(new Date());
         departmentMapper.insert(department);
     }
@@ -349,8 +348,8 @@ public class DepartmentServiceImp implements DepartmentService {
 
         PageData findMap = new PageData();
         findMap.put("pid", pid);
-        //是否禁用(1:已禁用 0:启用) 数据字典:sys_isdisable
-        findMap.put("isdisable", "0");
+        //是否禁用(0:已禁用 1:启用) 数据字典:sys_isdisable
+        findMap.put("isdisable", "1");
         findMap.put("mapSize", Integer.valueOf(findMap.size()));
         objectList = this.findDepartmentList(findMap);
 
@@ -444,8 +443,8 @@ public class DepartmentServiceImp implements DepartmentService {
         }
 
         //2. 根据参数查询(vmes_department:系统部门表)--获得返回树结构根节点
-        //isdisable:是否禁用(1:已禁用 0:启用)
-        findObj.setIsdisable("0");
+        //isdisable:是否禁用(0:已禁用 1:启用)
+        findObj.setIsdisable("1");
 
         PageData pageData = HttpUtils.entity2PageData(findObj, new PageData());
         List<Department> objectList = this.findDepartmentList(pageData);
@@ -593,8 +592,8 @@ public class DepartmentServiceImp implements DepartmentService {
 
         //查询部门表-获得每一层的id-部门集合List<Department>
         PageData pageData = new PageData();
-        //isdisable:是否禁用(1:已禁用 0:启用)
-        pageData.put("isdisable", "0");
+        //isdisable:是否禁用(0:已禁用 1:启用)
+        pageData.put("isdisable", "1");
         pageData.put("queryStr", pidQuery);
         pageData.put("mapSize", Integer.valueOf(pageData.size()));
 

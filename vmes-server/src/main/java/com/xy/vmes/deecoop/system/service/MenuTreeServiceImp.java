@@ -77,8 +77,8 @@ public class MenuTreeServiceImp implements MenuTreeService {
         Menu findObj = new Menu();
         if (count == 0) {
             try {
-                //isdisable:是否禁用(1:已禁用 0:启用)
-                findObj.setIsdisable("0");
+                //isdisable:是否禁用(0:已禁用 1:启用)
+                findObj.setIsdisable("1");
                 findObj.setId(pids);
                 PageData pageData = HttpUtils.entity2PageData(findObj, new PageData());
                 Menu deptObj = menuService.findMenu(pageData);
@@ -111,8 +111,8 @@ public class MenuTreeServiceImp implements MenuTreeService {
         String pidQuery = "pid in (" + pids + ")";
 
         PageData pageData = new PageData();
-        //isdisable:是否禁用(1:已禁用 0:启用)
-        pageData.put("isdisable", "0");
+        //isdisable:是否禁用(0:已禁用 1:启用)
+        pageData.put("isdisable", "1");
         pageData.put("queryStr", pidQuery);
         pageData.put("mapSize", Integer.valueOf(pageData.size()));
 
@@ -196,8 +196,8 @@ public class MenuTreeServiceImp implements MenuTreeService {
 
         //查询部门表-获得每一层的id-部门集合List<Menu>
         PageData pageData = new PageData();
-        //isdisable:是否禁用(1:已禁用 0:启用)
-        pageData.put("isdisable", "0");
+        //isdisable:是否禁用(0:已禁用 1:启用)
+        pageData.put("isdisable", "1");
         pageData.put("queryStr", pidQuery);
         pageData.put("mapSize", Integer.valueOf(pageData.size()));
 

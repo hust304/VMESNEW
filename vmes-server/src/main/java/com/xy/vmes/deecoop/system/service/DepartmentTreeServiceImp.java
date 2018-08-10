@@ -122,8 +122,8 @@ public class DepartmentTreeServiceImp implements DepartmentTreeService {
         String pidQuery = "pid in (" + pids + ")";
 
         PageData pageData = new PageData();
-        //isdisable:是否禁用(1:已禁用 0:启用)
-        pageData.put("isdisable", "0");
+        //isdisable:是否禁用(0:已禁用 1:启用)
+        pageData.put("isdisable", "1");
         pageData.put("queryStr", pidQuery);
         pageData.put("mapSize", Integer.valueOf(pageData.size()));
 
@@ -210,8 +210,8 @@ public class DepartmentTreeServiceImp implements DepartmentTreeService {
 
         //查询部门表-获得每一层的id-部门集合List<Department>
         PageData pageData = new PageData();
-        //isdisable:是否禁用(1:已禁用 0:启用)
-        pageData.put("isdisable", "0");
+        //isdisable:是否禁用(0:已禁用 1:启用)
+        pageData.put("isdisable", "1");
         pageData.put("queryStr", pidQuery);
         pageData.put("mapSize", Integer.valueOf(pageData.size()));
 
