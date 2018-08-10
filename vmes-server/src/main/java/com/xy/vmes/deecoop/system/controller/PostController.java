@@ -264,7 +264,7 @@ public class PostController {
         PageData pd = HttpUtils.parsePageData();
         Set<String> postOnlineSet = null;
         if(!StringUtils.isEmpty(pd.getString("isdisable"))){
-            if("1".equals(pd.getString("isdisable"))){
+            if("0".equals(pd.getString("isdisable"))){
                 //岗位的删除和禁用要先判断该岗位下是否挂载人员，如果有不能删除禁用
                 if(checkExsitOnlineEmployee(pd.getString("id"),postOnlineSet)){
                     model.putCode(1);
@@ -284,13 +284,13 @@ public class PostController {
 
     private boolean checkExsitOnlineEmployee(String postId,Set<String> postOnlineSet) throws Exception {
         PageData pd = new PageData();
-        pd.putQueryStr(" isdisable = 0 ");
+        pd.putQueryStr(" isdisable = 1 ");
         return checkExsitEmployee(postId,postOnlineSet,pd);
     }
 
     private boolean checkExsitDownlineEmployee(String postId,Set<String> postDownlineSet) throws Exception {
         PageData pd = new PageData();
-        pd.putQueryStr(" isdisable = 1 ");
+        pd.putQueryStr(" isdisable = 0 ");
         return checkExsitEmployee(postId,postDownlineSet,pd);
     }
 

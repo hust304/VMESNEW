@@ -457,7 +457,7 @@ public class EmployeeController {
         }
         //如果是主岗，只需要禁用的同时要禁用兼岗、员工、用户，启用时只需启用主岗
         else {
-            if("1".equals(isdisable)){
+            if("0".equals(isdisable)){
                 employee.setLeaveDate(new Date());//设置离职日期
                 employPostService.updateToDisableByEmployIds(employIds);//同时禁用该员工的主岗和兼岗
             }else {
@@ -504,7 +504,7 @@ public class EmployeeController {
                     if(employPostsMap.get("employPostId")!=null && employPostsMap.get("postId")!=null){
                         //先禁用
                         EmployPost employPost = employPostService.selectById(employPostsMap.get("employPostId").toString());
-                        employPost.setIsdisable("1");
+                        employPost.setIsdisable("0");
                         employPost.setUuser(pd.getString("uuser"));
                         employPostService.update(employPost);
                         //后新增

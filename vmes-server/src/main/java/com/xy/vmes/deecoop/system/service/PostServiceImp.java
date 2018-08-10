@@ -250,8 +250,8 @@ public class PostServiceImp implements PostService {
 
         PageData findMap = new PageData();
         findMap.put("deptId", deptId);
-        //是否禁用(1:已禁用 0:启用)
-        findMap.put("isdisable", "0");
+        //是否禁用(0:已禁用 1:启用)
+        findMap.put("isdisable", "1");
         findMap.put("mapSize", Integer.valueOf(findMap.size()));
 
         return this.findPostList(findMap);

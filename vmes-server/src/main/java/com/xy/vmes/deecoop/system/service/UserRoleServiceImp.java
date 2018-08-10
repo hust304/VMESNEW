@@ -197,8 +197,8 @@ public class UserRoleServiceImp implements UserRoleService {
 
         PageData findMap = new PageData();
         findMap.put("userId", userID);
-        findMap.put("isdisable", "0");
-        findMap.put("roleIsdisable", "0");
+        findMap.put("isdisable", "1");
+        findMap.put("roleIsdisable", "1");
         findMap.put("mapSize", Integer.valueOf(findMap.size()));
 
         List<Map<String, Object>> mapList = this.findUserRoleMapList(findMap);

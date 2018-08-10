@@ -314,8 +314,8 @@ public class UserServiceImp implements UserService {
         findMap.put("companyId", companyID);
         //用户类型(0:超级管理员1:企业管理员2:普通用户)
         findMap.put("userType", "1");
-        //是否禁用(1:已禁用 0:启用)
-        findMap.put("isdisable", "0");
+        //是否禁用(0:已禁用 1:启用)
+        findMap.put("isdisable", "1");
         findMap.put("mapSize", Integer.valueOf(findMap.size()));
 
         return this.findUser(findMap);
