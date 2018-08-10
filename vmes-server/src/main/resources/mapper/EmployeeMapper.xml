@@ -406,7 +406,7 @@
     <update id="updateToDisableByIds" parameterType="java.lang.String" >
         update
         <include refid="tableName"></include>
-        set isdisable = 1,leave_date = now(),udate = now()
+        set isdisable = 0,leave_date = now(),udate = now()
         where
         id in
         <foreach item="item" index="index" collection="array" open="(" separator="," close=")">

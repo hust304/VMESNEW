@@ -224,7 +224,7 @@
         from
         <include refid="tableName"></include>
         where
-        mobile = #{mobile} and isdisable = 0
+        mobile = #{mobile} and isdisable = 1
         <if test="id != null and id!=''" >
             <![CDATA[ and id <> #{id} ]]>
         </if>
@@ -234,7 +234,7 @@
     <update id="updateToDisableByEmployIds" parameterType="java.lang.String" >
         update
         <include refid="tableName"></include>
-        set isdisable = 1,udate = now()
+        set isdisable = 0,udate = now()
         where isdisable =0 and employ_id in
         <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
             #{item}
@@ -245,7 +245,7 @@
     <update id="updateToDisableByIds" parameterType="java.lang.String" >
         update
         <include refid="tableName"></include>
-        set isdisable = 1,udate = now()
+        set isdisable = 0,udate = now()
         where
         id in
         <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
@@ -374,7 +374,7 @@
 
     <update id="updateDisableByCompanyIds" parameterType="java.lang.String" >
         update <include refid="tableName" />
-            set isdisable = '1', company_id = null
+            set isdisable = '0', company_id = null
         where
             user_type = '1' and company_id in
             <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
