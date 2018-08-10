@@ -249,11 +249,11 @@ public class DepartmentTreeServiceImp implements DepartmentTreeService {
 
         //(必须)title当前节点名称
         if (dept.getName() != null && dept.getName().trim().length() > 0) {
-            tree.setTitle(dept.getName().trim());
+            tree.setName(dept.getName().trim());
         }
         //(必须)path当前节点编码
         if (dept.getCode() != null && dept.getCode().trim().length() > 0) {
-            tree.setPath(dept.getCode().trim());
+            tree.setUrl(dept.getCode().trim());
         }
         //id 当前节点ID
         if (dept.getId() != null && dept.getId().trim().length() > 0) {
