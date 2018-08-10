@@ -280,7 +280,7 @@
     <sql id="Field1">
         <!--查询隐藏字段-->
         id id,
-        pid id,
+        pid pid,
         company_id companyId,
         code code,
         name_en nameEn,

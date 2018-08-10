@@ -192,9 +192,9 @@ public class MenuServiceImp implements MenuService {
         StringBuffer msgBuf = new StringBuffer();
         String column_isnull = "({0})输入为空或空字符串，({0})是必填字段不可为空！<br/>";
 
-        if (object.getPid() == null || object.getPid().trim().length() == 0) {
-            msgBuf.append("pid为空或空字符串！<br/>");
-        }
+//        if (object.getPid() == null || object.getPid().trim().length() == 0) {
+//            msgBuf.append("pid为空或空字符串！<br/>");
+//        }
         if (object.getName() == null || object.getName().trim().length() == 0) {
             String str_isnull = MessageFormat.format(column_isnull, "菜单名称");
             msgBuf.append(str_isnull);
@@ -217,9 +217,9 @@ public class MenuServiceImp implements MenuService {
         if (object.getId() == null || object.getId().trim().length() == 0) {
             msgBuf.append("id为空或空字符串！<br/>");
         }
-        if (object.getPid() == null || object.getPid().trim().length() == 0) {
-            msgBuf.append("pid为空或空字符串！<br/>");
-        }
+//        if (object.getPid() == null || object.getPid().trim().length() == 0) {
+//            msgBuf.append("pid为空或空字符串！<br/>");
+//        }
         if (object.getName() == null || object.getName().trim().length() == 0) {
             String str_isnull = MessageFormat.format(column_isnull, "菜单名称");
             msgBuf.append(str_isnull);

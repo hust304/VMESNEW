@@ -282,7 +282,19 @@ public class MenuController {
         }
 
         //pid 获取父节点对象<Menu>
-        Menu paterObj = menuService.findMenuById(menuObj.getPid());
+        String pid = "root";
+        if (menuObj.getPid() != null && menuObj.getPid().trim().length() > 0) {
+            pid = menuObj.getPid().trim();
+        }
+
+        Menu paterObj = null;
+        if ("root".equals(pid)) {
+            List<Menu> objList = menuService.findMenuListByPid(pid);
+            if (objList != null && objList.size() > 0) {paterObj = objList.get(0);}
+        } else {
+            paterObj = menuService.findMenuById(pid);
+        }
+
         if (paterObj == null) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("(pid:"+ menuObj.getPid() + ")系统中无数据，请与管理员联系！</br>");
@@ -358,7 +370,18 @@ public class MenuController {
         }
 
         //pid 获取父节点对象<Menu>
-        Menu paterObj = menuService.findMenuById(menuObj.getPid());
+        String pid = "root";
+        if (menuObj.getPid() != null && menuObj.getPid().trim().length() > 0) {
+            pid = menuObj.getPid().trim();
+        }
+
+        Menu paterObj = null;
+        if ("root".equals(pid)) {
+            List<Menu> objList = menuService.findMenuListByPid(pid);
+            if (objList != null && objList.size() > 0) {paterObj = objList.get(0);}
+        } else {
+            paterObj = menuService.findMenuById(pid);
+        }
         if (paterObj == null) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("(pid:"+ menuObj.getPid() + ")系统中无数据，请与管理员联系！</br>");
@@ -564,8 +587,8 @@ public class MenuController {
                 queryStr = "a.role_id in (" + strTemp + ")";
             }
             PageData findMap = new PageData();
-            findMap.put("isdisable", "0");
-            findMap.put("menuIsdisable", "0");
+            findMap.put("isdisable", "1");
+            findMap.put("menuIsdisable", "1");
             findMap.put("queryStr", queryStr);
             findMap.put("orderStr", "b.layer asc,b.serial_number asc");
             findMap.put("mapSize", Integer.valueOf(findMap.size()));
