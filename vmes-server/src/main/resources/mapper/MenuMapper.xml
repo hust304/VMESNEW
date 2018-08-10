@@ -310,6 +310,20 @@
     <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select <include refid="Field1"/>
         from vmes_menu
+        <where>
+            <if test="name != null and name != ''"><!-- 关键词检索 -->
+                and name LIKE CONCAT(CONCAT('%', #{name}),'%')
+            </if>
+            <if test="url != null and url != ''"><!-- 关键词检索 -->
+                and url LIKE CONCAT(CONCAT('%', #{url}),'%')
+            </if>
+            <if test="isdisable != null and isdisable != ''" >
+                and isdisable = #{isdisable}
+            </if>
+            <if test="pid != null and pid != ''" >
+                and pid = #{pid}
+            </if>
+        </where>
     </select>
 
 </mapper>
