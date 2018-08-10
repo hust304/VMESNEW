@@ -215,7 +215,7 @@
             <otherwise>
                 <where>
                     <if test="userId != null and userId != ''" >
-                        and a.user_id = #{isdisable}
+                        and a.user_id = #{userId}
                     </if>
                     <if test="isdisable != null and isdisable != ''" >
                         and a.isdisable = #{isdisable}
