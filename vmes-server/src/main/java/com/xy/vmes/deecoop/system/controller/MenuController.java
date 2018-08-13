@@ -589,13 +589,14 @@ public class MenuController {
             String queryStr = "";
             if (userRole != null && userRole.trim().length() > 0) {
                 String strTemp = "'" + userRole.replace(",", "','" + ",") + "'";
-                queryStr = "a.role_id in (" + strTemp + ")";
+                queryStr = "b.role_id in (" + strTemp + ")";
             }
             PageData findMap = new PageData();
-            findMap.put("isdisable", "1");
-            findMap.put("menuIsdisable", "1");
             findMap.put("queryStr", queryStr);
-            findMap.put("orderStr", "b.layer asc,b.serial_number asc");
+            findMap.put("isdisable", "1");
+            //vmes_role_menu ADD INDEX IDX_ROLE_MENU(索引)
+            findMap.put("menuIsdisable", "1");
+            //findMap.put("orderStr", "b.layer asc,b.serial_number asc");
             findMap.put("mapSize", Integer.valueOf(findMap.size()));
 
             List<Map<String, Object>> mapList = roleMenuService.findRoleMenuMapList(findMap);

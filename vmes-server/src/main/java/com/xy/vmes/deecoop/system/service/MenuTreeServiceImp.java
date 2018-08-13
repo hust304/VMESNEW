@@ -296,6 +296,11 @@ public class MenuTreeServiceImp implements MenuTreeService {
         if (menu.getUrl() != null && menu.getUrl().trim().length() > 0) {
             tree.setUrl(menu.getUrl().trim());
         }
+        //(必须)是否禁用(0:已禁用 1:启用)
+        if (menu.getIsdisable() != null && menu.getIsdisable().trim().length() > 0) {
+            tree.setIsdisable(menu.getIsdisable().trim());
+        }
+
         //id 当前节点ID
         if (menu.getId() != null && menu.getId().trim().length() > 0) {
             tree.setId(menu.getId().trim());
