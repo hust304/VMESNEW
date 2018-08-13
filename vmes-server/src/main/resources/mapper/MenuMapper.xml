@@ -323,6 +323,9 @@
             <if test="pid != null and pid != ''" >
                 and pid = #{pid}
             </if>
+            <if test="layer != null and layer != ''" >
+                and layer = #{layer}
+            </if>
         </where>
     </select>
 

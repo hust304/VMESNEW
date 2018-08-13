@@ -14,6 +14,9 @@ public class TreeEntity {
     private String name;
     //(必须)当前节点编码
     private String url;
+    //(必须)是否禁用(0:已禁用 1:启用)
+    private String isdisable;
+
     //当前节点ID
     private String id;
     //当前节点父ID
@@ -75,5 +78,11 @@ public class TreeEntity {
     }
     public void setSerialNumber(Integer serialNumber) {
         this.serialNumber = serialNumber;
+    }
+    public String getIsdisable() {
+        return isdisable;
+    }
+    public void setIsdisable(String isdisable) {
+        this.isdisable = isdisable;
     }
 }
