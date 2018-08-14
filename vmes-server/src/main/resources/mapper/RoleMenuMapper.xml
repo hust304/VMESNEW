@@ -211,9 +211,9 @@
             a.id_4 as menuId4,
             a.id_5 as menuId5,
 
-            b.menu_id as menuId
+            b.menu_id as menuId,
             b.role_id as roleId,
-            b.isdisable as isdisable,
+            b.isdisable as isdisable
         from vmes_menu a
             left join vmes_role_menu b on a.id = b.menu_id
         <choose>
