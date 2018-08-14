@@ -430,7 +430,7 @@ public class MenuController {
      * @author 陈刚
      * @date 2018-08-01
      */
-    @PostMapping("/department/updateDisableMenu")
+    @PostMapping("/menu/updateDisableMenu")
     public ResultModel updateDisableMenu() throws Exception {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
@@ -480,7 +480,7 @@ public class MenuController {
      * @author 陈刚
      * @date 2018-08-01
      */
-    @PostMapping("/department/deleteMenus")
+    @PostMapping("/menu/deleteMenus")
     public ResultModel deleteMenus() throws Exception {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
