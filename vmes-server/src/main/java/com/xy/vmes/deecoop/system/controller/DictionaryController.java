@@ -1,8 +1,8 @@
 package com.xy.vmes.deecoop.system.controller;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
-import com.google.gson.Gson;
 import com.xy.vmes.common.util.RedisUtils;
+import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.common.util.TreeUtil;
 import com.xy.vmes.entity.Dictionary;
 import com.xy.vmes.entity.TreeEntity;
@@ -12,9 +12,7 @@ import com.xy.vmes.service.UserService;
 import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
-import com.yvan.YvanUtil;
 import com.yvan.cache.RedisClient;
-import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
 import com.yvan.template.ExcelAjaxTemplate;
 import lombok.extern.slf4j.Slf4j;
@@ -187,14 +185,13 @@ public class DictionaryController {
                 PageData pd = HttpUtils.parsePageData();
                 List<LinkedHashMap> titles = dictionaryService.findColumnList();
                 request.setAttribute("titles", titles.get(0));
-                List<Map> varList = dictionaryService.findDataList(pd);
-                    request.setAttribute("varList", varList);
-                }
+                //List<Map> varList = dictionaryService.findDataList(pd);
+                //request.setAttribute("varList", varList);
+            }
         });
         Long endTime = System.currentTimeMillis();
         logger.info("################dictionary/excelExport 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
     }
-
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
@@ -371,29 +368,88 @@ public class DictionaryController {
      * @author 刘威
      * @date 2018-08-01
      */
+//    @GetMapping("/dictionary/exportExcelDictionarys")
+//    public void exportExcelDictionarys()  throws Exception {
+//
+//        logger.info("################dictionary/exportExcelDictionarys 执行开始 ################# ");
+//        Long startTime = System.currentTimeMillis();
+//        HttpServletResponse response  = HttpUtils.currentResponse();
+//        HttpServletRequest request  = HttpUtils.currentRequest();
+//
+//        ExcelUtil.buildDefaultExcelDocument( request, response,new ExcelAjaxTemplate() {
+//            @Override
+//            public void execute(HttpServletRequest request, HSSFWorkbook workbook) throws Exception {
+//                // TODO Auto-generated method stub
+//                PageData pd = HttpUtils.parsePageData();
+//                List<LinkedHashMap> titles = dictionaryService.getColumnList();
+//                request.setAttribute("titles", titles.get(0));
+//                List<Map> varList = dictionaryService.getDataList(pd);
+//                request.setAttribute("varList", varList);
+//            }
+//        });
+//        Long endTime = System.currentTimeMillis();
+//        logger.info("################dictionary/exportExcelDictionarys 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+//    }
+
+    /**
+     * Excel导出功能：
+     * 1. 勾选指定行导出-(','逗号分隔的id字符串)
+     * 2. 按查询条件导出(默认查询方式)
+     * 参数说明:
+     *   ids          : 业务id字符串-(','分隔的字符串)
+     *   queryColumn  : 查询字段(sql where 子句)
+     *   showFieldcode: 导出Excel字段Code-显示顺序按照字符串排列顺序-(','分隔的字符串)
+
+     * 注意: 参数(ids,queryColumn)这两个参数是互斥的，(有且有一个参数不为空)
+     *
+     * @throws Exception
+     */
     @GetMapping("/dictionary/exportExcelDictionarys")
-    public void exportExcelDictionarys()  throws Exception {
+    public void exportExcelDictionarys() throws Exception {
+        //1. 获取Excel导出数据查询条件
+        PageData pageData = HttpUtils.parsePageData();
+        String ids = (String)pageData.get("ids");
+        String queryColumn = (String)pageData.get("queryColumn");
+        String showFieldcode = (String)pageData.get("showFieldcode");
 
-        logger.info("################dictionary/exportExcelDictionarys 执行开始 ################# ");
-        Long startTime = System.currentTimeMillis();
+        //2. 获取业务列表List<Map<栏位Key, 栏位名称>>
+        List<LinkedHashMap> columnList = dictionaryService.getColumnList();
+        LinkedHashMap columnMap = com.xy.vmes.common.util.ExcelUtil.modifyColumnMap(showFieldcode, columnList.get(0));
+
+        //3. 根据查询条件获取业务数据List
+        String queryStr = "";
+        if (ids != null && ids.trim().length() > 0) {
+            ids = StringUtil.stringTrimSpace(ids);
+            ids = "'" + ids.replace(",", "','") + "'";
+            queryStr = "id in (" + ids + ")";
+        }
+        if (queryColumn != null && queryColumn.trim().length() > 0) {
+            queryStr = queryStr + queryColumn;
+        }
+
+        PageData findMap = new PageData();
+        findMap.put("currentUserId", "0");  //测试代码-真实环境无此代码
+        findMap.put("queryStr", queryStr);
+
+        Pagination pg = HttpUtils.parsePagination();
+        List<Map> dataList = dictionaryService.getDataList(findMap);
+
+        //查询数据转换成Excel导出数据
+        List<LinkedHashMap<String, String>> dataMapList = com.xy.vmes.common.util.ExcelUtil.modifyDataList(columnMap, dataList);
+
         HttpServletResponse response  = HttpUtils.currentResponse();
-        HttpServletRequest request  = HttpUtils.currentRequest();
+        response.addHeader("Access-Control-Allow-Origin","*");
+        response.addHeader("Access-Control-Allow-Methods","*");
+        response.addHeader("Access-Control-Max-Age","100");
+        response.addHeader("Access-Control-Allow-Headers", "Content-Type");
+        response.addHeader("Access-Control-Allow-Credentials","false");
 
-        ExcelUtil.buildDefaultExcelDocument( request, response,new ExcelAjaxTemplate() {
-            @Override
-            public void execute(HttpServletRequest request, HSSFWorkbook workbook) throws Exception {
-                // TODO Auto-generated method stub
-                PageData pd = HttpUtils.parsePageData();
-                List<LinkedHashMap> titles = dictionaryService.getColumnList();
-                request.setAttribute("titles", titles.get(0));
-                List<Map> varList = dictionaryService.getDataList(pd);
-                request.setAttribute("varList", varList);
-            }
-        });
-        Long endTime = System.currentTimeMillis();
-        logger.info("################dictionary/exportExcelDictionarys 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        //查询数据-Excel文件导出
+        //String fileName = "Excel数据字典数据导出";
+        String fileName = "ExcelDictionary";
+        ExcelUtil.excelExportByDataList(response, fileName, dataMapList);
+
     }
-
 
     /**
      * @author 刘威
