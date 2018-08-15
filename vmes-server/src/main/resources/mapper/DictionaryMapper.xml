@@ -307,9 +307,9 @@
     </update>
 
     <!-- 自动创建，可以修改 -->
-    <select id="getTreeList"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
+    <select id="getTreeList"  parameterType="com.yvan.PageData"  resultType="com.xy.vmes.entity.TreeEntity">
         select
-        id,pid,NAME
+        id,pid,NAME,isdisable
         from
         <include refid="tableName"></include>
         where

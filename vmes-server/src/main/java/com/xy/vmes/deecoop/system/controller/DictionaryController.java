@@ -3,7 +3,9 @@ package com.xy.vmes.deecoop.system.controller;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.google.gson.Gson;
 import com.xy.vmes.common.util.RedisUtils;
+import com.xy.vmes.common.util.TreeUtil;
 import com.xy.vmes.entity.Dictionary;
+import com.xy.vmes.entity.TreeEntity;
 import com.xy.vmes.entity.User;
 import com.xy.vmes.service.DictionaryService;
 import com.xy.vmes.service.UserService;
@@ -407,8 +409,8 @@ public class DictionaryController {
         PageData pd = HttpUtils.parsePageData();
         Map result = new HashMap();
 
-        List<Map> treeList = dictionaryService.getTreeList(pd);
-        result.put("treeList",treeList);
+        List<TreeEntity> treeList = dictionaryService.getTreeList(pd);
+        result.put("treeList", TreeUtil.listSwitchTree(null,treeList));
         model.putResult(result);
 
         Long endTime = System.currentTimeMillis();

@@ -3,6 +3,7 @@ package com.xy.vmes.deecoop.system.service;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.deecoop.system.dao.DictionaryMapper;
 import com.xy.vmes.entity.Dictionary;
+import com.xy.vmes.entity.TreeEntity;
 import com.xy.vmes.service.DictionaryService;
 import com.yvan.PageData;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -173,7 +174,7 @@ public class DictionaryServiceImp implements DictionaryService {
      * 创建时间：2018-08-01
      */
     @Override
-    public List<Map>  getTreeList(PageData pd)throws Exception{
+    public List<TreeEntity>  getTreeList(PageData pd)throws Exception{
         return  dictionaryMapper.getTreeList(pd);
     }
 }

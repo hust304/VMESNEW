@@ -2,6 +2,7 @@ package com.xy.vmes.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.entity.Dictionary;
+import com.xy.vmes.entity.TreeEntity;
 import com.yvan.PageData;
 
 import java.util.LinkedHashMap;
@@ -110,7 +111,7 @@ public interface DictionaryService {
      * 创建人：刘威
      * 创建时间：2018-08-01
      */
-    List<Map> getTreeList(PageData pd)throws Exception;
+    List<TreeEntity> getTreeList(PageData pd)throws Exception;
 }
 
 
