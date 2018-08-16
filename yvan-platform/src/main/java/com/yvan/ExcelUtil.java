@@ -7,11 +7,14 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.yvan.platform.RestException;
 import com.yvan.template.ExcelAjaxTemplate;
 import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 
 public class ExcelUtil{
@@ -106,9 +109,139 @@ public class ExcelUtil{
 
 		return hssfWorkbook;
 	}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	public static List<List<String>> readExcel(InputStream inputStream, boolean isExcel2003) throws Exception {
+		List<List<String>> dataLst = new ArrayList<List<String>>();
+		if (inputStream == null) {return dataLst;}
 
+		try {
+			Workbook wb = null;
+			if (isExcel2003) {
+				wb = new HSSFWorkbook(inputStream);
+			} else {
+				wb = new XSSFWorkbook(inputStream);
+			}
+			if (wb == null) {return dataLst;}
 
+			// 得到第一个shell
+			Sheet sheet = wb.getSheetAt(0);
 
+			// 得到Excel的行数
+			int totalRows = 0;
+			totalRows = sheet.getPhysicalNumberOfRows();
+			if (totalRows == 0) {return dataLst;}
+
+			// 得到Excel的列数
+			int totalCells = 0;
+			if (sheet.getRow(0) != null) {
+				totalCells = sheet.getRow(0).getPhysicalNumberOfCells();
+			}
+
+			// 循环Excel的行
+			FormulaEvaluator evaluator = wb.getCreationHelper().createFormulaEvaluator();
+			for (int r = 0; r < totalRows; r++) {
+				Row row = sheet.getRow(r);
+				if (row == null || isBlankRow(row)) {continue;}
+				List<String> rowLst = new ArrayList<String>();
+
+				// 循环Excel的列
+				for (int c = 0; c < totalCells; c++) {
+					Cell cell = row.getCell(c);
+
+					// 获取合并单元格的数量
+					int sheetMergeCount = sheet.getNumMergedRegions();
+					for (int d = 0; d < sheetMergeCount; d++) {
+						CellRangeAddress ca = sheet.getMergedRegion(d);
+						//如果是合并单元格则把合并单元格打散，每个单元格重新赋值
+						if (r >= ca.getFirstRow() && r <= ca.getLastRow()) {
+							if (c >= ca.getFirstColumn() && c <= ca.getLastColumn()) {
+								Row fRow = sheet.getRow(ca.getFirstRow());
+								Cell fCell = fRow.getCell(ca.getFirstColumn());
+								cell = fCell;
+							}
+						}
+					}
+
+					String cellValue = "";
+					CellValue cv = evaluator.evaluate(cell);
+					if (cell != null && cv != null) {
+						//判断数据的类型
+						switch (cv.getCellType()) {
+							case HSSFCell.CELL_TYPE_NUMERIC: // 数字
+								if (HSSFDateUtil.isCellDateFormatted(cell)) {
+									// 如果是Date类型则，取得该Cell的Date值
+									Date date = cell.getDateCellValue();
+									// 把Date转换成本地格式的字符串(yyyy-MM-dd HH:mm:ss)
+									cellValue = DateUtils.toDateTimeStr(date);
+								} else if (cell.getCellStyle().getDataFormat() == 58) {
+									// 处理自定义日期格式：(yyyy-MM-dd)(通过判断单元格的格式id解决，id的值是58)
+									double value = cell.getNumericCellValue();
+									Date date = org.apache.poi.ss.usermodel.DateUtil.getJavaDate(value);
+									cellValue = DateUtils.toDateStr(date);
+								} else {
+									// 取得当前Cell的数值
+									String val = String.valueOf(cv.getNumberValue());
+									if (val.indexOf('.') > -1) {
+										cellValue = String.valueOf(new Double(val)).trim();
+									} else {
+										Integer num = new Integer((int)cv.getNumberValue());
+										cellValue = String.valueOf(num);
+									}
+								}
+								break;
+							case HSSFCell.CELL_TYPE_STRING: // 字符串
+								cellValue = cv.getStringValue();
+								break;
+							case HSSFCell.CELL_TYPE_BOOLEAN: // Boolean
+								cellValue = cv.getBooleanValue() + "";
+								break;
+							case HSSFCell.CELL_TYPE_FORMULA: // 公式
+								cellValue = cv.toString();
+								break;
+
+							case HSSFCell.CELL_TYPE_BLANK: // 空值
+								cellValue = "";
+								break;
+							case HSSFCell.CELL_TYPE_ERROR: // 故障
+								cellValue = "非法字符";
+								break;
+
+							default:
+								cellValue = "未知类型";
+								break;
+						}
+					}
+					rowLst.add(cellValue);
+				}
+
+				dataLst.add(rowLst);
+			}
+		} catch (Exception e) {
+			throw new RestException("", e.getMessage());
+		} finally {
+			if (inputStream != null) {
+				inputStream.close();
+			}
+		}
+		return dataLst;
+	}
+
+	public static List<Map<String, String>> reflectMapList(List<List<String>> list) {
+		List<Map<String, String>> mapList = new ArrayList<Map<String, String>>();
+		if (list == null || list.size() == 0) {return mapList;}
+
+		for (int i = 1; i < list.size(); i++) {
+			List<String> cellList = list.get(i);
+			Map<String, String> map = new HashMap<String, String>();
+
+			for (int j = 0; j < list.get(0).size(); j++) {
+				map.put(list.get(0).get(j), cellList.get(j));
+			}
+			mapList.add(map);
+		}
+
+		return mapList;
+	}
 
 	/**
 	 * @param fi //文件流
@@ -324,6 +457,47 @@ public class ExcelUtil{
 		style.setFillPattern(FillPatternType.SOLID_FOREGROUND); // 填充图案
 		style.setFillForegroundColor(HSSFColor.LIGHT_TURQUOISE.index); // 填充的背景颜色
 		return style;
+	}
+
+	/**
+	 * 判断当前行是否是空行
+	 * true : 当前行是空行(当前行全部单元格是空值)
+	 * false：当前行非空行(当前行单元格中一个或多个为非空)
+	 * @param row
+	 * @return
+	 */
+	private static boolean isBlankRow(Row row) {
+		if (row == null) {return true;}
+		boolean result = true;
+		for (int i = row.getFirstCellNum(); i < row.getLastCellNum(); i++) {
+			Cell cell = row.getCell(i);
+			String value = "";
+			if (cell != null) {
+				switch (cell.getCellType()) {
+					case Cell.CELL_TYPE_STRING:
+						value = cell.getStringCellValue();
+						break;
+					case Cell.CELL_TYPE_NUMERIC:
+						value = String.valueOf((int)cell.getNumericCellValue());
+						break;
+					case Cell.CELL_TYPE_BOOLEAN:
+						value = String.valueOf(cell.getBooleanCellValue());
+						break;
+					case Cell.CELL_TYPE_FORMULA:
+						value = String.valueOf(cell.getCellFormula());
+						break;
+					default:
+						break;
+				}
+
+				if (value.trim().length() > 0) {
+					result = false;
+					break;
+				}
+			}
+		}
+
+		return result;
 	}
  
 	    
