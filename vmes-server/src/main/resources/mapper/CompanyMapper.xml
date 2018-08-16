@@ -3,13 +3,13 @@
 <mapper namespace="com.xy.vmes.deecoop.system.dao.CompanyMapper">
     <sql id="Column1">
         <!--查询显示字段-->
-        '企业编码' companyCode,
-        '企业名称' companyName,
-        '显示顺序' companySerialNumber,
+        '企业编码' code,
+        '企业名称' name,
+        '显示顺序' serialNumber,
         '企业性质' companyType,
         '有效期' companyValidityDate,
         '企业用户数' companyUserCount,
-        '是否启用' companyIsdisable,
+        '是否启用' isdisable,
 
         '账号' userCode,
         '姓名' userName,
@@ -33,18 +33,18 @@
 
     <sql id="Field1">
         <!--查询显示字段-->
-        a.code companyCode,
-        a.name companyName,
-        a.serial_number companySerialNumber,
+        a.code code,
+        a.name name,
+        a.serial_number serialNumber,
         a.company_type companyType,
         DATE_FORMAT(a.company_validity_date,'%Y-%m-%d') companyValidityDate,
         a.company_user_count companyUserCount,
-        a.isdisable companyIsdisable,
+        a.isdisable isdisable,
 
         b.user_code userCode,
         b.user_name userName,
-        b.mobile userMobile,
-        b.email userEmail,
+        b.mobile mobile,
+        b.email email,
         '企业管理员' userType,
 
         <!--查询隐藏字段-->
@@ -63,17 +63,17 @@
             <if test="id != null and id != ''" >
                 and a.id = #{id}
             </if>
-            <if test="companyCode != null and companyCode != ''">
-                and a.code LIKE CONCAT(CONCAT('%', #{companyCode}),'%')
+            <if test="code != null and code != ''">
+                and a.code LIKE CONCAT(CONCAT('%', #{code}),'%')
             </if>
-            <if test="companyName != null and companyName != ''">
-                and a.name LIKE CONCAT(CONCAT('%', #{companyName}),'%')
+            <if test="name != null and name != ''">
+                and a.name LIKE CONCAT(CONCAT('%', #{name}),'%')
             </if>
             <if test="companyType != null and companyType != ''" >
                 and a.company_type = #{companyType}
             </if>
-            <if test="companyIsdisable != null and companyIsdisable != ''" >
-                and a.isdisable = #{companyIsdisable}
+            <if test="isdisable != null and isdisable != ''" >
+                and a.isdisable = #{isdisable}
             </if>
             <if test="layer != null and layer != ''" >
                 and a.layer = #{layer}
@@ -89,8 +89,8 @@
             <if test="userName != null and userName != ''">
                 and b.user_name LIKE CONCAT(CONCAT('%', #{userName}),'%')
             </if>
-            <if test="userMobile != null and userMobile != ''">
-                and b.mobile LIKE CONCAT(CONCAT('%', #{userMobile}),'%')
+            <if test="mobile != null and mobile != ''">
+                and b.mobile LIKE CONCAT(CONCAT('%', #{mobile}),'%')
             </if>
         </where>
     </select>
