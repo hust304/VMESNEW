@@ -258,16 +258,18 @@
     <sql id="Column1">
         '账号'  userCode,
         '姓名'  userName,
-        '用户类型' userType,
         '手机号'  mobile,
         '邮箱'  email,
-        '是否启用'  isdisable,
-        '员工ID'  employId,
-        '部门ID'  deptId,
-        '公司ID'  companyId,
+        '用户类型' userType,
+        '角色名称' roleName,
         '所属公司' companyName,
+        '是否启用'  isdisable,
+        '员工ID'  employId_hide,
+        '角色ID'  roleId_hide,
+        '部门ID'  deptId_hide,
+        '公司ID'  companyId_hide,
         '创建时间'  cdate,
-        'id' id
+        'id' id_hide
     </sql>
 
     <!-- 表格表体值 刘威-->
@@ -283,6 +285,8 @@
         vmesuser.company_id companyId,<!-- 公司ID-组织架构 -->
         company.name companyName,<!-- 所属公司 -->
         vmesuser.cdate cdate,<!-- 创建时间 -->
+        role.id roleId,<!-- 角色ID -->
+        case when role.company_id is null then "企业管理员" else role.name end roleName,<!-- 角色名称 -->
         vmesuser.id id <!-- id -->
     </sql>
 
@@ -340,6 +344,8 @@
         <include refid="Field1"></include>
         from vmes_user vmesuser
         left join vmes_department company on company.id = vmesuser.company_id
+        left join vmes_user_role userrole on userrole.user_id = vmesuser.id
+        left join vmes_role role on role.id = userrole.role_id
         <where>
             <if test="currentUserId != 0"><!-- 超级管理员 -->
                 and company_id in (select company_id from vmes_user where id = #{currentUserId})
