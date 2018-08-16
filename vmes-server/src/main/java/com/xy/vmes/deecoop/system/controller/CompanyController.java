@@ -37,7 +37,7 @@ public class CompanyController {
     @Autowired
     private CoderuleService coderuleService;
 
-    @GetMapping("/company/listPageCompanyAdmins")
+    @PostMapping("/company/listPageCompanyAdmins")
     public ResultModel listPageCompanyAdmins() throws Exception {
         ResultModel model = new ResultModel();
 
