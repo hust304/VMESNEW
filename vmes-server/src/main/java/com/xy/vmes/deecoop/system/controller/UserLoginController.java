@@ -190,7 +190,7 @@ public class UserLoginController {
         User user = new User();
         user = userEmployService.mapObject2User(userEmployMap, user);
         RedisMap.put("user", YvanUtil.toJson(user));
-        dataMap.put("userID", user.getId());
+        dataMap.put("userId", user.getId());
         dataMap.put("userCode", user.getUserCode());
         dataMap.put("companyId", user.getCompanyId());
         dataMap.put("userType", user.getUserType());
