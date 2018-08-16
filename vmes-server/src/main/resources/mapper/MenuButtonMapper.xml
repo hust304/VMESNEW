@@ -227,22 +227,17 @@
         company_id companyId,
         code code,
         menu_id menuId,
-        isdisable isdisable,
-
         DATE_FORMAT(cdate,'%Y-%m-%d %T') cdate,
         cuser cuser,
         DATE_FORMAT(udate,'%Y-%m-%d %T') udate,
-        uuser uuser
+        uuser uuser,
         <!--查询显示字段-->
         value value,
         name name,
         name_en nameEn,
         serial_number serialNumber,
-        CASE
-            WHEN a.isdisable = '0' THEN '已启用'
-            WHEN a.isdisable = '1' THEN '已禁用'
-        ELSE null
-        END isdisableName
+        isdisable isdisable
+
     </sql>
 
     <!-- 自动创建，可以修改 -->
@@ -252,20 +247,17 @@
         from
         <include refid="tableName"></include>
         <where>
+            <if test="menuId != null and menuId != ''" >
+                and menu_id = #{menuId}
+            </if>
+            <if test="isdisable != null and isdisable != ''" >
+                and isdisable = #{isdisable}
+            </if>
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr!=''" >
                 and ${queryStr}
             </if>
-            <if test="keywords!= null and keywords != ''"><!-- 关键词检索 -->
-                and
-                (
-                <!--	根据需求自己加检索条件
-                            字段1 LIKE CONCAT(CONCAT('%', #{keywords}),'%')
-                             or
-                            字段2 LIKE CONCAT(CONCAT('%', #{keywords}),'%')
-                        -->
-                )
-            </if>
+
         </where>
     </select>
 
