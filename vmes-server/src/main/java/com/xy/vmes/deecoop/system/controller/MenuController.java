@@ -563,55 +563,62 @@ public class MenuController {
     @PostMapping("/menu/treeMeuns")
     public ResultModel treeMeuns() {
         ResultModel model = new ResultModel();
+
+//            String userRole = "";
+//            try {
+//                //String sessionID = "c0d5f53e95a848899f93810732c80004:0:deecoop:userLoginMap";  //测试代码-真实环境无此代码
+//                String sessionID = (String)pageData.get("sessionID");
+//                System.out.println("treeMeuns()-sessionID: " + sessionID);
+//                userRole = RedisUtils.getUserRoleInfoBySessionID(redisClient, sessionID);
+//            } catch (Exception e) {
+//                throw new RestException("", e.getMessage());
+//            }
+//            if (userRole == null || userRole.trim().length() == 0) {
+//                model.putCode(Integer.valueOf(1));
+//                model.putMsg("当前用户无配置角色(用户角色)，请于管理员联系！");
+//                return model;
+//            }
+
+        String userRole = "";
+        userRole = "ce6fd6bdfa0f42798007a1ec5fe84717";  //测试数据-真实环境无此代码
+
+        //1. 获取当前登录用户所有角色ID
+        // 用户角色(当前用户)-(角色ID','分隔的字符串)
         PageData pageData = HttpUtils.parsePageData();
-
-            //1. 获取当前登录用户所有角色ID
-            // 用户角色(当前用户)-(角色ID','分隔的字符串)
-            String userRole = "";
-            try {
-                //String sessionID = "c0d5f53e95a848899f93810732c80004:0:deecoop:userLoginMap";  //测试代码-真实环境无此代码
-                String sessionID = (String)pageData.get("sessionID");
-                System.out.println("treeMeuns()-sessionID: " + sessionID);
-                userRole = RedisUtils.getUserRoleInfoBySessionID(redisClient, sessionID);
-            } catch (Exception e) {
-                throw new RestException("", e.getMessage());
-            }
-            if (userRole == null || userRole.trim().length() == 0) {
-                model.putCode(Integer.valueOf(1));
-                model.putMsg("当前用户无配置角色(用户角色)，请于管理员联系！");
-                return model;
-            }
-
-            //String userRole = "ce6fd6bdfa0f42798007a1ec5fe84717";  //测试数据-真实环境无此代码
+        String roleIds = (String)pageData.get("roleIds");
+        String userType = (String)pageData.get("userType");
+        if (!"0".equals(userType) && roleIds != null && roleIds.trim().length() > 0) {
+            userRole = roleIds;
             userRole = StringUtil.stringTrimSpace(userRole);
+        }
 
-            //2. 获取当前用户角色所有菜单List
-            String queryStr = "";
-            if (userRole != null && userRole.trim().length() > 0) {
-                String strTemp = "'" + userRole.replace(",", "','" + ",") + "'";
-                queryStr = "b.role_id in (" + strTemp + ")";
-            }
-            PageData findMap = new PageData();
-            findMap.put("queryStr", queryStr);
-            findMap.put("isdisable", "1");
-            //vmes_role_menu ADD INDEX IDX_ROLE_MENU(索引)
-            findMap.put("menuIsdisable", "1");
-            //findMap.put("orderStr", "b.layer asc,b.serial_number asc");
-            findMap.put("mapSize", Integer.valueOf(findMap.size()));
+        //2. 获取当前用户角色所有菜单List
+        String queryStr = "";
+        if (userRole != null && userRole.trim().length() > 0) {
+            String strTemp = "'" + userRole.replace(",", "','" + ",") + "'";
+            queryStr = "b.role_id in (" + strTemp + ")";
+        }
+        PageData findMap = new PageData();
+        findMap.put("queryStr", queryStr);
+        findMap.put("isdisable", "1");
+        //vmes_role_menu ADD INDEX IDX_ROLE_MENU(索引)
+        findMap.put("menuIsdisable", "1");
+        //findMap.put("orderStr", "b.layer asc,b.serial_number asc");
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
 
-            List<Map<String, Object>> mapList = roleMenuService.findRoleMenuMapList(findMap);
-            List<Menu> menuList = roleMenuService.mapList2MenuList(mapList, new ArrayList<Menu>());
-            //遍历菜单List<Menu>-获取菜单最大级别
-            Integer maxLayer = menuService.findMaxLayerByMenuList(menuList);
+        List<Map<String, Object>> mapList = roleMenuService.findRoleMenuMapList(findMap);
+        List<Menu> menuList = roleMenuService.mapList2MenuList(mapList, new ArrayList<Menu>());
+        //遍历菜单List<Menu>-获取菜单最大级别
+        Integer maxLayer = menuService.findMaxLayerByMenuList(menuList);
 
-            //3. 生成菜单树
-            menuTreeService.initialization();
-            menuTreeService.findMenuTreeByList(menuList, maxLayer);
-            List<TreeEntity> treeList = menuTreeService.creatMenuTree(maxLayer, null, null);
+        //3. 生成菜单树
+        menuTreeService.initialization();
+        menuTreeService.findMenuTreeByList(menuList, maxLayer);
+        List<TreeEntity> treeList = menuTreeService.creatMenuTree(maxLayer, null, null);
 
-            String treeJsonStr = YvanUtil.toJson(treeList);
-            //System.out.println("treeJsonStr: " + treeJsonStr);
-            model.putResult(treeJsonStr);
+        String treeJsonStr = YvanUtil.toJson(treeList);
+        //System.out.println("treeJsonStr: " + treeJsonStr);
+        model.putResult(treeJsonStr);
 
         return model;
     }
