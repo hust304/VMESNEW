@@ -1,5 +1,6 @@
 package com.xy.vmes.deecoop.system.controller;
 
+import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.Common;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.Department;
@@ -8,10 +9,7 @@ import com.xy.vmes.service.CoderuleService;
 import com.xy.vmes.service.CompanyService;
 import com.xy.vmes.service.DepartmentService;
 import com.xy.vmes.service.UserService;
-import com.yvan.Conv;
-import com.yvan.HttpUtils;
-import com.yvan.MD5Utils;
-import com.yvan.PageData;
+import com.yvan.*;
 import com.yvan.springmvc.ResultModel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.text.MessageFormat;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 说明：企业管理-企业和企业账号或企业管理员Controller
@@ -38,6 +36,66 @@ public class CompanyController {
     private UserService userService;
     @Autowired
     private CoderuleService coderuleService;
+
+    @GetMapping("/company/listPageCompanyAdmins")
+    public ResultModel listPageCompanyAdmins() throws Exception {
+        ResultModel model = new ResultModel();
+
+        //1. 查询遍历List列表
+        List<LinkedHashMap<String, String>> titleOutList = new ArrayList<LinkedHashMap<String, String>>();
+        List<String> titlesHideList = new ArrayList<String>();
+        Map<String, String> varModelMap = new HashMap<String, String>();
+        List<LinkedHashMap<String, String>> titleList = companyService.getColumnList();
+        if (titleList != null && titleList.size() > 0) {
+            LinkedHashMap<String, String> titlesMap = titleList.get(0);
+            for (Map.Entry<String, String> entry : titlesMap.entrySet()) {
+                LinkedHashMap<String, String> titleMap = new LinkedHashMap<String, String>();
+                if (entry.getKey().indexOf("_hide") != -1) {
+                    titleMap.put(entry.getKey().replace("_hide",""), entry.getValue());
+                    titlesHideList.add(entry.getKey().replace("_hide",""));
+                    varModelMap.put(entry.getKey().replace("_hide",""), "");
+                } else if (entry.getKey().indexOf("_hide") == -1) {
+                    titleMap.put(entry.getKey(), entry.getValue());
+                    varModelMap.put(entry.getKey(), "");
+                }
+                titleOutList.add(titleMap);
+            }
+        }
+
+        Map<String, Object> mapObj = new HashMap<String, Object>();
+        mapObj.put("hideTitles", titlesHideList);
+        mapObj.put("titles", YvanUtil.toJson(titleOutList));
+
+        //2. 分页查询数据List
+        PageData pageData = HttpUtils.parsePageData();
+        String userType = (String)pageData.get("userType");
+        String userId = (String)pageData.get("userId");
+        String companyId = (String)pageData.get("companyId");
+
+        pageData.put("layer", "1");
+        if ("1".equals(userType) && companyId != null && companyId.trim().length() > 0) {
+            pageData.put("id", companyId);
+        } else if ("2".equals(userType) && userId != null && userId.trim().length() > 0) {
+            pageData.put("cuser", userId);
+        }
+
+        List<Map<String, Object>> varList = companyService.getDataListPage(pageData, HttpUtils.parsePagination());
+        List<Map<String, String>> varMapList = new ArrayList<Map<String, String>>();
+        if(varList != null && varList.size() > 0) {
+            for (Map<String, Object> map : varList) {
+                Map<String, String> varMap = new HashMap<String, String>();
+                varMap.putAll(varModelMap);
+                for (Map.Entry<String, String> entry : varMap.entrySet()) {
+                    varMap.put(entry.getKey(), map.get(entry.getKey()) != null ? map.get(entry.getKey()).toString() : "");
+                }
+                varMapList.add(varMap);
+            }
+        }
+        mapObj.put("varList", YvanUtil.toJson(varMapList));
+
+        model.putResult(mapObj);
+        return model;
+    }
 
     /**添加企业信息-同时创建企业账号或企业管理员
      *

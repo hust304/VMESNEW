@@ -1,5 +1,8 @@
 package com.xy.vmes.deecoop.system.service;
 
+import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.deecoop.system.dao.CompanyMapper;
+import com.xy.vmes.deecoop.system.dao.DepartmentMapper;
 import com.xy.vmes.entity.Department;
 import com.xy.vmes.service.CompanyService;
 import com.xy.vmes.service.DepartmentService;
@@ -9,11 +12,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.MessageFormat;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional(readOnly = false)
 public class CompanyServiceImp implements CompanyService {
+    @Autowired
+    private CompanyMapper companyMapper;
     @Autowired
     private DepartmentService departmentService;
 
@@ -243,6 +250,22 @@ public class CompanyServiceImp implements CompanyService {
         }
 
         return  msgBuf.toString();
+    }
+
+    /**
+     * 创建人：陈刚
+     * 创建时间：2018-08-16
+     */
+    public List<LinkedHashMap<String, String>> getColumnList() throws Exception {
+        return companyMapper.getColumnList();
+    }
+
+    /**
+     * 创建人：陈刚
+     * 创建时间：2018-08-16
+     */
+    public List<Map<String, Object>> getDataListPage(PageData pd, Pagination pg) throws Exception {
+        return companyMapper.getDataListPage(pd, pg);
     }
 
 }

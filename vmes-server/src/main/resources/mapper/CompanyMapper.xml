@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xy.vmes.deecoop.system.dao.CompanyMapper">
+    <sql id="Column1">
+        <!--查询显示字段-->
+        '企业编码' companyCode,
+        '企业名称' companyName,
+        '显示顺序' companySerialNumber,
+        '企业性质' companyType,
+        '有效期' companyValidityDate,
+        '企业用户数' companyUserCount,
+        '是否禁用' companyIsdisable,
+
+        '账号' userCode,
+        '姓名' userName,
+        '手机号' userMobile,
+        '邮箱' userEmail,
+        '角色' userType,
+
+        <!--查询隐藏字段-->
+        'id' id_hide,
+        'pid' pid_hide,
+        'layer' layer_hide,
+        'organizeType' organizeType_hide,
+        'companyShortname' companyShortname_hide
+    </sql>
+
+    <select id="getColumnList" resultType="java.util.LinkedHashMap">
+        select
+        <include refid="Column1"/>
+        from dual
+    </select>
+
+    <sql id="Field1">
+        <!--查询显示字段-->
+        a.code companyCode,
+        a.name companyName,
+        a.serial_number companySerialNumber,
+        a.company_type companyType,
+        DATE_FORMAT(a.company_validity_date,'%Y-%m-%d') companyValidityDate,
+        a.company_user_count companyUserCount,
+        a.isdisable companyIsdisable,
+
+        b.user_code userCode,
+        b.user_name userName,
+        b.mobile userMobile,
+        b.email userEmail,
+        '企业管理员' userType,
+
+        <!--查询隐藏字段-->
+        a.id id,
+        a.pid pid,
+        a.layer layer,
+        a.organize_type organizeType,
+        a.company_shortname companyShortname
+
+    </sql>
+    <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select <include refid="Field1"/>
+        from vmes_department a
+            left join vmes_user b on a.id = b.company_id and b.user_type = '1'
+        <where>
+            <if test="id != null and id != ''" >
+                and a.id = #{id}
+            </if>
+            <if test="companyCode != null and companyCode != ''">
+                and a.code LIKE CONCAT(CONCAT('%', #{companyCode}),'%')
+            </if>
+            <if test="companyName != null and companyName != ''">
+                and a.name LIKE CONCAT(CONCAT('%', #{companyName}),'%')
+            </if>
+            <if test="companyType != null and companyType != ''" >
+                and a.company_type = #{companyType}
+            </if>
+            <if test="companyIsdisable != null and companyIsdisable != ''" >
+                and a.isdisable = #{companyIsdisable}
+            </if>
+            <if test="layer != null and layer != ''" >
+                and a.layer = #{layer}
+            </if>
+            <if test="cuser != null and cuser != ''" >
+                and a.cuser = #{cuser}
+            </if>
+
+
+            <if test="userCode != null and userCode != ''">
+                and b.user_code LIKE CONCAT(CONCAT('%', #{userCode}),'%')
+            </if>
+            <if test="userName != null and userName != ''">
+                and b.user_name LIKE CONCAT(CONCAT('%', #{userName}),'%')
+            </if>
+            <if test="userMobile != null and userMobile != ''">
+                and b.mobile LIKE CONCAT(CONCAT('%', #{userMobile}),'%')
+            </if>
+        </where>
+    </select>
+
+
+</mapper>

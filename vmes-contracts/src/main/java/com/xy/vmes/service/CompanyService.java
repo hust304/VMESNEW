@@ -1,6 +1,12 @@
 package com.xy.vmes.service;
 
+import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.entity.Department;
+import com.yvan.PageData;
+
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 public interface CompanyService {
     /**
@@ -56,5 +62,17 @@ public interface CompanyService {
      * @return
      */
     String checkDeleteCompanyByIds(String ids);
+
+    /**
+     * 创建人：陈刚
+     * 创建时间：2018-08-16
+     */
+    List<LinkedHashMap<String, String>> getColumnList() throws Exception;
+
+    /**
+     * 创建人：陈刚
+     * 创建时间：2018-08-16
+     */
+    List<Map<String, Object>> getDataListPage(PageData pd, Pagination pg) throws Exception;
 
 }
