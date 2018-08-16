@@ -193,6 +193,7 @@ public class UserLoginController {
         dataMap.put("userID", user.getId());
         dataMap.put("userCode", user.getUserCode());
         dataMap.put("companyId", user.getCompanyId());
+        dataMap.put("userType", user.getUserType());
 
         //employ:员工信息()
         Employee employ = new Employee();
@@ -201,6 +202,8 @@ public class UserLoginController {
         dataMap.put("userName", employ.getName());
 
         //deptId部门id-postId岗位ID
+        dataMap.put("deptId", "");
+        dataMap.put("postId", "");
 
         //userRole用户角色(角色ID','分隔的字符串)
         String roleIds = userRoleService.findRoleIdsByByUserID(user.getId());
