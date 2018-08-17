@@ -163,30 +163,11 @@ public class ${objectName}Controller {
     @GetMapping("/${objectNameLower}/excelExport")
     public void excelExport()  throws Exception {
 
-        logger.info("################${objectNameLower}/excelExport 执行开始 ################# ");
-        Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
-        HttpServletRequest request  = HttpUtils.currentRequest();
 
-        ExcelUtil.buildDefaultExcelDocument( request, response,new ExcelAjaxTemplate() {
-            @Override
-            public void execute(HttpServletRequest request, HSSFWorkbook workbook) throws Exception {
-                // TODO Auto-generated method stub
-                PageData pd = HttpUtils.parsePageData();
-                List<LinkedHashMap> titles = ${objectNameLower}Service.findColumnList();
-                request.setAttribute("titles", titles.get(0));
-                List<Map> varList = ${objectNameLower}Service.findDataList(pd);
-                    request.setAttribute("varList", varList);
-                }
-        });
-        Long endTime = System.currentTimeMillis();
-        logger.info("################${objectNameLower}/excelExport 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
     }
 
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
-
-
     /**
     * @author ${author} 自动创建，可以修改
     * @date ${nowDate?string("yyyy-MM-dd")}
@@ -252,31 +233,109 @@ public class ${objectName}Controller {
 
 
     /**
+    * Excel导出
     * @author ${author} 自动创建，可以修改
     * @date ${nowDate?string("yyyy-MM-dd")}
     */
     @GetMapping("/${objectNameLower}/exportExcelPosts")
-    public void exportExcelPosts()  throws Exception {
+    public void exportExcel${objectName}s() throws Exception {
+        //1. 获取Excel导出数据查询条件
+        PageData pageData = HttpUtils.parsePageData();
+        String ids = (String)pageData.get("ids");
+        String queryColumn = (String)pageData.get("queryColumn");
+        String showFieldcode = (String)pageData.get("showFieldcode");
 
-        logger.info("################post/exportExcel${objectName}s 执行开始 ################# ");
-        Long startTime = System.currentTimeMillis();
+        //2. 获取业务列表List<Map<栏位Key, 栏位名称>>  Service.getColumnList();
+        List<LinkedHashMap> columnList = null;
+        LinkedHashMap columnMap = com.xy.vmes.common.util.ExcelUtil.modifyColumnMap(showFieldcode, columnList.get(0));
+
+        //3. 根据查询条件获取业务数据List
+        String queryStr = "";
+        if (ids != null && ids.trim().length() > 0) {
+            ids = StringUtil.stringTrimSpace(ids);
+            ids = "'" + ids.replace(",", "','") + "'";
+            queryStr = "id in (" + ids + ")";
+        }
+        if (queryColumn != null && queryColumn.trim().length() > 0) {
+            queryStr = queryStr + queryColumn;
+        }
+
+        PageData findMap = new PageData();
+        //业务表查询条件 findMap.put("查询字段名称", "Value");
+        findMap.put("queryStr", queryStr);
+
+        Pagination pg = HttpUtils.parsePagination();
+        List<Map> dataList = dictionaryService.getDataList(findMap);
+
+        //查询数据转换成Excel导出数据
+        List<LinkedHashMap<String, String>> dataMapList = com.xy.vmes.common.util.ExcelUtil.modifyDataList(columnMap, dataList);
+
         HttpServletResponse response  = HttpUtils.currentResponse();
-        HttpServletRequest request  = HttpUtils.currentRequest();
+        response.addHeader("Access-Control-Allow-Origin","*");
+        response.addHeader("Access-Control-Allow-Methods","*");
+        response.addHeader("Access-Control-Max-Age","100");
+        response.addHeader("Access-Control-Allow-Headers", "Content-Type");
+        response.addHeader("Access-Control-Allow-Credentials","false");
 
-        ExcelUtil.buildDefaultExcelDocument( request, response,new ExcelAjaxTemplate() {
-            @Override
-            public void execute(HttpServletRequest request, HSSFWorkbook workbook) throws Exception {
-                // TODO Auto-generated method stub
-                PageData pd = HttpUtils.parsePageData();
-                List<LinkedHashMap> titles = ${objectNameLower}Service.getColumnList();
-                request.setAttribute("titles", titles.get(0));
-                List<Map> varList = ${objectNameLower}Service.getDataList(pd);
-                request.setAttribute("varList", varList);
-            }
-        });
-        Long endTime = System.currentTimeMillis();
-        logger.info("################post/exportExcel${objectName}s 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        //查询数据-Excel文件导出
+        //String fileName = "Excel文件导出";
+        String fileName = "ExcelDictionary";
+        ExcelUtil.excelExportByDataList(response, fileName, dataMapList);
     }
+
+    /**
+    * Excel导入
+    *
+    * @author ${author} 自动创建，可以修改
+    * @date ${nowDate?string("yyyy-MM-dd")}
+    */
+    @PostMapping("/${objectNameLower}/importExcel${objectName}s")
+    public ResultModel importExcel${objectName}s(@RequestParam(value="excelFile") MultipartFile file) {
+        ResultModel model = new ResultModel();
+        //HttpServletRequest Request = HttpUtils.currentRequest();
+
+        try {
+            if (file == null) {
+                model.putCode(Integer.valueOf(1));
+                model.putMsg("请上传Excel文件！");
+                return model;
+            }
+
+            // 验证文件是否合法
+            // 获取上传的文件名(文件名.后缀)
+            String fileName = file.getOriginalFilename();
+            if (fileName == null
+                || !(fileName.matches("^.+\\.(?i)(xlsx)$")
+                || fileName.matches("^.+\\.(?i)(xls)$"))
+            ) {
+                String failMesg = "不是excel格式文件,请重新选择！";
+                model.putCode(Integer.valueOf(1));
+                model.putMsg(failMesg);
+                return model;
+            }
+
+            // 判断文件的类型，是2003还是2007
+            boolean isExcel2003 = true;
+                if (fileName.matches("^.+\\.(?i)(xlsx)$")) {
+                isExcel2003 = false;
+            }
+
+            List<List<String>> dataLst = ExcelUtil.readExcel(file.getInputStream(), isExcel2003);
+            List<Map<String, String>> dataMapLst = ExcelUtil.reflectMapList(dataLst);
+
+            //1. Excel文件数据dataMapLst -->(转换) ExcelEntity (属性为导入模板字段)
+            //2. Excel导入字段(非空,数据有效性验证[数字类型,字典表(大小)类是否匹配])
+            //3. Excel导入字段-名称唯一性判断-在Excel文件中
+            //4. Excel导入字段-名称唯一性判断-在业务表中判断
+            //5. List<ExcelEntity> --> (转换) List<业务表DB>对象
+            //6. 遍历List<业务表DB> 对业务表添加或修改
+
+        } catch (Exception e) {
+            throw new RestException("", e.getMessage());
+        }
+
+            return model;
+        }
 
 }
 
