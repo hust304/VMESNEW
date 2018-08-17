@@ -46,6 +46,9 @@ public class Role implements Serializable {
 	//修改人账号
 	@TableField("uuser")
 	private String uuser;
+	//备注
+	@TableField("remark")
+	private String remark;
 
 
 
@@ -108,6 +111,12 @@ public class Role implements Serializable {
 	}
 	public void setCode(String code) {
 		this.code = code;
+	}
+	public String getRemark() {
+		return remark;
+	}
+	public void setRemark(String remark) {
+		this.remark = remark;
 	}
 	/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 

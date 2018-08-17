@@ -23,6 +23,7 @@
 		cuser cuser,<!-- 创建人账号 -->
 		udate udate,<!-- 修改时间 -->
 		uuser uuser,<!-- 修改人账号 -->
+        remark remark,
 		id id <!-- id -->
     </sql>
 
@@ -37,6 +38,7 @@
 		#{cuser},<!-- 创建人账号 -->
 		#{udate},<!-- 修改时间 -->
 		#{uuser},<!-- 修改人账号 -->
+        #{remark},
 		#{id} <!-- id -->
     </sql>
 
@@ -52,6 +54,7 @@
         '创建人账号'  cuser,
         '修改时间'  udate,
         '修改人账号'  uuser,
+        '备注'  remark,
         'id' id
     </sql>
 
@@ -204,7 +207,6 @@
         id id,
         company_id companyID,
         name_en nameEn,
-        isdisable,
         DATE_FORMAT(cdate,'%Y-%m-%d %T') cdate,
         cuser,
         DATE_FORMAT(udate,'%Y-%m-%d %T') udate,
@@ -213,11 +215,7 @@
         <!--查询显示字段-->
         code code,
         name name,
-        CASE
-            WHEN a.isdisable = '0' THEN '已启用'
-            WHEN a.isdisable = '1' THEN '已禁用'
-        ELSE null
-        END isdisableName
+        isdisable
     </sql>
     <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
