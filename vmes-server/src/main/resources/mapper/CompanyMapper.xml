@@ -15,7 +15,8 @@
         '姓名' userName,
         '手机号' userMobile,
         '邮箱' userEmail,
-        '角色' userType,
+        '角色套餐' roleName,
+        '用户类型' userType,
 
         <!--查询隐藏字段-->
         'id' id_hide,
@@ -46,6 +47,7 @@
         b.user_name userName,
         b.mobile mobile,
         b.email email,
+        f.name roleName,
         '企业管理员' userType,
 
         <!--查询隐藏字段-->
@@ -61,7 +63,9 @@
         select <include refid="Field1"/>
         from vmes_department a
             left join vmes_user b on a.id = b.company_id and b.user_type = '1'
-            left join view_vmes_dictionary c on a.company_type = c.small_code and c.big_code = 'sys_company_type'
+            left join vmes_user_role d on b.id = d.user_id
+            left join vmes_role f on d.role_id = f.id
+        left join view_vmes_dictionary c on a.company_type = c.small_code and c.big_code = 'sys_company_type'
         <where>
             <if test="id != null and id != ''" >
                 and a.id = #{id}
