@@ -6,7 +6,7 @@
         '企业编码' code,
         '企业名称' name,
         '显示顺序' serialNumber,
-        '企业性质' companyType,
+        '企业性质' companyTypeName,
         '有效期' companyValidityDate,
         '企业用户数' companyUserCount,
         '是否启用' isdisable,
@@ -21,6 +21,7 @@
         'id' id_hide,
         'pid' pid_hide,
         'layer' layer_hide,
+        'companyType' companyType_hide,
         'organizeType' organizeType_hide,
         'companyShortname' companyShortname_hide
     </sql>
@@ -36,7 +37,7 @@
         a.code code,
         a.name name,
         a.serial_number serialNumber,
-        a.company_type companyType,
+        c.small_name companyTypeName,
         DATE_FORMAT(a.company_validity_date,'%Y-%m-%d') companyValidityDate,
         a.company_user_count companyUserCount,
         a.isdisable isdisable,
@@ -51,6 +52,7 @@
         a.id id,
         a.pid pid,
         a.layer layer,
+        a.company_type companyType,
         a.organize_type organizeType,
         a.company_shortname companyShortname
 
@@ -59,6 +61,7 @@
         select <include refid="Field1"/>
         from vmes_department a
             left join vmes_user b on a.id = b.company_id and b.user_type = '1'
+            left join view_vmes_dictionary c on a.company_type = c.small_code and c.big_code = 'sys_company_type'
         <where>
             <if test="id != null and id != ''" >
                 and a.id = #{id}
