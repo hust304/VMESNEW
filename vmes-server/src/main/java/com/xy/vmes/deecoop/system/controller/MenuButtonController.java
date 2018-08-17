@@ -446,7 +446,7 @@ public class MenuButtonController {
      * @author 陈刚
      * @date 2018-08-08
      */
-    @PostMapping("/menu/listPageMenuButtons")
+    @PostMapping("/button/listPageMenuButtons")
     public ResultModel listPageMenuButtons() throws Exception {
         ResultModel model = new ResultModel();
         Map<String, Object> mapObj = new HashMap<String, Object>();
