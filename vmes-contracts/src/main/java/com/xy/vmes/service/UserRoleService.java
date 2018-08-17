@@ -68,6 +68,8 @@ public interface UserRoleService {
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
     List<UserRole> findUserRoleList(PageData object);
+    UserRole findUserRole(PageData object);
+
     /**
      * 用户角色-关联角色表
      * @param pd

@@ -135,6 +135,23 @@ public class UserRoleServiceImp implements UserRoleService {
 
         return objectList;
     }
+    public UserRole findUserRole(PageData object) {
+        if (object == null) {return null;}
+
+        List<UserRole> objectList = null;
+        try {
+            objectList = this.dataList(object);
+        } catch (Exception e) {
+            throw new RestException("", e.getMessage());
+        }
+
+        if (objectList != null && objectList.size() > 0) {
+            return objectList.get(0);
+        }
+
+        return null;
+    }
+
     /**
      * 创建人：刘威
      * 创建时间：2018-07-26

@@ -1,19 +1,15 @@
 package com.xy.vmes.deecoop.system.controller;
 
-import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.Common;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.Department;
 import com.xy.vmes.entity.User;
-import com.xy.vmes.service.CoderuleService;
-import com.xy.vmes.service.CompanyService;
-import com.xy.vmes.service.DepartmentService;
-import com.xy.vmes.service.UserService;
+import com.xy.vmes.entity.UserRole;
+import com.xy.vmes.service.*;
 import com.yvan.*;
 import com.yvan.springmvc.ResultModel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -32,8 +28,12 @@ public class CompanyController {
     private CompanyService companyService;
     @Autowired
     private DepartmentService departmentService;
+
     @Autowired
     private UserService userService;
+    @Autowired
+    private UserRoleService userRoleService;
+
     @Autowired
     private CoderuleService coderuleService;
 
@@ -114,6 +114,12 @@ public class CompanyController {
             return model;
         }
 
+        String roleId = (String)pageData.get("roleId");
+        if (roleId == null || roleId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("请选择一个角色套餐！</br>");
+            return model;
+        }
         Department companyObj = (Department)HttpUtils.pageData2Entity(pageData, new Department());
         if (companyObj == null) {
             model.putCode(Integer.valueOf(1));
@@ -193,13 +199,21 @@ public class CompanyController {
 
         departmentService.save(companyObj);
 
-        //创建(企业管理员)账户
+        //4. 创建(企业管理员)账户
         User user = new User();
         user.setCompanyId(companyObj.getId());
         String userCode = coderuleService.createCoder(companyObj.getId(), "vmes_user");
         user.setUserCode(userCode);
         user.setPassword(MD5Utils.MD5(Common.DEFAULT_PASSWORD));
+        //用户类型(0:超级管理员1:企业管理员2:普通用户)
+        user.setUserType("1");
         userService.save(user);
+
+        //5. 创建(用户角色)
+        UserRole userRole = new UserRole();
+        userRole.setUserId(user.getId());
+        userRole.setRoleId(roleId);
+        userRoleService.save(userRole);
 
         return model;
     }
@@ -218,6 +232,19 @@ public class CompanyController {
         if (pageData == null || pageData.size() == 0) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("参数错误：用户登录参数(pageData)为空！</br>");
+            return model;
+        }
+
+        String roleId_new = (String)pageData.get("roleId_new");
+        if (roleId_new == null || roleId_new.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("请选择一个角色套餐！</br>");
+            return model;
+        }
+        String roleId_old = (String)pageData.get("roleId_old");
+        if (roleId_old == null || roleId_old.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("角色套餐ID(角色ID)为空或空字符串！</br>");
             return model;
         }
 
@@ -283,8 +310,23 @@ public class CompanyController {
                 ) {
             companyDB.setLongCode(longNameCodeMpa.get("LongCode").trim() + "-" + companyDB.getCode());
         }
-
         departmentService.update(companyDB);
+
+        //获取当前企业管理员
+        User user = userService.findCompanyAdmin(companyDB.getId());
+        if (user != null) {
+            //4. 修改用户角色表
+            PageData findMap = new PageData();
+            findMap.put("userId", user.getId());
+            findMap.put("roleId_old", roleId_old);
+            findMap.put("mapSize", Integer.valueOf(findMap.size()));
+            UserRole userRole = userRoleService.findUserRole(findMap);
+
+            if (userRole != null) {
+                userRole.setRoleId(roleId_new);
+                userRoleService.update(userRole);
+            }
+        }
 
         return model;
     }
