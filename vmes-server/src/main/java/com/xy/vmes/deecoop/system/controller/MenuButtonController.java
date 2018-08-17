@@ -7,10 +7,7 @@ import com.xy.vmes.entity.Menu;
 import com.xy.vmes.entity.MenuButton;
 import com.xy.vmes.service.MenuButtonService;
 import com.xy.vmes.service.MenuService;
-import com.yvan.Conv;
-import com.yvan.ExcelUtil;
-import com.yvan.HttpUtils;
-import com.yvan.PageData;
+import com.yvan.*;
 import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
 import com.yvan.template.ExcelAjaxTemplate;
@@ -452,25 +449,27 @@ public class MenuButtonController {
         Map<String, Object> mapObj = new HashMap<String, Object>();
 
         //1. 查询遍历List列表
-        LinkedHashMap<String, String> titlesLinkedMap = new LinkedHashMap<String, String>();
+        List<LinkedHashMap<String, String>> titleOutList = new ArrayList<LinkedHashMap<String, String>>();
         List<String> titlesHideList = new ArrayList<String>();
         Map<String, String> varModelMap = new HashMap<String, String>();
         List<LinkedHashMap<String, String>> titleList = menuButtonService.getColumnList();
         if (titleList != null && titleList.size() > 0) {
             LinkedHashMap<String, String> titlesMap = titleList.get(0);
             for (Map.Entry<String, String> entry : titlesMap.entrySet()) {
+                LinkedHashMap<String, String> titleMap = new LinkedHashMap<String, String>();
                 if (entry.getKey().indexOf("_hide") != -1) {
-                    titlesLinkedMap.put(entry.getKey().replace("_hide",""), entry.getValue());
+                    titleMap.put(entry.getKey().replace("_hide",""), entry.getValue());
                     titlesHideList.add(entry.getKey().replace("_hide",""));
                     varModelMap.put(entry.getKey().replace("_hide",""), "");
                 } else if (entry.getKey().indexOf("_hide") == -1) {
-                    titlesLinkedMap.put(entry.getKey(), entry.getValue());
+                    titleMap.put(entry.getKey(), entry.getValue());
                     varModelMap.put(entry.getKey(), "");
                 }
+                titleOutList.add(titleMap);
             }
         }
         mapObj.put("hideTitles", titlesHideList);
-        mapObj.put("titles", titlesLinkedMap);
+        mapObj.put("titles", YvanUtil.toJson(titleOutList));
 
         //2. 分页查询数据List
         List<Map<String, String>> varMapList = new ArrayList<Map<String, String>>();
@@ -487,12 +486,10 @@ public class MenuButtonController {
                 varMapList.add(varMap);
             }
         }
-        mapObj.put("varList", varMapList);
+        mapObj.put("varList", YvanUtil.toJson(varMapList));
 
         model.putResult(mapObj);
         return model;
     }
 }
-
-
 
