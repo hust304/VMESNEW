@@ -134,6 +134,10 @@ public class UserEmployeeServiceImp implements UserEmployeeService {
         if (mapObject.get("userColumn3") != null) {
             object.setColumn3(mapObject.get("userColumn3").toString().trim());
         }
+        //userType用户类型(0:超级管理员1:企业管理员2:普通用户)
+        if (mapObject.get("userType") != null) {
+            object.setUserType(mapObject.get("userType").toString().trim());
+        }
 
         return object;
     }

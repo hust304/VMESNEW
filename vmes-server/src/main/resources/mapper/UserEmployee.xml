@@ -28,6 +28,7 @@
             a.udate as userUdate,
             a.uuser as userUuser,
 
+            a.user_type as userType,
             a.column_1 as userColumn1,
             a.column_2 as userColumn2,
             a.column_3 as userColumn3,

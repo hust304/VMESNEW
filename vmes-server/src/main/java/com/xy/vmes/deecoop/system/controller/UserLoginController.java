@@ -159,13 +159,16 @@ public class UserLoginController {
         Map<String, Object> userEmployMap = objectList.get(0);
         String userID = userEmployMap.get("userID").toString().toLowerCase();
         String companyID = userEmployMap.get("userCompanyID").toString();
+        String userType = userEmployMap.get("userType").toString();
 
         //2. 非超级管理员(账号)-比较当前登录企业账号-是否超过(有效期)
-        String checkValidityDate = companyService.checkCompanyValidityDate(companyID);
-        if (checkValidityDate != null && checkValidityDate.trim().length() > 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg(checkValidityDate);
-            return model;
+        if (!"0".equals(userType)) {
+            String checkValidityDate = companyService.checkCompanyValidityDate(companyID);
+            if (checkValidityDate != null && checkValidityDate.trim().length() > 0) {
+                model.putCode(Integer.valueOf(1));
+                model.putMsg(checkValidityDate);
+                return model;
+            }
         }
 
         //(用户账号, 密码MD5)-系统中存在--RedisKey: uuid_系统用户ID_deecoop
