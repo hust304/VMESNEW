@@ -75,4 +75,14 @@ public interface CompanyService {
      */
     List<Map<String, Object>> getDataListPage(PageData pd, Pagination pg) throws Exception;
 
+    /**
+     * 根据企业ID-判断当前企业有效期是否超时
+     *
+     * @param companyID  企业ID
+     * @return
+     *   true : 已超时
+     *   false: 未超时
+     */
+    String checkCompanyValidityDate(String companyID);
+
 }

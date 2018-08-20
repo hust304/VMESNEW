@@ -4,10 +4,7 @@ import com.xy.vmes.common.util.Common;
 import com.xy.vmes.common.util.RedisUtils;
 import com.xy.vmes.entity.Employee;
 import com.xy.vmes.entity.User;
-import com.xy.vmes.service.UserEmployeeService;
-import com.xy.vmes.service.UserLoginService;
-import com.xy.vmes.service.UserRoleService;
-import com.xy.vmes.service.UserService;
+import com.xy.vmes.service.*;
 import com.yvan.Conv;
 import com.yvan.HttpUtils;
 import com.yvan.MD5Utils;
@@ -55,8 +52,8 @@ public class UserLoginController {
     private UserService userService;
     @Autowired
     private UserRoleService userRoleService;
-    //@Autowired
-    //private UserLoginService userLoginService;
+    @Autowired
+    private CompanyService companyService;
     @Autowired
     RedisClient redisClient;
 
@@ -161,7 +158,15 @@ public class UserLoginController {
         }
         Map<String, Object> userEmployMap = objectList.get(0);
         String userID = userEmployMap.get("userID").toString().toLowerCase();
+        String companyID = userEmployMap.get("userCompanyID").toString();
 
+        //2. 非超级管理员(账号)-比较当前登录企业账号-是否超过(有效期)
+        String checkValidityDate = companyService.checkCompanyValidityDate(companyID);
+        if (checkValidityDate != null && checkValidityDate.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(checkValidityDate);
+            return model;
+        }
 
         //(用户账号, 密码MD5)-系统中存在--RedisKey: uuid_系统用户ID_deecoop
         //3. 生成新的Redis会话(生成新的uuid)
@@ -187,8 +192,8 @@ public class UserLoginController {
         Map<String, String> RedisMap = new HashMap<String, String>();
 
         //user:用户信息()
-        User user = new User();
-        user = userEmployService.mapObject2User(userEmployMap, user);
+        //User user = new User();
+        User user = userEmployService.mapObject2User(userEmployMap, null);
         RedisMap.put("user", YvanUtil.toJson(user));
         dataMap.put("userId", user.getId());
         dataMap.put("userCode", user.getUserCode());

@@ -2,16 +2,17 @@ package com.xy.vmes.deecoop.system.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.deecoop.system.dao.CompanyMapper;
-import com.xy.vmes.deecoop.system.dao.DepartmentMapper;
 import com.xy.vmes.entity.Department;
 import com.xy.vmes.service.CompanyService;
 import com.xy.vmes.service.DepartmentService;
+import com.yvan.DateUtils;
 import com.yvan.PageData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.MessageFormat;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -266,6 +267,57 @@ public class CompanyServiceImp implements CompanyService {
      */
     public List<Map<String, Object>> getDataListPage(PageData pd, Pagination pg) throws Exception {
         return companyMapper.getDataListPage(pd, pg);
+    }
+
+    /**
+     * 根据企业ID-判断当前企业有效期是否超时
+     *
+     * @param companyID  企业ID
+     * @return
+     *   true : 已超时
+     *   false: 未超时
+     */
+    public String checkCompanyValidityDate(String companyID) {
+        StringBuffer msgStr = new StringBuffer();
+        if (companyID == null || companyID.trim().length() == 0) {
+            msgStr.append("企业id为空或空字符串");
+            return msgStr.toString();
+        }
+
+        PageData findMap = new PageData();
+        findMap.put("id", companyID);
+        //组织类型(1:公司 2:部门)
+        findMap.put("organizeType", "1");
+        //是否禁用(0:已禁用 1:启用)
+        findMap.put("isdisable", "1");
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+        Department company = departmentService.findDepartment(findMap);
+        if (company == null) {
+            msgStr.append("您所在的企业系统中不存在或已禁用，请与管理员联系！<br/>");
+            msgStr.append("企业id:" + companyID + "<br/>");
+            return msgStr.toString();
+        }
+
+        //companyValidityDate 当前企业.有效期 与系统时间比较 (yyyy-mm-dd)
+        if (company.getCompanyValidityDate() == null) {
+            return msgStr.toString();
+        }
+        //当前企业有效期(yyyy-mm-dd)
+        String validityDateStr = DateUtils.toDateStr(company.getCompanyValidityDate());
+
+
+        //系统当前时间
+        String sysDateStr = DateUtils.toDateStr(new Date());
+        Date sysDate = DateUtils.fromDate(sysDateStr);
+
+        //系统当前时间 > 企业有效期
+        if (sysDate.getTime() > company.getCompanyValidityDate().getTime()) {
+            msgStr.append("企业有效期: " + validityDateStr);
+            msgStr.append("您所在的企业(有效期)已经到期，请于管理员联系！");
+            return msgStr.toString();
+        }
+
+        return msgStr.toString();
     }
 
 }
