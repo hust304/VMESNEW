@@ -11,6 +11,7 @@ import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.xy.vmes.common.util.StringUtil;
+import com.yvan.YvanUtil;
 import com.yvan.cache.RedisClient;
 import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
@@ -208,47 +209,47 @@ public class RoleController {
     @PostMapping("/role/listPageRoles")
     public ResultModel listPageRoles() throws Exception{
         ResultModel model = new ResultModel();
-        Map<String, Object> mapObj = new HashMap<String, Object>();
 
         //1. 查询遍历List列表
-        LinkedHashMap<String, String> titlesLinkedMap = new LinkedHashMap<String, String>();
+        List<LinkedHashMap<String, String>> titleOutList = new ArrayList<LinkedHashMap<String, String>>();
         List<String> titlesHideList = new ArrayList<String>();
         Map<String, String> varModelMap = new HashMap<String, String>();
         List<LinkedHashMap<String, String>> titleList = roleService.getColumnList();
         if (titleList != null && titleList.size() > 0) {
             LinkedHashMap<String, String> titlesMap = titleList.get(0);
             for (Map.Entry<String, String> entry : titlesMap.entrySet()) {
+                LinkedHashMap<String, String> titleMap = new LinkedHashMap<String, String>();
                 if (entry.getKey().indexOf("_hide") != -1) {
-                    titlesLinkedMap.put(entry.getKey().replace("_hide",""), entry.getValue());
+                    titleMap.put(entry.getKey().replace("_hide",""), entry.getValue());
                     titlesHideList.add(entry.getKey().replace("_hide",""));
                     varModelMap.put(entry.getKey().replace("_hide",""), "");
                 } else if (entry.getKey().indexOf("_hide") == -1) {
-                    titlesLinkedMap.put(entry.getKey(), entry.getValue());
+                    titleMap.put(entry.getKey(), entry.getValue());
                     varModelMap.put(entry.getKey(), "");
                 }
+                titleOutList.add(titleMap);
             }
         }
+
+        Map<String, Object> mapObj = new HashMap<String, Object>();
         mapObj.put("hideTitles", titlesHideList);
-        mapObj.put("titles", titlesLinkedMap);
+        mapObj.put("titles", YvanUtil.toJson(titleOutList));
 
         //2. 分页查询数据List
         PageData pageData = HttpUtils.parsePageData();
-        Pagination pg = HttpUtils.parsePagination();
-
-        PageData findMap = new PageData();
         String userId = (String)pageData.get("userId");
         String companyId = (String)pageData.get("companyId");
         //用户类型(0:超级管理员1:企业管理员2:普通用户)
         String userType = (String)pageData.get("userType");
 
         if ("1".equals(userType) && companyId != null && companyId.trim().length() > 0) {
-            findMap.put("companyId", companyId);
+            pageData.put("companyId", companyId);
         } else if ("2".equals(userType) && userId != null && userId.trim().length() > 0) {
-            findMap.put("cuser", userId);
+            pageData.put("cuser", userId);
         }
 
+        List<Map<String, Object>> varList = roleService.getDataListPage(pageData, HttpUtils.parsePagination());
         List<Map<String, String>> varMapList = new ArrayList<Map<String, String>>();
-        List<Map<String, Object>> varList = roleService.getDataListPage(findMap, pg);
         if(varList != null && varList.size() > 0) {
             for (Map<String, Object> map : varList) {
                 Map<String, String> varMap = new HashMap<String, String>();
@@ -259,7 +260,7 @@ public class RoleController {
                 varMapList.add(varMap);
             }
         }
-        mapObj.put("varList", varMapList);
+        mapObj.put("varList", YvanUtil.toJson(varMapList));
 
         model.putResult(mapObj);
         return model;
