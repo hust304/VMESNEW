@@ -636,9 +636,12 @@ public class MenuController {
             String strTemp = "'" + userRole.replace(",", "','" + ",") + "'";
             queryStr = "b.role_id in (" + strTemp + ")";
         }
+
         PageData findMap = new PageData();
-        findMap.put("queryStr", queryStr);
-        findMap.put("isdisable", "1");
+        if (queryStr.trim().length() > 0) {
+            findMap.put("queryStr", queryStr);
+            findMap.put("isdisable", "1");
+        }
         //vmes_role_menu ADD INDEX IDX_ROLE_MENU(索引)
         findMap.put("menuIsdisable", "1");
         //findMap.put("orderStr", "b.layer asc,b.serial_number asc");
