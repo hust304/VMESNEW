@@ -232,10 +232,23 @@ public class RoleController {
         mapObj.put("titles", titlesLinkedMap);
 
         //2. 分页查询数据List
-        List<Map<String, String>> varMapList = new ArrayList<Map<String, String>>();
-        PageData pd = HttpUtils.parsePageData();
+        PageData pageData = HttpUtils.parsePageData();
         Pagination pg = HttpUtils.parsePagination();
-        List<Map<String, Object>> varList = roleService.getDataListPage(pd, pg);
+
+        PageData findMap = new PageData();
+        String userId = (String)pageData.get("userId");
+        String companyId = (String)pageData.get("companyId");
+        //用户类型(0:超级管理员1:企业管理员2:普通用户)
+        String userType = (String)pageData.get("userType");
+
+        if ("1".equals(userType) && companyId != null && companyId.trim().length() > 0) {
+            findMap.put("companyId", companyId);
+        } else if ("2".equals(userType) && userId != null && userId.trim().length() > 0) {
+            findMap.put("cuser", userId);
+        }
+
+        List<Map<String, String>> varMapList = new ArrayList<Map<String, String>>();
+        List<Map<String, Object>> varList = roleService.getDataListPage(findMap, pg);
         if(varList != null && varList.size() > 0) {
             for (Map<String, Object> map : varList) {
                 Map<String, String> varMap = new HashMap<String, String>();
