@@ -244,7 +244,8 @@ public class UserServiceImp implements UserService {
             user.setEmail(employee.getEmail());
             user.setEmployId(employee.getId());
             user.setMobile(employee.getMobile());
-            user.setUserType("内部用户");
+            //用户类型(0:超级管理员1:企业管理员2:普通用户3:外部用户)
+            user.setUserType("2");
             user.setCuser(pd.getString("cuser"));
             user.setUuser(pd.getString("uuser"));
             //使用手机号后六位进行加密作为默认密码

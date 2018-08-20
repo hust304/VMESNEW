@@ -205,7 +205,7 @@ public class CompanyController {
         String userCode = coderuleService.createCoder(companyObj.getId(), "vmes_user");
         user.setUserCode(userCode);
         user.setPassword(MD5Utils.MD5(Common.DEFAULT_PASSWORD));
-        //用户类型(0:超级管理员1:企业管理员2:普通用户)
+        //用户类型(0:超级管理员1:企业管理员2:普通用户3:外部用户)
         user.setUserType("1");
         userService.save(user);
 
