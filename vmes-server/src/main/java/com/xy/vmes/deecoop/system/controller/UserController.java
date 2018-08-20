@@ -262,6 +262,7 @@ public class UserController {
             model.putMsg("该用户手机号已存在！");
             return model;
         }
+
         userService.save(user);
         //新增用户角色信息
         UserRole userRole = new UserRole();

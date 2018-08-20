@@ -5,6 +5,7 @@
         <!--查询显示字段-->
         '企业编码' code,
         '企业名称' name,
+        '企业简称' companyShortname,
         '显示顺序' serialNumber,
         '企业性质' companyTypeName,
         '有效期' companyValidityDate,
@@ -17,14 +18,16 @@
         '邮箱' userEmail,
         '角色套餐' roleName,
         '用户类型' userType,
+        '备注' remark,
 
         <!--查询隐藏字段-->
         'id' id_hide,
         'pid' pid_hide,
+        'roleId' roleId_hide,
+
         'layer' layer_hide,
         'companyType' companyType_hide,
-        'organizeType' organizeType_hide,
-        'companyShortname' companyShortname_hide
+        'organizeType' organizeType_hide
     </sql>
 
     <select id="getColumnList" resultType="java.util.LinkedHashMap">
@@ -42,7 +45,7 @@
         DATE_FORMAT(a.company_validity_date,'%Y-%m-%d') companyValidityDate,
         a.company_user_count companyUserCount,
         a.isdisable isdisable,
-
+        a.company_shortname companyShortname,
         b.user_code userCode,
         b.user_name userName,
         b.mobile mobile,
@@ -54,9 +57,10 @@
         a.id id,
         a.pid pid,
         a.layer layer,
+        f.id roleId,
+        f.remark remark,
         a.company_type companyType,
-        a.organize_type organizeType,
-        a.company_shortname companyShortname
+        a.organize_type organizeType
 
     </sql>
     <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
