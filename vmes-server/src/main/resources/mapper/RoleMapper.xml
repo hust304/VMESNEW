@@ -193,7 +193,7 @@
         <!--查询显示字段-->
         '角色编码' code,
         '角色名称' name,
-        '是否启用' isdisableName
+        '是否启用' isdisable
 
     </sql>
     <select id="getColumnList"  resultType="java.util.LinkedHashMap">
