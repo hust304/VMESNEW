@@ -1,7 +1,6 @@
 package com.xy.vmes.deecoop.system.controller;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
-import com.xy.vmes.common.util.RedisUtils;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.Menu;
 import com.xy.vmes.entity.TreeEntity;
@@ -243,6 +242,7 @@ public class MenuController {
             }
         }
         mapObj.put("varList", YvanUtil.toJson(varMapList));
+        mapObj.put("pageData", YvanUtil.toJson(pg));
 
         model.putResult(mapObj);
         return model;
