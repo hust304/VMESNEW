@@ -294,45 +294,43 @@ public class RoleController {
             model.putMsg("(角色名称)输入为空或空字符串，(角色名称)是必填字段不可为空！<br/>");
             return model;
         }
-        //String sessionID = "659e8eb2281846f18f3ed09d90818784:0:deecoop:userLoginMap";
-        String sessionID = (String)pageData.get("sessionID");
-        if (name == null || name.trim().length() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("sessionID 为空或空字符串！<br/>");
-            return model;
-        }
 
-        //2. sessionID-获取当前登录用户
-        User user = RedisUtils.getUserInfoBySessionID(redisClient, sessionID);
-        if (user == null) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("sessionID:" + sessionID + "&nbsp;Redis缓存获取User对象失败！");
-            return model;
-        }
+        String userId = (String)pageData.get("userId");
+        String companyId = (String)pageData.get("companyId");
+        //用户类型(0:超级管理员1:企业管理员2:普通用户)
+        String userType = (String)pageData.get("userType");
 
         //userType用户类型(0:超级管理员1:企业管理员2:普通用户)
-        if ("0".equals(user.getUserType())) {
+        if ("0".equals(userType)) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("账号:" + user.getUserCode() + " 当前账号为超级管理员，不可添加角色操作！");
+            model.putMsg("当前账号为超级管理员，不可添加角色操作！");
             return model;
-        } else if (user.getCompanyId() == null || user.getCompanyId().trim().length() == 0) {
+        } else if (companyId == null || companyId.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("账号:" + user.getUserCode() + "&nbsp;无公司id(CompanyId)，请与管理员联系！");
+            model.putMsg("无企业id(CompanyId)，请与管理员联系！");
+            return model;
+        }
+
+        //角色名称是否相同
+        if (roleService.isExistByName(companyId, null, name)) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("角色名称：" + name + "&nbsp;在系统中已经存在！</br>");
             return model;
         }
 
         //获取角色编码
         String code = null;
-        code = coderuleService.createCoder(user.getCompanyId().trim(), "vmes_role", "R");
+        code = coderuleService.createCoder(companyId.trim(), "vmes_role", "R");
         if (code == null || code.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("账号:" + user.getUserCode() + "&nbsp;生成角色编码失败，请与管理员联系！");
+            model.putMsg("生成角色编码失败，请与管理员联系！");
             return model;
         }
 
         //3. 添加角色
         Role role = new Role();
-        role.setCompanyId(user.getCompanyId().trim());
+        role.setCompanyId(companyId.trim());
+        role.setCuser(userId);
         role.setCode(code);
         role.setName(name);
         roleService.save(role);

@@ -111,6 +111,18 @@ public interface RoleService {
      */
     String findRoleIdsByRoleList(List<Role> objectList);
 
+    /**
+     * 角色名称是否相同
+     *
+     * @param companyId  (不可为空)
+     * @param id         (允许为空)-(添加时is null, 修改时 is not null)
+     * @param name       (不可为空)
+     * @return
+     *     true : 角色名称相同
+     *     false: 角色名称不相同(默认值)
+     */
+    boolean isExistByName(String companyId, String id, String name);
+
 }
 
 

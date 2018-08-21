@@ -2,10 +2,7 @@ package com.xy.vmes.deecoop.system.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.deecoop.system.dao.RoleMapper;
-import com.xy.vmes.entity.Role;
-import com.xy.vmes.entity.RoleButton;
-import com.xy.vmes.entity.RoleMenu;
-import com.xy.vmes.entity.UserRole;
+import com.xy.vmes.entity.*;
 import com.xy.vmes.service.RoleButtonService;
 import com.xy.vmes.service.RoleMenuService;
 import com.xy.vmes.service.RoleService;
@@ -248,6 +245,34 @@ public class RoleServiceImp implements RoleService {
         }
 
         return strBuf.toString();
+    }
+
+    /**
+     * 角色名称是否相同
+     *
+     * @param companyId  (不可为空)
+     * @param id         (允许为空)-(添加时is null, 修改时 is not null)
+     * @param name       (不可为空)
+     * @return
+     *     true : 角色名称相同
+     *     false: 角色名称不相同(默认值)
+     */
+    public boolean isExistByName(String companyId, String id, String name) {
+        if (companyId == null || companyId.trim().length() == 0) {return false;}
+        if (name == null || name.trim().length() == 0) {return false;}
+
+        PageData findMap = new PageData();
+        findMap.put("companyId", companyId);
+        findMap.put("name", name);
+        if (id != null && id.trim().length() > 0) {
+            findMap.put("id", id);
+        }
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+
+        List<Role> objectList = this.findRoleList(findMap);
+        if (objectList != null && objectList.size() > 0) {return true;}
+
+        return false;
     }
 }
 
