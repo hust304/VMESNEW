@@ -193,12 +193,16 @@
                     <if test="pid != null and pid!=''" >
                         and pid=#{pid}
                     </if>
-                    <if test="name != null and name!=''" >
-                        and name=#{name}
-                    </if>
                     <if test="code != null and code!=''" >
                         and code=#{code}
                     </if>
+                    <if test="name != null and name!=''" >
+                        and name=#{name}
+                    </if>
+                    <if test="cuser != null and cuser != ''" >
+                        and cuser = #{cuser}
+                    </if>
+
                     <if test="layer != null" >
                         and layer=#{layer}
                     </if>

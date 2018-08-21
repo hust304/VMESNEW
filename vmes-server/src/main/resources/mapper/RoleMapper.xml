@@ -139,19 +139,21 @@
                             </otherwise>
                         </choose>
                     </if>
-                    <if test="companyId != null and companyId != ''" >
-                        and company_id = #{companyId}
-                    </if>
                     <if test="code != null and code != ''" >
                         and code = #{code}
                     </if>
                     <if test="name != null and name != ''" >
                         and name = #{name}
                     </if>
+                    <if test="companyId != null and companyId != ''" >
+                        and company_id = #{companyId}
+                    </if>
+                    <if test="cuser != null and cuser != ''" >
+                        and cuser = #{cuser}
+                    </if>
                     <if test="isdisable != null and isdisable != ''" >
                         and isdisable = #{isdisable}
                     </if>
-
                     <!--queryStr 自定义sql查询语句-->
                     <if test="queryStr != null and queryStr != ''" >
                         and ${queryStr}
