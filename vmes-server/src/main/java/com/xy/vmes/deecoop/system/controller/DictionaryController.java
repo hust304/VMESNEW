@@ -201,7 +201,7 @@ public class DictionaryController {
      * @author 刘威
      * @date 2018-07-31
      */
-    @GetMapping("/dictionary/addDictionary")
+    @PostMapping("/dictionary/addDictionary")
     public ResultModel addDictionary()  throws Exception {
 
         logger.info("################dictionary/addDictionary 执行开始 ################# ");
@@ -267,7 +267,7 @@ public class DictionaryController {
      * @author 刘威
      * @date 2018-07-31
      */
-    @GetMapping("/dictionary/updateDictionary")
+    @PostMapping("/dictionary/updateDictionary")
     public ResultModel updateDictionary()  throws Exception {
 
         logger.info("################dictionary/updateDictionary 执行开始 ################# ");
@@ -287,7 +287,7 @@ public class DictionaryController {
      * @author 刘威
      * @date 2018-07-31
      */
-    @GetMapping("/dictionary/deleteDictionarys")
+    @PostMapping("/dictionary/deleteDictionarys")
     public ResultModel deleteDictionarys()  throws Exception {
 
         logger.info("################dictionary/deleteDictionarys 执行开始 ################# ");
@@ -308,7 +308,7 @@ public class DictionaryController {
      * @author 刘威
      * @date 2018-07-31
      */
-    @GetMapping("/dictionary/listPageDictionarys")
+    @PostMapping("/dictionary/listPageDictionarys")
     public ResultModel listPageDictionarys()  throws Exception {
 
         logger.info("################dictionary/listPageDictionarys 执行开始 ################# ");
@@ -455,7 +455,7 @@ public class DictionaryController {
      * @author 刘威
      * @date 2018-07-31
      */
-    @GetMapping("/dictionary/treeDictionarys")
+    @PostMapping("/dictionary/treeDictionarys")
     public ResultModel treeDictionarys()  throws Exception {
 
         logger.info("################dictionary/treeDictionarys 执行开始 ################# ");
