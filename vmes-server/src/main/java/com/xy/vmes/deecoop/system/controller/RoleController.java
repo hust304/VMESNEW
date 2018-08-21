@@ -242,10 +242,15 @@ public class RoleController {
         //用户类型(0:超级管理员1:企业管理员2:普通用户)
         String userType = (String)pageData.get("userType");
 
-        if ("1".equals(userType) && companyId != null && companyId.trim().length() > 0) {
-            pageData.put("companyId", companyId);
-        } else if ("2".equals(userType) && userId != null && userId.trim().length() > 0) {
-            pageData.put("cuser", userId);
+        if (userType != null && "1,2".indexOf(userType.trim()) != -1) {
+            if (companyId != null && companyId.trim().length() > 0) {
+                pageData.put("companyId", companyId);
+            }
+            if (userId != null && userId.trim().length() > 0) {
+                pageData.put("cuser", userId);
+            }
+        } else if (userType == null || "0".equals(userType.trim())) {
+            pageData.put("companyId", null);
         }
 
         List<Map<String, Object>> varList = roleService.getDataListPage(pageData, HttpUtils.parsePagination());
