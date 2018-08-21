@@ -1,6 +1,7 @@
 package com.xy.vmes.deecoop.system.controller;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.common.util.Common;
 import com.xy.vmes.common.util.RedisUtils;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.common.util.TreeUtil;
@@ -474,6 +475,29 @@ public class DictionaryController {
         return model;
     }
 
+
+
+    /**
+     * @author 刘威 自动创建，禁止修改
+     * @date 2018-07-31
+     */
+    @PostMapping("/dictionary/dataListDictionarys")
+    public ResultModel dataListDictionarys()  throws Exception {
+
+        logger.info("################dictionary/dataListDictionarys 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        HttpServletResponse response  = HttpUtils.currentResponse();
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+        String dictionaryKey = pd.getString("dictionaryKey");
+        String pid = Common.DICTIONARY_MAP.get(dictionaryKey);
+        pd.put("queryStr","(isdisable = '1' and pid = '"+pid+"')");
+        List<Map> dictionaryList = dictionaryService.findDataList(pd);
+        model.putResult(dictionaryList);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################dictionary/dataListDictionarys 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
 
 }
 

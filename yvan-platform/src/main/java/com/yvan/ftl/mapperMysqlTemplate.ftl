@@ -93,12 +93,43 @@
         </where>
     </select>
 
+
+    <!-- 批量删除 自动创建，禁止修改-->
+    <delete id="deleteByIds" parameterType="java.lang.String">
+        delete from
+        <include refid="tableName"></include>
+        where
+        id in
+        <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+		${r"#{item}"}
+        </foreach>
+    </delete>
+
+
+    <!-- 自动创建，禁止修改-->
+    <update id="updateToDisableByIds" parameterType="java.lang.String" >
+        update
+        <include refid="tableName"></include>
+        set isdisable = 1 ,udate = now()
+        where
+        id in
+        <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+        ${r"#{item}"}
+        </foreach>
+    </update>
+
+
+
+    <!-- ***************************************************以上为自动生成代码禁止修改，请在下面添加业务代码************************************************* -->
+
+
+
     <!-- 列表(全部) 自动创建，禁止修改-->
     <select id="dataList" parameterType="com.yvan.PageData" resultType="com.xy.vmes.entity.${objectName}">
         select
-            <include refid="Field"></include>
+        <include refid="Field"></include>
         from
-            <include refid="tableName"></include>
+        <include refid="tableName"></include>
         <choose>
             <!--
                 mapSize (0 or is null) 无查询参数-业务层传入
@@ -139,33 +170,7 @@
         </if>
     </select>
 
-    <!-- 批量删除 自动创建，禁止修改-->
-    <delete id="deleteByIds" parameterType="java.lang.String">
-        delete from
-        <include refid="tableName"></include>
-        where
-        id in
-        <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
-		${r"#{item}"}
-        </foreach>
-    </delete>
 
-
-    <!-- 自动创建，禁止修改-->
-    <update id="updateToDisableByIds" parameterType="java.lang.String" >
-        update
-        <include refid="tableName"></include>
-        set isdisable = 1 ,udate = now()
-        where
-        id in
-        <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
-        ${r"#{item}"}
-        </foreach>
-    </update>
-
-
-
-    <!-- ***************************************************以上为自动生成代码禁止修改，请在下面添加业务代码************************************************* -->
 
 
     <!-- 字段 自动创建，可以修改-->

@@ -698,6 +698,26 @@ public class RoleController {
         return model;
     }
 
+    /**
+     * @author 陈刚 自动创建，禁止修改
+     * @date 2018-07-30
+     */
+    @PostMapping("/role/dataListRoles")
+    public ResultModel dataListRoles()  throws Exception {
+
+        logger.info("################role/dataListRoles 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        HttpServletResponse response  = HttpUtils.currentResponse();
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+        List<Map> roleList = roleService.findDataList(pd);
+        model.putResult(roleList);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################role/dataListRoles 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
 
 }
 

@@ -78,4 +78,9 @@ public class Common {
         put("delete", "delete");
     }};
 
+    //Dictionary字典表大类ID映射
+    public static final Map<String, String> DICTIONARY_MAP = new HashMap<String, String>() {{
+        put("companyType", "0d779980a3ca4e69ac393a93bca84659");//企业性质
+    }};
+
 }

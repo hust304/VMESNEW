@@ -41,7 +41,7 @@
         a.code code,
         a.name name,
         a.serial_number serialNumber,
-        c.small_name companyTypeName,
+        c.name companyTypeName,
         DATE_FORMAT(a.company_validity_date,'%Y-%m-%d') companyValidityDate,
         a.company_user_count companyUserCount,
         a.isdisable isdisable,
@@ -69,7 +69,7 @@
             left join vmes_user b on a.id = b.company_id and b.user_type = '1'
             left join vmes_user_role d on b.id = d.user_id
             left join vmes_role f on d.role_id = f.id
-        left join view_vmes_dictionary c on a.company_type = c.small_code and c.big_code = 'sys_company_type'
+            left join vmes_dictionary c on a.company_type = c.id
         <where>
             <if test="id != null and id != ''" >
                 and a.id = #{id}
