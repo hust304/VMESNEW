@@ -357,6 +357,7 @@ public class RoleController {
 
         String id = (String)pageData.get("id");
         String name = (String)pageData.get("name");
+        String companyId = (String)pageData.get("companyId");
 
         String msgStr = new String();
         if (id == null || id.trim().length() == 0) {
@@ -371,7 +372,14 @@ public class RoleController {
             return model;
         }
 
-        //2. 修改角色
+        //角色名称是否相同
+        if (roleService.isExistByName(companyId, id, name)) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("角色名称：" + name + "&nbsp;在系统中已经存在！</br>");
+            return model;
+        }
+
+        //3. 修改角色
         Role objectDB = roleService.findRoleById(id);
         objectDB.setName(name);
         roleService.update(objectDB);
