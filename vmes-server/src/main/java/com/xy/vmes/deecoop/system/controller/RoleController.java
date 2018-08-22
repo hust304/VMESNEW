@@ -239,18 +239,12 @@ public class RoleController {
         PageData pageData = HttpUtils.parsePageData();
         String userId = (String)pageData.get("userId");
         String companyId = (String)pageData.get("companyId");
-        //用户类型(0:超级管理员1:企业管理员2:普通用户)
-        String userType = (String)pageData.get("userType");
 
-        if (userType != null && "1,2".indexOf(userType.trim()) != -1) {
-            if (companyId != null && companyId.trim().length() > 0) {
-                pageData.put("companyId", companyId);
-            }
-            if (userId != null && userId.trim().length() > 0) {
-                pageData.put("cuser", userId);
-            }
-        } else if (userType == null || "0".equals(userType.trim())) {
-            pageData.put("companyId", null);
+        if (companyId != null && companyId.trim().length() > 0) {
+            pageData.put("companyId", companyId);
+        }
+        if (userId != null && userId.trim().length() > 0) {
+            pageData.put("cuser", userId);
         }
 
         List<Map<String, Object>> varList = roleService.getDataListPage(pageData, HttpUtils.parsePagination());
@@ -296,19 +290,9 @@ public class RoleController {
         }
 
         String userId = (String)pageData.get("userId");
-        String companyId = (String)pageData.get("companyId");
-        //用户类型(0:超级管理员1:企业管理员2:普通用户)
-        String userType = (String)pageData.get("userType");
-
-        //userType用户类型(0:超级管理员1:企业管理员2:普通用户)
-        if ("0".equals(userType)) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("当前账号为超级管理员，不可添加角色操作！");
-            return model;
-        } else if (companyId == null || companyId.trim().length() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("无企业id(CompanyId)，请与管理员联系！");
-            return model;
+        String companyId = "";
+        if (pageData.get("companyId") != null) {
+            companyId = (String)pageData.get("companyId");
         }
 
         //角色名称是否相同
@@ -319,8 +303,7 @@ public class RoleController {
         }
 
         //获取角色编码
-        String code = null;
-        code = coderuleService.createCoder(companyId.trim(), "vmes_role", "R");
+        String code = coderuleService.createCoder(companyId, "vmes_role", "R");
         if (code == null || code.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("生成角色编码失败，请与管理员联系！");
@@ -329,7 +312,9 @@ public class RoleController {
 
         //3. 添加角色
         Role role = new Role();
-        role.setCompanyId(companyId.trim());
+        if (companyId != null && companyId.trim().length() > 0) {
+            role.setCompanyId(companyId.trim());
+        }
         role.setCuser(userId);
         role.setCode(code);
         role.setName(name);

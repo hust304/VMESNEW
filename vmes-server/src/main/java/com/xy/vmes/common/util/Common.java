@@ -80,7 +80,13 @@ public class Common {
 
     //Dictionary字典表大类ID映射
     public static final Map<String, String> DICTIONARY_MAP = new HashMap<String, String>() {{
-        put("companyType", "0d779980a3ca4e69ac393a93bca84659");//企业性质
+        //companyType: 0d779980a3ca4e69ac393a93bca84659 //企业性质
+        put("companyType", "0d779980a3ca4e69ac393a93bca84659");
+
+        //departmentType: 8421e4f093a44f029dddbc4ab13068be //部门类型
+        put("departmentType", "8421e4f093a44f029dddbc4ab13068be");
+
+
     }};
 
 }
