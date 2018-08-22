@@ -13,8 +13,21 @@ public class Common {
     //public final static String REDIS_USERBUTTON = "userButton";
     public final static String REDIS_USERLOGINMAP = "userLoginMap";
 
+    //用户登录-验证码-redis有效时间
+    public final static int REDIS_SECURITYCODE_LONG = 1 * 60 * 1000;
+    //用户登录-sessionID-redis有效时间
+    public final static int REDIS_SESSIONID_LONG = 30 * 60 * 1000;
+
+
     //系统默认密码: 123
     public final static String DEFAULT_PASSWORD = "123";
+
+    //java代码中的换行符
+    public final static String SYS_ENDLINE_JAVA = "\n";
+    //html中的换行符
+    public final static String SYS_ENDLINE_HTML = "<br/>";
+    //系统默认换行符 "\n"
+    public final static String SYS_ENDLINE_DEFAULT = SYS_ENDLINE_JAVA;
 
     ///////////////--编码规则--//////////////////////////////////////////////////////////////////////////////////////////////////
     //业务编码规则-分隔符
