@@ -71,6 +71,12 @@ public interface UserRoleService {
     UserRole findUserRole(PageData object);
 
     /**
+     * 创建人：刘威
+     * 创建时间：2018-07-23
+     */
+    void deleteByIds(String[] ids) throws Exception;
+
+    /**
      * 用户角色-关联角色表
      * @param pd
      * @return

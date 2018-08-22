@@ -78,7 +78,11 @@ public interface UserService {
 //     */
 //    String createCoder(String companyID);
 
-
+    /**
+     * 创建人：刘威
+     * 创建时间：2018-07-23
+     */
+    void deleteByIds(String[] ids) throws Exception;
 
     /**
      * 判断用户手机号是否存在

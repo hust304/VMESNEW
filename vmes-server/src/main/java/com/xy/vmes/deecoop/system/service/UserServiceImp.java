@@ -122,6 +122,19 @@ public class UserServiceImp implements UserService {
 
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+
+
+
+
+    /**
+     * 创建人：刘威
+     * 创建时间：2018-07-23
+     */
+    @Override
+    public void deleteByIds(String[] ids) throws Exception{
+        userMapper.deleteByIds(ids);
+    }
+
 //    /**
 //     * 生成用户编码
 //     *

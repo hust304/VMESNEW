@@ -112,6 +112,18 @@ public class UserRoleServiceImp implements UserRoleService {
 
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+
+
+
+    /**
+     * 创建人：刘威
+     * 创建时间：2018-07-23
+     */
+    @Override
+    public void deleteByIds(String[] ids) throws Exception{
+        userRoleMapper.deleteByIds(ids);
+    }
+
     /**
      * 用户角色-关联角色表
      * @param pd

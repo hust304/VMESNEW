@@ -10,6 +10,7 @@ import com.xy.vmes.service.*;
 import com.yvan.*;
 import com.yvan.springmvc.ResultModel;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -203,10 +204,19 @@ public class CompanyController {
         departmentService.save(companyObj);
 
         //4. 创建(企业管理员)账户
+
+        String userName = (String)pageData.get("userName");
+        String mobile = (String)pageData.get("mobile");
+        String email = (String)pageData.get("email");
+
         User user = new User();
         user.setCompanyId(companyObj.getId());
-        String userCode = coderuleService.createCoder(companyObj.getId(), "vmes_user");
+//        String userCode = coderuleService.createCoder(companyObj.getId(), "vmes_user");
+        String userCode = companyObj.getCode()+"admin";
         user.setUserCode(userCode);
+        user.setUserName(StringUtils.isEmpty(userName)?userCode:userName);
+        user.setMobile(mobile);
+        user.setEmail(email);
         user.setPassword(MD5Utils.MD5(Common.DEFAULT_PASSWORD));
         //用户类型(0:超级管理员1:企业管理员2:普通用户3:外部用户)
         user.setUserType("1");
@@ -310,9 +320,19 @@ public class CompanyController {
         departmentService.update(companyDB);
 
         //获取当前企业管理员
+
         User user = userService.findCompanyAdmin(companyDB.getId());
         if (user != null) {
-            //4. 修改用户角色表
+            String userName = (String)pageData.get("userName");
+            String mobile = (String)pageData.get("mobile");
+            String email = (String)pageData.get("email");
+            //4. 修改用户表
+            user.setUserName(userName);
+            user.setMobile(mobile);
+            user.setEmail(email);
+            userService.update(user);
+
+            //5. 修改用户角色表
             PageData findMap = new PageData();
             findMap.put("userId", user.getId());
             findMap.put("mapSize", Integer.valueOf(findMap.size()));
@@ -371,32 +391,46 @@ public class CompanyController {
         //1. 非空判断
         if (pageData == null || pageData.size() == 0) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("参数错误：用户登录参数(pageData)为空！</br>");
+            model.putMsg("参数错误：用户登录参数(pageData)为空！/n");
             return model;
         }
 
         String companyIds = (String)pageData.get("companyIds");
+        String userRoleIds = (String)pageData.get("userRoleIds");
+        String userIds = (String)pageData.get("userIds");
         if (companyIds == null || companyIds.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("参数错误：请至少选择一行数据！</br>");
+            model.putMsg("参数错误：请至少选择一行数据！/n");
             return model;
         }
 
-        String id_str = StringUtil.stringTrimSpace(companyIds);
-        String[] id_arry = id_str.split(",");
+        String companyId_str = StringUtil.stringTrimSpace(companyIds);
+        String[] companyId_arry = companyId_str.split(",");
+
+        String userRoleId_str = StringUtil.stringTrimSpace(userRoleIds);
+        String[] userRoleId_arry = companyId_str.split(",");
+
+
+        String userId_str = StringUtil.stringTrimSpace(userIds);
+        String[] userId_arry = companyId_str.split(",");
 
         //2. 当前企业节点下是否含有子节点
-        String msgStr = companyService.checkDeleteCompanyByIds(id_str);
+        String msgStr = companyService.checkDeleteCompanyByIds(companyId_str);
         if (msgStr.trim().length() > 0) {
             model.putCode(Integer.valueOf(1));
             model.putMsg(msgStr);
             return model;
         }
-
+        //删除企业
+        departmentService.deleteByIds(companyId_arry);
+        //删除企业管理员
+        userService.deleteByIds(userId_arry);
+        //删除企业管理员角色
+        userRoleService.deleteByIds(userRoleId_arry);
         //禁用企业
-        departmentService.updateDisableByIds(id_arry);
+//        departmentService.updateDisableByIds(id_arry);
         //禁用企业管理员
-        userService.updateDisableByCompanyIds(id_arry);
+//        userService.updateDisableByCompanyIds(id_arry);
 
         return model;
     }

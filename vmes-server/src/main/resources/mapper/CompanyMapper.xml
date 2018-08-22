@@ -13,9 +13,9 @@
         '是否启用' isdisable,
 
         '账号' userCode,
-        '姓名' userName,
-        '手机号' userMobile,
-        '邮箱' userEmail,
+        '管理员姓名' userName,
+        '手机号' mobile,
+        '邮箱' email,
         '套餐' roleName,
         '用户类型' userType,
         '备注' remark,
@@ -24,7 +24,8 @@
         'id' id_hide,
         'pid' pid_hide,
         'roleId' roleId_hide,
-
+        'userId' userId_hide,
+        'userRoleId' userRoleId_hide,
         'layer' layer_hide,
         'companyType' companyType_hide,
         'organizeType' organizeType_hide
@@ -56,6 +57,8 @@
         <!--查询隐藏字段-->
         a.id id,
         a.pid pid,
+        b.id userId,
+        d.id userRoleId,
         a.layer layer,
         f.id roleId,
         f.remark remark,
