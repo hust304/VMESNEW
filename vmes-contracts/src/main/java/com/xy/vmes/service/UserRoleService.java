@@ -109,6 +109,12 @@ public interface UserRoleService {
      * @return
      */
     String findRoleIdsByByUserID(String userID);
+    /**
+     * 根据roleID-获取用户ID(','逗号分隔的字符串)
+     * @param roleID
+     * @return
+     */
+    String findUserIdsByByRoleID(String roleID);
 
     /**
      * 创建人：陈刚
@@ -116,6 +122,27 @@ public interface UserRoleService {
      */
     Role userRoleMap2Role(Map<String, Object> mapObject, Role object);
     List<Role> userRoleMap2RoleList(List<Map<String, Object>> mapList, List<Role> objectList);
+
+    /**
+     * 创建人：陈刚
+     * 创建时间：2018-08-22
+     */
+    List<LinkedHashMap<String, String>> listUserColumn();
+    /**
+     * 创建人：陈刚
+     * 创建时间：2018-08-22
+     */
+    List<Map<String, Object>> listUserByRole(PageData pd);
+
+    /**
+     * 获取角色ID(','逗号分隔的字符串)
+     * 创建人：陈刚
+     * 创建时间：2018-08-01
+     *
+     * @param mapList
+     * @return
+     */
+    String findUserIdsByMapList(List<Map<String, Object>> mapList);
 
 }
 

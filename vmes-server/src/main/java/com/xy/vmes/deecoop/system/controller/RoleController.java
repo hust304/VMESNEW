@@ -240,6 +240,7 @@ public class RoleController {
         Pagination pg = HttpUtils.parsePagination();
         String userId = (String)pageData.get("userId");
         String companyId = (String)pageData.get("companyId");
+        String userType = (String)pageData.get("userType");
 
         if (companyId != null && companyId.trim().length() > 0) {
             pageData.put("companyId", companyId);
@@ -247,6 +248,11 @@ public class RoleController {
         if (userId != null && userId.trim().length() > 0) {
             pageData.put("cuser", userId);
         }
+
+//        //用户类型(0:超级管理员1:企业管理员2:普通用户)
+//        if ("0".equals(userType)) {
+//            pageData.put("cuser", null);
+//        }
 
         List<Map<String, Object>> varList = roleService.getDataListPage(pageData, pg);
         List<Map<String, String>> varMapList = new ArrayList<Map<String, String>>();
@@ -704,7 +710,91 @@ public class RoleController {
     }
 
 
+    /**
+     * 获取当前角色id已经绑定用户List
+     *
+     * @author 陈刚
+     * @date 2018-07-30
+     */
+    @PostMapping("/role/listUsersByRole")
+    public ResultModel listUsersByRole() throws Exception{
+        ResultModel model = new ResultModel();
+        Map<String, Object> mapObj = new HashMap<String, Object>();
 
+        //1. 查询遍历List列表
+        List<LinkedHashMap<String, String>> titleOutList = new ArrayList<LinkedHashMap<String, String>>();
+        List<String> titlesHideList = new ArrayList<String>();
+        Map<String, String> varModelMap = new HashMap<String, String>();
+        List<LinkedHashMap<String, String>> titleList = userRoleService.listUserColumn();
+        if (titleList != null && titleList.size() > 0) {
+            LinkedHashMap<String, String> titlesMap = titleList.get(0);
+            for (Map.Entry<String, String> entry : titlesMap.entrySet()) {
+                LinkedHashMap<String, String> titleMap = new LinkedHashMap<String, String>();
+                if (entry.getKey().indexOf("_hide") != -1) {
+                    titleMap.put(entry.getKey().replace("_hide",""), entry.getValue());
+                    titlesHideList.add(entry.getKey().replace("_hide",""));
+                    varModelMap.put(entry.getKey().replace("_hide",""), "");
+                } else if (entry.getKey().indexOf("_hide") == -1) {
+                    titleMap.put(entry.getKey(), entry.getValue());
+                    varModelMap.put(entry.getKey(), "");
+                }
+                titleOutList.add(titleMap);
+            }
+        }
+        mapObj.put("hideTitles", titlesHideList);
+        mapObj.put("titles", YvanUtil.toJson(titleOutList));
+
+        //2. 分页查询数据List
+        List<Map<String, String>> varMapList = new ArrayList<Map<String, String>>();
+        PageData pageData = HttpUtils.parsePageData();
+
+        //角色id-已经绑定的用户ID
+        String userIds = "";
+        String roleId = (String)pageData.get("roleId");
+        if (roleId != null && roleId.trim().length() > 0) {
+            userIds = userRoleService.findUserIdsByByRoleID(roleId.trim());
+            userIds = StringUtil.stringTrimSpace(userIds);
+        }
+
+        String sqlUserIds = "";
+        if (userIds.trim().length() > 0) {
+            sqlUserIds = "'" + userIds.replace(",", "','") + "'";
+        }
+
+        //in  : 当前角色ID-已经绑定的用户
+        //noin: 当前角色ID-没有绑定的用户
+        String queryStr = "";
+        String type = (String)pageData.get("type");
+        if ("in".equals(type) && sqlUserIds.trim().length() > 0) {
+            queryStr = queryStr + "id in ("+sqlUserIds+")";
+        } else if ("notin".equals(type)) {
+            queryStr = queryStr + "id not in ("+sqlUserIds+")";
+        }
+        if (queryStr.trim().length() > 0) {
+            pageData.put("queryStr", queryStr);
+        }
+
+        String deptId = (String)pageData.get("deptId");
+        if (deptId != null && deptId.trim().length() > 0) {
+            pageData.put("deptId", deptId);
+        }
+
+        List<Map<String, Object>> varList = userRoleService.listUserByRole(pageData);
+        if(varList != null && varList.size() > 0) {
+            for (Map<String, Object> map : varList) {
+                Map<String, String> varMap = new HashMap<String, String>();
+                varMap.putAll(varModelMap);
+                for (Map.Entry<String, String> entry : varMap.entrySet()) {
+                    varMap.put(entry.getKey(), map.get(entry.getKey()) != null ? map.get(entry.getKey()).toString() : "");
+                }
+                varMapList.add(varMap);
+            }
+        }
+        mapObj.put("varList", YvanUtil.toJson(varMapList));
+
+        model.putResult(mapObj);
+        return model;
+    }
 }
 
 

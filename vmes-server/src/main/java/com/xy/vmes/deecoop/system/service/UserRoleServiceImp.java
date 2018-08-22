@@ -223,6 +223,22 @@ public class UserRoleServiceImp implements UserRoleService {
 
         return roleService.findRoleIdsByRoleList(roleList);
     }
+    /**
+     * 根据roleID-获取用户ID(','逗号分隔的字符串)
+     * @param roleID
+     * @return
+     */
+    public String findUserIdsByByRoleID(String roleID) {
+        if (roleID == null || roleID.trim().length() == 0) {return new String();}
+
+        PageData findMap = new PageData();
+        findMap.put("roleId", roleID);
+        findMap.put("isdisable", "1");
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+
+        List<Map<String, Object>> mapList = this.findUserRoleMapList(findMap);
+        return this.findUserIdsByMapList(mapList);
+    }
 
     /**
      * 创建人：陈刚
@@ -294,6 +310,50 @@ public class UserRoleServiceImp implements UserRoleService {
         }
 
         return objectList;
+    }
+
+    /**
+     * 创建人：陈刚
+     * 创建时间：2018-08-22
+     */
+    public List<LinkedHashMap<String, String>> listUserColumn() {
+        return userRoleMapper.listUserColumn();
+    }
+    /**
+     * 创建人：陈刚
+     * 创建时间：2018-08-22
+     */
+    public List<Map<String, Object>> listUserByRole(PageData pd) {
+        return userRoleMapper.listUserByRole(pd);
+    }
+
+    /**
+     * 获取用户ID(','逗号分隔的字符串)
+     * 创建人：陈刚
+     * 创建时间：2018-08-01
+     *
+     * @param mapList
+     * @return
+     */
+    public String findUserIdsByMapList(List<Map<String, Object>> mapList) {
+        if (mapList == null || mapList.size() == 0) {return new String();}
+
+        StringBuffer strBuf = new StringBuffer();
+        for (Map<String, Object> mapObj : mapList) {
+            String userID = (String) mapObj.get("userId");
+            if (userID != null && userID.trim().length() > 0)  {
+                strBuf.append(userID.trim());
+                strBuf.append(",");
+            }
+        }
+
+        String strTemp = strBuf.toString();
+        if (strTemp.trim().length() > 0 && strTemp.indexOf(",") != -1) {
+            strTemp = strTemp.substring(0, strTemp.lastIndexOf(","));
+            return strTemp;
+        }
+
+        return strBuf.toString();
     }
 
 }

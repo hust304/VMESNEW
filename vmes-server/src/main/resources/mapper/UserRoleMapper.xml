@@ -217,6 +217,9 @@
                     <if test="userId != null and userId != ''" >
                         and a.user_id = #{userId}
                     </if>
+                    <if test="roleId != null and roleId != ''" >
+                        and b.id = #{roleId}
+                    </if>
                     <if test="isdisable != null and isdisable != ''" >
                         and a.isdisable = #{isdisable}
                     </if>
@@ -234,7 +237,54 @@
         <if test="orderStr != null and orderStr != ''" >
             order by ${orderStr}
         </if>
+    </select>
 
+    <!-- 当前角色id已经绑定用户List 或 当前角色id没有绑定用户List-->
+    <sql id="UserField">
+        <!--查询显示字段-->
+        user_code userCode,
+        user_name userName,
+        <!--查询隐藏字段-->
+        id id,
+        isdisable isdisable,
+        cdate cdate,
+        cuser cuser
+    </sql>
+    <select id="listUserByRole" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select <include refid="UserField" />
+        from vmes_user
+        <where>
+            <if test="deptId != null and deptId != ''" >
+                and dept_id = #{deptId}
+            </if>
+            <if test="companyId != null and companyId != ''" >
+                and company_id = #{companyId}
+            </if>
+
+            <if test="isdisable != null and isdisable != ''" >
+                and isdisable = #{isdisable}
+            </if>
+            <!--queryStr 自定义sql查询语句-->
+            <if test="queryStr != null and queryStr!=''" >
+                and ${queryStr}
+            </if>
+        </where>
+    </select>
+
+    <sql id="UserColumn">
+        <!--查询显示字段-->
+        '账号' userCode,
+        '姓名' userName,
+        <!--查询隐藏字段-->
+        'id' id_hide,
+        'isdisable' isdisable_hide,
+        'cdate' cdate_hide,
+        'cuser' cuser_hide
+    </sql>
+    <select id="listUserColumn" resultType="java.util.LinkedHashMap">
+        select
+        <include refid="UserColumn"/>
+        from dual
     </select>
 
 

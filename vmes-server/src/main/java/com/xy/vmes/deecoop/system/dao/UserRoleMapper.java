@@ -88,7 +88,18 @@ public interface UserRoleMapper extends BaseMapper<UserRole> {
 	@Select("updateDisableByRoleId")
 	void updateDisableByRoleId(String roleId);
 
-
+	/**
+	 * 创建人：陈刚
+	 * 创建时间：2018-08-22
+	 */
+	@Select("listUserColumn")
+	List<LinkedHashMap<String, String>> listUserColumn();
+	/**
+	 * 创建人：陈刚
+	 * 创建时间：2018-08-22
+	 */
+	@Select("listUserByRole")
+	List<Map<String, Object>> listUserByRole(PageData pd);
 
 
 }
