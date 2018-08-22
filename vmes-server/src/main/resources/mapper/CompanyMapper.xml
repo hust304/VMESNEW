@@ -8,7 +8,7 @@
         '企业简称' companyShortname,
         '显示顺序' serialNumber,
         '企业性质' companyTypeName,
-        '有效期' companyValidityDate,
+        '截至日期' companyValidityDate,
         '企业用户数' companyUserCount,
         '是否启用' isdisable,
 
@@ -16,7 +16,7 @@
         '姓名' userName,
         '手机号' userMobile,
         '邮箱' userEmail,
-        '角色套餐' roleName,
+        '套餐' roleName,
         '用户类型' userType,
         '备注' remark,
 
