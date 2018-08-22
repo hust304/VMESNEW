@@ -2,6 +2,7 @@ package com.xy.vmes.deecoop.system.controller;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.google.gson.Gson;
+import com.xy.vmes.common.util.Common;
 import com.xy.vmes.common.util.RedisUtils;
 import com.xy.vmes.entity.Department;
 import com.xy.vmes.entity.Role;
@@ -285,7 +286,8 @@ public class RoleController {
         //1. 非空判断
         if (pageData == null || pageData.size() == 0) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("参数错误：参数(pageData)为空！</br>");
+            model.putMsg("参数错误：参数(pageData)为空！");
+            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
 
@@ -293,6 +295,7 @@ public class RoleController {
         if (name == null || name.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("(角色名称)输入为空或空字符串，(角色名称)是必填字段不可为空！<br/>");
+            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
 
@@ -305,7 +308,8 @@ public class RoleController {
         //角色名称是否相同
         if (roleService.isExistByName(companyId, null, name)) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("角色名称：" + name + "&nbsp;在系统中已经存在！</br>");
+            model.putMsg("角色名称：" + name + "&nbsp;在系统中已经存在！");
+            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
 
@@ -343,7 +347,8 @@ public class RoleController {
         //1. 非空判断
         if (pageData == null || pageData.size() == 0) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("参数错误：用户登录参数(pageData)为空！</br>");
+            model.putMsg("参数错误：用户登录参数(pageData)为空！");
+            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
 
@@ -367,7 +372,8 @@ public class RoleController {
         //角色名称是否相同
         if (roleService.isExistByName(companyId, id, name)) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("角色名称：" + name + "&nbsp;在系统中已经存在！</br>");
+            model.putMsg("角色名称：" + name + "&nbsp;在系统中已经存在！");
+            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
 
@@ -392,7 +398,8 @@ public class RoleController {
         //1. 非空判断
         if (pageData == null || pageData.size() == 0) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("参数错误：用户登录参数(pageData)为空！</br>");
+            model.putMsg("参数错误：用户登录参数(pageData)为空！");
+            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
 
@@ -441,14 +448,16 @@ public class RoleController {
         //1. 非空判断
         if (pageData == null || pageData.size() == 0) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("参数错误：用户登录参数(pageData)为空！</br>");
+            model.putMsg("参数错误：用户登录参数(pageData)为空！");
+            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
 
         String ids = (String)pageData.get("ids");
         if (ids == null || ids.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("参数错误：请至少选择一行数据！</br>");
+            model.putMsg("参数错误：请至少选择一行数据！");
+            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
 
@@ -520,7 +529,8 @@ public class RoleController {
         //1. 非空判断
         if (pageData == null || pageData.size() == 0) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("参数错误：用户登录参数(pageData)为空！</br>");
+            model.putMsg("参数错误：用户登录参数(pageData)为空！");
+            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
 
@@ -568,7 +578,8 @@ public class RoleController {
         //1. 非空判断
         if (pageData == null || pageData.size() == 0) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("参数错误：用户登录参数(pageData)为空！</br>");
+            model.putMsg("参数错误：用户登录参数(pageData)为空！");
+            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
 
@@ -654,7 +665,8 @@ public class RoleController {
         //1. 非空判断
         if (pageData == null || pageData.size() == 0) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("参数错误：用户登录参数(pageData)为空！</br>");
+            model.putMsg("参数错误：用户登录参数(pageData)为空！");
+            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
 

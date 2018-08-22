@@ -216,7 +216,6 @@
 
     <!-- 字段 自动创建，可以修改-->
     <sql id="Field1">
-        code code,<!-- 字典编码 -->
         name name,<!-- 字典名称 -->
         remark remark,<!-- 备注 -->
         isdisable isdisable,<!-- 是否禁用(0:已禁用 1:启用) 数据字典:sys_isdisable -->
@@ -225,7 +224,6 @@
 
     <!-- 字段值 自动创建，可以修改-->
     <sql id="Column1">
-            '字典编码'  code,
             '字典名称'  name,
             '备注'  remark,
             '是否禁用' isdisable,
@@ -274,9 +272,6 @@
         from
         <include refid="tableName"></include>
         <where>
-            <if test="currentUserId != 0"><!-- 超级管理员 -->
-                and company_id in (select company_id from vmes_user where id = #{currentUserId})
-            </if>
             <if test="name!= null and name != ''"><!-- 关键词检索 -->
                 and name LIKE CONCAT(CONCAT('%', #{name}),'%')
             </if>

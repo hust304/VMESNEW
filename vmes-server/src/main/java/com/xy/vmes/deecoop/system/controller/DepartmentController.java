@@ -1,6 +1,7 @@
 package com.xy.vmes.deecoop.system.controller;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.common.util.Common;
 import com.xy.vmes.entity.Department;
 import com.xy.vmes.service.DepartmentService;
 import com.yvan.*;
@@ -219,14 +220,16 @@ public class DepartmentController {
         //1. 非空判断
         if (pageData == null || pageData.size() == 0) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("参数错误：用户登录参数(pageData)为空！</br>");
+            model.putMsg("参数错误：用户登录参数(pageData)为空！");
+            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
 
         Department deptObj = (Department)HttpUtils.pageData2Entity(pageData, new Department());
         if (deptObj == null) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("参数错误：Map 转 组织对象Department 异常！</br>");
+            model.putMsg("参数错误：Map 转 组织对象Department 异常！");
+            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
 
@@ -241,13 +244,15 @@ public class DepartmentController {
         Department paterObj = departmentService.findDepartmentById(deptObj.getPid());
         if (paterObj == null) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("(pid:"+ deptObj.getPid() + ")系统中无数据，请与管理员联系！</br>");
+            model.putMsg("(pid:"+ deptObj.getPid() + ")系统中无数据，请与管理员联系！");
+            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
 
         //2. (部门名称)在同一层名称不可重复
         if (departmentService.isExistByName(deptObj.getPid(), null, deptObj.getName())) {
-            String msgTemp = "上级部门名称: {0}<br/>部门名称: {1}<br/>在系统中已经重复！</br>";
+            String msgTemp = "上级部门名称: {0}<br/>部门名称: {1}<br/>在系统中已经重复！";
+            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             String str_isnull = MessageFormat.format(msgTemp,
                     paterObj.getName(),
                     deptObj.getName());
@@ -309,14 +314,16 @@ public class DepartmentController {
         //1. 非空判断
         if (pageData == null || pageData.size() == 0) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("参数错误：用户登录参数(pageData)为空！</br>");
+            model.putMsg("参数错误：用户登录参数(pageData)为空！");
+            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
 
         Department deptObj = (Department)HttpUtils.pageData2Entity(pageData, new Department());
         if (deptObj == null) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("参数错误：Map 转 组织对象Department 异常！</br>");
+            model.putMsg("参数错误：Map 转 组织对象Department 异常！");
+            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
 
@@ -331,13 +338,15 @@ public class DepartmentController {
         Department paterObj = departmentService.findDepartmentById(deptObj.getPid());
         if (paterObj == null) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("(pid:"+ deptObj.getPid() + ")系统中无数据，请与管理员联系！</br>");
+            model.putMsg("(pid:"+ deptObj.getPid() + ")系统中无数据，请与管理员联系！");
+            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
 
         //2. (部门名称)在同一层名称不可重复
         if (departmentService.isExistByName(deptObj.getPid(), deptObj.getId(), deptObj.getName())) {
-            String msgTemp = "上级部门名称: {0}<br/>部门名称: {1}<br/>在系统中已经重复！</br>";
+            String msgTemp = "上级部门名称: {0}<br/>部门名称: {1}<br/>在系统中已经重复！";
+            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             msgTemp = MessageFormat.format(msgTemp,
                     paterObj.getName(),
                     deptObj.getName());
@@ -394,7 +403,8 @@ public class DepartmentController {
         //1. 非空判断
         if (pageData == null || pageData.size() == 0) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("参数错误：用户登录参数(pageData)为空！</br>");
+            model.putMsg("参数错误：用户登录参数(pageData)为空！");
+            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
 
@@ -445,14 +455,16 @@ public class DepartmentController {
         //1. 非空判断
         if (pageData == null || pageData.size() == 0) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("参数错误：用户登录参数(pageData)为空！</br>");
+            model.putMsg("参数错误：用户登录参数(pageData)为空！");
+            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
 
         String ids = (String)pageData.get("ids");
         if (ids == null || ids.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("参数错误：请至少选择一行数据！</br>");
+            model.putMsg("参数错误：请至少选择一行数据！");
+            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
 

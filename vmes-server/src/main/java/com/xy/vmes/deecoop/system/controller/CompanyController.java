@@ -114,20 +114,23 @@ public class CompanyController {
         //1. 非空判断
         if (pageData == null || pageData.size() == 0) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("参数错误：用户登录参数(pageData)为空！</br>");
+            model.putMsg("参数错误：用户登录参数(pageData)为空！");
+            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
 
         String roleId = (String)pageData.get("roleId");
         if (roleId == null || roleId.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("请选择一个角色套餐！</br>");
+            model.putMsg("请选择一个角色套餐！");
+            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
         Department companyObj = (Department)HttpUtils.pageData2Entity(pageData, new Department());
         if (companyObj == null) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("参数错误：Map 转 组织对象Department 异常！</br>");
+            model.putMsg("参数错误：Map 转 组织对象Department 异常！");
+            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
 
@@ -142,21 +145,26 @@ public class CompanyController {
         Department rootObj = departmentService.findDepartmentByRoot();
         if (rootObj == null) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("根节点(pid:root)系统中无数据，请与管理员联系！</br>");
+            model.putMsg("根节点(pid:root)系统中无数据，请与管理员联系！");
+            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
 
         //2. (企业名称-企业编码)在同一层不可重复
         StringBuffer msgBuf = new StringBuffer();
         if (companyService.isExistByName(rootObj.getId(), null, companyObj.getName())) {
-            String msgTemp = "根名称: {0}<br/>企业名称: {1}<br/>在系统中已经重复！</br>";
+            String msgTemp = "根名称: {0}" + Common.SYS_ENDLINE_DEFAULT +
+                    "企业名称: {1}" + Common.SYS_ENDLINE_DEFAULT +
+                    "在系统中已经重复！" + Common.SYS_ENDLINE_DEFAULT;
             String msgExist = MessageFormat.format(msgTemp,
                     rootObj.getName(),
                     companyObj.getName());
             msgBuf.append(msgExist);
         }
         if (companyService.isExistByCode(rootObj.getId(), null, companyObj.getCode())) {
-            String msgTemp = "根名称: {0}<br/>企业编码: {1}<br/>在系统中已经重复！</br>";
+            String msgTemp = "根名称: {0}" + Common.SYS_ENDLINE_DEFAULT +
+                    "企业编码: {1}" + Common.SYS_ENDLINE_DEFAULT +
+                    "在系统中已经重复！" + Common.SYS_ENDLINE_DEFAULT;
             String msgExist = MessageFormat.format(msgTemp,
                     rootObj.getName(),
                     companyObj.getCode());
@@ -244,21 +252,24 @@ public class CompanyController {
         //1. 非空判断
         if (pageData == null || pageData.size() == 0) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("参数错误：用户登录参数(pageData)为空！</br>");
+            model.putMsg("参数错误：用户登录参数(pageData)为空！");
+            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
 
         String roleId = (String)pageData.get("roleId");
         if (roleId == null || roleId.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("请选择一个角色套餐！</br>");
+            model.putMsg("请选择一个角色套餐！");
+            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
 
         Department companyObj = (Department)HttpUtils.pageData2Entity(pageData, new Department());
         if (companyObj == null) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("参数错误：Map 转 组织对象Department 异常！</br>");
+            model.putMsg("参数错误：Map 转 组织对象Department 异常！");
+            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
 
@@ -273,21 +284,26 @@ public class CompanyController {
         Department rootObj = departmentService.findDepartmentByRoot();
         if (rootObj == null) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("根节点(pid:root)系统中无数据，请与管理员联系！</br>");
+            model.putMsg("根节点(pid:root)系统中无数据，请与管理员联系！");
+            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
 
         //2. (企业名称-企业编码)在同一层不可重复
         StringBuffer msgBuf = new StringBuffer();
         if (companyService.isExistByName(rootObj.getId(), companyObj.getId(), companyObj.getName())) {
-            String msgTemp = "根名称: {0}<br/>企业名称: {1}<br/>在系统中已经重复！</br>";
+            String msgTemp = "根名称: {0}" + Common.SYS_ENDLINE_DEFAULT +
+                    "企业名称: {1}" + Common.SYS_ENDLINE_DEFAULT +
+                    "在系统中已经重复！" + Common.SYS_ENDLINE_DEFAULT;
             String msgExist = MessageFormat.format(msgTemp,
                     rootObj.getName(),
                     companyObj.getName());
             msgBuf.append(msgExist);
         }
         if (companyService.isExistByCode(rootObj.getId(), companyObj.getId(), companyObj.getCode())) {
-            String msgTemp = "根名称: {0}<br/>企业编码: {1}<br/>在系统中已经重复！</br>";
+            String msgTemp = "根名称: {0}" + Common.SYS_ENDLINE_DEFAULT +
+                    "企业编码: {1}" + Common.SYS_ENDLINE_DEFAULT +
+                    "在系统中已经重复！" + Common.SYS_ENDLINE_DEFAULT;
             String msgExist = MessageFormat.format(msgTemp,
                     rootObj.getName(),
                     companyObj.getCode());

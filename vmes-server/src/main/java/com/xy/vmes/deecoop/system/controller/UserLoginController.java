@@ -104,20 +104,25 @@ public class UserLoginController {
         StringBuffer msgBuf = new StringBuffer();
         PageData pageData = HttpUtils.parsePageData();
         if (pageData == null || pageData.size() == 0) {
-            msgBuf.append("参数错误：用户登录参数(pageData)为空！</br>");
+            msgBuf.append("参数错误：用户登录参数(pageData)为空！");
+            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
         } else {
             if (pageData.get("userCode") == null || pageData.get("userCode").toString().trim().length() == 0 ) {
-                msgBuf.append("参数错误：账号输入为空或空字符串，账号为必填项不可为空！</br>");
+                msgBuf.append("参数错误：账号输入为空或空字符串，账号为必填项不可为空！");
+                model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             }
             if (pageData.get("userPassword") == null || pageData.get("userPassword").toString().trim().length() == 0 ) {
-                msgBuf.append("参数错误：密码输入为空或空字符串，密码为必填项不可为空！</br>");
+                msgBuf.append("参数错误：密码输入为空或空字符串，密码为必填项不可为空！");
+                model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             }
 
             if (pageData.get("securityCode") == null || pageData.get("securityCode").toString().trim().length() == 0 ) {
-                msgBuf.append("参数错误：验证码入为空或空字符串，验证码为必填项不可为空！</br>");
+                msgBuf.append("参数错误：验证码入为空或空字符串，验证码为必填项不可为空！");
+                model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             }
             if (pageData.get("securityCodeKey") == null || pageData.get("securityCodeKey").toString().trim().length() == 0 ) {
-                msgBuf.append("参数错误：验证码(Redis缓存Key)为空或空字符串！</br>");
+                msgBuf.append("参数错误：验证码(Redis缓存Key)为空或空字符串！");
+                model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             }
         }
 
@@ -228,7 +233,9 @@ public class UserLoginController {
         //缓存业务数据
         //Redis缓存Key:(uuid:用户ID:deecoop:userLoginMap)
         String Redis_userLogin_Key = new_uuid + ":" + userID + ":" + "deecoop" + ":" + Common.REDIS_USERLOGINMAP;
-        redisClient.set(Redis_userLogin_Key, YvanUtil.toJson(RedisMap));
+        //redisClient.set(Redis_userLogin_Key, YvanUtil.toJson(RedisMap));
+        //30 * 60 * 1000 (半小时)
+        redisClient.setWithExpireTime(Redis_userLogin_Key, YvanUtil.toJson(RedisMap), Common.REDIS_SESSIONID_LONG);
 
         model.putCode(Integer.valueOf(0));
         model.putResult(YvanUtil.toJson(dataMap));
@@ -257,7 +264,7 @@ public class UserLoginController {
 
         //Redis-验证码-缓存1分钟(60 * 1000)
         String RedisCodeKey = Conv.createUuid() + ":" + Common.REDIS_SECURITY_CODE;
-        redisClient.setWithExpireTime(RedisCodeKey, SecurityCode, 1 * 60 * 1000);
+        redisClient.setWithExpireTime(RedisCodeKey, SecurityCode, Common.REDIS_SECURITYCODE_LONG);
 
         Map<String, Object> dataMap = new HashMap<String, Object>();
         dataMap.put("securityCode", SecurityCode);
@@ -284,13 +291,16 @@ public class UserLoginController {
         StringBuffer msgBuf = new StringBuffer();
         PageData pageData = HttpUtils.parsePageData();
         if (pageData == null || pageData.size() == 0) {
-            msgBuf.append("参数错误：用户登录参数(pageData)为空！</br>");
+            msgBuf.append("参数错误：用户登录参数(pageData)为空！");
+            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
         } else {
             if (pageData.get("userID") == null || pageData.get("userID").toString().trim().length() == 0 ) {
-                msgBuf.append("参数错误：系统用户ID为空或空字符串！</br>");
+                msgBuf.append("参数错误：系统用户ID为空或空字符串！");
+                model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             }
             if (pageData.get("password") == null || pageData.get("password").toString().trim().length() == 0 ) {
-                msgBuf.append("参数错误：密码输入为空或空字符串，密码为必填项不可为空！</br>");
+                msgBuf.append("参数错误：密码输入为空或空字符串，密码为必填项不可为空！");
+                model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             }
         }
 
@@ -311,9 +321,10 @@ public class UserLoginController {
         findMap.put("mapSize", Integer.valueOf(findMap.size()));
         List<Map<String, Object>> objectList = userEmployService.findViewUserEmployList(findMap);
         if (objectList == null || objectList.size() == 0) {
-            //throw new RestException("", "userID:" + userID + " 系统中不存在，请与管理员联系！<br/>");
+            //throw new RestException("", "userID:" + userID + " 系统中不存在，请与管理员联系！");
             model.putCode(Integer.valueOf(1));
-            model.putMsg("userID:" + userID + " 系统中不存在，请与管理员联系！<br/>");
+            model.putMsg("userID:" + userID + " 系统中不存在，请与管理员联系！");
+            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
         Map<String, Object> userEmployMap = objectList.get(0);
@@ -343,7 +354,8 @@ public class UserLoginController {
         PageData pageData = HttpUtils.parsePageData();
         if (pageData == null || pageData.size() == 0) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("参数错误：用户登录参数(pageData)为空！</br>");
+            model.putMsg("参数错误：用户登录参数(pageData)为空！");
+            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
 
@@ -353,23 +365,27 @@ public class UserLoginController {
         String userCode = (String)pageData.get("userCode");
 
         if (type == null || type.trim().length() == 0) {
-            //throw new RestException("", "参数错误：密码找回方式为空或空字符串，密码找回方式为必填项不可为空！</br>");
+            //throw new RestException("", "参数错误：密码找回方式为空或空字符串，密码找回方式为必填项不可为空！");
             model.putCode(Integer.valueOf(1));
-            model.putMsg("参数错误：密码找回方式为空或空字符串！</br>");
+            model.putMsg("参数错误：密码找回方式为空或空字符串！");
+            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
         //type (mobile, email)取值范围
         StringBuffer msgBuf = new StringBuffer();
         if ("mobile".equals(type.toLowerCase())) {
             if (mobile == null || mobile.trim().length() == 0) {
-                msgBuf.append("参数错误：手机号为空或空字符串，手机号为必填项不可为空！</br>");
+                msgBuf.append("参数错误：手机号为空或空字符串，手机号为必填项不可为空！");
+                model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             }
         } else if ("email".equals(type.toLowerCase())) {
             if (userCode == null || userCode.trim().length() == 0) {
-                msgBuf.append("参数错误：账号手机为空或空字符串，账号手机为必填项不可为空！</br>");
+                msgBuf.append("参数错误：账号手机为空或空字符串，账号手机为必填项不可为空！");
+                model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             }
             if (email == null || email.trim().length() == 0) {
-                msgBuf.append("参数错误：邮箱地址为空或空字符串，邮箱地址为必填项不可为空！</br>");
+                msgBuf.append("参数错误：邮箱地址为空或空字符串，邮箱地址为必填项不可为空！");
+                model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             }
         }
         if (msgBuf.toString().trim().length() > 0) {
@@ -386,22 +402,25 @@ public class UserLoginController {
         findMap.put("userIsdisable", "0");
         if ("mobile".equals(type.toLowerCase())) {
             findMap.put("userMobile", mobile);
-            msgBuf.append("手机号:" + mobile + "<br/>");
+            msgBuf.append("手机号:" + mobile);
+            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
         } else if ("email".equals(type.toLowerCase())) {
             String queryStr = " (a.user_code = ''{0}'' or a.mobile = ''{0}'') ";
             queryStr = MessageFormat.format(queryStr, userCode);
             findMap.put("queryStr", queryStr);
             findMap.put("userEmail", email);
 
-            msgBuf.append("账号手机:" + userCode + "<br/>");
-            msgBuf.append("邮箱地址:" + email + "<br/>");
+            msgBuf.append("账号手机:" + userCode);
+            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
+            msgBuf.append("邮箱地址:" + email);
+            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
         }
         findMap.put("mapSize", Integer.valueOf(findMap.size()));
         List<Map<String, Object>> objectList = userEmployService.findViewUserEmployList(findMap);
         if (objectList == null || objectList.size() == 0) {
-            //throw new RestException("", msgBuf.toString() + "系统中不存在，请与管理员联系！<br/>");
             model.putCode(Integer.valueOf(1));
-            model.putMsg(msgBuf.toString() + "系统中不存在，请与管理员联系！<br/>");
+            model.putMsg(msgBuf.toString() + "系统中不存在，请与管理员联系！");
+            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
         Map<String, Object> userEmployMap = objectList.get(0);
@@ -440,14 +459,16 @@ public class UserLoginController {
         //1. 非空判断
         if (pageData == null || pageData.size() == 0) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("参数错误：用户登录参数(pageData)为空！</br>");
+            model.putMsg("参数错误：用户登录参数(pageData)为空！");
+            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
 
         String sessionID = (String)pageData.get("sessionID");
         if (sessionID == null || sessionID.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("sessionID为空或空字符串！<br/>");
+            model.putMsg("sessionID为空或空字符串！");
+            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
 
@@ -475,14 +496,16 @@ public class UserLoginController {
         //1. 非空判断
         if (pageData == null || pageData.size() == 0) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("参数错误：用户登录参数(pageData)为空！</br>");
+            model.putMsg("参数错误：用户登录参数(pageData)为空！");
+            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
 
         String userID = (String)pageData.get("userID");
         if (userID == null || userID.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("userID为空或空字符串！<br/>");
+            model.putMsg("userID为空或空字符串！");
+            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
 
@@ -525,14 +548,16 @@ public class UserLoginController {
         //1. 非空判断
         if (pageData == null || pageData.size() == 0) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("参数错误：用户登录参数(pageData)为空！</br>");
+            model.putMsg("参数错误：用户登录参数(pageData)为空！");
+            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
 
         String uuid = (String)pageData.get("uuid");
         if (uuid == null || uuid.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("uuid为空或空字符串！<br/>");
+            model.putMsg("uuid为空或空字符串！");
+            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
 
@@ -574,14 +599,16 @@ public class UserLoginController {
         //1. 非空判断
         if (pageData == null || pageData.size() == 0) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("参数错误：用户登录参数(pageData)为空！</br>");
+            model.putMsg("参数错误：用户登录参数(pageData)为空！");
+            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
 
         String userID = (String)pageData.get("userID");
         if (userID == null || userID.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("userID为空或空字符串！<br/>");
+            model.putMsg("userID为空或空字符串！");
+            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
 
@@ -602,14 +629,16 @@ public class UserLoginController {
         //1. 非空判断
         if (pageData == null || pageData.size() == 0) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("参数错误：用户登录参数(pageData)为空！</br>");
+            model.putMsg("参数错误：用户登录参数(pageData)为空！");
+            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
 
         String uuid = (String)pageData.get("uuid");
         if (uuid == null || uuid.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("uuid为空或空字符串！<br/>");
+            model.putMsg("uuid为空或空字符串！");
+            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
 
@@ -625,14 +654,16 @@ public class UserLoginController {
         //1. 非空判断
         if (pageData == null || pageData.size() == 0) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("参数错误：用户登录参数(pageData)为空！</br>");
+            model.putMsg("参数错误：用户登录参数(pageData)为空！");
+            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
 
         String sessionID = (String)pageData.get("sessionID");
         if (sessionID == null || sessionID.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("uuid为空或空字符串！<br/>");
+            model.putMsg("uuid为空或空字符串！");
+            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
 
