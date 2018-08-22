@@ -1,5 +1,6 @@
 package com.xy.vmes.deecoop.system.controller;
 
+import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.Common;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.Department;
@@ -79,7 +80,8 @@ public class CompanyController {
             pageData.put("cuser", userId);
         }
 
-        List<Map<String, Object>> varList = companyService.getDataListPage(pageData, HttpUtils.parsePagination());
+        Pagination pg = HttpUtils.parsePagination();
+        List<Map<String, Object>> varList = companyService.getDataListPage(pageData, pg);
         List<Map<String, String>> varMapList = new ArrayList<Map<String, String>>();
         if(varList != null && varList.size() > 0) {
             for (Map<String, Object> map : varList) {
@@ -92,6 +94,7 @@ public class CompanyController {
             }
         }
         mapObj.put("varList", YvanUtil.toJson(varMapList));
+        mapObj.put("pageData", YvanUtil.toJson(pg));
 
         model.putResult(mapObj);
         return model;
@@ -235,7 +238,7 @@ public class CompanyController {
             return model;
         }
 
-        String roleId = (String)pageData.get("roleId_new");
+        String roleId = (String)pageData.get("roleId");
         if (roleId == null || roleId.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("请选择一个角色套餐！</br>");
