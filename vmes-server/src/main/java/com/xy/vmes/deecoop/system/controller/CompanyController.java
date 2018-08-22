@@ -235,16 +235,10 @@ public class CompanyController {
             return model;
         }
 
-        String roleId_new = (String)pageData.get("roleId_new");
-        if (roleId_new == null || roleId_new.trim().length() == 0) {
+        String roleId = (String)pageData.get("roleId_new");
+        if (roleId == null || roleId.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("请选择一个角色套餐！</br>");
-            return model;
-        }
-        String roleId_old = (String)pageData.get("roleId_old");
-        if (roleId_old == null || roleId_old.trim().length() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("角色套餐ID(角色ID)为空或空字符串！</br>");
             return model;
         }
 
@@ -318,12 +312,11 @@ public class CompanyController {
             //4. 修改用户角色表
             PageData findMap = new PageData();
             findMap.put("userId", user.getId());
-            findMap.put("roleId_old", roleId_old);
             findMap.put("mapSize", Integer.valueOf(findMap.size()));
             UserRole userRole = userRoleService.findUserRole(findMap);
 
             if (userRole != null) {
-                userRole.setRoleId(roleId_new);
+                userRole.setRoleId(roleId);
                 userRoleService.update(userRole);
             }
         }
