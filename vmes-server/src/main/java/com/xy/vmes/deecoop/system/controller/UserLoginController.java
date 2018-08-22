@@ -158,8 +158,12 @@ public class UserLoginController {
         }
         Map<String, Object> userEmployMap = objectList.get(0);
         String userID = userEmployMap.get("userID").toString().toLowerCase();
-        String companyID = userEmployMap.get("userCompanyID").toString();
         String userType = userEmployMap.get("userType").toString();
+
+        String companyID = "";
+        if (userEmployMap.get("userCompanyID") != null) {
+            companyID = (String)userEmployMap.get("userCompanyID");
+        }
 
         //2. 非超级管理员(账号)-比较当前登录企业账号-是否超过(有效期)
         if (!"0".equals(userType)) {
@@ -210,7 +214,7 @@ public class UserLoginController {
         dataMap.put("userName", employ.getName());
 
         //deptId部门id-postId岗位ID
-        dataMap.put("deptId", "");
+        dataMap.put("deptId", user.getDeptId());
         dataMap.put("postId", "");
 
         //userRole用户角色(角色ID','分隔的字符串)
