@@ -237,6 +237,7 @@ public class RoleController {
 
         //2. 分页查询数据List
         PageData pageData = HttpUtils.parsePageData();
+        Pagination pg = HttpUtils.parsePagination();
         String userId = (String)pageData.get("userId");
         String companyId = (String)pageData.get("companyId");
 
@@ -247,7 +248,7 @@ public class RoleController {
             pageData.put("cuser", userId);
         }
 
-        List<Map<String, Object>> varList = roleService.getDataListPage(pageData, HttpUtils.parsePagination());
+        List<Map<String, Object>> varList = roleService.getDataListPage(pageData, pg);
         List<Map<String, String>> varMapList = new ArrayList<Map<String, String>>();
         if(varList != null && varList.size() > 0) {
             for (Map<String, Object> map : varList) {
@@ -260,7 +261,7 @@ public class RoleController {
             }
         }
         mapObj.put("varList", YvanUtil.toJson(varMapList));
-
+        mapObj.put("pageData", YvanUtil.toJson(pg));
         model.putResult(mapObj);
         return model;
     }

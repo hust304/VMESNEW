@@ -521,6 +521,7 @@ public class DepartmentController {
             }
         }
         mapObj.put("varList",varMapList);
+        mapObj.put("pageData", YvanUtil.toJson(pg));
 
         model.putResult(mapObj);
         return model;

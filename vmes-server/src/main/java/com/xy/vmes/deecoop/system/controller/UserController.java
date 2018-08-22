@@ -404,6 +404,7 @@ public class UserController {
             }
         }
         result.put("varList",varMapList);
+        result.put("pageData", YvanUtil.toJson(pg));
         model.putResult(result);
 
         Long endTime = System.currentTimeMillis();

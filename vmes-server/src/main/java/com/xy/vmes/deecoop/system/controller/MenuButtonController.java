@@ -487,7 +487,7 @@ public class MenuButtonController {
             }
         }
         mapObj.put("varList", YvanUtil.toJson(varMapList));
-
+        mapObj.put("pageData", YvanUtil.toJson(pg));
         model.putResult(mapObj);
         return model;
     }

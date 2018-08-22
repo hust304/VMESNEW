@@ -13,6 +13,7 @@ import com.xy.vmes.service.UserService;
 import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
+import com.yvan.YvanUtil;
 import com.yvan.cache.RedisClient;
 import com.yvan.springmvc.ResultModel;
 import com.yvan.template.ExcelAjaxTemplate;
@@ -357,6 +358,7 @@ public class DictionaryController {
             }
         }
         result.put("varList",varMapList);
+        result.put("pageData", YvanUtil.toJson(pg));
         model.putResult(result);
 
         Long endTime = System.currentTimeMillis();
