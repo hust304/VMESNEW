@@ -129,7 +129,7 @@ public class ${objectName}Controller {
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
-        Pagination pg = HttpUtils.parsePagination();
+        Pagination pg = HttpUtils.parsePagination(pd);
         List<${objectName}> ${objectNameLower}List = ${objectNameLower}Service.dataListPage(pd,pg);
         model.putResult(${objectNameLower}List);
         Long endTime = System.currentTimeMillis();
@@ -180,7 +180,7 @@ public class ${objectName}Controller {
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
-        Pagination pg = HttpUtils.parsePagination();
+        Pagination pg = HttpUtils.parsePagination(pd);
         Map result = new HashMap();
         List<LinkedHashMap> titles = ${objectNameLower}Service.getColumnList();
 

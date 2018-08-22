@@ -141,7 +141,7 @@ public class DictionaryController {
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
-        Pagination pg = HttpUtils.parsePagination();
+        Pagination pg = HttpUtils.parsePagination(pd);
         List<Dictionary> dictionaryList = dictionaryService.dataListPage(pd,pg);
         model.putResult(dictionaryList);
         Long endTime = System.currentTimeMillis();
@@ -318,7 +318,7 @@ public class DictionaryController {
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
-        Pagination pg = HttpUtils.parsePagination();
+        Pagination pg = HttpUtils.parsePagination(pd);
         Map result = new HashMap();
 
         List<LinkedHashMap> titles =dictionaryService.getColumnList();
@@ -434,7 +434,7 @@ public class DictionaryController {
         findMap.put("currentUserId", "0");  //测试代码-真实环境无此代码
         findMap.put("queryStr", queryStr);
 
-        Pagination pg = HttpUtils.parsePagination();
+        Pagination pg = HttpUtils.parsePagination(pageData);
         List<Map> dataList = dictionaryService.getDataList(findMap);
 
         //查询数据转换成Excel导出数据

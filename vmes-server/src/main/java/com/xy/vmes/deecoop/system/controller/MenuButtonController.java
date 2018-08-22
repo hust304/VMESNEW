@@ -133,7 +133,7 @@ public class MenuButtonController {
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
-        Pagination pg = HttpUtils.parsePagination();
+        Pagination pg = HttpUtils.parsePagination(pd);
         List<MenuButton> menuButtonList = menuButtonService.dataListPage(pd,pg);
         model.putResult(menuButtonList);
         Long endTime = System.currentTimeMillis();
@@ -492,7 +492,7 @@ public class MenuButtonController {
         //2. 分页查询数据List
         List<Map<String, String>> varMapList = new ArrayList<Map<String, String>>();
         PageData pd = HttpUtils.parsePageData();
-        Pagination pg = HttpUtils.parsePagination();
+        Pagination pg = HttpUtils.parsePagination(pd);
         List<Map<String, Object>> varList = menuButtonService.getDataListPage(pd, pg);
         if(varList != null && varList.size() > 0) {
             for (Map<String, Object> map : varList) {

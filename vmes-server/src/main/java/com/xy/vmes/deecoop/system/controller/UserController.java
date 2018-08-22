@@ -138,7 +138,7 @@ public class UserController {
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
-        Pagination pg = HttpUtils.parsePagination();
+        Pagination pg = HttpUtils.parsePagination(pd);
         List<User> userList = userService.dataListPage(pd,pg);
         model.putResult(userList);
         Long endTime = System.currentTimeMillis();
@@ -363,7 +363,7 @@ public class UserController {
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
-        Pagination pg = HttpUtils.parsePagination();
+        Pagination pg = HttpUtils.parsePagination(pd);
 
         Map result = new HashMap();
         List<LinkedHashMap> titles = userService.getColumnList();

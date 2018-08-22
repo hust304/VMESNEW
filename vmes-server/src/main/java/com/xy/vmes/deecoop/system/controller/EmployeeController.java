@@ -145,7 +145,7 @@ public class EmployeeController {
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
-        Pagination pg = HttpUtils.parsePagination();
+        Pagination pg = HttpUtils.parsePagination(pd);
         List<Employee> employeeList = employeeService.dataListPage(pd,pg);
         model.putResult(employeeList);
         Long endTime = System.currentTimeMillis();
@@ -657,7 +657,7 @@ public class EmployeeController {
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
-        Pagination pg = HttpUtils.parsePagination();
+        Pagination pg = HttpUtils.parsePagination(pd);
 
         Map result = new HashMap();
         List<LinkedHashMap> titles = employeeService.getColumnList();

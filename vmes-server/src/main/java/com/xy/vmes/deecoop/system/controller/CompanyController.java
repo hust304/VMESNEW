@@ -81,7 +81,7 @@ public class CompanyController {
             pageData.put("cuser", userId);
         }
 
-        Pagination pg = HttpUtils.parsePagination();
+        Pagination pg = HttpUtils.parsePagination(pageData);
         List<Map<String, Object>> varList = companyService.getDataListPage(pageData, pg);
         List<Map<String, String>> varMapList = new ArrayList<Map<String, String>>();
         if(varList != null && varList.size() > 0) {

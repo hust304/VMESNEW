@@ -146,7 +146,7 @@ public class PostController {
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
-        Pagination pg = HttpUtils.parsePagination();
+        Pagination pg = HttpUtils.parsePagination(pd);
         List<Post> postList = postService.dataListPage(pd,pg);
         model.putResult(postList);
         Long endTime = System.currentTimeMillis();
@@ -378,7 +378,7 @@ public class PostController {
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
-        Pagination pg = HttpUtils.parsePagination();
+        Pagination pg = HttpUtils.parsePagination(pd);
 
 
         Map result = new HashMap();

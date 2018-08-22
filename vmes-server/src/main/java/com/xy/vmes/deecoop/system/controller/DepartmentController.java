@@ -128,7 +128,7 @@ public class DepartmentController {
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
-        Pagination pg = HttpUtils.parsePagination();
+        Pagination pg = HttpUtils.parsePagination(pd);
         List<Department> departmentList = departmentService.dataListPage(pd,pg);
         model.putResult(departmentList);
         Long endTime = System.currentTimeMillis();
@@ -519,7 +519,7 @@ public class DepartmentController {
         //2. 分页查询数据List
         List<Map<String, String>> varMapList = new ArrayList<Map<String, String>>();
         PageData pd = HttpUtils.parsePageData();
-        Pagination pg = HttpUtils.parsePagination();
+        Pagination pg = HttpUtils.parsePagination(pd);
         List<Map<String, Object>> varList = departmentService.getDataListPage(pd, pg);
         if(varList != null && varList.size() > 0){
             for(int i=0; i < varList.size(); i++){

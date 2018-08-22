@@ -146,7 +146,7 @@ public class RoleController {
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
-        Pagination pg = HttpUtils.parsePagination();
+        Pagination pg = HttpUtils.parsePagination(pd);
         List<Role> roleList = roleService.dataListPage(pd,pg);
         model.putResult(roleList);
         Long endTime = System.currentTimeMillis();
@@ -238,7 +238,7 @@ public class RoleController {
 
         //2. 分页查询数据List
         PageData pageData = HttpUtils.parsePageData();
-        Pagination pg = HttpUtils.parsePagination();
+        Pagination pg = HttpUtils.parsePagination(pageData);
         String userId = (String)pageData.get("userId");
         String companyId = (String)pageData.get("companyId");
         String userType = (String)pageData.get("userType");
