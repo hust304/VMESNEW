@@ -314,9 +314,6 @@
         <include refid="tableName"></include>
         where
         ( 1=1
-        <if test="currentUserId != 0"><!-- 超级管理员 -->
-            and company_id in (select company_id from vmes_user where id = #{currentUserId})
-        </if>
         <if test="name!= null and name != ''"><!-- 关键词检索 -->
             and name LIKE CONCAT(CONCAT('%', #{name}),'%')
         </if>
