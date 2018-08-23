@@ -304,28 +304,29 @@
     <!-- 自动创建，可以修改 -->
     <select id="getTreeList"  parameterType="com.yvan.PageData"  resultType="com.xy.vmes.entity.TreeEntity">
         select
-        id,pid,NAME,isdisable
-        from
-        <include refid="tableName"></include>
-        where
-        ( 1=1
-        <if test="name!= null and name != ''"><!-- 关键词检索 -->
-            and name LIKE CONCAT(CONCAT('%', #{name}),'%')
-        </if>
-        <if test="code!= null and code != ''"><!-- 关键词检索 -->
-            and code LIKE CONCAT(CONCAT('%', #{code}),'%')
-        </if>
-        <if test="pid!= null and pid != ''"><!-- 关键词检索 -->
-            and pid = #{pid}
-        </if>
-        <if test="isdisable!= null and isdisable != ''"><!-- 关键词检索 -->
-            and isdisable = #{isdisable}
-        </if>
-        <if test="queryStr != null and queryStr!=''" ><!-- 自定义查询 -->
-            and ${queryStr}
-        </if>
-        ) or id = 'root'
-        order by code ASC
+            id,
+            name,
+            pid,
+            serial_number serialNumber,
+            isdisable
+        from <include refid="tableName"/>
+        <where>
+            <if test="name!= null and name != ''"><!-- 关键词检索 -->
+                and name LIKE CONCAT(CONCAT('%', #{name}),'%')
+            </if>
+            <if test="code!= null and code != ''"><!-- 关键词检索 -->
+                and code LIKE CONCAT(CONCAT('%', #{code}),'%')
+            </if>
+            <if test="pid!= null and pid != ''"><!-- 关键词检索 -->
+                and pid = #{pid}
+            </if>
+            <if test="isdisable!= null and isdisable != ''"><!-- 关键词检索 -->
+                and isdisable = #{isdisable}
+            </if>
+            <if test="queryStr != null and queryStr!=''" ><!-- 自定义查询 -->
+                and ${queryStr}
+            </if>
+        </where>
     </select>
 
 </mapper>
