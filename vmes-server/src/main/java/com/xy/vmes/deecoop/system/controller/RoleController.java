@@ -287,15 +287,13 @@ public class RoleController {
         if (pageData == null || pageData.size() == 0) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("参数错误：参数(pageData)为空！");
-            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
 
         String name = (String)pageData.get("name");
         if (name == null || name.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("(角色名称)输入为空或空字符串，(角色名称)是必填字段不可为空！<br/>");
-            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
+            model.putMsg("(角色名称)输入为空或空字符串，(角色名称)是必填字段不可为空！");
             return model;
         }
 
@@ -309,7 +307,6 @@ public class RoleController {
         if (roleService.isExistByName(companyId, null, name)) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("角色名称：" + name + "&nbsp;在系统中已经存在！");
-            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
 
@@ -348,7 +345,6 @@ public class RoleController {
         if (pageData == null || pageData.size() == 0) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("参数错误：用户登录参数(pageData)为空！");
-            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
 
@@ -358,10 +354,10 @@ public class RoleController {
 
         String msgStr = new String();
         if (id == null || id.trim().length() == 0) {
-            msgStr = msgStr + "id为空或空字符串！<br/>";
+            msgStr = msgStr + "id为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT;
         }
         if (name == null || name.trim().length() == 0) {
-            msgStr = msgStr + "(角色名称)输入为空或空字符串，(角色名称)是必填字段不可为空！<br/>";
+            msgStr = msgStr + "(角色名称)输入为空或空字符串，(角色名称)是必填字段不可为空！" + Common.SYS_ENDLINE_DEFAULT;
         }
         if (msgStr.trim().length() > 0) {
             model.putCode(Integer.valueOf(1));
@@ -373,7 +369,6 @@ public class RoleController {
         if (roleService.isExistByName(companyId, id, name)) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("角色名称：" + name + "&nbsp;在系统中已经存在！");
-            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
 
@@ -399,7 +394,6 @@ public class RoleController {
         if (pageData == null || pageData.size() == 0) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("参数错误：用户登录参数(pageData)为空！");
-            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
 
@@ -408,10 +402,10 @@ public class RoleController {
 
         String msgStr = new String();
         if (id == null || id.trim().length() == 0) {
-            msgStr = msgStr + "id为空或空字符串！<br/>";
+            msgStr = msgStr + "id为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT;
         }
         if (isdisable == null || isdisable.trim().length() == 0) {
-            msgStr = msgStr + "isdisable为空或空字符串！<br/>";
+            msgStr = msgStr + "isdisable为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT;
         }
         if (msgStr.trim().length() > 0) {
             model.putCode(Integer.valueOf(1));
@@ -449,7 +443,6 @@ public class RoleController {
         if (pageData == null || pageData.size() == 0) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("参数错误：用户登录参数(pageData)为空！");
-            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
 
@@ -457,7 +450,6 @@ public class RoleController {
         if (ids == null || ids.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("参数错误：请至少选择一行数据！");
-            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
 
@@ -530,18 +522,17 @@ public class RoleController {
         if (pageData == null || pageData.size() == 0) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("参数错误：用户登录参数(pageData)为空！");
-            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
 
         String msgStr = new String();
         String roleID = (String)pageData.get("roleID");
         if (roleID == null || roleID.trim().length() == 0) {
-            msgStr = msgStr + "roleID为空或空字符串！<br/>";
+            msgStr = msgStr + "roleID为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT;
         }
         String userIds = (String)pageData.get("isdisable");
         if (userIds == null || userIds.trim().length() == 0) {
-            msgStr = msgStr + "userIds为空或空字符串！<br/>";
+            msgStr = msgStr + "userIds为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT;
         }
         if (msgStr.trim().length() > 0) {
             model.putCode(Integer.valueOf(1));
@@ -579,18 +570,17 @@ public class RoleController {
         if (pageData == null || pageData.size() == 0) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("参数错误：用户登录参数(pageData)为空！");
-            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
 
         String msgStr = new String();
         String roleID = (String)pageData.get("roleID");
         if (roleID == null || roleID.trim().length() == 0) {
-            msgStr = msgStr + "roleID为空或空字符串！<br/>";
+            msgStr = msgStr + "roleID为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT;
         }
         String meunIds = (String)pageData.get("meunIds");
         if (meunIds == null || meunIds.trim().length() == 0) {
-            msgStr = msgStr + "meunIds为空或空字符串！<br/>";
+            msgStr = msgStr + "meunIds为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT;
         }
         if (msgStr.trim().length() > 0) {
             model.putCode(Integer.valueOf(1));
@@ -666,18 +656,17 @@ public class RoleController {
         if (pageData == null || pageData.size() == 0) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("参数错误：用户登录参数(pageData)为空！");
-            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
 
         String msgStr = new String();
         String roleID = (String)pageData.get("roleID");
         if (roleID == null || roleID.trim().length() == 0) {
-            msgStr = msgStr + "roleID为空或空字符串！<br/>";
+            msgStr = msgStr + "roleID为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT;
         }
         String buttonIds = (String)pageData.get("buttonIds");
         if (buttonIds == null || buttonIds.trim().length() == 0) {
-            msgStr = msgStr + "buttonIds为空或空字符串！<br/>";
+            msgStr = msgStr + "buttonIds为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT;
         }
         if (msgStr.trim().length() > 0) {
             model.putCode(Integer.valueOf(1));

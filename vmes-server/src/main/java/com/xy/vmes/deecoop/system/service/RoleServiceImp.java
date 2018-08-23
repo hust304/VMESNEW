@@ -1,6 +1,7 @@
 package com.xy.vmes.deecoop.system.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.common.util.Common;
 import com.xy.vmes.deecoop.system.dao.RoleMapper;
 import com.xy.vmes.entity.*;
 import com.xy.vmes.service.RoleButtonService;
@@ -182,7 +183,7 @@ public class RoleServiceImp implements RoleService {
     public String checkDeleteRoleByRoleIds(String roleIds) {
         if (roleIds == null || roleIds.trim().length() == 0) {return new String();}
 
-        String msgTemp = "第&nbsp;{0}&nbsp;行:&nbsp;角色在({1})中使用不可禁用！<br/>";
+        String msgTemp = "第&nbsp;{0}&nbsp;行:&nbsp;角色在({1})中使用不可禁用！" + Common.SYS_ENDLINE_DEFAULT;
         StringBuffer msgBuf = new StringBuffer();
 
         String[] roleid_arry = roleIds.split(",");

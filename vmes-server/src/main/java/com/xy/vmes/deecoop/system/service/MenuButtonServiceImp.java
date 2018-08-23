@@ -1,6 +1,7 @@
 package com.xy.vmes.deecoop.system.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.common.util.Common;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.system.dao.MenuButtonMapper;
 import com.xy.vmes.entity.MenuButton;
@@ -293,7 +294,7 @@ public class MenuButtonServiceImp implements MenuButtonService {
         if (object == null) {return new String();}
 
         StringBuffer msgBuf = new StringBuffer();
-        String column_isnull = "({0})输入为空或空字符串，({0})是必填字段不可为空！<br/>";
+        String column_isnull = "({0})输入为空或空字符串，({0})是必填字段不可为空！" + Common.SYS_ENDLINE_DEFAULT;
 
         if (object.getName() == null || object.getName().trim().length() == 0) {
             String str_isnull = MessageFormat.format(column_isnull, "按钮名称");
@@ -314,10 +315,11 @@ public class MenuButtonServiceImp implements MenuButtonService {
      */
     public String checkColumnByEdit(MenuButton object) {
         StringBuffer msgBuf = new StringBuffer();
-        String column_isnull = "({0})输入为空或空字符串，({0})是必填字段不可为空！<br/>";
+        String column_isnull = "({0})输入为空或空字符串，({0})是必填字段不可为空！" + Common.SYS_ENDLINE_DEFAULT;
 
         if (object.getId() == null || object.getId().trim().length() == 0) {
-            msgBuf.append("id为空或空字符串！<br/>");
+            msgBuf.append("id为空或空字符串！");
+            msgBuf.append(Common.SYS_ENDLINE_DEFAULT);
         }
         if (object.getName() == null || object.getName().trim().length() == 0) {
             String str_isnull = MessageFormat.format(column_isnull, "按钮名称");

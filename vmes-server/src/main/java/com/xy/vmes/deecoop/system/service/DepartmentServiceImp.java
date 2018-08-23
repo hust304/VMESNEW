@@ -205,10 +205,11 @@ public class DepartmentServiceImp implements DepartmentService {
         if (object == null) {return new String();}
 
         StringBuffer msgBuf = new StringBuffer();
-        String column_isnull = "({0})输入为空或空字符串，({0})是必填字段不可为空！<br/>";
+        String column_isnull = "({0})输入为空或空字符串，({0})是必填字段不可为空！" + Common.SYS_ENDLINE_DEFAULT;
 
         if (object.getPid() == null || object.getPid().trim().length() == 0) {
-            msgBuf.append("pid为空或空字符串！<br/>");
+            msgBuf.append("pid为空或空字符串！");
+            msgBuf.append(Common.SYS_ENDLINE_DEFAULT);
         }
         if (object.getName() == null || object.getName().trim().length() == 0) {
             String str_isnull = MessageFormat.format(column_isnull, "部门名称");
@@ -236,13 +237,15 @@ public class DepartmentServiceImp implements DepartmentService {
         if (object == null) {return new String();}
 
         StringBuffer msgBuf = new StringBuffer();
-        String column_isnull = "({0})输入为空或空字符串，({0})是必填字段不可为空！<br/>";
+        String column_isnull = "({0})输入为空或空字符串，({0})是必填字段不可为空！" + Common.SYS_ENDLINE_DEFAULT;
 
         if (object.getId() == null || object.getId().trim().length() == 0) {
-            msgBuf.append("id为空或空字符串！<br/>");
+            msgBuf.append("id为空或空字符串！");
+            msgBuf.append(Common.SYS_ENDLINE_DEFAULT);
         }
         if (object.getPid() == null || object.getPid().trim().length() == 0) {
-            msgBuf.append("pid为空或空字符串！<br/>");
+            msgBuf.append("pid为空或空字符串！");
+            msgBuf.append(Common.SYS_ENDLINE_DEFAULT);
         }
         if (object.getName() == null || object.getName().trim().length() == 0) {
             String str_isnull = MessageFormat.format(column_isnull, "部门名称");
@@ -739,8 +742,8 @@ public class DepartmentServiceImp implements DepartmentService {
     public String checkDeleteDeptByIds(String ids) {
         if (ids == null || ids.trim().length() == 0) {return new String();}
 
-        String msgTemp_1 = "第&nbsp;{0}&nbsp;行:&nbsp;存在子企业或子部门不可禁用！<br/>";
-        String msgTemp_2 = "第&nbsp;{0}&nbsp;行:&nbsp;存在岗位不可禁用！<br/>";
+        String msgTemp_1 = "第&nbsp;{0}&nbsp;行:&nbsp;存在子企业或子部门不可禁用！" + Common.SYS_ENDLINE_DEFAULT;
+        String msgTemp_2 = "第&nbsp;{0}&nbsp;行:&nbsp;存在岗位不可禁用！" + Common.SYS_ENDLINE_DEFAULT;
 
         StringBuffer msgBuf = new StringBuffer();
         String[] id_arry = ids.split(",");

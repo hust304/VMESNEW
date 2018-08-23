@@ -1,6 +1,7 @@
 package com.xy.vmes.deecoop.system.controller;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.common.util.Common;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.Menu;
 import com.xy.vmes.entity.TreeEntity;
@@ -262,14 +263,14 @@ public class MenuController {
         //1. 非空判断
         if (pageData == null || pageData.size() == 0) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("参数错误：用户登录参数(pageData)为空！</br>");
+            model.putMsg("参数错误：用户登录参数(pageData)为空！");
             return model;
         }
 
         Menu menuObj = (Menu)HttpUtils.pageData2Entity(pageData, new Menu());
         if (menuObj == null) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("参数错误：Map 转 菜单对象Menu 异常！</br>");
+            model.putMsg("参数错误：Map 转 菜单对象Menu 异常！");
             return model;
         }
 
@@ -296,13 +297,16 @@ public class MenuController {
 
         if (paterObj == null) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("(pid:"+ menuObj.getPid() + ")系统中无数据，请与管理员联系！</br>");
+            model.putMsg("(pid:"+ menuObj.getPid() + ")系统中无数据，请与管理员联系！");
+
             return model;
         }
 
         //2. (菜单名称)在同一层名称不可重复
         if (menuService.isExistByName(menuObj.getPid(), null, menuObj.getName())) {
-            String msgTemp = "上级菜单名称: {0}<br/>菜单名称: {1}<br/>在系统中已经重复！</br>";
+            String msgTemp = "上级菜单名称: {0}" + Common.SYS_ENDLINE_DEFAULT +
+                    "菜单名称: {1}" + Common.SYS_ENDLINE_DEFAULT +
+                    "在系统中已经重复！" + Common.SYS_ENDLINE_DEFAULT;
             String str_isnull = MessageFormat.format(msgTemp,
                     paterObj.getName(),
                     menuObj.getName());
@@ -353,14 +357,16 @@ public class MenuController {
         //1. 非空判断
         if (pageData == null || pageData.size() == 0) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("参数错误：用户登录参数(pageData)为空！</br>");
+            model.putMsg("参数错误：用户登录参数(pageData)为空！");
+
             return model;
         }
 
         Menu menuObj = (Menu)HttpUtils.pageData2Entity(pageData, new Menu());
         if (menuObj == null) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("参数错误：Map 转 菜单对象Menu 异常！</br>");
+            model.putMsg("参数错误：Map 转 菜单对象Menu 异常！");
+
             return model;
         }
 
@@ -386,13 +392,16 @@ public class MenuController {
         }
         if (paterObj == null) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("(pid:"+ menuObj.getPid() + ")系统中无数据，请与管理员联系！</br>");
+            model.putMsg("(pid:"+ menuObj.getPid() + ")系统中无数据，请与管理员联系！");
+
             return model;
         }
 
         //2. (菜单名称)在同一层名称不可重复
         if (menuService.isExistByName(menuObj.getPid(), menuObj.getId(), menuObj.getName())) {
-            String msgTemp = "上级菜单名称: {0}<br/>菜单名称: {1}<br/>在系统中已经重复！</br>";
+            String msgTemp = "上级菜单名称: {0}" + Common.SYS_ENDLINE_DEFAULT +
+                    "菜单名称: {1}" + Common.SYS_ENDLINE_DEFAULT +
+                    "在系统中已经重复！" + Common.SYS_ENDLINE_DEFAULT;
             msgTemp = MessageFormat.format(msgTemp,
                     paterObj.getName(),
                     menuObj.getName());
@@ -437,7 +446,8 @@ public class MenuController {
         //1. 非空判断
         if (pageData == null || pageData.size() == 0) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("参数错误：用户登录参数(pageData)为空！</br>");
+            model.putMsg("参数错误：用户登录参数(pageData)为空！");
+
             return model;
         }
 
@@ -446,10 +456,10 @@ public class MenuController {
 
         String msgStr = new String();
         if (id == null || id.trim().length() == 0) {
-            msgStr = msgStr + "id为空或空字符串！<br/>";
+            msgStr = msgStr + "id为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT;
         }
         if (isdisable == null || isdisable.trim().length() == 0) {
-            msgStr = msgStr + "isdisable为空或空字符串！<br/>";
+            msgStr = msgStr + "isdisable为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT;
         }
         if (msgStr.trim().length() > 0) {
             model.putCode(Integer.valueOf(1));
@@ -487,14 +497,16 @@ public class MenuController {
         //1. 非空判断
         if (pageData == null || pageData.size() == 0) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("参数错误：用户登录参数(pageData)为空！</br>");
+            model.putMsg("参数错误：用户登录参数(pageData)为空！");
+
             return model;
         }
 
         String ids = (String)pageData.get("ids");
         if (ids == null || ids.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("参数错误：请至少选择一行数据！</br>");
+            model.putMsg("参数错误：请至少选择一行数据！");
+
             return model;
         }
 

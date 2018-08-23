@@ -115,7 +115,6 @@ public class CompanyController {
         if (pageData == null || pageData.size() == 0) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("参数错误：用户登录参数(pageData)为空！");
-            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
 
@@ -123,14 +122,12 @@ public class CompanyController {
         if (roleId == null || roleId.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("请选择一个角色套餐！");
-            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
         Department companyObj = (Department)HttpUtils.pageData2Entity(pageData, new Department());
         if (companyObj == null) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("参数错误：Map 转 组织对象Department 异常！");
-            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
 
@@ -146,7 +143,6 @@ public class CompanyController {
         if (rootObj == null) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("根节点(pid:root)系统中无数据，请与管理员联系！");
-            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
 
@@ -253,7 +249,6 @@ public class CompanyController {
         if (pageData == null || pageData.size() == 0) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("参数错误：用户登录参数(pageData)为空！");
-            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
 
@@ -261,7 +256,6 @@ public class CompanyController {
         if (roleId == null || roleId.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("请选择一个角色套餐！");
-            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
 
@@ -269,7 +263,6 @@ public class CompanyController {
         if (companyObj == null) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("参数错误：Map 转 组织对象Department 异常！");
-            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
 
@@ -285,7 +278,6 @@ public class CompanyController {
         if (rootObj == null) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("根节点(pid:root)系统中无数据，请与管理员联系！");
-            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
 

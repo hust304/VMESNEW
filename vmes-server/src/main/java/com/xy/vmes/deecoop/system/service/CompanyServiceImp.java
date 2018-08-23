@@ -1,6 +1,7 @@
 package com.xy.vmes.deecoop.system.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.common.util.Common;
 import com.xy.vmes.deecoop.system.dao.CompanyMapper;
 import com.xy.vmes.entity.Department;
 import com.xy.vmes.service.CompanyService;
@@ -35,7 +36,7 @@ public class CompanyServiceImp implements CompanyService {
         if (object == null) {return new String();}
 
         StringBuffer msgBuf = new StringBuffer();
-        String column_isnull = "({0})输入为空或空字符串，({0})是必填字段不可为空！<br/>";
+        String column_isnull = "({0})输入为空或空字符串，({0})是必填字段不可为空！" + Common.SYS_ENDLINE_DEFAULT;
 
         //code:企业编码
         if (object.getCode() == null || object.getCode().trim().length() == 0) {
@@ -76,10 +77,11 @@ public class CompanyServiceImp implements CompanyService {
         if (object == null) {return new String();}
 
         StringBuffer msgBuf = new StringBuffer();
-        String column_isnull = "({0})输入为空或空字符串，({0})是必填字段不可为空！<br/>";
+        String column_isnull = "({0})输入为空或空字符串，({0})是必填字段不可为空！" + Common.SYS_ENDLINE_DEFAULT;
 
         if (object.getId() == null || object.getId().trim().length() == 0) {
-            msgBuf.append("id为空或空字符串！<br/>");
+            msgBuf.append("id为空或空字符串！");
+            msgBuf.append(Common.SYS_ENDLINE_DEFAULT);
         }
         //code:企业编码
         if (object.getCode() == null || object.getCode().trim().length() == 0) {
@@ -293,8 +295,10 @@ public class CompanyServiceImp implements CompanyService {
         findMap.put("mapSize", Integer.valueOf(findMap.size()));
         Department company = departmentService.findDepartment(findMap);
         if (company == null) {
-            msgStr.append("您所在的企业系统中不存在或已禁用，请与管理员联系！<br/>");
-            msgStr.append("企业id:" + companyID + "<br/>");
+            msgStr.append("您所在的企业系统中不存在或已禁用，请与管理员联系！");
+            msgStr.append(Common.SYS_ENDLINE_DEFAULT);
+            msgStr.append("企业id:" + companyID);
+            msgStr.append(Common.SYS_ENDLINE_DEFAULT);
             return msgStr.toString();
         }
 

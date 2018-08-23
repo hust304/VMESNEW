@@ -207,7 +207,6 @@ public class MenuButtonController {
         if (pageData == null || pageData.size() == 0) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("参数错误：用户登录参数(pageData)为空！");
-            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
 
@@ -215,7 +214,6 @@ public class MenuButtonController {
         if (buttonObj == null) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("参数错误：Map 转 按钮对象MenuButton 异常！");
-            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
 
@@ -231,7 +229,6 @@ public class MenuButtonController {
         if (menuObj == null) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("(菜单ID:"+ buttonObj.getMenuId() + ")系统中无数据，请与管理员联系！");
-            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
 
@@ -288,7 +285,6 @@ public class MenuButtonController {
         if (pageData == null || pageData.size() == 0) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("参数错误：用户登录参数(pageData)为空！");
-            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
 
@@ -296,7 +292,6 @@ public class MenuButtonController {
         if (buttonObj == null) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("参数错误：Map 转 按钮对象MenuButton 异常！");
-            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
 
@@ -312,7 +307,6 @@ public class MenuButtonController {
         if (menuObj == null) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("(菜单ID:"+ buttonObj.getMenuId() + ")系统中无数据，请与管理员联系！");
-            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
 
@@ -371,7 +365,6 @@ public class MenuButtonController {
         if (pageData == null || pageData.size() == 0) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("参数错误：用户登录参数(pageData)为空！");
-            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
 
@@ -415,7 +408,6 @@ public class MenuButtonController {
         if (pageData == null || pageData.size() == 0) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("参数错误：用户登录参数(pageData)为空！");
-            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
 
@@ -423,7 +415,6 @@ public class MenuButtonController {
         if (ids == null || ids.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("参数错误：请至少选择一行数据！");
-            model.putMsg(Common.SYS_ENDLINE_DEFAULT);
             return model;
         }
 

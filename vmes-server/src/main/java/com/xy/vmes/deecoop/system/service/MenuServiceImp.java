@@ -190,10 +190,10 @@ public class MenuServiceImp implements MenuService {
         if (object == null) {return new String();}
 
         StringBuffer msgBuf = new StringBuffer();
-        String column_isnull = "({0})输入为空或空字符串，({0})是必填字段不可为空！<br/>";
+        String column_isnull = "({0})输入为空或空字符串，({0})是必填字段不可为空！" + Common.SYS_ENDLINE_DEFAULT;
 
 //        if (object.getPid() == null || object.getPid().trim().length() == 0) {
-//            msgBuf.append("pid为空或空字符串！<br/>");
+//            msgBuf.append("pid为空或空字符串！");
 //        }
         if (object.getName() == null || object.getName().trim().length() == 0) {
             String str_isnull = MessageFormat.format(column_isnull, "菜单名称");
@@ -212,13 +212,14 @@ public class MenuServiceImp implements MenuService {
         if (object == null) {return new String();}
 
         StringBuffer msgBuf = new StringBuffer();
-        String column_isnull = "({0})输入为空或空字符串，({0})是必填字段不可为空！<br/>";
+        String column_isnull = "({0})输入为空或空字符串，({0})是必填字段不可为空！" + Common.SYS_ENDLINE_DEFAULT;
 
         if (object.getId() == null || object.getId().trim().length() == 0) {
-            msgBuf.append("id为空或空字符串！<br/>");
+            msgBuf.append("id为空或空字符串！");
+            msgBuf.append(Common.SYS_ENDLINE_DEFAULT);
         }
 //        if (object.getPid() == null || object.getPid().trim().length() == 0) {
-//            msgBuf.append("pid为空或空字符串！<br/>");
+//            msgBuf.append("pid为空或空字符串！");
 //        }
         if (object.getName() == null || object.getName().trim().length() == 0) {
             String str_isnull = MessageFormat.format(column_isnull, "菜单名称");
@@ -553,7 +554,7 @@ public class MenuServiceImp implements MenuService {
     public String checkDeleteMenuByIds(String ids) {
         if (ids == null || ids.trim().length() == 0) {return new String();}
 
-        String msgTemp = "第&nbsp;{0}&nbsp;行:&nbsp;菜单在({1})中使用不可禁用！<br/>";
+        String msgTemp = "第&nbsp;{0}&nbsp;行:&nbsp;菜单在({1})中使用不可禁用！" + Common.SYS_ENDLINE_DEFAULT;
         StringBuffer msgBuf = new StringBuffer();
 
         String[] menuid_arry = ids.split(",");
