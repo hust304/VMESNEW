@@ -51,7 +51,7 @@ public class TreeLoadController {
         }
         List<TreeEntity> treeList = menuTreeService.menuList2TreeList(objectList,null);
 
-        TreeEntity treeObject = TreeUtil.listSwitchTree(null, treeList);
+        TreeEntity treeObject = TreeUtil.switchTree(null, treeList);
         System.out.println("treeJson: " + YvanUtil.toJson(treeObject));
 
         return model;

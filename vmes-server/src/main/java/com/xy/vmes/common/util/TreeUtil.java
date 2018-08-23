@@ -3,9 +3,12 @@ package com.xy.vmes.common.util;
 import com.xy.vmes.entity.TreeEntity;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class TreeUtil {
+
     /**
      * 指定节点ID-及该指定节点ID下所有节点和子节点-生成树形结构
      * 当(指定节点ID)is null 或空字符串 -从根节点(root)开始生成树形结构
@@ -14,7 +17,7 @@ public class TreeUtil {
      * @param objectList (业务数据List-全部有效业务数据)-(菜单,组织架构,字典)
      * @return
      */
-    public static TreeEntity listSwitchTree(String nodeId, List<TreeEntity> objectList) {
+    public static TreeEntity switchTree(String nodeId, List<TreeEntity> objectList) {
         if (objectList == null || objectList.size() == 0) {return new TreeEntity();}
         if (nodeId == null || nodeId.trim().length() == 0) {nodeId = new String("root");}
 
@@ -24,6 +27,21 @@ public class TreeUtil {
 
         return nodeObject;
     }
+
+    public static List<TreeEntity> listSwitchTree(String nodeId, List<TreeEntity> objectList) {
+        List<TreeEntity> treeList = new ArrayList<TreeEntity>();
+        if (objectList == null || objectList.size() == 0) {return treeList;}
+        if (nodeId == null || nodeId.trim().length() == 0) {nodeId = new String("root");}
+
+        TreeEntity tree = switchTree(nodeId, objectList);
+        if (tree != null && tree.getChildren() != null) {
+            treeList = tree.getChildren();
+        }
+
+        return treeList;
+    }
+
+
 
     /**
      * 本方法为递归调用:
@@ -62,6 +80,9 @@ public class TreeUtil {
             }
         }
 
+        //按菜单排列顺序升序排列
+        orderAcsTreeBySerialNumber(childList);
+
         return childList;
     }
 
@@ -80,5 +101,15 @@ public class TreeUtil {
             }
         }
         return null;
+    }
+
+    private static void orderAcsTreeBySerialNumber(List<TreeEntity> objectList) {
+        Collections.sort(objectList, new Comparator<Object>() {
+            public int compare(Object arg0, Object arg1) {
+                TreeEntity object_0 = (TreeEntity)arg0;
+                TreeEntity object_1 = (TreeEntity)arg1;
+                return object_0.getSerialNumber().compareTo(object_1.getSerialNumber());
+            }
+        });
     }
 }

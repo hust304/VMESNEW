@@ -17,6 +17,8 @@ public class TreeEntity {
     //(必须)是否禁用(0:已禁用 1:启用)
     private String isdisable;
 
+    //当前节点-是否绑定角色(1:绑定 0:未绑定)
+    private String isBindRole;
     //当前节点ID
     private String id;
     //当前节点父ID
@@ -84,5 +86,11 @@ public class TreeEntity {
     }
     public void setIsdisable(String isdisable) {
         this.isdisable = isdisable;
+    }
+    public String getIsBindRole() {
+        return isBindRole;
+    }
+    public void setIsBindRole(String isBindRole) {
+        this.isBindRole = isBindRole;
     }
 }
