@@ -3,6 +3,7 @@ package com.xy.vmes.service;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.entity.RoleMenu;
 import com.xy.vmes.entity.Menu;
+import com.xy.vmes.entity.TreeEntity;
 import com.yvan.PageData;
 
 import java.util.LinkedHashMap;
@@ -103,6 +104,20 @@ public interface RoleMenuService {
     Menu mapObject2Menu(Map<String, Object> mapObject, Menu object);
 
     List<Menu> mapList2MenuList(List<Map<String, Object>> mapList, List<Menu> objectList);
+
+    /**
+     * 创建人：陈刚
+     * 创建时间：2018-08-23
+     */
+    List<Map<String, Object>> listMenuMapByRole(PageData pd);
+
+    /**
+     * 角色菜单ListList<Map<String, Object>>转换成-树结构体List<TreeEntity>
+     * @param mapList  角色菜单List<Map<String, Object>>
+     * @param treeList 树结构体List<TreeEntity>
+     * @return
+     */
+    List<TreeEntity> roleMenuList2TreeList(List<Map<String, Object>> mapList, List<TreeEntity> treeList);
 
 }
 

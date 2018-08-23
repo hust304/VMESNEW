@@ -5,6 +5,8 @@ import com.xy.vmes.common.util.DateFormat;
 import com.xy.vmes.deecoop.system.dao.RoleMenuMapper;
 import com.xy.vmes.entity.Menu;
 import com.xy.vmes.entity.RoleMenu;
+import com.xy.vmes.entity.TreeEntity;
+import com.xy.vmes.service.MenuTreeService;
 import com.xy.vmes.service.RoleMenuService;
 import com.yvan.PageData;
 import com.xy.vmes.common.util.StringUtil;
@@ -26,9 +28,10 @@ import com.yvan.Conv;
 @Transactional(readOnly = false)
 public class RoleMenuServiceImp implements RoleMenuService {
 
-
     @Autowired
     private RoleMenuMapper roleMenuMapper;
+    @Autowired
+    private MenuTreeService menuTreeService;
 
     /**
     * 创建人：陈刚 自动创建，禁止修改
@@ -312,6 +315,43 @@ public class RoleMenuServiceImp implements RoleMenuService {
         }
 
         return objectList;
+    }
+
+    /**
+     * 创建人：陈刚
+     * 创建时间：2018-08-23
+     */
+    public List<Map<String, Object>> listMenuMapByRole(PageData pd) {
+        return roleMenuMapper.listMenuMapByRole(pd);
+    }
+
+    /**
+     * 角色菜单ListList<Map<String, Object>>转换成-树结构体List<TreeEntity>
+     * @param mapList  角色菜单List<Map<String, Object>>
+     * @param treeList 树结构体List<TreeEntity>
+     * @return
+     */
+    public List<TreeEntity> roleMenuList2TreeList(List<Map<String, Object>> mapList, List<TreeEntity> treeList) {
+        if (treeList == null) {treeList = new ArrayList<TreeEntity>();}
+        if (mapList == null || mapList.size() == 0) {return treeList;}
+
+        //遍历mapList-生成treeList
+        for (Map<String, Object> mapObj : mapList) {
+            Menu menu = this.mapObject2Menu(mapObj, null);
+            TreeEntity treeObj = menuTreeService.menu2Tree(menu, null);
+            //当前节点-是否绑定角色(1:绑定 0:未绑定)
+            treeObj.setIsBindRole("0");
+
+            //当前菜单是否绑定角色
+            // 判断条件: 角色id(roleId)是否存在--
+            if (mapObj.get("roleId") != null && mapObj.get("roleId").toString().trim().length() > 0) {
+                treeObj.setIsBindRole("1");
+            }
+
+            treeList.add(treeObj);
+        }
+
+        return treeList;
     }
 }
 

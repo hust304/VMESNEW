@@ -80,6 +80,13 @@ public interface RoleMenuMapper extends BaseMapper<RoleMenu> {
 	 */
 	@Select("findRoleMenuMapList")
 	List<Map<String, Object>> findRoleMenuMapList(PageData pd);
+
+	/**
+	 * 创建人：陈刚
+	 * 创建时间：2018-08-23
+	 */
+	@Select("listMenuMapByRole")
+	List<Map<String, Object>> listMenuMapByRole(PageData pd);
 }
 
 

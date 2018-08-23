@@ -241,5 +241,59 @@
         </if>
     </select>
 
+    <!--获取全部菜单表-根据角色ID-->
+    <select id="listMenuMapByRole" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+            a.id,
+            a.pid as menuPid,
+            a.company_id as menuCompanyId,
+            a.code as menuCode,
+            a.name as menuName,
+
+            a.name_en as menuNameEn,
+            a.serial_number as menuSerialNumber,
+            a.icon as menuIcon,
+            a.type as menuType,
+            a.url as menuUrl,
+
+            a.isleaf as menuIsleaf,
+            a.layer as menuLayer,
+            a.isdisable as menuIsdisable,
+            a.cdate as menuCdate,
+            a.cuser as menuCuser,
+
+            a.udate as menuUdate,
+            a.uuser as menuUuser,
+            a.id_0 as menuId0,
+            a.id_1 as menuId1,
+            a.id_2 as menuId2,
+
+            a.id_3 as menuId3,
+            a.id_4 as menuId4,
+            a.id_5 as menuId5,
+
+            b.menu_id as menuId,
+            b.role_id as roleId,
+            b.isdisable as isdisable
+        from vmes_menu a
+            left join vmes_role_menu b on a.id = b.menu_id
+            <!--queryRoleIds 自定义sql查询语句 b.role_id in ()-->
+            <if test="queryRoleIds != null and queryRoleIds != ''" >
+                and ${queryRoleIds}
+            </if>
+        <where>
+            <!--queryStr 自定义sql查询语句 b.role_id in ()-->
+            <if test="queryStr != null and queryStr!=''" >
+                and ${queryStr}
+            </if>
+            <if test="isdisable != null and isdisable != ''" >
+                and b.isdisable = #{isdisable}
+            </if>
+            <if test="menuIsdisable != null and menuIsdisable != ''" >
+                and a.isdisable = #{menuIsdisable}
+            </if>
+        </where>
+    </select>
+
 
 </mapper>

@@ -4,8 +4,10 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.google.gson.Gson;
 import com.xy.vmes.common.util.Common;
 import com.xy.vmes.common.util.RedisUtils;
+import com.xy.vmes.common.util.TreeUtil;
 import com.xy.vmes.entity.Department;
 import com.xy.vmes.entity.Role;
+import com.xy.vmes.entity.TreeEntity;
 import com.xy.vmes.entity.User;
 import com.xy.vmes.service.*;
 import com.yvan.ExcelUtil;
@@ -605,18 +607,44 @@ public class RoleController {
         return model;
     }
 
-    /**角色对应全部菜单树
+    /**
+     * 菜单树
+     * 1. 获取全部菜单表-生成菜单树结构体
+     * 2. 根据角色ID-角色ID绑定的菜单选中状态-查询角色菜单表(vmes_role_menu)
      *
      * @author 陈刚
-     * @date 2018-07-30
+     * @date 2018-08-23
      */
     @PostMapping("/role/treeRoleMeunsAll")
     public ResultModel treeRoleMeunsAll() {
         ResultModel model = new ResultModel();
+
         PageData pageData = HttpUtils.parsePageData();
+        String roleIds = (String)pageData.get("roleIds");
+        if (roleIds == null || roleIds.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("角色ID为空或空字符串！");
+            return model;
+        }
+
+        roleIds = StringUtil.stringTrimSpace(roleIds);
+        roleIds = "'" + roleIds.replace(",", "','") + "'";
+        String queryRoleIds = "b.role_id in (" +  roleIds + ")";
+
+        PageData findMap = new PageData();
+        findMap.put("queryRoleIds", queryRoleIds);
+
+        //1. 根据角色ID-获取全部菜单List<Map>
+        List<Map<String, Object>> roleMenuMapList = roleMenuService.listMenuMapByRole(findMap);
+        List<TreeEntity> treeList = roleMenuService.roleMenuList2TreeList(roleMenuMapList, null);
+        List<TreeEntity> menuTreeList = TreeUtil.listSwitchTree(null, treeList);
+        String treeJsonStr = YvanUtil.toJson(menuTreeList);
+        System.out.println("treeJson: " + treeJsonStr);
+        model.putResult(treeJsonStr);
 
         return model;
     }
+
     /**角色对应(已选的)菜单树
      *
      * @author 陈刚
@@ -796,6 +824,8 @@ public class RoleController {
         model.putResult(mapObj);
         return model;
     }
+
+
 }
 
 
