@@ -187,9 +187,9 @@ public class RoleMenuServiceImp implements RoleMenuService {
         if (object == null) {object = new Menu();}
         if (mapObject == null) {return object;}
 
-        //b.id as menuId,
-        if (mapObject.get("menuId") != null) {
-            object.setId(mapObject.get("menuId").toString().trim());
+        //a.id,
+        if (mapObject.get("id") != null) {
+            object.setId(mapObject.get("id").toString().trim());
         }
         //b.pid as menuPid,
         if (mapObject.get("menuPid") != null) {
