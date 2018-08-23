@@ -465,11 +465,11 @@ public class DictionaryController {
         Map result = new HashMap();
 
         List<TreeEntity> treeList = dictionaryService.getTreeList(pd);
-        List<TreeEntity> treeDisableList = TreeUtil.listSwitchTree(null, treeList);
-        String treeJsonStr = YvanUtil.toJson(treeDisableList);
+        TreeEntity treeObj = TreeUtil.switchTree(null, treeList);
+        String treeJsonStr = YvanUtil.toJson(treeObj);
         System.out.println("treeJsonStr: " + treeJsonStr);
 
-        result.put("treeList", treeDisableList);
+        result.put("treeList", treeObj);
         model.putResult(result);
 
         Long endTime = System.currentTimeMillis();
