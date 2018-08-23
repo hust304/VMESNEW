@@ -1,4 +1,4 @@
-package ${classPath};
+package com.xy.vmes.deecoop.system.controller;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.StringUtil;
@@ -23,105 +23,105 @@ import java.util.*;
 
 
 /**
-* 说明：${TITLE}Controller
-* @author ${author} 自动生成
-* @date ${nowDate?string("yyyy-MM-dd")}
+* 说明：vmes_template:标准开发模板Controller
+* @author 刘威 自动生成
+* @date 2018-08-23
 */
 @RestController
 @Slf4j
-public class ${objectName}Controller {
+public class TemplateController {
 
-    private Logger logger = LoggerFactory.getLogger(${objectName}Controller.class);
+    private Logger logger = LoggerFactory.getLogger(TemplateController.class);
 
     @Autowired
-    private ${objectName}Service ${objectNameLower}Service;
+    private TemplateService templateService;
 
 
     /**
-    * @author ${author} 自动创建，禁止修改
-    * @date ${nowDate?string("yyyy-MM-dd")}
+    * @author 刘威 自动创建，禁止修改
+    * @date 2018-08-23
     */
-    @GetMapping("/${objectNameLower}/selectById/{id}")
+    @GetMapping("/template/selectById/{id}")
     public ResultModel selectById(@PathVariable("id") String id)  throws Exception {
 
-        logger.info("################${objectNameLower}/selectById 执行开始 ################# ");
+        logger.info("################template/selectById 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
-        ${objectName} ${objectNameLower} = ${objectNameLower}Service.selectById(id);
-        model.putResult(${objectNameLower});
+        Template template = templateService.selectById(id);
+        model.putResult(template);
         Long endTime = System.currentTimeMillis();
-        logger.info("################${objectNameLower}/selectById 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################template/selectById 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
 
 
     /**
-    * @author ${author} 自动创建，禁止修改
-    * @date ${nowDate?string("yyyy-MM-dd")}
+    * @author 刘威 自动创建，禁止修改
+    * @date 2018-08-23
     */
-    @PostMapping("/${objectNameLower}/save")
+    @PostMapping("/template/save")
     public ResultModel save()  throws Exception {
 
-        logger.info("################${objectNameLower}/save 执行开始 ################# ");
+        logger.info("################template/save 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
-        ${objectName} ${objectNameLower} = (${objectName})HttpUtils.pageData2Entity(pd, new ${objectName}());
-        ${objectNameLower}Service.save(${objectNameLower});
+        Template template = (Template)HttpUtils.pageData2Entity(pd, new Template());
+        templateService.save(template);
         Long endTime = System.currentTimeMillis();
-        logger.info("################${objectNameLower}/save 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################template/save 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
     /**
-    * @author ${author} 自动创建，禁止修改
-    * @date ${nowDate?string("yyyy-MM-dd")}
+    * @author 刘威 自动创建，禁止修改
+    * @date 2018-08-23
     */
-    @PostMapping("/${objectNameLower}/update")
+    @PostMapping("/template/update")
     public ResultModel update()  throws Exception {
 
-        logger.info("################${objectNameLower}/update 执行开始 ################# ");
+        logger.info("################template/update 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
-        ${objectName} ${objectNameLower} = (${objectName})HttpUtils.pageData2Entity(pd, new ${objectName}());
-        ${objectNameLower}Service.update(${objectNameLower});
+        Template template = (Template)HttpUtils.pageData2Entity(pd, new Template());
+        templateService.update(template);
         Long endTime = System.currentTimeMillis();
-        logger.info("################${objectNameLower}/update 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################template/update 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
 
     /**
-    * @author ${author} 自动创建，禁止修改
-    * @date ${nowDate?string("yyyy-MM-dd")}
+    * @author 刘威 自动创建，禁止修改
+    * @date 2018-08-23
     */
-    @GetMapping("/${objectNameLower}/deleteById/{id}")
+    @GetMapping("/template/deleteById/{id}")
     public ResultModel deleteById(@PathVariable("id") String id)  throws Exception {
 
-        logger.info("################${objectNameLower}/deleteById 执行开始 ################# ");
+        logger.info("################template/deleteById 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
-        ${objectNameLower}Service.deleteById(id);
+        templateService.deleteById(id);
         Long endTime = System.currentTimeMillis();
-        logger.info("################${objectNameLower}/deleteById 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################template/deleteById 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
 
     /**
-    * @author ${author} 自动创建，禁止修改
-    * @date ${nowDate?string("yyyy-MM-dd")}
+    * @author 刘威 自动创建，禁止修改
+    * @date 2018-08-23
     */
-    @PostMapping("/${objectNameLower}/deleteByIds")
+    @PostMapping("/template/deleteByIds")
     public ResultModel deleteByIds()  throws Exception {
 
-        logger.info("################${objectNameLower}/deleteById 执行开始 ################# ");
+        logger.info("################template/deleteById 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
         PageData pd = HttpUtils.parsePageData();
@@ -135,53 +135,53 @@ public class ${objectName}Controller {
         String id_str = StringUtil.stringTrimSpace(ids);
         String[] id_arry = id_str.split(",");
         if(id_arry.length>0){
-            ${objectNameLower}Service.deleteByIds(id_arry);
+            templateService.deleteByIds(id_arry);
         }
         Long endTime = System.currentTimeMillis();
-        logger.info("################${objectNameLower}/deleteById 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################template/deleteById 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
 
     /**
-    * @author ${author} 自动创建，禁止修改
-    * @date ${nowDate?string("yyyy-MM-dd")}
+    * @author 刘威 自动创建，禁止修改
+    * @date 2018-08-23
     */
-    @PostMapping("/${objectNameLower}/dataListPage")
+    @PostMapping("/template/dataListPage")
     public ResultModel dataListPage()  throws Exception {
 
-        logger.info("################${objectNameLower}/dataListPage 执行开始 ################# ");
+        logger.info("################template/dataListPage 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         Pagination pg = HttpUtils.parsePagination(pd);
-        List<${objectName}> ${objectNameLower}List = ${objectNameLower}Service.dataListPage(pd,pg);
+        List<Template> templateList = templateService.dataListPage(pd,pg);
         Map result = new HashMap();
-        result.put("varList",${objectNameLower}List);
+        result.put("varList",templateList);
         result.put("pageData", pg);
         model.putResult(result);
         Long endTime = System.currentTimeMillis();
-        logger.info("################${objectNameLower}/dataListPage 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################template/dataListPage 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
     /**
-    * @author ${author} 自动创建，禁止修改
-    * @date ${nowDate?string("yyyy-MM-dd")}
+    * @author 刘威 自动创建，禁止修改
+    * @date 2018-08-23
     */
-    @PostMapping("/${objectNameLower}/dataList")
+    @PostMapping("/template/dataList")
     public ResultModel dataList()  throws Exception {
 
-        logger.info("################${objectNameLower}/dataList 执行开始 ################# ");
+        logger.info("################template/dataList 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
-        List<${objectName}> ${objectNameLower}List = ${objectNameLower}Service.dataList(pd);
-        model.putResult(${objectNameLower}List);
+        List<Template> templateList = templateService.dataList(pd);
+        model.putResult(templateList);
         Long endTime = System.currentTimeMillis();
-        logger.info("################${objectNameLower}/dataList 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################template/dataList 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -189,20 +189,20 @@ public class ${objectName}Controller {
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
     /**
-    * @author ${author} 自动创建，可以修改
-    * @date ${nowDate?string("yyyy-MM-dd")}
+    * @author 刘威 自动创建，可以修改
+    * @date 2018-08-23
     */
-    @PostMapping("/${objectNameLower}/listPage${objectName}s")
-    public ResultModel listPage${objectName}s()  throws Exception {
+    @PostMapping("/template/listPageTemplates")
+    public ResultModel listPageTemplates()  throws Exception {
 
-        logger.info("################${objectNameLower}/listPage${objectName}s 执行开始 ################# ");
+        logger.info("################template/listPageTemplates 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         Pagination pg = HttpUtils.parsePagination(pd);
         Map result = new HashMap();
-        List<LinkedHashMap> titles = ${objectNameLower}Service.getColumnList();
+        List<LinkedHashMap> titles = templateService.getColumnList();
 
 
         List<LinkedHashMap> titlesList = new ArrayList<LinkedHashMap>();
@@ -230,7 +230,7 @@ public class ${objectName}Controller {
 
 
         List<Map> varMapList = new ArrayList();
-        List<Map> varList = ${objectNameLower}Service.getDataListPage(pd,pg);
+        List<Map> varList = templateService.getDataListPage(pd,pg);
         if(varList!=null&&varList.size()>0){
             for(int i=0;i<varList.size();i++){
                 Map map = varList.get(i);
@@ -247,19 +247,19 @@ public class ${objectName}Controller {
 
         model.putResult(result);
         Long endTime = System.currentTimeMillis();
-        logger.info("################${objectNameLower}/listPage${objectName}s 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################template/listPageTemplates 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
 
     /**
     * Excel导出
-    * @author ${author} 自动创建，可以修改
-    * @date ${nowDate?string("yyyy-MM-dd")}
+    * @author 刘威 自动创建，可以修改
+    * @date 2018-08-23
     */
-    @GetMapping("/${objectNameLower}/exportExcel${objectName}s")
-    public void exportExcel${objectName}s() throws Exception {
-        logger.info("################${objectNameLower}/exportExcel${objectName}s 执行开始 ################# ");
+    @GetMapping("/template/exportExcelTemplates")
+    public void exportExcelTemplates() throws Exception {
+        logger.info("################template/exportExcelTemplates 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         //1. 获取Excel导出数据查询条件
         PageData pd = HttpUtils.parsePageData();
@@ -287,7 +287,7 @@ public class ${objectName}Controller {
         findMap.put("queryStr", queryStr);
 
         Pagination pg = HttpUtils.parsePagination(pd);
-        List<Map> dataList = ${objectNameLower}Service.getDataList(findMap);
+        List<Map> dataList = templateService.getDataList(findMap);
 
         //查询数据转换成Excel导出数据
         List<LinkedHashMap<String, String>> dataMapList = ExcelUtil.modifyDataList(columnMap, dataList);
@@ -296,21 +296,21 @@ public class ${objectName}Controller {
 
         //查询数据-Excel文件导出
         //String fileName = "Excel文件导出";
-        String fileName = "Excel${objectName}";
+        String fileName = "ExcelTemplate";
         ExcelUtil.excelExportByDataList(response, fileName, dataMapList);
         Long endTime = System.currentTimeMillis();
-        logger.info("################${objectNameLower}/exportExcel${objectName}s 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################template/exportExcelTemplates 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
     }
 
     /**
     * Excel导入
     *
-    * @author ${author} 自动创建，可以修改
-    * @date ${nowDate?string("yyyy-MM-dd")}
+    * @author 刘威 自动创建，可以修改
+    * @date 2018-08-23
     */
-    @PostMapping("/${objectNameLower}/importExcel${objectName}s")
-    public ResultModel importExcel${objectName}s(@RequestParam(value="excelFile") MultipartFile file) throws Exception  {
-        logger.info("################${objectNameLower}/importExcel${objectName}s 执行开始 ################# ");
+    @PostMapping("/template/importExcelTemplates")
+    public ResultModel importExcelTemplates(@RequestParam(value="excelFile") MultipartFile file) throws Exception  {
+        logger.info("################template/importExcelTemplates 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
         //HttpServletRequest Request = HttpUtils.currentRequest();
@@ -350,7 +350,7 @@ public class ${objectName}Controller {
         //5. List<ExcelEntity> --> (转换) List<业务表DB>对象
         //6. 遍历List<业务表DB> 对业务表添加或修改
         Long endTime = System.currentTimeMillis();
-        logger.info("################${objectNameLower}/importExcel${objectName}s 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################template/importExcelTemplates 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 

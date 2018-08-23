@@ -417,7 +417,7 @@ public class DictionaryController {
 
         //2. 获取业务列表List<Map<栏位Key, 栏位名称>>
         List<LinkedHashMap> columnList = dictionaryService.getColumnList();
-        LinkedHashMap columnMap = com.xy.vmes.common.util.ExcelUtil.modifyColumnMap(showFieldcode, columnList.get(0));
+        LinkedHashMap columnMap = ExcelUtil.modifyColumnMap(showFieldcode, columnList.get(0));
 
         //3. 根据查询条件获取业务数据List
         String queryStr = "";
@@ -438,14 +438,10 @@ public class DictionaryController {
         List<Map> dataList = dictionaryService.getDataList(findMap);
 
         //查询数据转换成Excel导出数据
-        List<LinkedHashMap<String, String>> dataMapList = com.xy.vmes.common.util.ExcelUtil.modifyDataList(columnMap, dataList);
+        List<LinkedHashMap<String, String>> dataMapList = ExcelUtil.modifyDataList(columnMap, dataList);
 
         HttpServletResponse response  = HttpUtils.currentResponse();
-        response.addHeader("Access-Control-Allow-Origin","*");
-        response.addHeader("Access-Control-Allow-Methods","*");
-        response.addHeader("Access-Control-Max-Age","100");
-        response.addHeader("Access-Control-Allow-Headers", "Content-Type");
-        response.addHeader("Access-Control-Allow-Credentials","false");
+
 
         //查询数据-Excel文件导出
         //String fileName = "Excel数据字典数据导出";

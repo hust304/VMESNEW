@@ -1,58 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <!--
-说明：${TITLE} Mapper.xml
-创建人：${author} 自动创建
-创建时间：${nowDate?string("yyyy-MM-dd")}
+说明：vmes_template:标准开发模板 Mapper.xml
+创建人：刘威 自动创建
+创建时间：2018-08-23
  -->
-<mapper namespace="${classPath}.${objectName}Mapper">
+<mapper namespace="com.xy.vmes.deecoop.system.dao.TemplateMapper">
 
     <!--表名 自动创建，禁止修改-->
     <sql id="tableName">
-	${table}
+	vmes_template
     </sql>
 
     <!-- 字段 自动创建，禁止修改-->
     <sql id="Field">
-	<#list fieldList as var>
-		<#if var[7] == "否">
-		${var[0]} ${var[1]},<!-- ${var[3]} -->
-		</#if>
-	</#list>
-	<#list fieldList as var>
-		<#if var[7] == "是">
-		${var[0]} ${var[1]} <!-- ${var[1]} -->
-		</#if>
-	</#list>
+		code code,<!-- 编码 -->
+		name name,<!-- 名称 -->
+		isdisable isdisable,<!-- 是否启用 -->
+		cdate cdate,<!-- 创建时间 -->
+		cuser cuser,<!-- 创建人账号 -->
+		udate udate,<!-- 修改时间 -->
+		uuser uuser,<!-- 修改人账号 -->
+		remark remark,<!-- 备注 -->
+		id id <!-- id -->
     </sql>
 
     <!-- 字段值 自动创建，禁止修改-->
     <sql id="FieldValue">
-	<#list fieldList as var>
-		<#if var[7] == "否">
-		${r"#{"}${var[1]}${r"}"},<!-- ${var[3]} -->
-		</#if>
-	</#list>
-	<#list fieldList as var>
-		<#if var[7] == "是">
-		${r"#{"}${var[1]}${r"}"} <!-- ${var[1]} -->
-		</#if>
-	</#list>
+		#{code},<!-- 编码 -->
+		#{name},<!-- 名称 -->
+		#{isdisable},<!-- 是否启用 -->
+		#{cdate},<!-- 创建时间 -->
+		#{cuser},<!-- 创建人账号 -->
+		#{udate},<!-- 修改时间 -->
+		#{uuser},<!-- 修改人账号 -->
+		#{remark},<!-- 备注 -->
+		#{id} <!-- id -->
     </sql>
 
 
     <!-- 字段名称  '_hide' 表示前端列表隐藏 自动创建，禁止修改-->
     <sql id="Column">
-    <#list fieldList as var>
-        <#if var[7] == "否">
-        '${var[3]}'  ${var[1]},
-        </#if>
-    </#list>
-    <#list fieldList as var>
-        <#if var[7] == "是">
-        '${var[1]}' ${var[1]}_hide
-        </#if>
-    </#list>
+        '编码'  code,
+        '名称'  name,
+        '是否启用'  isdisable,
+        '创建时间'  cdate,
+        '创建人账号'  cuser,
+        '修改时间'  udate,
+        '修改人账号'  uuser,
+        '备注'  remark,
+        'id' id_hide
     </sql>
 
     <!-- 自动创建，禁止修改 -->
@@ -71,16 +68,16 @@
         <where>
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr!=''" >
-                and ${r"${"}queryStr${r"}"}
+                and ${queryStr}
             </if>
         </where>
         <if test="orderStr != null and orderStr != ''" >
-            order by ${r"${"}orderStr${r"}"}
+            order by ${orderStr}
         </if>
     </select>
 
     <!-- 列表 自动创建，禁止修改-->
-    <select id="datalistPage" parameterType="com.yvan.PageData" resultType="com.xy.vmes.entity.${objectName}">
+    <select id="datalistPage" parameterType="com.yvan.PageData" resultType="com.xy.vmes.entity.Template">
         select
         <include refid="Field"></include>
         from
@@ -88,7 +85,7 @@
         <where>
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr!=''" >
-                and ${r"${"}queryStr${r"}"}
+                and ${queryStr}
             </if>
         </where>
     </select>
@@ -101,7 +98,7 @@
         where
         id in
         <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
-		${r"#{item}"}
+		#{item}
         </foreach>
     </delete>
 
@@ -114,7 +111,7 @@
         where
         id in
         <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
-        ${r"#{item}"}
+        #{item}
         </foreach>
     </update>
 
@@ -125,7 +122,7 @@
 
 
     <!-- 列表(全部) 自动创建，禁止修改-->
-    <select id="dataList" parameterType="com.yvan.PageData" resultType="com.xy.vmes.entity.${objectName}">
+    <select id="dataList" parameterType="com.yvan.PageData" resultType="com.xy.vmes.entity.Template">
         select
         <include refid="Field"></include>
         from
@@ -149,10 +146,10 @@
                     <if test="id != null and id != ''" >
                         <choose>
                             <when test="'true' == isSelfExist">
-                                <![CDATA[ and id <> ${r"#{"}id${r"}"} ]]>
+                                <![CDATA[ and id <> #{id} ]]>
                             </when>
                             <otherwise>
-                                and id = ${r"#{"}id${r"}"}
+                                and id = #{id}
                             </otherwise>
                         </choose>
                     </if>
@@ -160,13 +157,13 @@
 
                     <!--queryStr 自定义sql查询语句-->
                     <if test="queryStr != null and queryStr != ''" >
-                        and ${r"${"}queryStr${r"}"}
+                        and ${queryStr}
                     </if>
                 </where>
             </otherwise>
         </choose>
         <if test="orderStr != null and orderStr != ''" >
-            order by ${r"${"}orderStr${r"}"}
+            order by ${orderStr}
         </if>
     </select>
 
@@ -175,30 +172,28 @@
 
     <!-- 字段 自动创建，可以修改-->
     <sql id="Field1">
-    <#list fieldList as var>
-        <#if var[7] == "否">
-        ${var[0]} ${var[1]},<!-- ${var[3]} -->
-        </#if>
-    </#list>
-    <#list fieldList as var>
-        <#if var[7] == "是">
-        ${var[0]} ${var[1]} <!-- ${var[1]} -->
-        </#if>
-    </#list>
+        code code,<!-- 编码 -->
+        name name,<!-- 名称 -->
+        isdisable isdisable,<!-- 是否启用 -->
+        cdate cdate,<!-- 创建时间 -->
+        cuser cuser,<!-- 创建人账号 -->
+        udate udate,<!-- 修改时间 -->
+        uuser uuser,<!-- 修改人账号 -->
+        remark remark,<!-- 备注 -->
+        id id <!-- id -->
     </sql>
 
     <!-- 字段值 自动创建，可以修改-->
     <sql id="Column1">
-    <#list fieldList as var>
-        <#if var[7] == "否">
-            '${var[3]}'  ${var[1]},
-        </#if>
-    </#list>
-    <#list fieldList as var>
-        <#if var[7] == "是">
-            '${var[1]}' ${var[1]}_hide
-        </#if>
-    </#list>
+            '编码'  code,
+            '名称'  name,
+            '是否启用'  isdisable,
+            '创建时间'  cdate,
+            '创建人账号'  cuser,
+            '修改时间'  udate,
+            '修改人账号'  uuser,
+            '备注'  remark,
+            'id' id_hide
     </sql>
 
 
@@ -218,17 +213,21 @@
         <where>
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >
-                and ${r"${"}queryStr${r"}"}
+                and ${queryStr}
             </if>
-            <if test="code != null and code != ''">
-                and code LIKE CONCAT(CONCAT('%', #{code}),'%')
-            </if>
-            <if test="name != null and name != ''">
-                and name LIKE CONCAT(CONCAT('%', #{name}),'%')
+            <if test="keywords!= null and keywords != ''"><!-- 关键词检索 -->
+                and
+                (
+                <!--	根据需求自己加检索条件
+                            字段1 LIKE CONCAT(CONCAT('%', #{keywords}),'%')
+                             or
+                            字段2 LIKE CONCAT(CONCAT('%', #{keywords}),'%')
+                        -->
+                )
             </if>
         </where>
         <if test="orderStr != null and orderStr != ''" >
-            order by ${r"${"}orderStr${r"}"}
+            order by ${orderStr}
         </if>
     </select>
 
@@ -241,7 +240,7 @@
         <where>
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >
-                and ${r"${"}queryStr${r"}"}
+                and ${queryStr}
             </if>
             <if test="code != null and code != ''">
                 and code LIKE CONCAT(CONCAT('%', #{code}),'%')
@@ -251,7 +250,7 @@
             </if>
         </where>
         <if test="orderStr != null and orderStr != ''" >
-            order by ${r"${"}orderStr${r"}"}
+            order by ${orderStr}
         </if>
     </select>
 
