@@ -210,9 +210,8 @@ public class ${objectName}Controller {
         Pagination pg = HttpUtils.parsePagination(pd);
         Map result = new HashMap();
 
-        //List<LinkedHashMap> titles = ${objectNameLower}Service.getColumnList();
         List<LinkedHashMap> titles = new ArrayList<LinkedHashMap>();
-        List<Column> columnList = columnService.findColumnList("dictionary");
+        List<Column> columnList = columnService.findColumnList("${modelCode}");
         if (columnList == null || columnList.size() == 0) {
             titles = ${objectNameLower}Service.getColumnList();
         } else {
