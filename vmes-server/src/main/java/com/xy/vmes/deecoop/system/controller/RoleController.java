@@ -5,10 +5,7 @@ import com.google.gson.Gson;
 import com.xy.vmes.common.util.Common;
 import com.xy.vmes.common.util.RedisUtils;
 import com.xy.vmes.common.util.TreeUtil;
-import com.xy.vmes.entity.Department;
-import com.xy.vmes.entity.Role;
-import com.xy.vmes.entity.TreeEntity;
-import com.xy.vmes.entity.User;
+import com.xy.vmes.entity.*;
 import com.xy.vmes.service.*;
 import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
@@ -57,6 +54,12 @@ public class RoleController {
     private RoleButtonService roleButtonService;
     @Autowired
     private CoderuleService coderuleService;
+
+    @Autowired
+    private MenuService menuService;
+    @Autowired
+    private MenuTreeService menuTreeService;
+
     @Autowired
     RedisClient redisClient;
 
@@ -653,7 +656,37 @@ public class RoleController {
     @PostMapping("/role/treeRoleMeunsSelected")
     public ResultModel treeRoleMeunsSelected() {
         ResultModel model = new ResultModel();
+
         PageData pageData = HttpUtils.parsePageData();
+        String roleIds = (String)pageData.get("roleIds");
+        if (roleIds == null || roleIds.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("角色ID为空或空字符串！");
+            return model;
+        }
+
+        roleIds = StringUtil.stringTrimSpace(roleIds);
+        roleIds = "'" + roleIds.replace(",", "','") + "'";
+        String queryRoleIds = "b.role_id in (" +  roleIds + ")";
+
+        PageData findMap = new PageData();
+        findMap.put("queryStr", queryRoleIds);
+        findMap.put("menuIsdisable", "1");
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+
+        //1. 根据角色ID-获取当前角色ID绑定的菜单
+        List<Map<String, Object>> mapList = roleMenuService.findRoleMenuMapList(findMap);
+        List<Menu> menuList = roleMenuService.mapList2MenuList(mapList, new ArrayList<Menu>());
+        Integer maxLayer = menuService.findMaxLayerByMenuList(menuList);
+
+        //3. 生成菜单树
+        menuTreeService.initialization();
+        menuTreeService.findMenuTreeByList(menuList, maxLayer);
+        List<TreeEntity> treeList = menuTreeService.creatMenuTree(maxLayer, null, null);
+
+        String treeJsonStr = YvanUtil.toJson(treeList);
+        System.out.println("treeJsonStr: " + treeJsonStr);
+        model.putResult(treeJsonStr);
 
         return model;
     }
