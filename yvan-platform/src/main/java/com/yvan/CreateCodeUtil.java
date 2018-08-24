@@ -9,7 +9,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
-
 /**
  * Created by 46368 on 2018/7/17.
  */
@@ -18,11 +17,12 @@ public class CreateCodeUtil {
     public static void CreateCode() throws Exception {
 
         PageData pd = new PageData();
-
-        String objectName = "Employee";//类名
-        String tableName = "vmes_employee";//表名
-        String title = "vmes_employee:员工管理";
-        String author = "刘威";
+        //模块编码
+        String modelCode = "Dictionary";
+        String objectName = "DictionaryTest";//类名
+        String tableName = "vmes_dictionary";//表名
+        String title = "vmes_dictionary:字典大类表";
+        String author = "陈刚";
         String projectName = "deecoop.system";//项目名
 
 
@@ -36,6 +36,8 @@ public class CreateCodeUtil {
         List<String[]> fieldList = DbFH.getColumnParameterLsit(DbFH.getFHCon(pd),pd.getString("table"),pd.getString("databaseName")); //读取字段信息
 
         Map<String,Object> root = new HashMap<String,Object>();
+        //模块编码
+        root.put("modelCode", modelCode);
         //表字段信息
         root.put("fieldList", fieldList);
         //说明
@@ -62,30 +64,30 @@ public class CreateCodeUtil {
         root.put("classPath", "com.xy.vmes.entity");
         Freemarker.printFile("entityTemplate.ftl", root, filePath,  ftlPath);
 
-//        //生成Mapper java
-//        root.put("classPath", "com.xy.vmes."+projectName+".dao");
-//        filePath = path+"vmes-server/src/main/java/com/xy/vmes/"+projectName.replace(".","/")+"/dao/"+objectName+"Mapper.java";
-//        Freemarker.printFile("mapperJavaTemplate.ftl", root, filePath, ftlPath);
+        //生成Mapper java
+        root.put("classPath", "com.xy.vmes."+projectName+".dao");
+        filePath = path+"vmes-server/src/main/java/com/xy/vmes/"+projectName.replace(".","/")+"/dao/"+objectName+"Mapper.java";
+        Freemarker.printFile("mapperJavaTemplate.ftl", root, filePath, ftlPath);
 
         //生成mybatis xml
         filePath = path+"vmes-server/src/main/resources/mapper/"+objectName+"Mapper.xml";
         Freemarker.printFile("mapperMysqlTemplate.ftl", root, filePath, ftlPath);
 
-//        //生成Service java
-//        root.put("classPath", "com.xy.vmes.service");
-//        filePath = path+"vmes-contracts/src/main/java/com/xy/vmes/service/"+objectName+"Service.java";
-//        Freemarker.printFile("serviceJavaTemplate.ftl", root, filePath, ftlPath);
-//
-//        //生成ServiceImp java
-//        root.put("classPath", "com.xy.vmes."+projectName+".service");
-//        filePath = path+"vmes-server/src/main/java/com/xy/vmes/"+projectName.replace(".","/")+"/service/"+objectName+"ServiceImp.java";
-//        Freemarker.printFile("serviceImpJavaTemplate.ftl", root, filePath, ftlPath);
-//
-//        //生成Controller java
-//        root.put("classPath", "com.xy.vmes."+projectName+".controller");
-//        filePath = path+"vmes-server/src/main/java/com/xy/vmes/"+projectName.replace(".","/")+"/controller/"+objectName+"Controller.java";
-//        Freemarker.printFile("controllerJavaTemplate.ftl", root, filePath, ftlPath);
-//
+        //生成Service java
+        root.put("classPath", "com.xy.vmes.service");
+        filePath = path+"vmes-contracts/src/main/java/com/xy/vmes/service/"+objectName+"Service.java";
+        Freemarker.printFile("serviceJavaTemplate.ftl", root, filePath, ftlPath);
+
+        //生成ServiceImp java
+        root.put("classPath", "com.xy.vmes."+projectName+".service");
+        filePath = path+"vmes-server/src/main/java/com/xy/vmes/"+projectName.replace(".","/")+"/service/"+objectName+"ServiceImp.java";
+        Freemarker.printFile("serviceImpJavaTemplate.ftl", root, filePath, ftlPath);
+
+        //生成Controller java
+        root.put("classPath", "com.xy.vmes."+projectName+".controller");
+        filePath = path+"vmes-server/src/main/java/com/xy/vmes/"+projectName.replace(".","/")+"/controller/"+objectName+"Controller.java";
+        Freemarker.printFile("controllerJavaTemplate.ftl", root, filePath, ftlPath);
+
 
 //        Gson gosn = new Gson();
 //        String result = gosn.toJson(fieldList);

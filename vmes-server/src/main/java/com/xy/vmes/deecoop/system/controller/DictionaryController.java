@@ -1,13 +1,12 @@
 package com.xy.vmes.deecoop.system.controller;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
-import com.xy.vmes.common.util.Common;
-import com.xy.vmes.common.util.RedisUtils;
-import com.xy.vmes.common.util.StringUtil;
-import com.xy.vmes.common.util.TreeUtil;
+import com.xy.vmes.common.util.*;
+import com.xy.vmes.entity.Column;
 import com.xy.vmes.entity.Dictionary;
 import com.xy.vmes.entity.TreeEntity;
 import com.xy.vmes.entity.User;
+import com.xy.vmes.service.ColumnService;
 import com.xy.vmes.service.DictionaryService;
 import com.xy.vmes.service.UserService;
 import com.yvan.ExcelUtil;
@@ -53,6 +52,8 @@ public class DictionaryController {
     @Autowired
     private RedisClient redisClient;
 
+    @Autowired
+    private ColumnService columnService;
     /**
     * @author 刘威 自动创建，禁止修改
     * @date 2018-07-31
@@ -321,7 +322,13 @@ public class DictionaryController {
         Pagination pg = HttpUtils.parsePagination(pd);
         Map result = new HashMap();
 
-        List<LinkedHashMap> titles =dictionaryService.getColumnList();
+        List<LinkedHashMap> titles = new ArrayList<LinkedHashMap>();
+        List<Column> columnList = columnService.findColumnList("dictionary");
+        if (columnList == null || columnList.size() == 0) {
+            titles = dictionaryService.getColumnList();
+        } else {
+            titles = ColumnUtil.listColumnByModelCode(columnList);
+        }
 
         List<LinkedHashMap> titlesList = new ArrayList<LinkedHashMap>();
         List<String> titlesHideList = new ArrayList<String>();
