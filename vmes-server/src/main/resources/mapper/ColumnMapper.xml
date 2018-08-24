@@ -56,8 +56,9 @@
                             </otherwise>
                         </choose>
                     </if>
-
-
+                    <if test="modelCode != null and modelCode != ''">
+                        and model_code = #{modelCode}
+                    </if>
                     <!--queryStr 自定义sql查询语句-->
                     <if test="queryStr != null and queryStr != ''" >
                         and ${queryStr}
