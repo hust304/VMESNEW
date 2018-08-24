@@ -209,55 +209,26 @@
         </foreach>
     </delete>
 
-    <insert id="insertColumn" >
-        insert into vmes_column (
-        id,model_code,title_key,title_name,serial_number,
-        isdisable,ishide,isedit,ismust,cdate,
-        cuser
-        ) VALUES
-        (replace(uuid(), '-', ''),'dictionary','pid','上级id-根root',1, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'dictionary','code','字典编码',2, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'dictionary','name','字典名称',3, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'dictionary','serialNumber','字典排列序号',4, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'dictionary','layer','字典级别(最大支持5层)-头2层系统默认',5, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'dictionary','column1','预留字段',6, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'dictionary','column2','预留字段',7, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'dictionary','column3','预留字段',8, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'dictionary','id0','根root节点ID-默认层(智能云管家)',9, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'dictionary','id1','(company:公司 system:系统)',10, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'dictionary','id2','一级节点ID',11, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'dictionary','id3','二级节点ID',12, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'dictionary','id4','三级节点ID',13, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'dictionary','id5','四级节点ID',14, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'dictionary','id6','五级节点ID',15, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'dictionary','isdisable','是否禁用(0:已禁用 1:启用) 数据字典:sys_isdisable',16, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'dictionary','cdate','创建时间',17, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'dictionary','cuser','创建人账号',18, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'dictionary','udate','修改时间',19, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'dictionary','uuser','修改人账号',20, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'dictionary','isglobal','是否是全局数据字典  0：否  1：是',21, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'dictionary','companyId','所属公司',22, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'dictionary','nameEn','英文名称',23, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'dictionary','remark','备注',24, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'dictionary','id','id',0, '1','1','1','0',now(), 'admin')
-    </insert>
-
     <!-- ***************************************************以上为自动生成代码禁止修改，请在下面添加业务代码************************************************* -->
 
 
     <!-- 字段 自动创建，可以修改-->
     <sql id="Field1">
-        name name,<!-- 字典名称 -->
-        remark remark,<!-- 备注 -->
-        isdisable isdisable,<!-- 是否禁用(0:已禁用 1:启用) 数据字典:sys_isdisable -->
-        id id <!-- id -->
+        b.name parentName,
+        a.name name,<!-- 字典名称 -->
+        a.remark remark,<!-- 备注 -->
+        a.isdisable isdisable,<!-- 是否禁用(0:已禁用 1:启用) 数据字典:sys_isdisable -->
+        a.pid pid,
+        a.id id <!-- id -->
     </sql>
 
     <!-- 字段值 自动创建，可以修改-->
     <sql id="Column1">
             '字典名称'  name,
+             '上级名称' parentName,
             '备注'  remark,
             '是否禁用' isdisable,
+            'pid' pid_hide,
             'id' id_hide
     </sql>
 
@@ -302,22 +273,23 @@
         select
         <include refid="Field1"></include>
         from
-        <include refid="tableName"></include>
+        vmes_dictionary a
+        left join vmes_dictionary b on a.pid = b.id
         <where>
             <if test="name!= null and name != ''"><!-- 关键词检索 -->
-                and name LIKE CONCAT(CONCAT('%', #{name}),'%')
+                and a.name LIKE CONCAT(CONCAT('%', #{name}),'%')
             </if>
             <if test="code!= null and code != ''"><!-- 关键词检索 -->
-                and code LIKE CONCAT(CONCAT('%', #{code}),'%')
+                and a.code LIKE CONCAT(CONCAT('%', #{code}),'%')
             </if>
             <if test="pid!= null and pid != ''"><!-- 关键词检索 -->
-                and pid = #{pid}
+                and a.pid = #{pid}
             </if>
             <if test="isdisable!= null and isdisable != ''"><!-- 关键词检索 -->
-                and isdisable = #{isdisable}
+                and a.isdisable = #{isdisable}
             </if>
         </where>
-        order by code ASC
+        order by a.serial_number ASC
     </select>
 
 
@@ -360,5 +332,22 @@
             </if>
         </where>
     </select>
+
+
+    <insert id="insertColumn" >
+        insert into vmes_column (
+        id,model_code,title_key,title_name,serial_number,
+        isdisable,ishide,isedit,ismust,cdate,
+        cuser
+        ) VALUES
+        (replace(uuid(), '-', ''),'dictionary','pid','上级id',1, '0','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'dictionary','name','字典名称',3, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'dictionary','parentName','上级名称',4, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'dictionary','isdisable','是否启用',5, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'dictionary','cdate','创建时间',6, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'dictionary','cuser','创建人账号',7, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'dictionary','remark','备注',8, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'dictionary','id','id',0, '0','1','1','0',now(), 'admin')
+    </insert>
 
 </mapper>

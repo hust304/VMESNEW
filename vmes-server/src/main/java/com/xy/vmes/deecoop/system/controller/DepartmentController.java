@@ -2,7 +2,9 @@ package com.xy.vmes.deecoop.system.controller;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.Common;
+import com.xy.vmes.common.util.TreeUtil;
 import com.xy.vmes.entity.Department;
+import com.xy.vmes.entity.TreeEntity;
 import com.xy.vmes.service.DepartmentService;
 import com.yvan.*;
 import com.xy.vmes.common.util.StringUtil;
@@ -184,27 +186,58 @@ public class DepartmentController {
 
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+
+
+
     /**
-     * 获得部门树形结构
-     * 当前部门节点下面所有子节点树形结构
-     *
-     * 创建人：陈刚
-     * 创建时间：2018-07-20
+     * @author 刘威
+     * @date 2018-07-31
      */
-    @GetMapping("/department/treeDepartments")
-    public String treeDepartments() {
-        PageData mapObj = HttpUtils.parsePageData();
+    @PostMapping("/department/treeDepartments")
+    public ResultModel treeDepartments()  throws Exception {
 
-        //递归调用获得(当前部门+当前部门下所有子部门)List结构体
-        //Department detp = new Department();
-        //detp.setId1("1");
-        //detp.setName("公司1");
-        //detp.setLayer(Integer.valueOf(1));
-        //detp = null;
-        //Tree<Department> treeObj = departmentService.findTree(detp);
+        logger.info("################/department/treeDepartments 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        HttpServletResponse response  = HttpUtils.currentResponse();
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+        Map result = new HashMap();
 
-        return null;
+        List<TreeEntity> treeList = departmentService.getTreeList(pd);
+        TreeEntity treeObj = TreeUtil.switchTree(null, treeList);
+        String treeJsonStr = YvanUtil.toJson(treeObj);
+        System.out.println("treeJsonStr: " + treeJsonStr);
+
+        result.put("treeList", treeObj);
+        model.putResult(result);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/department/treeDepartments 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
     }
+
+
+//    /**
+//     * 获得部门树形结构
+//     * 当前部门节点下面所有子节点树形结构
+//     *
+//     * 创建人：陈刚
+//     * 创建时间：2018-07-20
+//     */
+//    @GetMapping("/department/treeDepartments")
+//    public String treeDepartments() {
+//        PageData mapObj = HttpUtils.parsePageData();
+//
+//        //递归调用获得(当前部门+当前部门下所有子部门)List结构体
+//        //Department detp = new Department();
+//        //detp.setId1("1");
+//        //detp.setName("公司1");
+//        //detp.setLayer(Integer.valueOf(1));
+//        //detp = null;
+//        //Tree<Department> treeObj = departmentService.findTree(detp);
+//
+//        return null;
+//    }
 
     /**新增组织架构(组织类型:部门)
      * (organize_type:组织类型(1:公司 2:部门))

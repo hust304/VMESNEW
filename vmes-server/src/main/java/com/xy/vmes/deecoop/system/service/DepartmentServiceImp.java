@@ -5,6 +5,7 @@ import com.xy.vmes.deecoop.system.dao.DepartmentMapper;
 import com.xy.vmes.entity.CoderuleEntity;
 import com.xy.vmes.entity.Department;
 import com.xy.vmes.entity.Post;
+import com.xy.vmes.entity.TreeEntity;
 import com.xy.vmes.service.CoderuleService;
 import com.xy.vmes.service.DepartmentService;
 import com.xy.vmes.service.DepartmentTreeService;
@@ -118,6 +119,17 @@ public class DepartmentServiceImp implements DepartmentService {
 
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+
+
+    /**
+     * 创建人：刘威
+     * 创建时间：2018-08-01
+     */
+    @Override
+    public List<TreeEntity>  getTreeList(PageData pd)throws Exception{
+        return  departmentMapper.getTreeList(pd);
+    }
+
 
 
     /**

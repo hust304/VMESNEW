@@ -299,9 +299,9 @@
         <!--查询显示字段-->
         a.code code,
         a.name name,
-        c.small_name deptTypeName,
+        c.name deptTypeName,
         a.layer layer,
-        b.name paterName,
+        b.name parentName,
 
         DATE_FORMAT(a.udate,'%Y-%m-%d %T') udate,
         a.remark remark,
@@ -329,7 +329,7 @@
         '组织名称' name,
         '组织类型' deptTypeName,
         '组织层级' layer,
-        '上级组织' paterName,
+        '上级组织' parentName,
 
         '更改时间' udate,
         '备注' remark,
@@ -346,7 +346,7 @@
         select <include refid="Field1"/>
         from vmes_department a
             left join vmes_department b on a.pid = b.id
-            left join view_vmes_dictionary c on a.company_type = c.small_code and c.big_code = 'sys_department_type'
+            left join vmes_dictionary c on a.dept_type = c.id
         <where>
             <if test="code != null and code != ''"><!-- 关键词检索 -->
                 and a.code LIKE CONCAT(CONCAT('%', #{code}),'%')
@@ -354,10 +354,43 @@
             <if test="name != null and name != ''"><!-- 关键词检索 -->
                 and a.name LIKE CONCAT(CONCAT('%', #{name}),'%')
             </if>
-            <if test="organizeType != null and organizeType != ''" >
-                and a.organize_type = #{organizeType}
+            <if test="pid!= null and pid != ''"><!-- 关键词检索 -->
+                and a.pid = #{pid}
             </if>
+            <if test="deptTypeName != null and deptTypeName != ''" >
+                and c.name  LIKE CONCAT(CONCAT('%', #{deptTypeName}),'%')
+            </if>
+        </where>
+        order by a.layer,a.serial_number,a.code asc
+     </select>
 
+
+    <!-- 自动创建，可以修改 -->
+    <select id="getTreeList"  parameterType="com.yvan.PageData"  resultType="com.xy.vmes.entity.TreeEntity">
+        select
+        id,
+        name,
+        pid,
+        serial_number serialNumber,
+        layer,
+        isdisable
+        from <include refid="tableName"/>
+        <where>
+            <if test="name!= null and name != ''"><!-- 关键词检索 -->
+                and name LIKE CONCAT(CONCAT('%', #{name}),'%')
+            </if>
+            <if test="code!= null and code != ''"><!-- 关键词检索 -->
+                and code LIKE CONCAT(CONCAT('%', #{code}),'%')
+            </if>
+            <if test="pid!= null and pid != ''"><!-- 关键词检索 -->
+                and pid = #{pid}
+            </if>
+            <if test="isdisable!= null and isdisable != ''"><!-- 关键词检索 -->
+                and isdisable = #{isdisable}
+            </if>
+            <if test="queryStr != null and queryStr!=''" ><!-- 自定义查询 -->
+                and ${queryStr}
+            </if>
         </where>
     </select>
 

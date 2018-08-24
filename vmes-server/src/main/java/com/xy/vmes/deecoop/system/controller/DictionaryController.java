@@ -253,7 +253,7 @@ public class DictionaryController {
             }
         }
 
-
+        dictionary.setSerialNumber(1);
         if("admin".equals(user.getUserCode())){
             dictionary.setIsglobal("1");//超级管理员创建的数据字典都是全局设置
         }else {
@@ -365,7 +365,7 @@ public class DictionaryController {
             }
         }
         result.put("varList",varMapList);
-        result.put("pageData", YvanUtil.toJson(pg));
+        result.put("pageData", pg);
         model.putResult(result);
 
         Long endTime = System.currentTimeMillis();
