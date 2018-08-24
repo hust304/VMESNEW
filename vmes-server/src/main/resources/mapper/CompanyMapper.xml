@@ -94,10 +94,6 @@
             <if test="layer != null and layer != ''" >
                 and a.layer = #{layer}
             </if>
-            <if test="cuser != null and cuser != ''" >
-                and a.cuser = #{cuser}
-            </if>
-
 
             <if test="userCode != null and userCode != ''">
                 and b.user_code LIKE CONCAT(CONCAT('%', #{userCode}),'%')
