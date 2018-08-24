@@ -3,6 +3,7 @@ package com.xy.vmes.deecoop.system.dao;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.entity.Department;
+import com.xy.vmes.entity.TreeEntity;
 import com.yvan.PageData;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
@@ -82,6 +83,16 @@ public interface DepartmentMapper extends BaseMapper<Department> {
 	 */
 	@Select("updateDisableByIds")
 	void updateDisableByIds(String[] ids);
+
+
+
+	/**
+	 * 创建人：刘威
+	 * 创建时间：2018-08-01
+	 */
+	@Select("getTreeList")
+	List<TreeEntity> getTreeList(PageData pd);
+
 }
 
 

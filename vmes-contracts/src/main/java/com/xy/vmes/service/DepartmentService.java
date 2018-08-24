@@ -2,6 +2,7 @@ package com.xy.vmes.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.entity.Department;
+import com.xy.vmes.entity.TreeEntity;
 import com.yvan.PageData;
 import com.yvan.Tree;
 
@@ -247,6 +248,13 @@ public interface DepartmentService {
      * @return
      */
     String checkDeleteDeptByIds(String ids);
+
+
+    /**
+     * 创建人：刘威
+     * 创建时间：2018-08-01
+     */
+    List<TreeEntity> getTreeList(PageData pd)throws Exception;
 }
 
 
