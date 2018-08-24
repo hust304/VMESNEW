@@ -578,6 +578,7 @@ public class DbFH{
 
 		List<String[]> fieldList = new ArrayList<String[]>();
 
+		int indexColumn = 0;
 		while(rs.next()){
 
 			String column_name = rs.getObject(1)==null?"":rs.getObject(1).toString();
@@ -587,7 +588,7 @@ public class DbFH{
 			String character_maximum_length = rs.getObject(5)==null?"":rs.getObject(5).toString();
 
 
-			String[] strs = new String[8];
+			String[] strs = new String[9];
 			//列名英文
 			//列名英文去下划线（_）首字母小写其他大写
 			//列名英文去下划线（_）首字母大写其他大写
@@ -640,7 +641,9 @@ public class DbFH{
 				strs[7]="否";
 			}
 
+			strs[8] = Integer.valueOf(indexColumn).toString();
 			fieldList.add(strs);
+			indexColumn = indexColumn + 1;
 		}
 		return fieldList;
 	}

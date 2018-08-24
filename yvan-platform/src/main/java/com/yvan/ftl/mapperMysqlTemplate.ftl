@@ -118,7 +118,23 @@
         </foreach>
     </update>
 
-
+    <insert id="insertColumn" >
+        insert into vmes_column (
+        id,model_code,title_key,title_name,serial_number,
+        isdisable,ishide,isedit,ismust,cdate,
+        cuser
+        ) VALUES
+        <#list fieldList as var>
+            <#if var[7] == "否">
+            (replace(uuid(), '-', ''),'${modelCode}','${var[1]}','${var[3]}',${var[8]}, '1','1','1','0',now(), 'admin'),
+            </#if>
+        </#list>
+        <#list fieldList as var>
+            <#if var[7] == "是">
+            (replace(uuid(), '-', ''),'${modelCode}','${var[1]}','${var[1]}',${var[8]}, '1','1','1','0',now(), 'admin')
+            </#if>
+        </#list>
+    </insert>
 
     <!-- ***************************************************以上为自动生成代码禁止修改，请在下面添加业务代码************************************************* -->
 
@@ -221,10 +237,10 @@
                 and ${r"${"}queryStr${r"}"}
             </if>
             <if test="code != null and code != ''">
-                and code LIKE CONCAT(CONCAT('%', #{code}),'%')
+                and code LIKE CONCAT(CONCAT('%', ${r"#{"}code${r"}"}),'%')
             </if>
             <if test="name != null and name != ''">
-                and name LIKE CONCAT(CONCAT('%', #{name}),'%')
+                and name LIKE CONCAT(CONCAT('%', ${r"#{"}name${r"}"}),'%')
             </if>
         </where>
         <if test="orderStr != null and orderStr != ''" >
@@ -244,10 +260,10 @@
                 and ${r"${"}queryStr${r"}"}
             </if>
             <if test="code != null and code != ''">
-                and code LIKE CONCAT(CONCAT('%', #{code}),'%')
+                and code LIKE CONCAT(CONCAT('%', ${r"#{"}code${r"}"}),'%')
             </if>
             <if test="name != null and name != ''">
-                and name LIKE CONCAT(CONCAT('%', #{name}),'%')
+                and name LIKE CONCAT(CONCAT('%', ${r"#{"}name${r"}"}),'%')
             </if>
         </where>
         <if test="orderStr != null and orderStr != ''" >
