@@ -71,7 +71,14 @@ public class DictionaryServiceImp implements DictionaryService {
     public void deleteById(String id) throws Exception{
         dictionaryMapper.deleteById(id);
     }
-
+    /**
+     * 创建人：刘威 自动创建，禁止修改
+     * 创建时间：2018-08-23
+     */
+    @Override
+    public void deleteByIds(String[] ids) throws Exception{
+        dictionaryMapper.deleteByIds(ids);
+    }
 
     /**
     * 创建人：刘威 自动创建，禁止修改

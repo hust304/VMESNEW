@@ -298,9 +298,20 @@ public class DictionaryController {
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
-        String dictionaryIds = pd.getString("ids");
-        String[] ids = dictionaryIds.split(",");
-        dictionaryService.updateToDisableByIds(ids);
+//        String dictionaryIds = pd.getString("ids");
+//        String[] ids = dictionaryIds.split(",");
+//        dictionaryService.updateToDisableByIds(ids);
+        String ids = pd.getString("ids");
+        if(StringUtils.isEmpty(ids)){
+            model.putCode("1");
+            model.putMsg("未勾选删除记录，请重新选择！");
+            return model;
+        }
+        String id_str = StringUtil.stringTrimSpace(ids);
+        String[] id_arry = id_str.split(",");
+        if(id_arry.length>0){
+            dictionaryService.deleteByIds(id_arry);
+        }
         Long endTime = System.currentTimeMillis();
         logger.info("################dictionary/deleteDictionarys 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
