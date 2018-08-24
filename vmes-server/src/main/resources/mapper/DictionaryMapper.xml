@@ -238,6 +238,7 @@
         from dual
     </select>
 
+
     <!-- 自动创建，可以修改 -->
     <select id="getDataList"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
         select

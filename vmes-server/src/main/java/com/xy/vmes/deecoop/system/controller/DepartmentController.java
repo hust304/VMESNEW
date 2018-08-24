@@ -475,58 +475,122 @@ public class DepartmentController {
         return model;
     }
 
-    /**组织管理分页查询List
-     *
-     * @author 陈刚
-     * @date 2018-08-08
+//    /**组织管理分页查询List
+//     *
+//     * @author 陈刚
+//     * @date 2018-08-08
+//     */
+//    @PostMapping("/department/listPageDepartments")
+//    public ResultModel listPageDepartments() throws Exception {
+//        ResultModel model = new ResultModel();
+//        Map<String, Object> mapObj = new HashMap<String, Object>();
+//
+//
+//        //1. 查询遍历List列表
+//        LinkedHashMap<String, String> titlesLinkedMap = new LinkedHashMap<String, String>();
+//        List<String> titlesHideList = new ArrayList<String>();
+//        Map<String, String> varModelMap = new HashMap<String, String>();
+//        List<LinkedHashMap<String, String>> titleList = departmentService.getColumnList();
+//        if(titleList != null && titleList.size() >0 ){
+//            LinkedHashMap<String, String> titlesMap = titleList.get(0);
+//            for (Map.Entry<String, String> entry : titlesMap.entrySet()) {
+//                if(entry.getKey().indexOf("_hide") != -1){
+//                    titlesLinkedMap.put(entry.getKey().replace("_hide",""), entry.getValue());
+//                    titlesHideList.add(entry.getKey().replace("_hide",""));
+//                    varModelMap.put(entry.getKey().replace("_hide",""), "");
+//                }else{
+//                    titlesLinkedMap.put(entry.getKey(), entry.getValue());
+//                    varModelMap.put(entry.getKey(), "");
+//                }
+//            }
+//        }
+//        mapObj.put("hideTitles",titlesHideList);
+//        mapObj.put("titles",titlesLinkedMap);
+//
+//        //2. 分页查询数据List
+//        List<Map<String, String>> varMapList = new ArrayList<Map<String, String>>();
+//        PageData pd = HttpUtils.parsePageData();
+//        Pagination pg = HttpUtils.parsePagination(pd);
+//        List<Map<String, Object>> varList = departmentService.getDataListPage(pd, pg);
+//        if(varList != null && varList.size() > 0){
+//            for(int i=0; i < varList.size(); i++){
+//                Map<String, Object> map = varList.get(i);
+//                Map<String, String> varMap = new HashMap<String, String>();
+//                varMap.putAll(varModelMap);
+//                for (Map.Entry<String, String> entry : varMap.entrySet()) {
+//                    varMap.put(entry.getKey(), map.get(entry.getKey()) != null ? map.get(entry.getKey()).toString() : "");
+//                }
+//                varMapList.add(varMap);
+//            }
+//        }
+//        mapObj.put("varList",varMapList);
+//        mapObj.put("pageData", YvanUtil.toJson(pg));
+//
+//        model.putResult(mapObj);
+//        return model;
+//    }
+
+
+    /**
+     * @author 刘威 自动创建，可以修改
+     * @date 2018-08-23
      */
     @PostMapping("/department/listPageDepartments")
-    public ResultModel listPageDepartments() throws Exception {
+    public ResultModel listPageDepartments()  throws Exception {
+
+        logger.info("################department/listPageDepartments 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
-        Map<String, Object> mapObj = new HashMap<String, Object>();
-
-
-        //1. 查询遍历List列表
-        LinkedHashMap<String, String> titlesLinkedMap = new LinkedHashMap<String, String>();
-        List<String> titlesHideList = new ArrayList<String>();
-        Map<String, String> varModelMap = new HashMap<String, String>();
-        List<LinkedHashMap<String, String>> titleList = departmentService.getColumnList();
-        if(titleList != null && titleList.size() >0 ){
-            LinkedHashMap<String, String> titlesMap = titleList.get(0);
-            for (Map.Entry<String, String> entry : titlesMap.entrySet()) {
-                if(entry.getKey().indexOf("_hide") != -1){
-                    titlesLinkedMap.put(entry.getKey().replace("_hide",""), entry.getValue());
-                    titlesHideList.add(entry.getKey().replace("_hide",""));
-                    varModelMap.put(entry.getKey().replace("_hide",""), "");
-                }else{
-                    titlesLinkedMap.put(entry.getKey(), entry.getValue());
-                    varModelMap.put(entry.getKey(), "");
-                }
-            }
-        }
-        mapObj.put("hideTitles",titlesHideList);
-        mapObj.put("titles",titlesLinkedMap);
-
-        //2. 分页查询数据List
-        List<Map<String, String>> varMapList = new ArrayList<Map<String, String>>();
         PageData pd = HttpUtils.parsePageData();
         Pagination pg = HttpUtils.parsePagination(pd);
-        List<Map<String, Object>> varList = departmentService.getDataListPage(pd, pg);
-        if(varList != null && varList.size() > 0){
-            for(int i=0; i < varList.size(); i++){
-                Map<String, Object> map = varList.get(i);
+        Map result = new HashMap();
+        List<LinkedHashMap<String, String>> titles = departmentService.getColumnList();
+
+
+        List<LinkedHashMap> titlesList = new ArrayList<LinkedHashMap>();
+        List<String> titlesHideList = new ArrayList<String>();
+        Map<String, String> varModelMap = new HashMap<String, String>();
+        if(titles!=null&&titles.size()>0){
+            LinkedHashMap<String, String> titlesMap = titles.get(0);
+            for (Map.Entry<String, String> entry : titlesMap.entrySet()) {
+                LinkedHashMap titlesLinkedMap = new LinkedHashMap();
+                if(entry.getKey().indexOf("_hide")>0){
+                    titlesLinkedMap.put(entry.getKey().replace("_hide",""),entry.getValue());
+                    titlesHideList.add(entry.getKey().replace("_hide",""));
+                    varModelMap.put(entry.getKey().replace("_hide",""),"");
+                }else{
+                    titlesLinkedMap.put(entry.getKey(),entry.getValue());
+                    varModelMap.put(entry.getKey(),"");
+                }
+                titlesList.add(titlesLinkedMap);
+            }
+        }
+        result.put("hideTitles",titlesHideList);
+        result.put("titles",titlesList);
+
+
+
+
+        List<Map> varMapList = new ArrayList();
+        List<Map<String, Object>> varList = departmentService.getDataListPage(pd,pg);
+        if(varList!=null&&varList.size()>0){
+            for(int i=0;i<varList.size();i++){
+                Map map = varList.get(i);
                 Map<String, String> varMap = new HashMap<String, String>();
                 varMap.putAll(varModelMap);
                 for (Map.Entry<String, String> entry : varMap.entrySet()) {
-                    varMap.put(entry.getKey(), map.get(entry.getKey()) != null ? map.get(entry.getKey()).toString() : "");
+                    varMap.put(entry.getKey(),map.get(entry.getKey())!=null?map.get(entry.getKey()).toString():"");
                 }
                 varMapList.add(varMap);
             }
         }
-        mapObj.put("varList",varMapList);
-        mapObj.put("pageData", YvanUtil.toJson(pg));
+        result.put("varList",varMapList);
+        result.put("pageData", pg);
 
-        model.putResult(mapObj);
+        model.putResult(result);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################department/listPageDepartments 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 

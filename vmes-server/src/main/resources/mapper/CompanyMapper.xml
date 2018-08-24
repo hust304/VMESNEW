@@ -74,6 +74,8 @@
             left join vmes_role f on d.role_id = f.id
             left join vmes_dictionary c on a.company_type = c.id
         <where>
+            a.layer = '1'
+
             <if test="id != null and id != ''" >
                 and a.id = #{id}
             </if>
@@ -106,6 +108,8 @@
             <if test="mobile != null and mobile != ''">
                 and b.mobile LIKE CONCAT(CONCAT('%', #{mobile}),'%')
             </if>
+
+
         </where>
     </select>
 

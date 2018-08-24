@@ -11,10 +11,13 @@ import com.yvan.*;
 import com.yvan.springmvc.ResultModel;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletResponse;
 import java.text.MessageFormat;
 import java.util.*;
 
@@ -26,6 +29,7 @@ import java.util.*;
 @RestController
 @Slf4j
 public class CompanyController {
+    private Logger logger = LoggerFactory.getLogger(DepartmentController.class);
     @Autowired
     private CompanyService companyService;
     @Autowired
@@ -39,67 +43,132 @@ public class CompanyController {
     @Autowired
     private CoderuleService coderuleService;
 
-    @PostMapping("/company/listPageCompanyAdmins")
-    public ResultModel listPageCompanyAdmins() throws Exception {
-        ResultModel model = new ResultModel();
+//    @PostMapping("/company/listPageCompanyAdmins")
+//    public ResultModel listPageCompanyAdmins() throws Exception {
+//        ResultModel model = new ResultModel();
+//
+//        //1. 查询遍历List列表
+//        List<LinkedHashMap<String, String>> titleOutList = new ArrayList<LinkedHashMap<String, String>>();
+//        List<String> titlesHideList = new ArrayList<String>();
+//        Map<String, String> varModelMap = new HashMap<String, String>();
+//        List<LinkedHashMap<String, String>> titleList = companyService.getColumnList();
+//        if (titleList != null && titleList.size() > 0) {
+//            LinkedHashMap<String, String> titlesMap = titleList.get(0);
+//            for (Map.Entry<String, String> entry : titlesMap.entrySet()) {
+//                LinkedHashMap<String, String> titleMap = new LinkedHashMap<String, String>();
+//                if (entry.getKey().indexOf("_hide") != -1) {
+//                    titleMap.put(entry.getKey().replace("_hide",""), entry.getValue());
+//                    titlesHideList.add(entry.getKey().replace("_hide",""));
+//                    varModelMap.put(entry.getKey().replace("_hide",""), "");
+//                } else if (entry.getKey().indexOf("_hide") == -1) {
+//                    titleMap.put(entry.getKey(), entry.getValue());
+//                    varModelMap.put(entry.getKey(), "");
+//                }
+//                titleOutList.add(titleMap);
+//            }
+//        }
+//
+//        Map<String, Object> mapObj = new HashMap<String, Object>();
+//        mapObj.put("hideTitles", titlesHideList);
+//        mapObj.put("titles", YvanUtil.toJson(titleOutList));
+//
+//        //2. 分页查询数据List
+//        PageData pageData = HttpUtils.parsePageData();
+//        String userType = (String)pageData.get("userType");
+//        String userId = (String)pageData.get("userId");
+//        String companyId = (String)pageData.get("companyId");
+//
+//        pageData.put("layer", "1");
+//        if ("1".equals(userType) && companyId != null && companyId.trim().length() > 0) {
+//            pageData.put("id", companyId);
+//        } else if ("2".equals(userType) && userId != null && userId.trim().length() > 0) {
+//            pageData.put("cuser", userId);
+//        }
+//
+//        Pagination pg = HttpUtils.parsePagination(pageData);
+//        List<Map<String, Object>> varList = companyService.getDataListPage(pageData, pg);
+//        List<Map<String, String>> varMapList = new ArrayList<Map<String, String>>();
+//        if(varList != null && varList.size() > 0) {
+//            for (Map<String, Object> map : varList) {
+//                Map<String, String> varMap = new HashMap<String, String>();
+//                varMap.putAll(varModelMap);
+//                for (Map.Entry<String, String> entry : varMap.entrySet()) {
+//                    varMap.put(entry.getKey(), map.get(entry.getKey()) != null ? map.get(entry.getKey()).toString() : "");
+//                }
+//                varMapList.add(varMap);
+//            }
+//        }
+//        mapObj.put("varList", YvanUtil.toJson(varMapList));
+//        mapObj.put("pageData", YvanUtil.toJson(pg));
+//
+//        model.putResult(mapObj);
+//        return model;
+//    }
 
-        //1. 查询遍历List列表
-        List<LinkedHashMap<String, String>> titleOutList = new ArrayList<LinkedHashMap<String, String>>();
+    /**
+     * @author 刘威 自动创建，可以修改
+     * @date 2018-08-23
+     */
+    @PostMapping("/company/listPageCompanyAdmins")
+    public ResultModel listPageCompanyAdmins()  throws Exception {
+
+        logger.info("################company/listPageCompanyAdmins 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        HttpServletResponse response  = HttpUtils.currentResponse();
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+        Pagination pg = HttpUtils.parsePagination(pd);
+        Map result = new HashMap();
+        List<LinkedHashMap<String, String>> titles = companyService.getColumnList();
+
+
+        List<LinkedHashMap> titlesList = new ArrayList<LinkedHashMap>();
         List<String> titlesHideList = new ArrayList<String>();
         Map<String, String> varModelMap = new HashMap<String, String>();
-        List<LinkedHashMap<String, String>> titleList = companyService.getColumnList();
-        if (titleList != null && titleList.size() > 0) {
-            LinkedHashMap<String, String> titlesMap = titleList.get(0);
+        if(titles!=null&&titles.size()>0){
+            LinkedHashMap<String, String> titlesMap = titles.get(0);
             for (Map.Entry<String, String> entry : titlesMap.entrySet()) {
-                LinkedHashMap<String, String> titleMap = new LinkedHashMap<String, String>();
-                if (entry.getKey().indexOf("_hide") != -1) {
-                    titleMap.put(entry.getKey().replace("_hide",""), entry.getValue());
+                LinkedHashMap titlesLinkedMap = new LinkedHashMap();
+                if(entry.getKey().indexOf("_hide")>0){
+                    titlesLinkedMap.put(entry.getKey().replace("_hide",""),entry.getValue());
                     titlesHideList.add(entry.getKey().replace("_hide",""));
-                    varModelMap.put(entry.getKey().replace("_hide",""), "");
-                } else if (entry.getKey().indexOf("_hide") == -1) {
-                    titleMap.put(entry.getKey(), entry.getValue());
-                    varModelMap.put(entry.getKey(), "");
+                    varModelMap.put(entry.getKey().replace("_hide",""),"");
+                }else{
+                    titlesLinkedMap.put(entry.getKey(),entry.getValue());
+                    varModelMap.put(entry.getKey(),"");
                 }
-                titleOutList.add(titleMap);
+                titlesList.add(titlesLinkedMap);
             }
         }
+        result.put("hideTitles",titlesHideList);
+        result.put("titles",titlesList);
 
-        Map<String, Object> mapObj = new HashMap<String, Object>();
-        mapObj.put("hideTitles", titlesHideList);
-        mapObj.put("titles", YvanUtil.toJson(titleOutList));
 
-        //2. 分页查询数据List
-        PageData pageData = HttpUtils.parsePageData();
-        String userType = (String)pageData.get("userType");
-        String userId = (String)pageData.get("userId");
-        String companyId = (String)pageData.get("companyId");
 
-        pageData.put("layer", "1");
-        if ("1".equals(userType) && companyId != null && companyId.trim().length() > 0) {
-            pageData.put("id", companyId);
-        } else if ("2".equals(userType) && userId != null && userId.trim().length() > 0) {
-            pageData.put("cuser", userId);
-        }
 
-        Pagination pg = HttpUtils.parsePagination(pageData);
-        List<Map<String, Object>> varList = companyService.getDataListPage(pageData, pg);
-        List<Map<String, String>> varMapList = new ArrayList<Map<String, String>>();
-        if(varList != null && varList.size() > 0) {
-            for (Map<String, Object> map : varList) {
+        List<Map> varMapList = new ArrayList();
+        List<Map<String, Object>> varList = companyService.getDataListPage(pd,pg);
+        if(varList!=null&&varList.size()>0){
+            for(int i=0;i<varList.size();i++){
+                Map map = varList.get(i);
                 Map<String, String> varMap = new HashMap<String, String>();
                 varMap.putAll(varModelMap);
                 for (Map.Entry<String, String> entry : varMap.entrySet()) {
-                    varMap.put(entry.getKey(), map.get(entry.getKey()) != null ? map.get(entry.getKey()).toString() : "");
+                    varMap.put(entry.getKey(),map.get(entry.getKey())!=null?map.get(entry.getKey()).toString():"");
                 }
                 varMapList.add(varMap);
             }
         }
-        mapObj.put("varList", YvanUtil.toJson(varMapList));
-        mapObj.put("pageData", YvanUtil.toJson(pg));
+        result.put("varList",varMapList);
+        result.put("pageData", pg);
 
-        model.putResult(mapObj);
+        model.putResult(result);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################company/listPageCompanyAdmins 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
+
+
 
     /**添加企业信息-同时创建企业账号或企业管理员
      *
