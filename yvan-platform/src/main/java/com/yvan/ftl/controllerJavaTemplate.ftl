@@ -2,8 +2,13 @@ package ${classPath};
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.StringUtil;
-import com.xy.vmes.entity.Template;
-import com.xy.vmes.service.TemplateService;
+import com.xy.vmes.common.util.ColumnUtil;
+
+import com.xy.vmes.entity.Column;
+import com.xy.vmes.entity.${objectName};
+import com.xy.vmes.service.ColumnService;
+import com.xy.vmes.service.${objectName}Service;
+
 import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
@@ -36,6 +41,8 @@ public class ${objectName}Controller {
     @Autowired
     private ${objectName}Service ${objectNameLower}Service;
 
+    @Autowired
+    private ColumnService columnService;
 
     /**
     * @author ${author} 自动创建，禁止修改
@@ -202,8 +209,15 @@ public class ${objectName}Controller {
         PageData pd = HttpUtils.parsePageData();
         Pagination pg = HttpUtils.parsePagination(pd);
         Map result = new HashMap();
-        List<LinkedHashMap> titles = ${objectNameLower}Service.getColumnList();
 
+        //List<LinkedHashMap> titles = ${objectNameLower}Service.getColumnList();
+        List<LinkedHashMap> titles = new ArrayList<LinkedHashMap>();
+        List<Column> columnList = columnService.findColumnList("dictionary");
+        if (columnList == null || columnList.size() == 0) {
+            titles = ${objectNameLower}Service.getColumnList();
+        } else {
+            titles = ColumnUtil.listColumnByModelCode(columnList);
+        }
 
         List<LinkedHashMap> titlesList = new ArrayList<LinkedHashMap>();
         List<String> titlesHideList = new ArrayList<String>();
@@ -225,9 +239,6 @@ public class ${objectName}Controller {
         }
         result.put("hideTitles",titlesHideList);
         result.put("titles",titlesList);
-
-
-
 
         List<Map> varMapList = new ArrayList();
         List<Map> varList = ${objectNameLower}Service.getDataListPage(pd,pg);
