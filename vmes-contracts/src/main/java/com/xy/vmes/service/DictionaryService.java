@@ -36,6 +36,13 @@ public interface DictionaryService {
     void deleteById(String id) throws Exception;
 
     /**
+     * 创建人：刘威 自动创建，禁止修改
+     * 创建时间：2018-08-23
+     */
+    void deleteByIds(String[] ids) throws Exception;
+
+
+    /**
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-07-31
     */

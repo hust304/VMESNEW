@@ -218,6 +218,8 @@
         a.name name,<!-- 字典名称 -->
         a.remark remark,<!-- 备注 -->
         a.isdisable isdisable,<!-- 是否禁用(0:已禁用 1:启用) 数据字典:sys_isdisable -->
+        a.cdate cdate,
+        a.udate udate,
         a.pid pid,
         a.id id <!-- id -->
     </sql>
@@ -345,7 +347,7 @@
         (replace(uuid(), '-', ''),'dictionary','parentName','上级名称',4, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'dictionary','isdisable','是否启用',5, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'dictionary','cdate','创建时间',6, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'dictionary','cuser','创建人账号',7, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'dictionary','udate','修改时间',7, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'dictionary','remark','备注',8, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'dictionary','id','id',0, '0','1','1','0',now(), 'admin')
     </insert>
