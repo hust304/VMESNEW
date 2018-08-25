@@ -8,12 +8,13 @@
         '企业简称' companyShortname,
         '显示顺序' serialNumber,
         '企业性质' companyTypeName,
+
         '截至日期' companyValidityDate,
         '企业用户数' companyUserCount,
         '是否启用' isdisable,
-
         '账号' userCode,
         '管理员姓名' userName,
+
         '手机号' mobile,
         '邮箱' email,
         '套餐' roleName,
@@ -41,27 +42,29 @@
         <!--查询显示字段-->
         a.code code,
         a.name name,
+        a.company_shortname companyShortname,
         a.serial_number serialNumber,
         c.name companyTypeName,
+
         DATE_FORMAT(a.company_validity_date,'%Y-%m-%d') companyValidityDate,
         a.company_user_count companyUserCount,
         a.isdisable isdisable,
-        a.company_shortname companyShortname,
         b.user_code userCode,
         b.user_name userName,
+
         b.mobile mobile,
         b.email email,
         f.name roleName,
         '企业管理员' userType,
+        f.remark remark,
 
         <!--查询隐藏字段-->
         a.id id,
         a.pid pid,
         b.id userId,
+        f.id roleId,
         d.id userRoleId,
         a.layer layer,
-        f.id roleId,
-        f.remark remark,
         a.company_type companyType,
         a.organize_type organizeType
 
