@@ -202,9 +202,10 @@
         post.name name,<!-- 岗位名称 -->
         post.isdisable isdisable,<!-- 是否禁用(0:已禁用 1:启用) 数据字典:sys_isdisable -->
         post.udate udate,<!-- 修改时间 -->
-        post.dept_id deptId,<!-- 所属部门ID -->
         department.name deptName,<!-- 所属部门 -->
         post.remark remark,<!-- 备注 -->
+
+        post.dept_id deptId,<!-- 所属部门ID -->
         post.id id <!-- id -->
     </sql>
 
@@ -214,9 +215,10 @@
             '岗位名称'  name,
             '是否禁用'  isdisable,
             '修改时间'  udate,
-            '所属部门ID'  deptId,
             '所属部门'  deptName,
             '备注'  remark,
+
+            '所属部门ID'  deptId,
             'id' id
     </sql>
 
