@@ -307,4 +307,25 @@
         </foreach>
     </update>
 
+    <insert id="insertColumn" >
+        insert into vmes_column (
+        id,model_code,title_key,title_name,serial_number,
+        isdisable,ishide,isedit,ismust,cdate,
+        cuser
+        ) VALUES
+        ('e02b83dba8cf11e884ad00163e105f05', 'post', 'code', '岗位编码', 1, '1', '1', '1', '0', '2018-8-26 09:32:20', 'admin'),
+        ('e02b82b9a8cf11e884ad00163e105f05', 'post', 'name', '岗位名称', 2, '1', '1', '1', '0', '2018-8-26 09:32:20', 'admin'),
+        ('e02b84bba8cf11e884ad00163e105f05', 'post', 'isdisable', '是否启用', 3, '1', '1', '1', '0', '2018-8-26 09:32:20', 'admin'),
+        ('e02b8683a8cf11e884ad00163e105f05', 'post', 'udate', '修改时间', 4, '1', '1', '1', '0', '2018-8-26 09:32:20', 'admin'),
+        ('e02b844da8cf11e884ad00163e105f05', 'post', 'deptName', '所属部门', 5, '1', '1', '1', '0', '2018-8-26 09:32:20', 'admin'),
+        ('e02b888da8cf11e884ad00163e105f05', 'post', 'remark', '备注', 6, '1', '1', '1', '0', '2018-8-26 09:32:20', 'admin'),
+        ('e02b893ca8cf11e884ad00163e105f05', 'post', 'id', 'id', 7, '1', '0', '1', '0', '2018-8-26 09:32:20', 'admin'),
+        ('e02b8368a8cf11e884ad00163e105f05', 'post', 'nameEn', '英文名称', 8, '1', '0', '1', '0', '2018-8-26 09:32:20', 'admin'),
+        ('e02b8788a8cf11e884ad00163e105f05', 'post', 'deptId', '所属部门ID', 9, '1', '0', '1', '0', '2018-8-26 09:32:20', 'admin'),
+        ('e02b7f29a8cf11e884ad00163e105f05', 'post', 'companyId', '企业id', 10, '1', '0', '1', '0', '2018-8-26 09:32:20', 'admin'),
+        ('e02b852da8cf11e884ad00163e105f05', 'post', 'cdate', '创建时间', 11, '1', '0', '1', '0', '2018-8-26 09:32:20', 'admin'),
+        ('e02b860ba8cf11e884ad00163e105f05', 'post', 'cuser', '创建人id', 12, '1', '0', '1', '0', '2018-8-26 09:32:20', 'admin'),
+        ('e02b86e1a8cf11e884ad00163e105f05', 'post', 'uuser', '修改人id', 13, '1', '0', '1', '0', '2018-8-26 09:32:20', 'admin')
+    </insert>
+
 </mapper>
