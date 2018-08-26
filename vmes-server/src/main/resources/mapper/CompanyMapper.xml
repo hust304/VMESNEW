@@ -112,5 +112,40 @@
         </where>
     </select>
 
+    <insert id="insertColumn" >
+        insert into vmes_column (
+        id,model_code,title_key,title_name,serial_number,
+        isdisable,ishide,isedit,ismust,cdate,
+        cuser
+        ) VALUES
+        ('7ccd0de9a8c711e884ad00163e105f05', 'company', 'code', '企业编码', 1, '1', '1', '1', '0', '2018-8-26 08:32:18', 'admin'),
+        ('7ccd0e81a8c711e884ad00163e105f05', 'company', 'name', '企业名称', 2, '1', '1', '1', '0', '2018-8-26 08:32:18', 'admin'),
+        ('7ccd147ea8c711e884ad00163e105f05', 'company', 'companyShortname', '企业简称', 3, '1', '1', '1', '0', '2018-8-26 08:32:18', 'admin'),
+        ('7ccd11eba8c711e884ad00163e105f05', 'company', 'serialNumber', '显示顺序', 4, '1', '1', '1', '0', '2018-8-26 08:32:18', 'admin'),
+        ('7ccd17bea8c711e884ad00163e105f05', 'company', 'companyTypeName', '企业性质', 5, '1', '1', '1', '0', '2018-8-26 08:32:18', 'admin'),
+        ('7ccd14e0a8c711e884ad00163e105f05', 'company', 'companyValidityDate', '截至日期', 6, '1', '1', '1', '0', '2018-8-26 08:32:18', 'admin'),
+        ('7ccd1544a8c711e884ad00163e105f05', 'company', 'companyUserCount', '企业用户数', 7, '1', '1', '1', '0', '2018-8-26 08:32:18', 'admin'),
+        ('7ccd15aca8c711e884ad00163e105f05', 'company', 'isdisable', '是否启用', 8, '1', '1', '1', '0', '2018-8-26 08:32:18', 'admin'),
+        ('7ccd1831a8c711e884ad00163e105f05', 'company', 'userCode', '账号', 9, '1', '1', '1', '0', '2018-8-26 08:32:18', 'admin'),
+        ('7ccd189fa8c711e884ad00163e105f05', 'company', 'userName', '管理员姓名', 10, '1', '1', '1', '0', '2018-8-26 08:32:18', 'admin'),
+        ('7ccd18ffa8c711e884ad00163e105f05', 'company', 'mobile', '手机号', 11, '1', '1', '1', '0', '2018-8-26 08:32:18', 'admin'),
+        ('7ccd195ca8c711e884ad00163e105f05', 'company', 'email', '邮箱', 12, '1', '1', '1', '0', '2018-8-26 08:32:18', 'admin'),
+        ('7ccd1357a8c711e884ad00163e105f05', 'company', 'roleName', '套餐', 13, '1', '1', '1', '0', '2018-8-26 08:32:18', 'admin'),
+        ('7ccd103fa8c711e884ad00163e105f05', 'company', 'userType', '用户类型', 14, '1', '1', '1', '0', '2018-8-26 08:32:18', 'admin'),
+        ('7ccd1a20a8c711e884ad00163e105f05', 'company', 'remark', '备注', 15, '1', '1', '1', '0', '2018-8-26 08:32:18', 'admin'),
+        ('7ccd1a83a8c711e884ad00163e105f05', 'company', 'id', 'id', 16, '1', '0', '1', '0', '2018-8-26 08:32:18', 'admin'),
+        ('7ccd0aafa8c711e884ad00163e105f05', 'company', 'pid', '上级id', 17, '1', '0', '1', '0', '2018-8-26 08:32:18', 'admin'),
+        ('7ccd0fb5a8c711e884ad00163e105f05', 'company', 'userId', '用户id', 18, '1', '0', '1', '0', '2018-8-26 08:32:18', 'admin'),
+        ('7ccd141da8c711e884ad00163e105f05', 'company', 'roleId', '角色id', 19, '1', '0', '1', '0', '2018-8-26 08:32:18', 'admin'),
+        ('7ccd13b7a8c711e884ad00163e105f05', 'company', 'userRoleId', '用户角色id', 20, '1', '0', '1', '0', '2018-8-26 08:32:18', 'admin'),
+        ('7ccd10c2a8c711e884ad00163e105f05', 'company', 'layer', '组织级别', 21, '1', '0', '1', '0', '2018-8-26 08:32:18', 'admin'),
+        ('7ccd128da8c711e884ad00163e105f05', 'company', 'organizeType', '组织类型', 22, '1', '0', '1', '0', '2018-8-26 08:32:18', 'admin'),
+        ('7ccd12f1a8c711e884ad00163e105f05', 'company', 'companyType', '公司类型id', 23, '1', '0', '1', '0', '2018-8-26 08:32:18', 'admin'),
+        ('7ccd161ca8c711e884ad00163e105f05', 'company', 'cdate', '创建时间', 24, '1', '0', '1', '0', '2018-8-26 08:32:18', 'admin'),
+        ('7ccd168ca8c711e884ad00163e105f05', 'company', 'cuser', '创建人id', 25, '1', '0', '1', '0', '2018-8-26 08:32:18', 'admin'),
+        ('7ccd16f2a8c711e884ad00163e105f05', 'company', 'udate', '修改时间', 26, '1', '0', '1', '0', '2018-8-26 08:32:18', 'admin'),
+        ('7ccd175ca8c711e884ad00163e105f05', 'company', 'uuser', '修改人id', 27, '1', '0', '1', '0', '2018-8-26 08:32:18', 'admin')
+    </insert>
+
 
 </mapper>
