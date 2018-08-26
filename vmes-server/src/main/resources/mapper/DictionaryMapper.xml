@@ -214,10 +214,11 @@
 
     <!-- 字段 自动创建，可以修改-->
     <sql id="Field1">
-        b.name parentName,
         a.name name,<!-- 字典名称 -->
+        b.name parentName,
         a.remark remark,<!-- 备注 -->
         a.isdisable isdisable,<!-- 是否禁用(0:已禁用 1:启用) 数据字典:sys_isdisable -->
+
         a.cdate cdate,
         a.udate udate,
         a.pid pid,
@@ -229,7 +230,8 @@
             '字典名称'  name,
              '上级名称' parentName,
             '备注'  remark,
-            '是否禁用' isdisable,
+            '是否启用' isdisable,
+
             'pid' pid_hide,
             'id' id_hide
     </sql>
