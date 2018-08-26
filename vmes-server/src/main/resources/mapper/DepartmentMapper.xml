@@ -394,5 +394,30 @@
         </where>
     </select>
 
+    <insert id="insertColumn" >
+        insert into vmes_column (
+        id,model_code,title_key,title_name,serial_number,
+        isdisable,ishide,isedit,ismust,cdate,
+        cuser
+        ) VALUES
+        ('2836daa7a8cc11e884ad00163e105f05', 'department', 'code', '组织编码', 1, '1', '1', '1', '0', '2018-8-26 09:05:43', 'admin'),
+        ('2836db4ea8cc11e884ad00163e105f05', 'department', 'name', '组织名称', 2, '1', '1', '1', '0', '2018-8-26 09:05:43', 'admin'),
+        ('2836e4c5a8cc11e884ad00163e105f05', 'department', 'deptTypeName', '组织类型', 3, '1', '1', '1', '0', '2018-8-26 09:05:43', 'admin'),
+        ('2836dd5ca8cc11e884ad00163e105f05', 'department', 'layer', '组织层级', 4, '1', '1', '1', '0', '2018-8-26 09:05:43', 'admin'),
+        ('2836dcc8a8cc11e884ad00163e105f05', 'department', 'parentName', '上级组织', 5, '1', '1', '1', '0', '2018-8-26 09:05:43', 'admin'),
+        ('2836e3f3a8cc11e884ad00163e105f05', 'department', 'udate', '修改时间', 6, '1', '1', '1', '0', '2018-8-26 09:05:43', 'admin'),
+        ('2836e712a8cc11e884ad00163e105f05', 'department', 'remark', '备注', 7, '1', '1', '1', '0', '2018-8-26 09:05:43', 'admin'),
+        ('2836e299a8cc11e884ad00163e105f05', 'department', 'isdisable', '是否启用', 8, '1', '1', '1', '0', '2018-8-26 09:05:43', 'admin'),
+        ('2836e778a8cc11e884ad00163e105f05', 'department', 'id', 'id', 10, '1', '0', '1', '0', '2018-8-26 09:05:43', 'admin'),
+        ('2836d747a8cc11e884ad00163e105f05', 'department', 'pid', '上级id', 11, '1', '0', '1', '0', '2018-8-26 09:05:43', 'admin'),
+        ('2836e039a8cc11e884ad00163e105f05', 'department', 'deptType', '部门类型id', 12, '1', '0', '1', '0', '2018-8-26 09:05:43', 'admin'),
+        ('2836de70a8cc11e884ad00163e105f05', 'department', 'organizeType', '组织类型', 13, '1', '0', '1', '0', '2018-8-26 09:05:43', 'admin'),
+        ('2836ddc7a8cc11e884ad00163e105f05', 'department', 'serialNumber', '显示顺序', 14, '1', '0', '1', '0', '2018-8-26 09:05:43', 'admin'),
+        ('2836e316a8cc11e884ad00163e105f05', 'department', 'cdate', '创建时间', 15, '1', '0', '1', '0', '2018-8-26 09:05:43', 'admin'),
+        ('2836e382a8cc11e884ad00163e105f05', 'department', 'cuser', '创建人id', 16, '1', '0', '1', '0', '2018-8-26 09:05:43', 'admin'),
+        ('2836e465a8cc11e884ad00163e105f05', 'department', 'uuser', '修改人id', 17, '1', '0', '1', '0', '2018-8-26 09:05:43', 'admin'),
+        ('2836e109a8cc11e884ad00163e105f05', 'department', 'longCode', '组织长编码', 18, '1', '0', '1', '0', '2018-8-26 09:05:43', 'admin'),
+        ('2836e09da8cc11e884ad00163e105f05', 'department', 'longName', '组织长名称', 19, '1', '0', '1', '0', '2018-8-26 09:05:43', 'admin')
+    </insert>
 
 </mapper>
