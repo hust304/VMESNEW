@@ -73,6 +73,13 @@ public interface RoleButtonMapper extends BaseMapper<RoleButton> {
 	 */
 	@Select("updateDisableByRoleId")
 	void updateDisableByRoleId(String roleId);
+
+	/**
+	 * 创建人：陈刚
+	 * 创建时间：2018-08-27
+	 */
+	@Select("listMenuButtonMapByRole")
+	List<Map<String, Object>> listMenuButtonMapByRole(PageData pd);
 }
 
 

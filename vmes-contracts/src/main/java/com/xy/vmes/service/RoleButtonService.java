@@ -1,6 +1,8 @@
 package com.xy.vmes.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.entity.MenuButton;
+import com.xy.vmes.entity.MenuButtonEntity;
 import com.xy.vmes.entity.RoleButton;
 import com.yvan.PageData;
 
@@ -88,6 +90,27 @@ public interface RoleButtonService {
      * 创建时间：2018-07-31
      */
     void updateDisableByRoleId(String roleId);
+
+    /**
+     * 创建人：陈刚
+     * 创建时间：2018-08-27
+     */
+    List<Map<String, Object>> listMenuButtonMapByRole(PageData pd);
+
+    /**
+     * 创建人：陈刚
+     * 创建时间：2018-08-27
+     */
+    MenuButton mapObject2MenuButton(Map<String, Object> mapObject, MenuButton object);
+    MenuButtonEntity menuButton2ButtonsEntity(MenuButton button, MenuButtonEntity entity);
+
+    /**
+     * 角色按钮ListList<Map<String, Object>>转换成-按钮结构体List<MenuButtonEntity>
+     * @param mapList  角色菜单List<Map<String, Object>>
+     * @param buttonList 树结构体List<MenuButtonEntity>
+     * @return
+     */
+    List<MenuButtonEntity> roleButtonList2ButtonList(List<Map<String, Object>> mapList, List<MenuButtonEntity> buttonList);
 }
 
 

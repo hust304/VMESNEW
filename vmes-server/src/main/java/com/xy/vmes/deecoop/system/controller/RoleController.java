@@ -54,6 +54,8 @@ public class RoleController {
 
     @Autowired
     private MenuService menuService;
+    //@Autowired
+    //private MenuButtonService menuButtonService;
     @Autowired
     private MenuTreeService menuTreeService;
     @Autowired
@@ -788,8 +790,37 @@ public class RoleController {
     @PostMapping("/role/listRoleMeunsButtonsAll")
     public ResultModel listRoleMeunsButtonsAll() {
         ResultModel model = new ResultModel();
-        PageData pageData = HttpUtils.parsePageData();
 
+        PageData pageData = HttpUtils.parsePageData();
+        String roleIds = (String)pageData.get("roleIds");
+        if (roleIds == null || roleIds.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("角色ID为空或空字符串！");
+            return model;
+        }
+
+        String menuId = (String)pageData.get("menuId");
+        if (menuId == null || menuId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("菜单ID为空或空字符串！");
+            return model;
+        }
+
+        roleIds = StringUtil.stringTrimSpace(roleIds);
+        roleIds = "'" + roleIds.replace(",", "','") + "'";
+        String queryRoleIds = "b.role_id in (" +  roleIds + ")";
+
+        PageData findMap = new PageData();
+        findMap.put("queryRoleIds", queryRoleIds);
+        findMap.put("menuId", menuId);
+
+        List<Map<String, Object>> mapList = roleButtonService.listMenuButtonMapByRole(findMap);
+        List<MenuButtonEntity> entityList = roleButtonService.roleButtonList2ButtonList(mapList, null);
+
+        String treeJsonStr = YvanUtil.toJson(entityList);
+        System.out.println("treeJsonStr: " + treeJsonStr);
+
+        model.putResult(treeJsonStr);
         return model;
     }
     /**角色对应(已选的)菜单按钮列表

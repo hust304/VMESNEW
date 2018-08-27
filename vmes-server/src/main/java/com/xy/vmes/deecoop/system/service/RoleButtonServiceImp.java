@@ -1,8 +1,9 @@
 package com.xy.vmes.deecoop.system.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.common.util.DateFormat;
 import com.xy.vmes.deecoop.system.dao.RoleButtonMapper;
-import com.xy.vmes.entity.RoleButton;
+import com.xy.vmes.entity.*;
 import com.xy.vmes.service.RoleButtonService;
 import com.yvan.PageData;
 import com.xy.vmes.common.util.StringUtil;
@@ -162,6 +163,151 @@ public class RoleButtonServiceImp implements RoleButtonService {
      */
     public void updateDisableByRoleId(String roleId) {
         roleButtonMapper.updateDisableByRoleId(roleId);
+    }
+
+    /**
+     * 创建人：陈刚
+     * 创建时间：2018-08-27
+     */
+    public List<Map<String, Object>> listMenuButtonMapByRole(PageData pd) {
+        return roleButtonMapper.listMenuButtonMapByRole(pd);
+    }
+
+    /**
+     * 创建人：陈刚
+     * 创建时间：2018-08-27
+     */
+    public MenuButton mapObject2MenuButton(Map<String, Object> mapObject, MenuButton object) {
+        if (object == null) {object = new MenuButton();}
+        if (mapObject == null) {return object;}
+
+        //a.id id,
+        if (mapObject.get("id") != null) {
+            object.setId(mapObject.get("id").toString().trim());
+        }
+        //a.company_id companyId,
+        if (mapObject.get("companyId") != null) {
+            object.setCompanyId(mapObject.get("companyId").toString().trim());
+        }
+        //a.menu_id menuId,
+        if (mapObject.get("menuId") != null) {
+            object.setMenuId(mapObject.get("menuId").toString().trim());
+        }
+        //a.code code,
+        if (mapObject.get("code") != null) {
+            object.setCode(mapObject.get("code").toString().trim());
+        }
+        //a.value value,
+        if (mapObject.get("value") != null) {
+            object.setValue(mapObject.get("value").toString().trim());
+        }
+
+        //a.name name,
+        if (mapObject.get("name") != null) {
+            object.setName(mapObject.get("name").toString().trim());
+        }
+        //a.serial_number serialNumber,
+        if (mapObject.get("serialNumber") != null) {
+            try {
+                object.setSerialNumber(Integer.valueOf(mapObject.get("serialNumber").toString().trim()) );
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+        }
+        //a.name_en nameEn,
+        if (mapObject.get("nameEn") != null) {
+            object.setNameEn(mapObject.get("nameEn").toString().trim());
+        }
+        //a.isdisable buttonIsdisable,
+        if (mapObject.get("buttonIsdisable") != null) {
+            object.setIsdisable(mapObject.get("buttonIsdisable").toString().trim());
+        }
+        //a.cdate cdate,
+        if (mapObject.get("cdate") != null) {
+            String dateStr = mapObject.get("cdate").toString().trim();
+            Date date = DateFormat.dateString2Date(dateStr, DateFormat.DEFAULT_DATETIME_FORMAT);
+            if (date != null) {
+                object.setCdate(date);
+            }
+        }
+        //a.cuser cuser,
+        if (mapObject.get("cuser") != null) {
+            object.setCuser(mapObject.get("cuser").toString().trim());
+        }
+        //a.udate udate,
+        if (mapObject.get("udate") != null) {
+            String dateStr = mapObject.get("udate").toString().trim();
+            Date date = DateFormat.dateString2Date(dateStr, DateFormat.DEFAULT_DATETIME_FORMAT);
+            if (date != null) {
+                object.setCdate(date);
+            }
+        }
+        //a.uuser uuser,
+        if (mapObject.get("uuser") != null) {
+            object.setUuser(mapObject.get("uuser").toString().trim());
+        }
+
+        return object;
+    }
+
+    public MenuButtonEntity menuButton2ButtonsEntity(MenuButton button, MenuButtonEntity entity) {
+        if (entity == null) {entity = new MenuButtonEntity();}
+        if (button == null) {return entity;}
+
+        //name 按钮名称
+        String name = "";
+        if (button.getName() != null && button.getName().trim().length() > 0) {
+            name = button.getName().trim();
+        }
+        entity.setName(name);
+
+        //nameEn英文名称
+        String nameEn = "";
+        if (button.getNameEn() != null && button.getNameEn().trim().length() > 0) {
+            nameEn = button.getNameEn().trim();
+        }
+        entity.setNameEn(nameEn);
+
+        //serialNumber按钮顺序
+        entity.setSerialNumber(button.getSerialNumber());
+
+        //是否禁用(0:已禁用 1:启用) 数据字典:sys_isdisable
+        String isdisable = "0";
+        if (button.getIsdisable() != null && button.getIsdisable().trim().length() > 0) {
+            isdisable = button.getIsdisable().trim();
+        }
+        entity.setIsdisable(isdisable);
+
+        return entity;
+    }
+
+    /**
+     * 角色按钮ListList<Map<String, Object>>转换成-按钮结构体List<MenuButtonEntity>
+     * @param mapList  角色菜单List<Map<String, Object>>
+     * @param buttonList 树结构体List<MenuButtonEntity>
+     * @return
+     */
+    public List<MenuButtonEntity> roleButtonList2ButtonList(List<Map<String, Object>> mapList, List<MenuButtonEntity> buttonList) {
+        if (buttonList == null) {buttonList = new ArrayList<MenuButtonEntity>();}
+        if (mapList == null || mapList.size() == 0) {return buttonList;}
+
+        //遍历mapList-buttonList
+        for (Map<String, Object> mapObj : mapList) {
+            MenuButton button = this.mapObject2MenuButton(mapObj, null);
+            MenuButtonEntity entity = this.menuButton2ButtonsEntity(button, null);
+            //当前节点-是否绑定角色(1:绑定 0:未绑定)
+            entity.setIsBindRole("0");
+
+            //当前菜单是否绑定角色
+            // 判断条件: 角色id(roleId)是否存在--
+            if (mapObj.get("roleId") != null && mapObj.get("roleId").toString().trim().length() > 0) {
+                entity.setIsBindRole("1");
+            }
+
+            buttonList.add(entity);
+        }
+
+        return buttonList;
     }
 
 }
