@@ -1,6 +1,7 @@
 package com.xy.vmes.common.util;
 
 import com.xy.vmes.entity.Column;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
 
@@ -48,6 +49,62 @@ public class ColumnUtil {
         return keyValueMap;
     }
 
+
+
+    /**
+     * 查询结果集List<Map>-按照栏位列表Map的显示顺序-重构结果集List<Map>
+     *
+     * @param columnList  栏位列表Map<栏位编码, 栏位名称>
+     * @param dataList   业务查询结果集Map<栏位编码, Object>
+     * @return
+     */
+    public static List<LinkedHashMap<String, String>> modifyDataList(List<Column> columnList, List<Map> dataList) {
+        List<LinkedHashMap<String, String>> dataMapList = new ArrayList<LinkedHashMap<String, String>>();
+        if(dataList == null) {return dataMapList;}
+
+        //1. 获取(第一行:栏位编码 第二行: 栏位名称)
+        LinkedHashMap<String, String> columnCodeMap = new LinkedHashMap<String, String>();
+        LinkedHashMap<String, String> columnNameMap = new LinkedHashMap<String, String>();
+        for (Column column : columnList) {
+            columnCodeMap.put(column.getTitleKey(), column.getTitleKey());
+            if("0".equals(column.getIshide())){
+                columnNameMap.put(column.getTitleKey(), column.getTitleName()+"_hide");
+            }else {
+                columnNameMap.put(column.getTitleKey(), column.getTitleName());
+            }
+//            if("0".equals(column.getIshide())){
+//                columnCodeMap.put(column.getTitleKey(), column.getTitleKey()+"_hide");
+//            }else {
+//                columnCodeMap.put(column.getTitleKey(), column.getTitleKey());
+//            }
+//            columnNameMap.put(column.getTitleKey(), column.getTitleName());
+        }
+        dataMapList.add(columnCodeMap);
+        dataMapList.add(columnNameMap);
+
+        //获取栏位值
+        for (Map dataMap : dataList) {
+            LinkedHashMap<String, String> columnValueMap = new LinkedHashMap<String, String>();
+            for (Column column : columnList) {
+                if(column!=null){
+                    String columnMapKey = column.getTitleKey();
+                    if(!StringUtils.isEmpty(columnMapKey)){
+                        String dataValue = "";
+                        Object object = dataMap.get(columnMapKey);
+                        //Integer
+                        //Date
+                        //BigDecimal
+                        if (object != null) {dataValue = object.toString();}
+                        columnValueMap.put(columnMapKey, dataValue);
+                    }
+                }
+
+            }
+            dataMapList.add(columnValueMap);
+        }
+
+        return dataMapList;
+    }
 
 
 

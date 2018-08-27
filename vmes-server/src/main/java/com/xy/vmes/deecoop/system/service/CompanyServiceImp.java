@@ -259,7 +259,7 @@ public class CompanyServiceImp implements CompanyService {
      * 创建人：陈刚
      * 创建时间：2018-08-16
      */
-    public List<LinkedHashMap<String, String>> getColumnList() throws Exception {
+    public List<LinkedHashMap> getColumnList() throws Exception {
         return companyMapper.getColumnList();
     }
 
@@ -267,7 +267,7 @@ public class CompanyServiceImp implements CompanyService {
      * 创建人：陈刚
      * 创建时间：2018-08-16
      */
-    public List<Map<String, Object>> getDataListPage(PageData pd, Pagination pg) throws Exception {
+    public List<Map> getDataListPage(PageData pd, Pagination pg) throws Exception {
         return companyMapper.getDataListPage(pd, pg);
     }
 

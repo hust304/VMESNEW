@@ -1,10 +1,13 @@
 package com.xy.vmes.deecoop.system.controller;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.Common;
 import com.xy.vmes.common.util.TreeUtil;
+import com.xy.vmes.entity.Column;
 import com.xy.vmes.entity.Department;
 import com.xy.vmes.entity.TreeEntity;
+import com.xy.vmes.service.ColumnService;
 import com.xy.vmes.service.DepartmentService;
 import com.yvan.*;
 import com.xy.vmes.common.util.StringUtil;
@@ -40,7 +43,8 @@ public class DepartmentController {
 
     @Autowired
     private DepartmentService departmentService;
-
+    @Autowired
+    private ColumnService columnService;
 
     /**
     * @author 陈刚 自动创建，禁止修改
@@ -247,6 +251,8 @@ public class DepartmentController {
      */
     @PostMapping("/department/addDepartment")
     public ResultModel addDepartment() throws Exception {
+        logger.info("################department/addDepartment 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
@@ -326,7 +332,8 @@ public class DepartmentController {
         }
 
         departmentService.save(deptObj);
-
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/department/addDepartment 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -338,6 +345,8 @@ public class DepartmentController {
      */
     @PostMapping("/department/updateDepartment")
     public ResultModel updateDepartment() throws Exception {
+        logger.info("################department/updateDepartment 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
@@ -413,7 +422,8 @@ public class DepartmentController {
             deptDB.setSerialNumber(Integer.valueOf(maxCount.intValue() + 1));
         }
         departmentService.update(deptDB);
-
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/department/updateDepartment 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -424,6 +434,8 @@ public class DepartmentController {
      */
     @PostMapping("/department/updateDisableDept")
     public ResultModel updateDisableDept() throws Exception {
+        logger.info("################department/updateDisableDept 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
@@ -463,7 +475,8 @@ public class DepartmentController {
         objectDB.setIsdisable(isdisable);
         objectDB.setUdate(new Date());
         departmentService.update(objectDB);
-
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/department/updateDisableDept 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -475,6 +488,8 @@ public class DepartmentController {
      */
     @PostMapping("/department/deleteDepartments")
     public ResultModel deleteDepartments() throws Exception {
+        logger.info("################department/deleteDepartments 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
@@ -504,7 +519,8 @@ public class DepartmentController {
         }
 
         departmentService.updateDisableByIds(id_arry);
-
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/department/deleteDepartments 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -578,25 +594,27 @@ public class DepartmentController {
         PageData pd = HttpUtils.parsePageData();
         Pagination pg = HttpUtils.parsePagination(pd);
         Map result = new HashMap();
-        List<LinkedHashMap<String, String>> titles = departmentService.getColumnList();
-
+        List<Column> columnList = columnService.findColumnList("department");
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
+        }
 
         List<LinkedHashMap> titlesList = new ArrayList<LinkedHashMap>();
         List<String> titlesHideList = new ArrayList<String>();
         Map<String, String> varModelMap = new HashMap<String, String>();
-        if(titles!=null&&titles.size()>0){
-            LinkedHashMap<String, String> titlesMap = titles.get(0);
-            for (Map.Entry<String, String> entry : titlesMap.entrySet()) {
-                LinkedHashMap titlesLinkedMap = new LinkedHashMap();
-                if(entry.getKey().indexOf("_hide")>0){
-                    titlesLinkedMap.put(entry.getKey().replace("_hide",""),entry.getValue());
-                    titlesHideList.add(entry.getKey().replace("_hide",""));
-                    varModelMap.put(entry.getKey().replace("_hide",""),"");
-                }else{
-                    titlesLinkedMap.put(entry.getKey(),entry.getValue());
-                    varModelMap.put(entry.getKey(),"");
+        if(columnList!=null&&columnList.size()>0){
+            for (Column column : columnList) {
+                if(column!=null){
+                    if("0".equals(column.getIshide())){
+                        titlesHideList.add(column.getTitleKey());
+                    }
+                    LinkedHashMap titlesLinkedMap = new LinkedHashMap();
+                    titlesLinkedMap.put(column.getTitleKey(),column.getTitleName());
+                    varModelMap.put(column.getTitleKey(),"");
+                    titlesList.add(titlesLinkedMap);
                 }
-                titlesList.add(titlesLinkedMap);
             }
         }
         result.put("hideTitles",titlesHideList);
@@ -606,7 +624,7 @@ public class DepartmentController {
 
 
         List<Map> varMapList = new ArrayList();
-        List<Map<String, Object>> varList = departmentService.getDataListPage(pd,pg);
+        List<Map> varList = departmentService.getDataListPage(pd,pg);
         if(varList!=null&&varList.size()>0){
             for(int i=0;i<varList.size();i++){
                 Map map = varList.get(i);
@@ -625,6 +643,64 @@ public class DepartmentController {
         Long endTime = System.currentTimeMillis();
         logger.info("################department/listPageDepartments 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
+    }
+
+    /**
+     * Excel导出功能：
+     * 1. 勾选指定行导出-(','逗号分隔的id字符串)
+     * 2. 按查询条件导出(默认查询方式)
+     * 参数说明:
+     *   ids          : 业务id字符串-(','分隔的字符串)
+     *   queryColumn  : 查询字段(sql where 子句)
+     *   showFieldcode: 导出Excel字段Code-显示顺序按照字符串排列顺序-(','分隔的字符串)
+
+     * 注意: 参数(ids,queryColumn)这两个参数是互斥的，(有且有一个参数不为空)
+     *
+     * @throws Exception
+     */
+    @GetMapping("/department/exportExcelDepartments")
+    public void exportExcelDepartments() throws Exception {
+
+        logger.info("################department/exportExcelDepartments 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        //1. 获取Excel导出数据查询条件
+        PageData pd = HttpUtils.parsePageData();
+        String ids = pd.getString("ids");
+        String queryColumn = pd.getString("queryColumn");
+        List<Column> columnList = columnService.findColumnList("department");
+        if (columnList == null || columnList.size() == 0) {
+            throw new RestException("1","数据库没有生成TabCol，请联系管理员！");
+        }
+
+        //3. 根据查询条件获取业务数据List
+        String queryStr = "";
+        if (ids != null && ids.trim().length() > 0) {
+            ids = StringUtil.stringTrimSpace(ids);
+            ids = "'" + ids.replace(",", "','") + "'";
+            queryStr = "id in (" + ids + ")";
+        }
+        if (queryColumn != null && queryColumn.trim().length() > 0) {
+            queryStr = queryStr + queryColumn;
+        }
+
+        pd.put("queryStr", queryStr);
+
+        Pagination pg = HttpUtils.parsePagination(pd);
+        //分页参数默认设置100000
+        pg.setSize(100000);
+
+        List<Map> dataList = departmentService.getDataListPage(pd,pg);
+        //查询数据转换成Excel导出数据
+        List<LinkedHashMap<String, String>> dataMapList = ColumnUtil.modifyDataList(columnList, dataList);
+        HttpServletResponse response  = HttpUtils.currentResponse();
+
+
+        //查询数据-Excel文件导出
+        //String fileName = "Excel数据字典数据导出";
+        String fileName = "ExcelDepartment";
+        ExcelUtil.excelExportByDataList(response, fileName, dataMapList);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################department/exportExcelDepartments 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
     }
 
 }

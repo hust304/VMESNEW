@@ -210,10 +210,6 @@
         <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
 		#{item}
         </foreach>
-        <!--queryStr 自定义sql查询语句-->
-        <if test="queryStr != null and queryStr!=''" >
-            and ${queryStr}
-        </if>
     </delete>
 
 
@@ -247,10 +243,6 @@
         <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
             #{item}
         </foreach>
-        <!--queryStr 自定义sql查询语句-->
-        <if test="queryStr != null and queryStr!=''" >
-            and ${queryStr}
-        </if>
     </update>
 
     <!-- 批量修改用户信息为禁用状态 刘威-->
@@ -263,10 +255,6 @@
         <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
             #{item}
         </foreach>
-        <!--queryStr 自定义sql查询语句-->
-        <if test="queryStr != null and queryStr!=''" >
-            and ${queryStr}
-        </if>
     </update>
 
 
@@ -287,6 +275,29 @@
         '创建时间'  cdate,
         'id' id_hide
     </sql>
+
+    <insert id="insertColumn" >
+        insert into vmes_column (
+        id,model_code,title_key,title_name,serial_number,
+        isdisable,ishide,isedit,ismust,cdate,
+        cuser
+        ) VALUES
+        (replace(uuid(), '-', ''),'user','userCode','账号',1, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'user','userName','姓名',2, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'user','mobile','手机号',3, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'user','email','邮箱',4, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'user','userType','用户类型',5, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'user','roleName','角色名称',6, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'user','companyName','所属公司',7, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'user','isdisable','是否启用',8, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'user','cdate','创建时间',9, '1','1','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'user','employId_hide','员工ID',10, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'user','roleId_hide','角色ID',11, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'user','deptId_hide','部门ID',12, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'user','companyId_hide','公司ID',13, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'user','id','id',0, '1','0','1','0',now(), 'admin')
+    </insert>
 
     <!-- 表格表体值 刘威-->
     <sql id="Field1">
@@ -402,10 +413,6 @@
             <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
                 #{item}
             </foreach>
-        <!--queryStr 自定义sql查询语句-->
-        <if test="queryStr != null and queryStr!=''" >
-            and ${queryStr}
-        </if>
     </update>
 
 

@@ -74,13 +74,13 @@ public interface MenuMapper extends BaseMapper<Menu> {
 	 * 创建时间：2018-07-30
 	 */
 	@Select("getColumnList")
-	List<LinkedHashMap<String, String>> getColumnList();
+	List<LinkedHashMap> getColumnList();
 	/**
 	 * 创建人：陈刚
 	 * 创建时间：2018-07-30
 	 */
 	@Select("getDataListPage")
-	List<Map<String, Object>> getDataListPage(PageData pd, Pagination pg);
+	List<Map> getDataListPage(PageData pd, Pagination pg);
 }
 
 

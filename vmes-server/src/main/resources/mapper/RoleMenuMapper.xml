@@ -167,10 +167,6 @@
         <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
 		#{item}
         </foreach>
-        <!--queryStr 自定义sql查询语句-->
-        <if test="queryStr != null and queryStr!=''" >
-            and ${queryStr}
-        </if>
     </delete>
 
 
@@ -182,10 +178,6 @@
             <include refid="tableName"/>
         where
             role_id = #{roleId}
-        <!--queryStr 自定义sql查询语句-->
-        <if test="queryStr != null and queryStr!=''" >
-            and ${queryStr}
-        </if>
     </delete>
 
     <update id="updateDisableByRoleId" parameterType="java.lang.String" >
@@ -193,10 +185,6 @@
         set isdisable = 0
         where
         role_id = #{roleId}
-        <!--queryStr 自定义sql查询语句-->
-        <if test="queryStr != null and queryStr!=''" >
-            and ${queryStr}
-        </if>
     </update>
 
     <select id="findRoleMenuMapList" parameterType="com.yvan.PageData" resultType="java.util.Map">

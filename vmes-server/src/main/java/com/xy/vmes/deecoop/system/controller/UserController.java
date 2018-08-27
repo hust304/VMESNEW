@@ -2,14 +2,15 @@ package com.xy.vmes.deecoop.system.controller;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.google.gson.Gson;
+import com.xy.vmes.common.util.ColumnUtil;
+import com.xy.vmes.common.util.StringUtil;
+import com.xy.vmes.entity.Column;
 import com.xy.vmes.entity.Department;
 import com.xy.vmes.entity.User;
 import com.xy.vmes.entity.UserRole;
-import com.xy.vmes.service.CoderuleService;
-import com.xy.vmes.service.DepartmentService;
-import com.xy.vmes.service.UserRoleService;
-import com.xy.vmes.service.UserService;
+import com.xy.vmes.service.*;
 import com.yvan.*;
+import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
 import com.yvan.template.ExcelAjaxTemplate;
 import lombok.extern.slf4j.Slf4j;
@@ -49,7 +50,8 @@ public class UserController {
     private DepartmentService departmentService;
     @Autowired
     private CoderuleService coderuleService;
-
+    @Autowired
+    private ColumnService columnService;
     /**
      * @author 刘威 自动创建，禁止修改
      * @date 2018-07-26
@@ -366,24 +368,27 @@ public class UserController {
         Pagination pg = HttpUtils.parsePagination(pd);
 
         Map result = new HashMap();
-        List<LinkedHashMap> titles = userService.getColumnList();
+        List<Column> columnList = columnService.findColumnList("user");
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
+        }
 
         List<LinkedHashMap> titlesList = new ArrayList<LinkedHashMap>();
         List<String> titlesHideList = new ArrayList<String>();
         Map<String, String> varModelMap = new HashMap<String, String>();
-        if(titles!=null&&titles.size()>0){
-            LinkedHashMap<String, String> titlesMap = titles.get(0);
-            for (Map.Entry<String, String> entry : titlesMap.entrySet()) {
-                LinkedHashMap titlesLinkedMap = new LinkedHashMap();
-                if(entry.getKey().indexOf("_hide")>0){
-                    titlesLinkedMap.put(entry.getKey().replace("_hide",""),entry.getValue());
-                    titlesHideList.add(entry.getKey().replace("_hide",""));
-                    varModelMap.put(entry.getKey().replace("_hide",""),"");
-                }else{
-                    titlesLinkedMap.put(entry.getKey(),entry.getValue());
-                    varModelMap.put(entry.getKey(),"");
+        if(columnList!=null&&columnList.size()>0){
+            for (Column column : columnList) {
+                if(column!=null){
+                    if("0".equals(column.getIshide())){
+                        titlesHideList.add(column.getTitleKey());
+                    }
+                    LinkedHashMap titlesLinkedMap = new LinkedHashMap();
+                    titlesLinkedMap.put(column.getTitleKey(),column.getTitleName());
+                    varModelMap.put(column.getTitleKey(),"");
+                    titlesList.add(titlesLinkedMap);
                 }
-                titlesList.add(titlesLinkedMap);
             }
         }
         result.put("hideTitles",titlesHideList);
@@ -412,34 +417,91 @@ public class UserController {
         return model;
     }
 
-
-
     /**
-     * @author 刘威 自动创建，禁止修改
-     * @date 2018-07-26
+     * Excel导出功能：
+     * 1. 勾选指定行导出-(','逗号分隔的id字符串)
+     * 2. 按查询条件导出(默认查询方式)
+     * 参数说明:
+     *   ids          : 业务id字符串-(','分隔的字符串)
+     *   queryColumn  : 查询字段(sql where 子句)
+     *   showFieldcode: 导出Excel字段Code-显示顺序按照字符串排列顺序-(','分隔的字符串)
+
+     * 注意: 参数(ids,queryColumn)这两个参数是互斥的，(有且有一个参数不为空)
+     *
+     * @throws Exception
      */
     @GetMapping("/user/exportExcelUsers")
-    public void exportExcelUsers()  throws Exception {
-
+    public void exportExcelUsers() throws Exception {
         logger.info("################user/exportExcelUsers 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
-        HttpServletRequest request  = HttpUtils.currentRequest();
+        //1. 获取Excel导出数据查询条件
+        PageData pd = HttpUtils.parsePageData();
+        String ids = pd.getString("ids");
+        String queryColumn = pd.getString("queryColumn");
+        List<Column> columnList = columnService.findColumnList("user");
+        if (columnList == null || columnList.size() == 0) {
+            throw new RestException("1","数据库没有生成TabCol，请联系管理员！");
+        }
 
-        ExcelUtil.buildDefaultExcelDocument( request, response,new ExcelAjaxTemplate() {
-            @Override
-            public void execute(HttpServletRequest request, HSSFWorkbook workbook) throws Exception {
-                // TODO Auto-generated method stub
-                PageData pd = HttpUtils.parsePageData();
-                List<LinkedHashMap> titles = userService.getColumnList();
-                request.setAttribute("titles", titles.get(0));
-                List<Map> varList = userService.getDataList(pd);
-                request.setAttribute("varList", varList);
-            }
-        });
+        //3. 根据查询条件获取业务数据List
+        String queryStr = "";
+        if (ids != null && ids.trim().length() > 0) {
+            ids = StringUtil.stringTrimSpace(ids);
+            ids = "'" + ids.replace(",", "','") + "'";
+            queryStr = "id in (" + ids + ")";
+        }
+        if (queryColumn != null && queryColumn.trim().length() > 0) {
+            queryStr = queryStr + queryColumn;
+        }
+
+        pd.put("queryStr", queryStr);
+
+        Pagination pg = HttpUtils.parsePagination(pd);
+        //分页参数默认设置100000
+        pg.setSize(100000);
+
+        List<Map> dataList = userService.getDataListPage(pd,pg);
+
+        //查询数据转换成Excel导出数据
+        List<LinkedHashMap<String, String>> dataMapList = ColumnUtil.modifyDataList(columnList, dataList);
+        HttpServletResponse response  = HttpUtils.currentResponse();
+
+
+        //查询数据-Excel文件导出
+        //String fileName = "Excel数据字典数据导出";
+        String fileName = "ExcelUser";
+        ExcelUtil.excelExportByDataList(response, fileName, dataMapList);
         Long endTime = System.currentTimeMillis();
         logger.info("################user/exportExcelUsers 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+
     }
+
+//    /**
+//     * @author 刘威 自动创建，禁止修改
+//     * @date 2018-07-26
+//     */
+//    @GetMapping("/user/exportExcelUsers")
+//    public void exportExcelUsers()  throws Exception {
+//
+//        logger.info("################user/exportExcelUsers 执行开始 ################# ");
+//        Long startTime = System.currentTimeMillis();
+//        HttpServletResponse response  = HttpUtils.currentResponse();
+//        HttpServletRequest request  = HttpUtils.currentRequest();
+//
+//        ExcelUtil.buildDefaultExcelDocument( request, response,new ExcelAjaxTemplate() {
+//            @Override
+//            public void execute(HttpServletRequest request, HSSFWorkbook workbook) throws Exception {
+//                // TODO Auto-generated method stub
+//                PageData pd = HttpUtils.parsePageData();
+//                List<LinkedHashMap> titles = userService.getColumnList();
+//                request.setAttribute("titles", titles.get(0));
+//                List<Map> varList = userService.getDataList(pd);
+//                request.setAttribute("varList", varList);
+//            }
+//        });
+//        Long endTime = System.currentTimeMillis();
+//        logger.info("################user/exportExcelUsers 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+//    }
 
 
 }

@@ -2,15 +2,12 @@ package com.xy.vmes.deecoop.system.controller;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.google.gson.Gson;
-import com.xy.vmes.common.util.Common;
-import com.xy.vmes.common.util.RedisUtils;
-import com.xy.vmes.common.util.TreeUtil;
+import com.xy.vmes.common.util.*;
 import com.xy.vmes.entity.*;
 import com.xy.vmes.service.*;
 import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
-import com.xy.vmes.common.util.StringUtil;
 import com.yvan.YvanUtil;
 import com.yvan.cache.RedisClient;
 import com.yvan.platform.RestException;
@@ -59,7 +56,8 @@ public class RoleController {
     private MenuService menuService;
     @Autowired
     private MenuTreeService menuTreeService;
-
+    @Autowired
+    private ColumnService columnService;
     @Autowired
     RedisClient redisClient;
 
@@ -214,32 +212,37 @@ public class RoleController {
      */
     @PostMapping("/role/listPageRoles")
     public ResultModel listPageRoles() throws Exception{
+        logger.info("################role/listPageRoles 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
 
         //1. 查询遍历List列表
-        List<LinkedHashMap<String, String>> titleOutList = new ArrayList<LinkedHashMap<String, String>>();
-        List<String> titlesHideList = new ArrayList<String>();
-        Map<String, String> varModelMap = new HashMap<String, String>();
-        List<LinkedHashMap<String, String>> titleList = roleService.getColumnList();
-        if (titleList != null && titleList.size() > 0) {
-            LinkedHashMap<String, String> titlesMap = titleList.get(0);
-            for (Map.Entry<String, String> entry : titlesMap.entrySet()) {
-                LinkedHashMap<String, String> titleMap = new LinkedHashMap<String, String>();
-                if (entry.getKey().indexOf("_hide") != -1) {
-                    titleMap.put(entry.getKey().replace("_hide",""), entry.getValue());
-                    titlesHideList.add(entry.getKey().replace("_hide",""));
-                    varModelMap.put(entry.getKey().replace("_hide",""), "");
-                } else if (entry.getKey().indexOf("_hide") == -1) {
-                    titleMap.put(entry.getKey(), entry.getValue());
-                    varModelMap.put(entry.getKey(), "");
-                }
-                titleOutList.add(titleMap);
-            }
+        List<Column> columnList = columnService.findColumnList("role");
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
         }
 
+        List<LinkedHashMap> titlesList = new ArrayList<LinkedHashMap>();
+        List<String> titlesHideList = new ArrayList<String>();
+        Map<String, String> varModelMap = new HashMap<String, String>();
+        if(columnList!=null&&columnList.size()>0){
+            for (Column column : columnList) {
+                if(column!=null){
+                    if("0".equals(column.getIshide())){
+                        titlesHideList.add(column.getTitleKey());
+                    }
+                    LinkedHashMap titlesLinkedMap = new LinkedHashMap();
+                    titlesLinkedMap.put(column.getTitleKey(),column.getTitleName());
+                    varModelMap.put(column.getTitleKey(),"");
+                    titlesList.add(titlesLinkedMap);
+                }
+            }
+        }
         Map<String, Object> mapObj = new HashMap<String, Object>();
         mapObj.put("hideTitles", titlesHideList);
-        mapObj.put("titles", YvanUtil.toJson(titleOutList));
+        mapObj.put("titles", YvanUtil.toJson(titlesList));
 
         //2. 分页查询数据List
         PageData pageData = HttpUtils.parsePageData();
@@ -260,7 +263,7 @@ public class RoleController {
 //            pageData.put("cuser", null);
 //        }
 
-        List<Map<String, Object>> varList = roleService.getDataListPage(pageData, pg);
+        List<Map> varList = roleService.getDataListPage(pageData, pg);
         List<Map<String, String>> varMapList = new ArrayList<Map<String, String>>();
         if(varList != null && varList.size() > 0) {
             for (Map<String, Object> map : varList) {
@@ -275,7 +278,69 @@ public class RoleController {
         mapObj.put("varList", YvanUtil.toJson(varMapList));
         mapObj.put("pageData", YvanUtil.toJson(pg));
         model.putResult(mapObj);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################role/listPageRoles 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
+    }
+
+
+    /**
+     * Excel导出功能：
+     * 1. 勾选指定行导出-(','逗号分隔的id字符串)
+     * 2. 按查询条件导出(默认查询方式)
+     * 参数说明:
+     *   ids          : 业务id字符串-(','分隔的字符串)
+     *   queryColumn  : 查询字段(sql where 子句)
+     *   showFieldcode: 导出Excel字段Code-显示顺序按照字符串排列顺序-(','分隔的字符串)
+
+     * 注意: 参数(ids,queryColumn)这两个参数是互斥的，(有且有一个参数不为空)
+     *
+     * @throws Exception
+     */
+    @GetMapping("/role/exportExcelRoles")
+    public void exportExcelRoles() throws Exception {
+        logger.info("################role/exportExcelRoles 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        //1. 获取Excel导出数据查询条件
+        PageData pd = HttpUtils.parsePageData();
+        String ids = pd.getString("ids");
+        String queryColumn = pd.getString("queryColumn");
+        List<Column> columnList = columnService.findColumnList("role");
+        if (columnList == null || columnList.size() == 0) {
+            throw new RestException("1","数据库没有生成TabCol，请联系管理员！");
+        }
+
+        //3. 根据查询条件获取业务数据List
+        String queryStr = "";
+        if (ids != null && ids.trim().length() > 0) {
+            ids = StringUtil.stringTrimSpace(ids);
+            ids = "'" + ids.replace(",", "','") + "'";
+            queryStr = "id in (" + ids + ")";
+        }
+        if (queryColumn != null && queryColumn.trim().length() > 0) {
+            queryStr = queryStr + queryColumn;
+        }
+
+        pd.put("queryStr", queryStr);
+
+        Pagination pg = HttpUtils.parsePagination(pd);
+        //分页参数默认设置100000
+        pg.setSize(100000);
+
+        List<Map> dataList = roleService.getDataListPage(pd,pg);
+
+        //查询数据转换成Excel导出数据
+        List<LinkedHashMap<String, String>> dataMapList = ColumnUtil.modifyDataList(columnList, dataList);
+        HttpServletResponse response  = HttpUtils.currentResponse();
+
+
+        //查询数据-Excel文件导出
+        //String fileName = "Excel数据字典数据导出";
+        String fileName = "ExcelRole";
+        ExcelUtil.excelExportByDataList(response, fileName, dataMapList);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################role/exportExcelRoles 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+
     }
 
     /**添加角色
@@ -285,6 +350,8 @@ public class RoleController {
      */
     @PostMapping("/role/addRole")
     public ResultModel addRole() throws Exception {
+        logger.info("################role/addRole 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
@@ -332,7 +399,8 @@ public class RoleController {
         role.setCode(code);
         role.setName(name);
         roleService.save(role);
-
+        Long endTime = System.currentTimeMillis();
+        logger.info("################role/addRole 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -343,6 +411,8 @@ public class RoleController {
      */
     @PostMapping("/role/updateRole")
     public ResultModel updateRole() throws Exception {
+        logger.info("################role/updateRole 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
@@ -381,7 +451,8 @@ public class RoleController {
         Role objectDB = roleService.findRoleById(id);
         objectDB.setName(name);
         roleService.update(objectDB);
-
+        Long endTime = System.currentTimeMillis();
+        logger.info("################role/updateRole 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -392,6 +463,8 @@ public class RoleController {
      */
     @PostMapping("/role/updateDisableRole")
     public ResultModel updateDisableRole() throws Exception {
+        logger.info("################role/updateDisableRole 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
@@ -430,7 +503,8 @@ public class RoleController {
         Role objectDB = roleService.findRoleById(id);
         objectDB.setIsdisable(isdisable);
         roleService.update(objectDB);
-
+        Long endTime = System.currentTimeMillis();
+        logger.info("################role/updateDisableRole 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -441,6 +515,8 @@ public class RoleController {
      */
     @PostMapping("/role/deleteRoles")
     public ResultModel deleteRoles() throws Exception {
+        logger.info("################role/deleteRoles 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
@@ -484,7 +560,8 @@ public class RoleController {
             }
         }
         roleService.updateDisableByIds(id_arry);
-
+        Long endTime = System.currentTimeMillis();
+        logger.info("################role/deleteRoles 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -500,18 +577,18 @@ public class RoleController {
 
         return model;
     }
-    /**Excel导出角色
-     *
-     * @author 陈刚
-     * @date 2018-07-30
-     */
-    @PostMapping("/role/exportExcelRoles")
-    public ResultModel exportExcelRoles() {
-        ResultModel model = new ResultModel();
-        PageData pageData = HttpUtils.parsePageData();
-
-        return model;
-    }
+//    /**Excel导出角色
+//     *
+//     * @author 陈刚
+//     * @date 2018-07-30
+//     */
+//    @PostMapping("/role/exportExcelRoles")
+//    public ResultModel exportExcelRoles() {
+//        ResultModel model = new ResultModel();
+//        PageData pageData = HttpUtils.parsePageData();
+//
+//        return model;
+//    }
 
     /**角色批量绑定用户
      *
@@ -520,6 +597,8 @@ public class RoleController {
      */
     @PostMapping("/role/saveRoleUsers")
     public ResultModel saveRoleUsers() throws Exception {
+        logger.info("################role/saveRoleUsers 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
@@ -558,7 +637,8 @@ public class RoleController {
 
         //4. 添加角色用户(当前角色)
         userRoleService.addUserRoleByUserIds(roleID, userIds);
-
+        Long endTime = System.currentTimeMillis();
+        logger.info("################role/saveRoleUsers 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
     /**角色批量绑定菜单
@@ -568,6 +648,8 @@ public class RoleController {
      */
     @PostMapping("/role/saveRoleMeuns")
     public ResultModel saveRoleMeuns() throws Exception {
+        logger.info("################role/saveRoleMeuns 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
@@ -606,7 +688,8 @@ public class RoleController {
 
         //4. 添加角色菜单(当前角色)
         roleMenuService.addRoleMenuByMeunIds(roleID, meunIds);
-
+        Long endTime = System.currentTimeMillis();
+        logger.info("################role/saveRoleMeuns 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -620,6 +703,8 @@ public class RoleController {
      */
     @PostMapping("/role/treeRoleMeunsAll")
     public ResultModel treeRoleMeunsAll() {
+        logger.info("################role/treeRoleMeunsAll 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
 
         PageData pageData = HttpUtils.parsePageData();
@@ -644,7 +729,8 @@ public class RoleController {
         String treeJsonStr = YvanUtil.toJson(menuTreeList);
         System.out.println("treeJson: " + treeJsonStr);
         model.putResult(treeJsonStr);
-
+        Long endTime = System.currentTimeMillis();
+        logger.info("################role/treeRoleMeunsAll 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -655,6 +741,8 @@ public class RoleController {
      */
     @PostMapping("/role/treeRoleMeunsSelected")
     public ResultModel treeRoleMeunsSelected() {
+        logger.info("################role/treeRoleMeunsSelected 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
 
         PageData pageData = HttpUtils.parsePageData();
@@ -687,7 +775,8 @@ public class RoleController {
         String treeJsonStr = YvanUtil.toJson(treeList);
         System.out.println("treeJsonStr: " + treeJsonStr);
         model.putResult(treeJsonStr);
-
+        Long endTime = System.currentTimeMillis();
+        logger.info("################role/treeRoleMeunsSelected 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -710,6 +799,8 @@ public class RoleController {
      */
     @PostMapping("/role/saveRoleMeunsButtons")
     public ResultModel saveRoleMeunsButtons() throws Exception {
+        logger.info("################role/saveRoleMeunsButtons 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
@@ -748,7 +839,8 @@ public class RoleController {
 
         //4. 添加角色按钮(当前角色)
         roleButtonService.addRoleButtonByMeunIds(roleID, buttonIds);
-
+        Long endTime = System.currentTimeMillis();
+        logger.info("################role/saveRoleMeunsButtons 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -780,6 +872,8 @@ public class RoleController {
      */
     @PostMapping("/role/listUsersByRole")
     public ResultModel listUsersByRole() throws Exception{
+        logger.info("################role/listUsersByRole 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
         Map<String, Object> mapObj = new HashMap<String, Object>();
 
@@ -855,6 +949,9 @@ public class RoleController {
         mapObj.put("varList", YvanUtil.toJson(varMapList));
 
         model.putResult(mapObj);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################role/listUsersByRole 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+
         return model;
     }
 

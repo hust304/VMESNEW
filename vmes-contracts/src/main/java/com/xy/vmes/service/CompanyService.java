@@ -67,13 +67,13 @@ public interface CompanyService {
      * 创建人：陈刚
      * 创建时间：2018-08-16
      */
-    List<LinkedHashMap<String, String>> getColumnList() throws Exception;
+    List<LinkedHashMap> getColumnList() throws Exception;
 
     /**
      * 创建人：陈刚
      * 创建时间：2018-08-16
      */
-    List<Map<String, Object>> getDataListPage(PageData pd, Pagination pg) throws Exception;
+    List<Map> getDataListPage(PageData pd, Pagination pg) throws Exception;
 
     /**
      * 根据企业ID-判断当前企业有效期是否超时

@@ -190,10 +190,6 @@
         <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
 		#{item}
         </foreach>
-        <!--queryStr 自定义sql查询语句-->
-        <if test="queryStr != null and queryStr!=''" >
-            and ${queryStr}
-        </if>
     </delete>
 
 
@@ -219,6 +215,33 @@
         '显示顺序' serialNumber,
         '状态' isdisableName
     </sql>
+
+
+
+    <insert id="insertColumn" >
+        insert into vmes_column (
+        id,model_code,title_key,title_name,serial_number,
+        isdisable,ishide,isedit,ismust,cdate,
+        cuser
+        ) VALUES
+        (replace(uuid(), '-', ''),'button','companyId','companyId',1, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'button','isdisable','是否启用',2, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'button','cdate','创建时间',3, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'button','udate','修改时间',4, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'button','cuser','创建人',5, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'button','uuser','修改人',6, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'button','code','code',7, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'button','menuId','menuId',8, '1','0','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'button','value','按钮属性值',9, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'button','name','按钮名称',10, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'button','nameEn','英文名',11, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'button','serialNumber','显示顺序',12, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'button','isdisableName','状态',13, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'button','id','id',0, '1','0','1','0',now(), 'admin')
+    </insert>
+
+
     <select id="getColumnList"  resultType="java.util.LinkedHashMap">
         select
         <include refid="Column1"></include>
@@ -275,10 +298,6 @@
         <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
         #{item}
         </foreach>
-        <!--queryStr 自定义sql查询语句-->
-        <if test="queryStr != null and queryStr!=''" >
-            and ${queryStr}
-        </if>
     </update>
 
     <!-- 通过menuId删除菜单按钮信息 -->
@@ -287,10 +306,6 @@
         <include refid="tableName"/>
         where
         menu_id = #{menuId}
-        <!--queryStr 自定义sql查询语句-->
-        <if test="queryStr != null and queryStr!=''" >
-            and ${queryStr}
-        </if>
     </delete>
 
     <update id="updateDisableByMenuId" parameterType="java.lang.String" >
@@ -298,10 +313,6 @@
         set isdisable = 0
         where
         menu_id = #{menuId}
-        <!--queryStr 自定义sql查询语句-->
-        <if test="queryStr != null and queryStr!=''" >
-            and ${queryStr}
-        </if>
     </update>
 
 

@@ -1,10 +1,13 @@
 package com.xy.vmes.deecoop.system.controller;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.Common;
 import com.xy.vmes.common.util.StringUtil;
+import com.xy.vmes.entity.Column;
 import com.xy.vmes.entity.Menu;
 import com.xy.vmes.entity.TreeEntity;
+import com.xy.vmes.service.ColumnService;
 import com.xy.vmes.service.MenuService;
 import com.xy.vmes.service.MenuTreeService;
 import com.xy.vmes.service.RoleMenuService;
@@ -45,7 +48,8 @@ public class MenuController {
     private RoleMenuService roleMenuService;
     @Autowired
     private MenuTreeService menuTreeService;
-
+    @Autowired
+    private ColumnService columnService;
     /**
     * @author 陈刚 自动创建，禁止修改
     * @date 2018-08-01
@@ -201,37 +205,43 @@ public class MenuController {
      */
     @PostMapping("/menu/listPageMenus")
     public ResultModel listPageMenus() throws Exception {
+        logger.info("################menu/listPageMenus 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
         Map<String, Object> mapObj = new HashMap<String, Object>();
 
         //1. 查询遍历List列表
-        List<LinkedHashMap<String, String>> titleOutList = new ArrayList<LinkedHashMap<String, String>>();
+        List<Column> columnList = columnService.findColumnList("menu");
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
+        }
+
+        List<LinkedHashMap> titlesList = new ArrayList<LinkedHashMap>();
         List<String> titlesHideList = new ArrayList<String>();
         Map<String, String> varModelMap = new HashMap<String, String>();
-        List<LinkedHashMap<String, String>> titleList = menuService.getColumnList();
-        if (titleList != null && titleList.size() > 0) {
-            LinkedHashMap<String, String> titlesMap = titleList.get(0);
-            for (Map.Entry<String, String> entry : titlesMap.entrySet()) {
-                LinkedHashMap<String, String> titleMap = new LinkedHashMap<String, String>();
-                if (entry.getKey().indexOf("_hide") != -1) {
-                    titleMap.put(entry.getKey().replace("_hide",""), entry.getValue());
-                    titlesHideList.add(entry.getKey().replace("_hide",""));
-                    varModelMap.put(entry.getKey().replace("_hide",""), "");
-                } else if (entry.getKey().indexOf("_hide") == -1) {
-                    titleMap.put(entry.getKey(), entry.getValue());
-                    varModelMap.put(entry.getKey(), "");
+        if(columnList!=null&&columnList.size()>0){
+            for (Column column : columnList) {
+                if(column!=null){
+                    if("0".equals(column.getIshide())){
+                        titlesHideList.add(column.getTitleKey());
+                    }
+                    LinkedHashMap titlesLinkedMap = new LinkedHashMap();
+                    titlesLinkedMap.put(column.getTitleKey(),column.getTitleName());
+                    varModelMap.put(column.getTitleKey(),"");
+                    titlesList.add(titlesLinkedMap);
                 }
-                titleOutList.add(titleMap);
             }
         }
         mapObj.put("hideTitles", titlesHideList);
-        mapObj.put("titles", YvanUtil.toJson(titleOutList));
+        mapObj.put("titles", YvanUtil.toJson(titlesList));
 
         //2. 分页查询数据List
         List<Map<String, String>> varMapList = new ArrayList<Map<String, String>>();
         PageData pd = HttpUtils.parsePageData();
         Pagination pg = HttpUtils.parsePagination(pd);
-        List<Map<String, Object>> varList = menuService.getDataListPage(pd, pg);
+        List<Map> varList = menuService.getDataListPage(pd, pg);
         if(varList != null && varList.size() > 0) {
             for (Map<String, Object> map : varList) {
                 Map<String, String> varMap = new HashMap<String, String>();
@@ -246,7 +256,69 @@ public class MenuController {
         mapObj.put("pageData", YvanUtil.toJson(pg));
 
         model.putResult(mapObj);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################menu/listPageMenus 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
+    }
+
+
+    /**
+     * Excel导出功能：
+     * 1. 勾选指定行导出-(','逗号分隔的id字符串)
+     * 2. 按查询条件导出(默认查询方式)
+     * 参数说明:
+     *   ids          : 业务id字符串-(','分隔的字符串)
+     *   queryColumn  : 查询字段(sql where 子句)
+     *   showFieldcode: 导出Excel字段Code-显示顺序按照字符串排列顺序-(','分隔的字符串)
+
+     * 注意: 参数(ids,queryColumn)这两个参数是互斥的，(有且有一个参数不为空)
+     *
+     * @throws Exception
+     */
+    @GetMapping("/menu/exportExcelMenus")
+    public void exportExcelMenus() throws Exception {
+        logger.info("################menu/exportExcelMenus 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        //1. 获取Excel导出数据查询条件
+        PageData pd = HttpUtils.parsePageData();
+        String ids = pd.getString("ids");
+        String queryColumn = pd.getString("queryColumn");
+        List<Column> columnList = columnService.findColumnList("menu");
+        if (columnList == null || columnList.size() == 0) {
+            throw new RestException("1","数据库没有生成TabCol，请联系管理员！");
+        }
+
+        //3. 根据查询条件获取业务数据List
+        String queryStr = "";
+        if (ids != null && ids.trim().length() > 0) {
+            ids = StringUtil.stringTrimSpace(ids);
+            ids = "'" + ids.replace(",", "','") + "'";
+            queryStr = "id in (" + ids + ")";
+        }
+        if (queryColumn != null && queryColumn.trim().length() > 0) {
+            queryStr = queryStr + queryColumn;
+        }
+
+        pd.put("queryStr", queryStr);
+
+        Pagination pg = HttpUtils.parsePagination(pd);
+        //分页参数默认设置100000
+        pg.setSize(100000);
+
+        List<Map> dataList = menuService.getDataListPage(pd,pg);
+
+        //查询数据转换成Excel导出数据
+        List<LinkedHashMap<String, String>> dataMapList = ColumnUtil.modifyDataList(columnList, dataList);
+        HttpServletResponse response  = HttpUtils.currentResponse();
+
+
+        //查询数据-Excel文件导出
+        //String fileName = "Excel数据字典数据导出";
+        String fileName = "ExcelMenu";
+        ExcelUtil.excelExportByDataList(response, fileName, dataMapList);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################menu/exportExcelMenus 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+
     }
 
     /**
@@ -257,6 +329,8 @@ public class MenuController {
      */
     @PostMapping("/menu/addMenu")
     public ResultModel addMenu() throws Exception {
+        logger.info("################menu/addMenu 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
@@ -298,7 +372,6 @@ public class MenuController {
         if (paterObj == null) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("(pid:"+ menuObj.getPid() + ")系统中无数据，请与管理员联系！");
-
             return model;
         }
 
@@ -339,7 +412,8 @@ public class MenuController {
         }
 
         menuService.save(menuObj);
-
+        Long endTime = System.currentTimeMillis();
+        logger.info("################menu/addMenu 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -351,6 +425,8 @@ public class MenuController {
      */
     @PostMapping("/menu/updateMenu")
     public ResultModel updateMenu() throws Exception {
+        logger.info("################menu/updateMenu 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
@@ -429,7 +505,8 @@ public class MenuController {
             menuObj.setSerialNumber(Integer.valueOf(maxCount.intValue() + 1));
         }
         menuService.update(menuDB);
-
+        Long endTime = System.currentTimeMillis();
+        logger.info("################menu/updateMenu 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -440,6 +517,8 @@ public class MenuController {
      */
     @PostMapping("/menu/updateDisableMenu")
     public ResultModel updateDisableMenu() throws Exception {
+        logger.info("################menu/updateDisableMenu 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
@@ -480,7 +559,8 @@ public class MenuController {
         objectDB.setIsdisable(isdisable);
         objectDB.setUdate(new Date());
         menuService.update(objectDB);
-
+        Long endTime = System.currentTimeMillis();
+        logger.info("################menu/updateDisableMenu 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -491,6 +571,8 @@ public class MenuController {
      */
     @PostMapping("/menu/deleteMenus")
     public ResultModel deleteMenus() throws Exception {
+        logger.info("################menu/deleteMenus 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
@@ -523,28 +605,32 @@ public class MenuController {
 
         //3. 禁用菜单
         menuService.updateDisableByIds(id_arry);
-
+        Long endTime = System.currentTimeMillis();
+        logger.info("################menu/deleteMenus 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
-    /**
-     * 菜单Excel导出
-     *
-     * @author 陈刚
-     * @date 2018-08-01
-     */
-    @PostMapping("/menu/exportExcelMenus")
-    public ResultModel exportExcelMenus() throws Exception {
-        ResultModel model = new ResultModel();
-        PageData pageData = HttpUtils.parsePageData();
-
-        try {
-        } catch (Exception e) {
-            throw new RestException("", e.getMessage());
-        }
-
-        return model;
-    }
+//    /**
+//     * 菜单Excel导出
+//     *
+//     * @author 陈刚
+//     * @date 2018-08-01
+//     */
+//    @PostMapping("/menu/exportExcelMenus")
+//    public ResultModel exportExcelMenus() throws Exception {
+//        logger.info("################menu/exportExcelMenus 执行开始 ################# ");
+//        Long startTime = System.currentTimeMillis();
+//        ResultModel model = new ResultModel();
+//        PageData pageData = HttpUtils.parsePageData();
+//
+//        try {
+//        } catch (Exception e) {
+//            throw new RestException("", e.getMessage());
+//        }
+//        Long endTime = System.currentTimeMillis();
+//        logger.info("################menu/selectById 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+//        return model;
+//    }
 
     /**
      * 菜单Excel导入
@@ -554,6 +640,8 @@ public class MenuController {
      */
     @PostMapping("/menu/importExcelMenus")
     public ResultModel importExcelMenus(@RequestParam(value="excelFile") MultipartFile file) {
+        logger.info("################menu/importExcelMenus 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
         //HttpServletRequest Request = HttpUtils.currentRequest();
 
@@ -596,7 +684,8 @@ public class MenuController {
         } catch (Exception e) {
             throw new RestException("", e.getMessage());
         }
-
+        Long endTime = System.currentTimeMillis();
+        logger.info("################menu/importExcelMenus 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -611,6 +700,8 @@ public class MenuController {
     //@GetMapping("/menu/treeMeuns")
     @PostMapping("/menu/treeMeuns")
     public ResultModel treeMeuns() {
+        logger.info("################menu/treeMeuns 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
 
 //            String userRole = "";
@@ -672,7 +763,8 @@ public class MenuController {
         String treeJsonStr = YvanUtil.toJson(treeList);
         //System.out.println("treeJsonStr: " + treeJsonStr);
         model.putResult(treeJsonStr);
-
+        Long endTime = System.currentTimeMillis();
+        logger.info("################menu/treeMeuns 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 

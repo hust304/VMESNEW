@@ -71,13 +71,13 @@ public interface MenuService {
      * 创建人：陈刚
      * 创建时间：2018-08-08
      */
-    List<LinkedHashMap<String, String>> getColumnList() throws Exception;
+    List<LinkedHashMap> getColumnList() throws Exception;
 
     /**
      * 创建人：陈刚
      * 创建时间：2018-08-08
      */
-    List<Map<String, Object>> getDataListPage(PageData pd, Pagination pg) throws Exception;
+    List<Map> getDataListPage(PageData pd, Pagination pg) throws Exception;
 
     /**
      * 生成菜单编码

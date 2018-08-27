@@ -1,19 +1,23 @@
 package com.xy.vmes.deecoop.system.controller;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.Common;
 import com.xy.vmes.common.util.StringUtil;
+import com.xy.vmes.entity.Column;
 import com.xy.vmes.entity.Department;
 import com.xy.vmes.entity.User;
 import com.xy.vmes.entity.UserRole;
 import com.xy.vmes.service.*;
 import com.yvan.*;
+import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -42,6 +46,9 @@ public class CompanyController {
 
     @Autowired
     private CoderuleService coderuleService;
+
+    @Autowired
+    private ColumnService columnService;
 
 //    @PostMapping("/company/listPageCompanyAdmins")
 //    public ResultModel listPageCompanyAdmins() throws Exception {
@@ -119,25 +126,27 @@ public class CompanyController {
         PageData pd = HttpUtils.parsePageData();
         Pagination pg = HttpUtils.parsePagination(pd);
         Map result = new HashMap();
-        List<LinkedHashMap<String, String>> titles = companyService.getColumnList();
-
+        List<Column> columnList = columnService.findColumnList("company");
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
+        }
 
         List<LinkedHashMap> titlesList = new ArrayList<LinkedHashMap>();
         List<String> titlesHideList = new ArrayList<String>();
         Map<String, String> varModelMap = new HashMap<String, String>();
-        if(titles!=null&&titles.size()>0){
-            LinkedHashMap<String, String> titlesMap = titles.get(0);
-            for (Map.Entry<String, String> entry : titlesMap.entrySet()) {
-                LinkedHashMap titlesLinkedMap = new LinkedHashMap();
-                if(entry.getKey().indexOf("_hide")>0){
-                    titlesLinkedMap.put(entry.getKey().replace("_hide",""),entry.getValue());
-                    titlesHideList.add(entry.getKey().replace("_hide",""));
-                    varModelMap.put(entry.getKey().replace("_hide",""),"");
-                }else{
-                    titlesLinkedMap.put(entry.getKey(),entry.getValue());
-                    varModelMap.put(entry.getKey(),"");
+        if(columnList!=null&&columnList.size()>0){
+            for (Column column : columnList) {
+                if(column!=null){
+                    if("0".equals(column.getIshide())){
+                        titlesHideList.add(column.getTitleKey());
+                    }
+                    LinkedHashMap titlesLinkedMap = new LinkedHashMap();
+                    titlesLinkedMap.put(column.getTitleKey(),column.getTitleName());
+                    varModelMap.put(column.getTitleKey(),"");
+                    titlesList.add(titlesLinkedMap);
                 }
-                titlesList.add(titlesLinkedMap);
             }
         }
         result.put("hideTitles",titlesHideList);
@@ -147,7 +156,7 @@ public class CompanyController {
 
 
         List<Map> varMapList = new ArrayList();
-        List<Map<String, Object>> varList = companyService.getDataListPage(pd,pg);
+        List<Map> varList = companyService.getDataListPage(pd,pg);
         if(varList!=null&&varList.size()>0){
             for(int i=0;i<varList.size();i++){
                 Map map = varList.get(i);
@@ -169,6 +178,63 @@ public class CompanyController {
     }
 
 
+    /**
+     * Excel导出功能：
+     * 1. 勾选指定行导出-(','逗号分隔的id字符串)
+     * 2. 按查询条件导出(默认查询方式)
+     * 参数说明:
+     *   ids          : 业务id字符串-(','分隔的字符串)
+     *   queryColumn  : 查询字段(sql where 子句)
+     *   showFieldcode: 导出Excel字段Code-显示顺序按照字符串排列顺序-(','分隔的字符串)
+
+     * 注意: 参数(ids,queryColumn)这两个参数是互斥的，(有且有一个参数不为空)
+     *
+     * @throws Exception
+     */
+    @GetMapping("/company/exportExcelCompanys")
+    public void exportExcelCompanys() throws Exception {
+
+        logger.info("################company/exportExcelCompanys 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        //1. 获取Excel导出数据查询条件
+        PageData pd = HttpUtils.parsePageData();
+        String ids = pd.getString("ids");
+        String queryColumn = pd.getString("queryColumn");
+        List<Column> columnList = columnService.findColumnList("company");
+        if (columnList == null || columnList.size() == 0) {
+            throw new RestException("1","数据库没有生成TabCol，请联系管理员！");
+        }
+
+        //3. 根据查询条件获取业务数据List
+        String queryStr = "";
+        if (ids != null && ids.trim().length() > 0) {
+            ids = StringUtil.stringTrimSpace(ids);
+            ids = "'" + ids.replace(",", "','") + "'";
+            queryStr = "id in (" + ids + ")";
+        }
+        if (queryColumn != null && queryColumn.trim().length() > 0) {
+            queryStr = queryStr + queryColumn;
+        }
+
+        pd.put("queryStr", queryStr);
+
+        Pagination pg = HttpUtils.parsePagination(pd);
+        //分页参数默认设置100000
+        pg.setSize(100000);
+
+        List<Map> dataList = companyService.getDataListPage(pd,pg);
+        //查询数据转换成Excel导出数据
+        List<LinkedHashMap<String, String>> dataMapList = ColumnUtil.modifyDataList(columnList, dataList);
+        HttpServletResponse response  = HttpUtils.currentResponse();
+
+
+        //查询数据-Excel文件导出
+        //String fileName = "Excel数据字典数据导出";
+        String fileName = "ExcelCompany";
+        ExcelUtil.excelExportByDataList(response, fileName, dataMapList);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################company/exportExcelCompanys 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+    }
 
     /**添加企业信息-同时创建企业账号或企业管理员
      *
@@ -177,6 +243,8 @@ public class CompanyController {
      */
     @PostMapping("/company/addCompanyAdmin")
     public ResultModel addCompanyAdmin() throws Exception {
+        logger.info("################company/addCompanyAdmin 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
@@ -300,7 +368,8 @@ public class CompanyController {
         userRole.setUserId(user.getId());
         userRole.setRoleId(roleId);
         userRoleService.save(userRole);
-
+        Long endTime = System.currentTimeMillis();
+        logger.info("################company/addCompanyAdmin 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -311,6 +380,8 @@ public class CompanyController {
      */
     @PostMapping("/company/updateCompany")
     public ResultModel updateCompany() throws Exception {
+        logger.info("################company/updateCompany 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
@@ -420,7 +491,8 @@ public class CompanyController {
                 userRoleService.update(userRole);
             }
         }
-
+        Long endTime = System.currentTimeMillis();
+        logger.info("################company/updateCompany 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -431,6 +503,7 @@ public class CompanyController {
      */
     @PostMapping("/company/updateAdmin")
     public ResultModel updateAdmin() {
+
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
@@ -462,6 +535,8 @@ public class CompanyController {
      */
     @PostMapping("/company/deleteCompanyAdmins")
     public ResultModel deleteCompanyAdmins() throws Exception {
+        logger.info("################company/deleteCompanyAdmins 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
@@ -508,7 +583,8 @@ public class CompanyController {
 //        departmentService.updateDisableByIds(id_arry);
         //禁用企业管理员
 //        userService.updateDisableByCompanyIds(id_arry);
-
+        Long endTime = System.currentTimeMillis();
+        logger.info("################company/deleteCompanyAdmins 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 

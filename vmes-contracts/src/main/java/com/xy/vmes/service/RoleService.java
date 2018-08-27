@@ -71,13 +71,13 @@ public interface RoleService {
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2018-07-30
      */
-    List<LinkedHashMap<String, String>> getColumnList() throws Exception;
+    List<LinkedHashMap> getColumnList() throws Exception;
 
     /**
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2018-07-30
      */
-    List<Map<String, Object>> getDataListPage(PageData pd, Pagination pg) throws Exception;
+    List<Map> getDataListPage(PageData pd, Pagination pg) throws Exception;
 
     /**
      * 批量修改角色信息为禁用状态

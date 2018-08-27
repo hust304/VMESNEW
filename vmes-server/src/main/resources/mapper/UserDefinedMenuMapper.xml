@@ -159,10 +159,6 @@
         <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
 		#{item}
         </foreach>
-        <!--queryStr 自定义sql查询语句-->
-        <if test="queryStr != null and queryStr!=''" >
-            and ${queryStr}
-        </if>
     </delete>
 
 
@@ -179,6 +175,24 @@
         '菜单路径'  menuUrl,
         'id' id
     </sql>
+
+
+
+    <insert id="insertColumn" >
+        insert into vmes_column (
+        id,model_code,title_key,title_name,serial_number,
+        isdisable,ishide,isedit,ismust,cdate,
+        cuser
+        ) VALUES
+        (replace(uuid(), '-', ''),'mainPage','userId','用户ID',1, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'mainPage','menuId','菜单ID',2, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'mainPage','serialNumber','自定义菜单顺序',3, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'mainPage','menuName','菜单名称',4, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'mainPage','menuIcon','菜单图标',5, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'mainPage','menuUrl','菜单路径',6, '1','1','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'mainPage','id','id',0, '1','1','1','0',now(), 'admin')
+    </insert>
 
     <!-- 表格表体值 刘威-->
     <sql id="Field1">

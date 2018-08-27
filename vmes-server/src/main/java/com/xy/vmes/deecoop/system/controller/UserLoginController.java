@@ -98,6 +98,8 @@ public class UserLoginController {
      */
     @PostMapping("/userLogin/loginIn")
     public ResultModel loginIn() {
+        logger.info("################userLogin/loginIn 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
 
         //非空判断
@@ -239,7 +241,8 @@ public class UserLoginController {
         model.putCode(Integer.valueOf(0));
         model.putResult(YvanUtil.toJson(dataMap));
         model.set("sessionID", Redis_userLogin_Key);
-
+        Long endTime = System.currentTimeMillis();
+        logger.info("################userLogin/loginIn 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -259,6 +262,8 @@ public class UserLoginController {
      */
     @PostMapping("/userLogin/createSecurityCode")
     public ResultModel createSecurityCode() {
+        logger.info("################userLogin/createSecurityCode 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
         String SecurityCode = this.drawImg(new ByteArrayOutputStream());
 
         //Redis-验证码-缓存1分钟(60 * 1000)
@@ -271,6 +276,8 @@ public class UserLoginController {
 
         ResultModel model = new ResultModel();
         model.putResult(dataMap);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################userLogin/createSecurityCode 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -284,6 +291,8 @@ public class UserLoginController {
      */
     @PostMapping("/userLogin/changePassWord")
     public ResultModel changePassWord() throws Exception {
+        logger.info("################userLogin/changePassWord 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
 
         //非空判断
@@ -333,6 +342,8 @@ public class UserLoginController {
 
         model.putCode(Integer.valueOf(0));
         model.putMsg("登录密码修改成功！");
+        Long endTime = System.currentTimeMillis();
+        logger.info("################userLogin/changePassWord 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -345,6 +356,8 @@ public class UserLoginController {
      */
     @PostMapping("/userLogin/findPassWord")
     public ResultModel findPassWord() throws Exception {
+        logger.info("################userLogin/findPassWord 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
 
         //非空判断
@@ -434,6 +447,8 @@ public class UserLoginController {
 
         model.putCode(Integer.valueOf(0));
         model.putMsg("密码重置成功！");
+        Long endTime = System.currentTimeMillis();
+        logger.info("################userLogin/findPassWord 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -446,6 +461,8 @@ public class UserLoginController {
      */
     @PostMapping("/userLogin/loginOut")
     public ResultModel loginOut() {
+        logger.info("################userLogin/loginOut 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
@@ -466,7 +483,8 @@ public class UserLoginController {
         String[] str_arry = sessionID.split(":");
         String uuid = str_arry[0];
         RedisUtils.removeByUuid(redisClient, uuid);
-
+        Long endTime = System.currentTimeMillis();
+        logger.info("################userLogin/loginOut 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -480,6 +498,8 @@ public class UserLoginController {
      */
     @GetMapping("/userLogin/test_findAllRedisKeyByUserID")
     public ResultModel test_findAllRedisKeyByUserID() {
+        logger.info("################userLogin/test_findAllRedisKeyByUserID 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
@@ -521,6 +541,8 @@ public class UserLoginController {
         }
 
         model.putMsg(msgBuf.toString());
+        Long endTime = System.currentTimeMillis();
+        logger.info("################userLogin/test_findAllRedisKeyByUserID 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -531,6 +553,8 @@ public class UserLoginController {
      */
     @GetMapping("/userLogin/test_findAllRedisKeyByUuid")
     public ResultModel test_findAllRedisKeyByUuid() {
+        logger.info("################userLogin/test_findAllRedisKeyByUuid 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
@@ -570,6 +594,8 @@ public class UserLoginController {
         }
 
         model.putMsg(msgBuf.toString());
+        Long endTime = System.currentTimeMillis();
+        logger.info("################userLogin/test_findAllRedisKeyByUuid 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -580,6 +606,8 @@ public class UserLoginController {
      */
     @GetMapping("/userLogin/test_removeRedisKeyByUserID")
     public ResultModel test_removeRedisKeyByUserID() {
+        logger.info("################userLogin/test_removeRedisKeyByUserID 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
@@ -598,6 +626,8 @@ public class UserLoginController {
         }
 
         RedisUtils.removeByUserID(redisClient, userID);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################userLogin/test_removeRedisKeyByUserID 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -608,6 +638,8 @@ public class UserLoginController {
      */
     @GetMapping("/userLogin/test_removeRedisKeyByUuid")
     public ResultModel test_removeRedisKeyByUuid() {
+        logger.info("################userLogin/test_removeRedisKeyByUuid 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
@@ -626,11 +658,15 @@ public class UserLoginController {
         }
 
         RedisUtils.removeByUuid(redisClient, uuid);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################userLogin/test_removeRedisKeyByUuid 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
     @GetMapping("/userLogin/test_findRedisJsonStringBySessionID")
     public ResultModel test_findRedisJsonStringBySessionID() {
+        logger.info("################userLogin/test_findRedisJsonStringBySessionID 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
@@ -650,6 +686,8 @@ public class UserLoginController {
 
         String jsonString = RedisUtils.getRedisJsonStringBySessionID(redisClient, sessionID);
         model.putMsg(jsonString);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################userLogin/test_findRedisJsonStringBySessionID 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 

@@ -1,9 +1,11 @@
 package com.xy.vmes.deecoop.system.controller;
 
 import com.google.gson.JsonObject;
+import com.xy.vmes.entity.Column;
 import com.xy.vmes.entity.User;
 import com.xy.vmes.entity.UserDefinedMenu;
 import com.xy.vmes.entity.UserRole;
+import com.xy.vmes.service.ColumnService;
 import com.xy.vmes.service.UserDefinedMenuService;
 import com.xy.vmes.service.UserService;
 import com.yvan.HttpUtils;
@@ -38,7 +40,8 @@ public class MainPageController {
 
     @Autowired
     private UserDefinedMenuService userDefinedMenuService;
-
+    @Autowired
+    private ColumnService columnService;
 
     private Logger logger = LoggerFactory.getLogger(MainPageController.class);
 
@@ -147,24 +150,27 @@ public class MainPageController {
         PageData pd = HttpUtils.parsePageData();
 
         Map result = new HashMap();
-        List<LinkedHashMap> titles = userDefinedMenuService.getColumnList();
+        List<Column> columnList = columnService.findColumnList("user");
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
+        }
 
         List<LinkedHashMap> titlesList = new ArrayList<LinkedHashMap>();
         List<String> titlesHideList = new ArrayList<String>();
         Map<String, String> varModelMap = new HashMap<String, String>();
-        if(titles!=null&&titles.size()>0){
-            LinkedHashMap<String, String> titlesMap = titles.get(0);
-            for (Map.Entry<String, String> entry : titlesMap.entrySet()) {
-                LinkedHashMap titlesLinkedMap = new LinkedHashMap();
-                if(entry.getKey().indexOf("_hide")>0){
-                    titlesLinkedMap.put(entry.getKey().replace("_hide",""),entry.getValue());
-                    titlesHideList.add(entry.getKey().replace("_hide",""));
-                    varModelMap.put(entry.getKey().replace("_hide",""),"");
-                }else{
-                    titlesLinkedMap.put(entry.getKey(),entry.getValue());
-                    varModelMap.put(entry.getKey(),"");
+        if(columnList!=null&&columnList.size()>0){
+            for (Column column : columnList) {
+                if(column!=null){
+                    if("0".equals(column.getIshide())){
+                        titlesHideList.add(column.getTitleKey());
+                    }
+                    LinkedHashMap titlesLinkedMap = new LinkedHashMap();
+                    titlesLinkedMap.put(column.getTitleKey(),column.getTitleName());
+                    varModelMap.put(column.getTitleKey(),"");
+                    titlesList.add(titlesLinkedMap);
                 }
-                titlesList.add(titlesLinkedMap);
             }
         }
         result.put("hideTitles",titlesHideList);

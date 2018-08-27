@@ -80,13 +80,13 @@ public interface DepartmentService {
      * 创建人：陈刚
      * 创建时间：2018-08-08
      */
-    List<LinkedHashMap<String, String>> getColumnList() throws Exception;
+    List<LinkedHashMap> getColumnList() throws Exception;
 
     /**
      * 创建人：陈刚
      * 创建时间：2018-08-08
      */
-    List<Map<String, Object>> getDataListPage(PageData pd, Pagination pg) throws Exception;
+    List<Map> getDataListPage(PageData pd, Pagination pg) throws Exception;
 
     /**
      * 批量修改组织架构信息为禁用状态

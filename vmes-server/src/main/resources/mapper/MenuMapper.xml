@@ -240,10 +240,6 @@
         <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
 		#{item}
         </foreach>
-        <!--queryStr 自定义sql查询语句-->
-        <if test="queryStr != null and queryStr!=''" >
-            and ${queryStr}
-        </if>
     </delete>
 
 
@@ -256,10 +252,6 @@
         <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
             #{item}
         </foreach>
-        <!--queryStr 自定义sql查询语句-->
-        <if test="queryStr != null and queryStr!=''" >
-            and ${queryStr}
-        </if>
     </update>
 
     <!-- 菜单管理 分页List查询-->
@@ -283,6 +275,31 @@
         '资源路径' url,
         '状态' isdisable
     </sql>
+
+    <insert id="insertColumn" >
+        insert into vmes_column (
+        id,model_code,title_key,title_name,serial_number,
+        isdisable,ishide,isedit,ismust,cdate,
+        cuser
+        ) VALUES
+        (replace(uuid(), '-', ''),'menu','companyId','companyId',1, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'menu','cdate','创建时间',2, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'menu','udate','修改时间',3, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'menu','cuser','创建人',4, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'menu','uuser','修改人',5, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'menu','pid','pid',6, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'menu','nameEn','nameEn',7, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'menu','icon','icon',8, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'menu','layer','layer',9, '1','0','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'menu','name','菜单名称',10, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'menu','serialNumber','显示顺序',11, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'menu','url','资源路径',12, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'menu','isdisable','状态',13, '1','1','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'menu','id','id',0, '1','0','1','0',now(), 'admin')
+    </insert>
+
     <select id="getColumnList"  resultType="java.util.LinkedHashMap">
         select
         <include refid="Column1"/>

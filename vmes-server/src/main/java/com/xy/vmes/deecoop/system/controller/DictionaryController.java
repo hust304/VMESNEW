@@ -14,6 +14,7 @@ import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.YvanUtil;
 import com.yvan.cache.RedisClient;
+import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
 import com.yvan.template.ExcelAjaxTemplate;
 import lombok.extern.slf4j.Slf4j;
@@ -333,30 +334,37 @@ public class DictionaryController {
         Pagination pg = HttpUtils.parsePagination(pd);
         Map result = new HashMap();
 
-        List<LinkedHashMap> titles = new ArrayList<LinkedHashMap>();
+//        List<LinkedHashMap> titles = new ArrayList<LinkedHashMap>();
         List<Column> columnList = columnService.findColumnList("dictionary");
         if (columnList == null || columnList.size() == 0) {
-            titles = dictionaryService.getColumnList();
-        } else {
-            titles = ColumnUtil.listColumnByModelCode(columnList);
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
         }
 
         List<LinkedHashMap> titlesList = new ArrayList<LinkedHashMap>();
         List<String> titlesHideList = new ArrayList<String>();
         Map<String, String> varModelMap = new HashMap<String, String>();
-        if(titles!=null&&titles.size()>0){
-            LinkedHashMap<String, String> titlesMap = titles.get(0);
-            for (Map.Entry<String, String> entry : titlesMap.entrySet()) {
-                LinkedHashMap titlesLinkedMap = new LinkedHashMap();
-                if(entry.getKey().indexOf("_hide")>0){
-                    titlesLinkedMap.put(entry.getKey().replace("_hide",""),entry.getValue());
-                    titlesHideList.add(entry.getKey().replace("_hide",""));
-                    varModelMap.put(entry.getKey().replace("_hide",""),"");
-                }else{
-                    titlesLinkedMap.put(entry.getKey(),entry.getValue());
-                    varModelMap.put(entry.getKey(),"");
+        if(columnList!=null&&columnList.size()>0){
+            for (Column column : columnList) {
+                if(column!=null){
+                    if("0".equals(column.getIshide())){
+                        titlesHideList.add(column.getTitleKey());
+                    }
+                    LinkedHashMap titlesLinkedMap = new LinkedHashMap();
+                    titlesLinkedMap.put(column.getTitleKey(),column.getTitleName());
+                    varModelMap.put(column.getTitleKey(),"");
+                    titlesList.add(titlesLinkedMap);
                 }
-                titlesList.add(titlesLinkedMap);
+//                if(entry.getKey().indexOf("_hide")>0){
+//                    titlesLinkedMap.put(entry.getKey().replace("_hide",""),entry.getValue());
+//                    titlesHideList.add(entry.getKey().replace("_hide",""));
+//                    varModelMap.put(entry.getKey().replace("_hide",""),"");
+//                }else{
+//                    titlesLinkedMap.put(entry.getKey(),entry.getValue());
+//                    varModelMap.put(entry.getKey(),"");
+//                }
+//                titlesList.add(titlesLinkedMap);
             }
         }
         result.put("hideTitles",titlesHideList);
@@ -427,15 +435,22 @@ public class DictionaryController {
      */
     @GetMapping("/dictionary/exportExcelDictionarys")
     public void exportExcelDictionarys() throws Exception {
+        logger.info("################dictionary/exportExcelDictionarys 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
         //1. 获取Excel导出数据查询条件
         PageData pd = HttpUtils.parsePageData();
         String ids = pd.getString("ids");
         String queryColumn = pd.getString("queryColumn");
-        String showFieldcode = pd.getString("showFieldcode");
+//        String showFieldcode = pd.getString("showFieldcode");
+//
+//        //2. 获取业务列表List<Map<栏位Key, 栏位名称>>
+//        List<LinkedHashMap> columnList = dictionaryService.getColumnList();
+//        LinkedHashMap columnMap = ExcelUtil.modifyColumnMap(showFieldcode, columnList.get(0));
 
-        //2. 获取业务列表List<Map<栏位Key, 栏位名称>>
-        List<LinkedHashMap> columnList = dictionaryService.getColumnList();
-        LinkedHashMap columnMap = ExcelUtil.modifyColumnMap(showFieldcode, columnList.get(0));
+        List<Column> columnList = columnService.findColumnList("dictionary");
+        if (columnList == null || columnList.size() == 0) {
+            throw new RestException("1","数据库没有生成TabCol，请联系管理员！");
+        }
 
         //3. 根据查询条件获取业务数据List
         String queryStr = "";
@@ -454,10 +469,11 @@ public class DictionaryController {
         //分页参数默认设置100000
         pg.setSize(100000);
 
+
         List<Map> dataList = dictionaryService.getDataListPage(pd,pg);
 
         //查询数据转换成Excel导出数据
-        List<LinkedHashMap<String, String>> dataMapList = ExcelUtil.modifyDataList(columnMap, dataList);
+        List<LinkedHashMap<String, String>> dataMapList = ColumnUtil.modifyDataList(columnList, dataList);
 
         HttpServletResponse response  = HttpUtils.currentResponse();
 
@@ -466,6 +482,8 @@ public class DictionaryController {
         //String fileName = "Excel数据字典数据导出";
         String fileName = "ExcelDictionary";
         ExcelUtil.excelExportByDataList(response, fileName, dataMapList);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################dictionary/exportExcelDictionarys 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
 
     }
 
