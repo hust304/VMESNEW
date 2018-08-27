@@ -1,11 +1,10 @@
 package com.xy.vmes.deecoop.system.controller;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
-import com.google.gson.Gson;
-import com.xy.vmes.common.util.RedisUtils;
+import com.xy.vmes.common.util.ColumnUtil;
+import com.xy.vmes.entity.Column;
 import com.xy.vmes.entity.Department;
 import com.xy.vmes.entity.Post;
-import com.xy.vmes.entity.User;
 import com.xy.vmes.service.*;
 import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
@@ -27,8 +26,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.*;
 
 
@@ -55,6 +52,9 @@ public class PostController {
     private DepartmentService departmentService;
     @Autowired
     private CoderuleService coderuleService;
+
+    @Autowired
+    private ColumnService columnService;
 
     /**
     * @author 刘威 自动创建，禁止修改
@@ -208,7 +208,7 @@ public class PostController {
      * @author 刘威
      * @date 2018-08-01
      */
-    @GetMapping("/post/addPost")
+    @PostMapping("/post/addPost")
     public ResultModel addPost()  throws Exception {
 
         logger.info("################post/addPost 执行开始 ################# ");
@@ -255,7 +255,7 @@ public class PostController {
      * @author 刘威
      * @date 2018-08-01
      */
-    @GetMapping("/post/updatePost")
+    @PostMapping("/post/updatePost")
     public ResultModel updatePost()  throws Exception {
 
         logger.info("################post/updatePost 执行开始 ################# ");
@@ -320,7 +320,7 @@ public class PostController {
      * @author 刘威
      * @date 2018-08-01
      */
-    @GetMapping("/post/deletePosts")
+    @PostMapping("/post/deletePosts")
     public ResultModel deletePosts()  throws Exception {
 
         logger.info("################post/deletePosts 执行开始 ################# ");
@@ -370,7 +370,7 @@ public class PostController {
      * @author 刘威
      * @date 2018-08-01
      */
-    @GetMapping("/post/listPagePosts")
+    @PostMapping("/post/listPagePosts")
     public ResultModel listPagePosts()  throws Exception {
 
         logger.info("################post/listPagePosts 执行开始 ################# ");
@@ -379,10 +379,15 @@ public class PostController {
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         Pagination pg = HttpUtils.parsePagination(pd);
-
-
         Map result = new HashMap();
-        List<LinkedHashMap> titles = postService.getColumnList();
+
+        List<LinkedHashMap> titles = new ArrayList<LinkedHashMap>();
+        List<Column> columnList = columnService.findColumnList("post");
+        if (columnList == null || columnList.size() == 0) {
+            titles = postService.getColumnList();
+        } else {
+            titles = ColumnUtil.listColumnByModelCode(columnList);
+        }
 
         List<LinkedHashMap> titlesList = new ArrayList<LinkedHashMap>();
         List<String> titlesHideList = new ArrayList<String>();
