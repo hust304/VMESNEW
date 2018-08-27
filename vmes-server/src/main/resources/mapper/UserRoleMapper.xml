@@ -62,19 +62,22 @@
         <include refid="Field"></include>
         from
         <include refid="tableName"></include>
-        <if test="PageData!= null"><!-- 关键词检索 -->
-            where 1=1
-            <if test="PageData.keywords!= null and PageData.keywords != ''"><!-- 关键词检索 -->
+        <where>
+            <!--queryStr 自定义sql查询语句-->
+            <if test="queryStr != null and queryStr!=''" >
+                and ${queryStr}
+            </if>
+            <if test="keywords!= null and keywords != ''"><!-- 关键词检索 -->
                 and
                 (
                 <!--	根据需求自己加检索条件
-						字段1 LIKE CONCAT(CONCAT('%', #{PageData.keywords}),'%')
-						 or
-						字段2 LIKE CONCAT(CONCAT('%', #{PageData.keywords}),'%')
-					-->
+                            字段1 LIKE CONCAT(CONCAT('%', #{keywords}),'%')
+                             or
+                            字段2 LIKE CONCAT(CONCAT('%', #{keywords}),'%')
+                        -->
                 )
             </if>
-        </if>
+        </where>
     </select>
 
     <!-- 列表 自动创建，禁止修改-->
@@ -83,19 +86,22 @@
         <include refid="Field"></include>
         from
         <include refid="tableName"></include>
-        <if test="PageData!= null"><!-- 关键词检索 -->
-            where 1=1
+        <where>
+            <!--queryStr 自定义sql查询语句-->
+            <if test="queryStr != null and queryStr!=''" >
+                and ${queryStr}
+            </if>
             <if test="keywords!= null and keywords != ''"><!-- 关键词检索 -->
                 and
                 (
                 <!--	根据需求自己加检索条件
-						字段1 LIKE CONCAT(CONCAT('%', #{keywords}),'%')
-						 or
-						字段2 LIKE CONCAT(CONCAT('%', #{keywords}),'%')
-					-->
+                            字段1 LIKE CONCAT(CONCAT('%', #{keywords}),'%')
+                             or
+                            字段2 LIKE CONCAT(CONCAT('%', #{keywords}),'%')
+                        -->
                 )
             </if>
-        </if>
+        </where>
     </select>
 
     <!-- 列表(全部) 自动创建，禁止修改-->
@@ -161,6 +167,10 @@
         <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
 		#{item}
         </foreach>
+        <!--queryStr 自定义sql查询语句-->
+        <if test="queryStr != null and queryStr!=''" >
+            and ${queryStr}
+        </if>
     </delete>
 
 
@@ -173,6 +183,10 @@
         <include refid="tableName"></include>
         where
         user_id = #{userId}
+        <!--queryStr 自定义sql查询语句-->
+        <if test="queryStr != null and queryStr!=''" >
+            and ${queryStr}
+        </if>
     </delete>
 
     <!-- 通过roleId删除用户角色信息 -->
@@ -181,6 +195,10 @@
             <include refid="tableName"/>
         where
             role_id = #{roleId}
+        <!--queryStr 自定义sql查询语句-->
+        <if test="queryStr != null and queryStr!=''" >
+            and ${queryStr}
+        </if>
     </delete>
 
     <update id="updateDisableByRoleId" parameterType="java.lang.String" >
@@ -188,6 +206,10 @@
             set isdisable = 0,udate = now()
         where
             role_id = #{roleId}
+        <!--queryStr 自定义sql查询语句-->
+        <if test="queryStr != null and queryStr!=''" >
+            and ${queryStr}
+        </if>
     </update>
 
     <select id="findUserRoleMapList" parameterType="com.yvan.PageData" resultType="java.util.Map">

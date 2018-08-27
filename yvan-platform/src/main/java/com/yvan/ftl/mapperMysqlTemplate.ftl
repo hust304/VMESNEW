@@ -103,6 +103,10 @@
         <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
 		${r"#{item}"}
         </foreach>
+        <!--queryStr 自定义sql查询语句-->
+        <if test="queryStr != null and queryStr!=''" >
+            and ${queryStr}
+        </if>
     </delete>
 
 
@@ -116,6 +120,10 @@
         <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
         ${r"#{item}"}
         </foreach>
+        <!--queryStr 自定义sql查询语句-->
+        <if test="queryStr != null and queryStr!=''" >
+            and ${queryStr}
+        </if>
     </update>
 
     <insert id="insertColumn" >

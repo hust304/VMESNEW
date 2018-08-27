@@ -159,6 +159,10 @@
         <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
 		#{item}
         </foreach>
+        <!--queryStr 自定义sql查询语句-->
+        <if test="queryStr != null and queryStr!=''" >
+            and ${queryStr}
+        </if>
     </delete>
 
 

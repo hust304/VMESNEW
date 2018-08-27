@@ -96,7 +96,7 @@ public class Common {
         //companyType: 0d779980a3ca4e69ac393a93bca84659 //企业性质
         put("companyType", "0d779980a3ca4e69ac393a93bca84659");
 
-        //departmentType: 8421e4f093a44f029dddbc4ab13068be //部门类型
+        //deptType: 8421e4f093a44f029dddbc4ab13068be //部门类型
         put("deptType", "8421e4f093a44f029dddbc4ab13068be");
 
 

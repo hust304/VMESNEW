@@ -207,6 +207,10 @@
         <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
 		#{item}
         </foreach>
+        <!--queryStr 自定义sql查询语句-->
+        <if test="queryStr != null and queryStr!=''" >
+            and ${queryStr}
+        </if>
     </delete>
 
     <!-- ***************************************************以上为自动生成代码禁止修改，请在下面添加业务代码************************************************* -->
@@ -250,25 +254,27 @@
         select
         <include refid="Field1"></include>
         from
-        <include refid="tableName"></include>
+        vmes_dictionary a
+        left join vmes_dictionary b on a.pid = b.id
         <where>
-            <if test="currentUserId != 0"><!-- 超级管理员 -->
-                and company_id in (select company_id from vmes_user where id = #{currentUserId})
-            </if>
             <if test="name!= null and name != ''"><!-- 关键词检索 -->
-                and name LIKE CONCAT(CONCAT('%', #{name}),'%')
+                and a.name LIKE CONCAT(CONCAT('%', #{name}),'%')
             </if>
             <if test="code!= null and code != ''"><!-- 关键词检索 -->
-                and code LIKE CONCAT(CONCAT('%', #{code}),'%')
+                and a.code LIKE CONCAT(CONCAT('%', #{code}),'%')
             </if>
             <if test="pid!= null and pid != ''"><!-- 关键词检索 -->
-                and pid = #{pid}
+                and a.pid = #{pid}
             </if>
             <if test="isdisable!= null and isdisable != ''"><!-- 关键词检索 -->
-                and isdisable = #{isdisable}
+                and a.isdisable = #{isdisable}
+            </if>
+            <!--queryStr 自定义sql查询语句-->
+            <if test="queryStr != null and queryStr!=''" >
+                and ${queryStr}
             </if>
         </where>
-        order by code ASC
+        order by a.serial_number ASC
     </select>
 
 
@@ -291,6 +297,10 @@
             </if>
             <if test="isdisable!= null and isdisable != ''"><!-- 关键词检索 -->
                 and a.isdisable = #{isdisable}
+            </if>
+            <!--queryStr 自定义sql查询语句-->
+            <if test="queryStr != null and queryStr!=''" >
+                and ${queryStr}
             </if>
         </where>
         order by a.serial_number ASC

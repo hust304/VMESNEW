@@ -259,6 +259,10 @@
         <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
 		#{item}
         </foreach>
+        <!--queryStr 自定义sql查询语句-->
+        <if test="queryStr != null and queryStr!=''" >
+            and ${queryStr}
+        </if>
     </delete>
 
 
@@ -268,10 +272,14 @@
         update <include refid="tableName" />
             set isdisable = 0
         where
-            id in
-            <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
-                #{item}
-            </foreach>
+        id in
+        <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        <!--queryStr 自定义sql查询语句-->
+        <if test="queryStr != null and queryStr!=''" >
+            and ${queryStr}
+        </if>
     </update>
 
     <!-- 组织管理 分页List查询-->
@@ -359,6 +367,10 @@
             </if>
             <if test="deptTypeName != null and deptTypeName != ''" >
                 and c.name  LIKE CONCAT(CONCAT('%', #{deptTypeName}),'%')
+            </if>
+            <!--queryStr 自定义sql查询语句-->
+            <if test="queryStr != null and queryStr!=''" >
+                and ${queryStr}
             </if>
         </where>
         order by a.layer,a.serial_number,a.code asc

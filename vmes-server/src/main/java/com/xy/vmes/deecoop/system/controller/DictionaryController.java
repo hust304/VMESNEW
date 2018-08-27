@@ -428,10 +428,10 @@ public class DictionaryController {
     @GetMapping("/dictionary/exportExcelDictionarys")
     public void exportExcelDictionarys() throws Exception {
         //1. 获取Excel导出数据查询条件
-        PageData pageData = HttpUtils.parsePageData();
-        String ids = (String)pageData.get("ids");
-        String queryColumn = (String)pageData.get("queryColumn");
-        String showFieldcode = (String)pageData.get("showFieldcode");
+        PageData pd = HttpUtils.parsePageData();
+        String ids = pd.getString("ids");
+        String queryColumn = pd.getString("queryColumn");
+        String showFieldcode = pd.getString("showFieldcode");
 
         //2. 获取业务列表List<Map<栏位Key, 栏位名称>>
         List<LinkedHashMap> columnList = dictionaryService.getColumnList();
@@ -448,12 +448,13 @@ public class DictionaryController {
             queryStr = queryStr + queryColumn;
         }
 
-        PageData findMap = new PageData();
-        findMap.put("currentUserId", "0");  //测试代码-真实环境无此代码
-        findMap.put("queryStr", queryStr);
+        pd.put("queryStr", queryStr);
 
-        Pagination pg = HttpUtils.parsePagination(pageData);
-        List<Map> dataList = dictionaryService.getDataList(findMap);
+        Pagination pg = HttpUtils.parsePagination(pd);
+        //分页参数默认设置100000
+        pg.setSize(100000);
+
+        List<Map> dataList = dictionaryService.getDataListPage(pd,pg);
 
         //查询数据转换成Excel导出数据
         List<LinkedHashMap<String, String>> dataMapList = ExcelUtil.modifyDataList(columnMap, dataList);

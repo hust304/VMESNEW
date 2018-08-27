@@ -107,7 +107,10 @@
             <if test="mobile != null and mobile != ''">
                 and b.mobile LIKE CONCAT(CONCAT('%', #{mobile}),'%')
             </if>
-
+            <!--queryStr 自定义sql查询语句-->
+            <if test="queryStr != null and queryStr!=''" >
+                and ${queryStr}
+            </if>
 
         </where>
     </select>
