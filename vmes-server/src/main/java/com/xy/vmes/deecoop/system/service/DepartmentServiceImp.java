@@ -149,7 +149,7 @@ public class DepartmentServiceImp implements DepartmentService {
      * 创建时间：2018-08-08
      */
     @Override
-    public List<LinkedHashMap<String, String>> getColumnList() throws Exception{
+    public List<LinkedHashMap> getColumnList() throws Exception{
         return departmentMapper.getColumnList();
     }
 
@@ -158,7 +158,7 @@ public class DepartmentServiceImp implements DepartmentService {
      * 创建时间：2018-08-08
      */
     @Override
-    public List<Map<String, Object>> getDataListPage(PageData pd, Pagination pg) throws Exception{
+    public List<Map> getDataListPage(PageData pd, Pagination pg) throws Exception{
         return departmentMapper.getDataListPage(pd, pg);
     }
 

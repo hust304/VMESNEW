@@ -232,6 +232,17 @@ public class PostServiceImp implements PostService {
 
         return null;
     }
+
+    public Post findPostById(String id) {
+        if (id == null || id.trim().length() == 0) {return null;}
+
+        PageData findMap = new PageData();
+        findMap.put("id", id);
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+
+        return this.findPost(findMap);
+    }
+
     public List<Post> findPostList(PageData object) {
         if (object == null) {return null;}
 

@@ -1,14 +1,12 @@
 package com.xy.vmes.deecoop.system.controller;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
-import com.google.gson.Gson;
 import com.xy.vmes.common.util.ColumnUtil;
-import com.xy.vmes.common.util.RedisUtils;
+import com.xy.vmes.common.util.Common;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.entity.Department;
 import com.xy.vmes.entity.Post;
-import com.xy.vmes.entity.User;
 import com.xy.vmes.service.*;
 import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
@@ -31,8 +29,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.*;
 
 
@@ -213,7 +209,7 @@ public class PostController {
      * @author 刘威
      * @date 2018-08-01
      */
-    @GetMapping("/post/addPost")
+    @PostMapping("/post/addPost")
     public ResultModel addPost()  throws Exception {
 
         logger.info("################post/addPost 执行开始 ################# ");
@@ -260,25 +256,13 @@ public class PostController {
      * @author 刘威
      * @date 2018-08-01
      */
-    @GetMapping("/post/updatePost")
+    @PostMapping("/post/updatePost")
     public ResultModel updatePost()  throws Exception {
-
         logger.info("################post/updatePost 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
+
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
-        Set<String> postOnlineSet = null;
-        if(!StringUtils.isEmpty(pd.getString("isdisable"))){
-            if("0".equals(pd.getString("isdisable"))){
-                //岗位的删除和禁用要先判断该岗位下是否挂载人员，如果有不能删除禁用
-                if(checkExsitOnlineEmployee(pd.getString("id"),postOnlineSet)){
-                    model.putCode(1);
-                    model.putMsg("该岗位下面存在未离职员工不能禁用！");
-                    return model;
-                }
-            }
-        }
         Post post = (Post)HttpUtils.pageData2Entity(pd, new Post());
         postService.update(post);
         Long endTime = System.currentTimeMillis();
@@ -286,7 +270,46 @@ public class PostController {
         return model;
     }
 
+    /**
+     * 修改岗位(禁用)状态
+     * @author 陈刚
+     * @date 2018-07-27
+     */
+    @PostMapping("/post/updateDisablePost")
+    public ResultModel updateDisablePost() throws Exception {
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
 
+        String id = (String)pageData.get("id");
+        String isdisable = (String)pageData.get("isdisable");
+
+        String msgStr = new String();
+        if (id == null || id.trim().length() == 0) {
+            msgStr = msgStr + "id为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT;
+        }
+        if (isdisable == null || isdisable.trim().length() == 0) {
+            msgStr = msgStr + "isdisable为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT;
+        }
+        if (msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
+
+        //当前岗位ID-员工岗位表(vmes_employ_post)中是否存在
+        if ("0".equals(isdisable) && this.checkExsitOnlineEmployee(id, null)) {
+            model.putCode(1);
+            model.putMsg("该岗位下面存在绑定的员工不能禁用！");
+            return model;
+        }
+
+        Post postDB = postService.findPostById(id);
+        postDB.setIsdisable(isdisable);
+        postDB.setUdate(new Date());
+        postService.update(postDB);
+
+        return model;
+    }
 
     private boolean checkExsitOnlineEmployee(String postId,Set<String> postOnlineSet) throws Exception {
         PageData pd = new PageData();
@@ -325,7 +348,7 @@ public class PostController {
      * @author 刘威
      * @date 2018-08-01
      */
-    @GetMapping("/post/deletePosts")
+    @PostMapping("/post/deletePosts")
     public ResultModel deletePosts()  throws Exception {
 
         logger.info("################post/deletePosts 执行开始 ################# ");
@@ -344,7 +367,7 @@ public class PostController {
                 //岗位的删除和禁用要先判断该岗位下是否挂载在职人员，如果有不能删除禁用
                 if(checkExsitOnlineEmployee(ids[i],postOnlineSet)){
                     model.putCode(1);
-                    model.putMsg("该岗位下面存在未离职员工不能删除！");
+                    model.putMsg("该岗位下面存在绑定的员工不能删除！");
                     return model;
                 }else {
                     //岗位的删除和禁用要先判断该岗位下是否挂载不在职人员，如果有只能禁用，如果没有可以删除
@@ -375,7 +398,7 @@ public class PostController {
      * @author 刘威
      * @date 2018-08-01
      */
-    @GetMapping("/post/listPagePosts")
+    @PostMapping("/post/listPagePosts")
     public ResultModel listPagePosts()  throws Exception {
 
         logger.info("################post/listPagePosts 执行开始 ################# ");
@@ -414,7 +437,11 @@ public class PostController {
         result.put("hideTitles",titlesHideList);
         result.put("titles",titlesList);
 
-
+        //pid:root (组织架构根节点)查询全部
+        String pid = (String)pd.get("pid");
+        if (pid == null || "root".equals(pid)) {
+            pd.put("deptId", null);
+        }
         List<Map> varMapList = new ArrayList();
         List<Map> varList = postService.getDataListPage(pd,pg);
         if(varList!=null&&varList.size()>0){
