@@ -448,7 +448,7 @@ public class DictionaryController {
 //        //2. 获取业务列表List<Map<栏位Key, 栏位名称>>
 //        List<LinkedHashMap> columnList = dictionaryService.getColumnList();
 //        LinkedHashMap columnMap = ExcelUtil.modifyColumnMap(showFieldcode, columnList.get(0));
-
+        //2. 获取业务列表List<Map<栏位Key, 栏位名称>>
         List<Column> columnList = columnService.findColumnList("dictionary");
         if (columnList == null || columnList.size() == 0) {
             throw new RestException("1","数据库没有生成TabCol，请联系管理员！");

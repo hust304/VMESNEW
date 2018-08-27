@@ -1,18 +1,16 @@
 package ${classPath};
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
-import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.common.util.ColumnUtil;
-
+import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.Column;
-import com.xy.vmes.entity.${objectName};
+import com.xy.vmes.entity.Template;
 import com.xy.vmes.service.ColumnService;
-import com.xy.vmes.service.${objectName}Service;
-
+import com.xy.vmes.service.TemplateService;
 import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
-import com.yvan.YvanUtil;
+import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -210,30 +208,27 @@ public class ${objectName}Controller {
         Pagination pg = HttpUtils.parsePagination(pd);
         Map result = new HashMap();
 
-        List<LinkedHashMap> titles = new ArrayList<LinkedHashMap>();
-        List<Column> columnList = columnService.findColumnList("${modelCode}");
+        List<Column> columnList = columnService.findColumnList("user");
         if (columnList == null || columnList.size() == 0) {
-            titles = ${objectNameLower}Service.getColumnList();
-        } else {
-            titles = ColumnUtil.listColumnByModelCode(columnList);
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
         }
 
         List<LinkedHashMap> titlesList = new ArrayList<LinkedHashMap>();
         List<String> titlesHideList = new ArrayList<String>();
         Map<String, String> varModelMap = new HashMap<String, String>();
-        if(titles!=null&&titles.size()>0){
-            LinkedHashMap<String, String> titlesMap = titles.get(0);
-            for (Map.Entry<String, String> entry : titlesMap.entrySet()) {
-                LinkedHashMap titlesLinkedMap = new LinkedHashMap();
-                if(entry.getKey().indexOf("_hide")>0){
-                    titlesLinkedMap.put(entry.getKey().replace("_hide",""),entry.getValue());
-                    titlesHideList.add(entry.getKey().replace("_hide",""));
-                    varModelMap.put(entry.getKey().replace("_hide",""),"");
-                }else{
-                    titlesLinkedMap.put(entry.getKey(),entry.getValue());
-                    varModelMap.put(entry.getKey(),"");
+        if(columnList!=null&&columnList.size()>0){
+            for (Column column : columnList) {
+                if(column!=null){
+                    if("0".equals(column.getIshide())){
+                        titlesHideList.add(column.getTitleKey());
+                    }
+                    LinkedHashMap titlesLinkedMap = new LinkedHashMap();
+                    titlesLinkedMap.put(column.getTitleKey(),column.getTitleName());
+                    varModelMap.put(column.getTitleKey(),"");
+                    titlesList.add(titlesLinkedMap);
                 }
-                titlesList.add(titlesLinkedMap);
             }
         }
         result.put("hideTitles",titlesHideList);
@@ -275,11 +270,12 @@ public class ${objectName}Controller {
         PageData pd = HttpUtils.parsePageData();
         String ids = (String)pd.get("ids");
         String queryColumn = (String)pd.get("queryColumn");
-        String showFieldcode = (String)pd.get("showFieldcode");
 
-        //2. 获取业务列表List<Map<栏位Key, 栏位名称>>  Service.getColumnList();
-        List<LinkedHashMap> columnList = null;
-        LinkedHashMap columnMap = ExcelUtil.modifyColumnMap(showFieldcode, columnList.get(0));
+        //2. 获取业务列表List<Map<栏位Key, 栏位名称>>
+        List<Column> columnList = columnService.findColumnList("dictionary");
+        if (columnList == null || columnList.size() == 0) {
+            throw new RestException("1","数据库没有生成TabCol，请联系管理员！");
+        }
 
         //3. 根据查询条件获取业务数据List
         String queryStr = "";
@@ -300,7 +296,7 @@ public class ${objectName}Controller {
         List<Map> dataList = ${objectNameLower}Service.getDataList(findMap);
 
         //查询数据转换成Excel导出数据
-        List<LinkedHashMap<String, String>> dataMapList = ExcelUtil.modifyDataList(columnMap, dataList);
+        List<LinkedHashMap<String, String>> dataMapList = ColumnUtil.modifyDataList(columnList, dataList);
 
         HttpServletResponse response  = HttpUtils.currentResponse();
 
