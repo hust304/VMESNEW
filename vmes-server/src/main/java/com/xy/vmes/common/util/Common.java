@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class Common {
     public final static String REDIS_SECURITY_CODE = "securityCode";
-    //public final static String REDIS_USER = "user";
+    public final static String DEPARTMENT_ROOT_ID = "b6ff76cb95f711e884ad00163e105f05";
     //public final static String REDIS_EMPLOY = "employ";
     //public final static String REDIS_DEPT = "dept";
     //public final static String REDIS_USERROLE = "userRole";
@@ -93,11 +93,19 @@ public class Common {
 
     //Dictionary字典表大类ID映射
     public static final Map<String, String> DICTIONARY_MAP = new HashMap<String, String>() {{
+
+        //companyType: 0d779980a3ca4e69ac393a93bca84659 //根节点
+        put("root", "8421e4f093a44f029dddbc4ab13068bf");
+
         //companyType: 0d779980a3ca4e69ac393a93bca84659 //企业性质
         put("companyType", "0d779980a3ca4e69ac393a93bca84659");
 
         //deptType: 8421e4f093a44f029dddbc4ab13068be //部门类型
         put("deptType", "8421e4f093a44f029dddbc4ab13068be");
+
+        //userType: 744f2d88c9f647d0a4d967a714193850 //用户类型
+        put("userType", "744f2d88c9f647d0a4d967a714193850");
+
 
 
     }};

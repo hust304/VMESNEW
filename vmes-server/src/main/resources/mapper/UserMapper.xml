@@ -286,7 +286,7 @@
         (replace(uuid(), '-', ''),'user','userName','姓名',2, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'user','mobile','手机号',3, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'user','email','邮箱',4, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'user','userType','用户类型',5, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'user','userTypeName','用户类型',5, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'user','roleName','角色名称',6, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'user','companyName','所属公司',7, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'user','isdisable','是否启用',8, '1','1','1','0',now(), 'admin'),
@@ -296,6 +296,7 @@
         (replace(uuid(), '-', ''),'user','roleId_hide','角色ID',11, '1','0','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'user','deptId_hide','部门ID',12, '1','0','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'user','companyId_hide','公司ID',13, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'user','userType','用户类型ID',14, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'user','id','id',0, '1','0','1','0',now(), 'admin')
     </insert>
 
@@ -303,7 +304,8 @@
     <sql id="Field1">
         vmesuser.user_code userCode,<!-- 账号(系统登录账号) -->
         vmesuser.user_name userName,<!-- 姓名 -->
-        vmesuser.user_type userType,<!-- 用户类型 -->
+        dictionary.name userTypeName,<!-- 用户类型名称 -->
+        vmesuser.user_type userType,<!-- 用户类型ID -->
         vmesuser.mobile mobile,<!-- 手机号码 -->
         vmesuser.email email,<!-- 邮箱地址 -->
         vmesuser.isdisable isdisable,<!-- 是否禁用(0:已禁用 1:启用) 数据字典:sys_isdisable -->
@@ -373,6 +375,7 @@
         left join vmes_department company on company.id = vmesuser.company_id
         left join vmes_user_role userrole on userrole.user_id = vmesuser.id
         left join vmes_role role on role.id = userrole.role_id
+        left join vmes_dictionary dictionary on vmesuser.user_type = dictionary.id
         <where>
             <if test="currentUserId != 0"><!-- 超级管理员 -->
                 and company_id in (select company_id from vmes_user where id = #{currentUserId})

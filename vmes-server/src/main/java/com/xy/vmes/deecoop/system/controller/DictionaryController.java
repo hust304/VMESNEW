@@ -221,12 +221,12 @@ public class DictionaryController {
         }
         dictionary.setCompanyId(user.getCompanyId());
         if(StringUtils.isEmpty(pd.getString("pid"))){
-            dictionary.setPid("root");//root节点
-            dictionary.setId0("root");
-            dictionary.setLayer(1);
+            model.putCode(1);
+            model.putMsg("缺少上级节点，不能新增!");
+            return model;
         }else{
             Dictionary pDictionary = dictionaryService.selectById(pd.getString("pid"));
-            dictionary.setId0("root");
+            dictionary.setId0(pDictionary.getId0());//Common.DICTIONARY_MAP.get("root")
             dictionary.setId1(pDictionary.getId1());
             dictionary.setId2(pDictionary.getId2());
             dictionary.setId3(pDictionary.getId3());
@@ -235,7 +235,9 @@ public class DictionaryController {
             dictionary.setId6(pDictionary.getId6());
             dictionary.setLayer(pDictionary.getLayer()+1);
             dictionary.setPid(pDictionary.getId());
-            if(pDictionary.getLayer()==1){
+            if(pDictionary.getLayer()==0){
+                dictionary.setId0(pDictionary.getId());
+            }else if(pDictionary.getLayer()==1){
                 dictionary.setId1(pDictionary.getId());
             }else if(pDictionary.getLayer()==2){
                 dictionary.setId2(pDictionary.getId());
@@ -248,14 +250,14 @@ public class DictionaryController {
             }else if(pDictionary.getLayer()==6){
                 dictionary.setId6(pDictionary.getId());
             }else {
-                model.putCode(1);
+                model.putCode(2);
                 model.putMsg("数据字典最高层级不能超过7层!");
                 return model;
             }
         }
 
-        dictionary.setSerialNumber(1);
-        if("admin".equals(user.getUserCode())){
+//        dictionary.setSerialNumber(dictionary.getSerialNumber()==null?1:dictionary.getSerialNumber());
+        if(Common.DEPARTMENT_ROOT_ID.equals(user.getCompanyId())){
             dictionary.setIsglobal("1");//超级管理员创建的数据字典都是全局设置
         }else {
             dictionary.setIsglobal("0");//非全局设置

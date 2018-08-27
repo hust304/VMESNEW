@@ -66,18 +66,13 @@ public class ColumnUtil {
         LinkedHashMap<String, String> columnCodeMap = new LinkedHashMap<String, String>();
         LinkedHashMap<String, String> columnNameMap = new LinkedHashMap<String, String>();
         for (Column column : columnList) {
-            columnCodeMap.put(column.getTitleKey(), column.getTitleKey());
             if("0".equals(column.getIshide())){
-                columnNameMap.put(column.getTitleKey(), column.getTitleName()+"_hide");
+                columnNameMap.put(column.getTitleKey()+"_hide", column.getTitleName());
+                columnCodeMap.put(column.getTitleKey()+"_hide", column.getTitleKey());
             }else {
                 columnNameMap.put(column.getTitleKey(), column.getTitleName());
+                columnCodeMap.put(column.getTitleKey(), column.getTitleKey());
             }
-//            if("0".equals(column.getIshide())){
-//                columnCodeMap.put(column.getTitleKey(), column.getTitleKey()+"_hide");
-//            }else {
-//                columnCodeMap.put(column.getTitleKey(), column.getTitleKey());
-//            }
-//            columnNameMap.put(column.getTitleKey(), column.getTitleName());
         }
         dataMapList.add(columnCodeMap);
         dataMapList.add(columnNameMap);
@@ -91,11 +86,17 @@ public class ColumnUtil {
                     if(!StringUtils.isEmpty(columnMapKey)){
                         String dataValue = "";
                         Object object = dataMap.get(columnMapKey);
-                        //Integer
-                        //Date
-                        //BigDecimal
-                        if (object != null) {dataValue = object.toString();}
-                        columnValueMap.put(columnMapKey, dataValue);
+                        if (object != null) {
+                            dataValue = object.toString();
+                        }
+
+                        if("0".equals(column.getIshide())){
+                            columnValueMap.put(columnMapKey+"_hide", dataValue);
+                        }else {
+                            columnValueMap.put(columnMapKey, dataValue);
+                        }
+
+
                     }
                 }
 
