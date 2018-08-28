@@ -108,7 +108,8 @@ public class Common {
         //userType: 744f2d88c9f647d0a4d967a714193850 //用户类型
         put("userType", "744f2d88c9f647d0a4d967a714193850");
 
-
+        //political: 015cecdb7fdd450c8a21c7c97d406aa4 //政治面貌
+        put("political", "015cecdb7fdd450c8a21c7c97d406aa4");
 
     }};
 
