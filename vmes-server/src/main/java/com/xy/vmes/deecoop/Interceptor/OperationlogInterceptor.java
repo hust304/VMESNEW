@@ -1,7 +1,7 @@
 package com.xy.vmes.deecoop.Interceptor;
 
-import com.xy.vmes.entity.Loginfo;
-import com.xy.vmes.service.LoginfoService;
+import com.xy.vmes.entity.LogInfo;
+import com.xy.vmes.service.LogInfoService;
 import com.yvan.PageData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +24,7 @@ public class OperationlogInterceptor implements HandlerInterceptor {
     private Logger logger = LoggerFactory.getLogger(OperationlogInterceptor.class);
 
     @Autowired
-    private LoginfoService loginfoService;
+    private LogInfoService logInfoService;
 
     /**
      * 方法调用前
@@ -58,15 +58,15 @@ public class OperationlogInterceptor implements HandlerInterceptor {
         if (method_path == null || method_path.trim().length() == 0) {return;}
 
         //获取调用方法名称前缀
-        String prefix = loginfoService.findMethodPrefix(method_path);
+        String prefix = logInfoService.findMethodPrefix(method_path);
         //获取业务表名
-        String tableName = loginfoService.findTable(method_path);
+        String tableName = logInfoService.findTable(method_path);
 
         //获取调用参数
         PageData pageData = new PageData(request);
         String cuserId = (String)pageData.get("cuser");
 
-        Loginfo loginfoDB = loginfoService.createLoginfo(null);
+        LogInfo loginfoDB = logInfoService.createLoginfo(null);
         String id = (String)pageData.get("id");
         if (id != null && id.trim().length() > 0) {
             loginfoDB.setBusinessId(id);
@@ -76,14 +76,14 @@ public class OperationlogInterceptor implements HandlerInterceptor {
         if (ids != null && ids.trim().length() > 0) {
             loginfoDB.setOperateValue(ids);
         }
-
+        loginfoDB.setOperateUrl(request.getRequestURI());
         loginfoDB.setType("operate");
         loginfoDB.setSource("web");
-        loginfoDB.setTableName(tableName);
+        loginfoDB.setModelName(tableName);
         loginfoDB.setOperate(prefix);
         loginfoDB.setCuser(cuserId);
 
-        loginfoService.save(loginfoDB);
+        logInfoService.save(loginfoDB);
         logger.info("操作日志拦截器-OperationlogInterceptor.afterCompletion()-执行结束");
 
     }

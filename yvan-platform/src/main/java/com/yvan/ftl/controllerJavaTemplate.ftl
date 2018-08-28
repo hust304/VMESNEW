@@ -4,9 +4,9 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.Column;
-import com.xy.vmes.entity.Template;
+import com.xy.vmes.entity.${objectName};
 import com.xy.vmes.service.ColumnService;
-import com.xy.vmes.service.TemplateService;
+import com.xy.vmes.service.${objectName}Service;
 import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
@@ -208,7 +208,7 @@ public class ${objectName}Controller {
         Pagination pg = HttpUtils.parsePagination(pd);
         Map result = new HashMap();
 
-        List<Column> columnList = columnService.findColumnList("user");
+        List<Column> columnList = columnService.findColumnList("${modelCode}");
         if (columnList == null || columnList.size() == 0) {
             model.putCode("1");
             model.putMsg("数据库没有生成TabCol，请联系管理员！");
@@ -272,7 +272,7 @@ public class ${objectName}Controller {
         String queryColumn = (String)pd.get("queryColumn");
 
         //2. 获取业务列表List<Map<栏位Key, 栏位名称>>
-        List<Column> columnList = columnService.findColumnList("dictionary");
+        List<Column> columnList = columnService.findColumnList("${modelCode}");
         if (columnList == null || columnList.size() == 0) {
             throw new RestException("1","数据库没有生成TabCol，请联系管理员！");
         }

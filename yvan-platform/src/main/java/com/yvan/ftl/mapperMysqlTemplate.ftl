@@ -118,26 +118,29 @@
         </foreach>
     </update>
 
+
+
+    <!-- ***************************************************以上为自动生成代码禁止修改，请在下面添加业务代码************************************************* -->
+
+
+
     <insert id="insertColumn" >
         insert into vmes_column (
         id,model_code,title_key,title_name,serial_number,
         isdisable,ishide,isedit,ismust,cdate,
         cuser
         ) VALUES
-        <#list fieldList as var>
-            <#if var[7] == "否">
+    <#list fieldList as var>
+        <#if var[7] == "否">
             (replace(uuid(), '-', ''),'${modelCode}','${var[1]}','${var[3]}',${var[8]}, '1','1','1','0',now(), 'admin'),
-            </#if>
-        </#list>
-        <#list fieldList as var>
-            <#if var[7] == "是">
+        </#if>
+    </#list>
+    <#list fieldList as var>
+        <#if var[7] == "是">
             (replace(uuid(), '-', ''),'${modelCode}','${var[1]}','${var[1]}',${var[8]}, '1','1','1','0',now(), 'admin')
-            </#if>
-        </#list>
+        </#if>
+    </#list>
     </insert>
-
-    <!-- ***************************************************以上为自动生成代码禁止修改，请在下面添加业务代码************************************************* -->
-
 
 
     <!-- 列表(全部) 自动创建，禁止修改-->
@@ -204,6 +207,7 @@
     </sql>
 
     <!-- 字段值 自动创建，可以修改-->
+    <!--
     <sql id="Column1">
     <#list fieldList as var>
         <#if var[7] == "否">
@@ -216,14 +220,16 @@
         </#if>
     </#list>
     </sql>
-
+     -->
 
     <!-- 自动创建，可以修改 -->
+    <!--
     <select id="getColumnList"  resultType="java.util.LinkedHashMap">
         select
         <include refid="Column1"></include>
         from dual
     </select>
+    -->
 
     <!-- 自动创建，可以修改 -->
     <select id="getDataList"  parameterType="com.yvan.PageData"  resultType="java.util.Map">

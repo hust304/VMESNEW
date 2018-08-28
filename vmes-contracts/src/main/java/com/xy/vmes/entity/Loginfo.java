@@ -8,12 +8,12 @@ import java.util.*;
 import java.math.BigDecimal;
 
 /** 
- * 说明：vmes_loginfo:系统日志表 实体类
- * @author 陈刚 自动生成
- * @date 2018-08-08
+ * 说明：操作日志 实体类
+ * @author 刘威 自动生成
+ * @date 2018-08-28
  */
 @TableName("vmes_loginfo")
-public class Loginfo implements Serializable {
+public class LogInfo implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	//
@@ -28,12 +28,12 @@ public class Loginfo implements Serializable {
 	//业务类别(1:生产计划 2:产品 3:部门 4:部门子计划 5:派工单 6:子派工单)
 	@TableField("business_type")
 	private String businessType;
-	//产生源(app:终端操作 web:web端操作 sys:系统产生)
+	//操作来源(app:终端操作 web:web端操作 sys:系统产生)
 	@TableField("source")
 	private String source;
-	//业务名称 (表名)
-	@TableField("table_name")
-	private String tableName;
+	//模块名称
+	@TableField("model_name")
+	private String modelName;
 	//业务操作类型 (add,update,delete)
 	@TableField("operate")
 	private String operate;
@@ -49,6 +49,15 @@ public class Loginfo implements Serializable {
 	//(删除,修改)-业务id字符串
 	@TableField("operate_value")
 	private String operateValue;
+	//修改时间
+	@TableField("udate")
+	private Date udate;
+	//修改人账号
+	@TableField("uuser")
+	private String uuser;
+	//请求URL
+	@TableField("operate_url")
+	private String operateUrl;
 
 
 
@@ -82,11 +91,11 @@ public class Loginfo implements Serializable {
 	public String getSource() {
 		return source;
 	}
-	public void setTableName(String tableName) {
-		this.tableName = tableName;
+	public void setModelName(String modelName) {
+		this.modelName = modelName;
 	}
-	public String getTableName() {
-		return tableName;
+	public String getModelName() {
+		return modelName;
 	}
 	public void setOperate(String operate) {
 		this.operate = operate;
@@ -118,6 +127,26 @@ public class Loginfo implements Serializable {
 	public String getOperateValue() {
 		return operateValue;
 	}
+	public void setUdate(Date udate) {
+		this.udate = udate;
+	}
+	public Date getUdate() {
+		return udate;
+	}
+	public void setUuser(String uuser) {
+		this.uuser = uuser;
+	}
+	public String getUuser() {
+		return uuser;
+	}
+	public void setOperateUrl(String operateUrl) {
+		this.operateUrl = operateUrl;
+	}
+	public String getOperateUrl() {
+		return operateUrl;
+	}
+
+/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 
 }
