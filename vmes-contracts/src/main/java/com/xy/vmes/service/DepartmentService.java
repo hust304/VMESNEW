@@ -255,6 +255,15 @@ public interface DepartmentService {
      * 创建时间：2018-08-01
      */
     List<TreeEntity> getTreeList(PageData pd)throws Exception;
+
+    /**
+     * 获取部门级联查询ID
+     *
+     * @param id     部门id
+     * @param prefix 前缀
+     * @return
+     */
+    String findDeptidById(String id, String prefix);
 }
 
 

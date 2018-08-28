@@ -303,6 +303,45 @@
         </where>
     </select>
 
+    <!-- 部门表 + 岗位表 -->
+    <select id="listDeptPost"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
+        select
+            id,
+            pid,
+            name,
+            layer,
+            serial_number serialNumber,
+            'dept' type
+        from vmes_department
+        <where>
+            <if test="deptDisable!= null and deptDisable != ''">
+                and isdisable = #{deptDisable}
+            </if>
+            <if test="deptQuery != null and deptQuery != ''" >
+                and ${deptQuery}
+            </if>
+        </where>
+        UNION ALL
+        select
+            a.id,
+            a.dept_id as pid,
+            a.name,
+            null layer,
+            0 serialNumber,
+            'post' type
+        from vmes_post a
+        left join vmes_department b on a.dept_id = b.id
+        <where>
+            and a.dept_id is not null
+            <if test="postDisable!= null and postDisable != ''">
+                and a.isdisable = #{postDisable}
+            </if>
+            <if test="postQuery != null and postQuery != ''" >
+                and ${postQuery}
+            </if>
+        </where>
+    </select>
+
     <!-- 自动创建，可以修改-->
     <update id="updateToDisableByIds" parameterType="java.lang.String" >
         update

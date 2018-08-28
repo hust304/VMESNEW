@@ -89,7 +89,12 @@ public interface PostMapper extends BaseMapper<Post> {
 
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
-
+    /**
+     * 创建人：陈刚
+     * 创建时间：2018-08-28
+     */
+    @Select("listDeptPost")
+    List<Map<String, Object>> listDeptPost(PageData pd);
 
 }
 

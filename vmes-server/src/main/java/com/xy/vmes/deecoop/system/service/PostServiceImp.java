@@ -4,9 +4,12 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.Common;
 import com.xy.vmes.deecoop.system.dao.PostMapper;
 import com.xy.vmes.entity.CoderuleEntity;
+import com.xy.vmes.entity.DeptPostEntity;
 import com.xy.vmes.entity.Post;
+import com.xy.vmes.entity.TreeEntity;
 import com.xy.vmes.service.CoderuleService;
 import com.xy.vmes.service.PostService;
+import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.platform.RestException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -266,6 +269,49 @@ public class PostServiceImp implements PostService {
         findMap.put("mapSize", Integer.valueOf(findMap.size()));
 
         return this.findPostList(findMap);
+    }
+
+    /**
+     * 获取部门岗位List
+     * 创建人：陈刚
+     * 创建时间：2018-08-28
+     */
+    public List<Map<String, Object>> listDeptPost(PageData pd) {
+        return postMapper.listDeptPost(pd);
+    }
+
+    public TreeEntity deptPost2Tree(DeptPostEntity deptPost, TreeEntity tree) {
+        if (tree == null) {tree = new TreeEntity();}
+        if (deptPost == null) {return tree;}
+
+        //id;
+        tree.setId(deptPost.getId());
+        //pid;
+        tree.setPid(deptPost.getPid());
+        //name;
+        tree.setName(deptPost.getName());
+        //layer;
+        tree.setLayer(deptPost.getLayer());
+        //serialNumber;
+        tree.setSerialNumber(deptPost.getSerialNumber());
+        //"dept" 部门 "post" 岗位
+        //type;
+        tree.setType(deptPost.getType());
+
+        return tree;
+    }
+
+    public List<TreeEntity> deptPostList2TreeList(List<Map<String, Object>> mapList, List<TreeEntity> treeList) {
+        if (treeList == null) {treeList = new ArrayList<TreeEntity>();}
+        if (mapList == null || mapList.size() == 0) {return treeList;}
+
+        //遍历mapList-生成treeList
+        for (Map<String, Object> mapObj : mapList) {
+            DeptPostEntity deptPost = (DeptPostEntity)HttpUtils.pageData2Entity(mapObj, new DeptPostEntity());
+            TreeEntity tree = this.deptPost2Tree(deptPost, null);
+            treeList.add(tree);
+        }
+        return treeList;
     }
 
 }

@@ -1,7 +1,9 @@
 package com.xy.vmes.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.entity.DeptPostEntity;
 import com.xy.vmes.entity.Post;
+import com.xy.vmes.entity.TreeEntity;
 import com.yvan.PageData;
 
 import java.util.LinkedHashMap;
@@ -125,6 +127,16 @@ public interface PostService {
     Post findPostById(String id);
     List<Post> findPostList(PageData object);
     List<Post> findPostListByDeptId(String deptId);
+
+    /**
+     * 获取部门岗位List
+     * 创建人：陈刚
+     * 创建时间：2018-08-28
+     */
+    List<Map<String, Object>> listDeptPost(PageData pd);
+
+    TreeEntity deptPost2Tree(DeptPostEntity deptPost, TreeEntity tree);
+    List<TreeEntity> deptPostList2TreeList(List<Map<String, Object>> mapList, List<TreeEntity> treeList);
 }
 
 

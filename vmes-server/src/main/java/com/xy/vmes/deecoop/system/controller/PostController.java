@@ -4,9 +4,11 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.Common;
 import com.xy.vmes.common.util.StringUtil;
+import com.xy.vmes.common.util.TreeUtil;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.entity.Department;
 import com.xy.vmes.entity.Post;
+import com.xy.vmes.entity.TreeEntity;
 import com.xy.vmes.service.*;
 import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
@@ -45,10 +47,10 @@ public class PostController {
 
     @Autowired
     private PostService postService;
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private RedisClient redisClient;
+    //@Autowired
+    //private UserService userService;
+    //@Autowired
+    //private RedisClient redisClient;
     @Autowired
     private EmployPostService employPostService;
     @Autowired
@@ -525,32 +527,51 @@ public class PostController {
 
     }
 
-//    /**
-//     * @author 刘威 自动创建，禁止修改
-//     * @date 2018-08-01
-//     */
-//    @GetMapping("/post/exportExcelPosts")
-//    public void exportExcelPosts()  throws Exception {
-//
-//        logger.info("################post/exportExcelPosts 执行开始 ################# ");
-//        Long startTime = System.currentTimeMillis();
-//        HttpServletResponse response  = HttpUtils.currentResponse();
-//        HttpServletRequest request  = HttpUtils.currentRequest();
-//
-//        ExcelUtil.buildDefaultExcelDocument( request, response,new ExcelAjaxTemplate() {
-//            @Override
-//            public void execute(HttpServletRequest request, HSSFWorkbook workbook) throws Exception {
-//                // TODO Auto-generated method stub
-//                PageData pd = HttpUtils.parsePageData();
-//                List<LinkedHashMap> titles = postService.getColumnList();
-//                request.setAttribute("titles", titles.get(0));
-//                List<Map> varList = postService.getDataList(pd);
-//                request.setAttribute("varList", varList);
-//            }
-//        });
-//        Long endTime = System.currentTimeMillis();
-//        logger.info("################post/exportExcelPosts 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
-//    }
+    /**
+     * 部门岗位树
+     *
+     * @author 陈刚
+     * @date 2018-08-28
+     */
+    @PostMapping("/post/treeDeptPosts")
+    public ResultModel treeDeptPosts()  throws Exception {
+        logger.info("################/department/treeDepartments 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+        //部门id 为空查询整棵部门树
+        //部门id 非空查询当前部门下所有子部门(包含当前部门节点)
+        String deptId = (String)pd.get("deptId");
+        deptId = null;
+
+        PageData findMap = new PageData();
+        findMap.put("deptDisable", "1");
+        findMap.put("postDisable", "1");
+        if (deptId != null && deptId.trim().length() > 0) {
+            String queryIdStr = departmentService.findDeptidById(deptId, null);
+            findMap.put("deptQuery", queryIdStr);
+        }
+
+        //1. 查询(部门+岗位)表
+        List<Map<String, Object>> deptPostList = postService.listDeptPost(findMap);
+        List<TreeEntity> treeList = postService.deptPostList2TreeList(deptPostList, null);
+
+        //2. 获得部门岗位树形结构
+        TreeEntity treeObj = TreeUtil.switchTree(deptId, treeList);
+        String treeJsonStr = YvanUtil.toJson(treeObj);
+        System.out.println("treeJsonStr: " + treeJsonStr);
+
+        //3. 树形结构返回前端
+        Map result = new HashMap();
+        result.put("treeList", treeObj);
+        model.putResult(result);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/department/treeDepartments 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+
+        return model;
+    }
 
 }
 
