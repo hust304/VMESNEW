@@ -2,6 +2,8 @@ package com.xy.vmes.entity;
 
 
 public class MenuButtonEntity {
+    //按钮id
+    private String id;
     //按钮名称
     private String name;
     //英文名称
@@ -13,6 +15,12 @@ public class MenuButtonEntity {
     //当前节点-是否绑定角色(1:绑定 0:未绑定)
     private String isBindRole;
 
+    public String getId() {
+        return id;
+    }
+    public void setId(String id) {
+        this.id = id;
+    }
     public String getName() {
         return name;
     }

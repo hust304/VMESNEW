@@ -254,6 +254,8 @@ public class RoleButtonServiceImp implements RoleButtonService {
         if (entity == null) {entity = new MenuButtonEntity();}
         if (button == null) {return entity;}
 
+        //id 按钮id
+        entity.setId(button.getId());
         //name 按钮名称
         String name = "";
         if (button.getName() != null && button.getName().trim().length() > 0) {
