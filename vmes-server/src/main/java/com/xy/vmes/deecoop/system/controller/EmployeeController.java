@@ -236,7 +236,7 @@ public class EmployeeController {
      * @author 刘威 新增员工信息同时需要根据情况新增用户信息
      * @date 2018-08-02
      */
-    @GetMapping("/employee/addEmployeeAndUser")
+    @PostMapping("/employee/addEmployeeAndUser")
     public ResultModel addEmployeeAndUser()  throws Exception {
 
         logger.info("################employee/addEmployeeAndUser 执行开始 ################# ");
@@ -306,7 +306,7 @@ public class EmployeeController {
      * @author 刘威 修改员工信息同时修改或新增用户信息（手机号，邮箱，角色）
      * @date 2018-08-02
      */
-    @GetMapping("/employee/updateEmployeeAndUser")
+    @PostMapping("/employee/updateEmployeeAndUser")
     public ResultModel updateEmployeeAndUser()  throws Exception {
 
         logger.info("################employee/updateEmployeeAndUser 执行开始 ################# ");
@@ -388,7 +388,7 @@ public class EmployeeController {
      * @author 刘威  禁用员工信息包含主岗兼岗，同时禁用员工账号（支持批量删除，不支持物理删除）
      * @date 2018-08-02
      */
-    @GetMapping("/employee/deleteEmployees")
+    @PostMapping("/employee/deleteEmployees")
     public ResultModel deleteEmployees()  throws Exception {
 
         logger.info("################employee/deleteEmployees 执行开始 ################# ");
@@ -417,7 +417,7 @@ public class EmployeeController {
      * @author 刘威  单独启用禁用员工信息包含主岗兼岗，同时禁用员工账号
      * @date 2018-08-02
      */
-    @GetMapping("/employee/updateEmployeePostState")
+    @PostMapping("/employee/updateEmployeePostState")
     public ResultModel updateEmployeePostState()  throws Exception {
 
         logger.info("################employee/updateEmployeePostState 执行开始 ################# ");
@@ -481,7 +481,7 @@ public class EmployeeController {
      * @author 刘威
      * @date 2018-08-02
      */
-    @GetMapping("/employee/updateForChangeEmployeePost")
+    @PostMapping("/employee/updateForChangeEmployeePost")
     public ResultModel updateForChangeEmployeePost()  throws Exception {
 
         logger.info("################employee/updateForChangeEmployeePost 执行开始 ################# ");
@@ -534,7 +534,7 @@ public class EmployeeController {
      * @author 刘威
      * @date 2018-08-02
      */
-    @GetMapping("/employee/addEmployToUser")
+    @PostMapping("/employee/addEmployToUser")
     public ResultModel addEmployToUser()  throws Exception {
 
         logger.info("################employee/addEmployToUser 执行开始 ################# ");
@@ -602,7 +602,7 @@ public class EmployeeController {
      * @author 刘威
      * @date 2018-08-02
      */
-    @GetMapping("/employee/addEmployeePluralityPost")
+    @PostMapping("/employee/addEmployeePluralityPost")
     public ResultModel addEmployeePluralityPost()  throws Exception {
 
         logger.info("################employee/addEmployeePluralityPost 执行开始 ################# ");
@@ -652,7 +652,7 @@ public class EmployeeController {
      * @author 刘威 员工信息列表查询分页
      * @date 2018-07-26
      */
-    @GetMapping("/employee/listPageEmployees")
+    @PostMapping("/employee/listPageEmployees")
     public ResultModel listPageEmployees()  throws Exception {
 
         logger.info("################employee/listPageEmployees 执行开始 ################# ");
@@ -704,7 +704,7 @@ public class EmployeeController {
             }
         }
         result.put("varList",varMapList);
-        result.put("pageData", pg);
+        result.put("pageData", YvanUtil.toJson(pg));
         model.putResult(result);
 
         Long endTime = System.currentTimeMillis();
@@ -805,7 +805,7 @@ public class EmployeeController {
      * @author 刘威 通过ID查询
      * @date 2018-07-26
      */
-    @GetMapping("/employee/selectEmployeeAndUserById/{employPostId}")
+    @PostMapping("/employee/selectEmployeeAndUserById/{employPostId}")
     public ResultModel selectEmployeeAndUserById(@PathVariable("employPostId") String employPostId)  throws Exception {
 
         logger.info("################employee/selectEmployeeAndUserById 执行开始 ################# ");
