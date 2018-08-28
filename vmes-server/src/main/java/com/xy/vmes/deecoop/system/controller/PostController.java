@@ -456,7 +456,7 @@ public class PostController {
             }
         }
         result.put("varList",varMapList);
-        result.put("pageData", YvanUtil.toJson(pg));
+        result.put("pageData", pg);
 
         model.putResult(result);
         Long endTime = System.currentTimeMillis();

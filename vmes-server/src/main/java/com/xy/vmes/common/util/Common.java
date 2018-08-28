@@ -73,15 +73,17 @@ public class Common {
     //Controller类名与业务表对应关系
     public static final Map<String, String> SYSLOGINFO_CLASSNAME2TABLENAME_MAP = new HashMap<String, String>() {{
         //put("类名称", "表名");
-        put("DepartmentController", "vmes_department");
-        put("CompanyController", "vmes_department");
-        put("DictionaryController", "vmes_dictionary");
-        put("EmployeeController", "vmes_employee");
-        put("MenuButtonController", "vmes_menu_button");
-        put("MenuController", "vmes_menu");
-        put("PostController", "vmes_post");
-        put("RoleController", "vmes_role");
-        put("UserController", "vmes_user");
+        put("DepartmentController", "组织架构");
+        put("CompanyController", "企业账号申请");
+        put("DictionaryController", "数据字典");
+        put("EmployeeController", "员工管理");
+        put("MenuButtonController", "管理按钮");
+        put("MenuController", "菜单管理");
+        put("PostController", "职位管理");
+        put("RoleController", "角色权限");
+        put("UserController", "用户管理");
+        put("MainPageController", "主页及菜单自定义");
+        put("UserLoginController", "用户登录");
     }};
 
     //Controller操作方法前缀

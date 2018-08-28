@@ -354,8 +354,11 @@
             <if test="name != null and name != ''"><!-- 关键词检索 -->
                 and a.name LIKE CONCAT(CONCAT('%', #{name}),'%')
             </if>
-            <if test="pid!= null and pid != ''"><!-- 关键词检索 -->
+            <if test="pid!= null and pid != '' and layer == null"><!-- 关键词检索 -->
                 and a.pid = #{pid}
+            </if>
+            <if test="pid!= null and pid != '' and layer != null"><!-- 关键词检索 -->
+                and a.id_${layer} = #{pid}
             </if>
             <if test="deptTypeName != null and deptTypeName != ''" >
                 and c.name  LIKE CONCAT(CONCAT('%', #{deptTypeName}),'%')

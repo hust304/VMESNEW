@@ -277,17 +277,23 @@
             <if test="name != null and name != ''"><!-- 关键词检索 -->
                 and post.name LIKE CONCAT(CONCAT(#{name}),'%')
             </if>
-            <if test="deptId != null and deptId != ''"><!-- 关键词检索 -->
-                and post.dept_id = #{deptId}
-            </if>
+
             <if test="companyId != null and companyId != ''"><!-- 关键词检索 -->
                 and post.company_id = #{companyId}
             </if>
 
-
             <if test="isdisable != null and isdisable != ''"><!-- 关键词检索 -->
                 and post.isdisable = #{isdisable}
             </if>
+
+            <if test="pid!= null and pid != '' and layer == null"><!-- 关键词检索 -->
+                and department.id = #{pid}
+            </if>
+            <if test="pid!= null and pid != '' and layer != null"><!-- 关键词检索 -->
+                and department.id_${layer} = #{pid}
+            </if>
+
+
             <if test="deptName != null and deptName != ''"><!-- 关键词检索 -->
                 and department.name LIKE CONCAT(CONCAT(#{deptName}),'%')
             </if>
