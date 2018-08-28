@@ -16,6 +16,8 @@ public class TreeEntity {
     private String url;
     //(必须)是否禁用(0:已禁用 1:启用)
     private String isdisable;
+    //岗位树(属性)"dept" 部门 "post" 岗位
+    private String type;
 
     //当前节点-是否绑定角色(1:绑定 0:未绑定)
     private String isBindRole;
@@ -92,5 +94,11 @@ public class TreeEntity {
     }
     public void setIsBindRole(String isBindRole) {
         this.isBindRole = isBindRole;
+    }
+    public String getType() {
+        return type;
+    }
+    public void setType(String type) {
+        this.type = type;
     }
 }
