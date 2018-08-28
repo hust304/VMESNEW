@@ -176,12 +176,12 @@ public interface MenuButtonService {
      *
      * @param menuId  (不可为空)
      * @param id      (允许为空)-(添加时is null, 修改时 is not null)
-     * @param code    (不可为空)-按钮属性值
+     * @param nameEn  (不可为空)-按钮英文名称
      * @return
      *     true : 菜单名称存在名称相同
      *     false: 菜单名称不存在名称相同(默认值)
      */
-    boolean isExistByCode(String menuId, String id, String code);
+    boolean isExistByNameEn(String menuId, String id, String nameEn);
     Integer findMaxSerialNumber(String menuId);
     MenuButton object2objectDB(MenuButton object, MenuButton objectDB);
 }

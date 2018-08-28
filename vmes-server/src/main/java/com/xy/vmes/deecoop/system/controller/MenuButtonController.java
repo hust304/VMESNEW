@@ -249,9 +249,9 @@ public class MenuButtonController {
                     buttonObj.getName());
             msgBuf.append(msgExist);
         }
-        if (menuButtonService.isExistByCode(buttonObj.getMenuId(), null, buttonObj.getCode())) {
+        if (menuButtonService.isExistByNameEn(buttonObj.getMenuId(), null, buttonObj.getNameEn())) {
             String msgTemp = "菜单名称: {0}" + Common.SYS_ENDLINE_DEFAULT +
-                    "按钮属性值: {1}" + Common.SYS_ENDLINE_DEFAULT +
+                    "按钮英文名: {1}" + Common.SYS_ENDLINE_DEFAULT +
                     "在系统中已经重复！" + Common.SYS_ENDLINE_DEFAULT;
             String msgExist = MessageFormat.format(msgTemp,
                     menuObj.getName(),
@@ -330,9 +330,9 @@ public class MenuButtonController {
                     buttonObj.getName());
             msgBuf.append(msgExist);
         }
-        if (menuButtonService.isExistByCode(buttonObj.getMenuId(), buttonObj.getId(), buttonObj.getCode())) {
+        if (menuButtonService.isExistByNameEn(buttonObj.getMenuId(), buttonObj.getId(), buttonObj.getNameEn())) {
             String msgTemp = "菜单名称: {0}" + Common.SYS_ENDLINE_DEFAULT +
-                    "按钮属性值: {1}" + Common.SYS_ENDLINE_DEFAULT +
+                    "按钮英文名: {1}" + Common.SYS_ENDLINE_DEFAULT +
                     "在系统中已经重复！" + Common.SYS_ENDLINE_DEFAULT;
             String msgExist = MessageFormat.format(msgTemp,
                     menuObj.getName(),

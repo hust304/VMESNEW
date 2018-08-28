@@ -300,8 +300,9 @@ public class MenuButtonServiceImp implements MenuButtonService {
             String str_isnull = MessageFormat.format(column_isnull, "按钮名称");
             msgBuf.append(str_isnull);
         }
-        if (object.getCode() == null || object.getCode().trim().length() == 0) {
-            String str_isnull = MessageFormat.format(column_isnull, "按钮属性值");
+        if (object.getNameEn() == null || object.getNameEn().trim().length() == 0) {
+            String str_isnull = MessageFormat.format(column_isnull, "按钮英文名称");
+
             msgBuf.append(str_isnull);
         }
 
@@ -325,8 +326,8 @@ public class MenuButtonServiceImp implements MenuButtonService {
             String str_isnull = MessageFormat.format(column_isnull, "按钮名称");
             msgBuf.append(str_isnull);
         }
-        if (object.getCode() == null || object.getCode().trim().length() == 0) {
-            String str_isnull = MessageFormat.format(column_isnull, "按钮属性值");
+        if (object.getNameEn() == null || object.getNameEn().trim().length() == 0) {
+            String str_isnull = MessageFormat.format(column_isnull, "按钮英文名称");
             msgBuf.append(str_isnull);
         }
 
@@ -367,18 +368,18 @@ public class MenuButtonServiceImp implements MenuButtonService {
      *
      * @param menuId  (不可为空)
      * @param id      (允许为空)-(添加时is null, 修改时 is not null)
-     * @param code    (不可为空)-按钮属性值
+     * @param nameEn  (不可为空)-按钮英文名称
      * @return
      *     true : 菜单名称存在名称相同
      *     false: 菜单名称不存在名称相同(默认值)
      */
-    public boolean isExistByCode(String menuId, String id, String code) {
+    public boolean isExistByNameEn(String menuId, String id, String nameEn) {
         if (menuId == null || menuId.trim().length() == 0) {return false;}
-        if (code == null || code.trim().length() == 0) {return false;}
+        if (nameEn == null || nameEn.trim().length() == 0) {return false;}
 
         PageData findMap = new PageData();
         findMap.put("menuId", menuId);
-        findMap.put("code", code);
+        findMap.put("nameEn", nameEn);
         if (id != null && id.trim().length() > 0) {
             findMap.put("id", id);
             findMap.put("isSelfExist", "true");

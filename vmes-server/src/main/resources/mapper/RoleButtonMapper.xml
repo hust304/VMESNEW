@@ -190,27 +190,27 @@
     <!--获取全部菜单按钮-根据角色ID-->
     <select id="listMenuButtonMapByRole" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
-        a.id id,
-        a.company_id companyId,
-        a.menu_id menuId,
-        a.code code,
-        a.value value,
+            a.id id,
+            a.company_id companyId,
+            a.menu_id menuId,
+            a.code code,
+            a.value value,
 
-        a.name name,
-        a.serial_number serialNumber,
-        a.name_en nameEn,
-        a.isdisable buttonIsdisable,
-        a.cdate cdate,
+            a.name name,
+            a.serial_number serialNumber,
+            a.name_en nameEn,
+            a.isdisable buttonIsdisable,
+            a.cdate cdate,
 
-        a.cuser cuser,
-        a.udate udate,
-        a.uuser uuser,
+            a.cuser cuser,
+            a.udate udate,
+            a.uuser uuser,
 
-        b.button_id as buttonId,
-        b.role_id as roleId
-        b.isdisable as isdisable
+            b.button_id as buttonId,
+            b.role_id as roleId,
+            b.isdisable as isdisable
         from vmes_menu_button a
-        left join vmes_role_button b on a.id = b.button_id
+            left join vmes_role_button b on a.id = b.button_id
         <!--queryRoleIds 自定义sql查询语句 b.role_id in ()-->
         <if test="queryRoleIds != null and queryRoleIds != ''" >
             and ${queryRoleIds}
