@@ -260,10 +260,11 @@ public interface DepartmentService {
      * 获取部门级联查询ID
      *
      * @param id     部门id
+     * @param layer  部门级别
      * @param prefix 前缀
      * @return
      */
-    String findDeptidById(String id, String prefix);
+    String findDeptidById(String id, Integer layer, String prefix);
 }
 
 

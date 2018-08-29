@@ -783,29 +783,33 @@ public class DepartmentServiceImp implements DepartmentService {
      * 获取部门级联查询ID
      *
      * @param id     部门id
+     * @param layer  部门级别
      * @param prefix 前缀
      * @return
      */
-    public String findDeptidById(String id, String prefix) {
+    public String findDeptidById(String id, Integer layer, String prefix) {
         if (id == null || id.trim().length() == 0) {return null;}
         if (prefix == null) {prefix = new String();}
 
-        Department dept = this.findDepartmentById(id);
-        if (dept == null || dept.getLayer() == null) {return null;}
+        if (layer == null) {
+            Department dept = this.findDepartmentById(id);
+            if (dept == null || dept.getLayer() == null) {return null;}
+            layer = dept.getLayer();
+        }
 
         prefix = prefix.trim();
         String queryStr = "";
-        if (0 == dept.getLayer().intValue()) {
+        if (0 == layer.intValue()) {
             queryStr = prefix + "id_0 = '" + id + "'";
-        } else if (1 == dept.getLayer().intValue()) {
+        } else if (1 == layer.intValue()) {
             queryStr = prefix + "id_1 = '" + id + "'";
-        } else if (2 == dept.getLayer().intValue()) {
+        } else if (2 == layer.intValue()) {
             queryStr = prefix + "id_2 = '" + id + "'";
-        } else if (3 == dept.getLayer().intValue()) {
+        } else if (3 == layer.intValue()) {
             queryStr = prefix + "id_3 = '" + id + "'";
-        } else if (4 == dept.getLayer().intValue()) {
+        } else if (4 == layer.intValue()) {
             queryStr = prefix + "id_4 = '" + id + "'";
-        } else if (5 == dept.getLayer().intValue()) {
+        } else if (5 == layer.intValue()) {
             queryStr = prefix + "id_5 = '" + id + "'";
         }
 

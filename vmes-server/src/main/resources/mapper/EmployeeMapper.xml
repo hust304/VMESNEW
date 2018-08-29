@@ -380,61 +380,6 @@
 
 
     <!-- 自动创建，可以修改 -->
-    <select id="getDataListPage"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
-        select
-            <include refid="Field1"/>
-        from vmes_employee employee
-            left join vmes_employ_post  employpost on employpost.employ_id = employee.id
-            left join vmes_post post on post.id = employpost.post_id
-            left join vmes_department dept on dept.id = post.dept_id
-            left join vmes_user vmesuser on vmesuser.id = employee.user_id
-            left join vmes_user_role userrole on userrole.user_id = vmesuser.id
-            left join vmes_role role on role.id = userrole.role_id
-            left join vmes_dictionary dictionary on employee.political = dictionary.id
-        <where>
-            <!--queryStr 自定义sql查询语句-->
-            <if test="queryStr != null and queryStr!=''" >
-                and ${queryStr}
-            </if>
-            <if test="isdisable!= null and isdisable != ''"><!-- 默认值是0 -->
-                and employee.isdisable = #{isdisable}
-            </if>
-            <if test="isplurality!= null and isplurality != ''"><!-- 默认值是0 -->
-                and employee.isplurality = #{isplurality}
-            </if>
-            <if test="postId!= null and postId != ''"><!-- 默认值是0 -->
-                and post.id = #{postId}
-            </if>
-            <if test="deptId!= null and deptId != '' and layer != null and layer != ''"><!-- 关键词检索 -->
-                and dept.id_${layer} = #{deptId}
-            </if>
-            <if test="postName!= null and postName != ''"><!-- 关键词检索 -->
-                and post.name LIKE CONCAT(CONCAT('%', #{postName}),'%')
-            </if>
-            <if test="code!= null and code != ''"><!-- 关键词检索 -->
-                and employee.code LIKE CONCAT(CONCAT('%', #{code}),'%')
-            </if>
-            <if test="name!= null and name != ''"><!-- 关键词检索 -->
-                and employee.name LIKE CONCAT(CONCAT('%', #{name}),'%')
-            </if>
-            <if test="mobile!= null and mobile != ''"><!-- 关键词检索 -->
-                and employee.mobile LIKE CONCAT(CONCAT('%', #{mobile}),'%')
-            </if>
-            <if test="identityNumber!= null and identityNumber != ''"><!-- 关键词检索 -->
-                and employee.identity_number LIKE CONCAT(CONCAT('%', #{identityNumber}),'%')
-            </if>
-            <if test="entryDateEnd!= null and entryDateEnd != ''"><!-- 关键词检索 -->
-                <![CDATA[ and  employee.entry_date <= #{entryDateEnd} ]]>
-            </if>
-            <if test="entryDateStart!= null and entryDateStart != ''"><!-- 关键词检索 -->
-                <![CDATA[ and  employee.entry_date >= #{entryDateStart} ]]>
-            </if>
-        </where>
-            order by employee.cdate desc
-    </select>
-
-
-    <!-- 自动创建，可以修改-->
     <update id="updateToDisableByIds" parameterType="java.lang.String" >
         update
         <include refid="tableName"></include>
@@ -447,8 +392,7 @@
     </update>
 
 
-
-    <!-- 字段 自动创建，可以修改-->
+    <!-- 自动创建，可以修改-->
     <sql id="Field2">
         employee.code code,<!-- 员工编号 -->
         employee.name name,<!-- 员工姓名 -->
@@ -476,7 +420,9 @@
         employee.id employeeId <!-- employeeId -->
     </sql>
 
-    <!-- 字段值 自动创建，可以修改-->
+
+
+    <!-- 字段 自动创建，可以修改-->
     <sql id="Column2">
             '员工号'  code,
             '员工姓名'  name,
@@ -504,7 +450,7 @@
             'employeeId' employeeId
     </sql>
 
-    <!-- 自动创建，可以修改 -->
+    <!-- 字段值 自动创建，可以修改-->
     <select id="selectEmployeeAndUserById"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
         select
         <include refid="Field2"></include>
@@ -519,6 +465,7 @@
         where employpost.id = #{employPostId}
     </select>
 
+    <!-- 自动创建，可以修改 -->
     <insert id="insertColumn" >
         insert into vmes_column (
         id,model_code,title_key,title_name,serial_number,
@@ -562,5 +509,65 @@
         ('24c070afaa5f11e884ad00163e105f05', 'employee', 'uuser', '修改人id', 32, '1', '0', '1', '0', '2018-8-28 09:10:24', 'admin')
 
     </insert>
+
+    <select id="getDataListPage"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
+        select
+        <include refid="Field1"/>
+        from vmes_employee employee
+        left join vmes_employ_post  employpost on employpost.employ_id = employee.id
+        left join vmes_post post on post.id = employpost.post_id
+        left join vmes_department dept on dept.id = post.dept_id
+        left join vmes_user vmesuser on vmesuser.id = employee.user_id
+        left join vmes_user_role userrole on userrole.user_id = vmesuser.id
+        left join vmes_role role on role.id = userrole.role_id
+        left join vmes_dictionary dictionary on employee.political = dictionary.id
+        <where>
+            <!-- 员工表查询 (code,name) 必须在最前面-创建有索引 -->
+            <if test="code!= null and code != ''">
+                and employee.code LIKE CONCAT(CONCAT(#{code}),'%')
+            </if>
+            <if test="name!= null and name != ''">
+                and employee.name LIKE CONCAT(CONCAT(#{name}),'%')
+            </if>
+            <if test="isdisable!= null and isdisable != ''">
+                and employee.isdisable = #{isdisable}
+            </if>
+            <if test="mobile!= null and mobile != ''">
+                and employee.mobile LIKE CONCAT(CONCAT('%', #{mobile}),'%')
+            </if>
+            <if test="identityNumber!= null and identityNumber != ''">
+                and employee.identity_number LIKE CONCAT(CONCAT('%', #{identityNumber}),'%')
+            </if>
+            <if test="entryDateEnd!= null and entryDateEnd != ''">
+                <![CDATA[ and  employee.entry_date <= #{entryDateEnd} ]]>
+            </if>
+            <if test="entryDateStart!= null and entryDateStart != ''">
+                <![CDATA[ and  employee.entry_date >= #{entryDateStart} ]]>
+            </if>
+
+            <!--岗位表 -->
+            <if test="postId != null and postId != ''">
+                and post.id = #{postId}
+            </if>
+            <if test="postName!= null and postName != ''">
+                and post.name LIKE CONCAT(CONCAT(#{postName}),'%')
+            </if>
+
+            <!--deptQueryStr 部门表查询字符串 and id_1 = '' -->
+            <if test="deptQueryStr != null and deptQueryStr!=''" >
+                and ${deptQueryStr}
+            </if>
+            <!-- 员工岗位表 是否主岗或兼岗 -->
+            <if test="isplurality!= null and isplurality != ''">
+                and employpost.isplurality = #{isplurality}
+            </if>
+
+            <!--queryStr 自定义sql查询语句-->
+            <if test="queryStr != null and queryStr!=''" >
+                and ${queryStr}
+            </if>
+        </where>
+        order by employee.cdate desc
+    </select>
 
 </mapper>

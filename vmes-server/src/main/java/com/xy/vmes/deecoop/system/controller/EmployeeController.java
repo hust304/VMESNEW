@@ -689,6 +689,28 @@ public class EmployeeController {
         result.put("hideTitles",titlesHideList);
         result.put("titles",titlesList);
 
+        String id = (String)pd.get("id");
+        String type = (String)pd.get("type");
+
+        //"dept" 部门 "post" 岗位
+        if ("dept".equals(type)) {
+            Integer layerInt = null;
+            String layer = (String)pd.get("layer");
+            if (layer != null && layer.trim().length() > 0) {
+                try {
+                    layerInt = Integer.parseInt(layer.trim());
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+            String queryStr = departmentService.findDeptidById(id, layerInt, "dept.");
+            if (queryStr != null && queryStr.trim().length() > 0) {
+                pd.put("deptQueryStr", queryStr);
+            }
+        } else if ("post".equals(type)) {
+            pd.put("postId", id);
+
+        }
 
         List<Map> varMapList = new ArrayList();
         List<Map> varList = employeeService.getDataListPage(pd,pg);
