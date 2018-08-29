@@ -4,6 +4,8 @@ public class DeptPostEntity {
     private String id;
     private String pid;
     private String name;
+    private String deptName;
+    private String postName;
     private Integer layer;
 
     private Integer serialNumber;
@@ -28,6 +30,18 @@ public class DeptPostEntity {
     }
     public void setName(String name) {
         this.name = name;
+    }
+    public String getDeptName() {
+        return deptName;
+    }
+    public void setDeptName(String deptName) {
+        this.deptName = deptName;
+    }
+    public String getPostName() {
+        return postName;
+    }
+    public void setPostName(String postName) {
+        this.postName = postName;
     }
     public Integer getLayer() {
         return layer;
