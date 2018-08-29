@@ -909,27 +909,31 @@ public class RoleController {
         Map<String, Object> mapObj = new HashMap<String, Object>();
 
         //1. 查询遍历List列表
-        List<LinkedHashMap<String, String>> titleOutList = new ArrayList<LinkedHashMap<String, String>>();
+        List<Column> columnList = columnService.findColumnList("userRole");
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
+        }
+
+        List<LinkedHashMap> titlesList = new ArrayList<LinkedHashMap>();
         List<String> titlesHideList = new ArrayList<String>();
         Map<String, String> varModelMap = new HashMap<String, String>();
-        List<LinkedHashMap<String, String>> titleList = userRoleService.listUserColumn();
-        if (titleList != null && titleList.size() > 0) {
-            LinkedHashMap<String, String> titlesMap = titleList.get(0);
-            for (Map.Entry<String, String> entry : titlesMap.entrySet()) {
-                LinkedHashMap<String, String> titleMap = new LinkedHashMap<String, String>();
-                if (entry.getKey().indexOf("_hide") != -1) {
-                    titleMap.put(entry.getKey().replace("_hide",""), entry.getValue());
-                    titlesHideList.add(entry.getKey().replace("_hide",""));
-                    varModelMap.put(entry.getKey().replace("_hide",""), "");
-                } else if (entry.getKey().indexOf("_hide") == -1) {
-                    titleMap.put(entry.getKey(), entry.getValue());
-                    varModelMap.put(entry.getKey(), "");
+        if(columnList!=null&&columnList.size()>0){
+            for (Column column : columnList) {
+                if(column!=null){
+                    if("0".equals(column.getIshide())){
+                        titlesHideList.add(column.getTitleKey());
+                    }
+                    LinkedHashMap titlesLinkedMap = new LinkedHashMap();
+                    titlesLinkedMap.put(column.getTitleKey(),column.getTitleName());
+                    varModelMap.put(column.getTitleKey(),"");
+                    titlesList.add(titlesLinkedMap);
                 }
-                titleOutList.add(titleMap);
             }
         }
         mapObj.put("hideTitles", titlesHideList);
-        mapObj.put("titles", YvanUtil.toJson(titleOutList));
+        mapObj.put("titles", titlesList);
 
         //2. 分页查询数据List
         List<Map<String, String>> varMapList = new ArrayList<Map<String, String>>();
@@ -954,7 +958,7 @@ public class RoleController {
         String type = (String)pageData.get("type");
         if ("in".equals(type) && sqlUserIds.trim().length() > 0) {
             queryStr = queryStr + "id in ("+sqlUserIds+")";
-        } else if ("notin".equals(type)) {
+        } else if ("notin".equals(type) && sqlUserIds.trim().length() > 0) {
             queryStr = queryStr + "id not in ("+sqlUserIds+")";
         }
         if (queryStr.trim().length() > 0) {
@@ -977,7 +981,7 @@ public class RoleController {
                 varMapList.add(varMap);
             }
         }
-        mapObj.put("varList", YvanUtil.toJson(varMapList));
+        mapObj.put("varList", varMapList);
 
         model.putResult(mapObj);
         Long endTime = System.currentTimeMillis();
