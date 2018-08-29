@@ -948,11 +948,16 @@ public class RoleController {
         //noin: 当前角色ID-没有绑定的用户
         String queryStr = "";
         String type = (String)pageData.get("type");
+
         if ("in".equals(type) && sqlUserIds.trim().length() > 0) {
             queryStr = queryStr + "id in ("+sqlUserIds+")";
+        } else if ("in".equals(type) && sqlUserIds.trim().length() == 0) {
+            pageData.put("queryNull", "true");
         } else if ("notin".equals(type) && sqlUserIds.trim().length() > 0) {
             queryStr = queryStr + "id not in ("+sqlUserIds+")";
         }
+
+
         if (queryStr.trim().length() > 0) {
             pageData.put("queryStr", queryStr);
         }
