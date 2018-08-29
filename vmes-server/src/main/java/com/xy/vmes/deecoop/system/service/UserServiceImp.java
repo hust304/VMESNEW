@@ -264,11 +264,7 @@ public class UserServiceImp implements UserService {
             //使用手机号后六位进行加密作为默认密码
             String mobile = employee.getMobile();
             String password = mobile.substring(mobile.length()-6,mobile.length());
-            if(password!=null&&password.length()==6){
-                user.setPassword(MD5Utils.MD5(password));
-            }else{
-                throw  new RestException("12","输入手机号长度错误！");
-            }
+            user.setPassword(MD5Utils.MD5(password));
             save(user);
 
             //修改员工表用户ID

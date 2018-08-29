@@ -252,8 +252,13 @@ public class EmployeeController {
         }
         String mobile = pd.getString("mobile");
         if(StringUtils.isEmpty(mobile)){
-            model.putCode(2);
+            model.putCode(1);
             model.putMsg("手机号不能为空！");
+            return model;
+        }
+        if (mobile.trim().length() < 11) {
+            model.putCode(1);
+            model.putMsg("手机号长度错误！");
             return model;
         }
         mobile = mobile.trim();
