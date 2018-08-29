@@ -203,7 +203,7 @@ public class UserController {
      * @author 刘威 创建用户并且分配角色
      * @date 2018-07-26
      */
-    @GetMapping("/user/addUser")
+    @PostMapping("/user/addUser")
     public ResultModel addUser()  throws Exception {
 
         logger.info("################user/addUser 执行开始 ################# ");
@@ -283,7 +283,7 @@ public class UserController {
      * @author 刘威 修改用户及角色信息
      * @date 2018-07-26
      */
-    @GetMapping("/user/updateUser")
+    @PostMapping("/user/updateUser")
     public ResultModel updateUser()  throws Exception {
 
         logger.info("################user/updateUser 执行开始 ################# ");
@@ -333,7 +333,7 @@ public class UserController {
      * @author 刘威 修改用户及角色信息
      * @date 2018-07-26
      */
-    @GetMapping("/user/deleteUsers")
+    @PostMapping("/user/deleteUsers")
     public ResultModel deleteUsers()  throws Exception {
 
         logger.info("################user/deleteUsers 执行开始 ################# ");
@@ -357,7 +357,7 @@ public class UserController {
      * @author 刘威 用户列表分页
      * @date 2018-07-26
      */
-    @GetMapping("/user/listPageUsers")
+    @PostMapping("/user/listPageUsers")
     public ResultModel listPageUsers()  throws Exception {
 
         logger.info("################user/listPageUsers 执行开始 ################# ");
@@ -409,7 +409,7 @@ public class UserController {
             }
         }
         result.put("varList",varMapList);
-        result.put("pageData", YvanUtil.toJson(pg));
+        result.put("pageData", pg);
         model.putResult(result);
 
         Long endTime = System.currentTimeMillis();

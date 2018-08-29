@@ -277,6 +277,7 @@
     </sql>
 
     <insert id="insertColumn" >
+        delete from vmes_column where model_code = 'user' ;
         insert into vmes_column (
         id,model_code,title_key,title_name,serial_number,
         isdisable,ishide,isedit,ismust,cdate,
@@ -288,15 +289,16 @@
         (replace(uuid(), '-', ''),'user','email','邮箱',4, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'user','userTypeName','用户类型',5, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'user','roleName','角色名称',6, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'user','companyName','所属公司',7, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'user','isdisable','是否启用',8, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'user','cdate','创建时间',9, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'user','deptName','所属部门',7, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'user','companyName','所属公司',8, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'user','isdisable','是否启用',9, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'user','cdate','创建时间',10, '1','1','1','0',now(), 'admin'),
 
-        (replace(uuid(), '-', ''),'user','employId_hide','员工ID',10, '1','0','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'user','roleId_hide','角色ID',11, '1','0','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'user','deptId_hide','部门ID',12, '1','0','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'user','companyId_hide','公司ID',13, '1','0','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'user','userType','用户类型ID',14, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'user','employId','员工ID',11, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'user','roleId','角色ID',12, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'user','deptId','部门ID',13, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'user','companyId','公司ID',14, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'user','userType','用户类型ID',15, '1','0','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'user','id','id',0, '1','0','1','0',now(), 'admin')
     </insert>
 
@@ -310,12 +312,13 @@
         vmesuser.email email,<!-- 邮箱地址 -->
         vmesuser.isdisable isdisable,<!-- 是否禁用(0:已禁用 1:启用) 数据字典:sys_isdisable -->
         vmesuser.employ_id employId,<!-- 员工ID -->
-        vmesuser.dept_id deptId,<!-- 部门ID -->
-        vmesuser.company_id companyId,<!-- 公司ID-组织架构 -->
+        department.id deptId,<!-- 部门ID -->
+        department.name deptName,<!-- 所属部门 -->
+        company.id companyId,<!-- 公司ID-组织架构 -->
         company.name companyName,<!-- 所属公司 -->
         vmesuser.cdate cdate,<!-- 创建时间 -->
         role.id roleId,<!-- 角色ID -->
-        case when role.company_id is null then "企业管理员" else role.name end roleName,<!-- 角色名称 -->
+        case when role.company_id = 'b6ff76cb95f711e884ad00163e105f05' then "企业管理员" else role.name end roleName,<!-- 角色名称 -->
         vmesuser.id id <!-- id -->
     </sql>
 
@@ -335,9 +338,7 @@
         from vmes_user vmesuser
         left join vmes_department company on company.id = vmesuser.company_id
         <where>
-            <if test="currentUserId != 0"><!-- 超级管理员 -->
-                and company_id in (select company_id from vmes_user where id = #{currentUserId})
-            </if>
+
             <if test="userCode!= null and userCode != ''"><!-- 关键词检索 -->
                 and vmesuser.user_code LIKE CONCAT(CONCAT('%', #{userCode}),'%')
             </if>
@@ -376,10 +377,9 @@
         left join vmes_user_role userrole on userrole.user_id = vmesuser.id
         left join vmes_role role on role.id = userrole.role_id
         left join vmes_dictionary dictionary on vmesuser.user_type = dictionary.id
+        left join vmes_department department on department.id = vmesuser.dept_id
         <where>
-            <if test="currentUserId != 0"><!-- 超级管理员 -->
-                and company_id in (select company_id from vmes_user where id = #{currentUserId})
-            </if>
+
             <if test="userCode!= null and userCode != ''"><!-- 关键词检索 -->
                 and vmesuser.user_code LIKE CONCAT(CONCAT('%', #{userCode}),'%')
             </if>
@@ -398,9 +398,14 @@
             <if test="isdisable!= null and isdisable != ''"><!-- 关键词检索 -->
                 and vmesuser.isdisable = #{isdisable}
             </if>
-            <if test="deptId!= null and deptId != ''"><!-- 关键词检索 -->
-                and vmesuser.dept_id = #{deptId}
+            <if test="deptName!= null and deptName != ''"><!-- 关键词检索 -->
+                and department.name LIKE CONCAT(CONCAT('%', #{deptName}),'%')
             </if>
+
+            <if test="pid!= null and pid != '' and layer != null"><!-- 关键词检索 -->
+                and department.id_${layer} = #{pid}
+            </if>
+
             <if test="queryStr != null and queryStr!=''" ><!-- 自定义查询 -->
                 and ${queryStr}
             </if>

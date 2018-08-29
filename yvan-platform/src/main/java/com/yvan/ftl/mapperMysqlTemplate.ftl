@@ -125,6 +125,7 @@
 
 
     <insert id="insertColumn" >
+        delete from vmes_column where model_code = '${modelCode}' ;
         insert into vmes_column (
         id,model_code,title_key,title_name,serial_number,
         isdisable,ishide,isedit,ismust,cdate,

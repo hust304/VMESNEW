@@ -294,6 +294,7 @@
             <if test="isdisable!= null and isdisable != ''"><!-- 关键词检索 -->
                 and a.isdisable = #{isdisable}
             </if>
+
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr!=''" >
                 and ${queryStr}
@@ -345,19 +346,20 @@
 
 
     <insert id="insertColumn" >
+        delete from vmes_column where model_code = 'dictionary' ;
         insert into vmes_column (
         id,model_code,title_key,title_name,serial_number,
         isdisable,ishide,isedit,ismust,cdate,
         cuser
         ) VALUES
-        (replace(uuid(), '-', ''),'dictionary','pid','上级id',1, '0','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'dictionary','pid','上级id',1, '1','0','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'dictionary','name','字典名称',3, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'dictionary','parentName','上级名称',4, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'dictionary','isdisable','是否启用',5, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'dictionary','cdate','创建时间',6, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'dictionary','udate','修改时间',7, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'dictionary','remark','备注',8, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'dictionary','id','id',0, '0','1','1','0',now(), 'admin')
+        (replace(uuid(), '-', ''),'dictionary','id','id',0, '1','0','1','0',now(), 'admin')
     </insert>
 
 </mapper>

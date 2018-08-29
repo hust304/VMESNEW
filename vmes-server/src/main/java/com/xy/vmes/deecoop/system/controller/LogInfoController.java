@@ -205,6 +205,16 @@ public class LogInfoController {
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
+        String cdate = pd.getString("cdate");
+        if(!StringUtils.isEmpty(cdate)){
+            String[] cdateArr = cdate.replace("[","").replace("]","").split(",");
+            if(cdateArr!=null&&cdateArr.length>0){
+                pd.put("startDate",cdateArr[0]);
+                pd.put("endDate",cdateArr[1]);
+            }
+        }
+
+
         Pagination pg = HttpUtils.parsePagination(pd);
         Map result = new HashMap();
 
