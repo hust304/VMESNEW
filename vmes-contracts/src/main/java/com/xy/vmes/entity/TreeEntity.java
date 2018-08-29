@@ -16,8 +16,11 @@ public class TreeEntity {
     private String url;
     //(必须)是否禁用(0:已禁用 1:启用)
     private String isdisable;
+
     //岗位树(属性)"dept" 部门 "post" 岗位
     private String type;
+    private String deptName;
+    private String postName;
 
     //当前节点-是否绑定角色(1:绑定 0:未绑定)
     private String isBindRole;
@@ -100,5 +103,17 @@ public class TreeEntity {
     }
     public void setType(String type) {
         this.type = type;
+    }
+    public String getDeptName() {
+        return deptName;
+    }
+    public void setDeptName(String deptName) {
+        this.deptName = deptName;
+    }
+    public String getPostName() {
+        return postName;
+    }
+    public void setPostName(String postName) {
+        this.postName = postName;
     }
 }
