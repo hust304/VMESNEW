@@ -13,7 +13,7 @@ import java.math.BigDecimal;
  * @date 2018-08-24
  */
 @TableName("vmes_column")
-public class Column implements Serializable {
+public class Column implements Serializable,Cloneable {
 	private static final long serialVersionUID = 1L;
 
 	//
@@ -120,6 +120,14 @@ public class Column implements Serializable {
 	}
 
 /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
-
+	public Column clone() {
+		Column object = null;
+		try{
+			object = (Column)super.clone();
+		}catch(CloneNotSupportedException e) {
+			e.printStackTrace();
+		}
+		return object;
+	}
 
 }
