@@ -288,8 +288,11 @@ public class PostServiceImp implements PostService {
         tree.setId(deptPost.getId());
         //pid;
         tree.setPid(deptPost.getPid());
-        //name;
         tree.setName(deptPost.getName());
+        //deptName;
+        tree.setDeptName(deptPost.getDeptName());
+        //postName;
+        tree.setPostName(deptPost.getPostName());
         //layer;
         tree.setLayer(deptPost.getLayer());
         //serialNumber;
