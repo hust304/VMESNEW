@@ -144,7 +144,6 @@ public class RoleButtonServiceImp implements RoleButtonService {
         for (int i = 0; i < strArry.length; i++) {
             String buttonID = strArry[i];
             RoleButton objectDB = new RoleButton();
-            objectDB.setIsdisable("0");
             objectDB.setRoleId(roleId);
             objectDB.setButtonId(buttonID);
             try {

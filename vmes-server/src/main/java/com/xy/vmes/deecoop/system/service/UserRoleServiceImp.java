@@ -195,7 +195,6 @@ public class UserRoleServiceImp implements UserRoleService {
         for (int i = 0; i < strArry.length; i++) {
             String userID = strArry[i];
             UserRole objectDB = new UserRole();
-            objectDB.setIsdisable("0");
             objectDB.setRoleId(roleId);
             objectDB.setUserId(userID);
             try {

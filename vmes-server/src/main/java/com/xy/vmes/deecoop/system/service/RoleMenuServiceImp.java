@@ -149,7 +149,6 @@ public class RoleMenuServiceImp implements RoleMenuService {
         for (int i = 0; i < strArry.length; i++) {
             String meunID = strArry[i];
             RoleMenu objectDB = new RoleMenu();
-            objectDB.setIsdisable("0");
             objectDB.setRoleId(roleId);
             objectDB.setMenuId(meunID);
             try {

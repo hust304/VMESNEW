@@ -616,7 +616,7 @@ public class RoleController {
         if (roleID == null || roleID.trim().length() == 0) {
             msgStr = msgStr + "roleID为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT;
         }
-        String userIds = (String)pageData.get("isdisable");
+        String userIds = (String)pageData.get("userIds");
         if (userIds == null || userIds.trim().length() == 0) {
             msgStr = msgStr + "userIds为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT;
         }
@@ -626,19 +626,11 @@ public class RoleController {
             return model;
         }
 
-        //2.当前角色ID(用户角色,角色菜单,角色按钮)-是否使用
-        msgStr = roleService.checkDeleteRoleByRoleIds(roleID);
-        if (msgStr.trim().length() > 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg(msgStr);
-            return model;
-        }
-
-        //3. 删除角色用户(当前角色)
+        //2. 删除角色用户(当前角色)
         userRoleService.deleteUserRoleByRoleId(roleID);
-
-        //4. 添加角色用户(当前角色)
+        //3. 添加角色用户(当前角色)
         userRoleService.addUserRoleByUserIds(roleID, userIds);
+
         Long endTime = System.currentTimeMillis();
         logger.info("################role/saveRoleUsers 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
