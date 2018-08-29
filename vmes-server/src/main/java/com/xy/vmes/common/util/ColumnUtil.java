@@ -107,9 +107,70 @@ public class ColumnUtil {
         return dataMapList;
     }
 
+    public static List<Column> listAllhideByColumnList(List<Column> columnList) {
+        if (columnList == null) {columnList = new ArrayList<Column>();}
+        for (Column column : columnList) {
+            //是否隐藏(0:隐藏 1:显示)
+            column.setIshide("0");
+        }
+        return columnList;
+    }
+
+    public static LinkedHashMap<String, Column> columnList2ColumnMap(List<Column> columnList, LinkedHashMap<String, Column> columnMap) {
+        if (columnMap == null) {columnMap = new LinkedHashMap<String, Column>();}
+        if (columnList == null || columnMap.size() == 0) {return columnMap;}
+
+        for (Column column : columnList) {
+            String titleKey = column.getTitleKey();
+            columnMap.put(titleKey, column);
+        }
+        return columnMap;
+    }
+
+    public static List<Column> modifyColumnList(String fieldCode, List<Column> columnList, LinkedHashMap<String, Column> columnMap) {
+        if (columnList == null) {return new ArrayList<Column>();}
+        if (fieldCode == null || fieldCode.trim().length() == 0) {return columnList;}
+
+        List<Column> newColumnList = new ArrayList<Column>();
+        List<Column> inColumnList = new ArrayList<Column>();
+        String[] fieldArry = fieldCode.split(",");
+        for (int i = 0; i < fieldArry.length; i++) {
+            String field = fieldArry[i].trim();
+            Column column = new Column();
+            if (columnMap.get(field) != null) {
+                column = columnMap.get(field).clone();
+                //是否隐藏(0:隐藏 1:显示)
+                column.setIshide("1");
+                inColumnList.add(column);
+            } else if (columnMap.get(field) == null) {
+                column.setTitleKey(field);
+                column.setTitleName(field);
+                column.setIshide("1");
+            }
+            newColumnList.add(column);
+        }
+
+        for (Iterator iterator = columnMap.keySet().iterator(); iterator.hasNext();) {
+            String mapKey = iterator.next().toString().trim();
+            Column column = columnMap.get(mapKey);
+            boolean isInColumn = false;
+            for (int i = 0; i < inColumnList.size(); i++) {
+                Column inColumn = inColumnList.get(i);
+                if (mapKey.equals(inColumn.getTitleKey())) {
+                    isInColumn = true;
+                    break;}
+            }
+            if (!isInColumn) {
+                newColumnList.add(column);
+            }
+        }
+
+        return newColumnList;
+    }
 
 
-    private static void orderAcsBySerialNumber(List<Column> objectList) {
+
+    public static void orderAcsBySerialNumber(List<Column> objectList) {
         Collections.sort(objectList, new Comparator<Object>() {
             public int compare(Object arg0, Object arg1) {
                 Column object_0 = (Column)arg0;
