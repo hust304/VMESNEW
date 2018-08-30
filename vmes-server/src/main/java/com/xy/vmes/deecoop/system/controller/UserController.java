@@ -246,25 +246,24 @@ public class UserController {
         String companyId = department.getId1();
         if(!StringUtils.isEmpty(companyId)){
             user.setCompanyId(companyId);
-            if(StringUtils.isEmpty(user.getUserCode())){
-                String code = coderuleService.createCoder(companyId,"vmes_user");
-                if(StringUtils.isEmpty(code)){
-                    model.putCode(4);
-                    model.putMsg("编码规则创建异常，请重新操作！");
-                    return model;
-                }
-                user.setUserCode(code);
-            }
-            if(isExistUserCode(user.getUserCode())){
-                model.putCode(5);
-                model.putMsg("该用户账号号已存在！");
+        }else{
+            companyId = department.getId0();
+            user.setCompanyId(companyId);
+        }
+
+        if(StringUtils.isEmpty(user.getUserCode())){
+            String code = coderuleService.createCoder(companyId,"vmes_user");
+            if(StringUtils.isEmpty(code)){
+                model.putCode(4);
+                model.putMsg("编码规则创建异常，请重新操作！");
                 return model;
             }
-
-        }else{
-            //如果没有公司ID，那么就是创建根节点下的管理员账号，这个时候定义的用户名就是账号
-            user.setCompanyId(department.getId0());
-            user.setUserCode(user.getUserName());
+            user.setUserCode(code);
+        }
+        if(isExistUserCode(user.getUserCode())){
+            model.putCode(5);
+            model.putMsg("该用户账号号已存在！");
+            return model;
         }
 
         if(isExistMobile(pd)){

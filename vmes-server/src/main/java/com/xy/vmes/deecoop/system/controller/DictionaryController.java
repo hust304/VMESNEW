@@ -532,7 +532,7 @@ public class DictionaryController {
         PageData pd = HttpUtils.parsePageData();
         String dictionaryKey = pd.getString("dictionaryKey");
         String pid = Common.DICTIONARY_MAP.get(dictionaryKey);
-        pd.put("queryStr","(isdisable = '1' and pid = '"+pid+"' "+ pd.getString("queryStr")+" )");
+        pd.put("queryStr","(isdisable = '1' and pid = '"+pid+"' "+ pd.getString("queryStr")!=null?pd.getString("queryStr"):""+" )");
         List<Map> dictionaryList = dictionaryService.findDataList(pd);
         model.putResult(dictionaryList);
         Long endTime = System.currentTimeMillis();
