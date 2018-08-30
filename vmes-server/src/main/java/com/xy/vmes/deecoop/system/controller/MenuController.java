@@ -728,7 +728,8 @@ public class MenuController {
 
         String userRole = "";
         String userType = (String)pageData.get("userType");
-        if (!"0".equals(userType) && roleIds != null && roleIds.trim().length() > 0) {
+        //(userType_admin:超级管理员 userType_company:企业管理员 userType_employee:普通用户 userType_outer:外部用户)
+        if (!Common.DICTIONARY_MAP.get("userType_admin").equals(userType) && roleIds != null && roleIds.trim().length() > 0) {
             userRole = roleIds;
             userRole = StringUtil.stringTrimSpace(userRole);
         }
