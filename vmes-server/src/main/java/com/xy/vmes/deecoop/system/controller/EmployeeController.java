@@ -541,18 +541,6 @@ public class EmployeeController {
      */
     @PostMapping("/employee/addEmployToUser")
     public ResultModel addEmployToUser()  throws Exception {
-
-        logger.info("################employee/addEmployToUser 执行开始 ################# ");
-        Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
-        ResultModel model = new ResultModel();
-        PageData pd = HttpUtils.parsePageData();
-        StringBuffer msg = new StringBuffer();
-        int success = 0;
-        int error = 0;
-
-        String employRoles = pd.getString("employRoles");
-
 //        employRoles ="[{\"employId\":\"3\",\"roleId\":\"1\"}," +
 //                "{\"employId\":\"3\",\"roleId\":1532599975000}," +
 //                "{\"employId\":\"3\",\"roleId\":1532601003000}," +
@@ -560,35 +548,74 @@ public class EmployeeController {
 //                "{\"employId\":\"3\",\"roleId\":1532600802000}," +
 //                "{\"employId\":\"3\",\"roleId\":1532601034000}]";
 
+        logger.info("################employee/addEmployToUser 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+        StringBuffer msg = new StringBuffer();
+        int success = 0;
+        int error = 0;
+
+        String employRoles = pd.getString("employRoles");
+        if (employRoles == null || employRoles.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("请至少选择一行数据！");
+            return model;
+        }
+
         List employRolesList = YvanUtil.jsonToList(employRoles);
-        if(employRolesList!=null&&employRolesList.size()>0){
-            for(int i=0;i<employRolesList.size();i++){
-                Map employRolesMap = (Map)employRolesList.get(i);
-                if(employRolesMap!=null){
-                    if(employRolesMap.get("employId")!=null && employRolesMap.get("roleId")!=null){
-                        Employee employee = employeeService.selectById(employRolesMap.get("employId").toString());
-                        String msgHeader = "员工："+employee.getName()+"("+employee.getCode()+")    ";
-                        //判断当前员工是否已经拥有账号信息，如果没有则新增，如果有则提示已存在
-                        if(StringUtils.isEmpty(employee.getUserId())){
-                            //获取当前员工主岗信息
-                            EmployPost employPost = getMainEmployPost(employee.getId());
-                            Post post = postService.selectById(employPost.getPostId());
-                            String deptId = post.getDeptId();
-                            pd.put("deptId",deptId);
-                            pd.put("roleId",employRolesMap.get("roleId").toString());
-                            try {
-                                //新增用户信息
-                                userService.createUserAndRole(pd,employee);
-                                msg.append(msgHeader+"创建账号成功！");
-                                success = success + 1;
-                            }catch (RestException e){
-                                msg.append(msgHeader+"创建账号失败，失败原因如下："+e.getMessage());
-                                error = error + 1;
-                            }
-                        }else {
-                            msg.append(msgHeader+"创建账号失败，失败原因如下：当前员工账号已存在");
+        if (employRolesList == null || employRolesList.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("请至少选择一行数据！");
+            return model;
+        }
+
+        //去除相同的员工ID
+        Map mapTemp = new HashMap();
+        for(int i=0;i<employRolesList.size();i++) {
+            Map employRolesMap = (Map)employRolesList.get(i);
+            String employeeId = (String)employRolesMap.get("employeeId");
+            if (employeeId != null && employeeId.trim().length() > 0) {
+                mapTemp.put(employeeId, employRolesMap);
+            }
+        }
+
+        List empRolesList = new ArrayList();
+        for (Iterator iterator = mapTemp.keySet().iterator(); iterator.hasNext();) {
+            String mapKey = (String)iterator.next();
+            Map mapValue = (Map)mapTemp.get(mapKey);
+            if (mapValue != null && mapValue.size() > 0) {
+                empRolesList.add(mapValue);
+            }
+        }
+
+        for(int i=0;i<empRolesList.size();i++){
+            Map employRolesMap = (Map)employRolesList.get(i);
+            if(employRolesMap!=null){
+                if(employRolesMap.get("employeeId")!=null && employRolesMap.get("roleId")!=null){
+                    Employee employee = employeeService.selectById(employRolesMap.get("employeeId").toString());
+                    String msgHeader = "员工："+employee.getName()+"("+employee.getCode()+")    ";
+                    //判断当前员工是否已经拥有账号信息，如果没有则新增，如果有则提示已存在
+                    if(StringUtils.isEmpty(employee.getUserId())){
+                        //获取当前员工主岗信息
+                        EmployPost employPost = getMainEmployPost(employee.getId());
+                        Post post = postService.selectById(employPost.getPostId());
+                        String deptId = post.getDeptId();
+                        pd.put("deptId",deptId);
+                        pd.put("roleId",employRolesMap.get("roleId").toString());
+                        try {
+                            //新增用户信息
+                            userService.createUserAndRole(pd,employee);
+                            msg.append(msgHeader+"创建账号成功！");
+                            success = success + 1;
+                        }catch (RestException e){
+                            msg.append(msgHeader+"创建账号失败，失败原因如下："+e.getMessage());
                             error = error + 1;
                         }
+                    }else {
+                        msg.append(msgHeader+"创建账号失败，失败原因如下：当前员工账号已存在");
+                        error = error + 1;
                     }
                 }
             }
@@ -619,20 +646,20 @@ public class EmployeeController {
 
         String employPluralityPosts = pd.getString("employPluralityPosts");
 
-//        employRoles ="[{\"employId\":\"3\",\"postId\":\"1\"}," +
-//                "{\"employId\":\"3\",\"postId\":1532599975000}," +
-//                "{\"employId\":\"3\",\"postId\":1532601003000}," +
-//                "{\"employId\":\"3\",\"postId\":1532600923000}," +
-//                "{\"employId\":\"3\",\"postId\":1532600802000}," +
-//                "{\"employId\":\"3\",\"postId\":1532601034000}]";
+//        employRoles ="[{\"employeeId\":\"3\",\"postId\":\"1\"}," +
+//                "{\"employeeId\":\"3\",\"postId\":1532599975000}," +
+//                "{\"employeeId\":\"3\",\"postId\":1532601003000}," +
+//                "{\"employeeId\":\"3\",\"postId\":1532600923000}," +
+//                "{\"employeeId\":\"3\",\"postId\":1532600802000}," +
+//                "{\"employeeId\":\"3\",\"postId\":1532601034000}]";
 
         List employPluralityPostsList = YvanUtil.jsonToList(employPluralityPosts);
         if(employPluralityPostsList!=null&&employPluralityPostsList.size()>0){
             for(int i=0;i<employPluralityPostsList.size();i++){
                 Map employPluralityPostsMap = (Map)employPluralityPostsList.get(i);
                 if(employPluralityPostsMap!=null){
-                    if(employPluralityPostsMap.get("employId")!=null && employPluralityPostsMap.get("postId")!=null){
-                        Employee employee = employeeService.selectById(employPluralityPostsMap.get("employId").toString());
+                    if(employPluralityPostsMap.get("employeeId")!=null && employPluralityPostsMap.get("postId")!=null){
+                        Employee employee = employeeService.selectById(employPluralityPostsMap.get("employeeId").toString());
                         //新增员工兼岗信息
                         EmployPost employPost = new EmployPost();
                         employPost.setEmployId(employee.getId());

@@ -267,7 +267,8 @@
         employee.isdisable,
 
         <!-- 隐藏字段 -->
-        employee.id,
+        employpost.id,
+        employee.id employeeId,
         employpost.id employPostId,
         post.id postId,
         dept.id deptId,
@@ -416,6 +417,7 @@
         vmesuser.user_code userCode,<!-- 用户账号 -->
         role.id roleId,<!-- 角色ID -->
         role.name roleName,<!-- 角色名称 -->
+        employpost.id id, <!-- employPostId -->
         employpost.id employPostId, <!-- employPostId -->
         employee.id employeeId <!-- employeeId -->
     </sql>
