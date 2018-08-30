@@ -212,7 +212,7 @@ public class MainPageController {
      * @author 陈刚
      * @date 2018-07-27
      */
-    @GetMapping("/mainPage/listRoleMeunAll")
+    @PostMapping("/mainPage/listRoleMeunAll")
     public ResultModel listRoleMeunAll() throws Exception {
         logger.info("################mainPage/listUserDefinedMenu 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
