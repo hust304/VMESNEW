@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.DateFormat;
 import com.xy.vmes.deecoop.system.dao.RoleMenuMapper;
 import com.xy.vmes.entity.Menu;
+import com.xy.vmes.entity.MenuEntity;
 import com.xy.vmes.entity.RoleMenu;
 import com.xy.vmes.entity.TreeEntity;
 import com.xy.vmes.service.MenuTreeService;
@@ -351,6 +352,47 @@ public class RoleMenuServiceImp implements RoleMenuService {
         }
 
         return treeList;
+    }
+
+    public MenuEntity menu2MenuEntity(Menu menu, MenuEntity entity) {
+        if (entity == null) {entity = new MenuEntity();}
+        if (menu == null) {return entity;}
+
+        //id;
+        entity.setId(menu.getId());
+        //name;
+        entity.setName(menu.getName());
+        //nameEn;
+        entity.setNameEn(menu.getNameEn());
+        //url;
+        entity.setUrl(menu.getUrl());
+        //layer;
+        if (menu.getLayer() != null) {
+            entity.setLayer(menu.getLayer());
+        }
+
+        return entity;
+    }
+
+    public List<MenuEntity> menuList2MenuEntityList(List<Menu> menuList, List<MenuEntity> entityList) {
+        if (entityList == null) {entityList = new ArrayList<MenuEntity>();}
+        if (menuList == null || menuList.size() == 0) {return entityList;}
+
+        for (Menu menu : menuList) {
+            MenuEntity entity = this.menu2MenuEntity(menu, null);
+            entityList.add(entity);
+        }
+        return entityList;
+    }
+
+    public void orderAcsByLayer(List<MenuEntity> entityList) {
+        Collections.sort(entityList, new Comparator<Object>() {
+            public int compare(Object arg0, Object arg1) {
+                MenuEntity object_0 = (MenuEntity)arg0;
+                MenuEntity object_1 = (MenuEntity)arg1;
+                return object_0.getLayer().compareTo(object_1.getLayer());
+            }
+        });
     }
 }
 

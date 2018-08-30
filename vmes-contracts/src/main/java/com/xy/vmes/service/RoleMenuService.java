@@ -1,6 +1,7 @@
 package com.xy.vmes.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.entity.MenuEntity;
 import com.xy.vmes.entity.RoleMenu;
 import com.xy.vmes.entity.Menu;
 import com.xy.vmes.entity.TreeEntity;
@@ -119,6 +120,9 @@ public interface RoleMenuService {
      */
     List<TreeEntity> roleMenuList2TreeList(List<Map<String, Object>> mapList, List<TreeEntity> treeList);
 
+    MenuEntity menu2MenuEntity(Menu menu, MenuEntity entity);
+    List<MenuEntity> menuList2MenuEntityList(List<Menu> menuList, List<MenuEntity> entityList);
+    void orderAcsByLayer(List<MenuEntity> entityList);
 }
 
 

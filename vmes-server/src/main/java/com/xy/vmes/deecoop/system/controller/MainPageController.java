@@ -1,19 +1,16 @@
 package com.xy.vmes.deecoop.system.controller;
 
-import com.google.gson.JsonObject;
-import com.xy.vmes.entity.Column;
-import com.xy.vmes.entity.User;
-import com.xy.vmes.entity.UserDefinedMenu;
-import com.xy.vmes.entity.UserRole;
+import com.xy.vmes.common.util.Common;
+import com.xy.vmes.common.util.StringUtil;
+import com.xy.vmes.entity.*;
 import com.xy.vmes.service.ColumnService;
+import com.xy.vmes.service.RoleMenuService;
 import com.xy.vmes.service.UserDefinedMenuService;
 import com.xy.vmes.service.UserService;
 import com.yvan.HttpUtils;
 import com.yvan.MD5Utils;
 import com.yvan.PageData;
 import com.yvan.YvanUtil;
-import com.yvan.platform.JsonArrayWapper;
-import com.yvan.platform.JsonWapper;
 import com.yvan.springmvc.ResultModel;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -37,11 +34,12 @@ public class MainPageController {
 
     @Autowired
     private UserService userService;
-
     @Autowired
     private UserDefinedMenuService userDefinedMenuService;
     @Autowired
     private ColumnService columnService;
+    @Autowired
+    private RoleMenuService roleMenuService;
 
     private Logger logger = LoggerFactory.getLogger(MainPageController.class);
 
@@ -193,6 +191,63 @@ public class MainPageController {
         result.put("varList",varMapList);
 
         model.putResult(result);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################mainPage/listUserDefinedMenu 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 查询当前登录用户角色已经绑定的菜单
+     * 1. 超级管理员: 全部菜单表数据
+     * 2. 非超级管理员(企业管理员,普通用户,外部用户)-当前登录用户角色已经绑定的菜单
+     *
+     * userType: 当前用户类型-字典表id
+     *     userType_admin:超级管理员
+     *     userType_company:企业管理员
+     *     userType_employee:普通用户
+     *     userType_outer:外部用户
+     * roleIds:  当前用户角色id
+     *
+     * @author 陈刚
+     * @date 2018-07-27
+     */
+    @GetMapping("/mainPage/listRoleMeunAll")
+    public ResultModel listRoleMeunAll() throws Exception {
+        logger.info("################mainPage/listUserDefinedMenu 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+        String userType = (String)pageData.get("userType");
+
+        //角色Id字符串-->转换成 sql查询字符串
+        String roleIds = (String)pageData.get("roleIds");
+        String queryIds = "";
+        if (roleIds != null && roleIds.trim().length() > 0) {
+            roleIds = StringUtil.stringTrimSpace(roleIds);
+            roleIds = "'" + roleIds.replace(",", "','") + "'";
+            queryIds = "b.role_id in (" + roleIds + ")";
+        }
+
+        PageData findMap = new PageData();
+        //超级管理员:  全部菜单表数据
+        //非超级管理员 当前登录用户角色已经绑定的菜单
+        //userType_admin:超级管理员 userType_company:企业管理员 userType_employee:普通用户 userType_outer:外部用户)
+        if (userType != null
+            && !Common.DICTIONARY_MAP.get("userType_admin").equals(userType)
+            && queryIds.trim().length() > 0
+        ) {
+            findMap.put("queryStr", queryIds);
+        }
+        findMap.put("menuIsdisable", "1");
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+
+        List<Map<String, Object>> mapList = roleMenuService.findRoleMenuMapList(findMap);
+        List<Menu> menuList = roleMenuService.mapList2MenuList(mapList, null);
+        List<MenuEntity> entityLiset = roleMenuService.menuList2MenuEntityList(menuList, null);
+        roleMenuService.orderAcsByLayer(entityLiset);
+        model.putResult(entityLiset);
 
         Long endTime = System.currentTimeMillis();
         logger.info("################mainPage/listUserDefinedMenu 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
