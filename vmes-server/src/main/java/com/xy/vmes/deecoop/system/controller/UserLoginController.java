@@ -172,7 +172,8 @@ public class UserLoginController {
         }
 
         //2. 非超级管理员(账号)-比较当前登录企业账号-是否超过(有效期)
-        if (!"0".equals(userType)) {
+        //(userType_admin:超级管理员 userType_company:企业管理员 userType_employee:普通用户 userType_outer:外部用户)
+        if (!Common.DICTIONARY_MAP.get("userType_admin").equals(userType)) {
             String checkValidityDate = companyService.checkCompanyValidityDate(companyID);
             if (checkValidityDate != null && checkValidityDate.trim().length() > 0) {
                 model.putCode(Integer.valueOf(1));
