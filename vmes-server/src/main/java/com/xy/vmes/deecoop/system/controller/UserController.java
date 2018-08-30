@@ -246,13 +246,21 @@ public class UserController {
         String companyId = department.getId1();
         if(!StringUtils.isEmpty(companyId)){
             user.setCompanyId(companyId);
-            String code = coderuleService.createCoder(companyId,"vmes_user");
-            if(StringUtils.isEmpty(code)){
-                model.putCode(4);
-                model.putMsg("编码规则创建异常，请重新操作！");
+            if(StringUtils.isEmpty(user.getUserCode())){
+                String code = coderuleService.createCoder(companyId,"vmes_user");
+                if(StringUtils.isEmpty(code)){
+                    model.putCode(4);
+                    model.putMsg("编码规则创建异常，请重新操作！");
+                    return model;
+                }
+                user.setUserCode(code);
+            }
+            if(isExistUserCode(user.getUserCode())){
+                model.putCode(5);
+                model.putMsg("该用户账号号已存在！");
                 return model;
             }
-            user.setUserCode(code);
+
         }else{
             //如果没有公司ID，那么就是创建根节点下的管理员账号，这个时候定义的用户名就是账号
             user.setCompanyId(department.getId0());
@@ -260,7 +268,7 @@ public class UserController {
         }
 
         if(isExistMobile(pd)){
-            model.putCode(5);
+            model.putCode(6);
             model.putMsg("该用户手机号已存在！");
             return model;
         }
@@ -325,6 +333,17 @@ public class UserController {
 
     private boolean isExistMobile(PageData pd) throws Exception {
         boolean isExist = userService.isExistMobile(pd);
+        return isExist;
+    }
+
+    private boolean isExistUserCode(String userCode) throws Exception {
+        boolean isExist = false;
+        PageData pd = new PageData();
+        pd.putQueryStr("user_code = '"+userCode+"'");
+        List<Map> userList = userService.findDataList(pd);
+        if(userList!=null&&userList.size()>0){
+            isExist = true;
+        }
         return isExist;
     }
 

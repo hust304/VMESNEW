@@ -532,13 +532,15 @@ public class DictionaryController {
         PageData pd = HttpUtils.parsePageData();
         String dictionaryKey = pd.getString("dictionaryKey");
         String pid = Common.DICTIONARY_MAP.get(dictionaryKey);
-        pd.put("queryStr","(isdisable = '1' and pid = '"+pid+"')");
+        pd.put("queryStr","(isdisable = '1' and pid = '"+pid+"' "+ pd.getString("queryStr")+" )");
         List<Map> dictionaryList = dictionaryService.findDataList(pd);
         model.putResult(dictionaryList);
         Long endTime = System.currentTimeMillis();
         logger.info("################dictionary/dataListDictionarys 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
+
+
 
 }
 

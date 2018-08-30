@@ -73,10 +73,12 @@ public class User implements Serializable {
 	//预留字段
 	@TableField("column_3")
 	private String column3;
-	//用户类型(0:超级管理员1:企业管理员2:普通用户)数据字典:sys_usertype
+	//用户类型(userType_admin:超级管理员 userType_company:企业管理员 userType_employee:普通用户 userType_outer:外部用户)数据字典
 	@TableField("user_type")
 	private String userType;
-
+	//备注
+	@TableField("remark")
+	private String remark;
 
 
 
@@ -199,6 +201,12 @@ public class User implements Serializable {
 	}
 	public String getUserType() {
 		return userType;
+	}
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
+	public String getRemark() {
+		return remark;
 	}
 
 /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/

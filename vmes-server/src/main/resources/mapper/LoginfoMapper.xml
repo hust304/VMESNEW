@@ -17,9 +17,9 @@
 		type type,<!-- 日志类型 operate:操作日志 state:状态日志 -->
 		business_id businessId,<!-- 业务单ID -->
 		business_type businessType,<!-- 业务类别(1:生产计划 2:产品 3:部门 4:部门子计划 5:派工单 6:子派工单) -->
-		source source,<!-- 操作来源(app:终端操作 web:web端操作 sys:系统产生) -->
+        source  source,<!-- 操作来源(app:终端操作 web:web端操作 sys:系统产生) -->
 		model_name modelName,<!-- 模块名称 -->
-		operate operate,<!-- 业务操作类型 (add,update,delete) -->
+        operate  operate,<!-- 业务操作类型 (add,update,delete) -->
 		remark remark,<!-- 备注 -->
 		cdate cdate,<!-- 创建时间 -->
 		cuser cuser,<!-- 创建人账号 -->
@@ -137,6 +137,7 @@
 
 
     <insert id="insertColumn" >
+        delete from vmes_column where model_code = 'LogInfo' ;
         insert into vmes_column (
         id,model_code,title_key,title_name,serial_number,
         isdisable,ishide,isedit,ismust,cdate,
@@ -154,8 +155,8 @@
             (replace(uuid(), '-', ''),'LogInfo','operateValue','业务id字符串',10, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'LogInfo','udate','修改时间',11, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'LogInfo','uuser','修改人账号',12, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'LogInfo','userCode','操作人账号',13, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'LogInfo','userName','操作人姓名',14, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'LogInfo','userCode','操作人账号',13, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'LogInfo','userName','操作人姓名',14, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'LogInfo','operateUrl','请求URL',15, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'LogInfo','id','id',0, '1','0','1','0',now(), 'admin')
     </insert>
@@ -217,9 +218,9 @@
         t.type type,<!-- 日志类型 operate:操作日志 state:状态日志 -->
         t.business_id businessId,<!-- 业务单ID -->
         t.business_type businessType,<!-- 业务类别(1:生产计划 2:产品 3:部门 4:部门子计划 5:派工单 6:子派工单) -->
-        t.source source,<!-- 操作来源(app:终端操作 web:web端操作 sys:系统产生) -->
+        case when t.source='app' then '终端操作' when t.source='web' then 'WEB操作' else '系统生成' end  source,<!-- 操作来源(app:终端操作 web:web端操作 sys:系统产生) -->
         t.model_name modelName,<!-- 模块名称 -->
-        t.operate operate,<!-- 业务操作类型 (add,update,delete) -->
+        case when t.operate='add' then '新增' when t.operate='update' then '修改' when t.operate='delete' then '删除' else null end  operate,<!-- 业务操作类型 (add,update,delete) -->
         t.remark remark,<!-- 备注 -->
         t.cdate cdate,<!-- 创建时间 -->
         t.cuser cuser,<!-- 创建人账号 -->
@@ -277,6 +278,9 @@
             <if test="userName != null and userName != ''">
                 and u.user_name LIKE CONCAT(CONCAT('%', #{userName}),'%')
             </if>
+            <if test="cdate!= null and cdate != ''"><!-- 关键词检索 -->
+                <![CDATA[ and a.cdate >= #{startDate} and a.cdate <=  #{endDate}]]>
+            </if>
         </where>
         <if test="orderStr != null and orderStr != ''" >
             order by ${orderStr}
@@ -300,6 +304,9 @@
             </if>
             <if test="userName != null and userName != ''">
                 and u.user_name LIKE CONCAT(CONCAT('%', #{userName}),'%')
+            </if>
+            <if test="cdate!= null and cdate != ''"><!-- 关键词检索 -->
+                <![CDATA[ and t.cdate >= #{startDate} and t.cdate <=  #{endDate}]]>
             </if>
         </where>
         <if test="orderStr != null and orderStr != ''" >

@@ -352,6 +352,7 @@ public class CompanyController {
 
         User user = new User();
         user.setCompanyId(companyObj.getId());
+        user.setDeptId(companyObj.getId());
 //        String userCode = coderuleService.createCoder(companyObj.getId(), "vmes_user");
         String userCode = companyObj.getCode()+"admin";
         user.setUserCode(userCode);
@@ -359,8 +360,8 @@ public class CompanyController {
         user.setMobile(mobile);
         user.setEmail(email);
         user.setPassword(MD5Utils.MD5(Common.DEFAULT_PASSWORD));
-        //用户类型(0:超级管理员1:企业管理员2:普通用户3:外部用户)
-        user.setUserType("1");
+        //用户类型(userType_admin:超级管理员 userType_company:企业管理员 userType_employee:普通用户 userType_outer:外部用户)
+        user.setUserType(Common.DICTIONARY_MAP.get("userType_company"));
         userService.save(user);
 
         //5. 创建(用户角色)

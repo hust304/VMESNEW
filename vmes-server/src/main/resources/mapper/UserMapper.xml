@@ -292,13 +292,18 @@
         (replace(uuid(), '-', ''),'user','deptName','所属部门',7, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'user','companyName','所属公司',8, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'user','isdisable','是否启用',9, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'user','cdate','创建时间',10, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'user','employeeCode','员工',10, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'user','remark','备注',11, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'user','cdate','创建时间',12, '1','0','1','0',now(), 'admin'),
 
-        (replace(uuid(), '-', ''),'user','employId','员工ID',11, '1','0','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'user','roleId','角色ID',12, '1','0','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'user','deptId','部门ID',13, '1','0','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'user','companyId','公司ID',14, '1','0','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'user','userType','用户类型ID',15, '1','0','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'user','employeeId','员工ID',13, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'user','roleId','角色ID',14, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'user','deptId','部门ID',15, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'user','companyId','公司ID',16, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'user','userType','用户类型ID',17, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'user','password','密码',18, '1','0','1','0',now(), 'admin'),
+
         (replace(uuid(), '-', ''),'user','id','id',0, '1','0','1','0',now(), 'admin')
     </insert>
 
@@ -306,12 +311,16 @@
     <sql id="Field1">
         vmesuser.user_code userCode,<!-- 账号(系统登录账号) -->
         vmesuser.user_name userName,<!-- 姓名 -->
+        vmesuser.password password,
+        vmesuser.remark remark,
         dictionary.name userTypeName,<!-- 用户类型名称 -->
         vmesuser.user_type userType,<!-- 用户类型ID -->
         vmesuser.mobile mobile,<!-- 手机号码 -->
         vmesuser.email email,<!-- 邮箱地址 -->
         vmesuser.isdisable isdisable,<!-- 是否禁用(0:已禁用 1:启用) 数据字典:sys_isdisable -->
         vmesuser.employ_id employId,<!-- 员工ID -->
+        employee.id employeeId,
+        employee.code employeeCode,
         department.id deptId,<!-- 部门ID -->
         department.name deptName,<!-- 所属部门 -->
         company.id companyId,<!-- 公司ID-组织架构 -->
@@ -378,6 +387,7 @@
         left join vmes_role role on role.id = userrole.role_id
         left join vmes_dictionary dictionary on vmesuser.user_type = dictionary.id
         left join vmes_department department on department.id = vmesuser.dept_id
+        left join vmes_employee employee on employee.id = vmesuser.employ_id
         <where>
 
             <if test="userCode!= null and userCode != ''"><!-- 关键词检索 -->
