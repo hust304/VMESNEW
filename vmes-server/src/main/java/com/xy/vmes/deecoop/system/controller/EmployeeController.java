@@ -3,6 +3,7 @@ package com.xy.vmes.deecoop.system.controller;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.google.gson.Gson;
 import com.xy.vmes.common.util.ColumnUtil;
+import com.xy.vmes.common.util.Common;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.*;
 import com.xy.vmes.service.*;
@@ -539,7 +540,7 @@ public class EmployeeController {
      * @author 刘威
      * @date 2018-08-02
      */
-    @PostMapping("/employee/addEmployToUser")
+    @PostMapping("/employee/")
     public ResultModel addEmployToUser()  throws Exception {
 //        employRoles ="[{\"employId\":\"3\",\"roleId\":\"1\"}," +
 //                "{\"employId\":\"3\",\"roleId\":1532599975000}," +
@@ -636,48 +637,93 @@ public class EmployeeController {
      */
     @PostMapping("/employee/addEmployeePluralityPost")
     public ResultModel addEmployeePluralityPost()  throws Exception {
-
         logger.info("################employee/addEmployeePluralityPost 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
+
         ResultModel model = new ResultModel();
-        PageData pd = HttpUtils.parsePageData();
+        PageData pageData = HttpUtils.parsePageData();
+        String employeeId = (String)pageData.get("employeeId");
+        String postIds = (String)pageData.get("postIds");
 
-
-        String employPluralityPosts = pd.getString("employPluralityPosts");
-
-//        employRoles ="[{\"employeeId\":\"3\",\"postId\":\"1\"}," +
-//                "{\"employeeId\":\"3\",\"postId\":1532599975000}," +
-//                "{\"employeeId\":\"3\",\"postId\":1532601003000}," +
-//                "{\"employeeId\":\"3\",\"postId\":1532600923000}," +
-//                "{\"employeeId\":\"3\",\"postId\":1532600802000}," +
-//                "{\"employeeId\":\"3\",\"postId\":1532601034000}]";
-
-        List employPluralityPostsList = YvanUtil.jsonToList(employPluralityPosts);
-        if(employPluralityPostsList!=null&&employPluralityPostsList.size()>0){
-            for(int i=0;i<employPluralityPostsList.size();i++){
-                Map employPluralityPostsMap = (Map)employPluralityPostsList.get(i);
-                if(employPluralityPostsMap!=null){
-                    if(employPluralityPostsMap.get("employeeId")!=null && employPluralityPostsMap.get("postId")!=null){
-                        Employee employee = employeeService.selectById(employPluralityPostsMap.get("employeeId").toString());
-                        //新增员工兼岗信息
-                        EmployPost employPost = new EmployPost();
-                        employPost.setEmployId(employee.getId());
-                        employPost.setPostId(employPluralityPostsMap.get("postId").toString());
-                        employPost.setCuser(pd.getString("cuser"));
-                        employPost.setUuser(pd.getString("uuser"));
-                        employPost.setIsplurality("1");//兼岗
-                        employPostService.save(employPost);
-                    }
-                }
-            }
+        String msgStr = new String();
+        if (employeeId == null || employeeId.trim().length() == 0) {
+            msgStr = msgStr + "员工id为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT;
         }
+        if (postIds == null || postIds.trim().length() == 0) {
+            msgStr = msgStr + "岗位id为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT;
+        }
+        if (msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
+
+        //1. 删除(员工id, 兼岗)(vmes_employ_post)数据
+        Map columnMap = new HashMap();
+        columnMap.put("employ_id", employeeId);
+        //是否兼岗(1:兼岗0:主岗)
+        columnMap.put("isplurality", "1");
+        employPostService.deleteByColumnMap(columnMap);
+
+        postIds = StringUtil.stringTrimSpace(postIds);
+        String[] postIdArry = postIds.split(",");
+        for(int i = 0; i < postIdArry.length; i++){
+            String postId = postIdArry[i];
+            //新增员工兼岗信息
+            EmployPost employPost = new EmployPost();
+            employPost.setEmployId(employeeId);
+            employPost.setPostId(postId);
+            employPost.setCuser(pageData.getString("cuser"));
+            //是否兼岗(1:兼岗0:主岗)
+            employPost.setIsplurality("1");
+            employPostService.save(employPost);
+        }
+
         Long endTime = System.currentTimeMillis();
         logger.info("################employee/addEmployeePluralityPost 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
+    /**
+     * 1. 员工id查询(vmes_employ_post)主岗-表对象
+     * 2. 如果存在(员工id, old岗位id)设置禁用
+     * 3. 插入数据(员工id, new岗位id)设置主岗
+     *
+     * @return
+     * @throws Exception
+     */
+    @PostMapping("/employee/addEmployeeMainPost")
+    public ResultModel addEmployeeMainPost()  throws Exception {
+        logger.info("################employee/addEmployeeMasterPost 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
 
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+        String employeeId = (String)pageData.get("employeeId");
+        String postId = (String)pageData.get("postId");
+
+        //1. 员工id查询(vmes_employ_post)主岗
+        EmployPost mainEmployPost = employPostService.findMainEmployPost(employeeId);
+        if (mainEmployPost != null) {
+            //是否禁用(0:已禁用 1:启用)
+            mainEmployPost.setIsdisable("0");
+            mainEmployPost.setUuser(pageData.getString("uuser"));
+            employPostService.update(mainEmployPost);
+        }
+
+        //2. 插入数据(员工id, new岗位id)设置主岗
+        EmployPost newEmployPost = new EmployPost();
+        newEmployPost.setEmployId(employeeId);
+        newEmployPost.setPostId(postId);
+        //是否兼岗(1:兼岗0:主岗)
+        newEmployPost.setIsplurality("0");
+        newEmployPost.setCuser(pageData.getString("cuser"));
+        employPostService.save(newEmployPost);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################employee/addEmployeeMasterPost 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
 
 
     /**

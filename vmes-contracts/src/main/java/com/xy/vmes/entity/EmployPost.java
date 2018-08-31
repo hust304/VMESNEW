@@ -25,7 +25,7 @@ public class EmployPost implements Serializable {
 	//岗位ID
 	@TableField("post_id")
 	private String postId;
-	//是否兼岗(Y:兼岗N:主岗) 数据字典:sys_isplurality
+	//是否兼岗(1:兼岗0:主岗) 数据字典:sys_isplurality
 	@TableField("isplurality")
 	private String isplurality;
 	//是否禁用(0:已禁用 1:启用) 数据字典:sys_isdisable

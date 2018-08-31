@@ -117,6 +117,10 @@ public interface EmployPostService {
      */
     void updateToDisableByEmployIds(String[] ids) throws Exception;
 
+    List<EmployPost> findEmployPostList(PageData object);
+    EmployPost findEmployPost(PageData object);
+    EmployPost findEmployPostById(String id);
+    EmployPost findMainEmployPost(String employId);
 }
 
 

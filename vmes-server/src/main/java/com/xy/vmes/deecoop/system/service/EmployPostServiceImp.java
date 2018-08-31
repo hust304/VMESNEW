@@ -2,9 +2,11 @@ package com.xy.vmes.deecoop.system.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.deecoop.system.dao.EmployPostMapper;
+import com.xy.vmes.entity.Department;
 import com.xy.vmes.entity.EmployPost;
 import com.xy.vmes.service.EmployPostService;
 import com.yvan.PageData;
+import com.yvan.platform.RestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -37,7 +39,6 @@ public class EmployPostServiceImp implements EmployPostService {
     public void save(EmployPost employPost) throws Exception{
         employPost.setId(Conv.createUuid());
         employPost.setCdate(new Date());
-        employPost.setUdate(new Date());
         employPostMapper.insert(employPost);
     }
 
@@ -183,7 +184,51 @@ public class EmployPostServiceImp implements EmployPostService {
         employPostMapper.updateToDisableByEmployIds(ids);
     }
 
+    public List<EmployPost> findEmployPostList(PageData object) {
+        if (object == null) {return null;}
 
+        List<EmployPost> objectList = null;
+        try {
+            objectList = this.dataList(object);
+        } catch (Exception e) {
+            throw new RestException("", e.getMessage());
+        }
+
+        return objectList;
+    }
+
+    public EmployPost findEmployPost(PageData object) {
+        if (object == null) {return null;}
+
+        List<EmployPost> objectList = this.findEmployPostList(object);
+        if (objectList != null && objectList.size() > 0) {
+            return objectList.get(0);
+        }
+
+        return null;
+    }
+
+    public EmployPost findEmployPostById(String id) {
+        if (id == null || id.trim().length() == 0) {return null;}
+
+        PageData findMap = new PageData();
+        findMap.put("id", id);
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+        return this.findEmployPost(findMap);
+    }
+
+    public EmployPost findMainEmployPost(String employId) {
+        if (employId == null || employId.trim().length() == 0) {return null;}
+
+        PageData findMap = new PageData();
+        findMap.put("employId", employId);
+        //是否兼岗(1:兼岗0:主岗) 数据字典:sys_isplurality
+        findMap.put("isplurality", "0");
+        //是否禁用(0:已禁用 1:启用) 数据字典:sys_isdisable
+        findMap.put("isdisable", "1");
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+        return this.findEmployPost(findMap);
+    }
 }
 
 
