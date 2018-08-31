@@ -88,8 +88,9 @@ public class fileController {
         includesuffixs[0]="jpg";
         includesuffixs[1]="png";
         includesuffixs[2]="jpeg";
-        int maxSize = 5;//文件最大5M
-        String photoUrl = FileUploadUtils.uploadFile(file,absolutePath,relativePath, Long.valueOf(maxSize),includesuffixs);
+        String photoUrl = FileUploadUtils.uploadFile(file,absolutePath,relativePath, Long.valueOf(5),includesuffixs);
+        System.out.println("photoUrl:" + photoUrl);
+
         model.put("photo",photoUrl);
         model.putMsg("图片上传成功！");
 

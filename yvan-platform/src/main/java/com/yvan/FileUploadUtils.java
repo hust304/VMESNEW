@@ -58,15 +58,24 @@ public class FileUploadUtils {
   public static String uploadFile(MultipartFile multipartFile, String absolutePath,
                                   String relativePath,String  filePrefix,Long maxSize, String[] includesuffixs)
           throws Exception {
-    String realAbsolutePath = initPath(absolutePath + relativePath);
-    String fileName = multipartFile.getOriginalFilename();
+      String today = new SimpleDateFormat("yyyyMMdd").format(new Date());
+      relativePath = relativePath + today;
+      String realAbsolutePath = absolutePath + relativePath;
+
+      String fileName = multipartFile.getOriginalFilename();
     if (StringUtils.isEmpty(fileName)) {
       return null;
     }
     String[] split = fileName.split("\\.");
     String suffix = split.length >= 2 ? split[split.length - 1] : "temp";
     canUpload(multipartFile, suffix, maxSize, includesuffixs);
-    String destFileName = realAbsolutePath +"/"+ filePrefix + "." + suffix;
+
+    //获取文件相对路径
+    String filePath = relativePath + "/" + filePrefix + "." + suffix;
+
+    //文件上传绝对路径
+    String destFileName = realAbsolutePath + "/" + filePrefix + "." + suffix;
+
     File destFile = new File(destFileName);
     if(!destFile.getParentFile().exists()){				//判断有没有父路径，就是判断文件整个路径是否存在
       destFile.getParentFile().mkdirs();				//不存在就全部创建
@@ -84,7 +93,7 @@ public class FileUploadUtils {
         stream.close();
       }
     }
-    return destFileName.replace(absolutePath, "");
+    return filePath;
   }
 
 
