@@ -34,7 +34,7 @@ public class FileUploadUtils {
    * @throws Exception
    */
   public static String uploadFile(MultipartFile multipartFile, String absolutePath,
-                                                                String relativePath, long maxSize, String[] includesuffixs)
+                                                                String relativePath, Long maxSize, String[] includesuffixs)
         throws Exception {
 
     String filePrefix =
@@ -56,7 +56,7 @@ public class FileUploadUtils {
    * @throws Exception
    */
   public static String uploadFile(MultipartFile multipartFile, String absolutePath,
-                                  String relativePath,String  filePrefix,long maxSize, String[] includesuffixs)
+                                  String relativePath,String  filePrefix,Long maxSize, String[] includesuffixs)
           throws Exception {
     String realAbsolutePath = initPath(absolutePath + relativePath);
     String fileName = multipartFile.getOriginalFilename();
@@ -222,13 +222,27 @@ public static String uploadByteFile(byte[] bytes, String absolutePath,
     }
   }
 
-  private static void canUpload(MultipartFile multipartFile, String suffix, long maxSize,
+  private static void canUpload(MultipartFile multipartFile, String suffix, Long maxSize,
                                 String[] includesuffixs) throws IOException {
     if (multipartFile == null || multipartFile.getSize() == 0) {
       throw new IOException("上传文件不存在");
     }
-    if (multipartFile.getSize() > maxSize * 1024) {
-      throw new IOException("上传文件不能超过  " + maxSize + " K");
+    //获取文件大小(单位B)字节
+    long filsSize = 0;
+    if (multipartFile != null) {
+      filsSize = multipartFile.getSize();
+    }
+    //System.out.println("filsSize: " + filsSize);
+
+    //获取最大文件大小(单位M)
+    long maxFilsSize = 0;
+    if (maxSize != null) {
+      maxFilsSize = maxSize.longValue() * 1024 * 1024;
+    }
+    //System.out.println("maxFilsSize: " + maxFilsSize);
+
+    if (maxSize != null && (filsSize > maxFilsSize) ) {
+      throw new IOException("上传文件不能超过  " + maxSize + " M");
     }
     if (includesuffixs == null || includesuffixs.length == 0) {
       return;
@@ -256,7 +270,7 @@ public static String uploadByteFile(byte[] bytes, String absolutePath,
         throw new Exception("文件上传格式不正确!");
       }
       if (null != pictureFile && !pictureFile.isEmpty()) {
-        return uploadFile(pictureFile, upload_absolute_path, upload_relative_path, 10240,
+        return uploadFile(pictureFile, upload_absolute_path, upload_relative_path, null,
                 new String[]{"jpg", "png", "bmp", "gif"});
       }
     }

@@ -1,26 +1,20 @@
 package com.xy.vmes.deecoop.fileio.controller;
 
-import com.yvan.ExcelUtil;
 import com.yvan.FileUploadUtils;
 import com.yvan.HttpUtils;
-import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
-import com.yvan.template.ExcelAjaxTemplate;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 说明：文件IO Controller
@@ -73,25 +67,21 @@ public class fileController {
      * @author 刘威
      * @date 2018-08-02
      */
-    @GetMapping("/file/uploadEmployeePhoto")
-    public ResultModel uploadEmployeePhoto()  throws Exception {
-
+    @PostMapping("/file/uploadEmployeePhoto")
+    public ResultModel uploadEmployeePhoto(@RequestParam("fileName") MultipartFile file)  throws Exception {
         logger.info("################file/uploadEmployeePhoto 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
+
         ResultModel model = new ResultModel();
         HttpServletResponse response  = HttpUtils.currentResponse();
         HttpServletRequest request  = HttpUtils.currentRequest();
-        PageData pd = HttpUtils.parsePageData();
-
-        MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
-        MultipartFile photoFile = multipartRequest.getFile("photo");
 
         String path = (String.valueOf(Thread.currentThread().getContextClassLoader().getResource(""))+"../../../../").replaceAll("file:/", "").replaceAll("%20", " ").trim();
         if(path.indexOf(":") != 1){
             path = File.separator + path;
         }
 
-        String absolutePath = path+"yvan-file/";//上传文件的绝对路径
+        String absolutePath = path+"vmes-file/";//上传文件的绝对路径
         String relativePath = "employee/photo/";//上传文件的相对路径
 
         String[] includesuffixs = new String[3];//上传的文件类型，包括jpg、png、jpeg
@@ -99,7 +89,7 @@ public class fileController {
         includesuffixs[1]="png";
         includesuffixs[2]="jpeg";
         int maxSize = 5;//文件最大5M
-        String photoUrl = FileUploadUtils.uploadFile(photoFile,absolutePath,relativePath,maxSize,includesuffixs);
+        String photoUrl = FileUploadUtils.uploadFile(file,absolutePath,relativePath, Long.valueOf(maxSize),includesuffixs);
         model.put("photo",photoUrl);
         model.putMsg("图片上传成功！");
 
@@ -108,6 +98,13 @@ public class fileController {
         return model;
     }
 
+//    @PostMapping("/file/uploadEmployeePhoto")
+//    public ResultModel uploadEmployeePhoto(@RequestParam("fileName") MultipartFile file) throws Exception {
+        HttpServletResponse response  = HttpUtils.currentResponse();
+        HttpServletRequest request  = HttpUtils.currentRequest();
+//        System.out.println("in uploadEmployeePhoto()");
+//        return null;
+//    }
 
 //    public static void main(String[] args) throws Exception {
 //        File destFile = new File("D://test111/test222/test333/test.txt");
