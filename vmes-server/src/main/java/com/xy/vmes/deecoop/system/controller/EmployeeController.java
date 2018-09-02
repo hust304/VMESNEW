@@ -726,20 +726,13 @@ public class EmployeeController {
             employPostService.update(mainEmployPost);
         }
 
-        //(员工id, 岗位id, 兼岗)查询(vmes_employ_post)表记录
-        PageData findMap = new PageData();
-        findMap.put("employId", employeeId);
-        findMap.put("postId", postId);
+        //删除(员工id, 岗位id, 兼岗)查询(vmes_employ_post)表记录
+        Map columnMap = new HashMap();
+        columnMap.put("employ_id", employeeId);
+        columnMap.put("post_id", postId);
         //是否兼岗(1:兼岗0:主岗)
-        findMap.put("isplurality", "1");
-        findMap.put("mapSize", Integer.valueOf(findMap.size()));
-        EmployPost otherEmployPost = employPostService.findEmployPost(findMap);
-        if (otherEmployPost != null) {
-            //是否禁用(0:已禁用 1:启用)
-            otherEmployPost.setIsdisable("0");
-            otherEmployPost.setUuser(pageData.getString("uuser"));
-            employPostService.update(otherEmployPost);
-        }
+        columnMap.put("isplurality", "1");
+        employPostService.deleteByColumnMap(columnMap);
 
         //2. 插入数据(员工id, new岗位id)设置主岗
         EmployPost newEmployPost = new EmployPost();
