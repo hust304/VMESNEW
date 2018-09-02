@@ -692,7 +692,7 @@ public class EmployeeController {
      * @return
      * @throws Exception
      */
-    @PostMapping("/employee/addEmployeeMainPost")
+    @GetMapping("/employee/addEmployeeMainPost")
     public ResultModel addEmployeeMainPost()  throws Exception {
         logger.info("################employee/addEmployeeMasterPost 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -702,13 +702,43 @@ public class EmployeeController {
         String employeeId = (String)pageData.get("employeeId");
         String postId = (String)pageData.get("postId");
 
-        //1. 员工id查询(vmes_employ_post)主岗
+        String msgStr = new String();
+        if (employeeId == null || employeeId.trim().length() == 0) {
+            msgStr = msgStr + "员工id为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT;
+        }
+        if (postId == null || postId.trim().length() == 0) {
+            msgStr = msgStr + "岗位id为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT;
+        }
+        if (msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
+
+        //员工id查询(vmes_employ_post)主岗
         EmployPost mainEmployPost = employPostService.findMainEmployPost(employeeId);
-        if (mainEmployPost != null) {
+        if (mainEmployPost != null && postId.equals(mainEmployPost.getPostId())) {
+            return model;
+        } else if (mainEmployPost != null && !postId.equals(mainEmployPost.getPostId())) {
             //是否禁用(0:已禁用 1:启用)
             mainEmployPost.setIsdisable("0");
             mainEmployPost.setUuser(pageData.getString("uuser"));
             employPostService.update(mainEmployPost);
+        }
+
+        //(员工id, 岗位id, 兼岗)查询(vmes_employ_post)表记录
+        PageData findMap = new PageData();
+        findMap.put("employId", employeeId);
+        findMap.put("postId", postId);
+        //是否兼岗(1:兼岗0:主岗)
+        findMap.put("isplurality", "1");
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+        EmployPost otherEmployPost = employPostService.findEmployPost(findMap);
+        if (otherEmployPost != null) {
+            //是否禁用(0:已禁用 1:启用)
+            otherEmployPost.setIsdisable("0");
+            otherEmployPost.setUuser(pageData.getString("uuser"));
+            employPostService.update(otherEmployPost);
         }
 
         //2. 插入数据(员工id, new岗位id)设置主岗
