@@ -726,7 +726,7 @@ public class EmployeeController {
             employPostService.update(mainEmployPost);
         }
 
-        //删除(员工id, 岗位id, 兼岗)查询(vmes_employ_post)表记录
+        //删除(员工id, 岗位id, 兼岗)-(vmes_employ_post)表记录
         Map columnMap = new HashMap();
         columnMap.put("employ_id", employeeId);
         columnMap.put("post_id", postId);
