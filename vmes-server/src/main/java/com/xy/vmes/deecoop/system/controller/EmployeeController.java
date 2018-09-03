@@ -43,21 +43,19 @@ public class EmployeeController {
 
     @Autowired
     private EmployeeService employeeService;
-
     @Autowired
-    private UserService userService;
-
-    @Autowired
-    private UserRoleService userRoleService;
-
+    private PostService postService;
     @Autowired
     private EmployPostService employPostService;
 
     @Autowired
-    private DepartmentService departmentService;
+    private UserService userService;
+    @Autowired
+    private UserRoleService userRoleService;
 
     @Autowired
-    private PostService postService;
+    private DepartmentService departmentService;
+
 
     @Autowired
     private ColumnService columnService;
@@ -414,7 +412,40 @@ public class EmployeeController {
         return model;
     }
 
+    @PostMapping("/employee/updateDisableEmployee")
+    public ResultModel updateDisableEmployee()  throws Exception {
+        logger.info("################employee/updateDisableEmployee 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
 
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        //id:主键id-(vmes_employ_post:员工岗位表)
+        String id = (String)pageData.get("id");
+        String isdisable = (String)pageData.get("isdisable");
+
+        String msgStr = new String();
+        if (id == null || id.trim().length() == 0) {
+            msgStr = msgStr + "id为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT;
+        }
+        if (isdisable == null || isdisable.trim().length() == 0) {
+            msgStr = msgStr + "isdisable为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT;
+        }
+        if (msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
+
+        EmployPost employPostDB = employPostService.findEmployPostById(id);
+        employPostDB.setIsdisable(isdisable);
+        employPostDB.setUuser(pageData.getString("uuser"));
+        employPostService.update(employPostDB);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################employee/updateDisableEmployee 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
 
 
     /**
@@ -423,22 +454,40 @@ public class EmployeeController {
      */
     @PostMapping("/employee/deleteEmployees")
     public ResultModel deleteEmployees()  throws Exception {
-
         logger.info("################employee/deleteEmployees 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
+
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
 
+        String employeeIds = pd.getString("employeeIds");
+        if (employeeIds == null || employeeIds.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("参数错误：请至少选择一行数据！");
+            return model;
+        }
 
-        String employeeIds = pd.getString("ids");
-        String[] ids = employeeIds.split(",");
+        //去除相同的id
+        Map<String, String> mapTemp = new HashMap<String, String>();
+        String[] idArray = employeeIds.split(",");
+        for (String id : idArray) {
+            mapTemp.put(id, id);
+        }
+
+        int i = 0;
+        String[] idNewArry = new String[mapTemp.size()];
+        for (Iterator iterator = mapTemp.keySet().iterator(); iterator.hasNext();) {
+            String mapKey = (String)iterator.next();
+            idNewArry[i] = mapKey;
+            i = i + 1;
+        }
+
         //禁用员工信息
-        employeeService.updateToDisableByIds(ids);
+        employeeService.updateToDisableByIds(idNewArry);
         //禁用用户信息
-        userService.updateToDisableByEmployIds(ids);
+        userService.updateToDisableByEmployIds(idNewArry);
         //禁用用户岗位信息
-        employPostService.updateToDisableByEmployIds(ids);
+        employPostService.updateToDisableByEmployIds(idNewArry);
 
         Long endTime = System.currentTimeMillis();
         logger.info("################employee/deleteEmployees 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
