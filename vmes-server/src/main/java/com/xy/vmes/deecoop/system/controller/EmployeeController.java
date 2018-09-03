@@ -264,7 +264,7 @@ public class EmployeeController {
             model.putMsg("手机号不能为空！");
             return model;
         }
-        if (mobile.trim().length() < 11) {
+        if (mobile.trim().length() != 11) {
             model.putCode(1);
             model.putMsg("手机号长度错误！");
             return model;
@@ -343,7 +343,11 @@ public class EmployeeController {
             model.putMsg("手机号不能为空！");
             return model;
         }
-
+        if (mobile.trim().length() != 11) {
+            model.putCode(1);
+            model.putMsg("手机号长度错误！");
+            return model;
+        }
         //手机号唯一性判断(vmes_employee:员工表)
         if (employeeService.isExistByMobile(employeeId, mobile)) {
             model.putCode(1);
@@ -393,7 +397,7 @@ public class EmployeeController {
                 Map columnMap = new HashMap();
                 columnMap.put("user_id", userId);
                 columnMap.put("role_id", roleId);
-                //userRoleService.deleteByColumnMap(columnMap);
+                userRoleService.deleteByColumnMap(columnMap);
 
                 //新增用户角色信息
                 UserRole userRole = new UserRole();
@@ -401,7 +405,7 @@ public class EmployeeController {
                 userRole.setUserId(user.getId());
                 userRole.setCuser(pd.getString("cuser"));
                 userRole.setUuser(pd.getString("uuser"));
-                //userRoleService.save(userRole);
+                userRoleService.save(userRole);
             }
         }
 

@@ -58,7 +58,7 @@ public class FileUploadUtils {
   public static String uploadFile(MultipartFile multipartFile, String absolutePath,
                                   String relativePath,String  filePrefix,Long maxSize, String[] includesuffixs)
           throws Exception {
-      String today = new SimpleDateFormat("yyyyMMdd").format(new Date());
+      String today = new SimpleDateFormat("yyyyMM").format(new Date());
       relativePath = relativePath + today;
       String realAbsolutePath = absolutePath + relativePath;
 
