@@ -400,6 +400,7 @@ public class RoleController {
         role.setCuser(userId);
         role.setCode(code);
         role.setName(name);
+        role.setRemark(pageData.getString("remark"));
         roleService.save(role);
         Long endTime = System.currentTimeMillis();
         logger.info("################role/addRole 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
@@ -452,6 +453,7 @@ public class RoleController {
         //3. 修改角色
         Role objectDB = roleService.findRoleById(id);
         objectDB.setName(name);
+        objectDB.setRemark(pageData.getString("remark"));
         roleService.update(objectDB);
         Long endTime = System.currentTimeMillis();
         logger.info("################role/updateRole 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");

@@ -223,6 +223,7 @@
         <!--查询显示字段-->
         code code,
         name name,
+        remark remark,
         isdisable
     </sql>
     <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
