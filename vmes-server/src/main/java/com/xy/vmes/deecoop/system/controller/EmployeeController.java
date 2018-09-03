@@ -216,7 +216,15 @@ public class EmployeeController {
     }
 
     private boolean isExistMobile(PageData pd) throws Exception {
-        boolean isExist = userService.isExistMobile(pd);
+        PageData findMap = new PageData();
+        findMap.put("mobile", (String)pd.get("mobile"));
+
+        String userId = (String)pd.get("userId");
+        if (userId != null && userId.trim().length() > 0) {
+            findMap.put("id", userId);
+        }
+
+        boolean isExist = userService.isExistMobile(findMap);
         return isExist;
     }
 
@@ -242,7 +250,6 @@ public class EmployeeController {
 
         logger.info("################employee/addEmployeeAndUser 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         String postId = pd.getString("postId");
@@ -262,7 +269,15 @@ public class EmployeeController {
             model.putMsg("手机号长度错误！");
             return model;
         }
+
         mobile = mobile.trim();
+        //手机号唯一性判断(vmes_employee:员工表)
+        if (employeeService.isExistByMobile(null, mobile)) {
+            model.putCode(1);
+            model.putMsg("手机号:" + mobile + "在系统中已经存在，请核对后再次输入！");
+            return model;
+        }
+
         Post post = postService.selectById(postId);
         String  companyId = post.getCompanyId();
 
@@ -317,34 +332,43 @@ public class EmployeeController {
 
         logger.info("################employee/updateEmployeeAndUser 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
+
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
+        String employeeId = (String)pd.get("employeeId");
         String mobile = pd.getString("mobile");
+
         if(StringUtils.isEmpty(mobile)){
-            model.putCode(2);
+            model.putCode(1);
             model.putMsg("手机号不能为空！");
             return model;
         }
 
+        //手机号唯一性判断(vmes_employee:员工表)
+        if (employeeService.isExistByMobile(employeeId, mobile)) {
+            model.putCode(1);
+            model.putMsg("手机号:" + mobile + "在系统中已经存在，请核对后再次输入！");
+            return model;
+        }
 
         //修改员工信息
         Employee employee = (Employee)HttpUtils.pageData2Entity(pd, new Employee());
-        employee.setId(pd.getString("employId"));
+        employee.setId(employeeId);
+
         mobile = mobile.trim();
         employee.setMobile(mobile);
         employeeService.update(employee);
 
 
         //获取员工主岗信息，找到当前员工所在部门
-        String employId = employee.getId();
-        employee = employeeService.selectById(employId);
+        //String employId = employee.getId();
+        //employee = employeeService.selectById(employId);
 
         //判断是否拥有用户信息，如果没有则新增，如果有则修改
         String userId = employee.getUserId();
         if(StringUtils.isEmpty(userId)){
             //新增用户信息
-            EmployPost employPost = getMainEmployPost(employId);
+            EmployPost employPost = getMainEmployPost(employeeId);
             Post post = postService.selectById(employPost.getPostId());
             String deptId = post.getDeptId();
             pd.put("deptId",deptId);
@@ -358,29 +382,28 @@ public class EmployeeController {
         }else {
             //修改用户信息
             User user = userService.selectById(userId);
-            //校验输入的手机号是否存在
-            if(isExistMobile(pd)){
-                model.putCode(3);
-                model.putMsg("用户中该手机号已存在，请修改手机号！");
-                return model;
-            }
             user.setEmail(employee.getEmail());
             user.setEmployId(employee.getId());
             user.setMobile(employee.getMobile());
             user.setUuser(pd.getString("uuser"));
 
-            //删除用户角色信息
-            userRoleService.deleteRoleByUserId(user.getId());
-            //新增用户角色信息
-            UserRole userRole = new UserRole();
-            userRole.setRoleId(pd.getString("roleId"));
-            userRole.setUserId(user.getId());
-            userRole.setCuser(pd.getString("cuser"));
-            userRole.setUuser(pd.getString("uuser"));
-            userRoleService.save(userRole);
+            String roleId = (String)pd.get("roleId");
+            if (roleId != null && roleId.trim().length() > 0) {
+                //删除(用户id, 角色id)-(vmes_user_role:用户角色)
+                Map columnMap = new HashMap();
+                columnMap.put("user_id", userId);
+                columnMap.put("role_id", roleId);
+                //userRoleService.deleteByColumnMap(columnMap);
 
+                //新增用户角色信息
+                UserRole userRole = new UserRole();
+                userRole.setRoleId(pd.getString("roleId"));
+                userRole.setUserId(user.getId());
+                userRole.setCuser(pd.getString("cuser"));
+                userRole.setUuser(pd.getString("uuser"));
+                //userRoleService.save(userRole);
+            }
         }
-
 
         Long endTime = System.currentTimeMillis();
         logger.info("################employee/updateEmployeeAndUser 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
@@ -657,6 +680,8 @@ public class EmployeeController {
             model.putMsg(msgStr);
             return model;
         }
+
+
 
         //1. 删除(员工id, 兼岗)(vmes_employ_post)数据
         Map columnMap = new HashMap();

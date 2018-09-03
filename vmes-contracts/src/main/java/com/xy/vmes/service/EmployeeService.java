@@ -114,6 +114,11 @@ public interface EmployeeService {
      * 创建时间：2018-08-06
      */
     List<Map> selectEmployeeAndUserById(PageData pd) throws Exception;
+
+    Employee findEmployee(PageData object);
+    List<Employee> findEmployeeList(PageData object);
+    Employee findEmployeeById(String id);
+    boolean isExistByMobile(String id, String mobile);
 }
 
 
