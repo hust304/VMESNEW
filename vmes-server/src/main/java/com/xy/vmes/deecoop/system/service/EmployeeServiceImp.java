@@ -5,8 +5,8 @@ import com.xy.vmes.deecoop.system.dao.EmployeeMapper;
 import com.xy.vmes.entity.Employee;
 import com.xy.vmes.service.EmployeeService;
 import com.yvan.PageData;
+import com.yvan.platform.RestException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -182,6 +182,62 @@ public class EmployeeServiceImp implements EmployeeService {
     @Override
     public List<Map> selectEmployeeAndUserById(PageData pd) throws Exception{
         return employeeMapper.selectEmployeeAndUserById(pd);
+    }
+
+    public Employee findEmployee(PageData object) {
+        if (object == null) {return null;}
+
+        List<Employee> objectList = this.findEmployeeList(object);
+        if (objectList != null && objectList.size() > 0) {
+            return objectList.get(0);
+        }
+
+        return null;
+    }
+
+    public List<Employee> findEmployeeList(PageData object) {
+        if (object == null) {return null;}
+
+        List<Employee> objectList = null;
+        try {
+            objectList = this.dataList(object);
+        } catch (Exception e) {
+            throw new RestException("", e.getMessage());
+        }
+
+        return objectList;
+    }
+
+    public Employee findEmployeeById(String id) {
+        if (id == null || id.trim().length() == 0) {return null;}
+
+        PageData findMap = new PageData();
+        findMap.put("id", id);
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+
+        List<Employee> objectList = this.findEmployeeList(findMap);
+        if (objectList != null && objectList.size() > 0) {return objectList.get(0);}
+
+        return null;
+    }
+
+    public boolean isExistByMobile(String id, String mobile) {
+        if (id == null || id.trim().length() == 0) {return false;}
+        if (mobile == null || mobile.trim().length() == 0) {return false;}
+
+        PageData findMap = new PageData();
+        findMap.put("id", id);
+        findMap.put("mobile", mobile);
+        if (id != null && id.trim().length() > 0) {
+            findMap.put("id", id);
+            findMap.put("isSelfExist", "true");
+        }
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+
+        List<Employee> objectList = this.findEmployeeList(findMap);
+        if (objectList != null && objectList.size() > 0) {return true;}
+
+        return false;
     }
 
 }

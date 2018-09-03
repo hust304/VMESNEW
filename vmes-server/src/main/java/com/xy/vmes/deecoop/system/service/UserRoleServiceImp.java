@@ -110,7 +110,9 @@ public class UserRoleServiceImp implements UserRoleService {
         return userRoleMapper.findDataList(pd);
     }
 
-
+    public void deleteByColumnMap(Map columnMap) throws Exception {
+        userRoleMapper.deleteByMap(columnMap);
+    }
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 
