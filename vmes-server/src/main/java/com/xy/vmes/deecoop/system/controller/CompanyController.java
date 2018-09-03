@@ -354,7 +354,7 @@ public class CompanyController {
         user.setCompanyId(companyObj.getId());
         user.setDeptId(companyObj.getId());
 //        String userCode = coderuleService.createCoder(companyObj.getId(), "vmes_user");
-        String userCode = companyObj.getCode()+"admin";
+        String userCode = companyObj.getCode().toLowerCase()+"admin";
         user.setUserCode(userCode);
         user.setUserName(StringUtils.isEmpty(userName)?userCode:userName);
         user.setMobile(mobile);
