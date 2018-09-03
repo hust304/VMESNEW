@@ -119,6 +119,14 @@ public interface UserMapper extends BaseMapper<User> {
 	@Select("updateDisableByCompanyIds")
 	void updateDisableByCompanyIds(String[] companyIds);
 
+
+	/**
+	 * 创建人：刘威
+	 * 创建时间：2018-07-26
+	 */
+	@Select("selectCountUserNum")
+	List<Map> selectCountUserNum(PageData pd);
+
 }
 
 

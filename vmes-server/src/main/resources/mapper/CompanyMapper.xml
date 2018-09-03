@@ -72,7 +72,7 @@
     <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select <include refid="Field1"/>
         from vmes_department a
-            left join vmes_user b on a.id = b.company_id and b.user_type = '1'
+            left join vmes_user b on a.id = b.company_id and b.user_type = '2fb9bbee46ca4ce1913f3a673a7dd68f' <!--企业管理员-->
             left join vmes_user_role d on b.id = d.user_id
             left join vmes_role f on d.role_id = f.id
             left join vmes_dictionary c on a.company_type = c.id

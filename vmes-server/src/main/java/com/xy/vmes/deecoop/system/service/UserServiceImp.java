@@ -341,6 +341,15 @@ public class UserServiceImp implements UserService {
         userMapper.updateDisableByCompanyIds(companyIds);
     }
 
+    /**
+     * 获取企业当前用户数及用户总数
+     * 创建人：刘威
+     * @param pd
+     * @return
+     */
+    public List<Map> selectCountUserNum(PageData pd) throws Exception{
+        return  userMapper.selectCountUserNum(pd);
+    }
 }
 
 

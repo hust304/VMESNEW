@@ -148,6 +148,12 @@ public interface UserService {
      * 创建时间：2018-08-06
      */
     void updateDisableByCompanyIds(String[] companyIds);
+
+    /**
+     * 创建人：刘威
+     * 创建时间：2018-08-03
+     */
+    List<Map> selectCountUserNum(PageData pd) throws Exception;
 }
 
 

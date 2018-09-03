@@ -224,8 +224,10 @@ public class UserController {
         user.setMobile(mobile);
         //如果用户设置了密码那就用设置的密码加密，如果没有设置密码，那么就用手机号后六位进行加密作为默认密码
         if(StringUtils.isEmpty(user.getPassword())){
-            String password = mobile.substring(mobile.length()-6,mobile.length());
-            if(password!=null&&password.length()==6){
+
+            if(mobile!=null&&mobile.trim().length()>6){
+                mobile = mobile.trim();
+                String password = mobile.substring(mobile.length()-6,mobile.length());
                 user.setPassword(MD5Utils.MD5(password));
             }else{
                 model.putCode(2);
@@ -273,13 +275,18 @@ public class UserController {
         }
 
         userService.save(user);
+
+
         //新增用户角色信息
-        UserRole userRole = new UserRole();
-        userRole.setRoleId(pd.getString("roleId"));
-        userRole.setUserId(user.getId());
-        userRole.setCuser(pd.getString("cuser"));
-        userRole.setUuser(pd.getString("uuser"));
-        userRoleService.save(userRole);
+        if(!StringUtils.isEmpty(pd.getString("roleId"))){
+            UserRole userRole = new UserRole();
+            userRole.setRoleId(pd.getString("roleId"));
+            userRole.setUserId(user.getId());
+            userRole.setCuser(pd.getString("cuser"));
+            userRole.setUuser(pd.getString("uuser"));
+            userRoleService.save(userRole);
+        }
+
         Long endTime = System.currentTimeMillis();
         logger.info("################user/addUser 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
@@ -319,12 +326,15 @@ public class UserController {
         //删除用户角色信息
         userRoleService.deleteRoleByUserId(user.getId());
         //新增用户角色信息
-        UserRole userRole = new UserRole();
-        userRole.setRoleId(pd.getString("roleId"));
-        userRole.setUserId(user.getId());
-        userRole.setCuser(pd.getString("cuser"));
-        userRole.setUuser(pd.getString("uuser"));
-        userRoleService.save(userRole);
+        if(!StringUtils.isEmpty(pd.getString("roleId"))){
+            UserRole userRole = new UserRole();
+            userRole.setRoleId(pd.getString("roleId"));
+            userRole.setUserId(user.getId());
+            userRole.setCuser(pd.getString("cuser"));
+            userRole.setUuser(pd.getString("uuser"));
+            userRoleService.save(userRole);
+        }
+
         Long endTime = System.currentTimeMillis();
         logger.info("################user/updateUser 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
@@ -344,6 +354,87 @@ public class UserController {
             isExist = true;
         }
         return isExist;
+    }
+
+    /**
+     * @author 刘威 批量重置密码
+     * @date 2018-07-26
+     */
+    @PostMapping("/user/updatePasswords")
+    public ResultModel updatePasswords()  throws Exception {
+
+        logger.info("################user/updatePasswords 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        HttpServletResponse response  = HttpUtils.currentResponse();
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+
+        String userIds = pd.getString("ids");
+        String[] ids = userIds.split(",");
+
+        if(ids!=null&&ids.length>0){
+            for(int i=0;i<ids.length;i++){
+                String id =  ids[i];
+                User user = userService.selectById(id);
+                if(StringUtils.isEmpty(user.getMobile())){
+                    user.setPassword(MD5Utils.MD5("123"));
+                }else{
+                    String mobile = user.getMobile();
+                    if(mobile!=null&&mobile.trim().length()>6){
+                        mobile = mobile.trim();
+                        String password = mobile.substring(mobile.length()-6,mobile.length());
+                        user.setPassword(MD5Utils.MD5(password));
+                    }else{
+                        model.putCode(1);
+                        model.putMsg("用户"+user.getUserName()+"的手机号长度错误！");
+                        return model;
+                    }
+
+                }
+                userService.update(user);
+            }
+        }
+
+
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################user/updatePasswords 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+    /**
+     * @author 刘威 查询公司用户使用情况
+     * @date 2018-07-26
+     */
+    @PostMapping("/user/selectCountUserNum")
+    public ResultModel selectCountUserNum()  throws Exception {
+
+        logger.info("################user/selectCountUserNum 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        HttpServletResponse response  = HttpUtils.currentResponse();
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+
+        String deptId = pd.getString("deptId");
+        if(StringUtils.isEmpty(deptId)){
+            model.putCode(1);
+            model.putMsg("部门ID不能为空！");
+            return model;
+        }
+
+        List<Map>  countUserNum =  userService.selectCountUserNum(pd);
+        if(countUserNum!=null&&countUserNum.size()>0){
+            model.putResult(countUserNum.get(0));
+        }else{
+            model.putCode(2);
+            model.putMsg("公司当前用户数查询异常！");
+            return model;
+        }
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################user/selectCountUserNum 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
     }
 
 
