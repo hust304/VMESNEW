@@ -671,13 +671,13 @@ public class RoleController {
             return model;
         }
 
-        //2.当前角色ID(用户角色,角色菜单,角色按钮)-是否使用
-        msgStr = roleService.checkDeleteRoleByRoleIds(roleID);
-        if (msgStr.trim().length() > 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg(msgStr);
-            return model;
-        }
+//        //2.当前角色ID(用户角色,角色菜单,角色按钮)-是否使用
+//        msgStr = roleService.checkDeleteRoleByRoleIds(roleID);
+//        if (msgStr.trim().length() > 0) {
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg(msgStr);
+//            return model;
+//        }
 
         //3. 删除角色菜单(当前角色)
         roleMenuService.deleteRoleMenuByRoleId(roleID);
@@ -851,13 +851,13 @@ public class RoleController {
             return model;
         }
 
-        //2.当前角色ID(用户角色,角色菜单,角色按钮)-是否使用
-        msgStr = roleService.checkDeleteRoleByRoleIds(roleID);
-        if (msgStr.trim().length() > 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg(msgStr);
-            return model;
-        }
+//        //2.当前角色ID(用户角色,角色菜单,角色按钮)-是否使用
+//        msgStr = roleService.checkDeleteRoleByRoleIds(roleID);
+//        if (msgStr.trim().length() > 0) {
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg(msgStr);
+//            return model;
+//        }
 
         //3. 删除角色按钮(当前角色)
         roleButtonService.deleteRoleButtonByRoleId(roleID);
