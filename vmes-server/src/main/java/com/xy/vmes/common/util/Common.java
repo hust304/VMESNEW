@@ -13,10 +13,10 @@ public class Common {
     //public final static String REDIS_USERBUTTON = "userButton";
     public final static String REDIS_USERLOGINMAP = "userLoginMap";
 
-    //用户登录-验证码-redis有效时间
-    public final static int REDIS_SECURITYCODE_LONG = 1 * 60 * 1000;
-    //用户登录-sessionID-redis有效时间
-    public final static int REDIS_SESSIONID_LONG = 30 * 60 * 1000;
+    //用户登录-验证码-redis有效时间(单位:秒)
+    public final static int REDIS_SECURITYCODE_LONG = 1 * 60;
+    //用户登录-sessionID-redis有效时间(单位:秒)
+    public final static int REDIS_SESSIONID_LONG = 30 * 60;
 
 
     //系统默认密码: 123
