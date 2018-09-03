@@ -772,7 +772,7 @@ public class EmployeeController {
      */
     @GetMapping("/employee/addEmployeeMainPost")
     public ResultModel addEmployeeMainPost()  throws Exception {
-        logger.info("################employee/addEmployeeMasterPost 执行开始 ################# ");
+        logger.info("################employee/addEmployeeMainPost 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
 
         ResultModel model = new ResultModel();
@@ -822,7 +822,7 @@ public class EmployeeController {
         employPostService.save(newEmployPost);
 
         Long endTime = System.currentTimeMillis();
-        logger.info("################employee/addEmployeeMasterPost 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################employee/addEmployeeMainPost 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
