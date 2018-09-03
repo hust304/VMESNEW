@@ -770,7 +770,7 @@ public class EmployeeController {
      * @return
      * @throws Exception
      */
-    @GetMapping("/employee/addEmployeeMainPost")
+    @PostMapping("/employee/addEmployeeMainPost")
     public ResultModel addEmployeeMainPost()  throws Exception {
         logger.info("################employee/addEmployeeMainPost 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
