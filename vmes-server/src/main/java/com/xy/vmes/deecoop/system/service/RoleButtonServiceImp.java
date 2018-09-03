@@ -49,7 +49,7 @@ public class RoleButtonServiceImp implements RoleButtonService {
     @Override
     public void update(RoleButton roleButton) throws Exception{
         roleButton.setUdate(new Date());
-        roleButtonMapper.updateById(roleButton);
+        roleButtonMapper.updateAllColumnById(roleButton);
     }
 
     /**

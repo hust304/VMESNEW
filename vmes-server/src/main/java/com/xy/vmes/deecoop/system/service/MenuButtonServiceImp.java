@@ -50,7 +50,7 @@ public class MenuButtonServiceImp implements MenuButtonService {
     @Override
     public void update(MenuButton menuButton) throws Exception{
         menuButton.setUdate(new Date());
-        menuButtonMapper.updateById(menuButton);
+        menuButtonMapper.updateAllColumnById(menuButton);
     }
 
     /**

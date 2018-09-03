@@ -48,7 +48,7 @@ public class LogInfoServiceImp implements LogInfoService {
     @Override
     public void update(LogInfo logInfo) throws Exception{
         logInfo.setUdate(new Date());
-        logInfoMapper.updateById(logInfo);
+        logInfoMapper.updateAllColumnById(logInfo);
     }
 
     /**

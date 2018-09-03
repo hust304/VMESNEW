@@ -51,7 +51,7 @@ public class CoderuleServiceImp implements CoderuleService {
     */
     @Override
     public void update(Coderule coderule) throws Exception{
-        coderuleMapper.updateById(coderule);
+        coderuleMapper.updateAllColumnById(coderule);
     }
 
     /**

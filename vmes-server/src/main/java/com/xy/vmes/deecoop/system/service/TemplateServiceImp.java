@@ -49,7 +49,7 @@ public class TemplateServiceImp implements TemplateService {
     @Override
     public void update(Template template) throws Exception{
         template.setUdate(new Date());
-        templateMapper.updateById(template);
+        templateMapper.updateAllColumnById(template);
     }
 
     /**

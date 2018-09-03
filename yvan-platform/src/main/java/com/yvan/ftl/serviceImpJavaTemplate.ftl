@@ -49,7 +49,7 @@ public class ${objectName}ServiceImp implements ${objectName}Service {
     @Override
     public void update(${objectName} ${objectNameLower}) throws Exception{
         ${objectNameLower}.setUdate(new Date());
-        ${objectNameLower}Mapper.updateById(${objectNameLower});
+        ${objectNameLower}Mapper.updateAllColumnById(${objectNameLower});
     }
 
     /**

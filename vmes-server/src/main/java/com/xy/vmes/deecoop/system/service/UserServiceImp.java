@@ -61,7 +61,8 @@ public class UserServiceImp implements UserService {
     @Override
     public void update(User user) throws Exception{
         user.setUdate(new Date());
-        userMapper.updateById(user);
+//        userMapper.updateById(user);
+        userMapper.updateAllColumnById(user);
     }
 
     /**

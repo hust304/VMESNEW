@@ -55,7 +55,7 @@ public class PostServiceImp implements PostService {
     @Override
     public void update(Post post) throws Exception{
         post.setUdate(new Date());
-        postMapper.updateById(post);
+        postMapper.updateAllColumnById(post);
     }
 
     /**

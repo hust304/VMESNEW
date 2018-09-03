@@ -49,7 +49,7 @@ public class EmployeeServiceImp implements EmployeeService {
     @Override
     public void update(Employee employee) throws Exception{
         employee.setUdate(new Date());
-        employeeMapper.updateById(employee);
+        employeeMapper.updateAllColumnById(employee);
     }
 
     /**

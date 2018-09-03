@@ -41,7 +41,7 @@ public class ColumnServiceImp implements ColumnService {
     */
     @Override
     public void update(Column column) throws Exception{
-        columnMapper.updateById(column);
+        columnMapper.updateAllColumnById(column);
     }
 
     /**

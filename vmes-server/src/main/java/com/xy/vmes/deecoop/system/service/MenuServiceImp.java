@@ -52,7 +52,7 @@ public class MenuServiceImp implements MenuService {
     @Override
     public void update(Menu menu) throws Exception{
         menu.setUdate(new Date());
-        menuMapper.updateById(menu);
+        menuMapper.updateAllColumnById(menu);
     }
 
     /**

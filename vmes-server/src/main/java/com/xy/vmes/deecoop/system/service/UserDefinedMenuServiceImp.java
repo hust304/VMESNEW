@@ -49,7 +49,7 @@ public class UserDefinedMenuServiceImp implements UserDefinedMenuService {
     @Override
     public void update(UserDefinedMenu userDefinedMenu) throws Exception{
         userDefinedMenu.setUdate(new Date());
-        userDefinedMenuMapper.updateById(userDefinedMenu);
+        userDefinedMenuMapper.updateAllColumnById(userDefinedMenu);
     }
 
     /**

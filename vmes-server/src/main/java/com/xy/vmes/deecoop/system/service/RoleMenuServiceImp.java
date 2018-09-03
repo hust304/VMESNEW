@@ -54,7 +54,7 @@ public class RoleMenuServiceImp implements RoleMenuService {
     @Override
     public void update(RoleMenu roleMenu) throws Exception{
         roleMenu.setUdate(new Date());
-        roleMenuMapper.updateById(roleMenu);
+        roleMenuMapper.updateAllColumnById(roleMenu);
     }
 
     /**

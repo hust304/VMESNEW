@@ -4,10 +4,7 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.google.gson.Gson;
 import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.StringUtil;
-import com.xy.vmes.entity.Column;
-import com.xy.vmes.entity.Department;
-import com.xy.vmes.entity.User;
-import com.xy.vmes.entity.UserRole;
+import com.xy.vmes.entity.*;
 import com.xy.vmes.service.*;
 import com.yvan.*;
 import com.yvan.platform.RestException;
@@ -52,6 +49,8 @@ public class UserController {
     private CoderuleService coderuleService;
     @Autowired
     private ColumnService columnService;
+    @Autowired
+    private EmployeeService employeeService;
     /**
      * @author 刘威 自动创建，禁止修改
      * @date 2018-07-26
@@ -399,6 +398,39 @@ public class UserController {
 
         Long endTime = System.currentTimeMillis();
         logger.info("################user/updatePasswords 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+    /**
+     * @author 刘威 解除当前用户绑定员工
+     * @date 2018-07-26
+     */
+    @PostMapping("/user/updateEmployeeUser")
+    public ResultModel updateEmployeeUser()  throws Exception {
+
+        logger.info("################user/updateEmployeeUser 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        HttpServletResponse response  = HttpUtils.currentResponse();
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+        String userId = pd.getString("id");
+        String employeeId = pd.getString("employeeId");
+
+        if(!StringUtils.isEmpty(userId)){
+            User user = userService.selectById(userId);
+            user.setEmployId(null);
+            userService.update(user);
+        }
+
+        if(!StringUtils.isEmpty(employeeId)){
+            Employee employee = employeeService.selectById(employeeId);
+            employee.setUserId(null);
+            employeeService.update(employee);
+        }
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################user/updateEmployeeUser 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 

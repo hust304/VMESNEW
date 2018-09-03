@@ -58,7 +58,7 @@ public class DepartmentServiceImp implements DepartmentService {
     @Override
     public void update(Department department) throws Exception{
         department.setUdate(new Date());
-        departmentMapper.updateById(department);
+        departmentMapper.updateAllColumnById(department);
     }
 
     /**

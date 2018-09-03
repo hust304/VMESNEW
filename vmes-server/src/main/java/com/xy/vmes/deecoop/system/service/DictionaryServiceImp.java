@@ -50,7 +50,7 @@ public class DictionaryServiceImp implements DictionaryService {
     @Override
     public void update(Dictionary dictionary) throws Exception{
         dictionary.setUdate(new Date());
-        dictionaryMapper.updateById(dictionary);
+        dictionaryMapper.updateAllColumnById(dictionary);
     }
 
     /**

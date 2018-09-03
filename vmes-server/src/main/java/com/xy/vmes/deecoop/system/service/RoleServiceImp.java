@@ -57,7 +57,7 @@ public class RoleServiceImp implements RoleService {
     @Override
     public void update(Role role) throws Exception{
         role.setUdate(new Date());
-        roleMapper.updateById(role);
+        roleMapper.updateAllColumnById(role);
     }
 
     /**

@@ -50,7 +50,7 @@ public class EmployPostServiceImp implements EmployPostService {
     @Override
     public void update(EmployPost employPost) throws Exception{
         employPost.setUdate(new Date());
-        employPostMapper.updateById(employPost);
+        employPostMapper.updateAllColumnById(employPost);
     }
 
     /**
