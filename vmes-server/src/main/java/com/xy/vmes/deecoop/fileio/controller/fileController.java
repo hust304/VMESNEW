@@ -82,7 +82,7 @@ public class fileController {
         }
 
         String absolutePath = path+"vmes-file/";//上传文件的绝对路径
-        String relativePath = "employee/photo/";//上传文件的相对路径
+        String relativePath = "fileUpload/employee/photo/";//上传文件的相对路径
 
         String[] includesuffixs = new String[3];//上传的文件类型，包括jpg、png、jpeg
         includesuffixs[0]="jpg";
