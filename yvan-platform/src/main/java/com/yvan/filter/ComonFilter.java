@@ -54,9 +54,10 @@ public class ComonFilter implements Filter {
 //        String sessionID = "227d18412b194ec38f5fff6d0cfcd6fb:0:deecoop:userLoginMap";
 //        mParametersWrapper.putHeader("sessionID",sessionID);
         //请求地址中含有字符串“login”和“error”的不参与sessionId校验
-        if(uri.indexOf("login".toLowerCase()) < 0 && uri.indexOf("error".toLowerCase()) < 0){
+        if(uri.indexOf("login".toLowerCase()) < 0 && uri.indexOf("error".toLowerCase()) < 0 && uri.indexOf("png".toLowerCase())<0){
             if (!checkSession(httpRequest, httpResponse)) {
-                httpResponse.sendRedirect(((HttpServletRequest)request).getContextPath() + "/error/401");
+                httpResponse.sendRedirect(httpRequest.getHeader("referer") + "api/error/401");
+//                throw  new RestException("401","您的SessionID过期或您的账号已被踢出！"); httpResponse.sendRedirect("http://localhost:9528/api/error/401");
                 return;
             }
         }
