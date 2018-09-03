@@ -470,7 +470,7 @@
         select
         <include refid="Field1"/>
         from vmes_employee employee
-        left join vmes_employ_post employpost on employpost.employ_id = employee.id
+        left join vmes_employ_post employpost on employpost.employ_id = employee.id and employpost.isdisable = '1'
         left join vmes_post post on post.id = employpost.post_id
         left join vmes_department dept on dept.id = post.dept_id
         left join vmes_user vmesuser on vmesuser.id = employee.user_id

@@ -420,13 +420,13 @@ public class EmployeeController {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
-        //id:主键id-(vmes_employ_post:员工岗位表)
-        String id = (String)pageData.get("id");
+        //id:主键id-(vmes_employ:员工岗位表)
+        String employeeId = (String)pageData.get("employeeId");
         String isdisable = (String)pageData.get("isdisable");
 
         String msgStr = new String();
-        if (id == null || id.trim().length() == 0) {
-            msgStr = msgStr + "id为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT;
+        if (employeeId == null || employeeId.trim().length() == 0) {
+            msgStr = msgStr + "员工id为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT;
         }
         if (isdisable == null || isdisable.trim().length() == 0) {
             msgStr = msgStr + "isdisable为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT;
@@ -437,10 +437,10 @@ public class EmployeeController {
             return model;
         }
 
-        EmployPost employPostDB = employPostService.findEmployPostById(id);
-        employPostDB.setIsdisable(isdisable);
-        employPostDB.setUuser(pageData.getString("uuser"));
-        employPostService.update(employPostDB);
+        Employee employDB = employeeService.findEmployeeById(employeeId);
+        employDB.setIsdisable(isdisable);
+        employDB.setUuser(pageData.getString("uuser"));
+        employeeService.update(employDB);
 
         Long endTime = System.currentTimeMillis();
         logger.info("################employee/updateDisableEmployee 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
