@@ -253,6 +253,7 @@ public class UserServiceImp implements UserService {
                 throw  new RestException("11","编码规则创建异常，请重新操作！");
             }
             user.setUserCode(code);
+            user.setUserName(employee.getName());
             user.setCompanyId(employee.getCompanyId());
             user.setDeptId(pd.getString("deptId"));
             user.setEmail(employee.getEmail());
