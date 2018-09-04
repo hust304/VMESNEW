@@ -892,7 +892,7 @@ public class EmployeeController {
         }
 
         List<Map> varMapList = new ArrayList();
-        List<Map> varList = employeeService.getDataListPage(pd,pg);
+        List<Map> varList = employeeService.getDataListPage(pd, pg);
         if(varList!=null&&varList.size()>0){
             for(int i=0;i<varList.size();i++){
                 Map map = varList.get(i);
@@ -905,7 +905,7 @@ public class EmployeeController {
             }
         }
         result.put("varList",varMapList);
-        result.put("pageData", YvanUtil.toJson(pg));
+        result.put("pageData", pg);
         model.putResult(result);
 
         Long endTime = System.currentTimeMillis();

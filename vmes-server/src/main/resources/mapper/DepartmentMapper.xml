@@ -360,6 +360,9 @@
             <if test="deptTypeName != null and deptTypeName != ''" >
                 and c.name  LIKE CONCAT(CONCAT('%', #{deptTypeName}),'%')
             </if>
+            <if test="cuser != null and cuser != ''" >
+                and a.cuser = #{cuser}
+            </if>
 
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr!=''" >

@@ -500,6 +500,9 @@
             <if test="entryDateStart!= null and entryDateStart != ''">
                 <![CDATA[ and  employee.entry_date >= #{entryDateStart} ]]>
             </if>
+            <if test="cuser != null and cuser != ''">
+                and employee.company_id in (select company_id from vmes_user where id = #{cuser})
+            </if>
 
             <!--岗位表 -->
             <if test="postId != null and postId != ''">

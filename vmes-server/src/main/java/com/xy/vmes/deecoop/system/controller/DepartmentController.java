@@ -629,12 +629,14 @@ public class DepartmentController {
         result.put("hideTitles",titlesHideList);
         result.put("titles",titlesList);
 
+        //所属企业id
         String companyId = (String)pd.get("companyId");
         String queryIdStr_1 = "";
         if (companyId != null && companyId.trim().length() > 0) {
             queryIdStr_1 = departmentService.findDeptidById(companyId, null, "a.");
         }
 
+        //部门id
         String deptId = (String)pd.get("deptId");
         String queryIdStr_2 = "";
         if (deptId != null && deptId.trim().length() > 0) {
@@ -658,6 +660,12 @@ public class DepartmentController {
             queryStr = "(" + queryStr + ")";
             pd.put("queryStr", queryStr);
         }
+
+        String userType = (String)pd.get("userType");
+        //(userType_admin:超级管理员 userType_company:企业管理员 userType_employee:普通用户 userType_outer:外部用户)
+        if (Common.DICTIONARY_MAP.get("userType_admin").equals(userType) && pd.get("cuser") != null && pd.get("cuser").toString().trim().length() > 0) {
+            pd.put("cuser", pd.get("cuser").toString().trim());
+        } else {pd.put("cuser", null);}
 
         List<Map> varMapList = new ArrayList();
         List<Map> varList = departmentService.getDataListPage(pd,pg);
