@@ -340,12 +340,12 @@ public class RoleMenuServiceImp implements RoleMenuService {
             Menu menu = this.mapObject2Menu(mapObj, null);
             TreeEntity treeObj = menuTreeService.menu2Tree(menu, null);
             //当前节点-是否绑定角色(1:绑定 0:未绑定)
-            treeObj.setIsBindRole("0");
+            treeObj.setIsBindRole(Boolean.FALSE);
 
             //当前菜单是否绑定角色
             // 判断条件: 角色id(roleId)是否存在--
             if (mapObj.get("roleId") != null && mapObj.get("roleId").toString().trim().length() > 0) {
-                treeObj.setIsBindRole("1");
+                treeObj.setIsBindRole(Boolean.TRUE);
             }
 
             treeList.add(treeObj);
