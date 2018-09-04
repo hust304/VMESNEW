@@ -271,30 +271,24 @@
         vmes_post post
         left join vmes_department department on department.id = post.dept_id
         <where>
-            <if test="code != null and code != ''"><!-- 关键词检索 -->
+            <if test="code != null and code != ''">
                 and post.code LIKE CONCAT(CONCAT(#{code}),'%')
             </if>
-            <if test="name != null and name != ''"><!-- 关键词检索 -->
+            <if test="name != null and name != ''">
                 and post.name LIKE CONCAT(CONCAT(#{name}),'%')
             </if>
 
-            <if test="companyId != null and companyId != ''"><!-- 关键词检索 -->
+            <if test="companyId != null and companyId != ''">
                 and post.company_id = #{companyId}
             </if>
-
-            <if test="isdisable != null and isdisable != ''"><!-- 关键词检索 -->
+            <if test="isdisable != null and isdisable != ''">
                 and post.isdisable = #{isdisable}
             </if>
-
-            <if test="pid!= null and pid != '' and layer == null"><!-- 关键词检索 -->
-                and department.id = #{pid}
-            </if>
-            <if test="pid!= null and pid != '' and layer != null"><!-- 关键词检索 -->
-                and department.id_${layer} = #{pid}
+            <if test="cuser != null and cuser != ''">
+                and post.company_id in (select company_id from vmes_user where id = #{cuser})
             </if>
 
-
-            <if test="deptName != null and deptName != ''"><!-- 关键词检索 -->
+            <if test="deptName != null and deptName != ''">
                 and department.name LIKE CONCAT(CONCAT(#{deptName}),'%')
             </if>
             <if test="queryStr != null and queryStr!=''" ><!-- 自定义查询 -->

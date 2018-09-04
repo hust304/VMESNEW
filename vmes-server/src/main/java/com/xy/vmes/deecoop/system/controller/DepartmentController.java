@@ -629,11 +629,34 @@ public class DepartmentController {
         result.put("hideTitles",titlesHideList);
         result.put("titles",titlesList);
 
-        String deptID = null;
-        if (pd.get("deptID") != null && pd.get("deptID").toString().trim().length() > 0) {
-            deptID = ((String)pd.get("deptID")).trim();
-            String queryIdStr = departmentService.findDeptidById(deptID, null, "a.");
-            pd.put("queryStr", queryIdStr);
+        String companyId = (String)pd.get("companyId");
+        String queryIdStr_1 = "";
+        if (companyId != null && companyId.trim().length() > 0) {
+            queryIdStr_1 = departmentService.findDeptidById(companyId, null, "a.");
+        }
+
+        String deptId = (String)pd.get("deptId");
+        String queryIdStr_2 = "";
+        if (deptId != null && deptId.trim().length() > 0) {
+            queryIdStr_2 = departmentService.findDeptidById(deptId, null, "a.");
+        }
+
+        List<String> sqlStrList = new ArrayList<String>();
+        if (queryIdStr_1.trim().length() > 0) {sqlStrList.add(queryIdStr_1);}
+        if (queryIdStr_2.trim().length() > 0) {sqlStrList.add(queryIdStr_2);}
+
+        String queryStr = "";
+        for (String sqlStr : sqlStrList) {
+            queryStr = queryStr + sqlStr.trim() + " and ";
+        }
+        //去掉最后一个"and"
+        if (queryStr.lastIndexOf("and") != -1) {
+            queryStr = queryStr.substring(0, queryStr.lastIndexOf("and"));
+        }
+
+        if (queryStr.trim().length() > 0) {
+            queryStr = "(" + queryStr + ")";
+            pd.put("queryStr", queryStr);
         }
 
         List<Map> varMapList = new ArrayList();

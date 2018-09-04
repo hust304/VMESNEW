@@ -410,7 +410,6 @@ public class PostController {
         PageData pd = HttpUtils.parsePageData();
         Pagination pg = HttpUtils.parsePagination(pd);
 
-
         Map result = new HashMap();
         //1. 查询遍历List列表
         List<Column> columnList = columnService.findColumnList("post");
@@ -439,13 +438,15 @@ public class PostController {
         result.put("hideTitles",titlesHideList);
         result.put("titles",titlesList);
 
-        //pid:root (组织架构根节点)查询全部
-        String pid = (String)pd.get("pid");
-        if (pid == null || "root".equals(pid)) {
-            pd.put("deptId", null);
+        String deptId = null;
+        if (pd.get("deptId") != null && pd.get("deptId").toString().trim().length() > 0) {
+            deptId = ((String)pd.get("deptId")).trim();
+            String queryIdStr = departmentService.findDeptidById(deptId, null, "department.");
+            pd.put("queryStr", queryIdStr);
         }
+
         List<Map> varMapList = new ArrayList();
-        List<Map> varList = postService.getDataListPage(pd,pg);
+        List<Map> varList = postService.getDataListPage(pd, pg);
         if(varList!=null&&varList.size()>0){
             for(int i=0;i<varList.size();i++){
                 Map map = varList.get(i);
