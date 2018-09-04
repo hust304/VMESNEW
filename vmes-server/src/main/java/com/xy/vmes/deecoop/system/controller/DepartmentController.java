@@ -199,19 +199,28 @@ public class DepartmentController {
      */
     @PostMapping("/department/treeDepartments")
     public ResultModel treeDepartments()  throws Exception {
-
         logger.info("################/department/treeDepartments 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
+
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
-        Map result = new HashMap();
+        PageData findMap = new PageData();
 
-        List<TreeEntity> treeList = departmentService.getTreeList(pd);
-        TreeEntity treeObj = TreeUtil.switchTree(null, treeList);
+        //部门id 为空查询整棵部门树
+        //部门id 非空查询当前部门下所有子部门(包含当前部门节点)
+        String deptId = null;
+        if (pd.get("deptID") != null && pd.get("deptID").toString().trim().length() > 0) {
+            deptId = ((String)pd.get("deptID")).trim();
+            String queryIdStr = departmentService.findDeptidById(deptId, null, null);
+            findMap.put("queryStr", queryIdStr);
+        }
+
+        List<TreeEntity> treeList = departmentService.getTreeList(findMap);
+        TreeEntity treeObj = TreeUtil.switchTree(deptId, treeList);
         String treeJsonStr = YvanUtil.toJson(treeObj);
         System.out.println("treeJsonStr: " + treeJsonStr);
 
+        Map result = new HashMap();
         result.put("treeList", treeObj);
         model.putResult(result);
 
