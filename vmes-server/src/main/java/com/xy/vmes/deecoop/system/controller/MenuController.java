@@ -724,7 +724,6 @@ public class MenuController {
         // 用户角色(当前用户)-(角色ID','分隔的字符串)
         PageData pageData = HttpUtils.parsePageData();
         String roleIds = (String)pageData.get("roleIds");
-        roleIds = "ce6fd6bdfa0f42798007a1ec5fe84717";  //测试数据-真实环境无此代码
 
         String userRole = "";
         String userType = (String)pageData.get("userType");
