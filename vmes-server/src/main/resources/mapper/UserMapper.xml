@@ -494,7 +494,7 @@
 
     <!-- 列表表体数据查询 -->
     <select id="selectCountUserNum"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
-        select count(u.id) currentUsers,d.company_user_count allUsers,d.id companyId,d.name companyName
+        select count(u.id) currentUsers,d.company_user_count allUsers,case when d.company_user_count>count(u.id) then 0 else 1 end isFull,d.id companyId,d.name companyName
         from vmes_user u
         left join vmes_department d on d.id = u.company_id
         where u.isdisable = 1

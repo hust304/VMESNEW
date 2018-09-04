@@ -273,6 +273,25 @@ public class UserController {
             return model;
         }
 
+        List<Map>  countUserNum =  checkCompanyUserNum(deptId,null);
+
+        if(countUserNum!=null&&countUserNum.size()>0){
+            Map userNumMap = countUserNum.get(0);
+
+            if(userNumMap.get("isFull")!=null){
+                String isFull = userNumMap.get("isFull").toString();
+                if(!StringUtils.isEmpty(isFull)&&"1".equals(isFull)){
+                    model.putCode(7);
+                    model.putMsg("当前公司用户数已满员，请联系平台相关人员购买用户数！");
+                    return model;
+                }
+            }
+        }else{
+            model.putCode(8);
+            model.putMsg("公司当前用户数查询异常！");
+            return model;
+        }
+
         userService.save(user);
 
 
@@ -435,6 +454,17 @@ public class UserController {
     }
 
 
+
+
+    public List<Map> checkCompanyUserNum(String deptId,String queryStr)  throws Exception {
+        PageData pd = new PageData();
+        pd.put("deptId",deptId);
+        pd.putQueryStr(queryStr);
+        List<Map>  countUserNum =  userService.selectCountUserNum(pd);
+        return  countUserNum;
+    }
+
+
     /**
      * @author 刘威 查询公司用户使用情况
      * @date 2018-07-26
@@ -454,8 +484,8 @@ public class UserController {
             model.putMsg("部门ID不能为空！");
             return model;
         }
-
-        List<Map>  countUserNum =  userService.selectCountUserNum(pd);
+        List<Map>  countUserNum =  checkCompanyUserNum(deptId,null);
+//        List<Map>  countUserNum =  userService.selectCountUserNum(pd);
         if(countUserNum!=null&&countUserNum.size()>0){
             model.putResult(countUserNum.get(0));
         }else{
