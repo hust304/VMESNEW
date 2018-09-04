@@ -1,7 +1,6 @@
 package com.yvan.filter;
 
 import com.yvan.cache.RedisClient;
-import com.yvan.platform.RestException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,8 +29,9 @@ import java.util.Set;
 @EnableConfigurationProperties(RedisProperties.class)
 @ConditionalOnClass(RedisClient.class)
 public class ComonFilter implements Filter {
-
     private Logger logger = LoggerFactory.getLogger(ComonFilter.class);
+
+
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -51,35 +51,57 @@ public class ComonFilter implements Filter {
         uri = uri.toLowerCase();
         ModifyParametersWrapper mParametersWrapper = new ModifyParametersWrapper(httpRequest);
 
-//        String sessionID = "227d18412b194ec38f5fff6d0cfcd6fb:0:deecoop:userLoginMap";
-//        mParametersWrapper.putHeader("sessionID",sessionID);
         //请求地址中含有字符串“login”和“error”的不参与sessionId校验
         if(uri.indexOf("login".toLowerCase()) < 0 && uri.indexOf("error".toLowerCase()) < 0 && uri.indexOf("fileUpload".toLowerCase())<0){
-            if (!checkSession(httpRequest, httpResponse)) {
+            if (!this.checkSession(httpRequest)) {
                 httpResponse.sendRedirect(httpRequest.getHeader("referer") + "api/error/401");
-//                throw  new RestException("401","您的SessionID过期或您的账号已被踢出！"); httpResponse.sendRedirect("http://localhost:9528/api/error/401");
                 return;
             }
+
+            //延长 Session 时间
+            this.extendSessionTime(httpRequest, httpResponse);
         }
         chain.doFilter(mParametersWrapper, httpResponse);
     }
 
-    public boolean checkSession(HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
+    /**
+     * 延长Redis缓存Key(sessionID) 有效时间
+     * Redis缓存Key: (uuid:用户ID:deecoop:userLoginMap)
+     *
+     * @param httpRequest
+     * @param httpResponse
+     * @throws IOException
+     */
+    public void extendSessionTime(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException {
+        //sessionID: (uuid:用户ID:deecoop:userLoginMap)
+        String sessionID = httpRequest.getHeader("sessionID");
+        if (sessionID == null || sessionID.trim().length() == 0) {
+            httpResponse.sendRedirect(httpRequest.getHeader("referer") + "api/error/401");
+            return;
+        }
+
+        //获取(sessionID)值: Redis缓存Key: (uuid:用户ID:deecoop:userLoginMap)
+        String sessionValue = "";
+        if (redisClient.get(sessionID) != null && redisClient.get(sessionID).trim().length() > 0) {
+            sessionValue = redisClient.get(sessionID).trim();
+        }
+        redisClient.setWithExpireTime(sessionID, sessionValue, 30 * 60);
+    }
+
+    public boolean checkSession(HttpServletRequest httpRequest) {
         //System.out.println("*********************************** in checkSession()");
         //1. 客户端-获取历史sessionID
         //sessionID: (uuid:用户ID:deecoop:userLoginMap)
         String sessionID = httpRequest.getHeader("sessionID");
-
         if (sessionID == null || sessionID.trim().length() == 0) {
             return false;
         }
-
-        System.out.println("Client:sessionID: " + sessionID);
+        //System.out.println("Client:sessionID: " + sessionID);
 
         String[] str_arry = sessionID.split(":");
         String uuid = str_arry[0];
         String userID = str_arry[1];
-        System.out.println("userID: " + userID);
+        //System.out.println("userID: " + userID);
 
         //2. 通过(userID)-Redis缓存中获取最新的会话id(uuid)
         String uuid_new = this.findRedisUuidByUserID(userID);
@@ -104,6 +126,9 @@ public class ComonFilter implements Filter {
 
     @Autowired
     private RedisProperties prop;
+
+    @Autowired
+    RedisClient redisClient;
 
     @Bean(name = "jedisPool")
     public JedisPool jedisPool() {
