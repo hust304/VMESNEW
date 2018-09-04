@@ -402,7 +402,6 @@ public class PostController {
      */
     @PostMapping("/post/listPagePosts")
     public ResultModel listPagePosts()  throws Exception {
-
         logger.info("################post/listPagePosts 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
@@ -443,6 +442,12 @@ public class PostController {
             deptId = ((String)pd.get("deptId")).trim();
             String queryIdStr = departmentService.findDeptidById(deptId, null, "department.");
             pd.put("queryStr", queryIdStr);
+        }
+
+        String userType = (String)pd.get("userType");
+        //(userType_admin:超级管理员 userType_company:企业管理员 userType_employee:普通用户 userType_outer:外部用户)
+        if (Common.DICTIONARY_MAP.get("userType_admin").equals(userType)) {
+            pd.put("cuser", null);
         }
 
         List<Map> varMapList = new ArrayList();
