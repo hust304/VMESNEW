@@ -629,8 +629,12 @@ public class DepartmentController {
         result.put("hideTitles",titlesHideList);
         result.put("titles",titlesList);
 
-
-
+        String deptID = null;
+        if (pd.get("deptID") != null && pd.get("deptID").toString().trim().length() > 0) {
+            deptID = ((String)pd.get("deptID")).trim();
+            String queryIdStr = departmentService.findDeptidById(deptID, null, "a.");
+            pd.put("queryStr", queryIdStr);
+        }
 
         List<Map> varMapList = new ArrayList();
         List<Map> varList = departmentService.getDataListPage(pd,pg);
