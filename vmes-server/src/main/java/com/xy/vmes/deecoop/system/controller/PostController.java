@@ -542,8 +542,7 @@ public class PostController {
         PageData pd = HttpUtils.parsePageData();
         //部门id 为空查询整棵部门树
         //部门id 非空查询当前部门下所有子部门(包含当前部门节点)
-        String deptId = (String)pd.get("deptId");
-        deptId = null;
+        String deptId = (String)pd.get("deptID");
 
         PageData findMap = new PageData();
         findMap.put("deptDisable", "1");
@@ -551,6 +550,9 @@ public class PostController {
         if (deptId != null && deptId.trim().length() > 0) {
             String queryIdStr = departmentService.findDeptidById(deptId, null, null);
             findMap.put("deptQuery", queryIdStr);
+
+            String queryIdStr_1 = departmentService.findDeptidById(deptId, null, "b.");
+            findMap.put("postQuery", queryIdStr_1);
         }
 
         //1. 查询(部门+岗位)表
