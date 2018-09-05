@@ -1,6 +1,7 @@
 package com.xy.vmes.deecoop.system.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.system.dao.EmployPostMapper;
 import com.xy.vmes.entity.Department;
 import com.xy.vmes.entity.EmployPost;
@@ -228,6 +229,31 @@ public class EmployPostServiceImp implements EmployPostService {
         findMap.put("isdisable", "1");
         findMap.put("mapSize", Integer.valueOf(findMap.size()));
         return this.findEmployPost(findMap);
+    }
+
+    /**
+     * check (员工id, 岗位id字符串)-岗位id字符串 中是否含有主岗
+     * @param employId 员工id
+     * @param postIds  岗位id字符串
+     * @return
+     */
+    public boolean checkEmployMainPostByPostIds(String employId, String postIds) {
+        if (employId == null || employId.trim().length() == 0) {return false;}
+        if (postIds == null || postIds.trim().length() == 0) {return false;}
+
+        PageData findMap = new PageData();
+        findMap.put("employId", employId);
+        //是否兼岗(1:兼岗0:主岗) 数据字典:sys_isplurality
+        findMap.put("isplurality", "0");
+
+        postIds = StringUtil.stringTrimSpace(postIds);
+        postIds = "'" + postIds.replace(",", "','") + "'";
+        findMap.put("queryStr", "post_id in (" + postIds + ")");
+
+        List<EmployPost> objectList = this.findEmployPostList(findMap);
+        if (objectList != null && objectList.size() > 0) {return true;}
+
+        return false;
     }
 }
 

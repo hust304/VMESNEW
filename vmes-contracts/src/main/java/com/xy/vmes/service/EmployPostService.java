@@ -121,6 +121,14 @@ public interface EmployPostService {
     EmployPost findEmployPost(PageData object);
     EmployPost findEmployPostById(String id);
     EmployPost findMainEmployPost(String employId);
+
+    /**
+     * check (员工id, 岗位id字符串)-岗位id字符串 中是否含有主岗
+     * @param employId 员工id
+     * @param postIds  岗位id字符串
+     * @return
+     */
+    boolean checkEmployMainPostByPostIds(String employId, String postIds);
 }
 
 

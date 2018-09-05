@@ -224,6 +224,7 @@
         employpost.id,
         employee.id employeeId,
         employpost.id employPostId,
+        <!-- 员工岗位id -->
         post.id postId,
         dept.id deptId,
         role.id roleId,
@@ -232,10 +233,20 @@
         employee.cuser,
         employee.company_id companyId,
         employee.icon,
-        employee.photo
-    </sql>
+        employee.photo,
+        <!-- 获取主岗id-是否兼岗(1:兼岗0:主岗)-->
+        CASE
+          WHEN employpost.isplurality = '0' THEN employpost.post_id
+          ELSE null
+        END mainPostId,
+        <!-- 获取兼岗id-是否兼岗(1:兼岗0:主岗)-->
+        CASE
+          WHEN employpost.isplurality = '1' THEN employpost.post_id
+        ELSE null
+        END otherPostId
+</sql>
 
-    <!-- 字段值 自动创建，可以修改-->
+<!-- 字段值 自动创建，可以修改-->
     <sql id="Column1">
             '员工号'  code,
             '员工姓名'  name,

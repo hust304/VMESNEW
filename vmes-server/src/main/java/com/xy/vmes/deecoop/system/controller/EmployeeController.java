@@ -734,7 +734,12 @@ public class EmployeeController {
             return model;
         }
 
-
+        //当前员工id-岗位id字符串-中是否含有主岗
+        if (employPostService.checkEmployMainPostByPostIds(employeeId, postIds)) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("当前选择的兼岗中含有主岗，请核对后再次操作！");
+            return model;
+        }
 
         //1. 删除(员工id, 兼岗)(vmes_employ_post)数据
         Map columnMap = new HashMap();
