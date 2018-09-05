@@ -239,7 +239,7 @@ public class CompanyServiceImp implements CompanyService {
         if (ids == null || ids.trim().length() == 0) {return new String();}
         String[] id_arry = ids.split(",");
 
-        String msgTemp = "第&nbsp;{0}&nbsp;行:&nbsp;存在子企业或子部门不可删除！/n";
+        String msgTemp = "第 {0} 行: 存在子企业或子部门不可删除！" + Common.SYS_ENDLINE_DEFAULT;
         StringBuffer msgBuf = new StringBuffer();
         for (int i = 0; i < id_arry.length; i++) {
             String id = id_arry[i];

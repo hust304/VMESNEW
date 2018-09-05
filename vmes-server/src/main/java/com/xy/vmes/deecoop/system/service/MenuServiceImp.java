@@ -554,7 +554,7 @@ public class MenuServiceImp implements MenuService {
     public String checkDeleteMenuByIds(String ids) {
         if (ids == null || ids.trim().length() == 0) {return new String();}
 
-        String msgTemp = "第&nbsp;{0}&nbsp;行:&nbsp;菜单在({1})中使用不可禁用！" + Common.SYS_ENDLINE_DEFAULT;
+        String msgTemp = "第 {0} 行: 菜单在({1})中使用不可禁用！" + Common.SYS_ENDLINE_DEFAULT;
         StringBuffer msgBuf = new StringBuffer();
 
         String[] menuid_arry = ids.split(",");

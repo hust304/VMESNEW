@@ -380,7 +380,7 @@ public class RoleController {
         //角色名称是否相同
         if (roleService.isExistByName(companyId, null, name)) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("角色名称：" + name + "&nbsp;在系统中已经存在！");
+            model.putMsg("角色名称：" + name + " 在系统中已经存在！");
             return model;
         }
 
@@ -446,7 +446,7 @@ public class RoleController {
         //角色名称是否相同
         if (roleService.isExistByName(companyId, id, name)) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("角色名称：" + name + "&nbsp;在系统中已经存在！");
+            model.putMsg("角色名称：" + name + " 在系统中已经存在！");
             return model;
         }
 

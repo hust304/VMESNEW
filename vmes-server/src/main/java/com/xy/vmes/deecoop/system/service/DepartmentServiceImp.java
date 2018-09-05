@@ -754,8 +754,8 @@ public class DepartmentServiceImp implements DepartmentService {
     public String checkDeleteDeptByIds(String ids) {
         if (ids == null || ids.trim().length() == 0) {return new String();}
 
-        String msgTemp_1 = "第&nbsp;{0}&nbsp;行:&nbsp;存在子企业或子部门不可禁用！" + Common.SYS_ENDLINE_DEFAULT;
-        String msgTemp_2 = "第&nbsp;{0}&nbsp;行:&nbsp;存在岗位不可禁用！" + Common.SYS_ENDLINE_DEFAULT;
+        String msgTemp_1 = "第 {0} 行: 存在子企业或子部门不可禁用！" + Common.SYS_ENDLINE_DEFAULT;
+        String msgTemp_2 = "第 {0} 行: 存在岗位不可禁用！" + Common.SYS_ENDLINE_DEFAULT;
 
         StringBuffer msgBuf = new StringBuffer();
         String[] id_arry = ids.split(",");
