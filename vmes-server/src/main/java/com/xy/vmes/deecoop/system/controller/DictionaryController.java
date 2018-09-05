@@ -495,19 +495,31 @@ public class DictionaryController {
      */
     @PostMapping("/dictionary/treeDictionarys")
     public ResultModel treeDictionarys()  throws Exception {
-
         logger.info("################dictionary/treeDictionarys 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
+
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
-        Map result = new HashMap();
+
+        String userType = (String)pd.get("userType");
+        //(userType_admin:超级管理员 userType_company:企业管理员 userType_employee:普通用户 userType_outer:外部用户)
+        if (userType != null && userType.trim().length() > 0 && Common.DICTIONARY_MAP.get("userType_admin").equals(userType)) {
+            //是否是全局数据字典  0：否  1：是
+            //0：否 --业务数据-企业管理员维护
+            //1：是 --(超级管理员)维护
+            pd.put("isglobal", "1");
+        } else {
+            pd.put("isglobal", "0");
+            pd.put("queryStr", " or pid = 'root'");
+        }
+        pd.put("isdisable", "1");
 
         List<TreeEntity> treeList = dictionaryService.getTreeList(pd);
         TreeEntity treeObj = TreeUtil.switchTree(null, treeList);
         String treeJsonStr = YvanUtil.toJson(treeObj);
         System.out.println("treeJsonStr: " + treeJsonStr);
 
+        Map result = new HashMap();
         result.put("treeList", treeObj);
         model.putResult(result);
 

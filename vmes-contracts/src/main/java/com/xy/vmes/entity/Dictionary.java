@@ -80,6 +80,8 @@ public class Dictionary implements Serializable {
 	@TableField("uuser")
 	private String uuser;
 	//是否是全局数据字典  0：否  1：是
+	//0：否 --业务数据-企业管理员创建的
+	//1：是 --全员可以创建-(超级管理员-企业管理员-普通用户)
 	@TableField("isglobal")
 	private String isglobal;
 	//所属公司
