@@ -425,10 +425,10 @@ public class UserController {
      * @author 刘威 解除当前用户绑定员工
      * @date 2018-07-26
      */
-    @PostMapping("/user/updateEmployeeUser")
-    public ResultModel updateEmployeeUser()  throws Exception {
+    @PostMapping("/user/updateEmployeeUserUnbind")
+    public ResultModel updateEmployeeUserUnbind()  throws Exception {
 
-        logger.info("################user/updateEmployeeUser 执行开始 ################# ");
+        logger.info("################user/updateEmployeeUserUnbind 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
@@ -449,10 +449,42 @@ public class UserController {
         }
 
         Long endTime = System.currentTimeMillis();
-        logger.info("################user/updateEmployeeUser 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################user/updateEmployeeUserUnbind 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
+
+    /**
+     * @author 刘威 解除当前用户绑定员工
+     * @date 2018-07-26
+     */
+    @PostMapping("/user/updateEmployeeUserBind")
+    public ResultModel updateEmployeeUserBind()  throws Exception {
+
+        logger.info("################user/updateEmployeeUserBind 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        HttpServletResponse response  = HttpUtils.currentResponse();
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+        String userId = pd.getString("id");
+        String employeeId = pd.getString("employeeId");
+
+        if(!StringUtils.isEmpty(userId)){
+            User user = userService.selectById(userId);
+            user.setEmployId(employeeId);
+            userService.update(user);
+        }
+
+        if(!StringUtils.isEmpty(employeeId)){
+            Employee employee = employeeService.selectById(employeeId);
+            employee.setUserId(userId);
+            employeeService.update(employee);
+        }
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################user/updateEmployeeUserBind 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
 
 
 
