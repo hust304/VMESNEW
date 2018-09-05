@@ -551,8 +551,8 @@ public class PostController {
         String deptId = (String)pd.get("deptID");
 
         PageData findMap = new PageData();
-        findMap.put("deptDisable", "1");
-        findMap.put("postDisable", "1");
+        //findMap.put("deptDisable", "1");
+        //findMap.put("postDisable", "1");
         if (deptId != null && deptId.trim().length() > 0) {
             String queryIdStr = departmentService.findDeptidById(deptId, null, null);
             findMap.put("deptQuery", queryIdStr);

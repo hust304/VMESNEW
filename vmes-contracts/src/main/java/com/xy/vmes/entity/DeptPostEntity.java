@@ -3,6 +3,7 @@ package com.xy.vmes.entity;
 public class DeptPostEntity {
     private String id;
     private String pid;
+    private String isdisable;
     private String name;
     private String deptName;
     private String postName;
@@ -60,5 +61,11 @@ public class DeptPostEntity {
     }
     public void setType(String type) {
         this.type = type;
+    }
+    public String getIsdisable() {
+        return isdisable;
+    }
+    public void setIsdisable(String isdisable) {
+        this.isdisable = isdisable;
     }
 }
