@@ -936,6 +936,11 @@ public class RoleController {
             findMap.put("queryStr", queryIdStr);
         }
         findMap.put("userIsdisable", "1");
+        //查询用户未绑定角色
+        findMap.put("queryIsBindRole", "userRole.role_id is null");
+        //普通用户-外部用户
+        String queryUserType = "user_type in ('69726efa45044117ac94a33ab2938ce4','028fb82cfbe341b1954834edfa2fc18d')";
+        findMap.put("queryUserType", queryUserType);
 
         List<Map<String, String>> varMapList = new ArrayList<Map<String, String>>();
         List<Map<String, Object>> varList = userRoleService.listUserByRole(findMap);
@@ -1002,26 +1007,9 @@ public class RoleController {
         PageData pageData = HttpUtils.parsePageData();
 
         //角色id-已经绑定的用户ID
-        String userIds = "";
-        String roleId = (String)pageData.get("roleId");
-        if (roleId != null && roleId.trim().length() > 0) {
-            userIds = userRoleService.findUserIdsByByRoleID(roleId.trim());
-            userIds = StringUtil.stringTrimSpace(userIds);
-        }
-
-        String sqlUserIds = "";
-        if (userIds.trim().length() > 0) {
-            sqlUserIds = "'" + userIds.replace(",", "','") + "'";
-        }
-
         PageData findMap = new PageData();
-        String queryStr = "";
-        if (sqlUserIds.trim().length() > 0) {
-            queryStr = queryStr + "user.id in ("+sqlUserIds+")";
-            findMap.put("queryStr", queryStr);
-        } else if (sqlUserIds.trim().length() == 0) {
-            findMap.put("queryNull", "true");
-        }
+        String roleId = (String)pageData.get("roleId");
+        findMap.put("roleId", roleId);
 
         //普通用户-外部用户
         String queryUserType = "user_type in ('69726efa45044117ac94a33ab2938ce4','028fb82cfbe341b1954834edfa2fc18d')";
