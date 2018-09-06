@@ -615,23 +615,17 @@ public class RoleController {
             return model;
         }
 
-        String msgStr = new String();
         String roleID = (String)pageData.get("roleID");
         if (roleID == null || roleID.trim().length() == 0) {
-            msgStr = msgStr + "roleID为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT;
-        }
-        String userIds = (String)pageData.get("userIds");
-        if (userIds == null || userIds.trim().length() == 0) {
-            msgStr = msgStr + "userIds为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT;
-        }
-        if (msgStr.trim().length() > 0) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg(msgStr);
+            model.putMsg("roleID为空或空字符串！");
             return model;
         }
 
         //2. 删除角色用户(当前角色)
         userRoleService.deleteUserRoleByRoleId(roleID);
+
+        String userIds = (String)pageData.get("userIds");
         //3. 添加角色用户(当前角色)
         userRoleService.addUserRoleByUserIds(roleID, userIds, (String)pageData.get("cuser"));
 
