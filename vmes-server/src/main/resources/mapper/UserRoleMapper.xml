@@ -260,25 +260,37 @@
         select <include refid="UserField" />
         from vmes_user user
             left join vmes_department dept on user.dept_id = dept.id
-        <where>
-            <if test="deptId != null and deptId != ''" >
-                and user.dept_id = #{deptId}
-            </if>
-            <if test="companyId != null and companyId != ''" >
-                and user.company_id = #{companyId}
-            </if>
+        <choose>
+            <when test="'true' == queryNull ">
+                where 1=2
+            </when>
+            <otherwise>
+                <where>
+                    <if test="deptId != null and deptId != ''" >
+                        and user.dept_id = #{deptId}
+                    </if>
+                    <if test="companyId != null and companyId != ''" >
+                        and user.company_id = #{companyId}
+                    </if>
 
-            <if test="isdisable != null and isdisable != ''" >
-                and user.isdisable = #{isdisable}
-            </if>
-            <if test="cuser != null and cuser != ''">
-                and user.company_id in (select company_id from vmes_user where id = #{cuser})
-            </if>
-            <!--queryStr 自定义sql查询语句-->
-            <if test="queryStr != null and queryStr!=''" >
-                and ${queryStr}
-            </if>
-        </where>
+                    <if test="userIsdisable != null and userIsdisable != ''" >
+                        and user.isdisable = #{userIsdisable}
+                    </if>
+                    <if test="cuser != null and cuser != ''">
+                        and user.company_id in (select company_id from vmes_user where id = #{cuser})
+                    </if>
+
+                    <!--queryStr 自定义sql查询语句-->
+                    <if test="queryStr != null and queryStr != ''" >
+                        and ${queryStr}
+                    </if>
+                    <!--queryUserType 自定义sql查询语句-->
+                    <if test="queryUserType != null and queryUserType != ''" >
+                        and ${queryUserType}
+                    </if>
+                </where>
+            </otherwise>
+        </choose>
     </select>
 
     <sql id="UserColumn">

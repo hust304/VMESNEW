@@ -897,9 +897,9 @@ public class RoleController {
      * @author 陈刚
      * @date 2018-07-30
      */
-    @GetMapping("/role/listAllUsersByDeptId")
+    @PostMapping("/role/listAllUsersByDeptId")
     public ResultModel listAllUsersByDeptId() throws Exception{
-        logger.info("################role/listUsersByRole 执行开始 ################# ");
+        logger.info("################role/listAllUsersByDeptId 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
 
         ResultModel model = new ResultModel();
@@ -935,13 +935,13 @@ public class RoleController {
         //2. 查询数据List
         PageData findMap = new PageData();
         PageData pageData = HttpUtils.parsePageData();
-        String deptId = (String)pageData.get("deptId");
 
+        String deptId = (String)pageData.get("deptId");
         if (deptId != null && deptId.trim().length() > 0) {
             String queryIdStr = departmentService.findDeptidById(deptId, null, "dept.");
             findMap.put("queryStr", queryIdStr);
         }
-
+        findMap.put("userIsdisable", "1");
 
         List<Map<String, String>> varMapList = new ArrayList<Map<String, String>>();
         List<Map<String, Object>> varList = userRoleService.listUserByRole(findMap);
@@ -959,7 +959,7 @@ public class RoleController {
 
         model.putResult(mapObj);
         Long endTime = System.currentTimeMillis();
-        logger.info("################role/listUsersByRole 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################role/listAllUsersByDeptId 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
 
         return model;
     }
@@ -1005,7 +1005,6 @@ public class RoleController {
         mapObj.put("titles", titlesList);
 
         //2. 分页查询数据List
-        List<Map<String, String>> varMapList = new ArrayList<Map<String, String>>();
         PageData pageData = HttpUtils.parsePageData();
 
         //角色id-已经绑定的用户ID
@@ -1021,35 +1020,21 @@ public class RoleController {
             sqlUserIds = "'" + userIds.replace(",", "','") + "'";
         }
 
-        //in  : 当前角色ID-已经绑定的用户
-        //noin: 当前角色ID-没有绑定的用户
+        PageData findMap = new PageData();
         String queryStr = "";
-        String type = (String)pageData.get("type");
-
-        if ("in".equals(type) && sqlUserIds.trim().length() > 0) {
-            queryStr = queryStr + "id in ("+sqlUserIds+")";
-        } else if ("in".equals(type) && sqlUserIds.trim().length() == 0) {
-            pageData.put("queryNull", "true");
-        } else if ("notin".equals(type) && sqlUserIds.trim().length() > 0) {
-            queryStr = queryStr + "id not in ("+sqlUserIds+")";
+        if (sqlUserIds.trim().length() > 0) {
+            queryStr = queryStr + "user.id in ("+sqlUserIds+")";
+            findMap.put("queryStr", queryStr);
+        } else if (sqlUserIds.trim().length() == 0) {
+            findMap.put("queryNull", "true");
         }
 
         //普通用户-外部用户
-        String childQuery = "user_type in ('69726efa45044117ac94a33ab2938ce4','028fb82cfbe341b1954834edfa2fc18d')";
-        if (queryStr.trim().length() > 0) {
-            queryStr = queryStr + " and " + childQuery;
-        } else {
-            queryStr = queryStr + childQuery;
-        }
-        pageData.put("queryStr", queryStr);
+        String queryUserType = "user_type in ('69726efa45044117ac94a33ab2938ce4','028fb82cfbe341b1954834edfa2fc18d')";
+        findMap.put("queryUserType", queryUserType);
 
-
-        String deptId = (String)pageData.get("deptId");
-        if (deptId != null && deptId.trim().length() > 0) {
-            pageData.put("deptId", deptId);
-        }
-
-        List<Map<String, Object>> varList = userRoleService.listUserByRole(pageData);
+        List<Map<String, String>> varMapList = new ArrayList<Map<String, String>>();
+        List<Map<String, Object>> varList = userRoleService.listUserByRole(findMap);
         if(varList != null && varList.size() > 0) {
             for (Map<String, Object> map : varList) {
                 Map<String, String> varMap = new HashMap<String, String>();
@@ -1068,7 +1053,6 @@ public class RoleController {
 
         return model;
     }
-
 
 }
 
