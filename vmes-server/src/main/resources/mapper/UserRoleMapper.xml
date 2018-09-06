@@ -248,40 +248,37 @@
     <!-- 当前角色id已经绑定用户List 或 当前角色id没有绑定用户List-->
     <sql id="UserField">
         <!--查询显示字段-->
-        user_code userCode,
-        user_name userName,
+        user.user_code userCode,
+        user.user_name userName,
         <!--查询隐藏字段-->
-        id id,
-        isdisable isdisable,
-        cdate cdate,
-        cuser cuser
+        user.id id,
+        user.isdisable isdisable,
+        user.cdate cdate,
+        user.cuser cuser
     </sql>
     <select id="listUserByRole" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select <include refid="UserField" />
-        from vmes_user
-        <choose>
-            <when test="'true' == queryNull ">
-                where 1=2
-            </when>
-            <otherwise>
-                <where>
-                    <if test="deptId != null and deptId != ''" >
-                        and dept_id = #{deptId}
-                    </if>
-                    <if test="companyId != null and companyId != ''" >
-                        and company_id = #{companyId}
-                    </if>
+        from vmes_user user
+            left join vmes_department dept on user.dept_id = dept.id
+        <where>
+            <if test="deptId != null and deptId != ''" >
+                and user.dept_id = #{deptId}
+            </if>
+            <if test="companyId != null and companyId != ''" >
+                and user.company_id = #{companyId}
+            </if>
 
-                    <if test="isdisable != null and isdisable != ''" >
-                        and isdisable = #{isdisable}
-                    </if>
-                    <!--queryStr 自定义sql查询语句-->
-                    <if test="queryStr != null and queryStr!=''" >
-                        and ${queryStr}
-                    </if>
-                </where>
-            </otherwise>
-        </choose>
+            <if test="isdisable != null and isdisable != ''" >
+                and user.isdisable = #{isdisable}
+            </if>
+            <if test="cuser != null and cuser != ''">
+                and user.company_id in (select company_id from vmes_user where id = #{cuser})
+            </if>
+            <!--queryStr 自定义sql查询语句-->
+            <if test="queryStr != null and queryStr!=''" >
+                and ${queryStr}
+            </if>
+        </where>
     </select>
 
     <sql id="UserColumn">

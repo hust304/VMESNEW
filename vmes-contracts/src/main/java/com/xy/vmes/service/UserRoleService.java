@@ -100,7 +100,7 @@ public interface UserRoleService {
      * 创建人：陈刚
      * 创建时间：2018-07-31
      */
-    void addUserRoleByUserIds(String roleId, String userIds);
+    void addUserRoleByUserIds(String roleId, String userIds, String cuser);
 
     /**
      * 修改禁用属性(isdisable)

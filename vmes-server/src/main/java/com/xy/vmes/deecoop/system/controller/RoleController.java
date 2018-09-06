@@ -53,6 +53,8 @@ public class RoleController {
     private CoderuleService coderuleService;
 
     @Autowired
+    private DepartmentService departmentService;
+    @Autowired
     private MenuService menuService;
     //@Autowired
     //private MenuButtonService menuButtonService;
@@ -631,7 +633,7 @@ public class RoleController {
         //2. 删除角色用户(当前角色)
         userRoleService.deleteUserRoleByRoleId(roleID);
         //3. 添加角色用户(当前角色)
-        userRoleService.addUserRoleByUserIds(roleID, userIds);
+        userRoleService.addUserRoleByUserIds(roleID, userIds, (String)pageData.get("cuser"));
 
         Long endTime = System.currentTimeMillis();
         logger.info("################role/saveRoleUsers 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
@@ -890,6 +892,79 @@ public class RoleController {
 
 
     /**
+     * 根据部门id获取全部待选用户
+     *
+     * @author 陈刚
+     * @date 2018-07-30
+     */
+    @GetMapping("/role/listAllUsersByDeptId")
+    public ResultModel listAllUsersByDeptId() throws Exception{
+        logger.info("################role/listUsersByRole 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        Map<String, Object> mapObj = new HashMap<String, Object>();
+
+        //1. 查询遍历List列表
+        List<Column> columnList = columnService.findColumnList("userRole");
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
+        }
+
+        List<LinkedHashMap> titlesList = new ArrayList<LinkedHashMap>();
+        List<String> titlesHideList = new ArrayList<String>();
+        Map<String, String> varModelMap = new HashMap<String, String>();
+        if(columnList!=null&&columnList.size()>0){
+            for (Column column : columnList) {
+                if(column!=null){
+                    if("0".equals(column.getIshide())){
+                        titlesHideList.add(column.getTitleKey());
+                    }
+                    LinkedHashMap titlesLinkedMap = new LinkedHashMap();
+                    titlesLinkedMap.put(column.getTitleKey(),column.getTitleName());
+                    varModelMap.put(column.getTitleKey(),"");
+                    titlesList.add(titlesLinkedMap);
+                }
+            }
+        }
+        mapObj.put("hideTitles", titlesHideList);
+        mapObj.put("titles", titlesList);
+
+        //2. 查询数据List
+        PageData findMap = new PageData();
+        PageData pageData = HttpUtils.parsePageData();
+        String deptId = (String)pageData.get("deptId");
+
+        if (deptId != null && deptId.trim().length() > 0) {
+            String queryIdStr = departmentService.findDeptidById(deptId, null, "dept.");
+            findMap.put("queryStr", queryIdStr);
+        }
+
+
+        List<Map<String, String>> varMapList = new ArrayList<Map<String, String>>();
+        List<Map<String, Object>> varList = userRoleService.listUserByRole(findMap);
+        if(varList != null && varList.size() > 0) {
+            for (Map<String, Object> map : varList) {
+                Map<String, String> varMap = new HashMap<String, String>();
+                varMap.putAll(varModelMap);
+                for (Map.Entry<String, String> entry : varMap.entrySet()) {
+                    varMap.put(entry.getKey(), map.get(entry.getKey()) != null ? map.get(entry.getKey()).toString() : "");
+                }
+                varMapList.add(varMap);
+            }
+        }
+        mapObj.put("varList", varMapList);
+
+        model.putResult(mapObj);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################role/listUsersByRole 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+
+        return model;
+    }
+
+    /**
      * 获取当前角色id已经绑定用户List
      *
      * @author 陈刚
@@ -959,10 +1034,15 @@ public class RoleController {
             queryStr = queryStr + "id not in ("+sqlUserIds+")";
         }
 
-
+        //普通用户-外部用户
+        String childQuery = "user_type in ('69726efa45044117ac94a33ab2938ce4','028fb82cfbe341b1954834edfa2fc18d')";
         if (queryStr.trim().length() > 0) {
-            pageData.put("queryStr", queryStr);
+            queryStr = queryStr + " and " + childQuery;
+        } else {
+            queryStr = queryStr + childQuery;
         }
+        pageData.put("queryStr", queryStr);
+
 
         String deptId = (String)pageData.get("deptId");
         if (deptId != null && deptId.trim().length() > 0) {

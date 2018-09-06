@@ -188,7 +188,7 @@ public class UserRoleServiceImp implements UserRoleService {
      * 创建人：陈刚
      * 创建时间：2018-07-31
      */
-    public void addUserRoleByUserIds(String roleId, String userIds) {
+    public void addUserRoleByUserIds(String roleId, String userIds, String cuser) {
         if (roleId == null || roleId.trim().length() == 0) {return;}
         if (userIds == null || userIds.trim().length() == 0) {return;}
 
@@ -196,9 +196,17 @@ public class UserRoleServiceImp implements UserRoleService {
         String[] strArry = userIds.split(",");
         for (int i = 0; i < strArry.length; i++) {
             String userID = strArry[i];
+            //删除当前用户角色
+            try {
+                this.deleteRoleByUserId(userID);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
             UserRole objectDB = new UserRole();
             objectDB.setRoleId(roleId);
             objectDB.setUserId(userID);
+            objectDB.setCuser(cuser);
             try {
                 this.save(objectDB);
             } catch (Exception e) {
