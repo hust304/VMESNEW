@@ -204,18 +204,12 @@ public class DepartmentController {
 
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
-        PageData findMap = new PageData();
-
-        //部门id 为空查询整棵部门树
-        //部门id 非空查询当前部门下所有子部门(包含当前部门节点)
         String deptId = null;
-        if (pd.get("deptID") != null && pd.get("deptID").toString().trim().length() > 0) {
-            deptId = ((String)pd.get("deptID")).trim();
-            String queryIdStr = departmentService.findDeptidById(deptId, null, null);
-            findMap.put("queryStr", queryIdStr);
+        if (pd.get("currentCompanyId") != null && pd.get("currentCompanyId").toString().trim().length() > 0) {
+            deptId = ((String)pd.get("currentCompanyId")).trim();
         }
 
-        List<TreeEntity> treeList = departmentService.getTreeList(findMap);
+        List<TreeEntity> treeList = departmentService.getTreeList(pd);
         TreeEntity treeObj = TreeUtil.switchTree(deptId, treeList);
         String treeJsonStr = YvanUtil.toJson(treeObj);
         System.out.println("treeJsonStr: " + treeJsonStr);
