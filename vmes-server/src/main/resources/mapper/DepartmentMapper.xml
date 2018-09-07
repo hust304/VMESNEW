@@ -348,20 +348,25 @@
             left join vmes_department b on a.pid = b.id
             left join vmes_dictionary c on a.dept_type = c.id
         <where>
+
+
             <if test="code != null and code != ''"><!-- 关键词检索 -->
                 and a.code LIKE CONCAT(CONCAT('%', #{code}),'%')
             </if>
             <if test="name != null and name != ''"><!-- 关键词检索 -->
                 and a.name LIKE CONCAT(CONCAT('%', #{name}),'%')
             </if>
-            <if test="pid!= null and pid != '' and layer == null">
+            <if test="pid!= null and pid != '' and layer == null"><!-- 关键词检索 -->
                 and a.pid = #{pid}
+            </if>
+            <if test="pid!= null and pid != '' and layer != null"><!-- 关键词检索 -->
+                and a.id_${layer} = #{pid}
             </if>
             <if test="deptTypeName != null and deptTypeName != ''" >
                 and c.name  LIKE CONCAT(CONCAT('%', #{deptTypeName}),'%')
             </if>
-            <if test="cuser != null and cuser != ''" >
-                and a.cuser = #{cuser}
+            <if test="cuser != null and cuser != ''"><!-- 关键词检索 -->
+                and (a.id_0 in (select company_id from vmes_user where id =  #{cuser})  or a.id_1 in (select company_id from vmes_user where id =  #{cuser}) )
             </if>
 
             <!--queryStr 自定义sql查询语句-->
