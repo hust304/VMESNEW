@@ -99,7 +99,8 @@ public class MainPageController {
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
-        String userDefinedMenus = pd.getString("userDefinedMenus");
+//        String userDefinedMenus = pd.getString("userDefinedMenus");
+        ArrayList userDefinedMenusList = (ArrayList)pd.get("userDefinedMenus");
 //        userDefinedMenus ="{\"userDefinedMenus\":[{\"userId\":\"3\",\"menuId\":\"1\",\"serialNumber\":\"1\"}," +
 //                "{\"userId\":\"3\",\"menuId\":1532599975000,\"serialNumber\":\"2\"}," +
 //                "{\"userId\":\"3\",\"menuId\":1532601003000,\"serialNumber\":\"3\"}," +
@@ -113,7 +114,9 @@ public class MainPageController {
 //                "{\"userId\":\"3\",\"menuId\":1532600802000,\"serialNumber\":\"5\"}," +
 //                "{\"userId\":\"3\",\"menuId\":1532601034000,\"serialNumber\":\"6\"}]";
 
-        List userDefinedMenusList = YvanUtil.jsonToList(userDefinedMenus);
+//        userDefinedMenus = userDefinedMenus.replace(", {}","");
+//        List userDefinedMenusList = YvanUtil.jsonToList(userDefinedMenus);
+
         if(userDefinedMenusList!=null&&userDefinedMenusList.size()>0){
             for(int i=0;i<userDefinedMenusList.size();i++){
                 String josnObj = YvanUtil.toJson(userDefinedMenusList.get(i));
