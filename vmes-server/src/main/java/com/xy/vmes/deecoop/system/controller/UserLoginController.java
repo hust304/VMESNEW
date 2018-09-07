@@ -213,12 +213,12 @@ public class UserLoginController {
         dataMap.put("userCode", user.getUserCode());
         dataMap.put("companyId", user.getCompanyId());
         dataMap.put("userType", user.getUserType());
+        dataMap.put("userName", user.getUserName());
 
         //employ:员工信息()
         Employee employ = new Employee();
         employ = userEmployService.mapObject2Employee(userEmployMap, employ);
         RedisMap.put("employ", YvanUtil.toJson(employ));
-        dataMap.put("userName", employ.getName());
 
         //deptId部门id-postId岗位ID
         dataMap.put("deptId", user.getDeptId());
