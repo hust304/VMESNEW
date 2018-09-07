@@ -2,17 +2,12 @@ package com.xy.vmes.deecoop.system.controller;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.*;
-import com.xy.vmes.entity.Column;
+import com.xy.vmes.entity.*;
 import com.xy.vmes.entity.Dictionary;
-import com.xy.vmes.entity.TreeEntity;
-import com.xy.vmes.entity.User;
 import com.xy.vmes.service.ColumnService;
 import com.xy.vmes.service.DictionaryService;
 import com.xy.vmes.service.UserService;
-import com.yvan.ExcelUtil;
-import com.yvan.HttpUtils;
-import com.yvan.PageData;
-import com.yvan.YvanUtil;
+import com.yvan.*;
 import com.yvan.cache.RedisClient;
 import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
@@ -30,8 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.text.MessageFormat;
 import java.util.*;
 
 
@@ -207,61 +201,71 @@ public class DictionaryController {
      */
     @PostMapping("/dictionary/addDictionary")
     public ResultModel addDictionary()  throws Exception {
-
         logger.info("################dictionary/addDictionary 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
+
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         Dictionary dictionary = (Dictionary)HttpUtils.pageData2Entity(pd, new Dictionary());
+
         String sessionID = pd.getString("sessionID");
         User user = RedisUtils.getUserInfoBySessionID(redisClient,sessionID);
-        if(user==null){
+        if(user == null){
             user = userService.selectById(pd.getString("currentUserId"));
         }
-        dictionary.setCompanyId(user.getCompanyId());
-        if(StringUtils.isEmpty(pd.getString("pid"))){
-            model.putCode(1);
-            model.putMsg("缺少上级节点，不能新增!");
+
+        if (dictionary.getPid() == null || dictionary.getPid().trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("pid为空或空字符串");
             return model;
-        }else{
-            Dictionary pDictionary = dictionaryService.selectById(pd.getString("pid"));
-            dictionary.setId0(pDictionary.getId0());//Common.DICTIONARY_MAP.get("root")
-            dictionary.setId1(pDictionary.getId1());
-            dictionary.setId2(pDictionary.getId2());
-            dictionary.setId3(pDictionary.getId3());
-            dictionary.setId4(pDictionary.getId4());
-            dictionary.setId5(pDictionary.getId5());
-            dictionary.setId6(pDictionary.getId6());
-            dictionary.setLayer(pDictionary.getLayer()+1);
-            dictionary.setPid(pDictionary.getId());
-            if(pDictionary.getLayer()==0){
-                dictionary.setId0(pDictionary.getId());
-            }else if(pDictionary.getLayer()==1){
-                dictionary.setId1(pDictionary.getId());
-            }else if(pDictionary.getLayer()==2){
-                dictionary.setId2(pDictionary.getId());
-            }else if(pDictionary.getLayer()==3){
-                dictionary.setId3(pDictionary.getId());
-            }else if(pDictionary.getLayer()==4){
-                dictionary.setId4(pDictionary.getId());
-            }else if(pDictionary.getLayer()==5){
-                dictionary.setId5(pDictionary.getId());
-            }else if(pDictionary.getLayer()==6){
-                dictionary.setId6(pDictionary.getId());
-            }else {
-                model.putCode(2);
-                model.putMsg("数据字典最高层级不能超过7层!");
-                return model;
-            }
         }
 
-//        dictionary.setSerialNumber(dictionary.getSerialNumber()==null?1:dictionary.getSerialNumber());
-        if(Common.DEPARTMENT_ROOT_ID.equals(user.getCompanyId())){
+        //pid 获取父节点对象<Department>
+        Dictionary paterObj = dictionaryService.findDictionaryById(dictionary.getPid());
+        if (paterObj == null) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("(pid:"+ dictionary.getPid() + ")系统中无数据，请与管理员联系！");
+            return model;
+        }
+
+        //2. (字典名称)在同一层名称不可重复
+        if (dictionaryService.isExistByName(dictionary.getPid(), null, dictionary.getName())) {
+            String msgTemp = "上级字典名称: {0}{2}字典名称: {1}{2}在系统中已经重复！{2}";
+            String str_isnull = MessageFormat.format(msgTemp,
+                    paterObj.getName(),
+                    dictionary.getName(),
+                    Common.SYS_ENDLINE_DEFAULT);
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(str_isnull);
+            return model;
+        }
+
+        //3. 创建字典信息
+        String id = Conv.createUuid();
+        dictionary.setId(id);
+        dictionary.setCompanyId(user.getCompanyId());
+
+        //userType_admin:超级管理员 userType_company:企业管理员 userType_employee:普通用户 userType_outer:外部用户)
+        //isglobal: 0：否  1：是
+        if(Common.DICTIONARY_MAP.get("userType_admin").equals(user.getUserType())){
             dictionary.setIsglobal("1");//超级管理员创建的数据字典都是全局设置
         }else {
             dictionary.setIsglobal("0");//非全局设置
         }
+
+        dictionary = dictionaryService.id2DictionaryByLayer(id,
+                Integer.valueOf(paterObj.getLayer().intValue() + 1),
+                dictionary);
+        dictionary = dictionaryService.paterObject2ObjectDB(paterObj, dictionary);
+
+        //设置部门级别
+        dictionary.setLayer(Integer.valueOf(paterObj.getLayer().intValue() + 1));
+        //设置默认部门顺序
+        if (dictionary.getSerialNumber() == null) {
+            Integer maxCount = dictionaryService.findMaxSerialNumber(dictionary.getPid());
+            dictionary.setSerialNumber(Integer.valueOf(maxCount.intValue() + 1));
+        }
+
         dictionaryService.save(dictionary);
         Long endTime = System.currentTimeMillis();
         logger.info("################dictionary/addDictionary 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
@@ -275,19 +279,110 @@ public class DictionaryController {
      */
     @PostMapping("/dictionary/updateDictionary")
     public ResultModel updateDictionary()  throws Exception {
-
         logger.info("################dictionary/updateDictionary 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
+
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         Dictionary dictionary = (Dictionary)HttpUtils.pageData2Entity(pd, new Dictionary());
-        dictionaryService.update(dictionary);
+
+        //pid 获取父节点对象<Department>
+        Dictionary paterObj = dictionaryService.findDictionaryById(dictionary.getPid());
+        if (paterObj == null) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("(pid:"+ dictionary.getPid() + ")系统中无数据，请与管理员联系！");
+            return model;
+        }
+
+        //2. (字典名称)在同一层名称不可重复
+        if (dictionaryService.isExistByName(dictionary.getPid(), dictionary.getId(), dictionary.getName())) {
+            String msgTemp = "上级字典名称: {0}{2}字典名称: {1}{2}在系统中已经重复！{2}";
+            String str_isnull = MessageFormat.format(msgTemp,
+                    paterObj.getName(),
+                    dictionary.getName(),
+                    Common.SYS_ENDLINE_DEFAULT);
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(str_isnull);
+            return model;
+        }
+
+        //3. 修改部门信息
+        Dictionary dictionaryDB = dictionaryService.findDictionaryById(dictionary.getId());
+        dictionaryDB = dictionaryService.object2objectDB(dictionary, dictionaryDB);
+        dictionaryDB = dictionaryService.clearDictionaryByPath(dictionaryDB);
+        dictionaryDB = dictionaryService.id2DictionaryByLayer(dictionaryDB.getId(),
+                Integer.valueOf(paterObj.getLayer().intValue() + 1),
+                dictionaryDB);
+        dictionaryDB = dictionaryService.paterObject2ObjectDB(paterObj, dictionaryDB);
+        //设置部门级别
+        dictionaryDB.setLayer(Integer.valueOf(paterObj.getLayer().intValue() + 1));
+        //设置默认部门顺序
+        if (dictionary.getSerialNumber() == null) {
+            Integer maxCount = dictionaryService.findMaxSerialNumber(dictionary.getPid());
+            dictionaryDB.setSerialNumber(Integer.valueOf(maxCount.intValue() + 1));
+        }
+        dictionaryDB.setUuser((String)pd.get("uuser"));
+        dictionaryService.update(dictionaryDB);
+
         Long endTime = System.currentTimeMillis();
         logger.info("################dictionary/updateDictionary 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
+    /**修改组织架构(禁用)状态
+     *
+     * @author 陈刚
+     * @date 2018-07-27
+     */
+    @PostMapping("/dictionary/updateDisableDictionary")
+    public ResultModel updateDisableDictionary() throws Exception {
+        logger.info("################dictionary/updateDisableDictionary 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
 
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        //1. 非空判断
+        if (pageData == null || pageData.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("参数错误：用户登录参数(pageData)为空！");
+            return model;
+        }
+
+        String id = (String)pageData.get("id");
+        String isdisable = (String)pageData.get("isdisable");
+
+        String msgStr = new String();
+        if (id == null || id.trim().length() == 0) {
+            msgStr = msgStr + "id为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT;
+        }
+        if (isdisable == null || isdisable.trim().length() == 0) {
+            msgStr = msgStr + "isdisable为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT;
+        }
+        if (msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
+
+        //2. 当前组织节点下是否含有(子节点-岗位)
+        msgStr = dictionaryService.checkDeleteDictionaryByIds(id);
+        if (msgStr != null && msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
+
+        //3. 修改组织架构(禁用)状态
+        Dictionary objectDB = dictionaryService.findDictionaryById(id);
+        objectDB.setIsdisable(isdisable);
+        objectDB.setUdate(new Date());
+        objectDB.setUuser((String)pageData.get("uuser"));
+        dictionaryService.update(objectDB);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/dictionary/updateDisableDictionary 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
 
     /**
      * @author 刘威
