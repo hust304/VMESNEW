@@ -151,7 +151,7 @@ public class MainPageController {
         PageData pd = HttpUtils.parsePageData();
 
         Map result = new HashMap();
-        List<Column> columnList = columnService.findColumnList("user");
+        List<Column> columnList = columnService.findColumnList("mainPage");
         if (columnList == null || columnList.size() == 0) {
             model.putCode("1");
             model.putMsg("数据库没有生成TabCol，请联系管理员！");
@@ -217,7 +217,7 @@ public class MainPageController {
      */
     @PostMapping("/mainPage/listRoleMeunAll")
     public ResultModel listRoleMeunAll() throws Exception {
-        logger.info("################mainPage/listUserDefinedMenu 执行开始 ################# ");
+        logger.info("################mainPage/listRoleMeunAll 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
 
         ResultModel model = new ResultModel();
@@ -253,7 +253,7 @@ public class MainPageController {
         model.putResult(entityLiset);
 
         Long endTime = System.currentTimeMillis();
-        logger.info("################mainPage/listUserDefinedMenu 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################mainPage/listRoleMeunAll 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
