@@ -179,6 +179,7 @@
 
 
     <insert id="insertColumn" >
+        delete from vmes_column where model_code = 'mainPage' ;
         insert into vmes_column (
         id,model_code,title_key,title_name,serial_number,
         isdisable,ishide,isedit,ismust,cdate,
@@ -190,7 +191,7 @@
         (replace(uuid(), '-', ''),'mainPage','menuName','菜单名称',4, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'mainPage','menuIcon','菜单图标',5, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'mainPage','menuUrl','菜单路径',6, '1','1','1','0',now(), 'admin'),
-
+        (replace(uuid(), '-', ''),'mainPage','layer','菜单层级',7, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'mainPage','id','id',0, '1','1','1','0',now(), 'admin')
     </insert>
 
@@ -202,6 +203,7 @@
         menu.name menuName,<!-- 菜单名称 -->
         menu.icon menuIcon,<!-- 菜单图标 -->
         menu.url menuUrl,<!-- 菜单路径 -->
+        menu.layer layer,<!-- 菜单层级 -->
         usermenu.id id <!-- id -->
     </sql>
 
