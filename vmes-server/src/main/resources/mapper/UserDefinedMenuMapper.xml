@@ -186,25 +186,21 @@
         cuser
         ) VALUES
         (replace(uuid(), '-', ''),'mainPage','userId','用户ID',1, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'mainPage','menuId','菜单ID',2, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'mainPage','serialNumber','自定义菜单顺序',3, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'mainPage','menuName','菜单名称',4, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'mainPage','menuIcon','菜单图标',5, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'mainPage','menuUrl','菜单路径',6, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'mainPage','layer','菜单层级',7, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'mainPage','serialNumber','自定义菜单顺序',2, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'mainPage','name','菜单名称',3, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'mainPage','url','菜单路径',4, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'mainPage','layer','菜单层级',5, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'mainPage','id','id',0, '1','1','1','0',now(), 'admin')
     </insert>
 
     <!-- 表格表体值 刘威-->
     <sql id="Field1">
         usermenu.user_id userId,<!-- 用户ID -->
-        usermenu.menu_id menuId,<!-- 菜单ID -->
+        usermenu.menu_id id,<!-- 菜单ID -->
         usermenu.serial_number serialNumber,<!-- 自定义菜单顺序 -->
-        menu.name menuName,<!-- 菜单名称 -->
-        menu.icon menuIcon,<!-- 菜单图标 -->
-        menu.url menuUrl,<!-- 菜单路径 -->
-        menu.layer layer,<!-- 菜单层级 -->
-        usermenu.id id <!-- id -->
+        menu.name name,<!-- 菜单名称 -->
+        menu.url url,<!-- 菜单路径 -->
+        menu.layer layer<!-- 菜单层级 -->
     </sql>
 
 

@@ -119,15 +119,25 @@ public class MainPageController {
 
         if(userDefinedMenusList!=null&&userDefinedMenusList.size()>0){
             for(int i=0;i<userDefinedMenusList.size();i++){
-                String josnObj = YvanUtil.toJson(userDefinedMenusList.get(i));
-                UserDefinedMenu userDefinedMenu = YvanUtil.jsonToObj(josnObj, UserDefinedMenu.class);
-                if(i==0){
-                    Map columnMap = new HashMap();
-                    columnMap.put("user_id",userDefinedMenu.getUserId());
-                    userDefinedMenuService.deleteByColumnMap(columnMap);
+//                String josnObj = YvanUtil.toJson(userDefinedMenusList.get(i));
+//                UserDefinedMenu userDefinedMenu = YvanUtil.jsonToObj(josnObj, UserDefinedMenu.class);
+                Map userDefinedMenusMap = (Map) userDefinedMenusList.get(i);
+                if(userDefinedMenusMap!=null){
+                    UserDefinedMenu userDefinedMenu = new UserDefinedMenu();
+
+                    userDefinedMenu.setMenuId(userDefinedMenusMap.get("id").toString());
+                    userDefinedMenu.setSerialNumber(Integer.parseInt(userDefinedMenusMap.get("serialNumber").toString()));
+                    userDefinedMenu.setUserId(userDefinedMenusMap.get("userId").toString());
+
+                    if(i==0){
+                        Map columnMap = new HashMap();
+                        columnMap.put("user_id",userDefinedMenu.getUserId());
+                        userDefinedMenuService.deleteByColumnMap(columnMap);
+                    }
+
+                    userDefinedMenuService.save(userDefinedMenu);
                 }
 
-                userDefinedMenuService.save(userDefinedMenu);
             }
         }
         Long endTime = System.currentTimeMillis();
