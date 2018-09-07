@@ -324,8 +324,8 @@ public class UserServiceImp implements UserService {
 
         PageData findMap = new PageData();
         findMap.put("companyId", companyID);
-        //用户类型(0:超级管理员1:企业管理员2:普通用户)
-        findMap.put("userType", "1");
+        //数据字典  userType_admin:超级管理员 userType_company:企业管理员 userType_employee:普通用户 userType_outer:外部用户
+        findMap.put("userType", Common.DICTIONARY_MAP.get("userType_company"));
         //是否禁用(0:已禁用 1:启用)
         findMap.put("isdisable", "1");
         findMap.put("mapSize", Integer.valueOf(findMap.size()));
