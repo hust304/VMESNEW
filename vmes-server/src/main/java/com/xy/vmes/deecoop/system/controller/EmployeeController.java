@@ -302,6 +302,13 @@ public class EmployeeController {
         employPost.setIsplurality("0");//主岗
         employPostService.save(employPost);
 
+        //是否开通用户账号
+        //isOpenUser 1:需要开通 0:无需开通
+        String isOpenUser = (String)pd.get("isOpenUser");
+        if (!"1".equals(isOpenUser)) {
+            return model;
+        }
+
         //新增用户信息
         String  deptId = post.getDeptId();
         pd.put("deptId",deptId);
