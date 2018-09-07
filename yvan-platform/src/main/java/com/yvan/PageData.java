@@ -133,7 +133,7 @@ public class PageData extends HashMap implements Map{
 	}
 	
 	public String getString(Object key) {
-		return get(key).toString();
+		return get(key)==null?"":get(key).toString();
 	}
 	
 	@SuppressWarnings("unchecked")
