@@ -55,14 +55,17 @@ public class PageData extends HashMap implements Map{
 			}
 			returnMap.put(name, value);
 		}
-		String  sessionID =  request.getHeader("sessionID");
+		//sessionID:(uuid:用户ID:企业ID:deecoop:userLoginMap)
+		String sessionID = request.getHeader("sessionID");
 		if(!StringUtils.isEmpty(sessionID)){
 			String[] atrrs = sessionID.split(":");
-			if(atrrs.length==4){
+			if(atrrs.length >= 2){
 				String userId = atrrs[1];
+				String companyId = atrrs[2];
 				returnMap.put("cuser", userId);
 				returnMap.put("uuser", userId);
 				returnMap.put("currentUserId", userId);
+				returnMap.put("currentCompanyId", companyId);
 				returnMap.put("sessionID",sessionID);
 			}
 		}

@@ -81,7 +81,7 @@ public class UserLoginController {
      *     ResultModel.result
      *     ResultModel.sessionID(Redis缓存Key:uuid:用户ID:deecoop:userLoginMap)
 
-     * Redis缓存Key:   (uuid:用户ID:deecoop:userLoginMap)
+     * Redis缓存Key:   (uuid:用户ID:企业ID:deecoop:userLoginMap)
      * Redis缓存Value: JsonString--Map<String, String>
      *     userID:    用户ID
      *     userCode:  系统账号
@@ -233,8 +233,12 @@ public class UserLoginController {
         //userButton按钮权限()
 
         //缓存业务数据
-        //Redis缓存Key:(uuid:用户ID:deecoop:userLoginMap)
-        String Redis_userLogin_Key = new_uuid + ":" + userID + ":" + "deecoop" + ":" + Common.REDIS_USERLOGINMAP;
+        //Redis缓存Key:(uuid:用户ID:企业ID:deecoop:userLoginMap)
+        String Redis_userLogin_Key = new_uuid + ":" +
+                                    userID + ":" +
+                                    companyID + ":" +
+                                    "deecoop" + ":" +
+                                    Common.REDIS_USERLOGINMAP;
         //redisClient.set(Redis_userLogin_Key, YvanUtil.toJson(RedisMap));
         //30 * 60 * 1000 (半小时)
         redisClient.setWithExpireTime(Redis_userLogin_Key, YvanUtil.toJson(RedisMap), Common.REDIS_SESSIONID_LONG);
