@@ -508,7 +508,6 @@ public class UserLoginController {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
-        pageData = null;
         //1. 非空判断
         if (pageData == null || pageData.size() == 0) {
             model.putCode(Integer.valueOf(1));
@@ -530,7 +529,7 @@ public class UserLoginController {
 
         StringBuffer msgBuf = new StringBuffer();
         try {
-            String strTemp = ":" + userID + ":deecoop";
+            String strTemp = ":" + userID;
             Set<String> keySet = jedis.keys("*" + strTemp + "*");
             for (Iterator iterator = keySet.iterator(); iterator.hasNext();) {
                 String key = (String) iterator.next();

@@ -169,7 +169,7 @@ public class RedisUtils {
         Jedis jedis = null;
         try {
             jedis = redisClient.getJedisPool().getResource();
-            String strTemp = ":" + userID + ":deecoop";
+            String strTemp = ":" + userID;
             Set<String> keySet = jedis.keys("*" + strTemp + "*");
             if (keySet == null || keySet.size() == 0) {return null;}
 
@@ -197,7 +197,7 @@ public class RedisUtils {
         Jedis jedis = null;
         try {
             jedis = redisClient.getJedisPool().getResource();
-            String strTemp = ":" + userID + ":deecoop";
+            String strTemp = ":" + userID;
             Set<String> keySet = jedis.keys("*" + strTemp + "*");
             for (Iterator iterator = keySet.iterator(); iterator.hasNext();) {
                 String key = (String) iterator.next();
