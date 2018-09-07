@@ -44,16 +44,17 @@ public class PageData extends HashMap implements Map{
 			Object valueObj = entry.getValue();
 			if(null == valueObj){
 				value = "";
+                returnMap.put(name, value);
 			}else if(valueObj instanceof String[]){
 				String[] values = (String[])valueObj;
 				for(int i=0;i<values.length;i++){
 					 value = values[i] + ",";
 				}
 				value = value.substring(0, value.length()-1);
+                returnMap.put(name, value);
 			}else{
-				value = valueObj.toString();
+                returnMap.put(name, valueObj);
 			}
-			returnMap.put(name, value);
 		}
 		//sessionID:(uuid:用户ID:企业ID:deecoop:userLoginMap)
 		String sessionID = request.getHeader("sessionID");
@@ -132,7 +133,7 @@ public class PageData extends HashMap implements Map{
 	}
 	
 	public String getString(Object key) {
-		return (String)get(key);
+		return get(key).toString();
 	}
 	
 	@SuppressWarnings("unchecked")
