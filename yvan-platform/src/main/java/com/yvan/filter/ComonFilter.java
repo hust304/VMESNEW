@@ -158,7 +158,7 @@ public class ComonFilter implements Filter {
             redisClient.setJedisPool(this.jedisPool());
             jedis = redisClient.getJedisPool().getResource();
 
-            String strTemp = ":" + userID + ":deecoop";
+            String strTemp = ":" + userID;
             Set<String> keySet = jedis.keys("*" + strTemp + "*");
             if (keySet != null && keySet.size() > 0) {
                 for (Iterator iterator = keySet.iterator(); iterator.hasNext();) {
