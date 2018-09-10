@@ -880,8 +880,8 @@ public class EmployeeController {
         result.put("hideTitles",titlesHideList);
         result.put("titles",titlesList);
 
-        String id = (String)pd.get("id");
-        String type = (String)pd.get("type");
+        String id = pd.getString("id");
+        String type = pd.getString("type");
 
         //"dept" 部门 "post" 岗位
         if ("dept".equals(type)) {
