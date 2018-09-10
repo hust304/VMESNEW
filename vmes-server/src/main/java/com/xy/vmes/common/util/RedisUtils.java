@@ -239,6 +239,28 @@ public class RedisUtils {
         }
     }
 
+    public static void removeByCode(RedisClient redisClient, String code) {
+        if (code == null || code.trim().length() == 0) {return;}
+
+        Jedis jedis = null;
+        try {
+            jedis = redisClient.getJedisPool().getResource();
+            Set<String> keySet = jedis.keys("*" + code + "*");
+            for (Iterator iterator = keySet.iterator(); iterator.hasNext();) {
+                String key = (String) iterator.next();
+                if(jedis.exists(key)){
+                    jedis.del(key);
+                }
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            if (jedis != null) {
+                jedis.close();
+            }
+        }
+    }
+
     public static String getRedisJsonStringBySessionID(RedisClient redisClient, String sessionID) {
         Jedis jedis = null;
         String sessionJson = "";

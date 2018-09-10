@@ -79,7 +79,7 @@ public class UserLoginController {
      *     ResultModel.code
      *     ResultModel.msg
      *     ResultModel.result
-     *     ResultModel.sessionID(Redis缓存Key:uuid:用户ID:deecoop:userLoginMap)
+     *     ResultModel.sessionID(Redis缓存Key:uuid:用户ID:企业ID:deecoop:userLoginMap)
 
      * Redis缓存Key:   (uuid:用户ID:企业ID:deecoop:userLoginMap)
      * Redis缓存Value: JsonString--Map<String, String>
@@ -498,13 +498,118 @@ public class UserLoginController {
 
     /**
      * 获取全部含有(userID)的Redis缓存key
-     * Redis缓存Key:(uuid:用户ID:deecoop)
+     * Redis缓存Key:(uuid:用户ID:企业ID:deecoop:userLoginMap)
      * @return
      */
-    @GetMapping("/userLogin/test_findAllRedisKeyByUserID")
-    public ResultModel test_findAllRedisKeyByUserID() {
-        logger.info("################userLogin/test_findAllRedisKeyByUserID 执行开始 ################# ");
-        Long startTime = System.currentTimeMillis();
+//    @GetMapping("/userLogin/test_findAllRedisKeyByUserID")
+//    public ResultModel test_findAllRedisKeyByUserID() {
+//        logger.info("################userLogin/test_findAllRedisKeyByUserID 执行开始 ################# ");
+//        Long startTime = System.currentTimeMillis();
+//        ResultModel model = new ResultModel();
+//        PageData pageData = HttpUtils.parsePageData();
+//
+//        //1. 非空判断
+//        if (pageData == null || pageData.size() == 0) {
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg("参数错误：用户登录参数(pageData)为空！");
+//            return model;
+//        }
+//
+//        String userID = (String)pageData.get("userID");
+//        if (userID == null || userID.trim().length() == 0) {
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg("userID为空或空字符串！");
+//            return model;
+//        }
+//
+//        Jedis jedis = redisClient.getJedisPool().getResource();
+//        if (jedis == null) {
+//            throw new RestException("", "Redis 缓存错误(jedis is null)，请与管理员联系！");
+//        }
+//
+//        StringBuffer msgBuf = new StringBuffer();
+//        try {
+//            String strTemp = ":" + userID;
+//            Set<String> keySet = jedis.keys("*" + strTemp + "*");
+//            for (Iterator iterator = keySet.iterator(); iterator.hasNext();) {
+//                String key = (String) iterator.next();
+//                msgBuf.append(key);
+//                msgBuf.append("--");
+//            }
+//        } catch (Exception e){
+//            e.printStackTrace();
+//        }finally {
+//            if (jedis != null) {
+//                jedis.close();
+//            }
+//        }
+//
+//        model.putMsg(msgBuf.toString());
+//        Long endTime = System.currentTimeMillis();
+//        logger.info("################userLogin/test_findAllRedisKeyByUserID 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+//        return model;
+//    }
+
+    /**
+     * 获取全部含有(uuid)的Redis缓存key
+     * Redis缓存Key:(uuid:用户ID:企业ID:deecoop:userLoginMap)
+     * @return
+     */
+//    @GetMapping("/userLogin/test_findAllRedisKeyByUuid")
+//    public ResultModel test_findAllRedisKeyByUuid() {
+//        logger.info("################userLogin/test_findAllRedisKeyByUuid 执行开始 ################# ");
+//        Long startTime = System.currentTimeMillis();
+//        ResultModel model = new ResultModel();
+//        PageData pageData = HttpUtils.parsePageData();
+//
+//        //1. 非空判断
+//        if (pageData == null || pageData.size() == 0) {
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg("参数错误：用户登录参数(pageData)为空！");
+//            return model;
+//        }
+//
+//        String uuid = (String)pageData.get("uuid");
+//        if (uuid == null || uuid.trim().length() == 0) {
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg("uuid为空或空字符串！");
+//            return model;
+//        }
+//
+//        Jedis jedis = redisClient.getJedisPool().getResource();
+//        if (jedis == null) {
+//            throw new RestException("", "Redis 缓存错误(jedis is null)，请与管理员联系！");
+//        }
+//
+//        StringBuffer msgBuf = new StringBuffer();
+//        try {
+//            Set<String> keySet = jedis.keys(uuid + "*");
+//            for (Iterator iterator = keySet.iterator(); iterator.hasNext();) {
+//                String key = (String) iterator.next();
+//                msgBuf.append(key);
+//                msgBuf.append("--");
+//            }
+//        } catch (Exception e){
+//            e.printStackTrace();
+//        }finally {
+//            if (jedis != null) {
+//                jedis.close();
+//            }
+//        }
+//
+//        model.putMsg(msgBuf.toString());
+//        Long endTime = System.currentTimeMillis();
+//        logger.info("################userLogin/test_findAllRedisKeyByUuid 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+//        return model;
+//    }
+
+    /**
+     * 获取全部含有(uuid)的Redis缓存key
+     * Redis缓存Key:(uuid:用户ID:企业ID:deecoop:userLoginMap)
+     * @return
+     */
+    @GetMapping("/userLogin/test_findAllRedisKeyByCodeKey")
+    public ResultModel test_findAllRedisKeyByCodeKey() {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
@@ -515,10 +620,17 @@ public class UserLoginController {
             return model;
         }
 
-        String userID = (String)pageData.get("userID");
-        if (userID == null || userID.trim().length() == 0) {
+        String codeKey = (String)pageData.get("codeKey");
+        if (codeKey == null || codeKey.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("userID为空或空字符串！");
+            model.putMsg("codeKey为空或空字符串！");
+            return model;
+        }
+
+        String codeValue = (String)pageData.get("codeValue");
+        if (codeValue == null || codeValue.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("codeValue为空或空字符串！");
             return model;
         }
 
@@ -529,7 +641,15 @@ public class UserLoginController {
 
         StringBuffer msgBuf = new StringBuffer();
         try {
-            String strTemp = ":" + userID;
+            String strTemp = "";
+            if ("uuid".equals(codeKey)) {
+                strTemp = codeValue;
+            } else if ("userID,companyID,deecoop,userLoginMap".indexOf(codeKey) != -1 ) {
+                strTemp = ":" + codeValue;
+            } else {
+                strTemp = codeValue;
+            }
+
             Set<String> keySet = jedis.keys("*" + strTemp + "*");
             for (Iterator iterator = keySet.iterator(); iterator.hasNext();) {
                 String key = (String) iterator.next();
@@ -545,20 +665,11 @@ public class UserLoginController {
         }
 
         model.putMsg(msgBuf.toString());
-        Long endTime = System.currentTimeMillis();
-        logger.info("################userLogin/test_findAllRedisKeyByUserID 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
-    /**
-     * 获取全部含有(uuid)的Redis缓存key
-     * Redis缓存Key:(uuid:用户ID:deecoop)
-     * @return
-     */
-    @GetMapping("/userLogin/test_findAllRedisKeyByUuid")
-    public ResultModel test_findAllRedisKeyByUuid() {
-        logger.info("################userLogin/test_findAllRedisKeyByUuid 执行开始 ################# ");
-        Long startTime = System.currentTimeMillis();
+    @GetMapping("/userLogin/test_removeRedisKeyByCodeKey")
+    public ResultModel test_removeRedisKeyByCodeKey() {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
@@ -569,103 +680,96 @@ public class UserLoginController {
             return model;
         }
 
-        String uuid = (String)pageData.get("uuid");
-        if (uuid == null || uuid.trim().length() == 0) {
+        String codeKey = (String)pageData.get("codeKey");
+        if (codeKey == null || codeKey.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("uuid为空或空字符串！");
+            model.putMsg("codeKey为空或空字符串！");
             return model;
         }
 
-        Jedis jedis = redisClient.getJedisPool().getResource();
-        if (jedis == null) {
-            throw new RestException("", "Redis 缓存错误(jedis is null)，请与管理员联系！");
+        String codeValue = (String)pageData.get("codeValue");
+        if (codeValue == null || codeValue.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("codeValue为空或空字符串！");
+            return model;
         }
 
-        StringBuffer msgBuf = new StringBuffer();
-        try {
-            Set<String> keySet = jedis.keys(uuid + "*");
-            for (Iterator iterator = keySet.iterator(); iterator.hasNext();) {
-                String key = (String) iterator.next();
-                msgBuf.append(key);
-                msgBuf.append("--");
-            }
-        } catch (Exception e){
-            e.printStackTrace();
-        }finally {
-            if (jedis != null) {
-                jedis.close();
-            }
+        if ("uuid".equals(codeKey)) {
+            RedisUtils.removeByUuid(redisClient, codeValue);
+        } else if ("userID".equals(codeKey)) {
+            RedisUtils.removeByUserID(redisClient, codeValue);
+        } else {
+            RedisUtils.removeByCode(redisClient, codeValue);
         }
 
-        model.putMsg(msgBuf.toString());
-        Long endTime = System.currentTimeMillis();
-        logger.info("################userLogin/test_findAllRedisKeyByUuid 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
+
+
 
     /**
      * 获取全部含有(uuid)的Redis缓存key
-     * Redis缓存Key:(uuid:用户ID:deecoop)
+     * Redis缓存Key:(uuid:用户ID:企业ID:deecoop:userLoginMap)
      * @return
      */
-    @GetMapping("/userLogin/test_removeRedisKeyByUserID")
-    public ResultModel test_removeRedisKeyByUserID() {
-        logger.info("################userLogin/test_removeRedisKeyByUserID 执行开始 ################# ");
-        Long startTime = System.currentTimeMillis();
-        ResultModel model = new ResultModel();
-        PageData pageData = HttpUtils.parsePageData();
-
-        //1. 非空判断
-        if (pageData == null || pageData.size() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("参数错误：用户登录参数(pageData)为空！");
-            return model;
-        }
-
-        String userID = (String)pageData.get("userID");
-        if (userID == null || userID.trim().length() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("userID为空或空字符串！");
-            return model;
-        }
-
-        RedisUtils.removeByUserID(redisClient, userID);
-        Long endTime = System.currentTimeMillis();
-        logger.info("################userLogin/test_removeRedisKeyByUserID 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
-        return model;
-    }
+//    @GetMapping("/userLogin/test_removeRedisKeyByUserID")
+//    public ResultModel test_removeRedisKeyByUserID() {
+//        logger.info("################userLogin/test_removeRedisKeyByUserID 执行开始 ################# ");
+//        Long startTime = System.currentTimeMillis();
+//        ResultModel model = new ResultModel();
+//        PageData pageData = HttpUtils.parsePageData();
+//
+//        //1. 非空判断
+//        if (pageData == null || pageData.size() == 0) {
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg("参数错误：用户登录参数(pageData)为空！");
+//            return model;
+//        }
+//
+//        String userID = (String)pageData.get("userID");
+//        if (userID == null || userID.trim().length() == 0) {
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg("userID为空或空字符串！");
+//            return model;
+//        }
+//
+//        RedisUtils.removeByUserID(redisClient, userID);
+//        Long endTime = System.currentTimeMillis();
+//        logger.info("################userLogin/test_removeRedisKeyByUserID 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+//        return model;
+//    }
 
     /**
      * 获取全部含有(uuid)的Redis缓存key
-     * Redis缓存Key:(uuid:用户ID:deecoop)
+     * Redis缓存Key:(uuid:用户ID:企业ID:deecoop:userLoginMap)
      * @return
      */
-    @GetMapping("/userLogin/test_removeRedisKeyByUuid")
-    public ResultModel test_removeRedisKeyByUuid() {
-        logger.info("################userLogin/test_removeRedisKeyByUuid 执行开始 ################# ");
-        Long startTime = System.currentTimeMillis();
-        ResultModel model = new ResultModel();
-        PageData pageData = HttpUtils.parsePageData();
-
-        //1. 非空判断
-        if (pageData == null || pageData.size() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("参数错误：用户登录参数(pageData)为空！");
-            return model;
-        }
-
-        String uuid = (String)pageData.get("uuid");
-        if (uuid == null || uuid.trim().length() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("uuid为空或空字符串！");
-            return model;
-        }
-
-        RedisUtils.removeByUuid(redisClient, uuid);
-        Long endTime = System.currentTimeMillis();
-        logger.info("################userLogin/test_removeRedisKeyByUuid 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
-        return model;
-    }
+//    @GetMapping("/userLogin/test_removeRedisKeyByUuid")
+//    public ResultModel test_removeRedisKeyByUuid() {
+//        logger.info("################userLogin/test_removeRedisKeyByUuid 执行开始 ################# ");
+//        Long startTime = System.currentTimeMillis();
+//        ResultModel model = new ResultModel();
+//        PageData pageData = HttpUtils.parsePageData();
+//
+//        //1. 非空判断
+//        if (pageData == null || pageData.size() == 0) {
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg("参数错误：用户登录参数(pageData)为空！");
+//            return model;
+//        }
+//
+//        String uuid = (String)pageData.get("uuid");
+//        if (uuid == null || uuid.trim().length() == 0) {
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg("uuid为空或空字符串！");
+//            return model;
+//        }
+//
+//        RedisUtils.removeByUuid(redisClient, uuid);
+//        Long endTime = System.currentTimeMillis();
+//        logger.info("################userLogin/test_removeRedisKeyByUuid 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+//        return model;
+//    }
 
     @GetMapping("/userLogin/test_findRedisJsonStringBySessionID")
     public ResultModel test_findRedisJsonStringBySessionID() {
