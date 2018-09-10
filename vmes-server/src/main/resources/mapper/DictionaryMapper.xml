@@ -251,13 +251,16 @@
             <if test="isdisable!= null and isdisable != ''"><!-- 关键词检索 -->
                 and a.isdisable = #{isdisable}
             </if>
+            <if test="currentCompanyId != null and currentCompanyId != ''">
+                and a.company_id = #{currentCompanyId}
+            </if>
 
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr!=''" >
                 and ${queryStr}
             </if>
         </where>
-        order by a.serial_number ASC
+            order by a.serial_number ASC
     </select>
 
 
@@ -292,12 +295,15 @@
             <if test="isglobal!= null and isglobal != ''">
                 and isglobal = #{isglobal}
             </if>
+            <if test="isdisable!= null and isdisable != ''">
+                and isdisable = #{isdisable}
+            </if>
+            <if test="currentCompanyId != null and currentCompanyId != ''">
+                and company_id = #{currentCompanyId}
+            </if>
 
             <if test="name!= null and name != ''">
                 and name LIKE CONCAT(CONCAT('%', #{name}),'%')
-            </if>
-            <if test="isdisable!= null and isdisable != ''">
-                and isdisable = #{isdisable}
             </if>
             <if test="queryStr != null and queryStr!=''" >
                 ${queryStr}

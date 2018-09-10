@@ -595,19 +595,8 @@ public class DictionaryController {
 
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
-
-        String userType = (String)pd.get("userType");
-        //(userType_admin:超级管理员 userType_company:企业管理员 userType_employee:普通用户 userType_outer:外部用户)
-        if (userType != null && userType.trim().length() > 0 && Common.DICTIONARY_MAP.get("userType_admin").equals(userType)) {
-            //是否是全局数据字典  0：否  1：是
-            //0：否 --业务数据-企业管理员维护
-            //1：是 --(超级管理员)维护
-            pd.put("isglobal", "1");
-        } else {
-            pd.put("isglobal", "0");
-            pd.put("queryStr", " or pid = 'root'");
-        }
         pd.put("isdisable", "1");
+        pd.put("queryStr", " or pid = 'root'");
 
         List<TreeEntity> treeList = dictionaryService.getTreeList(pd);
         TreeEntity treeObj = TreeUtil.switchTree(null, treeList);
