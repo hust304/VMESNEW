@@ -886,7 +886,7 @@ public class EmployeeController {
         //"dept" 部门 "post" 岗位
         if ("dept".equals(type)) {
             Integer layerInt = null;
-            String layer = (String)pd.get("layer");
+            String layer = pd.getString("layer");
             if (layer != null && layer.trim().length() > 0) {
                 try {
                     layerInt = Integer.parseInt(layer.trim());
