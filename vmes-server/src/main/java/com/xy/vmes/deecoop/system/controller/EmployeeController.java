@@ -942,75 +942,71 @@ public class EmployeeController {
     public void exportExcelEmployees() throws Exception {
         logger.info("################employee/exportExcelEmployees 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        //1. 获取Excel导出数据查询条件
-        PageData pd = HttpUtils.parsePageData();
-        String ids = pd.getString("ids");
-        String queryColumn = pd.getString("queryColumn");
+
         List<Column> columnList = columnService.findColumnList("employee");
         if (columnList == null || columnList.size() == 0) {
             throw new RestException("1","数据库没有生成TabCol，请联系管理员！");
         }
 
-        //3. 根据查询条件获取业务数据List
+        //根据查询条件获取业务数据List
+        PageData pd = HttpUtils.parsePageData();
+        String ids = pd.getString("ids");
         String queryStr = "";
         if (ids != null && ids.trim().length() > 0) {
             ids = StringUtil.stringTrimSpace(ids);
             ids = "'" + ids.replace(",", "','") + "'";
-            queryStr = "id in (" + ids + ")";
+            queryStr = "employpost.id in (" + ids + ")";
         }
-        if (queryColumn != null && queryColumn.trim().length() > 0) {
-            queryStr = queryStr + queryColumn;
-        }
-
         pd.put("queryStr", queryStr);
 
         Pagination pg = HttpUtils.parsePagination(pd);
-        //分页参数默认设置100000
         pg.setSize(100000);
-
-        List<Map> dataList = employeeService.getDataListPage(pd,pg);
+        List<Map> dataList = employeeService.getDataListPage(pd, pg);
 
         //查询数据转换成Excel导出数据
         List<LinkedHashMap<String, String>> dataMapList = ColumnUtil.modifyDataList(columnList, dataList);
         HttpServletResponse response  = HttpUtils.currentResponse();
 
-
         //查询数据-Excel文件导出
-        //String fileName = "Excel数据字典数据导出";
-        String fileName = "ExcelEmployee";
+        String fileName = pd.getString("fileName");
+        if (fileName == null || fileName.trim().length() == 0) {
+            fileName = "ExcelEmployee";
+        }
+
+        //导出文件名-中文转码
+        fileName = new String(fileName.getBytes("utf-8"),"ISO-8859-1");
         ExcelUtil.excelExportByDataList(response, fileName, dataMapList);
         Long endTime = System.currentTimeMillis();
         logger.info("################employee/exportExcelEmployees 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
-
     }
 
 
     /**
      * @author 刘威 自动创建，禁止修改
      * @date 2018-07-26
-     */
-    @GetMapping("/employee/exportExcelUsers")
-    public void exportExcelUsers()  throws Exception {
-
-        logger.info("################employee/exportExcelUsers 执行开始 ################# ");
-        Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
-        HttpServletRequest request  = HttpUtils.currentRequest();
-
-        ExcelUtil.buildDefaultExcelDocument( request, response,new ExcelAjaxTemplate() {
-            @Override
-            public void execute(HttpServletRequest request, HSSFWorkbook workbook) throws Exception {
-                // TODO Auto-generated method stub
-                PageData pd = HttpUtils.parsePageData();
-                List<LinkedHashMap> titles = employeeService.getColumnList();
-                request.setAttribute("titles", titles.get(0));
-                List<Map> varList = employeeService.getDataList(pd);
-                request.setAttribute("varList", varList);
-            }
-        });
-        Long endTime = System.currentTimeMillis();
-        logger.info("################employee/exportExcelUsers 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
-    }
+     */    @GetMapping("/employee/exportExcelUsers")
+//    public void exportExcelUsers()  throws Exception {
+//
+//        logger.info("################employee/exportExcelUsers 执行开始 ################# ");
+//        Long startTime = System.currentTimeMillis();
+//        HttpServletResponse response  = HttpUtils.currentResponse();
+//        HttpServletRequest request  = HttpUtils.currentRequest();
+//
+//        ExcelUtil.buildDefaultExcelDocument( request, response,new ExcelAjaxTemplate() {
+//            @Override
+//            public void execute(HttpServletRequest request, HSSFWorkbook workbook) throws Exception {
+//                // TODO Auto-generated method stub
+//                PageData pd = HttpUtils.parsePageData();
+//                List<LinkedHashMap> titles = employeeService.getColumnList();
+//                request.setAttribute("titles", titles.get(0));
+//                List<Map> varList = employeeService.getDataList(pd);
+//                request.setAttribute("varList", varList);
+//            }
+//        });
+//        Long endTime = System.currentTimeMillis();
+//        logger.info("################employee/exportExcelUsers 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+//    }
+//
 
 
 
