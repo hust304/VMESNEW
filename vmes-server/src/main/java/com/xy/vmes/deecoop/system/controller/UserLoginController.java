@@ -300,53 +300,53 @@ public class UserLoginController {
         Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
 
+        PageData pageData = HttpUtils.parsePageData();
+        String userID = pageData.getString("userID");
+        String passwordOld = pageData.getString("passwordOld");
+        String passwordNew = pageData.getString("passwordNew");
+
         //非空判断
         StringBuffer msgBuf = new StringBuffer();
-        PageData pageData = HttpUtils.parsePageData();
-        if (pageData == null || pageData.size() == 0) {
-            msgBuf.append("参数错误：用户登录参数(pageData)为空！");
-        } else {
-            if (pageData.get("userID") == null || pageData.get("userID").toString().trim().length() == 0 ) {
-                msgBuf.append("参数错误：系统用户ID为空或空字符串！");
-                msgBuf.append(Common.SYS_ENDLINE_DEFAULT);
-            }
-            if (pageData.get("password") == null || pageData.get("password").toString().trim().length() == 0 ) {
-                msgBuf.append("参数错误：密码输入为空或空字符串，密码为必填项不可为空！");
-                msgBuf.append(Common.SYS_ENDLINE_DEFAULT);
-            }
+        if (userID == null || userID.trim().length() == 0 ) {
+            msgBuf.append("参数错误：系统用户ID为空或空字符串！");
+            msgBuf.append(Common.SYS_ENDLINE_DEFAULT);
         }
-
+        if (passwordOld == null || passwordOld.trim().length() == 0 ) {
+            msgBuf.append("参数错误：原密码输入为空或空字符串，原密码为必填项不可为空！");
+            msgBuf.append(Common.SYS_ENDLINE_DEFAULT);
+        }
+        if (passwordNew == null || passwordNew.trim().length() == 0 ) {
+            msgBuf.append("参数错误：新密码输入为空或空字符串，新密码为必填项不可为空！");
+            msgBuf.append(Common.SYS_ENDLINE_DEFAULT);
+        }
         if (msgBuf.toString().trim().length() > 0) {
             model.putCode(Integer.valueOf(1));
             model.putMsg(msgBuf.toString());
             return model;
         }
 
-        String userID = pageData.get("userID").toString().trim();
-        String password = pageData.get("password").toString().trim();
-        password = MD5Utils.MD5(password);
-
+        //1. 查询(用户id,原密码)-系统中是否存在
         PageData findMap = new PageData();
-        //isdisable:是否禁用(1:已禁用 0:启用)
-        findMap.put("userIsdisable", "0");
         findMap.put("userID", userID);
+        findMap.put("userPassword", MD5Utils.MD5(passwordOld));
+        //isdisable:是否禁用(0:已禁用 1:启用)
+        findMap.put("userIsdisable", "1");
         findMap.put("mapSize", Integer.valueOf(findMap.size()));
+
         List<Map<String, Object>> objectList = userEmployService.findViewUserEmployList(findMap);
         if (objectList == null || objectList.size() == 0) {
-            //throw new RestException("", "userID:" + userID + " 系统中不存在，请与管理员联系！");
             model.putCode(Integer.valueOf(1));
-            model.putMsg("userID:" + userID + " 系统中不存在，请与管理员联系！");
+            model.putMsg("原密码输入错误，请核对后再次输入！");
             return model;
         }
-        Map<String, Object> userEmployMap = objectList.get(0);
 
-        User userDB = new User();
-        userDB = userEmployService.mapObject2User(userEmployMap, userDB);
-        userDB.setPassword(password);
+        //2. 修改用户新密码
+        Map<String, Object> userEmployMap = objectList.get(0);
+        User userDB = userEmployService.mapObject2User(userEmployMap, null);
+        userDB.setPassword(MD5Utils.MD5(passwordNew));
         userService.update(userDB);
 
-        model.putCode(Integer.valueOf(0));
-        model.putMsg("登录密码修改成功！");
+        model.putMsg("密码修改成功！");
         Long endTime = System.currentTimeMillis();
         logger.info("################userLogin/changePassWord 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
