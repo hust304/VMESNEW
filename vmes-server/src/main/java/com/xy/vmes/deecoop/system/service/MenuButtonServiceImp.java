@@ -44,11 +44,21 @@ public class MenuButtonServiceImp implements MenuButtonService {
 
 
     /**
-    * 创建人：陈刚 自动创建，禁止修改
-    * 创建时间：2018-08-03
-    */
+     * 创建人：陈刚 自动创建，禁止修改
+     * 创建时间：2018-08-03
+     */
     @Override
     public void update(MenuButton menuButton) throws Exception{
+        menuButton.setUdate(new Date());
+        menuButtonMapper.updateById(menuButton);
+    }
+
+    /**
+     * 创建人：陈刚 自动创建，禁止修改
+     * 创建时间：2018-08-03
+     */
+    @Override
+    public void updateAll(MenuButton menuButton) throws Exception{
         menuButton.setUdate(new Date());
         menuButtonMapper.updateAllColumnById(menuButton);
     }

@@ -24,10 +24,16 @@ public interface RoleService {
     void save(Role role) throws Exception;
 
     /**
-    * 创建人：陈刚 自动创建，禁止修改
-    * 创建时间：2018-07-30
-    */
+     * 创建人：陈刚 自动创建，禁止修改
+     * 创建时间：2018-07-30
+     */
     void update(Role role) throws Exception;
+
+    /**
+     * 创建人：陈刚 自动创建，禁止修改
+     * 创建时间：2018-07-30
+     */
+    void updateAll(Role role) throws Exception;
 
     /**
     * 创建人：陈刚 自动创建，禁止修改

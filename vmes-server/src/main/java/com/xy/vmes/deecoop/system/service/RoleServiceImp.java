@@ -57,6 +57,16 @@ public class RoleServiceImp implements RoleService {
     @Override
     public void update(Role role) throws Exception{
         role.setUdate(new Date());
+        roleMapper.updateById(role);
+    }
+
+    /**
+     * 创建人：陈刚 自动创建，禁止修改
+     * 创建时间：2018-07-30
+     */
+    @Override
+    public void updateAll(Role role) throws Exception{
+        role.setUdate(new Date());
         roleMapper.updateAllColumnById(role);
     }
 

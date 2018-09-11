@@ -49,8 +49,19 @@ public class TemplateServiceImp implements TemplateService {
     @Override
     public void update(Template template) throws Exception{
         template.setUdate(new Date());
+        templateMapper.updateById(template);
+    }
+
+    /**
+     * 创建人：刘威 自动创建，禁止修改
+     * 创建时间：2018-08-23
+     */
+    @Override
+    public void updateAll(Template template) throws Exception{
+        template.setUdate(new Date());
         templateMapper.updateAllColumnById(template);
     }
+
 
     /**
     * 创建人：刘威 自动创建，禁止修改

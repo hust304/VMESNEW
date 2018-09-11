@@ -466,13 +466,13 @@ public class UserController {
         if(!StringUtils.isEmpty(userId)){
             User user = userService.selectById(userId);
             user.setEmployId(null);
-            userService.update(user);
+            userService.updateAll(user);
         }
 
         if(!StringUtils.isEmpty(employeeId)){
             Employee employee = employeeService.selectById(employeeId);
             employee.setUserId(null);
-            employeeService.update(employee);
+            employeeService.updateAll(employee);
         }
 
         Long endTime = System.currentTimeMillis();

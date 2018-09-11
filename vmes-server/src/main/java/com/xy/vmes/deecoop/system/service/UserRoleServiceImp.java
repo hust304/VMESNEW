@@ -51,6 +51,16 @@ public class UserRoleServiceImp implements UserRoleService {
     @Override
     public void update(UserRole userRole) throws Exception{
         userRole.setUdate(new Date());
+        userRoleMapper.updateById(userRole);
+    }
+
+    /**
+     * 创建人：刘威 自动创建，禁止修改
+     * 创建时间：2018-07-26
+     */
+    @Override
+    public void updateAll(UserRole userRole) throws Exception{
+        userRole.setUdate(new Date());
         userRoleMapper.updateAllColumnById(userRole);
     }
 

@@ -49,6 +49,16 @@ public class UserDefinedMenuServiceImp implements UserDefinedMenuService {
     @Override
     public void update(UserDefinedMenu userDefinedMenu) throws Exception{
         userDefinedMenu.setUdate(new Date());
+        userDefinedMenuMapper.updateById(userDefinedMenu);
+    }
+
+    /**
+     * 创建人：刘威 自动创建，禁止修改
+     * 创建时间：2018-07-27
+     */
+    @Override
+    public void updateAll(UserDefinedMenu userDefinedMenu) throws Exception{
+        userDefinedMenu.setUdate(new Date());
         userDefinedMenuMapper.updateAllColumnById(userDefinedMenu);
     }
 

@@ -41,6 +41,15 @@ public class ColumnServiceImp implements ColumnService {
     */
     @Override
     public void update(Column column) throws Exception{
+        columnMapper.updateById(column);
+    }
+
+    /**
+     * 创建人：陈刚 自动创建，禁止修改
+     * 创建时间：2018-08-24
+     */
+    @Override
+    public void updateAll(Column column) throws Exception{
         columnMapper.updateAllColumnById(column);
     }
 

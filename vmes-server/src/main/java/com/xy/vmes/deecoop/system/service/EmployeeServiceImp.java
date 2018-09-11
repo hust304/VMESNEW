@@ -49,6 +49,16 @@ public class EmployeeServiceImp implements EmployeeService {
     @Override
     public void update(Employee employee) throws Exception{
         employee.setUdate(new Date());
+        employeeMapper.updateById(employee);
+    }
+
+    /**
+     * 创建人：刘威 自动创建，禁止修改
+     * 创建时间：2018-08-02
+     */
+    @Override
+    public void updateAll(Employee employee) throws Exception{
+        employee.setUdate(new Date());
         employeeMapper.updateAllColumnById(employee);
     }
 

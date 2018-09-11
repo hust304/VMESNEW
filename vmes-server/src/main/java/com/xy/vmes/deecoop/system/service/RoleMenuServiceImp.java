@@ -54,6 +54,16 @@ public class RoleMenuServiceImp implements RoleMenuService {
     @Override
     public void update(RoleMenu roleMenu) throws Exception{
         roleMenu.setUdate(new Date());
+        roleMenuMapper.updateById(roleMenu);
+    }
+
+    /**
+     * 创建人：陈刚 自动创建，禁止修改
+     * 创建时间：2018-07-30
+     */
+    @Override
+    public void updateAll(RoleMenu roleMenu) throws Exception{
+        roleMenu.setUdate(new Date());
         roleMenuMapper.updateAllColumnById(roleMenu);
     }
 

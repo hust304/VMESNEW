@@ -29,6 +29,12 @@ public interface EmployPostService {
     void update(EmployPost employPost) throws Exception;
 
     /**
+     * 创建人：刘威 自动创建，禁止修改
+     * 创建时间：2018-08-01
+     */
+    void updateAll(EmployPost employPost) throws Exception;
+
+    /**
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-08-01
     */

@@ -58,6 +58,16 @@ public class DepartmentServiceImp implements DepartmentService {
     @Override
     public void update(Department department) throws Exception{
         department.setUdate(new Date());
+        departmentMapper.updateById(department);
+    }
+
+    /**
+     * 创建人：陈刚 自动创建，禁止修改
+     * 创建时间：2018-07-23
+     */
+    @Override
+    public void updateAll(Department department) throws Exception{
+        department.setUdate(new Date());
         departmentMapper.updateAllColumnById(department);
     }
 

@@ -31,6 +31,12 @@ public interface DepartmentService {
     void update(Department department) throws Exception;
 
     /**
+     * 创建人：陈刚 自动创建，禁止修改
+     * 创建时间：2018-07-23
+     */
+    void updateAll(Department department) throws Exception;
+
+    /**
     * 创建人：陈刚 自动创建，禁止修改
     * 创建时间：2018-07-23
     */

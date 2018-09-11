@@ -32,6 +32,12 @@ public interface ${objectName}Service {
     * 创建人：${author} 自动创建，禁止修改
     * 创建时间：${nowDate?string("yyyy-MM-dd")}
     */
+    void updateAll(${objectName} ${objectNameLower}) throws Exception;
+
+    /**
+    * 创建人：${author} 自动创建，禁止修改
+    * 创建时间：${nowDate?string("yyyy-MM-dd")}
+    */
     void deleteById(String id) throws Exception;
 
     /**

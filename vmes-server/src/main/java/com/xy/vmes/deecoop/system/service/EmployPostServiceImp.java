@@ -51,6 +51,16 @@ public class EmployPostServiceImp implements EmployPostService {
     @Override
     public void update(EmployPost employPost) throws Exception{
         employPost.setUdate(new Date());
+        employPostMapper.updateById(employPost);
+    }
+
+    /**
+     * 创建人：刘威 自动创建，禁止修改
+     * 创建时间：2018-08-01
+     */
+    @Override
+    public void updateAll(EmployPost employPost) throws Exception{
+        employPost.setUdate(new Date());
         employPostMapper.updateAllColumnById(employPost);
     }
 

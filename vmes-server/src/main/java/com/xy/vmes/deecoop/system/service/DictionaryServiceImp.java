@@ -51,6 +51,16 @@ public class DictionaryServiceImp implements DictionaryService {
     @Override
     public void update(Dictionary dictionary) throws Exception{
         dictionary.setUdate(new Date());
+        dictionaryMapper.updateById(dictionary);
+    }
+
+    /**
+     * 创建人：刘威 自动创建，禁止修改
+     * 创建时间：2018-07-31
+     */
+    @Override
+    public void updateAll(Dictionary dictionary) throws Exception{
+        dictionary.setUdate(new Date());
         dictionaryMapper.updateAllColumnById(dictionary);
     }
 

@@ -29,6 +29,12 @@ public interface EmployeeService {
     void update(Employee employee) throws Exception;
 
     /**
+     * 创建人：刘威 自动创建，禁止修改
+     * 创建时间：2018-08-02
+     */
+    void updateAll(Employee employee) throws Exception;
+
+    /**
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-08-02
     */

@@ -49,6 +49,16 @@ public class ${objectName}ServiceImp implements ${objectName}Service {
     @Override
     public void update(${objectName} ${objectNameLower}) throws Exception{
         ${objectNameLower}.setUdate(new Date());
+        ${objectNameLower}Mapper.updateById(${objectNameLower});
+    }
+
+    /**
+    * 创建人：${author} 自动创建，禁止修改
+    * 创建时间：${nowDate?string("yyyy-MM-dd")}
+    */
+    @Override
+    public void updateAll(${objectName} ${objectNameLower}) throws Exception{
+        ${objectNameLower}.setUdate(new Date());
         ${objectNameLower}Mapper.updateAllColumnById(${objectNameLower});
     }
 

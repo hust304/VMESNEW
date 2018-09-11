@@ -30,6 +30,12 @@ public interface MenuService {
     void update(Menu menu) throws Exception;
 
     /**
+     * 创建人：陈刚 自动创建，禁止修改
+     * 创建时间：2018-07-31
+     */
+    void updateAll(Menu menu) throws Exception;
+
+    /**
     * 创建人：陈刚 自动创建，禁止修改
     * 创建时间：2018-07-31
     */

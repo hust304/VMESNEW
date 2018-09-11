@@ -24,10 +24,16 @@ public interface DictionaryService {
     void save(Dictionary dictionary) throws Exception;
 
     /**
-    * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-07-31
-    */
+     * 创建人：刘威 自动创建，禁止修改
+     * 创建时间：2018-07-31
+     */
     void update(Dictionary dictionary) throws Exception;
+
+    /**
+     * 创建人：刘威 自动创建，禁止修改
+     * 创建时间：2018-07-31
+     */
+    void updateAll(Dictionary dictionary) throws Exception;
 
     /**
     * 创建人：刘威 自动创建，禁止修改

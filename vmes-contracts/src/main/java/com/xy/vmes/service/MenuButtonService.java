@@ -29,6 +29,12 @@ public interface MenuButtonService {
     void update(MenuButton menuButton) throws Exception;
 
     /**
+     * 创建人：陈刚 自动创建，禁止修改
+     * 创建时间：2018-08-03
+     */
+    void updateAll(MenuButton menuButton) throws Exception;
+
+    /**
     * 创建人：陈刚 自动创建，禁止修改
     * 创建时间：2018-08-03
     */

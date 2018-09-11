@@ -55,8 +55,19 @@ public class PostServiceImp implements PostService {
     @Override
     public void update(Post post) throws Exception{
         post.setUdate(new Date());
+        postMapper.updateById(post);
+    }
+
+    /**
+     * 创建人：刘威 自动创建，禁止修改
+     * 创建时间：2018-08-01
+     */
+    @Override
+    public void updateAll(Post post) throws Exception{
+        post.setUdate(new Date());
         postMapper.updateAllColumnById(post);
     }
+
 
     /**
     * 创建人：刘威 自动创建，禁止修改

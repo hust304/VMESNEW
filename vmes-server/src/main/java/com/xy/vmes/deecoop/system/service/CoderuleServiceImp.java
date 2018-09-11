@@ -51,6 +51,15 @@ public class CoderuleServiceImp implements CoderuleService {
     */
     @Override
     public void update(Coderule coderule) throws Exception{
+        coderuleMapper.updateById(coderule);
+    }
+
+    /**
+     * 创建人：陈刚 自动创建，禁止修改
+     * 创建时间：2018-07-26
+     */
+    @Override
+    public void updateAll(Coderule coderule) throws Exception{
         coderuleMapper.updateAllColumnById(coderule);
     }
 

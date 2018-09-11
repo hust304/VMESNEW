@@ -29,6 +29,13 @@ public interface UserDefinedMenuService {
     void update(UserDefinedMenu userDefinedMenu) throws Exception;
 
     /**
+     * 创建人：刘威 自动创建，禁止修改
+     * 创建时间：2018-07-27
+     */
+    void updateAll(UserDefinedMenu userDefinedMenu) throws Exception;
+
+
+    /**
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-07-27
     */

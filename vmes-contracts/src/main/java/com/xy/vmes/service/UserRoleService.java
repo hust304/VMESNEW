@@ -30,6 +30,12 @@ public interface UserRoleService {
     void update(UserRole userRole) throws Exception;
 
     /**
+     * 创建人：刘威 自动创建，禁止修改
+     * 创建时间：2018-07-26
+     */
+    void updateAll(UserRole userRole) throws Exception;
+
+    /**
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-07-26
     */

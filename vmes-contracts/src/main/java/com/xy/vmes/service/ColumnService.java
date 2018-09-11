@@ -29,6 +29,12 @@ public interface ColumnService {
     void update(Column column) throws Exception;
 
     /**
+     * 创建人：陈刚 自动创建，禁止修改
+     * 创建时间：2018-08-24
+     */
+    void updateAll(Column column) throws Exception;
+
+    /**
     * 创建人：陈刚 自动创建，禁止修改
     * 创建时间：2018-08-24
     */

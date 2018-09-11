@@ -52,6 +52,16 @@ public class MenuServiceImp implements MenuService {
     @Override
     public void update(Menu menu) throws Exception{
         menu.setUdate(new Date());
+        menuMapper.updateById(menu);
+    }
+
+    /**
+     * 创建人：陈刚 自动创建，禁止修改
+     * 创建时间：2018-07-31
+     */
+    @Override
+    public void updateAll(Menu menu) throws Exception{
+        menu.setUdate(new Date());
         menuMapper.updateAllColumnById(menu);
     }
 

@@ -28,6 +28,12 @@ public interface CoderuleService {
     void update(Coderule coderule) throws Exception;
 
     /**
+     * 创建人：陈刚 自动创建，禁止修改
+     * 创建时间：2018-07-26
+     */
+    void updateAll(Coderule coderule) throws Exception;
+
+    /**
     * 创建人：陈刚 自动创建，禁止修改
     * 创建时间：2018-07-26
     */
