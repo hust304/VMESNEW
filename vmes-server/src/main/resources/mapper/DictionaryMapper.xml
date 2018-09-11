@@ -294,14 +294,9 @@
             <if test="pid!= null and pid != ''">
                 and pid = #{pid}
             </if>
-            <if test="isglobal!= null and isglobal != ''">
-                and isglobal = #{isglobal}
-            </if>
+
             <if test="isdisable!= null and isdisable != ''">
                 and isdisable = #{isdisable}
-            </if>
-            <if test="currentCompanyId != null and currentCompanyId != ''">
-                and company_id = #{currentCompanyId}
             </if>
 
             <if test="name!= null and name != ''">
@@ -359,6 +354,10 @@
                     </if>
                     <if test="isdisable != null and isdisable!=''" >
                         and isdisable = #{isdisable}
+                    </if>
+
+                    <if test="currentCompanyId != null and currentCompanyId != ''">
+                        and company_id = #{currentCompanyId}
                     </if>
 
                     <!--queryStr 自定义sql查询语句-->

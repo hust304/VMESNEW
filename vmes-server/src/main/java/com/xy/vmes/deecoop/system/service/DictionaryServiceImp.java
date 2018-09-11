@@ -250,13 +250,14 @@ public class DictionaryServiceImp implements DictionaryService {
      *     true : 组织名称存在名称相同
      *     false: 组织名称不存在名称相同(默认值)
      */
-    public boolean isExistByName(String pid, String id, String name) {
+    public boolean isExistByName(String pid, String id, String name, String currentCompanyId) {
         if (pid == null || pid.trim().length() == 0) {return false;}
         if (name == null || name.trim().length() == 0) {return false;}
 
         PageData findMap = new PageData();
         findMap.put("pid", pid);
         findMap.put("name", name);
+        findMap.put("currentCompanyId",currentCompanyId);
         if (id != null && id.trim().length() > 0) {
             findMap.put("id", id);
             findMap.put("isSelfExist", "true");

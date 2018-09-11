@@ -229,7 +229,7 @@ public class DictionaryController {
         }
 
         //2. (字典名称)在同一层名称不可重复
-        if (dictionaryService.isExistByName(dictionary.getPid(), null, dictionary.getName())) {
+        if (dictionaryService.isExistByName(dictionary.getPid(), null, dictionary.getName(),pd.getString("currentCompanyId"))) {
             String msgTemp = "上级字典名称: {0}{2}字典名称: {1}{2}在系统中已经重复！{2}";
             String str_isnull = MessageFormat.format(msgTemp,
                     paterObj.getName(),
@@ -295,7 +295,7 @@ public class DictionaryController {
         }
 
         //2. (字典名称)在同一层名称不可重复
-        if (dictionaryService.isExistByName(dictionary.getPid(), dictionary.getId(), dictionary.getName())) {
+        if (dictionaryService.isExistByName(dictionary.getPid(), dictionary.getId(), dictionary.getName(),pd.getString("currentCompanyId"))) {
             String msgTemp = "上级字典名称: {0}{2}字典名称: {1}{2}在系统中已经重复！{2}";
             String str_isnull = MessageFormat.format(msgTemp,
                     paterObj.getName(),
@@ -596,7 +596,7 @@ public class DictionaryController {
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         pd.put("isdisable", "1");
-        pd.put("queryStr", " or pid = 'root'");
+        pd.put("queryStr", " and company_id = '"+pd.get("currentCompanyId")+"' or  isopen = '1'");
 
         List<TreeEntity> treeList = dictionaryService.getTreeList(pd);
         TreeEntity treeObj = TreeUtil.switchTree(null, treeList);
@@ -626,9 +626,16 @@ public class DictionaryController {
         PageData pd = HttpUtils.parsePageData();
 
         String dictionaryKey = pd.getString("dictionaryKey");
+        String isglobal = pd.getString("isglobal");
         String id = Common.DICTIONARY_MAP.get(dictionaryKey);
         pd.put("isdisable", "1");
-        pd.put("queryStr", " and ( id = '"+id+"' or id_1 = '"+id+"'  ) ");
+
+        if(StringUtils.isEmpty(isglobal)||"0".equals(isglobal)){
+            pd.put("queryStr", "  and company_id = '"+pd.get("currentCompanyId")+"'  and ( id = '"+id+"' or id_1 = '"+id+"'  )  ");
+        }else if("1".equals(isglobal)){
+            pd.put("queryStr", "  and isglobal = '"+pd.get("isglobal")+"'  and ( id = '"+id+"' or id_1 = '"+id+"'  ) ");
+        }
+
 
         List<TreeEntity> treeList = dictionaryService.getTreeList(pd);
         TreeEntity treeObj = TreeUtil.switchTree(id, treeList);

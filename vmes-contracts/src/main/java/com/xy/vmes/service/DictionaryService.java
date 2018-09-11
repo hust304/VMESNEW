@@ -138,7 +138,7 @@ public interface DictionaryService {
      *     true : 组织名称存在名称相同
      *     false: 组织名称不存在名称相同(默认值)
      */
-    boolean isExistByName(String pid, String id, String name);
+    boolean isExistByName(String pid, String id, String name,String currentCompanyId);
 
     Dictionary id2DictionaryByLayer(String id, Integer layer, Dictionary objectDB);
     Dictionary paterObject2ObjectDB(Dictionary paterObject, Dictionary objectDB);

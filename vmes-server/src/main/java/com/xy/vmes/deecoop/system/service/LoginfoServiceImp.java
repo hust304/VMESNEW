@@ -48,6 +48,16 @@ public class LogInfoServiceImp implements LogInfoService {
     @Override
     public void update(LogInfo logInfo) throws Exception{
         logInfo.setUdate(new Date());
+        logInfoMapper.updateById(logInfo);
+    }
+
+    /**
+     * 创建人：刘威 自动创建，禁止修改
+     * 创建时间：2018-08-28
+     */
+    @Override
+    public void updateAll(LogInfo logInfo) throws Exception{
+        logInfo.setUdate(new Date());
         logInfoMapper.updateAllColumnById(logInfo);
     }
 
