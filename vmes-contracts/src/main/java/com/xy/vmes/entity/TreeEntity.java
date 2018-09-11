@@ -22,6 +22,10 @@ public class TreeEntity {
     private String deptName;
     private String postName;
 
+    //数据字典属性
+    private String label;
+    private String value;
+
     //当前节点-是否绑定角色(1:绑定 0:未绑定)
     private Boolean isBindRole;
     //当前节点ID
@@ -37,6 +41,19 @@ public class TreeEntity {
     //(必须)当前节点子节点
     private List<TreeEntity> children = new ArrayList<TreeEntity>();
 
+
+    public String getLabel() {
+        return label;
+    }
+    public void setLabel(String label) {
+        this.label = label;
+    }
+    public String getValue() {
+        return value;
+    }
+    public void setValue(String value) {
+        this.value = value;
+    }
 
     public String getName() {
         return name;

@@ -61,6 +61,17 @@ public class UserServiceImp implements UserService {
     @Override
     public void update(User user) throws Exception{
         user.setUdate(new Date());
+        userMapper.updateById(user);
+//        userMapper.updateAllColumnById(user);
+    }
+
+    /**
+     * 创建人：刘威 自动创建，禁止修改
+     * 创建时间：2018-07-26
+     */
+    @Override
+    public void updateAll(User user) throws Exception{
+        user.setUdate(new Date());
 //        userMapper.updateById(user);
         userMapper.updateAllColumnById(user);
     }

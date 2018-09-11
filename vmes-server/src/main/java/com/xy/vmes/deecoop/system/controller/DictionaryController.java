@@ -600,8 +600,8 @@ public class DictionaryController {
 
         List<TreeEntity> treeList = dictionaryService.getTreeList(pd);
         TreeEntity treeObj = TreeUtil.switchTree(null, treeList);
-        String treeJsonStr = YvanUtil.toJson(treeObj);
-        System.out.println("treeJsonStr: " + treeJsonStr);
+//        String treeJsonStr = YvanUtil.toJson(treeObj);
+//        System.out.println("treeJsonStr: " + treeJsonStr);
 
         Map result = new HashMap();
         result.put("treeList", treeObj);
@@ -612,6 +612,35 @@ public class DictionaryController {
         return model;
     }
 
+
+    /**
+     * @author 刘威
+     * @date 2018-07-31
+     */
+    @PostMapping("/dictionary/getDictionarys")
+    public ResultModel getDictionarys()  throws Exception {
+        logger.info("################dictionary/getDictionarys 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+
+        String dictionaryKey = pd.getString("dictionaryKey");
+        String id = Common.DICTIONARY_MAP.get(dictionaryKey);
+        pd.put("isdisable", "1");
+        pd.put("queryStr", " and ( id = '"+id+"' or id_1 = '"+id+"'  ) ");
+
+        List<TreeEntity> treeList = dictionaryService.getTreeList(pd);
+        TreeEntity treeObj = TreeUtil.switchTree(id, treeList);
+
+        Map result = new HashMap();
+        result.put("options", treeObj);
+        model.putResult(result);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################dictionary/getDictionarys 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
 
 
     /**

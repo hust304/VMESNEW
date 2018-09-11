@@ -61,6 +61,7 @@ public class TreeUtil {
             }
             nodeObject.setChildren(childListNew);
         }else{
+            nodeObject.setChildren(null);
             return;
         }
     }

@@ -282,6 +282,8 @@
             id,
             name,
             pid,
+            id value,
+            name label,
             serial_number serialNumber,
             isdisable
         from <include refid="tableName"/>
@@ -310,6 +312,8 @@
             </if>
         </where>
     </select>
+
+
 
 
     <!-- 列表(全部) 自动创建，禁止修改-->

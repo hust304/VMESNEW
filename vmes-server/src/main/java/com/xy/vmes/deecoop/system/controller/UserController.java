@@ -213,6 +213,11 @@ public class UserController {
         //新增用户信息
         User user = (User)HttpUtils.pageData2Entity(pd, new User());
 
+        if(!StringUtils.isEmpty(pd.getString("employeeId"))){
+            user.setEmployId(pd.getString("employeeId"));
+        }
+
+
         String mobile = user.getMobile();
         if(StringUtils.isEmpty(mobile)){
             model.putCode(1);
@@ -305,6 +310,13 @@ public class UserController {
             userRoleService.save(userRole);
         }
 
+        //员工信息绑定
+        if(!StringUtils.isEmpty(pd.getString("employeeId"))){
+            Employee employee = employeeService.selectById(pd.getString("employeeId"));
+            employee.setUserId(user.getId());
+            employeeService.update(employee);
+        }
+
         Long endTime = System.currentTimeMillis();
         logger.info("################user/addUser 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
@@ -325,7 +337,15 @@ public class UserController {
         PageData pd = HttpUtils.parsePageData();
         //修改用户信息
         User user = (User)HttpUtils.pageData2Entity(pd, new User());
-        user.setPassword(MD5Utils.MD5(user.getPassword()));
+
+        if(!StringUtils.isEmpty(pd.getString("employeeId"))){
+            user.setEmployId(pd.getString("employeeId"));
+        }
+
+        if(!StringUtils.isEmpty(user.getPassword())){
+            user.setPassword(MD5Utils.MD5(user.getPassword()));
+        }
+
         String mobile = user.getMobile();
         if(StringUtils.isEmpty(mobile)){
             model.putCode(2);
@@ -351,6 +371,13 @@ public class UserController {
             userRole.setCuser(pd.getString("cuser"));
             userRole.setUuser(pd.getString("uuser"));
             userRoleService.save(userRole);
+        }
+
+        //员工信息绑定
+        if(!StringUtils.isEmpty(pd.getString("employeeId"))){
+            Employee employee = employeeService.selectById(pd.getString("employeeId"));
+            employee.setUserId(user.getId());
+            employeeService.update(employee);
         }
 
         Long endTime = System.currentTimeMillis();
