@@ -15,6 +15,7 @@ import com.yvan.cache.RedisClient;
 import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -218,7 +219,12 @@ public class UserLoginController {
         dataMap.put("userType", user.getUserType());
         dataMap.put("userName", user.getUserName());
         Department company = departmentService.selectById(user.getCompanyId());
-        dataMap.put("companyShortname",company.getCompanyShortname());
+        if(company!=null&&(!StringUtils.isEmpty(company.getCompanyShortname()))){
+            dataMap.put("companyShortname", company.getCompanyShortname());
+        }else {
+            dataMap.put("companyShortname", "智造云管家");
+        }
+
 
 
         //employ:员工信息()
