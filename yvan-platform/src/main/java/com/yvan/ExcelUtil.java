@@ -228,13 +228,13 @@ public class ExcelUtil{
 		return dataLst;
 	}
 
-	public static List<Map<String, String>> reflectMapList(List<List<String>> list) {
-		List<Map<String, String>> mapList = new ArrayList<Map<String, String>>();
+	public static List<LinkedHashMap<String, String>> reflectMapList(List<List<String>> list) {
+		List<LinkedHashMap<String, String>> mapList = new ArrayList<LinkedHashMap<String, String>>();
 		if (list == null || list.size() == 0) {return mapList;}
 
 		for (int i = 1; i < list.size(); i++) {
 			List<String> cellList = list.get(i);
-			Map<String, String> map = new HashMap<String, String>();
+			LinkedHashMap<String, String> map = new LinkedHashMap<String, String>();
 
 			for (int j = 0; j < list.get(0).size(); j++) {
 				map.put(list.get(0).get(j), cellList.get(j));
