@@ -541,14 +541,14 @@ public class PostController {
      */
     @PostMapping("/post/treeDeptPosts")
     public ResultModel treeDeptPosts()  throws Exception {
-        logger.info("################/department/treeDepartments 执行开始 ################# ");
+        logger.info("################/post/treeDeptPosts 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
 
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         //部门id 为空查询整棵部门树
         //部门id 非空查询当前部门下所有子部门(包含当前部门节点)
-        String deptId = (String)pd.get("deptID");
+        String deptId = (String)pd.get("currentCompanyId");
 
         PageData findMap = new PageData();
         //findMap.put("deptDisable", "1");
@@ -576,7 +576,7 @@ public class PostController {
         model.putResult(result);
 
         Long endTime = System.currentTimeMillis();
-        logger.info("################/department/treeDepartments 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/post/treeDeptPosts 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
 
         return model;
     }
