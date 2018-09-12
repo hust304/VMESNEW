@@ -37,11 +37,11 @@ public class HttpUtils {
         try {
             //设置跨域请求参数
             HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getResponse();
-            response.addHeader("Access-Control-Allow-Origin", "*");
-            response.addHeader("Access-Control-Allow-Methods", "*");
-            response.addHeader("Access-Control-Max-Age", "100");
-            response.addHeader("Access-Control-Allow-Headers", "Content-Type");
-            response.addHeader("Access-Control-Allow-Credentials", "false");
+//            response.addHeader("Access-Control-Allow-Origin", "*");
+//            response.addHeader("Access-Control-Allow-Methods", "*");
+//            response.addHeader("Access-Control-Max-Age", "100");
+//            response.addHeader("Access-Control-Allow-Headers", "Content-Type");
+//            response.addHeader("Access-Control-Allow-Credentials", "false");
             return response;
         } catch (Exception e) {
             return null;

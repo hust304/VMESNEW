@@ -28,8 +28,12 @@ public class ExcelUtil{
 		ServletOutputStream outputStream = null;
 
 		try {
-			response.setContentType("octets/stream;charset=utf-8");
-			response.addHeader("Content-disposition", "attachment;filename=" + fileName + ".xls");
+			response.reset();
+			response.setHeader("Content-Type","application/octet-stream" );
+			response.setHeader("Connection", "close");
+			response.setHeader("Content-Disposition","attachment;filename=" + fileName + ".xls" );
+//			response.setContentType("octets/stream;charset=utf-8");
+//			response.addHeader("Content-disposition", "attachment;filename=" + fileName + ".xls");
 			outputStream = response.getOutputStream();
 
 			//1. 生成Excel文件对象<HSSFWorkbook>: 业务查询数据结构体-Excel对象
