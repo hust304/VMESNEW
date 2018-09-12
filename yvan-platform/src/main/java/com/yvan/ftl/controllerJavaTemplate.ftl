@@ -266,43 +266,39 @@ public class ${objectName}Controller {
     public void exportExcel${objectName}s() throws Exception {
         logger.info("################${objectNameLower}/exportExcel${objectName}s 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        //1. 获取Excel导出数据查询条件
-        PageData pd = HttpUtils.parsePageData();
-        String ids = (String)pd.get("ids");
-        String queryColumn = (String)pd.get("queryColumn");
 
-        //2. 获取业务列表List<Map<栏位Key, 栏位名称>>
         List<Column> columnList = columnService.findColumnList("${modelCode}");
         if (columnList == null || columnList.size() == 0) {
             throw new RestException("1","数据库没有生成TabCol，请联系管理员！");
         }
 
-        //3. 根据查询条件获取业务数据List
+        //根据查询条件获取业务数据List
+        PageData pd = HttpUtils.parsePageData();
+        String ids = (String)pd.getString("ids");
         String queryStr = "";
         if (ids != null && ids.trim().length() > 0) {
             ids = StringUtil.stringTrimSpace(ids);
             ids = "'" + ids.replace(",", "','") + "'";
             queryStr = "id in (" + ids + ")";
         }
-        if (queryColumn != null && queryColumn.trim().length() > 0) {
-            queryStr = queryStr + queryColumn;
-        }
-
-        PageData findMap = new PageData();
-        //业务表查询条件 findMap.put("查询字段名称", "Value");
-        findMap.put("queryStr", queryStr);
+        pd.put("queryStr", queryStr);
 
         Pagination pg = HttpUtils.parsePagination(pd);
-        List<Map> dataList = ${objectNameLower}Service.getDataList(findMap);
+        pg.setSize(100000);
+        List<Map> dataList = ${objectNameLower}Service.getDataListPage(pd, pg);
 
         //查询数据转换成Excel导出数据
         List<LinkedHashMap<String, String>> dataMapList = ColumnUtil.modifyDataList(columnList, dataList);
-
-        HttpServletResponse response  = HttpUtils.currentResponse();
+        HttpServletResponse response = HttpUtils.currentResponse();
 
         //查询数据-Excel文件导出
-        //String fileName = "Excel文件导出";
-        String fileName = "Excel${objectName}";
+        String fileName = pd.getString("fileName");
+        if (fileName == null || fileName.trim().length() == 0) {
+            fileName = "Excel${objectName}";
+        }
+
+        //导出文件名-中文转码
+        fileName = new String(fileName.getBytes("utf-8"),"ISO-8859-1");
         ExcelUtil.excelExportByDataList(response, fileName, dataMapList);
         Long endTime = System.currentTimeMillis();
         logger.info("################${objectNameLower}/exportExcel${objectName}s 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
