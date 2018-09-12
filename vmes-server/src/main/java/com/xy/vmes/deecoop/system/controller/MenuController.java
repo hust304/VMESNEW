@@ -672,7 +672,7 @@ public class MenuController {
             }
 
             List<List<String>> dataLst = ExcelUtil.readExcel(file.getInputStream(), isExcel2003);
-            List<Map<String, String>> dataMapLst = ExcelUtil.reflectMapList(dataLst);
+            List<LinkedHashMap<String, String>> dataMapLst = ExcelUtil.reflectMapList(dataLst);
 
             //1. Excel文件数据dataMapLst -->(转换) ExcelEntity (属性为导入模板字段)
             //2. Excel导入字段(非空,数据有效性验证[数字类型,字典表(大小)类是否匹配])
