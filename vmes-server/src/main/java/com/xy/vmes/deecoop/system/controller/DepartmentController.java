@@ -6,9 +6,12 @@ import com.xy.vmes.common.util.Common;
 import com.xy.vmes.common.util.TreeUtil;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.entity.Department;
+import com.xy.vmes.entity.Post;
 import com.xy.vmes.entity.TreeEntity;
+import com.xy.vmes.service.CoderuleService;
 import com.xy.vmes.service.ColumnService;
 import com.xy.vmes.service.DepartmentService;
+import com.xy.vmes.service.PostService;
 import com.yvan.*;
 import com.xy.vmes.common.util.StringUtil;
 import com.yvan.platform.RestException;
@@ -41,6 +44,10 @@ public class DepartmentController {
 
     @Autowired
     private DepartmentService departmentService;
+    @Autowired
+    private PostService postService;
+    @Autowired
+    private CoderuleService coderuleService;
     @Autowired
     private ColumnService columnService;
 
@@ -331,8 +338,32 @@ public class DepartmentController {
             Integer maxCount = departmentService.findMaxSerialNumber(deptObj.getPid());
             deptObj.setSerialNumber(Integer.valueOf(maxCount.intValue() + 1));
         }
-
         departmentService.save(deptObj);
+
+        //4. 创建部门岗位信息
+        String companyId = deptObj.getId1();
+        //负责人(岗位)
+        String code_1 = coderuleService.createCoder(companyId,"vmes_post","P");
+        Post post_1 = new Post();
+        post_1.setDeptId(deptObj.getId());
+        post_1.setName("负责人");
+        post_1.setCompanyId(companyId);
+        post_1.setCode(code_1);
+        post_1.setCuser(pageData.getString("cuser"));
+        post_1.setRemark("负责人(岗位)-创建部门-系统自动创建");
+        postService.save(post_1);
+
+        //员工(岗位)
+        String code_2 = coderuleService.createCoder(companyId,"vmes_post","P");
+        Post post_2 = new Post();
+        post_2.setDeptId(deptObj.getId());
+        post_2.setName("员工");
+        post_2.setCompanyId(companyId);
+        post_2.setCode(code_2);
+        post_2.setCuser(pageData.getString("cuser"));
+        post_2.setRemark("员工(岗位)-创建部门-系统自动创建");
+        postService.save(post_2);
+
         Long endTime = System.currentTimeMillis();
         logger.info("################/department/addDepartment 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
