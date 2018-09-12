@@ -2,6 +2,7 @@ package com.xy.vmes.deecoop.system.controller;
 
 import com.xy.vmes.common.util.Common;
 import com.xy.vmes.common.util.RedisUtils;
+import com.xy.vmes.entity.Department;
 import com.xy.vmes.entity.Employee;
 import com.xy.vmes.entity.User;
 import com.xy.vmes.service.*;
@@ -55,6 +56,8 @@ public class UserLoginController {
     @Autowired
     private CompanyService companyService;
     @Autowired
+    private DepartmentService departmentService;
+    @Autowired
     RedisClient redisClient;
 
     /**
@@ -97,7 +100,7 @@ public class UserLoginController {
      * 创建时间：2018-07-20
      */
     @PostMapping("/userLogin/loginIn")
-    public ResultModel loginIn() {
+    public ResultModel loginIn() throws Exception {
         logger.info("################userLogin/loginIn 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
@@ -214,6 +217,9 @@ public class UserLoginController {
         dataMap.put("companyId", user.getCompanyId());
         dataMap.put("userType", user.getUserType());
         dataMap.put("userName", user.getUserName());
+        Department company = departmentService.selectById(user.getCompanyId());
+        dataMap.put("companyShortname",company.getCompanyShortname());
+
 
         //employ:员工信息()
         Employee employ = new Employee();
