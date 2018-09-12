@@ -694,7 +694,7 @@ public class DepartmentController {
      *
      * @throws Exception
      */
-    @GetMapping("/department/exportExcelDepartments")
+    @PostMapping("/department/exportExcelDepartments")
     public void exportExcelDepartments() throws Exception {
         logger.info("################department/exportExcelDepartments 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
