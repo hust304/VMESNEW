@@ -436,7 +436,7 @@
         left join vmes_role role on role.id = userrole.role_id
         left join vmes_dictionary usertype on vmesuser.user_type = usertype.id
         left join vmes_department department on department.id = vmesuser.dept_id
-        left join vmes_employee employee on employee.id = vmesuser.employ_id
+        left join vmes_employee employee on employee.id = vmesuser.employ_id and employee.user_id = vmesuser.id
         left join vmes_user ecuser on ecuser.id = employee.cuser
         left join vmes_dictionary political on political.id = employee.political
         left join vmes_employ_post employeepost on employeepost.employ_id = employee.id and employeepost.isplurality = 0 and employeepost.isdisable = 1
