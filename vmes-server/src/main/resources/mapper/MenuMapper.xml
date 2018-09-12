@@ -347,9 +347,6 @@
             <if test="isdisable != null and isdisable != ''" >
                 and isdisable = #{isdisable}
             </if>
-            <if test="currentCompanyId != null and currentCompanyId != ''">
-                and company_id = #{currentCompanyId}
-            </if>
             <if test="pid != null and pid != ''" >
                 and pid = #{pid}
             </if>
