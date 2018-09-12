@@ -151,8 +151,8 @@
                     <if test="name != null and name != ''" >
                         and name = #{name}
                     </if>
-                    <if test="companyId != null and companyId != ''" >
-                        and company_id = #{companyId}
+                    <if test="currentCompanyId != null and currentCompanyId != ''">
+                        and company_id = #{currentCompanyId}
                     </if>
                     <if test="cuser != null and cuser != ''" >
                         and cuser = #{cuser}
@@ -241,8 +241,8 @@
             <if test="name != null and name != ''"><!-- 关键词检索 -->
                 and name LIKE CONCAT(CONCAT(#{name}),'%')
             </if>
-            <if test="companyId != null and companyId != ''" >
-                and company_id = #{companyId}
+            <if test="currentCompanyId != null and currentCompanyId != ''">
+                and company_id = #{currentCompanyId}
             </if>
             <if test="cuser != null and cuser != ''" >
                 and cuser = #{cuser}

@@ -216,6 +216,7 @@
             and ${queryRoleIds}
         </if>
         <where>
+
             <if test="menuId != null and menuId != ''" >
                 and a.menu_id = #{menuId}
             </if>

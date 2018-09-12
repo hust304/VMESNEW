@@ -305,6 +305,9 @@
             <if test="userName != null and userName != ''">
                 and u.user_name LIKE CONCAT(CONCAT('%', #{userName}),'%')
             </if>
+            <!--<if test="currentCompanyId != null and currentCompanyId != ''">-->
+                <!--and u.company_id = #{currentCompanyId}-->
+            <!--</if>-->
             <if test="cdate!= null and cdate != ''"><!-- 关键词检索 -->
                 <![CDATA[ and t.cdate >= #{startDate} and t.cdate <=  #{endDate}]]>
             </if>

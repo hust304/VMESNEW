@@ -238,8 +238,8 @@
         vmes_post post
         left join vmes_department department on department.id = post.dept_id
         <where>
-            <if test="currentUserId != 0"><!-- 超级管理员 -->
-                and post.company_id in (select company_id from vmes_user where id = #{currentUserId})
+            <if test="currentCompanyId != null and currentCompanyId != ''">
+                and post.company_id = #{currentCompanyId}
             </if>
             <if test="deptId != null and deptId != ''"><!-- 关键词检索 -->
                 and post.dept_id LIKE CONCAT(CONCAT('%', #{deptId}),'%')
@@ -284,8 +284,9 @@
             <if test="isdisable != null and isdisable != ''">
                 and post.isdisable = #{isdisable}
             </if>
-            <if test="cuser != null and cuser != ''">
-                and post.company_id in (select company_id from vmes_user where id = #{cuser})
+
+            <if test="currentCompanyId != null and currentCompanyId != ''">
+                and post.company_id = #{currentCompanyId}
             </if>
 
             <if test="deptName != null and deptName != ''">
