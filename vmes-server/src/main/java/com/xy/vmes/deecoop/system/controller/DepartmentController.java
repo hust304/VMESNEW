@@ -4,14 +4,8 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.Common;
 import com.xy.vmes.common.util.TreeUtil;
-import com.xy.vmes.entity.Column;
-import com.xy.vmes.entity.Department;
-import com.xy.vmes.entity.Post;
-import com.xy.vmes.entity.TreeEntity;
-import com.xy.vmes.service.CoderuleService;
-import com.xy.vmes.service.ColumnService;
-import com.xy.vmes.service.DepartmentService;
-import com.xy.vmes.service.PostService;
+import com.xy.vmes.entity.*;
+import com.xy.vmes.service.*;
 import com.yvan.*;
 import com.xy.vmes.common.util.StringUtil;
 import com.yvan.platform.RestException;
@@ -44,6 +38,8 @@ public class DepartmentController {
 
     @Autowired
     private DepartmentService departmentService;
+    @Autowired
+    private DepartmentExcelService departmentExcelService;
     @Autowired
     private PostService postService;
     @Autowired
@@ -308,13 +304,15 @@ public class DepartmentController {
         //3. 创建部门信息
         String id = Conv.createUuid();
         deptObj.setId(id);
+        deptObj.setCuser(pageData.getString("cuser"));
         deptObj = departmentService.id2DepartmentByLayer(id,
                 Integer.valueOf(paterObj.getLayer().intValue() + 1),
                 deptObj);
         deptObj = departmentService.paterObject2ObjectDB(paterObj, deptObj);
 
         //获取部门编码
-        String code = departmentService.createCoder("1");
+        String companyID = pageData.getString("currentCompanyId");
+        String code = departmentService.createCoder(companyID);
         deptObj.setCode(code);
 
         //获取(长名称,长编码)- 通过'-'连接的字符串
@@ -809,15 +807,72 @@ public class DepartmentController {
         List<LinkedHashMap<String, String>> dataMapLst = ExcelUtil.reflectMapList(dataLst);
 
         //1. Excel文件数据dataMapLst -->(转换) ExcelEntity (属性为导入模板字段)
+        List<DeptExcelEntity> excelList = departmentExcelService.mapList2ImportExcelList(dataMapLst, null);
+        if (excelList == null || excelList.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("Excel导入文件为空，请填写需要导入的数据！");
+            return model;
+        }
+
         //2. Excel导入字段(非空,数据有效性验证[数字类型,字典表(大小)类是否匹配])
+        PageData pageData = HttpUtils.parsePageData();
+        String companyId = pageData.getString("currentCompanyId");
+        String msgStr = departmentExcelService.checkColumnImportExcel(excelList,
+                companyId,
+                Integer.valueOf(3),
+                Common.SYS_IMPORTEXCEL_MESSAGE_MAXROW);
+        if (msgStr != null && msgStr.trim().length() > 0) {
+            StringBuffer msgBuf = new StringBuffer();
+            msgBuf.append("Excel导入失败！" + Common.SYS_ENDLINE_DEFAULT);
+            msgBuf.append(msgStr.trim());
+            msgBuf.append("请核对后再次导入" + Common.SYS_ENDLINE_DEFAULT);
+
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgBuf.toString());
+            return model;
+        }
+
         //3. Excel导入字段-名称唯一性判断-在Excel文件中
+        msgStr = departmentExcelService.checkExistImportExcelBySelf(excelList, Integer.valueOf(3), Common.SYS_IMPORTEXCEL_MESSAGE_MAXROW);
+        if (msgStr != null && msgStr.trim().length() > 0) {
+            StringBuffer msgBuf = new StringBuffer();
+            msgBuf.append("Excel导入失败！" + Common.SYS_ENDLINE_DEFAULT);
+            msgBuf.append(msgStr.trim());
+            msgBuf.append("请核对后再次导入" + Common.SYS_ENDLINE_DEFAULT);
+
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgBuf.toString());
+            return model;
+        }
+
         //4. Excel导入字段-名称唯一性判断-在业务表中判断
+        msgStr = departmentExcelService.checkExistImportExcelByDatabase(
+                excelList,
+                companyId,
+                Integer.valueOf(3),
+                Common.SYS_IMPORTEXCEL_MESSAGE_MAXROW);
+        if (msgStr != null && msgStr.trim().length() > 0) {
+            StringBuffer msgBuf = new StringBuffer();
+            msgBuf.append("Excel导入失败！" + Common.SYS_ENDLINE_DEFAULT);
+            msgBuf.append(msgStr.trim());
+            msgBuf.append("请核对后再次导入" + Common.SYS_ENDLINE_DEFAULT);
+
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgBuf.toString());
+            return model;
+        }
+
         //5. List<ExcelEntity> --> (转换) List<业务表DB>对象
         //6. 遍历List<业务表DB> 对业务表添加或修改
-
+        departmentExcelService.addImportExcelByList(excelList,
+                pageData.getString("cuser"),
+                companyId);
 
         Long endTime = System.currentTimeMillis();
         logger.info("################department/importExcelDepartments 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+
+        //"Excel数据导入成功，共成功导入({0})条！"
+        model.putMsg(MessageFormat.format("Excel数据导入成功，共成功导入({0})条！", excelList.size()));
         return model;
     }
 }

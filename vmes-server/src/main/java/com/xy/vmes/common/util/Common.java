@@ -29,6 +29,8 @@ public class Common {
     //系统默认换行符 "\n"
     public final static String SYS_ENDLINE_DEFAULT = SYS_ENDLINE_JAVA;
 
+    public static Integer SYS_IMPORTEXCEL_MESSAGE_MAXROW  = Integer.valueOf(50);
+
     ///////////////--编码规则--//////////////////////////////////////////////////////////////////////////////////////////////////
     //业务编码规则-分隔符
     //public static final String CODE_RULE_SEPARATOR = "-";

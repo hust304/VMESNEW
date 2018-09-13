@@ -219,6 +219,9 @@
                         and isdisable=#{isdisable}
                     </if>
 
+                    <if test="longName != null and longName != ''" >
+                        and long_name=#{longName}
+                    </if>
                     <if test="id0 != null and id0!=''" >
                         and id_0=#{id0}
                     </if>

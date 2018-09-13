@@ -74,7 +74,10 @@ public interface DepartmentService {
 
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
-
+    Map<String, String> getDeptKeyNameMap();
+    Map<String, String> getDeptNameKeyMap();
+    void createDeptMap();
+    void implementDeptMapByParentID(String parentId);
 
     /**
      * 创建人：陈刚 自动创建，禁止修改
@@ -271,6 +274,25 @@ public interface DepartmentService {
      * @return
      */
     String findDeptidById(String id, Integer layer, String prefix);
+
+    /**
+     * 递归调用-添加(系统组织架构)vmes_department
+     *   企业id  --> id_1
+     *   一级部门 --> id_2
+     *   二级部门 --> id_3
+     *   三级部门 --> id_4
+     *
+     * @param cuser     创建人id
+     * @param parent    父节点对象
+     * @param deptType  组织类型
+     * @param nameList  部门名称
+     * @param count     递归执行次数
+     */
+    String addBusinessByNameList(String cuser,
+                                 Department parent,
+                                 String deptType,
+                                 List<String> nameList,
+                                 int count);
 }
 
 

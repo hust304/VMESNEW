@@ -10,6 +10,7 @@ import com.xy.vmes.service.CoderuleService;
 import com.xy.vmes.service.DepartmentService;
 import com.xy.vmes.service.DepartmentTreeService;
 import com.xy.vmes.service.PostService;
+import com.yvan.Conv;
 import com.yvan.PageData;
 import com.yvan.Tree;
 import com.yvan.HttpUtils;
@@ -129,7 +130,34 @@ public class DepartmentServiceImp implements DepartmentService {
 
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+    private Map<String, String> deptKeyNameMap;
+    private Map<String, String> deptNameKeyMap;
 
+    public Map<String, String> getDeptKeyNameMap() {
+        return deptKeyNameMap;
+    }
+    public Map<String, String> getDeptNameKeyMap() {
+        return deptNameKeyMap;
+    }
+    public void createDeptMap() {
+        this.deptKeyNameMap = new HashMap<String, String>();
+        this.deptNameKeyMap = new HashMap<String, String>();
+    }
+    public void implementDeptMapByParentID(String parentId) {
+        this.createDeptMap();
+        if (parentId == null || parentId.trim().length() == 0) {return;}
+
+        List<Department> deptList = this.findDepartmentListByPid(parentId);
+        if (deptList == null || deptList.size() == 0) {return;}
+        for (Department object : deptList) {
+            String deptID = object.getId();
+            String deptName = object.getName();
+            if (deptName != null && deptName.trim().length() > 0) {
+                this.deptKeyNameMap.put(deptID, deptName);
+                this.deptNameKeyMap.put(deptName, deptID);
+            }
+        }
+    }
 
     /**
      * 创建人：刘威
@@ -824,6 +852,114 @@ public class DepartmentServiceImp implements DepartmentService {
         }
 
         return queryStr;
+    }
+
+    /**
+     * 递归调用-添加(系统组织架构)vmes_department
+     *   企业id  --> id_1
+     *   一级部门 --> id_2
+     *   二级部门 --> id_3
+     *   三级部门 --> id_4
+     *
+     * @param cuser     创建人id
+     * @param parent    父节点对象
+     * @param deptType  组织类型
+     * @param nameList  部门名称
+     * @param count     递归执行次数
+     */
+    public String addBusinessByNameList(String cuser,
+                                        Department parent,
+                                        String deptType,
+                                        List<String> nameList,
+                                        int count) {
+        //1. 获取部门名称-从一级部门开始(根节点)
+        String nodeName = nameList.get(count - nameList.size());
+        if (nodeName == null || nodeName.trim().length() == 0) {return new String();}
+
+        //2. 根据(pid:父节点ID)获取当前层所有节点
+        this.implementDeptMapByParentID(parent.getId());
+        Map<String, String> nameKeyMap = this.getDeptNameKeyMap();
+
+        //获取当前节点<Department>对象
+        String id = "";
+        Department deptObj = new Department();
+        if (nameKeyMap.get(nodeName.trim()) == null) {
+            id = Conv.createUuid();
+            deptObj.setId(id);
+            deptObj.setDeptType(deptType);
+            deptObj.setCuser(cuser);
+            deptObj = this.id2DepartmentByLayer(id,
+                    Integer.valueOf(parent.getLayer().intValue() + 1),
+                    deptObj);
+            deptObj = this.paterObject2ObjectDB(parent, deptObj);
+
+            //获取部门编码
+            String code = this.createCoder(parent.getId1());
+            deptObj.setCode(code);
+
+            //获取(长名称,长编码)- 通过'-'连接的字符串
+            Map<String, String> longNameCodeMpa = this.findLongNameCodeByPater(parent);
+            if (longNameCodeMpa != null
+                    && longNameCodeMpa.get("LongName") != null
+                    && longNameCodeMpa.get("LongName").trim().length() > 0
+                    ) {
+                deptObj.setLongName(longNameCodeMpa.get("LongName").trim() + "-" + deptObj.getName());
+            }
+            if (longNameCodeMpa != null
+                    && longNameCodeMpa.get("LongCode") != null
+                    && longNameCodeMpa.get("LongCode").trim().length() > 0
+                    ) {
+                deptObj.setLongCode(longNameCodeMpa.get("LongCode").trim() + "-" + deptObj.getCode());
+            }
+            //设置部门级别
+            deptObj.setLayer(Integer.valueOf(parent.getLayer().intValue() + 1));
+            //设置默认部门顺序
+            if (deptObj.getSerialNumber() == null) {
+                Integer maxCount = this.findMaxSerialNumber(deptObj.getPid());
+                deptObj.setSerialNumber(Integer.valueOf(maxCount.intValue() + 1));
+            }
+
+            try {
+                //添加部门<Department>对象
+                this.save(deptObj);
+
+                //创建负责人(岗位)
+                String companyId = deptObj.getId1();
+                String code_1 = coderuleService.createCoder(companyId,"vmes_post","P");
+                Post post_1 = new Post();
+                post_1.setDeptId(deptObj.getId());
+                post_1.setName("负责人");
+                post_1.setCompanyId(companyId);
+                post_1.setCode(code_1);
+                post_1.setCuser(cuser);
+                post_1.setRemark("负责人(岗位)-创建部门-系统自动创建");
+                postService.save(post_1);
+
+                //创建员工(岗位)
+                String code_2 = coderuleService.createCoder(companyId,"vmes_post","P");
+                Post post_2 = new Post();
+                post_2.setDeptId(deptObj.getId());
+                post_2.setName("员工");
+                post_2.setCompanyId(companyId);
+                post_2.setCode(code_2);
+                post_2.setCuser(cuser);
+                post_2.setRemark("员工(岗位)-创建部门-系统自动创建");
+                postService.save(post_2);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            id = nameKeyMap.get(nodeName.trim()).trim();
+            deptObj = this.findDepartmentById(id);
+        }
+
+        if (0 == (count - 1)) {
+            return id;
+        } else {
+            count = count - 1;
+            return addBusinessByNameList(cuser, deptObj, deptType, nameList, count);
+        }
     }
 }
 
