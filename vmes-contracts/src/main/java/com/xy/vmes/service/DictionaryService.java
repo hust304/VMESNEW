@@ -116,6 +116,11 @@ public interface DictionaryService {
 
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+    Map<String, String> getKeyNameMap();
+    Map<String, String> getNameKeyMap();
+    void createBusinessMap();
+    void implementBusinessMapByParentID(String parentId, String companyId);
+
     /**
      * 创建人：刘威
      * 创建时间：2018-08-01
