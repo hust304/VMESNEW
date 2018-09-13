@@ -815,8 +815,8 @@ public class DepartmentController {
         }
 
         //2. Excel导入字段(非空,数据有效性验证[数字类型,字典表(大小)类是否匹配])
-        PageData pageData = HttpUtils.parsePageData();
-        String companyId = pageData.getString("currentCompanyId");
+        HttpServletRequest httpRequest = HttpUtils.currentRequest();
+        String companyId = (String)httpRequest.getParameter("companyId");
         String msgStr = departmentExcelService.checkColumnImportExcel(excelList,
                 companyId,
                 Integer.valueOf(3),
@@ -864,8 +864,9 @@ public class DepartmentController {
 
         //5. List<ExcelEntity> --> (转换) List<业务表DB>对象
         //6. 遍历List<业务表DB> 对业务表添加或修改
+        String userId = (String)httpRequest.getParameter("userId");
         departmentExcelService.addImportExcelByList(excelList,
-                pageData.getString("cuser"),
+                userId,
                 companyId);
 
         Long endTime = System.currentTimeMillis();

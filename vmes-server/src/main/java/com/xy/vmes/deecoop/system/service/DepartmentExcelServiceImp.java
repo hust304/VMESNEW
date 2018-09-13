@@ -22,9 +22,9 @@ public class DepartmentExcelServiceImp implements DepartmentExcelService {
 
     public List<DeptExcelEntity> mapList2ImportExcelList(List<LinkedHashMap<String, String>> mapList, List<DeptExcelEntity> excelList) {
         if (excelList == null) {excelList = new ArrayList<DeptExcelEntity>();}
-        if (mapList == null || mapList.size() <= 2) {return excelList;}
+        if (mapList == null || mapList.size() <= 1) {return excelList;}
 
-        for (int i = 2; i < mapList.size(); i++) {
+        for (int i = 1; i < mapList.size(); i++) {
             LinkedHashMap mapObject = mapList.get(i);
             DeptExcelEntity excelEntity = this.map2ExcelEntity(mapObject, null);
             excelList.add(excelEntity);
