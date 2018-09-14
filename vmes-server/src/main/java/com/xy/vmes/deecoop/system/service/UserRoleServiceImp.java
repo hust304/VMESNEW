@@ -379,7 +379,7 @@ public class UserRoleServiceImp implements UserRoleService {
         }
 
         String strTemp = strBuf.toString();
-        if (strTemp.trim().length() > 0 && strTemp.indexOf(",") != -1) {
+        if (strTemp.trim().length() > 0 && strTemp.lastIndexOf(",") != -1) {
             strTemp = strTemp.substring(0, strTemp.lastIndexOf(","));
             return strTemp;
         }
