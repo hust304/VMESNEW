@@ -307,12 +307,12 @@ public class RoleButtonServiceImp implements RoleButtonService {
             MenuButton button = this.mapObject2MenuButton(mapObj, null);
             MenuButtonEntity entity = this.menuButton2ButtonsEntity(button, null);
             //当前节点-是否绑定角色(1:绑定 0:未绑定)
-            entity.setIsBindRole("0");
+            entity.setIsBindRole("1");
 
             //当前菜单是否绑定角色
             // 判断条件: 角色id(roleId)是否存在--
             if (mapObj.get("roleId") != null && mapObj.get("roleId").toString().trim().length() > 0) {
-                entity.setIsBindRole("1");
+                entity.setIsBindRole("0");
             }
 
             buttonList.add(entity);
