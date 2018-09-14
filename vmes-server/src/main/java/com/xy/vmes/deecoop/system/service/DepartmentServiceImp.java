@@ -2,10 +2,7 @@ package com.xy.vmes.deecoop.system.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.deecoop.system.dao.DepartmentMapper;
-import com.xy.vmes.entity.CoderuleEntity;
-import com.xy.vmes.entity.Department;
-import com.xy.vmes.entity.Post;
-import com.xy.vmes.entity.TreeEntity;
+import com.xy.vmes.entity.*;
 import com.xy.vmes.service.CoderuleService;
 import com.xy.vmes.service.DepartmentService;
 import com.xy.vmes.service.DepartmentTreeService;
@@ -582,6 +579,9 @@ public class DepartmentServiceImp implements DepartmentService {
         Map<String, String> objectMap = new HashMap<String, String>();
         if (objectList == null || objectList.size() == 0) {return objectMap;}
 
+        //按照(Department.layer)升序排序
+        this.orderAcsByLayer(objectList);
+
         StringBuffer LongNameBuf = new StringBuffer();
         StringBuffer LongCodeBuf = new StringBuffer();
         for (Department object : objectList) {
@@ -703,6 +703,9 @@ public class DepartmentServiceImp implements DepartmentService {
         if (objectDB == null) {objectDB = new Department();}
         if (paterObject == null) {return objectDB;}
 
+        if (paterObject.getId() != null && paterObject.getId().trim().length() > 0) {
+            objectDB.setPid(paterObject.getId().trim());
+        }
         if (paterObject.getId0() != null && paterObject.getId0().trim().length() > 0) {
             objectDB.setId0(paterObject.getId0().trim());
         }
@@ -861,19 +864,19 @@ public class DepartmentServiceImp implements DepartmentService {
      *   二级部门 --> id_3
      *   三级部门 --> id_4
      *
-     * @param cuser     创建人id
-     * @param parent    父节点对象
-     * @param deptType  组织类型
-     * @param nameList  部门名称
-     * @param count     递归执行次数
+     * @param cuser       创建人id
+     * @param parent      父节点对象
+     * @param excelEntity 组织类型
+     * @param nameList    部门名称
+     * @param count       递归执行次数
      */
     public String addBusinessByNameList(String cuser,
                                         Department parent,
-                                        String deptType,
+                                        DeptExcelEntity excelEntity,
                                         List<String> nameList,
                                         int count) {
         //1. 获取部门名称-从一级部门开始(根节点)
-        String nodeName = nameList.get(count - nameList.size());
+        String nodeName = nameList.get(nameList.size() - count);
         if (nodeName == null || nodeName.trim().length() == 0) {return new String();}
 
         //2. 根据(pid:父节点ID)获取当前层所有节点
@@ -886,7 +889,7 @@ public class DepartmentServiceImp implements DepartmentService {
         if (nameKeyMap.get(nodeName.trim()) == null) {
             id = Conv.createUuid();
             deptObj.setId(id);
-            deptObj.setDeptType(deptType);
+            deptObj.setDeptType(excelEntity.getDeptType());
             deptObj.setCuser(cuser);
             deptObj = this.id2DepartmentByLayer(id,
                     Integer.valueOf(parent.getLayer().intValue() + 1),
@@ -903,7 +906,7 @@ public class DepartmentServiceImp implements DepartmentService {
                     && longNameCodeMpa.get("LongName") != null
                     && longNameCodeMpa.get("LongName").trim().length() > 0
                     ) {
-                deptObj.setLongName(longNameCodeMpa.get("LongName").trim() + "-" + deptObj.getName());
+                deptObj.setLongName(longNameCodeMpa.get("LongName").trim() + "-" + nodeName);
             }
             if (longNameCodeMpa != null
                     && longNameCodeMpa.get("LongCode") != null
@@ -917,6 +920,11 @@ public class DepartmentServiceImp implements DepartmentService {
             if (deptObj.getSerialNumber() == null) {
                 Integer maxCount = this.findMaxSerialNumber(deptObj.getPid());
                 deptObj.setSerialNumber(Integer.valueOf(maxCount.intValue() + 1));
+            }
+
+            deptObj.setName(nodeName);
+            if (excelEntity.getRemark() != null && excelEntity.getRemark().trim().length() > 0) {
+                deptObj.setRemark(excelEntity.getRemark().trim());
             }
 
             try {
@@ -958,8 +966,31 @@ public class DepartmentServiceImp implements DepartmentService {
             return id;
         } else {
             count = count - 1;
-            return addBusinessByNameList(cuser, deptObj, deptType, nameList, count);
+            return addBusinessByNameList(cuser, deptObj, excelEntity, nameList, count);
         }
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    //重写排序方法: 按照(Department.serialNumber)升序排序
+    private void orderAcsBySerialNumber(List<Department> objectList) {
+        Collections.sort(objectList, new Comparator<Object>() {
+            public int compare(Object arg0, Object arg1) {
+                Department object_0 = (Department)arg0;
+                Department object_1 = (Department)arg1;
+                return object_0.getSerialNumber().compareTo(object_1.getSerialNumber());
+            }
+        });
+    }
+
+    //重写排序方法: 按照(Department.layer)升序排序
+    private void orderAcsByLayer(List<Department> objectList) {
+        Collections.sort(objectList, new Comparator<Object>() {
+            public int compare(Object arg0, Object arg1) {
+                Department object_0 = (Department)arg0;
+                Department object_1 = (Department)arg1;
+                return object_0.getLayer().compareTo(object_1.getSerialNumber());
+            }
+        });
     }
 }
 

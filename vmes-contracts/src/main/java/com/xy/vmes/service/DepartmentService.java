@@ -2,6 +2,7 @@ package com.xy.vmes.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.entity.Department;
+import com.xy.vmes.entity.DeptExcelEntity;
 import com.xy.vmes.entity.TreeEntity;
 import com.yvan.PageData;
 import com.yvan.Tree;
@@ -284,13 +285,13 @@ public interface DepartmentService {
      *
      * @param cuser     创建人id
      * @param parent    父节点对象
-     * @param deptType  组织类型
+     * @param excelEntity  组织类型
      * @param nameList  部门名称
      * @param count     递归执行次数
      */
     String addBusinessByNameList(String cuser,
                                  Department parent,
-                                 String deptType,
+                                 DeptExcelEntity excelEntity,
                                  List<String> nameList,
                                  int count);
 }

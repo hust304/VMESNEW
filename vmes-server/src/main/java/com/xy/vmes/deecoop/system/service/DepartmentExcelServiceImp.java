@@ -46,13 +46,14 @@ public class DepartmentExcelServiceImp implements DepartmentExcelService {
             namePath.append("-");
         }
         if (excelEntity.getDeptName_3() != null && excelEntity.getDeptName_3().trim().length() > 0) {
-            namePath.append(excelEntity.getDeptName_2().trim());
+            namePath.append(excelEntity.getDeptName_3().trim());
             namePath.append("-");
         }
 
         //去掉最后一个"-"
         String strTmp = "";
-        if (namePath.toString().trim().length() > 0 && namePath.toString().trim().indexOf("-") != -1) {
+        if (namePath.toString().trim().length() > 0 && namePath.toString().trim().lastIndexOf("-") != -1) {
+            strTmp = namePath.toString().trim();
             strTmp = strTmp.substring(0, strTmp.lastIndexOf("-"));
         }
 
@@ -325,7 +326,7 @@ public class DepartmentExcelServiceImp implements DepartmentExcelService {
 
             departmentService.addBusinessByNameList(cuser,
                     parent,
-                    excelEntity.getDeptType(),
+                    excelEntity,
                     nameList,
                     nameList.size());
         }
