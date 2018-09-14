@@ -586,7 +586,7 @@ public class MenuButtonController {
      * @author 陈刚
      * @date 2018-09-14
      */
-    @GetMapping("/button/initMenuButtons")
+    @PostMapping("/button/initMenuButtons")
     public ResultModel initMenuButtons() throws Exception {
         logger.info("################button/initMenuButtons 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -608,47 +608,51 @@ public class MenuButtonController {
             return model;
         }
 
+        List<MenuButtonEntity> buttonList = new ArrayList<MenuButtonEntity>();
         String roleIds = pageData.getString("roleId");
-        if (roleIds == null || roleIds.trim().length() == 0) {roleIds = "";}
-
-        //1. 根据角色id查询(vmes_role_button)-角色按钮表
-        List<RoleButton> roleButtonList = new ArrayList<RoleButton>();
-
-        PageData findMap = new PageData();
         if (roleIds != null && roleIds.trim().length() > 0) {
+            //1. 根据角色id查询(vmes_role_button)-角色按钮表
+            PageData findMap = new PageData();
             roleIds = StringUtil.stringTrimSpace(roleIds);
             roleIds = "'" + roleIds.replace(",", "','") + "'";
-
             findMap.put("queryStr", "role_id in (" + roleIds + ")");
             findMap.put("mapSize", Integer.valueOf(findMap.size()));
+            List<RoleButton> roleButtonList = new ArrayList<RoleButton>();
             roleButtonList = roleButtonService.findRoleButtonList(findMap);
-        }
+            if (roleButtonList == null || roleButtonList.size() == 0) {
+                model.put("buttonList", buttonList);
+                return model;
+            }
 
-        //2. 遍历List<RoleButton>-获取按钮id字符串
-        String buttonIds = "";
-        if (roleButtonList.size() > 0) {
-            buttonIds = roleButtonService.findButtonsByRoleButtonList(roleButtonList);
-        }
+            //2. 遍历List<RoleButton>-获取按钮id字符串
+            String buttonIds = "";
+            if (roleButtonList.size() > 0) {
+                buttonIds = roleButtonService.findButtonsByRoleButtonList(roleButtonList);
+            }
+            if (buttonIds.trim().length() == 0) {
+                model.put("buttonList", buttonList);
+                return model;
+            }
 
-        //3. (菜单id, 按钮id)-查询(vmes_menu_button)-菜单按钮表
-        findMap = new PageData();
-        findMap.put("menuId", Common.SYS_MENU_MAP.get(menuKey));
-        //是否禁用(0:已禁用 1:启用)
-        findMap.put("isdisable", "1");
-        if (buttonIds.trim().length() > 0) {
-            buttonIds = StringUtil.stringTrimSpace(buttonIds);
-            buttonIds = "'" + buttonIds.replace(",", "','") + "'";
-            findMap.put("queryStr", "id in (" + buttonIds + ")");
-        }
-        findMap.put("mapSize", Integer.valueOf(findMap.size()));
-        List<MenuButton> menuButtonList = menuButtonService.findMenuButtonList(findMap);
+            //3. (菜单id, 按钮id)-查询(vmes_menu_button)-菜单按钮表
+            findMap = new PageData();
+            findMap.put("menuId", Common.SYS_MENU_MAP.get(menuKey));
+            //是否禁用(0:已禁用 1:启用)
+            findMap.put("isdisable", "1");
+            if (buttonIds.trim().length() > 0) {
+                buttonIds = StringUtil.stringTrimSpace(buttonIds);
+                buttonIds = "'" + buttonIds.replace(",", "','") + "'";
+                findMap.put("queryStr", "id in (" + buttonIds + ")");
+            }
+            findMap.put("mapSize", Integer.valueOf(findMap.size()));
+            List<MenuButton> menuButtonList = menuButtonService.findMenuButtonList(findMap);
 
-        //4. 遍历List<MenuButton> 得到按钮List<MenuButtonEntity>
-        List<MenuButtonEntity> buttonList = new ArrayList<MenuButtonEntity>();
-        if (menuButtonList != null && menuButtonList.size() > 0) {
-            for (MenuButton menuButton : menuButtonList) {
-                MenuButtonEntity buttonEntity = roleButtonService.menuButton2ButtonsEntity(menuButton, null);
-                buttonList.add(buttonEntity);
+            //4. 遍历List<MenuButton> 得到按钮List<MenuButtonEntity>
+            if (menuButtonList != null && menuButtonList.size() > 0) {
+                for (MenuButton menuButton : menuButtonList) {
+                    MenuButtonEntity buttonEntity = roleButtonService.menuButton2ButtonsEntity(menuButton, null);
+                    buttonList.add(buttonEntity);
+                }
             }
         }
 
