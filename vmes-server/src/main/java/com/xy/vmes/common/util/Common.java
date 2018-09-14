@@ -95,7 +95,7 @@ public class Common {
         put("delete", "delete");
     }};
 
-    //Dictionary字典表大类ID映射
+    ///////////////--Dictionary字典表大类ID映射--///////////////////////////////////////////////////////////////////
     public static final Map<String, String> DICTIONARY_MAP = new HashMap<String, String>() {{
 
         //companyType: 0d779980a3ca4e69ac393a93bca84659 //根节点
@@ -126,8 +126,63 @@ public class Common {
         //political: 015cecdb7fdd450c8a21c7c97d406aa4 //政治面貌
         put("political", "015cecdb7fdd450c8a21c7c97d406aa4");
 
-
-
     }};
 
+    ///////////////--菜单名称--///////////////////////////////////////////////////////////////////
+    //Map<菜单key, 菜单id>
+    public static final Map<String, String> SYS_MENU_MAP = new HashMap<String, String>() {{
+        //home: '主页',
+        put("home", "97c8c8150a7746e190a7a440b2119e02");
+
+        //******销售******
+        //order: '销售',
+        put("order", "94caec1bca7e4131b16bfcee9b1351e2");
+
+        //******生产******
+        //product: '生产',
+        put("product", "73883f69b4034b7f89e9d59bc4919a6a");
+
+        //******仓库******
+        //warehouse: '仓库',
+        put("warehouse", "15a6c4ca92fe42a0a82320287538b727");
+
+        //table: '报表',
+        put("table", "156b96f3245d4a5ba45ca3c2e67fd803");
+
+        //******人事******
+        //emp: '人事',
+        put("emp", "a962ac5d572d46c38d75d644974abc80");
+            //department: '组织管理',
+            put("department", "b0f2e472c3b84a3eba7839cb3ebc01b8");
+            //post: '岗位管理',
+            put("post", "7a8e501d59544e4fa61636d2b7813751");
+            //employee: '员工管理',
+            put("employee", "093a0bc9346044afaa814ea17a74d073");
+
+        //******质量******
+        //quality: '质量',
+        put("quality", "c93a3ca8d720434dbee9a87482931772");
+
+        //******系统设置******
+        //system: '系统设置',
+        put("system", "9446a05883cf4669aecd710e663aea39");
+            //company: '企业账号申请',
+            put("company", "55004941ca4440e09d01975829f797b0");
+            //user: '用户管理',
+            put("user", "59de75701c53408a857f0179fcaa7a09");
+            //menumanage: '菜单管理',
+            put("menumanage", "6eb9766b1396425b84cd5cd7d3bb464b");
+            //template: '系统开发模板',
+            put("template", "dccbd97d7b404c0ab5b76b36b2521d8d");
+            //dictionary: '数据字典',
+            put("dictionary", "8e7fef00aedc4da880b4c06399f47ce1");
+            //role: '角色权限',
+            put("role", "33112d776e7140e98002df71785de23c");
+            //auths: '权限管理',
+            //accountHome: '自定义主页',
+            put("accountHome", "e1206343ddc94ec4b072adedb4ba40aa");
+            //logInfo: '操作日志',
+            put("logInfo", "cba143d6d51b4d4288071eb3bad56606");
+
+    }};
 }

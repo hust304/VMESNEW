@@ -321,6 +321,34 @@ public class RoleButtonServiceImp implements RoleButtonService {
         return buttonList;
     }
 
+    /**
+     * 获取按钮ID(','逗号分隔的字符串)
+     * 创建人：陈刚
+     * 创建时间：2018-09-14
+     *
+     * @param objectList
+     * @return
+     */
+    public String findButtonsByRoleButtonList(List<RoleButton> objectList) {
+        if (objectList == null || objectList.size() == 0) {return new String();}
+
+        StringBuffer strBuf = new StringBuffer();
+        for (RoleButton object : objectList) {
+            if (object.getButtonId() != null && object.getButtonId().trim().length() > 0)  {
+                strBuf.append(object.getButtonId().trim());
+                strBuf.append(",");
+            }
+        }
+
+        String strTemp = strBuf.toString();
+        if (strTemp.trim().length() > 0 && strTemp.indexOf(",") != -1) {
+            strTemp = strTemp.substring(0, strTemp.lastIndexOf(","));
+            return strTemp;
+        }
+
+        return strBuf.toString();
+    }
+
 }
 
 

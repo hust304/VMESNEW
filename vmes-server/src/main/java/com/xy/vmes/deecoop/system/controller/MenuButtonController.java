@@ -1,16 +1,14 @@
 package com.xy.vmes.deecoop.system.controller;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
-import com.google.gson.Gson;
 import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.Common;
 import com.xy.vmes.common.util.StringUtil;
-import com.xy.vmes.entity.Column;
-import com.xy.vmes.entity.Menu;
-import com.xy.vmes.entity.MenuButton;
+import com.xy.vmes.entity.*;
 import com.xy.vmes.service.ColumnService;
 import com.xy.vmes.service.MenuButtonService;
 import com.xy.vmes.service.MenuService;
+import com.xy.vmes.service.RoleButtonService;
 import com.yvan.*;
 import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
@@ -27,8 +25,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.text.MessageFormat;
 import java.util.*;
 
@@ -41,11 +37,12 @@ import java.util.*;
 @RestController
 @Slf4j
 public class MenuButtonController {
-
     private Logger logger = LoggerFactory.getLogger(MenuButtonController.class);
 
     @Autowired
     private MenuButtonService menuButtonService;
+    @Autowired
+    private RoleButtonService roleButtonService;
 
     @Autowired
     private ColumnService columnService;
@@ -538,7 +535,7 @@ public class MenuButtonController {
      *
      * @throws Exception
      */
-    @GetMapping("/button/exportExcelMenuButtons")
+    @PostMapping("/button/exportExcelMenuButtons")
     public void exportExcelMenuButtons() throws Exception {
         logger.info("################button/exportExcelMenuButtons 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -581,7 +578,84 @@ public class MenuButtonController {
         ExcelUtil.excelExportByDataList(response, fileName, dataMapList);
         Long endTime = System.currentTimeMillis();
         logger.info("################button/exportExcelMenuButtons 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+    }
 
+    /**
+     * 根据(菜单Key,登录用户角色id)获取菜单按钮List
+     *
+     * @author 陈刚
+     * @date 2018-09-14
+     */
+    @GetMapping("/button/initMenuButtons")
+    public ResultModel initMenuButtons() throws Exception {
+        logger.info("################button/initMenuButtons 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        String menuKey = pageData.getString("menuKey");
+        if (menuKey == null || menuKey.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("菜单Key为空或空字符串！");
+            return model;
+        }
+
+        //常理类(com.xy.vmes.common.util.Common.SYS_MENU_MAP)中定义Map<菜单key, 菜单id>
+        if (Common.SYS_MENU_MAP.get(menuKey) == null || Common.SYS_MENU_MAP.get(menuKey).trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("菜单Key:" + menuKey + " 常理类Common.SYS_MENU_MAP 无定义！");
+            return model;
+        }
+
+        String roleIds = pageData.getString("roleId");
+        if (roleIds == null || roleIds.trim().length() == 0) {roleIds = "";}
+
+        //1. 根据角色id查询(vmes_role_button)-角色按钮表
+        List<RoleButton> roleButtonList = new ArrayList<RoleButton>();
+
+        PageData findMap = new PageData();
+        if (roleIds != null && roleIds.trim().length() > 0) {
+            roleIds = StringUtil.stringTrimSpace(roleIds);
+            roleIds = "'" + roleIds.replace(",", "','") + "'";
+
+            findMap.put("queryStr", "role_id in (" + roleIds + ")");
+            findMap.put("mapSize", Integer.valueOf(findMap.size()));
+            roleButtonList = roleButtonService.findRoleButtonList(findMap);
+        }
+
+        //2. 遍历List<RoleButton>-获取按钮id字符串
+        String buttonIds = "";
+        if (roleButtonList.size() > 0) {
+            buttonIds = roleButtonService.findButtonsByRoleButtonList(roleButtonList);
+        }
+
+        //3. (菜单id, 按钮id)-查询(vmes_menu_button)-菜单按钮表
+        findMap = new PageData();
+        findMap.put("menuId", Common.SYS_MENU_MAP.get(menuKey));
+        //是否禁用(0:已禁用 1:启用)
+        findMap.put("isdisable", "1");
+        if (buttonIds.trim().length() > 0) {
+            buttonIds = StringUtil.stringTrimSpace(buttonIds);
+            buttonIds = "'" + buttonIds.replace(",", "','") + "'";
+            findMap.put("queryStr", "id in (" + buttonIds + ")");
+        }
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+        List<MenuButton> menuButtonList = menuButtonService.findMenuButtonList(findMap);
+
+        //4. 遍历List<MenuButton> 得到按钮List<MenuButtonEntity>
+        List<MenuButtonEntity> buttonList = new ArrayList<MenuButtonEntity>();
+        if (menuButtonList != null && menuButtonList.size() > 0) {
+            for (MenuButton menuButton : menuButtonList) {
+                MenuButtonEntity buttonEntity = roleButtonService.menuButton2ButtonsEntity(menuButton, null);
+                buttonList.add(buttonEntity);
+            }
+        }
+
+        model.put("buttonList", buttonList);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################button/initMenuButtons 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
     }
 }
 
