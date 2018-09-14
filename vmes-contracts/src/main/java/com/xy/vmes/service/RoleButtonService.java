@@ -82,7 +82,7 @@ public interface RoleButtonService {
      * 创建人：陈刚
      * 创建时间：2018-07-31
      */
-    void deleteRoleButtonByRoleId(String roleId) throws Exception;
+    void deleteRoleButtonByRoleId(PageData object) throws Exception;
     /**
      * 添加角色按钮
      * 创建人：陈刚
@@ -127,7 +127,7 @@ public interface RoleButtonService {
      * @param objectList
      * @return
      */
-    String findButtonsByRoleButtonList(List<RoleButton> objectList);
+    String findButtonIdsByRoleButtonList(List<RoleButton> objectList);
 }
 
 

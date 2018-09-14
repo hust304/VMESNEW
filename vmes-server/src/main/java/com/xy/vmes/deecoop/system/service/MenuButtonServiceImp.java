@@ -436,6 +436,34 @@ public class MenuButtonServiceImp implements MenuButtonService {
 
         return objectDB;
     }
+
+    /**
+     * 获取按钮ID(','逗号分隔的字符串)
+     * 创建人：陈刚
+     * 创建时间：2018-09-14
+     *
+     * @param objectList
+     * @return
+     */
+    public String findButtonIdsByMenuButtonList(List<MenuButton> objectList) {
+        if (objectList == null || objectList.size() == 0) {return new String();}
+
+        StringBuffer strBuf = new StringBuffer();
+        for (MenuButton object : objectList) {
+            if (object.getId() != null && object.getId().trim().length() > 0)  {
+                strBuf.append(object.getId().trim());
+                strBuf.append(",");
+            }
+        }
+
+        String strTemp = strBuf.toString();
+        if (strTemp.trim().length() > 0 && strTemp.lastIndexOf(",") != -1) {
+            strTemp = strTemp.substring(0, strTemp.lastIndexOf(","));
+            return strTemp;
+        }
+
+        return strBuf.toString();
+    }
 }
 
 

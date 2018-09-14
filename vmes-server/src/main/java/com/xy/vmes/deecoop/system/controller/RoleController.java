@@ -826,40 +826,46 @@ public class RoleController {
         PageData pageData = HttpUtils.parsePageData();
 
         //1. 非空判断
-        if (pageData == null || pageData.size() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("参数错误：用户登录参数(pageData)为空！");
-            return model;
-        }
-
-        String msgStr = new String();
         String roleID = (String)pageData.get("roleID");
         if (roleID == null || roleID.trim().length() == 0) {
-            msgStr = msgStr + "roleID为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT;
-        }
-        String buttonIds = (String)pageData.get("buttonIds");
-        if (buttonIds == null || buttonIds.trim().length() == 0) {
-            msgStr = msgStr + "buttonIds为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT;
-        }
-        if (msgStr.trim().length() > 0) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg(msgStr);
+            model.putMsg("角色id为空或空字符串！");
             return model;
         }
 
-//        //2.当前角色ID(用户角色,角色菜单,角色按钮)-是否使用
-//        msgStr = roleService.checkDeleteRoleByRoleIds(roleID);
-//        if (msgStr.trim().length() > 0) {
-//            model.putCode(Integer.valueOf(1));
-//            model.putMsg(msgStr);
-//            return model;
-//        }
+        String meunId = (String)pageData.get("meunId");
+        if (meunId == null || meunId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("菜单id为空或空字符串！");
+            return model;
+        }
+
+        //获取(菜单id,角色id)所有按钮id字符串-查询(vmes_role_button,vmes_menu_button)-菜单按钮表
+        PageData findMap = new PageData();
+        findMap.put("menuId", meunId);
+        findMap.put("roleId", roleID);
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+        List<RoleButton> roleButtonList = roleButtonService.findRoleButtonList(findMap);
+        String roleButtonIds = roleButtonService.findButtonIdsByRoleButtonList(roleButtonList);
 
         //3. 删除角色按钮(当前角色)
-        roleButtonService.deleteRoleButtonByRoleId(roleID);
+        if (roleButtonIds != null && roleButtonIds.trim().length() > 0) {
+            findMap = new PageData();
+            findMap.put("roleId", roleID);
+
+            roleButtonIds = StringUtil.stringTrimSpace(roleButtonIds);
+            roleButtonIds = "'" + roleButtonIds.replace(",", "','") + "'";
+            findMap.put("queryStr", "button_id in (" + roleButtonIds + ")");
+
+            roleButtonService.deleteRoleButtonByRoleId(findMap);
+        }
 
         //4. 添加角色按钮(当前角色)
-        roleButtonService.addRoleButtonByMeunIds(roleID, buttonIds);
+        String buttonIds = (String)pageData.get("buttonIds");
+        if (buttonIds != null && buttonIds.trim().length() > 0) {
+            roleButtonService.addRoleButtonByMeunIds(roleID, buttonIds);
+        }
+
         Long endTime = System.currentTimeMillis();
         logger.info("################role/saveRoleMeunsButtons 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;

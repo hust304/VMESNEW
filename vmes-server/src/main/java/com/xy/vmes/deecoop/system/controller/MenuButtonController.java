@@ -627,7 +627,7 @@ public class MenuButtonController {
             //2. 遍历List<RoleButton>-获取按钮id字符串
             String buttonIds = "";
             if (roleButtonList.size() > 0) {
-                buttonIds = roleButtonService.findButtonsByRoleButtonList(roleButtonList);
+                buttonIds = roleButtonService.findButtonIdsByRoleButtonList(roleButtonList);
             }
             if (buttonIds.trim().length() == 0) {
                 model.put("buttonList", buttonList);

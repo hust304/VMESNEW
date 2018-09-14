@@ -137,8 +137,8 @@ public class RoleButtonServiceImp implements RoleButtonService {
      * 创建人：陈刚
      * 创建时间：2018-07-31
      */
-    public void deleteRoleButtonByRoleId(String roleId) throws Exception {
-        roleButtonMapper.deleteRoleButtonByRoleId(roleId);
+    public void deleteRoleButtonByRoleId(PageData object) throws Exception {
+        roleButtonMapper.deleteRoleButtonByRoleId(object);
     }
     /**
      * 添加角色按钮
@@ -329,7 +329,7 @@ public class RoleButtonServiceImp implements RoleButtonService {
      * @param objectList
      * @return
      */
-    public String findButtonsByRoleButtonList(List<RoleButton> objectList) {
+    public String findButtonIdsByRoleButtonList(List<RoleButton> objectList) {
         if (objectList == null || objectList.size() == 0) {return new String();}
 
         StringBuffer strBuf = new StringBuffer();
@@ -341,7 +341,7 @@ public class RoleButtonServiceImp implements RoleButtonService {
         }
 
         String strTemp = strBuf.toString();
-        if (strTemp.trim().length() > 0 && strTemp.indexOf(",") != -1) {
+        if (strTemp.trim().length() > 0 && strTemp.lastIndexOf(",") != -1) {
             strTemp = strTemp.substring(0, strTemp.lastIndexOf(","));
             return strTemp;
         }

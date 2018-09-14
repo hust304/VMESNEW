@@ -190,6 +190,16 @@ public interface MenuButtonService {
     boolean isExistByNameEn(String menuId, String id, String nameEn);
     Integer findMaxSerialNumber(String menuId);
     MenuButton object2objectDB(MenuButton object, MenuButton objectDB);
+
+    /**
+     * 获取按钮ID(','逗号分隔的字符串)
+     * 创建人：陈刚
+     * 创建时间：2018-09-14
+     *
+     * @param objectList
+     * @return
+     */
+    String findButtonIdsByMenuButtonList(List<MenuButton> objectList);
 }
 
 
