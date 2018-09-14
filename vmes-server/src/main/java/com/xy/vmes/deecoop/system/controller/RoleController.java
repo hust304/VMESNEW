@@ -833,8 +833,8 @@ public class RoleController {
             return model;
         }
 
-        String meunId = (String)pageData.get("meunId");
-        if (meunId == null || meunId.trim().length() == 0) {
+        String menuId = (String)pageData.get("menuId");
+        if (menuId == null || menuId.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("菜单id为空或空字符串！");
             return model;
@@ -842,7 +842,7 @@ public class RoleController {
 
         //获取(菜单id,角色id)所有按钮id字符串-查询(vmes_role_button,vmes_menu_button)-菜单按钮表
         PageData findMap = new PageData();
-        findMap.put("menuId", meunId);
+        findMap.put("menuId", menuId);
         findMap.put("roleId", roleID);
         findMap.put("mapSize", Integer.valueOf(findMap.size()));
         List<RoleButton> roleButtonList = roleButtonService.findRoleButtonList(findMap);
