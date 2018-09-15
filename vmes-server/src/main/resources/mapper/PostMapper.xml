@@ -151,19 +151,19 @@
                             </otherwise>
                         </choose>
                     </if>
-                    <if test="companyId != null and companyId != ''" >
-                        and company_id = #{companyId}
-                    </if>
-
-                    <if test="deptId != null and deptId != ''" >
-                        and dept_id = #{deptId}
+                    <if test="code != null and code != ''" >
+                        and code = #{code}
                     </if>
                     <if test="name != null and name != ''" >
                         and name = #{name}
                     </if>
-                    <if test="code != null and code != ''" >
-                        and code = #{code}
+                    <if test="deptId != null and deptId != ''" >
+                        and dept_id = #{deptId}
                     </if>
+                    <if test="companyId != null and companyId != ''" >
+                        and company_id = #{companyId}
+                    </if>
+
                     <if test="layer != null" >
                         and layer = #{layer}
                     </if>
@@ -238,18 +238,19 @@
         vmes_post post
         left join vmes_department department on department.id = post.dept_id
         <where>
-            <if test="currentCompanyId != null and currentCompanyId != ''">
-                and post.company_id = #{currentCompanyId}
-            </if>
-            <if test="deptId != null and deptId != ''"><!-- 关键词检索 -->
-                and post.dept_id LIKE CONCAT(CONCAT('%', #{deptId}),'%')
-            </if>
             <if test="code != null and code != ''"><!-- 关键词检索 -->
                 and post.code LIKE CONCAT(CONCAT('%', #{code}),'%')
             </if>
             <if test="name != null and name != ''"><!-- 关键词检索 -->
                 and post.name LIKE CONCAT(CONCAT('%', #{name}),'%')
             </if>
+            <if test="deptId != null and deptId != ''"><!-- 关键词检索 -->
+                and post.dept_id LIKE CONCAT(CONCAT('%', #{deptId}),'%')
+            </if>
+            <if test="currentCompanyId != null and currentCompanyId != ''">
+                and post.company_id = #{currentCompanyId}
+            </if>
+
             <if test="deptName != null and deptName != ''"><!-- 关键词检索 -->
                 and department.name LIKE CONCAT(CONCAT('%', #{deptName}),'%')
             </if>
@@ -277,21 +278,20 @@
             <if test="name != null and name != ''">
                 and post.name LIKE CONCAT(CONCAT(#{name}),'%')
             </if>
-
             <if test="companyId != null and companyId != ''">
                 and post.company_id = #{companyId}
             </if>
-            <if test="isdisable != null and isdisable != ''">
-                and post.isdisable = #{isdisable}
-            </if>
-
             <if test="currentCompanyId != null and currentCompanyId != ''">
                 and post.company_id = #{currentCompanyId}
             </if>
 
+            <if test="isdisable != null and isdisable != ''">
+                and post.isdisable = #{isdisable}
+            </if>
             <if test="deptName != null and deptName != ''">
                 and department.name LIKE CONCAT(CONCAT(#{deptName}),'%')
             </if>
+
             <if test="queryStr != null and queryStr!=''" ><!-- 自定义查询 -->
                 and ${queryStr}
             </if>
