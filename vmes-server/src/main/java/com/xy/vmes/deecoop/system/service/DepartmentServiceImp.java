@@ -706,6 +706,23 @@ public class DepartmentServiceImp implements DepartmentService {
         if (paterObject.getId() != null && paterObject.getId().trim().length() > 0) {
             objectDB.setPid(paterObject.getId().trim());
         }
+
+        String paterLongName = "";
+        if (paterObject.getLongName() != null && paterObject.getLongName().trim().length() > 0) {
+            paterLongName = paterObject.getLongName().trim();
+        }
+        if (objectDB.getName() != null && objectDB.getName().trim().length() > 0) {
+            objectDB.setLongName(paterLongName + "-" + objectDB.getName());
+        }
+
+        String paterLongCode = "";
+        if (paterObject.getLongCode() != null && paterObject.getLongCode().trim().length() > 0) {
+            paterLongCode = paterObject.getLongCode().trim();
+        }
+        if (objectDB.getCode() != null && objectDB.getCode().trim().length() > 0) {
+            objectDB.setLongCode(paterLongCode + "-" + objectDB.getCode());
+        }
+
         if (paterObject.getId0() != null && paterObject.getId0().trim().length() > 0) {
             objectDB.setId0(paterObject.getId0().trim());
         }
@@ -889,6 +906,10 @@ public class DepartmentServiceImp implements DepartmentService {
         if (nameKeyMap.get(nodeName.trim()) == null) {
             id = Conv.createUuid();
             deptObj.setId(id);
+            //获取部门编码
+            String code = this.createCoder(parent.getId1());
+            deptObj.setCode(code);
+            deptObj.setName(nodeName);
             deptObj.setDeptType(excelEntity.getDeptType());
             deptObj.setCuser(cuser);
             deptObj = this.id2DepartmentByLayer(id,
@@ -896,24 +917,21 @@ public class DepartmentServiceImp implements DepartmentService {
                     deptObj);
             deptObj = this.paterObject2ObjectDB(parent, deptObj);
 
-            //获取部门编码
-            String code = this.createCoder(parent.getId1());
-            deptObj.setCode(code);
+//            //获取(长名称,长编码)- 通过'-'连接的字符串
+//            Map<String, String> longNameCodeMpa = this.findLongNameCodeByPater(parent);
+//            if (longNameCodeMpa != null
+//                    && longNameCodeMpa.get("LongName") != null
+//                    && longNameCodeMpa.get("LongName").trim().length() > 0
+//                    ) {
+//                deptObj.setLongName(longNameCodeMpa.get("LongName").trim() + "-" + nodeName);
+//            }
+//            if (longNameCodeMpa != null
+//                    && longNameCodeMpa.get("LongCode") != null
+//                    && longNameCodeMpa.get("LongCode").trim().length() > 0
+//                    ) {
+//                deptObj.setLongCode(longNameCodeMpa.get("LongCode").trim() + "-" + deptObj.getCode());
+//            }
 
-            //获取(长名称,长编码)- 通过'-'连接的字符串
-            Map<String, String> longNameCodeMpa = this.findLongNameCodeByPater(parent);
-            if (longNameCodeMpa != null
-                    && longNameCodeMpa.get("LongName") != null
-                    && longNameCodeMpa.get("LongName").trim().length() > 0
-                    ) {
-                deptObj.setLongName(longNameCodeMpa.get("LongName").trim() + "-" + nodeName);
-            }
-            if (longNameCodeMpa != null
-                    && longNameCodeMpa.get("LongCode") != null
-                    && longNameCodeMpa.get("LongCode").trim().length() > 0
-                    ) {
-                deptObj.setLongCode(longNameCodeMpa.get("LongCode").trim() + "-" + deptObj.getCode());
-            }
             //设置部门级别
             deptObj.setLayer(Integer.valueOf(parent.getLayer().intValue() + 1));
             //设置默认部门顺序

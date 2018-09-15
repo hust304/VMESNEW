@@ -301,34 +301,38 @@ public class DepartmentController {
             return model;
         }
 
+
         //3. 创建部门信息
         String id = Conv.createUuid();
         deptObj.setId(id);
         deptObj.setCuser(pageData.getString("cuser"));
-        deptObj = departmentService.id2DepartmentByLayer(id,
-                Integer.valueOf(paterObj.getLayer().intValue() + 1),
-                deptObj);
-        deptObj = departmentService.paterObject2ObjectDB(paterObj, deptObj);
 
         //获取部门编码
         String companyID = pageData.getString("currentCompanyId");
         String code = departmentService.createCoder(companyID);
         deptObj.setCode(code);
 
-        //获取(长名称,长编码)- 通过'-'连接的字符串
-        Map<String, String> longNameCodeMpa = departmentService.findLongNameCodeByPater(paterObj);
-        if (longNameCodeMpa != null
-            && longNameCodeMpa.get("LongName") != null
-            && longNameCodeMpa.get("LongName").trim().length() > 0
-        ) {
-            deptObj.setLongName(longNameCodeMpa.get("LongName").trim() + "-" + deptObj.getName());
-        }
-        if (longNameCodeMpa != null
-            && longNameCodeMpa.get("LongCode") != null
-            && longNameCodeMpa.get("LongCode").trim().length() > 0
-        ) {
-            deptObj.setLongCode(longNameCodeMpa.get("LongCode").trim() + "-" + deptObj.getCode());
-        }
+        deptObj = departmentService.id2DepartmentByLayer(id,
+                Integer.valueOf(paterObj.getLayer().intValue() + 1),
+                deptObj);
+        deptObj = departmentService.paterObject2ObjectDB(paterObj, deptObj);
+
+
+//        //获取(长名称,长编码)- 通过'-'连接的字符串
+//        Map<String, String> longNameCodeMpa = departmentService.findLongNameCodeByPater(paterObj);
+//        if (longNameCodeMpa != null
+//            && longNameCodeMpa.get("LongName") != null
+//            && longNameCodeMpa.get("LongName").trim().length() > 0
+//        ) {
+//            deptObj.setLongName(longNameCodeMpa.get("LongName").trim() + "-" + deptObj.getName());
+//        }
+//        if (longNameCodeMpa != null
+//            && longNameCodeMpa.get("LongCode") != null
+//            && longNameCodeMpa.get("LongCode").trim().length() > 0
+//        ) {
+//            deptObj.setLongCode(longNameCodeMpa.get("LongCode").trim() + "-" + deptObj.getCode());
+//        }
+
         //设置部门级别
         deptObj.setLayer(Integer.valueOf(paterObj.getLayer().intValue() + 1));
         //设置默认部门顺序
@@ -430,20 +434,21 @@ public class DepartmentController {
                 deptDB);
         deptDB = departmentService.paterObject2ObjectDB(paterObj, deptDB);
 
-        //获取(长名称,长编码)- 通过'-'连接的字符串
-        Map<String, String> longNameCodeMpa = departmentService.findLongNameCodeByPater(paterObj);
-        if (longNameCodeMpa != null
-                && longNameCodeMpa.get("LongName") != null
-                && longNameCodeMpa.get("LongName").trim().length() > 0
-                ) {
-            deptDB.setLongName(longNameCodeMpa.get("LongName").trim() + "-" + deptDB.getName());
-        }
-        if (longNameCodeMpa != null
-                && longNameCodeMpa.get("LongCode") != null
-                && longNameCodeMpa.get("LongCode").trim().length() > 0
-                ) {
-            deptDB.setLongCode(longNameCodeMpa.get("LongCode").trim() + "-" + deptDB.getCode());
-        }
+//        //获取(长名称,长编码)- 通过'-'连接的字符串
+//        Map<String, String> longNameCodeMpa = departmentService.findLongNameCodeByPater(paterObj);
+//        if (longNameCodeMpa != null
+//                && longNameCodeMpa.get("LongName") != null
+//                && longNameCodeMpa.get("LongName").trim().length() > 0
+//                ) {
+//            deptDB.setLongName(longNameCodeMpa.get("LongName").trim() + "-" + deptDB.getName());
+//        }
+//        if (longNameCodeMpa != null
+//                && longNameCodeMpa.get("LongCode") != null
+//                && longNameCodeMpa.get("LongCode").trim().length() > 0
+//                ) {
+//            deptDB.setLongCode(longNameCodeMpa.get("LongCode").trim() + "-" + deptDB.getCode());
+//        }
+
         //设置部门级别
         deptDB.setLayer(Integer.valueOf(paterObj.getLayer().intValue() + 1));
         //设置默认部门顺序
