@@ -305,6 +305,8 @@ public class DepartmentController {
         //3. 创建部门信息
         String id = Conv.createUuid();
         deptObj.setId(id);
+        //组织类型(1:公司 2:部门)
+        deptObj.setOrganizeType("2");
         deptObj.setCuser(pageData.getString("cuser"));
 
         //获取部门编码
@@ -333,8 +335,6 @@ public class DepartmentController {
 //            deptObj.setLongCode(longNameCodeMpa.get("LongCode").trim() + "-" + deptObj.getCode());
 //        }
 
-        //设置部门级别
-        deptObj.setLayer(Integer.valueOf(paterObj.getLayer().intValue() + 1));
         //设置默认部门顺序
         if (deptObj.getSerialNumber() == null) {
             Integer maxCount = departmentService.findMaxSerialNumber(deptObj.getPid());
@@ -449,8 +449,6 @@ public class DepartmentController {
 //            deptDB.setLongCode(longNameCodeMpa.get("LongCode").trim() + "-" + deptDB.getCode());
 //        }
 
-        //设置部门级别
-        deptDB.setLayer(Integer.valueOf(paterObj.getLayer().intValue() + 1));
         //设置默认部门顺序
         if (deptObj.getSerialNumber() == null) {
             Integer maxCount = departmentService.findMaxSerialNumber(deptObj.getPid());

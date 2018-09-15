@@ -722,6 +722,10 @@ public class DepartmentServiceImp implements DepartmentService {
         if (objectDB.getCode() != null && objectDB.getCode().trim().length() > 0) {
             objectDB.setLongCode(paterLongCode + "-" + objectDB.getCode());
         }
+        //设置部门级别
+        if (paterObject.getLayer() != null) {
+            objectDB.setLayer(Integer.valueOf(paterObject.getLayer().intValue() + 1));
+        }
 
         if (paterObject.getId0() != null && paterObject.getId0().trim().length() > 0) {
             objectDB.setId0(paterObject.getId0().trim());
@@ -906,6 +910,8 @@ public class DepartmentServiceImp implements DepartmentService {
         if (nameKeyMap.get(nodeName.trim()) == null) {
             id = Conv.createUuid();
             deptObj.setId(id);
+            //组织类型(1:公司 2:部门)
+            deptObj.setOrganizeType("2");
             //获取部门编码
             String code = this.createCoder(parent.getId1());
             deptObj.setCode(code);
@@ -932,8 +938,6 @@ public class DepartmentServiceImp implements DepartmentService {
 //                deptObj.setLongCode(longNameCodeMpa.get("LongCode").trim() + "-" + deptObj.getCode());
 //            }
 
-            //设置部门级别
-            deptObj.setLayer(Integer.valueOf(parent.getLayer().intValue() + 1));
             //设置默认部门顺序
             if (deptObj.getSerialNumber() == null) {
                 Integer maxCount = this.findMaxSerialNumber(deptObj.getPid());
