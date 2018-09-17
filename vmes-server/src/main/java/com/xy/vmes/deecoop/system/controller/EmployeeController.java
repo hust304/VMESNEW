@@ -938,7 +938,7 @@ public class EmployeeController {
      *
      * @throws Exception
      */
-    @GetMapping("/employee/exportExcelEmployees")
+    @PostMapping("/employee/exportExcelEmployees")
     public void exportExcelEmployees() throws Exception {
         logger.info("################employee/exportExcelEmployees 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();

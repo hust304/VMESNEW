@@ -180,28 +180,28 @@ public class PostController {
      * @author 刘威 自动创建，禁止修改
      * @date 2018-08-01
      */
-    @GetMapping("/post/excelExport")
-    public void excelExport()  throws Exception {
-
-        logger.info("################post/excelExport 执行开始 ################# ");
-        Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
-        HttpServletRequest request  = HttpUtils.currentRequest();
-
-        ExcelUtil.buildDefaultExcelDocument( request, response,new ExcelAjaxTemplate() {
-            @Override
-            public void execute(HttpServletRequest request, HSSFWorkbook workbook) throws Exception {
-                // TODO Auto-generated method stub
-                PageData pd = HttpUtils.parsePageData();
-                List<LinkedHashMap> titles = postService.findColumnList();
-                request.setAttribute("titles", titles.get(0));
-                List<Map> varList = postService.findDataList(pd);
-                request.setAttribute("varList", varList);
-            }
-        });
-        Long endTime = System.currentTimeMillis();
-        logger.info("################post/excelExport 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
-    }
+//    @GetMapping("/post/excelExport")
+//    public void excelExport()  throws Exception {
+//
+//        logger.info("################post/excelExport 执行开始 ################# ");
+//        Long startTime = System.currentTimeMillis();
+//        HttpServletResponse response  = HttpUtils.currentResponse();
+//        HttpServletRequest request  = HttpUtils.currentRequest();
+//
+//        ExcelUtil.buildDefaultExcelDocument( request, response,new ExcelAjaxTemplate() {
+//            @Override
+//            public void execute(HttpServletRequest request, HSSFWorkbook workbook) throws Exception {
+//                // TODO Auto-generated method stub
+//                PageData pd = HttpUtils.parsePageData();
+//                List<LinkedHashMap> titles = postService.findColumnList();
+//                request.setAttribute("titles", titles.get(0));
+//                List<Map> varList = postService.findDataList(pd);
+//                request.setAttribute("varList", varList);
+//            }
+//        });
+//        Long endTime = System.currentTimeMillis();
+//        logger.info("################post/excelExport 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+//    }
 
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
@@ -404,12 +404,8 @@ public class PostController {
     public ResultModel listPagePosts()  throws Exception {
         logger.info("################post/listPagePosts 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
-        PageData pd = HttpUtils.parsePageData();
-        Pagination pg = HttpUtils.parsePagination(pd);
 
-        Map result = new HashMap();
         //1. 查询遍历List列表
         List<Column> columnList = columnService.findColumnList("post");
         if (columnList == null || columnList.size() == 0) {
@@ -434,22 +430,19 @@ public class PostController {
                 }
             }
         }
+
+        Map result = new HashMap();
         result.put("hideTitles",titlesHideList);
         result.put("titles",titlesList);
 
-        String deptId = null;
+        PageData pd = HttpUtils.parsePageData();
         if (pd.get("deptId") != null && pd.get("deptId").toString().trim().length() > 0) {
-            deptId = ((String)pd.get("deptId")).trim();
+            String deptId = ((String)pd.get("deptId")).trim();
             String queryIdStr = departmentService.findDeptidById(deptId, null, "department.");
             pd.put("queryStr", queryIdStr);
         }
 
-//        String userType = (String)pd.get("userType");
-//        //(userType_admin:超级管理员 userType_company:企业管理员 userType_employee:普通用户 userType_outer:外部用户)
-//        if (Common.DICTIONARY_MAP.get("userType_admin").equals(userType)) {
-//            pd.put("cuser", null);
-//        }
-
+        Pagination pg = HttpUtils.parsePagination(pd);
         List<Map> varMapList = new ArrayList();
         List<Map> varList = postService.getDataListPage(pd, pg);
         if(varList!=null&&varList.size()>0){
@@ -486,44 +479,34 @@ public class PostController {
      *
      * @throws Exception
      */
-    @GetMapping("/button/exportExcelPosts")
+    @PostMapping("/post/exportExcelPosts")
     public void exportExcelPosts() throws Exception {
         logger.info("################post/exportExcelPosts 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        //1. 获取Excel导出数据查询条件
-        PageData pd = HttpUtils.parsePageData();
-        String ids = pd.getString("ids");
-        String queryColumn = pd.getString("queryColumn");
+
         List<Column> columnList = columnService.findColumnList("post");
         if (columnList == null || columnList.size() == 0) {
             throw new RestException("1","数据库没有生成TabCol，请联系管理员！");
         }
 
-        //3. 根据查询条件获取业务数据List
+        //根据查询条件获取业务数据List
+        PageData pd = HttpUtils.parsePageData();
+        String ids = pd.getString("ids");
         String queryStr = "";
         if (ids != null && ids.trim().length() > 0) {
             ids = StringUtil.stringTrimSpace(ids);
             ids = "'" + ids.replace(",", "','") + "'";
             queryStr = "id in (" + ids + ")";
         }
-        if (queryColumn != null && queryColumn.trim().length() > 0) {
-            queryStr = queryStr + queryColumn;
-        }
-
         pd.put("queryStr", queryStr);
 
         Pagination pg = HttpUtils.parsePagination(pd);
-        //分页参数默认设置100000
         pg.setSize(100000);
-
-        List<Map> dataList = postService.getDataListPage(pd,pg);
-
+        List<Map> dataList = postService.getDataListPage(pd, pg);
         //查询数据转换成Excel导出数据
         List<LinkedHashMap<String, String>> dataMapList = ColumnUtil.modifyDataList(columnList, dataList);
 
         HttpServletResponse response  = HttpUtils.currentResponse();
-
-
         //查询数据-Excel文件导出
         //String fileName = "Excel数据字典数据导出";
         String fileName = "ExcelPost";
