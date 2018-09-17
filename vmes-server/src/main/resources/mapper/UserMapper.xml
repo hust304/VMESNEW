@@ -467,10 +467,10 @@
             <if test="isdisable!= null and isdisable != ''"><!-- 关键词检索 -->
                 and vmesuser.isdisable = #{isdisable}
             </if>
+
             <if test="deptName!= null and deptName != ''"><!-- 关键词检索 -->
                 and department.name LIKE CONCAT(CONCAT('%', #{deptName}),'%')
             </if>
-
             <if test="pid!= null and pid != '' and layer != null"><!-- 关键词检索 -->
                 and department.id_${layer} = #{pid}
             </if>
@@ -479,7 +479,7 @@
                 and ${queryStr}
             </if>
         </where>
-        order by vmesuser.user_code ASC
+            order by vmesuser.cdate desc
     </select>
 
     <update id="updateDisableByCompanyIds" parameterType="java.lang.String" >

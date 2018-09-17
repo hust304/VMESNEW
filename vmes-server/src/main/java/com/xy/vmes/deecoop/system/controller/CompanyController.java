@@ -118,14 +118,10 @@ public class CompanyController {
      */
     @PostMapping("/company/listPageCompanyAdmins")
     public ResultModel listPageCompanyAdmins()  throws Exception {
-
         logger.info("################company/listPageCompanyAdmins 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
-        PageData pd = HttpUtils.parsePageData();
-        Pagination pg = HttpUtils.parsePagination(pd);
-        Map result = new HashMap();
+
         List<Column> columnList = columnService.findColumnList("company");
         if (columnList == null || columnList.size() == 0) {
             model.putCode("1");
@@ -149,14 +145,18 @@ public class CompanyController {
                 }
             }
         }
+
+        Map result = new HashMap();
         result.put("hideTitles",titlesHideList);
         result.put("titles",titlesList);
 
 
-
+        PageData pd = HttpUtils.parsePageData();
+        pd.put("layer", "1");
+        Pagination pg = HttpUtils.parsePagination(pd);
 
         List<Map> varMapList = new ArrayList();
-        List<Map> varList = companyService.getDataListPage(pd,pg);
+        List<Map> varList = companyService.getDataListPage(pd, pg);
         if(varList!=null&&varList.size()>0){
             for(int i=0;i<varList.size();i++){
                 Map map = varList.get(i);
@@ -191,42 +191,34 @@ public class CompanyController {
      *
      * @throws Exception
      */
-    @GetMapping("/company/exportExcelCompanys")
+    @PostMapping("/company/exportExcelCompanys")
     public void exportExcelCompanys() throws Exception {
-
         logger.info("################company/exportExcelCompanys 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        //1. 获取Excel导出数据查询条件
-        PageData pd = HttpUtils.parsePageData();
-        String ids = pd.getString("ids");
-        String queryColumn = pd.getString("queryColumn");
+
         List<Column> columnList = columnService.findColumnList("company");
         if (columnList == null || columnList.size() == 0) {
             throw new RestException("1","数据库没有生成TabCol，请联系管理员！");
         }
 
-        //3. 根据查询条件获取业务数据List
+        //根据查询条件获取业务数据List
+        PageData pd = HttpUtils.parsePageData();
+        pd.put("layer", "1");
+        String ids = pd.getString("ids");
         String queryStr = "";
         if (ids != null && ids.trim().length() > 0) {
             ids = StringUtil.stringTrimSpace(ids);
             ids = "'" + ids.replace(",", "','") + "'";
             queryStr = "id in (" + ids + ")";
         }
-        if (queryColumn != null && queryColumn.trim().length() > 0) {
-            queryStr = queryStr + queryColumn;
-        }
-
         pd.put("queryStr", queryStr);
 
         Pagination pg = HttpUtils.parsePagination(pd);
-        //分页参数默认设置100000
         pg.setSize(100000);
-
-        List<Map> dataList = companyService.getDataListPage(pd,pg);
+        List<Map> dataList = companyService.getDataListPage(pd, pg);
         //查询数据转换成Excel导出数据
         List<LinkedHashMap<String, String>> dataMapList = ColumnUtil.modifyDataList(columnList, dataList);
         HttpServletResponse response  = HttpUtils.currentResponse();
-
 
         //查询数据-Excel文件导出
         //String fileName = "Excel数据字典数据导出";
@@ -589,31 +581,4 @@ public class CompanyController {
         return model;
     }
 
-    /**企业信息-Excel导出
-     *
-     * @author 陈刚
-     * @date 2018-08-06
-     */
-    @PostMapping("/company/exportExcelCompanyAdmins")
-    public ResultModel exportExcelCompanyAdmins() {
-        ResultModel model = new ResultModel();
-        PageData pageData = HttpUtils.parsePageData();
-
-
-        return model;
-    }
-
-    /**企业信息-Excel导入
-     *
-     * @author 陈刚
-     * @date 2018-08-06
-     */
-    @PostMapping("/company/importExcelMenus")
-    public ResultModel importExcelMenus() {
-        ResultModel model = new ResultModel();
-        PageData pageData = HttpUtils.parsePageData();
-
-
-        return model;
-    }
 }

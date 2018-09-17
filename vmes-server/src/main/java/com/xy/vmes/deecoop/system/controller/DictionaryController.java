@@ -530,58 +530,42 @@ public class DictionaryController {
      *
      * @throws Exception
      */
-    @GetMapping("/dictionary/exportExcelDictionarys")
+    @PostMapping("/dictionary/exportExcelDictionarys")
     public void exportExcelDictionarys() throws Exception {
         logger.info("################dictionary/exportExcelDictionarys 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        //1. 获取Excel导出数据查询条件
-        PageData pd = HttpUtils.parsePageData();
-        String ids = pd.getString("ids");
-        String queryColumn = pd.getString("queryColumn");
-//        String showFieldcode = pd.getString("showFieldcode");
-//
-//        //2. 获取业务列表List<Map<栏位Key, 栏位名称>>
-//        List<LinkedHashMap> columnList = dictionaryService.getColumnList();
-//        LinkedHashMap columnMap = ExcelUtil.modifyColumnMap(showFieldcode, columnList.get(0));
-        //2. 获取业务列表List<Map<栏位Key, 栏位名称>>
+
         List<Column> columnList = columnService.findColumnList("dictionary");
         if (columnList == null || columnList.size() == 0) {
             throw new RestException("1","数据库没有生成TabCol，请联系管理员！");
         }
 
-        //3. 根据查询条件获取业务数据List
+        //根据查询条件获取业务数据List
+        PageData pd = HttpUtils.parsePageData();
+        String ids = pd.getString("ids");
+
         String queryStr = "";
         if (ids != null && ids.trim().length() > 0) {
             ids = StringUtil.stringTrimSpace(ids);
             ids = "'" + ids.replace(",", "','") + "'";
             queryStr = "id in (" + ids + ")";
         }
-        if (queryColumn != null && queryColumn.trim().length() > 0) {
-            queryStr = queryStr + queryColumn;
-        }
-
         pd.put("queryStr", queryStr);
 
         Pagination pg = HttpUtils.parsePagination(pd);
-        //分页参数默认设置100000
         pg.setSize(100000);
-
-
-        List<Map> dataList = dictionaryService.getDataListPage(pd,pg);
+        List<Map> dataList = dictionaryService.getDataListPage(pd, pg);
 
         //查询数据转换成Excel导出数据
         List<LinkedHashMap<String, String>> dataMapList = ColumnUtil.modifyDataList(columnList, dataList);
 
         HttpServletResponse response  = HttpUtils.currentResponse();
-
-
         //查询数据-Excel文件导出
         //String fileName = "Excel数据字典数据导出";
         String fileName = "ExcelDictionary";
         ExcelUtil.excelExportByDataList(response, fileName, dataMapList);
         Long endTime = System.currentTimeMillis();
         logger.info("################dictionary/exportExcelDictionarys 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
-
     }
 
     /**
