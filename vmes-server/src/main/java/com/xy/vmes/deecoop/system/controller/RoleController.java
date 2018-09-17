@@ -287,7 +287,7 @@ public class RoleController {
      *
      * @throws Exception
      */
-    @GetMapping("/role/exportExcelRoles")
+    @PostMapping("/role/exportExcelRoles")
     public void exportExcelRoles() throws Exception {
         logger.info("################role/exportExcelRoles 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
