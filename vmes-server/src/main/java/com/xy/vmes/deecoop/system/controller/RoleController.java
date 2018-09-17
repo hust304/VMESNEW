@@ -250,23 +250,9 @@ public class RoleController {
 
         //2. 分页查询数据List
         PageData pageData = HttpUtils.parsePageData();
+        pageData.put("cuser", null);
+
         Pagination pg = HttpUtils.parsePagination(pageData);
-        String userId = (String)pageData.get("userId");
-        String companyId = (String)pageData.get("companyId");
-        String userType = (String)pageData.get("userType");
-
-        if (companyId != null && companyId.trim().length() > 0) {
-            pageData.put("companyId", companyId);
-        }
-        if (userId != null && userId.trim().length() > 0) {
-            pageData.put("cuser", null);
-        }
-
-//        //用户类型(0:超级管理员1:企业管理员2:普通用户)
-//        if ("0".equals(userType)) {
-//            pageData.put("cuser", null);
-//        }
-
         List<Map> varList = roleService.getDataListPage(pageData, pg);
         List<Map<String, String>> varMapList = new ArrayList<Map<String, String>>();
         if(varList != null && varList.size() > 0) {
@@ -307,6 +293,7 @@ public class RoleController {
         Long startTime = System.currentTimeMillis();
         //1. 获取Excel导出数据查询条件
         PageData pd = HttpUtils.parsePageData();
+        pd.put("cuser", null);
         String ids = pd.getString("ids");
         String queryColumn = pd.getString("queryColumn");
         List<Column> columnList = columnService.findColumnList("role");
