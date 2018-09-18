@@ -60,9 +60,11 @@
             b.cuser as employCuser,
             b.udate as employUdate,
             b.uuser as employUuser,
+            b.remark as employRemark,
+            b.isOpenUser as isOpenUser,
+
             b.column_1 as employColumn1,
             b.column_2 as employColumn2,
-
             b.column_3 as employColumn3
         from deecoop.vmes_user a
             left join deecoop.vmes_employee b on a.employ_id = b.id

@@ -41,6 +41,7 @@
 		column_2 column2,<!-- 预留字段 -->
 		column_3 column3,<!-- 预留字段 -->
         remark remark,
+        isOpenUser isOpenUser,
 		id id <!-- id -->
     </sql>
 
@@ -218,6 +219,7 @@
 
         employee.cdate,
         employee.remark,
+        employee.isOpenUser,
         employpost.isdisable,
 
         <!-- 隐藏字段 -->
@@ -377,6 +379,7 @@
         employee.isdisable isdisable,<!-- 是否禁用(1:已禁用 0:启用)  -->
         employee.cdate cdate,<!-- 创建时间 -->
         employee.cuser cuser,<!-- 创建人账号 -->
+        employee.isOpenUser,
         post.id postId,<!-- 岗位ID -->
         post.name postName,<!-- 岗位名称 -->
         dept.id deptId,<!-- 部门ID -->

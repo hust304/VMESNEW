@@ -100,6 +100,9 @@ public class Employee implements Serializable {
 	//备注
 	@TableField("remark")
 	private String remark;
+	//是否开通用户
+	@TableField("isOpenUser")
+	private String isOpenUser;
 
 
 	public void setId(String id) {
@@ -269,6 +272,12 @@ public class Employee implements Serializable {
 	}
 	public void setRemark(String remark) {
 		this.remark = remark;
+	}
+	public String getIsOpenUser() {
+		return isOpenUser;
+	}
+	public void setIsOpenUser(String isOpenUser) {
+		this.isOpenUser = isOpenUser;
 	}
 	/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 

@@ -266,6 +266,15 @@ public class UserEmployeeServiceImp implements UserEmployeeService {
         if (mapObject.get("employUuser") != null) {
             object.setUuser(mapObject.get("employUuser").toString().trim());
         }
+        //备注 remark
+        if (mapObject.get("employRemark") != null) {
+            object.setRemark(mapObject.get("employRemark").toString().trim());
+        }
+        //是否开通用户 isOpenUser
+        if (mapObject.get("isOpenUser") != null) {
+            object.setIsOpenUser(mapObject.get("isOpenUser").toString().trim());
+        }
+
         //预留字段 employColumn1
         if (mapObject.get("employColumn1") != null) {
             object.setColumn1(mapObject.get("employColumn1").toString().trim());
