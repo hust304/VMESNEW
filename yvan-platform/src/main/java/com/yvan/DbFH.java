@@ -625,7 +625,7 @@ public class DbFH{
 				}else{
 					strs[4]="Integer";
 				}
-			}else if(data_type.contains("double") || data_type.contains("numeric")){
+			}else if(data_type.contains("double") || data_type.contains("numeric") || data_type.contains("float")){
 				strs[4]="BigDecimal";
 			}else if(data_type.contains("date")){
 				strs[4]="Date";
