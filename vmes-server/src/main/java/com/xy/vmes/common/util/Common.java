@@ -101,30 +101,31 @@ public class Common {
         //companyType: 0d779980a3ca4e69ac393a93bca84659 //根节点
         put("root", "8421e4f093a44f029dddbc4ab13068bf");
 
+        //userType: 744f2d88c9f647d0a4d967a714193850 //用户类型
+        put("userType", "744f2d88c9f647d0a4d967a714193850");
+            //userType: 744f2d88c9f647d0a4d967a714193850 //用户类型-超级管理员
+            put("userType_admin", "6839818aecfc41be8f367e62502dfde4");
+
+            //userType: 744f2d88c9f647d0a4d967a714193850 //用户类型-企业管理员
+            put("userType_company", "2fb9bbee46ca4ce1913f3a673a7dd68f");
+
+            //userType: 744f2d88c9f647d0a4d967a714193850 //用户类型-普通用户
+            put("userType_employee", "69726efa45044117ac94a33ab2938ce4");
+
+            //userType: 744f2d88c9f647d0a4d967a714193850 //用户类型-外部用户
+            put("userType_outer", "028fb82cfbe341b1954834edfa2fc18d");
+
+        //political: 015cecdb7fdd450c8a21c7c97d406aa4 //政治面貌
+        put("political", "015cecdb7fdd450c8a21c7c97d406aa4");
+
         //companyType: 0d779980a3ca4e69ac393a93bca84659 //企业性质
         put("companyType", "0d779980a3ca4e69ac393a93bca84659");
 
         //deptType: 8421e4f093a44f029dddbc4ab13068be //部门类型
         put("deptType", "8421e4f093a44f029dddbc4ab13068be");
 
-        //userType: 744f2d88c9f647d0a4d967a714193850 //用户类型
-        put("userType", "744f2d88c9f647d0a4d967a714193850");
-
-        //userType: 744f2d88c9f647d0a4d967a714193850 //用户类型-超级管理员
-        put("userType_admin", "6839818aecfc41be8f367e62502dfde4");
-
-        //userType: 744f2d88c9f647d0a4d967a714193850 //用户类型-企业管理员
-        put("userType_company", "2fb9bbee46ca4ce1913f3a673a7dd68f");
-
-        //userType: 744f2d88c9f647d0a4d967a714193850 //用户类型-普通用户
-        put("userType_employee", "69726efa45044117ac94a33ab2938ce4");
-
-        //userType: 744f2d88c9f647d0a4d967a714193850 //用户类型-外部用户
-        put("userType_outer", "028fb82cfbe341b1954834edfa2fc18d");
-
-
-        //political: 015cecdb7fdd450c8a21c7c97d406aa4 //政治面貌
-        put("political", "015cecdb7fdd450c8a21c7c97d406aa4");
+        //productType: 4c4bd1b59954438c8bf56facd97a0c7e 货品属性
+        put("productType", "8421e4f093a44f029dddbc4ab13068be");
 
     }};
 
