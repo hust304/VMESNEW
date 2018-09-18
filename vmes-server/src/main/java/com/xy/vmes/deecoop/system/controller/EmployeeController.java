@@ -277,7 +277,7 @@ public class EmployeeController {
         }
 
         Post post = postService.selectById(postId);
-        String  companyId = post.getCompanyId();
+        String companyId = post.getCompanyId();
 
         //新增员工信息
         Employee employee = (Employee)HttpUtils.pageData2Entity(pd, new Employee());
@@ -293,6 +293,7 @@ public class EmployeeController {
         employee.setMobile(mobile);
         employee.setCompanyId(companyId);
         employeeService.save(employee);
+
         //新增员工主岗信息
         EmployPost employPost = new EmployPost();
         employPost.setEmployId(employee.getId());
@@ -303,14 +304,13 @@ public class EmployeeController {
         employPostService.save(employPost);
 
         //是否开通用户账号
-        //isOpenUser 1:需要开通 0:无需开通
-        String isOpenUser = (String)pd.get("isOpenUser");
-        if (!"1".equals(isOpenUser)) {
+        //isOpenUser 1:需要开通 0:无需开通 is null
+        if (!"1".equals(employee.getIsOpenUser())) {
             return model;
         }
 
         //新增用户信息
-        String  deptId = post.getDeptId();
+        String deptId = post.getDeptId();
         pd.put("deptId",deptId);
         try {
             userService.createUserAndRole(pd,employee);
