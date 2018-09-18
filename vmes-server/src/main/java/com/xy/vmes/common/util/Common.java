@@ -132,6 +132,9 @@ public class Common {
     ///////////////--菜单名称--///////////////////////////////////////////////////////////////////
     //Map<菜单key, 菜单id>
     public static final Map<String, String> SYS_MENU_MAP = new HashMap<String, String>() {{
+        //root 节点(智能云管家) pid := root
+        put("root", "8b678e8195f711e884ad00163e105f05");
+
         //home: '主页',
         put("home", "97c8c8150a7746e190a7a440b2119e02");
 

@@ -44,11 +44,11 @@ public class RoleController {
     @Autowired
     private RoleService roleService;
     @Autowired
-    private UserRoleService userRoleService;
-    @Autowired
     private RoleMenuService roleMenuService;
     @Autowired
     private RoleButtonService roleButtonService;
+    @Autowired
+    private UserRoleService userRoleService;
     @Autowired
     private CoderuleService coderuleService;
 
@@ -386,6 +386,20 @@ public class RoleController {
         role.setName(name);
         role.setRemark(pageData.getString("remark"));
         roleService.save(role);
+
+        //4. 添加角色菜单
+        RoleMenu roleMenu_1 = new RoleMenu();
+        roleMenu_1.setRoleId(role.getId());
+        roleMenu_1.setMenuId(Common.SYS_MENU_MAP.get("root"));
+        roleMenu_1.setCuser(userId);
+        roleMenuService.save(roleMenu_1);
+
+        RoleMenu roleMenu_2 = new RoleMenu();
+        roleMenu_2.setRoleId(role.getId());
+        roleMenu_2.setMenuId(Common.SYS_MENU_MAP.get("home"));
+        roleMenu_2.setCuser(userId);
+        roleMenuService.save(roleMenu_2);
+
         Long endTime = System.currentTimeMillis();
         logger.info("################role/addRole 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
