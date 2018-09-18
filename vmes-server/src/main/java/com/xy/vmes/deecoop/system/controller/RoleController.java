@@ -1038,6 +1038,44 @@ public class RoleController {
         return model;
     }
 
+
+    /**
+     * 获取当前角色id已经绑定用户List
+     *
+     * @author 陈刚
+     * @date 2018-07-30
+     */
+    @PostMapping("/role/getRoles")
+    public ResultModel getRoles() throws Exception{
+        logger.info("################role/getRoles 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        ResultModel model = new ResultModel();
+
+        PageData pd = HttpUtils.parsePageData();
+        List<Map> roleList = roleService.findDataList(pd);
+
+        List<Map> options = new ArrayList<Map>();
+        if(roleList!=null&&roleList.size()>0){
+            for(int i=0;i<roleList.size();i++){
+                Map role = roleList.get(i);
+                if(role!=null){
+                    Map option = new HashMap();
+                    option.put("label",role.get("name"));
+                    option.put("value",role.get("id"));
+                    options.add(option);
+                }
+
+            }
+        }
+        Map result = new HashMap();
+        result.put("options", options);
+        model.putResult(result);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################role/getRoles 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+
+        return model;
+    }
+
 }
 
 

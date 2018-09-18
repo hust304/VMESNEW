@@ -626,7 +626,7 @@ public class DictionaryController {
         TreeEntity treeObj = TreeUtil.switchTree(id, treeList);
 
         Map result = new HashMap();
-        result.put("options", treeObj);
+        result.put("options", treeObj.getChildren());
         model.putResult(result);
 
         Long endTime = System.currentTimeMillis();
