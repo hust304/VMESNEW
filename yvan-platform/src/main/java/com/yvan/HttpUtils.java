@@ -92,9 +92,8 @@ public class HttpUtils {
         for (Iterator iterator = mapObj.keySet().iterator(); iterator.hasNext(); ) {
             String mapKey = (String) iterator.next();
             String mapValue = mapObj.get(mapKey).toString().trim();
-            if (mapValue.length() == 0) {
-                continue;
-            }
+            if ("cdate,udate".indexOf(mapKey) != -1) {continue;}
+            if (mapValue.length() == 0) {continue;}
 
             //2. 遍历业务对象属性
             Class clazz = entityObj.getClass();
