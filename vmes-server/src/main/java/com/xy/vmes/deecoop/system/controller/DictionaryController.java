@@ -611,13 +611,14 @@ public class DictionaryController {
 
         String dictionaryKey = pd.getString("dictionaryKey");
         String isglobal = pd.getString("isglobal");
+        String queryStr = pd.getString("queryStr");
         String id = Common.DICTIONARY_MAP.get(dictionaryKey);
         pd.put("isdisable", "1");
 
         if(StringUtils.isEmpty(isglobal)||"0".equals(isglobal)){
-            pd.put("queryStr", "  and company_id = '"+pd.get("currentCompanyId")+"'  and ( id = '"+id+"' or id_1 = '"+id+"'  )  ");
+            pd.put("queryStr", "  and company_id = '"+pd.get("currentCompanyId")+"'  and ( id = '"+id+"' or id_1 = '"+id+"'  )  " + queryStr);
         }else if("1".equals(isglobal)){
-            pd.put("queryStr", "  and isglobal = '"+pd.get("isglobal")+"'  and ( id = '"+id+"' or id_1 = '"+id+"'  ) ");
+            pd.put("queryStr", "  and isglobal = '"+pd.get("isglobal")+"'  and ( id = '"+id+"' or id_1 = '"+id+"'  ) " + queryStr);
         }
 
 
