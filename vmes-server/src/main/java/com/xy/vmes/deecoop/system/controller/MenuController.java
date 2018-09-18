@@ -751,6 +751,14 @@ public class MenuController {
         findMap.put("mapSize", Integer.valueOf(findMap.size()));
 
         List<Map<String, Object>> mapList = roleMenuService.findRoleMenuMapList(findMap);
+        if (mapList == null || mapList.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("当前登录用户id:" + pageData.getString("cuser") + Common.SYS_ENDLINE_DEFAULT +
+                        "1.没有配置角色" + Common.SYS_ENDLINE_DEFAULT +
+                        "2.角色没有绑定菜单" + Common.SYS_ENDLINE_DEFAULT);
+            return model;
+        }
+
         List<Menu> menuList = roleMenuService.mapList2MenuList(mapList, new ArrayList<Menu>());
         //遍历菜单List<Menu>-获取菜单最大级别
         Integer maxLayer = menuService.findMaxLayerByMenuList(menuList);
