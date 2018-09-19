@@ -110,7 +110,7 @@
     <update id="updateToDisableByIds" parameterType="java.lang.String" >
         update
         <include refid="tableName"></include>
-        set isdisable = 1 ,udate = now()
+        set isdisable = '0' ,udate = now()
         where
         id in
         <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
@@ -121,9 +121,6 @@
 
 
     <!-- ***************************************************以上为自动生成代码禁止修改，请在下面添加业务代码************************************************* -->
-
-
-
     <insert id="insertColumn" >
         delete from vmes_column where model_code = '${modelCode}' ;
         insert into vmes_column (
