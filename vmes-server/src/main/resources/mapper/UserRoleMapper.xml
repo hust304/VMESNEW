@@ -285,13 +285,18 @@
                 and user.company_id in (select company_id from vmes_user where id = #{cuser})
             </if>
 
-            <!--queryIsBindRole 自定义sql查询语句-->
-            <if test="queryIsBindRole != null and queryIsBindRole != ''" >
-                and ${queryIsBindRole}
-            </if>
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >
                 and ${queryStr}
+            </if>
+            <!--queryUserIdStr user.id not in 查询字句-->
+            <if test="queryUserIdStr != null and queryUserIdStr != ''" >
+                and ${queryUserIdStr}
+            </if>
+
+            <!--queryIsBindRole 自定义sql查询语句-->
+            <if test="queryIsBindRole != null and queryIsBindRole != ''" >
+                and ${queryIsBindRole}
             </if>
             <!--queryUserType 自定义sql查询语句-->
             <if test="queryUserType != null and queryUserType != ''" >

@@ -937,9 +937,20 @@ public class RoleController {
             String queryIdStr = departmentService.findDeptidById(deptId, null, "dept.");
             findMap.put("queryStr", queryIdStr);
         }
+
+        String roleId = (String)pageData.get("roleId");
+        if (roleId != null && roleId.trim().length() > 0) {
+            String userIds = userRoleService.findUserIdsByByRoleID(roleId);
+            if (userIds != null && userIds.trim().length() > 0) {
+                userIds = StringUtil.stringTrimSpace(userIds);
+                userIds = "'" + userIds.replace(",", "','") + "'";
+                findMap.put("queryUserIdStr", "user.id not in (" + userIds + ")");
+            }
+        }
+
         findMap.put("userIsdisable", "1");
         //查询用户未绑定角色
-        findMap.put("queryIsBindRole", "userRole.role_id is null");
+        //findMap.put("queryIsBindRole", "userRole.role_id is null");
         //普通用户-外部用户
         String queryUserType = "user_type in ('69726efa45044117ac94a33ab2938ce4','028fb82cfbe341b1954834edfa2fc18d')";
         findMap.put("queryUserType", queryUserType);
