@@ -5,7 +5,7 @@
 创建人：陈刚 自动创建
 创建时间：2018-09-18
  -->
-<mapper namespace="com.xy.vmes.deecoop.system.dao.CustomerMapper">
+<mapper namespace="com.xy.vmes.deecoop.base.dao.CustomerMapper">
 
     <!--表名 自动创建，禁止修改-->
     <sql id="tableName">
@@ -211,7 +211,7 @@
 
     <!-- 字段 自动创建，可以修改-->
     <sql id="Field1">
-        id id
+        id id,
         code code,
         name name,
         name_en nameEn,
