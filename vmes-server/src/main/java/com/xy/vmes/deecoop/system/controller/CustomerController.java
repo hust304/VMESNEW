@@ -6,7 +6,6 @@ import com.xy.vmes.common.util.Common;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.entity.Customer;
-import com.xy.vmes.entity.Department;
 import com.xy.vmes.service.ColumnService;
 import com.xy.vmes.service.CustomerService;
 import com.yvan.ExcelUtil;

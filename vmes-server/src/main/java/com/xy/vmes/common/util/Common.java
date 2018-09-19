@@ -188,5 +188,15 @@ public class Common {
             //logInfo: '操作日志',
             put("logInfo", "cba143d6d51b4d4288071eb3bad56606");
 
+        //******基础******
+        //base: '基础',
+        put("base", "be55b2f9cb6b4b6e8b77b8a9d4514b24");
+            //product: 产品物料,
+            put("product", "9675556924de4a34bd14e9420311e751");
+            //equipment: 设备信息,
+            put("equipment", "02e604fde496494993dfa4f6d7511c84");
+            //customer: 客户供应商,
+            put("customer", "66628bbd6bdd4f47a903feaec2feab59");
+
     }};
 }
