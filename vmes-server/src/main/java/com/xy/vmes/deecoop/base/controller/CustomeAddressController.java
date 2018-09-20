@@ -416,7 +416,7 @@ public class CustomeAddressController {
     * @author 陈刚 自动创建，可以修改
     * @date 2018-09-20
     */
-    @GetMapping("/customeAddress/exportExcelCustomeAddresss")
+    @PostMapping("/customeAddress/exportExcelCustomeAddresss")
     public void exportExcelCustomeAddresss() throws Exception {
         logger.info("################customeAddress/exportExcelCustomeAddresss 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
