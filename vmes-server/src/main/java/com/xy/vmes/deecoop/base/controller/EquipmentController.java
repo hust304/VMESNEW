@@ -7,9 +7,11 @@ import com.xy.vmes.entity.Column;
 import com.xy.vmes.entity.Equipment;
 import com.xy.vmes.service.ColumnService;
 import com.xy.vmes.service.EquipmentService;
+import com.xy.vmes.service.FileService;
 import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
+import com.yvan.YvanUtil;
 import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
 import lombok.extern.slf4j.Slf4j;
@@ -41,6 +43,9 @@ public class EquipmentController {
 
     @Autowired
     private ColumnService columnService;
+
+    @Autowired
+    private FileService fileService;
 
     /**
     * @author 刘威 自动创建，禁止修改
@@ -370,8 +375,50 @@ public class EquipmentController {
         PageData pd = HttpUtils.parsePageData();
         Equipment equipment = (Equipment)HttpUtils.pageData2Entity(pd, new Equipment());
         equipmentService.save(equipment);
+        fileService.createQRCode("equipment", YvanUtil.toJson(equipment));
         Long endTime = System.currentTimeMillis();
         logger.info("################equipment/addEquipment 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * @author 刘威 自动创建，禁止修改
+     * @date 2018-09-20
+     */
+    @PostMapping("/equipment/updateEquipment")
+    public ResultModel updateEquipment()  throws Exception {
+
+        logger.info("################equipment/updateEquipment 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        HttpServletResponse response  = HttpUtils.currentResponse();
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+        Equipment equipment = (Equipment)HttpUtils.pageData2Entity(pd, new Equipment());
+        equipmentService.update(equipment);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################equipment/updateEquipment 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    public ResultModel deleteEquipments()  throws Exception {
+        logger.info("################equipment/deleteEquipments 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        HttpServletResponse response  = HttpUtils.currentResponse();
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+        String ids = pd.getString("ids");
+        if(StringUtils.isEmpty(ids)){
+            model.putCode("1");
+            model.putMsg("未勾选删除记录，请重新选择！");
+            return model;
+        }
+        String id_str = StringUtil.stringTrimSpace(ids);
+        String[] id_arry = id_str.split(",");
+        if(id_arry.length>0){
+            equipmentService.deleteByIds(id_arry);
+        }
+        Long endTime = System.currentTimeMillis();
+        logger.info("################equipment/deleteEquipments 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 

@@ -56,24 +56,24 @@ public class FileServiceImp implements FileService {
         return relativePath+fileName;
     }
 
-    public static void main(String[] args) throws Exception {
-//        File destFile = new File("D://test111/test222/test333/test.txt");
-//        if(!destFile.getParentFile().exists()){				//判断有没有父路径，就是判断文件整个路径是否存在
-//            destFile.getParentFile().mkdirs();				//不存在就全部创建
+//    public static void main(String[] args) throws Exception {
+////        File destFile = new File("D://test111/test222/test333/test.txt");
+////        if(!destFile.getParentFile().exists()){				//判断有没有父路径，就是判断文件整个路径是否存在
+////            destFile.getParentFile().mkdirs();				//不存在就全部创建
+////        }
+//        String path = (String.valueOf(Thread.currentThread().getContextClassLoader().getResource(""))+"../../../../").replaceAll("file:/", "").replaceAll("%20", " ").trim();
+//        if(path.indexOf(":") != 1){
+//            path = File.separator + path;
 //        }
-        String path = (String.valueOf(Thread.currentThread().getContextClassLoader().getResource(""))+"../../../../").replaceAll("file:/", "").replaceAll("%20", " ").trim();
-        if(path.indexOf(":") != 1){
-            path = File.separator + path;
-        }
-
-        String absolutePath = path+"vmes-file/";//上传文件的绝对路径
-        String relativePath = "fileUpload/QRCode/equipment/";//上传文件的相对路径
-        String fileName = new Long(System.currentTimeMillis()).toString() + UUID.randomUUID().toString().substring(0, 3)+"."+QRCodeUtils.CODE_FORMAT;
-        File QRCode = new File(absolutePath+relativePath+fileName);
-        if(!QRCode.getParentFile().exists()){				//判断有没有父路径，就是判断文件整个路径是否存在
-            QRCode.getParentFile().mkdirs();				//不存在就全部创建
-        }
-        QRCodeUtils.create(new FileOutputStream(QRCode),"123");
-
-    }
+//
+//        String absolutePath = path+"vmes-file/";//上传文件的绝对路径
+//        String relativePath = "fileUpload/QRCode/equipment/";//上传文件的相对路径
+//        String fileName = new Long(System.currentTimeMillis()).toString() + UUID.randomUUID().toString().substring(0, 3)+"."+QRCodeUtils.CODE_FORMAT;
+//        File QRCode = new File(absolutePath+relativePath+fileName);
+//        if(!QRCode.getParentFile().exists()){				//判断有没有父路径，就是判断文件整个路径是否存在
+//            QRCode.getParentFile().mkdirs();				//不存在就全部创建
+//        }
+//        QRCodeUtils.create(new FileOutputStream(QRCode),"123");
+//
+//    }
 }
