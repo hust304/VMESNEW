@@ -272,7 +272,7 @@ public class LogInfoController {
     * @author 刘威 自动创建，可以修改
     * @date 2018-08-28
     */
-    @GetMapping("/logInfo/exportExcelLogInfos")
+    @PostMapping("/logInfo/exportExcelLogInfos")
     public void exportExcelLogInfos() throws Exception {
         logger.info("################logInfo/exportExcelLogInfos 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();

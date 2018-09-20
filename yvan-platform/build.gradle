@@ -57,6 +57,7 @@ dependencies {
     compile 'itext:itext:4.2.0'
 
     //compile 'com.google.code.gson:gson:2.8.5'
+    compile 'com.google.zxing:core:3.2.1'
 }
 
 artifacts {

@@ -262,7 +262,7 @@ public class ${objectName}Controller {
     * @author ${author} 自动创建，可以修改
     * @date ${nowDate?string("yyyy-MM-dd")}
     */
-    @GetMapping("/${objectNameLower}/exportExcel${objectName}s")
+    @PostMapping("/${objectNameLower}/exportExcel${objectName}s")
     public void exportExcel${objectName}s() throws Exception {
         logger.info("################${objectNameLower}/exportExcel${objectName}s 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
