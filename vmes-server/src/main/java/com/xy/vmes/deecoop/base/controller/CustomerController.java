@@ -347,16 +347,14 @@ public class CustomerController {
             return model;
         }
 
-        if (!customerService.checkDeleteCustomerByIds(id)) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("当前禁用的数据系统正在使用中，不可禁用操作！");
-            return model;
-        }
+//        if (!customerService.checkDeleteCustomerByIds(id)) {
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg("当前禁用的数据系统正在使用中，不可禁用操作！");
+//            return model;
+//        }
 
         //2. 修改客户供应商(禁用)状态
-        Customer objectDB = customerService.findCustomerById(id);
-        objectDB.setIsdisable(isdisable);
-        objectDB.setUdate(new Date());
+        Customer objectDB = (Customer)HttpUtils.pageData2Entity(pageData, new Customer());
         customerService.update(objectDB);
 
         Long endTime = System.currentTimeMillis();

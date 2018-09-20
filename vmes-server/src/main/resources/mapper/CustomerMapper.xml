@@ -212,32 +212,8 @@
     </select>
 
 
-    <!-- 字段 自动创建，可以修改-->
-    <sql id="Field1">
-        id id,
-        code code,
-        name name,
-        name_en nameEn,
-        genre genre,
-        genreName,
-
-        type,
-        typeName,
-        province province,
-        provinceName,
-        remark remark,
-        isdisable isdisable,
-        company_id companyId,
-
-        qrcode qrcode,
-        cuser cuser,
-        cdate cdate,
-        uuser uuser,
-        udate udate
-    </sql>
-
     <!-- 自动创建，可以修改 -->
-    <select id="getDataList" parameterType="com.yvan.PageData" resultType="java.util.Map">
+    <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
             cust.id id,
             cust.code code,
@@ -264,35 +240,14 @@
             left join vmes_dictionary province on cust.province = province.id
             left join vmes_dictionary type on cust.type = type.id
         <where>
-            <!--queryStr 自定义sql查询语句-->
-            <if test="queryStr != null and queryStr != ''" >
-                and ${queryStr}
-            </if>
             <if test="code != null and code != ''">
-                and code LIKE CONCAT(CONCAT('%', #{code}),'%')
+                and cust.code LIKE CONCAT(CONCAT(#{code}),'%')
             </if>
             <if test="name != null and name != ''">
-                and name LIKE CONCAT(CONCAT('%', #{name}),'%')
-            </if>
-        </where>
-        <if test="orderStr != null and orderStr != ''" >
-            order by ${orderStr}
-        </if>
-    </select>
-
-    <!-- 自动创建，可以修改 -->
-    <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
-        select <include refid="Field1"/>
-        from <include refid="tableName"/>
-        <where>
-            <if test="code != null and code != ''">
-                and code LIKE CONCAT(CONCAT(#{code}),'%')
-            </if>
-            <if test="name != null and name != ''">
-                and name LIKE CONCAT(CONCAT(#{name}),'%')
+                and cust.name LIKE CONCAT(CONCAT(#{name}),'%')
             </if>
             <if test="currentCompanyId != null and currentCompanyId != ''">
-                and company_id=#{currentCompanyId}
+                and cust.company_id=#{currentCompanyId}
             </if>
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >

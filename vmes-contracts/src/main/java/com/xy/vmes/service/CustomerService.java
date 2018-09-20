@@ -99,12 +99,6 @@ public interface CustomerService {
     * 创建人：陈刚 自动创建，禁止修改
     * 创建时间：2018-09-18
     */
-    List<Map> getDataList(PageData pd) throws Exception;
-
-    /**
-    * 创建人：陈刚 自动创建，禁止修改
-    * 创建时间：2018-09-18
-    */
     List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception;
 
     /**

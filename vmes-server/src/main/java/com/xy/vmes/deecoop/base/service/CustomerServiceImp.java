@@ -159,15 +159,6 @@ public class CustomerServiceImp implements CustomerService {
      * 创建时间：2018-09-18
      */
     @Override
-    public List<Map> getDataList(PageData pd) throws Exception{
-        return customerMapper.getDataList(pd);
-    }
-
-    /**
-     * 创建人：陈刚 自动创建，禁止修改
-     * 创建时间：2018-09-18
-     */
-    @Override
     public List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception{
         return customerMapper.getDataListPage(pd,pg);
     }
