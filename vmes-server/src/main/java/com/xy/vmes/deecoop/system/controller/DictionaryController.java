@@ -258,8 +258,6 @@ public class DictionaryController {
                 dictionary);
         dictionary = dictionaryService.paterObject2ObjectDB(paterObj, dictionary);
 
-        //设置部门级别
-        dictionary.setLayer(Integer.valueOf(paterObj.getLayer().intValue() + 1));
         //设置默认部门顺序
         if (dictionary.getSerialNumber() == null) {
             Integer maxCount = dictionaryService.findMaxSerialNumber(dictionary.getPid());
@@ -314,8 +312,7 @@ public class DictionaryController {
                 Integer.valueOf(paterObj.getLayer().intValue() + 1),
                 dictionaryDB);
         dictionaryDB = dictionaryService.paterObject2ObjectDB(paterObj, dictionaryDB);
-        //设置部门级别
-        dictionaryDB.setLayer(Integer.valueOf(paterObj.getLayer().intValue() + 1));
+
         //设置默认部门顺序
         if (dictionary.getSerialNumber() == null) {
             Integer maxCount = dictionaryService.findMaxSerialNumber(dictionary.getPid());

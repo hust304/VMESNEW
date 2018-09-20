@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.annotations.TableName;
 
 import java.io.Serializable;
 import java.util.*;
-import java.math.BigDecimal;
 
 /** 
  * 说明：vmes_customer:客户供应商表 实体类

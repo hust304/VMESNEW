@@ -333,6 +333,12 @@ public class DictionaryServiceImp implements DictionaryService {
         if (objectDB == null) {objectDB = new Dictionary();}
         if (paterObject == null) {return objectDB;}
 
+        if (paterObject.getId() != null && paterObject.getId().trim().length() > 0) {
+            objectDB.setPid(paterObject.getId().trim());
+        }
+        if (paterObject.getLayer() != null) {
+            objectDB.setLayer(Integer.valueOf(paterObject.getLayer().intValue() + 1));
+        }
         if (paterObject.getId0() != null && paterObject.getId0().trim().length() > 0) {
             objectDB.setId0(paterObject.getId0().trim());
         }
