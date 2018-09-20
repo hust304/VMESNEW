@@ -428,7 +428,7 @@ public class MenuButtonServiceImp implements MenuButtonService {
         if (object == null) {return objectDB;}
 
         objectDB.setName(object.getName());
-        objectDB.setCode(object.getCode());
+        objectDB.setNameEn(object.getNameEn());
         //serialNumber按钮顺序
         if (object.getSerialNumber() != null) {
             objectDB.setSerialNumber(object.getSerialNumber());
