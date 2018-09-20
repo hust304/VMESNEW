@@ -304,30 +304,33 @@ public class CompanyController {
         //3. 创建(企业-企业管理员)信息
         String id = Conv.createUuid();
         companyObj.setId(id);
+        //organizeType组织类型(1:公司 2:部门)
+        companyObj.setOrganizeType("1");
+        companyObj.setCuser(pageData.getString("cuser"));
+
         companyObj = departmentService.id2DepartmentByLayer(id,
                 Integer.valueOf(rootObj.getLayer().intValue() + 1),
                 companyObj);
         companyObj = departmentService.paterObject2ObjectDB(rootObj, companyObj);
 
-        //获取(长名称,长编码)- 通过'-'连接的字符串
-        Map<String, String> longNameCodeMpa = departmentService.findLongNameCodeByPater(rootObj);
-        if (longNameCodeMpa != null
-                && longNameCodeMpa.get("LongName") != null
-                && longNameCodeMpa.get("LongName").trim().length() > 0
-                ) {
-            companyObj.setLongName(longNameCodeMpa.get("LongName").trim() + "-" + companyObj.getName());
-        }
-        if (longNameCodeMpa != null
-                && longNameCodeMpa.get("LongCode") != null
-                && longNameCodeMpa.get("LongCode").trim().length() > 0
-                ) {
-            companyObj.setLongCode(longNameCodeMpa.get("LongCode").trim() + "-" + companyObj.getCode());
-        }
+//        //获取(长名称,长编码)- 通过'-'连接的字符串
+//        Map<String, String> longNameCodeMpa = departmentService.findLongNameCodeByPater(rootObj);
+//        if (longNameCodeMpa != null
+//                && longNameCodeMpa.get("LongName") != null
+//                && longNameCodeMpa.get("LongName").trim().length() > 0
+//                ) {
+//            companyObj.setLongName(longNameCodeMpa.get("LongName").trim() + "-" + companyObj.getName());
+//        }
+//        if (longNameCodeMpa != null
+//                && longNameCodeMpa.get("LongCode") != null
+//                && longNameCodeMpa.get("LongCode").trim().length() > 0
+//                ) {
+//            companyObj.setLongCode(longNameCodeMpa.get("LongCode").trim() + "-" + companyObj.getCode());
+//        }
         //该企业-在组织表级别
-        companyObj.setLayer(Integer.valueOf(rootObj.getLayer().intValue() + 1));
-        companyObj.setPid(rootObj.getId());
-        //organizeType组织类型(1:公司 2:部门)
-        companyObj.setOrganizeType("1");
+        //companyObj.setLayer(Integer.valueOf(rootObj.getLayer().intValue() + 1));
+        //companyObj.setPid(rootObj.getId());
+
         //排列顺序serialNumber
         if (companyObj.getSerialNumber() == null) {
             Integer maxCount = departmentService.findMaxSerialNumber(rootObj.getId());
@@ -453,20 +456,20 @@ public class CompanyController {
         Department companyDB = departmentService.findDepartmentById(companyObj.getId());
         companyDB = companyService.object2objectDB(companyObj, companyDB);
 
-        //获取(长名称,长编码)- 通过'-'连接的字符串
-        Map<String, String> longNameCodeMpa = departmentService.findLongNameCodeByPater(rootObj);
-        if (longNameCodeMpa != null
-                && longNameCodeMpa.get("LongName") != null
-                && longNameCodeMpa.get("LongName").trim().length() > 0
-                ) {
-            companyDB.setLongName(longNameCodeMpa.get("LongName").trim() + "-" + companyDB.getName());
-        }
-        if (longNameCodeMpa != null
-                && longNameCodeMpa.get("LongCode") != null
-                && longNameCodeMpa.get("LongCode").trim().length() > 0
-                ) {
-            companyDB.setLongCode(longNameCodeMpa.get("LongCode").trim() + "-" + companyDB.getCode());
-        }
+//        //获取(长名称,长编码)- 通过'-'连接的字符串
+//        Map<String, String> longNameCodeMpa = departmentService.findLongNameCodeByPater(rootObj);
+//        if (longNameCodeMpa != null
+//                && longNameCodeMpa.get("LongName") != null
+//                && longNameCodeMpa.get("LongName").trim().length() > 0
+//                ) {
+//            companyDB.setLongName(longNameCodeMpa.get("LongName").trim() + "-" + companyDB.getName());
+//        }
+//        if (longNameCodeMpa != null
+//                && longNameCodeMpa.get("LongCode") != null
+//                && longNameCodeMpa.get("LongCode").trim().length() > 0
+//                ) {
+//            companyDB.setLongCode(longNameCodeMpa.get("LongCode").trim() + "-" + companyDB.getCode());
+//        }
         departmentService.update(companyDB);
 
         //获取当前企业管理员
