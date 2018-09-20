@@ -793,7 +793,6 @@ public class DepartmentServiceImp implements DepartmentService {
 
         objectDB.setPid(object.getPid());
         objectDB.setName(object.getName());
-        objectDB.setOrganizeType("2");
         objectDB.setDeptType(object.getDeptType());
         objectDB.setIsdisable(object.getIsdisable());
 

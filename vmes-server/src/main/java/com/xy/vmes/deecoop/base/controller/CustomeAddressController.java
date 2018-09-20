@@ -2,13 +2,11 @@ package com.xy.vmes.deecoop.base.controller;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
-import com.xy.vmes.common.util.Common;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.Column;
-import com.xy.vmes.entity.Customer;
+import com.xy.vmes.entity.CustomeAddress;
 import com.xy.vmes.service.ColumnService;
 import com.xy.vmes.service.CustomeAddressService;
-import com.xy.vmes.service.CustomerService;
 import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
@@ -28,18 +26,16 @@ import java.util.*;
 
 
 /**
- * 说明：vmes_customer:客户供应商表Controller
- * @author 陈刚 自动生成
- * @date 2018-09-18
- */
+* 说明：vmes_customer_addressController
+* @author 陈刚 自动生成
+* @date 2018-09-20
+*/
 @RestController
 @Slf4j
-public class CustomerController {
+public class CustomeAddressController {
 
-    private Logger logger = LoggerFactory.getLogger(CustomerController.class);
+    private Logger logger = LoggerFactory.getLogger(CustomeAddressController.class);
 
-    @Autowired
-    private CustomerService customerService;
     @Autowired
     private CustomeAddressService customeAddressService;
 
@@ -47,90 +43,90 @@ public class CustomerController {
     private ColumnService columnService;
 
     /**
-     * @author 陈刚 自动创建，禁止修改
-     * @date 2018-09-18
-     */
-    @GetMapping("/customer/selectById/{id}")
+    * @author 陈刚 自动创建，禁止修改
+    * @date 2018-09-20
+    */
+    @GetMapping("/customeAddress/selectById/{id}")
     public ResultModel selectById(@PathVariable("id") String id)  throws Exception {
 
-        logger.info("################customer/selectById 执行开始 ################# ");
+        logger.info("################customeAddress/selectById 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
-        Customer customer = customerService.selectById(id);
-        model.putResult(customer);
+        CustomeAddress customeAddress = customeAddressService.selectById(id);
+        model.putResult(customeAddress);
         Long endTime = System.currentTimeMillis();
-        logger.info("################customer/selectById 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################customeAddress/selectById 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
 
 
     /**
-     * @author 陈刚 自动创建，禁止修改
-     * @date 2018-09-18
-     */
-    @PostMapping("/customer/save")
+    * @author 陈刚 自动创建，禁止修改
+    * @date 2018-09-20
+    */
+    @PostMapping("/customeAddress/save")
     public ResultModel save()  throws Exception {
 
-        logger.info("################customer/save 执行开始 ################# ");
+        logger.info("################customeAddress/save 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
-        Customer customer = (Customer)HttpUtils.pageData2Entity(pd, new Customer());
-        customerService.save(customer);
+        CustomeAddress customeAddress = (CustomeAddress)HttpUtils.pageData2Entity(pd, new CustomeAddress());
+        customeAddressService.save(customeAddress);
         Long endTime = System.currentTimeMillis();
-        logger.info("################customer/save 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################customeAddress/save 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
     /**
-     * @author 陈刚 自动创建，禁止修改
-     * @date 2018-09-18
-     */
-    @PostMapping("/customer/update")
+    * @author 陈刚 自动创建，禁止修改
+    * @date 2018-09-20
+    */
+    @PostMapping("/customeAddress/update")
     public ResultModel update()  throws Exception {
 
-        logger.info("################customer/update 执行开始 ################# ");
+        logger.info("################customeAddress/update 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
-        Customer customer = (Customer)HttpUtils.pageData2Entity(pd, new Customer());
-        customerService.update(customer);
+        CustomeAddress customeAddress = (CustomeAddress)HttpUtils.pageData2Entity(pd, new CustomeAddress());
+        customeAddressService.update(customeAddress);
         Long endTime = System.currentTimeMillis();
-        logger.info("################customer/update 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################customeAddress/update 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
 
     /**
-     * @author 陈刚 自动创建，禁止修改
-     * @date 2018-09-18
-     */
-    @GetMapping("/customer/deleteById/{id}")
+    * @author 陈刚 自动创建，禁止修改
+    * @date 2018-09-20
+    */
+    @GetMapping("/customeAddress/deleteById/{id}")
     public ResultModel deleteById(@PathVariable("id") String id)  throws Exception {
 
-        logger.info("################customer/deleteById 执行开始 ################# ");
+        logger.info("################customeAddress/deleteById 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
-        customerService.deleteById(id);
+        customeAddressService.deleteById(id);
         Long endTime = System.currentTimeMillis();
-        logger.info("################customer/deleteById 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################customeAddress/deleteById 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
 
     /**
-     * @author 陈刚 自动创建，禁止修改
-     * @date 2018-09-18
-     */
-    @PostMapping("/customer/deleteByIds")
+    * @author 陈刚 自动创建，禁止修改
+    * @date 2018-09-20
+    */
+    @PostMapping("/customeAddress/deleteByIds")
     public ResultModel deleteByIds()  throws Exception {
 
-        logger.info("################customer/deleteById 执行开始 ################# ");
+        logger.info("################customeAddress/deleteById 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
         PageData pd = HttpUtils.parsePageData();
@@ -144,53 +140,53 @@ public class CustomerController {
         String id_str = StringUtil.stringTrimSpace(ids);
         String[] id_arry = id_str.split(",");
         if(id_arry.length>0){
-            customerService.deleteByIds(id_arry);
+            customeAddressService.deleteByIds(id_arry);
         }
         Long endTime = System.currentTimeMillis();
-        logger.info("################customer/deleteById 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################customeAddress/deleteById 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
 
     /**
-     * @author 陈刚 自动创建，禁止修改
-     * @date 2018-09-18
-     */
-    @PostMapping("/customer/dataListPage")
+    * @author 陈刚 自动创建，禁止修改
+    * @date 2018-09-20
+    */
+    @PostMapping("/customeAddress/dataListPage")
     public ResultModel dataListPage()  throws Exception {
 
-        logger.info("################customer/dataListPage 执行开始 ################# ");
+        logger.info("################customeAddress/dataListPage 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         Pagination pg = HttpUtils.parsePagination(pd);
-        List<Customer> customerList = customerService.dataListPage(pd,pg);
+        List<CustomeAddress> customeAddressList = customeAddressService.dataListPage(pd,pg);
         Map result = new HashMap();
-        result.put("varList",customerList);
+        result.put("varList",customeAddressList);
         result.put("pageData", pg);
         model.putResult(result);
         Long endTime = System.currentTimeMillis();
-        logger.info("################customer/dataListPage 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################customeAddress/dataListPage 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
     /**
-     * @author 陈刚 自动创建，禁止修改
-     * @date 2018-09-18
-     */
-    @PostMapping("/customer/dataList")
+    * @author 陈刚 自动创建，禁止修改
+    * @date 2018-09-20
+    */
+    @PostMapping("/customeAddress/dataList")
     public ResultModel dataList()  throws Exception {
 
-        logger.info("################customer/dataList 执行开始 ################# ");
+        logger.info("################customeAddress/dataList 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
-        List<Customer> customerList = customerService.dataList(pd);
-        model.putResult(customerList);
+        List<CustomeAddress> customeAddressList = customeAddressService.dataList(pd);
+        model.putResult(customeAddressList);
         Long endTime = System.currentTimeMillis();
-        logger.info("################customer/dataList 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################customeAddress/dataList 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -198,16 +194,16 @@ public class CustomerController {
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
     /**
-     * @author 陈刚 自动创建，可以修改
-     * @date 2018-09-18
-     */
-    @PostMapping("/customer/listPageCustomers")
-    public ResultModel listPageCustomers()  throws Exception {
-        logger.info("################customer/listPageCustomers 执行开始 ################# ");
+    * @author 陈刚 自动创建，可以修改
+    * @date 2018-09-20
+    */
+    @PostMapping("/customeAddress/listPageCustomeAddresss")
+    public ResultModel listPageCustomeAddresss() throws Exception {
+        logger.info("################customeAddress/listPageCustomeAddresss 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
 
-        List<Column> columnList = columnService.findColumnList("customer");
+        List<Column> columnList = columnService.findColumnList("customeAddress");
         if (columnList == null || columnList.size() == 0) {
             model.putCode("1");
             model.putMsg("数据库没有生成TabCol，请联系管理员！");
@@ -230,15 +226,14 @@ public class CustomerController {
                 }
             }
         }
-
         Map result = new HashMap();
         result.put("hideTitles",titlesHideList);
         result.put("titles",titlesList);
 
-        PageData pd = HttpUtils.parsePageData();
         List<Map> varMapList = new ArrayList();
+        PageData pd = HttpUtils.parsePageData();
         Pagination pg = HttpUtils.parsePagination(pd);
-        List<Map> varList = customerService.getDataListPage(pd, pg);
+        List<Map> varList = customeAddressService.getDataListPage(pd,pg);
         if(varList!=null&&varList.size()>0){
             for(int i=0;i<varList.size();i++){
                 Map map = varList.get(i);
@@ -255,128 +250,146 @@ public class CustomerController {
 
         model.putResult(result);
         Long endTime = System.currentTimeMillis();
-        logger.info("################customer/listPageCustomers 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################customeAddress/listPageCustomeAddresss 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
     /**
-     * 新增客户供应商
+     * 新增客户供应商地址
      *
      * @author 陈刚
-     * @date 2018-09-19
+     * @date 2018-09-20
      */
-    @PostMapping("/customer/addCustomer")
-    public ResultModel addCustomer() throws Exception {
-        logger.info("################/customer/addCustomer 执行开始 ################# ");
+    @PostMapping("/customeAddress/addCustomerAddress")
+    public ResultModel addCustomerAddress() throws Exception {
+        logger.info("################/customeAddress/addCustomerAddress 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
 
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
         //1. 非空判断
-        String name = pageData.getString("name");
-        if (name == null || name.trim().length() == 0) {
+        String customerId = pageData.getString("customerId");
+        if (customerId == null || customerId.trim().length() > 0) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("名称输入为空或空字符串，名称为必填不可为空！");
+            model.putMsg("客户id为空或空字符串！");
             return model;
         }
 
-        Customer object = (Customer)HttpUtils.pageData2Entity(pageData, new Customer());
-        customerService.save(object);
+        CustomeAddress custAddr = (CustomeAddress)HttpUtils.pageData2Entity(pageData, new CustomeAddress());
+        //是否默认(0:非默认 1:默认)
+        custAddr.setIsdefault("0");
 
-        Long endTime = System.currentTimeMillis();
-        logger.info("################customer/addCustomer 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
-        return model;
-    }
-
-    /**
-     * 修改客户供应商
-     *
-     * @author 陈刚
-     * @date 2018-09-19
-     */
-    @PostMapping("/customer/updateCustomer")
-    public ResultModel updateCustomer() throws Exception {
-        logger.info("################/customer/updateCustomer 执行开始 ################# ");
-        Long startTime = System.currentTimeMillis();
-
-        ResultModel model = new ResultModel();
-        PageData pageData = HttpUtils.parsePageData();
-
-        //1. 非空判断
-        String name = pageData.getString("name");
-        if (name == null || name.trim().length() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("名称输入为空或空字符串，名称为必填不可为空！");
-            return model;
-        }
-
-        Customer objectDB = (Customer)HttpUtils.pageData2Entity(pageData, new Customer());
-        customerService.update(objectDB);
-
-        Long endTime = System.currentTimeMillis();
-        logger.info("################customer/updateCustomer 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
-        return model;
-    }
-
-    /**
-     * 修改客户供应商(禁用)状态
-     *
-     * @author 陈刚
-     * @date 2018-09-19
-     */
-    @PostMapping("/customer/updateDisableCustomer")
-    public ResultModel updateDisableCustomer() throws Exception {
-        logger.info("################/customer/updateDisableCustomer 执行开始 ################# ");
-        Long startTime = System.currentTimeMillis();
-
-        ResultModel model = new ResultModel();
-
-        PageData pageData = HttpUtils.parsePageData();
-        String id = pageData.getString("id");
-        String isdisable = pageData.getString("isdisable");
-
-        //1. 非空判断
-        String msgStr = new String();
-        if (id == null || id.trim().length() == 0) {
-            msgStr = msgStr + "id为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT;
-        }
-        if (isdisable == null || isdisable.trim().length() == 0) {
-            msgStr = msgStr + "isdisable为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT;
-        }
+        String msgStr = customeAddressService.checkColumnByAddEdit(custAddr);
         if (msgStr.trim().length() > 0) {
             model.putCode(Integer.valueOf(1));
             model.putMsg(msgStr);
             return model;
         }
 
-//        if (!customerService.checkDeleteCustomerByIds(id)) {
-//            model.putCode(Integer.valueOf(1));
-//            model.putMsg("当前禁用的数据系统正在使用中，不可禁用操作！");
-//            return model;
-//        }
+        //2. 根据客户id查询(vmes_customer_address)
+        //是否默认(0:非默认 1:默认)
+        PageData findMap = new PageData();
+        findMap.put("customerId", customerId);
+        findMap.put("isdefault", "1");
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+        List<CustomeAddress> objectList = customeAddressService.findCustomeAddressList(findMap);
+        if (objectList == null || objectList.size() == 0) {
+            custAddr.setIsdefault("1");
+        }
 
-        //2. 修改客户供应商(禁用)状态
-        Customer objectDB = (Customer)HttpUtils.pageData2Entity(pageData, new Customer());
-        customerService.update(objectDB);
+        customeAddressService.save(custAddr);
 
         Long endTime = System.currentTimeMillis();
-        logger.info("################customer/updateDisableCustomer 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################customeAddress/addCustomerAddress 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
     /**
-     * 删除客户供应商
-     * 1. 支持批量删除
-     * 2. 如果删除数据被引用，则禁用该数据
-     * 3. 如果删除数据未被引用，则直接物理删除
+     * 修改客户供应商地址
      *
      * @author 陈刚
-     * @date 2018-09-19
+     * @date 2018-09-20
      */
-    @PostMapping("/customer/deleteCustomers")
-    public ResultModel deleteCustomers() throws Exception {
-        logger.info("################/customer/deleteCustomers 执行开始 ################# ");
+    @PostMapping("/customeAddress/updateCustomerAddress")
+    public ResultModel updateCustomerAddress() throws Exception {
+        logger.info("################/customeAddress/updateCustomerAddress 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        //1. 非空判断
+        CustomeAddress custAddrDB = (CustomeAddress)HttpUtils.pageData2Entity(pageData, new CustomeAddress());
+        String msgStr = customeAddressService.checkColumnByAddEdit(custAddrDB);
+        if (msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
+
+        customeAddressService.update(custAddrDB);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################customeAddress/updateCustomerAddress 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 修改默认客户供应商地址
+     *
+     * @author 陈刚
+     * @date 2018-09-20
+     */
+    @PostMapping("/customeAddress/updateDefaultCustomerAddress")
+    public ResultModel updateDefaultCustomerAddress() throws Exception {
+        logger.info("################/customeAddress/updateDefaultCustomerAddress 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        //1. 非空判断
+        String customerId = pageData.getString("customerId");
+        if (customerId == null || customerId.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("客户id为空或空字符串！");
+            return model;
+        }
+        String addrId = pageData.getString("addrId");
+        if (addrId == null || addrId.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("地址id为空或空字符串！");
+            return model;
+        }
+
+        //2. 客户id-修改客户地址表字段(vmes_customer_address.isdefault) 全部为(0:非默认)
+        PageData mapObject = new PageData();
+        mapObject.put("customerId", customerId);
+        //是否默认(0:非默认 1:默认)
+        mapObject.put("isdefault", "0");
+        customeAddressService.updateDefaultByCustId(mapObject);
+
+        CustomeAddress custAddrDB = customeAddressService.findCustomeAddressById(addrId);
+        //是否默认(0:非默认 1:默认)
+        custAddrDB.setIsdefault("1");
+        customeAddressService.update(custAddrDB);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################customeAddress/updateDefaultCustomerAddress 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 删除客户供应商地址
+     * 1. 支持批量删除
+     *
+     * @author 陈刚
+     * @date 2018-09-20
+     */
+    @PostMapping("/customeAddress/deleteCustomerAddress")
+    public ResultModel deleteCustomerAddress() throws Exception {
+        logger.info("################/customeAddress/deleteCustomerAddress 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
 
         ResultModel model = new ResultModel();
@@ -390,33 +403,25 @@ public class CustomerController {
             return model;
         }
 
-        //2. 删除客户供应商
         ids = StringUtil.stringTrimSpace(ids);
-        customerService.deleteByIds(ids.split(","));
-
-        //3. 删除客户供应商地址
-        String[] id_arry = ids.split(",");
-        for (int i = 0; i < id_arry.length; i++) {
-            String id = id_arry[i];
-            customeAddressService.deleteCustAddrByCustId(id);
-        }
+        customeAddressService.deleteByIds(ids.split(","));
 
         Long endTime = System.currentTimeMillis();
-        logger.info("################customer/deleteCustomers 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################customeAddress/deleteCustomerAddress 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
     /**
-     * Excel导出
-     * @author 陈刚 自动创建，可以修改
-     * @date 2018-09-18
-     */
-    @PostMapping("/customer/exportExcelCustomers")
-    public void exportExcelCustomers() throws Exception {
-        logger.info("################customer/exportExcelCustomers 执行开始 ################# ");
+    * Excel导出
+    * @author 陈刚 自动创建，可以修改
+    * @date 2018-09-20
+    */
+    @PostMapping("/customeAddress/exportExcelCustomeAddresss")
+    public void exportExcelCustomeAddresss() throws Exception {
+        logger.info("################customeAddress/exportExcelCustomeAddresss 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
 
-        List<Column> columnList = columnService.findColumnList("Customer");
+        List<Column> columnList = columnService.findColumnList("customeAddress");
         if (columnList == null || columnList.size() == 0) {
             throw new RestException("1","数据库没有生成TabCol，请联系管理员！");
         }
@@ -434,7 +439,7 @@ public class CustomerController {
 
         Pagination pg = HttpUtils.parsePagination(pd);
         pg.setSize(100000);
-        List<Map> dataList = customerService.getDataListPage(pd, pg);
+        List<Map> dataList = customeAddressService.getDataListPage(pd, pg);
 
         //查询数据转换成Excel导出数据
         List<LinkedHashMap<String, String>> dataMapList = ColumnUtil.modifyDataList(columnList, dataList);
@@ -443,25 +448,25 @@ public class CustomerController {
         //查询数据-Excel文件导出
         String fileName = pd.getString("fileName");
         if (fileName == null || fileName.trim().length() == 0) {
-            fileName = "ExcelCustomer";
+            fileName = "ExcelCustomeAddress";
         }
 
         //导出文件名-中文转码
         fileName = new String(fileName.getBytes("utf-8"),"ISO-8859-1");
         ExcelUtil.excelExportByDataList(response, fileName, dataMapList);
         Long endTime = System.currentTimeMillis();
-        logger.info("################customer/exportExcelCustomers 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################customeAddress/exportExcelCustomeAddresss 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
     }
 
     /**
-     * Excel导入
-     *
-     * @author 陈刚 自动创建，可以修改
-     * @date 2018-09-18
-     */
-    @PostMapping("/customer/importExcelCustomers")
-    public ResultModel importExcelCustomers(@RequestParam(value="excelFile") MultipartFile file) throws Exception  {
-        logger.info("################customer/importExcelCustomers 执行开始 ################# ");
+    * Excel导入
+    *
+    * @author 陈刚 自动创建，可以修改
+    * @date 2018-09-20
+    */
+    @PostMapping("/customeAddress/importExcelCustomeAddresss")
+    public ResultModel importExcelCustomeAddresss(@RequestParam(value="excelFile") MultipartFile file) throws Exception  {
+        logger.info("################customeAddress/importExcelCustomeAddresss 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
         //HttpServletRequest Request = HttpUtils.currentRequest();
@@ -476,9 +481,9 @@ public class CustomerController {
         // 获取上传的文件名(文件名.后缀)
         String fileName = file.getOriginalFilename();
         if (fileName == null
-                || !(fileName.matches("^.+\\.(?i)(xlsx)$")
-                || fileName.matches("^.+\\.(?i)(xls)$"))
-                ) {
+            || !(fileName.matches("^.+\\.(?i)(xlsx)$")
+            || fileName.matches("^.+\\.(?i)(xls)$"))
+        ) {
             String failMesg = "不是excel格式文件,请重新选择！";
             model.putCode(Integer.valueOf(1));
             model.putMsg(failMesg);
@@ -487,7 +492,7 @@ public class CustomerController {
 
         // 判断文件的类型，是2003还是2007
         boolean isExcel2003 = true;
-        if (fileName.matches("^.+\\.(?i)(xlsx)$")) {
+            if (fileName.matches("^.+\\.(?i)(xlsx)$")) {
             isExcel2003 = false;
         }
 
@@ -501,8 +506,11 @@ public class CustomerController {
         //5. List<ExcelEntity> --> (转换) List<业务表DB>对象
         //6. 遍历List<业务表DB> 对业务表添加或修改
         Long endTime = System.currentTimeMillis();
-        logger.info("################customer/importExcelCustomers 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################customeAddress/importExcelCustomeAddresss 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
 }
+
+
+

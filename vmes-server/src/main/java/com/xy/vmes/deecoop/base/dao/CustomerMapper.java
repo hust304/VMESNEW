@@ -65,15 +65,6 @@ public interface CustomerMapper extends BaseMapper<Customer> {
     @Select("getColumnList")
     List<LinkedHashMap> getColumnList();
 
-
-    /**
-     * 创建人：陈刚 自动创建，禁止修改
-     * 创建时间：2018-09-18
-     */
-    @Select("getDataList")
-    List<Map> getDataList(PageData pd);
-
-
     /**
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2018-09-18

@@ -1,32 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <!--
-说明：vmes_customer:客户供应商表 Mapper.xml
+说明：vmes_customer_address Mapper.xml
 创建人：陈刚 自动创建
-创建时间：2018-09-18
+创建时间：2018-09-20
  -->
-<mapper namespace="com.xy.vmes.deecoop.base.dao.CustomerMapper">
+<mapper namespace="com.xy.vmes.deecoop.base.dao.CustomeAddressMapper">
 
     <!--表名 自动创建，禁止修改-->
     <sql id="tableName">
-	vmes_customer
+	vmes_customer_address
     </sql>
 
     <!-- 字段 自动创建，禁止修改-->
     <sql id="Field">
-		company_id companyId,<!-- 公司ID-组织架构 -->
-		qrcode qrcode,<!-- 二维码-(图片相对路径) -->
-		code code,<!-- 客户编码 -->
-		name name,<!-- 客户名称 -->
-		name_en nameEn,<!-- 英文名称 -->
-
-        genre genre,<!-- 属性(1:客户 2:供应商) -->
-        type type
-		province province,<!-- 省 -->
+		customer_id customerId,<!-- 客户id -->
+		name name,<!-- 联系姓名 -->
+		phone phone,<!-- 电话号 -->
+		mobile mobile,<!-- 手机号 -->
+		address address,<!-- 详细地址 -->
+		email email,<!-- 邮箱地址 -->
+		isdefault isdefault,<!-- 是否默认(0:非默认 1:默认) -->
 		remark remark,<!-- 备注 -->
 		cuser cuser,<!-- 创建用户id -->
-
-        cdate cdate,<!-- 创建时间 -->
+		cdate cdate,<!-- 创建时间 -->
 		uuser uuser,<!-- 修改用户id -->
 		udate udate,<!-- 修改时间 -->
 		isdisable isdisable,<!-- 是否启用(0:已禁用 1:启用) -->
@@ -35,13 +32,13 @@
 
     <!-- 字段值 自动创建，禁止修改-->
     <sql id="FieldValue">
-		#{companyId},<!-- 公司ID-组织架构 -->
-		#{qrcode},<!-- 二维码-(图片相对路径) -->
-		#{code},<!-- 客户编码 -->
-		#{name},<!-- 客户名称 -->
-		#{nameEn},<!-- 英文名称 -->
-		#{genre},<!-- 属性(1:客户 2:供应商) -->
-		#{province},<!-- 省 -->
+		#{customerId},<!-- 客户id -->
+		#{name},<!-- 联系姓名 -->
+		#{phone},<!-- 电话号 -->
+		#{mobile},<!-- 手机号 -->
+		#{address},<!-- 详细地址 -->
+		#{email},<!-- 邮箱地址 -->
+		#{isdefault},<!-- 是否默认(0:非默认 1:默认) -->
 		#{remark},<!-- 备注 -->
 		#{cuser},<!-- 创建用户id -->
 		#{cdate},<!-- 创建时间 -->
@@ -54,13 +51,13 @@
 
     <!-- 字段名称  '_hide' 表示前端列表隐藏 自动创建，禁止修改-->
     <sql id="Column">
-        '公司ID-组织架构'  companyId,
-        '二维码-(图片相对路径)'  qrcode,
-        '客户编码'  code,
-        '客户名称'  name,
-        '英文名称'  nameEn,
-        '属性(1:客户 2:供应商)'  genre,
-        '省'  province,
+        '客户id'  customerId,
+        '联系姓名'  name,
+        '电话号'  phone,
+        '手机号'  mobile,
+        '详细地址'  address,
+        '邮箱地址'  email,
+        '是否默认(0:非默认 1:默认)'  isdefault,
         '备注'  remark,
         '创建用户id'  cuser,
         '创建时间'  cdate,
@@ -95,7 +92,7 @@
     </select>
 
     <!-- 列表 自动创建，禁止修改-->
-    <select id="datalistPage" parameterType="com.yvan.PageData" resultType="com.xy.vmes.entity.Customer">
+    <select id="datalistPage" parameterType="com.yvan.PageData" resultType="com.xy.vmes.entity.CustomeAddress">
         select
         <include refid="Field"></include>
         from
@@ -111,23 +108,25 @@
 
     <!-- 批量删除 自动创建，禁止修改-->
     <delete id="deleteByIds" parameterType="java.lang.String">
-        delete from <include refid="tableName"/>
+        delete from
+        <include refid="tableName"></include>
         where
-            id in
+        id in
         <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
-		    #{item}
+		#{item}
         </foreach>
     </delete>
 
 
     <!-- 自动创建，禁止修改-->
     <update id="updateToDisableByIds" parameterType="java.lang.String" >
-        update <include refid="tableName"/>
-            set isdisable = '0', udate = now()
+        update
+        <include refid="tableName"></include>
+        set isdisable = '0' ,udate = now()
         where
-            id in
+        id in
         <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
-            #{item}
+        #{item}
         </foreach>
     </update>
 
@@ -135,32 +134,35 @@
 
     <!-- ***************************************************以上为自动生成代码禁止修改，请在下面添加业务代码************************************************* -->
     <insert id="insertColumn" >
-        delete from vmes_column where model_code = 'customer' ;
+        delete from vmes_column where model_code = 'customeAddress' ;
         insert into vmes_column (
         id,model_code,title_key,title_name,serial_number,
         isdisable,ishide,isedit,ismust,cdate,
         cuser
         ) VALUES
-            (replace(uuid(), '-', ''),'customer','companyId','公司ID-组织架构',1, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'customer','qrcode','二维码-(图片相对路径)',2, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'customer','code','客户编码',3, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'customer','name','客户名称',4, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'customer','nameEn','英文名称',5, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'customer','genre','属性(1:客户 2:供应商)',6, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'customer','province','省',7, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'customer','remark','备注',8, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'customer','cuser','创建用户id',9, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'customer','cdate','创建时间',10, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'customer','uuser','修改用户id',11, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'customer','udate','修改时间',12, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'customer','isdisable','是否启用(0:已禁用 1:启用)',13, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'customer','id','id',0, '1','1','1','0',now(), 'admin')
+            (replace(uuid(), '-', ''),'customeAddress','customerId','客户id',1, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'customeAddress','name','联系姓名',2, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'customeAddress','phone','电话号',3, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'customeAddress','mobile','手机号',4, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'customeAddress','address','详细地址',5, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'customeAddress','email','邮箱地址',6, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'customeAddress','isdefault','是否默认(0:非默认 1:默认)',7, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'customeAddress','remark','备注',8, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'customeAddress','cuser','创建用户id',9, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'customeAddress','cdate','创建时间',10, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'customeAddress','uuser','修改用户id',11, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'customeAddress','udate','修改时间',12, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'customeAddress','isdisable','是否启用(0:已禁用 1:启用)',13, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'customeAddress','id','id',0, '1','1','1','0',now(), 'admin')
     </insert>
 
+
     <!-- 列表(全部) 自动创建，禁止修改-->
-    <select id="dataList" parameterType="com.yvan.PageData" resultType="com.xy.vmes.entity.Customer">
-        select <include refid="Field"/>
-        from <include refid="tableName"/>
+    <select id="dataList" parameterType="com.yvan.PageData" resultType="com.xy.vmes.entity.CustomeAddress">
+        select
+        <include refid="Field"></include>
+        from
+        <include refid="tableName"></include>
         <choose>
             <!--
                 mapSize (0 or is null) 无查询参数-业务层传入
@@ -187,18 +189,13 @@
                             </otherwise>
                         </choose>
                     </if>
-                    <if test="code != null and code != ''" >
-                        and code=#{code}
+                    <if test="customerId != null and customerId != ''" >
+                        and customer_id=#{code}
                     </if>
-                    <if test="name != null and name != ''" >
-                        and name=#{name}
+                    <if test="isdefault != null and isdefault != ''" >
+                        and isdefault=#{isdefault}
                     </if>
-                    <if test="companyId != null and companyId != ''" >
-                        and company_id=#{companyId}
-                    </if>
-                    <if test="genre != null and genre != ''" >
-                        and genre=#{genre}
-                    </if>
+
                     <!--queryStr 自定义sql查询语句-->
                     <if test="queryStr != null and queryStr != ''" >
                         and ${queryStr}
@@ -211,53 +208,52 @@
         </if>
     </select>
 
+    <!-- 字段 自动创建，可以修改-->
+    <sql id="Field1">
+        customer_id customerId,<!-- 客户id -->
+        name name,<!-- 联系姓名 -->
+        phone phone,<!-- 电话号 -->
+        mobile mobile,<!-- 手机号 -->
+        address address,<!-- 详细地址 -->
+        email email,<!-- 邮箱地址 -->
+        isdefault isdefault,<!-- 是否默认(0:非默认 1:默认) -->
+        remark remark,<!-- 备注 -->
+        cuser cuser,<!-- 创建用户id -->
+        cdate cdate,<!-- 创建时间 -->
+        uuser uuser,<!-- 修改用户id -->
+        udate udate,<!-- 修改时间 -->
+        isdisable isdisable,<!-- 是否启用(0:已禁用 1:启用) -->
+        id id <!-- id -->
+    </sql>
 
     <!-- 自动创建，可以修改 -->
-    <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
+    <select id="getDataListPage"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
         select
-            cust.id id,
-            cust.code code,
-            cust.name name,
-            cust.name_en nameEn,
-            cust.genre genre,
-            genre.name genreName,
-
-            cust.type,
-            type.name typeName,
-            cust.province province,
-            province.name provinceName,
-            cust.remark remark,
-            cust.isdisable isdisable,
-            cust.company_id companyId,
-
-            cust.qrcode qrcode,
-            cust.cuser cuser,
-            cust.cdate cdate,
-            cust.uuser uuser,
-            cust.udate udate
-        from vmes_customer cust
-            left join vmes_dictionary genre on cust.genre = genre.id
-            left join vmes_dictionary province on cust.province = province.id
-            left join vmes_dictionary type on cust.type = type.id
+        <include refid="Field1"></include>
+        from
+        <include refid="tableName"></include>
         <where>
-            <if test="code != null and code != ''">
-                and cust.code LIKE CONCAT(CONCAT(#{code}),'%')
-            </if>
-            <if test="name != null and name != ''">
-                and cust.name LIKE CONCAT(CONCAT(#{name}),'%')
-            </if>
-            <if test="currentCompanyId != null and currentCompanyId != ''">
-                and cust.company_id=#{currentCompanyId}
-            </if>
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >
                 and ${queryStr}
             </if>
+            <if test="code != null and code != ''">
+                and code LIKE CONCAT(CONCAT('%', #{code}),'%')
+            </if>
+            <if test="name != null and name != ''">
+                and name LIKE CONCAT(CONCAT('%', #{name}),'%')
+            </if>
         </where>
-
         <if test="orderStr != null and orderStr != ''" >
             order by ${orderStr}
         </if>
     </select>
+
+    <update id="updateDefaultByCustId" parameterType="com.yvan.PageData" >
+        update <include refid="tableName"/>
+            set isdefault = #{isdefault}, udate = now()
+        where customer_id = #{customerId}
+    </update>
+
 
 </mapper>
