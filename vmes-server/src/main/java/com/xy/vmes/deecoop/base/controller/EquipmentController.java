@@ -131,7 +131,7 @@ public class EquipmentController {
     @PostMapping("/equipment/deleteByIds")
     public ResultModel deleteByIds()  throws Exception {
 
-        logger.info("################equipment/deleteById 执行开始 ################# ");
+        logger.info("################equipment/deleteByIds 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
         PageData pd = HttpUtils.parsePageData();
@@ -148,7 +148,7 @@ public class EquipmentController {
             equipmentService.deleteByIds(id_arry);
         }
         Long endTime = System.currentTimeMillis();
-        logger.info("################equipment/deleteById 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################equipment/deleteByIds 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -400,27 +400,27 @@ public class EquipmentController {
         return model;
     }
 
-    public ResultModel deleteEquipments()  throws Exception {
-        logger.info("################equipment/deleteEquipments 执行开始 ################# ");
-        Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
-        ResultModel model = new ResultModel();
-        PageData pd = HttpUtils.parsePageData();
-        String ids = pd.getString("ids");
-        if(StringUtils.isEmpty(ids)){
-            model.putCode("1");
-            model.putMsg("未勾选删除记录，请重新选择！");
-            return model;
-        }
-        String id_str = StringUtil.stringTrimSpace(ids);
-        String[] id_arry = id_str.split(",");
-        if(id_arry.length>0){
-            equipmentService.deleteByIds(id_arry);
-        }
-        Long endTime = System.currentTimeMillis();
-        logger.info("################equipment/deleteEquipments 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
-        return model;
-    }
+//    public ResultModel deleteEquipments()  throws Exception {
+//        logger.info("################equipment/deleteEquipments 执行开始 ################# ");
+//        Long startTime = System.currentTimeMillis();
+//        HttpServletResponse response  = HttpUtils.currentResponse();
+//        ResultModel model = new ResultModel();
+//        PageData pd = HttpUtils.parsePageData();
+//        String ids = pd.getString("ids");
+//        if(StringUtils.isEmpty(ids)){
+//            model.putCode("1");
+//            model.putMsg("未勾选删除记录，请重新选择！");
+//            return model;
+//        }
+//        String id_str = StringUtil.stringTrimSpace(ids);
+//        String[] id_arry = id_str.split(",");
+//        if(id_arry.length>0){
+//            equipmentService.deleteByIds(id_arry);
+//        }
+//        Long endTime = System.currentTimeMillis();
+//        logger.info("################equipment/deleteEquipments 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+//        return model;
+//    }
 
 }
 

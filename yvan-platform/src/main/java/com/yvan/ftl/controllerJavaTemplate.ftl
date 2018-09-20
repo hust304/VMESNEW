@@ -126,7 +126,7 @@ public class ${objectName}Controller {
     @PostMapping("/${objectNameLower}/deleteByIds")
     public ResultModel deleteByIds()  throws Exception {
 
-        logger.info("################${objectNameLower}/deleteById 执行开始 ################# ");
+        logger.info("################${objectNameLower}/deleteByIds 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
         PageData pd = HttpUtils.parsePageData();
@@ -143,7 +143,7 @@ public class ${objectName}Controller {
             ${objectNameLower}Service.deleteByIds(id_arry);
         }
         Long endTime = System.currentTimeMillis();
-        logger.info("################${objectNameLower}/deleteById 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################${objectNameLower}/deleteByIds 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
