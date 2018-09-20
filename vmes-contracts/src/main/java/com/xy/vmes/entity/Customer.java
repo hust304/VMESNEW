@@ -31,18 +31,23 @@ public class Customer implements Serializable {
 	//客户名称
 	@TableField("name")
 	private String name;
+
 	//英文名称
 	@TableField("name_en")
 	private String nameEn;
-	//属性(1:客户 2:供应商)
+	//属性(字典表-vmes_dictionary.id)
 	@TableField("genre")
 	private String genre;
-	//省
+	//类型(字典表-vmes_dictionary.id)
+	@TableField("type")
+	private String type;
+	//省(字典表-vmes_dictionary.id)
 	@TableField("province")
 	private String province;
 	//备注
 	@TableField("remark")
 	private String remark;
+
 	//创建用户id
 	@TableField("cuser")
 	private String cuser;
