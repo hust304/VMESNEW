@@ -374,8 +374,9 @@ public class EquipmentController {
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         Equipment equipment = (Equipment)HttpUtils.pageData2Entity(pd, new Equipment());
+        String url = fileService.createQRCode("equipment", YvanUtil.toJson(equipment));
+        equipment.setQrcode(url);
         equipmentService.save(equipment);
-        fileService.createQRCode("equipment", YvanUtil.toJson(equipment));
         Long endTime = System.currentTimeMillis();
         logger.info("################equipment/addEquipment 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
