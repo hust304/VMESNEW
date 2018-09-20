@@ -30,6 +30,7 @@
 		uuser uuser,<!-- 修改用户id -->
 		udate udate,<!-- 修改时间 -->
 		isdisable isdisable,<!-- 是否启用(0:已禁用 1:启用) -->
+        photo photo,
 		id id <!-- id -->
     </sql>
 
@@ -51,6 +52,7 @@
 		#{uuser},<!-- 修改用户id -->
 		#{udate},<!-- 修改时间 -->
 		#{isdisable},<!-- 是否启用(0:已禁用 1:启用) -->
+        #{photo},
 		#{id} <!-- id -->
     </sql>
 
@@ -73,6 +75,7 @@
         '修改用户id'  uuser,
         '修改时间'  udate,
         '是否启用(0:已禁用 1:启用)'  isdisable,
+        '设备图片' photo,
         'id' id_hide
     </sql>
 
@@ -167,6 +170,7 @@
             (replace(uuid(), '-', ''),'Equipment','cdate','创建时间',16, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'Equipment','uuser','修改用户id',17, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'Equipment','udate','修改时间',18, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'Equipment','photo','设备图片',19, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'Equipment','id','id',0, '1','1','1','0',now(), 'admin')
     </insert>
 
@@ -238,6 +242,7 @@
         equipment.uuser uuser,<!-- 修改用户id -->
         equipment.udate udate,<!-- 修改时间 -->
         equipment.isdisable isdisable,<!-- 是否启用(0:已禁用 1:启用) -->
+        equipment.photo photo,
         equipment.id id, <!-- id -->
 
 

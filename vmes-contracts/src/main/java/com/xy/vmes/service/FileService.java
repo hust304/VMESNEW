@@ -9,7 +9,7 @@ import java.io.File;
  */
 public interface FileService {
 
-    String uploadEmployeePhoto(MultipartFile file) throws Exception;
+    String uploadPhoto(String photoDir ,MultipartFile file) throws Exception;
 
     String createQRCode(String qrCodeDir ,String content) throws Exception;
 }

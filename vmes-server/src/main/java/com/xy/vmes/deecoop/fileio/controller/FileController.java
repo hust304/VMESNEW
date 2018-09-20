@@ -3,8 +3,10 @@ package com.xy.vmes.deecoop.fileio.controller;
 import com.xy.vmes.service.FileService;
 import com.yvan.FileUploadUtils;
 import com.yvan.HttpUtils;
+import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,14 +74,18 @@ public class FileController {
      * @author 刘威
      * @date 2018-08-02
      */
-    @PostMapping("/file/uploadEmployeePhoto")
-    public ResultModel uploadEmployeePhoto(@RequestParam("fileName") MultipartFile file)  throws Exception {
-        logger.info("################file/uploadEmployeePhoto 执行开始 ################# ");
+    @PostMapping("/file/uploadPhoto")
+    public ResultModel uploadPhoto(@RequestParam("fileName") MultipartFile file)  throws Exception {
+        logger.info("################file/uploadPhoto 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-
+        PageData pageData = HttpUtils.parsePageData();
         ResultModel model = new ResultModel();
-
-        String photoUrl = fileService.uploadEmployeePhoto(file);
+        if(StringUtils.isEmpty(pageData.getString("photoDir"))){
+            model.putCode(1);
+            model.putMsg("请输入图片上传目录！");
+            return model;
+        }
+        String photoUrl = fileService.uploadPhoto(pageData.getString("photoDir"),file);
 
         System.out.println("photoUrl:" + photoUrl);
 
@@ -87,7 +93,7 @@ public class FileController {
         model.putMsg("图片上传成功！");
 
         Long endTime = System.currentTimeMillis();
-        logger.info("################file/uploadEmployeePhoto 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################file/uploadPhoto 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 

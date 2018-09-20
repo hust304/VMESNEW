@@ -67,6 +67,9 @@ public class Equipment implements Serializable {
 	//是否启用(0:已禁用 1:启用)
 	@TableField("isdisable")
 	private String isdisable;
+	//产品图片
+	@TableField("photo")
+	private String photo;
 
 
 
@@ -171,6 +174,12 @@ public class Equipment implements Serializable {
 	}
 	public String getIsdisable() {
 		return isdisable;
+	}
+	public void setPhoto(String photo) {
+		this.photo = photo;
+	}
+	public String getPhoto() {
+		return photo;
 	}
 
 /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
