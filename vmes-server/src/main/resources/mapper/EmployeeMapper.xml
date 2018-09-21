@@ -345,6 +345,12 @@
             <if test="entryDateStart!= null and entryDateStart != ''"><!-- 关键词检索 -->
                 <![CDATA[ and  employee.entry_date >= #{entryDateStart} ]]>
             </if>
+            <if test="pid!= null and pid != '' and layer != null"><!-- 关键词检索 -->
+                and  dept.id_${layer} = #{pid}
+            </if>
+            <if test="pid!= null and pid != '' and layer == null"><!-- 关键词检索 -->
+                and post.id = #{pid}
+            </if>
         </where>
             order by employee.cdate desc
     </select>
@@ -538,6 +544,15 @@
             <if test="isplurality!= null and isplurality != ''">
                 and employpost.isplurality = #{isplurality}
             </if>
+
+            <choose>
+                <when test="pid!= null and pid != '' and layer != null and layer != ''">
+                    and  dept.id_${layer} = #{pid}
+                </when>
+                <otherwise>
+                    and post.id = #{pid}
+                </otherwise>
+            </choose>
 
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr!=''" >
