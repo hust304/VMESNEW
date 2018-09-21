@@ -545,14 +545,15 @@
                 and employpost.isplurality = #{isplurality}
             </if>
 
-            <choose>
-                <when test="pid!= null and pid != '' and layer != null and layer != ''">
-                    and  dept.id_${layer} = #{pid}
-                </when>
-                <otherwise>
-                    and post.id = #{pid}
-                </otherwise>
-            </choose>
+
+            <if test="pid!= null and pid != '' and layer != null and layer != ''">
+                and  dept.id_${layer} = #{pid}
+            </if>
+
+            <if test="pid!= null and pid != '' and layer == '' ">
+                and post.id = #{pid}
+            </if>
+
 
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr!=''" >

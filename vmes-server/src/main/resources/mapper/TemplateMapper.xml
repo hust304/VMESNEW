@@ -266,6 +266,9 @@
             <if test="name != null and name != ''">
                 and name LIKE CONCAT(CONCAT('%', #{name}),'%')
             </if>
+            <if test="isdisable != null and isdisable != ''">
+                and isdisable = #{isdisable}
+            </if>
         </where>
         <if test="orderStr != null and orderStr != ''" >
             order by ${orderStr}
