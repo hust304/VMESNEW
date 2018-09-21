@@ -293,8 +293,9 @@ public class CustomerController {
         }
 
         Customer object = (Customer)HttpUtils.pageData2Entity(pageData, new Customer());
-        object.setCode(code);
         object.setCuser(pageData.getString("cuser"));
+        object.setCompanyId(companyId);
+        object.setCode(code);
         //生成客户供应商二维码
         String qrcode = fileService.createQRCode("customer", YvanUtil.toJson(object));
         if (qrcode != null && qrcode.trim().length() > 0) {

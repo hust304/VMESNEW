@@ -107,6 +107,12 @@ public class Customer implements Serializable {
 	public String getGenre() {
 		return genre;
 	}
+	public void setType(String type) {
+		this.type = type;
+	}
+	public String getType() {
+		return type;
+	}
 	public void setProvince(String province) {
 		this.province = province;
 	}

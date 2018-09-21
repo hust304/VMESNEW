@@ -354,8 +354,9 @@ public class ProductController {
 
         //2. 添加产品表(vmes_product)
         Product product = (Product)HttpUtils.pageData2Entity(pageData, new Product());
-        product.setCode(code);
         product.setCuser(pageData.getString("cuser"));
+        product.setCompanyId(companyId);
+        product.setCode(code);
 
         //生成产品二维码
         String qrcode = fileService.createQRCode("product", YvanUtil.toJson(product));
