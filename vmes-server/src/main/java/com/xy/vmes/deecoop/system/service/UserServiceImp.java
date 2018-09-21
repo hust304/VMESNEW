@@ -282,6 +282,8 @@ public class UserServiceImp implements UserService {
 
             //修改员工表用户ID
             employee.setUserId(user.getId());
+            //是否开通用户 0:不开通 1:开通 is null 不开通
+            employee.setIsOpenUser("1");
             employeeService.update(employee);
 
             //新增用户角色信息
