@@ -78,14 +78,17 @@ public class FileController {
     public ResultModel uploadPhoto(@RequestParam("fileName") MultipartFile file)  throws Exception {
         logger.info("################file/uploadPhoto 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        PageData pageData = HttpUtils.parsePageData();
         ResultModel model = new ResultModel();
-        if(StringUtils.isEmpty(pageData.getString("photoDir"))){
+
+        //PageData pageData = HttpUtils.parsePageData();
+        HttpServletRequest httpRequest = HttpUtils.currentRequest();
+        String photoDir = (String)httpRequest.getParameter("photoDir");
+        if(StringUtils.isEmpty(photoDir)){
             model.putCode(1);
             model.putMsg("请输入图片上传目录！");
             return model;
         }
-        String photoUrl = fileService.uploadPhoto(pageData.getString("photoDir"),file);
+        String photoUrl = fileService.uploadPhoto(photoDir, file);
 
         System.out.println("photoUrl:" + photoUrl);
 
