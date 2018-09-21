@@ -7,9 +7,7 @@ import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.entity.Product;
 import com.xy.vmes.entity.ProductProperty;
-import com.xy.vmes.service.ColumnService;
-import com.xy.vmes.service.ProductPropertyService;
-import com.xy.vmes.service.ProductService;
+import com.xy.vmes.service.*;
 import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
@@ -37,7 +35,6 @@ import java.util.*;
 @RestController
 @Slf4j
 public class ProductController {
-
     private Logger logger = LoggerFactory.getLogger(ProductController.class);
 
     @Autowired
@@ -45,6 +42,10 @@ public class ProductController {
     @Autowired
     private ProductPropertyService productPropertyService;
 
+    @Autowired
+    private CoderuleService coderuleService;
+    @Autowired
+    private FileService fileService;
     @Autowired
     private ColumnService columnService;
 
@@ -342,8 +343,25 @@ public class ProductController {
             return model;
         }
 
+        //获取产品编码
+        String companyId = pageData.getString("currentCompanyId");
+        String code = coderuleService.createCoder(companyId,"vmes_product","P");
+        if(StringUtils.isEmpty(code)){
+            model.putCode(1);
+            model.putMsg("产品编码规则创建异常，请重新操作！");
+            return model;
+        }
+
         //2. 添加产品表(vmes_product)
         Product product = (Product)HttpUtils.pageData2Entity(pageData, new Product());
+        product.setCode(code);
+        product.setCuser(pageData.getString("cuser"));
+
+        //生成产品二维码
+        String qrcode = fileService.createQRCode("product", YvanUtil.toJson(product));
+        if (qrcode != null && qrcode.trim().length() > 0) {
+            product.setQrcode(qrcode);
+        }
         productService.save(product);
 
         //3. 添加产品属性表(vmes_product_property)
@@ -414,6 +432,7 @@ public class ProductController {
         }
 
         //3.修改产品表(vmes_product)
+        productDB.setUuser(pageData.getString("cuser"));
         productService.update(productDB);
 
         Long endTime = System.currentTimeMillis();

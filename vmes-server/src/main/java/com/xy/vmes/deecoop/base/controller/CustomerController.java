@@ -6,12 +6,11 @@ import com.xy.vmes.common.util.Common;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.entity.Customer;
-import com.xy.vmes.service.ColumnService;
-import com.xy.vmes.service.CustomeAddressService;
-import com.xy.vmes.service.CustomerService;
+import com.xy.vmes.service.*;
 import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
+import com.yvan.YvanUtil;
 import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +34,6 @@ import java.util.*;
 @RestController
 @Slf4j
 public class CustomerController {
-
     private Logger logger = LoggerFactory.getLogger(CustomerController.class);
 
     @Autowired
@@ -43,6 +41,10 @@ public class CustomerController {
     @Autowired
     private CustomeAddressService customeAddressService;
 
+    @Autowired
+    private FileService fileService;
+    @Autowired
+    private CoderuleService coderuleService;
     @Autowired
     private ColumnService columnService;
 
@@ -281,7 +283,23 @@ public class CustomerController {
             return model;
         }
 
+        //获取客户供应商编码
+        String companyId = pageData.getString("currentCompanyId");
+        String code = coderuleService.createCoder(companyId,"vmes_customer","C");
+        if(StringUtils.isEmpty(code)){
+            model.putCode(1);
+            model.putMsg("客户供应商编码规则创建异常，请重新操作！");
+            return model;
+        }
+
         Customer object = (Customer)HttpUtils.pageData2Entity(pageData, new Customer());
+        object.setCode(code);
+        object.setCuser(pageData.getString("cuser"));
+        //生成客户供应商二维码
+        String qrcode = fileService.createQRCode("customer", YvanUtil.toJson(object));
+        if (qrcode != null && qrcode.trim().length() > 0) {
+            object.setQrcode(qrcode);
+        }
         customerService.save(object);
 
         Long endTime = System.currentTimeMillis();
@@ -312,6 +330,7 @@ public class CustomerController {
         }
 
         Customer objectDB = (Customer)HttpUtils.pageData2Entity(pageData, new Customer());
+        objectDB.setUuser(pageData.getString("cuser"));
         customerService.update(objectDB);
 
         Long endTime = System.currentTimeMillis();
