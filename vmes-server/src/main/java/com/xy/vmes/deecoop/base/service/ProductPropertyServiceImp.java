@@ -1,0 +1,238 @@
+package com.xy.vmes.deecoop.base.service;
+
+import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.deecoop.base.dao.ProductPropertyMapper;
+import com.xy.vmes.entity.ProductProperty;
+import com.xy.vmes.service.ProductPropertyService;
+import com.yvan.PageData;
+import com.yvan.platform.RestException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.*;
+
+import com.yvan.Conv;
+
+/**
+* 说明：vmes_product_property:产品属性 实现类
+* 创建人：陈刚 自动创建
+* 创建时间：2018-09-21
+*/
+@Service
+@Transactional(readOnly = false)
+public class ProductPropertyServiceImp implements ProductPropertyService {
+
+    @Autowired
+    private ProductPropertyMapper productPropertyMapper;
+
+    /**
+    * 创建人：陈刚 自动创建，禁止修改
+    * 创建时间：2018-09-21
+    */
+    @Override
+    public void save(ProductProperty productProperty) throws Exception{
+        productProperty.setId(Conv.createUuid());
+        productProperty.setCdate(new Date());
+        productProperty.setUdate(new Date());
+        productPropertyMapper.insert(productProperty);
+    }
+
+    /**
+    * 创建人：陈刚 自动创建，禁止修改
+    * 创建时间：2018-09-21
+    */
+    @Override
+    public void update(ProductProperty productProperty) throws Exception{
+        productProperty.setUdate(new Date());
+        productPropertyMapper.updateById(productProperty);
+    }
+
+    /**
+    * 创建人：陈刚 自动创建，禁止修改
+    * 创建时间：2018-09-21
+    */
+    @Override
+    public void updateAll(ProductProperty productProperty) throws Exception{
+        productProperty.setUdate(new Date());
+        productPropertyMapper.updateAllColumnById(productProperty);
+    }
+
+    /**
+    * 创建人：陈刚 自动创建，禁止修改
+    * 创建时间：2018-09-21
+    */
+    @Override
+    //@Cacheable(cacheNames = "productProperty", key = "''+#id")
+    public ProductProperty selectById(String id) throws Exception{
+        return productPropertyMapper.selectById(id);
+    }
+
+    /**
+    * 创建人：陈刚 自动创建，禁止修改
+    * 创建时间：2018-09-21
+    */
+    @Override
+    public void deleteById(String id) throws Exception{
+        productPropertyMapper.deleteById(id);
+    }
+
+    /**
+    * 创建人：陈刚 自动创建，禁止修改
+    * 创建时间：2018-09-21
+    */
+    @Override
+    public void deleteByIds(String[] ids) throws Exception{
+        productPropertyMapper.deleteByIds(ids);
+    }
+
+    /**
+    * 创建人：陈刚 自动创建，禁止修改
+    * 创建时间：2018-09-21
+    */
+    @Override
+    public List<ProductProperty> dataList(PageData pd) throws Exception{
+        return productPropertyMapper.dataList(pd);
+    }
+
+    /**
+    * 创建人：陈刚 自动创建，禁止修改
+    * 创建时间：2018-09-21
+    */
+    @Override
+    public List<Map> findDataList(PageData pd) throws Exception{
+        return productPropertyMapper.findDataList(pd);
+    }
+
+    /**
+    * 创建人：陈刚 自动创建，禁止修改
+    * 创建时间：2018-09-21
+    */
+    @Override
+    public void deleteByColumnMap(Map columnMap) throws Exception{
+        productPropertyMapper.deleteByMap(columnMap);
+    }
+
+    /**
+    * 创建人：陈刚 自动创建，禁止修改
+    * 创建时间：2018-09-21
+    */
+    @Override
+    public List<ProductProperty> selectByColumnMap(Map columnMap) throws Exception{
+    List<ProductProperty> productPropertyList =  productPropertyMapper.selectByMap(columnMap);
+        return productPropertyList;
+    }
+
+    /**
+    * 创建人：陈刚 自动创建，禁止修改
+    * 创建时间：2018-09-21
+    */
+    @Override
+    public List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception{
+        return productPropertyMapper.getDataListPage(pd,pg);
+    }
+
+    /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+    public ProductProperty findProductPropertyById(String id) {
+        if (id == null || id.trim().length() == 0) {return null;}
+
+        PageData findMap = new PageData();
+        findMap.put("id", id);
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+
+        return this.findProductProperty(findMap);
+    }
+
+    public ProductProperty findProductProperty(PageData object) {
+        if (object == null) {return null;}
+
+        List<ProductProperty> objectList = this.findProductPropertyList(object);
+        if (objectList != null && objectList.size() > 0) {
+            return objectList.get(0);
+        }
+
+        return null;
+    }
+
+    public List<ProductProperty> findProductPropertyList(PageData object) {
+        if (object == null) {return null;}
+
+        List<ProductProperty> objectList = null;
+        try {
+            objectList = this.dataList(object);
+        } catch (Exception e) {
+            throw new RestException("", e.getMessage());
+        }
+
+        return objectList;
+    }
+    public List<ProductProperty> findProductPropertyListByProdId(String prodId) {
+        List<ProductProperty> objectList = new ArrayList<ProductProperty>();
+        if (prodId == null || prodId.trim().length() == 0) {return objectList;}
+
+        PageData findMap = new PageData();
+        findMap.put("prodId", prodId);
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+        objectList = this.findProductPropertyList(findMap);
+
+        return objectList;
+    }
+
+    public void deleteProdPropertyByProdId(String prodId) throws Exception {
+        if (prodId == null || prodId.trim().length() == 0) {return;}
+
+        Map<String, Object> mapObject = new HashMap<String, Object>();
+        mapObject.put("prod_id", prodId);
+
+        this.deleteByColumnMap(mapObject);
+    }
+
+    public ProductProperty map2ProdProperty(Map<String, Object> mapObj, ProductProperty object) {
+        if (object == null) {object = new ProductProperty();}
+        if (mapObj == null) {return object;}
+
+        //{name:属性名称,value:属性值，remark:备注}
+        if (mapObj.get("name") != null && mapObj.get("name").toString().trim().length() > 0) {
+            object.setName(mapObj.get("name").toString().trim());
+        }
+        if (mapObj.get("value") != null && mapObj.get("value").toString().trim().length() > 0) {
+            object.setValue(mapObj.get("value").toString().trim());
+        }
+        if (mapObj.get("remark") != null && mapObj.get("remark").toString().trim().length() > 0) {
+            object.setRemark(mapObj.get("remark").toString().trim());
+        }
+
+        return object;
+    }
+    public List<ProductProperty> mapList2ProductPropertyList(List<Map<String, Object>> mapList, List<ProductProperty> objectList) {
+        if (objectList == null) {objectList = new ArrayList<ProductProperty>();}
+        if (mapList == null || mapList.size() == 0) {return objectList;}
+
+        for (Map<String, Object> mapObject : mapList) {
+            ProductProperty object = this.map2ProdProperty(mapObject, null);
+            objectList.add(object);
+        }
+
+        return objectList;
+    }
+
+    public void addProductProperty(String cuser, String prodId, List<ProductProperty> objectList) {
+        if (prodId == null || prodId.trim().length() == 0) {return;}
+        if (objectList == null || objectList.size() == 0) {return;}
+
+        for (ProductProperty object : objectList) {
+            object.setProdId(prodId);
+            object.setCuser(cuser);
+            try {
+                this.save(object);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
+}
+
+
+
