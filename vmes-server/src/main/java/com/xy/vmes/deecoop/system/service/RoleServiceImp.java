@@ -126,7 +126,9 @@ public class RoleServiceImp implements RoleService {
         return roleMapper.findDataList(pd);
     }
 
-
+    public void deleteByIds(String[] ids) throws Exception {
+        roleMapper.deleteByIds(ids);
+    }
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
     /**
      * 创建人：陈刚

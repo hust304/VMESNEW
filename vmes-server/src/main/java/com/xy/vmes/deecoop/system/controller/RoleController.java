@@ -1,7 +1,6 @@
 package com.xy.vmes.deecoop.system.controller;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
-import com.google.gson.Gson;
 import com.xy.vmes.common.util.*;
 import com.xy.vmes.entity.*;
 import com.xy.vmes.service.*;
@@ -25,8 +24,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.*;
 
 
@@ -493,17 +490,16 @@ public class RoleController {
             return model;
         }
 
-        //2.当前角色ID(用户角色,角色菜单,角色按钮)-是否使用
-        msgStr = roleService.checkDeleteRoleByRoleIds(id);
-        if (msgStr.trim().length() > 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg(msgStr);
-            return model;
-        }
+//        //2.当前角色ID(用户角色,角色菜单,角色按钮)-是否使用
+//        msgStr = roleService.checkDeleteRoleByRoleIds(id);
+//        if (msgStr.trim().length() > 0) {
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg(msgStr);
+//            return model;
+//        }
 
         //修改角色(禁用)状态
-        Role objectDB = roleService.findRoleById(id);
-        objectDB.setIsdisable(isdisable);
+        Role objectDB = (Role)HttpUtils.pageData2Entity(pageData, new Role());
         roleService.update(objectDB);
         Long endTime = System.currentTimeMillis();
         logger.info("################role/updateDisableRole 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
@@ -536,32 +532,26 @@ public class RoleController {
             return model;
         }
 
-        String id_str = StringUtil.stringTrimSpace(ids);
-        String[] id_arry = id_str.split(",");
-
-        //2.当前角色ID(用户角色,角色菜单,角色按钮)-是否使用
-        String msgStr = roleService.checkDeleteRoleByRoleIds(id_str);
-        if (msgStr.trim().length() > 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg(msgStr);
-            return model;
-        }
-
+        ids = StringUtil.stringTrimSpace(ids);
+        String[] id_arry = ids.split(",");
         for (int i = 0; i < id_arry.length; i++) {
             String roleID = id_arry[i];
             try {
                 //1. 当前角色ID-禁用(用户角色)
-                userRoleService.updateDisableByRoleId(roleID);
+                userRoleService.deleteUserRoleByRoleId(roleID);
                 //2. 当前角色ID-禁用(角色菜单)
-                roleMenuService.updateDisableByRoleId(roleID);
+                roleMenuService.deleteRoleMenuByRoleId(roleID);
                 //3. 当前角色ID-禁用(角色按钮)
-                roleButtonService.updateDisableByRoleId(roleID);
+                PageData mapObj = new PageData();
+                mapObj.put("roleId", roleID);
+                roleButtonService.deleteRoleButtonByRoleId(mapObj);
 
             } catch (Exception e) {
                 throw new RestException("", e.getMessage());
             }
         }
-        roleService.updateDisableByIds(id_arry);
+
+        roleService.deleteByIds(ids.split(","));
         Long endTime = System.currentTimeMillis();
         logger.info("################role/deleteRoles 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
@@ -572,13 +562,13 @@ public class RoleController {
      * @author 陈刚
      * @date 2018-07-30
      */
-    @PostMapping("/role/importExcelRoles")
-    public ResultModel importExcelRoles() {
-        ResultModel model = new ResultModel();
-        PageData pageData = HttpUtils.parsePageData();
-
-        return model;
-    }
+//    @PostMapping("/role/importExcelRoles")
+//    public ResultModel importExcelRoles() {
+//        ResultModel model = new ResultModel();
+//        PageData pageData = HttpUtils.parsePageData();
+//
+//        return model;
+//    }
 //    /**Excel导出角色
 //     *
 //     * @author 陈刚
