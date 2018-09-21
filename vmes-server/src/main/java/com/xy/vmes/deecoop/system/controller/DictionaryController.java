@@ -622,6 +622,8 @@ public class DictionaryController {
         List<TreeEntity> treeList = dictionaryService.getTreeList(pd);
         TreeEntity treeObj = TreeUtil.switchTree(id, treeList);
 
+        dealWithTreeEntityChildren(treeObj);
+
         Map result = new HashMap();
         result.put("options", treeObj.getChildren());
         model.putResult(result);
@@ -630,6 +632,18 @@ public class DictionaryController {
         logger.info("################dictionary/getDictionarys 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
+
+    public void dealWithTreeEntityChildren(TreeEntity treeObj){
+        if(treeObj!=null&&treeObj.getChildren()!=null&&treeObj.getChildren().size()>0){
+            for(int i=0;i<treeObj.getChildren().size();i++){
+                dealWithTreeEntityChildren(treeObj.getChildren().get(i));
+            }
+        }else {
+            treeObj.setChildren(null);
+        }
+    }
+
+
 
 
     /**
