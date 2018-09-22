@@ -366,7 +366,10 @@ public class ProductController {
         productService.save(product);
 
         //3. 添加产品属性表(vmes_product_property)
-        String dataListJsonStr = pageData.getString("dataListJsonStr");
+        String dataListJsonStr = pageData.getString("prodProperty");
+        //测试代码-真实环境无此代码
+        //dataListJsonStr = "[{\"name\":\"属性名称_1\",\"value\":\"属性值_1\",\"remark\":\"备注_1\"},{\"name\":\"属性名称_2\",\"value\":\"属性值_2\",\"remark\":\"备注_2\"}]";
+
         if (dataListJsonStr != null && dataListJsonStr.trim().length() > 0) {
             //JsonString 转换成List<Map<String, Object>>
             List<Map<String, Object>> dataList = (List<Map<String, Object>>) YvanUtil.jsonToList(dataListJsonStr);
@@ -412,7 +415,7 @@ public class ProductController {
         Product productDB = (Product)HttpUtils.pageData2Entity(pageData, new Product());
 
         //2. 修改产品属性表(vmes_product_property)
-        String dataListJsonStr = pageData.getString("dataListJsonStr");
+        String dataListJsonStr = pageData.getString("prodProperty");
         if (dataListJsonStr != null && dataListJsonStr.trim().length() > 0) {
             //JsonString 转换成List<Map<String, Object>>
             List<Map<String, Object>> dataList = (List<Map<String, Object>>) YvanUtil.jsonToList(dataListJsonStr);
