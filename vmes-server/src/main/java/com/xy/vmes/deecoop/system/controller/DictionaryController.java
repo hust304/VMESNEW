@@ -229,7 +229,7 @@ public class DictionaryController {
         }
 
         //2. (字典名称)在同一层名称不可重复
-        if (dictionaryService.isExistByName(dictionary.getPid(), null, dictionary.getName(),pd.getString("currentCompanyId"))) {
+        if (dictionaryService.isExistByName(pid, null, dictionary.getName(), pd.getString("currentCompanyId"))) {
             String msgTemp = "上级字典名称: {0}{2}字典名称: {1}{2}在系统中已经重复！{2}";
             String str_isnull = MessageFormat.format(msgTemp,
                     paterObj.getName(),
