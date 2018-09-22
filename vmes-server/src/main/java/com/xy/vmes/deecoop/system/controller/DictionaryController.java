@@ -214,17 +214,17 @@ public class DictionaryController {
             user = userService.selectById(pd.getString("currentUserId"));
         }
 
-        if (dictionary.getPid() == null || dictionary.getPid().trim().length() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("pid为空或空字符串");
-            return model;
+        //默认pid:= 字典表根节点
+        String pid = Common.DICTIONARY_MAP.get("root");
+        if (dictionary.getPid() != null && dictionary.getPid().trim().length() > 0) {
+            pid = dictionary.getPid().trim();
         }
 
         //pid 获取父节点对象<Department>
-        Dictionary paterObj = dictionaryService.findDictionaryById(dictionary.getPid());
+        Dictionary paterObj = dictionaryService.findDictionaryById(pid);
         if (paterObj == null) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("(pid:"+ dictionary.getPid() + ")系统中无数据，请与管理员联系！");
+            model.putMsg("(pid:"+ pid + ")系统中无数据，请与管理员联系！");
             return model;
         }
 
@@ -249,7 +249,7 @@ public class DictionaryController {
         //isglobal: 0：否  1：是
         if(Common.DICTIONARY_MAP.get("userType_admin").equals(user.getUserType())){
             dictionary.setIsglobal("1");//超级管理员创建的数据字典都是全局设置
-        }else {
+        } else {
             dictionary.setIsglobal("0");//非全局设置
         }
 

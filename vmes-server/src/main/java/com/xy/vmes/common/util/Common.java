@@ -98,7 +98,7 @@ public class Common {
     ///////////////--Dictionary字典表大类ID映射--///////////////////////////////////////////////////////////////////
     public static final Map<String, String> DICTIONARY_MAP = new HashMap<String, String>() {{
 
-        //companyType: 0d779980a3ca4e69ac393a93bca84659 //根节点
+        //字典表根节点
         put("root", "8421e4f093a44f029dddbc4ab13068bf");
 
         //userType: 744f2d88c9f647d0a4d967a714193850 //用户类型
