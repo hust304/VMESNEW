@@ -313,11 +313,11 @@ public class DictionaryController {
                 dictionaryDB);
         dictionaryDB = dictionaryService.paterObject2ObjectDB(paterObj, dictionaryDB);
 
-        //设置默认部门顺序
-        if (dictionary.getSerialNumber() == null) {
-            Integer maxCount = dictionaryService.findMaxSerialNumber(dictionary.getPid());
-            dictionaryDB.setSerialNumber(Integer.valueOf(maxCount.intValue() + 1));
-        }
+//        //设置默认部门顺序
+//        if (dictionary.getSerialNumber() == null) {
+//            Integer maxCount = dictionaryService.findMaxSerialNumber(dictionary.getPid());
+//            dictionaryDB.setSerialNumber(Integer.valueOf(maxCount.intValue() + 1));
+//        }
         dictionaryDB.setUuser((String)pd.get("uuser"));
         dictionaryService.update(dictionaryDB);
 

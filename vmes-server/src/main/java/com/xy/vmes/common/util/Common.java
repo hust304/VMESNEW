@@ -124,8 +124,30 @@ public class Common {
         //deptType: 8421e4f093a44f029dddbc4ab13068be //部门类型
         put("deptType", "8421e4f093a44f029dddbc4ab13068be");
 
-        //productType: 4c4bd1b59954438c8bf56facd97a0c7e 货品属性
-        put("productType", "8421e4f093a44f029dddbc4ab13068be");
+        //基础-产品物料
+        //productGenre: 4c4bd1b59954438c8bf56facd97a0c7e 货品属性
+        put("productGenre", "4c4bd1b59954438c8bf56facd97a0c7e");
+
+        //productType: a39ac4c1e02e45788eb03a52a5e9a972 货品类型
+        put("productType", "a39ac4c1e02e45788eb03a52a5e9a972");
+
+        //基础-客户供应商
+        //customerGenre:b166cc9397744f0cbbea3244647305ee(字典id)  客户供应商属性(字典名称)
+        put("customerGenre", "b166cc9397744f0cbbea3244647305ee");
+            //customerGenreKh:  df7cb67fca4148bc9632c908e4a7fdea(字典id)  客户(字典名称)
+            //put("customerGenreKh", "df7cb67fca4148bc9632c908e4a7fdea");
+
+            //customerGenreGys: 49c0a7ebcb4c4175bd5195837a6a9a13(字典id)  供应商(字典名称)
+            //put("customerGenreGys", "49c0a7ebcb4c4175bd5195837a6a9a13");
+
+        //customerTypeKh:a50dcf66b14a440282eed9e26c1d9482 (字典id)  客户类型  (字典名称)
+        put("customerTypeKh", "a50dcf66b14a440282eed9e26c1d9482");
+
+        //customerTypeGys:d28640b12a454246b172c49a604a89f5(字典id)  供应商类型(字典名称)
+        put("customerTypeGys", "d28640b12a454246b172c49a604a89f5");
+
+
+
 
     }};
 
