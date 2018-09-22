@@ -118,7 +118,9 @@ public class RoleButtonServiceImp implements RoleButtonService {
         return roleButtonMapper.findDataList(pd);
     }
 
-
+    public void deleteByColumnMap(Map columnMap) throws Exception {
+        roleButtonMapper.deleteByMap(columnMap);
+    }
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
     public List<RoleButton> findRoleButtonList(PageData object) {
         List<RoleButton> objectList = new ArrayList<RoleButton>();
@@ -137,9 +139,24 @@ public class RoleButtonServiceImp implements RoleButtonService {
      * 创建人：陈刚
      * 创建时间：2018-07-31
      */
-    public void deleteRoleButtonByRoleId(PageData object) throws Exception {
-        roleButtonMapper.deleteRoleButtonByRoleId(object);
+    public void deleteRoleButtonByRoleId(String roleId) throws Exception {
+        if (roleId == null || roleId.trim().length() == 0) {return;}
+
+        Map<String, Object> mapObject = new HashMap<String, Object>();
+        mapObject.put("role_id", roleId);
+
+        this.deleteByColumnMap(mapObject);
     }
+
+    public void deleteRoleButtonByButtonId(String buttonId) throws Exception {
+        if (buttonId == null || buttonId.trim().length() == 0) {return;}
+
+        Map<String, Object> mapObject = new HashMap<String, Object>();
+        mapObject.put("button_id", buttonId);
+
+        this.deleteByColumnMap(mapObject);
+    }
+
     /**
      * 添加角色按钮
      * 创建人：陈刚

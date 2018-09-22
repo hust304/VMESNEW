@@ -64,13 +64,6 @@ public interface RoleButtonMapper extends BaseMapper<RoleButton> {
 	 * 创建人：陈刚
 	 * 创建时间：2018-07-31
 	 */
-	@Select("deleteRoleButtonByRoleId")
-	void deleteRoleButtonByRoleId(PageData object);
-
-	/**
-	 * 创建人：陈刚
-	 * 创建时间：2018-07-31
-	 */
 	@Select("updateDisableByRoleId")
 	void updateDisableByRoleId(String roleId);
 

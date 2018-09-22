@@ -64,13 +64,6 @@ public interface RoleMenuMapper extends BaseMapper<RoleMenu> {
 	 * 创建人：陈刚
 	 * 创建时间：2018-07-31
 	 */
-	@Select("deleteRoleMenuByRoleId")
-	void deleteRoleMenuByRoleId(String roleId);
-
-	/**
-	 * 创建人：陈刚
-	 * 创建时间：2018-07-31
-	 */
 	@Select("updateDisableByRoleId")
 	void updateDisableByRoleId(String roleId);
 

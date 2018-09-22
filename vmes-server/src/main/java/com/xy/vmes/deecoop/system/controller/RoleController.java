@@ -542,9 +542,7 @@ public class RoleController {
                 //2. 当前角色ID-禁用(角色菜单)
                 roleMenuService.deleteRoleMenuByRoleId(roleID);
                 //3. 当前角色ID-禁用(角色按钮)
-                PageData mapObj = new PageData();
-                mapObj.put("roleId", roleID);
-                roleButtonService.deleteRoleButtonByRoleId(mapObj);
+                roleButtonService.deleteRoleButtonByRoleId(roleID);
 
             } catch (Exception e) {
                 throw new RestException("", e.getMessage());
@@ -840,10 +838,14 @@ public class RoleController {
             findMap.put("roleId", roleID);
 
             roleButtonIds = StringUtil.stringTrimSpace(roleButtonIds);
-            roleButtonIds = "'" + roleButtonIds.replace(",", "','") + "'";
-            findMap.put("queryStr", "button_id in (" + roleButtonIds + ")");
-
-            roleButtonService.deleteRoleButtonByRoleId(findMap);
+            String[] idArry = roleButtonIds.split(",");
+            for (String buttonId : idArry) {
+                try {
+                    roleButtonService.deleteRoleButtonByButtonId(buttonId);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
         }
 
         //4. 添加角色按钮(当前角色)

@@ -94,13 +94,13 @@ public interface UserRoleService {
      * 创建人：刘威
      * 创建时间：2018-07-26
      */
-    void deleteRoleByUserId(String userId) throws Exception;
-
+    void deleteUserRoleByUserId(String userId) throws Exception;
     /**
      * 创建人：陈刚
      * 创建时间：2018-07-31
      */
     void deleteUserRoleByRoleId(String roleId) throws Exception;
+
     /**
      * 添加用户角色
      * 创建人：陈刚

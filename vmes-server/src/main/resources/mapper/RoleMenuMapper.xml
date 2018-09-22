@@ -172,14 +172,6 @@
 
 
     <!-- ***************************************************以上为自动生成代码禁止修改，请在下面添加业务代码************************************************* -->
-    <!-- 通过roleId删除角色菜单信息 -->
-    <delete id="deleteRoleMenuByRoleId" parameterType="java.lang.String">
-        delete from
-            <include refid="tableName"/>
-        where
-            role_id = #{roleId}
-    </delete>
-
     <update id="updateDisableByRoleId" parameterType="java.lang.String" >
         update <include refid="tableName" />
         set isdisable = 0

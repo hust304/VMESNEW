@@ -173,22 +173,6 @@
 
     <!-- ***************************************************以上为自动生成代码禁止修改，请在下面添加业务代码************************************************* -->
 
-    <!-- 通过userId删除用户角色信息 刘威-->
-    <delete id="deleteRoleByUserId" parameterType="java.lang.String">
-        delete from
-        <include refid="tableName"></include>
-        where
-        user_id = #{userId}
-    </delete>
-
-    <!-- 通过roleId删除用户角色信息 -->
-    <delete id="deleteUserRoleByRoleId" parameterType="java.lang.String">
-        delete from
-            <include refid="tableName"/>
-        where
-            role_id = #{roleId}
-    </delete>
-
     <update id="updateDisableByRoleId" parameterType="java.lang.String" >
         update <include refid="tableName" />
             set isdisable = 0,udate = now()

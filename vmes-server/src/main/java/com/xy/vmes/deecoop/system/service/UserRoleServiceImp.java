@@ -181,8 +181,13 @@ public class UserRoleServiceImp implements UserRoleService {
      * 创建时间：2018-07-26
      */
     @Override
-    public void deleteRoleByUserId(String userId) throws Exception {
-        userRoleMapper.deleteRoleByUserId(userId);
+    public void deleteUserRoleByUserId(String userId) throws Exception {
+        if (userId == null || userId.trim().length() == 0) {return;}
+
+        Map<String, Object> mapObject = new HashMap<String, Object>();
+        mapObject.put("user_id", userId);
+
+        this.deleteByColumnMap(mapObject);
     }
 
     /**
@@ -190,7 +195,12 @@ public class UserRoleServiceImp implements UserRoleService {
      * 创建时间：2018-07-31
      */
     public void deleteUserRoleByRoleId(String roleId) throws Exception {
-        userRoleMapper.deleteUserRoleByRoleId(roleId);
+        if (roleId == null || roleId.trim().length() == 0) {return;}
+
+        Map<String, Object> mapObject = new HashMap<String, Object>();
+        mapObject.put("role_id", roleId);
+
+        this.deleteByColumnMap(mapObject);
     }
 
     /**
@@ -208,7 +218,7 @@ public class UserRoleServiceImp implements UserRoleService {
             String userID = strArry[i];
             //删除当前用户角色
             try {
-                this.deleteRoleByUserId(userID);
+                this.deleteUserRoleByUserId(userID);
             } catch (Exception e) {
                 e.printStackTrace();
             }

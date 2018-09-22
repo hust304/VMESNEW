@@ -362,7 +362,7 @@ public class UserController {
         user.setMobile(mobile);
         userService.update(user);
         //删除用户角色信息
-        userRoleService.deleteRoleByUserId(user.getId());
+        userRoleService.findRoleIdsByByUserID(user.getId());
         //新增用户角色信息
         if(!StringUtils.isEmpty(pd.getString("roleId"))){
             UserRole userRole = new UserRole();

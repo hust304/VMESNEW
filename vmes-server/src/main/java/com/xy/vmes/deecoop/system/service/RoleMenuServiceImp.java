@@ -123,7 +123,9 @@ public class RoleMenuServiceImp implements RoleMenuService {
         return roleMenuMapper.findDataList(pd);
     }
 
-
+    public void deleteByColumnMap(Map columnMap) throws Exception {
+        roleMenuMapper.deleteByMap(columnMap);
+    }
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
     public List<RoleMenu> findRoleMenuList(PageData object) {
         List<RoleMenu> objectList = new ArrayList<RoleMenu>();
@@ -144,8 +146,22 @@ public class RoleMenuServiceImp implements RoleMenuService {
      * 创建时间：2018-07-31
      */
     public void deleteRoleMenuByRoleId(String roleId) throws Exception {
-        roleMenuMapper.deleteRoleMenuByRoleId(roleId);
+        if (roleId == null || roleId.trim().length() == 0) {return;}
+
+        Map<String, Object> mapObject = new HashMap<String, Object>();
+        mapObject.put("role_id", roleId);
+
+        this.deleteByColumnMap(mapObject);
     }
+    public void deleteRoleMenuByMenuId(String menuId) throws Exception {
+        if (menuId == null || menuId.trim().length() == 0) {return;}
+
+        Map<String, Object> mapObject = new HashMap<String, Object>();
+        mapObject.put("menu_id", menuId);
+
+        this.deleteByColumnMap(mapObject);
+    }
+
     /**
      * 添加角色菜单
      * 创建人：陈刚

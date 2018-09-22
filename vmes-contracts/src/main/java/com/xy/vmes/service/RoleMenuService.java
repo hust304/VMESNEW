@@ -82,6 +82,8 @@ public interface RoleMenuService {
      * 创建时间：2018-07-31
      */
     void deleteRoleMenuByRoleId(String roleId) throws Exception;
+    void deleteRoleMenuByMenuId(String menuId) throws Exception;
+
     /**
      * 添加角色菜单
      * 创建人：陈刚
