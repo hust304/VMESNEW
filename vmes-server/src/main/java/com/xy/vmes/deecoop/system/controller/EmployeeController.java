@@ -230,8 +230,10 @@ public class EmployeeController {
     private EmployPost getMainEmployPost(String employId) throws Exception {
         Map columnMap = new HashMap();
         columnMap.put("employ_id",employId);
+        //是否兼岗(1:兼岗0:主岗)
         columnMap.put("isplurality","0");
-        columnMap.put("isdisable","0");
+        //是否禁用(0:已禁用 1:启用)
+        columnMap.put("isdisable","1");
         List<EmployPost> employPostList = employPostService.selectByColumnMap(columnMap);
         if(employPostList!=null&&employPostList.size()>0){
             return employPostList.get(0);
@@ -656,7 +658,7 @@ public class EmployeeController {
      * @author 刘威
      * @date 2018-08-02
      */
-    @PostMapping("/employee/")
+    @PostMapping("/employee/addEmployToUser")
     public ResultModel addEmployToUser()  throws Exception {
 //        employRoles ="[{\"employId\":\"3\",\"roleId\":\"1\"}," +
 //                "{\"employId\":\"3\",\"roleId\":1532599975000}," +
