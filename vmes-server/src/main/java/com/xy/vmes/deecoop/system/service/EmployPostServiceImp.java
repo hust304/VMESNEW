@@ -223,6 +223,15 @@ public class EmployPostServiceImp implements EmployPostService {
         return objectList;
     }
 
+    public List<EmployPost> findEmployPostListByPostId(String postId) {
+        if (postId == null || postId.trim().length() == 0) {return null;}
+
+        PageData findMap = new PageData();
+        findMap.put("postId", postId);
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+        return this.findEmployPostList(findMap);
+    }
+
     public EmployPost findEmployPost(PageData object) {
         if (object == null) {return null;}
 

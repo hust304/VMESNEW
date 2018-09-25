@@ -415,7 +415,7 @@ public class DictionaryServiceImp implements DictionaryService {
     public String checkDeleteDictionaryByIds(String ids) {
         if (ids == null || ids.trim().length() == 0) {return new String();}
 
-        String msgTemp_1 = "第 {0} 行: 存在子节点不可禁用！" + Common.SYS_ENDLINE_DEFAULT;
+        String msgTemp_1 = "勾选数据 第 {0} 行: 存在子节点不可禁用！" + Common.SYS_ENDLINE_DEFAULT;
 
         StringBuffer msgBuf = new StringBuffer();
         String[] id_arry = ids.split(",");

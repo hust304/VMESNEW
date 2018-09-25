@@ -73,6 +73,8 @@ public interface UserDefinedMenuService {
 
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+    void deleteUserDefinedMenuByUserId(String userId) throws Exception;
+    void deleteUserDefinedMenuByMenuId(String menuId) throws Exception;
 
     /**
      * 创建人：刘威

@@ -352,43 +352,62 @@ public class PostController {
      */
     @PostMapping("/post/deletePosts")
     public ResultModel deletePosts()  throws Exception {
-
         logger.info("################post/deletePosts 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
+
         PageData pd = HttpUtils.parsePageData();
         String postIds = pd.getString("ids");
+        if (postIds == null || postIds.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("参数错误：请至少选择一行数据！");
+            return model;
+        }
+
+        postIds = StringUtil.stringTrimSpace(postIds);
         String[] ids = postIds.split(",");
-        List<String> updateIdsList = new ArrayList<String>();
-        List<String> deleteIdsList = new ArrayList<String>();
-        Set<String> postOnlineSet = null;
-        Set<String> postDownlineSet = null;
-        if(ids!=null&&ids.length>0){
-            for(int i=0;i<ids.length;i++){
-                //岗位的删除和禁用要先判断该岗位下是否挂载在职人员，如果有不能删除禁用
-                if(checkExsitOnlineEmployee(ids[i],postOnlineSet)){
-                    model.putCode(1);
-                    model.putMsg("该岗位下面存在绑定的员工不能删除！");
-                    return model;
-                }else {
-                    //岗位的删除和禁用要先判断该岗位下是否挂载不在职人员，如果有只能禁用，如果没有可以删除
-                    if(checkExsitDownlineEmployee(ids[i],postDownlineSet)){
-                        updateIdsList.add(ids[i]);
-                    }else {
-                        deleteIdsList.add(ids[i]);
-                    }
-                }
-            }
+
+//        List<String> updateIdsList = new ArrayList<String>();
+//        List<String> deleteIdsList = new ArrayList<String>();
+//        Set<String> postOnlineSet = null;
+//        Set<String> postDownlineSet = null;
+//        if(ids!=null&&ids.length>0){
+//            for(int i=0;i<ids.length;i++){
+//                //岗位的删除和禁用要先判断该岗位下是否挂载在职人员，如果有不能删除禁用
+//                if(checkExsitOnlineEmployee(ids[i],postOnlineSet)){
+//                    model.putCode(1);
+//                    model.putMsg("该岗位下面存在绑定的员工不能删除！");
+//                    return model;
+//                }else {
+//                    //岗位的删除和禁用要先判断该岗位下是否挂载不在职人员，如果有只能禁用，如果没有可以删除
+//                    if(checkExsitDownlineEmployee(ids[i],postDownlineSet)){
+//                        updateIdsList.add(ids[i]);
+//                    }else {
+//                        deleteIdsList.add(ids[i]);
+//                    }
+//                }
+//            }
+//        }
+//        String[] updateIds =  updateIdsList.toArray(new String[updateIdsList.size()]);
+//        String[] deleteIds =  deleteIdsList.toArray(new String[deleteIdsList.size()]);
+//        if(updateIds!=null&&updateIds.length>0){
+//            postService.updateToDisableByIds(updateIds);
+//        }
+//        if(deleteIds!=null&&deleteIds.length>0){
+//            postService.deleteByIds(deleteIds);
+//        }
+
+        //当前岗位是否绑定有员工
+        String msgStr = postService.checkDelPostByIds(postIds);
+        if (msgStr != null && msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
         }
-        String[] updateIds =  updateIdsList.toArray(new String[updateIdsList.size()]);
-        String[] deleteIds =  deleteIdsList.toArray(new String[deleteIdsList.size()]);
-        if(updateIds!=null&&updateIds.length>0){
-            postService.updateToDisableByIds(updateIds);
-        }
-        if(deleteIds!=null&&deleteIds.length>0){
-            postService.deleteByIds(deleteIds);
-        }
+
+        //删除(vmes_post)岗位表
+        postService.deleteByIds(ids);
+
         Long endTime = System.currentTimeMillis();
         logger.info("################post/deletePosts 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;

@@ -3,11 +3,9 @@ package com.xy.vmes.deecoop.system.service;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.Common;
 import com.xy.vmes.deecoop.system.dao.PostMapper;
-import com.xy.vmes.entity.CoderuleEntity;
-import com.xy.vmes.entity.DeptPostEntity;
-import com.xy.vmes.entity.Post;
-import com.xy.vmes.entity.TreeEntity;
+import com.xy.vmes.entity.*;
 import com.xy.vmes.service.CoderuleService;
+import com.xy.vmes.service.EmployPostService;
 import com.xy.vmes.service.PostService;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
@@ -16,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.MessageFormat;
 import java.util.*;
 
 import com.yvan.Conv;
@@ -32,6 +31,8 @@ public class PostServiceImp implements PostService {
 
     @Autowired
     private PostMapper postMapper;
+    @Autowired
+    EmployPostService employPostService;
     @Autowired
     private CoderuleService coderuleService;
 
@@ -330,6 +331,26 @@ public class PostServiceImp implements PostService {
         return treeList;
     }
 
+    public String checkDelPostByIds(String ids) {
+        if (ids == null || ids.trim().length() == 0) {
+            return new String();
+        }
+
+        String msgTemp_1 = "勾选数据 第 {0} 行: 该岗位已经绑定员工不可删除！" + Common.SYS_ENDLINE_DEFAULT;
+
+        StringBuffer msgBuf = new StringBuffer();
+        String[] id_arry = ids.split(",");
+        for (int i = 0; i < id_arry.length; i++) {
+            String postId = id_arry[i];
+            List<EmployPost> objectList = employPostService.findEmployPostListByPostId(postId);
+            if (objectList != null && objectList.size() > 0) {
+                String msg_Str = MessageFormat.format(msgTemp_1, (i+1));
+                msgBuf.append(msg_Str);
+            }
+        }
+
+        return  msgBuf.toString();
+    }
 }
 
 

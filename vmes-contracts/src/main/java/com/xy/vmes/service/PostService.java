@@ -143,6 +143,8 @@ public interface PostService {
 
     TreeEntity deptPost2Tree(DeptPostEntity deptPost, TreeEntity tree);
     List<TreeEntity> deptPostList2TreeList(List<Map<String, Object>> mapList, List<TreeEntity> treeList);
+
+    String checkDelPostByIds(String ids);
 }
 
 

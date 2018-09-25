@@ -42,6 +42,8 @@ public class MenuController {
     @Autowired
     private MenuService menuService;
     @Autowired
+    UserDefinedMenuService userDefinedMenuService;
+    @Autowired
     private RoleMenuService roleMenuService;
     @Autowired
     private MenuButtonService menuButtonService;
@@ -610,12 +612,15 @@ public class MenuController {
 
                 //2. 删除(vmes_role_menu)角色菜单表
                 roleMenuService.deleteRoleMenuByMenuId(menuId);
+
+                //3. 删除(vmes_user_defined_menu)用户主页表
+                userDefinedMenuService.deleteUserDefinedMenuByMenuId(menuId);
             } catch (Exception e) {
                 throw new RestException("", e.getMessage());
             }
         }
 
-        //3. 删除(vmes_menu)菜单表
+        //4. 删除(vmes_menu)菜单表
         menuService.deleteByIds(id_arry);
 
         Long endTime = System.currentTimeMillis();

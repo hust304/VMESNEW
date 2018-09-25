@@ -44,6 +44,9 @@ public class UserController {
     @Autowired
     private UserRoleService userRoleService;
     @Autowired
+    UserDefinedMenuService userDefinedMenuService;
+
+    @Autowired
     private DepartmentService departmentService;
     @Autowired
     private CoderuleService coderuleService;
@@ -575,13 +578,16 @@ public class UserController {
         String userIds = pd.getString("ids");
         String[] ids = userIds.split(",");
 
-        //1. 删除(vmes_user_role)用户角色表
         for (int i = 0; i < ids.length; i++) {
             String userId = ids[i];
+            //1. 删除(vmes_user_role)用户角色表
             userRoleService.deleteUserRoleByUserId(userId);
+
+            //2.删除(vmes_user_defined_menu)用户主页表
+            userDefinedMenuService.deleteUserDefinedMenuByUserId(userId);
         }
 
-        //2. 删除(vmes_user)用户表
+        //3. 删除(vmes_user)用户表
         userService.deleteByIds(ids);
 
         Long endTime = System.currentTimeMillis();

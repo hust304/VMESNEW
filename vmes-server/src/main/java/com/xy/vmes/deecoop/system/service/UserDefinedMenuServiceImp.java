@@ -10,11 +10,9 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
+import java.util.*;
+
 import com.yvan.Conv;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
 * 说明：用户自定义菜单 实现类
@@ -120,7 +118,22 @@ public class UserDefinedMenuServiceImp implements UserDefinedMenuService {
 
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+    public void deleteUserDefinedMenuByUserId(String userId) throws Exception {
+        if (userId == null || userId.trim().length() == 0) {return;}
 
+        Map<String, Object> mapObject = new HashMap<String, Object>();
+        mapObject.put("user_id", userId);
+
+        this.deleteByColumnMap(mapObject);
+    }
+    public void deleteUserDefinedMenuByMenuId(String menuId) throws Exception {
+        if (menuId == null || menuId.trim().length() == 0) {return;}
+
+        Map<String, Object> mapObject = new HashMap<String, Object>();
+        mapObject.put("menu_id", menuId);
+
+        this.deleteByColumnMap(mapObject);
+    }
 
     /**
      * 创建人：刘威

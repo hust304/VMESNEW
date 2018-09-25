@@ -43,6 +43,8 @@ public class CompanyController {
     private UserService userService;
     @Autowired
     private UserRoleService userRoleService;
+    @Autowired
+    UserDefinedMenuService userDefinedMenuService;
 
     @Autowired
     private CoderuleService coderuleService;
@@ -587,9 +589,10 @@ public class CompanyController {
 
                 //2. 删除(vmes_user)用户表
                 userService.deleteById(userId);
-
                 //3. 删除(vmes_user_role)用户角色表
                 userRoleService.deleteUserRoleByUserId(userId);
+                //4. 删除(vmes_user_defined_menu)用户主页表
+                userDefinedMenuService.deleteUserDefinedMenuByUserId(userId);
             }
         }
 
