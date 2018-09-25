@@ -410,7 +410,7 @@ public class MenuButtonController {
      * @date 2018-08-03
      */
     @PostMapping("/button/deleteMeunButtons")
-    public ResultModel deleteMeunButtons() {
+    public ResultModel deleteMeunButtons() throws Exception {
         logger.info("################button/deleteMeunButtons 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
@@ -430,30 +430,44 @@ public class MenuButtonController {
             return model;
         }
 
-        //启用状态改为(禁用)-禁用执行物理删除
+//        //启用状态改为(禁用)-禁用执行物理删除
+//        String id_str = StringUtil.stringTrimSpace(ids);
+//        List<MenuButton> objectList = menuButtonService.findMenuButtonListByIds(id_str);
+//        Map<String, String> mapObj = menuButtonService.checkDeleteMenuButtonByList(objectList);
+//
+//        String updateIds = mapObj.get("updateDisableIds");
+//        if (updateIds != null && updateIds.trim().length() > 0) {
+//            String[] id_arry = updateIds.split(",");
+//            try {
+//                menuButtonService.updateToDisableByIds(id_arry);
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        }
+//
+//        String deleteIds = mapObj.get("deleteIds");
+//        if (deleteIds != null && deleteIds.trim().length() > 0) {
+//            String[] id_arry = deleteIds.split(",");
+//            try {
+//                menuButtonService.deleteByIds(id_arry);
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        }
+
         String id_str = StringUtil.stringTrimSpace(ids);
-        List<MenuButton> objectList = menuButtonService.findMenuButtonListByIds(id_str);
-        Map<String, String> mapObj = menuButtonService.checkDeleteMenuButtonByList(objectList);
+        String[] id_arry = id_str.split(",");
 
-        String updateIds = mapObj.get("updateDisableIds");
-        if (updateIds != null && updateIds.trim().length() > 0) {
-            String[] id_arry = updateIds.split(",");
-            try {
-                menuButtonService.updateToDisableByIds(id_arry);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+
+        for (int i = 0; i < id_arry.length; i++) {
+            String menuButtonId = id_arry[i];
+            //1. 删除(vmes_role_button)菜单按钮表
+            roleButtonService.deleteRoleButtonByButtonId(menuButtonId);
         }
 
-        String deleteIds = mapObj.get("deleteIds");
-        if (deleteIds != null && deleteIds.trim().length() > 0) {
-            String[] id_arry = deleteIds.split(",");
-            try {
-                menuButtonService.deleteByIds(id_arry);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+        //2. 删除(vmes_menu_button)菜单按钮表
+        menuButtonService.deleteByIds(id_arry);
+
         Long endTime = System.currentTimeMillis();
         logger.info("################button/deleteMeunButtons 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;

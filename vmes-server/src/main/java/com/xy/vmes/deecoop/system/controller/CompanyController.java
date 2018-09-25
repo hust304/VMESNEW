@@ -545,7 +545,7 @@ public class CompanyController {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
-        //1. 非空判断
+        //非空判断
         if (pageData == null || pageData.size() == 0) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("参数错误：用户登录参数(pageData)为空！/n");
@@ -553,8 +553,6 @@ public class CompanyController {
         }
 
         String companyIds = (String)pageData.get("companyIds");
-        String userRoleIds = (String)pageData.get("userRoleIds");
-        String userIds = (String)pageData.get("userIds");
         if (companyIds == null || companyIds.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("参数错误：请至少选择一行数据！/n");
@@ -564,30 +562,40 @@ public class CompanyController {
         String companyId_str = StringUtil.stringTrimSpace(companyIds);
         String[] companyId_arry = companyId_str.split(",");
 
-        String userRoleId_str = StringUtil.stringTrimSpace(userRoleIds);
-        String[] userRoleId_arry = companyId_str.split(",");
-
-
-        String userId_str = StringUtil.stringTrimSpace(userIds);
-        String[] userId_arry = companyId_str.split(",");
-
-        //2. 当前企业节点下是否含有子节点
+        //当前企业节点下是否含有子节点
         String msgStr = companyService.checkDeleteCompanyByIds(companyId_str);
         if (msgStr.trim().length() > 0) {
             model.putCode(Integer.valueOf(1));
             model.putMsg(msgStr);
             return model;
         }
+
+        for (int j = 0; j < companyId_arry.length; j++) {
+            String companyId = companyId_arry[j];
+
+            //(部门id,user_type)查询(vmes_user)用户表
+            PageData findMap = new PageData();
+            findMap.put("companyId", companyId);
+            findMap.put("deptId", companyId);
+            findMap.put("userType", Common.DICTIONARY_MAP.get("userType_company"));
+            findMap.put("mapSize", Integer.valueOf(findMap.size()));
+            User user = userService.findUser(findMap);
+
+            String userId = "";
+            if (user != null && user.getId() != null && user.getId().trim().length() > 0) {
+                userId = user.getId().trim();
+
+                //2. 删除(vmes_user)用户表
+                userService.deleteById(userId);
+
+                //3. 删除(vmes_user_role)用户角色表
+                userRoleService.deleteUserRoleByUserId(userId);
+            }
+        }
+
         //删除企业
         departmentService.deleteByIds(companyId_arry);
-        //删除企业管理员
-        userService.deleteByIds(userId_arry);
-        //删除企业管理员角色
-        userRoleService.deleteByIds(userRoleId_arry);
-        //禁用企业
-//        departmentService.updateDisableByIds(id_arry);
-        //禁用企业管理员
-//        userService.updateDisableByCompanyIds(id_arry);
+
         Long endTime = System.currentTimeMillis();
         logger.info("################company/deleteCompanyAdmins 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;

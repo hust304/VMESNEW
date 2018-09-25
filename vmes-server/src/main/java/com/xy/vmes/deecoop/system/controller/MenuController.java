@@ -7,10 +7,7 @@ import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.entity.Menu;
 import com.xy.vmes.entity.TreeEntity;
-import com.xy.vmes.service.ColumnService;
-import com.xy.vmes.service.MenuService;
-import com.xy.vmes.service.MenuTreeService;
-import com.xy.vmes.service.RoleMenuService;
+import com.xy.vmes.service.*;
 import com.yvan.*;
 import com.yvan.cache.RedisClient;
 import com.yvan.platform.RestException;
@@ -46,6 +43,8 @@ public class MenuController {
     private MenuService menuService;
     @Autowired
     private RoleMenuService roleMenuService;
+    @Autowired
+    private MenuButtonService menuButtonService;
     @Autowired
     private MenuTreeService menuTreeService;
     @Autowired
@@ -595,16 +594,30 @@ public class MenuController {
         String id_str = StringUtil.stringTrimSpace(ids);
         String[] id_arry = id_str.split(",");
 
-        //2. 当前菜单ID(菜单按钮)中是否使用中
-        String msgStr = menuService.checkDeleteMenuByIds(id_str);
-        if (msgStr.trim().length() > 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg(msgStr);
-            return model;
+//        //2. 当前菜单ID(菜单按钮)中是否使用中
+//        String msgStr = menuService.checkDeleteMenuByIds(id_str);
+//        if (msgStr.trim().length() > 0) {
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg(msgStr);
+//            return model;
+//        }
+
+        for (int i = 0; i < id_arry.length; i++) {
+            String menuId = id_arry[i];
+            try {
+                //1. 删除(vmes_menu_button)菜单按钮表
+                menuButtonService.deleteMenuButtonByMenuId(menuId);
+
+                //2. 删除(vmes_role_menu)角色菜单表
+                roleMenuService.deleteRoleMenuByMenuId(menuId);
+            } catch (Exception e) {
+                throw new RestException("", e.getMessage());
+            }
         }
 
-        //3. 禁用菜单
-        menuService.updateDisableByIds(id_arry);
+        //3. 删除(vmes_menu)菜单表
+        menuService.deleteByIds(id_arry);
+
         Long endTime = System.currentTimeMillis();
         logger.info("################menu/deleteMenus 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;

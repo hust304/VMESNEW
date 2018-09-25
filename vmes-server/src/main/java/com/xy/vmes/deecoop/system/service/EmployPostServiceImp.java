@@ -13,11 +13,9 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
+import java.util.*;
+
 import com.yvan.Conv;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
 * 说明：vmes_employ_post:员工岗位关系表 实现类
@@ -185,6 +183,23 @@ public class EmployPostServiceImp implements EmployPostService {
     }
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+    public void deleteEmployPostByEmployId(String employId) throws Exception {
+        if (employId == null || employId.trim().length() == 0) {return;}
+
+        Map<String, Object> mapObject = new HashMap<String, Object>();
+        mapObject.put("employ_id", employId);
+
+        this.deleteByColumnMap(mapObject);
+    }
+
+    public void deleteEmployPostByPostId(String postId) throws Exception {
+        if (postId == null || postId.trim().length() == 0) {return;}
+
+        Map<String, Object> mapObject = new HashMap<String, Object>();
+        mapObject.put("post_id", postId);
+
+        this.deleteByColumnMap(mapObject);
+    }
 
     /**
      * 创建人：刘威

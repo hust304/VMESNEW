@@ -44,9 +44,9 @@ public class EmployeeController {
     @Autowired
     private EmployeeService employeeService;
     @Autowired
-    private PostService postService;
-    @Autowired
     private EmployPostService employPostService;
+    @Autowired
+    private PostService postService;
 
     @Autowired
     private UserService userService;
@@ -489,12 +489,35 @@ public class EmployeeController {
             i = i + 1;
         }
 
-        //禁用员工信息
-        employeeService.updateToDisableByIds(idNewArry);
-        //禁用用户信息
-        userService.updateToDisableByEmployIds(idNewArry);
-        //禁用用户岗位信息
-        employPostService.updateToDisableByEmployIds(idNewArry);
+//        //禁用员工信息
+//        employeeService.updateToDisableByIds(idNewArry);
+//        //禁用用户信息
+//        userService.updateToDisableByEmployIds(idNewArry);
+//        //禁用用户岗位信息
+//        employPostService.updateToDisableByEmployIds(idNewArry);
+
+        for (int j = 0; j < idNewArry.length; j++) {
+            String employId = idNewArry[j];
+
+            //1. 删除(vmes_employ_post)员工岗位表
+            employPostService.deleteEmployPostByEmployId(employId);
+
+            //根据员工id查询(vmes_employee)-获取当前员工用户id
+            String userId = "";
+            Employee employee = employeeService.findEmployeeById(employId);
+            if (employee != null && employee.getUserId() != null && employee.getUserId().trim().length() > 0) {
+                userId = employee.getUserId().trim();
+
+                //2. 删除(vmes_user)用户表
+                userService.deleteById(userId);
+
+                //3. 删除(vmes_user_role)用户角色表
+                userRoleService.deleteUserRoleByUserId(userId);
+            }
+        }
+
+        //4. 删除(vmes_employee)员工表
+        employeeService.deleteByIds(idNewArry);
 
         Long endTime = System.currentTimeMillis();
         logger.info("################employee/deleteEmployees 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");

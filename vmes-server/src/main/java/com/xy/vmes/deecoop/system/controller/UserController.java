@@ -575,7 +575,14 @@ public class UserController {
         String userIds = pd.getString("ids");
         String[] ids = userIds.split(",");
 
-        userService.updateToDisableByIds(ids);
+        //1. 删除(vmes_user_role)用户角色表
+        for (int i = 0; i < ids.length; i++) {
+            String userId = ids[i];
+            userRoleService.deleteUserRoleByUserId(userId);
+        }
+
+        //2. 删除(vmes_user)用户表
+        userService.deleteByIds(ids);
 
         Long endTime = System.currentTimeMillis();
         logger.info("################user/deleteUsers 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");

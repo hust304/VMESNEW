@@ -128,6 +128,11 @@ public class MenuServiceImp implements MenuService {
     @Autowired
     private CoderuleService coderuleService;
 
+    @Override
+    public void deleteByIds(String[] ids) throws Exception{
+        menuMapper.deleteByIds(ids);
+    }
+
     /**
      * 创建人：陈刚
      * 创建时间：2018-08-08
