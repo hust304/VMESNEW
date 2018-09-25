@@ -245,10 +245,10 @@ public class EmployeeController {
      */
     @PostMapping("/employee/addEmployeeAndUser")
     public ResultModel addEmployeeAndUser()  throws Exception {
-
         logger.info("################employee/addEmployeeAndUser 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
+
         PageData pd = HttpUtils.parsePageData();
         String postId = pd.getString("postId");
         if(StringUtils.isEmpty(postId)){
@@ -280,7 +280,13 @@ public class EmployeeController {
         String companyId = post.getCompanyId();
 
         //新增员工信息
+        String roleId = pd.getString("roleId");
         Employee employee = (Employee)HttpUtils.pageData2Entity(pd, new Employee());
+        if ("1".equals(employee.getIsOpenUser()) && (roleId == null || roleId.trim().length() == 0) ) {
+            model.putCode(1);
+            model.putMsg("角色名称为空，角色名称为必填项不可为空！" );
+            return model;
+        }
 
         //公司内部的工号唯一性校验
         PageData pdExist = new PageData();
@@ -334,11 +340,10 @@ public class EmployeeController {
      */
     @PostMapping("/employee/updateEmployeeAndUser")
     public ResultModel updateEmployeeAndUser()  throws Exception {
-
         logger.info("################employee/updateEmployeeAndUser 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-
         ResultModel model = new ResultModel();
+
         PageData pd = HttpUtils.parsePageData();
         String employeeId = (String)pd.get("employeeId");
         String mobile = pd.getString("mobile");
@@ -360,14 +365,19 @@ public class EmployeeController {
             return model;
         }
 
-        //修改员工信息
+        String roleId = pd.getString("roleId");
         Employee employee = (Employee)HttpUtils.pageData2Entity(pd, new Employee());
-        employee.setId(employeeId);
+        if ("1".equals(employee.getIsOpenUser()) && (roleId == null || roleId.trim().length() == 0) ) {
+            model.putCode(1);
+            model.putMsg("角色名称为空，角色名称为必填项不可为空！" );
+            return model;
+        }
 
+        //修改员工信息
+        employee.setId(employeeId);
         mobile = mobile.trim();
         employee.setMobile(mobile);
         employeeService.update(employee);
-
 
         //获取员工主岗信息，找到当前员工所在部门
         //String employId = employee.getId();
@@ -396,7 +406,7 @@ public class EmployeeController {
             user.setMobile(employee.getMobile());
             user.setUuser(pd.getString("uuser"));
 
-            String roleId = (String)pd.get("roleId");
+            //String roleId = (String)pd.get("roleId");
             if (roleId != null && roleId.trim().length() > 0) {
                 //删除(用户id, 角色id)-(vmes_user_role:用户角色)
                 Map columnMap = new HashMap();
