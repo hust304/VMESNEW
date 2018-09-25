@@ -19,6 +19,9 @@ public interface UserEmployeeService {
      */
     List<Map<String, Object>> findViewUserEmployList(PageData object);
 
+    Map<String, Object> findViewUserEmployByUserId(String userId);
+    Map<String, Object> findViewUserEmployByEmployID(String employID);
+
     /**
      * 创建人：陈刚
      * 创建时间：2018-07-20

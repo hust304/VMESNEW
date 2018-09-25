@@ -100,7 +100,7 @@ public class Employee implements Serializable {
 	//备注
 	@TableField("remark")
 	private String remark;
-	//是否开通用户
+	//是否开通用户(0:不开通 1:开通 is null 不开通)
 	@TableField("isOpenUser")
 	private String isOpenUser;
 

@@ -299,18 +299,22 @@ public class UserServiceImp implements UserService {
     public User findUser(PageData object) {
         if (object == null) {return null;}
 
-        List<User> objectList = null;
-        try {
-            objectList = this.dataList(object);
-        } catch (Exception e) {
-            throw new RestException("", e.getMessage());
-        }
-
+        List<User> objectList = this.findUserList(object);
         if (objectList != null && objectList.size() > 0) {
             return objectList.get(0);
         }
 
         return null;
+    }
+
+    public User findUserById(String id) {
+        if (id == null || id.trim().length() == 0) {return null;}
+
+        PageData findMap = new PageData();
+        findMap.put("id", id);
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+
+        return this.findUser(findMap);
     }
 
     public List<User> findUserList(PageData object) {

@@ -137,6 +137,8 @@ public interface UserService {
     void createUserAndRole(PageData pd, Employee employee ) throws Exception;
 
     User findUser(PageData object);
+    User findUserById(String id);
+
     List<User> findUserList(PageData object);
 
     /**

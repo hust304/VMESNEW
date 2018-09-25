@@ -48,21 +48,22 @@
             b.email,
             b.sex,
             b.birthday,
+            b.leave_date as leaveDate,
             b.entry_date as entryDate,
-            b.native_place as nativePlace,
 
+            b.native_place as nativePlace,
             b.political,
             b.identity_number as identityNumber,
             b.marital,
             b.isdisable as employIsdisable,
-            b.cdate as employCdate,
 
+            b.cdate as employCdate,
             b.cuser as employCuser,
             b.udate as employUdate,
             b.uuser as employUuser,
             b.remark as employRemark,
-            b.isOpenUser as isOpenUser,
 
+            b.isOpenUser as isOpenUser,
             b.column_1 as employColumn1,
             b.column_2 as employColumn2,
             b.column_3 as employColumn3

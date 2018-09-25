@@ -39,6 +39,34 @@ public class UserEmployeeServiceImp implements UserEmployeeService {
         return objectList;
     }
 
+    public Map<String, Object> findViewUserEmployByUserId(String userId) {
+        if (userId == null || userId.trim().length() == 0) {return null;}
+
+        PageData findMap = new PageData();
+        findMap.put("userID", userId);
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+
+        List<Map<String, Object>> objectList = this.findViewUserEmployList(findMap);
+        if (objectList != null && objectList.size() > 0) {
+            return objectList.get(0);
+        }
+        return null;
+    }
+
+    public Map<String, Object> findViewUserEmployByEmployID(String employID) {
+        if (employID == null || employID.trim().length() == 0) {return null;}
+
+        PageData findMap = new PageData();
+        findMap.put("employID", employID);
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+
+        List<Map<String, Object>> objectList = this.findViewUserEmployList(findMap);
+        if (objectList != null && objectList.size() > 0) {
+            return objectList.get(0);
+        }
+        return null;
+    }
+
     /**
      * 创建人：陈刚
      * 创建时间：2018-07-20
@@ -218,6 +246,14 @@ public class UserEmployeeServiceImp implements UserEmployeeService {
             Date date = DateFormat.dateString2Date(dateStr, DateFormat.DEFAULT_DATETIME_FORMAT);
             if (date != null) {
                 object.setEntryDate(date);
+            }
+        }
+        //离职日期 leaveDate
+        if (mapObject.get("leaveDate") != null) {
+            String dateStr = mapObject.get("leaveDate").toString().trim();
+            Date date = DateFormat.dateString2Date(dateStr, DateFormat.DEFAULT_DATETIME_FORMAT);
+            if (date != null) {
+                object.setLeaveDate(date);
             }
         }
         //籍贯 nativePlace

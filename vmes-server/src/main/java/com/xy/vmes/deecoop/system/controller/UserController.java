@@ -42,6 +42,8 @@ public class UserController {
     @Autowired
     private UserService userService;
     @Autowired
+    private UserEmployeeService userEmployeeService;
+    @Autowired
     private UserRoleService userRoleService;
     @Autowired
     UserDefinedMenuService userDefinedMenuService;
@@ -582,9 +584,19 @@ public class UserController {
             String userId = ids[i];
             //1. 删除(vmes_user_role)用户角色表
             userRoleService.deleteUserRoleByUserId(userId);
-
-            //2.删除(vmes_user_defined_menu)用户主页表
+            //2. 删除(vmes_user_defined_menu)用户主页表
             userDefinedMenuService.deleteUserDefinedMenuByUserId(userId);
+
+            //3. 修改员工表(vmes_employee)-字段user_id 设置为 Null
+            //用户id查询(vmes_user)
+            Map<String, Object> mapObject = userEmployeeService.findViewUserEmployByUserId(userId);
+            if (mapObject != null) {
+                Employee employee = userEmployeeService.mapObject2Employee(mapObject, null);
+                employee.setUserId(null);
+                //是否开通用户(0:不开通 1:开通 is null 不开通)
+                employee.setIsOpenUser("0");
+                employeeService.updateAll(employee);
+            }
         }
 
         //3. 删除(vmes_user)用户表
