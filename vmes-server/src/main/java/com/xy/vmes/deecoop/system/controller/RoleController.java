@@ -1065,6 +1065,7 @@ public class RoleController {
                     Map option = new HashMap();
                     option.put("label",role.get("name"));
                     option.put("value",role.get("id"));
+                    option.put("remark",role.get("remark"));
                     options.add(option);
                 }
 
