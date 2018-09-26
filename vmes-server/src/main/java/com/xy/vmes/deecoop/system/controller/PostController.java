@@ -5,22 +5,16 @@ import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.Common;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.common.util.TreeUtil;
-import com.xy.vmes.entity.Column;
-import com.xy.vmes.entity.Department;
-import com.xy.vmes.entity.Post;
-import com.xy.vmes.entity.TreeEntity;
+import com.xy.vmes.entity.*;
 import com.xy.vmes.service.*;
 import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.YvanUtil;
-import com.yvan.cache.RedisClient;
 import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
-import com.yvan.template.ExcelAjaxTemplate;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +23,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
 
@@ -561,6 +554,62 @@ public class PostController {
 
             String queryIdStr_1 = departmentService.findDeptidById(deptId, null, "b.");
             findMap.put("postQuery", queryIdStr_1);
+        }
+
+        //1. 查询(部门+岗位)表
+        List<Map<String, Object>> deptPostList = postService.listDeptPost(findMap);
+        List<TreeEntity> treeList = postService.deptPostList2TreeList(deptPostList, null);
+
+        //2. 获得部门岗位树形结构
+        TreeEntity treeObj = TreeUtil.switchTree(deptId, treeList);
+        String treeJsonStr = YvanUtil.toJson(treeObj);
+        System.out.println("treeJsonStr: " + treeJsonStr);
+
+        //3. 树形结构返回前端
+        Map result = new HashMap();
+        result.put("treeList", treeObj);
+        model.putResult(result);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/post/treeDeptPosts 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+
+        return model;
+    }
+
+    /**
+     * 部门岗位树
+     *
+     * @author 陈刚
+     * @date 2018-08-28
+     */
+    @PostMapping("/post/treeDeptPostsNotMainPost")
+    public ResultModel treeDeptPostsNotMainPost() throws Exception {
+        logger.info("################/post/treeDeptPosts 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+
+        //部门id 为空查询整棵部门树
+        //部门id 非空查询当前部门下所有子部门(包含当前部门节点)
+        String deptId = pd.getString("currentCompanyId");
+
+        PageData findMap = new PageData();
+        //findMap.put("deptDisable", "1");
+        //findMap.put("postDisable", "1");
+        if (deptId != null && deptId.trim().length() > 0) {
+            String queryIdStr = departmentService.findDeptidById(deptId, null, null);
+            findMap.put("deptQuery", queryIdStr);
+
+            String queryIdStr_1 = departmentService.findDeptidById(deptId, null, "b.");
+            findMap.put("postQuery", queryIdStr_1);
+        }
+
+        //获取员工id-获取员工主岗id
+        String employeeId = pd.getString("employeeId");
+        EmployPost employPost = employPostService.findMainEmployPost(employeeId);
+        if (employPost != null && employPost.getPostId() != null && employPost.getPostId().trim().length() > 0) {
+            findMap.put("mainPostQuery", "a.id not in ('"+ employPost.getPostId().trim() +"')");
         }
 
         //1. 查询(部门+岗位)表
