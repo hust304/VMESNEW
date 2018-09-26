@@ -146,8 +146,8 @@ public class Common {
         //customerTypeGys:d28640b12a454246b172c49a604a89f5(字典id)  供应商类型(字典名称)
         put("customerTypeGys", "d28640b12a454246b172c49a604a89f5");
 
-
-
+        //e8d9461fbe704fdcbe2ee88efb310f2c(字典id)  省直辖市(字典名称)
+        put("province", "e8d9461fbe704fdcbe2ee88efb310f2c");
 
     }};
 
