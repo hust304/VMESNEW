@@ -41,8 +41,6 @@ public class TreeUtil {
         return treeList;
     }
 
-
-
     /**
      * 本方法为递归调用:
      * @param nodeObject
@@ -112,5 +110,86 @@ public class TreeUtil {
                 return object_0.getSerialNumber().compareTo(object_1.getSerialNumber());
             }
         });
+    }
+
+    private static void orderAcsTreeByLayer(List<TreeEntity> objectList) {
+        Collections.sort(objectList, new Comparator<Object>() {
+            public int compare(Object arg0, Object arg1) {
+                TreeEntity object_0 = (TreeEntity)arg0;
+                TreeEntity object_1 = (TreeEntity)arg1;
+                return object_0.getLayer().compareTo(object_1.getLayer());
+            }
+        });
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////
+    /**
+     * 遍历树形结构体List<TreeEntity>，获取树节点List<TreeEntity>
+     *     nodeType:= "root" 获取所有根节点
+     *     nodeType:= "leaf" 获取所有叶子节点
+     *
+     *
+     * @param nodeType  节点类型(root leaf)
+     * @param treeList  树形结构体
+     * @return
+     */
+    public static List<TreeEntity> findNodeListByTreeList(String nodeType, List<TreeEntity> treeList, List<TreeEntity> nodeList) {
+        if (nodeList == null) {nodeList = new ArrayList<TreeEntity>();}
+        if (treeList == null) {return nodeList;}
+        if (nodeType == null || nodeType.trim().length() == 0) {return nodeList;}
+
+        if ("root".equals(nodeType)) {
+            findRootNodeListByTreeList(treeList, nodeList);
+        } else if ("leaf".equals(nodeType)) {
+            findLeafNodeListByTreeList(treeList, nodeList);
+        }
+
+        //按菜单级别升序排列
+        orderAcsTreeByLayer(nodeList);
+
+        return nodeList;
+
+    }
+
+    /**
+     * 获取所有根节点List
+     * 本方法为递归调用:
+     *
+     * @param treeList   树形结构List
+     * @param nodeList   返回值根节点List
+     */
+    private static void findRootNodeListByTreeList(List<TreeEntity> treeList, List<TreeEntity> nodeList) {
+        for (TreeEntity treeNode : treeList) {
+            //获取当前节点下所有孩子List
+            List<TreeEntity> childList = treeNode.getChildren();
+            if (childList != null && childList.size() > 0) {
+                //获取当前节点-如果是根节点
+                TreeEntity rootNode = treeNode.clone();
+                rootNode.setChildren(null);
+                nodeList.add(rootNode);
+
+                findRootNodeListByTreeList(childList, nodeList);
+            }
+        }
+    }
+
+    /**
+     * 获取所有叶子节点List
+     * 本方法为递归调用:
+     *
+     * @param treeList   树形结构List
+     * @param nodeList   返回值根节点List
+     */
+    private static void findLeafNodeListByTreeList(List<TreeEntity> treeList, List<TreeEntity> nodeList) {
+        for (TreeEntity treeNode : treeList) {
+            //获取当前节点下所有孩子List
+            List<TreeEntity> childList = treeNode.getChildren();
+            if (childList != null && childList.size() > 0) {
+                findLeafNodeListByTreeList(childList, nodeList);
+            } else {
+                TreeEntity leafNode = treeNode.clone();
+                nodeList.add(leafNode);
+            }
+        }
     }
 }

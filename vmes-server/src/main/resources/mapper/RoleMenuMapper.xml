@@ -230,6 +230,9 @@
                     <if test="menuIsdisable != null and menuIsdisable != ''" >
                         and a.isdisable = #{menuIsdisable}
                     </if>
+                    <if test="rootStr != null and rootStr != ''" >
+                        or ${rootStr}
+                    </if>
 
                 </where>
             </otherwise>

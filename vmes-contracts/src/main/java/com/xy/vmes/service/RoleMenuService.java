@@ -130,6 +130,10 @@ public interface RoleMenuService {
 
     MenuEntity menu2MenuEntity(Menu menu, MenuEntity entity);
     List<MenuEntity> menuList2MenuEntityList(List<Menu> menuList, List<MenuEntity> entityList);
+
+    MenuEntity treeEntity2MenuEntity(TreeEntity treeEntity, MenuEntity entity);
+    List<MenuEntity> treeList2MenuEntityList(List<TreeEntity> treeList, List<MenuEntity> entityList);
+
     void orderAcsByLayer(List<MenuEntity> entityList);
 }
 
