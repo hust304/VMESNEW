@@ -7,6 +7,7 @@ import com.xy.vmes.entity.Menu;
 import com.xy.vmes.entity.MenuEntity;
 import com.xy.vmes.entity.RoleMenu;
 import com.xy.vmes.entity.TreeEntity;
+import com.xy.vmes.service.MenuService;
 import com.xy.vmes.service.MenuTreeService;
 import com.xy.vmes.service.RoleMenuService;
 import com.yvan.PageData;
@@ -33,6 +34,9 @@ public class RoleMenuServiceImp implements RoleMenuService {
     private RoleMenuMapper roleMenuMapper;
     @Autowired
     private MenuTreeService menuTreeService;
+
+    @Autowired
+    MenuService menuService;
 
     /**
     * 创建人：陈刚 自动创建，禁止修改
@@ -442,7 +446,20 @@ public class RoleMenuServiceImp implements RoleMenuService {
         return entityList;
     }
 
+    public String findMenuidByRoleIds(String roleIds) {
+        if (roleIds == null || roleIds.trim().length() == 0) {return new String();}
 
+        roleIds = StringUtil.stringTrimSpace(roleIds);
+        roleIds = "'" + roleIds.replace(",", "','") + "'";
+
+        PageData findMap = new PageData();
+        findMap.put("queryStr", "b.role_id in (" +  roleIds + ")");
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+        List<Map<String, Object>> mapList = this.findRoleMenuMapList(findMap);
+        List<Menu> menuList = this.mapList2MenuList(mapList, null);
+
+        return menuService.findMenuidByMenuList(menuList);
+    }
 
     public void orderAcsByLayer(List<MenuEntity> entityList) {
         Collections.sort(entityList, new Comparator<Object>() {

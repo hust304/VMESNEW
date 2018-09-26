@@ -684,7 +684,7 @@ public class RoleController {
         ResultModel model = new ResultModel();
 
         PageData pageData = HttpUtils.parsePageData();
-        String roleIds = (String)pageData.get("roleIds");
+        String roleIds = pageData.getString("roleIds");
         if (roleIds == null || roleIds.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("角色ID为空或空字符串！");
@@ -696,7 +696,19 @@ public class RoleController {
         String queryRoleIds = "b.role_id in (" +  roleIds + ")";
 
         PageData findMap = new PageData();
+        findMap.put("rootStr", "a.pid in ('root')");
         findMap.put("queryRoleIds", queryRoleIds);
+
+        //获取当前登录用户-角色id
+        String userRoleId = pageData.getString("userRoleId");
+        if (userRoleId != null && userRoleId.trim().length() > 0) {
+            String menuIds = roleMenuService.findMenuidByRoleIds(userRoleId);
+            menuIds = StringUtil.stringTrimSpace(menuIds);
+            menuIds = "'" + menuIds.replace(",", "','") + "'";
+
+            String queryStr = "a.id in (" +  menuIds + ")";
+            findMap.put("queryStr", queryStr);
+        }
 
         //1. 根据角色ID-获取全部菜单List<Map>
         List<Map<String, Object>> roleMenuMapList = roleMenuService.listMenuMapByRole(findMap);

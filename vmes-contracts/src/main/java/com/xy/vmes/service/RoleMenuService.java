@@ -135,6 +135,8 @@ public interface RoleMenuService {
     List<MenuEntity> treeList2MenuEntityList(List<TreeEntity> treeList, List<MenuEntity> entityList);
 
     void orderAcsByLayer(List<MenuEntity> entityList);
+
+    String findMenuidByRoleIds(String roleIds);
 }
 
 
