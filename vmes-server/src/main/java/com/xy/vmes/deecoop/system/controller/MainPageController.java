@@ -2,6 +2,7 @@ package com.xy.vmes.deecoop.system.controller;
 
 import com.xy.vmes.common.util.Common;
 import com.xy.vmes.common.util.StringUtil;
+import com.xy.vmes.common.util.TreeUtil;
 import com.xy.vmes.entity.*;
 import com.xy.vmes.service.ColumnService;
 import com.xy.vmes.service.RoleMenuService;
@@ -254,13 +255,17 @@ public class MainPageController {
             findMap.put("queryStr", queryIds);
         }
         findMap.put("menuIsdisable", "1");
+        findMap.put("rootStr", "pid = 'root'");
         findMap.put("mapSize", Integer.valueOf(findMap.size()));
-
         List<Map<String, Object>> mapList = roleMenuService.findRoleMenuMapList(findMap);
-        List<Menu> menuList = roleMenuService.mapList2MenuList(mapList, null);
-        List<MenuEntity> entityLiset = roleMenuService.menuList2MenuEntityList(menuList, null);
-        roleMenuService.orderAcsByLayer(entityLiset);
-        model.putResult(entityLiset);
+
+        List<TreeEntity> entityList = roleMenuService.roleMenuList2TreeList(mapList, null);
+        List<TreeEntity> treeList = TreeUtil.listSwitchTree(null, entityList);
+        List<TreeEntity> nodeList = TreeUtil.findNodeListByTreeList("leaf", treeList, null);
+
+        List<MenuEntity> menuLiset = roleMenuService.treeList2MenuEntityList(nodeList, null);
+        roleMenuService.orderAcsByLayer(menuLiset);
+        model.putResult(menuLiset);
 
         Long endTime = System.currentTimeMillis();
         logger.info("################mainPage/listRoleMeunAll 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");

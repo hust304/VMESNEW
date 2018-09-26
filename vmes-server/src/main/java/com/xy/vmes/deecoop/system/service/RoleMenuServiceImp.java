@@ -411,6 +411,39 @@ public class RoleMenuServiceImp implements RoleMenuService {
         return entityList;
     }
 
+    public MenuEntity treeEntity2MenuEntity(TreeEntity treeEntity, MenuEntity entity) {
+        if (entity == null) {entity = new MenuEntity();}
+        if (treeEntity == null) {return entity;}
+
+        //id;
+        entity.setId(treeEntity.getId());
+        //name;
+        entity.setName(treeEntity.getName());
+        //nameEn;
+        //entity.setNameEn(treeEntity.getNameEn());
+        //url;
+        entity.setUrl(treeEntity.getUrl());
+        //layer;
+        if (treeEntity.getLayer() != null) {
+            entity.setLayer(treeEntity.getLayer());
+        }
+
+        return entity;
+    }
+
+    public List<MenuEntity> treeList2MenuEntityList(List<TreeEntity> treeList, List<MenuEntity> entityList) {
+        if (entityList == null) {entityList = new ArrayList<MenuEntity>();}
+        if (treeList == null || treeList.size() == 0) {return entityList;}
+
+        for (TreeEntity treeEntity : treeList) {
+            MenuEntity entity = this.treeEntity2MenuEntity(treeEntity, null);
+            entityList.add(entity);
+        }
+        return entityList;
+    }
+
+
+
     public void orderAcsByLayer(List<MenuEntity> entityList) {
         Collections.sort(entityList, new Comparator<Object>() {
             public int compare(Object arg0, Object arg1) {

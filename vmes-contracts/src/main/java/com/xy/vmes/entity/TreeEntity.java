@@ -9,7 +9,7 @@ import java.util.List;
  * 创建人：陈刚
  * 创建时间：2018-07-18
  */
-public class TreeEntity {
+public class TreeEntity implements Cloneable {
     //(必须)当前节点名称
     private String name;
     //(必须)当前节点编码
@@ -132,5 +132,15 @@ public class TreeEntity {
     }
     public void setPostName(String postName) {
         this.postName = postName;
+    }
+
+    public TreeEntity clone() {
+        TreeEntity object = null;
+        try{
+            object = (TreeEntity)super.clone();
+        }catch(CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+        return object;
     }
 }
