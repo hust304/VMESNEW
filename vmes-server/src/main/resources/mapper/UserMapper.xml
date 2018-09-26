@@ -418,6 +418,9 @@
             <if test="deptId!= null and deptId != ''"><!-- 关键词检索 -->
                 and vmesuser.dept_id = #{deptId}
             </if>
+            <if test="currentCompanyId != null and currentCompanyId != ''">
+                and (company.id = #{currentCompanyId} or (company.pid = #{currentCompanyId} and usertype.name = '企业管理员'))
+            </if>
             <if test="queryStr != null and queryStr!=''" ><!-- 自定义查询 -->
                 and ${queryStr}
             </if>
@@ -467,7 +470,9 @@
             <if test="isdisable!= null and isdisable != ''"><!-- 关键词检索 -->
                 and vmesuser.isdisable = #{isdisable}
             </if>
-
+            <if test="currentCompanyId != null and currentCompanyId != ''">
+                and (company.id = #{currentCompanyId} or (company.pid = #{currentCompanyId} and usertype.name = '企业管理员'))
+            </if>
             <if test="deptName!= null and deptName != ''"><!-- 关键词检索 -->
                 and department.name LIKE CONCAT(CONCAT('%', #{deptName}),'%')
             </if>
