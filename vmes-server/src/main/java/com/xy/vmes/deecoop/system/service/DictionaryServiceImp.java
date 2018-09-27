@@ -3,9 +3,7 @@ package com.xy.vmes.deecoop.system.service;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.Common;
 import com.xy.vmes.deecoop.system.dao.DictionaryMapper;
-import com.xy.vmes.entity.Department;
 import com.xy.vmes.entity.Dictionary;
-import com.xy.vmes.entity.Post;
 import com.xy.vmes.entity.TreeEntity;
 import com.xy.vmes.service.DictionaryService;
 import com.yvan.PageData;
@@ -17,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.text.MessageFormat;
 import java.util.*;
 
-import com.yvan.Conv;
 
 /**
 * 说明：数据字典 实现类
@@ -431,6 +428,35 @@ public class DictionaryServiceImp implements DictionaryService {
         }
 
         return  msgBuf.toString();
+    }
+
+    public String findDictionaryIdById(String id, Integer layer, String prefix) {
+        if (id == null || id.trim().length() == 0) {return null;}
+        if (prefix == null) {prefix = new String();}
+
+        if (layer == null) {
+            Dictionary object = this.findDictionaryById(id);
+            if (object == null || object.getLayer() == null) {return null;}
+            layer = object.getLayer();
+        }
+
+        prefix = prefix.trim();
+        String queryStr = "";
+        if (0 == layer.intValue()) {
+            queryStr = prefix + "id_0 = '" + id + "'";
+        } else if (1 == layer.intValue()) {
+            queryStr = prefix + "id_1 = '" + id + "'";
+        } else if (2 == layer.intValue()) {
+            queryStr = prefix + "id_2 = '" + id + "'";
+        } else if (3 == layer.intValue()) {
+            queryStr = prefix + "id_3 = '" + id + "'";
+        } else if (4 == layer.intValue()) {
+            queryStr = prefix + "id_4 = '" + id + "'";
+        } else if (5 == layer.intValue()) {
+            queryStr = prefix + "id_5 = '" + id + "'";
+        }
+
+        return queryStr;
     }
 }
 

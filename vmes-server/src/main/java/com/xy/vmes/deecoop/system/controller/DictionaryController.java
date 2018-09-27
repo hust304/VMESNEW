@@ -578,14 +578,25 @@ public class DictionaryController {
     public ResultModel treeDictionarys()  throws Exception {
         logger.info("################dictionary/treeDictionarys 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-
         ResultModel model = new ResultModel();
+
         PageData pd = HttpUtils.parsePageData();
+        //获取全部字典树-查询条件
         pd.put("isdisable", "1");
         pd.put("queryStr", " and company_id = '"+pd.get("currentCompanyId")+"' or  isopen = '1'");
 
+        //获取指定节点及该节点下子节点-字典树-查询条件
+        String pid = null;
+        String dictionaryKey = pd.getString("dictionaryKey");
+        if (dictionaryKey != null && dictionaryKey.trim().length() > 0 && Common.DICTIONARY_MAP.get(dictionaryKey) != null) {
+            pid = Common.DICTIONARY_MAP.get(dictionaryKey).trim();
+            pd.put("pid", pid);
+            pd.put("selfQueryStr", "id = '" + pid + "'");
+            pd.put("queryStr", null);
+        }
+
         List<TreeEntity> treeList = dictionaryService.getTreeList(pd);
-        TreeEntity treeObj = TreeUtil.switchTree(null, treeList);
+        TreeEntity treeObj = TreeUtil.switchTree(pid, treeList);
 //        String treeJsonStr = YvanUtil.toJson(treeObj);
 //        System.out.println("treeJsonStr: " + treeJsonStr);
 

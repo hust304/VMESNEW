@@ -162,6 +162,8 @@ public interface DictionaryService {
      * @return
      */
     String checkDeleteDictionaryByIds(String ids);
+
+    String findDictionaryIdById(String id, Integer layer, String prefix);
 }
 
 
