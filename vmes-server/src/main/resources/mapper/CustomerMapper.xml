@@ -249,6 +249,9 @@
             <if test="currentCompanyId != null and currentCompanyId != ''">
                 and cust.company_id=#{currentCompanyId}
             </if>
+            <if test="genre != null and genre != ''" >
+                and cust.genre=#{genre}
+            </if>
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >
                 and ${queryStr}
