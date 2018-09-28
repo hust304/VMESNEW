@@ -615,12 +615,12 @@ public class MenuButtonController {
             return model;
         }
 
-        //常理类(com.xy.vmes.common.util.Common.SYS_MENU_MAP)中定义Map<菜单key, 菜单id>
-        if (Common.SYS_MENU_MAP.get(menuKey) == null || Common.SYS_MENU_MAP.get(menuKey).trim().length() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("菜单Key:" + menuKey + " 常理类Common.SYS_MENU_MAP 无定义！");
-            return model;
-        }
+//        //常理类(com.xy.vmes.common.util.Common.SYS_MENU_MAP)中定义Map<菜单key, 菜单id>
+//        if (Common.SYS_MENU_MAP.get(menuKey) == null || Common.SYS_MENU_MAP.get(menuKey).trim().length() == 0) {
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg("菜单Key:" + menuKey + " 常理类Common.SYS_MENU_MAP 无定义！");
+//            return model;
+//        }
 
         List<MenuButtonEntity> buttonList = new ArrayList<MenuButtonEntity>();
         String roleIds = pageData.getString("roleId");
@@ -650,7 +650,7 @@ public class MenuButtonController {
 
             //3. (菜单id, 按钮id)-查询(vmes_menu_button)-菜单按钮表
             findMap = new PageData();
-            findMap.put("menuId", Common.SYS_MENU_MAP.get(menuKey));
+            findMap.put("menuId", menuKey);
             //是否禁用(0:已禁用 1:启用)
             findMap.put("isdisable", "1");
             if (buttonIds.trim().length() > 0) {
