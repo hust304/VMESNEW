@@ -135,18 +135,21 @@ public class Common {
 
         //基础-客户供应商
         //customerGenre:b166cc9397744f0cbbea3244647305ee(字典id)  客户供应商属性(字典名称)
-        put("customerGenre", "b166cc9397744f0cbbea3244647305ee");
+        put("customerSupplierGenre", "b166cc9397744f0cbbea3244647305ee");
             //customerGenreKh:  df7cb67fca4148bc9632c908e4a7fdea(字典id)  客户(字典名称)
             //put("customerGenreKh", "df7cb67fca4148bc9632c908e4a7fdea");
 
             //customerGenreGys: 49c0a7ebcb4c4175bd5195837a6a9a13(字典id)  供应商(字典名称)
             //put("customerGenreGys", "49c0a7ebcb4c4175bd5195837a6a9a13");
 
-        //customerTypeKh:a50dcf66b14a440282eed9e26c1d9482 (字典id)  客户类型  (字典名称)
-        put("customerTypeKh", "a50dcf66b14a440282eed9e26c1d9482");
+        //supplierType:a50dcf66b14a440282eed9e26c1d9482 (字典id)  客户类型  (字典名称)
+        put("customerType", "a50dcf66b14a440282eed9e26c1d9482");
 
-        //customerTypeGys:d28640b12a454246b172c49a604a89f5(字典id)  供应商类型(字典名称)
-        put("customerTypeGys", "d28640b12a454246b172c49a604a89f5");
+        //supplierType:d28640b12a454246b172c49a604a89f5(字典id)  供应商类型(字典名称)
+        put("supplierType", "d28640b12a454246b172c49a604a89f5");
+
+        //equipmentType:7d24edc83dcf4619b618bf0b0eba2851(字典id)  设备类型(字典名称)
+        put("equipmentType", "7d24edc83dcf4619b618bf0b0eba2851");
 
         //e8d9461fbe704fdcbe2ee88efb310f2c(字典id)  省直辖市(字典名称)
         put("province", "e8d9461fbe704fdcbe2ee88efb310f2c");

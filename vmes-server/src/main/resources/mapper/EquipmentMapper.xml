@@ -154,8 +154,8 @@
         ) VALUES
             (replace(uuid(), '-', ''),'Equipment','companyId','公司ID-组织架构',1, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'Equipment','qrcode','二维码-(图片相对路径)',2, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'Equipment','code','产品编码',3, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'Equipment','name','产品名称',4, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'Equipment','code','设备编码',3, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'Equipment','name','设备名称',4, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'Equipment','nameEn','英文名称',5, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'Equipment','spec','规格型号',6, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'Equipment','typeName','设备类型',7, '1','1','1','0',now(), 'admin'),
@@ -171,7 +171,7 @@
             (replace(uuid(), '-', ''),'Equipment','uuser','修改用户id',17, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'Equipment','udate','修改时间',18, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'Equipment','photo','设备图片',19, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'Equipment','id','id',0, '1','1','1','0',now(), 'admin')
+            (replace(uuid(), '-', ''),'Equipment','id','id',0, '1','0','1','0',now(), 'admin')
     </insert>
 
 
@@ -357,6 +357,9 @@
             </if>
             <if test="isdisable!= null and isdisable != ''">
                 and equipment.isdisable = #{isdisable}
+            </if>
+            <if test="pid!= null and pid != '' and layer != null"><!-- 关键词检索 -->
+                and department.id_${layer} = #{pid}
             </if>
         </where>
         <if test="orderStr != null and orderStr != ''" >
