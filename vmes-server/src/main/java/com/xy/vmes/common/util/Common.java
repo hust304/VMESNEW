@@ -127,9 +127,11 @@ public class Common {
         //基础-产品物料
         //productGenre: 4c4bd1b59954438c8bf56facd97a0c7e 货品属性
         put("productGenre", "4c4bd1b59954438c8bf56facd97a0c7e");
-
         //productType: a39ac4c1e02e45788eb03a52a5e9a972 货品类型
         put("productType", "a39ac4c1e02e45788eb03a52a5e9a972");
+        //基础-产品物料(计量单位-结算单位)-公用一个字典id
+        //productUnit: 0ae6e79890db490585e13f34bf00ea4b 货品计量单位
+        put("productUnit", "0ae6e79890db490585e13f34bf00ea4b");
 
         //基础-客户供应商
         //customerGenre:b166cc9397744f0cbbea3244647305ee(字典id)  客户供应商属性(字典名称)

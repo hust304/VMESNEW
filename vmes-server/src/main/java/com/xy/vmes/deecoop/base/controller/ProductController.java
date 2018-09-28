@@ -238,6 +238,14 @@ public class ProductController {
         result.put("titles",titlesList);
 
         PageData pd = HttpUtils.parsePageData();
+        pd.put("orderStr", "prod.cdate desc");
+        String genreId = pd.getString("genreId");
+        if (genreId != null && genreId.trim().length() > 0
+            && !Common.DICTIONARY_MAP.get("productGenre").equals(genreId)
+        ) {
+            pd.put("genre", genreId);
+        }
+
         Pagination pg = HttpUtils.parsePagination(pd);
         List<Map> varMapList = new ArrayList();
         List<Map> varList = productService.getDataListPage(pd, pg);

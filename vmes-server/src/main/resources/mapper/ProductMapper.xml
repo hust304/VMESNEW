@@ -255,7 +255,7 @@
             prod.name_en nameEn,
             prod.spec spec,
             prod.genre genre,
-            prod.genre.name genreName
+            genre.name genreName,
             prod.unit unit,
             unit.name unitName,
 
@@ -283,29 +283,27 @@
             left join vmes_dictionary lastUnit on prod.last_unit = lastUnit.id
             left join vmes_dictionary type on prod.type = type.id
         <where>
+            <if test="code != null and code != ''">
+                and prod.code LIKE CONCAT(CONCAT(#{code}),'%')
+            </if>
+            <if test="name != null and name != ''">
+                and prod.name LIKE CONCAT(CONCAT(#{name}),'%')
+            </if>
+            <if test="currentCompanyId != null and currentCompanyId != ''" >
+                and prod.company_id=#{currentCompanyId}
+            </if>
+            <if test="genre != null and genre != ''" >
+                and prod.genre=#{genre}
+            </if>
+
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >
                 and ${queryStr}
-            </if>
-            <if test="code != null and code != ''">
-                and code LIKE CONCAT(CONCAT(#{code}),'%')
-            </if>
-            <if test="name != null and name != ''">
-                and name LIKE CONCAT(CONCAT(#{name}),'%')
-            </if>
-            <if test="currentCompanyId != null and currentCompanyId != ''" >
-                and company_id=#{currentCompanyId}
-            </if>
-            <if test="genre != null and genre != ''" >
-                and genre=#{genre}
             </if>
         </where>
         <if test="orderStr != null and orderStr != ''" >
             order by ${orderStr}
         </if>
     </select>
-
-
-
 
 </mapper>
