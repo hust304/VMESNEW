@@ -5,6 +5,7 @@ import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.entity.Equipment;
+import com.xy.vmes.service.CoderuleService;
 import com.xy.vmes.service.ColumnService;
 import com.xy.vmes.service.EquipmentService;
 import com.xy.vmes.service.FileService;
@@ -46,6 +47,9 @@ public class EquipmentController {
 
     @Autowired
     private FileService fileService;
+
+    @Autowired
+    private CoderuleService coderuleService;
 
     /**
     * @author 刘威 自动创建，禁止修改
@@ -375,6 +379,14 @@ public class EquipmentController {
         PageData pd = HttpUtils.parsePageData();
         Equipment equipment = (Equipment)HttpUtils.pageData2Entity(pd, new Equipment());
         String url = fileService.createQRCode("equipment", YvanUtil.toJson(equipment));
+        if(StringUtils.isEmpty(pd.getString("currentCompanyId"))){
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("当前用户公司ID为空！");
+            return model;
+        }
+        equipment.setCompanyId(pd.getString("currentCompanyId"));
+        String code = coderuleService.createCoder(pd.getString("currentCompanyId"),"vmes_equipment","E");
+        equipment.setCode(code);
         equipment.setQrcode(url);
         equipmentService.save(equipment);
         Long endTime = System.currentTimeMillis();
