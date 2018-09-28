@@ -633,7 +633,7 @@ public class DictionaryController {
         }else if("1".equals(isglobal)){
             pd.put("queryStr", "  and isglobal = '"+pd.get("isglobal")+"'  and ( id = '"+id+"' or id_1 = '"+id+"'  ) " + queryStr);
         }
-
+        pd.put("selfQueryStr", "id = '" + id + "'");
 
         List<TreeEntity> treeList = dictionaryService.getTreeList(pd);
         TreeEntity treeObj = TreeUtil.switchTree(id, treeList);
