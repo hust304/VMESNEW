@@ -683,7 +683,9 @@ public class RoleController {
         Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
 
+        //A. 获取全部菜单树-查询条件-(企业管理员账号)
         PageData pageData = HttpUtils.parsePageData();
+        //角色List页面-勾选的角色id
         String roleIds = pageData.getString("roleIds");
         if (roleIds == null || roleIds.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
@@ -696,21 +698,25 @@ public class RoleController {
         String queryRoleIds = "b.role_id in (" +  roleIds + ")";
 
         PageData findMap = new PageData();
-        findMap.put("rootStr", "a.pid in ('root')");
         findMap.put("queryRoleIds", queryRoleIds);
 
-        //获取当前登录用户-角色id
-        String userRoleId = pageData.getString("userRoleId");
-        if (userRoleId != null && userRoleId.trim().length() > 0) {
-            String menuIds = roleMenuService.findMenuidByRoleIds(userRoleId);
-            menuIds = StringUtil.stringTrimSpace(menuIds);
-            menuIds = "'" + menuIds.replace(",", "','") + "'";
+        //B. 获取用户角色相关菜单树-查询条件-
+        //获取当前登录用户-用户类型
+        String userType = pageData.getString("userType");
+        if (!Common.DICTIONARY_MAP.get("userType_admin").equals(userType)) {
+            //获取当前登录用户-用户角色id
+            String userRoleId = pageData.getString("userRoleId");
+            if (userRoleId != null && userRoleId.trim().length() > 0) {
+                String menuIds = roleMenuService.findMenuidByRoleIds(userRoleId);
+                menuIds = StringUtil.stringTrimSpace(menuIds);
+                menuIds = "'" + menuIds.replace(",", "','") + "'";
 
-            String queryStr = "a.id in (" +  menuIds + ")";
-            findMap.put("queryStr", queryStr);
+                String queryStr = "a.id in (" +  menuIds + ")";
+                findMap.put("queryStr", queryStr);
+            }
+            findMap.put("rootStr", "a.pid in ('root')");
         }
 
-        //1. 根据角色ID-获取全部菜单List<Map>
         List<Map<String, Object>> roleMenuMapList = roleMenuService.listMenuMapByRole(findMap);
         List<TreeEntity> treeList = roleMenuService.roleMenuList2TreeList(roleMenuMapList, null);
         List<TreeEntity> menuTreeList = TreeUtil.listSwitchTree(null, treeList);
