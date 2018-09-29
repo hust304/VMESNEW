@@ -42,6 +42,8 @@ public class UserController {
     @Autowired
     private UserService userService;
     @Autowired
+    private EmployeeService employeeService;
+    @Autowired
     private UserEmployeeService userEmployeeService;
     @Autowired
     private UserRoleService userRoleService;
@@ -54,8 +56,7 @@ public class UserController {
     private CoderuleService coderuleService;
     @Autowired
     private ColumnService columnService;
-    @Autowired
-    private EmployeeService employeeService;
+
     /**
      * @author 刘威 自动创建，禁止修改
      * @date 2018-07-26
@@ -209,31 +210,35 @@ public class UserController {
      */
     @PostMapping("/user/addUser")
     public ResultModel addUser()  throws Exception {
-
         logger.info("################user/addUser 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
+
         PageData pd = HttpUtils.parsePageData();
-        //新增用户信息
         User user = (User)HttpUtils.pageData2Entity(pd, new User());
 
-        if(!StringUtils.isEmpty(pd.getString("employeeId"))){
-            user.setEmployId(pd.getString("employeeId"));
-        }
-
-
+        //A. 手机号验证
         String mobile = user.getMobile();
-        if(StringUtils.isEmpty(mobile)){
+        if(mobile == null || mobile.trim().length() == 0){
             model.putCode(1);
             model.putMsg("该用户手机号不能为空！");
             return model;
         }
-        mobile = mobile.trim();
-        user.setMobile(mobile);
+        if (mobile.trim().length() != 11) {
+            model.putCode(1);
+            model.putMsg("手机号长度错误！");
+            return model;
+        }
+        if(isExistMobile(pd)){
+            model.putCode(1);
+            model.putMsg("该用户手机号已存在！");
+            return model;
+        }
+        user.setMobile(mobile.trim());
+
+        //B. 通过手机号-设置用户默认密码
         //如果用户设置了密码那就用设置的密码加密，如果没有设置密码，那么就用手机号后六位进行加密作为默认密码
         if(StringUtils.isEmpty(user.getPassword())){
-
             if(mobile!=null&&mobile.trim().length()>6){
                 mobile = mobile.trim();
                 String password = mobile.substring(mobile.length()-6,mobile.length());
@@ -247,6 +252,7 @@ public class UserController {
             user.setPassword(MD5Utils.MD5(user.getPassword()));
         }
 
+        //C. 部门
         String deptId = pd.getString("deptId");
         if(StringUtils.isEmpty(deptId)){
             model.putCode(3);
@@ -262,6 +268,7 @@ public class UserController {
             user.setCompanyId(companyId);
         }
 
+        //设置用户编码
         if(StringUtils.isEmpty(user.getUserCode())){
             String code = coderuleService.createCoder(companyId,"vmes_user");
             if(StringUtils.isEmpty(code)){
@@ -271,23 +278,11 @@ public class UserController {
             }
             user.setUserCode(code);
         }
-        if(isExistUserCode(user.getUserCode())){
-            model.putCode(5);
-            model.putMsg("该用户账号号已存在！");
-            return model;
-        }
 
-        if(isExistMobile(pd)){
-            model.putCode(6);
-            model.putMsg("该用户手机号已存在！");
-            return model;
-        }
-
-        List<Map>  countUserNum =  checkCompanyUserNum(deptId,null);
-
+        //D. 验证企业用户数
+        List<Map> countUserNum = checkCompanyUserNum(deptId,null);
         if(countUserNum!=null&&countUserNum.size()>0){
             Map userNumMap = countUserNum.get(0);
-
             if(userNumMap.get("isFull")!=null){
                 String isFull = userNumMap.get("isFull").toString();
                 if(!StringUtils.isEmpty(isFull)&&"1".equals(isFull)){
@@ -302,23 +297,33 @@ public class UserController {
             return model;
         }
 
+        String employeeId = pd.getString("employeeId");
+        if (employeeId != null && employeeId.trim().length() > 0) {
+            user.setEmployId(employeeId);
+        }
         userService.save(user);
 
-
-        //新增用户角色信息
-        if(!StringUtils.isEmpty(pd.getString("roleId"))){
+        String roleId = pd.getString("roleId");
+        if (roleId != null && roleId.trim().length() > 0) {
             UserRole userRole = new UserRole();
-            userRole.setRoleId(pd.getString("roleId"));
+            userRole.setRoleId(roleId);
             userRole.setUserId(user.getId());
             userRole.setCuser(pd.getString("cuser"));
             userRole.setUuser(pd.getString("uuser"));
             userRoleService.save(userRole);
         }
 
-        //员工信息绑定
-        if(!StringUtils.isEmpty(pd.getString("employeeId"))){
-            Employee employee = employeeService.selectById(pd.getString("employeeId"));
+        if (employeeId != null && employeeId.trim().length() > 0) {
+            Employee employee = employeeService.findEmployeeById(employeeId);
+            //mobile:手机号码
+            employee.setMobile(user.getMobile());
+            //email:邮箱地址
+            employee.setEmail(user.getEmail());
+            //user_name:姓名->name:员工姓名
+            employee.setName(user.getUserName());
             employee.setUserId(user.getId());
+            //是否开通用户(0:不开通 1:开通 is null 不开通)
+            employee.setIsOpenUser("1");
             employeeService.update(employee);
         }
 
@@ -334,40 +339,56 @@ public class UserController {
      */
     @PostMapping("/user/updateUser")
     public ResultModel updateUser()  throws Exception {
-
         logger.info("################user/updateUser 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
+
         PageData pd = HttpUtils.parsePageData();
-        //修改用户信息
         User user = (User)HttpUtils.pageData2Entity(pd, new User());
 
-        if(!StringUtils.isEmpty(pd.getString("employeeId"))){
-            user.setEmployId(pd.getString("employeeId"));
-        }
-
-        if(!StringUtils.isEmpty(user.getPassword())){
-            user.setPassword(MD5Utils.MD5(user.getPassword()));
-        }
-
+        //A. 手机号验证
         String mobile = user.getMobile();
-        if(StringUtils.isEmpty(mobile)){
-            model.putCode(2);
+        if(mobile == null || mobile.trim().length() == 0){
+            model.putCode(1);
             model.putMsg("该用户手机号不能为空！");
             return model;
         }
-
+        if (mobile.trim().length() != 11) {
+            model.putCode(1);
+            model.putMsg("手机号长度错误！");
+            return model;
+        }
         if(isExistMobile(pd)){
             model.putCode(1);
             model.putMsg("该用户手机号已存在！");
             return model;
         }
-        mobile = mobile.trim();
-        user.setMobile(mobile);
+        user.setMobile(mobile.trim());
+
+        //B. 通过手机号-设置用户默认密码
+        //如果用户设置了密码那就用设置的密码加密，如果没有设置密码，那么就用手机号后六位进行加密作为默认密码
+        if(StringUtils.isEmpty(user.getPassword())){
+            if(mobile!=null&&mobile.trim().length()>6){
+                mobile = mobile.trim();
+                String password = mobile.substring(mobile.length()-6,mobile.length());
+                user.setPassword(MD5Utils.MD5(password));
+            }else{
+                model.putCode(2);
+                model.putMsg("输入手机号长度错误！");
+                return model;
+            }
+        }else{
+            user.setPassword(MD5Utils.MD5(user.getPassword()));
+        }
+
+        String employeeId = pd.getString("employeeId");
+        if (employeeId != null && employeeId.trim().length() > 0) {
+            user.setEmployId(employeeId);
+        }
         userService.update(user);
+
         //删除用户角色信息
-        userRoleService.findRoleIdsByByUserID(user.getId());
+        userRoleService.deleteUserRoleByUserId(user.getId());
         //新增用户角色信息
         if(!StringUtils.isEmpty(pd.getString("roleId"))){
             UserRole userRole = new UserRole();
@@ -378,10 +399,17 @@ public class UserController {
             userRoleService.save(userRole);
         }
 
-        //员工信息绑定
-        if(!StringUtils.isEmpty(pd.getString("employeeId"))){
-            Employee employee = employeeService.selectById(pd.getString("employeeId"));
+        if (employeeId != null && employeeId.trim().length() > 0) {
+            Employee employee = employeeService.findEmployeeById(employeeId);
+            //mobile:手机号码
+            employee.setMobile(user.getMobile());
+            //email:邮箱地址
+            employee.setEmail(user.getEmail());
+            //user_name:姓名->name:员工姓名
+            employee.setName(user.getUserName());
             employee.setUserId(user.getId());
+            //是否开通用户(0:不开通 1:开通 is null 不开通)
+            employee.setIsOpenUser("1");
             employeeService.update(employee);
         }
 
@@ -477,6 +505,8 @@ public class UserController {
         if(!StringUtils.isEmpty(employeeId)){
             Employee employee = employeeService.selectById(employeeId);
             employee.setUserId(null);
+            //是否开通用户(0:不开通 1:开通 is null 不开通)
+            employee.setIsOpenUser("0");
             employeeService.updateAll(employee);
         }
 

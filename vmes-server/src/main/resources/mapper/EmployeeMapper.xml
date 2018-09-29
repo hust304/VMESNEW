@@ -497,7 +497,7 @@
         left join vmes_employ_post employpost on employpost.employ_id = employee.id and employpost.isdisable = '1'
         left join vmes_post post on post.id = employpost.post_id
         left join vmes_department dept on dept.id = post.dept_id
-        left join vmes_user vmesuser on vmesuser.id = employee.user_id
+        left join vmes_user vmesuser on employee.id = vmesuser.employ_id
         left join vmes_user_role userrole on userrole.user_id = vmesuser.id
         left join vmes_role role on role.id = userrole.role_id
         left join vmes_dictionary dictionary on employee.political = dictionary.id
