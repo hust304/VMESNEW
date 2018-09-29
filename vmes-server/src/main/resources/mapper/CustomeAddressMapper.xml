@@ -233,15 +233,15 @@
         from
         <include refid="tableName"></include>
         <where>
+            <if test="customerId != null and customerId != ''" >
+                and customer_id=#{code}
+            </if>
+            <if test="isdefault != null and isdefault != ''" >
+                and isdefault=#{isdefault}
+            </if>
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >
                 and ${queryStr}
-            </if>
-            <if test="code != null and code != ''">
-                and code LIKE CONCAT(CONCAT('%', #{code}),'%')
-            </if>
-            <if test="name != null and name != ''">
-                and name LIKE CONCAT(CONCAT('%', #{name}),'%')
             </if>
         </where>
         <if test="orderStr != null and orderStr != ''" >

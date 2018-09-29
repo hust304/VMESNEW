@@ -255,7 +255,17 @@ public class ProductController {
                 Map<String, String> varMap = new HashMap<String, String>();
                 varMap.putAll(varModelMap);
                 for (Map.Entry<String, String> entry : varMap.entrySet()) {
-                    varMap.put(entry.getKey(),map.get(entry.getKey())!=null?map.get(entry.getKey()).toString():"");
+                    String mapKey = entry.getKey();
+                    Object mapValue = map.get(mapKey);
+                    //获取产品物料-自定义属性
+                    if ("prodProperty".equals(mapKey)) {
+                        String prodId = (String)map.get("id");
+                        List<ProductProperty> objectList = productPropertyService.findProductPropertyListByProdId(prodId);
+                        String jsonString = productPropertyService.prodPropertyList2JsonString(objectList);
+                        varMap.put(mapKey, jsonString);
+                    } else {
+                        varMap.put(mapKey, mapValue != null ? mapValue.toString() : "");
+                    }
                 }
                 varMapList.add(varMap);
             }

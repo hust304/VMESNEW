@@ -95,6 +95,10 @@ public interface ProductPropertyService {
 
     void addProductProperty(String cuser, String prodId, List<ProductProperty> objectList);
 
+    Map<String, String> prodProperty2Map(ProductProperty object, Map<String, String> mapObject);
+
+    String prodPropertyList2JsonString(List<ProductProperty> objectList);
+
 
 }
 

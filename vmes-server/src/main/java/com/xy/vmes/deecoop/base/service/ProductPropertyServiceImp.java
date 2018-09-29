@@ -5,6 +5,7 @@ import com.xy.vmes.deecoop.base.dao.ProductPropertyMapper;
 import com.xy.vmes.entity.ProductProperty;
 import com.xy.vmes.service.ProductPropertyService;
 import com.yvan.PageData;
+import com.yvan.YvanUtil;
 import com.yvan.platform.RestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -231,7 +232,42 @@ public class ProductPropertyServiceImp implements ProductPropertyService {
         }
     }
 
+    public Map<String, String> prodProperty2Map(ProductProperty object, Map<String, String> mapObject) {
+        if (mapObject == null) {mapObject = new LinkedHashMap<String, String>();}
+        if (object == null) {return mapObject;}
 
+        //name 属性名称
+        String name = "";
+        if (object.getName() != null && object.getName().trim().length() > 0) {
+            name = object.getName().trim();
+        }
+        mapObject.put("name", name);
+
+        //value 属性值
+        String value = "";
+        if (object.getValue() != null && object.getValue().trim().length() > 0) {
+            value = object.getValue().trim();
+        }
+        mapObject.put("value", value);
+
+        //remark 备注
+        //private String ;
+
+        return mapObject;
+    }
+
+    public String prodPropertyList2JsonString(List<ProductProperty> objectList) {
+        List<Map<String, String>> mapList = new ArrayList<Map<String, String>>();
+
+        if (objectList != null && objectList.size() > 0) {
+            for (ProductProperty object : objectList) {
+                Map<String, String> mapObject = this.prodProperty2Map(object, null);
+                mapList.add(mapObject);
+            }
+        }
+
+        return YvanUtil.toJson(mapList);
+    }
 }
 
 
