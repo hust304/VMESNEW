@@ -197,9 +197,9 @@ public class CustomeAddressController {
     * @author 陈刚 自动创建，可以修改
     * @date 2018-09-20
     */
-    @PostMapping("/customeAddress/listPageCustomeAddresss")
-    public ResultModel listPageCustomeAddresss() throws Exception {
-        logger.info("################customeAddress/listPageCustomeAddresss 执行开始 ################# ");
+    @PostMapping("/customeAddress/listPageCustomeAddress")
+    public ResultModel listPageCustomeAddress() throws Exception {
+        logger.info("################customeAddress/listPageCustomeAddress 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
 
@@ -250,7 +250,7 @@ public class CustomeAddressController {
 
         model.putResult(result);
         Long endTime = System.currentTimeMillis();
-        logger.info("################customeAddress/listPageCustomeAddresss 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################customeAddress/listPageCustomeAddress 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
