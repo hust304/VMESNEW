@@ -270,7 +270,7 @@ public class CustomeAddressController {
 
         //1. 非空判断
         String customerId = pageData.getString("customerId");
-        if (customerId == null || customerId.trim().length() > 0) {
+        if (customerId == null || customerId.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("客户id为空或空字符串！");
             return model;
@@ -356,10 +356,17 @@ public class CustomeAddressController {
             model.putMsg("客户id为空或空字符串！");
             return model;
         }
-        String addrId = pageData.getString("addrId");
-        if (addrId == null || addrId.trim().length() > 0) {
+        String addressId = pageData.getString("addressId");
+        if (addressId == null || addressId.trim().length() > 0) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("地址id为空或空字符串！");
+            return model;
+        }
+
+        List<CustomeAddress> addressList = customeAddressService.findCustomeAddressListByCustId(customerId);
+        if (addressList != null && addressList.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("当前客户地址只有一条，不可修改默认属性！");
             return model;
         }
 
@@ -370,7 +377,7 @@ public class CustomeAddressController {
         mapObject.put("isdefault", "0");
         customeAddressService.updateDefaultByCustId(mapObject);
 
-        CustomeAddress custAddrDB = customeAddressService.findCustomeAddressById(addrId);
+        CustomeAddress custAddrDB = customeAddressService.findCustomeAddressById(addressId);
         //是否默认(0:非默认 1:默认)
         custAddrDB.setIsdefault("1");
         customeAddressService.update(custAddrDB);

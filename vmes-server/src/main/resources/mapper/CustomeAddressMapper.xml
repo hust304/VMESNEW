@@ -234,7 +234,7 @@
         <include refid="tableName"></include>
         <where>
             <if test="customerId != null and customerId != ''" >
-                and customer_id=#{code}
+                and customer_id=#{customerId}
             </if>
             <if test="isdefault != null and isdefault != ''" >
                 and isdefault=#{isdefault}
