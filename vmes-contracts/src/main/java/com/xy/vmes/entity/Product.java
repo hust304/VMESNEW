@@ -80,7 +80,12 @@ public class Product implements Serializable {
 	@TableField("photo")
 	private String photo;
 
-
+	//库存数量
+	@TableField("stock_count")
+	private BigDecimal stockCount;
+	//乐观锁
+	@TableField("version")
+	private Integer version;
 
 	public void setId(String id) {
 		this.id = id;
@@ -208,7 +213,18 @@ public class Product implements Serializable {
 	public String getPhoto() {
 		return photo;
 	}
-
+	public BigDecimal getStockCount() {
+		return stockCount;
+	}
+	public void setStockCount(BigDecimal stockCount) {
+		this.stockCount = stockCount;
+	}
+	public Integer getVersion() {
+		return version;
+	}
+	public void setVersion(Integer version) {
+		this.version = version;
+	}
 /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 
