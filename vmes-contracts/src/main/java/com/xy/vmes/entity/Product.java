@@ -83,6 +83,9 @@ public class Product implements Serializable {
 	//库存数量
 	@TableField("stock_count")
 	private BigDecimal stockCount;
+	//安全库存数量
+	@TableField("safety_count")
+	private BigDecimal safetyCount;
 	//乐观锁
 	@TableField("version")
 	private Integer version;
@@ -218,6 +221,12 @@ public class Product implements Serializable {
 	}
 	public void setStockCount(BigDecimal stockCount) {
 		this.stockCount = stockCount;
+	}
+	public BigDecimal getSafetyCount() {
+		return safetyCount;
+	}
+	public void setSafetyCount(BigDecimal safetyCount) {
+		this.safetyCount = safetyCount;
 	}
 	public Integer getVersion() {
 		return version;
