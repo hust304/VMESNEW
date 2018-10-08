@@ -344,7 +344,7 @@ public class UserController {
         ResultModel model = new ResultModel();
 
         PageData pd = HttpUtils.parsePageData();
-        User user = (User)HttpUtils.pageData2Entity(pd, new User());
+        User user = userService.findUserById(pd.getString("id"));
 
         //A. 手机号验证
         String mobile = user.getMobile();
@@ -381,12 +381,6 @@ public class UserController {
             user.setPassword(MD5Utils.MD5(user.getPassword()));
         }
 
-        String employeeId = pd.getString("employeeId");
-        if (employeeId != null && employeeId.trim().length() > 0) {
-            user.setEmployId(employeeId);
-        }
-        userService.update(user);
-
         //删除用户角色信息
         userRoleService.deleteUserRoleByUserId(user.getId());
         //新增用户角色信息
@@ -399,19 +393,38 @@ public class UserController {
             userRoleService.save(userRole);
         }
 
+        //原绑定员工
+        String old_employeeId = user.getEmployId();
+        if (old_employeeId != null && old_employeeId.trim().length() > 0) {
+            Employee employee = employeeService.findEmployeeById(old_employeeId);
+            if (employee != null) {
+                employee.setUserId(null);
+                //是否开通用户(0:不开通 1:开通 is null 不开通)
+                employee.setIsOpenUser("0");
+                employeeService.updateAll(employee);
+            }
+        }
+
+        //新绑定员工
+        String employeeId = pd.getString("employeeId");
         if (employeeId != null && employeeId.trim().length() > 0) {
             Employee employee = employeeService.findEmployeeById(employeeId);
+            if (employee != null) {
+                employee.setUserId(user.getId());
+                //是否开通用户(0:不开通 1:开通 is null 不开通)
+                employee.setIsOpenUser("1");
+                employeeService.update(employee);
+            }
+
+            user.setEmployId(employeeId);
             //mobile:手机号码
-            employee.setMobile(user.getMobile());
+            user.setMobile(employee.getMobile());
             //email:邮箱地址
-            employee.setEmail(user.getEmail());
+            user.setEmail(employee.getEmail());
             //user_name:姓名->name:员工姓名
-            employee.setName(user.getUserName());
-            employee.setUserId(user.getId());
-            //是否开通用户(0:不开通 1:开通 is null 不开通)
-            employee.setIsOpenUser("1");
-            employeeService.update(employee);
+            user.setUserName(employee.getName());
         }
+        userService.update(user);
 
         Long endTime = System.currentTimeMillis();
         logger.info("################user/updateUser 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
