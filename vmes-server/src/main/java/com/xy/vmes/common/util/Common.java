@@ -176,6 +176,11 @@ public class Common {
         //******仓库******
         //warehouse: '仓库',
         put("warehouse", "15a6c4ca92fe42a0a82320287538b727");
+            //基础 base ff1330a1a96246c0b041451b3212bbee
+            put("base", "ff1330a1a96246c0b041451b3212bbee");
+                //库位配置 position e4fd9624f7b94e499dd2b7015b3df332
+                put("position", "e4fd9624f7b94e499dd2b7015b3df332");
+                //库位初始化 () bb00131c20b64b1da92321b0f71ef129
 
         //table: '报表',
         put("table", "156b96f3245d4a5ba45ca3c2e67fd803");

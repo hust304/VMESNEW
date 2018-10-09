@@ -501,7 +501,7 @@ public class CoderuleServiceImp implements CoderuleService {
         //companyID 公司ID
         object.setCompanyID(companyID);
         //length 指定位数(5)
-        object.setLength(Common.CODE_RULE_LENGTH_3);
+        object.setLength(Common.CODE_RULE_LENGTH_5);
 
 
         //firstName 第一段编码为自定义前缀字符
@@ -553,7 +553,7 @@ public class CoderuleServiceImp implements CoderuleService {
         //companyID 公司ID
         object.setCompanyID(companyID);
         //length 指定位数(5)
-        object.setLength(Common.CODE_RULE_LENGTH_3);
+        object.setLength(Common.CODE_RULE_LENGTH_5);
 
 
         //firstName 第一段编码为自定义前缀字符

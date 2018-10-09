@@ -1,5 +1,7 @@
 package com.xy.vmes.common.util;
 
+import com.yvan.Numbers;
+
 public class StringUtil {
     /**
      * ','分隔字符串去掉空格
@@ -28,4 +30,17 @@ public class StringUtil {
 
         return str;
     }
+
+    public static long char2Number(String str) {
+        if (str == null || str.trim().length() == 0) {return -1L;}
+
+        try {
+            return Numbers.toNumber(str, Numbers.MAX_RADIX);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return -1L;
+    }
+
 }
