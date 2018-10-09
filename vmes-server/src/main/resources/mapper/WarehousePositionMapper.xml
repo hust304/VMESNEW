@@ -9,10 +9,8 @@
 
     <!-- 批量删除 自动创建，禁止修改-->
     <delete id="deleteByIds" parameterType="java.lang.String">
-        delete from
-        <include refid="tableName"></include>
-        where
-        id in
+        delete from vmes_warehouse_position
+        where id in
         <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
             #{item}
         </foreach>
@@ -21,9 +19,8 @@
 
     <!-- 自动创建，禁止修改-->
     <update id="updateToDisableByIds" parameterType="java.lang.String" >
-        update
-        <include refid="tableName"></include>
-        set isdisable = '0' ,udate = now()
+        update vmes_warehouse_position
+            set isdisable = '0' ,udate = now()
         where
         id in
         <foreach item="item" index="index" collection="array" open="(" separator="," close=")">

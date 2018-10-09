@@ -141,6 +141,14 @@ public class WarehousePositionServiceImp implements WarehousePositionService {
         return this.findWarehousePosition(findMap);
     }
 
+    public WarehousePosition findWarehousePositionByRoot() {
+        PageData findMap = new PageData();
+        findMap.put("pid", "root");
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+
+        return this.findWarehousePosition(findMap);
+    }
+
     public List<WarehousePosition> findWarehousePositionList(PageData object) {
         if (object == null) {return null;}
 

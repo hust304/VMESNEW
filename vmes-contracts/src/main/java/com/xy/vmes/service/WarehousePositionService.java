@@ -1,7 +1,6 @@
 package com.xy.vmes.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
-import com.xy.vmes.entity.Department;
 import com.xy.vmes.entity.WarehousePosition;
 import com.yvan.PageData;
 
@@ -72,6 +71,7 @@ public interface WarehousePositionService {
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
     WarehousePosition findWarehousePosition(PageData object);
     WarehousePosition findWarehousePositionById(String id);
+    WarehousePosition findWarehousePositionByRoot();
 
     List<WarehousePosition> findWarehousePositionList(PageData object);
     List<WarehousePosition> findWarehousePositionListByPid(String pid);
