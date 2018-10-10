@@ -26,6 +26,11 @@ public class TreeEntity implements Cloneable {
     private String label;
     private String value;
 
+    //BomID
+    private String bomId;
+    private String bomTreeId;
+    private String pathId;
+
     //当前节点-是否绑定角色(1:绑定 0:未绑定)
     private Boolean isBindRole;
     //当前节点ID
@@ -142,5 +147,29 @@ public class TreeEntity implements Cloneable {
             e.printStackTrace();
         }
         return object;
+    }
+
+    public String getBomId() {
+        return bomId;
+    }
+
+    public void setBomId(String bomId) {
+        this.bomId = bomId;
+    }
+
+    public String getPathId() {
+        return pathId;
+    }
+
+    public void setPathId(String pathId) {
+        this.pathId = pathId;
+    }
+
+    public String getBomTreeId() {
+        return bomTreeId;
+    }
+
+    public void setBomTreeId(String bomTreeId) {
+        this.bomTreeId = bomTreeId;
     }
 }
