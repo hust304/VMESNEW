@@ -530,31 +530,60 @@ public class UserController {
 
 
     /**
-     * @author 刘威 解除当前用户绑定员工
+     * @author 刘威 当前用户绑定员工
      * @date 2018-07-26
      */
     @PostMapping("/user/updateEmployeeUserBind")
-    public ResultModel updateEmployeeUserBind()  throws Exception {
+    public ResultModel updateEmployeeUserBind() throws Exception {
 
         logger.info("################user/updateEmployeeUserBind 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
+
         String userId = pd.getString("id");
+        if (userId == null || userId.trim().length() == 0) {
+            model.putCode(1);
+            model.putMsg("用户id为空或空字符串！");
+            return model;
+        }
+
+        User user = userService.selectById(userId);
+
+        //原绑定员工
+        String old_employeeId = user.getEmployId();
+        if (old_employeeId != null && old_employeeId.trim().length() > 0) {
+            Employee employee = employeeService.findEmployeeById(old_employeeId);
+            if (employee != null) {
+                employee.setUserId(null);
+                //是否开通用户(0:不开通 1:开通 is null 不开通)
+                employee.setIsOpenUser("0");
+                employeeService.updateAll(employee);
+            }
+        }
+
+        //新绑定员工
         String employeeId = pd.getString("employeeId");
+        if (employeeId != null && employeeId.trim().length() > 0) {
+            Employee employee = employeeService.findEmployeeById(employeeId);
+            if (employee != null) {
+                employee.setUserId(user.getId());
+                //是否开通用户(0:不开通 1:开通 is null 不开通)
+                employee.setIsOpenUser("1");
+                employeeService.update(employee);
+            }
 
-        if(!StringUtils.isEmpty(userId)){
-            User user = userService.selectById(userId);
             user.setEmployId(employeeId);
-            userService.update(user);
+            //mobile:手机号码
+            user.setMobile(employee.getMobile());
+            //email:邮箱地址
+            user.setEmail(employee.getEmail());
+            //user_name:姓名->name:员工姓名
+            user.setUserName(employee.getName());
         }
 
-        if(!StringUtils.isEmpty(employeeId)){
-            Employee employee = employeeService.selectById(employeeId);
-            employee.setUserId(userId);
-            employeeService.update(employee);
-        }
+        userService.update(user);
 
         Long endTime = System.currentTimeMillis();
         logger.info("################user/updateEmployeeUserBind 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
