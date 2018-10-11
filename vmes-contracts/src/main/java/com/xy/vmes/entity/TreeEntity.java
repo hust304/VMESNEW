@@ -10,12 +10,25 @@ import java.util.List;
  * 创建时间：2018-07-18
  */
 public class TreeEntity implements Cloneable {
+    //树形结构基本属性
+    //当前节点ID
+    private String id;
+    //当前节点父ID
+    private String pid;
     //(必须)当前节点名称
     private String name;
-    //(必须)当前节点编码
-    private String url;
     //(必须)是否禁用(0:已禁用 1:启用)
     private String isdisable;
+    //当前节点级别
+    private Integer layer;
+    //节点顺序
+    private Integer serialNumber;
+
+    //菜单树
+    //当前节点编码
+    private String url;
+    //当前节点图标
+    private String icon;
 
     //岗位树(属性)"dept" 部门 "post" 岗位
     private String type;
@@ -31,18 +44,13 @@ public class TreeEntity implements Cloneable {
     private String bomTreeId;
     private String pathId;
 
+    //仓库树
+    //virtual_genre:虚拟库-属性
+    private String virtualGenre;
+
     //当前节点-是否绑定角色(1:绑定 0:未绑定)
     private Boolean isBindRole;
-    //当前节点ID
-    private String id;
-    //当前节点父ID
-    private String pid;
-    //当前节点级别
-    private Integer layer;
-    //菜单顺序
-    private Integer serialNumber;
-    //当前节点图标
-    private String icon;
+
     //(必须)当前节点子节点
     private List<TreeEntity> children = new ArrayList<TreeEntity>();
 
@@ -138,7 +146,6 @@ public class TreeEntity implements Cloneable {
     public void setPostName(String postName) {
         this.postName = postName;
     }
-
     public TreeEntity clone() {
         TreeEntity object = null;
         try{
@@ -148,28 +155,28 @@ public class TreeEntity implements Cloneable {
         }
         return object;
     }
-
     public String getBomId() {
         return bomId;
     }
-
     public void setBomId(String bomId) {
         this.bomId = bomId;
     }
-
     public String getPathId() {
         return pathId;
     }
-
     public void setPathId(String pathId) {
         this.pathId = pathId;
     }
-
     public String getBomTreeId() {
         return bomTreeId;
     }
-
     public void setBomTreeId(String bomTreeId) {
         this.bomTreeId = bomTreeId;
+    }
+    public String getVirtualGenre() {
+        return virtualGenre;
+    }
+    public void setVirtualGenre(String virtualGenre) {
+        this.virtualGenre = virtualGenre;
     }
 }

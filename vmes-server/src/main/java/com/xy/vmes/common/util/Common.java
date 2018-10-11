@@ -154,6 +154,15 @@ public class Common {
         //e8d9461fbe704fdcbe2ee88efb310f2c(字典id)  省直辖市(字典名称)
         put("province", "e8d9461fbe704fdcbe2ee88efb310f2c");
 
+        //仓库货位表(vmes_warehouse_position)
+        put("warehouseRoot", "df930aaecb7111e884ad00163e105f05");
+            //实体库
+            put("warehouseEntity", "2d75e49bcb9911e884ad00163e105f05");
+            //虚拟库
+            put("warehouseVirtual", "56f5e83dcb9911e884ad00163e105f05");
+
+        //db46547d1bcb4c14baa228db1e8aaffe(字典id)  部门货位名称(字典名称)
+        put("departmentPosition", "db46547d1bcb4c14baa228db1e8aaffe");
     }};
 
     ///////////////--菜单名称--///////////////////////////////////////////////////////////////////
