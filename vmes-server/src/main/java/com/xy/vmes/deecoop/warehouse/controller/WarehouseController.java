@@ -322,6 +322,7 @@ public class WarehouseController {
 
         String id = Conv.createUuid();
         warehouse.setId(id);
+        warehouse.setWarehouseId(id);
 
         //获取仓库编码
         String companyID = pageData.getString("currentCompanyId");
@@ -393,6 +394,7 @@ public class WarehouseController {
 
         String id = Conv.createUuid();
         warehouse.setId(id);
+        warehouse.setWarehouseId(id);
 
         //获取仓库编码
         String companyID = pageData.getString("currentCompanyId");

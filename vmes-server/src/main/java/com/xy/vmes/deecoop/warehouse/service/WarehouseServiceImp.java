@@ -13,7 +13,6 @@ import com.yvan.Numbers;
 import com.yvan.PageData;
 import com.yvan.YvanUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -373,6 +372,11 @@ public class WarehouseServiceImp implements WarehouseService {
             objectDB.setPathId(paterPathId + "-" + objectDB.getId());
         }
 
+        //warehouseId 仓库ID
+        if (paterObject.getWarehouseId() != null && paterObject.getWarehouseId().trim().length() > 0) {
+            objectDB.setWarehouseId(paterObject.getWarehouseId().trim());
+        }
+
         //设置仓库或货位级别
         if (paterObject.getLayer() != null) {
             objectDB.setLayer(Integer.valueOf(paterObject.getLayer().intValue() + 1));
@@ -385,6 +389,7 @@ public class WarehouseServiceImp implements WarehouseService {
 
         objectDB.setPathId(null);
         objectDB.setPathName(null);
+        objectDB.setWarehouseId(null);
         objectDB.setLayer(null);
 
         return objectDB;

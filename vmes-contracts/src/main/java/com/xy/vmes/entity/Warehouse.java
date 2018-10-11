@@ -52,6 +52,9 @@ public class Warehouse implements Serializable {
 	//货位编码
 	@TableField("code")
 	private String code;
+	//仓库ID
+	@TableField("warehouse_id")
+	private String warehouseId;
 	//货位名称
 	@TableField("name")
 	private String name;
@@ -244,8 +247,13 @@ public class Warehouse implements Serializable {
 	public String getIsdisable() {
 		return isdisable;
 	}
-
-/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+	public String getWarehouseId() {
+		return warehouseId;
+	}
+	public void setWarehouseId(String warehouseId) {
+		this.warehouseId = warehouseId;
+	}
+	/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 
 }

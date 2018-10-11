@@ -23,20 +23,22 @@
 
         qrcode qrcode,
         code code,
+        warehouse_id warehouseId,
         name name,
         name_en nameEn,
-        dept_id deptId,
 
+        dept_id deptId,
         dept_place_key deptPlaceKey,
         path_name pathName,
         path_id pathId,
         isopen isopen,
-        cuser cuser,
 
+        cuser cuser,
         cdate cdate,
         uuser uuser,
         udate udate,
         isdisable isdisable,
+
         remark remark
     </sql>
 
@@ -177,53 +179,66 @@
 
     <!-- 字段 自动创建，可以修改-->
     <sql id="Field1">
-        id id,
-        pid pid,
-        company_id companyId,
-        entity_type entityType,
-        virtual_genre virtualGenre,
 
-        virtual_dept_id virtualDeptId,
-        virtual_dept_name virtualDeptName,
-        virtual_customer_id virtualCustomerId,
-        virtual_customer_name virtualCustomerName,
-        layer layer,
-
-        qrcode qrcode,
-        code code,
-        name name,
-        name_en nameEn,
-        dept_id deptId,
-
-        dept_place_key deptPlaceKey,
-        path_name pathName,
-        path_id pathId,
-        isopen isopen,
-        cuser cuser,
-
-        cdate cdate,
-        uuser uuser,
-        udate udate,
-        isdisable isdisable,
-        remark remark
     </sql>
 
     <!-- 自动创建，可以修改 -->
     <select id="getDataListPage"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
         select
-            <include refid="Field1"/>
-        from
-            vmes_warehouse
+            a.id id,
+            a.pid pid,
+            a.company_id companyId,
+            a.entity_type entityType,
+            b.name entityTypeName,
+            a.virtual_genre virtualGenre,
+
+            a.virtual_dept_id virtualDeptId,
+            a.virtual_dept_name virtualDeptName,
+            a.virtual_customer_id virtualCustomerId,
+            a.virtual_customer_name virtualCustomerName,
+            a.layer layer,
+
+            a.qrcode qrcode,
+            a.code code,
+            a.warehouse_id warehouseId,
+            c.name warehouseName,
+            a.name name,
+            a.name_en nameEn,
+
+            a.dept_id deptId,
+            a.dept_place_key deptPlaceKey,
+            a.path_name pathName,
+            a.path_id pathId,
+            a.isopen isopen,
+
+            a.cuser cuser,
+            a.cdate cdate,
+            a.uuser uuser,
+            a.udate udate,
+            a.isdisable isdisable,
+
+            a.remark remark
+        from vmes_warehouse a
+            left join vmes_dictionary b on a.entity_type = b.id
+            left join vmes_warehouse c on a.warehouse_id = c.id
         <where>
+            <if test="code != null and code != ''">
+                and code LIKE CONCAT(CONCAT(#{code}),'%')
+            </if>
+            <if test="name != null and name != ''">
+                and name LIKE CONCAT(CONCAT(#{name}),'%')
+            </if>
+            <if test="companyId != null and companyId != ''" >
+                and company_id=#{companyId}
+            </if>
+
+            <!--nodeId 树形结构指定节点id 自定义sql查询语句-->
+            <if test="nodeId != null and nodeId != ''" >
+                and path_id LIKE CONCAT(CONCAT('%', #{nodeId}),'%')
+            </if>
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >
                 and ${queryStr}
-            </if>
-            <if test="code != null and code != ''">
-                and code LIKE CONCAT(CONCAT('%', #{code}),'%')
-            </if>
-            <if test="name != null and name != ''">
-                and name LIKE CONCAT(CONCAT('%', #{name}),'%')
             </if>
         </where>
         <if test="orderStr != null and orderStr != ''" >
