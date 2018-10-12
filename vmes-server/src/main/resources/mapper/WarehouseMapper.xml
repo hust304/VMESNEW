@@ -183,13 +183,12 @@
     </sql>
 
     <!-- 自动创建，可以修改 -->
-    <select id="getDataListPage"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
+    <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
             a.id id,
             a.pid pid,
             a.company_id companyId,
             a.entity_type entityType,
-            b.name entityTypeName,
             a.virtual_genre virtualGenre,
 
             a.virtual_dept_id virtualDeptId,
@@ -201,7 +200,6 @@
             a.qrcode qrcode,
             a.code code,
             a.warehouse_id warehouseId,
-            c.name warehouseName,
             a.name name,
             a.name_en nameEn,
 
@@ -217,24 +215,33 @@
             a.udate udate,
             a.isdisable isdisable,
 
-            a.remark remark
+            a.remark remark,
+
+            <!--仓库属性-->
+            c.name entityTypeName,
+            CASE
+              WHEN b.virtual_genre = '1' THEN b.virtual_dept_name
+              WHEN b.virtual_genre = '2' THEN b.virtual_customer_name
+            ELSE null
+            END virtualGenreName
+
         from vmes_warehouse a
-            left join vmes_dictionary b on a.entity_type = b.id
-            left join vmes_warehouse c on a.warehouse_id = c.id
+            left join vmes_warehouse b on a.warehouse_id = b.id
+            left join vmes_dictionary c on b.entity_type = c.id
         <where>
             <if test="code != null and code != ''">
-                and code LIKE CONCAT(CONCAT(#{code}),'%')
+                and a.code LIKE CONCAT(CONCAT(#{code}),'%')
             </if>
             <if test="name != null and name != ''">
-                and name LIKE CONCAT(CONCAT(#{name}),'%')
+                and a.name LIKE CONCAT(CONCAT(#{name}),'%')
             </if>
-            <if test="companyId != null and companyId != ''" >
-                and company_id=#{companyId}
+            <if test="currentCompanyId != null and currentCompanyId != ''" >
+                and a.company_id=#{currentCompanyId}
             </if>
 
             <!--nodeId 树形结构指定节点id 自定义sql查询语句-->
             <if test="nodeId != null and nodeId != ''" >
-                and path_id LIKE CONCAT(CONCAT('%', #{nodeId}),'%')
+                and a.path_id LIKE CONCAT(CONCAT('%', #{nodeId}),'%')
             </if>
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >

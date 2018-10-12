@@ -160,6 +160,11 @@ public class WarehouseController {
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
     /**
+     * 获取仓库树结构
+     * 1. 当前企业的仓库树
+     * 2. 指定仓库节点及该节点下所有子节点
+     *    指定仓库节id(为空或空字符串)-得到整棵仓库树
+     *
      * @author 陈刚
      * @date 2018-10-10
      */
@@ -246,8 +251,8 @@ public class WarehouseController {
         result.put("hideTitles",titlesHideList);
         result.put("titles",titlesList);
 
-        HttpServletResponse response  = HttpUtils.currentResponse();
         PageData pd = HttpUtils.parsePageData();
+        pd.put("orderStr", "a.cdate desc");
         Pagination pg = HttpUtils.parsePagination(pd);
 
         List<Map> varMapList = new ArrayList();
@@ -346,6 +351,15 @@ public class WarehouseController {
 
     /**
      * 新增仓库(虚拟库)
+     * 上级id
+     * pid：2d75e49bcb9911e884ad00163e105f05：实体库
+     * pid：56f5e83dcb9911e884ad00163e105f05：虚拟库
+     *
+     * virtualGenre: 虚拟库属性(1:内部单位 2:外部单位)
+     * 1:内部单位 (仓库名称:=部门名称)-用户不可更改
+     *   默认创建(物料区,待检区,合格区,不合格区)-这4个货位
+     * 2:外部单位 (仓库名称:=客户供应商名称)-用户允许更改
+     *
      * @author 陈刚
      * @date 2018-10-10
      * @throws Exception
@@ -661,8 +675,8 @@ public class WarehouseController {
      *
      * virtualGenre: 虚拟库属性(1:内部单位 2:外部单位)
      * 1:内部单位 (仓库名称:=部门名称)-用户不可更改
-     * 默认创建(物料区,待检区,合格区,不合格区)-这4个货位
-     * 删除这4个货位
+     *   默认创建(物料区,待检区,合格区,不合格区)-这4个货位
+     *   删除这4个货位
      *
      * @author 陈刚
      * @date 2018-10-10

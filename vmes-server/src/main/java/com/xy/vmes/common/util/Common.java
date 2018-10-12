@@ -163,6 +163,10 @@ public class Common {
 
         //db46547d1bcb4c14baa228db1e8aaffe(字典id)  部门货位名称(字典名称)
         put("departmentPosition", "db46547d1bcb4c14baa228db1e8aaffe");
+
+        //d7fc4c594c5a4c8e81266c52cbf30110(字典id)  仓库类型(字典名称)
+        put("warehouseType", "d7fc4c594c5a4c8e81266c52cbf30110");
+
     }};
 
     ///////////////--菜单名称--///////////////////////////////////////////////////////////////////

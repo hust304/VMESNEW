@@ -358,7 +358,8 @@
         product.name name,
         tree.parent_prod_id pid,
         tree.layer,
-        tree.isdisable
+        tree.isdisable,
+        0 serialNumber
         from
         vmes_bom_tree tree
         left join vmes_product product on product.id = tree.prod_id
