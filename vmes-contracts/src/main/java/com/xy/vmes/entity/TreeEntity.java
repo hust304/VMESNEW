@@ -22,7 +22,7 @@ public class TreeEntity implements Cloneable {
     //当前节点级别
     private Integer layer;
     //节点顺序
-    private Integer serialNumber;
+    private Integer serialNumber = Integer.valueOf(0);
 
     //菜单树
     //当前节点编码
