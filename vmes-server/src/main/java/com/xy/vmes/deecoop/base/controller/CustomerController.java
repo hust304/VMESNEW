@@ -239,7 +239,8 @@ public class CustomerController {
 
         PageData pd = HttpUtils.parsePageData();
         pd.put("orderStr", "cust.cdate desc");
-        String genreId = pd.getString("genreId");
+
+        String genreId = pd.getString("pid");
         if (genreId != null && genreId.trim().length() > 0
             && !Common.DICTIONARY_MAP.get("customerSupplierGenre").equals(genreId)
         ) {
