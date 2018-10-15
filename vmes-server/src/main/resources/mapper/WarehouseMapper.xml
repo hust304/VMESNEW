@@ -223,7 +223,7 @@
               WHEN b.virtual_genre = '1' THEN b.virtual_dept_name
               WHEN b.virtual_genre = '2' THEN b.virtual_customer_name
             ELSE null
-            END virtualGenreName
+            END virtualDepartmentName
 
         from vmes_warehouse a
             left join vmes_warehouse b on a.warehouse_id = b.id
