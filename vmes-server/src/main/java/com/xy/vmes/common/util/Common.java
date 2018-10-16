@@ -31,6 +31,13 @@ public class Common {
 
     public static Integer SYS_IMPORTEXCEL_MESSAGE_MAXROW  = Integer.valueOf(50);
 
+    //系统小数四舍五入-位数
+    public static final int SYS_NUMBER_FORMAT_2 = 2;
+    public static final int SYS_NUMBER_FORMAT_3 = 3;
+    public static final int SYS_NUMBER_FORMAT_4 = 4;
+    //系统小数四舍五入-默认2位小数
+    public static final int SYS_NUMBER_FORMAT_DEFAULT = SYS_NUMBER_FORMAT_2;
+
     ///////////////--编码规则--//////////////////////////////////////////////////////////////////////////////////////////////////
     //业务编码规则-分隔符
     //public static final String CODE_RULE_SEPARATOR = "-";
