@@ -20,8 +20,10 @@ spring:
 
   redis:
     key_prefix: vmes
-    host: 127.0.0.1
+    host: 47.93.44.177
     port: 6379
     password: riw11119owow
+    timeout: 0
+    expire: 18000
 
-ui-path: file:/home/vmes/htdocs/vmes.deecoop.cn
+ui-path: file:./vmes-file
