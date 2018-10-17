@@ -251,6 +251,9 @@ public class WarehouseInController {
         }
 
         String dtlJsonStr = pageData.getString("dtlJsonStr");
+        //测试代码-真实环境无此代码
+        //dtlJsonStr = "[{\"productId\":\"9c414aadb2874b969b11d49e141b2f57\",\"count\":\"23.56\"},{\"productId\":\"ade5be7286214bd482240c603ad331a2\",\"count\":\"54.32\"}]";
+
         if (dtlJsonStr == null || dtlJsonStr.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("请至少添加选择一条货品数据！");
@@ -269,6 +272,8 @@ public class WarehouseInController {
         //1. 添加入库单
         String parentId = Conv.createUuid();
         warehouseIn.setId(parentId);
+        //状态(0:未完成 1:已完成 -1:已取消)
+        warehouseIn.setState("0");
         warehouseIn.setCompanyId(companyID);
         //入库单编号
         String code = coderuleService.createCoder(companyID, "vmes_warehouse_in", "W");

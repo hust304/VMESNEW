@@ -179,7 +179,7 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
         if (mapList == null || mapList.size() == 0) {return objectList;}
 
         for (Map<String, String> mapObject : mapList) {
-            WarehouseInDetail detail = (WarehouseInDetail) HttpUtils.pageData2Entity(mapObject, new WarehouseIn());
+            WarehouseInDetail detail = (WarehouseInDetail)HttpUtils.pageData2Entity(mapObject, new WarehouseInDetail());
             objectList.add(detail);
         }
 
@@ -191,6 +191,8 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
         if (objectList == null || objectList.size() == 0) {return;}
 
         for (WarehouseInDetail detail : objectList) {
+            //状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+            detail.setState("0");
             detail.setParentId(parentObj.getId());
             detail.setCuser(parentObj.getCuser());
 
