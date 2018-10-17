@@ -535,7 +535,7 @@ public class CoderuleServiceImp implements CoderuleService {
 
 
     /**
-     * 获取流水号：前缀+日期（yyyyMMdd）+3位流水号，如P20180808001
+     * 获取流水号：前缀+日期（yyyyMMdd）+6位流水号，如P20180808001
      * 创建人：刘威
      * @param companyID   公司ID
      * @param tableName   表名
@@ -544,7 +544,7 @@ public class CoderuleServiceImp implements CoderuleService {
      * @return
      */
     @Override
-    public String createCoderByDate(String companyID,String tableName,String dateFormat,String prefix) {
+    public String createCoderByDate(String companyID, String tableName, String dateFormat, String prefix) {
         //(企业编号+前缀字符+日期字符+流水号)-(company+prefix+date+code)
         //(无需+前缀字符+无需+流水号)-W000142
         CoderuleEntity object = new CoderuleEntity();
@@ -552,8 +552,8 @@ public class CoderuleServiceImp implements CoderuleService {
         object.setTableName(tableName);
         //companyID 公司ID
         object.setCompanyID(companyID);
-        //length 指定位数(5)
-        object.setLength(Common.CODE_RULE_LENGTH_5);
+        //length 指定位数(6)
+        object.setLength(Common.CODE_RULE_LENGTH_DEFAULT);
 
 
         //firstName 第一段编码为自定义前缀字符
