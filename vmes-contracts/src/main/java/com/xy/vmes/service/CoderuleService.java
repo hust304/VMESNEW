@@ -53,11 +53,35 @@ public interface CoderuleService {
      * 创建时间：2018-07-26
      */
     Map<String, Object> findCoderuleMap(PageData pd);
+
+    /**
+     * 获取最新系统流水号
+     * @param companyId  企业id
+     * @param tableName  业务名称(表名)
+     * @return
+     */
+    Coderule findNewCodeByCoderule(String companyId, String tableName, String type);
+
+    /**
+     * 获取最新系统流水号
+     * @param companyId  企业id
+     * @param tableName  业务名称(表名)
+     * @param dayString  日期(yyyyMMdd)
+     * @return
+     */
+    Coderule findNewCodeByCoderule(String companyId, String tableName, String type, String dayString);
+
     /**
      * 创建人：陈刚
      * 创建时间：2018-07-26
      */
     Integer updateCoderule(PageData pd) throws Exception;
+
+    /**
+     * 创建人：陈刚 自动创建，禁止修改
+     * 创建时间：2018-07-26
+     */
+    void deleteByColumnMap(Map columnMap) throws Exception;
 
     ////////////////////////////////////////////////////////////////////////////////////////////
     /**
@@ -85,7 +109,14 @@ public interface CoderuleService {
      */
     String findCoderule(CoderuleEntity object);
 
+    /**
+     * 按照当天日期(yyyy-MM-dd)流水号递增
+     * @param object
+     * @return
+     */
+    String findCoderuleByDate(CoderuleEntity object);
 
+    ////////////////////////////////////////////////////////////////////////////////////////////
     /**
      * 获取流水号：前缀+6位流水号，如P000001
      * 创建人：刘威
@@ -96,8 +127,6 @@ public interface CoderuleService {
      */
     String createCoder(String companyID,String tableName,String prefix);
 
-
-
     /**
      * 获取流水号：企业编码+6位流水号，如DEECOOP000001
      * 创建人：刘威
@@ -106,10 +135,6 @@ public interface CoderuleService {
      * @return
      */
     String createCoder(String companyID,String tableName);
-
-
-
-
 
     /**
      * 获取流水号：公司编码+日期（yyyyMMdd）+3位流水号，如DEECOOP20180808001
@@ -133,6 +158,16 @@ public interface CoderuleService {
      */
     String createCoderByDate(String companyID,String tableName,String dateFormat,String prefix);
 
+    /**
+     * 获取流水号：前缀+日期（yyyyMMdd）+6位流水号，如P20180808001
+     * 创建人：刘威
+     * @param companyID   公司ID
+     * @param tableName   表名
+     * @param dateFormat  日期格式
+     * @param prefix      前缀名称
+     * @return
+     */
+    String createCoderCdateByDate(String companyID, String tableName, String dateFormat, String prefix);
 }
 
 
