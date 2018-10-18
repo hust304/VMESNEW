@@ -20,7 +20,6 @@ import java.util.Map;
 @Repository
 public interface LogInfoMapper extends BaseMapper<LogInfo> {
 
-
     /**
      * 创建人：刘威 自动创建，禁止修改
      * 创建时间：2018-08-28

@@ -5,15 +5,13 @@ import com.xy.vmes.common.util.Common;
 import com.xy.vmes.deecoop.system.dao.LogInfoMapper;
 import com.xy.vmes.entity.LogInfo;
 import com.xy.vmes.service.LogInfoService;
+import com.yvan.Conv;
 import com.yvan.PageData;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-
-import com.yvan.Conv;
 
 /**
  * 说明：操作日志 实现类
@@ -24,7 +22,6 @@ import com.yvan.Conv;
 @Transactional(readOnly = false)
 public class LogInfoServiceImp implements LogInfoService {
 
-
     @Autowired
     private LogInfoMapper logInfoMapper;
 
@@ -33,7 +30,7 @@ public class LogInfoServiceImp implements LogInfoService {
      * 创建时间：2018-08-28
      */
     @Override
-    public void save(LogInfo logInfo) throws Exception{
+    public void save(LogInfo logInfo) throws Exception {
         logInfo.setId(Conv.createUuid());
         logInfo.setCdate(new Date());
         logInfo.setUdate(new Date());
@@ -46,7 +43,7 @@ public class LogInfoServiceImp implements LogInfoService {
      * 创建时间：2018-08-28
      */
     @Override
-    public void update(LogInfo logInfo) throws Exception{
+    public void update(LogInfo logInfo) throws Exception {
         logInfo.setUdate(new Date());
         logInfoMapper.updateById(logInfo);
     }
@@ -56,7 +53,7 @@ public class LogInfoServiceImp implements LogInfoService {
      * 创建时间：2018-08-28
      */
     @Override
-    public void updateAll(LogInfo logInfo) throws Exception{
+    public void updateAll(LogInfo logInfo) throws Exception {
         logInfo.setUdate(new Date());
         logInfoMapper.updateAllColumnById(logInfo);
     }
@@ -67,7 +64,7 @@ public class LogInfoServiceImp implements LogInfoService {
      */
     @Override
     //@Cacheable(cacheNames = "logInfo", key = "''+#id")
-    public LogInfo selectById(String id) throws Exception{
+    public LogInfo selectById(String id) throws Exception {
         return logInfoMapper.selectById(id);
     }
 
@@ -76,7 +73,7 @@ public class LogInfoServiceImp implements LogInfoService {
      * 创建时间：2018-08-28
      */
     @Override
-    public void deleteById(String id) throws Exception{
+    public void deleteById(String id) throws Exception {
         logInfoMapper.deleteById(id);
     }
 
@@ -85,7 +82,7 @@ public class LogInfoServiceImp implements LogInfoService {
      * 创建时间：2018-08-28
      */
     @Override
-    public void deleteByIds(String[] ids) throws Exception{
+    public void deleteByIds(String[] ids) throws Exception {
         logInfoMapper.deleteByIds(ids);
     }
 
@@ -94,8 +91,8 @@ public class LogInfoServiceImp implements LogInfoService {
      * 创建时间：2018-08-28
      */
     @Override
-    public List<LogInfo> dataListPage(PageData pd,Pagination pg) throws Exception{
-        return logInfoMapper.dataListPage(pd,pg);
+    public List<LogInfo> dataListPage(PageData pd, Pagination pg) throws Exception {
+        return logInfoMapper.dataListPage(pd, pg);
     }
 
     /**
@@ -103,7 +100,7 @@ public class LogInfoServiceImp implements LogInfoService {
      * 创建时间：2018-08-28
      */
     @Override
-    public List<LogInfo> dataList(PageData pd) throws Exception{
+    public List<LogInfo> dataList(PageData pd) throws Exception {
         return logInfoMapper.dataList(pd);
     }
 
@@ -112,7 +109,7 @@ public class LogInfoServiceImp implements LogInfoService {
      * 创建时间：2018-08-28
      */
     @Override
-    public List<LinkedHashMap> findColumnList() throws Exception{
+    public List<LinkedHashMap> findColumnList() throws Exception {
         return logInfoMapper.findColumnList();
     }
 
@@ -121,7 +118,7 @@ public class LogInfoServiceImp implements LogInfoService {
      * 创建时间：2018-08-28
      */
     @Override
-    public List<Map> findDataList(PageData pd) throws Exception{
+    public List<Map> findDataList(PageData pd) throws Exception {
         return logInfoMapper.findDataList(pd);
     }
 
@@ -131,7 +128,7 @@ public class LogInfoServiceImp implements LogInfoService {
      * 创建时间：2018-08-28
      */
     @Override
-    public void deleteByColumnMap(Map columnMap) throws Exception{
+    public void deleteByColumnMap(Map columnMap) throws Exception {
         logInfoMapper.deleteByMap(columnMap);
     }
 
@@ -140,8 +137,8 @@ public class LogInfoServiceImp implements LogInfoService {
      * 创建时间：2018-08-28
      */
     @Override
-    public List<LogInfo> selectByColumnMap(Map columnMap) throws Exception{
-        List<LogInfo> logInfoList =  logInfoMapper.selectByMap(columnMap);
+    public List<LogInfo> selectByColumnMap(Map columnMap) throws Exception {
+        List<LogInfo> logInfoList = logInfoMapper.selectByMap(columnMap);
         return logInfoList;
     }
 
@@ -151,7 +148,7 @@ public class LogInfoServiceImp implements LogInfoService {
      * 创建时间：2018-08-28
      */
     @Override
-    public List<Map> getDataList(PageData pd) throws Exception{
+    public List<Map> getDataList(PageData pd) throws Exception {
         return logInfoMapper.getDataList(pd);
     }
 
@@ -160,8 +157,8 @@ public class LogInfoServiceImp implements LogInfoService {
      * 创建时间：2018-08-28
      */
     @Override
-    public List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception{
-        return logInfoMapper.getDataListPage(pd,pg);
+    public List<Map> getDataListPage(PageData pd, Pagination pg) throws Exception {
+        return logInfoMapper.getDataListPage(pd, pg);
     }
 
     /**
@@ -169,7 +166,7 @@ public class LogInfoServiceImp implements LogInfoService {
      * 创建时间：2018-08-28
      */
     @Override
-    public void updateToDisableByIds(String[] ids)throws Exception{
+    public void updateToDisableByIds(String[] ids) throws Exception {
         logInfoMapper.updateToDisableByIds(ids);
     }
 
@@ -178,12 +175,15 @@ public class LogInfoServiceImp implements LogInfoService {
     /**
      * 获取调用方法名称前缀：
      * 根据Controller调用方法全路径名称(com.xy.vmes.deecoop.system.controller.DepartmentController.addDepartment())
+     *
      * @param methodPath
      * @return
      */
     @Override
     public String findMethodPrefix(String methodPath) {
-        if (methodPath == null || methodPath.trim().length() == 0) {return new String();}
+        if (methodPath == null || methodPath.trim().length() == 0) {
+            return new String();
+        }
         if (methodPath.indexOf("throws java.lang.Exception") != -1) {
             methodPath = methodPath.replace("throws java.lang.Exception", "");
         }
@@ -196,11 +196,13 @@ public class LogInfoServiceImp implements LogInfoService {
         if (beginIndex < maxLength) {
             method = methodPath.substring(beginIndex, maxLength);
         }
-        if (method.trim().length() == 0) {return new String();}
+        if (method.trim().length() == 0) {
+            return new String();
+        }
 
         //2. 获取调用方法前缀
         Map<String, String> methodPrefixMap = Common.SYSLOGINFO_METHODPREFIX_MAP;
-        for (Iterator iterator = methodPrefixMap.keySet().iterator(); iterator.hasNext();) {
+        for (Iterator iterator = methodPrefixMap.keySet().iterator(); iterator.hasNext(); ) {
             String mapKey = (String) iterator.next();
             String mapValue = methodPrefixMap.get(mapKey);
             if (method.indexOf(mapKey) != -1) {
@@ -214,15 +216,18 @@ public class LogInfoServiceImp implements LogInfoService {
     /**
      * 获取业务表名：
      * 根据Controller调用方法全路径名称(com.xy.vmes.deecoop.system.controller.DepartmentController.addDepartment())
+     *
      * @param methodPath
      * @return
      */
     @Override
     public String findTable(String methodPath) {
-        if (methodPath == null || methodPath.trim().length() == 0) {return new String();}
+        if (methodPath == null || methodPath.trim().length() == 0) {
+            return new String();
+        }
 
         Map<String, String> classnameMap = Common.SYSLOGINFO_CLASSNAME2TABLENAME_MAP;
-        for (Iterator iterator = classnameMap.keySet().iterator(); iterator.hasNext();) {
+        for (Iterator iterator = classnameMap.keySet().iterator(); iterator.hasNext(); ) {
             String mapKey = (String) iterator.next();
             String mapValue = classnameMap.get(mapKey);
             if (methodPath.indexOf(mapKey) != -1) {
@@ -235,15 +240,16 @@ public class LogInfoServiceImp implements LogInfoService {
 
     /**
      * 创建新的日志对象<Loginfo>
+     *
      * @return
      */
     @Override
     public LogInfo createLoginfo(LogInfo object) {
-        if (object == null) {object = new LogInfo();}
+        if (object == null) {
+            object = new LogInfo();
+        }
         object.setCdate(new Date());
-
         return object;
-
     }
 
 }
