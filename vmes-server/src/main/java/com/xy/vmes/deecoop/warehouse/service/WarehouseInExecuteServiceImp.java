@@ -5,9 +5,9 @@ import com.xy.vmes.common.util.Common;
 import com.xy.vmes.deecoop.warehouse.dao.WarehouseInExecuteMapper;
 import com.xy.vmes.entity.WarehouseInExecute;
 import com.xy.vmes.service.WarehouseInExecuteService;
+import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -194,20 +194,31 @@ public class WarehouseInExecuteServiceImp implements WarehouseInExecuteService {
         return this.findWarehouseInExecuteList(findMap);
     }
 
-    ///////////////////////////////////////////////////////////////////////////////
-    public BigDecimal findSumCountByExecuteList(List<WarehouseInExecute> objectList) {
-        double sumCount = 0D;
-        if (objectList != null && objectList.size() > 0) {
-            for (WarehouseInExecute object : objectList) {
-                if (object.getCount() != null) {
-                    sumCount = sumCount + object.getCount().doubleValue();
-                }
-            }
+    public List<WarehouseInExecute> mapList2ExecuteList(List<Map<String, String>> mapList, List<WarehouseInExecute> objectList) {
+        if (objectList == null) {objectList = new ArrayList<WarehouseInExecute>();}
+        if (mapList == null || mapList.size() == 0) {return objectList;}
+
+        for (Map<String, String> mapObject : mapList) {
+            WarehouseInExecute execute = (WarehouseInExecute)HttpUtils.pageData2Entity(mapObject, new WarehouseInExecute());
+            objectList.add(execute);
         }
 
-        //四舍五入 2位小数
-        return BigDecimal.valueOf(sumCount).setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+        return objectList;
     }
+    ///////////////////////////////////////////////////////////////////////////////
+//    public BigDecimal findSumCountByExecuteList(List<WarehouseInExecute> objectList) {
+//        double sumCount = 0D;
+//        if (objectList != null && objectList.size() > 0) {
+//            for (WarehouseInExecute object : objectList) {
+//                if (object.getCount() != null) {
+//                    sumCount = sumCount + object.getCount().doubleValue();
+//                }
+//            }
+//        }
+//
+//        //四舍五入 2位小数
+//        return BigDecimal.valueOf(sumCount).setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+//    }
 }
 
 

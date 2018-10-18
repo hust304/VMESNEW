@@ -25,7 +25,7 @@ public class WarehouseInDetail implements Serializable {
 	//执行人ID
 	@TableField("execute_id")
 	private String executeId;
-	//仓库货位ID
+	//(推荐)货位ID
 	@TableField("warehouse_id")
 	private String warehouseId;
 	//产品ID

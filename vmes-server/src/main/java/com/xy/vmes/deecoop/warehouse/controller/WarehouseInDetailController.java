@@ -17,6 +17,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+/**
+ * 说明：入库派单明细
+ * @author 陈刚 自动生成
+ * @date 2018-10-16
+ */
 @RestController
 @Slf4j
 public class WarehouseInDetailController {
@@ -28,15 +33,33 @@ public class WarehouseInDetailController {
     private WarehouseInDetailService warehouseInDetailService;
 
     /**
+     * 修改入库单明细
+     * @author 陈刚
+     * @date 2018-10-16
+     * @throws Exception
+     */
+    @PostMapping("/warehouseInDetail/updateWarehouseInDetail")
+    @Transactional
+    public ResultModel updateWarehouseInDetail() throws Exception {
+        logger.info("################/warehouseInDetail/updateWarehouseInDetail 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        ResultModel model = new ResultModel();
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/warehouseInDetail/updateWarehouseInDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
      * 取消入库单明细
      * @author 陈刚
      * @date 2018-10-16
      * @throws Exception
      */
-    @PostMapping("/warehouseInDetail/updateDisableWarehouseInDetail")
+    @PostMapping("/warehouseInDetail/updateCancelWarehouseInDetail")
     @Transactional
-    public ResultModel updateDisableWarehouseInDetail() throws Exception {
-        logger.info("################/warehouseInDetail/deleteWarehouseInDetail 执行开始 ################# ");
+    public ResultModel updateCancelWarehouseInDetail() throws Exception {
+        logger.info("################/warehouseInDetail/updateCancelWarehouseInDetail 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
 
@@ -84,7 +107,7 @@ public class WarehouseInDetailController {
         }
 
         Long endTime = System.currentTimeMillis();
-        logger.info("################/warehouseInDetail/deleteWarehouseInDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/warehouseInDetail/updateCancelWarehouseInDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 

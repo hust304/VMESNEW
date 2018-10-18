@@ -85,8 +85,9 @@ public interface WarehouseInExecuteService {
     List<WarehouseInExecute> findWarehouseInExecuteList(PageData object);
     List<WarehouseInExecute> findWarehouseInExecuteListByDetailId(String detailId);
 
+    List<WarehouseInExecute> mapList2ExecuteList(List<Map<String, String>> mapList, List<WarehouseInExecute> objectList);
     ///////////////////////////////////////////////////////////////////////////////
-    BigDecimal findSumCountByExecuteList(List<WarehouseInExecute> objectList);
+    //BigDecimal findSumCountByExecuteList(List<WarehouseInExecute> objectList);
 
 }
 

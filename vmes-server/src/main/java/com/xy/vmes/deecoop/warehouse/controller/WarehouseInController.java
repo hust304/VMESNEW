@@ -313,10 +313,10 @@ public class WarehouseInController {
      * @date 2018-10-16
      * @throws Exception
      */
-    @PostMapping("/warehouseIn/updateDisableWarehouseIn")
+    @PostMapping("/warehouseIn/updateCancelWarehouseIn")
     @Transactional
-    public ResultModel updateDisableWarehouseIn() throws Exception {
-        logger.info("################/warehouseIn/updateDisableWarehouseIn 执行开始 ################# ");
+    public ResultModel updateCancelWarehouseIn() throws Exception {
+        logger.info("################/warehouseIn/updateCancelWarehouseIn 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
 
@@ -353,7 +353,7 @@ public class WarehouseInController {
         warehouseInService.update(warehouseIn);
 
         Long endTime = System.currentTimeMillis();
-        logger.info("################/warehouseIn/updateDisableWarehouseIn 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/warehouseIn/updateCancelWarehouseIn 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
