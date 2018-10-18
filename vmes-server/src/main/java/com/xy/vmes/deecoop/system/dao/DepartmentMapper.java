@@ -26,28 +26,24 @@ public interface DepartmentMapper extends BaseMapper<Department> {
 	* 创建人：陈刚 自动创建，禁止修改
 	* 创建时间：2018-07-23
 	*/
-    @Select("datalistPage")
     List<Department> dataListPage(PageData pd,Pagination pg);
 
     /**
     * 创建人：陈刚 自动创建，禁止修改
     * 创建时间：2018-07-23
     */
-	@Select("dataList")
 	List<Department> dataList(PageData pd);
 
 	/**
 	* 创建人：陈刚 自动创建，禁止修改
 	* 创建时间：2018-07-23
 	*/
-	@Delete("deleteByIds")
 	void deleteByIds(String[] ids);
 
     /**
     * 创建人：陈刚 自动创建，禁止修改
     * 创建时间：2018-07-23
     */
-    @Select("findColumnList")
     List<LinkedHashMap> findColumnList();
 
 
@@ -55,7 +51,6 @@ public interface DepartmentMapper extends BaseMapper<Department> {
     * 创建人：陈刚 自动创建，禁止修改
     * 创建时间：2018-07-23
     */
-    @Select("findDataList")
     List<Map> findDataList(PageData pd);
 
 
@@ -65,14 +60,12 @@ public interface DepartmentMapper extends BaseMapper<Department> {
 	 * 创建人：陈刚
 	 * 创建时间：2018-08-08
 	 */
-	@Select("getColumnList")
 	List<LinkedHashMap> getColumnList();
 
 	/**
 	 * 创建人：陈刚
 	 * 创建时间：2018-08-08
 	 */
-	@Select("getDataListPage")
 	List<Map> getDataListPage(PageData pd, Pagination pg);
 
     /**
@@ -81,7 +74,6 @@ public interface DepartmentMapper extends BaseMapper<Department> {
 	 * 创建人：陈刚
 	 * 创建时间：2018-07-27
 	 */
-	@Select("updateDisableByIds")
 	void updateDisableByIds(String[] ids);
 
 
@@ -90,7 +82,6 @@ public interface DepartmentMapper extends BaseMapper<Department> {
 	 * 创建人：刘威
 	 * 创建时间：2018-08-01
 	 */
-	@Select("getTreeList")
 	List<TreeEntity> getTreeList(PageData pd);
 
 }

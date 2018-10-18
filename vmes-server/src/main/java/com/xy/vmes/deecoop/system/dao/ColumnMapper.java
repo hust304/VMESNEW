@@ -24,10 +24,7 @@ public interface ColumnMapper extends BaseMapper<Column> {
     * 创建人：陈刚 自动创建，禁止修改
     * 创建时间：2018-08-24
     */
-	@Select("dataList")
 	List<Column> dataList(PageData pd);
-
-
 
 }
 

@@ -25,28 +25,24 @@ public interface UserDefinedMenuMapper extends BaseMapper<UserDefinedMenu> {
 	* 创建人：刘威 自动创建，禁止修改
 	* 创建时间：2018-07-27
 	*/
-    @Select("datalistPage")
     List<UserDefinedMenu> dataListPage(PageData pd,Pagination pg);
 
     /**
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-07-27
     */
-	@Select("dataList")
 	List<UserDefinedMenu> dataList(PageData pd);
 
 	/**
 	* 创建人：刘威 自动创建，禁止修改
 	* 创建时间：2018-07-27
 	*/
-	@Delete("deleteByIds")
 	void deleteByIds(String[] ids);
 
     /**
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-07-27
     */
-    @Select("findColumnList")
     List<LinkedHashMap> findColumnList();
 
 
@@ -54,7 +50,6 @@ public interface UserDefinedMenuMapper extends BaseMapper<UserDefinedMenu> {
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-07-27
     */
-    @Select("findDataList")
     List<Map> findDataList(PageData pd);
 
 
@@ -66,7 +61,6 @@ public interface UserDefinedMenuMapper extends BaseMapper<UserDefinedMenu> {
 	 * 创建人：刘威
 	 * 创建时间：2018-07-26
 	 */
-	@Select("getColumnList")
 	List<LinkedHashMap> getColumnList();
 
 
@@ -74,7 +68,6 @@ public interface UserDefinedMenuMapper extends BaseMapper<UserDefinedMenu> {
 	 * 创建人：刘威
 	 * 创建时间：2018-07-26
 	 */
-	@Select("getDataList")
 	List<Map> getDataList(PageData pd);
 }
 

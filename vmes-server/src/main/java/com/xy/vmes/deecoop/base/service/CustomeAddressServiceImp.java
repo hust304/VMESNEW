@@ -146,16 +146,6 @@ public class CustomeAddressServiceImp implements CustomeAddressService {
         return customeAddressList;
     }
 
-
-    /**
-    * 创建人：陈刚 自动创建，禁止修改
-    * 创建时间：2018-09-20
-    */
-    @Override
-    public List<LinkedHashMap> getColumnList() throws Exception{
-        return customeAddressMapper.getColumnList();
-    }
-
     /**
     * 创建人：陈刚 自动创建，禁止修改
     * 创建时间：2018-09-20
@@ -181,6 +171,7 @@ public class CustomeAddressServiceImp implements CustomeAddressService {
      * @param object
      * @return
      */
+    @Override
     public String checkColumnByAddEdit(CustomeAddress object) {
         if (object == null) {return new String();}
 
@@ -203,6 +194,7 @@ public class CustomeAddressServiceImp implements CustomeAddressService {
         return msgBuf.toString();
     }
 
+    @Override
     public CustomeAddress findCustomeAddress(PageData object) {
         if (object == null) {return null;}
 
@@ -219,6 +211,8 @@ public class CustomeAddressServiceImp implements CustomeAddressService {
 
         return null;
     }
+
+    @Override
     public CustomeAddress findCustomeAddressById(String id) {
         if (id == null || id.trim().length() == 0) {return null;}
 
@@ -232,6 +226,7 @@ public class CustomeAddressServiceImp implements CustomeAddressService {
         return null;
     }
 
+    @Override
     public List<CustomeAddress> findCustomeAddressList(PageData object) {
         if (object == null) {return null;}
 
@@ -244,6 +239,8 @@ public class CustomeAddressServiceImp implements CustomeAddressService {
 
         return objectList;
     }
+
+    @Override
     public List<CustomeAddress> findCustomeAddressListByCustId(String custId) {
         List<CustomeAddress> objectList = new ArrayList<CustomeAddress>();
         if (custId == null || custId.trim().length() == 0) {return objectList;}
@@ -256,10 +253,12 @@ public class CustomeAddressServiceImp implements CustomeAddressService {
         return objectList;
     }
 
+    @Override
     public void updateDefaultByCustId(PageData pageData) {
         customeAddressMapper.updateDefaultByCustId(pageData);
     }
 
+    @Override
     public void deleteCustAddrByCustId(String custId) throws Exception {
         if (custId == null || custId.trim().length() == 0) {return;}
 

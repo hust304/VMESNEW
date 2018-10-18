@@ -25,7 +25,6 @@ import java.util.Map;
 @Transactional(readOnly = false)
 public class EquipmentServiceImp implements EquipmentService {
 
-
     @Autowired
     private EquipmentMapper equipmentMapper;
 
@@ -144,16 +143,6 @@ public class EquipmentServiceImp implements EquipmentService {
     public List<Equipment> selectByColumnMap(Map columnMap) throws Exception{
     List<Equipment> equipmentList =  equipmentMapper.selectByMap(columnMap);
         return equipmentList;
-    }
-
-
-    /**
-    * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-09-20
-    */
-    @Override
-    public List<LinkedHashMap> getColumnList() throws Exception{
-        return equipmentMapper.getColumnList();
     }
 
     /**

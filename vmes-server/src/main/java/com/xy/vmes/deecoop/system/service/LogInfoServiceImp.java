@@ -151,15 +151,6 @@ public class LogInfoServiceImp implements LogInfoService {
      * 创建时间：2018-08-28
      */
     @Override
-    public List<LinkedHashMap> getColumnList() throws Exception{
-        return logInfoMapper.getColumnList();
-    }
-
-    /**
-     * 创建人：刘威 自动创建，禁止修改
-     * 创建时间：2018-08-28
-     */
-    @Override
     public List<Map> getDataList(PageData pd) throws Exception{
         return logInfoMapper.getDataList(pd);
     }
@@ -190,6 +181,7 @@ public class LogInfoServiceImp implements LogInfoService {
      * @param methodPath
      * @return
      */
+    @Override
     public String findMethodPrefix(String methodPath) {
         if (methodPath == null || methodPath.trim().length() == 0) {return new String();}
         if (methodPath.indexOf("throws java.lang.Exception") != -1) {
@@ -225,6 +217,7 @@ public class LogInfoServiceImp implements LogInfoService {
      * @param methodPath
      * @return
      */
+    @Override
     public String findTable(String methodPath) {
         if (methodPath == null || methodPath.trim().length() == 0) {return new String();}
 
@@ -244,6 +237,7 @@ public class LogInfoServiceImp implements LogInfoService {
      * 创建新的日志对象<Loginfo>
      * @return
      */
+    @Override
     public LogInfo createLoginfo(LogInfo object) {
         if (object == null) {object = new LogInfo();}
         object.setCdate(new Date());

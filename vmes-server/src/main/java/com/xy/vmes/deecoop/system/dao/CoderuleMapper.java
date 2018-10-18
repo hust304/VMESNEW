@@ -22,21 +22,18 @@ public interface CoderuleMapper extends BaseMapper<Coderule> {
     * 创建人：陈刚 自动创建，禁止修改
     * 创建时间：2018-07-26
     */
-	@Select("dataList")
 	List<Coderule> dataList(PageData pd);
 
 	/**
 	 * 创建人：陈刚 自动创建，禁止修改
 	 * 创建时间：2018-07-23
 	 */
-	@Select("findDataList")
 	List<Map<String, Object>> findDataList(PageData pd);
 
 	/**
 	 * 创建人：陈刚
 	 * 创建时间：2018-07-26
 	 */
-	@Update("updateCoderule")
 	Integer updateCoderule(PageData pd);
 }
 

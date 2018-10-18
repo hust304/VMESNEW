@@ -25,28 +25,24 @@ public interface BomMapper extends BaseMapper<Bom> {
 	* 创建人：刘威 自动创建，禁止修改
 	* 创建时间：2018-09-29
 	*/
-    @Select("datalistPage")
     List<Bom> dataListPage(PageData pd,Pagination pg);
 
     /**
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-09-29
     */
-	@Select("dataList")
 	List<Bom> dataList(PageData pd);
 
 	/**
 	* 创建人：刘威 自动创建，禁止修改
 	* 创建时间：2018-09-29
 	*/
-	@Delete("deleteByIds")
 	void deleteByIds(String[] ids);
 
     /**
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-09-29
     */
-    @Select("findColumnList")
     List<LinkedHashMap> findColumnList();
 
 
@@ -54,7 +50,6 @@ public interface BomMapper extends BaseMapper<Bom> {
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-09-29
     */
-    @Select("findDataList")
     List<Map> findDataList(PageData pd);
 
 
@@ -62,15 +57,6 @@ public interface BomMapper extends BaseMapper<Bom> {
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-09-29
     */
-    @Select("getColumnList")
-    List<LinkedHashMap> getColumnList();
-
-
-    /**
-    * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-09-29
-    */
-    @Select("getDataList")
     List<Map> getDataList(PageData pd);
 
 
@@ -78,7 +64,6 @@ public interface BomMapper extends BaseMapper<Bom> {
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-09-29
     */
-    @Select("getDataListPage")
     List<Map> getDataListPage(PageData pd,Pagination pg);
 
 
@@ -86,12 +71,10 @@ public interface BomMapper extends BaseMapper<Bom> {
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-09-29
     */
-    @Select("updateToDisableByIds")
     void updateToDisableByIds(String[] ids);
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
-    @Select("updateToNotDefaultByPorId")
     void updateToNotDefaultByPorId(String prodId);
 }
 

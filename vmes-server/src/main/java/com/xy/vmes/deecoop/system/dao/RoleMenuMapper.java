@@ -25,28 +25,24 @@ public interface RoleMenuMapper extends BaseMapper<RoleMenu> {
 	* 创建人：陈刚 自动创建，禁止修改
 	* 创建时间：2018-07-30
 	*/
-    @Select("datalistPage")
     List<RoleMenu> dataListPage(PageData pd,Pagination pg);
 
     /**
     * 创建人：陈刚 自动创建，禁止修改
     * 创建时间：2018-07-30
     */
-	@Select("dataList")
 	List<RoleMenu> dataList(PageData pd);
 
 	/**
 	* 创建人：陈刚 自动创建，禁止修改
 	* 创建时间：2018-07-30
 	*/
-	@Delete("deleteByIds")
 	void deleteByIds(String[] ids);
 
     /**
     * 创建人：陈刚 自动创建，禁止修改
     * 创建时间：2018-07-30
     */
-    @Select("findColumnList")
     List<LinkedHashMap> findColumnList();
 
 
@@ -54,7 +50,6 @@ public interface RoleMenuMapper extends BaseMapper<RoleMenu> {
     * 创建人：陈刚 自动创建，禁止修改
     * 创建时间：2018-07-30
     */
-    @Select("findDataList")
     List<Map> findDataList(PageData pd);
 
 
@@ -64,21 +59,18 @@ public interface RoleMenuMapper extends BaseMapper<RoleMenu> {
 	 * 创建人：陈刚
 	 * 创建时间：2018-07-31
 	 */
-	@Select("updateDisableByRoleId")
 	void updateDisableByRoleId(String roleId);
 
 	/**
 	 * 创建人：陈刚
 	 * 创建时间：2018-07-31
 	 */
-	@Select("findRoleMenuMapList")
 	List<Map<String, Object>> findRoleMenuMapList(PageData pd);
 
 	/**
 	 * 创建人：陈刚
 	 * 创建时间：2018-08-23
 	 */
-	@Select("listMenuMapByRole")
 	List<Map<String, Object>> listMenuMapByRole(PageData pd);
 }
 

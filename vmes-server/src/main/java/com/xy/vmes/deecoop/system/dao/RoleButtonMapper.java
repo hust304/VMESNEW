@@ -25,28 +25,24 @@ public interface RoleButtonMapper extends BaseMapper<RoleButton> {
 	* 创建人：陈刚 自动创建，禁止修改
 	* 创建时间：2018-07-30
 	*/
-    @Select("datalistPage")
     List<RoleButton> dataListPage(PageData pd,Pagination pg);
 
     /**
     * 创建人：陈刚 自动创建，禁止修改
     * 创建时间：2018-07-30
     */
-	@Select("dataList")
 	List<RoleButton> dataList(PageData pd);
 
 	/**
 	* 创建人：陈刚 自动创建，禁止修改
 	* 创建时间：2018-07-30
 	*/
-	@Delete("deleteByIds")
 	void deleteByIds(String[] ids);
 
     /**
     * 创建人：陈刚 自动创建，禁止修改
     * 创建时间：2018-07-30
     */
-    @Select("findColumnList")
     List<LinkedHashMap> findColumnList();
 
 
@@ -54,7 +50,6 @@ public interface RoleButtonMapper extends BaseMapper<RoleButton> {
     * 创建人：陈刚 自动创建，禁止修改
     * 创建时间：2018-07-30
     */
-    @Select("findDataList")
     List<Map> findDataList(PageData pd);
 
 
@@ -64,14 +59,12 @@ public interface RoleButtonMapper extends BaseMapper<RoleButton> {
 	 * 创建人：陈刚
 	 * 创建时间：2018-07-31
 	 */
-	@Select("updateDisableByRoleId")
 	void updateDisableByRoleId(String roleId);
 
 	/**
 	 * 创建人：陈刚
 	 * 创建时间：2018-08-27
 	 */
-	@Select("listMenuButtonMapByRole")
 	List<Map<String, Object>> listMenuButtonMapByRole(PageData pd);
 }
 

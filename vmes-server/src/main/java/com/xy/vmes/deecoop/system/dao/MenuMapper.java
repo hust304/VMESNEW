@@ -25,28 +25,24 @@ public interface MenuMapper extends BaseMapper<Menu> {
 	* 创建人：陈刚 自动创建，禁止修改
 	* 创建时间：2018-07-31
 	*/
-    @Select("datalistPage")
     List<Menu> dataListPage(PageData pd,Pagination pg);
 
     /**
     * 创建人：陈刚 自动创建，禁止修改
     * 创建时间：2018-07-31
     */
-	@Select("dataList")
 	List<Menu> dataList(PageData pd);
 
 	/**
 	* 创建人：陈刚 自动创建，禁止修改
 	* 创建时间：2018-07-31
 	*/
-	@Delete("deleteByIds")
 	void deleteByIds(String[] ids);
 
     /**
     * 创建人：陈刚 自动创建，禁止修改
     * 创建时间：2018-07-31
     */
-    @Select("findColumnList")
     List<LinkedHashMap> findColumnList();
 
 
@@ -54,7 +50,6 @@ public interface MenuMapper extends BaseMapper<Menu> {
     * 创建人：陈刚 自动创建，禁止修改
     * 创建时间：2018-07-31
     */
-    @Select("findDataList")
     List<Map> findDataList(PageData pd);
 
 
@@ -66,20 +61,17 @@ public interface MenuMapper extends BaseMapper<Menu> {
 	 * 创建人：陈刚
 	 * 创建时间：2018-07-31
 	 */
-	@Select("updateDisableByIds")
 	void updateDisableByIds(String[] ids);
 
 	/**
 	 * 创建人：陈刚
 	 * 创建时间：2018-07-30
 	 */
-	@Select("getColumnList")
 	List<LinkedHashMap> getColumnList();
 	/**
 	 * 创建人：陈刚
 	 * 创建时间：2018-07-30
 	 */
-	@Select("getDataListPage")
 	List<Map> getDataListPage(PageData pd, Pagination pg);
 }
 

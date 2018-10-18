@@ -144,16 +144,6 @@ public class CustomerServiceImp implements CustomerService {
         return customerList;
     }
 
-
-    /**
-     * 创建人：陈刚 自动创建，禁止修改
-     * 创建时间：2018-09-18
-     */
-    @Override
-    public List<LinkedHashMap> getColumnList() throws Exception{
-        return customerMapper.getColumnList();
-    }
-
     /**
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2018-09-18

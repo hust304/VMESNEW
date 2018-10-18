@@ -24,28 +24,18 @@ public interface ProductPropertyMapper extends BaseMapper<ProductProperty> {
     * 创建人：陈刚 自动创建，禁止修改
     * 创建时间：2018-09-21
     */
-	@Select("dataList")
 	List<ProductProperty> dataList(PageData pd);
 
 	/**
 	* 创建人：陈刚 自动创建，禁止修改
 	* 创建时间：2018-09-21
 	*/
-	@Delete("deleteByIds")
 	void deleteByIds(String[] ids);
 
     /**
     * 创建人：陈刚 自动创建，禁止修改
     * 创建时间：2018-09-21
     */
-    @Select("findDataList")
-    List<Map> findDataList(PageData pd);
-
-    /**
-    * 创建人：陈刚 自动创建，禁止修改
-    * 创建时间：2018-09-21
-    */
-    @Select("getDataListPage")
     List<Map> getDataListPage(PageData pd,Pagination pg);
 
 

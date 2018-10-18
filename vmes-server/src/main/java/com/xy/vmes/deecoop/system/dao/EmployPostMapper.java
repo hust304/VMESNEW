@@ -25,28 +25,24 @@ public interface EmployPostMapper extends BaseMapper<EmployPost> {
 	* 创建人：刘威 自动创建，禁止修改
 	* 创建时间：2018-08-01
 	*/
-    @Select("datalistPage")
     List<EmployPost> dataListPage(PageData pd,Pagination pg);
 
     /**
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-08-01
     */
-	@Select("dataList")
 	List<EmployPost> dataList(PageData pd);
 
 	/**
 	* 创建人：刘威 自动创建，禁止修改
 	* 创建时间：2018-08-01
 	*/
-	@Delete("deleteByIds")
 	void deleteByIds(String[] ids);
 
     /**
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-08-01
     */
-    @Select("findColumnList")
     List<LinkedHashMap> findColumnList();
 
 
@@ -54,14 +50,12 @@ public interface EmployPostMapper extends BaseMapper<EmployPost> {
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-08-01
     */
-    @Select("findDataList")
     List<Map> findDataList(PageData pd);
 
     /**
      * 创建人：刘威 自动创建，禁止修改
      * 创建时间：2018-08-01
      */
-    @Select("getColumnList")
     List<LinkedHashMap> getColumnList();
 
 
@@ -69,7 +63,6 @@ public interface EmployPostMapper extends BaseMapper<EmployPost> {
      * 创建人：刘威 自动创建，禁止修改
      * 创建时间：2018-08-01
      */
-    @Select("getDataList")
     List<Map> getDataList(PageData pd);
 
 
@@ -77,7 +70,6 @@ public interface EmployPostMapper extends BaseMapper<EmployPost> {
      * 创建人：刘威 自动创建，禁止修改
      * 创建时间：2018-08-01
      */
-    @Select("getDataListPage")
     List<Map> getDataListPage(PageData pd,Pagination pg);
 
 
@@ -85,7 +77,6 @@ public interface EmployPostMapper extends BaseMapper<EmployPost> {
      * 创建人：刘威 自动创建，禁止修改
      * 创建时间：2018-08-01
      */
-    @Select("updateToDisableByIds")
     void updateToDisableByIds(String[] ids);
 
 
@@ -96,7 +87,6 @@ public interface EmployPostMapper extends BaseMapper<EmployPost> {
      * 创建人：刘威
      * 创建时间：2018-08-03
      */
-    @Select("updateToDisableByEmployIds")
     void updateToDisableByEmployIds(String[] ids);
 
 }

@@ -25,28 +25,24 @@ public interface EmployeeMapper extends BaseMapper<Employee> {
 	* 创建人：刘威 自动创建，禁止修改
 	* 创建时间：2018-08-02
 	*/
-    @Select("datalistPage")
     List<Employee> dataListPage(PageData pd,Pagination pg);
 
     /**
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-08-02
     */
-	@Select("dataList")
 	List<Employee> dataList(PageData pd);
 
 	/**
 	* 创建人：刘威 自动创建，禁止修改
 	* 创建时间：2018-08-02
 	*/
-	@Delete("deleteByIds")
 	void deleteByIds(String[] ids);
 
     /**
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-08-02
     */
-    @Select("findColumnList")
     List<LinkedHashMap> findColumnList();
 
 
@@ -54,7 +50,6 @@ public interface EmployeeMapper extends BaseMapper<Employee> {
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-08-02
     */
-    @Select("findDataList")
     List<Map> findDataList(PageData pd);
 
 
@@ -62,7 +57,6 @@ public interface EmployeeMapper extends BaseMapper<Employee> {
      * 创建人：刘威 自动创建，禁止修改
      * 创建时间：2018-08-02
      */
-    @Select("getColumnList")
     List<LinkedHashMap> getColumnList();
 
 
@@ -70,7 +64,6 @@ public interface EmployeeMapper extends BaseMapper<Employee> {
      * 创建人：刘威 自动创建，禁止修改
      * 创建时间：2018-08-02
      */
-    @Select("getDataList")
     List<Map> getDataList(PageData pd);
 
 
@@ -78,7 +71,6 @@ public interface EmployeeMapper extends BaseMapper<Employee> {
      * 创建人：刘威 自动创建，禁止修改
      * 创建时间：2018-08-02
      */
-    @Select("getDataListPage")
     List<Map> getDataListPage(PageData pd,Pagination pg);
 
 
@@ -86,7 +78,6 @@ public interface EmployeeMapper extends BaseMapper<Employee> {
      * 创建人：刘威 自动创建，禁止修改
      * 创建时间：2018-08-02
      */
-    @Select("updateToDisableByIds")
     void updateToDisableByIds(String[] ids);
 
 
@@ -98,7 +89,6 @@ public interface EmployeeMapper extends BaseMapper<Employee> {
      * 创建人：
      * 创建时间：2018-08-02
      */
-    @Select("selectEmployeeAndUserById")
     List<Map> selectEmployeeAndUserById(PageData pd);
 
 }

@@ -101,15 +101,6 @@ public class ProductPropertyServiceImp implements ProductPropertyService {
     * 创建时间：2018-09-21
     */
     @Override
-    public List<Map> findDataList(PageData pd) throws Exception{
-        return productPropertyMapper.findDataList(pd);
-    }
-
-    /**
-    * 创建人：陈刚 自动创建，禁止修改
-    * 创建时间：2018-09-21
-    */
-    @Override
     public void deleteByColumnMap(Map columnMap) throws Exception{
         productPropertyMapper.deleteByMap(columnMap);
     }
@@ -134,6 +125,7 @@ public class ProductPropertyServiceImp implements ProductPropertyService {
     }
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+    @Override
     public ProductProperty findProductPropertyById(String id) {
         if (id == null || id.trim().length() == 0) {return null;}
 
@@ -144,6 +136,7 @@ public class ProductPropertyServiceImp implements ProductPropertyService {
         return this.findProductProperty(findMap);
     }
 
+    @Override
     public ProductProperty findProductProperty(PageData object) {
         if (object == null) {return null;}
 
@@ -155,6 +148,7 @@ public class ProductPropertyServiceImp implements ProductPropertyService {
         return null;
     }
 
+    @Override
     public List<ProductProperty> findProductPropertyList(PageData object) {
         if (object == null) {return null;}
 
@@ -167,6 +161,8 @@ public class ProductPropertyServiceImp implements ProductPropertyService {
 
         return objectList;
     }
+
+    @Override
     public List<ProductProperty> findProductPropertyListByProdId(String prodId) {
         List<ProductProperty> objectList = new ArrayList<ProductProperty>();
         if (prodId == null || prodId.trim().length() == 0) {return objectList;}
@@ -179,6 +175,7 @@ public class ProductPropertyServiceImp implements ProductPropertyService {
         return objectList;
     }
 
+    @Override
     public void deleteProdPropertyByProdId(String prodId) throws Exception {
         if (prodId == null || prodId.trim().length() == 0) {return;}
 
@@ -188,6 +185,7 @@ public class ProductPropertyServiceImp implements ProductPropertyService {
         this.deleteByColumnMap(mapObject);
     }
 
+    @Override
     public ProductProperty map2ProdProperty(Map<String, Object> mapObj, ProductProperty object) {
         if (object == null) {object = new ProductProperty();}
         if (mapObj == null) {return object;}
@@ -205,6 +203,8 @@ public class ProductPropertyServiceImp implements ProductPropertyService {
 
         return object;
     }
+
+    @Override
     public List<ProductProperty> mapList2ProductPropertyList(List<Map<String, Object>> mapList, List<ProductProperty> objectList) {
         if (objectList == null) {objectList = new ArrayList<ProductProperty>();}
         if (mapList == null || mapList.size() == 0) {return objectList;}
@@ -217,6 +217,7 @@ public class ProductPropertyServiceImp implements ProductPropertyService {
         return objectList;
     }
 
+    @Override
     public void addProductProperty(String cuser, String prodId, List<ProductProperty> objectList) {
         if (prodId == null || prodId.trim().length() == 0) {return;}
         if (objectList == null || objectList.size() == 0) {return;}
@@ -232,6 +233,7 @@ public class ProductPropertyServiceImp implements ProductPropertyService {
         }
     }
 
+    @Override
     public Map<String, String> prodProperty2Map(ProductProperty object, Map<String, String> mapObject) {
         if (mapObject == null) {mapObject = new LinkedHashMap<String, String>();}
         if (object == null) {return mapObject;}
@@ -256,6 +258,7 @@ public class ProductPropertyServiceImp implements ProductPropertyService {
         return mapObject;
     }
 
+    @Override
     public String prodPropertyList2JsonString(List<ProductProperty> objectList) {
         List<Map<String, String>> mapList = new ArrayList<Map<String, String>>();
 

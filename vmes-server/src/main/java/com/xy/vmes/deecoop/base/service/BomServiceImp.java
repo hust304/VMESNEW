@@ -152,15 +152,6 @@ public class BomServiceImp implements BomService {
     * 创建时间：2018-09-29
     */
     @Override
-    public List<LinkedHashMap> getColumnList() throws Exception{
-        return bomMapper.getColumnList();
-    }
-
-    /**
-    * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-09-29
-    */
-    @Override
     public List<Map> getDataList(PageData pd) throws Exception{
         return bomMapper.getDataList(pd);
     }

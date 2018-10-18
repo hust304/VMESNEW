@@ -84,7 +84,7 @@
     </select>
 
     <!-- 列表 自动创建，禁止修改-->
-    <select id="datalistPage" parameterType="com.yvan.PageData" resultType="com.xy.vmes.entity.EmployPost">
+    <select id="dataListPage" parameterType="com.yvan.PageData" resultType="com.xy.vmes.entity.EmployPost">
         select
         <include refid="Field"></include>
         from

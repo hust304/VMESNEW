@@ -98,7 +98,7 @@
     </select>
 
     <!-- 列表 自动创建，禁止修改-->
-    <select id="datalistPage" parameterType="com.yvan.PageData" resultType="com.xy.vmes.entity.MenuButton">
+    <select id="dataListPage" parameterType="com.yvan.PageData" resultType="com.xy.vmes.entity.MenuButton">
         select
         <include refid="Field"></include>
         from

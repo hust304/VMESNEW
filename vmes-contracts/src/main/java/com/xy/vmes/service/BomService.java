@@ -88,13 +88,6 @@ public interface BomService {
     */
     List<Bom> selectByColumnMap(Map columnMap) throws Exception;
 
-
-    /**
-    * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-09-29
-    */
-    List<LinkedHashMap> getColumnList() throws Exception;
-
     /**
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-09-29

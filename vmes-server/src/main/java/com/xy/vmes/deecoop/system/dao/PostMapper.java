@@ -25,28 +25,24 @@ public interface PostMapper extends BaseMapper<Post> {
 	* 创建人：刘威 自动创建，禁止修改
 	* 创建时间：2018-08-01
 	*/
-    @Select("datalistPage")
     List<Post> dataListPage(PageData pd,Pagination pg);
 
     /**
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-08-01
     */
-	@Select("dataList")
 	List<Post> dataList(PageData pd);
 
 	/**
 	* 创建人：刘威 自动创建，禁止修改
 	* 创建时间：2018-08-01
 	*/
-	@Delete("deleteByIds")
 	void deleteByIds(String[] ids);
 
     /**
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-08-01
     */
-    @Select("findColumnList")
     List<LinkedHashMap> findColumnList();
 
 
@@ -54,14 +50,12 @@ public interface PostMapper extends BaseMapper<Post> {
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-08-01
     */
-    @Select("findDataList")
     List<Map> findDataList(PageData pd);
 
     /**
      * 创建人：刘威 自动创建，禁止修改
      * 创建时间：2018-08-01
      */
-    @Select("getColumnList")
     List<LinkedHashMap> getColumnList();
 
 
@@ -69,21 +63,18 @@ public interface PostMapper extends BaseMapper<Post> {
      * 创建人：刘威 自动创建，禁止修改
      * 创建时间：2018-08-01
      */
-    @Select("getDataList")
     List<Map> getDataList(PageData pd);
 
     /**
      * 创建人：刘威 自动创建，禁止修改
      * 创建时间：2018-08-01
      */
-    @Select("getDataListPage")
     List<Map> getDataListPage(PageData pd,Pagination pg);
 
     /**
      * 创建人：刘威 自动创建，禁止修改
      * 创建时间：2018-08-01
      */
-    @Select("updateToDisableByIds")
     void updateToDisableByIds(String[] ids);
 
 
@@ -93,7 +84,6 @@ public interface PostMapper extends BaseMapper<Post> {
      * 创建人：陈刚
      * 创建时间：2018-08-28
      */
-    @Select("listDeptPost")
     List<Map<String, Object>> listDeptPost(PageData pd);
 
 }

@@ -147,16 +147,6 @@ public class BomTreeServiceImp implements BomTreeService {
         return bomTreeList;
     }
 
-
-    /**
-    * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-09-29
-    */
-    @Override
-    public List<LinkedHashMap> getColumnList() throws Exception{
-        return bomTreeMapper.getColumnList();
-    }
-
     /**
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-09-29

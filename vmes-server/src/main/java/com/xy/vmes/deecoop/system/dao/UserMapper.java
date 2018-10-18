@@ -25,28 +25,24 @@ public interface UserMapper extends BaseMapper<User> {
 	* 创建人：刘威 自动创建，禁止修改
 	* 创建时间：2018-07-26
 	*/
-    @Select("datalistPage")
     List<User> dataListPage(PageData pd,Pagination pg);
 
     /**
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-07-26
     */
-	@Select("dataList")
 	List<User> dataList(PageData pd);
 
 	/**
 	* 创建人：刘威 自动创建，禁止修改
 	* 创建时间：2018-07-26
 	*/
-	@Delete("deleteByIds")
 	void deleteByIds(String[] ids);
 
     /**
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-07-26
     */
-    @Select("findColumnList")
     List<LinkedHashMap> findColumnList();
 
 
@@ -54,7 +50,6 @@ public interface UserMapper extends BaseMapper<User> {
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-07-26
     */
-    @Select("findDataList")
     List<Map> findDataList(PageData pd);
 
 
@@ -68,7 +63,6 @@ public interface UserMapper extends BaseMapper<User> {
 	 * 创建人：刘威
 	 * 创建时间：2018-07-26
 	 */
-	@Select("isExistMobile")
 	List<User> isExistMobile(PageData pd);
 
 
@@ -78,21 +72,18 @@ public interface UserMapper extends BaseMapper<User> {
 	 * 创建人：刘威
 	 * 创建时间：2018-07-26
 	 */
-	@Select("updateToDisableByIds")
 	void updateToDisableByIds(String[] ids);
 
 	/**
 	 * 创建人：刘威
 	 * 创建时间：2018-08-03
 	 */
-	@Select("updateToDisableByEmployIds")
 	void updateToDisableByEmployIds(String[] ids);
 
 	/**
 	 * 创建人：刘威
 	 * 创建时间：2018-07-26
 	 */
-	@Select("getColumnList")
 	List<LinkedHashMap> getColumnList();
 
 
@@ -100,14 +91,12 @@ public interface UserMapper extends BaseMapper<User> {
 	 * 创建人：刘威
 	 * 创建时间：2018-07-26
 	 */
-	@Select("getDataList")
 	List<Map> getDataList(PageData pd);
 
 	/**
 	 * 创建人：刘威
 	 * 创建时间：2018-07-26
 	 */
-	@Select("getDataListPage")
 	List<Map> getDataListPage(PageData pd,Pagination pg);
 
 	/**
@@ -116,7 +105,6 @@ public interface UserMapper extends BaseMapper<User> {
 	 * 创建人：陈刚
 	 * 创建时间：2018-08-06
 	 */
-	@Select("updateDisableByCompanyIds")
 	void updateDisableByCompanyIds(String[] companyIds);
 
 
@@ -124,7 +112,6 @@ public interface UserMapper extends BaseMapper<User> {
 	 * 创建人：刘威
 	 * 创建时间：2018-07-26
 	 */
-	@Select("selectCountUserNum")
 	List<Map> selectCountUserNum(PageData pd);
 
 }

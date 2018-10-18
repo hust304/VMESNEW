@@ -25,28 +25,24 @@ public interface RoleMapper extends BaseMapper<Role> {
 	* 创建人：陈刚 自动创建，禁止修改
 	* 创建时间：2018-07-30
 	*/
-    @Select("datalistPage")
     List<Role> dataListPage(PageData pd,Pagination pg);
 
     /**
     * 创建人：陈刚 自动创建，禁止修改
     * 创建时间：2018-07-30
     */
-	@Select("dataList")
 	List<Role> dataList(PageData pd);
 
 	/**
 	* 创建人：陈刚 自动创建，禁止修改
 	* 创建时间：2018-07-30
 	*/
-	@Delete("deleteByIds")
 	void deleteByIds(String[] ids);
 
     /**
     * 创建人：陈刚 自动创建，禁止修改
     * 创建时间：2018-07-30
     */
-    @Select("findColumnList")
     List<LinkedHashMap> findColumnList();
 
 
@@ -54,7 +50,6 @@ public interface RoleMapper extends BaseMapper<Role> {
     * 创建人：陈刚 自动创建，禁止修改
     * 创建时间：2018-07-30
     */
-    @Select("findDataList")
     List<Map> findDataList(PageData pd);
 
 
@@ -64,13 +59,11 @@ public interface RoleMapper extends BaseMapper<Role> {
 	 * 创建人：陈刚
 	 * 创建时间：2018-07-30
 	 */
-	@Select("getColumnList")
 	List<LinkedHashMap> getColumnList();
 	/**
 	 * 创建人：陈刚
 	 * 创建时间：2018-07-30
 	 */
-	@Select("getDataListPage")
 	List<Map> getDataListPage(PageData pd, Pagination pg);
 
 	/**
@@ -79,7 +72,6 @@ public interface RoleMapper extends BaseMapper<Role> {
 	 * 创建人：陈刚
 	 * 创建时间：2018-07-30
 	 */
-    @Select("updateDisableByIds")
     void updateDisableByIds(String[] ids);
 }
 

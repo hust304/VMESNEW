@@ -25,28 +25,24 @@ public interface TemplateMapper extends BaseMapper<Template> {
 	* 创建人：刘威 自动创建，禁止修改
 	* 创建时间：2018-08-23
 	*/
-    @Select("datalistPage")
     List<Template> dataListPage(PageData pd,Pagination pg);
 
     /**
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-08-23
     */
-	@Select("dataList")
 	List<Template> dataList(PageData pd);
 
 	/**
 	* 创建人：刘威 自动创建，禁止修改
 	* 创建时间：2018-08-23
 	*/
-	@Delete("deleteByIds")
 	void deleteByIds(String[] ids);
 
     /**
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-08-23
     */
-    @Select("findColumnList")
     List<LinkedHashMap> findColumnList();
 
 
@@ -54,7 +50,6 @@ public interface TemplateMapper extends BaseMapper<Template> {
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-08-23
     */
-    @Select("findDataList")
     List<Map> findDataList(PageData pd);
 
 
@@ -62,7 +57,6 @@ public interface TemplateMapper extends BaseMapper<Template> {
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-08-23
     */
-    @Select("getColumnList")
     List<LinkedHashMap> getColumnList();
 
 
@@ -70,7 +64,6 @@ public interface TemplateMapper extends BaseMapper<Template> {
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-08-23
     */
-    @Select("getDataList")
     List<Map> getDataList(PageData pd);
 
 
@@ -78,7 +71,6 @@ public interface TemplateMapper extends BaseMapper<Template> {
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-08-23
     */
-    @Select("getDataListPage")
     List<Map> getDataListPage(PageData pd,Pagination pg);
 
 
@@ -86,7 +78,6 @@ public interface TemplateMapper extends BaseMapper<Template> {
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-08-23
     */
-    @Select("updateToDisableByIds")
     void updateToDisableByIds(String[] ids);
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/

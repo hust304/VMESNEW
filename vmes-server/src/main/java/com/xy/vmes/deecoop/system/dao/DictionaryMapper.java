@@ -26,28 +26,24 @@ public interface DictionaryMapper extends BaseMapper<Dictionary> {
 	* 创建人：刘威 自动创建，禁止修改
 	* 创建时间：2018-07-31
 	*/
-    @Select("datalistPage")
     List<Dictionary> dataListPage(PageData pd,Pagination pg);
 
     /**
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-07-31
     */
-	@Select("dataList")
 	List<Dictionary> dataList(PageData pd);
 
 	/**
 	* 创建人：刘威 自动创建，禁止修改
 	* 创建时间：2018-07-31
 	*/
-	@Delete("deleteByIds")
 	void deleteByIds(String[] ids);
 
     /**
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-07-31
     */
-    @Select("findColumnList")
     List<LinkedHashMap> findColumnList();
 
 
@@ -55,7 +51,6 @@ public interface DictionaryMapper extends BaseMapper<Dictionary> {
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-07-31
     */
-    @Select("findDataList")
     List<Map> findDataList(PageData pd);
 
 
@@ -63,7 +58,6 @@ public interface DictionaryMapper extends BaseMapper<Dictionary> {
      * 创建人：刘威 自动创建，禁止修改
      * 创建时间：2018-07-31
      */
-    @Select("getColumnList")
     List<LinkedHashMap> getColumnList();
 
 
@@ -71,21 +65,18 @@ public interface DictionaryMapper extends BaseMapper<Dictionary> {
      * 创建人：刘威 自动创建，禁止修改
      * 创建时间：2018-07-31
      */
-    @Select("getDataList")
     List<Map> getDataList(PageData pd);
 
     /**
      * 创建人：刘威 自动创建，禁止修改
      * 创建时间：2018-07-31
      */
-    @Select("getDataListPage")
     List<Map> getDataListPage(PageData pd,Pagination pg);
 
     /**
      * 创建人：刘威 自动创建，禁止修改
      * 创建时间：2018-07-31
      */
-    @Select("updateToDisableByIds")
     void updateToDisableByIds(String[] ids);
 
 
@@ -98,7 +89,6 @@ public interface DictionaryMapper extends BaseMapper<Dictionary> {
      * 创建人：刘威
      * 创建时间：2018-08-01
      */
-    @Select("getTreeList")
     List<TreeEntity> getTreeList(PageData pd);
 }
 

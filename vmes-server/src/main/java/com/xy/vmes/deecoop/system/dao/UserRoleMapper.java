@@ -25,28 +25,24 @@ public interface UserRoleMapper extends BaseMapper<UserRole> {
 	* 创建人：刘威 自动创建，禁止修改
 	* 创建时间：2018-07-26
 	*/
-    @Select("datalistPage")
     List<UserRole> dataListPage(PageData pd,Pagination pg);
 
     /**
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-07-26
     */
-	@Select("dataList")
 	List<UserRole> dataList(PageData pd);
 
 	/**
 	* 创建人：刘威 自动创建，禁止修改
 	* 创建时间：2018-07-26
 	*/
-	@Delete("deleteByIds")
 	void deleteByIds(String[] ids);
 
     /**
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-07-26
     */
-    @Select("findColumnList")
     List<LinkedHashMap> findColumnList();
 
 
@@ -54,7 +50,6 @@ public interface UserRoleMapper extends BaseMapper<UserRole> {
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-07-26
     */
-    @Select("findDataList")
     List<Map> findDataList(PageData pd);
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
@@ -62,27 +57,23 @@ public interface UserRoleMapper extends BaseMapper<UserRole> {
 	 * 创建人：陈刚
 	 * 创建时间：2018-07-31
 	 */
-	@Select("findUserRoleMapList")
 	List<Map<String, Object>> findUserRoleMapList(PageData pd);
 
 	/**
 	 * 创建人：陈刚
 	 * 创建时间：2018-07-31
 	 */
-	@Select("updateDisableByRoleId")
 	void updateDisableByRoleId(String roleId);
 
 	/**
 	 * 创建人：陈刚
 	 * 创建时间：2018-08-22
 	 */
-	@Select("listUserColumn")
 	List<LinkedHashMap<String, String>> listUserColumn();
 	/**
 	 * 创建人：陈刚
 	 * 创建时间：2018-08-22
 	 */
-	@Select("listUserByRole")
 	List<Map<String, Object>> listUserByRole(PageData pd);
 
 

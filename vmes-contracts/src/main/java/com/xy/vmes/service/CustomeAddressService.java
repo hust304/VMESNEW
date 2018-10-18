@@ -88,13 +88,6 @@ public interface CustomeAddressService {
     */
     List<CustomeAddress> selectByColumnMap(Map columnMap) throws Exception;
 
-
-    /**
-    * 创建人：陈刚 自动创建，禁止修改
-    * 创建时间：2018-09-20
-    */
-    List<LinkedHashMap> getColumnList() throws Exception;
-
     /**
     * 创建人：陈刚 自动创建，禁止修改
     * 创建时间：2018-09-20

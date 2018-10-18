@@ -20,6 +20,5 @@ public interface UserEmployeeMapper {
      * 创建人：陈刚
      * 创建时间：2018-07-20
      */
-    @Select("findViewUserEmployList")
     List<Map<String, Object>> findViewUserEmployList(PageData pd);
 }
