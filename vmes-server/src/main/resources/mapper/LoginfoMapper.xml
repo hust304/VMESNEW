@@ -7,79 +7,45 @@
  -->
 <mapper namespace="com.xy.vmes.deecoop.system.dao.LogInfoMapper">
 
-    <!--表名 自动创建，禁止修改-->
-    <sql id="tableName">
-	vmes_loginfo
-    </sql>
-
-    <!-- 字段 自动创建，禁止修改-->
-    <sql id="Field">
-		type type,<!-- 日志类型 operate:操作日志 state:状态日志 -->
-		business_id businessId,<!-- 业务单ID -->
-		business_type businessType,<!-- 业务类别(1:生产计划 2:产品 3:部门 4:部门子计划 5:派工单 6:子派工单) -->
-        source  source,<!-- 操作来源(app:终端操作 web:web端操作 sys:系统产生) -->
-		model_name modelName,<!-- 模块名称 -->
-        operate  operate,<!-- 业务操作类型 (add,update,delete) -->
-		remark remark,<!-- 备注 -->
-		cdate cdate,<!-- 创建时间 -->
-		cuser cuser,<!-- 创建人账号 -->
-		operate_value operateValue,<!-- (删除,修改)-业务id字符串 -->
-		udate udate,<!-- 修改时间 -->
-		uuser uuser,<!-- 修改人账号 -->
-		operate_url operateUrl,<!-- 请求URL -->
-		id id <!-- id -->
-    </sql>
-
-    <!-- 字段值 自动创建，禁止修改-->
-    <sql id="FieldValue">
-		#{type},<!-- 日志类型 operate:操作日志 state:状态日志 -->
-		#{businessId},<!-- 业务单ID -->
-		#{businessType},<!-- 业务类别(1:生产计划 2:产品 3:部门 4:部门子计划 5:派工单 6:子派工单) -->
-		#{source},<!-- 操作来源(app:终端操作 web:web端操作 sys:系统产生) -->
-		#{modelName},<!-- 模块名称 -->
-		#{operate},<!-- 业务操作类型 (add,update,delete) -->
-		#{remark},<!-- 备注 -->
-		#{cdate},<!-- 创建时间 -->
-		#{cuser},<!-- 创建人账号 -->
-		#{operateValue},<!-- (删除,修改)-业务id字符串 -->
-		#{udate},<!-- 修改时间 -->
-		#{uuser},<!-- 修改人账号 -->
-		#{operateUrl},<!-- 请求URL -->
-		#{id} <!-- id -->
-    </sql>
-
-
-    <!-- 字段名称  '_hide' 表示前端列表隐藏 自动创建，禁止修改-->
-    <sql id="Column">
-        '日志类型 operate:操作日志 state:状态日志'  type,
-        '业务单ID'  businessId,
-        '业务类别(1:生产计划 2:产品 3:部门 4:部门子计划 5:派工单 6:子派工单)'  businessType,
-        '操作来源(app:终端操作 web:web端操作 sys:系统产生)'  source,
-        '模块名称'  modelName,
-        '业务操作类型 (add,update,delete)'  operate,
-        '备注'  remark,
-        '创建时间'  cdate,
-        '创建人账号'  cuser,
-        '(删除,修改)-业务id字符串'  operateValue,
-        '修改时间'  udate,
-        '修改人账号'  uuser,
-        '请求URL'  operateUrl,
-        'id' id_hide
-    </sql>
-
     <!-- 自动创建，禁止修改 -->
     <select id="findColumnList"  resultType="java.util.LinkedHashMap">
         select
-        <include refid="Column"></include>
+            '日志类型 operate:操作日志 state:状态日志'  type,
+            '业务单ID'  businessId,
+            '业务类别(1:生产计划 2:产品 3:部门 4:部门子计划 5:派工单 6:子派工单)'  businessType,
+            '操作来源(app:终端操作 web:web端操作 sys:系统产生)'  source,
+            '模块名称'  modelName,
+            '业务操作类型 (add,update,delete)'  operate,
+            '备注'  remark,
+            '创建时间'  cdate,
+            '创建人账号'  cuser,
+            '(删除,修改)-业务id字符串'  operateValue,
+            '修改时间'  udate,
+            '修改人账号'  uuser,
+            '请求URL'  operateUrl,
+            'id' id_hide
         from dual
     </select>
 
     <!-- 自动创建，禁止修改 -->
     <select id="findDataList"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
         select
-        <include refid="Field"></include>
+            type type,<!-- 日志类型 operate:操作日志 state:状态日志 -->
+            business_id businessId,<!-- 业务单ID -->
+            business_type businessType,<!-- 业务类别(1:生产计划 2:产品 3:部门 4:部门子计划 5:派工单 6:子派工单) -->
+            source  source,<!-- 操作来源(app:终端操作 web:web端操作 sys:系统产生) -->
+            model_name modelName,<!-- 模块名称 -->
+            operate  operate,<!-- 业务操作类型 (add,update,delete) -->
+            remark remark,<!-- 备注 -->
+            cdate cdate,<!-- 创建时间 -->
+            cuser cuser,<!-- 创建人账号 -->
+            operate_value operateValue,<!-- (删除,修改)-业务id字符串 -->
+            udate udate,<!-- 修改时间 -->
+            uuser uuser,<!-- 修改人账号 -->
+            operate_url operateUrl,<!-- 请求URL -->
+            id id <!-- id -->
         from
-        <include refid="tableName"></include>
+        vmes_loginfo
         <where>
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr!=''" >
@@ -94,9 +60,22 @@
     <!-- 列表 自动创建，禁止修改-->
     <select id="dataListPage" parameterType="com.yvan.PageData" resultType="com.xy.vmes.entity.LogInfo">
         select
-        <include refid="Field"></include>
+            type type,<!-- 日志类型 operate:操作日志 state:状态日志 -->
+            business_id businessId,<!-- 业务单ID -->
+            business_type businessType,<!-- 业务类别(1:生产计划 2:产品 3:部门 4:部门子计划 5:派工单 6:子派工单) -->
+            source  source,<!-- 操作来源(app:终端操作 web:web端操作 sys:系统产生) -->
+            model_name modelName,<!-- 模块名称 -->
+            operate  operate,<!-- 业务操作类型 (add,update,delete) -->
+            remark remark,<!-- 备注 -->
+            cdate cdate,<!-- 创建时间 -->
+            cuser cuser,<!-- 创建人账号 -->
+            operate_value operateValue,<!-- (删除,修改)-业务id字符串 -->
+            udate udate,<!-- 修改时间 -->
+            uuser uuser,<!-- 修改人账号 -->
+            operate_url operateUrl,<!-- 请求URL -->
+            id id <!-- id -->
         from
-        <include refid="tableName"></include>
+        vmes_loginfo
         <where>
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr!=''" >
@@ -109,7 +88,7 @@
     <!-- 批量删除 自动创建，禁止修改-->
     <delete id="deleteByIds" parameterType="java.lang.String">
         delete from
-        <include refid="tableName"></include>
+        vmes_loginfo
         where
         id in
         <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
@@ -121,7 +100,7 @@
     <!-- 自动创建，禁止修改-->
     <update id="updateToDisableByIds" parameterType="java.lang.String" >
         update
-        <include refid="tableName"></include>
+        vmes_loginfo
         set isdisable = 1 ,udate = now()
         where
         id in
@@ -165,9 +144,22 @@
     <!-- 列表(全部) 自动创建，禁止修改-->
     <select id="dataList" parameterType="com.yvan.PageData" resultType="com.xy.vmes.entity.LogInfo">
         select
-        <include refid="Field"></include>
+            type type,<!-- 日志类型 operate:操作日志 state:状态日志 -->
+            business_id businessId,<!-- 业务单ID -->
+            business_type businessType,<!-- 业务类别(1:生产计划 2:产品 3:部门 4:部门子计划 5:派工单 6:子派工单) -->
+            source  source,<!-- 操作来源(app:终端操作 web:web端操作 sys:系统产生) -->
+            model_name modelName,<!-- 模块名称 -->
+            operate  operate,<!-- 业务操作类型 (add,update,delete) -->
+            remark remark,<!-- 备注 -->
+            cdate cdate,<!-- 创建时间 -->
+            cuser cuser,<!-- 创建人账号 -->
+            operate_value operateValue,<!-- (删除,修改)-业务id字符串 -->
+            udate udate,<!-- 修改时间 -->
+            uuser uuser,<!-- 修改人账号 -->
+            operate_url operateUrl,<!-- 请求URL -->
+            id id <!-- id -->
         from
-        <include refid="tableName"></include>
+        vmes_loginfo
         <choose>
             <!--
                 mapSize (0 or is null) 无查询参数-业务层传入
@@ -208,29 +200,6 @@
         </if>
     </select>
 
-
-
-
-    <!-- 字段 自动创建，可以修改-->
-    <sql id="Field1">
-        u.user_code userCode,
-        u.user_name userName,
-        t.type type,<!-- 日志类型 operate:操作日志 state:状态日志 -->
-        t.business_id businessId,<!-- 业务单ID -->
-        t.business_type businessType,<!-- 业务类别(1:生产计划 2:产品 3:部门 4:部门子计划 5:派工单 6:子派工单) -->
-        case when t.source='app' then '终端操作' when t.source='web' then 'WEB操作' else '系统生成' end  source,<!-- 操作来源(app:终端操作 web:web端操作 sys:系统产生) -->
-        t.model_name modelName,<!-- 模块名称 -->
-        case when t.operate='add' then '新增' when t.operate='update' then '修改' when t.operate='delete' then '删除' else null end  operate,<!-- 业务操作类型 (add,update,delete) -->
-        t.remark remark,<!-- 备注 -->
-        t.cdate cdate,<!-- 创建时间 -->
-        t.cuser cuser,<!-- 创建人账号 -->
-        t.operate_value operateValue,<!-- (删除,修改)-业务id字符串 -->
-        t.udate udate,<!-- 修改时间 -->
-        t.uuser uuser,<!-- 修改人账号 -->
-        t.operate_url operateUrl,<!-- 请求URL -->
-        t.id id <!-- id -->
-    </sql>
-
     <!-- 字段值 自动创建，可以修改-->
     <!--
     <sql id="Column1">
@@ -263,7 +232,22 @@
     <!-- 自动创建，可以修改 -->
     <select id="getDataList"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
         select
-        <include refid="Field1"></include>
+            u.user_code userCode,
+            u.user_name userName,
+            t.type type,<!-- 日志类型 operate:操作日志 state:状态日志 -->
+            t.business_id businessId,<!-- 业务单ID -->
+            t.business_type businessType,<!-- 业务类别(1:生产计划 2:产品 3:部门 4:部门子计划 5:派工单 6:子派工单) -->
+            case when t.source='app' then '终端操作' when t.source='web' then 'WEB操作' else '系统生成' end  source,<!-- 操作来源(app:终端操作 web:web端操作 sys:系统产生) -->
+            t.model_name modelName,<!-- 模块名称 -->
+            case when t.operate='add' then '新增' when t.operate='update' then '修改' when t.operate='delete' then '删除' else null end  operate,<!-- 业务操作类型 (add,update,delete) -->
+            t.remark remark,<!-- 备注 -->
+            t.cdate cdate,<!-- 创建时间 -->
+            t.cuser cuser,<!-- 创建人账号 -->
+            t.operate_value operateValue,<!-- (删除,修改)-业务id字符串 -->
+            t.udate udate,<!-- 修改时间 -->
+            t.uuser uuser,<!-- 修改人账号 -->
+            t.operate_url operateUrl,<!-- 请求URL -->
+            t.id id <!-- id -->
         from
         vmes_loginfo  t
         left join vmes_user u on t.cuser = u.id
@@ -290,7 +274,22 @@
     <!-- 自动创建，可以修改 -->
     <select id="getDataListPage"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
         select
-        <include refid="Field1"></include>
+            u.user_code userCode,
+            u.user_name userName,
+            t.type type,<!-- 日志类型 operate:操作日志 state:状态日志 -->
+            t.business_id businessId,<!-- 业务单ID -->
+            t.business_type businessType,<!-- 业务类别(1:生产计划 2:产品 3:部门 4:部门子计划 5:派工单 6:子派工单) -->
+            case when t.source='app' then '终端操作' when t.source='web' then 'WEB操作' else '系统生成' end  source,<!-- 操作来源(app:终端操作 web:web端操作 sys:系统产生) -->
+            t.model_name modelName,<!-- 模块名称 -->
+            case when t.operate='add' then '新增' when t.operate='update' then '修改' when t.operate='delete' then '删除' else null end  operate,<!-- 业务操作类型 (add,update,delete) -->
+            t.remark remark,<!-- 备注 -->
+            t.cdate cdate,<!-- 创建时间 -->
+            t.cuser cuser,<!-- 创建人账号 -->
+            t.operate_value operateValue,<!-- (删除,修改)-业务id字符串 -->
+            t.udate udate,<!-- 修改时间 -->
+            t.uuser uuser,<!-- 修改人账号 -->
+            t.operate_url operateUrl,<!-- 请求URL -->
+            t.id id <!-- id -->
         from
         vmes_loginfo  t
         left join vmes_user u on t.cuser = u.id
@@ -316,8 +315,5 @@
             order by ${orderStr}
         </if>
     </select>
-
-
-
 
 </mapper>
