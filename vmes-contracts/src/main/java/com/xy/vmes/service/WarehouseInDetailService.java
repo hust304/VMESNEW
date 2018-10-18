@@ -105,7 +105,7 @@ public interface WarehouseInDetailService {
      *   true : 全部相同，在入库单明细List
      *   false: 一条或多条不同，在入库单明细List
      *
-     * @param state       明细状态-入库单明细状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+     * @param state       明细状态-入库单明细状态(0:待派单 1:执行中 2:已完成 -1:已取消)
      * @param ignoreState 忽视状态
      * @param objectList  入库单明细List<WarehouseInDetail>
      * @return
@@ -117,7 +117,7 @@ public interface WarehouseInDetailService {
      *   true : 全部相同，在入库单明细List
      *   false: 一条或多条不同，在入库单明细List
      *
-     * @param checState   验证明细状态-入库单明细状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+     * @param checState   验证明细状态-入库单明细状态(0:待派单 1:执行中 2:已完成 -1:已取消)
      * @param ignoreState 忽视状态
      * @param objectList  入库单明细List<WarehouseInDetail>
      * @return

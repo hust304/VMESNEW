@@ -253,7 +253,7 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
      *   true : 全部相同，在入库单明细List
      *   false: 一条或多条不同，在入库单明细List
      *
-     * @param state       明细状态-入库单明细状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+     * @param state       明细状态-入库单明细状态(0:待派单 1:执行中 2:已完成 -1:已取消)
      * @param ignoreState 忽视状态(允许为空)
      * @param objectList  入库单明细List<WarehouseInDetail>
      * @return
@@ -295,6 +295,10 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
         String state = "";
         if ("-1".equals(checState)) {
             //验证状态: -1:已取消(验证是否允许取消) --> (0:待派单 ) 忽视状态:-1:已取消
+            state = "0";
+            isAllExist = this.isAllExistStateByDetailList(state, ignoreState, objectList);
+        } else if ("0".equals(checState)) {
+            //验证状态: 0:待派单 (验证是否允许删除) --> (0:待派单 ) 忽视状态:-1:已取消
             state = "0";
             isAllExist = this.isAllExistStateByDetailList(state, ignoreState, objectList);
         } else if ("2".equals(checState)) {

@@ -81,6 +81,21 @@ public interface WarehouseProductService {
     WarehouseProduct findWarehouseProductById(String id);
 
     List<WarehouseProduct> findWarehouseProductList(PageData object);
+
+    ///////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * 获取推荐货位(默认货位)
+     * 1. 查询库存表(vmes_warehouse_product:仓库货位产品库存表)
+     *   A. 相同货品的库位，按数量由少到多
+     *   B. 历史放过此货品的空库位
+     * 2. 查询仓库表(vmes_warehouse:仓库货位表) 创建时间最久的货位(cdate)
+     *
+     * @param companyId  企业id
+     * @param productId  货品id
+     * @return
+     */
+    String findDefaultWarehousePosition(String companyId, String productId);
 }
 
 

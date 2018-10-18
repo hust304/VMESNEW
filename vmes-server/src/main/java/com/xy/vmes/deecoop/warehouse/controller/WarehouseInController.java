@@ -358,12 +358,57 @@ public class WarehouseInController {
     }
 
     /**
+     * 删除入库单
+     * @author 陈刚
+     * @date 2018-10-16
+     * @throws Exception
+     */
+    @PostMapping("/warehouseIn/deleteWarehouseIn")
+    @Transactional
+    public ResultModel deleteWarehouseIn() throws Exception {
+        logger.info("################/warehouseIn/deleteWarehouseIn 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        ResultModel model = new ResultModel();
+
+        PageData pageData = HttpUtils.parsePageData();
+        String parentId = pageData.getString("id");
+        if (parentId == null || parentId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("入库单id为空或空字符串！");
+            return model;
+        }
+
+        //1. 根据(入库单id)-查询入库单明细(vmes_warehouse_in_detail)
+        List<WarehouseInDetail> detailList = warehouseInDetailService.findWarehouseInDetailListByParentId(parentId);
+        //明细状态:state:状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+        //验证明细是否允许删除(0:待派单) 忽视状态:-1:已取消
+        if (!warehouseInDetailService.checkStateByDetailList("0", "-1", detailList)) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("当前入库单不可删除，该入库单中含有(1:执行中 2:已完成)状态，请核对后再次操作！");
+            return model;
+        }
+
+        //2. 删除入库单明细
+        Map columnMap = new HashMap();
+        columnMap.put("parent_id", parentId);
+        warehouseInDetailService.deleteByColumnMap(columnMap);
+
+        //3. 删除入库单
+        warehouseInService.deleteById(parentId);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/warehouseIn/deleteWarehouseIn 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+    /**
     * Excel导出
     * @author 陈刚 自动创建，可以修改
     * @date 2018-10-16
     */
     @PostMapping("/warehouseIn/exportExcelWarehouseIns")
-    public void exportExcelWarehouseIns() throws Exception {
+    public void exportExcelWarehouseIn() throws Exception {
         logger.info("################warehouseIn/exportExcelWarehouseIns 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
 
@@ -411,7 +456,7 @@ public class WarehouseInController {
     * @date 2018-10-16
     */
     @PostMapping("/warehouseIn/importExcelWarehouseIns")
-    public ResultModel importExcelWarehouseIns(@RequestParam(value="excelFile") MultipartFile file) throws Exception  {
+    public ResultModel importExcelWarehouseIn(@RequestParam(value="excelFile") MultipartFile file) throws Exception  {
         logger.info("################warehouseIn/importExcelWarehouseIns 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
