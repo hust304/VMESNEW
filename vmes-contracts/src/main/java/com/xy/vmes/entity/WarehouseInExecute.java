@@ -22,12 +22,16 @@ public class WarehouseInExecute implements Serializable {
 	//入库明细ID
 	@TableField("detail_id")
 	private String detailId;
+	//(实际)货位ID
+	@TableField("warehouse_id")
+	private String warehouseId;
 	//当前入库数量
 	@TableField("count")
 	private BigDecimal count;
 	//创建用户id
 	@TableField("cuser")
 	private String cuser;
+
 	//创建时间
 	@TableField("cdate")
 	private Date cdate;
@@ -56,6 +60,12 @@ public class WarehouseInExecute implements Serializable {
 	}
 	public String getDetailId() {
 		return detailId;
+	}
+	public String getWarehouseId() {
+		return warehouseId;
+	}
+	public void setWarehouseId(String warehouseId) {
+		this.warehouseId = warehouseId;
 	}
 	public void setCount(BigDecimal count) {
 		this.count = count;

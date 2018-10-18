@@ -69,10 +69,11 @@
         select
             id id,
             detail_id detailId,
+            warehouse_id warehouseId,
             count count,
             cuser cuser,
-            cdate cdate,
 
+            cdate cdate,
             uuser uuser,
             udate udate,
             remark remark,
@@ -125,10 +126,11 @@
         select
             id id,
             detail_id detailId,
+            warehouse_id warehouseId,
             count count,
             cuser cuser,
-            cdate cdate,
 
+            cdate cdate,
             uuser uuser,
             udate udate,
             remark remark,
