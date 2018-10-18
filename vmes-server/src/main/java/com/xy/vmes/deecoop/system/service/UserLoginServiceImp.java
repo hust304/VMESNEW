@@ -4,6 +4,7 @@ import com.xy.vmes.entity.Department;
 import com.xy.vmes.entity.Employee;
 import com.xy.vmes.entity.User;
 import com.xy.vmes.service.UserLoginService;
+import com.yvan.Conv;
 import com.yvan.common.util.JsonUtil;
 import com.yvan.platform.RestException;
 import org.springframework.stereotype.Service;
@@ -21,23 +22,25 @@ public class UserLoginServiceImp implements UserLoginService {
         }
 
         //JsonString 转换Map<String, String> 对象
-        Map<String, String> mapObject = JsonUtil.jsonString2Map(jsonString);
-        for (Iterator iterator = mapObject.keySet().iterator(); iterator.hasNext();) {
+        Map mapObject = JsonUtil.jsonString2Map(jsonString);
+        for (Iterator iterator = mapObject.keySet().iterator(); iterator.hasNext(); ) {
             String mapKey = (String) iterator.next();
-            String mapValue = mapObject.get(mapKey);
-            if (mapValue == null || mapValue.trim().length() == 0) {continue;}
+            String mapValue = Conv.NS(mapObject.get(mapKey));
+            if (mapValue == null || mapValue.trim().length() == 0) {
+                continue;
+            }
 
-            try{
+            try {
                 if ("sessionID".equals(mapKey)) {
                     mapObj.put(mapKey, mapValue);
                 } else if ("user".equals(mapKey)) {
-                    User user = (User)JsonUtil.jsonString2Object(mapValue, User.class);
+                    User user = (User) JsonUtil.jsonString2Object(mapValue, User.class);
                     mapObj.put(mapKey, user);
                 } else if ("employ".equals(mapKey)) {
-                    Employee employ = (Employee)JsonUtil.jsonString2Object(mapValue, Employee.class);
+                    Employee employ = (Employee) JsonUtil.jsonString2Object(mapValue, Employee.class);
                     mapObj.put(mapKey, employ);
                 } else if ("dept".equals(mapKey)) {
-                    Department dept = (Department)JsonUtil.jsonString2Object(mapValue, Department.class);
+                    Department dept = (Department) JsonUtil.jsonString2Object(mapValue, Department.class);
                     mapObj.put(mapKey, dept);
                 } else if ("userRole".equals(mapKey)) {
 

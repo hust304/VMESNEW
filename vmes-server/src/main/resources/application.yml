@@ -68,6 +68,7 @@ mybatis-plus:
     id-type: 2
     field-strategy: 2
     db-column-underline: true
+    refresh-mapper: false
   configuration:
     map-underscore-to-camel-case: true
     cache-enabled: false
