@@ -7,11 +7,6 @@
  -->
 <mapper namespace="com.xy.vmes.deecoop.system.dao.LogInfoMapper">
 
-    <!--表名 自动创建，禁止修改-->
-    <sql id="tableName">
-	vmes_loginfo
-    </sql>
-
     <!-- 字段 自动创建，禁止修改-->
     <sql id="Field">
 		type type,<!-- 日志类型 operate:操作日志 state:状态日志 -->
@@ -79,7 +74,7 @@
         select
         <include refid="Field"></include>
         from
-        <include refid="tableName"></include>
+        vmes_loginfo
         <where>
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr!=''" >
@@ -96,7 +91,7 @@
         select
         <include refid="Field"></include>
         from
-        <include refid="tableName"></include>
+        vmes_loginfo
         <where>
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr!=''" >
@@ -109,7 +104,7 @@
     <!-- 批量删除 自动创建，禁止修改-->
     <delete id="deleteByIds" parameterType="java.lang.String">
         delete from
-        <include refid="tableName"></include>
+        vmes_loginfo
         where
         id in
         <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
@@ -121,7 +116,7 @@
     <!-- 自动创建，禁止修改-->
     <update id="updateToDisableByIds" parameterType="java.lang.String" >
         update
-        <include refid="tableName"></include>
+        vmes_loginfo
         set isdisable = 1 ,udate = now()
         where
         id in
@@ -167,7 +162,7 @@
         select
         <include refid="Field"></include>
         from
-        <include refid="tableName"></include>
+        vmes_loginfo
         <choose>
             <!--
                 mapSize (0 or is null) 无查询参数-业务层传入
