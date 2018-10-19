@@ -331,8 +331,9 @@ public class WarehouseInController {
         //1. 根据(入库单id)-查询入库单明细(vmes_warehouse_in_detail)
         List<WarehouseInDetail> detailList = warehouseInDetailService.findWarehouseInDetailListByParentId(parentId);
         //明细状态:state:状态(0:待派单 1:执行中 2:已完成 -1.已取消)
-        //验证明细是否允许取消(-1.已取消)
-        if (!warehouseInDetailService.checkStateByDetailList("-1", null, detailList)) {
+        //验证明细是否允许取消
+        //判断明细中是否全部(0:待派单)--忽视状态(-1.已取消)
+        if (!warehouseInDetailService.isAllExistStateByDetailList("0", "-1", detailList)) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("当前入库单不可取消，该入库单中含有(1:执行中 2:已完成)状态，请核对后再次操作！");
             return model;
@@ -381,8 +382,9 @@ public class WarehouseInController {
         //1. 根据(入库单id)-查询入库单明细(vmes_warehouse_in_detail)
         List<WarehouseInDetail> detailList = warehouseInDetailService.findWarehouseInDetailListByParentId(parentId);
         //明细状态:state:状态(0:待派单 1:执行中 2:已完成 -1.已取消)
-        //验证明细是否允许删除(0:待派单) 忽视状态:-1:已取消
-        if (!warehouseInDetailService.checkStateByDetailList("0", "-1", detailList)) {
+        //验证明细是否允许删除
+        //判断明细中是否全部(0:待派单) 忽视状态:-1:已取消
+        if (!warehouseInDetailService.isAllExistStateByDetailList("0", "-1", detailList)) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("当前入库单不可删除，该入库单中含有(1:执行中 2:已完成)状态，请核对后再次操作！");
             return model;

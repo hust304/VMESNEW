@@ -237,10 +237,11 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
             }
         }
 
-        //3. 反写入库单(vmes_warehouse_in)状态-判断是否(已完成)
+        //3. 反写入库单(vmes_warehouse_in)状态
         //明细状态   state:状态(0:待派单 1:执行中 2:已完成 -1.已取消)
         //入库单状态 state:状态(0:未完成 1:已完成 -1:已取消)
-        if (this.checkStateByDetailList("2", null, detailList)) {
+        //判断明细状态是否全部(2:已完成)
+        if (this.isAllExistStateByDetailList("2", null, detailList)) {
             WarehouseIn warehouseIn = new WarehouseIn();
             warehouseIn.setId(parentId);
             warehouseIn.setState("1");
@@ -277,38 +278,6 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
         return true;
     }
 
-    /**
-     * 验证入库单明细状态，在入库单明细List<WarehouseInDetail>中是否全部相同
-     *   true : 全部相同，在入库单明细List
-     *   false: 一条或多条不同，在入库单明细List
-     *
-     * @param checState   验证明细状态-入库单明细状态(0:待派单 1:执行中 2:已完成 -1:已取消)
-     * @param ignoreState 忽视状态(允许为空)
-     * @param objectList  入库单明细List<WarehouseInDetail>
-     * @return
-     */
-    public boolean checkStateByDetailList(String checState, String ignoreState, List<WarehouseInDetail> objectList) {
-        if (checState == null || checState.trim().length() == 0) {return false;}
-        if (objectList == null || objectList.size() == 0) {return false;}
-
-        boolean isAllExist = false;
-        String state = "";
-        if ("-1".equals(checState)) {
-            //验证状态: -1:已取消(验证是否允许取消) --> (0:待派单 ) 忽视状态:-1:已取消
-            state = "0";
-            isAllExist = this.isAllExistStateByDetailList(state, ignoreState, objectList);
-        } else if ("0".equals(checState)) {
-            //验证状态: 0:待派单 (验证是否允许删除) --> (0:待派单 ) 忽视状态:-1:已取消
-            state = "0";
-            isAllExist = this.isAllExistStateByDetailList(state, ignoreState, objectList);
-        } else if ("2".equals(checState)) {
-            //验证状态: 2:已完成(验证是否已完成)--> (2:已完成) 忽视状态:-1:已取消
-            state = "2";
-            isAllExist = this.isAllExistStateByDetailList(state, ignoreState, objectList);
-        }
-
-        return isAllExist;
-    }
 }
 
 

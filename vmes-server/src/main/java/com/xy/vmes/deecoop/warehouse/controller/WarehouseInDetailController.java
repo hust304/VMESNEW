@@ -97,8 +97,8 @@ public class WarehouseInDetailController {
             List<WarehouseInDetail> detailList = warehouseInDetailService.findWarehouseInDetailListByParentId(detail.getParentId());
 
             //验证状态(0:待派单 1:执行中 2:已完成 -1:已取消)
-            //判断明细是否(-1:已取消)--(验证是否允许取消)--忽视状态:-1:已取消
-            if (warehouseInDetailService.checkStateByDetailList("-1", "-1", detailList)) {
+            //判断明细是否全部(-1:已取消)--(验证是否允许取消)--忽视状态:-1:已取消
+            if (warehouseInDetailService.isAllExistStateByDetailList("-1", null, detailList)) {
                 //状态(0:未完成 1:已完成 -1:已取消)
                 warehouseIn.setState("-1");
             }

@@ -5,7 +5,6 @@ import com.xy.vmes.entity.WarehouseIn;
 import com.xy.vmes.entity.WarehouseInDetail;
 import com.yvan.PageData;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -111,18 +110,6 @@ public interface WarehouseInDetailService {
      * @return
      */
     boolean isAllExistStateByDetailList(String state, String ignoreState, List<WarehouseInDetail> objectList);
-
-    /**
-     * 验证入库单明细状态，在入库单明细List<WarehouseInDetail>中是否全部相同
-     *   true : 全部相同，在入库单明细List
-     *   false: 一条或多条不同，在入库单明细List
-     *
-     * @param checState   验证明细状态-入库单明细状态(0:待派单 1:执行中 2:已完成 -1:已取消)
-     * @param ignoreState 忽视状态
-     * @param objectList  入库单明细List<WarehouseInDetail>
-     * @return
-     */
-    boolean checkStateByDetailList(String checState, String ignoreState, List<WarehouseInDetail> objectList);
 
 }
 
