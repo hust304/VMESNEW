@@ -438,9 +438,10 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
 
         if (objectDB == null) {
             WarehouseProduct addObj = new WarehouseProduct();
-            addObj.setCdate(object.getCdate());
+            addObj.setCode(object.getCode());
             addObj.setProductId(object.getProductId());
             addObj.setWarehouseId(object.getWarehouseId());
+            addObj.setStockCount(count);
             addObj.setCuser(object.getCuser());
             addObj.setCompanyId(object.getCompanyId());
             this.save(addObj);
@@ -493,9 +494,10 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
 
         if (objectDB == null) {
             WarehouseProduct addObj = new WarehouseProduct();
-            addObj.setCdate(object.getCdate());
+            addObj.setCode(object.getCode());
             addObj.setProductId(object.getProductId());
             addObj.setWarehouseId(object.getWarehouseId());
+            addObj.setStockCount(count);
             addObj.setCuser(object.getCuser());
             addObj.setCompanyId(object.getCompanyId());
             this.save(addObj);
@@ -520,6 +522,7 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
             try {
                 this.updateStockCount(modifyMap);
             } catch (Exception e) {
+                e.printStackTrace();
                 throw new TableVersionException(Common.SYS_STOCKCOUNT_ERRORCODE, "当前系统繁忙，请稍后操作！");
             }
 

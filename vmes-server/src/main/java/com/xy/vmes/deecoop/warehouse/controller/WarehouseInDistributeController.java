@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -62,7 +63,7 @@ public class WarehouseInDistributeController {
 
         String dtlJsonStr = pageData.getString("dtlJsonStr");
         //测试代码-真实环境无此代码
-        //dtlJsonStr = "";
+        //dtlJsonStr = "[{\"id\":\"6d1e4503db6f46bcb22249b29abd4e27\",\"warehouseId\":\"0f1ca6d8e3614c9895edfc655433914c\"},{\"id\":\"824cdac10bb54c7aa62441e55696597e\",\"warehouseId\":\"45f58566a8534c77a63a0a8882d76def\"}]";
 
         if (dtlJsonStr == null || dtlJsonStr.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));

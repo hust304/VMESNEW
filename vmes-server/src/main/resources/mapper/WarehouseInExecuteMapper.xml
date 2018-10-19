@@ -53,7 +53,6 @@
             sum(a.count) executeCount
         from vmes_warehouse_in_execute a
           left join vmes_warehouse_in_detail b on a.detail_id = b.id
-        group by b.parent_id,a.detail_id
         <where>
             <if test="parentId != null and parentId != ''" >
                 and b.parent_id = #{parentId}
@@ -62,6 +61,7 @@
                 and a.detail_id = #{detailId}
             </if>
         </where>
+        group by b.parent_id,a.detail_id
     </select>
 
     <!-- 列表(全部) 自动创建，禁止修改-->

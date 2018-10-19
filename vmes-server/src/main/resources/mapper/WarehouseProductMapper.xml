@@ -161,7 +161,7 @@
         set
             stock_count = ${stockCount},
             uuser = #{uuser},
-            udate = now()
+            udate = now(),
             version = version + 1
         <where>
             <if test="id != null and id != ''" >
