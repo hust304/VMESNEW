@@ -446,8 +446,11 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
             this.save(addObj);
         } else {
             //(源)库存数量 - 变更数量 := 变更后库存数量
-            BigDecimal stockCountDB = objectDB.getStockCount();
-            double modifyCount = stockCountDB.doubleValue() - count.doubleValue();
+            double stockCountDB = 0D;
+            if (objectDB.getStockCount() != null) {
+                stockCountDB = objectDB.getStockCount().doubleValue();
+            }
+            double modifyCount = stockCountDB - count.doubleValue();
             //四舍五入到2位小数
             BigDecimal bigDecimal = BigDecimal.valueOf(modifyCount).setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
 
@@ -498,8 +501,12 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
             this.save(addObj);
         } else {
             //(目标)库存数量 + 变更数量 := 变更后库存数量
-            BigDecimal stockCountDB = objectDB.getStockCount();
-            double modifyCount = stockCountDB.doubleValue() + count.doubleValue();
+            double stockCountDB = 0D;
+            if (objectDB.getStockCount() != null) {
+                stockCountDB = objectDB.getStockCount().doubleValue();
+            }
+
+            double modifyCount = stockCountDB + count.doubleValue();
             //四舍五入到2位小数
             BigDecimal bigDecimal = BigDecimal.valueOf(modifyCount).setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
 
