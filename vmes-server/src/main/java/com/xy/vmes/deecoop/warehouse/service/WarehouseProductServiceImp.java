@@ -2,6 +2,7 @@ package com.xy.vmes.deecoop.warehouse.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.Common;
+import com.xy.vmes.exception.TableVersionException;
 import com.xy.vmes.deecoop.warehouse.dao.WarehouseProductMapper;
 import com.xy.vmes.entity.Warehouse;
 import com.xy.vmes.entity.WarehouseProduct;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 import com.yvan.Conv;
@@ -222,6 +224,400 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
         }
 
         return null;
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////
+    /**
+     * 入库(变更库存数量)
+     * @param object  入库库存信息
+     * @param count   入库数量(大于零或小于零)--小于零)反向操作(撤销入库)
+     * @param cuser
+     * @param companyId
+     */
+    public String inStockCount(WarehouseProduct object, BigDecimal count, String cuser, String companyId) throws TableVersionException,Exception {
+        StringBuffer msgBuf = new StringBuffer();
+
+        String msgStr = this.checkInWarehouseProduct(object);
+        if (msgStr != null && msgStr.trim().length() > 0) {
+            msgBuf.append(msgStr);
+        }
+        if (count == null) {
+            msgBuf.append("入库数量为空" + Common.SYS_ENDLINE_DEFAULT);
+        }
+        if (msgBuf.toString().trim().length() > 0) {
+            return msgBuf.toString().trim();
+        }
+
+        //type:(in:入库 out:出库 move:移库)
+        object.setCuser(cuser);
+        object.setCompanyId(companyId);
+        this.modifyStockCount(null, object, "in", count);
+
+        return msgBuf.toString();
+    }
+    /**
+     * 出库(变更库存数量)
+     * @param object  出库库存信息
+     * @param count   出库数量(大于零或小于零)--小于零)反向操作(撤销出库)
+     * @param cuser
+     * @param companyId
+     */
+    public String outStockCount(WarehouseProduct object, BigDecimal count, String cuser, String companyId) throws TableVersionException,Exception {
+        StringBuffer msgBuf = new StringBuffer();
+
+        String msgStr = this.checkOutWarehouseProduct(object);
+        if (msgStr != null && msgStr.trim().length() > 0) {
+            msgBuf.append(msgStr);
+        }
+        if (count == null) {
+            msgBuf.append("出库数量为空" + Common.SYS_ENDLINE_DEFAULT);
+        }
+        if (msgBuf.toString().trim().length() > 0) {
+            return msgBuf.toString().trim();
+        }
+
+        //type:(in:入库 out:出库 move:移库)
+        object.setCuser(cuser);
+        object.setCompanyId(companyId);
+        this.modifyStockCount(object, null, "out", count);
+
+        return msgBuf.toString();
+    }
+
+    /**
+     * 移库(变更库存数量)
+     * @param source  变更源对象
+     * @param target  变更目标对象
+     * @param count   变更数量(大于零或小于零)
+     */
+    public String moveStockCount(WarehouseProduct source, WarehouseProduct target, BigDecimal count, String cuser, String companyId) throws TableVersionException,Exception {
+        StringBuffer msgBuf = new StringBuffer();
+
+        String msgStr = this.checkMoveWarehouseProduct(source, target);
+        if (msgStr != null && msgStr.trim().length() > 0) {
+            msgBuf.append(msgStr);
+        }
+        if (count == null) {
+            msgBuf.append("移库数量为空" + Common.SYS_ENDLINE_DEFAULT);
+        }
+        if (msgBuf.toString().trim().length() > 0) {
+            return msgBuf.toString().trim();
+        }
+
+        source.setCuser(cuser);
+        source.setCompanyId(companyId);
+
+        target.setCuser(cuser);
+        target.setCompanyId(companyId);
+
+        this.modifyStockCount(source, target, "move", count);
+
+        return msgBuf.toString();
+    }
+
+    /**
+     * 变更库存数量唯一接口
+     * 库存数量变更，包括操作(入库, 出库, 移库)
+     *
+     * (源)source<WarehouseProduct>
+     *   code:        is not null 货位批次号
+     *   productId:   is not null 货品id
+     *   warehouseId: is not null 库位id
+     *
+     * (目标)target<WarehouseProduct>
+     *   code:        is not null 货位批次号
+     *   productId:   is not null 货品id
+     *   warehouseId: is not null 库位id
+     *
+     * (操作类型)type:(in:入库 out:出库 move:移库)
+     * (变更数量)count: 大于零或小于零，(小于零)反向操作 退回或撤销业务等
+     *
+     * in:入库
+     * (源)source (null) is null
+     *(目标)target (不可为空)is not null
+     * (货位批次号,货品id,库位id)查询库存表-得到库存数量
+     * 库存数量 + 变更数量 := 变更后库存数量  变更数量(小于零) 撤销入库
+     *
+     * out:出库
+     * (源)source (不可为空) is not null
+     * (目标)target (null) is null
+     * (货位批次号,货品id,库位id)查询库存表-得到库存数量
+     * 库存数量 - 变更数量 := 变更后库存数量  变更数量(小于零) 撤销出库
+     *
+     * move:移库
+     * (源)source (不可为空) is not null
+     *   (货位批次号,货品id,库位id)查询库存表-得到(源)库存数量
+     *   (源)库存数量 - 变更数量 := 变更后库存数量  变更数量(小于零) 撤销移库
+     *
+     * (目标)target (不可为空)is not null
+     *   (货位批次号,货品id,库位id)查询库存表-得到(目标)库存数量
+     *   (目标)库存数量 + 变更数量 := 变更后库存数量  变更数量(小于零) 撤销移库
+     *
+     *
+     * @param source  变更源对象
+     * @param target  变更目标对象
+     * @param type    (不可为空)类型(in:入库 out:出库 move:移库)
+     * @param count   (不可为空)变更数量
+     * @return
+     */
+    public String modifyStockCount(WarehouseProduct source, WarehouseProduct target, String type, BigDecimal count) throws TableVersionException,Exception {
+        StringBuffer msgBuf = new StringBuffer();
+
+        //基本入口参数(非空判断)
+        if (type == null || type.trim().length() == 0) {
+            msgBuf.append("变更类型(type)为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT);
+        }
+        if (count == null) {
+            msgBuf.append("变更数量(count)为空！" + Common.SYS_ENDLINE_DEFAULT);
+        }
+//        if ("in".equals(type) && target == null) {
+//            msgBuf.append("入库操作:变更目标对象 target<WarehouseProduct>为空！" + Common.SYS_ENDLINE_DEFAULT);
+//        } else if ("out".equals(type) && source == null) {
+//            msgBuf.append("出库操作:变更源对象对象 source<WarehouseProduct>为空！" + Common.SYS_ENDLINE_DEFAULT);
+//        } else if ("move".equals(type) && (target == null || source == null) ) {
+//            msgBuf.append("移库操作:变更源或变更目标对象(source,target) <WarehouseProduct>为空！" + Common.SYS_ENDLINE_DEFAULT);
+//        }
+//        if (msgBuf.toString().trim().length() > 0) {
+//            return msgBuf.toString();
+//        }
+
+        if ("in".equals(type)) {
+            String strTemp = this.checkInWarehouseProduct(target);
+            if (strTemp.trim().length() > 0) {
+                msgBuf.append(strTemp);
+                return msgBuf.toString();
+            }
+        } else if ("out".equals(type)) {
+            String strTemp = this.checkOutWarehouseProduct(source);
+            if (strTemp.trim().length() > 0) {
+                msgBuf.append(strTemp);
+                return msgBuf.toString();
+            }
+        } else if ("move".equals(type)) {
+            String strTemp = this.checkMoveWarehouseProduct(source, target);
+            if (strTemp.trim().length() > 0) {
+                msgBuf.append(strTemp);
+                return msgBuf.toString();
+            }
+        }
+
+        //(源)source 变更库存数量
+        if (source != null) {
+            this.modifyBySource(source, count);
+        }
+
+        //(目标)target 变更库存数量
+        if (target != null) {
+            this.modifyByTarget(target, count);
+        }
+
+        return msgBuf.toString();
+    }
+    //////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * (源)source 变更库存数量
+     *   (货位批次号,货品id,库位id)查询库存表-得到(源)库存数量
+     *   (源)库存数量 - 变更数量 := 变更后库存数量  变更数量(小于零) 撤销移库
+     *
+     * @param object
+     * @param count
+     */
+    private void modifyBySource(WarehouseProduct object, BigDecimal count) throws TableVersionException,Exception {
+        if (object == null) {return;}
+        if (count == null) {return;}
+
+        //(货位批次号,货品id,库位id)查询库存表
+        //非空判断 -- 接口入口已经验证
+        PageData findMap = new PageData();
+        findMap.put("code", object.getCdate());
+        findMap.put("productId", object.getProductId());
+        findMap.put("warehouseId", object.getWarehouseId());
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+        WarehouseProduct objectDB = this.findWarehouseProduct(findMap);
+
+        if (objectDB == null) {
+            WarehouseProduct addObj = new WarehouseProduct();
+            addObj.setCdate(object.getCdate());
+            addObj.setProductId(object.getProductId());
+            addObj.setWarehouseId(object.getWarehouseId());
+            addObj.setCuser(object.getCuser());
+            addObj.setCompanyId(object.getCompanyId());
+            this.save(addObj);
+        } else {
+            //(源)库存数量 - 变更数量 := 变更后库存数量
+            BigDecimal stockCountDB = objectDB.getStockCount();
+            double modifyCount = stockCountDB.doubleValue() - count.doubleValue();
+            //四舍五入到2位小数
+            BigDecimal bigDecimal = BigDecimal.valueOf(modifyCount).setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+
+            PageData modifyMap = new PageData();
+            modifyMap.put("stockCount", bigDecimal.toString());
+            modifyMap.put("uuser", object.getCuser());
+            //修改where条件
+            modifyMap.put("id", objectDB.getId());
+            modifyMap.put("version", objectDB.getVersion().toString());
+            try {
+                this.updateStockCount(modifyMap);
+            } catch (Exception e) {
+                throw new TableVersionException(Common.SYS_STOCKCOUNT_ERRORCODE, "当前系统繁忙，请稍后操作！");
+            }
+
+            //库存变更日志
+        }
+    }
+
+    /**
+     * (目标)target 变更库存数量
+     *   (货位批次号,货品id,库位id)查询库存表-得到(目标)库存数量
+     *   (目标)库存数量 + 变更数量 := 变更后库存数量  变更数量(小于零) 撤销移库
+     *
+     * @param object
+     * @param count
+     */
+    private void modifyByTarget(WarehouseProduct object, BigDecimal count) throws TableVersionException,Exception {
+        if (object == null) {return;}
+        if (count == null) {return;}
+
+        //(货位批次号,货品id,库位id)查询库存表
+        //非空判断 -- 接口入口已经验证
+        PageData findMap = new PageData();
+        findMap.put("code", object.getCdate());
+        findMap.put("productId", object.getProductId());
+        findMap.put("warehouseId", object.getWarehouseId());
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+        WarehouseProduct objectDB = this.findWarehouseProduct(findMap);
+
+        if (objectDB == null) {
+            WarehouseProduct addObj = new WarehouseProduct();
+            addObj.setCdate(object.getCdate());
+            addObj.setProductId(object.getProductId());
+            addObj.setWarehouseId(object.getWarehouseId());
+            addObj.setCuser(object.getCuser());
+            addObj.setCompanyId(object.getCompanyId());
+            this.save(addObj);
+        } else {
+            //(目标)库存数量 + 变更数量 := 变更后库存数量
+            BigDecimal stockCountDB = objectDB.getStockCount();
+            double modifyCount = stockCountDB.doubleValue() + count.doubleValue();
+            //四舍五入到2位小数
+            BigDecimal bigDecimal = BigDecimal.valueOf(modifyCount).setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+
+            PageData modifyMap = new PageData();
+            modifyMap.put("stockCount", bigDecimal.toString());
+            modifyMap.put("uuser", object.getCuser());
+            //修改where条件
+            modifyMap.put("id", objectDB.getId());
+            modifyMap.put("version", objectDB.getVersion().toString());
+
+            try {
+                this.updateStockCount(modifyMap);
+            } catch (Exception e) {
+                throw new TableVersionException(Common.SYS_STOCKCOUNT_ERRORCODE, "当前系统繁忙，请稍后操作！");
+            }
+
+            //库存变更日志
+        }
+    }
+
+    private String checkInWarehouseProduct(WarehouseProduct object) {
+        StringBuffer msgBuf = new StringBuffer();
+        if (object == null) {
+            msgBuf.append("参数错误: 入库对象<WarehouseProduct> 为空！");
+            return msgBuf.toString();
+        }
+
+        if (object.getCode() == null || object.getCode().trim().length() == 0) {
+            msgBuf.append("货位批次号为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT);
+        }
+        if (object.getProductId() == null || object.getProductId().trim().length() == 0) {
+            msgBuf.append("货品id为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT);
+        }
+        if (object.getCode() == null || object.getCode().trim().length() == 0) {
+            msgBuf.append("库位id为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT);
+        }
+
+        return msgBuf.toString();
+    }
+
+    private String checkOutWarehouseProduct(WarehouseProduct object) {
+        StringBuffer msgBuf = new StringBuffer();
+        if (object == null) {
+            msgBuf.append("参数错误: 出库对象<WarehouseProduct> 为空！");
+            return msgBuf.toString();
+        }
+
+        if (object.getCode() == null || object.getCode().trim().length() == 0) {
+            msgBuf.append("货位批次号为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT);
+        }
+        if (object.getProductId() == null || object.getProductId().trim().length() == 0) {
+            msgBuf.append("货品id为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT);
+        }
+        if (object.getCode() == null || object.getCode().trim().length() == 0) {
+            msgBuf.append("库位id为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT);
+        }
+
+        return msgBuf.toString();
+    }
+
+    private String checkSourceWarehouseProduct(WarehouseProduct object) {
+        StringBuffer msgBuf = new StringBuffer();
+        if (object == null) {
+            msgBuf.append("参数错误: (源)source<WarehouseProduct> 为空！");
+            return msgBuf.toString();
+        }
+
+        if (object.getCode() == null || object.getCode().trim().length() == 0) {
+            msgBuf.append("(源)货位批次号为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT);
+        }
+        if (object.getProductId() == null || object.getProductId().trim().length() == 0) {
+            msgBuf.append("(源)货品id为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT);
+        }
+        if (object.getCode() == null || object.getCode().trim().length() == 0) {
+            msgBuf.append("(源)库位id为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT);
+        }
+
+        return msgBuf.toString();
+    }
+
+    private String checkTargetWarehouseProduct(WarehouseProduct object) {
+        StringBuffer msgBuf = new StringBuffer();
+        if (object == null) {
+            msgBuf.append("参数错误: (目标)target<WarehouseProduct> 为空！");
+            return msgBuf.toString();
+        }
+
+        if (object.getCode() == null || object.getCode().trim().length() == 0) {
+            msgBuf.append("(目标)货位批次号为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT);
+        }
+        if (object.getProductId() == null || object.getProductId().trim().length() == 0) {
+            msgBuf.append("(目标)货品id为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT);
+        }
+        if (object.getCode() == null || object.getCode().trim().length() == 0) {
+            msgBuf.append("(目标)库位id为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT);
+        }
+
+        return msgBuf.toString();
+    }
+
+    private String checkMoveWarehouseProduct(WarehouseProduct source, WarehouseProduct target) {
+        StringBuffer msgBuf = new StringBuffer();
+        if (source == null || target == null) {
+            msgBuf.append("移库操作:变更源或变更目标对象(source,target) <WarehouseProduct>为空！" + Common.SYS_ENDLINE_DEFAULT);
+            return msgBuf.toString();
+        }
+
+        String msg_source = this.checkSourceWarehouseProduct(source);
+        if (msg_source != null && msg_source.trim().length() > 0) {
+            msgBuf.append(msg_source);
+        }
+
+        String msg_target = this.checkTargetWarehouseProduct(target);
+        if (msg_target != null && msg_target.trim().length() > 0) {
+            msgBuf.append(msg_target);
+        }
+
+        return msgBuf.toString();
     }
 }
 

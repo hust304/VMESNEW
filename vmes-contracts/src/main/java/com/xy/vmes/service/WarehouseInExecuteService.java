@@ -89,6 +89,8 @@ public interface WarehouseInExecuteService {
     ///////////////////////////////////////////////////////////////////////////////
     //BigDecimal findSumCountByExecuteList(List<WarehouseInExecute> objectList);
 
+    String checkColumnExecuteList(List<WarehouseInExecute> objectList);
+
 }
 
 

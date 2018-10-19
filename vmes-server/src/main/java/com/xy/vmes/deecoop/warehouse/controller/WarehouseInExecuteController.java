@@ -1,11 +1,15 @@
 package com.xy.vmes.deecoop.warehouse.controller;
 
+import com.xy.vmes.common.util.Common;
+import com.xy.vmes.exception.TableVersionException;
 import com.xy.vmes.entity.WarehouseIn;
 import com.xy.vmes.entity.WarehouseInDetail;
 import com.xy.vmes.entity.WarehouseInExecute;
+import com.xy.vmes.entity.WarehouseProduct;
 import com.xy.vmes.service.WarehouseInDetailService;
 import com.xy.vmes.service.WarehouseInExecuteService;
 import com.xy.vmes.service.WarehouseInService;
+import com.xy.vmes.service.WarehouseProductService;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.YvanUtil;
@@ -38,6 +42,8 @@ public class WarehouseInExecuteController {
     private WarehouseInDetailService warehouseInDetailService;
     @Autowired
     private WarehouseInExecuteService warehouseInExecuteService;
+    @Autowired
+    private WarehouseProductService warehouseProductService;
 
     /**
      * 新增入库单明细执行
@@ -85,13 +91,46 @@ public class WarehouseInExecuteController {
         }
 
         String cuser = pageData.getString("cuser");
+        String companyId = pageData.getString("currentCompanyId");
+
+        WarehouseInDetail detail = warehouseInDetailService.findWarehouseInDetailById(detailId);
+        List<WarehouseInExecute> executeList = warehouseInExecuteService.mapList2ExecuteList(mapList, null);
+        String msgStr = warehouseInExecuteService.checkColumnExecuteList(executeList);
+        if (msgStr != null && msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
 
         //1. 添加入库单明细-入库执行
-        List<WarehouseInExecute> executeList = warehouseInExecuteService.mapList2ExecuteList(mapList, null);
-        for (WarehouseInExecute execute : executeList) {
-            execute.setCuser(cuser);
-            execute.setDetailId(detailId);
-            warehouseInExecuteService.save(execute);
+        try {
+            for (WarehouseInExecute execute : executeList) {
+                //入库操作
+                WarehouseProduct inObject = new WarehouseProduct();
+                //货位批次号
+                inObject.setCode(detail.getCode());
+                //产品ID
+                inObject.setProductId(detail.getProductId());
+                //(实际)货位ID
+                inObject.setWarehouseId(execute.getWarehouseId());
+                msgStr = warehouseProductService.inStockCount(inObject, execute.getCount(), cuser, companyId);
+                if (msgStr != null && msgStr.trim().length() > 0) {
+                    model.putCode(Integer.valueOf(1));
+                    model.putMsg(msgStr);
+                    return model;
+                }
+
+                execute.setCuser(cuser);
+                execute.setDetailId(detailId);
+                warehouseInExecuteService.save(execute);
+            }
+        } catch (TableVersionException tabExc) {
+            //库存变更 version 锁
+            if (Common.SYS_STOCKCOUNT_ERRORCODE.equals(tabExc.getErrorCode())) {
+                model.putCode(Integer.valueOf(1));
+                model.putMsg(tabExc.getMessage());
+                return model;
+            }
         }
 
         //2. 修改修改当前入库单明细状态--同时反写入库单状态

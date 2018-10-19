@@ -4,6 +4,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Common {
+    //系统应用自定义异常-错误码(ErrorCode)
+    //系统通用编码规则 version 锁
+    public final static String SYS_CODERULE_ERRORCODE = "0001";
+    //库存变更 version 锁
+    public final static String SYS_STOCKCOUNT_ERRORCODE = "0002";
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
     public final static String REDIS_SECURITY_CODE = "securityCode";
     public final static String DEPARTMENT_ROOT_ID = "b6ff76cb95f711e884ad00163e105f05";
     //public final static String REDIS_EMPLOY = "employ";

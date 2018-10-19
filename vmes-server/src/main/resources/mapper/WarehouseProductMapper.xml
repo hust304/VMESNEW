@@ -159,8 +159,9 @@
     <update id="updateStockCount" parameterType="com.yvan.PageData">
         update vmes_warehouse_product
         set
-            stock_count = #{stockCount},
-            udate = #{udate},
+            stock_count = ${stockCount},
+            uuser = #{uuser},
+            udate = now()
             version = version + 1
         <where>
             <if test="id != null and id != ''" >
@@ -178,7 +179,7 @@
             </if>
 
             <if test="version != null and version != ''" >
-                and version=#{version}
+                and version=${version}
             </if>
         </where>
     </update>

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.text.MessageFormat;
 import java.util.*;
 
 import com.yvan.Conv;
@@ -219,6 +220,27 @@ public class WarehouseInExecuteServiceImp implements WarehouseInExecuteService {
 //        //四舍五入 2位小数
 //        return BigDecimal.valueOf(sumCount).setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
 //    }
+
+    public String checkColumnExecuteList(List<WarehouseInExecute> objectList) {
+        if (objectList == null || objectList.size() == 0) {return new String();}
+        String column_isnull = "第 {0} 行: {1}为空或{2}为空，({1},{2})为必填不可为空！" + Common.SYS_ENDLINE_DEFAULT;
+
+        StringBuffer msgBuf = new StringBuffer();
+        for (int i = 0; i < objectList.size(); i++) {
+            WarehouseInExecute object = objectList.get(i);
+            if ((object.getWarehouseId() == null || object.getWarehouseId().trim().length() == 0)
+                || object.getCount() == null
+            ) {
+                String str_isnull = MessageFormat.format(column_isnull,
+                        Integer.valueOf(i+1).toString(),
+                        "实际货位ID",
+                        "入库数量");
+                msgBuf.append(str_isnull);
+            }
+        }
+
+        return msgBuf.toString();
+    }
 }
 
 

@@ -1,10 +1,11 @@
 package com.xy.vmes.service;
 
+import com.xy.vmes.exception.TableVersionException;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.entity.WarehouseProduct;
 import com.yvan.PageData;
 
-import java.util.LinkedHashMap;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -96,6 +97,83 @@ public interface WarehouseProductService {
      * @return
      */
     String findDefaultWarehousePosition(String companyId, String productId);
+
+    /////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * 入库(变更库存数量)
+     * @param object  入库库存信息
+     * @param count   入库数量(大于零或小于零)--小于零)反向操作(撤销入库)
+     * @param cuser
+     * @param companyId
+     */
+    String inStockCount(WarehouseProduct object, BigDecimal count, String cuser, String companyId) throws TableVersionException,Exception;
+    /**
+     * 出库(变更库存数量)
+     * @param object  出库库存信息
+     * @param count   出库数量(大于零或小于零)--小于零)反向操作(撤销出库)
+     * @param cuser
+     * @param companyId
+     */
+    String outStockCount(WarehouseProduct object, BigDecimal count, String cuser, String companyId) throws TableVersionException,Exception;
+
+    /**
+     * 移库(变更库存数量)
+     * @param source  变更源对象
+     * @param target  变更目标对象
+     * @param count   变更数量(大于零或小于零)
+     * @param cuser
+     * @param companyId
+     */
+    String moveStockCount(WarehouseProduct source, WarehouseProduct target, BigDecimal count, String cuser, String companyId) throws TableVersionException,Exception;
+
+    /**
+     * 变更库存数量唯一接口
+     * 库存数量变更，包括操作(入库, 出库, 移库)
+     *
+     * (源)source<WarehouseProduct>
+     *   code:        is not null 货位批次号
+     *   productId:   is not null 货品id
+     *   warehouseId: is not null 库位id
+     *
+     * (目标)target<WarehouseProduct>
+     *   code:        is not null 货位批次号
+     *   productId:   is not null 货品id
+     *   warehouseId: is not null 库位id
+     *
+     * (操作类型)type:(in:入库 out:出库 move:移库)
+     * (变更数量)count: 大于零或小于零，(小于零)反向操作 退回或撤销业务等
+     *
+     * in:入库
+     * (源)source (null) is null
+     *(目标)target (不可为空)is not null
+     * (货位批次号,货品id,库位id)查询库存表-得到库存数量
+     * 库存数量 + 变更数量 := 变更后库存数量  变更数量(小于零) 撤销入库
+     *
+     * out:出库
+     * (源)source (不可为空) is not null
+     * (目标)target (null) is null
+     * (货位批次号,货品id,库位id)查询库存表-得到库存数量
+     * 库存数量 - 变更数量 := 变更后库存数量  变更数量(小于零) 撤销出库
+     *
+     * move:移库
+     * (源)source (不可为空) is not null
+     *   (货位批次号,货品id,库位id)查询库存表-得到(源)库存数量
+     *   (源)库存数量 - 变更数量 := 变更后库存数量  变更数量(小于零) 撤销移库
+     *
+     * (目标)target (不可为空)is not null
+     *   (货位批次号,货品id,库位id)查询库存表-得到(目标)库存数量
+     *   (目标)库存数量 + 变更数量 := 变更后库存数量  变更数量(小于零) 撤销移库
+     *
+     *
+     *
+     * @param source  变更源对象
+     * @param target  变更目标对象
+     * @param type    (不可为空)类型(in:入库 out:出库 move:移库)
+     * @param count   (不可为空)变更数量
+     * @return
+     */
+    String modifyStockCount(WarehouseProduct source, WarehouseProduct target, String type, BigDecimal count) throws Exception;
 }
 
 
