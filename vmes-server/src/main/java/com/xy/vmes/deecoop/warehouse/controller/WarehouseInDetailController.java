@@ -1,7 +1,10 @@
 package com.xy.vmes.deecoop.warehouse.controller;
 
+import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.entity.Column;
 import com.xy.vmes.entity.WarehouseIn;
 import com.xy.vmes.entity.WarehouseInDetail;
+import com.xy.vmes.service.ColumnService;
 import com.xy.vmes.service.WarehouseInDetailService;
 import com.xy.vmes.service.WarehouseInService;
 import com.yvan.HttpUtils;
@@ -15,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import java.util.*;
 
 /**
  * 说明：入库派单明细
@@ -31,6 +34,72 @@ public class WarehouseInDetailController {
     private WarehouseInService warehouseInService;
     @Autowired
     private WarehouseInDetailService warehouseInDetailService;
+
+    @Autowired
+    private ColumnService columnService;
+
+    /**
+     * @author 陈刚 自动创建，可以修改
+     * @date 2018-10-16
+     */
+    @PostMapping("/warehouseInDetail/listPageWarehouseInDetail")
+    public ResultModel listPageWarehouseInDetail() throws Exception {
+        logger.info("################/warehouseInDetail/listPageWarehouseInDetail 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        ResultModel model = new ResultModel();
+
+        List<Column> columnList = columnService.findColumnList("warehouseInDetail");
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
+        }
+
+        List<LinkedHashMap> titlesList = new ArrayList<LinkedHashMap>();
+        List<String> titlesHideList = new ArrayList<String>();
+        Map<String, String> varModelMap = new HashMap<String, String>();
+        if (columnList != null && columnList.size() > 0) {
+            for (Column column : columnList) {
+                if(column!=null){
+                    if("0".equals(column.getIshide())){
+                        titlesHideList.add(column.getTitleKey());
+                    }
+                    LinkedHashMap titlesLinkedMap = new LinkedHashMap();
+                    titlesLinkedMap.put(column.getTitleKey(),column.getTitleName());
+                    varModelMap.put(column.getTitleKey(),"");
+                    titlesList.add(titlesLinkedMap);
+                }
+            }
+        }
+        Map result = new HashMap();
+        result.put("hideTitles",titlesHideList);
+        result.put("titles",titlesList);
+
+        PageData pd = HttpUtils.parsePageData();
+        pd.put("orderStr", "a.cdate asc");
+        Pagination pg = HttpUtils.parsePagination(pd);
+
+        List<Map> varMapList = new ArrayList();
+        List<Map> varList = warehouseInDetailService.getDataListPage(pd, pg);
+        if(varList!=null&&varList.size()>0){
+            for(int i=0;i<varList.size();i++){
+                Map map = varList.get(i);
+                Map<String, String> varMap = new HashMap<String, String>();
+                varMap.putAll(varModelMap);
+                for (Map.Entry<String, String> entry : varMap.entrySet()) {
+                    varMap.put(entry.getKey(),map.get(entry.getKey())!=null?map.get(entry.getKey()).toString():"");
+                }
+                varMapList.add(varMap);
+            }
+        }
+        result.put("varList",varMapList);
+        result.put("pageData", pg);
+
+        model.putResult(result);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/warehouseInDetail/listPageWarehouseInDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
 
     /**
      * 修改入库单明细

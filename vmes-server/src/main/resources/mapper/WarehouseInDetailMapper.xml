@@ -23,20 +23,30 @@
         isdisable,ishide,isedit,ismust,cdate,
         cuser
         ) VALUES
-            (replace(uuid(), '-', ''),'warehouseInDetail','parentId','入库单ID',1, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'warehouseInDetail','executeId','执行人ID',2, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'warehouseInDetail','warehouseId','仓库货位ID',3, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'warehouseInDetail','productId','产品ID',4, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'warehouseInDetail','code','货位批次号',5, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'warehouseInDetail','count','入库数量',6, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'warehouseInDetail','state','状态(0:待派单 1:执行中 2:已完成 -1.已取消)',7, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'warehouseInDetail','cuser','创建用户id',8, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'warehouseInDetail','cdate','创建时间',9, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'warehouseInDetail','uuser','修改用户id',10, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'warehouseInDetail','udate','修改时间',11, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'warehouseInDetail','remark','备注',12, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'warehouseInDetail','isdisable','是否启用(0:已禁用 1:启用)',13, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'warehouseInDetail','id','id',0, '1','1','1','0',now(), 'admin')
+            ('67cf4289d5a511e884ad00163e105f05', 'warehouseInDetail', 'id', 'id', 0, '1', '0', '1', '0', '2018-10-22 10:51:42', 'admin');
+            ('bf3db7b7d5a611e884ad00163e105f05', 'warehouseInDetail', 'productCode', '货品编码', 1, '1', '1', '1', '0', '2018-10-22 11:01:18', 'admin');
+            ('bf3db85fd5a611e884ad00163e105f05', 'warehouseInDetail', 'productName', '货品名称', 2, '1', '1', '1', '0', '2018-10-22 11:01:18', 'admin');
+            ('bf3db8dbd5a611e884ad00163e105f05', 'warehouseInDetail', 'productSpec', '规格型号', 3, '1', '1', '1', '0', '2018-10-22 11:01:18', 'admin');
+            ('bf3db94fd5a611e884ad00163e105f05', 'warehouseInDetail', 'genreName', '货品属性', 4, '1', '1', '1', '0', '2018-10-22 11:01:18', 'admin');
+            ('bf3e2a69d5a611e884ad00163e105f05', 'warehouseInDetail', 'unitName', '计量单位', 5, '1', '1', '1', '0', '2018-10-22 11:01:18', 'admin');
+            ('bf3db6aad5a611e884ad00163e105f05', 'warehouseInDetail', 'unit', '计量单位id', 5, '1', '0', '1', '0', '2018-10-22 11:01:18', 'admin');
+            ('67cf3fe4d5a511e884ad00163e105f05', 'warehouseInDetail', 'count', '入库数量', 6, '1', '1', '1', '0', '2018-10-22 10:51:42', 'admin');
+            ('bf3db5fbd5a611e884ad00163e105f05', 'warehouseInDetail', 'executeCount', '已完成数量', 7, '1', '1', '1', '0', '2018-10-22 11:01:18', 'admin');
+            ('67cf3f85d5a511e884ad00163e105f05', 'warehouseInDetail', 'code', '批次号', 8, '1', '1', '1', '0', '2018-10-22 10:51:42', 'admin');
+            ('67cf3878d5a511e884ad00163e105f05', 'warehouseInDetail', 'executeId', '执行人id', 9, '1', '0', '1', '0', '2018-10-22 10:51:42', 'admin');
+            ('711b914dd5a811e884ad00163e105f05', 'warehouseInDetail', 'executeName', '执行人', 9, '1', '1', '1', '0', '2018-10-22 11:13:26', 'admin');
+            ('bf3db282d5a611e884ad00163e105f05', 'warehouseInDetail', 'stateName', '状态', 10, '1', '1', '1', '0', '2018-10-22 11:01:18', 'admin');
+            ('67cf4037d5a511e884ad00163e105f05', 'warehouseInDetail', 'state', '状态id', 10, '1', '0', '1', '0', '2018-10-22 10:51:42', 'admin');
+            ('67cf41e3d5a511e884ad00163e105f05', 'warehouseInDetail', 'remark', '备注', 11, '1', '1', '1', '0', '2018-10-22 10:51:42', 'admin');
+            ('67cf34b2d5a511e884ad00163e105f05', 'warehouseInDetail', 'parentId', '入库单id', 12, '1', '0', '1', '0', '2018-10-22 10:51:42', 'admin');
+            ('67cf3f12d5a511e884ad00163e105f05', 'warehouseInDetail', 'productId', '货品id', 13, '1', '0', '1', '0', '2018-10-22 10:51:42', 'admin');
+            ('67cf3cfdd5a511e884ad00163e105f05', 'warehouseInDetail', 'warehouseId', '仓库货位id', 14, '1', '0', '1', '0', '2018-10-22 10:51:42', 'admin');
+            ('67cf4095d5a511e884ad00163e105f05', 'warehouseInDetail', 'cuser', '创建用户id', 15, '1', '0', '1', '0', '2018-10-22 10:51:42', 'admin');
+            ('67cf40e7d5a511e884ad00163e105f05', 'warehouseInDetail', 'cdate', '创建时间', 16, '1', '0', '1', '0', '2018-10-22 10:51:42', 'admin');
+            ('67cf4139d5a511e884ad00163e105f05', 'warehouseInDetail', 'uuser', '修改用户id', 17, '1', '0', '1', '0', '2018-10-22 10:51:42', 'admin');
+            ('67cf4189d5a511e884ad00163e105f05', 'warehouseInDetail', 'udate', '修改时间', 18, '1', '0', '1', '0', '2018-10-22 10:51:42', 'admin');
+            ('67cf4233d5a511e884ad00163e105f05', 'warehouseInDetail', 'isdisable', '是否启用', 19, '1', '0', '1', '0', '2018-10-22 10:51:42', 'admin');
+
     </insert>
 
     <update id="updateStateByDetail" parameterType="com.yvan.PageData" >
@@ -124,24 +134,44 @@
     <!-- 自动创建，可以修改 -->
     <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
-            id id,
-            parent_id parentId,
-            execute_id executeId,
-            warehouse_id warehouseId,
-            product_id productId,
+            a.id id,
+            a.parent_id parentId,
+            a.execute_id executeId,
+            a.warehouse_id warehouseId,
+            a.product_id productId,
 
-            code code,
-            count count,
-            state state,
-            cuser cuser,
-            cdate cdate,
+            a.code code,
+            a.count count,
+            a.state state,
+            a.cuser cuser,
+            a.cdate cdate,
 
-            uuser uuser,
-            udate udate,
-            remark remark,
-            isdisable isdisable
-        from vmes_warehouse_in_detail
+            a.uuser uuser,
+            a.udate udate,
+            a.remark remark,
+            a.isdisable isdisable,
+
+            <!--货品表-->
+            prod.code productCode,
+            prod.name productName,
+            prod.spec productSpec,
+            prod.unit,
+            unit.name unitName,
+            '' genreName,
+            <!--获取已执行数量-入库执行表-->
+            b.count executeCount
+        from vmes_warehouse_in_detail a
+            left join vmes_product prod on a.product_id = prod.id
+            left join vmes_dictionary unit on prod.unit = unit.id
+            left join (
+                select detail_id,sum(count) count
+                from vmes_warehouse_in_execute v
+                group by detail_id
+            ) b on a.id = b.detail_id
         <where>
+            <if test="parentId != null and parentId != ''" >
+                and a.parent_id = #{parentId}
+            </if>
 
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >

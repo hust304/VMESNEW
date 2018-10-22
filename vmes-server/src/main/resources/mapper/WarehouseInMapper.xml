@@ -35,20 +35,24 @@
         isdisable,ishide,isedit,ismust,cdate,
         cuser
         ) VALUES
-            (replace(uuid(), '-', ''),'warehouseIn','code','入库单编码',1, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'warehouseIn','type','入库类型-(字典表-vmes_dictionary.id)',2, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'warehouseIn','warehouseId','仓库ID(仓库表-layer:2的记录)',3, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'warehouseIn','deptId','单位id(部门id或客户id)',4, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'warehouseIn','deptName','单位名称(部门或客户)',5, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'warehouseIn','makeId','制单人ID',6, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'warehouseIn','state','状态(0:未完成 1:已完成 -1:已取消)',7, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'warehouseIn','cuser','创建用户id',8, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'warehouseIn','cdate','创建时间',9, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'warehouseIn','uuser','修改用户id',10, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'warehouseIn','udate','修改时间',11, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'warehouseIn','remark','备注',12, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'warehouseIn','isdisable','是否启用(0:已禁用 1:启用)',13, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'warehouseIn','id','id',0, '1','1','1','0',now(), 'admin')
+            ('88d302b0d5a411e884ad00163e105f05', 'warehouseIn', 'id', 'id', 0, '1', '0', '1', '0', '2018-10-22 10:45:28', 'admin');
+            ('9a37622ed5a211e884ad00163e105f05', 'warehouseIn', 'code', '入库单编码', 1, '1', '1', '1', '0', '2018-10-22 10:31:38', 'admin');
+            ('9a376597d5a211e884ad00163e105f05', 'warehouseIn', 'type', '入库类型id', 2, '1', '0', '1', '0', '2018-10-22 10:31:38', 'admin');
+            ('9a377244d5a211e884ad00163e105f05', 'warehouseIn', 'typeName', '入库类型', 2, '1', '1', '1', '0', '2018-10-22 10:31:38', 'admin');
+            ('9a376cbcd5a211e884ad00163e105f05', 'warehouseIn', 'warehouseId', '仓库id', 3, '1', '0', '1', '0', '2018-10-22 10:31:38', 'admin');
+            ('c3b9e937d5a311e884ad00163e105f05', 'warehouseIn', 'warehouseName', '仓库', 3, '1', '1', '1', '0', '2018-10-22 10:39:57', 'admin');
+            ('9a376d57d5a211e884ad00163e105f05', 'warehouseIn', 'deptId', '来源单位id', 4, '1', '0', '1', '0', '2018-10-22 10:31:38', 'admin');
+            ('9a376dcad5a211e884ad00163e105f05', 'warehouseIn', 'deptName', '来源单位', 4, '1', '1', '1', '0', '2018-10-22 10:31:38', 'admin');
+            ('c3b9ed14d5a311e884ad00163e105f05', 'warehouseIn', 'makeName', '制单人', 5, '1', '1', '1', '0', '2018-10-22 10:39:57', 'admin');
+            ('9a376e3ad5a211e884ad00163e105f05', 'warehouseIn', 'makeId', '制单人id', 5, '1', '0', '1', '0', '2018-10-22 10:31:38', 'admin');
+            ('9a377092d5a211e884ad00163e105f05', 'warehouseIn', 'cdate', '创建时间', 6, '1', '1', '1', '0', '2018-10-22 10:31:38', 'admin');
+            ('c17259bfd5a411e884ad00163e105f05', 'warehouseIn', 'stateName', '状态', 7, '1', '1', '1', '0', '2018-10-22 10:47:03', 'admin');
+            ('9a376e9cd5a211e884ad00163e105f05', 'warehouseIn', 'state', '状态id', 7, '1', '0', '1', '0', '2018-10-22 10:31:38', 'admin');
+            ('9a377030d5a211e884ad00163e105f05', 'warehouseIn', 'cuser', '创建用户id', 8, '1', '0', '1', '0', '2018-10-22 10:31:38', 'admin');
+            ('9a3770e8d5a211e884ad00163e105f05', 'warehouseIn', 'uuser', '修改用户id', 9, '1', '0', '1', '0', '2018-10-22 10:31:38', 'admin');
+            ('9a37713ed5a211e884ad00163e105f05', 'warehouseIn', 'udate', '修改时间', 10, '1', '0', '1', '0', '2018-10-22 10:31:38', 'admin');
+            ('9a377193d5a211e884ad00163e105f05', 'warehouseIn', 'remark', '备注', 11, '1', '0', '1', '0', '2018-10-22 10:31:38', 'admin');
+            ('9a3771e4d5a211e884ad00163e105f05', 'warehouseIn', 'isdisable', '是否启用', 12, '1', '0', '1', '0', '2018-10-22 10:31:38', 'admin');
     </insert>
 
 
@@ -128,37 +132,47 @@
     <!-- 自动创建，可以修改 -->
     <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
-            id id,
-            company_id companyId
-            code code,
-            type type,
-            warehouse_id warehouseId,
+            a.id id,
+            a.company_id companyId,
+            a.code code,
+            a.type type,
+            a.warehouse_id warehouseId,
+            b.name warehouseName,
 
-            dept_id deptId,
-            dept_name deptName,
-            make_id makeId,
-            state state,
-            cuser cuser,
+            a.dept_id deptId,
+            a.dept_name deptName,
+            a.make_id makeId,
+            c.user_name makeName,
+            a.state state,
+            CASE
+              WHEN a.state = '0' THEN '未完成'
+              WHEN a.state = '1' THEN '已完成'
+              WHEN a.state = '-1' THEN '已取消'
+            ELSE null
+            END stateName,
+            a.cuser cuser,
 
-            cdate cdate,
-            uuser uuser,
-            udate udate,
-            remark remark,
-            isdisable isdisable
-        from vmes_warehouse_in
+            a.cdate cdate,
+            a.uuser uuser,
+            a.udate udate,
+            a.remark remark,
+            a.isdisable isdisable
+        from vmes_warehouse_in a
+            left join vmes_warehouse b on a.warehouse_id = b.id
+            left join vmes_user c on a.make_id = c.id
         <where>
             <if test="code != null and code != ''">
-                and code LIKE CONCAT(CONCAT(#{code}),'%')
+                and a.code LIKE CONCAT(CONCAT(#{code}),'%')
             </if>
-            <if test="companyId != null and companyId != ''" >
-                and company_id = #{companyId}
+            <if test="currentCompanyId != null and currentCompanyId != ''" >
+                and a.company_id = #{currentCompanyId}
             </if>
 
             <if test="type != null and type != ''" >
-                and type = #{type}
+                and a.type = #{type}
             </if>
             <if test="warehouseId != null and warehouseId != ''" >
-                and warehouse_id = #{warehouseId}
+                and a.warehouse_id = #{warehouseId}
             </if>
 
             <!--queryStr 自定义sql查询语句-->

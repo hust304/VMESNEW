@@ -162,9 +162,9 @@ public class WarehouseInController {
     * @author 陈刚 自动创建，可以修改
     * @date 2018-10-16
     */
-    @PostMapping("/warehouseIn/listPageWarehouseIns")
-    public ResultModel listPageWarehouseIns() throws Exception {
-        logger.info("################warehouseIn/listPageWarehouseIns 执行开始 ################# ");
+    @PostMapping("/warehouseIn/listPageWarehouseIn")
+    public ResultModel listPageWarehouseIn() throws Exception {
+        logger.info("################warehouseIn/listPageWarehouseIn 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
 
@@ -196,6 +196,7 @@ public class WarehouseInController {
         result.put("titles",titlesList);
 
         PageData pd = HttpUtils.parsePageData();
+        pd.put("orderStr", "a.cdate desc");
         Pagination pg = HttpUtils.parsePagination(pd);
 
         List<Map> varMapList = new ArrayList();
@@ -216,7 +217,7 @@ public class WarehouseInController {
 
         model.putResult(result);
         Long endTime = System.currentTimeMillis();
-        logger.info("################warehouseIn/listPageWarehouseIns 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################warehouseIn/listPageWarehouseIn 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
