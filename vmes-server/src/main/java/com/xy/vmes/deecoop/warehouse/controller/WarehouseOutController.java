@@ -1,15 +1,17 @@
-package ${classPath};
+package com.xy.vmes.deecoop.warehouse.controller;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.Column;
-import com.xy.vmes.entity.${objectName};
+import com.xy.vmes.entity.WarehouseInDetail;
+import com.xy.vmes.entity.WarehouseOut;
+import com.xy.vmes.entity.WarehouseOutDetail;
+import com.xy.vmes.service.CoderuleService;
 import com.xy.vmes.service.ColumnService;
-import com.xy.vmes.service.${objectName}Service;
-import com.yvan.ExcelUtil;
-import com.yvan.HttpUtils;
-import com.yvan.PageData;
+import com.xy.vmes.service.WarehouseOutDetailService;
+import com.xy.vmes.service.WarehouseOutService;
+import com.yvan.*;
 import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
 import lombok.extern.slf4j.Slf4j;
@@ -27,111 +29,118 @@ import java.util.*;
 
 
 /**
-* 说明：${TITLE}Controller
-* @author ${author} 自动生成
-* @date ${nowDate?string("yyyy-MM-dd")}
+* 说明：出库Controller
+* @author 刘威 自动生成
+* @date 2018-10-22
 */
 @RestController
 @Slf4j
-public class ${objectName}Controller {
+public class WarehouseOutController {
 
-    private Logger logger = LoggerFactory.getLogger(${objectName}Controller.class);
+    private Logger logger = LoggerFactory.getLogger(WarehouseOutController.class);
 
     @Autowired
-    private ${objectName}Service ${objectNameLower}Service;
+    private WarehouseOutService warehouseOutService;
 
     @Autowired
     private ColumnService columnService;
 
+    @Autowired
+    private CoderuleService coderuleService;
+
+    @Autowired
+    private WarehouseOutDetailService warehouseOutDetailService;
+
+
     /**
-    * @author ${author} 自动创建，禁止修改
-    * @date ${nowDate?string("yyyy-MM-dd")}
+    * @author 刘威 自动创建，禁止修改
+    * @date 2018-10-22
     */
-    @GetMapping("/${objectNameLower}/selectById/{id}")
+    @GetMapping("/warehouseOut/selectById/{id}")
     public ResultModel selectById(@PathVariable("id") String id)  throws Exception {
 
-        logger.info("################${objectNameLower}/selectById 执行开始 ################# ");
+        logger.info("################warehouseOut/selectById 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
-        ${objectName} ${objectNameLower} = ${objectNameLower}Service.selectById(id);
-        model.putResult(${objectNameLower});
+        WarehouseOut warehouseOut = warehouseOutService.selectById(id);
+        model.putResult(warehouseOut);
         Long endTime = System.currentTimeMillis();
-        logger.info("################${objectNameLower}/selectById 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################warehouseOut/selectById 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
 
 
     /**
-    * @author ${author} 自动创建，禁止修改
-    * @date ${nowDate?string("yyyy-MM-dd")}
+    * @author 刘威 自动创建，禁止修改
+    * @date 2018-10-22
     */
-    @PostMapping("/${objectNameLower}/save")
+    @PostMapping("/warehouseOut/save")
     @Transactional
     public ResultModel save()  throws Exception {
 
-        logger.info("################${objectNameLower}/save 执行开始 ################# ");
+        logger.info("################warehouseOut/save 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
-        ${objectName} ${objectNameLower} = (${objectName})HttpUtils.pageData2Entity(pd, new ${objectName}());
-        ${objectNameLower}Service.save(${objectNameLower});
+        WarehouseOut warehouseOut = (WarehouseOut)HttpUtils.pageData2Entity(pd, new WarehouseOut());
+        warehouseOutService.save(warehouseOut);
         Long endTime = System.currentTimeMillis();
-        logger.info("################${objectNameLower}/save 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################warehouseOut/save 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
     /**
-    * @author ${author} 自动创建，禁止修改
-    * @date ${nowDate?string("yyyy-MM-dd")}
+    * @author 刘威 自动创建，禁止修改
+    * @date 2018-10-22
     */
-    @PostMapping("/${objectNameLower}/update")
+    @PostMapping("/warehouseOut/update")
     @Transactional
     public ResultModel update()  throws Exception {
 
-        logger.info("################${objectNameLower}/update 执行开始 ################# ");
+        logger.info("################warehouseOut/update 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
-        ${objectName} ${objectNameLower} = (${objectName})HttpUtils.pageData2Entity(pd, new ${objectName}());
-        ${objectNameLower}Service.update(${objectNameLower});
+        WarehouseOut warehouseOut = (WarehouseOut)HttpUtils.pageData2Entity(pd, new WarehouseOut());
+        warehouseOutService.update(warehouseOut);
         Long endTime = System.currentTimeMillis();
-        logger.info("################${objectNameLower}/update 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################warehouseOut/update 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
 
     /**
-    * @author ${author} 自动创建，禁止修改
-    * @date ${nowDate?string("yyyy-MM-dd")}
+    * @author 刘威 自动创建，禁止修改
+    * @date 2018-10-22
     */
-    @GetMapping("/${objectNameLower}/deleteById/{id}")
+    @GetMapping("/warehouseOut/deleteById/{id}")
     @Transactional
     public ResultModel deleteById(@PathVariable("id") String id)  throws Exception {
 
-        logger.info("################${objectNameLower}/deleteById 执行开始 ################# ");
+        logger.info("################warehouseOut/deleteById 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
-        ${objectNameLower}Service.deleteById(id);
+        warehouseOutService.deleteById(id);
         Long endTime = System.currentTimeMillis();
-        logger.info("################${objectNameLower}/deleteById 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################warehouseOut/deleteById 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
 
     /**
-    * @author ${author} 自动创建，禁止修改
-    * @date ${nowDate?string("yyyy-MM-dd")}
+    * @author 刘威 自动创建，禁止修改
+    * @date 2018-10-22
     */
-    @PostMapping("/${objectNameLower}/deleteByIds")
+    @PostMapping("/warehouseOut/deleteByIds")
     @Transactional
     public ResultModel deleteByIds()  throws Exception {
 
-        logger.info("################${objectNameLower}/deleteByIds 执行开始 ################# ");
+        logger.info("################warehouseOut/deleteByIds 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
         PageData pd = HttpUtils.parsePageData();
@@ -145,67 +154,146 @@ public class ${objectName}Controller {
         String id_str = StringUtil.stringTrimSpace(ids);
         String[] id_arry = id_str.split(",");
         if(id_arry.length>0){
-            ${objectNameLower}Service.deleteByIds(id_arry);
+            warehouseOutService.deleteByIds(id_arry);
         }
         Long endTime = System.currentTimeMillis();
-        logger.info("################${objectNameLower}/deleteByIds 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################warehouseOut/deleteByIds 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
 
     /**
-    * @author ${author} 自动创建，禁止修改
-    * @date ${nowDate?string("yyyy-MM-dd")}
+    * @author 刘威 自动创建，禁止修改
+    * @date 2018-10-22
     */
-    @PostMapping("/${objectNameLower}/dataListPage")
+    @PostMapping("/warehouseOut/dataListPage")
     public ResultModel dataListPage()  throws Exception {
 
-        logger.info("################${objectNameLower}/dataListPage 执行开始 ################# ");
+        logger.info("################warehouseOut/dataListPage 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         Pagination pg = HttpUtils.parsePagination(pd);
-        List<${objectName}> ${objectNameLower}List = ${objectNameLower}Service.dataListPage(pd,pg);
+        List<WarehouseOut> warehouseOutList = warehouseOutService.dataListPage(pd,pg);
         Map result = new HashMap();
-        result.put("varList",${objectNameLower}List);
+        result.put("varList",warehouseOutList);
         result.put("pageData", pg);
         model.putResult(result);
         Long endTime = System.currentTimeMillis();
-        logger.info("################${objectNameLower}/dataListPage 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################warehouseOut/dataListPage 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
     /**
-    * @author ${author} 自动创建，禁止修改
-    * @date ${nowDate?string("yyyy-MM-dd")}
+    * @author 刘威 自动创建，禁止修改
+    * @date 2018-10-22
     */
-    @PostMapping("/${objectNameLower}/dataList")
+    @PostMapping("/warehouseOut/dataList")
     public ResultModel dataList()  throws Exception {
 
-        logger.info("################${objectNameLower}/dataList 执行开始 ################# ");
+        logger.info("################warehouseOut/dataList 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
-        List<${objectName}> ${objectNameLower}List = ${objectNameLower}Service.dataList(pd);
-        model.putResult(${objectNameLower}List);
+        List<WarehouseOut> warehouseOutList = warehouseOutService.dataList(pd);
+        model.putResult(warehouseOutList);
         Long endTime = System.currentTimeMillis();
-        logger.info("################${objectNameLower}/dataList 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################warehouseOut/dataList 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
 
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
-    /**
-    * @author ${author} 自动创建，可以修改
-    * @date ${nowDate?string("yyyy-MM-dd")}
-    */
-    @PostMapping("/${objectNameLower}/listPage${objectName}s")
-    public ResultModel listPage${objectName}s()  throws Exception {
 
-        logger.info("################${objectNameLower}/listPage${objectName}s 执行开始 ################# ");
+
+
+
+
+    /**
+     * 新增出库单
+     * @author 刘威
+     * @date 2018-10-16
+     * @throws Exception
+     */
+    @PostMapping("/warehouseOut/addWarehouseOut")
+    @Transactional
+    public ResultModel addWarehouseOut() throws Exception {
+        logger.info("################/warehouseOut/addWarehouseOut 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        WarehouseOut warehouseOut = (WarehouseOut)HttpUtils.pageData2Entity(pageData, new WarehouseOut());
+        if (warehouseOut == null) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("参数错误：Map 转 仓库对象WarehouseIn 异常！");
+            return model;
+        }
+
+        //非空判断
+        String msgStr = warehouseOutService.checkColumn(warehouseOut);
+        if (msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
+
+        String dtlJsonStr = pageData.getString("dtlJsonStr");
+        //测试代码-真实环境无此代码
+        //dtlJsonStr = "[{\"productId\":\"9c414aadb2874b969b11d49e141b2f57\",\"count\":\"23.56\"},{\"productId\":\"ade5be7286214bd482240c603ad331a2\",\"count\":\"54.32\"}]";
+
+        if (dtlJsonStr == null || dtlJsonStr.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("请至少添加选择一条货品数据！");
+            return model;
+        }
+
+        List<Map<String, String>> mapList = (List<Map<String, String>>) YvanUtil.jsonToList(dtlJsonStr);
+        if (mapList == null || mapList.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("入库单明细Json字符串-转换成List错误！");
+            return model;
+        }
+
+        String companyID = pageData.getString("currentCompanyId");
+
+        //1. 添加出库单
+        String id = Conv.createUuid();
+        warehouseOut.setId(id);
+        //状态(0:未完成 1:已完成 -1:已取消)
+        warehouseOut.setState("0");
+        warehouseOut.setCompanyId(companyID);
+        //出库单编号
+        String code = coderuleService.createCoder(companyID, "vmes_warehouse_out", "O");
+        warehouseOut.setCode(code);
+        warehouseOutService.save(warehouseOut);
+
+        //2.添加出库单明细
+        List<WarehouseOutDetail> detailList = warehouseOutDetailService.mapList2DetailList(mapList, null);
+        warehouseOutDetailService.addWarehouseOutDetail(warehouseOut, detailList);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/warehouseOut/addWarehouseOut 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+
+
+
+
+    /**
+    * @author 刘威 自动创建，可以修改
+    * @date 2018-10-22
+    */
+    @PostMapping("/warehouseOut/listPageWarehouseOuts")
+    public ResultModel listPageWarehouseOuts()  throws Exception {
+
+        logger.info("################warehouseOut/listPageWarehouseOuts 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
@@ -213,7 +301,7 @@ public class ${objectName}Controller {
         Pagination pg = HttpUtils.parsePagination(pd);
         Map result = new HashMap();
 
-        List<Column> columnList = columnService.findColumnList("${modelCode}");
+        List<Column> columnList = columnService.findColumnList("WarehouseOut");
         if (columnList == null || columnList.size() == 0) {
             model.putCode("1");
             model.putMsg("数据库没有生成TabCol，请联系管理员！");
@@ -240,7 +328,7 @@ public class ${objectName}Controller {
         result.put("titles",titlesList);
 
         List<Map> varMapList = new ArrayList();
-        List<Map> varList = ${objectNameLower}Service.getDataListPage(pd,pg);
+        List<Map> varList = warehouseOutService.getDataListPage(pd,pg);
         if(varList!=null&&varList.size()>0){
             for(int i=0;i<varList.size();i++){
                 Map map = varList.get(i);
@@ -257,22 +345,22 @@ public class ${objectName}Controller {
 
         model.putResult(result);
         Long endTime = System.currentTimeMillis();
-        logger.info("################${objectNameLower}/listPage${objectName}s 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################warehouseOut/listPageWarehouseOuts 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
 
     /**
     * Excel导出
-    * @author ${author} 自动创建，可以修改
-    * @date ${nowDate?string("yyyy-MM-dd")}
+    * @author 刘威 自动创建，可以修改
+    * @date 2018-10-22
     */
-    @PostMapping("/${objectNameLower}/exportExcel${objectName}s")
-    public void exportExcel${objectName}s() throws Exception {
-        logger.info("################${objectNameLower}/exportExcel${objectName}s 执行开始 ################# ");
+    @PostMapping("/warehouseOut/exportExcelWarehouseOuts")
+    public void exportExcelWarehouseOuts() throws Exception {
+        logger.info("################warehouseOut/exportExcelWarehouseOuts 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
 
-        List<Column> columnList = columnService.findColumnList("${modelCode}");
+        List<Column> columnList = columnService.findColumnList("WarehouseOut");
         if (columnList == null || columnList.size() == 0) {
             throw new RestException("1","数据库没有生成TabCol，请联系管理员！");
         }
@@ -290,7 +378,7 @@ public class ${objectName}Controller {
 
         Pagination pg = HttpUtils.parsePagination(pd);
         pg.setSize(100000);
-        List<Map> dataList = ${objectNameLower}Service.getDataListPage(pd, pg);
+        List<Map> dataList = warehouseOutService.getDataListPage(pd, pg);
 
         //查询数据转换成Excel导出数据
         List<LinkedHashMap<String, String>> dataMapList = ColumnUtil.modifyDataList(columnList, dataList);
@@ -299,25 +387,25 @@ public class ${objectName}Controller {
         //查询数据-Excel文件导出
         String fileName = pd.getString("fileName");
         if (fileName == null || fileName.trim().length() == 0) {
-            fileName = "Excel${objectName}";
+            fileName = "ExcelWarehouseOut";
         }
 
         //导出文件名-中文转码
         fileName = new String(fileName.getBytes("utf-8"),"ISO-8859-1");
         ExcelUtil.excelExportByDataList(response, fileName, dataMapList);
         Long endTime = System.currentTimeMillis();
-        logger.info("################${objectNameLower}/exportExcel${objectName}s 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################warehouseOut/exportExcelWarehouseOuts 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
     }
 
     /**
     * Excel导入
     *
-    * @author ${author} 自动创建，可以修改
-    * @date ${nowDate?string("yyyy-MM-dd")}
+    * @author 刘威 自动创建，可以修改
+    * @date 2018-10-22
     */
-    @PostMapping("/${objectNameLower}/importExcel${objectName}s")
-    public ResultModel importExcel${objectName}s(@RequestParam(value="excelFile") MultipartFile file) throws Exception  {
-        logger.info("################${objectNameLower}/importExcel${objectName}s 执行开始 ################# ");
+    @PostMapping("/warehouseOut/importExcelWarehouseOuts")
+    public ResultModel importExcelWarehouseOuts(@RequestParam(value="excelFile") MultipartFile file) throws Exception  {
+        logger.info("################warehouseOut/importExcelWarehouseOuts 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
         //HttpServletRequest Request = HttpUtils.currentRequest();
@@ -357,9 +445,13 @@ public class ${objectName}Controller {
         //5. List<ExcelEntity> --> (转换) List<业务表DB>对象
         //6. 遍历List<业务表DB> 对业务表添加或修改
         Long endTime = System.currentTimeMillis();
-        logger.info("################${objectNameLower}/importExcel${objectName}s 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################warehouseOut/importExcelWarehouseOuts 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
+
+
+
+
 
 }
 

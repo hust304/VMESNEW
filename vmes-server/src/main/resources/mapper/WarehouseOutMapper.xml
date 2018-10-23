@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+说明：出库 Mapper.xml
+创建人：刘威 自动创建
+创建时间：2018-10-22
+ -->
+<mapper namespace="com.xy.vmes.deecoop.warehouse.dao.WarehouseOutMapper">
+
+    <!--表名 自动创建，禁止修改-->
+    <sql id="tableName">
+	vmes_warehouse_out
+    </sql>
+
+    <!-- 字段 自动创建，禁止修改-->
+    <sql id="Field">
+		company_id companyId,<!-- 企业ID-组织架构 -->
+		code code,<!-- 出库单编码 -->
+		type type,<!-- 出库类型-(字典表-vmes_dictionary.id) -->
+		warehouse_id warehouseId,<!-- 仓库ID(仓库表-layer:2的记录) -->
+		dept_id deptId,<!-- 单位id(部门id或客户id) -->
+		dept_name deptName,<!-- 单位名称(部门或客户) -->
+		make_id makeId,<!-- 制单人ID -->
+		state state,<!-- 状态(0:未完成 1:已完成 -1:已取消) -->
+		cuser cuser,<!-- 创建用户id -->
+		cdate cdate,<!-- 创建时间 -->
+		uuser uuser,<!-- 修改用户id -->
+		udate udate,<!-- 修改时间 -->
+		remark remark,<!-- 备注 -->
+		isdisable isdisable,<!-- 是否启用(0:已禁用 1:启用) -->
+		id id <!-- id -->
+    </sql>
+
+    <!-- 字段值 自动创建，禁止修改-->
+    <sql id="FieldValue">
+		#{companyId},<!-- 企业ID-组织架构 -->
+		#{code},<!-- 出库单编码 -->
+		#{type},<!-- 出库类型-(字典表-vmes_dictionary.id) -->
+		#{warehouseId},<!-- 仓库ID(仓库表-layer:2的记录) -->
+		#{deptId},<!-- 单位id(部门id或客户id) -->
+		#{deptName},<!-- 单位名称(部门或客户) -->
+		#{makeId},<!-- 制单人ID -->
+		#{state},<!-- 状态(0:未完成 1:已完成 -1:已取消) -->
+		#{cuser},<!-- 创建用户id -->
+		#{cdate},<!-- 创建时间 -->
+		#{uuser},<!-- 修改用户id -->
+		#{udate},<!-- 修改时间 -->
+		#{remark},<!-- 备注 -->
+		#{isdisable},<!-- 是否启用(0:已禁用 1:启用) -->
+		#{id} <!-- id -->
+    </sql>
+
+
+    <!-- 字段名称  '_hide' 表示前端列表隐藏 自动创建，禁止修改-->
+    <sql id="Column">
+        '企业ID-组织架构'  companyId,
+        '出库单编码'  code,
+        '出库类型-(字典表-vmes_dictionary.id)'  type,
+        '仓库ID(仓库表-layer:2的记录)'  warehouseId,
+        '单位id(部门id或客户id)'  deptId,
+        '单位名称(部门或客户)'  deptName,
+        '制单人ID'  makeId,
+        '状态(0:未完成 1:已完成 -1:已取消)'  state,
+        '创建用户id'  cuser,
+        '创建时间'  cdate,
+        '修改用户id'  uuser,
+        '修改时间'  udate,
+        '备注'  remark,
+        '是否启用(0:已禁用 1:启用)'  isdisable,
+        'id' id_hide
+    </sql>
+
+    <!-- 自动创建，禁止修改 -->
+    <select id="findColumnList"  resultType="java.util.LinkedHashMap">
+        select
+        <include refid="Column"></include>
+        from dual
+    </select>
+
+    <!-- 自动创建，禁止修改 -->
+    <select id="findDataList"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
+        select
+        <include refid="Field"></include>
+        from
+        <include refid="tableName"></include>
+        <where>
+            <!--queryStr 自定义sql查询语句-->
+            <if test="queryStr != null and queryStr!=''" >
+                and ${queryStr}
+            </if>
+        </where>
+        <if test="orderStr != null and orderStr != ''" >
+            order by ${orderStr}
+        </if>
+    </select>
+
+    <!-- 列表 自动创建，禁止修改-->
+    <select id="datalistPage" parameterType="com.yvan.PageData" resultType="com.xy.vmes.entity.WarehouseOut">
+        select
+        <include refid="Field"></include>
+        from
+        <include refid="tableName"></include>
+        <where>
+            <!--queryStr 自定义sql查询语句-->
+            <if test="queryStr != null and queryStr!=''" >
+                and ${queryStr}
+            </if>
+        </where>
+    </select>
+
+
+    <!-- 批量删除 自动创建，禁止修改-->
+    <delete id="deleteByIds" parameterType="java.lang.String">
+        delete from
+        <include refid="tableName"></include>
+        where
+        id in
+        <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+		#{item}
+        </foreach>
+    </delete>
+
+
+    <!-- 自动创建，禁止修改-->
+    <update id="updateToDisableByIds" parameterType="java.lang.String" >
+        update
+        <include refid="tableName"></include>
+        set isdisable = '0' ,udate = now()
+        where
+        id in
+        <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+        #{item}
+        </foreach>
+    </update>
+
+
+
+    <!-- ***************************************************以上为自动生成代码禁止修改，请在下面添加业务代码************************************************* -->
+    <insert id="insertColumn" >
+        delete from vmes_column where model_code = 'WarehouseOut' ;
+        insert into vmes_column (
+        id,model_code,title_key,title_name,serial_number,
+        isdisable,ishide,isedit,ismust,cdate,
+        cuser
+        ) VALUES
+            (replace(uuid(), '-', ''),'WarehouseOut','companyId','企业ID-组织架构',1, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'WarehouseOut','code','出库单编码',2, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'WarehouseOut','type','出库类型ID',3, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'WarehouseOut','typeName','出库类型',3, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'WarehouseOut','warehouseName','仓库',4, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'WarehouseOut','warehouseId','仓库ID',4, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'WarehouseOut','deptId','单位id',5, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'WarehouseOut','deptName','单位名称',6, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'WarehouseOut','makeName','制单人',7, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'WarehouseOut','makeId','制单人ID',7, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'WarehouseOut','state','状态',8, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'WarehouseOut','cuser','创建用户id',9, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'WarehouseOut','cdate','创建时间',10, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'WarehouseOut','uuser','修改用户id',11, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'WarehouseOut','udate','修改时间',12, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'WarehouseOut','remark','备注',13, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'WarehouseOut','isdisable','是否启用',14, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'WarehouseOut','id','id',0, '1','0','1','0',now(), 'admin')
+    </insert>
+
+
+    <!-- 列表(全部) 自动创建，禁止修改-->
+    <select id="dataList" parameterType="com.yvan.PageData" resultType="com.xy.vmes.entity.WarehouseOut">
+        select
+        <include refid="Field"></include>
+        from
+        <include refid="tableName"></include>
+        <choose>
+            <!--
+                mapSize (0 or is null) 无查询参数-业务层传入
+                isQueryAll 是否查询全部
+                fasle: (false or is null) 无查询条件-查询结果集返回空或list.size()==0
+                true : 无查询条件-返回全部业务表数据
+            -->
+            <when test="(mapSize == null || mapSize == 0) and 'true' != isQueryAll ">
+                where 1=2
+            </when>
+            <otherwise>
+                <where>
+                    <!--isSelfExist 是否考虑自己在业务表中是否存在
+                        false: (false or is null) 无需考虑自己在业务表中是否存在
+                        true : 需要考虑自己在业务表中是否存在
+                    -->
+                    <if test="id != null and id != ''" >
+                        <choose>
+                            <when test="'true' == isSelfExist">
+                                <![CDATA[ and id <> #{id} ]]>
+                            </when>
+                            <otherwise>
+                                and id = #{id}
+                            </otherwise>
+                        </choose>
+                    </if>
+
+
+                    <!--queryStr 自定义sql查询语句-->
+                    <if test="queryStr != null and queryStr != ''" >
+                        and ${queryStr}
+                    </if>
+                </where>
+            </otherwise>
+        </choose>
+        <if test="orderStr != null and orderStr != ''" >
+            order by ${orderStr}
+        </if>
+    </select>
+
+
+
+
+    <!-- 字段 自动创建，可以修改-->
+    <sql id="Field1">
+        out.company_id companyId,<!-- 企业ID-组织架构 -->
+        out.code code,<!-- 出库单编码 -->
+        type.id type,<!-- 出库类型-(字典表-vmes_dictionary.id) -->
+        type.name typeName,
+        warehouse.name warehouseName,
+        out.warehouse_id warehouseId,<!-- 仓库ID(仓库表-layer:2的记录) -->
+        out.dept_id deptId,<!-- 单位id(部门id或客户id) -->
+        out.dept_name deptName,<!-- 单位名称(部门或客户) -->
+        user.name makeName,
+        out.make_id makeId,<!-- 制单人ID -->
+        out.state state,<!-- 状态(0:未完成 1:已完成 -1:已取消) -->
+        out.cuser cuser,<!-- 创建用户id -->
+        out.cdate cdate,<!-- 创建时间 -->
+        out.uuser uuser,<!-- 修改用户id -->
+        out.udate udate,<!-- 修改时间 -->
+        out.remark remark,<!-- 备注 -->
+        out.isdisable isdisable,<!-- 是否启用(0:已禁用 1:启用) -->
+        out.id id <!-- id -->
+    </sql>
+
+    <!-- 字段值 自动创建，可以修改-->
+    <!--
+    <sql id="Column1">
+            '企业ID-组织架构'  companyId,
+            '出库单编码'  code,
+            '出库类型-(字典表-vmes_dictionary.id)'  type,
+            '仓库ID(仓库表-layer:2的记录)'  warehouseId,
+            '单位id(部门id或客户id)'  deptId,
+            '单位名称(部门或客户)'  deptName,
+            '制单人ID'  makeId,
+            '状态(0:未完成 1:已完成 -1:已取消)'  state,
+            '创建用户id'  cuser,
+            '创建时间'  cdate,
+            '修改用户id'  uuser,
+            '修改时间'  udate,
+            '备注'  remark,
+            '是否启用(0:已禁用 1:启用)'  isdisable,
+            'id' id_hide
+    </sql>
+     -->
+
+    <!-- 自动创建，可以修改 -->
+    <!--
+    <select id="getColumnList"  resultType="java.util.LinkedHashMap">
+        select
+        <include refid="Column1"></include>
+        from dual
+    </select>
+    -->
+
+    <!-- 自动创建，可以修改 -->
+    <select id="getDataList"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
+        select
+        <include refid="Field1"></include>
+        from
+        vmes_warehouse_out out
+        left join vmes_dictionary type on type.id = out.type
+        left join vmes_warehouse warehouse on warehouse.id = out.warehouse_id
+        left join vmes_user user on user.id = out.make_id
+        <where>
+            <!--queryStr 自定义sql查询语句-->
+            <if test="queryStr != null and queryStr != ''" >
+                and ${queryStr}
+            </if>
+            <if test="code != null and code != ''">
+                and code LIKE CONCAT(CONCAT('%', #{code}),'%')
+            </if>
+            <if test="name != null and name != ''">
+                and name LIKE CONCAT(CONCAT('%', #{name}),'%')
+            </if>
+        </where>
+        <if test="orderStr != null and orderStr != ''" >
+            order by ${orderStr}
+        </if>
+    </select>
+
+    <!-- 自动创建，可以修改 -->
+    <select id="getDataListPage"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
+        select
+        <include refid="Field1"></include>
+        from
+        vmes_warehouse_out out
+        left join vmes_dictionary type on type.id = out.type
+        left join vmes_warehouse warehouse on warehouse.id = out.warehouse_id
+        left join vmes_user user on user.id = out.make_id
+        <where>
+            <!--queryStr 自定义sql查询语句-->
+            <if test="queryStr != null and queryStr != ''" >
+                and ${queryStr}
+            </if>
+            <if test="code != null and code != ''">
+                and code LIKE CONCAT(CONCAT('%', #{code}),'%')
+            </if>
+            <if test="name != null and name != ''">
+                and name LIKE CONCAT(CONCAT('%', #{name}),'%')
+            </if>
+        </where>
+        <if test="orderStr != null and orderStr != ''" >
+            order by ${orderStr}
+        </if>
+    </select>
+
+
+
+
+</mapper>
