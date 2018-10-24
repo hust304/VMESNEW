@@ -327,6 +327,8 @@
 
     <!-- 表格表体值 刘威-->
     <sql id="Field1">
+        vmesuser.user_code code,<!-- 账号(系统登录账号) -->
+        vmesuser.user_name name,<!-- 姓名 -->
         vmesuser.user_code userCode,<!-- 账号(系统登录账号) -->
         vmesuser.user_name userName,<!-- 姓名 -->
         vmesuser.password password,

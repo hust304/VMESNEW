@@ -71,7 +71,7 @@ public class DepartmentCustomerController {
         result.put("titles",titlesList);
 
         PageData pd = HttpUtils.parsePageData();
-        pd.put("orderStr", "cdate desc");
+        pd.put("orderStr", "type asc,cdate desc");
 
         String genreId = pd.getString("pid");
         if (genreId != null && genreId.trim().length() > 0
