@@ -1,5 +1,7 @@
 package com.xy.vmes.deecoop.system.service;
 
+import com.xy.vmes.common.util.ColumnUtil;
+import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.system.dao.ColumnMapper;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.service.ColumnService;
@@ -74,6 +76,30 @@ public class ColumnServiceImp implements ColumnService {
         findMap.put("modelCode", modelCode);
         findMap.put("mapSize", Integer.valueOf(findMap.size()));
         return this.dataList(findMap);
+    }
+
+    /**
+     * 根据栏位字符串(逗号分隔的字符串)-重新调整List<Column>
+     * 1. 栏位字符串全部显示
+     * 2. 栏位字符串排列顺序就是显示顺序
+     *
+     * @param fieldCode   栏位key字符串 (','逗号分隔的字符串)
+     * @param sourceList  List<Column>
+     */
+    public List<Column> modifyColumnByFieldCode(String fieldCode, List<Column> sourceList) {
+        if (sourceList == null) {sourceList = new ArrayList<Column>();}
+        if (fieldCode == null || fieldCode.trim().length() == 0) {return sourceList;}
+
+        fieldCode = StringUtil.stringTrimSpace(fieldCode);
+        sourceList = ColumnUtil.listAllhideByColumnList(sourceList);
+        LinkedHashMap<String, Column> columnMap = ColumnUtil.columnList2ColumnMap(sourceList, null);
+
+        List<Column> newColumnList = ColumnUtil.modifyColumnList(fieldCode, columnMap);
+        if (newColumnList != null && newColumnList.size() > 0) {
+            ColumnUtil.orderAcsBySerialNumber(newColumnList);
+        }
+
+        return newColumnList;
     }
 
 }

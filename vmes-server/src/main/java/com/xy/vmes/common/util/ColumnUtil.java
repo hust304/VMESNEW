@@ -7,50 +7,6 @@ import java.util.*;
 
 public class ColumnUtil {
 
-
-    /**
-     * 遍历模块栏位表对象List<Column>-获取模块栏位信息List<LinkedHashMap>
-     *
-     * @param objectList
-     * @return
-     */
-    public static List<LinkedHashMap> listColumnByModelCode(List<Column> objectList) {
-        List<LinkedHashMap> columnList = new ArrayList<LinkedHashMap>();
-        if (objectList == null || objectList.size() == 0) {return columnList;}
-
-        //按照 serialNumber 升序排列
-        orderAcsBySerialNumber(objectList);
-
-        LinkedHashMap<String, Object> columnMap = new LinkedHashMap<String, Object>();
-        for (Column column : objectList) {
-            String mapKey = column.getTitleKey();
-            String mapValue = column.getTitleName();
-
-            //是否隐藏(0:隐藏 1:显示)
-            if (!"1".equals(column.getIshide())) {
-                mapKey = mapKey + "_hide";
-            }
-
-            columnMap.put(mapKey, mapValue);
-        }
-
-        columnList.add(columnMap);
-        return columnList;
-    }
-
-    public static Map<String, String> keyValueMap(List<Column> objectList) {
-        Map<String, String> keyValueMap = new HashMap<String, String>();
-        if (objectList == null || objectList.size() == 0) {return keyValueMap;}
-
-        for (Column column : objectList) {
-            String mapKey = column.getTitleKey();
-            keyValueMap.put(mapKey, "");
-        }
-        return keyValueMap;
-    }
-
-
-
     /**
      * 查询结果集List<Map>-按照栏位列表Map的显示顺序-重构结果集List<Map>
      *
@@ -112,13 +68,14 @@ public class ColumnUtil {
         for (Column column : columnList) {
             //是否隐藏(0:隐藏 1:显示)
             column.setIshide("0");
+            column.setSerialNumber(Integer.valueOf(99));
         }
         return columnList;
     }
 
     public static LinkedHashMap<String, Column> columnList2ColumnMap(List<Column> columnList, LinkedHashMap<String, Column> columnMap) {
         if (columnMap == null) {columnMap = new LinkedHashMap<String, Column>();}
-        if (columnList == null || columnMap.size() == 0) {return columnMap;}
+        if (columnList == null || columnList.size() == 0) {return columnMap;}
 
         for (Column column : columnList) {
             String titleKey = column.getTitleKey();
@@ -127,11 +84,12 @@ public class ColumnUtil {
         return columnMap;
     }
 
-    public static List<Column> modifyColumnList(String fieldCode, List<Column> columnList, LinkedHashMap<String, Column> columnMap) {
-        if (columnList == null) {return new ArrayList<Column>();}
-        if (fieldCode == null || fieldCode.trim().length() == 0) {return columnList;}
-
+    public static List<Column> modifyColumnList(String fieldCode, LinkedHashMap<String, Column> columnMap) {
         List<Column> newColumnList = new ArrayList<Column>();
+
+        if (fieldCode == null || fieldCode.trim().length() == 0) {return newColumnList;}
+        if (columnMap == null || columnMap.size() == 0) {return newColumnList;}
+
         List<Column> inColumnList = new ArrayList<Column>();
         String[] fieldArry = fieldCode.split(",");
         for (int i = 0; i < fieldArry.length; i++) {
@@ -141,11 +99,13 @@ public class ColumnUtil {
                 column = columnMap.get(field).clone();
                 //是否隐藏(0:隐藏 1:显示)
                 column.setIshide("1");
+                column.setSerialNumber(Integer.valueOf(i+1));
                 inColumnList.add(column);
             } else if (columnMap.get(field) == null) {
                 column.setTitleKey(field);
                 column.setTitleName(field);
                 column.setIshide("1");
+                column.setSerialNumber(Integer.valueOf(i+1));
             }
             newColumnList.add(column);
         }
@@ -167,8 +127,6 @@ public class ColumnUtil {
 
         return newColumnList;
     }
-
-
 
     public static void orderAcsBySerialNumber(List<Column> objectList) {
         Collections.sort(objectList, new Comparator<Object>() {

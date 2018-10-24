@@ -43,6 +43,16 @@ public interface ColumnService {
 
     List<Column> findColumnList(String modelCode) throws Exception;
 
+    /**
+     * 根据栏位字符串(逗号分隔的字符串)-重新调整List<Column>
+     * 1. 栏位字符串全部显示
+     * 2. 栏位字符串排列顺序就是显示顺序
+     *
+     * @param fieldCode   栏位key字符串 (','逗号分隔的字符串)
+     * @param sourceList  List<Column>
+     */
+    List<Column> modifyColumnByFieldCode(String fieldCode, List<Column> sourceList);
+
 }
 
 
