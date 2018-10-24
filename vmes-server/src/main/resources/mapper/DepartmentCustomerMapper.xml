@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+说明：部门客户供应商 DepartmentCustomerMapper.xml
+创建人：陈刚 自动创建
+创建时间：2018-09-18
+ -->
+<mapper namespace="com.xy.vmes.deecoop.base.dao.DepartmentCustomerMapper">
+
+    <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+            id,
+            name,
+            name_en,
+            DATE_FORMAT(cdate,'%Y-%m-%d %T') cdate,
+            cuser,
+            'dept' type,
+            '部门' typeName
+        from vmes_department
+        where isdisable = '1' and organize_type = '2'
+        <if test="companyId != null and companyId != ''">
+            and id_1=#{companyId}
+        </if>
+        UNION ALL
+        select
+            id,
+            name,
+            name_en,
+            DATE_FORMAT(cdate,'%Y-%m-%d %T') cdate,
+            cuser,
+            'cust' type,
+            '客户供应商' typeName
+        from vmes_customer
+        where isdisable = '1'
+        <if test="companyId != null and companyId != ''">
+            and company_id=#{companyId}
+        </if>
+
+        <if test="orderStr != null and orderStr != ''" >
+            order by ${orderStr}
+        </if>
+    </select>
+
+    <!-- ***************************************************以上为自动生成代码禁止修改，请在下面添加业务代码************************************************* -->
+    <insert id="insertColumn" >
+        delete from vmes_column where model_code = 'departmentCustomer' ;
+        insert into vmes_column (
+        id,model_code,title_key,title_name,serial_number,
+        isdisable,ishide,isedit,ismust,cdate,
+        cuser
+        ) VALUES
+        (replace(uuid(), '-', ''),'departmentCustomer','id','id',0, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'departmentCustomer','name','name',0, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'departmentCustomer','name_en','name_en',0, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'departmentCustomer','cdate','cdate',0, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'departmentCustomer','cuser','cuser',0, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'departmentCustomer','type','type',0, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'departmentCustomer','typeName','typeName',0, '1','1','1','0',now(), 'admin')
+
+    </insert>
+
+</mapper>
