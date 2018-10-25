@@ -245,6 +245,11 @@ public class ProductController {
         result.put("titles",titlesList);
 
         pd.put("orderStr", "prod.cdate desc");
+        String orderStr = pd.getString("orderStr");
+        if (orderStr != null && orderStr.trim().length() > 0) {
+            pd.put("orderStr", orderStr);
+        }
+
         String genreId = pd.getString("genreId");
         if (genreId != null && genreId.trim().length() > 0
             && !Common.DICTIONARY_MAP.get("productGenre").equals(genreId)
