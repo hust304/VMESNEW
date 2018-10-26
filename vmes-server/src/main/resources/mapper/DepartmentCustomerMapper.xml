@@ -11,6 +11,7 @@
         select
             a.id,a.code,a.name,a.name_en,a.cdate,a.cuser,a.type,a.typeName
         from (
+            <!--仓库表(虚拟库)-->
             select
                 id,
                 code,
@@ -19,13 +20,14 @@
                 DATE_FORMAT(cdate,'%Y-%m-%d %T') cdate,
                 cuser,
                 '1' type,
-                '部门' typeName
-            from vmes_department
-            where isdisable = '1' and organize_type = '2'
+                '虚拟库' typeName
+            from vmes_warehouse
+            where path_id like '%56f5e83dcb9911e884ad00163e105f05%' and layer = 2
             <if test="currentCompanyId != null and currentCompanyId != ''">
-                and id_1=#{currentCompanyId}
+                and company_id=#{currentCompanyId}
             </if>
             UNION ALL
+            <!--仓库表(实体库-组装区)-->
             select
                 id,
                 code,
@@ -34,16 +36,40 @@
                 DATE_FORMAT(cdate,'%Y-%m-%d %T') cdate,
                 cuser,
                 '2' type,
-                '客户供应商' typeName
-            from vmes_customer
-            where isdisable = '1'
+                '组装区' typeName
+            from vmes_warehouse
+            where path_id like '%2d75e49bcb9911e884ad00163e105f05%' and layer >= 3
+                <if test="currentCompanyId != null and currentCompanyId != ''">
+                    and company_id=#{currentCompanyId}
+                </if>
+            UNION ALL
+            <!--客户供应商表-->
+            select
+                cust.id,
+                cust.code,
+                cust.name,
+                cust.name_en,
+                DATE_FORMAT(cust.cdate,'%Y-%m-%d %T') cdate,
+                cust.cuser,
+                CASE
+                  WHEN genre = 'df7cb67fca4148bc9632c908e4a7fdea' THEN '3'
+                  WHEN genre = '49c0a7ebcb4c4175bd5195837a6a9a13' THEN '4'
+                ELSE null
+                END type,
+                genre.name typeName
+            from vmes_customer cust
+                left join vmes_dictionary genre on cust.genre = genre.id
+            where cust.isdisable = '1'
             <if test="currentCompanyId != null and currentCompanyId != ''">
-                and company_id=#{currentCompanyId}
+                and cust.company_id=#{currentCompanyId}
             </if>
         ) a
         <where>
             <if test="type != null and type != ''">
                 and a.type=#{type}
+            </if>
+            <if test="queryStr != null and queryStr!=''" >
+                and ${queryStr}
             </if>
         </where>
 
