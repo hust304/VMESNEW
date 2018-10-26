@@ -53,17 +53,18 @@
     <select id="dataList" parameterType="com.yvan.PageData" resultType="com.xy.vmes.entity.WarehouseProduct">
         select
             id id,
+            qrcode qrcode,
             company_id companyId,
             warehouse_id warehouseId,
             product_id productId,
-            code code,
 
+            code code,
             stock_count stockCount,
             cuser cuser,
             cdate cdate,
             uuser uuser,
-            udate udate,
 
+            udate udate,
             remark remark,
             isdisable isdisable,
             version version
@@ -123,17 +124,18 @@
     <select id="getDataListPage"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
         select
             id id,
+            qrcode qrcode,
             company_id companyId,
             warehouse_id warehouseId,
             product_id productId,
-            code code,
 
+            code code,
             stock_count stockCount,
             cuser cuser,
             cdate cdate,
             uuser uuser,
-            udate udate,
 
+            udate udate,
             remark remark,
             isdisable isdisable,
             version version

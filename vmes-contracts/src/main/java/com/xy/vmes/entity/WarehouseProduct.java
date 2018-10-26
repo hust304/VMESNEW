@@ -18,6 +18,9 @@ public class WarehouseProduct implements Serializable {
 
 	@TableField("id")
 	private String id;
+	//二维码
+	@TableField("qrcode")
+	private String qrcode;
 	//企业ID-组织架构
 	@TableField("company_id")
 	private String companyId;
@@ -63,6 +66,12 @@ public class WarehouseProduct implements Serializable {
 	}
 	public String getId() {
 		return id;
+	}
+	public String getQrcode() {
+		return qrcode;
+	}
+	public void setQrcode(String qrcode) {
+		this.qrcode = qrcode;
 	}
 	public String getCompanyId() {
 		return companyId;

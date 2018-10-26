@@ -22,6 +22,12 @@ public class WarehouseOutDetail implements Serializable {
 	//入库单ID
 	@TableField("parent_id")
 	private String parentId;
+	//二维码
+	@TableField("qrcode")
+	private String qrcode;
+	//业务id
+	@TableField("business_id")
+	private String businessId;
 	//执行人ID
 	@TableField("execute_id")
 	private String executeId;
@@ -60,7 +66,6 @@ public class WarehouseOutDetail implements Serializable {
 	private String isdisable;
 
 
-
 	public void setId(String id) {
 		this.id = id;
 	}
@@ -72,6 +77,18 @@ public class WarehouseOutDetail implements Serializable {
 	}
 	public String getParentId() {
 		return parentId;
+	}
+	public String getQrcode() {
+		return qrcode;
+	}
+	public void setQrcode(String qrcode) {
+		this.qrcode = qrcode;
+	}
+	public String getBusinessId() {
+		return businessId;
+	}
+	public void setBusinessId(String businessId) {
+		this.businessId = businessId;
 	}
 	public void setExecuteId(String executeId) {
 		this.executeId = executeId;

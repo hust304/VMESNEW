@@ -15,6 +15,8 @@
     <!-- 字段 自动创建，禁止修改-->
     <sql id="Field">
 		parent_id parentId,<!-- 入库单ID -->
+        qrcode qrcode,
+        business_id businessId,
 		execute_id executeId,<!-- 执行人ID -->
 		warehouse_id warehouseId,<!--  (推荐)货位ID -->
 		product_id productId,<!-- 产品ID -->
@@ -209,6 +211,8 @@
     <!-- 字段 自动创建，可以修改-->
     <sql id="Field1">
         parent_id parentId,<!-- 入库单ID -->
+        qrcode qrcode,
+        business_id businessId,
         execute_id executeId,<!-- 执行人ID -->
         warehouse_id warehouseId,<!--  (推荐)货位ID -->
         product_id productId,<!-- 产品ID -->

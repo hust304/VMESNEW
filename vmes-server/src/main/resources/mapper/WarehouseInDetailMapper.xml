@@ -96,19 +96,22 @@
         select
             id id,
             parent_id parentId,
+            qrcode qrcode,
+            business_id businessId,
             execute_id executeId,
+
             warehouse_id warehouseId,
             product_id productId,
-
             code code,
             count count,
             state state,
+
             cuser cuser,
             cdate cdate,
-
             uuser uuser,
             udate udate,
             remark remark,
+
             isdisable isdisable
         from vmes_warehouse_in_detail
         <choose>
@@ -167,19 +170,22 @@
         select
             a.id id,
             a.parent_id parentId,
+            a.qrcode,
+            a.businessId,
             a.execute_id executeId,
+
             a.warehouse_id warehouseId,
             a.product_id productId,
-
             a.code code,
             a.count count,
             a.state state,
+
             a.cuser cuser,
             DATE_FORMAT(a.cdate,'%Y-%m-%d %T') cdate,
-
             a.uuser uuser,
             DATE_FORMAT(a.udate,'%Y-%m-%d %T') udate,
             a.remark remark,
+
             a.isdisable isdisable,
 
             <!--货品表-->
