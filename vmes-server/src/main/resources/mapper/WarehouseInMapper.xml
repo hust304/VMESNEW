@@ -133,6 +133,8 @@
     <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
             a.id id,
+            <!--级联table 传值用 -->
+            a.id parentId,
             a.company_id companyId,
             a.code code,
             a.type type,
@@ -158,26 +160,26 @@
             DATE_FORMAT(a.udate,'%Y-%m-%d %T') udate,
             a.remark remark,
             a.isdisable isdisable
-        from vmes_warehouse_in a
-            left join vmes_warehouse b on a.warehouse_id = b.id
-            left join vmes_user c on a.make_id = c.id
-            left join vmes_dictionary type on a.type = type.id
-        <where>
-            <if test="code != null and code != ''">
-                and a.code LIKE CONCAT(CONCAT(#{code}),'%')
-            </if>
-            <if test="currentCompanyId != null and currentCompanyId != ''" >
-                and a.company_id = #{currentCompanyId}
-            </if>
+    from vmes_warehouse_in a
+        left join vmes_warehouse b on a.warehouse_id = b.id
+        left join vmes_user c on a.make_id = c.id
+        left join vmes_dictionary type on a.type = type.id
+    <where>
+        <if test="code != null and code != ''">
+            and a.code LIKE CONCAT(CONCAT(#{code}),'%')
+        </if>
+        <if test="currentCompanyId != null and currentCompanyId != ''" >
+            and a.company_id = #{currentCompanyId}
+        </if>
 
-            <if test="type != null and type != ''" >
-                and a.type = #{type}
-            </if>
-            <if test="warehouseId != null and warehouseId != ''" >
-                and a.warehouse_id = #{warehouseId}
-            </if>
+        <if test="type != null and type != ''" >
+            and a.type = #{type}
+        </if>
+        <if test="warehouseId != null and warehouseId != ''" >
+            and a.warehouse_id = #{warehouseId}
+        </if>
 
-            <!--queryStr 自定义sql查询语句-->
+        <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >
                 and ${queryStr}
             </if>
