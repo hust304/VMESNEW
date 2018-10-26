@@ -206,6 +206,9 @@
             <if test="parentId != null and parentId != ''" >
                 and a.parent_id = #{parentId}
             </if>
+            <if test="state != null and state != ''" >
+                and a.state = #{state}
+            </if>
 
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >
