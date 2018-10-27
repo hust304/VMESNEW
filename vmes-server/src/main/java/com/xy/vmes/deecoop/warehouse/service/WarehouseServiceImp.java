@@ -286,6 +286,27 @@ public class WarehouseServiceImp implements WarehouseService {
         return strTemp;
     }
 
+    public Integer findMaxSerialNumber(String pid) {
+        if (pid == null || pid.trim().length() == 0) {return Integer.valueOf(0);}
+
+        PageData findMap = new PageData();
+        findMap.put("pid", pid);
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+
+        List<Warehouse> objectList = null;
+        try {
+            objectList = this.findWarehouseList(findMap);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if (objectList != null && objectList.size() > 0) {
+            return Integer.valueOf(objectList.size());
+        }
+
+        return Integer.valueOf(0);
+    }
+
     ///////////////////////////////////////////////////////////////////////////////////////////////
     public String checkColumnByEntity(Warehouse object) {
         if (object == null) {return new String();}
@@ -405,6 +426,7 @@ public class WarehouseServiceImp implements WarehouseService {
         if (paterObj == null) {return;}
         if (keyNameMap == null || keyNameMap.size() == 0) {return;}
 
+        Integer maxCount = this.findMaxSerialNumber(paterObj.getId());
         for (Iterator iterator = keyNameMap.keySet().iterator(); iterator.hasNext();) {
             String mapKey = (String)iterator.next();
             String mapValue = keyNameMap.get(mapKey).toString().trim();
@@ -428,6 +450,7 @@ public class WarehouseServiceImp implements WarehouseService {
 
             //设置货位路径名称
             warehouse = this.paterObject2Warehouse(paterObj, warehouse);
+            warehouse.setSerialNumber(Integer.valueOf(maxCount.intValue() + 1));
 
             try {
                 //生成货位二维码
@@ -440,12 +463,23 @@ public class WarehouseServiceImp implements WarehouseService {
                 e.printStackTrace();
             }
         }
+
+        //是否叶子(0:非叶子 1:是叶子)
+        if ("1".equals(paterObj.getIsLeaf())) {
+            paterObj.setIsLeaf("0");
+            try {
+                this.update(paterObj);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public void createWarehouseByPosition(Warehouse paterObj, List<String> nameList) {
         if (paterObj == null) {return;}
         if (nameList == null || nameList.size() == 0) {return;}
 
+        Integer maxCount = this.findMaxSerialNumber(paterObj.getId());
         for (String name : nameList) {
             Warehouse warehouse = new Warehouse();
             warehouse.setId(Conv.createUuid());
@@ -461,6 +495,7 @@ public class WarehouseServiceImp implements WarehouseService {
             warehouse.setName(name);
             //设置货位路径名称
             warehouse = this.paterObject2Warehouse(paterObj, warehouse);
+            warehouse.setSerialNumber(Integer.valueOf(maxCount.intValue() + 1));
 
             try {
                 //生成货位二维码
@@ -469,6 +504,16 @@ public class WarehouseServiceImp implements WarehouseService {
                     warehouse.setQrcode(qrcode);
                 }
                 this.save(warehouse);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        //是否叶子(0:非叶子 1:是叶子)
+        if ("1".equals(paterObj.getIsLeaf())) {
+            paterObj.setIsLeaf("0");
+            try {
+                this.update(paterObj);
             } catch (Exception e) {
                 e.printStackTrace();
             }

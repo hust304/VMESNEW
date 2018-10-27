@@ -342,6 +342,13 @@ public class WarehouseController {
         if (qrcode != null && qrcode.trim().length() > 0) {
             warehouse.setQrcode(qrcode);
         }
+
+        //设置默认顺序
+        if (warehouse.getSerialNumber() == null) {
+            Integer maxCount = warehouseService.findMaxSerialNumber(pid);
+            warehouse.setSerialNumber(Integer.valueOf(maxCount.intValue() + 1));
+        }
+
         warehouseService.save(warehouse);
 
         Long endTime = System.currentTimeMillis();
@@ -422,6 +429,11 @@ public class WarehouseController {
         String qrcode = fileService.createQRCode("warehouseBase", YvanUtil.toJson(warehouse));
         if (qrcode != null && qrcode.trim().length() > 0) {
             warehouse.setQrcode(qrcode);
+        }
+        //设置默认顺序
+        if (warehouse.getSerialNumber() == null) {
+            Integer maxCount = warehouseService.findMaxSerialNumber(pid);
+            warehouse.setSerialNumber(Integer.valueOf(maxCount.intValue() + 1));
         }
         warehouseService.save(warehouse);
 
@@ -508,7 +520,18 @@ public class WarehouseController {
         if (qrcode != null && qrcode.trim().length() > 0) {
             warehouse.setQrcode(qrcode);
         }
+        //设置默认顺序
+        if (warehouse.getSerialNumber() == null) {
+            Integer maxCount = warehouseService.findMaxSerialNumber(pid);
+            warehouse.setSerialNumber(Integer.valueOf(maxCount.intValue() + 1));
+        }
         warehouseService.save(warehouse);
+
+        //是否叶子(0:非叶子 1:是叶子)
+        if ("1".equals(paterObj.getIsLeaf())) {
+            paterObj.setIsLeaf("0");
+            warehouseService.update(paterObj);
+        }
 
         Long endTime = System.currentTimeMillis();
         logger.info("################/warehouseBase/addWarehousePosition 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");

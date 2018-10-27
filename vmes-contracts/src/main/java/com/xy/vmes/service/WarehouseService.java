@@ -83,6 +83,7 @@ public interface WarehouseService {
     List<String> findNameListByChar(String start, String end);
     List<String> findNameList(String start, String end, String suffix);
     String nameList2NameString(List<String> nameList);
+    Integer findMaxSerialNumber(String pid);
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
     String checkColumnByEntity(Warehouse object);

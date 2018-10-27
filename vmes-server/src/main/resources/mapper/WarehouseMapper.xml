@@ -27,18 +27,20 @@
         name name,
         name_en nameEn,
 
+        serial_number serialNumber,
+        isLeaf isLeaf,
         dept_id deptId,
         dept_place_key deptPlaceKey,
         path_name pathName,
+
         path_id pathId,
         isopen isopen,
-
         cuser cuser,
         cdate cdate,
         uuser uuser,
+
         udate udate,
         isdisable isdisable,
-
         remark remark
     </sql>
 
@@ -144,6 +146,9 @@
                         and company_id=#{companyId}
                     </if>
 
+                    <if test="isLeaf != null and isLeaf != ''" >
+                        and isLeaf=#{isLeaf}
+                    </if>
                     <if test="isdisable != null and isdisable != ''" >
                         and isdisable=#{isdisable}
                     </if>

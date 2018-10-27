@@ -61,6 +61,11 @@ public class Warehouse implements Serializable {
 	//英文名称
 	@TableField("name_en")
 	private String nameEn;
+	//同级排列序号
+	@TableField("serial_number")
+	private Integer serialNumber;
+	//是否叶子(0:非叶子 1:是叶子)
+	private String isLeaf;
 	//货位所属部门ID
 	@TableField("dept_id")
 	private String deptId;
@@ -252,6 +257,19 @@ public class Warehouse implements Serializable {
 	}
 	public void setWarehouseId(String warehouseId) {
 		this.warehouseId = warehouseId;
+	}
+	public Integer getSerialNumber() {
+		return serialNumber;
+	}
+	public void setSerialNumber(Integer serialNumber) {
+		this.serialNumber = serialNumber;
+	}
+	public String getIsLeaf() {
+		return isLeaf;
+	}
+
+	public void setIsLeaf(String isLeaf) {
+		this.isLeaf = isLeaf;
 	}
 	/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
