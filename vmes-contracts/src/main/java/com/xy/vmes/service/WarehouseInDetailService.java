@@ -97,7 +97,16 @@ public interface WarehouseInDetailService {
      */
     void updateStateWarehouseInDetail(List<WarehouseInDetail> detailList) throws Exception;
 
-
+    /**
+     * 根据入库单明细状态-反写入库单状态
+     * 入库单状态(0:未完成 1:已完成 -1:已取消)
+     * 入库单明细状态(0:待派单 1:执行中 2:已完成 -1:已取消)
+     *
+     * @param parent       入库单对象
+     * @param dtllList     入库单明细List<WarehouseInDetail>
+     * @param ignoreState  忽视状态
+     */
+    void updateParentStateByDetailList(WarehouseIn parent, List<WarehouseInDetail> dtllList, String ignoreState) throws Exception;
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**
      * 入库单明细状态，在入库单明细List<WarehouseInDetail>中是否全部相同
@@ -110,6 +119,19 @@ public interface WarehouseInDetailService {
      * @return
      */
     boolean isAllExistStateByDetailList(String state, String ignoreState, List<WarehouseInDetail> objectList);
+
+    /**
+     * 获取入库单状态-根据入库单明细状态
+     * 入库单状态(0:未完成 1:已完成 -1:已取消)
+     * 入库单明细状态(0:待派单 1:执行中 2:已完成 -1:已取消)
+     *
+     * @param ignoreState  忽视状态
+     * @param dtlList      入库单明细List<WarehouseInDetail>
+     * @return
+     */
+    String findParentStateByDetailList(String ignoreState, List<WarehouseInDetail> dtlList);
+
+
 
 }
 

@@ -245,17 +245,9 @@ public class WarehouseInDetailController {
         warehouseInDetailService.update(detail);
 
         //2.返写入库单状态
+        //获取入库单状态-根据入库单明细状态 -- 忽视状态(-1:已取消)
         if (warehouseIn != null) {
-            List<WarehouseInDetail> detailList = warehouseInDetailService.findWarehouseInDetailListByParentId(detail.getParentId());
-
-            //验证状态(0:待派单 1:执行中 2:已完成 -1:已取消)
-            //判断明细是否全部(-1:已取消)--(验证是否允许取消)--忽视状态:-1:已取消
-            if (warehouseInDetailService.isAllExistStateByDetailList("-1", null, detailList)) {
-                //状态(0:未完成 1:已完成 -1:已取消)
-                warehouseIn.setState("-1");
-            }
-
-            warehouseInService.update(warehouseIn);
+            warehouseInDetailService.updateParentStateByDetailList(warehouseIn, null, "-1");
         }
 
         Long endTime = System.currentTimeMillis();
@@ -303,19 +295,11 @@ public class WarehouseInDetailController {
         //1. 删除入库明细
         warehouseInDetailService.deleteById(detailId);
 
-//        //2.返写入库单状态
-//        if (warehouseIn != null) {
-//            List<WarehouseInDetail> detailList = warehouseInDetailService.findWarehouseInDetailListByParentId(detail.getParentId());
-//
-//            //验证状态(0:待派单 1:执行中 2:已完成 -1:已取消)
-//            //判断明细是否(2:已完成) -- 忽视状态(-1:已取消)
-//            if (warehouseInDetailService.checkStateByDetailList("2", "-1", detailList)) {
-//                //状态(0:未完成 1:已完成 -1:已取消)
-//                warehouseIn.setState("1");
-//            }
-//
-//            warehouseInService.update(warehouseIn);
-//        }
+        //2.返写入库单状态
+        //获取入库单状态-根据入库单明细状态 -- 忽视状态(-1:已取消)
+        if (warehouseIn != null) {
+            warehouseInDetailService.updateParentStateByDetailList(warehouseIn, null, "-1");
+        }
 
         Long endTime = System.currentTimeMillis();
         logger.info("################/warehouseInDetail/deleteWarehouseInDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");

@@ -238,16 +238,35 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
         }
 
         //3. 反写入库单(vmes_warehouse_in)状态
-        //明细状态   state:状态(0:待派单 1:执行中 2:已完成 -1.已取消)
-        //入库单状态 state:状态(0:未完成 1:已完成 -1:已取消)
-        //判断明细状态是否全部(2:已完成)
-        if (this.isAllExistStateByDetailList("2", null, detailList)) {
-            WarehouseIn warehouseIn = new WarehouseIn();
-            warehouseIn.setId(parentId);
-            warehouseIn.setState("1");
-            warehouseInService.update(warehouseIn);
-        }
+        WarehouseIn warehouseIn = new WarehouseIn();
+        warehouseIn.setId(parentId);
+        this.updateParentStateByDetailList(warehouseIn, detailList, "-1");
     }
+
+    /**
+     * 根据入库单明细状态-反写入库单状态
+     * 入库单状态(0:未完成 1:已完成 -1:已取消)
+     * 入库单明细状态(0:待派单 1:执行中 2:已完成 -1:已取消)
+     *
+     * @param parent       入库单对象
+     * @param dtlList      入库单明细List<WarehouseInDetail>
+     * @param ignoreState  忽视状态
+     */
+    public void updateParentStateByDetailList(WarehouseIn parent, List<WarehouseInDetail> dtlList, String ignoreState) throws Exception {
+        if (parent == null) {return;}
+        if (parent.getId() == null || parent.getId().trim().length() == 0) {return;}
+
+        if (dtlList == null) {
+            dtlList = this.findWarehouseInDetailListByParentId(parent.getId());
+        }
+
+        //获取入库单状态-根据入库单明细状态
+        String parentState = this.findParentStateByDetailList(ignoreState, dtlList);
+
+        parent.setState(parentState);
+        warehouseInService.update(parent);
+    }
+
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**
      * 入库单明细状态，在入库单明细List<WarehouseInDetail>中是否全部相同
@@ -276,6 +295,34 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
         }
 
         return true;
+    }
+
+    /**
+     * 获取入库单状态-根据入库单明细状态
+     * 入库单状态(0:未完成 1:已完成 -1:已取消)
+     * 入库单明细状态(0:待派单 1:执行中 2:已完成 -1:已取消)
+     *
+     * @param ignoreState  忽视状态
+     * @param dtlList      入库单明细List<WarehouseInDetail>
+     * @return
+     */
+    public String findParentStateByDetailList(String ignoreState, List<WarehouseInDetail> dtlList) {
+        String parentState = new String("0");
+        if (dtlList == null || dtlList.size() == 0) {return parentState;}
+
+        //1. 验证入库单状态(1:已完成) --> 全部明细状态 (2:已完成) -- 忽视状态(-1:已取消)
+        String checkDtlState = "2";
+        if (this.isAllExistStateByDetailList(checkDtlState, ignoreState, dtlList)) {
+            return "1";
+        }
+
+        //2. 验证入库单状态(-1:已取消) --> 全部明细状态 (-1:已取消) -- 忽视状态 null
+        checkDtlState = "-1";
+        if (this.isAllExistStateByDetailList(checkDtlState, null, dtlList)) {
+            return "-1";
+        }
+
+        return parentState;
     }
 
 }

@@ -309,7 +309,7 @@ public class WarehouseInController {
     }
 
     /**
-     * 取消入库单
+     * 取消入库单(取消整个入库单-入库单明细)
      * @author 陈刚
      * @date 2018-10-16
      * @throws Exception

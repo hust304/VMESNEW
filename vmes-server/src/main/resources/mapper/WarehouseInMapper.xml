@@ -171,6 +171,9 @@
         <if test="currentCompanyId != null and currentCompanyId != ''" >
             and a.company_id = #{currentCompanyId}
         </if>
+        <if test="state != null and state != ''" >
+            and a.state = #{state}
+        </if>
 
         <if test="type != null and type != ''" >
             and a.type = #{type}
