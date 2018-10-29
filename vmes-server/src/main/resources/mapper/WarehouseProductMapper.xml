@@ -157,6 +157,57 @@
         </if>
     </select>
 
+    <!--vmes_warehouse_product,vmes_product 关联查询 -->
+    <select id="findWarehouseProductMapList" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+            a.id id,
+            a.qrcode qrcode,
+            a.company_id companyId,
+            a.warehouse_id warehouseId,
+            a.product_id productId,
+
+            a.code code,
+            a.stock_count stockCount,
+            a.remark remark,
+            a.isdisable isdisable,
+            a.version version,
+
+            b.code productCode,
+            b.name productName,
+            b.name_en productNameEn,
+            b.spec productSpec,
+            b.genre productGenre,
+
+            b.type productType,
+            b.unit productUnit,
+            b.last_unit productLastUnit,
+            b.last_ratio productLastRatio,
+            b.price productPrice,
+
+            b.validity_date productValidityDate,
+            b.isdisable productIsdisable,
+            b.stock_count productStockCount,
+            b.safety_count productSafetyCount
+
+        from vmes_warehouse_product a
+            left join vmes_product b on a.product_id = b.id
+        <where>
+            <if test="companyId != null and companyId != ''" >
+                and a.company_id=#{companyId}
+            </if>
+            <if test="isdisable != null and isdisable != ''" >
+                and a.isdisable=#{isdisable}
+            </if>
+
+            <if test="productType != null and productType != ''" >
+                and b.type=#{productType}
+            </if>
+            <if test="productIsdisable != null and productIsdisable != ''" >
+                and b.isdisable=#{productIsdisable}
+            </if>
+        </where>
+    </select>
+
     <!--库存数量-并发(version)控制-->
     <update id="updateStockCount" parameterType="com.yvan.PageData">
         update vmes_warehouse_product

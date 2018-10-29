@@ -196,10 +196,15 @@
             unit.name productUnitName,
             prod.genre productGenre,
             genre.name productGenreName,
+            prod.type productType,
+
+            <!--入库单表-->
+            parent.code parentCode,
 
             <!--获取已执行数量-入库执行表-->
             b.count executeCount
         from vmes_warehouse_in_detail a
+            left join vmes_warehouse_in parent on a.parent_id = parent.id
             left join vmes_product prod on a.product_id = prod.id
             left join vmes_dictionary unit on prod.unit = unit.id
             left join vmes_dictionary genre on prod.genre = genre.id

@@ -250,6 +250,7 @@
         select <include refid="UserField" />
         from vmes_user user
             left join vmes_user_role userRole on user.id = userRole.user_id
+            left join vmes_role role on userRole.role_id = role.id
             left join vmes_department dept on user.dept_id = dept.id
         <where>
             <if test="deptId != null and deptId != ''" >

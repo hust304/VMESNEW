@@ -230,7 +230,9 @@
                     <if test="genre != null and genre != ''" >
                         and genre=#{genre}
                     </if>
-
+                    <if test="type != null and type != ''" >
+                        and type=#{type}
+                    </if>
 
 
                     <!--queryStr 自定义sql查询语句-->
