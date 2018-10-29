@@ -90,6 +90,9 @@ public interface WarehouseService {
     String checkColumnByVirtual(Warehouse object);
     Warehouse paterObject2Warehouse(Warehouse paterObject, Warehouse objectDB);
     Warehouse clearWarehouseByPath(Warehouse objectDB);
+
+    String findPidsByWarehouseList(List<Warehouse> objectList);
+
     /**
      * 创建部门货位
      * @param paterObj

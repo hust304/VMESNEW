@@ -112,6 +112,8 @@ public interface ProductService {
     Product findProductById(String id);
 
     List<Product> findProductList(PageData object);
+
+    String findIdsByProductList(List<Product> objectList);
 }
 
 

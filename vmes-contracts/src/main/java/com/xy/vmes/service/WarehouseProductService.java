@@ -1,5 +1,6 @@
 package com.xy.vmes.service;
 
+import com.xy.vmes.entity.Product;
 import com.xy.vmes.exception.TableVersionException;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.entity.WarehouseProduct;
@@ -78,11 +79,17 @@ public interface WarehouseProductService {
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
     void updateStockCount(PageData pd) throws Exception;
 
+    /**
+     * 创建人：陈刚
+     * 创建时间：2018-10-16
+     */
+    List<Map<String, Object>> findWarehouseProductMapList(PageData pd);
+
     WarehouseProduct findWarehouseProduct(PageData object);
     WarehouseProduct findWarehouseProductById(String id);
 
     List<WarehouseProduct> findWarehouseProductList(PageData object);
-
+    String findWarehouseIdsByWarehouseProductList(List<WarehouseProduct> objectList);
     ///////////////////////////////////////////////////////////////////////////////////////////
 
     /**
@@ -90,13 +97,16 @@ public interface WarehouseProductService {
      * 1. 查询库存表(vmes_warehouse_product:仓库货位产品库存表)
      *   A. 相同货品的库位，按数量由少到多
      *   B. 历史放过此货品的空库位
-     * 2. 查询仓库表(vmes_warehouse:仓库货位表) 创建时间最久的货位(cdate)
+     * 2. 若是新货，就推荐相同货品分类附近的空库位
+     * 3. 查询仓库表(vmes_warehouse:仓库货位表) 创建时间最久的货位(cdate)
      *
      * @param companyId  企业id
-     * @param productId  货品id
+     * @param product    货品对象
      * @return
      */
-    String findDefaultWarehousePosition(String companyId, String productId);
+    String findDefaultWarehousePosition(String companyId, Product product);
+
+    String findWarehouseIdsByMapList(List<Map<String, Object>> mapList);
 
     /////////////////////////////////////////////////////////////////////////////////
 

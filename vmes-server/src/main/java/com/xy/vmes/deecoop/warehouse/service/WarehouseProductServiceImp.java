@@ -2,10 +2,13 @@ package com.xy.vmes.deecoop.warehouse.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.Common;
+import com.xy.vmes.common.util.StringUtil;
+import com.xy.vmes.entity.Product;
 import com.xy.vmes.exception.TableVersionException;
 import com.xy.vmes.deecoop.warehouse.dao.WarehouseProductMapper;
 import com.xy.vmes.entity.Warehouse;
 import com.xy.vmes.entity.WarehouseProduct;
+import com.xy.vmes.service.ProductService;
 import com.xy.vmes.service.WarehouseProductService;
 import com.xy.vmes.service.WarehouseService;
 import com.yvan.PageData;
@@ -31,6 +34,8 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
     private WarehouseProductMapper warehouseProductMapper;
     @Autowired
     private WarehouseService warehouseService;
+    @Autowired
+    private ProductService productService;
 
     /**
     * 创建人：陈刚 自动创建，禁止修改
@@ -138,6 +143,14 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
         warehouseProductMapper.updateStockCount(pd);
     }
 
+    /**
+     * 创建人：陈刚
+     * 创建时间：2018-10-16
+     */
+    public List<Map<String, Object>> findWarehouseProductMapList(PageData pd) {
+        return warehouseProductMapper.findWarehouseProductMapList(pd);
+    }
+
     public WarehouseProduct findWarehouseProduct(PageData object) {
         if (object == null) {return null;}
 
@@ -171,6 +184,25 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
         return objectList;
     }
 
+    public String findWarehouseIdsByWarehouseProductList(List<WarehouseProduct> objectList) {
+        if (objectList == null || objectList.size() == 0) {return new String();}
+
+        StringBuffer strBuf = new StringBuffer();
+        for (WarehouseProduct object : objectList) {
+            if (object.getWarehouseId() != null && object.getWarehouseId().trim().length() > 0) {
+                strBuf.append(object.getWarehouseId().trim());
+                strBuf.append(",");
+            }
+        }
+
+        String strTemp = strBuf.toString();
+        if (strTemp.trim().length() > 0 && strTemp.lastIndexOf(",") != -1) {
+            strTemp = strTemp.substring(0, strTemp.lastIndexOf(","));
+            return strTemp;
+        }
+
+        return strBuf.toString();
+    }
     ///////////////////////////////////////////////////////////////////////////////////////////
 
     /**
@@ -178,21 +210,73 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
      * 1. 查询库存表(vmes_warehouse_product:仓库货位产品库存表)
      *   A. 相同货品的库位，按数量由少到多
      *   B. 历史放过此货品的空库位
-     * 2. 查询仓库表(vmes_warehouse:仓库货位表) 创建时间最久的货位(cdate)
+     * 2. 若是新货，就推荐相同货品分类附近的空库位
+     * 3. 查询仓库表(vmes_warehouse:仓库货位表) 创建时间最久的货位(cdate)
      *
      * @param companyId  企业id
-     * @param productId  货品id
+     * @param product    货品对象
      * @return
      */
-    public String findDefaultWarehousePosition(String companyId, String productId) {
-        //1. 查询库存表(vmes_warehouse_product:仓库货位产品库存表)
+    public String findDefaultWarehousePosition(String companyId, Product product) {
+        String position = new String();
+        if (companyId == null || companyId.trim().length() == 0) {return position;}
+        if (product == null) {return position;}
+
+        //1. 相同货品的库位，按数量由少到多
+        position = this.findDefaultPositionByHistory(companyId, product);
+        if (position != null && position.trim().length() > 0) {return position;}
+
+        //2. 若是新货，就推荐相同货品分类附近的空库位
+        position = this.findDefaultPositionByproductType(companyId, product);
+        if (position != null && position.trim().length() > 0) {return position;}
+
+        //3. 查询仓库表(vmes_warehouse:仓库货位表) 创建时间最久的货位(cdate)
+        position = this.findDefaultPosition(companyId);
+
+        return position;
+    }
+
+    public String findWarehouseIdsByMapList(List<Map<String, Object>> mapList) {
+        if (mapList == null || mapList.size() == 0) {return new String();}
+
+        StringBuffer strBuf = new StringBuffer();
+        for (Map<String, Object> mapObject : mapList) {
+            String warehouseId = (String)mapObject.get("warehouseId");
+            if (warehouseId != null && warehouseId.trim().length() > 0) {
+                strBuf.append(warehouseId.trim());
+                strBuf.append(",");
+            }
+        }
+
+        String strTemp = strBuf.toString();
+        if (strTemp.trim().length() > 0 && strTemp.lastIndexOf(",") != -1) {
+            strTemp = strTemp.substring(0, strTemp.lastIndexOf(","));
+            return strTemp;
+        }
+
+        return strBuf.toString();
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /**
+     * vmes_warehouse_product:仓库货位产品库存表
+     * 优先推荐相同货品的库位，按数量由少到多
+     * 其次推荐曾放过此货品的空库位
+     *
+     * @param companyId
+     * @param product
+     * @return
+     */
+    private String findDefaultPositionByHistory(String companyId, Product product) {
+        if (companyId == null || companyId.trim().length() == 0) {return new String();}
+        if (product == null) {return new String();}
+
         PageData findMap = new PageData();
         if (companyId != null && companyId.trim().length() > 0) {
             findMap.put("companyId", companyId);
         }
-        if (productId != null && productId.trim().length() > 0) {
-            findMap.put("productId", productId);
-        }
+        findMap.put("productId", product.getId());
+
         if (findMap.size() > 0) {
             findMap.put("mapSize", Integer.valueOf(findMap.size()));
             findMap.put("orderStr", "stock_count,cdate asc");
@@ -200,30 +284,114 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
 
         List<WarehouseProduct> objectList = findWarehouseProductList(findMap);
         if (objectList != null && objectList.size() > 0
-            && objectList.get(0).getWarehouseId() != null
-            && objectList.get(0).getWarehouseId().trim().length() > 0
-        ) {
+                && objectList.get(0).getWarehouseId() != null
+                && objectList.get(0).getWarehouseId().trim().length() > 0
+                ) {
             return objectList.get(0).getWarehouseId().trim();
         }
 
-        //2. 查询仓库表(vmes_warehouse:仓库货位表) 创建时间最久的货位(cdate)
+        return new String();
+    }
+
+    /**
+     * 相同货品分类附近的空库位
+     *
+     * @param companyId
+     * @param product
+     * @return
+     */
+    private String findDefaultPositionByproductType(String companyId, Product product) {
+        if (companyId == null || companyId.trim().length() == 0) {return new String();}
+        if (product == null) {return new String();}
+
+        //查询 vmes_warehouse_product 获取已放货品的货位id Map<货位id,货位id>
+        PageData findMap = new PageData();
+        findMap.put("companyId", companyId);
+        findMap.put("queryStr", "warehouse_id is not null and product_id is not null");
+        List<WarehouseProduct> objectList = this.findWarehouseProductList(findMap);
+
+        Map<String, String> existMap = new HashMap<String, String>();
+        for (WarehouseProduct object : objectList) {
+            String warehouseId = object.getWarehouseId();
+            existMap.put(warehouseId, warehouseId);
+        }
+
+        //1. vmes_warehouse_product,vmes_product 关联查询
+        //相同货品分类-在仓库中的货位id(逗号分隔的字符串)
         findMap = new PageData();
+        //isdisable:是否启用(0:已禁用 1:启用)
+        findMap.put("isdisable", "1");
+        findMap.put("productIsdisable", "1");
+
+        findMap.put("companyId", companyId);
+        findMap.put("type", product.getType());
+
+        List<Map<String, Object>> mapList = this.findWarehouseProductMapList(findMap);
+        String warehouseIds = this.findWarehouseIdsByMapList(mapList);
+        if (warehouseIds == null || warehouseIds.trim().length() == 0) {return new String();}
+
+        //2. 根据货位ids-查询 vmes_warehouse:仓库货位表-获取全部仓库货位表pid
+        findMap = new PageData();
+        //是否启用(0:已禁用 1:启用)
+        findMap.put("isdisable", "1");
+        warehouseIds = StringUtil.stringTrimSpace(warehouseIds);
+        warehouseIds = "'" + warehouseIds.replace(",", "','") + "'";
+        findMap.put("queryStr", "id in (" + warehouseIds + ")");
+        List<Warehouse> warehouseList = warehouseService.findWarehouseList(findMap);
+        String pids = warehouseService.findPidsByWarehouseList(warehouseList);
+        if (pids == null || pids.trim().length() == 0) {return new String();}
+
+        //3. 根据上级pids-查询 vmes_warehouse:仓库货位表-获取全部仓库货位List
+        findMap = new PageData();
+        //是否启用(0:已禁用 1:启用)
+        findMap.put("isdisable", "1");
+        //isLeaf:是否叶子(0:非叶子 1:是叶子)
+        findMap.put("isLeaf", "1");
+        pids = StringUtil.stringTrimSpace(pids);
+        pids = "'" + pids.replace(",", "','") + "'";
+        findMap.put("queryStr", "pid in (" + pids + ")");
+        findMap.put("orderStr", "layer,serial_number");
+        warehouseList = warehouseService.findWarehouseList(findMap);
+        if (warehouseList == null || warehouseList.size() == 0) {return new String();}
+
+        //4. 遍历warehouseList<Warehouse>--(同类货品所有货位)
+        for (Warehouse object : warehouseList) {
+            String warehouseId = object.getId();
+            if (existMap.get(warehouseId) == null) {
+                return warehouseId;
+            }
+        }
+
+        return new String();
+    }
+
+    /**
+     * 获取一个空货位
+     * 查询仓库表(vmes_warehouse:仓库货位表) 创建时间最久的货位(cdate)
+     *
+     * @param companyId
+     * @return
+     */
+    private String findDefaultPosition(String companyId) {
+        if (companyId == null || companyId.trim().length() == 0) {return new String();}
+
+        PageData findMap = new PageData();
         //是否启用(0:已禁用 1:启用)
         findMap.put("isdisable", "1");
         //实体库 warehouseEntity 2d75e49bcb9911e884ad00163e105f05
         findMap.put("nodeId", Common.DICTIONARY_MAP.get("warehouseEntity"));
         findMap.put("queryStr", "layer >= 3");
-        if (companyId != null && companyId.trim().length() > 0) {
-            findMap.put("companyId", companyId);
-        }
+        findMap.put("companyId", companyId);
+        //是否叶子(0:非叶子 1:是叶子)
+        findMap.put("isLeaf", " 1");
         findMap.put("orderStr", "cdate asc");
 
         List<Warehouse> warehouseList = warehouseService.findWarehouseList(findMap);
         if (warehouseList != null && warehouseList.size() > 0 && warehouseList.get(0).getId() != null) {
-            return objectList.get(0).getWarehouseId().trim();
+            return warehouseList.get(0).getWarehouseId().trim();
         }
 
-        return null;
+        return new String();
     }
 
     /////////////////////////////////////////////////////////////////////////////////

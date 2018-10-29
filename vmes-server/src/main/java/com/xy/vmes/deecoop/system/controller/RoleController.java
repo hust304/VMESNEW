@@ -1059,6 +1059,43 @@ public class RoleController {
         return model;
     }
 
+    /**
+     * 获取当前角色id已经绑定用户List
+     *
+     * @author 陈刚
+     * @date 2018-07-30
+     */
+    @PostMapping("/role/findListUserByRole")
+    public ResultModel findListUserByRole() throws Exception {
+        logger.info("################role/findListUserByRole 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        ResultModel model = new ResultModel();
+
+        PageData pd = HttpUtils.parsePageData();
+        List<Map<String, Object>> mapList = userRoleService.listUserByRole(pd);
+
+        List<Map<String, String>> userMapList = new ArrayList<Map<String, String>>();
+        if (mapList != null && mapList.size() > 0) {
+            for (Map<String, Object> mapObj : mapList) {
+                String id = (String)mapObj.get("id");
+                String userName = (String)mapObj.get("userName");
+                if (id != null && id.trim().length() > 0 && userName != null && userName.trim().length() > 0) {
+                    Map<String, String> userMap = new HashMap<String, String>();
+                    userMap.put("id", id);
+                    userMap.put("userName", userName);
+                    userMapList.add(userMap);
+                }
+            }
+        }
+
+        Map result = new HashMap();
+        result.put("options", userMapList);
+        model.putResult(result);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################role/findListUserByRole 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
 
     /**
      * 获取当前角色id已经绑定用户List

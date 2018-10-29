@@ -39,6 +39,12 @@ public interface WarehouseProductMapper extends BaseMapper<WarehouseProduct> {
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
     /**
+     * 创建人：陈刚
+     * 创建时间：2018-10-16
+     */
+    List<Map<String, Object>> findWarehouseProductMapList(PageData pd);
+
+    /**
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2018-10-16
      */

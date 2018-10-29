@@ -208,6 +208,24 @@ public class ProductServiceImp implements ProductService {
 
         return objectList;
     }
+
+    public String findIdsByProductList(List<Product> objectList) {
+        if (objectList == null || objectList.size() == 0) {return new String();}
+
+        StringBuffer strBuf = new StringBuffer();
+        for (Product object : objectList) {
+            strBuf.append(object.getId().trim());
+            strBuf.append(",");
+        }
+
+        String strTemp = strBuf.toString();
+        if (strTemp.trim().length() > 0 && strTemp.lastIndexOf(",") != -1) {
+            strTemp = strTemp.substring(0, strTemp.lastIndexOf(","));
+            return strTemp;
+        }
+
+        return strBuf.toString();
+    }
 }
 
 

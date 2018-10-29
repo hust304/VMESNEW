@@ -416,6 +416,27 @@ public class WarehouseServiceImp implements WarehouseService {
         return objectDB;
     }
 
+    public String findPidsByWarehouseList(List<Warehouse> objectList) {
+        if (objectList == null || objectList.size() == 0) {return new String();}
+
+        StringBuffer strBuf = new StringBuffer();
+        for (Warehouse object : objectList) {
+            String pid = object.getPid();
+            if (pid != null && pid.trim().length() > 0) {
+                strBuf.append(pid.trim());
+                strBuf.append(",");
+            }
+        }
+
+        String strTemp = strBuf.toString();
+        if (strTemp.trim().length() > 0 && strTemp.lastIndexOf(",") != -1) {
+            strTemp = strTemp.substring(0, strTemp.lastIndexOf(","));
+            return strTemp;
+        }
+
+        return strBuf.toString();
+    }
+
     /**
      * 创建部门货位
      * @param paterObj
