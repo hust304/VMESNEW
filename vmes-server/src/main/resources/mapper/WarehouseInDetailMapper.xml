@@ -173,12 +173,20 @@
             a.qrcode qrcode,
             a.business_id businessId,
             a.execute_id executeId,
+            user.user_name executeName,
 
             a.warehouse_id warehouseId,
             a.product_id productId,
             a.code code,
             ROUND(a.count, 2) count,
             a.state state,
+            CASE
+                WHEN a.state = '0' THEN '待派单'
+                WHEN a.state = '1' THEN '执行中'
+                WHEN a.state = '2' THEN '已完成'
+                WHEN a.state = '-1' THEN '已取消'
+            ELSE null
+            END stateName,
 
             a.cuser cuser,
             DATE_FORMAT(a.cdate,'%Y-%m-%d %T') cdate,
@@ -208,6 +216,7 @@
             left join vmes_product prod on a.product_id = prod.id
             left join vmes_dictionary unit on prod.unit = unit.id
             left join vmes_dictionary genre on prod.genre = genre.id
+            left join vmes_user user on a.execute_id = user.id
             left join (
                 select detail_id,sum(count) count
                 from vmes_warehouse_in_execute v

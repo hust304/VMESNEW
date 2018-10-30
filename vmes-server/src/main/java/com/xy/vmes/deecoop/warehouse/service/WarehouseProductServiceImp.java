@@ -308,6 +308,9 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
         PageData findMap = new PageData();
         findMap.put("companyId", companyId);
         findMap.put("queryStr", "warehouse_id is not null and product_id is not null");
+        if (findMap.size() > 0) {
+            findMap.put("mapSize", Integer.valueOf(findMap.size()));
+        }
         List<WarehouseProduct> objectList = this.findWarehouseProductList(findMap);
 
         Map<String, String> existMap = new HashMap<String, String>();
@@ -322,9 +325,11 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
         //isdisable:是否启用(0:已禁用 1:启用)
         findMap.put("isdisable", "1");
         findMap.put("productIsdisable", "1");
-
         findMap.put("companyId", companyId);
         findMap.put("type", product.getType());
+        if (findMap.size() > 0) {
+            findMap.put("mapSize", Integer.valueOf(findMap.size()));
+        }
 
         List<Map<String, Object>> mapList = this.findWarehouseProductMapList(findMap);
         String warehouseIds = this.findWarehouseIdsByMapList(mapList);
@@ -337,6 +342,10 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
         warehouseIds = StringUtil.stringTrimSpace(warehouseIds);
         warehouseIds = "'" + warehouseIds.replace(",", "','") + "'";
         findMap.put("queryStr", "id in (" + warehouseIds + ")");
+        if (findMap.size() > 0) {
+            findMap.put("mapSize", Integer.valueOf(findMap.size()));
+        }
+
         List<Warehouse> warehouseList = warehouseService.findWarehouseList(findMap);
         String pids = warehouseService.findPidsByWarehouseList(warehouseList);
         if (pids == null || pids.trim().length() == 0) {return new String();}
@@ -354,6 +363,10 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
         pids = "'" + pids.replace(",", "','") + "'";
         findMap.put("queryStr", "pid in (" + pids + ") and layer >= 3");
         findMap.put("orderStr", "layer,serial_number");
+        if (findMap.size() > 0) {
+            findMap.put("mapSize", Integer.valueOf(findMap.size()));
+        }
+
         warehouseList = warehouseService.findWarehouseList(findMap);
         if (warehouseList == null || warehouseList.size() == 0) {return new String();}
 
@@ -386,12 +399,15 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
         findMap.put("queryStr", "layer >= 3");
         findMap.put("companyId", companyId);
         //是否叶子(0:非叶子 1:是叶子)
-        findMap.put("isLeaf", " 1");
-        findMap.put("orderStr", "cdate asc");
+        findMap.put("isLeaf", "1");
+        findMap.put("orderStr", "cdate,serial_number asc");
+        if (findMap.size() > 0) {
+            findMap.put("mapSize", Integer.valueOf(findMap.size()));
+        }
 
         List<Warehouse> warehouseList = warehouseService.findWarehouseList(findMap);
         if (warehouseList != null && warehouseList.size() > 0 && warehouseList.get(0).getId() != null) {
-            return warehouseList.get(0).getWarehouseId().trim();
+            return warehouseList.get(0).getId().trim();
         }
 
         return new String();
