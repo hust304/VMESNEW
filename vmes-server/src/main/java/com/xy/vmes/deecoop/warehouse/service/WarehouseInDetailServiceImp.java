@@ -1,6 +1,7 @@
 package com.xy.vmes.deecoop.warehouse.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.common.util.Common;
 import com.xy.vmes.deecoop.warehouse.dao.WarehouseInDetailMapper;
 import com.xy.vmes.entity.WarehouseIn;
 import com.xy.vmes.entity.WarehouseInDetail;
@@ -186,6 +187,22 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
         return objectList;
     }
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    public String checkDistributeDetailList(List<WarehouseInDetail> objectList) {
+        if (objectList == null || objectList.size() == 0) {
+            return new String("请至少选择一条明细！");
+        }
+
+        StringBuffer msgBuf = new StringBuffer();
+        for (int i = 0; i < objectList.size(); i++) {
+            WarehouseInDetail detail = objectList.get(i);
+            if (detail.getWarehouseId() == null || detail.getWarehouseId().trim().length() == 0) {
+                msgBuf.append("第 " + (i+1) + " 行：推荐库位为空，推荐库位必填项(系统无推荐货位，请指定或添加新货位)" + Common.SYS_ENDLINE_DEFAULT);
+            }
+        }
+
+        return msgBuf.toString();
+    }
+
     public void addWarehouseInDetail(WarehouseIn parentObj, List<WarehouseInDetail> objectList) throws Exception {
         if (parentObj == null) {return;}
         if (objectList == null || objectList.size() == 0) {return;}

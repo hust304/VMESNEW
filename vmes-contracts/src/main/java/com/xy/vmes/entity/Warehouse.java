@@ -65,6 +65,7 @@ public class Warehouse implements Serializable {
 	@TableField("serial_number")
 	private Integer serialNumber;
 	//是否叶子(0:非叶子 1:是叶子)
+	@TableField("isLeaf")
 	private String isLeaf;
 	//货位所属部门ID
 	@TableField("dept_id")

@@ -345,11 +345,14 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
         findMap = new PageData();
         //是否启用(0:已禁用 1:启用)
         findMap.put("isdisable", "1");
+        //实体库 warehouseEntity 2d75e49bcb9911e884ad00163e105f05
+        findMap.put("nodeId", Common.DICTIONARY_MAP.get("warehouseEntity"));
+        findMap.put("companyId", companyId);
         //isLeaf:是否叶子(0:非叶子 1:是叶子)
         findMap.put("isLeaf", "1");
         pids = StringUtil.stringTrimSpace(pids);
         pids = "'" + pids.replace(",", "','") + "'";
-        findMap.put("queryStr", "pid in (" + pids + ")");
+        findMap.put("queryStr", "pid in (" + pids + ") and layer >= 3");
         findMap.put("orderStr", "layer,serial_number");
         warehouseList = warehouseService.findWarehouseList(findMap);
         if (warehouseList == null || warehouseList.size() == 0) {return new String();}

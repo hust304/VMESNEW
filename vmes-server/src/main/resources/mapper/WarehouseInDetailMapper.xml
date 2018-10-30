@@ -177,7 +177,7 @@
             a.warehouse_id warehouseId,
             a.product_id productId,
             a.code code,
-            a.count count,
+            ROUND(a.count, 2) count,
             a.state state,
 
             a.cuser cuser,
@@ -202,7 +202,7 @@
             parent.code parentCode,
 
             <!--获取已执行数量-入库执行表-->
-            b.count executeCount
+            ROUND(b.count, 2) executeCount
         from vmes_warehouse_in_detail a
             left join vmes_warehouse_in parent on a.parent_id = parent.id
             left join vmes_product prod on a.product_id = prod.id
