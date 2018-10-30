@@ -553,7 +553,7 @@ public class WarehouseController {
      * @date 2018-10-10
      * @throws Exception
      */
-    @GetMapping("/warehouseBase/addWarehousePositionByRange")
+    @PostMapping("/warehouseBase/addWarehousePositionByRange")
     @Transactional
     public ResultModel addWarehousePositionByRange() throws Exception {
         logger.info("################/warehouseBase/addWarehousePositionByRange 执行开始 ################# ");
