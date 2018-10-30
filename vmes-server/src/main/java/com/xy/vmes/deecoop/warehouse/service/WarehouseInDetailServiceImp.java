@@ -1,7 +1,6 @@
 package com.xy.vmes.deecoop.warehouse.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
-import com.xy.vmes.common.util.Common;
 import com.xy.vmes.deecoop.warehouse.dao.WarehouseInDetailMapper;
 import com.xy.vmes.entity.WarehouseIn;
 import com.xy.vmes.entity.WarehouseInDetail;
@@ -196,7 +195,7 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
         for (int i = 0; i < objectList.size(); i++) {
             WarehouseInDetail detail = objectList.get(i);
             if (detail.getWarehouseId() == null || detail.getWarehouseId().trim().length() == 0) {
-                msgBuf.append("第 " + (i+1) + " 行：推荐库位为空，推荐库位必填项(系统无推荐货位，请指定或添加新货位)" + Common.SYS_ENDLINE_DEFAULT);
+                msgBuf.append("第 " + (i+1) + " 行：推荐库位为空，推荐库位必填项(系统无推荐货位，请指定或添加新货位)");
             }
         }
 
@@ -298,10 +297,12 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
     public boolean isAllExistStateByDetailList(String state, String ignoreState, List<WarehouseInDetail> objectList) {
         if (state == null || state.trim().length() == 0) {return false;}
         if (objectList == null || objectList.size() == 0) {return false;}
+        if ("-1".equals(ignoreState)) {ignoreState = "c";}
 
         for (WarehouseInDetail object : objectList) {
             String dtl_state = object.getState();
             if (dtl_state == null || dtl_state.trim().length() == 0) {return false;}
+            if ("-1".equals(dtl_state)) {dtl_state = "c";}
 
             //忽视状态:判断与明细状态 相同则继续执行循环
             if (ignoreState != null && ignoreState.trim().length() > 0 && ignoreState.indexOf(dtl_state) != -1) {continue;}

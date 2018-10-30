@@ -60,7 +60,7 @@
     <select id="dataList" parameterType="com.yvan.PageData" resultType="com.xy.vmes.entity.WarehouseIn">
         select
             id id,
-            company_id companyId
+            company_id companyId,
             code code,
             type type,
             warehouse_id warehouseId,
