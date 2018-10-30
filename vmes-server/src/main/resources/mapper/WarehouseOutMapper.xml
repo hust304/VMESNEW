@@ -334,6 +334,11 @@
                 and unit.name LIKE CONCAT(CONCAT('%', #{productUnitName}),'%')
             </if>
 
+            <if test="detailState != null and detailState != ''">
+                and detail.state =  #{detailState}
+            </if>
+
+
         </where>
         <if test="orderStr != null and orderStr != ''" >
             order by ${orderStr}
@@ -395,6 +400,10 @@
             </if>
             <if test="productUnitName != null and productUnitName != ''">
                 and unit.name LIKE CONCAT(CONCAT('%', #{productUnitName}),'%')
+            </if>
+
+            <if test="detailState != null and detailState != ''">
+                and detail.state =  #{detailState}
             </if>
 
         </where>
