@@ -123,6 +123,15 @@ public interface WarehouseOutDetailService {
 
     void addWarehouseOutDetail(WarehouseOut parentObj, List<WarehouseOutDetail> objectList) throws Exception;
 
+    void addWarehouseOutDetail(WarehouseOut parentObj, WarehouseOutDetail detail) throws Exception;
+
+    List<WarehouseOutDetail> findWarehouseOutDetailListByParentId(String parentId) throws Exception;
+
+    boolean isAllExistStateByDetailList(String state, String ignoreState, List<WarehouseOutDetail> detailList) throws Exception;
+
+    void updateStateByDetail(PageData mapDetail) throws Exception;
+
+    WarehouseOutDetail findWarehouseOutDetailById(String detailId);
 }
 
 

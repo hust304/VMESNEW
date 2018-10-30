@@ -190,7 +190,7 @@ public class WarehouseOutDetailServiceImp implements WarehouseOutDetailService {
     }
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
-
+    @Override
     public List<WarehouseOutDetail> mapList2DetailList(List<Map<String, String>> mapList, List<WarehouseOutDetail> objectList) {
         if (objectList == null) {objectList = new ArrayList<WarehouseOutDetail>();}
         if (mapList == null || mapList.size() == 0) {return objectList;}
@@ -203,6 +203,7 @@ public class WarehouseOutDetailServiceImp implements WarehouseOutDetailService {
         return objectList;
     }
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    @Override
     public void addWarehouseOutDetail(WarehouseOut parentObj, List<WarehouseOutDetail> objectList) throws Exception {
         if (parentObj == null) {return;}
         if (objectList == null || objectList.size() == 0) {return;}
@@ -214,6 +215,102 @@ public class WarehouseOutDetailServiceImp implements WarehouseOutDetailService {
             detail.setCuser(parentObj.getCuser());
             this.save(detail);
         }
+    }
+
+    @Override
+    public void addWarehouseOutDetail(WarehouseOut parentObj, WarehouseOutDetail detail) throws Exception {
+        if (parentObj == null) {return;}
+        //状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+        detail.setState("0");
+        detail.setParentId(parentObj.getId());
+        detail.setCuser(parentObj.getCuser());
+        this.save(detail);
+    }
+
+    @Override
+    public List<WarehouseOutDetail> findWarehouseOutDetailListByParentId(String parentId) throws Exception {
+        if (parentId == null || parentId.trim().length() == 0) {return null;}
+
+        PageData findMap = new PageData();
+        findMap.put("parentId", parentId);
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+
+        return this.findWarehouseOutDetailList(findMap);
+    }
+
+
+
+
+
+
+    public List<WarehouseOutDetail> findWarehouseOutDetailList(PageData object) {
+        if (object == null) {return null;}
+
+        List<WarehouseOutDetail> objectList = new ArrayList<WarehouseOutDetail>();
+        try {
+            objectList = this.dataList(object);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return objectList;
+    }
+
+    /**
+     * 出库单明细状态，在出库单明细List<WarehouseInDetail>中是否全部相同
+     *   true : 全部相同，在出库单明细List
+     *   false: 一条或多条不同，在出库单明细List
+     *
+     * @param state       明细状态-出库单明细状态(0:待派单 1:执行中 2:已完成 -1:已取消)
+     * @param ignoreState 忽视状态(允许为空)
+     * @param objectList  出库单明细List<WarehouseInDetail>
+     * @return
+     */
+    @Override
+    public boolean isAllExistStateByDetailList(String state, String ignoreState, List<WarehouseOutDetail> objectList) {
+        if (state == null || state.trim().length() == 0) {return false;}
+        if (objectList == null || objectList.size() == 0) {return false;}
+
+        for (WarehouseOutDetail object : objectList) {
+            String dtl_state = object.getState();
+            if (dtl_state == null || dtl_state.trim().length() == 0) {return false;}
+
+            //忽视状态:判断与明细状态 相同则继续执行循环
+            if (ignoreState != null && ignoreState.trim().length() > 0 && ignoreState.indexOf(dtl_state) != -1) {continue;}
+
+            if (state.indexOf(dtl_state) == -1) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    @Override
+    public void updateStateByDetail(PageData pd) throws Exception{
+        warehouseOutDetailMapper.updateStateByDetail(pd);
+    }
+
+    @Override
+    public WarehouseOutDetail findWarehouseOutDetailById(String id) {
+        if (id == null || id.trim().length() == 0) {return null;}
+
+        PageData findMap = new PageData();
+        findMap.put("id", id);
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+
+        return this.findWarehouseOutDetail(findMap);
+    }
+
+    public WarehouseOutDetail findWarehouseOutDetail(PageData object) {
+        if (object == null) {return null;}
+
+        List<WarehouseOutDetail> objectList = this.findWarehouseOutDetailList(object);
+        if (objectList != null && objectList.size() > 0) {
+            return objectList.get(0);
+        }
+
+        return null;
     }
 }
 

@@ -145,21 +145,21 @@
         ) VALUES
             (replace(uuid(), '-', ''),'WarehouseOut','companyId','企业ID-组织架构',1, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'WarehouseOut','code','出库单编码',2, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseOut','type','出库类型ID',3, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'WarehouseOut','type','出库类型ID',3, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'WarehouseOut','typeName','出库类型',3, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'WarehouseOut','warehouseName','仓库',4, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'WarehouseOut','warehouseId','仓库ID',4, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'WarehouseOut','deptId','单位id',5, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseOut','deptName','单位名称',6, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'WarehouseOut','deptName','接收单位',6, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'WarehouseOut','makeName','制单人',7, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'WarehouseOut','makeId','制单人ID',7, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'WarehouseOut','state','状态',8, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'WarehouseOut','cuser','创建用户id',9, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseOut','cdate','创建时间',10, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'WarehouseOut','cdate','制单时间',10, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'WarehouseOut','uuser','修改用户id',11, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseOut','udate','修改时间',12, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseOut','remark','备注',13, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseOut','isdisable','是否启用',14, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'WarehouseOut','udate','修改时间',12, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'WarehouseOut','remark','备注',13, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'WarehouseOut','isdisable','是否启用',14, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'WarehouseOut','id','id',0, '1','0','1','0',now(), 'admin')
     </insert>
 
@@ -196,7 +196,19 @@
                             </otherwise>
                         </choose>
                     </if>
+                    <if test="code != null and code != ''" >
+                        and code = #{code}
+                    </if>
+                    <if test="companyId != null and companyId != ''" >
+                        and company_id = #{companyId}
+                    </if>
 
+                    <if test="type != null and type != ''" >
+                        and type = #{type}
+                    </if>
+                    <if test="warehouseId != null and warehouseId != ''" >
+                        and warehouse_id = #{warehouseId}
+                    </if>
 
                     <!--queryStr 自定义sql查询语句-->
                     <if test="queryStr != null and queryStr != ''" >
@@ -215,24 +227,25 @@
 
     <!-- 字段 自动创建，可以修改-->
     <sql id="Field1">
-        out.company_id companyId,<!-- 企业ID-组织架构 -->
-        out.code code,<!-- 出库单编码 -->
+        distinct
+        warehouseout.company_id companyId,<!-- 企业ID-组织架构 -->
+        warehouseout.code code,<!-- 出库单编码 -->
         type.id type,<!-- 出库类型-(字典表-vmes_dictionary.id) -->
         type.name typeName,
         warehouse.name warehouseName,
-        out.warehouse_id warehouseId,<!-- 仓库ID(仓库表-layer:2的记录) -->
-        out.dept_id deptId,<!-- 单位id(部门id或客户id) -->
-        out.dept_name deptName,<!-- 单位名称(部门或客户) -->
-        user.name makeName,
-        out.make_id makeId,<!-- 制单人ID -->
-        out.state state,<!-- 状态(0:未完成 1:已完成 -1:已取消) -->
-        out.cuser cuser,<!-- 创建用户id -->
-        out.cdate cdate,<!-- 创建时间 -->
-        out.uuser uuser,<!-- 修改用户id -->
-        out.udate udate,<!-- 修改时间 -->
-        out.remark remark,<!-- 备注 -->
-        out.isdisable isdisable,<!-- 是否启用(0:已禁用 1:启用) -->
-        out.id id <!-- id -->
+        warehouseout.warehouse_id warehouseId,<!-- 仓库ID(仓库表-layer:2的记录) -->
+        warehouseout.dept_id deptId,<!-- 单位id(部门id或客户id) -->
+        warehouseout.dept_name deptName,<!-- 单位名称(部门或客户) -->
+        user.user_name makeName,
+        warehouseout.make_id makeId,<!-- 制单人ID -->
+        case when warehouseout.state=-1 then '已取消' when warehouseout.state=0 then '未完成' when warehouseout.state=1 then '已完成' else null end state,<!-- 状态(0:未完成 1:已完成 -1:已取消) -->
+        warehouseout.cuser cuser,<!-- 创建用户id -->
+        warehouseout.cdate cdate,<!-- 创建时间 -->
+        warehouseout.uuser uuser,<!-- 修改用户id -->
+        warehouseout.udate udate,<!-- 修改时间 -->
+        warehouseout.remark remark,<!-- 备注 -->
+        warehouseout.isdisable isdisable,<!-- 是否启用(0:已禁用 1:启用) -->
+        warehouseout.id id <!-- id -->
     </sql>
 
     <!-- 字段值 自动创建，可以修改-->
@@ -270,21 +283,57 @@
         select
         <include refid="Field1"></include>
         from
-        vmes_warehouse_out out
-        left join vmes_dictionary type on type.id = out.type
-        left join vmes_warehouse warehouse on warehouse.id = out.warehouse_id
-        left join vmes_user user on user.id = out.make_id
+        vmes_warehouse_out warehouseout
+        left join vmes_dictionary type on type.id = warehouseout.type
+        left join vmes_warehouse warehouse on warehouse.id = warehouseout.warehouse_id
+        left join vmes_user user on user.id = warehouseout.make_id
+
+        left join vmes_warehouse_out_detail detail on detail.parent_id = warehouseout.id
+        left join vmes_product prod on prod.id = detail.product_id
+        left join vmes_dictionary genre on prod.genre = genre.id
+        left join vmes_dictionary unit on prod.unit = unit.id
+
         <where>
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >
                 and ${queryStr}
             </if>
             <if test="code != null and code != ''">
-                and code LIKE CONCAT(CONCAT('%', #{code}),'%')
+                and warehouseout.code LIKE CONCAT(CONCAT('%', #{code}),'%')
             </if>
-            <if test="name != null and name != ''">
-                and name LIKE CONCAT(CONCAT('%', #{name}),'%')
+            <if test="currentCompanyId != null and currentCompanyId != ''">
+                and warehouseout.company_id = #{currentCompanyId}
             </if>
+
+            <if test="typeName != null and typeName != ''">
+                and type.name LIKE CONCAT(CONCAT('%', #{typeName}),'%')
+            </if>
+            <if test="warehouseName != null and warehouseName != ''">
+                and warehouse.name LIKE CONCAT(CONCAT('%', #{warehouseName}),'%')
+            </if>
+            <if test="deptName != null and deptName != ''">
+                and warehouseout.dept_name LIKE CONCAT(CONCAT('%', #{deptName}),'%')
+            </if>
+            <if test="state != null and state != ''">
+                and warehouseout.state =  #{state}
+            </if>
+
+            <if test="productCode != null and productCode != ''">
+                and prod.code LIKE CONCAT(CONCAT('%', #{productCode}),'%')
+            </if>
+            <if test="productName != null and productName != ''">
+                and prod.name LIKE CONCAT(CONCAT('%', #{productName}),'%')
+            </if>
+            <if test="productSpec != null and productSpec != ''">
+                and prod.spec LIKE CONCAT(CONCAT('%', #{productSpec}),'%')
+            </if>
+            <if test="productGenreName != null and productGenreName != ''">
+                and genre.name LIKE CONCAT(CONCAT('%', #{productGenreName}),'%')
+            </if>
+            <if test="productUnitName != null and productUnitName != ''">
+                and unit.name LIKE CONCAT(CONCAT('%', #{productUnitName}),'%')
+            </if>
+
         </where>
         <if test="orderStr != null and orderStr != ''" >
             order by ${orderStr}
@@ -296,21 +345,58 @@
         select
         <include refid="Field1"></include>
         from
-        vmes_warehouse_out out
-        left join vmes_dictionary type on type.id = out.type
-        left join vmes_warehouse warehouse on warehouse.id = out.warehouse_id
-        left join vmes_user user on user.id = out.make_id
+        vmes_warehouse_out warehouseout
+        left join vmes_dictionary type on type.id = warehouseout.type
+        left join vmes_warehouse warehouse on warehouse.id = warehouseout.warehouse_id
+        left join vmes_user user on user.id = warehouseout.make_id
+
+        left join vmes_warehouse_out_detail detail on detail.parent_id = warehouseout.id
+        left join vmes_product prod on prod.id = detail.product_id
+        left join vmes_dictionary genre on prod.genre = genre.id
+        left join vmes_dictionary unit on prod.unit = unit.id
+
         <where>
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >
                 and ${queryStr}
             </if>
             <if test="code != null and code != ''">
-                and code LIKE CONCAT(CONCAT('%', #{code}),'%')
+                and warehouseout.code LIKE CONCAT(CONCAT('%', #{code}),'%')
             </if>
-            <if test="name != null and name != ''">
-                and name LIKE CONCAT(CONCAT('%', #{name}),'%')
+            <if test="currentCompanyId != null and currentCompanyId != ''">
+                and warehouseout.company_id = #{currentCompanyId}
             </if>
+
+            <if test="typeName != null and typeName != ''">
+                and type.name LIKE CONCAT(CONCAT('%', #{typeName}),'%')
+            </if>
+            <if test="warehouseName != null and warehouseName != ''">
+                and warehouse.name LIKE CONCAT(CONCAT('%', #{warehouseName}),'%')
+            </if>
+            <if test="deptName != null and deptName != ''">
+                and warehouseout.dept_name LIKE CONCAT(CONCAT('%', #{deptName}),'%')
+            </if>
+            <if test="state != null and state != ''">
+                and warehouseout.state =  #{state}
+            </if>
+
+
+            <if test="productCode != null and productCode != ''">
+                and prod.code LIKE CONCAT(CONCAT('%', #{productCode}),'%')
+            </if>
+            <if test="productName != null and productName != ''">
+                and prod.name LIKE CONCAT(CONCAT('%', #{productName}),'%')
+            </if>
+            <if test="productSpec != null and productSpec != ''">
+                and prod.spec LIKE CONCAT(CONCAT('%', #{productSpec}),'%')
+            </if>
+            <if test="productGenreName != null and productGenreName != ''">
+                and genre.name LIKE CONCAT(CONCAT('%', #{productGenreName}),'%')
+            </if>
+            <if test="productUnitName != null and productUnitName != ''">
+                and unit.name LIKE CONCAT(CONCAT('%', #{productUnitName}),'%')
+            </if>
+
         </where>
         <if test="orderStr != null and orderStr != ''" >
             order by ${orderStr}

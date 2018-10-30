@@ -117,6 +117,9 @@ public interface WarehouseOutService {
 
     String checkColumn(WarehouseOut object);
 
+    WarehouseOut findWarehouseOutById(String id)throws Exception;
+
+    void updateState(String id) throws Exception;
 }
 
 

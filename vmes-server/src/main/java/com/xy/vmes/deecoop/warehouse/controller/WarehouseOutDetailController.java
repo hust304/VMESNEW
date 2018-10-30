@@ -4,9 +4,11 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.Column;
+import com.xy.vmes.entity.WarehouseOut;
 import com.xy.vmes.entity.WarehouseOutDetail;
 import com.xy.vmes.service.ColumnService;
 import com.xy.vmes.service.WarehouseOutDetailService;
+import com.xy.vmes.service.WarehouseOutService;
 import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
@@ -42,6 +44,10 @@ public class WarehouseOutDetailController {
 
     @Autowired
     private ColumnService columnService;
+
+    @Autowired
+    private WarehouseOutService warehouseOutService;
+
 
     /**
     * @author 刘威 自动创建，禁止修改
@@ -198,6 +204,138 @@ public class WarehouseOutDetailController {
 
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+
+
+    /**
+     * 恢复出库单明细
+     * @author 刘威
+     * @date 2018-10-16
+     * @throws Exception
+     */
+    @PostMapping("/warehouseOutDetail/recoveryWarehouseOutDetail")
+    @Transactional
+    public ResultModel recoveryWarehouseOutDetail() throws Exception {
+        logger.info("################/warehouseOutDetail/recoveryWarehouseOutDetail 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        ResultModel model = new ResultModel();
+
+        PageData pageData = HttpUtils.parsePageData();
+        String detailId = pageData.getString("id");
+        if (detailId == null || detailId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("出库单明细id为空或空字符串！");
+            return model;
+        }
+
+        WarehouseOutDetail detail = warehouseOutDetailService.findWarehouseOutDetailById(detailId);
+        //状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+        if (detail.getState() != null && "-1".indexOf(detail.getState().trim()) < 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("当前出库明细不是取消状态，不能恢复！");
+            return model;
+        }
+
+
+        //1. 修改明细状态
+        //明细状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+        detail.setState("0");
+        warehouseOutDetailService.update(detail);
+        //2.返写出库单状态
+        warehouseOutService.updateState(detail.getParentId());
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/warehouseOutDetail/recoveryWarehouseOutDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 取消出库单明细
+     * @author 刘威
+     * @date 2018-10-16
+     * @throws Exception
+     */
+    @PostMapping("/warehouseOutDetail/cancelWarehouseOutDetail")
+    @Transactional
+    public ResultModel cancelWarehouseOutDetail() throws Exception {
+        logger.info("################/warehouseOutDetail/cancelWarehouseOutDetail 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        ResultModel model = new ResultModel();
+
+        PageData pageData = HttpUtils.parsePageData();
+        String detailId = pageData.getString("id");
+        if (detailId == null || detailId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("出库单明细id为空或空字符串！");
+            return model;
+        }
+
+        WarehouseOutDetail detail = warehouseOutDetailService.findWarehouseOutDetailById(detailId);
+        //状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+        if (detail.getState() != null && "1,2".indexOf(detail.getState().trim()) > -1) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("当前出库明细不可取消，该出库单明细状态(1:执行中 2:已完成)！");
+            return model;
+        }
+
+
+        //1. 修改明细状态
+        //明细状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+        detail.setState("-1");
+        warehouseOutDetailService.update(detail);
+        //2.返写出库单状态
+        warehouseOutService.updateState(detail.getParentId());
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/warehouseOutDetail/cancelWarehouseOutDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 删除出库单明细
+     * @author 刘威
+     * @date 2018-10-16
+     * @throws Exception
+     */
+    @PostMapping("/warehouseOutDetail/deleteWarehouseOutDetail")
+    @Transactional
+    public ResultModel deleteWarehouseOutDetail() throws Exception {
+        logger.info("################/warehouseOutDetail/deleteWarehouseOutDetail 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        ResultModel model = new ResultModel();
+
+        PageData pageData = HttpUtils.parsePageData();
+        String detailId = pageData.getString("id");
+        if (detailId == null || detailId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("出库单明细id为空或空字符串！");
+            return model;
+        }
+
+        WarehouseOutDetail detail = warehouseOutDetailService.findWarehouseOutDetailById(detailId);
+        //状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+        if (detail.getState() != null && "1,2".indexOf(detail.getState().trim()) > -1) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("当前出库明细不可删除，该出库单明细状态(1:执行中 2:已完成)！");
+            return model;
+        }
+
+
+        //1. 删除入库明细
+        warehouseOutDetailService.deleteById(detailId);
+        //2.返写入库单状态
+        warehouseOutService.updateState(detail.getParentId());
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/warehouseOutDetail/deleteWarehouseOutDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+
+
+
+
+
     /**
     * @author 刘威 自动创建，可以修改
     * @date 2018-10-23

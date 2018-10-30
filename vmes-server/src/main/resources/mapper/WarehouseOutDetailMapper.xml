@@ -14,40 +14,42 @@
 
     <!-- 字段 自动创建，禁止修改-->
     <sql id="Field">
-		parent_id parentId,<!-- 入库单ID -->
+        parent_id parentId,<!-- 入库单ID -->
+        execute_id executeId,<!-- 执行人ID -->
+        warehouse_id warehouseId,<!--  (推荐)货位ID -->
+        product_id productId,<!-- 产品ID -->
+        code code,<!-- 货位批次号 -->
+        count count,<!-- 入库数量 -->
+        state state,<!-- 状态(0:待派单 1:执行中 2:已完成) -->
+        cuser cuser,<!-- 创建用户id -->
+        cdate cdate,<!-- 创建时间 -->
+        uuser uuser,<!-- 修改用户id -->
+        udate udate,<!-- 修改时间 -->
+        remark remark,<!-- 备注 -->
+        isdisable isdisable,<!-- 是否启用(0:已禁用 1:启用) -->
         qrcode qrcode,
         business_id businessId,
-		execute_id executeId,<!-- 执行人ID -->
-		warehouse_id warehouseId,<!--  (推荐)货位ID -->
-		product_id productId,<!-- 产品ID -->
-		code code,<!-- 货位批次号 -->
-		count count,<!-- 入库数量 -->
-		state state,<!-- 状态(0:待派单 1:执行中 2:已完成) -->
-		cuser cuser,<!-- 创建用户id -->
-		cdate cdate,<!-- 创建时间 -->
-		uuser uuser,<!-- 修改用户id -->
-		udate udate,<!-- 修改时间 -->
-		remark remark,<!-- 备注 -->
-		isdisable isdisable,<!-- 是否启用(0:已禁用 1:启用) -->
-		id id <!-- id -->
+        id id <!-- id -->
     </sql>
 
     <!-- 字段值 自动创建，禁止修改-->
     <sql id="FieldValue">
-		#{parentId},<!-- 入库单ID -->
-		#{executeId},<!-- 执行人ID -->
-		#{warehouseId},<!--  (推荐)货位ID -->
-		#{productId},<!-- 产品ID -->
-		#{code},<!-- 货位批次号 -->
-		#{count},<!-- 入库数量 -->
-		#{state},<!-- 状态(0:待派单 1:执行中 2:已完成) -->
-		#{cuser},<!-- 创建用户id -->
-		#{cdate},<!-- 创建时间 -->
-		#{uuser},<!-- 修改用户id -->
-		#{udate},<!-- 修改时间 -->
-		#{remark},<!-- 备注 -->
-		#{isdisable},<!-- 是否启用(0:已禁用 1:启用) -->
-		#{id} <!-- id -->
+        #{parentId},<!-- 入库单ID -->
+        #{executeId},<!-- 执行人ID -->
+        #{warehouseId},<!--  (推荐)货位ID -->
+        #{productId},<!-- 产品ID -->
+        #{code},<!-- 货位批次号 -->
+        #{count},<!-- 入库数量 -->
+        #{state},<!-- 状态(0:待派单 1:执行中 2:已完成) -->
+        #{cuser},<!-- 创建用户id -->
+        #{cdate},<!-- 创建时间 -->
+        #{uuser},<!-- 修改用户id -->
+        #{udate},<!-- 修改时间 -->
+        #{remark},<!-- 备注 -->
+        #{isdisable},<!-- 是否启用(0:已禁用 1:启用) -->
+        #{qrcode},
+        #{businessId},
+        #{id} <!-- id -->
     </sql>
 
 
@@ -66,6 +68,8 @@
         '修改时间'  udate,
         '备注'  remark,
         '是否启用(0:已禁用 1:启用)'  isdisable,
+        '二维码' qrcode,
+        '业务id' businessId,
         'id' id_hide
     </sql>
 
@@ -115,7 +119,7 @@
         where
         id in
         <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
-		#{item}
+            #{item}
         </foreach>
     </delete>
 
@@ -128,7 +132,7 @@
         where
         id in
         <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
-        #{item}
+            #{item}
         </foreach>
     </update>
 
@@ -142,20 +146,31 @@
         isdisable,ishide,isedit,ismust,cdate,
         cuser
         ) VALUES
-            (replace(uuid(), '-', ''),'WarehouseOutDetail','parentId','入库单ID',1, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseOutDetail','executeId','执行人ID',2, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseOutDetail','warehouseId',' (推荐)货位ID',3, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseOutDetail','productId','产品ID',4, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseOutDetail','code','货位批次号',5, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseOutDetail','count','入库数量',6, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseOutDetail','state','状态(0:待派单 1:执行中 2:已完成)',7, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseOutDetail','cuser','创建用户id',8, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseOutDetail','cdate','创建时间',9, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseOutDetail','uuser','修改用户id',10, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseOutDetail','udate','修改时间',11, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseOutDetail','remark','备注',12, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseOutDetail','isdisable','是否启用(0:已禁用 1:启用)',13, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseOutDetail','id','id',0, '1','1','1','0',now(), 'admin')
+        (replace(uuid(), '-', ''),'WarehouseOutDetail','productCode','货品编码',1, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutDetail','productName','货品名称',2, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutDetail','productSpec',' 规格/型号',3, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutDetail','productGenre','货品属性ID',4, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutDetail','productGenreName','货品属性',5, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutDetail','productUnit','计量单位ID',6, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutDetail','productUnitName','计量单位',7, '1','1','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'WarehouseOutDetail','parentId','出库单ID',8, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutDetail','executeId','执行人ID',9, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutDetail','executeName','执行人',9, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutDetail','warehouseId',' (推荐)货位ID',10, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutDetail','productId','产品ID',11, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutDetail','code','批次号',12, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutDetail','count','出库数量',13, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutDetail','state','状态',14, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutDetail','cuser','创建用户id',15, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutDetail','cdate','创建时间',16, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutDetail','uuser','修改用户id',17, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutDetail','udate','修改时间',18, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutDetail','remark','备注',19, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutDetail','isdisable','是否启用',20, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutDetail','qrcode','二维码',21, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutDetail','businessId','业务id',22, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutDetail','id','id',0, '1','0','1','0',now(), 'admin')
     </insert>
 
 
@@ -191,7 +206,18 @@
                             </otherwise>
                         </choose>
                     </if>
-
+                    <if test="parentId != null and parentId != ''" >
+                        and parent_id = #{parentId}
+                    </if>
+                    <if test="code != null and code != ''" >
+                        and code = #{code}
+                    </if>
+                    <if test="productId != null and productId != ''" >
+                        and product_id = #{productId}
+                    </if>
+                    <if test="warehouseId != null and warehouseId != ''" >
+                        and warehouse_id = #{warehouseId}
+                    </if>
 
                     <!--queryStr 自定义sql查询语句-->
                     <if test="queryStr != null and queryStr != ''" >
@@ -210,22 +236,33 @@
 
     <!-- 字段 自动创建，可以修改-->
     <sql id="Field1">
-        parent_id parentId,<!-- 入库单ID -->
-        qrcode qrcode,
-        business_id businessId,
-        execute_id executeId,<!-- 执行人ID -->
-        warehouse_id warehouseId,<!--  (推荐)货位ID -->
-        product_id productId,<!-- 产品ID -->
-        code code,<!-- 货位批次号 -->
-        count count,<!-- 入库数量 -->
-        state state,<!-- 状态(0:待派单 1:执行中 2:已完成) -->
-        cuser cuser,<!-- 创建用户id -->
-        cdate cdate,<!-- 创建时间 -->
-        uuser uuser,<!-- 修改用户id -->
-        udate udate,<!-- 修改时间 -->
-        remark remark,<!-- 备注 -->
-        isdisable isdisable,<!-- 是否启用(0:已禁用 1:启用) -->
-        id id <!-- id -->
+        detail.parent_id parentId,<!-- 入库单ID -->
+        detail.execute_id executeId,<!-- 执行人ID -->
+        detail.warehouse_id warehouseId,<!--  (推荐)货位ID -->
+        detail.product_id productId,<!-- 产品ID -->
+        detail.code code,<!-- 货位批次号 -->
+        round(detail.count,2) count,<!-- 入库数量 -->
+        case when detail.state=-1 then '已取消' when detail.state=0 then '待派单' when detail.state=1 then '执行中' when detail.state=2 then '已完成' else null end state,<!-- 状态(0:待派单 1:执行中 2:已完成) -->
+        detail.cuser cuser,<!-- 创建用户id -->
+        detail.cdate cdate,<!-- 创建时间 -->
+        detail.uuser uuser,<!-- 修改用户id -->
+        detail.udate udate,<!-- 修改时间 -->
+        detail.remark remark,<!-- 备注 -->
+        detail.isdisable isdisable,<!-- 是否启用(0:已禁用 1:启用) -->
+        detail.qrcode qrcode,
+        detail.business_id businessId,
+
+        prod.code productCode,
+        prod.name productName,
+        prod.spec productSpec,
+        prod.genre productGenre,
+        genre.name productGenreName,
+        prod.unit productUnit,
+        unit.name productUnitName,
+
+        user.user_name executeName,
+
+        detail.id id <!-- id -->
     </sql>
 
     <!-- 字段值 自动创建，可以修改-->
@@ -262,17 +299,35 @@
         select
         <include refid="Field1"></include>
         from
-        <include refid="tableName"></include>
+        vmes_warehouse_out_detail detail
+        left join vmes_product prod on prod.id = detail.product_id
+        left join vmes_dictionary genre on prod.genre = genre.id
+        left join vmes_dictionary unit on prod.unit = unit.id
+        left join vmes_dictionary lastUnit on prod.last_unit = lastUnit.id
+        left join vmes_dictionary type on prod.type = type.id
+        left join vmes_user user on user.id = detail.execute_id
         <where>
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >
                 and ${queryStr}
             </if>
-            <if test="code != null and code != ''">
-                and code LIKE CONCAT(CONCAT('%', #{code}),'%')
+            <if test="parentId != null and parentId != ''">
+                and detail.parent_id =  #{parentId}
             </if>
-            <if test="name != null and name != ''">
-                and name LIKE CONCAT(CONCAT('%', #{name}),'%')
+            <if test="productCode != null and productCode != ''">
+                and prod.code LIKE CONCAT(CONCAT('%', #{productCode}),'%')
+            </if>
+            <if test="productName != null and productName != ''">
+                and prod.name LIKE CONCAT(CONCAT('%', #{productName}),'%')
+            </if>
+            <if test="productSpec != null and productSpec != ''">
+                and prod.spec LIKE CONCAT(CONCAT('%', #{productSpec}),'%')
+            </if>
+            <if test="productGenreName != null and productGenreName != ''">
+                and genre.name LIKE CONCAT(CONCAT('%', #{productGenreName}),'%')
+            </if>
+            <if test="productUnitName != null and productUnitName != ''">
+                and unit.name LIKE CONCAT(CONCAT('%', #{productUnitName}),'%')
             </if>
         </where>
         <if test="orderStr != null and orderStr != ''" >
@@ -285,17 +340,35 @@
         select
         <include refid="Field1"></include>
         from
-        <include refid="tableName"></include>
+        vmes_warehouse_out_detail detail
+        left join vmes_product prod on prod.id = detail.product_id
+        left join vmes_dictionary genre on prod.genre = genre.id
+        left join vmes_dictionary unit on prod.unit = unit.id
+        left join vmes_dictionary lastUnit on prod.last_unit = lastUnit.id
+        left join vmes_dictionary type on prod.type = type.id
+        left join vmes_user user on user.id = detail.execute_id
         <where>
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >
                 and ${queryStr}
             </if>
-            <if test="code != null and code != ''">
-                and code LIKE CONCAT(CONCAT('%', #{code}),'%')
+            <if test="parentId != null and parentId != ''">
+                and detail.parent_id =  #{parentId}
             </if>
-            <if test="name != null and name != ''">
-                and name LIKE CONCAT(CONCAT('%', #{name}),'%')
+            <if test="productCode != null and productCode != ''">
+                and prod.code LIKE CONCAT(CONCAT('%', #{productCode}),'%')
+            </if>
+            <if test="productName != null and productName != ''">
+                and prod.name LIKE CONCAT(CONCAT('%', #{productName}),'%')
+            </if>
+            <if test="productSpec != null and productSpec != ''">
+                and prod.spec LIKE CONCAT(CONCAT('%', #{productSpec}),'%')
+            </if>
+            <if test="productGenreName != null and productGenreName != ''">
+                and genre.name LIKE CONCAT(CONCAT('%', #{productGenreName}),'%')
+            </if>
+            <if test="productUnitName != null and productUnitName != ''">
+                and unit.name LIKE CONCAT(CONCAT('%', #{productUnitName}),'%')
             </if>
         </where>
         <if test="orderStr != null and orderStr != ''" >
@@ -303,7 +376,16 @@
         </if>
     </select>
 
-
+    <update id="updateStateByDetail" parameterType="com.yvan.PageData" >
+        update vmes_warehouse_out_detail set
+        state = #{state},
+        udate = now()
+        <where>
+            <if test="parentId != null and parentId != ''" >
+                and parent_id = #{parentId}
+            </if>
+        </where>
+    </update>
 
 
 </mapper>

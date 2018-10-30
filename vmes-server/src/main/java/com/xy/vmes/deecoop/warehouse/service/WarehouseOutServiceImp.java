@@ -4,19 +4,18 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.Common;
 import com.xy.vmes.deecoop.warehouse.dao.WarehouseOutMapper;
 import com.xy.vmes.entity.WarehouseOut;
+import com.xy.vmes.entity.WarehouseOutDetail;
+import com.xy.vmes.service.WarehouseOutDetailService;
 import com.xy.vmes.service.WarehouseOutService;
 import com.yvan.PageData;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.MessageFormat;
-import java.util.Date;
+import java.util.*;
+
 import com.yvan.Conv;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
 * 说明：出库 实现类
@@ -30,6 +29,9 @@ public class WarehouseOutServiceImp implements WarehouseOutService {
 
     @Autowired
     private WarehouseOutMapper warehouseOutMapper;
+
+    @Autowired
+    private WarehouseOutDetailService warehouseOutDetailService;
 
     /**
     * 创建人：刘威 自动创建，禁止修改
@@ -206,6 +208,87 @@ public class WarehouseOutServiceImp implements WarehouseOutService {
         }
 
         return msgBuf.toString();
+    }
+
+    public WarehouseOut findWarehouseOutById(String id) {
+        if (id == null || id.trim().length() == 0) {return null;}
+
+        PageData findMap = new PageData();
+        findMap.put("id", id);
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+
+        return this.findWarehouseOut(findMap);
+    }
+
+
+
+    public WarehouseOut findWarehouseOut(PageData object) {
+        if (object == null) {return null;}
+
+        List<WarehouseOut> objectList = this.findWarehouseOutList(object);
+        if (objectList != null && objectList.size() > 0) {
+            return objectList.get(0);
+        }
+
+        return null;
+    }
+
+    public List<WarehouseOut> findWarehouseOutList(PageData object) {
+        if (object == null) {return null;}
+
+        List<WarehouseOut> objectList = new ArrayList<WarehouseOut>();
+        try {
+            objectList = this.dataList(object);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return objectList;
+    }
+
+
+    @Override
+    public void updateState(String id) throws Exception {
+        WarehouseOut warehouseOut = this.findWarehouseOutById(id);
+        int yqx = 0;//已取消
+        int dpd = 0;//待派单
+        int zxz = 0;//执行中
+        int ywc = 0;//已完成
+        if(warehouseOut!=null){
+            List<WarehouseOutDetail> detailList = warehouseOutDetailService.findWarehouseOutDetailListByParentId(id);
+            if(detailList!=null&&detailList.size()>0){
+                for(int i=0;i<detailList.size();i++){
+                    WarehouseOutDetail warehouseOutDetail = detailList.get(i);
+                    if("-1".equals(warehouseOutDetail.getState())){
+                        yqx = yqx + 1;
+                    }else if("0".equals(warehouseOutDetail.getState())){
+                        dpd = dpd + 1;
+                    }else if("1".equals(warehouseOutDetail.getState())){
+                        zxz = zxz + 1;
+                    }else if("2".equals(warehouseOutDetail.getState())){
+                        ywc = ywc + 1;
+                    }
+                }
+            }else{
+                //如果当前出库单没有明细则自动删除当前出库单
+               this.deleteById(id);
+               return;
+            }
+            //该出库单明细状态全是已取消状态，则说明当前出库单状态为已取消
+            if(yqx>0&&dpd==0&&zxz==0&&ywc==0){
+                warehouseOut.setState("-1");//已取消
+            }
+            //该出库单明细状态全是已完成和已取消状态，则说明当前出库单状态为已完成
+            else if(ywc>0&&yqx>=0&&zxz==0&&dpd==0){
+                warehouseOut.setState("1");//已完成
+            }
+            //除了以上两种特殊情况，其他情况下的出库单状态均为未完成
+            else{
+                warehouseOut.setState("0");//未完成
+            }
+            this.update(warehouseOut);
+        }
+
     }
 }
 

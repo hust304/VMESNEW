@@ -184,7 +184,7 @@ public class Common {
         //550e0457a3d34149ba3199d90b0ae198(字典id)  入库类型(字典名称)
         put("warehouseInType", "550e0457a3d34149ba3199d90b0ae198");
         //20c09785a7b54ec280d10c988be21929(字典id)  出库类型(字典名称)
-        put("warehouseOut", "20c09785a7b54ec280d10c988be21929");
+        put("warehouseOutType", "20c09785a7b54ec280d10c988be21929");
 
     }};
 
