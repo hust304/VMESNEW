@@ -270,10 +270,12 @@ public class WarehouseOutDetailServiceImp implements WarehouseOutDetailService {
     public boolean isAllExistStateByDetailList(String state, String ignoreState, List<WarehouseOutDetail> objectList) {
         if (state == null || state.trim().length() == 0) {return false;}
         if (objectList == null || objectList.size() == 0) {return false;}
+        if ("-1".equals(ignoreState)) {ignoreState = "c";}
 
         for (WarehouseOutDetail object : objectList) {
             String dtl_state = object.getState();
             if (dtl_state == null || dtl_state.trim().length() == 0) {return false;}
+            if ("-1".equals(dtl_state)) {dtl_state = "c";}
 
             //忽视状态:判断与明细状态 相同则继续执行循环
             if (ignoreState != null && ignoreState.trim().length() > 0 && ignoreState.indexOf(dtl_state) != -1) {continue;}

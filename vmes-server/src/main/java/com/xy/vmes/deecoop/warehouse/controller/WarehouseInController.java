@@ -314,10 +314,10 @@ public class WarehouseInController {
      * @date 2018-10-16
      * @throws Exception
      */
-    @PostMapping("/warehouseIn/updateCancelWarehouseIn")
+    @PostMapping("/warehouseIn/cancelWarehouseIn")
     @Transactional
-    public ResultModel updateCancelWarehouseIn() throws Exception {
-        logger.info("################/warehouseIn/updateCancelWarehouseIn 执行开始 ################# ");
+    public ResultModel cancelWarehouseIn() throws Exception {
+        logger.info("################/warehouseIn/cancelWarehouseIn 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
 
@@ -355,7 +355,54 @@ public class WarehouseInController {
         warehouseInService.update(warehouseIn);
 
         Long endTime = System.currentTimeMillis();
-        logger.info("################/warehouseIn/updateCancelWarehouseIn 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/warehouseIn/cancelWarehouseIn 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 恢复入库单(恢复整个入库单-入库单明细)
+     * @author 陈刚
+     * @date 2018-10-16
+     * @throws Exception
+     */
+    @PostMapping("/warehouseIn/recoveryWarehouseIn")
+    @Transactional
+    public ResultModel recoveryWarehouseIn() throws Exception {
+        logger.info("################/warehouseIn/recoveryWarehouseIn 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        ResultModel model = new ResultModel();
+
+        PageData pageData = HttpUtils.parsePageData();
+        String parentId = pageData.getString("id");
+        if (parentId == null || parentId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("入库单id为空或空字符串！");
+            return model;
+        }
+
+        //入库单状态:state:状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+        WarehouseIn warehouseIn = warehouseInService.findWarehouseInById(parentId);
+        //验证出库单是否允许取消
+        if ("-1".indexOf(warehouseIn.getState().trim()) == -1) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("当前入库单不是取消状态，不可恢复！");
+            return model;
+        }
+
+        //2. 修改明细状态
+        PageData mapDetail = new PageData();
+        mapDetail.put("parentId", parentId);
+        //明细状态:state:状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+        mapDetail.put("state", "0");
+        warehouseInDetailService.updateStateByDetail(mapDetail);
+
+        //3. 修改抬头表状态
+        //state:状态(0:未完成 1:已完成 -1:已取消)
+        warehouseIn.setState("0");
+        warehouseInService.update(warehouseIn);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/warehouseIn/recoveryWarehouseIn 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
