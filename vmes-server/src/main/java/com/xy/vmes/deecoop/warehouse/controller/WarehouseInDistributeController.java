@@ -5,10 +5,7 @@ import com.xy.vmes.entity.Column;
 import com.xy.vmes.entity.Product;
 import com.xy.vmes.entity.ProductProperty;
 import com.xy.vmes.entity.WarehouseInDetail;
-import com.xy.vmes.service.ColumnService;
-import com.xy.vmes.service.WarehouseInDetailService;
-import com.xy.vmes.service.WarehouseProductService;
-import com.xy.vmes.service.WarehouseService;
+import com.xy.vmes.service.*;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.YvanUtil;
@@ -39,6 +36,8 @@ public class WarehouseInDistributeController {
     private WarehouseService warehouseService;
     @Autowired
     private WarehouseInDetailService warehouseInDetailService;
+    @Autowired
+    private WarehouseInExecutorService warehouseInExecutorService;
     @Autowired
     private WarehouseProductService warehouseProductService;
 
@@ -200,10 +199,16 @@ public class WarehouseInDistributeController {
             return model;
         }
 
+        String cuser = pageData.getString("cuser");
         for (WarehouseInDetail detail : detailList) {
+            detail.setCuser(cuser);
+
+            //入库明细分配执行人
+            warehouseInExecutorService.addWarehouseInExecutor(detail, executeId);
+
             //状态(0:待派单 1:执行中 2:已完成 -1.已取消)
             detail.setState("1");
-            detail.setExecuteId(executeId);
+            //detail.setExecuteId(executeId);
             warehouseInDetailService.update(detail);
         }
 

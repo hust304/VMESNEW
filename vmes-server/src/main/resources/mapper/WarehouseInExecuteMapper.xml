@@ -69,14 +69,16 @@
         select
             id id,
             detail_id detailId,
+            executor_id executorId,
             warehouse_id warehouseId,
             count count,
-            cuser cuser,
 
+            cuser cuser,
             cdate cdate,
             uuser uuser,
             udate udate,
             remark remark,
+
             isdisable isdisable
         from vmes_warehouse_in_execute
         <choose>
@@ -107,6 +109,9 @@
                     </if>
                     <if test="detailId != null and detailId != ''" >
                         and detail_id = #{detailId}
+                    </if>
+                    <if test="executorId != null and executorId != ''" >
+                        and executor_id = #{executorId}
                     </if>
 
                     <!--queryStr 自定义sql查询语句-->

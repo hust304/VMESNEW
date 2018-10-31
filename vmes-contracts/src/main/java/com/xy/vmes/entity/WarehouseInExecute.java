@@ -22,16 +22,19 @@ public class WarehouseInExecute implements Serializable {
 	//入库明细ID
 	@TableField("detail_id")
 	private String detailId;
+	//执行人ID
+	@TableField("executor_id")
+	private String executorId;
 	//(实际)货位ID
 	@TableField("warehouse_id")
 	private String warehouseId;
 	//当前入库数量
 	@TableField("count")
 	private BigDecimal count;
+
 	//创建用户id
 	@TableField("cuser")
 	private String cuser;
-
 	//创建时间
 	@TableField("cdate")
 	private Date cdate;
@@ -44,6 +47,7 @@ public class WarehouseInExecute implements Serializable {
 	//备注
 	@TableField("remark")
 	private String remark;
+
 	//是否启用(0:已禁用 1:启用)
 	@TableField("isdisable")
 	private String isdisable;
@@ -109,7 +113,12 @@ public class WarehouseInExecute implements Serializable {
 	public String getIsdisable() {
 		return isdisable;
 	}
-
+	public String getExecutorId() {
+		return executorId;
+	}
+	public void setExecutorId(String executorId) {
+		this.executorId = executorId;
+	}
 /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 
