@@ -168,76 +168,88 @@
     <!-- 自动创建，可以修改 -->
     <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
-            a.id id,
-            a.parent_id parentId,
-            a.qrcode qrcode,
-            a.business_id businessId,
-            a.execute_id executeId,
-            user.user_name executeName,
+            id,parentId,qrcode,businessId,executeId,executeName,
+            warehouseId,productId,code,count,state,stateName,
+            cuser,cdate,uuser,udate,remark,
+            isdisable,
+            <!--货品表-->
+            productCode,productName,productSpec,productUnit,productUnitName,productGenre,productGenreName,productType,
+            <!--入库单表-->
+            parentCode,
+            <!--获取已执行数量-入库执行表-->
+            round(sum(ifnull(executeCount,0)),2) executeCount
+        from (
+            select
+                a.id id,
+                a.parent_id parentId,
+                a.qrcode qrcode,
+                a.business_id businessId,
+                a.execute_id executeId,
+                '' executeName,
 
-            a.warehouse_id warehouseId,
-            a.product_id productId,
-            a.code code,
-            ROUND(a.count, 2) count,
-            a.state state,
-            CASE
+                a.warehouse_id warehouseId,
+                a.product_id productId,
+                a.code code,
+                ROUND(a.count, 2) count,
+                a.state state,
+                CASE
                 WHEN a.state = '0' THEN '待派单'
                 WHEN a.state = '1' THEN '执行中'
                 WHEN a.state = '2' THEN '已完成'
                 WHEN a.state = '-1' THEN '已取消'
-            ELSE null
-            END stateName,
+                ELSE null
+                END stateName,
 
-            a.cuser cuser,
-            DATE_FORMAT(a.cdate,'%Y-%m-%d %T') cdate,
-            a.uuser uuser,
-            DATE_FORMAT(a.udate,'%Y-%m-%d %T') udate,
-            a.remark remark,
+                a.cuser cuser,
+                DATE_FORMAT(a.cdate,'%Y-%m-%d %T') cdate,
+                a.uuser uuser,
+                DATE_FORMAT(a.udate,'%Y-%m-%d %T') udate,
+                a.remark remark,
 
-            a.isdisable isdisable,
+                a.isdisable isdisable,
 
-            <!--货品表-->
-            prod.code productCode,
-            prod.name productName,
-            prod.spec productSpec,
-            prod.unit productUnit,
-            unit.name productUnitName,
-            prod.genre productGenre,
-            genre.name productGenreName,
-            prod.type productType,
+                <!--货品表-->
+                prod.code productCode,
+                prod.name productName,
+                prod.spec productSpec,
+                prod.unit productUnit,
+                unit.name productUnitName,
+                prod.genre productGenre,
+                genre.name productGenreName,
+                prod.type productType,
 
-            <!--入库单表-->
-            parent.code parentCode,
+                <!--入库单表-->
+                parent.code parentCode,
 
-            <!--获取已执行数量-入库执行表-->
-            ROUND(b.count, 2) executeCount
-        from vmes_warehouse_in_detail a
-            left join vmes_warehouse_in parent on a.parent_id = parent.id
-            left join vmes_product prod on a.product_id = prod.id
-            left join vmes_dictionary unit on prod.unit = unit.id
-            left join vmes_dictionary genre on prod.genre = genre.id
-            left join vmes_user user on a.execute_id = user.id
-            left join (
-                select detail_id,sum(count) count
-                from vmes_warehouse_in_execute v
-                group by detail_id
-            ) b on a.id = b.detail_id
-        <where>
-            <if test="parentId != null and parentId != ''" >
-                and a.parent_id = #{parentId}
+                <!--获取已执行数量-入库执行表-->
+                inexecute.count executeCount
+            from vmes_warehouse_in_detail a
+                left join vmes_warehouse_in parent on a.parent_id = parent.id
+                left join vmes_product prod on a.product_id = prod.id
+                left join vmes_dictionary unit on prod.unit = unit.id
+                left join vmes_dictionary genre on prod.genre = genre.id
+                <!--left join vmes_user user on a.execute_id = user.id-->
+                left join vmes_warehouse_in_execute inexecute on a.id = inexecute.detail_id
+
+            <where>
+                <if test="parentId != null and parentId != ''" >
+                    and a.parent_id = #{parentId}
+                </if>
+                <if test="state != null and state != ''" >
+                    and a.state = #{state}
+                </if>
+
+                <!--queryStr 自定义sql查询语句-->
+                <if test="queryStr != null and queryStr != ''" >
+                    and ${queryStr}
+                </if>
+            </where>
+            <if test="orderStr != null and orderStr != ''" >
+                order by ${orderStr}
             </if>
-            <if test="state != null and state != ''" >
-                and a.state = #{state}
-            </if>
+        ) in_detail
+        group by id
 
-            <!--queryStr 自定义sql查询语句-->
-            <if test="queryStr != null and queryStr != ''" >
-                and ${queryStr}
-            </if>
-        </where>
-        <if test="orderStr != null and orderStr != ''" >
-            order by ${orderStr}
-        </if>
     </select>
 
 </mapper>
