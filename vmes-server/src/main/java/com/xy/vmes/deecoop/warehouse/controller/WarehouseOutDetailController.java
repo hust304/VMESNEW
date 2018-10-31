@@ -229,12 +229,11 @@ public class WarehouseOutDetailController {
 
         WarehouseOutDetail detail = warehouseOutDetailService.findWarehouseOutDetailById(detailId);
         //状态(0:待派单 1:执行中 2:已完成 -1.已取消)
-        if (detail.getState() != null && "-1".indexOf(detail.getState().trim()) < 0) {
+        if (detail.getState() != null && !"-1".equals(detail.getState().trim())) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("当前出库明细不是取消状态，不能恢复！");
             return model;
         }
-
 
         //1. 修改明细状态
         //明细状态(0:待派单 1:执行中 2:已完成 -1.已取消)

@@ -208,10 +208,10 @@ public class WarehouseInDetailController {
      * @date 2018-10-16
      * @throws Exception
      */
-    @PostMapping("/warehouseInDetail/updateCancelWarehouseInDetail")
+    @PostMapping("/warehouseInDetail/cancelWarehouseInDetail")
     @Transactional
-    public ResultModel updateCancelWarehouseInDetail() throws Exception {
-        logger.info("################/warehouseInDetail/updateCancelWarehouseInDetail 执行开始 ################# ");
+    public ResultModel cancelWarehouseInDetail() throws Exception {
+        logger.info("################/warehouseInDetail/cancelWarehouseInDetail 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
 
@@ -251,7 +251,53 @@ public class WarehouseInDetailController {
         }
 
         Long endTime = System.currentTimeMillis();
-        logger.info("################/warehouseInDetail/updateCancelWarehouseInDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/warehouseInDetail/cancelWarehouseInDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 恢复入库单明细
+     * @author 陈刚
+     * @date 2018-10-16
+     * @throws Exception
+     */
+    @PostMapping("/warehouseInDetail/recoveryWarehouseInDetail")
+    @Transactional
+    public ResultModel recoveryWarehouseInDetail() throws Exception {
+        logger.info("################/warehouseInDetail/recoveryWarehouseInDetail 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        ResultModel model = new ResultModel();
+
+        PageData pageData = HttpUtils.parsePageData();
+        String detailId = pageData.getString("id");
+        if (detailId == null || detailId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("入库单明细id为空或空字符串！");
+            return model;
+        }
+
+        //明细状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+        WarehouseInDetail detail = warehouseInDetailService.findWarehouseInDetailById(detailId);
+        if (detail.getState() != null && !"-1".equals(detail.getState().trim())) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("当前入库明细不是取消状态，不可恢复！");
+            return model;
+        }
+
+        //1. 修改明细状态
+        //明细状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+        detail.setState("0");
+        warehouseInDetailService.update(detail);
+
+        //2. 反写入库单主表状态
+        WarehouseIn warehouseIn = warehouseInService.findWarehouseInById(detail.getParentId());
+        //获取入库单状态-根据入库单明细状态 -- 忽视状态(-1:已取消)
+        if (warehouseIn != null) {
+            warehouseInDetailService.updateParentStateByDetailList(warehouseIn, null, "-1");
+        }
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/warehouseInDetail/recoveryWarehouseInDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 

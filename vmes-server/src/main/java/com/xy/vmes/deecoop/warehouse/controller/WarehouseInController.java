@@ -301,7 +301,65 @@ public class WarehouseInController {
     public ResultModel updateWarehouseIn() throws Exception {
         logger.info("################/warehouseIn/updateWarehouseIn 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
+
         ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        WarehouseIn warehouseIn = (WarehouseIn)HttpUtils.pageData2Entity(pageData, new WarehouseIn());
+        if (warehouseIn == null) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("参数错误：Map 转 WarehouseIn 异常！");
+            return model;
+        }
+
+        //非空判断
+        String msgStr = warehouseInService.checkColumn(warehouseIn);
+        if (msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
+
+        String dtlJsonStr = pageData.getString("dtlJsonStr");
+        if (dtlJsonStr == null || dtlJsonStr.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("请至少添加选择一条货品数据！");
+            return model;
+        }
+        List<Map<String, String>> mapList = (List<Map<String, String>>) YvanUtil.jsonToList(dtlJsonStr);
+        if (mapList == null || mapList.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("入库单明细Json字符串-转换成List错误！");
+            return model;
+        }
+
+        //1.更新入库单明细
+        List<WarehouseInDetail> detailList = warehouseInDetailService.mapList2DetailList(mapList, null);
+        if (detailList != null && detailList.size() > 0) {
+            for (WarehouseInDetail detail : detailList) {
+                String detailId = detail.getId();
+                if (detailId == null || detailId.trim().length() == 0) {
+                    //状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+                    detail.setState("0");
+                    detail.setParentId(warehouseIn.getId());
+                    detail.setCuser(warehouseIn.getCuser());
+                    warehouseInDetailService.save(detail);
+                } else {
+                    warehouseInDetailService.update(detail);
+                }
+            }
+        }
+
+        //2.更新入库单表头
+        warehouseInService.update(warehouseIn);
+
+        //3.删除入库单明细
+        String deleteIds = pageData.getString("deleteIds");
+        if (deleteIds != null && deleteIds.trim().length() > 0) {
+            deleteIds = StringUtil.stringTrimSpace(deleteIds);
+            String[] delete_Ids = deleteIds.split(",");
+            warehouseInDetailService.deleteByIds(delete_Ids);
+        }
 
         Long endTime = System.currentTimeMillis();
         logger.info("################/warehouseIn/updateWarehouseIn 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
@@ -380,10 +438,10 @@ public class WarehouseInController {
             return model;
         }
 
-        //入库单状态:state:状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+        //入库单状态:state:状态(0:未完成 1:已完成 -1:已取消)
         WarehouseIn warehouseIn = warehouseInService.findWarehouseInById(parentId);
         //验证出库单是否允许取消
-        if ("-1".indexOf(warehouseIn.getState().trim()) == -1) {
+        if ("-1".equals(warehouseIn.getState())) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("当前入库单不是取消状态，不可恢复！");
             return model;
