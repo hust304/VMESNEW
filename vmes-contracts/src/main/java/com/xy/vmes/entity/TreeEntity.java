@@ -47,6 +47,9 @@ public class TreeEntity implements Cloneable {
     //仓库树
     //virtual_genre:虚拟库-属性
     private String virtualGenre;
+    //根节点到本节点路径ID pathId
+    //根节点到本节点路径名称
+    private String pathName;
 
     //当前节点-是否绑定角色(1:绑定 0:未绑定)
     private Boolean isBindRole;
@@ -178,5 +181,11 @@ public class TreeEntity implements Cloneable {
     }
     public void setVirtualGenre(String virtualGenre) {
         this.virtualGenre = virtualGenre;
+    }
+    public String getPathName() {
+        return pathName;
+    }
+    public void setPathName(String pathName) {
+        this.pathName = pathName;
     }
 }

@@ -197,6 +197,7 @@ public class WarehouseController {
         //是否启用(0:已禁用 1:启用)
         findMap.put("isdisable", "1");
         findMap.put("mapSize", Integer.valueOf(findMap.size()));
+        findMap.put("orderStr", "layer,serial_number asc");
 
         List<Warehouse> objectList = warehouseService.findWarehouseList(findMap);
         List<TreeEntity> treeList = warehouseService.warehouseList2TreeList(objectList, null);

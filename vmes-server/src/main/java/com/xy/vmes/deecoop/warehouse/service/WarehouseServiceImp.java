@@ -603,6 +603,10 @@ public class WarehouseServiceImp implements WarehouseService {
         tree.setSerialNumber(Integer.valueOf(0));
         //virtualGenre:虚拟库-属性
         tree.setVirtualGenre(warehouse.getVirtualGenre());
+        //pathName 根节点到本节点路径名称
+        tree.setPathName(warehouse.getPathName());
+        //pathId 根节点到本节点路径ID
+        tree.setPathId(warehouse.getPathId());
 
         return tree;
     }
