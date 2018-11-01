@@ -155,8 +155,6 @@
         (replace(uuid(), '-', ''),'WarehouseOutDetail','productUnitName','计量单位',7, '1','1','1','0',now(), 'admin'),
 
         (replace(uuid(), '-', ''),'WarehouseOutDetail','parentId','出库单ID',8, '1','0','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'WarehouseOutDetail','executeId','执行人ID',9, '1','0','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'WarehouseOutDetail','executeName','执行人',9, '1','0','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'WarehouseOutDetail','warehouseId',' (推荐)货位ID',10, '1','0','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'WarehouseOutDetail','productId','产品ID',11, '1','0','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'WarehouseOutDetail','code','批次号',12, '1','0','1','0',now(), 'admin'),
@@ -172,6 +170,40 @@
         (replace(uuid(), '-', ''),'WarehouseOutDetail','qrcode','二维码',22, '1','0','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'WarehouseOutDetail','businessId','业务id',23, '1','0','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'WarehouseOutDetail','id','id',0, '1','0','1','0',now(), 'admin')
+    </insert>
+
+    <insert id="insertColumn1" >
+        delete from vmes_column where model_code = 'WarehouseOutDetailDispatch' ;
+        insert into vmes_column (
+        id,model_code,title_key,title_name,serial_number,
+        isdisable,ishide,isedit,ismust,cdate,
+        cuser
+        ) VALUES
+        (replace(uuid(), '-', ''),'WarehouseOutDetailDispatch','warehouseCode','出库单编码',1, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutDetailDispatch','productCode','货品编码',2, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutDetailDispatch','productName','货品名称',3, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutDetailDispatch','productSpec',' 规格/型号',4, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutDetailDispatch','productGenre','货品属性ID',5, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutDetailDispatch','productGenreName','货品属性',6, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutDetailDispatch','productUnit','计量单位ID',7, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutDetailDispatch','productUnitName','计量单位',8, '1','1','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'WarehouseOutDetailDispatch','parentId','出库单ID',9, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutDetailDispatch','warehouseId',' (推荐)货位ID',10, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutDetailDispatch','productId','产品ID',11, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutDetailDispatch','code','批次号',12, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutDetailDispatch','count','出库数量',13, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutDetailDispatch','executeCount','已出库数量',14, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutDetailDispatch','state','状态',15, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutDetailDispatch','cuser','创建用户id',16, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutDetailDispatch','cdate','创建时间',17, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutDetailDispatch','uuser','修改用户id',18, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutDetailDispatch','udate','修改时间',19, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutDetailDispatch','remark','备注',20, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutDetailDispatch','isdisable','是否启用',21, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutDetailDispatch','qrcode','二维码',22, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutDetailDispatch','businessId','业务id',23, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutDetailDispatch','id','id',0, '1','0','1','0',now(), 'admin')
     </insert>
 
 
@@ -238,7 +270,6 @@
     <!-- 字段 自动创建，可以修改-->
     <sql id="Field1">
             detail.parent_id parentId,
-            detail.execute_id executeId,
             detail.warehouse_id warehouseId,
             detail.product_id productId,
             detail.code code,
@@ -261,7 +292,7 @@
             prod.unit productUnit,
             unit.name productUnitName,
 
-            user.user_name executeName,
+            whout.code warehouseCode,
             round(outexecute.count,2) executeCount,
             detail.id id
     </sql>
@@ -297,21 +328,21 @@
 
     <!-- 自动创建，可以修改 -->
     <select id="getDataList"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
-        select parentId,executeId,warehouseId,productId,code,count,state,cuser,cdate,udate,remark,isdisable,qrcode,
-        businessId,productCode,productName,productSpec,productGenre,productGenreName,productUnit,productUnitName,executeName,round(sum(ifnull(executeCount,0)),2) executeCount,id
+        select parentId,warehouseId,productId,code,count,state,cuser,cdate,udate,remark,isdisable,qrcode,
+        businessId,productCode,productName,productSpec,productGenre,productGenreName,productUnit,productUnitName,round(sum(ifnull(executeCount,0)),2) executeCount,warehouseCode,id
 
         from (
             select
             <include refid="Field1"></include>
             from
             vmes_warehouse_out_detail detail
+            left join vmes_warehouse_out whout on whout.id = detail.parent_id
             left join vmes_warehouse_out_execute outexecute on outexecute.detail_id = detail.id
             left join vmes_product prod on prod.id = detail.product_id
             left join vmes_dictionary genre on prod.genre = genre.id
             left join vmes_dictionary unit on prod.unit = unit.id
             left join vmes_dictionary lastUnit on prod.last_unit = lastUnit.id
             left join vmes_dictionary type on prod.type = type.id
-            left join vmes_user user on user.id = detail.execute_id
             <where>
                 <!--queryStr 自定义sql查询语句-->
                 <if test="queryStr != null and queryStr != ''" >
@@ -350,21 +381,21 @@
 
     <!-- 自动创建，可以修改 -->
     <select id="getDataListPage"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
-        select parentId,executeId,warehouseId,productId,code,count,state,cuser,cdate,udate,remark,isdisable,qrcode,
-        businessId,productCode,productName,productSpec,productGenre,productGenreName,productUnit,productUnitName,executeName,round(sum(ifnull(executeCount,0)),2) executeCount,id
+        select parentId,warehouseId,productId,code,count,state,cuser,cdate,udate,remark,isdisable,qrcode,
+        businessId,productCode,productName,productSpec,productGenre,productGenreName,productUnit,productUnitName,round(sum(ifnull(executeCount,0)),2) executeCount,warehouseCode,id
 
         from (
             select
             <include refid="Field1"></include>
             from
             vmes_warehouse_out_detail detail
+            left join vmes_warehouse_out whout on whout.id = detail.parent_id
             left join vmes_warehouse_out_execute outexecute on outexecute.detail_id = detail.id
             left join vmes_product prod on prod.id = detail.product_id
             left join vmes_dictionary genre on prod.genre = genre.id
             left join vmes_dictionary unit on prod.unit = unit.id
             left join vmes_dictionary lastUnit on prod.last_unit = lastUnit.id
             left join vmes_dictionary type on prod.type = type.id
-            left join vmes_user user on user.id = detail.execute_id
             <where>
                 <!--queryStr 自定义sql查询语句-->
                 <if test="queryStr != null and queryStr != ''" >

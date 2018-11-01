@@ -125,6 +125,11 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
         return warehouseProductMapper.getDataListPage(pd, pg);
     }
 
+    @Override
+    public List<Map> getDataListPageDispatch(PageData pd, Pagination pg) throws Exception{
+        return warehouseProductMapper.getDataListPageDispatch(pd, pg);
+    }
+
     /**
     * 创建人：陈刚 自动创建，禁止修改
     * 创建时间：2018-10-16

@@ -56,6 +56,9 @@ public interface WarehouseProductMapper extends BaseMapper<WarehouseProduct> {
      */
     void updateStockCount(PageData pd);
 
+
+    List<Map> getDataListPageDispatch(PageData pd, Pagination pg);
+
 }
 
 
