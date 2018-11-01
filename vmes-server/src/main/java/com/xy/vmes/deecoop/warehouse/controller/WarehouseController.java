@@ -253,6 +253,8 @@ public class WarehouseController {
         result.put("titles",titlesList);
 
         PageData pd = HttpUtils.parsePageData();
+        //是否启用(0:已禁用 1:启用)
+        pd.put("isdisable", "1");
         pd.put("orderStr", "a.cdate desc");
         Pagination pg = HttpUtils.parsePagination(pd);
 

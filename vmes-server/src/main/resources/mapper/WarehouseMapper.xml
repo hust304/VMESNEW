@@ -243,6 +243,12 @@
             <if test="currentCompanyId != null and currentCompanyId != ''" >
                 and a.company_id=#{currentCompanyId}
             </if>
+            <if test="isdisable != null and isdisable != ''" >
+                and a.isdisable=#{isdisable}
+            </if>
+            <if test="isLeaf != null and isLeaf != ''" >
+                and a.isLeaf=#{isLeaf}
+            </if>
 
             <!--nodeId 树形结构指定节点id 自定义sql查询语句-->
             <if test="nodeId != null and nodeId != ''" >
