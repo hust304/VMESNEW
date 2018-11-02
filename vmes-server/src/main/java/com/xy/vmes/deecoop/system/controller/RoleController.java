@@ -1135,6 +1135,77 @@ public class RoleController {
         return model;
     }
 
+    @PostMapping("/role/addRoleByName")
+    public ResultModel addRoleByName() throws Exception {
+        logger.info("################role/addRoleByName 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        String userType = pageData.getString("userType");
+        //userType: 744f2d88c9f647d0a4d967a714193850 //用户类型-超级管理员(userType_admin)
+        if (Common.DICTIONARY_MAP.get("userType_admin").equals(userType)) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("超级管理员不可操作！");
+            return model;
+        }
+
+        String roleName = pageData.getString("roleName");
+        if (roleName == null || roleName.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("角色名称为空或空字符串，角色名称不可为空！");
+            return model;
+        }
+
+        String companyId = pageData.getString("currentCompanyId");
+        if (companyId == null || companyId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("企业id为空或空字符串！");
+            return model;
+        }
+
+        //1. (企业id,角色名称) 查询(vmes_role)
+        PageData findMap = new PageData();
+        findMap.put("currentCompanyId", companyId);
+        findMap.put("name", roleName);
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+        List<Role> roleList = roleService.findRoleList(findMap);
+
+        //Map<"roleId", String>
+        //   <"roleName", String>
+        //   <"type", old new>
+
+        Map<String, String> roleMap = new HashMap<String, String>();
+        if (roleList == null || roleList.size() == 0) {
+            //获取角色编码
+            String code = coderuleService.createCoder(companyId, "vmes_role", "R");
+
+            //创建角色
+            Role role = new Role();
+            role.setCuser(pageData.getString("cuser"));
+            role.setCompanyId(companyId);
+            role.setName(roleName);
+            role.setCode(code);
+            roleService.save(role);
+
+            roleMap.put("roleId", role.getId());
+            roleMap.put("roleName", role.getName());
+            roleMap.put("type", "new");
+        } else if (roleList != null && roleList.size() > 0) {
+            Role role = roleList.get(0);
+            roleMap.put("roleId", role.getId());
+            roleMap.put("roleName", role.getName());
+            roleMap.put("type", "old");
+        }
+
+        model.putResult(roleMap);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################role/addRoleByName 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
 }
 
 
