@@ -278,6 +278,7 @@ public class RoleServiceImp implements RoleService {
         findMap.put("currentCompanyId", companyId);
         findMap.put("name", name);
         if (id != null && id.trim().length() > 0) {
+            findMap.put("isSelfExist", "true");
             findMap.put("id", id);
         }
         findMap.put("mapSize", Integer.valueOf(findMap.size()));
