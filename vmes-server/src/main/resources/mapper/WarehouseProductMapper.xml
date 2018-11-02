@@ -131,8 +131,8 @@
         isdisable,ishide,isedit,ismust,cdate,
         cuser
         ) VALUES
-        (replace(uuid(), '-', ''),'WarehouseProductDispatch','warehouseName','货位名称',1, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'WarehouseProductDispatch','code','货品批次号',2, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseProductDispatch','name','货位名称',1, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseProductDispatch','code','批次号',2, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'WarehouseProductDispatch','stockCount','库存数量',3, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'WarehouseProductDispatch','suggestCount','建议取货数量',4, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'WarehouseProductDispatch','warehouseId','仓库货位ID',4, '1','0','1','0',now(), 'admin'),
@@ -140,6 +140,25 @@
         (replace(uuid(), '-', ''),'WarehouseProductDispatch','isdisable','是否启用',6, '1','0','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'WarehouseProductDispatch','companyId','公司ID',7, '1','0','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'WarehouseProductDispatch','id','id',0, '1','0','1','0',now(), 'admin')
+    </insert>
+
+
+    <insert id="insertColumn2" >
+        delete from vmes_column where model_code = 'WarehouseProductDispatchOption' ;
+        insert into vmes_column (
+        id,model_code,title_key,title_name,serial_number,
+        isdisable,ishide,isedit,ismust,cdate,
+        cuser
+        ) VALUES
+        (replace(uuid(), '-', ''),'WarehouseProductDispatchOption','name','货位名称',1, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseProductDispatchOption','code','批次号',2, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseProductDispatchOption','stockCount','库存数量',3, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseProductDispatchOption','suggestCount','建议取货数量',4, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseProductDispatchOption','warehouseId','仓库货位ID',4, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseProductDispatchOption','productId','产品ID',5, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseProductDispatchOption','isdisable','是否启用',6, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseProductDispatchOption','companyId','公司ID',7, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseProductDispatchOption','id','id',0, '1','0','1','0',now(), 'admin')
     </insert>
 
     <!-- 自动创建，可以修改 -->
@@ -150,10 +169,10 @@
         product.warehouse_id warehouseId,
         product.product_id productId,
         product.code code,
-        product.stock_count stockCount,
+        round(product.stock_count,2) stockCount,
         product.isdisable isdisable,
 
-        warehouse.path_name warehouseName
+        warehouse.path_name name
 
         from vmes_warehouse_product product
         left join vmes_warehouse warehouse on warehouse.id = product.warehouse_id
@@ -171,6 +190,7 @@
             <if test="currentCompanyId != null and currentCompanyId != ''">
                 and product.company_id = #{currentCompanyId}
             </if>
+            and product.stock_count > 0
         </where>
         <if test="orderStr != null and orderStr != ''" >
             order by product.code asc  <!-- 先入先出 按批次号的升序排列 -->

@@ -3,6 +3,7 @@ package com.xy.vmes.entity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 说明：(组织架构,功能菜单,字典管理)-通用树形结构对象-与界面树形展示属性相关
@@ -57,6 +58,36 @@ public class TreeEntity implements Cloneable {
     //(必须)当前节点子节点
     private List<TreeEntity> children = new ArrayList<TreeEntity>();
 
+    //级联table表头信息
+    private List titles;
+    private List hideTitles;
+    //级联table值信息
+    private Map vauleMap;
+
+
+    public List getTitles() {
+        return titles;
+    }
+
+    public void setTitles(List titles) {
+        this.titles = titles;
+    }
+
+    public List getHideTitles() {
+        return hideTitles;
+    }
+
+    public void setHideTitles(List hideTitles) {
+        this.hideTitles = hideTitles;
+    }
+
+    public Map getVauleMap() {
+        return vauleMap;
+    }
+
+    public void setVauleMap(Map vauleMap) {
+        this.vauleMap = vauleMap;
+    }
 
     public String getLabel() {
         return label;

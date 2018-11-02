@@ -4,11 +4,13 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.Column;
+import com.xy.vmes.entity.TreeEntity;
 import com.xy.vmes.entity.WarehouseOut;
 import com.xy.vmes.entity.WarehouseOutDetail;
 import com.xy.vmes.service.ColumnService;
 import com.xy.vmes.service.WarehouseOutDetailService;
 import com.xy.vmes.service.WarehouseOutService;
+import com.xy.vmes.service.WarehouseProductService;
 import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
@@ -47,6 +49,9 @@ public class WarehouseOutDetailController {
 
     @Autowired
     private WarehouseOutService warehouseOutService;
+
+    @Autowired
+    private WarehouseProductService warehouseProductService;
 
 
     /**
@@ -397,6 +402,131 @@ public class WarehouseOutDetailController {
         logger.info("################warehouseOutDetail/listPageWarehouseOutDetails 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
+
+
+
+    /**
+     * @author 刘威 自动创建，可以修改
+     * @date 2018-10-23
+     */
+    @PostMapping("/warehouseOutDetail/listPageWarehouseOutDispatch")
+    public ResultModel listPageWarehouseOutDispatch()  throws Exception {
+
+        logger.info("################warehouseOutDetail/listPageWarehouseOutDispatch 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        HttpServletResponse response  = HttpUtils.currentResponse();
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+        Pagination pg = HttpUtils.parsePagination(pd);
+        Map result = new HashMap();
+
+        List<Column> columnList = columnService.findColumnList("WarehouseOutDetailDispatch");
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
+        }
+        //获取根节点表头
+        Map rootTitleMap = getTitleList(columnList);
+
+        columnList = columnService.findColumnList("WarehouseProductDispatchOption");
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
+        }
+        //获取子节点表头
+        Map childrenTitleMap = getTitleList(columnList);
+
+
+
+        List<TreeEntity> varMapList = new ArrayList();
+        List<Map> varList = warehouseOutDetailService.getDataListPage(pd,pg);
+        if(varList!=null&&varList.size()>0){
+            for(int i=0;i<varList.size();i++){
+                Map map = varList.get(i);
+                Map<String, String> varMap = new HashMap<String, String>();
+                varMap.putAll((Map<String, String>)rootTitleMap.get("varModel"));
+                for (Map.Entry<String, String> entry : varMap.entrySet()) {
+                    varMap.put(entry.getKey(),map.get(entry.getKey())!=null?map.get(entry.getKey()).toString():"");
+                }
+                TreeEntity entity = new TreeEntity();
+                entity.setId(map.get("id").toString());
+                entity.setPid(null);
+                entity.setHideTitles((List<String>)rootTitleMap.get("hideTitles"));
+                entity.setTitles((List<LinkedHashMap>)rootTitleMap.get("titles"));
+                entity.setVauleMap(varMap);
+                entity.setChildren(getChildrenList(map,childrenTitleMap));
+                varMapList.add(entity);
+            }
+        }
+        result.put("varList",varMapList);
+        result.put("pageData", pg);
+
+        model.putResult(result);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################warehouseOutDetail/listPageWarehouseOutDispatch 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+
+    public Map getTitleList(List<Column> columnList){
+        Map result = new HashMap();
+        List<LinkedHashMap> titlesList = new ArrayList<LinkedHashMap>();
+        List<String> titlesHideList = new ArrayList<String>();
+        Map<String, String> varModelMap = new HashMap<String, String>();
+        if(columnList!=null&&columnList.size()>0){
+            for (Column column : columnList) {
+                if(column!=null){
+                    if("0".equals(column.getIshide())){
+                        titlesHideList.add(column.getTitleKey());
+                    }
+                    LinkedHashMap titlesLinkedMap = new LinkedHashMap();
+                    titlesLinkedMap.put(column.getTitleKey(),column.getTitleName());
+                    varModelMap.put(column.getTitleKey(),"");
+                    titlesList.add(titlesLinkedMap);
+                }
+            }
+        }
+        result.put("hideTitles",titlesHideList);
+        result.put("titles",titlesList);
+        result.put("varModel",varModelMap);
+        return result;
+    }
+
+
+    public List<TreeEntity> getChildrenList(Map rootMap,Map childrenTitleMap)  throws Exception {
+
+
+        ResultModel model = new ResultModel();
+        PageData pd = new PageData();
+        Pagination pg = HttpUtils.parsePagination(pd);
+        Map result = new HashMap();
+        pd.put("productId",rootMap.get("productId"));
+        List<TreeEntity> childrenMapList = new ArrayList<TreeEntity>();
+        List<Map> varList = warehouseProductService.getDataListPageDispatch(pd,pg);
+        if(varList!=null&&varList.size()>0){
+            for(int i=0;i<varList.size();i++){
+                Map map = varList.get(i);
+                Map<String, String> varMap = new HashMap<String, String>();
+                varMap.putAll((Map<String, String>)childrenTitleMap.get("varModel"));
+                for (Map.Entry<String, String> entry : varMap.entrySet()) {
+                    varMap.put(entry.getKey(),map.get(entry.getKey())!=null?map.get(entry.getKey()).toString():"");
+                }
+                TreeEntity entity = new TreeEntity();
+                entity.setId(map.get("id").toString());
+                entity.setPid(rootMap.get("id").toString());
+                entity.setHideTitles((List<String>)childrenTitleMap.get("hideTitles"));
+                entity.setTitles((List<LinkedHashMap>)childrenTitleMap.get("titles"));
+                entity.setVauleMap(varMap);
+                entity.setChildren(null);
+                childrenMapList.add(entity);
+            }
+        }
+        return childrenMapList;
+    }
+
 
 
 

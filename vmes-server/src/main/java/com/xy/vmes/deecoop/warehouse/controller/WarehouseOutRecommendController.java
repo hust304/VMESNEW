@@ -4,9 +4,9 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.Column;
-import com.xy.vmes.entity.WarehouseProduct;
+import com.xy.vmes.entity.WarehouseOutRecommend;
 import com.xy.vmes.service.ColumnService;
-import com.xy.vmes.service.WarehouseProductService;
+import com.xy.vmes.service.WarehouseOutRecommendService;
 import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
@@ -22,99 +22,116 @@ import org.springframework.web.multipart.MultipartFile;
 import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.http.HttpServletResponse;
-import java.text.DecimalFormat;
 import java.util.*;
 
 
 
 /**
-* 说明：出库明细Controller
+* 说明：出库推荐Controller
 * @author 刘威 自动生成
-* @date 2018-10-31
+* @date 2018-11-01
 */
 @RestController
 @Slf4j
-public class WarehouseProductController {
+public class WarehouseOutRecommendController {
 
-    private Logger logger = LoggerFactory.getLogger(WarehouseProductController.class);
+    private Logger logger = LoggerFactory.getLogger(WarehouseOutRecommendController.class);
 
     @Autowired
-    private WarehouseProductService warehouseProductService;
+    private WarehouseOutRecommendService warehouseOutRecommendService;
 
     @Autowired
     private ColumnService columnService;
 
+    /**
+    * @author 刘威 自动创建，禁止修改
+    * @date 2018-11-01
+    */
+    @GetMapping("/warehouseOutRecommend/selectById/{id}")
+    public ResultModel selectById(@PathVariable("id") String id)  throws Exception {
+
+        logger.info("################warehouseOutRecommend/selectById 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        HttpServletResponse response  = HttpUtils.currentResponse();
+        ResultModel model = new ResultModel();
+        WarehouseOutRecommend warehouseOutRecommend = warehouseOutRecommendService.selectById(id);
+        model.putResult(warehouseOutRecommend);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################warehouseOutRecommend/selectById 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
 
 
     /**
     * @author 刘威 自动创建，禁止修改
-    * @date 2018-10-31
+    * @date 2018-11-01
     */
-    @PostMapping("/warehouseProduct/save")
+    @PostMapping("/warehouseOutRecommend/save")
     @Transactional
     public ResultModel save()  throws Exception {
 
-        logger.info("################warehouseProduct/save 执行开始 ################# ");
+        logger.info("################warehouseOutRecommend/save 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
-        WarehouseProduct warehouseProduct = (WarehouseProduct)HttpUtils.pageData2Entity(pd, new WarehouseProduct());
-        warehouseProductService.save(warehouseProduct);
+        WarehouseOutRecommend warehouseOutRecommend = (WarehouseOutRecommend)HttpUtils.pageData2Entity(pd, new WarehouseOutRecommend());
+        warehouseOutRecommendService.save(warehouseOutRecommend);
         Long endTime = System.currentTimeMillis();
-        logger.info("################warehouseProduct/save 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################warehouseOutRecommend/save 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
     /**
     * @author 刘威 自动创建，禁止修改
-    * @date 2018-10-31
+    * @date 2018-11-01
     */
-    @PostMapping("/warehouseProduct/update")
+    @PostMapping("/warehouseOutRecommend/update")
     @Transactional
     public ResultModel update()  throws Exception {
 
-        logger.info("################warehouseProduct/update 执行开始 ################# ");
+        logger.info("################warehouseOutRecommend/update 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
-        WarehouseProduct warehouseProduct = (WarehouseProduct)HttpUtils.pageData2Entity(pd, new WarehouseProduct());
-        warehouseProductService.update(warehouseProduct);
+        WarehouseOutRecommend warehouseOutRecommend = (WarehouseOutRecommend)HttpUtils.pageData2Entity(pd, new WarehouseOutRecommend());
+        warehouseOutRecommendService.update(warehouseOutRecommend);
         Long endTime = System.currentTimeMillis();
-        logger.info("################warehouseProduct/update 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################warehouseOutRecommend/update 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
 
     /**
     * @author 刘威 自动创建，禁止修改
-    * @date 2018-10-31
+    * @date 2018-11-01
     */
-    @GetMapping("/warehouseProduct/deleteById/{id}")
+    @GetMapping("/warehouseOutRecommend/deleteById/{id}")
     @Transactional
     public ResultModel deleteById(@PathVariable("id") String id)  throws Exception {
 
-        logger.info("################warehouseProduct/deleteById 执行开始 ################# ");
+        logger.info("################warehouseOutRecommend/deleteById 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
-        warehouseProductService.deleteById(id);
+        warehouseOutRecommendService.deleteById(id);
         Long endTime = System.currentTimeMillis();
-        logger.info("################warehouseProduct/deleteById 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################warehouseOutRecommend/deleteById 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
 
     /**
     * @author 刘威 自动创建，禁止修改
-    * @date 2018-10-31
+    * @date 2018-11-01
     */
-    @PostMapping("/warehouseProduct/deleteByIds")
+    @PostMapping("/warehouseOutRecommend/deleteByIds")
     @Transactional
     public ResultModel deleteByIds()  throws Exception {
 
-        logger.info("################warehouseProduct/deleteByIds 执行开始 ################# ");
+        logger.info("################warehouseOutRecommend/deleteByIds 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
         PageData pd = HttpUtils.parsePageData();
@@ -128,31 +145,53 @@ public class WarehouseProductController {
         String id_str = StringUtil.stringTrimSpace(ids);
         String[] id_arry = id_str.split(",");
         if(id_arry.length>0){
-            warehouseProductService.deleteByIds(id_arry);
+            warehouseOutRecommendService.deleteByIds(id_arry);
         }
         Long endTime = System.currentTimeMillis();
-        logger.info("################warehouseProduct/deleteByIds 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################warehouseOutRecommend/deleteByIds 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
 
-
     /**
     * @author 刘威 自动创建，禁止修改
-    * @date 2018-10-31
+    * @date 2018-11-01
     */
-    @PostMapping("/warehouseProduct/dataList")
-    public ResultModel dataList()  throws Exception {
+    @PostMapping("/warehouseOutRecommend/dataListPage")
+    public ResultModel dataListPage()  throws Exception {
 
-        logger.info("################warehouseProduct/dataList 执行开始 ################# ");
+        logger.info("################warehouseOutRecommend/dataListPage 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
-        List<WarehouseProduct> warehouseProductList = warehouseProductService.dataList(pd);
-        model.putResult(warehouseProductList);
+        Pagination pg = HttpUtils.parsePagination(pd);
+        List<WarehouseOutRecommend> warehouseOutRecommendList = warehouseOutRecommendService.dataListPage(pd,pg);
+        Map result = new HashMap();
+        result.put("varList",warehouseOutRecommendList);
+        result.put("pageData", pg);
+        model.putResult(result);
         Long endTime = System.currentTimeMillis();
-        logger.info("################warehouseProduct/dataList 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################warehouseOutRecommend/dataListPage 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+    * @author 刘威 自动创建，禁止修改
+    * @date 2018-11-01
+    */
+    @PostMapping("/warehouseOutRecommend/dataList")
+    public ResultModel dataList()  throws Exception {
+
+        logger.info("################warehouseOutRecommend/dataList 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        HttpServletResponse response  = HttpUtils.currentResponse();
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+        List<WarehouseOutRecommend> warehouseOutRecommendList = warehouseOutRecommendService.dataList(pd);
+        model.putResult(warehouseOutRecommendList);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################warehouseOutRecommend/dataList 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -161,22 +200,20 @@ public class WarehouseProductController {
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
     /**
     * @author 刘威 自动创建，可以修改
-    * @date 2018-10-31
+    * @date 2018-11-01
     */
-    @PostMapping("/warehouseProduct/listPageWarehouseProductsDispatch")
-    public ResultModel listPageWarehouseProductsDispatch()  throws Exception {
+    @PostMapping("/warehouseOutRecommend/listPageWarehouseOutRecommends")
+    public ResultModel listPageWarehouseOutRecommends()  throws Exception {
 
-        logger.info("################warehouseProduct/listPageWarehouseProductsDispatch 执行开始 ################# ");
+        logger.info("################warehouseOutRecommend/listPageWarehouseOutRecommends 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         Pagination pg = HttpUtils.parsePagination(pd);
         Map result = new HashMap();
-        DecimalFormat df = new DecimalFormat("0.00");
-        double count = Double.parseDouble(pd.getString("count"));
 
-        List<Column> columnList = columnService.findColumnList("WarehouseProductDispatch");
+        List<Column> columnList = columnService.findColumnList("WarehouseOutRecommend");
         if (columnList == null || columnList.size() == 0) {
             model.putCode("1");
             model.putMsg("数据库没有生成TabCol，请联系管理员！");
@@ -203,83 +240,7 @@ public class WarehouseProductController {
         result.put("titles",titlesList);
 
         List<Map> varMapList = new ArrayList();
-        List<Map> varList = warehouseProductService.getDataListPageDispatch(pd,pg);
-        if(varList!=null&&varList.size()>0){
-            for(int i=0;i<varList.size();i++){
-                Map map = varList.get(i);
-                Map<String, String> varMap = new HashMap<String, String>();
-                varMap.putAll(varModelMap);
-                for (Map.Entry<String, String> entry : varMap.entrySet()) {
-                    varMap.put(entry.getKey(),map.get(entry.getKey())!=null?map.get(entry.getKey()).toString():"");
-                }
-                double stockCount = Double.parseDouble((String)varMap.get("stockCount"));
-                if(count>0){
-                    if(count>=stockCount){
-
-                        varMap.put("suggestCount",df.format(stockCount));
-                        count = count - stockCount;
-                        varMapList.add(varMap);
-                    }else if(count<stockCount){
-                        varMap.put("suggestCount",df.format(count));
-                        count = 0;
-                        varMapList.add(varMap);
-                    }
-                }
-            }
-        }
-        result.put("varList",varMapList);
-        result.put("pageData", pg);
-
-        model.putResult(result);
-        Long endTime = System.currentTimeMillis();
-        logger.info("################warehouseProduct/listPageWarehouseProductsDispatch 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
-        return model;
-    }
-
-
-    /**
-     * @author 刘威 自动创建，可以修改
-     * @date 2018-10-31
-     */
-    @PostMapping("/warehouseProduct/listPageWarehouseProductsDispatchOption")
-    public ResultModel listPageWarehouseProductsDispatchOption()  throws Exception {
-
-        logger.info("################warehouseProduct/listPageWarehouseProductsDispatchOption 执行开始 ################# ");
-        Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
-        ResultModel model = new ResultModel();
-        PageData pd = HttpUtils.parsePageData();
-        Pagination pg = HttpUtils.parsePagination(pd);
-        Map result = new HashMap();
-
-        List<Column> columnList = columnService.findColumnList("WarehouseProductDispatchOption");
-        if (columnList == null || columnList.size() == 0) {
-            model.putCode("1");
-            model.putMsg("数据库没有生成TabCol，请联系管理员！");
-            return model;
-        }
-
-        List<LinkedHashMap> titlesList = new ArrayList<LinkedHashMap>();
-        List<String> titlesHideList = new ArrayList<String>();
-        Map<String, String> varModelMap = new HashMap<String, String>();
-        if(columnList!=null&&columnList.size()>0){
-            for (Column column : columnList) {
-                if(column!=null){
-                    if("0".equals(column.getIshide())){
-                        titlesHideList.add(column.getTitleKey());
-                    }
-                    LinkedHashMap titlesLinkedMap = new LinkedHashMap();
-                    titlesLinkedMap.put(column.getTitleKey(),column.getTitleName());
-                    varModelMap.put(column.getTitleKey(),"");
-                    titlesList.add(titlesLinkedMap);
-                }
-            }
-        }
-        result.put("hideTitles",titlesHideList);
-        result.put("titles",titlesList);
-
-        List<Map> varMapList = new ArrayList();
-        List<Map> varList = warehouseProductService.getDataListPageDispatch(pd,pg);
+        List<Map> varList = warehouseOutRecommendService.getDataListPage(pd,pg);
         if(varList!=null&&varList.size()>0){
             for(int i=0;i<varList.size();i++){
                 Map map = varList.get(i);
@@ -296,7 +257,7 @@ public class WarehouseProductController {
 
         model.putResult(result);
         Long endTime = System.currentTimeMillis();
-        logger.info("################warehouseProduct/listPageWarehouseProductsDispatchOption 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################warehouseOutRecommend/listPageWarehouseOutRecommends 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -304,14 +265,14 @@ public class WarehouseProductController {
     /**
     * Excel导出
     * @author 刘威 自动创建，可以修改
-    * @date 2018-10-31
+    * @date 2018-11-01
     */
-    @PostMapping("/warehouseProduct/exportExcelWarehouseProducts")
-    public void exportExcelWarehouseProducts() throws Exception {
-        logger.info("################warehouseProduct/exportExcelWarehouseProducts 执行开始 ################# ");
+    @PostMapping("/warehouseOutRecommend/exportExcelWarehouseOutRecommends")
+    public void exportExcelWarehouseOutRecommends() throws Exception {
+        logger.info("################warehouseOutRecommend/exportExcelWarehouseOutRecommends 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
 
-        List<Column> columnList = columnService.findColumnList("WarehouseProduct");
+        List<Column> columnList = columnService.findColumnList("WarehouseOutRecommend");
         if (columnList == null || columnList.size() == 0) {
             throw new RestException("1","数据库没有生成TabCol，请联系管理员！");
         }
@@ -329,7 +290,7 @@ public class WarehouseProductController {
 
         Pagination pg = HttpUtils.parsePagination(pd);
         pg.setSize(100000);
-        List<Map> dataList = warehouseProductService.getDataListPage(pd, pg);
+        List<Map> dataList = warehouseOutRecommendService.getDataListPage(pd, pg);
 
         //查询数据转换成Excel导出数据
         List<LinkedHashMap<String, String>> dataMapList = ColumnUtil.modifyDataList(columnList, dataList);
@@ -338,25 +299,25 @@ public class WarehouseProductController {
         //查询数据-Excel文件导出
         String fileName = pd.getString("fileName");
         if (fileName == null || fileName.trim().length() == 0) {
-            fileName = "ExcelWarehouseProduct";
+            fileName = "ExcelWarehouseOutRecommend";
         }
 
         //导出文件名-中文转码
         fileName = new String(fileName.getBytes("utf-8"),"ISO-8859-1");
         ExcelUtil.excelExportByDataList(response, fileName, dataMapList);
         Long endTime = System.currentTimeMillis();
-        logger.info("################warehouseProduct/exportExcelWarehouseProducts 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################warehouseOutRecommend/exportExcelWarehouseOutRecommends 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
     }
 
     /**
     * Excel导入
     *
     * @author 刘威 自动创建，可以修改
-    * @date 2018-10-31
+    * @date 2018-11-01
     */
-    @PostMapping("/warehouseProduct/importExcelWarehouseProducts")
-    public ResultModel importExcelWarehouseProducts(@RequestParam(value="excelFile") MultipartFile file) throws Exception  {
-        logger.info("################warehouseProduct/importExcelWarehouseProducts 执行开始 ################# ");
+    @PostMapping("/warehouseOutRecommend/importExcelWarehouseOutRecommends")
+    public ResultModel importExcelWarehouseOutRecommends(@RequestParam(value="excelFile") MultipartFile file) throws Exception  {
+        logger.info("################warehouseOutRecommend/importExcelWarehouseOutRecommends 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
         //HttpServletRequest Request = HttpUtils.currentRequest();
@@ -396,7 +357,7 @@ public class WarehouseProductController {
         //5. List<ExcelEntity> --> (转换) List<业务表DB>对象
         //6. 遍历List<业务表DB> 对业务表添加或修改
         Long endTime = System.currentTimeMillis();
-        logger.info("################warehouseProduct/importExcelWarehouseProducts 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################warehouseOutRecommend/importExcelWarehouseOutRecommends 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
