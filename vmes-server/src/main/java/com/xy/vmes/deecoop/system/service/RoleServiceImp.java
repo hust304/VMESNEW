@@ -275,7 +275,7 @@ public class RoleServiceImp implements RoleService {
         if (name == null || name.trim().length() == 0) {return false;}
 
         PageData findMap = new PageData();
-        findMap.put("companyId", companyId);
+        findMap.put("currentCompanyId", companyId);
         findMap.put("name", name);
         if (id != null && id.trim().length() > 0) {
             findMap.put("id", id);
