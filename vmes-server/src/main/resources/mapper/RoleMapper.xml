@@ -217,7 +217,7 @@
     <sql id="RoleField">
         <!--查询隐藏字段-->
         id id,
-        company_id companyID,
+        company_id companyId,
         name_en nameEn,
         DATE_FORMAT(cdate,'%Y-%m-%d %T') cdate,
         cuser,
