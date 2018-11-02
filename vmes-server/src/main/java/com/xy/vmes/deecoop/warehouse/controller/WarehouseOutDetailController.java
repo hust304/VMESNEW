@@ -429,6 +429,9 @@ public class WarehouseOutDetailController {
         //获取根节点表头
         Map rootTitleMap = getTitleList(columnList);
 
+        result.put("hideTitles",rootTitleMap.get("hideTitles"));
+        result.put("titles",rootTitleMap.get("titles"));
+
         columnList = columnService.findColumnList("WarehouseProductDispatchOption");
         if (columnList == null || columnList.size() == 0) {
             model.putCode("1");
@@ -440,24 +443,21 @@ public class WarehouseOutDetailController {
 
 
 
-        List<TreeEntity> varMapList = new ArrayList();
+        List<Map> varMapList = new ArrayList();
         List<Map> varList = warehouseOutDetailService.getDataListPage(pd,pg);
         if(varList!=null&&varList.size()>0){
             for(int i=0;i<varList.size();i++){
                 Map map = varList.get(i);
-                Map<String, String> varMap = new HashMap<String, String>();
+                Map<String, Object> varMap = new HashMap<String, Object>();
                 varMap.putAll((Map<String, String>)rootTitleMap.get("varModel"));
-                for (Map.Entry<String, String> entry : varMap.entrySet()) {
+                for (Map.Entry<String, Object> entry : varMap.entrySet()) {
                     varMap.put(entry.getKey(),map.get(entry.getKey())!=null?map.get(entry.getKey()).toString():"");
                 }
-                TreeEntity entity = new TreeEntity();
-                entity.setId(map.get("id").toString());
-                entity.setPid(null);
-                entity.setHideTitles((List<String>)rootTitleMap.get("hideTitles"));
-                entity.setTitles((List<LinkedHashMap>)rootTitleMap.get("titles"));
-                entity.setVauleMap(varMap);
-                entity.setChildren(getChildrenList(map,childrenTitleMap));
-                varMapList.add(entity);
+                varMap.put("hideTitles",childrenTitleMap.get("hideTitles"));
+                varMap.put("titles",childrenTitleMap.get("titles"));
+                varMap.put("pid",null);
+                varMap.put("children",getChildrenList(map,childrenTitleMap));
+                varMapList.add(varMap);
             }
         }
         result.put("varList",varMapList);
@@ -496,15 +496,11 @@ public class WarehouseOutDetailController {
     }
 
 
-    public List<TreeEntity> getChildrenList(Map rootMap,Map childrenTitleMap)  throws Exception {
-
-
-        ResultModel model = new ResultModel();
+    public List<Map> getChildrenList(Map rootMap,Map childrenTitleMap)  throws Exception {
         PageData pd = new PageData();
         Pagination pg = HttpUtils.parsePagination(pd);
-        Map result = new HashMap();
         pd.put("productId",rootMap.get("productId"));
-        List<TreeEntity> childrenMapList = new ArrayList<TreeEntity>();
+        List<Map> childrenMapList = new ArrayList();
         List<Map> varList = warehouseProductService.getDataListPageDispatch(pd,pg);
         if(varList!=null&&varList.size()>0){
             for(int i=0;i<varList.size();i++){
@@ -514,14 +510,8 @@ public class WarehouseOutDetailController {
                 for (Map.Entry<String, String> entry : varMap.entrySet()) {
                     varMap.put(entry.getKey(),map.get(entry.getKey())!=null?map.get(entry.getKey()).toString():"");
                 }
-                TreeEntity entity = new TreeEntity();
-                entity.setId(map.get("id").toString());
-                entity.setPid(rootMap.get("id").toString());
-                entity.setHideTitles((List<String>)childrenTitleMap.get("hideTitles"));
-                entity.setTitles((List<LinkedHashMap>)childrenTitleMap.get("titles"));
-                entity.setVauleMap(varMap);
-                entity.setChildren(null);
-                childrenMapList.add(entity);
+                varMap.put("pid",rootMap.get("id").toString());
+                childrenMapList.add(varMap);
             }
         }
         return childrenMapList;
