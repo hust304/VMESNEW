@@ -26,6 +26,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.http.HttpServletResponse;
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.*;
 
 
@@ -432,7 +434,7 @@ public class WarehouseOutDetailController {
         result.put("hideTitles",rootTitleMap.get("hideTitles"));
         result.put("titles",rootTitleMap.get("titles"));
 
-        columnList = columnService.findColumnList("WarehouseProductDispatchOption");
+        columnList = columnService.findColumnList("WarehouseProductDispatch");
         if (columnList == null || columnList.size() == 0) {
             model.putCode("1");
             model.putMsg("数据库没有生成TabCol，请联系管理员！");
@@ -496,10 +498,19 @@ public class WarehouseOutDetailController {
     }
 
 
+
     public List<Map> getChildrenList(Map rootMap,Map childrenTitleMap)  throws Exception {
         PageData pd = new PageData();
         Pagination pg = HttpUtils.parsePagination(pd);
         pd.put("productId",rootMap.get("productId"));
+
+        DecimalFormat df = new DecimalFormat("0.00");
+        double count = 0.00;
+        if(rootMap.get("count")!=null){
+            count = ((BigDecimal) rootMap.get("count")).doubleValue();
+        }
+
+
         List<Map> childrenMapList = new ArrayList();
         List<Map> varList = warehouseProductService.getDataListPageDispatch(pd,pg);
         if(varList!=null&&varList.size()>0){
@@ -511,7 +522,18 @@ public class WarehouseOutDetailController {
                     varMap.put(entry.getKey(),map.get(entry.getKey())!=null?map.get(entry.getKey()).toString():"");
                 }
                 varMap.put("pid",rootMap.get("id").toString());
-                childrenMapList.add(varMap);
+                double stockCount = Double.parseDouble((String)varMap.get("stockCount"));
+                if(count>0){
+                    if(count>=stockCount){
+                        varMap.put("suggestCount",df.format(stockCount));
+                        count = count - stockCount;
+                        childrenMapList.add(varMap);
+                    }else if(count<stockCount){
+                        varMap.put("suggestCount",df.format(count));
+                        count = 0;
+                        childrenMapList.add(varMap);
+                    }
+                }
             }
         }
         return childrenMapList;
