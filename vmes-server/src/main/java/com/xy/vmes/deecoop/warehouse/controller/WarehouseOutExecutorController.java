@@ -4,8 +4,10 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.Column;
+import com.xy.vmes.entity.WarehouseOutExecute;
 import com.xy.vmes.entity.WarehouseOutExecutor;
 import com.xy.vmes.service.ColumnService;
+import com.xy.vmes.service.WarehouseOutExecuteService;
 import com.xy.vmes.service.WarehouseOutExecutorService;
 import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
@@ -39,7 +41,8 @@ public class WarehouseOutExecutorController {
 
     @Autowired
     private WarehouseOutExecutorService warehouseOutExecutorService;
-
+    @Autowired
+    private WarehouseOutExecuteService warehouseOutExecuteService;
     @Autowired
     private ColumnService columnService;
 
@@ -198,6 +201,61 @@ public class WarehouseOutExecutorController {
 
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+
+
+
+
+
+    /**
+     * @author 刘威 自动创建，禁止修改
+     * @date 2018-11-01
+     */
+    @PostMapping("/warehouseOutExecutor/updateExecutor")
+    @Transactional
+    public ResultModel updateExecutor()  throws Exception {
+
+        logger.info("################warehouseOutExecutor/updateExecutor 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        HttpServletResponse response  = HttpUtils.currentResponse();
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+        String detailId = pd.getString("detailId");
+        String executorIds = pd.getString("executorIds");
+        pd.put("queryStr","detail_id ='"+detailId+"' and isdisable = '1' ");
+        List<WarehouseOutExecute> warehouseOutExecuteList = warehouseOutExecuteService.dataList(pd);
+        if(warehouseOutExecuteList!=null&&warehouseOutExecuteList.size()>0){
+            model.putCode("1");
+            model.putMsg("该出库单执行人已开始出库，不能直接更换执行人，请联系当前执行人与其沟通后撤回单据！");
+            return model;
+        }
+
+        if(!StringUtils.isEmpty(executorIds)){
+            String[] executorIdArr = executorIds.split(",");
+            if(executorIdArr!=null&&executorIdArr.length>0){
+                Map columnMap = new HashMap();
+                columnMap.put("detail_id",detailId);
+                warehouseOutExecutorService.deleteByColumnMap(columnMap);
+
+                for(int i=0;i<executorIdArr.length;i++){
+                    WarehouseOutExecutor warehouseOutExecutor = new WarehouseOutExecutor();
+                    warehouseOutExecutor.setDetailId(detailId);
+                    warehouseOutExecutor.setExecutorId(executorIdArr[i]);
+                    warehouseOutExecutorService.save(warehouseOutExecutor);
+                }
+            }
+        }else {
+            model.putCode("2");
+            model.putMsg("未勾选记录，请重新选择！");
+            return model;
+        }
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################warehouseOutExecutor/updateExecutor 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+
     /**
     * @author 刘威 自动创建，可以修改
     * @date 2018-11-01

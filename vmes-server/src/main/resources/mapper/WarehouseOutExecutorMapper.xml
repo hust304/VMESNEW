@@ -125,15 +125,16 @@
         isdisable,ishide,isedit,ismust,cdate,
         cuser
         ) VALUES
-            (replace(uuid(), '-', ''),'WarehouseOutExecutor','detailId','明细ID',1, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseOutExecutor','executorId','执行人ID',2, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseOutExecutor','cuser','创建用户id',3, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseOutExecutor','cdate','创建时间',4, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseOutExecutor','uuser','修改用户id',5, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseOutExecutor','udate','修改时间',6, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseOutExecutor','remark','备注',7, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseOutExecutor','isdisable','是否启用(0:已禁用 1:启用)',8, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseOutExecutor','id','id',0, '1','1','1','0',now(), 'admin')
+            (replace(uuid(), '-', ''),'WarehouseOutExecutor','detailId','明细ID',1, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'WarehouseOutExecutor','executorId','执行人ID',2, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'WarehouseOutExecutor','executor','执行人',3, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'WarehouseOutExecutor','cuser','创建用户id',4, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'WarehouseOutExecutor','cdate','开始执行时间',5, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'WarehouseOutExecutor','uuser','修改用户id',6, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'WarehouseOutExecutor','udate','修改时间',7, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'WarehouseOutExecutor','remark','备注',8, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'WarehouseOutExecutor','isdisable','是否启用',9, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'WarehouseOutExecutor','id','id',0, '1','0','1','0',now(), 'admin')
     </insert>
 
 
@@ -188,15 +189,18 @@
 
     <!-- 字段 自动创建，可以修改-->
     <sql id="Field1">
-        detail_id detailId,<!-- 明细ID -->
-        executor_id executorId,<!-- 执行人ID -->
-        cuser cuser,<!-- 创建用户id -->
-        cdate cdate,<!-- 创建时间 -->
-        uuser uuser,<!-- 修改用户id -->
-        udate udate,<!-- 修改时间 -->
-        remark remark,<!-- 备注 -->
-        isdisable isdisable,<!-- 是否启用(0:已禁用 1:启用) -->
-        id id <!-- id -->
+        executor.detail_id detailId,<!-- 明细ID -->
+        executor.executor_id executorId,<!-- 执行人ID -->
+        executor.cuser cuser,<!-- 创建用户id -->
+        executor.cdate cdate,<!-- 创建时间 -->
+        executor.uuser uuser,<!-- 修改用户id -->
+        executor.udate udate,<!-- 修改时间 -->
+        executor.remark remark,<!-- 备注 -->
+        executor.isdisable isdisable,<!-- 是否启用(0:已禁用 1:启用) -->
+
+        vmesuser.user_name executor,
+
+        executor.id id <!-- id -->
     </sql>
 
     <!-- 字段值 自动创建，可以修改-->
@@ -228,17 +232,18 @@
         select
         <include refid="Field1"></include>
         from
-        <include refid="tableName"></include>
+        vmes_warehouse_out_executor executor
+        left join vmes_user vmesuser on vmesuser.id = executor.executor_id
         <where>
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >
                 and ${queryStr}
             </if>
-            <if test="code != null and code != ''">
-                and code LIKE CONCAT(CONCAT('%', #{code}),'%')
+            <if test="detailId != null and detailId != ''">
+                and executor.detail_id = #{detailId}
             </if>
-            <if test="name != null and name != ''">
-                and name LIKE CONCAT(CONCAT('%', #{name}),'%')
+            <if test="executor != null and executor != ''">
+                and vmesuser.user_name LIKE CONCAT(CONCAT('%', #{executor}),'%')
             </if>
         </where>
         <if test="orderStr != null and orderStr != ''" >
@@ -251,17 +256,18 @@
         select
         <include refid="Field1"></include>
         from
-        <include refid="tableName"></include>
+        vmes_warehouse_out_executor executor
+        left join vmes_user vmesuser on vmesuser.id = executor.executor_id
         <where>
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >
                 and ${queryStr}
             </if>
-            <if test="code != null and code != ''">
-                and code LIKE CONCAT(CONCAT('%', #{code}),'%')
+            <if test="detailId != null and detailId != ''">
+                and executor.detail_id = #{detailId}
             </if>
-            <if test="name != null and name != ''">
-                and name LIKE CONCAT(CONCAT('%', #{name}),'%')
+            <if test="executor != null and executor != ''">
+                and vmesuser.user_name LIKE CONCAT(CONCAT('%', #{executor}),'%')
             </if>
         </where>
         <if test="orderStr != null and orderStr != ''" >
