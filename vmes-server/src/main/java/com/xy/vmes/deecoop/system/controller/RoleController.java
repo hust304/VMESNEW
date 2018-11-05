@@ -599,19 +599,19 @@ public class RoleController {
             return model;
         }
 
-        String roleID = (String)pageData.get("roleID");
-        if (roleID == null || roleID.trim().length() == 0) {
+        String roleId = (String)pageData.get("roleId");
+        if (roleId == null || roleId.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("roleID为空或空字符串！");
+            model.putMsg("roleId为空或空字符串！");
             return model;
         }
 
         //2. 删除角色用户(当前角色)
-        userRoleService.deleteUserRoleByRoleId(roleID);
+        userRoleService.deleteUserRoleByRoleId(roleId);
 
         String userIds = (String)pageData.get("userIds");
         //3. 添加角色用户(当前角色)
-        userRoleService.addUserRoleByUserIds(roleID, userIds, (String)pageData.get("cuser"));
+        userRoleService.addUserRoleByUserIds(roleId, userIds, (String)pageData.get("cuser"));
 
         Long endTime = System.currentTimeMillis();
         logger.info("################role/saveRoleUsers 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
