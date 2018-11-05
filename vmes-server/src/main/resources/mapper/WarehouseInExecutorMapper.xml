@@ -34,15 +34,16 @@
         isdisable,ishide,isedit,ismust,cdate,
         cuser
         ) VALUES
-            (replace(uuid(), '-', ''),'WarehouseInExecutor','detailId','明细ID',1, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseInExecutor','executorId','执行人ID',2, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseInExecutor','cuser','创建用户id',3, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseInExecutor','cdate','创建时间',4, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseInExecutor','uuser','修改用户id',5, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseInExecutor','udate','修改时间',6, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseInExecutor','remark','备注',7, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseInExecutor','isdisable','是否启用(0:已禁用 1:启用)',8, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseInExecutor','id','id',0, '1','1','1','0',now(), 'admin')
+            (replace(uuid(), '-', ''),'warehouseInExecutor','detailId','明细ID',1, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'warehouseInExecutor','executorId','执行人ID',2, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'warehouseInExecutor','executorName','执行人',3, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'warehouseInExecutor','cuser','创建用户id',3, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'warehouseInExecutor','cdate','创建时间',4, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'warehouseInExecutor','uuser','修改用户id',5, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'warehouseInExecutor','udate','修改时间',6, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'warehouseInExecutor','remark','备注',7, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'warehouseInExecutor','isdisable','是否启用(0:已禁用 1:启用)',8, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'warehouseInExecutor','id','id',0, '1','1','1','0',now(), 'admin')
     </insert>
 
 
@@ -108,35 +109,36 @@
     <!-- 自动创建，可以修改 -->
     <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
-            id id,
-            detail_id detailId,
-            executor_id executorId,
-            cuser cuser,
-            cdate cdate,
+            executor.id id,
+            executor.detail_id detailId,
+            executor.executor_id executorId,
+            user.user_name executorName,
+            executor.cuser cuser,
+            DATE_FORMAT(executor.cdate,'%Y-%m-%d %T') cdate,
 
-            uuser uuser,
-            udate udate,
-            remark remark,
-            isdisable isdisable
-        from vmes_warehouse_in_executor:
+            executor.uuser uuser,
+            executor.udate udate,
+            executor.remark remark,
+            executor.isdisable isdisable
+        from vmes_warehouse_in_executor executor
+            left join vmes_user user on executor.executor_id = user.id
         <where>
+
+            <if test="detailId != null and detailId != ''">
+                and executor.detail_id = #{detailId}
+            </if>
+            <if test="executor != null and executor != ''">
+                and user.user_name LIKE CONCAT(CONCAT('%', #{executor}),'%')
+            </if>
+
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >
                 and ${queryStr}
-            </if>
-            <if test="code != null and code != ''">
-                and code LIKE CONCAT(CONCAT('%', #{code}),'%')
-            </if>
-            <if test="name != null and name != ''">
-                and name LIKE CONCAT(CONCAT('%', #{name}),'%')
             </if>
         </where>
         <if test="orderStr != null and orderStr != ''" >
             order by ${orderStr}
         </if>
     </select>
-
-
-
 
 </mapper>
