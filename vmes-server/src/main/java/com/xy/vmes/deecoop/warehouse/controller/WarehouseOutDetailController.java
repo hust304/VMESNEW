@@ -3,17 +3,12 @@ package com.xy.vmes.deecoop.warehouse.controller;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.StringUtil;
-import com.xy.vmes.entity.Column;
-import com.xy.vmes.entity.TreeEntity;
-import com.xy.vmes.entity.WarehouseOut;
-import com.xy.vmes.entity.WarehouseOutDetail;
-import com.xy.vmes.service.ColumnService;
-import com.xy.vmes.service.WarehouseOutDetailService;
-import com.xy.vmes.service.WarehouseOutService;
-import com.xy.vmes.service.WarehouseProductService;
+import com.xy.vmes.entity.*;
+import com.xy.vmes.service.*;
 import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
+import com.yvan.YvanUtil;
 import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
 import lombok.extern.slf4j.Slf4j;
@@ -55,6 +50,11 @@ public class WarehouseOutDetailController {
     @Autowired
     private WarehouseProductService warehouseProductService;
 
+    @Autowired
+    private WarehouseOutRecommendService warehouseOutRecommendService;
+
+    @Autowired
+    private WarehouseOutExecutorService warehouseOutExecutorService;
 
     /**
     * @author 刘威 自动创建，禁止修改
@@ -211,6 +211,108 @@ public class WarehouseOutDetailController {
 
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+
+
+
+
+
+
+
+
+
+
+
+    /**
+     * 恢复出库单明细
+     * @author 刘威
+     * @date 2018-10-16
+     * @throws Exception
+     */
+    @PostMapping("/warehouseOutDetail/dispatchWarehouseOutDetail")
+    @Transactional
+    public ResultModel dispatchWarehouseOutDetail() throws Exception {
+        logger.info("################/warehouseOutDetail/dispatchWarehouseOutDetail 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        ResultModel model = new ResultModel();
+
+        PageData pageData = HttpUtils.parsePageData();
+        String executorIdsStr = pageData.getString("executorIdsStr");
+        String jsonDataStr = pageData.getString("jsonDataStr");
+        List<Map<String, Object>> mapList = (List<Map<String, Object>>) YvanUtil.jsonToList(jsonDataStr);
+
+
+
+        if(mapList!=null&&mapList.size()>0){
+            for(int j=0;j<mapList.size();j++){
+                Map<String, Object> detailMap = mapList.get(j);
+                if(detailMap!=null&&detailMap.get("children")!=null){
+                    String detailId = (String)detailMap.get("id");
+                    if(!StringUtils.isEmpty(detailId)){
+
+                        //新增出库执行人记录
+                        if(!StringUtils.isEmpty(executorIdsStr)){
+                            String[] executorIds = executorIdsStr.split(",");
+                            if(executorIds!=null&&executorIds.length>0){
+                                for(int i=0;i<executorIds.length;i++){
+                                    String executorId = executorIds[i];
+                                    WarehouseOutExecutor executor = new WarehouseOutExecutor();
+                                    executor.setExecutorId(executorId);
+                                    executor.setDetailId(detailId);
+                                    warehouseOutExecutorService.save(executor);
+                                }
+                            }
+                        }
+
+                        //新增推荐库位记录
+                        List childrenList = (List) detailMap.get("children");
+                        if(childrenList!=null&&childrenList.size()>0){
+                            for(int k=0;k<childrenList.size();k++){
+                                Map<String, Object> childrenMap = (Map<String, Object>)childrenList.get(k);
+                                String warehouseId = (String)childrenMap.get("warehouseId");
+                                String code = (String)childrenMap.get("code");
+                                String suggestCount = (String)childrenMap.get("suggestCount");
+                                WarehouseOutRecommend recommend = new WarehouseOutRecommend();
+                                recommend.setDetailId(detailId);
+                                recommend.setWarehouseId(warehouseId);
+                                recommend.setCode(code);
+                                recommend.setCount(StringUtils.isEmpty(suggestCount)?BigDecimal.ZERO:BigDecimal.valueOf(Double.parseDouble(suggestCount)));
+                                warehouseOutRecommendService.save(recommend);
+                            }
+                        }
+
+                        //更新出库单及出库明细状态
+                        WarehouseOutDetail detail = warehouseOutDetailService.selectById(detailId);
+                        detail.setState("1");
+                        warehouseOutDetailService.update(detail);
+                        warehouseOutService.updateState(detail.getParentId());
+
+                    }
+                }
+
+            }
+        }
+
+//        //状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+//        if (detail.getState() != null && !"-1".equals(detail.getState().trim())) {
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg("当前出库明细不是取消状态，不能恢复！");
+//            return model;
+//        }
+//
+//        //1. 修改明细状态
+//        //明细状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+//        detail.setState("0");
+//        warehouseOutDetailService.update(detail);
+//        //2.返写出库单状态
+//        warehouseOutService.updateState(detail.getParentId());
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/warehouseOutDetail/dispatchWarehouseOutDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+
 
 
     /**
