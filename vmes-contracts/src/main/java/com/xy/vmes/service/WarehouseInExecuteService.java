@@ -1,7 +1,9 @@
 package com.xy.vmes.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.entity.WarehouseInDetail;
 import com.xy.vmes.entity.WarehouseInExecute;
+import com.xy.vmes.entity.WarehouseLoginfo;
 import com.yvan.PageData;
 
 import java.math.BigDecimal;
@@ -90,6 +92,9 @@ public interface WarehouseInExecuteService {
     //BigDecimal findSumCountByExecuteList(List<WarehouseInExecute> objectList);
 
     String checkColumnExecuteList(List<WarehouseInExecute> objectList);
+
+    ///////////////////////////////////////////////////////////////////////////////
+    WarehouseLoginfo warehouseInExecute2Loginfo(WarehouseInExecute execute, WarehouseLoginfo loginfo);
 
 }
 

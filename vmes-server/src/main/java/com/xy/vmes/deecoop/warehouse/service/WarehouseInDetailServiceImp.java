@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.deecoop.warehouse.dao.WarehouseInDetailMapper;
 import com.xy.vmes.entity.WarehouseIn;
 import com.xy.vmes.entity.WarehouseInDetail;
+import com.xy.vmes.entity.WarehouseLoginfo;
 import com.xy.vmes.service.*;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
@@ -341,6 +342,35 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
         }
 
         return parentState;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    public WarehouseLoginfo warehouseInDetail2Loginfo(WarehouseInDetail detail, WarehouseLoginfo loginfo) {
+        if (loginfo == null) {loginfo = new WarehouseLoginfo();}
+        if (detail == null) {return loginfo;}
+
+        //companyId企业ID
+        //businessId 明细id(出入库明细id 库存盘点明细id)
+        loginfo.setBusinessId(detail.getId());
+        //code货位批次号
+        loginfo.setCode(detail.getCode());
+        //productId 产品ID
+        loginfo.setProductId(detail.getProductId());
+        //warehouseId 仓库货位ID
+        //loginfo.setWarehouseId(detail.getWarehouseId());
+        //count 当前操作数量
+        //before_count 操作变更前数量(业务相关)
+        //after_count 操作变更后数量(业务相关)
+        //beforeStockCount 库存变更前数量(库存相关)
+        //afterStockCount 库存变更后数量(库存相关)
+        //operation_count 操作数量(正数:加库存 负数:减库存)
+        //business_type 业务类型(in:入库 out:出库: move:移库 check:库存盘点)
+        //operation 操作类型(add:添加 modify:修改 delete:删除:)
+        //cuser 创建用户id
+        //cdate 创建时间
+        //remark 备注
+
+        return loginfo;
     }
 
 }
