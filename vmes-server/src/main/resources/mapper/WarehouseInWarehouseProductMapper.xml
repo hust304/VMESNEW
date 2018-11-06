@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.xy.vmes.deecoop.warehouse.dao.WarehouseInWarehouseProductMapper">
+    <!--
+    说明：获取全部货位信息，同时带出仓库货位存放货品信息
+    (vmes_warehouse:仓库货位表-vmes_warehouse_product:仓库货位产品库存表)
+
+    创建人：陈刚
+    创建时间：2018-11-06
+     -->
+    <select id="findAllListWarehouse" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+            warehouse.id,
+            warehouse.code,
+            warehouse.name,
+            warehouse.path_name,
+            warehouse.path_id,
+            warehouse.layer,
+            warehouse.serial_number,
+
+            warehouseProduct.product_id,
+            warehouseProduct.warehouse_id,
+            warehouseProduct.stock_count,
+            warehouseProduct.productCode,
+            warehouseProduct.productName,
+            warehouseProduct.productNameEn,
+            warehouseProduct.productSpec,
+            warehouseProduct.productGenre,
+            warehouseProduct.productType,
+            warehouseProduct.productUnit,
+            warehouseProduct.productUnitName,
+            warehouseProduct.productTypeName,
+            warehouseProduct.productGenreName
+        from (
+            select id,code,name,path_name,path_id,layer,serial_number
+            from vmes_warehouse
+            where isdisable = '1'
+                <if test="companyId != null and companyId != ''" >
+                    and company_id=#{companyId}
+                </if>
+        ) warehouse left join (
+            select
+                a.product_id,a.warehouse_id,a.stock_count,
+                b.code productCode,
+                b.name productName,
+                b.name_en productNameEn,
+                b.spec productSpec,
+                b.genre productGenre,
+                b.type productType,
+                b.unit productUnit,
+                unit.name productUnitName,
+                type.name productTypeName,
+                genre.name productGenreName
+            from (
+                select product_id,warehouse_id,round(sum(ifnull(stock_count,0)), 2) stock_count
+                from vmes_warehouse_product
+                <where>
+                    <if test="companyId != null and companyId != ''" >
+                        and company_id=#{companyId}
+                    </if>
+                </where>
+                group by product_id,warehouse_id
+            ) a
+                left join vmes_product b on a.product_id = b.id
+                left join vmes_dictionary unit on b.unit = unit.id
+                left join vmes_dictionary genre on b.genre = genre.id
+                left join vmes_dictionary type on b.type = type.id
+            where b.isdisable = '1'
+        ) warehouseProduct on warehouse.id = warehouseProduct.warehouse_id
+
+        <where>
+            <if test="isExistProd != null and isExistProd != ''" >
+                <choose>
+                    <when test="'true' == isExistProd">
+                        and warehouseProduct.product_id is not null
+                    </when>
+                    <otherwise>
+                        and warehouseProduct.product_id is null
+                    </otherwise>
+                </choose>
+            </if>
+
+            <if test="productId != null and productId != ''" >
+                and warehouseProduct.product_id = #{productId}
+            </if>
+            <if test="productType != null and productType != ''" >
+                and warehouseProduct.productType = #{productType}
+            </if>
+        </where>
+    </select>
+
+
+</mapper>
