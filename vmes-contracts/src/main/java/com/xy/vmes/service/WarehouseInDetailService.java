@@ -85,7 +85,7 @@ public interface WarehouseInDetailService {
     List<WarehouseInDetail> mapList2DetailList(List<Map<String, String>> mapList, List<WarehouseInDetail> objectList);
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    String checkDistributeDetailList(List<WarehouseInDetail> objectList);
+    String checkDispatcheDetailList(List<WarehouseInDetail> objectList);
 
     void addWarehouseInDetail(WarehouseIn parentObj, List<WarehouseInDetail> objectList) throws Exception;
 

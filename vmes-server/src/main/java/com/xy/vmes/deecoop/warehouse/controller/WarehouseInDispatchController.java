@@ -3,7 +3,6 @@ package com.xy.vmes.deecoop.warehouse.controller;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.entity.Product;
-import com.xy.vmes.entity.ProductProperty;
 import com.xy.vmes.entity.WarehouseInDetail;
 import com.xy.vmes.service.*;
 import com.yvan.HttpUtils;
@@ -19,7 +18,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.math.BigDecimal;
 import java.util.*;
 
 /**
@@ -29,8 +27,8 @@ import java.util.*;
  */
 @RestController
 @Slf4j
-public class WarehouseInDistributeController {
-    private Logger logger = LoggerFactory.getLogger(WarehouseInDistributeController.class);
+public class WarehouseInDispatchController {
+    private Logger logger = LoggerFactory.getLogger(WarehouseInDispatchController.class);
 
     @Autowired
     private WarehouseService warehouseService;
@@ -40,6 +38,8 @@ public class WarehouseInDistributeController {
     private WarehouseInExecutorService warehouseInExecutorService;
     @Autowired
     private WarehouseProductService warehouseProductService;
+    @Autowired
+    private WarehouseInWarehouseProductService warehouseInWarehouseProductService;
 
     @Autowired
     private ColumnService columnService;
@@ -48,9 +48,9 @@ public class WarehouseInDistributeController {
      * @author 陈刚 自动创建，可以修改
      * @date 2018-10-16
      */
-    @PostMapping("/warehouseInDistribute/listPageWarehouseInDetail")
+    @PostMapping("/warehouseInDispatch/listPageWarehouseInDetail")
     public ResultModel listPageWarehouseInDetail() throws Exception {
-        logger.info("################/warehouseInDistribute/listPageWarehouseInDetail 执行开始 ################# ");
+        logger.info("################/warehouseInDispatch/listPageWarehouseInDetail 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
 
@@ -148,7 +148,91 @@ public class WarehouseInDistributeController {
 
         model.putResult(result);
         Long endTime = System.currentTimeMillis();
-        logger.info("################/warehouseInDistribute/listPageWarehouseInDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/warehouseInDispatch/listPageWarehouseInDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 入库管理-入库派单
+     * 获取全部货位，同时带出该货位存放的货品信息
+     * @return
+     * @throws Exception
+     */
+    @PostMapping("/warehouseInDispatch/findWarehouseListByWarehouseIn")
+    public ResultModel findWarehouseListByWarehouseIn() throws Exception {
+        logger.info("################/warehouseInDispatch/findWarehouseListByWarehouseIn 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        ResultModel model = new ResultModel();
+
+        List<Column> columnList = columnService.findColumnList("warehouseInDispatchWarehouseProduct");
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
+        }
+
+        //获取指定栏位字符串-重新调整List<Column>
+        PageData pd = HttpUtils.parsePageData();
+        String fieldCode = pd.getString("fieldCode");
+        if (fieldCode != null && fieldCode.trim().length() > 0) {
+            columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
+        }
+
+        List<LinkedHashMap> titlesList = new ArrayList<LinkedHashMap>();
+        List<String> titlesHideList = new ArrayList<String>();
+        Map<String, String> varModelMap = new HashMap<String, String>();
+        if (columnList != null && columnList.size() > 0) {
+            for (Column column : columnList) {
+                if(column!=null){
+                    if("0".equals(column.getIshide())){
+                        titlesHideList.add(column.getTitleKey());
+                    }
+                    LinkedHashMap titlesLinkedMap = new LinkedHashMap();
+                    titlesLinkedMap.put(column.getTitleKey(),column.getTitleName());
+                    varModelMap.put(column.getTitleKey(),"");
+                    titlesList.add(titlesLinkedMap);
+                }
+            }
+        }
+        Map result = new HashMap();
+        result.put("hideTitles",titlesHideList);
+        result.put("titles",titlesList);
+
+        pd.put("orderStr", "warehouseProduct.product_id,warehouseProduct.productType,warehouse.layer,warehouse.serial_number");
+        String orderStr = pd.getString("orderStr");
+        if (orderStr != null && orderStr.trim().length() > 0) {
+            pd.put("orderStr", orderStr);
+        }
+
+//        pd.put("isExistProd", "false");
+//        pd.put("companyId", "02b02026270d4b6582b7bfc576e81971");
+//        pd.put("productId", "01de8e2c87074f06b32567d7c1275808");
+//        pd.put("productType", "d5afe1d25e69406bb3a54adb7b555f25");
+
+        String companyId = pd.getString("currentCompanyId");
+        pd.put("companyId", companyId);
+
+        Pagination pg = HttpUtils.parsePagination(pd);
+        List<Map> varMapList = new ArrayList();
+        List<Map> varList = warehouseInWarehouseProductService.findAllListWarehouse(pd, pg);
+        if(varList != null && varList.size() > 0) {
+            for(int i = 0; i < varList.size(); i++) {
+                Map map = varList.get(i);
+                Map<String, String> varMap = new HashMap<String, String>();
+                varMap.putAll(varModelMap);
+                for (Map.Entry<String, String> entry : varMap.entrySet()) {
+                    varMap.put(entry.getKey(), map.get(entry.getKey()) !=null ? map.get(entry.getKey()).toString():"");
+                }
+                varMapList.add(varMap);
+            }
+        }
+
+        result.put("varList",varMapList);
+        result.put("pageData", pg);
+
+        model.putResult(result);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/warehouseInDispatch/findWarehouseListByWarehouseIn 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -158,10 +242,10 @@ public class WarehouseInDistributeController {
      * @date 2018-10-18
      * @throws Exception
      */
-    @PostMapping("/warehouseInDistribute/updateWarehouseInDistribute")
+    @PostMapping("/warehouseInDispatch/updateWarehouseInDispatch")
     @Transactional
-    public ResultModel updateWarehouseInDistribute() throws Exception {
-        logger.info("################/warehouseInDistribute/updateWarehouseInDistribute 执行开始 ################# ");
+    public ResultModel updateWarehouseInDispatch() throws Exception {
+        logger.info("################/warehouseInDispatch/updateWarehouseInDispatch 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
 
@@ -192,7 +276,7 @@ public class WarehouseInDistributeController {
 
         //1. 入库单明细派单
         List<WarehouseInDetail> detailList = warehouseInDetailService.mapList2DetailList(mapList, null);
-        String msgStr = warehouseInDetailService.checkDistributeDetailList(detailList);
+        String msgStr = warehouseInDetailService.checkDispatcheDetailList(detailList);
         if (msgStr != null && msgStr.trim().length() > 0) {
             model.putCode(Integer.valueOf(1));
             model.putMsg(msgStr);
@@ -213,7 +297,7 @@ public class WarehouseInDistributeController {
         }
 
         Long endTime = System.currentTimeMillis();
-        logger.info("################/warehouseInDistribute/updateWarehouseInDistribute 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/warehouseInDispatch/updateWarehouseInDispatch 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 }

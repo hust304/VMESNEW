@@ -187,7 +187,7 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
         return objectList;
     }
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    public String checkDistributeDetailList(List<WarehouseInDetail> objectList) {
+    public String checkDispatcheDetailList(List<WarehouseInDetail> objectList) {
         if (objectList == null || objectList.size() == 0) {
             return new String("请至少选择一条明细！");
         }

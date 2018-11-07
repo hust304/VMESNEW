@@ -15,14 +15,15 @@
             warehouse.id,
             warehouse.code,
             warehouse.name,
-            warehouse.path_name,
-            warehouse.path_id,
+            warehouse.warehouseName,
+            warehouse.path_name pathName,
+            warehouse.path_id pathId,
             warehouse.layer,
-            warehouse.serial_number,
+            warehouse.serial_number serialNumber,
 
-            warehouseProduct.product_id,
-            warehouseProduct.warehouse_id,
-            warehouseProduct.stock_count,
+            warehouseProduct.product_id productId,
+            warehouseProduct.warehouse_id warehouseId,
+            warehouseProduct.stock_count stockCount,
             warehouseProduct.productCode,
             warehouseProduct.productName,
             warehouseProduct.productNameEn,
@@ -34,11 +35,12 @@
             warehouseProduct.productTypeName,
             warehouseProduct.productGenreName
         from (
-            select id,code,name,path_name,path_id,layer,serial_number
-            from vmes_warehouse
-            where isdisable = '1'
+            select a.id,a.code,a.name,b.name warehouseName,a.path_name,a.path_id,a.layer,a.serial_number
+            from vmes_warehouse a
+                left join vmes_warehouse b on a.warehouse_id = b.id
+            where a.isdisable = '1'
                 <if test="companyId != null and companyId != ''" >
-                    and company_id=#{companyId}
+                    and a.company_id=#{companyId}
                 </if>
         ) warehouse left join (
             select
@@ -57,6 +59,9 @@
                 select product_id,warehouse_id,round(sum(ifnull(stock_count,0)), 2) stock_count
                 from vmes_warehouse_product
                 <where>
+                    <if test="productId != null and productId != ''" >
+                        and product_id=#{productId}
+                    </if>
                     <if test="companyId != null and companyId != ''" >
                         and company_id=#{companyId}
                     </if>
@@ -68,6 +73,9 @@
                 left join vmes_dictionary genre on b.genre = genre.id
                 left join vmes_dictionary type on b.type = type.id
             where b.isdisable = '1'
+                <if test="productType != null and productType != ''" >
+                    and b.type=#{productType}
+                </if>
         ) warehouseProduct on warehouse.id = warehouseProduct.warehouse_id
 
         <where>
@@ -88,7 +96,19 @@
             <if test="productType != null and productType != ''" >
                 and warehouseProduct.productType = #{productType}
             </if>
+
+            <!--nodeId 树形结构指定节点id 自定义sql查询语句-->
+            <if test="nodeId != null and nodeId != ''" >
+                and warehouse.path_id LIKE CONCAT(CONCAT('%', #{nodeId}),'%')
+            </if>
+            <!--queryStr 自定义sql查询语句-->
+            <if test="queryStr != null and queryStr != ''" >
+                and ${queryStr}
+            </if>
         </where>
+        <if test="orderStr != null and orderStr != ''" >
+            order by ${orderStr}
+        </if>
     </select>
 
 
