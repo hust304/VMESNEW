@@ -186,6 +186,8 @@ public class Common {
         //20c09785a7b54ec280d10c988be21929(字典id)  出库类型(字典名称)
         put("warehouseOutType", "20c09785a7b54ec280d10c988be21929");
 
+        //a66d180a1a3346a1a3f4f224baf4ada8(字典id)  退单原因(字典名称)
+        put("warehouseRebackBill", "a66d180a1a3346a1a3f4f224baf4ada8");
     }};
 
     ///////////////--菜单名称--///////////////////////////////////////////////////////////////////
