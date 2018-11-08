@@ -127,14 +127,14 @@
         ) VALUES
             (replace(uuid(), '-', ''),'WarehouseOutExecutor','detailId','明细ID',1, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'WarehouseOutExecutor','executorId','执行人ID',2, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseOutExecutor','userCode','执行人账号',2, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseOutExecutor','executor','执行人名称',3, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'WarehouseOutExecutor','userCode','账号',2, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'WarehouseOutExecutor','executor','名称',3, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'WarehouseOutExecutor','cuser','创建用户id',4, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseOutExecutor','cdate','开始执行时间',5, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'WarehouseOutExecutor','cdate','开始时间',5, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'WarehouseOutExecutor','uuser','修改用户id',6, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'WarehouseOutExecutor','udate','修改时间',7, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseOutExecutor','remark','备注',8, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseOutExecutor','isdisable','是否启用',9, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'WarehouseOutExecutor','isdisable','状态',8, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'WarehouseOutExecutor','remark','备注',9, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'WarehouseOutExecutor','id','id',0, '1','0','1','0',now(), 'admin')
     </insert>
 
@@ -248,9 +248,7 @@
                 and vmesuser.user_name LIKE CONCAT(CONCAT('%', #{executor}),'%')
             </if>
         </where>
-        <if test="orderStr != null and orderStr != ''" >
-            order by ${orderStr}
-        </if>
+        order by executor.isdisable desc
     </select>
 
     <!-- 自动创建，可以修改 -->
@@ -272,9 +270,7 @@
                 and vmesuser.user_name LIKE CONCAT(CONCAT('%', #{executor}),'%')
             </if>
         </where>
-        <if test="orderStr != null and orderStr != ''" >
-            order by ${orderStr}
-        </if>
+        order by executor.isdisable desc
     </select>
 
 

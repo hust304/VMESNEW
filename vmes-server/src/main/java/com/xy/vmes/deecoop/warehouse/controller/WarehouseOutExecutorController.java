@@ -234,7 +234,15 @@ public class WarehouseOutExecutorController {
             if(executorIdArr!=null&&executorIdArr.length>0){
                 Map columnMap = new HashMap();
                 columnMap.put("detail_id",detailId);
-                warehouseOutExecutorService.deleteByColumnMap(columnMap);
+                List<WarehouseOutExecutor> warehouseOutExecutorList = warehouseOutExecutorService.selectByColumnMap(columnMap);
+                if(warehouseOutExecutorList!=null&&warehouseOutExecutorList.size()>0){
+                    for(int i=0;i<warehouseOutExecutorList.size();i++){
+                        WarehouseOutExecutor warehouseOutExecutor = warehouseOutExecutorList.get(i);
+                        warehouseOutExecutor.setIsdisable("0");
+                        warehouseOutExecutor.setRemark("执行人变更");
+                        warehouseOutExecutorService.update(warehouseOutExecutor);
+                    }
+                }
 
                 for(int i=0;i<executorIdArr.length;i++){
                     WarehouseOutExecutor warehouseOutExecutor = new WarehouseOutExecutor();

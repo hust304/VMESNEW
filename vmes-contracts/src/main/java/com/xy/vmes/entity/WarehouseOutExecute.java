@@ -28,6 +28,9 @@ public class WarehouseOutExecute implements Serializable {
 	//(实际)货位ID
 	@TableField("warehouse_id")
 	private String warehouseId;
+	//货位ID
+	@TableField("warehouse_product_id")
+	private String warehouseProductId;
 	//当前出库数量
 	@TableField("count")
 	private BigDecimal count;
@@ -119,6 +122,13 @@ public class WarehouseOutExecute implements Serializable {
 		return isdisable;
 	}
 
+	public String getWarehouseProductId() {
+		return warehouseProductId;
+	}
+
+	public void setWarehouseProductId(String warehouseProductId) {
+		this.warehouseProductId = warehouseProductId;
+	}
 /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 

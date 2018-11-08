@@ -17,6 +17,7 @@
 		detail_id detailId,<!-- 出库明细ID -->
 		executor_id executorId,<!-- 执行人ID -->
 		warehouse_id warehouseId,<!-- (实际)货位ID -->
+        warehouse_product_id warehouseProductId,
 		count count,<!-- 当前出库数量 -->
 		cuser cuser,<!-- 创建用户id -->
 		cdate cdate,<!-- 创建时间 -->
@@ -32,6 +33,7 @@
 		#{detailId},<!-- 出库明细ID -->
 		#{executorId},<!-- 执行人ID -->
 		#{warehouseId},<!-- (实际)货位ID -->
+        #{warehouseProductId},<!-- (实际)货位ID -->
 		#{count},<!-- 当前出库数量 -->
 		#{cuser},<!-- 创建用户id -->
 		#{cdate},<!-- 创建时间 -->
@@ -48,6 +50,7 @@
         '出库明细ID'  detailId,
         '执行人ID'  executorId,
         '(实际)货位ID'  warehouseId,
+        '货位ID'  warehouseProductId,
         '当前出库数量'  count,
         '创建用户id'  cuser,
         '创建时间'  cdate,
@@ -134,6 +137,7 @@
             (replace(uuid(), '-', ''),'WarehouseOutExecute','detailId','出库明细ID',1, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'WarehouseOutExecute','executorId','执行人ID',2, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'WarehouseOutExecute','warehouseId','(实际)货位ID',3, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'WarehouseOutExecute','warehouseProductId','(实际)货位ID',3, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'WarehouseOutExecute','count','当前出库数量',4, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'WarehouseOutExecute','cuser','创建用户id',5, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'WarehouseOutExecute','cdate','创建时间',6, '1','1','1','0',now(), 'admin'),
@@ -198,6 +202,7 @@
         detail_id detailId,<!-- 出库明细ID -->
         executor_id executorId,<!-- 执行人ID -->
         warehouse_id warehouseId,<!-- (实际)货位ID -->
+        warehouse_product_id warehouseProductId,
         count count,<!-- 当前出库数量 -->
         cuser cuser,<!-- 创建用户id -->
         cdate cdate,<!-- 创建时间 -->
