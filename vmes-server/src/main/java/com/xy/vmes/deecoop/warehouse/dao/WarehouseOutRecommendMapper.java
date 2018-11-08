@@ -14,7 +14,7 @@ import java.util.Map;
 /**
 * 说明：出库推荐 Mapper.java
 * 创建人：刘威 自动创建
-* 创建时间：2018-11-01
+* 创建时间：2018-11-07
 */
 @Mapper
 @Repository
@@ -23,60 +23,60 @@ public interface WarehouseOutRecommendMapper extends BaseMapper<WarehouseOutReco
 
 	/**
 	* 创建人：刘威 自动创建，禁止修改
-	* 创建时间：2018-11-01
+	* 创建时间：2018-11-07
 	*/
     List<WarehouseOutRecommend> dataListPage(PageData pd,Pagination pg);
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-11-01
+    * 创建时间：2018-11-07
     */
 	List<WarehouseOutRecommend> dataList(PageData pd);
 
 	/**
 	* 创建人：刘威 自动创建，禁止修改
-	* 创建时间：2018-11-01
+	* 创建时间：2018-11-07
 	*/
 	void deleteByIds(String[] ids);
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-11-01
+    * 创建时间：2018-11-07
     */
     List<LinkedHashMap> findColumnList();
 
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-11-01
+    * 创建时间：2018-11-07
     */
     List<Map> findDataList(PageData pd);
 
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-11-01
+    * 创建时间：2018-11-07
     */
     List<LinkedHashMap> getColumnList();
 
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-11-01
+    * 创建时间：2018-11-07
     */
     List<Map> getDataList(PageData pd);
 
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-11-01
+    * 创建时间：2018-11-07
     */
     List<Map> getDataListPage(PageData pd,Pagination pg);
 
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-11-01
+    * 创建时间：2018-11-07
     */
     void updateToDisableByIds(String[] ids);
 

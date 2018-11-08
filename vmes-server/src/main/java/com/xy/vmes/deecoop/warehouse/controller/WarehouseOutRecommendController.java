@@ -29,7 +29,7 @@ import java.util.*;
 /**
 * 说明：出库推荐Controller
 * @author 刘威 自动生成
-* @date 2018-11-01
+* @date 2018-11-07
 */
 @RestController
 @Slf4j
@@ -45,7 +45,7 @@ public class WarehouseOutRecommendController {
 
     /**
     * @author 刘威 自动创建，禁止修改
-    * @date 2018-11-01
+    * @date 2018-11-07
     */
     @GetMapping("/warehouseOutRecommend/selectById/{id}")
     public ResultModel selectById(@PathVariable("id") String id)  throws Exception {
@@ -65,7 +65,7 @@ public class WarehouseOutRecommendController {
 
     /**
     * @author 刘威 自动创建，禁止修改
-    * @date 2018-11-01
+    * @date 2018-11-07
     */
     @PostMapping("/warehouseOutRecommend/save")
     @Transactional
@@ -85,7 +85,7 @@ public class WarehouseOutRecommendController {
 
     /**
     * @author 刘威 自动创建，禁止修改
-    * @date 2018-11-01
+    * @date 2018-11-07
     */
     @PostMapping("/warehouseOutRecommend/update")
     @Transactional
@@ -106,7 +106,7 @@ public class WarehouseOutRecommendController {
 
     /**
     * @author 刘威 自动创建，禁止修改
-    * @date 2018-11-01
+    * @date 2018-11-07
     */
     @GetMapping("/warehouseOutRecommend/deleteById/{id}")
     @Transactional
@@ -125,7 +125,7 @@ public class WarehouseOutRecommendController {
 
     /**
     * @author 刘威 自动创建，禁止修改
-    * @date 2018-11-01
+    * @date 2018-11-07
     */
     @PostMapping("/warehouseOutRecommend/deleteByIds")
     @Transactional
@@ -155,7 +155,7 @@ public class WarehouseOutRecommendController {
 
     /**
     * @author 刘威 自动创建，禁止修改
-    * @date 2018-11-01
+    * @date 2018-11-07
     */
     @PostMapping("/warehouseOutRecommend/dataListPage")
     public ResultModel dataListPage()  throws Exception {
@@ -178,7 +178,7 @@ public class WarehouseOutRecommendController {
 
     /**
     * @author 刘威 自动创建，禁止修改
-    * @date 2018-11-01
+    * @date 2018-11-07
     */
     @PostMapping("/warehouseOutRecommend/dataList")
     public ResultModel dataList()  throws Exception {
@@ -200,7 +200,7 @@ public class WarehouseOutRecommendController {
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
     /**
     * @author 刘威 自动创建，可以修改
-    * @date 2018-11-01
+    * @date 2018-11-07
     */
     @PostMapping("/warehouseOutRecommend/listPageWarehouseOutRecommends")
     public ResultModel listPageWarehouseOutRecommends()  throws Exception {
@@ -265,7 +265,7 @@ public class WarehouseOutRecommendController {
     /**
     * Excel导出
     * @author 刘威 自动创建，可以修改
-    * @date 2018-11-01
+    * @date 2018-11-07
     */
     @PostMapping("/warehouseOutRecommend/exportExcelWarehouseOutRecommends")
     public void exportExcelWarehouseOutRecommends() throws Exception {
@@ -313,7 +313,7 @@ public class WarehouseOutRecommendController {
     * Excel导入
     *
     * @author 刘威 自动创建，可以修改
-    * @date 2018-11-01
+    * @date 2018-11-07
     */
     @PostMapping("/warehouseOutRecommend/importExcelWarehouseOutRecommends")
     public ResultModel importExcelWarehouseOutRecommends(@RequestParam(value="excelFile") MultipartFile file) throws Exception  {

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.Common;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.Product;
+import com.xy.vmes.entity.WarehouseOut;
 import com.xy.vmes.exception.TableVersionException;
 import com.xy.vmes.deecoop.warehouse.dao.WarehouseProductMapper;
 import com.xy.vmes.entity.Warehouse;
@@ -86,6 +87,16 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
     @Override
     public void deleteByIds(String[] ids) throws Exception{
         warehouseProductMapper.deleteByIds(ids);
+    }
+
+    /**
+     * 创建人：刘威 自动创建，禁止修改
+     * 创建时间：2018-10-22
+     */
+    @Override
+    //@Cacheable(cacheNames = "warehouseOut", key = "''+#id")
+    public WarehouseProduct selectById(String id) throws Exception{
+        return warehouseProductMapper.selectById(id);
     }
 
     /**

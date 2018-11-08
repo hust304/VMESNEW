@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 /** 
  * 说明：出库推荐 实体类
  * @author 刘威 自动生成
- * @date 2018-11-01
+ * @date 2018-11-07
  */
 @TableName("vmes_warehouse_out_recommend")
 public class WarehouseOutRecommend implements Serializable {
@@ -23,11 +23,8 @@ public class WarehouseOutRecommend implements Serializable {
 	@TableField("detail_id")
 	private String detailId;
 	//货位ID
-	@TableField("warehouse_id")
-	private String warehouseId;
-	//货位批次号
-	@TableField("code")
-	private String code;
+	@TableField("warehouse_product_id")
+	private String warehouseProductId;
 	//推荐出库数量
 	@TableField("count")
 	private BigDecimal count;
@@ -64,17 +61,11 @@ public class WarehouseOutRecommend implements Serializable {
 	public String getDetailId() {
 		return detailId;
 	}
-	public void setWarehouseId(String warehouseId) {
-		this.warehouseId = warehouseId;
+	public void setWarehouseProductId(String warehouseProductId) {
+		this.warehouseProductId = warehouseProductId;
 	}
-	public String getWarehouseId() {
-		return warehouseId;
-	}
-	public void setCode(String code) {
-		this.code = code;
-	}
-	public String getCode() {
-		return code;
+	public String getWarehouseProductId() {
+		return warehouseProductId;
 	}
 	public void setCount(BigDecimal count) {
 		this.count = count;

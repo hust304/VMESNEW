@@ -2,8 +2,10 @@ package com.xy.vmes.deecoop.warehouse.controller;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
+import com.xy.vmes.common.util.Common;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.*;
+import com.xy.vmes.exception.TableVersionException;
 import com.xy.vmes.service.*;
 import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
@@ -56,6 +58,8 @@ public class WarehouseOutDetailController {
     @Autowired
     private WarehouseOutExecutorService warehouseOutExecutorService;
 
+    @Autowired
+    private WarehouseOutExecuteService warehouseOutExecuteService;
     /**
     * @author 刘威 自动创建，禁止修改
     * @date 2018-10-23
@@ -217,13 +221,103 @@ public class WarehouseOutDetailController {
 
 
 
+    /**
+     * 出库单明细派单
+     * @author 刘威
+     * @date 2018-10-16
+     * @throws Exception
+     */
+    @PostMapping("/warehouseOutDetail/executeWarehouseOutDetail")
+    @Transactional
+    public ResultModel executeWarehouseOutDetail() throws Exception {
+        logger.info("################/warehouseOutDetail/executeWarehouseOutDetail 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        ResultModel model = new ResultModel();
+
+        PageData pageData = HttpUtils.parsePageData();
+        String jsonDataStr = pageData.getString("jsonDataStr");
+        String currentUserId = pageData.getString("currentUserId");
+        String currentCompanyId = pageData.getString("currentCompanyId");
+        List<Map<String, Object>> mapList = (List<Map<String, Object>>) YvanUtil.jsonToList(jsonDataStr);
+
+
+
+        if(mapList!=null&&mapList.size()>0){
+            for(int j=0;j<mapList.size();j++){
+                Map<String, Object> detailMap = mapList.get(j);
+                if(detailMap!=null&&detailMap.get("children")!=null){
+                    String detailId = (String)detailMap.get("id");
+                    if(!StringUtils.isEmpty(detailId)){
+                        //新增推荐库位记录
+                        List childrenList = (List) detailMap.get("children");
+                        if(childrenList!=null&&childrenList.size()>0){
+                            for(int k=0;k<childrenList.size();k++){
+                                Map<String, Object> childrenMap = (Map<String, Object>)childrenList.get(k);
+                                String id = (String)childrenMap.get("id");
+                                String warehouseId = (String)childrenMap.get("warehouseId");
+                                String suggestCount = (String)childrenMap.get("suggestCount");
+                                BigDecimal count = StringUtils.isEmpty(suggestCount)?BigDecimal.ZERO:BigDecimal.valueOf(Double.parseDouble(suggestCount));
+
+                                WarehouseOutExecute execute = new WarehouseOutExecute();
+                                execute.setDetailId(detailId);
+                                execute.setWarehouseId(warehouseId);
+                                execute.setExecutorId(currentUserId);
+                                execute.setCount(count);
+                                warehouseOutExecuteService.save(execute);
+
+
+
+
+                                //添加出库单明细-出库执行
+                                try {
+                                    //出库操作
+                                    WarehouseProduct outObject = warehouseProductService.selectById(id);
+                                    String msgStr = warehouseProductService.outStockCount(outObject, count, currentUserId, currentCompanyId);
+                                    if (msgStr != null && msgStr.trim().length() > 0) {
+                                        model.putCode(Integer.valueOf(1));
+                                        model.putMsg(msgStr);
+                                        return model;
+                                    }
+                                } catch (TableVersionException tabExc) {
+                                    //库存变更 version 锁
+                                    if (Common.SYS_STOCKCOUNT_ERRORCODE.equals(tabExc.getErrorCode())) {
+                                        model.putCode(Integer.valueOf(1));
+                                        model.putMsg(tabExc.getMessage());
+                                        return model;
+                                    }
+                                }
+
+
+                            }
+                        }
+
+                        //更新出库单及出库明细状态
+                        WarehouseOutDetail detail = warehouseOutDetailService.selectById(detailId);
+                        //明细状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+                        detail.setState("2");
+                        warehouseOutDetailService.update(detail);
+                        warehouseOutService.updateState(detail.getParentId());
+
+                    }
+                }
+
+            }
+        }
+
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/warehouseOutDetail/executeWarehouseOutDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
 
 
 
 
 
     /**
-     * 恢复出库单明细
+     * 出库单明细派单
      * @author 刘威
      * @date 2018-10-16
      * @throws Exception
@@ -268,13 +362,11 @@ public class WarehouseOutDetailController {
                         if(childrenList!=null&&childrenList.size()>0){
                             for(int k=0;k<childrenList.size();k++){
                                 Map<String, Object> childrenMap = (Map<String, Object>)childrenList.get(k);
-                                String warehouseId = (String)childrenMap.get("warehouseId");
-                                String code = (String)childrenMap.get("code");
+                                String warehouseProductId = (String)childrenMap.get("id");
                                 String suggestCount = (String)childrenMap.get("suggestCount");
                                 WarehouseOutRecommend recommend = new WarehouseOutRecommend();
                                 recommend.setDetailId(detailId);
-                                recommend.setWarehouseId(warehouseId);
-                                recommend.setCode(code);
+                                recommend.setWarehouseProductId(warehouseProductId);
                                 recommend.setCount(StringUtils.isEmpty(suggestCount)?BigDecimal.ZERO:BigDecimal.valueOf(Double.parseDouble(suggestCount)));
                                 warehouseOutRecommendService.save(recommend);
                             }
@@ -282,6 +374,7 @@ public class WarehouseOutDetailController {
 
                         //更新出库单及出库明细状态
                         WarehouseOutDetail detail = warehouseOutDetailService.selectById(detailId);
+                        //明细状态(0:待派单 1:执行中 2:已完成 -1.已取消)
                         detail.setState("1");
                         warehouseOutDetailService.update(detail);
                         warehouseOutService.updateState(detail.getParentId());
@@ -292,19 +385,6 @@ public class WarehouseOutDetailController {
             }
         }
 
-//        //状态(0:待派单 1:执行中 2:已完成 -1.已取消)
-//        if (detail.getState() != null && !"-1".equals(detail.getState().trim())) {
-//            model.putCode(Integer.valueOf(1));
-//            model.putMsg("当前出库明细不是取消状态，不能恢复！");
-//            return model;
-//        }
-//
-//        //1. 修改明细状态
-//        //明细状态(0:待派单 1:执行中 2:已完成 -1.已取消)
-//        detail.setState("0");
-//        warehouseOutDetailService.update(detail);
-//        //2.返写出库单状态
-//        warehouseOutService.updateState(detail.getParentId());
 
         Long endTime = System.currentTimeMillis();
         logger.info("################/warehouseOutDetail/dispatchWarehouseOutDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
@@ -509,14 +589,118 @@ public class WarehouseOutDetailController {
 
 
 
+
     /**
      * @author 刘威 自动创建，可以修改
      * @date 2018-10-23
      */
-    @PostMapping("/warehouseOutDetail/listPageWarehouseOutDispatch")
-    public ResultModel listPageWarehouseOutDispatch()  throws Exception {
+    @PostMapping("/warehouseOutDetail/listPageWarehouseOutDetailsExecute")
+    public ResultModel listPageWarehouseOutDetailsExecute()  throws Exception {
 
-        logger.info("################warehouseOutDetail/listPageWarehouseOutDispatch 执行开始 ################# ");
+        logger.info("################warehouseOutDetail/listPageWarehouseOutDetailsExecute 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        HttpServletResponse response  = HttpUtils.currentResponse();
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+        Pagination pg = HttpUtils.parsePagination(pd);
+        Map result = new HashMap();
+
+        List<Column> columnList = columnService.findColumnList("WarehouseOutDetailDispatch");
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
+        }
+        //获取根节点表头
+        Map rootTitleMap = getTitleList(columnList);
+
+        result.put("hideTitles",rootTitleMap.get("hideTitles"));
+        result.put("titles",rootTitleMap.get("titles"));
+
+        columnList = columnService.findColumnList("WarehouseOutRecommend");
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
+        }
+        //获取子节点表头
+        Map childrenTitleMap = getTitleList(columnList);
+
+
+
+        List<Map> varMapList = new ArrayList();
+        List<Map> varList = warehouseOutDetailService.getDataListPage(pd,pg);
+        if(varList!=null&&varList.size()>0){
+            for(int i=0;i<varList.size();i++){
+                Map map = varList.get(i);
+                Map<String, Object> varMap = new HashMap<String, Object>();
+                varMap.putAll((Map<String, String>)rootTitleMap.get("varModel"));
+                for (Map.Entry<String, Object> entry : varMap.entrySet()) {
+                    varMap.put(entry.getKey(),map.get(entry.getKey())!=null?map.get(entry.getKey()).toString():"");
+                }
+                varMap.put("hideTitles",childrenTitleMap.get("hideTitles"));
+                varMap.put("titles",childrenTitleMap.get("titles"));
+                varMap.put("pid",null);
+                varMap.put("children",getExecuteChildrenList(map,childrenTitleMap));
+                varMapList.add(varMap);
+            }
+        }
+        result.put("varList",varMapList);
+        result.put("pageData", pg);
+
+        model.putResult(result);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################warehouseOutDetail/listPageWarehouseOutDetailsExecute 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    public List<Map> getExecuteChildrenList(Map rootMap,Map childrenTitleMap)  throws Exception {
+        PageData pd = new PageData();
+        Pagination pg = HttpUtils.parsePagination(pd);
+        pd.put("detailId",rootMap.get("id"));
+
+        DecimalFormat df = new DecimalFormat("0.00");
+        double count = 0.00;
+        if(rootMap.get("count")!=null){
+            count = ((BigDecimal) rootMap.get("count")).doubleValue();
+        }
+
+
+        List<Map> childrenMapList = new ArrayList();
+        List<Map> varList = warehouseOutRecommendService.getDataListPage(pd,pg);
+        if(varList!=null&&varList.size()>0){
+            for(int i=0;i<varList.size();i++){
+                Map map = varList.get(i);
+                Map<String, String> varMap = new HashMap<String, String>();
+                varMap.putAll((Map<String, String>)childrenTitleMap.get("varModel"));
+                for (Map.Entry<String, String> entry : varMap.entrySet()) {
+                    varMap.put(entry.getKey(),map.get(entry.getKey())!=null?map.get(entry.getKey()).toString():"");
+                }
+                varMap.put("pid",rootMap.get("id").toString());
+                double suggestCount = Double.parseDouble((String)varMap.get("suggestCount"));
+                double stockCount = Double.parseDouble((String)varMap.get("stockCount"));
+                if(stockCount<suggestCount){
+                    varMap.put("suggestCount",df.format(stockCount));
+                    childrenMapList.add(varMap);
+                }else {
+                    varMap.put("suggestCount",df.format(suggestCount));
+                    childrenMapList.add(varMap);
+                }
+            }
+        }
+        return childrenMapList;
+    }
+
+
+
+    /**
+     * @author 刘威 自动创建，可以修改
+     * @date 2018-10-23
+     */
+    @PostMapping("/warehouseOutDetail/listPageWarehouseOutDetailsDispatch")
+    public ResultModel listPageWarehouseOutDetailsDispatch()  throws Exception {
+
+        logger.info("################warehouseOutDetail/listPageWarehouseOutDetailsDispatch 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
@@ -560,7 +744,7 @@ public class WarehouseOutDetailController {
                 varMap.put("hideTitles",childrenTitleMap.get("hideTitles"));
                 varMap.put("titles",childrenTitleMap.get("titles"));
                 varMap.put("pid",null);
-                varMap.put("children",getChildrenList(map,childrenTitleMap));
+                varMap.put("children",getDispatchChildrenList(map,childrenTitleMap));
                 varMapList.add(varMap);
             }
         }
@@ -569,7 +753,7 @@ public class WarehouseOutDetailController {
 
         model.putResult(result);
         Long endTime = System.currentTimeMillis();
-        logger.info("################warehouseOutDetail/listPageWarehouseOutDispatch 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################warehouseOutDetail/listPageWarehouseOutDetailsDispatch 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -601,7 +785,7 @@ public class WarehouseOutDetailController {
 
 
 
-    public List<Map> getChildrenList(Map rootMap,Map childrenTitleMap)  throws Exception {
+    public List<Map> getDispatchChildrenList(Map rootMap,Map childrenTitleMap)  throws Exception {
         PageData pd = new PageData();
         Pagination pg = HttpUtils.parsePagination(pd);
         pd.put("productId",rootMap.get("productId"));
@@ -644,68 +828,68 @@ public class WarehouseOutDetailController {
 
 
 
-    /**
-     * @author 刘威 自动创建，可以修改
-     * @date 2018-10-23
-     */
-    @PostMapping("/warehouseOutDetail/listPageWarehouseOutDetailsDispatch")
-    public ResultModel listPageWarehouseOutDetailsDispatch()  throws Exception {
-
-        logger.info("################warehouseOutDetail/listPageWarehouseOutDetailsDispatch 执行开始 ################# ");
-        Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
-        ResultModel model = new ResultModel();
-        PageData pd = HttpUtils.parsePageData();
-        Pagination pg = HttpUtils.parsePagination(pd);
-        Map result = new HashMap();
-
-        List<Column> columnList = columnService.findColumnList("WarehouseOutDetailDispatch");
-        if (columnList == null || columnList.size() == 0) {
-            model.putCode("1");
-            model.putMsg("数据库没有生成TabCol，请联系管理员！");
-            return model;
-        }
-
-        List<LinkedHashMap> titlesList = new ArrayList<LinkedHashMap>();
-        List<String> titlesHideList = new ArrayList<String>();
-        Map<String, String> varModelMap = new HashMap<String, String>();
-        if(columnList!=null&&columnList.size()>0){
-            for (Column column : columnList) {
-                if(column!=null){
-                    if("0".equals(column.getIshide())){
-                        titlesHideList.add(column.getTitleKey());
-                    }
-                    LinkedHashMap titlesLinkedMap = new LinkedHashMap();
-                    titlesLinkedMap.put(column.getTitleKey(),column.getTitleName());
-                    varModelMap.put(column.getTitleKey(),"");
-                    titlesList.add(titlesLinkedMap);
-                }
-            }
-        }
-        result.put("hideTitles",titlesHideList);
-        result.put("titles",titlesList);
-
-        List<Map> varMapList = new ArrayList();
-        List<Map> varList = warehouseOutDetailService.getDataListPage(pd,pg);
-        if(varList!=null&&varList.size()>0){
-            for(int i=0;i<varList.size();i++){
-                Map map = varList.get(i);
-                Map<String, String> varMap = new HashMap<String, String>();
-                varMap.putAll(varModelMap);
-                for (Map.Entry<String, String> entry : varMap.entrySet()) {
-                    varMap.put(entry.getKey(),map.get(entry.getKey())!=null?map.get(entry.getKey()).toString():"");
-                }
-                varMapList.add(varMap);
-            }
-        }
-        result.put("varList",varMapList);
-        result.put("pageData", pg);
-
-        model.putResult(result);
-        Long endTime = System.currentTimeMillis();
-        logger.info("################warehouseOutDetail/listPageWarehouseOutDetailsDispatch 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
-        return model;
-    }
+//    /**
+//     * @author 刘威 自动创建，可以修改
+//     * @date 2018-10-23
+//     */
+//    @PostMapping("/warehouseOutDetail/listPageWarehouseOutDetailsDispatch")
+//    public ResultModel listPageWarehouseOutDetailsDispatch()  throws Exception {
+//
+//        logger.info("################warehouseOutDetail/listPageWarehouseOutDetailsDispatch 执行开始 ################# ");
+//        Long startTime = System.currentTimeMillis();
+//        HttpServletResponse response  = HttpUtils.currentResponse();
+//        ResultModel model = new ResultModel();
+//        PageData pd = HttpUtils.parsePageData();
+//        Pagination pg = HttpUtils.parsePagination(pd);
+//        Map result = new HashMap();
+//
+//        List<Column> columnList = columnService.findColumnList("WarehouseOutDetailDispatch");
+//        if (columnList == null || columnList.size() == 0) {
+//            model.putCode("1");
+//            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+//            return model;
+//        }
+//
+//        List<LinkedHashMap> titlesList = new ArrayList<LinkedHashMap>();
+//        List<String> titlesHideList = new ArrayList<String>();
+//        Map<String, String> varModelMap = new HashMap<String, String>();
+//        if(columnList!=null&&columnList.size()>0){
+//            for (Column column : columnList) {
+//                if(column!=null){
+//                    if("0".equals(column.getIshide())){
+//                        titlesHideList.add(column.getTitleKey());
+//                    }
+//                    LinkedHashMap titlesLinkedMap = new LinkedHashMap();
+//                    titlesLinkedMap.put(column.getTitleKey(),column.getTitleName());
+//                    varModelMap.put(column.getTitleKey(),"");
+//                    titlesList.add(titlesLinkedMap);
+//                }
+//            }
+//        }
+//        result.put("hideTitles",titlesHideList);
+//        result.put("titles",titlesList);
+//
+//        List<Map> varMapList = new ArrayList();
+//        List<Map> varList = warehouseOutDetailService.getDataListPage(pd,pg);
+//        if(varList!=null&&varList.size()>0){
+//            for(int i=0;i<varList.size();i++){
+//                Map map = varList.get(i);
+//                Map<String, String> varMap = new HashMap<String, String>();
+//                varMap.putAll(varModelMap);
+//                for (Map.Entry<String, String> entry : varMap.entrySet()) {
+//                    varMap.put(entry.getKey(),map.get(entry.getKey())!=null?map.get(entry.getKey()).toString():"");
+//                }
+//                varMapList.add(varMap);
+//            }
+//        }
+//        result.put("varList",varMapList);
+//        result.put("pageData", pg);
+//
+//        model.putResult(result);
+//        Long endTime = System.currentTimeMillis();
+//        logger.info("################warehouseOutDetail/listPageWarehouseOutDetailsDispatch 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+//        return model;
+//    }
 
 
 

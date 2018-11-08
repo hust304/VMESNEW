@@ -19,7 +19,7 @@ import java.util.Map;
 /**
 * 说明：出库推荐 实现类
 * 创建人：刘威 自动创建
-* 创建时间：2018-11-01
+* 创建时间：2018-11-07
 */
 @Service
 @Transactional(readOnly = false)
@@ -31,7 +31,7 @@ public class WarehouseOutRecommendServiceImp implements WarehouseOutRecommendSer
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-11-01
+    * 创建时间：2018-11-07
     */
     @Override
     public void save(WarehouseOutRecommend warehouseOutRecommend) throws Exception{
@@ -44,7 +44,7 @@ public class WarehouseOutRecommendServiceImp implements WarehouseOutRecommendSer
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-11-01
+    * 创建时间：2018-11-07
     */
     @Override
     public void update(WarehouseOutRecommend warehouseOutRecommend) throws Exception{
@@ -54,7 +54,7 @@ public class WarehouseOutRecommendServiceImp implements WarehouseOutRecommendSer
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-11-01
+    * 创建时间：2018-11-07
     */
     @Override
     public void updateAll(WarehouseOutRecommend warehouseOutRecommend) throws Exception{
@@ -64,7 +64,7 @@ public class WarehouseOutRecommendServiceImp implements WarehouseOutRecommendSer
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-11-01
+    * 创建时间：2018-11-07
     */
     @Override
     //@Cacheable(cacheNames = "warehouseOutRecommend", key = "''+#id")
@@ -74,7 +74,7 @@ public class WarehouseOutRecommendServiceImp implements WarehouseOutRecommendSer
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-11-01
+    * 创建时间：2018-11-07
     */
     @Override
     public void deleteById(String id) throws Exception{
@@ -83,7 +83,7 @@ public class WarehouseOutRecommendServiceImp implements WarehouseOutRecommendSer
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-11-01
+    * 创建时间：2018-11-07
     */
     @Override
     public void deleteByIds(String[] ids) throws Exception{
@@ -92,7 +92,7 @@ public class WarehouseOutRecommendServiceImp implements WarehouseOutRecommendSer
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-11-01
+    * 创建时间：2018-11-07
     */
     @Override
     public List<WarehouseOutRecommend> dataListPage(PageData pd,Pagination pg) throws Exception{
@@ -101,7 +101,7 @@ public class WarehouseOutRecommendServiceImp implements WarehouseOutRecommendSer
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-11-01
+    * 创建时间：2018-11-07
     */
     @Override
     public List<WarehouseOutRecommend> dataList(PageData pd) throws Exception{
@@ -110,7 +110,7 @@ public class WarehouseOutRecommendServiceImp implements WarehouseOutRecommendSer
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-11-01
+    * 创建时间：2018-11-07
     */
     @Override
     public List<LinkedHashMap> findColumnList() throws Exception{
@@ -119,7 +119,7 @@ public class WarehouseOutRecommendServiceImp implements WarehouseOutRecommendSer
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-11-01
+    * 创建时间：2018-11-07
     */
     @Override
     public List<Map> findDataList(PageData pd) throws Exception{
@@ -129,7 +129,7 @@ public class WarehouseOutRecommendServiceImp implements WarehouseOutRecommendSer
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-11-01
+    * 创建时间：2018-11-07
     */
     @Override
     public void deleteByColumnMap(Map columnMap) throws Exception{
@@ -138,7 +138,7 @@ public class WarehouseOutRecommendServiceImp implements WarehouseOutRecommendSer
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-11-01
+    * 创建时间：2018-11-07
     */
     @Override
     public List<WarehouseOutRecommend> selectByColumnMap(Map columnMap) throws Exception{
@@ -149,7 +149,7 @@ public class WarehouseOutRecommendServiceImp implements WarehouseOutRecommendSer
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-11-01
+    * 创建时间：2018-11-07
     */
     @Override
     public List<LinkedHashMap> getColumnList() throws Exception{
@@ -158,7 +158,7 @@ public class WarehouseOutRecommendServiceImp implements WarehouseOutRecommendSer
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-11-01
+    * 创建时间：2018-11-07
     */
     @Override
     public List<Map> getDataList(PageData pd) throws Exception{
@@ -167,7 +167,7 @@ public class WarehouseOutRecommendServiceImp implements WarehouseOutRecommendSer
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-11-01
+    * 创建时间：2018-11-07
     */
     @Override
     public List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception{
@@ -176,7 +176,7 @@ public class WarehouseOutRecommendServiceImp implements WarehouseOutRecommendSer
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-11-01
+    * 创建时间：2018-11-07
     */
     @Override
     public void updateToDisableByIds(String[] ids)throws Exception{

@@ -127,7 +127,8 @@
         ) VALUES
             (replace(uuid(), '-', ''),'WarehouseOutExecutor','detailId','明细ID',1, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'WarehouseOutExecutor','executorId','执行人ID',2, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseOutExecutor','executor','执行人',3, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'WarehouseOutExecutor','userCode','执行人账号',2, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'WarehouseOutExecutor','executor','执行人名称',3, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'WarehouseOutExecutor','cuser','创建用户id',4, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'WarehouseOutExecutor','cdate','开始执行时间',5, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'WarehouseOutExecutor','uuser','修改用户id',6, '1','0','1','0',now(), 'admin'),
@@ -199,6 +200,7 @@
         executor.isdisable isdisable,<!-- 是否启用(0:已禁用 1:启用) -->
 
         vmesuser.user_name executor,
+        vmesuser.user_code userCode,
 
         executor.id id <!-- id -->
     </sql>

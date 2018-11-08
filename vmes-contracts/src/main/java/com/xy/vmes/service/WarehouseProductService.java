@@ -34,6 +34,8 @@ public interface WarehouseProductService {
      */
     void updateAll(WarehouseProduct object) throws Exception;
 
+    WarehouseProduct selectById(String id) throws Exception;
+
     /**
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2018-10-16

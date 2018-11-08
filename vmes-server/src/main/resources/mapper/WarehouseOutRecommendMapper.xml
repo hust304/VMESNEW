@@ -3,7 +3,7 @@
 <!--
 说明：出库推荐 Mapper.xml
 创建人：刘威 自动创建
-创建时间：2018-11-01
+创建时间：2018-11-07
  -->
 <mapper namespace="com.xy.vmes.deecoop.warehouse.dao.WarehouseOutRecommendMapper">
 
@@ -15,8 +15,7 @@
     <!-- 字段 自动创建，禁止修改-->
     <sql id="Field">
 		detail_id detailId,<!-- 出库明细ID -->
-		warehouse_id warehouseId,<!-- 货位ID -->
-		code code,<!-- 货位批次号 -->
+		warehouse_product_id warehouseProductId,<!-- 货位ID -->
 		count count,<!-- 推荐出库数量 -->
 		cuser cuser,<!-- 创建用户id -->
 		cdate cdate,<!-- 创建时间 -->
@@ -30,8 +29,7 @@
     <!-- 字段值 自动创建，禁止修改-->
     <sql id="FieldValue">
 		#{detailId},<!-- 出库明细ID -->
-		#{warehouseId},<!-- 货位ID -->
-		#{code},<!-- 货位批次号 -->
+		#{warehouseProductId},<!-- 货位ID -->
 		#{count},<!-- 推荐出库数量 -->
 		#{cuser},<!-- 创建用户id -->
 		#{cdate},<!-- 创建时间 -->
@@ -46,8 +44,7 @@
     <!-- 字段名称  '_hide' 表示前端列表隐藏 自动创建，禁止修改-->
     <sql id="Column">
         '出库明细ID'  detailId,
-        '货位ID'  warehouseId,
-        '货位批次号'  code,
+        '货位ID'  warehouseProductId,
         '推荐出库数量'  count,
         '创建用户id'  cuser,
         '创建时间'  cdate,
@@ -131,17 +128,15 @@
         isdisable,ishide,isedit,ismust,cdate,
         cuser
         ) VALUES
-            (replace(uuid(), '-', ''),'WarehouseOutRecommend','detailId','出库明细ID',1, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseOutRecommend','warehouseId','货位ID',2, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseOutRecommend','code','货位批次号',3, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseOutRecommend','count','推荐出库数量',4, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseOutRecommend','cuser','创建用户id',5, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseOutRecommend','cdate','创建时间',6, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseOutRecommend','uuser','修改用户id',7, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseOutRecommend','udate','修改时间',8, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseOutRecommend','remark','备注',9, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseOutRecommend','isdisable','是否启用(0:已禁用 1:启用)',10, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseOutRecommend','id','id',0, '1','1','1','0',now(), 'admin')
+        (replace(uuid(), '-', ''),'WarehouseOutRecommend','name','货位名称',1, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutRecommend','code','批次号',2, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutRecommend','stockCount','库存数量',3, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutRecommend','suggestCount','建议取货数量',4, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutRecommend','warehouseId','仓库货位ID',4, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutRecommend','productId','产品ID',5, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutRecommend','isdisable','是否启用',6, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutRecommend','companyId','公司ID',7, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutRecommend','id','id',0, '1','0','1','0',now(), 'admin')
     </insert>
 
 
@@ -196,25 +191,24 @@
 
     <!-- 字段 自动创建，可以修改-->
     <sql id="Field1">
-        detail_id detailId,<!-- 出库明细ID -->
-        warehouse_id warehouseId,<!-- 货位ID -->
-        code code,<!-- 货位批次号 -->
-        count count,<!-- 推荐出库数量 -->
-        cuser cuser,<!-- 创建用户id -->
-        cdate cdate,<!-- 创建时间 -->
-        uuser uuser,<!-- 修改用户id -->
-        udate udate,<!-- 修改时间 -->
-        remark remark,<!-- 备注 -->
-        isdisable isdisable,<!-- 是否启用(0:已禁用 1:启用) -->
-        id id <!-- id -->
+        product.id id,
+        product.company_id companyId,
+        product.warehouse_id warehouseId,
+        product.product_id productId,
+        product.code code,
+        round(product.stock_count,2) stockCount,
+        product.isdisable isdisable,
+
+        round(recommend.count,2) suggestCount,
+
+        warehouse.path_name name
     </sql>
 
     <!-- 字段值 自动创建，可以修改-->
     <!--
     <sql id="Column1">
             '出库明细ID'  detailId,
-            '货位ID'  warehouseId,
-            '货位批次号'  code,
+            '货位ID'  warehouseProductId,
             '推荐出库数量'  count,
             '创建用户id'  cuser,
             '创建时间'  cdate,
@@ -240,21 +234,24 @@
         select
         <include refid="Field1"></include>
         from
-        <include refid="tableName"></include>
+        vmes_warehouse_out_recommend recommend
+        left join vmes_warehouse_product product on recommend.warehouse_product_id = product.id
+        left join vmes_warehouse warehouse on warehouse.id = product.warehouse_id
         <where>
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >
                 and ${queryStr}
             </if>
-            <if test="code != null and code != ''">
-                and code LIKE CONCAT(CONCAT('%', #{code}),'%')
+            <if test="detailId != null and detailId != ''">
+                and recommend.detail_id = #{detailId}
             </if>
-            <if test="name != null and name != ''">
-                and name LIKE CONCAT(CONCAT('%', #{name}),'%')
+            <if test="currentCompanyId != null and currentCompanyId != ''">
+                and product.company_id = #{currentCompanyId}
             </if>
+            and product.stock_count > 0
         </where>
         <if test="orderStr != null and orderStr != ''" >
-            order by ${orderStr}
+            order by product.code asc  <!-- 先入先出 按批次号的升序排列 -->
         </if>
     </select>
 
@@ -263,21 +260,24 @@
         select
         <include refid="Field1"></include>
         from
-        <include refid="tableName"></include>
+        vmes_warehouse_out_recommend recommend
+        left join vmes_warehouse_product product on recommend.warehouse_product_id = product.id
+        left join vmes_warehouse warehouse on warehouse.id = product.warehouse_id
         <where>
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >
                 and ${queryStr}
             </if>
-            <if test="code != null and code != ''">
-                and code LIKE CONCAT(CONCAT('%', #{code}),'%')
+            <if test="detailId != null and detailId != ''">
+                and recommend.detail_id = #{detailId}
             </if>
-            <if test="name != null and name != ''">
-                and name LIKE CONCAT(CONCAT('%', #{name}),'%')
+            <if test="currentCompanyId != null and currentCompanyId != ''">
+                and product.company_id = #{currentCompanyId}
             </if>
+            and product.stock_count > 0
         </where>
         <if test="orderStr != null and orderStr != ''" >
-            order by ${orderStr}
+            order by product.code asc  <!-- 先入先出 按批次号的升序排列 -->
         </if>
     </select>
 
