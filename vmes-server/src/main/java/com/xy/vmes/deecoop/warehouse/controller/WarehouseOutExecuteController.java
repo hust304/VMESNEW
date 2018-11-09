@@ -236,8 +236,8 @@ public class WarehouseOutExecuteController {
 
         if((!StringUtils.isEmpty(beforeCount))&&(!StringUtils.isEmpty(afterCount))){
 
-            BigDecimal before = BigDecimal.valueOf(Double.parseDouble(beforeCount));
-            BigDecimal after = BigDecimal.valueOf(Double.parseDouble(afterCount));
+            BigDecimal before = BigDecimal.valueOf(Double.parseDouble(beforeCount)).setScale(2, BigDecimal.ROUND_HALF_UP);
+            BigDecimal after = BigDecimal.valueOf(Double.parseDouble(afterCount)).setScale(2, BigDecimal.ROUND_HALF_UP);
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
             WarehouseOutExecute execute = warehouseOutExecuteService.selectById(id);
@@ -288,10 +288,10 @@ public class WarehouseOutExecuteController {
                 }
             }
             //明细状态(0:待派单 1:执行中 2:已完成 -1.已取消)
-            if(detail.getCount().compareTo(totalCount)>=0){
-                detail.setState("2");
-            }else {
+            if(detail.getCount().compareTo(totalCount)>0){
                 detail.setState("1");
+            }else {
+                detail.setState("2");
             }
 
             warehouseOutDetailService.update(detail);
@@ -372,10 +372,10 @@ public class WarehouseOutExecuteController {
             }
         }
         //明细状态(0:待派单 1:执行中 2:已完成 -1.已取消)
-        if(detail.getCount().compareTo(totalCount)>=0){
-            detail.setState("2");
-        }else {
+        if(detail.getCount().compareTo(totalCount)>0){
             detail.setState("1");
+        }else {
+            detail.setState("2");
         }
 
         warehouseOutDetailService.update(detail);
@@ -477,10 +477,10 @@ public class WarehouseOutExecuteController {
                             }
                         }
                         //明细状态(0:待派单 1:执行中 2:已完成 -1.已取消)
-                        if(detail.getCount().compareTo(totalCount)>=0){
-                            detail.setState("2");
-                        }else {
+                        if(detail.getCount().compareTo(totalCount)>0){
                             detail.setState("1");
+                        }else {
+                            detail.setState("2");
                         }
 
                         warehouseOutDetailService.update(detail);

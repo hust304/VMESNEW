@@ -372,7 +372,7 @@
             from
             vmes_warehouse_out_detail detail
             left join vmes_warehouse_out whout on whout.id = detail.parent_id
-            left join vmes_warehouse_out_execute outexecute on outexecute.detail_id = detail.id
+            left join vmes_warehouse_out_execute outexecute on outexecute.detail_id = detail.id and outexecute.isdisable = '1'
             left join vmes_product prod on prod.id = detail.product_id
             left join vmes_dictionary genre on prod.genre = genre.id
             left join vmes_dictionary unit on prod.unit = unit.id
@@ -425,7 +425,7 @@
             from
             vmes_warehouse_out_detail detail
             left join vmes_warehouse_out whout on whout.id = detail.parent_id
-            left join vmes_warehouse_out_execute outexecute on outexecute.detail_id = detail.id
+            left join vmes_warehouse_out_execute outexecute on outexecute.detail_id = detail.id and outexecute.isdisable = '1'
             left join vmes_product prod on prod.id = detail.product_id
             left join vmes_dictionary genre on prod.genre = genre.id
             left join vmes_dictionary unit on prod.unit = unit.id
