@@ -207,6 +207,41 @@
     </insert>
 
 
+    <insert id="insertColumn2" >
+        delete from vmes_column where model_code = 'WarehouseOutDetailRecords' ;
+        insert into vmes_column (
+        id,model_code,title_key,title_name,serial_number,
+        isdisable,ishide,isedit,ismust,cdate,
+        cuser
+        ) VALUES
+        (replace(uuid(), '-', ''),'WarehouseOutDetailRecords','warehouseOutCode','出库单编码',1, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutDetailRecords','productCode','货品编码',2, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutDetailRecords','productName','货品名称',3, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutDetailRecords','productSpec',' 规格/型号',4, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutDetailRecords','productGenre','货品属性ID',5, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutDetailRecords','productGenreName','货品属性',6, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutDetailRecords','productUnit','计量单位ID',7, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutDetailRecords','productUnitName','计量单位',8, '1','1','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'WarehouseOutDetailRecords','parentId','出库单ID',9, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutDetailRecords','warehouseId',' (推荐)货位ID',10, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutDetailRecords','productId','产品ID',11, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutDetailRecords','code','批次号',12, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutDetailRecords','count','出库数量',13, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutDetailRecords','executeCount','已出库数量',14, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutDetailRecords','state','状态',15, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutDetailRecords','cuser','创建用户id',16, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutDetailRecords','cdate','创建时间',17, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutDetailRecords','uuser','修改用户id',18, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutDetailRecords','udate','修改时间',19, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutDetailRecords','remark','备注',20, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutDetailRecords','isdisable','是否启用',21, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutDetailRecords','qrcode','二维码',22, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutDetailRecords','businessId','业务id',23, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutDetailRecords','id','id',0, '1','0','1','0',now(), 'admin')
+    </insert>
+
+
     <!-- 列表(全部) 自动创建，禁止修改-->
     <select id="dataList" parameterType="com.yvan.PageData" resultType="com.xy.vmes.entity.WarehouseOutDetail">
         select

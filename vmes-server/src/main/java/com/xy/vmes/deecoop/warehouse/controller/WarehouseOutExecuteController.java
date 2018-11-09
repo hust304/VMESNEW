@@ -2,14 +2,16 @@ package com.xy.vmes.deecoop.warehouse.controller;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
+import com.xy.vmes.common.util.Common;
+import com.xy.vmes.common.util.DateFormat;
 import com.xy.vmes.common.util.StringUtil;
-import com.xy.vmes.entity.Column;
-import com.xy.vmes.entity.WarehouseOutExecute;
-import com.xy.vmes.service.ColumnService;
-import com.xy.vmes.service.WarehouseOutExecuteService;
+import com.xy.vmes.entity.*;
+import com.xy.vmes.exception.TableVersionException;
+import com.xy.vmes.service.*;
 import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
+import com.yvan.YvanUtil;
 import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +24,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.http.HttpServletResponse;
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 
@@ -42,6 +46,15 @@ public class WarehouseOutExecuteController {
 
     @Autowired
     private ColumnService columnService;
+
+    @Autowired
+    private WarehouseProductService warehouseProductService;
+
+    @Autowired
+    private WarehouseOutDetailService warehouseOutDetailService;
+
+    @Autowired
+    private WarehouseOutService warehouseOutService;
 
     /**
     * @author 刘威 自动创建，禁止修改
@@ -198,6 +211,308 @@ public class WarehouseOutExecuteController {
 
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+
+
+
+    /**
+     * 出库编辑
+     * @author 刘威
+     * @date 2018-10-16
+     * @throws Exception
+     */
+    @PostMapping("/warehouseOutExecute/updateWarehouseOutExecute")
+    @Transactional
+    public ResultModel updateWarehouseOutExecute() throws Exception {
+        logger.info("################/warehouseOutExecute/updateWarehouseOutExecute 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        ResultModel model = new ResultModel();
+
+        PageData pageData = HttpUtils.parsePageData();
+        String id = pageData.getString("id");
+        String beforeCount = pageData.getString("beforeCount");
+        String afterCount = pageData.getString("afterCount");
+        String currentUserId = pageData.getString("currentUserId");
+        String currentCompanyId = pageData.getString("currentCompanyId");
+
+        if((!StringUtils.isEmpty(beforeCount))&&(!StringUtils.isEmpty(afterCount))){
+
+            BigDecimal before = BigDecimal.valueOf(Double.parseDouble(beforeCount));
+            BigDecimal after = BigDecimal.valueOf(Double.parseDouble(afterCount));
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+
+            WarehouseOutExecute execute = warehouseOutExecuteService.selectById(id);
+            execute.setCount(after);
+            if(StringUtils.isEmpty(execute.getRemark())){
+                execute.setRemark("操作记录：修改前（"+beforeCount+"） 修改后 （"+afterCount+"） 操作时间："+ dateFormat.format(new Date()));
+            }else {
+                execute.setRemark(execute.getRemark()+"  操作记录：修改前（"+beforeCount+"） 修改后 （"+afterCount+"） 操作时间："+ dateFormat.format(new Date()));
+            }
+
+            warehouseOutExecuteService.update(execute);
+
+
+            try {
+                //还原出库操作
+                WarehouseProduct outObject = warehouseProductService.selectById(execute.getWarehouseProductId());
+                String msgStr = warehouseProductService.outStockCount(outObject, after.subtract(before), currentUserId, currentCompanyId);
+                if (msgStr != null && msgStr.trim().length() > 0) {
+                    model.putCode(Integer.valueOf(1));
+                    model.putMsg(msgStr);
+                    return model;
+                }
+            } catch (TableVersionException tabExc) {
+                //库存变更 version 锁
+                if (Common.SYS_STOCKCOUNT_ERRORCODE.equals(tabExc.getErrorCode())) {
+                    model.putCode(Integer.valueOf(1));
+                    model.putMsg(tabExc.getMessage());
+                    return model;
+                }
+            }
+
+
+
+            //更新出库单及出库明细状态
+            WarehouseOutDetail detail = warehouseOutDetailService.selectById(execute.getDetailId());
+
+            Map columnMap = new HashMap();
+            columnMap.put("detail_id",execute.getDetailId());
+            columnMap.put("isdisable","1");
+            BigDecimal totalCount = BigDecimal.ZERO;
+            List<WarehouseOutExecute> warehouseOutExecuteList = warehouseOutExecuteService.selectByColumnMap(columnMap);
+            if(warehouseOutExecuteList!=null&&warehouseOutExecuteList.size()>0){
+                for(int i=0;i<warehouseOutExecuteList.size();i++){
+                    WarehouseOutExecute warehouseOutExecute = warehouseOutExecuteList.get(i);
+                    if(warehouseOutExecute!=null&&warehouseOutExecute.getCount()!=null){
+                        totalCount = totalCount.add(warehouseOutExecute.getCount());
+                    }
+                }
+            }
+            //明细状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+            if(detail.getCount().compareTo(totalCount)>=0){
+                detail.setState("2");
+            }else {
+                detail.setState("1");
+            }
+
+            warehouseOutDetailService.update(detail);
+            warehouseOutService.updateState(detail.getParentId());
+
+        }
+
+
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/warehouseOutExecute/updateWarehouseOutExecute 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+    /**
+     * 出库删除
+     * @author 刘威
+     * @date 2018-10-16
+     * @throws Exception
+     */
+    @PostMapping("/warehouseOutExecute/deleteWarehouseOutExecute")
+    @Transactional
+    public ResultModel deleteWarehouseOutExecute() throws Exception {
+        logger.info("################/warehouseOutExecute/deleteWarehouseOutExecute 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        ResultModel model = new ResultModel();
+
+        PageData pageData = HttpUtils.parsePageData();
+        String id = pageData.getString("id");
+        String currentUserId = pageData.getString("currentUserId");
+        String currentCompanyId = pageData.getString("currentCompanyId");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        WarehouseOutExecute execute = warehouseOutExecuteService.selectById(id);
+        execute.setIsdisable("0");
+        if(StringUtils.isEmpty(execute.getRemark())){
+            execute.setRemark("操作记录：删除  操作时间："+ dateFormat.format(new Date()));
+        }else {
+            execute.setRemark(execute.getRemark()+"  操作记录：删除  操作时间："+ dateFormat.format(new Date()));
+        }
+        warehouseOutExecuteService.update(execute);
+
+
+        try {
+            //还原出库操作
+            WarehouseProduct outObject = warehouseProductService.selectById(execute.getWarehouseProductId());
+            String msgStr = warehouseProductService.outStockCount(outObject, execute.getCount().negate(), currentUserId, currentCompanyId);
+            if (msgStr != null && msgStr.trim().length() > 0) {
+                model.putCode(Integer.valueOf(1));
+                model.putMsg(msgStr);
+                return model;
+            }
+        } catch (TableVersionException tabExc) {
+            //库存变更 version 锁
+            if (Common.SYS_STOCKCOUNT_ERRORCODE.equals(tabExc.getErrorCode())) {
+                model.putCode(Integer.valueOf(1));
+                model.putMsg(tabExc.getMessage());
+                return model;
+            }
+        }
+
+
+
+        //更新出库单及出库明细状态
+        WarehouseOutDetail detail = warehouseOutDetailService.selectById(execute.getDetailId());
+
+        Map columnMap = new HashMap();
+        columnMap.put("detail_id",execute.getDetailId());
+        columnMap.put("isdisable","1");
+        BigDecimal totalCount = BigDecimal.ZERO;
+        List<WarehouseOutExecute> warehouseOutExecuteList = warehouseOutExecuteService.selectByColumnMap(columnMap);
+        if(warehouseOutExecuteList!=null&&warehouseOutExecuteList.size()>0){
+            for(int i=0;i<warehouseOutExecuteList.size();i++){
+                WarehouseOutExecute warehouseOutExecute = warehouseOutExecuteList.get(i);
+                if(warehouseOutExecute!=null&&warehouseOutExecute.getCount()!=null){
+                    totalCount = totalCount.add(warehouseOutExecute.getCount());
+                }
+            }
+        }
+        //明细状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+        if(detail.getCount().compareTo(totalCount)>=0){
+            detail.setState("2");
+        }else {
+            detail.setState("1");
+        }
+
+        warehouseOutDetailService.update(detail);
+        warehouseOutService.updateState(detail.getParentId());
+
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/warehouseOutExecute/deleteWarehouseOutExecute 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+
+    /**
+     * 出库执行
+     * @author 刘威
+     * @date 2018-10-16
+     * @throws Exception
+     */
+    @PostMapping("/warehouseOutExecute/executeWarehouseOutExecute")
+    @Transactional
+    public ResultModel executeWarehouseOutExecute() throws Exception {
+        logger.info("################/warehouseOutExecute/executeWarehouseOutExecute 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        ResultModel model = new ResultModel();
+
+        PageData pageData = HttpUtils.parsePageData();
+        String jsonDataStr = pageData.getString("jsonDataStr");
+        String currentUserId = pageData.getString("currentUserId");
+        String currentCompanyId = pageData.getString("currentCompanyId");
+        List<Map<String, Object>> mapList = (List<Map<String, Object>>) YvanUtil.jsonToList(jsonDataStr);
+
+
+
+        if(mapList!=null&&mapList.size()>0){
+            for(int j=0;j<mapList.size();j++){
+                Map<String, Object> detailMap = mapList.get(j);
+                if(detailMap!=null&&detailMap.get("children")!=null){
+                    String detailId = (String)detailMap.get("id");
+                    if(!StringUtils.isEmpty(detailId)){
+                        //新增推荐库位记录
+                        List childrenList = (List) detailMap.get("children");
+                        if(childrenList!=null&&childrenList.size()>0){
+                            for(int k=0;k<childrenList.size();k++){
+                                Map<String, Object> childrenMap = (Map<String, Object>)childrenList.get(k);
+                                String id = (String)childrenMap.get("id");
+                                String warehouseId = (String)childrenMap.get("warehouseId");
+                                String suggestCount = (String)childrenMap.get("suggestCount");
+                                BigDecimal count = StringUtils.isEmpty(suggestCount)?BigDecimal.ZERO:BigDecimal.valueOf(Double.parseDouble(suggestCount));
+
+                                WarehouseOutExecute execute = new WarehouseOutExecute();
+                                execute.setDetailId(detailId);
+                                execute.setWarehouseId(warehouseId);
+                                execute.setExecutorId(currentUserId);
+                                execute.setWarehouseProductId(id);
+                                execute.setCount(count);
+                                warehouseOutExecuteService.save(execute);
+
+
+
+
+                                //添加出库单明细-出库执行
+                                try {
+                                    //出库操作
+                                    WarehouseProduct outObject = warehouseProductService.selectById(id);
+                                    String msgStr = warehouseProductService.outStockCount(outObject, count, currentUserId, currentCompanyId);
+                                    if (msgStr != null && msgStr.trim().length() > 0) {
+                                        model.putCode(Integer.valueOf(1));
+                                        model.putMsg(msgStr);
+                                        return model;
+                                    }
+                                } catch (TableVersionException tabExc) {
+                                    //库存变更 version 锁
+                                    if (Common.SYS_STOCKCOUNT_ERRORCODE.equals(tabExc.getErrorCode())) {
+                                        model.putCode(Integer.valueOf(1));
+                                        model.putMsg(tabExc.getMessage());
+                                        return model;
+                                    }
+                                }
+
+
+                            }
+                        }
+
+                        //更新出库单及出库明细状态
+                        WarehouseOutDetail detail = warehouseOutDetailService.selectById(detailId);
+
+                        Map columnMap = new HashMap();
+                        columnMap.put("detail_id",detailId);
+                        columnMap.put("isdisable","1");
+                        BigDecimal totalCount = BigDecimal.ZERO;
+                        List<WarehouseOutExecute> warehouseOutExecuteList = warehouseOutExecuteService.selectByColumnMap(columnMap);
+                        if(warehouseOutExecuteList!=null&&warehouseOutExecuteList.size()>0){
+                            for(int i=0;i<warehouseOutExecuteList.size();i++){
+                                WarehouseOutExecute warehouseOutExecute = warehouseOutExecuteList.get(i);
+                                if(warehouseOutExecute!=null&&warehouseOutExecute.getCount()!=null){
+                                    totalCount = totalCount.add(warehouseOutExecute.getCount());
+                                }
+                            }
+                        }
+                        //明细状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+                        if(detail.getCount().compareTo(totalCount)>=0){
+                            detail.setState("2");
+                        }else {
+                            detail.setState("1");
+                        }
+
+                        warehouseOutDetailService.update(detail);
+                        warehouseOutService.updateState(detail.getParentId());
+
+                    }
+                }
+
+            }
+        }
+
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/warehouseOutExecute/executeWarehouseOutExecute 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     /**
     * @author 刘威 自动创建，可以修改
     * @date 2018-11-01

@@ -248,7 +248,7 @@
                 and vmesuser.user_name LIKE CONCAT(CONCAT('%', #{executor}),'%')
             </if>
         </where>
-        order by executor.isdisable desc
+        order by executor.isdisable desc ,executor.cdate desc
     </select>
 
     <!-- 自动创建，可以修改 -->
@@ -270,7 +270,7 @@
                 and vmesuser.user_name LIKE CONCAT(CONCAT('%', #{executor}),'%')
             </if>
         </where>
-        order by executor.isdisable desc
+        order by executor.isdisable desc ,executor.cdate desc
     </select>
 
 

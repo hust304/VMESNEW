@@ -241,8 +241,9 @@
         case when warehouseout.state=-1 then '已取消' when warehouseout.state=0 then '未完成' when warehouseout.state=1 then '已完成' else null end state,<!-- 状态(0:未完成 1:已完成 -1:已取消) -->
         warehouseout.cuser cuser,<!-- 创建用户id -->
         warehouseout.cdate cdate,<!-- 创建时间 -->
+        DATE_FORMAT(warehouseout.cdate,'%Y-%m-%d') cdate,
         warehouseout.uuser uuser,<!-- 修改用户id -->
-        warehouseout.udate udate,<!-- 修改时间 -->
+        DATE_FORMAT(warehouseout.udate,'%Y-%m-%d') udate,
         warehouseout.remark remark,<!-- 备注 -->
         warehouseout.isdisable isdisable,<!-- 是否启用(0:已禁用 1:启用) -->
         warehouseout.id id <!-- id -->
