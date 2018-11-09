@@ -141,4 +141,45 @@
         </if>
     </select>
 
+    <!-- 获取入库明细执行人列表 -->
+    <select id="findListWarehouseInExecutorByAddExecute" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+        executor.id,
+        executor.detail_id detailId,
+        executor.executor_id executorId,
+
+        <!-- 入库单明细表 -->
+        detail.warehouse_id warehouseId,
+        <!-- 仓库货位表 -->
+        warehouse.path_name pathName,
+        ifnull(warehouseProduct.stock_count, 0) stockCount,
+        '' count
+        from vmes_warehouse_in_executor executor
+            left join vmes_warehouse_in_detail detail on executor.detail_id = detail.id
+            left join vmes_warehouse warehouse on detail.warehouse_id = warehouse.id
+            left join (
+                select product_id,company_id,warehouse_id,round(sum(ifnull(stock_count,0)), 2) stock_count
+                from vmes_warehouse_product
+                <where>
+                    <if test="productId != null and productId != ''">
+                        and product_id = #{productId}
+                    </if>
+                    <if test="companyId != null and companyId != ''">
+                        and company_id = #{companyId}
+                    </if>
+                    <if test="warehouseId != null and warehouseId != ''">
+                        and warehouse_id = #{warehouseId}
+                    </if>
+                </where>
+                group by product_id,company_id,warehouse_id
+            ) warehouseProduct on detail.warehouse_id = warehouseProduct.warehouse_id
+        <where>
+            <if test="detailId != null and detailId != ''">
+                and executor.detail_id = #{detailId}
+            </if>
+            <if test="executorId != null and executorId != ''">
+                and executor.executor_id = #{executorId}
+            </if>
+        </where>
+    </select>
 </mapper>

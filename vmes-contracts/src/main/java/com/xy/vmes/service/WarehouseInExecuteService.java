@@ -78,6 +78,8 @@ public interface WarehouseInExecuteService {
     void updateToDisableByIds(String[] ids)throws Exception;
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+    void updateIsdisableByExecute(String detailId, String isdisable) throws Exception;
+
     List<Map<String, Object>> findSumcountByWarehouseInExecute(PageData object);
     Map<String, BigDecimal> findExecuteCountByParentId(String parentId);
 

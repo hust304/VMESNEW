@@ -44,6 +44,13 @@ public interface WarehouseInExecutorMapper extends BaseMapper<WarehouseInExecuto
      * 创建时间：2018-10-31
      */
     List<Map> getDataListPage(PageData pd, Pagination pg);
+
+    /**
+     * 获取入库明细执行人列表(添加入库执行)
+     * @param pd
+     * @return
+     */
+    List<Map> findListWarehouseInExecutorByAddExecute(PageData pd);
 }
 
 

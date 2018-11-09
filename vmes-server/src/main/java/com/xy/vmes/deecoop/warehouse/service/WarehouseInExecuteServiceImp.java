@@ -129,6 +129,16 @@ public class WarehouseInExecuteServiceImp implements WarehouseInExecuteService {
     }
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+    public void updateIsdisableByExecute(String detailId, String isdisable) throws Exception {
+        if (detailId == null || detailId.trim().length() == 0) {return;}
+        if (isdisable == null || isdisable.trim().length() == 0) {return;}
+
+        PageData findMap = new PageData();
+        findMap.put("detailId", detailId);
+        findMap.put("isdisable", isdisable);
+        warehouseInExecuteMapper.updateIsdisableByExecute(findMap);
+    }
+
     public List<Map<String, Object>> findSumcountByWarehouseInExecute(PageData object) {
         if (object == null) {return null;}
         return warehouseInExecuteMapper.findSumcountByWarehouseInExecute(object);

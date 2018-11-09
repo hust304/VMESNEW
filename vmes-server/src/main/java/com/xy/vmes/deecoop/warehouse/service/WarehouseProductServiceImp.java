@@ -633,7 +633,7 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
         //(货位批次号,货品id,库位id)查询库存表
         //非空判断 -- 接口入口已经验证
         PageData findMap = new PageData();
-        findMap.put("code", object.getCdate());
+        findMap.put("code", object.getCode());
         findMap.put("productId", object.getProductId());
         findMap.put("warehouseId", object.getWarehouseId());
         findMap.put("mapSize", Integer.valueOf(findMap.size()));
@@ -689,7 +689,7 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
         //(货位批次号,货品id,库位id)查询库存表
         //非空判断 -- 接口入口已经验证
         PageData findMap = new PageData();
-        findMap.put("code", object.getCdate());
+        findMap.put("code", object.getCode());
         findMap.put("productId", object.getProductId());
         findMap.put("warehouseId", object.getWarehouseId());
         findMap.put("mapSize", Integer.valueOf(findMap.size()));

@@ -76,6 +76,14 @@ public interface WarehouseInExecutorService {
     void updateToDisableByIds(String[] ids)throws Exception;
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+    /**
+     * 获取入库明细执行人列表(添加入库执行)
+     * @param pd
+     * @return
+     * @throws Exception
+     */
+    List<Map> findListWarehouseInExecutorByAddExecute(PageData pd) throws Exception;
+
     WarehouseInExecutor findWarehouseInExecutor(PageData object);
     WarehouseInExecutor findWarehouseInExecutorById(String id);
 

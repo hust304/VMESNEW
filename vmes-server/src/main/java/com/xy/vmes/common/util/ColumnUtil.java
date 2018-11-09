@@ -128,6 +128,37 @@ public class ColumnUtil {
         return newColumnList;
     }
 
+    /**
+     * 根据List<Column>，获取业务列表Map
+     * @param columnList
+     *
+     * @return
+     */
+    public static Map<String, Object> findTitleMapByColumnList(List<Column> columnList) {
+        Map<String, Object> mapObject = new HashMap<String, Object>();
+        if (columnList == null || columnList.size() == 0) {return mapObject;}
+
+        List<LinkedHashMap> titlesList = new ArrayList<LinkedHashMap>();
+        List<String> titlesHideList = new ArrayList<String>();
+        Map<String, String> varModelMap = new HashMap<String, String>();
+
+        for (Column column : columnList) {
+            if("0".equals(column.getIshide())){
+                titlesHideList.add(column.getTitleKey());
+            }
+            LinkedHashMap titlesLinkedMap = new LinkedHashMap();
+            titlesLinkedMap.put(column.getTitleKey(),column.getTitleName());
+            varModelMap.put(column.getTitleKey(),"");
+            titlesList.add(titlesLinkedMap);
+        }
+
+        mapObject.put("hideTitles",titlesHideList);
+        mapObject.put("titles",titlesList);
+        mapObject.put("varModel",varModelMap);
+
+        return mapObject;
+    }
+
     public static void orderAcsBySerialNumber(List<Column> objectList) {
         Collections.sort(objectList, new Comparator<Object>() {
             public int compare(Object arg0, Object arg1) {

@@ -1,8 +1,10 @@
 package com.xy.vmes.deecoop.warehouse.controller;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.service.ColumnService;
+import com.xy.vmes.service.WarehouseInDetailService;
 import com.xy.vmes.service.WarehouseInExecutorService;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
@@ -27,11 +29,14 @@ public class WarehouseInExecutorController {
     private Logger logger = LoggerFactory.getLogger(WarehouseInExecutorController.class);
 
     @Autowired
+    private WarehouseInDetailService warehouseInDetailService;
+    @Autowired
     private WarehouseInExecutorService warehouseInExecutorService;
     @Autowired
     private ColumnService columnService;
 
     /**
+     * 入库单派单明细(vmes_warehouse_in_executor)
      * @author 陈刚 自动创建，可以修改
      * @date 2018-10-16
      */
@@ -102,5 +107,109 @@ public class WarehouseInExecutorController {
         Long endTime = System.currentTimeMillis();
         logger.info("################warehouseInExecutor/listPageWarehouseInExecutor 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
+    }
+
+    /**
+     * (入库管理-任务列表)获取入库单执行列表
+     * @author 陈刚
+     * @date 2018-10-18
+     * @throws Exception
+     */
+    @PostMapping("/warehouseInExecutor/findListByWarehouseInExecutor")
+    public ResultModel findListByWarehouseInExecutor() throws Exception {
+        logger.info("################warehouseInExecutor/findListByWarehouseInExecutor 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+        Map result = new HashMap();
+
+        //A. 第一级: 获取入库单明细Title列表
+        List<Column> columnList = columnService.findColumnList("warehouseInDetail");
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
+        }
+
+        String firstFieldCode = pd.getString("firstFieldCode");
+        if (firstFieldCode != null && firstFieldCode.trim().length() > 0) {
+            columnList = columnService.modifyColumnByFieldCode(firstFieldCode, columnList);
+        }
+
+        Map<String, Object> firstTitleMap = ColumnUtil.findTitleMapByColumnList(columnList);
+        result.put("hideTitles",firstTitleMap.get("hideTitles"));
+        result.put("titles",firstTitleMap.get("titles"));
+
+        //B. 第二级: 获取入库单明细执行人Title列表
+        columnList = columnService.findColumnList("warehouseInExecutorByAddExecute");
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
+        }
+        String secondFieldCode = pd.getString("secondFieldCode");
+        if (secondFieldCode != null && secondFieldCode.trim().length() > 0) {
+            columnList = columnService.modifyColumnByFieldCode(secondFieldCode, columnList);
+        }
+
+        Map<String, Object> secondTitleMap = ColumnUtil.findTitleMapByColumnList(columnList);
+
+        //C. 查询第一层数据
+        String companyId = pd.getString("currentCompanyId");
+        Pagination pg = HttpUtils.parsePagination(pd);
+        List<Map> varMapList = new ArrayList();
+        List<Map> varList = warehouseInDetailService.getDataListPage(pd, pg);
+        if (varList != null && varList.size() > 0) {
+            for(int i = 0; i < varList.size(); i++) {
+                Map map = varList.get(i);
+                Map<String, Object> varMap = new HashMap<String, Object>();
+                varMap.putAll((Map<String, String>)firstTitleMap.get("varModel"));
+                for (Map.Entry<String, Object> entry : varMap.entrySet()) {
+                    varMap.put(entry.getKey(), map.get(entry.getKey()) != null ? map.get(entry.getKey()).toString() : "");
+                }
+                varMap.put("hideTitles", secondTitleMap.get("hideTitles"));
+                varMap.put("titles", secondTitleMap.get("titles"));
+                varMap.put("pid", null);
+                //查询第二层数据
+                varMap.put("children", this.findSecondList(map, secondTitleMap ,companyId));
+                varMapList.add(varMap);
+            }
+        }
+        result.put("varList",varMapList);
+        result.put("pageData", pg);
+
+        model.putResult(result);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################warehouseInExecutor/findListByWarehouseInExecutor 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    private List<Map> findSecondList(Map firstRowMap, Map<String, Object> secondTitleMap, String companyId) throws Exception {
+        String productId = (String)firstRowMap.get("productId");
+        String warehouseId = (String)firstRowMap.get("warehouseId");
+
+        PageData findMap = new PageData();
+        findMap.put("productId", productId);
+        findMap.put("warehouseId", warehouseId);
+        findMap.put("companyId", companyId);
+
+        List<Map> secondMapList = new ArrayList();
+        List<Map> varList = warehouseInExecutorService.findListWarehouseInExecutorByAddExecute(findMap);
+        if(varList != null && varList.size() > 0) {
+            for(int i = 0; i < varList.size(); i++) {
+                Map map = varList.get(i);
+                Map<String, String> varMap = new HashMap<String, String>();
+                varMap.putAll((Map<String, String>)secondTitleMap.get("varModel"));
+                for (Map.Entry<String, String> entry : varMap.entrySet()) {
+                    varMap.put(entry.getKey(), map.get(entry.getKey()) != null ? map.get(entry.getKey()).toString() : "");
+                }
+                varMap.put("pid",firstRowMap.get("id").toString());
+                secondMapList.add(varMap);
+
+            }
+        }
+
+        return secondMapList;
     }
 }

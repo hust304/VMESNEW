@@ -70,6 +70,15 @@ public interface WarehouseService {
     void updateToDisableByIds(String[] ids)throws Exception;
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+    /**
+     * 获取全部仓库货位记录，同时带出该(货位,货品)库存数量
+     *
+     * @param pd
+     * @param pg
+     * @return
+     */
+    List<Map> findListWarehouseByWarehouseProduct(PageData pd, Pagination pg) throws Exception;
+
     Map<String, String> getKeyNameMap();
     Map<String, String> getNameKeyMap();
     void createBusinessMap();

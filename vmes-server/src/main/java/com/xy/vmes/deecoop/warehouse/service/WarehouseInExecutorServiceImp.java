@@ -127,6 +127,16 @@ public class WarehouseInExecutorServiceImp implements WarehouseInExecutorService
     }
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+    /**
+     * 获取入库明细执行人列表(添加入库执行)
+     * @param pd
+     * @return
+     * @throws Exception
+     */
+    public List<Map> findListWarehouseInExecutorByAddExecute(PageData pd) throws Exception {
+        return warehouseInExecutorMapper.findListWarehouseInExecutorByAddExecute(pd);
+    }
+
     public WarehouseInExecutor findWarehouseInExecutor(PageData object) {
         if (object == null) {return null;}
 
