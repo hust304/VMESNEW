@@ -272,8 +272,13 @@ public class WarehouseInExecuteController {
         PageData findMap = new PageData();
         findMap.put("detailId", detailId);
         findMap.put("executorId", cuser);
+        //是否启用(0:已禁用 1:启用)
+        findMap.put("isdisable", "1");
         findMap.put("mapSize", Integer.valueOf(findMap.size()));
+
         List<WarehouseInExecute> executeList = warehouseInExecuteService.findWarehouseInExecuteList(findMap);
+        List<WarehouseInExecutor> executorList = warehouseInExecutorService.findWarehouseInExecutorList(findMap);
+
         if (executeList == null || executeList.size() == 0) {return model;}
 
         StringBuffer msgBuf = new StringBuffer();
@@ -308,9 +313,8 @@ public class WarehouseInExecuteController {
                 model.putMsg(msgBuf.toString());
                 return model;
             } else {
-                //B. 修改入库执行表
-                for (int i = 0; i < executeList.size(); i++) {
-                    WarehouseInExecute execute = executeList.get(i);
+                //B. 修改入库执行表 vmes_warehouse_in_execute
+                for (WarehouseInExecute execute : executeList) {
                     //isdisable: 是否启用(0:已禁用 1:启用)
                     execute.setIsdisable("0");
 
@@ -323,12 +327,29 @@ public class WarehouseInExecuteController {
                     warehouseInExecuteService.update(execute);
                 }
 
-                //C. 修改入库单明细状态
+                //C. 入库明细执行人 vmes_warehouse_in_executor
+                if (executorList != null && executorList.size() > 0) {
+                    for (WarehouseInExecutor executor : executorList) {
+                        //isdisable: 是否启用(0:已禁用 1:启用)
+                        executor.setIsdisable("0");
+
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+                        if (executor.getRemark() == null) {
+                            executor.setRemark("退单原因:"+remark+" 操作时间："+ dateFormat.format(new Date()));
+                        } else {
+                            executor.setRemark(executor.getRemark() + " 退单原因:"+remark+" 操作时间："+ dateFormat.format(new Date()));
+                        }
+
+                        warehouseInExecutorService.update(executor);
+                    }
+                }
+
+                //D. 修改入库单明细状态
                 //状态(0:待派单 1:执行中 2:已完成 -1.已取消)
                 detail.setState("0");
                 warehouseInDetailService.update(detail);
 
-                //2. 修改修改当前入库单明细状态--同时反写入库单状态
+                //E. 修改修改当前入库单明细状态--同时反写入库单状态
                 WarehouseIn parent = new WarehouseIn();
                 parent.setId(detail.getParentId());
                 //入库单明细状态(0:待派单 1:执行中 2:已完成 -1:已取消) --忽视明细状态(-1:已取消)

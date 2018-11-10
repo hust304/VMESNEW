@@ -93,6 +93,9 @@
                     <if test="executorId != null and executorId != ''" >
                         and executor_id = #{executorId}
                     </if>
+                    <if test="isdisable != null and isdisable != ''" >
+                        and isdisable = #{isdisable}
+                    </if>
 
                     <!--queryStr 自定义sql查询语句-->
                     <if test="queryStr != null and queryStr != ''" >
