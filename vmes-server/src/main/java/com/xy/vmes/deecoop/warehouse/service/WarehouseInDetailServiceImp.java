@@ -298,6 +298,8 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
     public boolean isAllExistStateByDetailList(String state, String ignoreState, List<WarehouseInDetail> objectList) {
         if (state == null || state.trim().length() == 0) {return false;}
         if (objectList == null || objectList.size() == 0) {return false;}
+
+        if ("-1".equals(state)) {state = "c";}
         if ("-1".equals(ignoreState)) {ignoreState = "c";}
 
         for (WarehouseInDetail object : objectList) {

@@ -1,5 +1,7 @@
 package com.xy.vmes.deecoop.warehouse.controller;
 
+import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.Common;
 import com.xy.vmes.entity.*;
 import com.xy.vmes.exception.TableVersionException;
@@ -18,9 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 说明：入库派单明细执行
@@ -42,6 +42,85 @@ public class WarehouseInExecuteController {
     private WarehouseInExecuteService warehouseInExecuteService;
     @Autowired
     private WarehouseProductService warehouseProductService;
+
+    @Autowired
+    private ColumnService columnService;
+
+    /**
+     * (入库管理-任务列表)获取入库单执行列表
+     * @author 陈刚
+     * @date 2018-10-18
+     * @throws Exception
+     */
+    @PostMapping("/warehouseInExecute/findListWarehouseInExecuteByEdit")
+    public ResultModel findListWarehouseInExecuteByEdit() throws Exception {
+        logger.info("################warehouseInExecute/findListWarehouseInExecuteByEdit 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+        Map result = new HashMap();
+
+        //A. 第一级: 获取入库单明细Title列表
+        List<Column> columnList = columnService.findColumnList("warehouseInDetail");
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
+        }
+
+        String firstFieldCode = pd.getString("firstFieldCode");
+        if (firstFieldCode != null && firstFieldCode.trim().length() > 0) {
+            columnList = columnService.modifyColumnByFieldCode(firstFieldCode, columnList);
+        }
+
+        Map<String, Object> firstTitleMap = ColumnUtil.findTitleMapByColumnList(columnList);
+        result.put("hideTitles",firstTitleMap.get("hideTitles"));
+        result.put("titles",firstTitleMap.get("titles"));
+
+        //B. 第二级: 获取入库单明细执行人Title列表
+        columnList = columnService.findColumnList("warehouseInExecuteByEdit");
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
+        }
+        String secondFieldCode = pd.getString("secondFieldCode");
+        if (secondFieldCode != null && secondFieldCode.trim().length() > 0) {
+            columnList = columnService.modifyColumnByFieldCode(secondFieldCode, columnList);
+        }
+
+        Map<String, Object> secondTitleMap = ColumnUtil.findTitleMapByColumnList(columnList);
+
+        //C. 查询第一层数据
+        String companyId = pd.getString("currentCompanyId");
+        Pagination pg = HttpUtils.parsePagination(pd);
+        List<Map> varMapList = new ArrayList();
+        List<Map> varList = warehouseInDetailService.getDataListPage(pd, pg);
+        if (varList != null && varList.size() > 0) {
+            for(int i = 0; i < varList.size(); i++) {
+                Map map = varList.get(i);
+                Map<String, Object> varMap = new HashMap<String, Object>();
+                varMap.putAll((Map<String, String>)firstTitleMap.get("varModel"));
+                for (Map.Entry<String, Object> entry : varMap.entrySet()) {
+                    varMap.put(entry.getKey(), map.get(entry.getKey()) != null ? map.get(entry.getKey()).toString() : "");
+                }
+                varMap.put("hideTitles", secondTitleMap.get("hideTitles"));
+                varMap.put("titles", secondTitleMap.get("titles"));
+                varMap.put("pid", null);
+                //查询第二层数据
+                varMap.put("children", this.findSecondList(map, secondTitleMap ,companyId));
+                varMapList.add(varMap);
+            }
+        }
+        result.put("varList",varMapList);
+        result.put("pageData", pg);
+
+        model.putResult(result);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################warehouseInExecute/findListWarehouseInExecuteByEdit 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
 
     /**
      * 新增入库单明细执行
@@ -275,7 +354,7 @@ public class WarehouseInExecuteController {
      * @date 2018-11-09
      * @throws Exception
      */
-    @PostMapping("/warehouseInExecute/updateWarehouseInExecute ")
+    @PostMapping("/warehouseInExecute/updateWarehouseInExecute")
     @Transactional
     public ResultModel updateWarehouseInExecute() throws Exception {
         logger.info("################/warehouseInExecute/updateWarehouseInExecute 执行开始 ################# ");
@@ -320,6 +399,10 @@ public class WarehouseInExecuteController {
             BigDecimal after = BigDecimal.valueOf(Double.parseDouble(afterCount));
 
             WarehouseProduct warehouseProduct = new WarehouseProduct();
+            warehouseProduct.setProductId(detail.getProductId());
+            warehouseProduct.setCode(detail.getCode());
+            warehouseProduct.setWarehouseId(execute.getWarehouseId());
+
             BigDecimal count = BigDecimal.valueOf(after.doubleValue() - before.doubleValue());
             String msgStr = warehouseProductService.inStockCount(warehouseProduct, count, cuser, companyId);
             if (msgStr != null && msgStr.trim().length() > 0) {
@@ -349,7 +432,6 @@ public class WarehouseInExecuteController {
                 return model;
             }
         }
-
 
         Long endTime = System.currentTimeMillis();
         logger.info("################/warehouseInExecute/updateWarehouseInExecute 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
@@ -382,6 +464,10 @@ public class WarehouseInExecuteController {
             BigDecimal executeCountount = execute.getCount();
 
             WarehouseProduct warehouseProduct = new WarehouseProduct();
+            warehouseProduct.setProductId(detail.getProductId());
+            warehouseProduct.setCode(detail.getCode());
+            warehouseProduct.setWarehouseId(execute.getWarehouseId());
+
             BigDecimal count = BigDecimal.valueOf(-1 * executeCountount.doubleValue());
             String msgStr = warehouseProductService.inStockCount(warehouseProduct, count, cuser, companyId);
             if (msgStr != null && msgStr.trim().length() > 0) {
@@ -416,6 +502,35 @@ public class WarehouseInExecuteController {
         Long endTime = System.currentTimeMillis();
         logger.info("################/warehouseInExecute/deleteWarehouseInExecute 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////
+    private List<Map> findSecondList(Map firstRowMap, Map<String, Object> secondTitleMap, String companyId) throws Exception {
+        String productId = (String)firstRowMap.get("productId");
+        String detailId = (String)firstRowMap.get("id");
+
+        PageData findMap = new PageData();
+        findMap.put("detailId", detailId);
+        findMap.put("productId", productId);
+        findMap.put("companyId", companyId);
+
+        List<Map> secondMapList = new ArrayList();
+        List<Map> varList = warehouseInExecuteService.findListWarehouseInExecuteByEdit(findMap);
+        if(varList != null && varList.size() > 0) {
+            for(int i = 0; i < varList.size(); i++) {
+                Map map = varList.get(i);
+                Map<String, String> varMap = new HashMap<String, String>();
+                varMap.putAll((Map<String, String>)secondTitleMap.get("varModel"));
+                for (Map.Entry<String, String> entry : varMap.entrySet()) {
+                    varMap.put(entry.getKey(), map.get(entry.getKey()) != null ? map.get(entry.getKey()).toString() : "");
+                }
+                varMap.put("pid",firstRowMap.get("id").toString());
+                secondMapList.add(varMap);
+
+            }
+        }
+
+        return secondMapList;
     }
 
     /**

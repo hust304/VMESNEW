@@ -188,8 +188,10 @@ public class WarehouseInExecutorController {
     private List<Map> findSecondList(Map firstRowMap, Map<String, Object> secondTitleMap, String companyId) throws Exception {
         String productId = (String)firstRowMap.get("productId");
         String warehouseId = (String)firstRowMap.get("warehouseId");
+        String detailId = (String)firstRowMap.get("id");
 
         PageData findMap = new PageData();
+        findMap.put("detailId", detailId);
         findMap.put("productId", productId);
         findMap.put("warehouseId", warehouseId);
         findMap.put("companyId", companyId);

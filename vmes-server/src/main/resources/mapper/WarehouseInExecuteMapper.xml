@@ -171,4 +171,44 @@
     </select>
 
 
+    <!-- 获取入库执行明细列表 -->
+    <select id="findListWarehouseInExecuteByEdit" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+            execute.id,
+            execute.detail_id detailId,
+            execute.executor_id executorId,
+            execute.warehouse_id warehouseId,
+            round(ifnull(execute.count, 0), 2) count,
+            round(ifnull(execute.count, 0), 2) beforeCount,
+            execute.remark,
+            <!-- 仓库货位表 -->
+            warehouse.path_name pathName,
+            ifnull(warehouseProduct.stock_count, 0) stockCount
+        from vmes_warehouse_in_execute execute
+            left join vmes_warehouse warehouse on execute.warehouse_id = warehouse.id
+            left join (
+                select product_id,company_id,warehouse_id,round(sum(ifnull(stock_count,0)), 2) stock_count
+                from vmes_warehouse_product
+                <where>
+                    <if test="productId != null and productId != ''">
+                        and product_id = #{productId}
+                    </if>
+                    <if test="companyId != null and companyId != ''">
+                        and company_id = #{companyId}
+                    </if>
+                </where>
+                group by product_id,company_id,warehouse_id
+            ) warehouseProduct on execute.warehouse_id = warehouseProduct.warehouse_id
+        <where>
+            <if test="detailId != null and detailId != ''">
+                and execute.detail_id = #{detailId}
+            </if>
+            <if test="executorId != null and executorId != ''">
+                and execute.executor_id = #{executorId}
+            </if>
+            and execute.isdisable = '1'
+        </where>
+    </select>
+
+
 </mapper>

@@ -139,6 +139,15 @@ public class WarehouseInExecuteServiceImp implements WarehouseInExecuteService {
         warehouseInExecuteMapper.updateIsdisableByExecute(findMap);
     }
 
+    /**
+     * 获取入库执行明细列表(修改入库执行)
+     * @param pd
+     * @return
+     */
+    public List<Map> findListWarehouseInExecuteByEdit(PageData pd) throws Exception {
+        return warehouseInExecuteMapper.findListWarehouseInExecuteByEdit(pd);
+    }
+
     public List<Map<String, Object>> findSumcountByWarehouseInExecute(PageData object) {
         if (object == null) {return null;}
         return warehouseInExecuteMapper.findSumcountByWarehouseInExecute(object);

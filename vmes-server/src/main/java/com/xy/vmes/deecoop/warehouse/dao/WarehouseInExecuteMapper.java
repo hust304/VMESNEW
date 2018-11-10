@@ -40,6 +40,13 @@ public interface WarehouseInExecuteMapper extends BaseMapper<WarehouseInExecute>
     void updateIsdisableByExecute(PageData pd);
 
     /**
+     * 获取入库执行明细列表(修改入库执行)
+     * @param pd
+     * @return
+     */
+    List<Map> findListWarehouseInExecuteByEdit(PageData pd);
+
+    /**
      * 创建人：陈刚
      * 创建时间：2018-10-16
      */

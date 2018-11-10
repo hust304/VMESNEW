@@ -639,12 +639,15 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
         findMap.put("mapSize", Integer.valueOf(findMap.size()));
         WarehouseProduct objectDB = this.findWarehouseProduct(findMap);
 
+        //当前需要变更库存数量 (大于零:加库存 小于零:减库存)
+        double tempCount = -1 * count.doubleValue();
+
         if (objectDB == null) {
             WarehouseProduct addObj = new WarehouseProduct();
             addObj.setCode(object.getCode());
             addObj.setProductId(object.getProductId());
             addObj.setWarehouseId(object.getWarehouseId());
-            addObj.setStockCount(count);
+            addObj.setStockCount(BigDecimal.valueOf(tempCount));
             addObj.setCuser(object.getCuser());
             addObj.setCompanyId(object.getCompanyId());
             this.save(addObj);
@@ -654,7 +657,9 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
             if (objectDB.getStockCount() != null) {
                 stockCountDB = objectDB.getStockCount().doubleValue();
             }
-            double modifyCount = stockCountDB - count.doubleValue();
+
+            double modifyCount = stockCountDB + tempCount;
+
             //四舍五入到2位小数
             BigDecimal bigDecimal = BigDecimal.valueOf(modifyCount).setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
 
@@ -695,12 +700,15 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
         findMap.put("mapSize", Integer.valueOf(findMap.size()));
         WarehouseProduct objectDB = this.findWarehouseProduct(findMap);
 
+        //当前需要变更库存数量 (大于零:加库存 小于零:减库存)
+        double tempCount = count.doubleValue();
+
         if (objectDB == null) {
             WarehouseProduct addObj = new WarehouseProduct();
             addObj.setCode(object.getCode());
             addObj.setProductId(object.getProductId());
             addObj.setWarehouseId(object.getWarehouseId());
-            addObj.setStockCount(count);
+            addObj.setStockCount(BigDecimal.valueOf(tempCount));
             addObj.setCuser(object.getCuser());
             addObj.setCompanyId(object.getCompanyId());
             this.save(addObj);
@@ -711,7 +719,7 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
                 stockCountDB = objectDB.getStockCount().doubleValue();
             }
 
-            double modifyCount = stockCountDB + count.doubleValue();
+            double modifyCount = stockCountDB + tempCount;
             //四舍五入到2位小数
             BigDecimal bigDecimal = BigDecimal.valueOf(modifyCount).setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
 

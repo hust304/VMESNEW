@@ -80,6 +80,13 @@ public interface WarehouseInExecuteService {
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
     void updateIsdisableByExecute(String detailId, String isdisable) throws Exception;
 
+    /**
+     * 获取入库执行明细列表(修改入库执行)
+     * @param pd
+     * @return
+     */
+    List<Map> findListWarehouseInExecuteByEdit(PageData pd) throws Exception;
+
     List<Map<String, Object>> findSumcountByWarehouseInExecute(PageData object);
     Map<String, BigDecimal> findExecuteCountByParentId(String parentId);
 

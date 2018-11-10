@@ -233,7 +233,7 @@
                 left join vmes_dictionary unit on prod.unit = unit.id
                 left join vmes_dictionary genre on prod.genre = genre.id
                 <!--left join vmes_user user on a.execute_id = user.id-->
-                left join vmes_warehouse_in_execute inexecute on a.id = inexecute.detail_id
+                left join vmes_warehouse_in_execute inexecute on a.id = inexecute.detail_id and inexecute.isdisable = '1'
 
             <where>
                 <if test="parentId != null and parentId != ''" >
@@ -242,7 +242,6 @@
                 <if test="state != null and state != ''" >
                     and a.state = #{state}
                 </if>
-                and inexecute.isdisable = '1'
 
                 <!--queryStr 自定义sql查询语句-->
                 <if test="queryStr != null and queryStr != ''" >

@@ -277,7 +277,7 @@ public class WarehouseInController {
         warehouseIn.setState("0");
         warehouseIn.setCompanyId(companyID);
         //入库单编号
-        String code = coderuleService.createCoder(companyID, "vmes_warehouse_in", "W");
+        String code = coderuleService.createCoder(companyID, "vmes_warehouse_in", "I");
         warehouseIn.setCode(code);
         warehouseInService.save(warehouseIn);
 
