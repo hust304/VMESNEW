@@ -242,6 +242,19 @@
                 <if test="state != null and state != ''" >
                     and a.state = #{state}
                 </if>
+                <!--过滤出当前登录用户是(入库)执行人 (vmes_warehouse_in_executor) 查询语句-->
+                <if test="'true' == isNeedExecutor">
+                    and a.id in (
+                        select detail_id
+                        from vmes_warehouse_in_executor
+                        <where>
+                            <if test="cuser != null and cuser != ''" >
+                                and executor_id = #{cuser}
+                            </if>
+                            and isdisable = '1'
+                        </where>
+                    )
+                </if>
 
                 <!--queryStr 自定义sql查询语句-->
                 <if test="queryStr != null and queryStr != ''" >

@@ -345,8 +345,18 @@ public class WarehouseInExecuteController {
                 }
 
                 //D. 修改入库单明细状态
-                //状态(0:待派单 1:执行中 2:已完成 -1.已取消)
-                detail.setState("0");
+                findMap = new PageData();
+                findMap.put("detailId", detailId);
+                //是否启用(0:已禁用 1:启用)
+                findMap.put("isdisable", "1");
+                findMap.put("mapSize", Integer.valueOf(findMap.size()));
+                executorList = warehouseInExecutorService.findWarehouseInExecutorList(findMap);
+                if (executorList != null && executorList.size() > 0) {
+                    //明细状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+                    detail.setState("1");
+                }else {
+                    detail.setState("0");
+                }
                 warehouseInDetailService.update(detail);
 
                 //E. 修改修改当前入库单明细状态--同时反写入库单状态
