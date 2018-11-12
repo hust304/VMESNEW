@@ -378,13 +378,15 @@ public class WarehouseOutDetailController {
                         if(childrenList!=null&&childrenList.size()>0){
                             for(int k=0;k<childrenList.size();k++){
                                 Map<String, Object> childrenMap = (Map<String, Object>)childrenList.get(k);
-                                String warehouseProductId = (String)childrenMap.get("id");
-                                String suggestCount = (String)childrenMap.get("suggestCount");
-                                WarehouseOutRecommend recommend = new WarehouseOutRecommend();
-                                recommend.setDetailId(detailId);
-                                recommend.setWarehouseProductId(warehouseProductId);
-                                recommend.setCount(StringUtils.isEmpty(suggestCount)?BigDecimal.ZERO:BigDecimal.valueOf(Double.parseDouble(suggestCount)));
-                                warehouseOutRecommendService.save(recommend);
+                                if(childrenMap != null){
+                                    String warehouseProductId = (String)childrenMap.get("id");
+                                    String suggestCount = (String)childrenMap.get("suggestCount");
+                                    WarehouseOutRecommend recommend = new WarehouseOutRecommend();
+                                    recommend.setDetailId(detailId);
+                                    recommend.setWarehouseProductId(warehouseProductId);
+                                    recommend.setCount(StringUtils.isEmpty(suggestCount)?BigDecimal.ZERO:BigDecimal.valueOf(Double.parseDouble(suggestCount)));
+                                    warehouseOutRecommendService.save(recommend);
+                                }
                             }
                         }
 
