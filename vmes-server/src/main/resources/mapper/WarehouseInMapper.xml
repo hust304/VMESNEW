@@ -132,6 +132,7 @@
     <!-- 自动创建，可以修改 -->
     <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
+            distinct
             a.id id,
             <!--级联table 传值用 -->
             a.id parentId,
@@ -164,6 +165,11 @@
         left join vmes_warehouse b on a.warehouse_id = b.id
         left join vmes_user c on a.make_id = c.id
         left join vmes_dictionary type on a.type = type.id
+
+        left join vmes_warehouse_in_detail d on a.id = d.parent_id
+        left join vmes_product prod on d.product_id = prod.id
+        left join vmes_dictionary genre on prod.genre = genre.id
+        left join vmes_dictionary unit on prod.unit = unit.id
     <where>
         <if test="code != null and code != ''">
             and a.code LIKE CONCAT(CONCAT(#{code}),'%')
@@ -180,6 +186,10 @@
         </if>
         <if test="warehouseId != null and warehouseId != ''" >
             and a.warehouse_id = #{warehouseId}
+        </if>
+
+        <if test="detailState != null and detailState != ''" >
+            and d.state = #{detailState}
         </if>
 
         <!--过滤出当前登录用户是(入库)执行人 (vmes_warehouse_in_executor) 查询语句-->
@@ -200,6 +210,23 @@
                 left join vmes_warehouse_in_detail detail on executor.detail_id = detail.id
                 left join vmes_warehouse_in parent on detail.parent_id = parent.id
             )
+        </if>
+
+        <!--按货品属性 查询语句-->
+        <if test="productCode != null and productCode != ''">
+            and prod.code LIKE CONCAT(CONCAT(#{productCode}),'%')
+        </if>
+        <if test="productName != null and productName != ''">
+            and prod.name LIKE CONCAT(CONCAT(#{productName}),'%')
+        </if>
+        <if test="productSpec != null and productSpec != ''">
+            and prod.spec LIKE CONCAT(CONCAT(#{productSpec}),'%')
+        </if>
+        <if test="productGenreName != null and productGenreName != ''">
+            and genre.name LIKE CONCAT(CONCAT(#{productGenreName}),'%')
+        </if>
+        <if test="productUnitName != null and productUnitName != ''">
+            and unit.name LIKE CONCAT(CONCAT(#{productUnitName}),'%')
         </if>
 
         <!--queryStr 自定义sql查询语句-->
