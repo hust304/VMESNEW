@@ -67,6 +67,7 @@
             cdate cdate,
             uuser uuser,
 
+            audit_date auditDate,
             udate udate,
             remark remark,
             isdisable isdisable,
