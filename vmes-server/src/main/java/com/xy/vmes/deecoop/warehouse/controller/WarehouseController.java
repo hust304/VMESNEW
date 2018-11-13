@@ -255,7 +255,7 @@ public class WarehouseController {
         PageData pd = HttpUtils.parsePageData();
         //是否启用(0:已禁用 1:启用)
         pd.put("isdisable", "1");
-        pd.put("orderStr", "a.cdate desc");
+        pd.put("orderStr", "a.layer,a.serial_number asc");
         Pagination pg = HttpUtils.parsePagination(pd);
 
         List<Map> varMapList = new ArrayList();
@@ -855,10 +855,10 @@ public class WarehouseController {
      * @date 2018-10-10
      * @throws Exception
      */
-    @PostMapping("/warehouseBase/updateWarehousePosition")
+    @PostMapping("/warehouseBase/updateWarehousePositionByName")
     @Transactional
-    public ResultModel updateWarehousePosition() throws Exception {
-        logger.info("################/warehouseBase/updateWarehousePosition 执行开始 ################# ");
+    public ResultModel updateWarehousePositionByName() throws Exception {
+        logger.info("################/warehouseBase/updateWarehousePositionByName 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
 
         ResultModel model = new ResultModel();
@@ -904,10 +904,14 @@ public class WarehouseController {
 
         Warehouse warehouse = warehouseService.findWarehouseById(id);
         warehouse.setName(name);
+        //pathName 根节点到本节点路径名称
+        if (paterObj.getPathName() != null && paterObj.getPathName().trim().length() > 0) {
+            warehouse.setPathName(paterObj.getPathName().trim() + "-" + name);
+        }
         warehouseService.update(warehouse);
 
         Long endTime = System.currentTimeMillis();
-        logger.info("################/warehouseBase/updateWarehousePosition 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/warehouseBase/updateWarehousePositionByName 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////
