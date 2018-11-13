@@ -777,8 +777,11 @@ public class WarehouseOutDetailController {
 
         DecimalFormat df = new DecimalFormat("0.00");
         double count = 0.00;
+        double executeCount = 0.00;
         if(rootMap.get("count")!=null){
             count = ((BigDecimal) rootMap.get("count")).doubleValue();
+            executeCount = ((BigDecimal) rootMap.get("executeCount")).doubleValue();
+
         }
 
 
@@ -799,8 +802,14 @@ public class WarehouseOutDetailController {
                     varMap.put("suggestCount",df.format(stockCount));
                     childrenMapList.add(varMap);
                 }else {
-                    varMap.put("suggestCount",df.format(suggestCount));
-                    childrenMapList.add(varMap);
+                    if(suggestCount>(count-executeCount)){
+                        varMap.put("suggestCount",df.format(count-executeCount));
+                        childrenMapList.add(varMap);
+                    }else {
+                        varMap.put("suggestCount",df.format(suggestCount));
+                        childrenMapList.add(varMap);
+                    }
+
                 }
             }
         }
