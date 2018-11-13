@@ -30,10 +30,10 @@ public class WarehouseProduct implements Serializable {
 	//产品ID
 	@TableField("product_id")
 	private String productId;
+
 	//货位批次号
 	@TableField("code")
 	private String code;
-
 	//库存数量
 	@TableField("stock_count")
 	private BigDecimal stockCount;
@@ -46,10 +46,13 @@ public class WarehouseProduct implements Serializable {
 	//修改用户id
 	@TableField("uuser")
 	private String uuser;
+
 	//修改时间
 	@TableField("udate")
 	private Date udate;
-
+	//审核时间
+	@TableField("audit_date")
+	private Date auditDate;
 	//备注
 	@TableField("remark")
 	private String remark;
@@ -145,8 +148,13 @@ public class WarehouseProduct implements Serializable {
 	public Integer getVersion() {
 		return version;
 	}
-
-/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+	public Date getAuditDate() {
+		return auditDate;
+	}
+	public void setAuditDate(Date auditDate) {
+		this.auditDate = auditDate;
+	}
+	/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 
 }
