@@ -121,43 +121,44 @@
     <!-- 自动创建，可以修改 -->
     <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
-            check.id id,
-            check.company_id companyId,
-            check.code code,
-            check.type type,
+            parent.id id,
+            parent.id parentId,
+            parent.company_id companyId,
+            parent.code code,
+            parent.type type,
             CASE
-              WHEN check.type = '2' THEN '按货品'
-              WHEN check.type = '1' THEN '按库位'
+              WHEN parent.type = '2' THEN '按货品'
+              WHEN parent.type = '1' THEN '按库位'
             ELSE null
             END typeName,
-            check.make_id makeId,
+            parent.make_id makeId,
             user.user_name makeName,
 
-            check.state state,
+            parent.state state,
             CASE
-              WHEN check.state = '0' THEN '未完成'
-              WHEN check.state = '1' THEN '已完成'
-              WHEN check.state = '-1' THEN '已取消'
+              WHEN parent.state = '0' THEN '未完成'
+              WHEN parent.state = '1' THEN '已完成'
+              WHEN parent.state = '-1' THEN '已取消'
             ELSE null
             END stateName,
-            check.cuser cuser,
-            DATE_FORMAT(check.cdate,'%Y-%m-%d %T') cdate,
-            check.uuser uuser,
-            DATE_FORMAT(check.udate,'%Y-%m-%d %T') udate,
+            parent.cuser cuser,
+            DATE_FORMAT(parent.cdate,'%Y-%m-%d %T') cdate,
+            parent.uuser uuser,
+            DATE_FORMAT(parent.udate,'%Y-%m-%d %T') udate,
 
-            check.remark remark,
-            check.isdisable isdisable
-        from vmes_warehouse_check check
-            left join vmes_user user on a.make_id = user.id
+            parent.remark remark,
+            parent.isdisable isdisable
+        from vmes_warehouse_check parent
+            left join vmes_user user on parent.make_id = user.id
         <where>
             <if test="code != null and code != ''" >
-                and code = #{code}
+                and parent.code = #{code}
             </if>
             <if test="companyId != null and companyId != ''" >
-                and company_id = #{companyId}
+                and parent.company_id = #{companyId}
             </if>
             <if test="type != null and type != ''" >
-                and type = #{type}
+                and parent.type = #{type}
             </if>
 
             <!--queryStr 自定义sql查询语句-->

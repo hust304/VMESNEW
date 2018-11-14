@@ -147,7 +147,7 @@ public class WarehouseCheckController {
         String dtlJsonStr = pageData.getString("dtlJsonStr");
         if (dtlJsonStr == null || dtlJsonStr.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("请至少添加选择一条(货品，货位)数据！");
+            model.putMsg("请至少选择一条(货品，货位)数据！");
             return model;
         }
 
@@ -161,7 +161,7 @@ public class WarehouseCheckController {
         String ids = warehouseCheckDetailService.findBusinessIdByMapList(mapList);
         if (ids == null || ids.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("请至少添加选择一条(货品，货位)数据！");
+            model.putMsg("请至少选择一条(货品，货位)数据！");
             return model;
         }
         ids = StringUtil.stringTrimSpace(ids);
@@ -171,11 +171,14 @@ public class WarehouseCheckController {
         PageData findMap = new PageData();
         findMap.put("companyId", companyId);
 
-        //type: 盘点类型(1:按库位 2:货品)
+        //type: 盘点类型(1:按货位 2:货品)
+        String typeName = "";
         if ("1".equals(warehouseCheck.getType().trim())) {
+            typeName = "货位";
             String queryWarehouseStr = "warehouse_id in (" + queryIds + ")";
             findMap.put("queryWarehouseStr", queryWarehouseStr);
         } else if ("2".equals(warehouseCheck.getType().trim())) {
+            typeName = "货品";
             String queryProductStr = "product_id in (" + queryIds + ")";
             findMap.put("queryProductStr", queryProductStr);
         }
@@ -183,6 +186,8 @@ public class WarehouseCheckController {
 
         List<WarehouseProduct> warehouseProductList = warehouseProductService.findWarehouseProductList(findMap);
         if (warehouseProductList == null || warehouseProductList.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("您所勾选的("+typeName+")在系统库存中不存在！");
             return model;
         }
 
@@ -192,9 +197,9 @@ public class WarehouseCheckController {
         warehouseCheck.setCode(code);
         //state:状态(0:未完成 1:已完成 -1:已取消)
         warehouseCheck.setState("0");
-        warehouseCheckService.save(warehouseCheck);
+        //warehouseCheckService.save(warehouseCheck);
 
-        warehouseCheckDetailService.addWarehouseCheckDetail(warehouseCheck, warehouseProductList);
+        //warehouseCheckDetailService.addWarehouseCheckDetail(warehouseCheck, warehouseProductList);
 
         Long endTime = System.currentTimeMillis();
         logger.info("################/warehouseCheck/addWarehouseCheck 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
