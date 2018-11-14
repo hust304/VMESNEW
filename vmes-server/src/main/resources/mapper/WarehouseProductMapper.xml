@@ -48,10 +48,6 @@
             (replace(uuid(), '-', ''),'warehouseProduct','id','id',0, '1','1','1','0',now(), 'admin')
     </insert>
 
-
-
-
-
     <!-- 列表(全部) 自动创建，禁止修改-->
     <select id="dataList" parameterType="com.yvan.PageData" resultType="com.xy.vmes.entity.WarehouseProduct">
         select
@@ -102,12 +98,21 @@
                     <if test="code != null and code != ''" >
                         and code = #{code}
                     </if>
+
                     <if test="productId != null and productId != ''" >
                         and product_id = #{productId}
                     </if>
+                    <if test="queryProductStr != null and queryProductStr != ''" >
+                        and ${queryProductStr}
+                    </if>
+
                     <if test="warehouseId != null and warehouseId != ''" >
                         and warehouse_id = #{warehouseId}
                     </if>
+                    <if test="queryWarehouseStr != null and queryWarehouseStr != ''" >
+                        and ${queryWarehouseStr}
+                    </if>
+
                     <if test="companyId != null and companyId != ''" >
                         and company_id = #{companyId}
                     </if>
