@@ -616,6 +616,8 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
 
         return msgBuf.toString();
     }
+
+
     //////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
@@ -839,6 +841,17 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
         }
 
         return msgBuf.toString();
+    }
+
+
+    @Override
+    public List<Map> getWarehouseProductView(PageData pd, Pagination pg) throws Exception {
+        return warehouseProductMapper.warehouseProductView(pd,pg);
+    }
+
+    @Override
+    public List<Map> getWarehouseDetailView(PageData pd, Pagination pg) throws Exception {
+        return warehouseProductMapper.warehouseDetailView(pd,pg);
     }
 }
 

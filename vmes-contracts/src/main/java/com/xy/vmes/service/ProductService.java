@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.entity.Product;
 import com.yvan.PageData;
 
+import java.math.BigDecimal;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -114,6 +115,9 @@ public interface ProductService {
     List<Product> findProductList(PageData object);
 
     String findIdsByProductList(List<Product> objectList);
+
+
+    void updateStockCount(Product product, BigDecimal count, String uuser) throws Exception;
 }
 
 

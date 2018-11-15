@@ -188,6 +188,11 @@ public interface WarehouseProductService {
      * @return
      */
     String modifyStockCount(WarehouseProduct source, WarehouseProduct target, String type, BigDecimal count) throws Exception;
+
+
+    List<Map> getWarehouseProductView(PageData pd,Pagination pg) throws Exception;
+
+    List<Map> getWarehouseDetailView(PageData pd,Pagination pg) throws Exception;
 }
 
 

@@ -4,8 +4,10 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.Column;
+import com.xy.vmes.entity.Product;
 import com.xy.vmes.entity.WarehouseProduct;
 import com.xy.vmes.service.ColumnService;
+import com.xy.vmes.service.ProductService;
 import com.xy.vmes.service.WarehouseProductService;
 import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
@@ -22,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.http.HttpServletResponse;
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.*;
 
@@ -44,6 +47,8 @@ public class WarehouseProductController {
     @Autowired
     private ColumnService columnService;
 
+    @Autowired
+    private ProductService productService;
 
 
     /**
@@ -159,6 +164,187 @@ public class WarehouseProductController {
 
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+
+
+
+
+
+
+
+    /**
+     * @author 刘威
+     * @date 2018-10-31
+     */
+    @PostMapping("/warehouseProduct/updateWarehouseProduct")
+    @Transactional
+    public ResultModel updateWarehouseProduct()  throws Exception {
+
+        logger.info("################warehouseProduct/updateWarehouseProduct 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        HttpServletResponse response  = HttpUtils.currentResponse();
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+        String productId = pd.getString("productId");
+        BigDecimal beforeCount = BigDecimal.valueOf(Double.parseDouble( pd.getString("beforeCount")));
+        BigDecimal afterCount = BigDecimal.valueOf(Double.parseDouble( pd.getString("afterCount")));
+        String uuser = pd.getString("uuser");
+        WarehouseProduct warehouseProduct = (WarehouseProduct)HttpUtils.pageData2Entity(pd, new WarehouseProduct());
+        warehouseProduct.setStockCount(afterCount);
+        warehouseProductService.update(warehouseProduct);
+
+        //添加修改产品库存的代码
+        Product product = productService.selectById(productId);
+        productService.updateStockCount(product,product.getStockCount().add(afterCount.subtract(beforeCount)),uuser);
+
+        //还需添加库存操作日志代码
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################warehouseProduct/updateWarehouseProduct 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+
+    /**
+     * @author 刘威 自动创建，可以修改
+     * @date 2018-10-31
+     */
+    @PostMapping("/warehouseProduct/listPageWarehouseProductView")
+    public ResultModel listPageWarehouseProductView()  throws Exception {
+
+        logger.info("################warehouseProduct/listPageWarehouseProductView 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        HttpServletResponse response  = HttpUtils.currentResponse();
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+        Pagination pg = HttpUtils.parsePagination(pd);
+        Map result = new HashMap();
+
+        List<Column> columnList = columnService.findColumnList("WarehouseProductView");
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
+        }
+
+        List<LinkedHashMap> titlesList = new ArrayList<LinkedHashMap>();
+        List<String> titlesHideList = new ArrayList<String>();
+        Map<String, String> varModelMap = new HashMap<String, String>();
+        if(columnList!=null&&columnList.size()>0){
+            for (Column column : columnList) {
+                if(column!=null){
+                    if("0".equals(column.getIshide())){
+                        titlesHideList.add(column.getTitleKey());
+                    }
+                    LinkedHashMap titlesLinkedMap = new LinkedHashMap();
+                    titlesLinkedMap.put(column.getTitleKey(),column.getTitleName());
+                    varModelMap.put(column.getTitleKey(),"");
+                    titlesList.add(titlesLinkedMap);
+                }
+            }
+        }
+        result.put("hideTitles",titlesHideList);
+        result.put("titles",titlesList);
+
+        List<Map> varMapList = new ArrayList();
+        List<Map> varList = warehouseProductService.getWarehouseProductView(pd,pg);
+        if(varList!=null&&varList.size()>0){
+            for(int i=0;i<varList.size();i++){
+                Map map = varList.get(i);
+                Map<String, String> varMap = new HashMap<String, String>();
+                varMap.putAll(varModelMap);
+                for (Map.Entry<String, String> entry : varMap.entrySet()) {
+                    varMap.put(entry.getKey(),map.get(entry.getKey())!=null?map.get(entry.getKey()).toString():"");
+                }
+                varMapList.add(varMap);
+            }
+        }
+        result.put("varList",varMapList);
+        result.put("pageData", pg);
+
+        model.putResult(result);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################warehouseProduct/listPageWarehouseProductView 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+    /**
+     * @author 刘威 自动创建，可以修改
+     * @date 2018-10-31
+     */
+    @PostMapping("/warehouseProduct/listPageWarehouseDetailView")
+    public ResultModel listPageWarehouseDetailView()  throws Exception {
+
+        logger.info("################warehouseProduct/listPageWarehouseDetailView 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        HttpServletResponse response  = HttpUtils.currentResponse();
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+        Pagination pg = HttpUtils.parsePagination(pd);
+        Map result = new HashMap();
+
+        List<Column> columnList = columnService.findColumnList("WarehouseDetailView");
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
+        }
+
+        List<LinkedHashMap> titlesList = new ArrayList<LinkedHashMap>();
+        List<String> titlesHideList = new ArrayList<String>();
+        Map<String, String> varModelMap = new HashMap<String, String>();
+        if(columnList!=null&&columnList.size()>0){
+            for (Column column : columnList) {
+                if(column!=null){
+                    if("0".equals(column.getIshide())){
+                        titlesHideList.add(column.getTitleKey());
+                    }
+                    LinkedHashMap titlesLinkedMap = new LinkedHashMap();
+                    titlesLinkedMap.put(column.getTitleKey(),column.getTitleName());
+                    varModelMap.put(column.getTitleKey(),"");
+                    titlesList.add(titlesLinkedMap);
+                }
+            }
+        }
+        result.put("hideTitles",titlesHideList);
+        result.put("titles",titlesList);
+
+        List<Map> varMapList = new ArrayList();
+        List<Map> varList = warehouseProductService.getWarehouseDetailView(pd,pg);
+        if(varList!=null&&varList.size()>0){
+            for(int i=0;i<varList.size();i++){
+                Map map = varList.get(i);
+                Map<String, String> varMap = new HashMap<String, String>();
+                varMap.putAll(varModelMap);
+                for (Map.Entry<String, String> entry : varMap.entrySet()) {
+                    varMap.put(entry.getKey(),map.get(entry.getKey())!=null?map.get(entry.getKey()).toString():"");
+                }
+                varMapList.add(varMap);
+            }
+        }
+        result.put("varList",varMapList);
+        result.put("pageData", pg);
+
+        model.putResult(result);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################warehouseProduct/listPageWarehouseDetailView 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     /**
     * @author 刘威 自动创建，可以修改
     * @date 2018-10-31
@@ -399,6 +585,7 @@ public class WarehouseProductController {
         logger.info("################warehouseProduct/importExcelWarehouseProducts 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
+
 
 }
 

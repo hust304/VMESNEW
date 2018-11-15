@@ -56,6 +56,9 @@ public class WarehouseOutExecuteController {
     @Autowired
     private WarehouseOutService warehouseOutService;
 
+    @Autowired
+    private ProductService productService;
+
     /**
     * @author 刘威 自动创建，禁止修改
     * @date 2018-11-01
@@ -255,6 +258,10 @@ public class WarehouseOutExecuteController {
                 //还原出库操作
                 WarehouseProduct outObject = warehouseProductService.selectById(execute.getWarehouseProductId());
                 String msgStr = warehouseProductService.outStockCount(outObject, after.subtract(before), currentUserId, currentCompanyId);
+
+                Product product = productService.selectById(outObject.getProductId());
+                productService.updateStockCount(product,product.getStockCount().subtract(after.subtract(before)),currentUserId);
+
                 if (msgStr != null && msgStr.trim().length() > 0) {
                     model.putCode(Integer.valueOf(1));
                     model.putMsg(msgStr);
@@ -339,6 +346,10 @@ public class WarehouseOutExecuteController {
             //还原出库操作
             WarehouseProduct outObject = warehouseProductService.selectById(execute.getWarehouseProductId());
             String msgStr = warehouseProductService.outStockCount(outObject, execute.getCount().negate(), currentUserId, currentCompanyId);
+
+            Product product = productService.selectById(outObject.getProductId());
+            productService.updateStockCount(product,product.getStockCount().add(execute.getCount()),currentUserId);
+
             if (msgStr != null && msgStr.trim().length() > 0) {
                 model.putCode(Integer.valueOf(1));
                 model.putMsg(msgStr);
@@ -442,6 +453,11 @@ public class WarehouseOutExecuteController {
                                     //出库操作
                                     WarehouseProduct outObject = warehouseProductService.selectById(id);
                                     String msgStr = warehouseProductService.outStockCount(outObject, count, currentUserId, currentCompanyId);
+
+                                    Product product = productService.selectById(outObject.getProductId());
+                                    productService.updateStockCount(product,product.getStockCount().subtract(count),currentUserId);
+
+
                                     if (msgStr != null && msgStr.trim().length() > 0) {
                                         model.putCode(Integer.valueOf(1));
                                         model.putMsg(msgStr);
@@ -455,6 +471,7 @@ public class WarehouseOutExecuteController {
                                         return model;
                                     }
                                 }
+
 
 
                             }

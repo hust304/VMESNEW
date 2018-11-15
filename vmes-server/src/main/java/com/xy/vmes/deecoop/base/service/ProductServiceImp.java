@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import com.yvan.Conv;
 import java.util.LinkedHashMap;
@@ -225,6 +226,16 @@ public class ProductServiceImp implements ProductService {
         }
 
         return strBuf.toString();
+    }
+
+    @Override
+    public void updateStockCount(Product product, BigDecimal count,String uuser) throws Exception {
+        PageData pd = new PageData();
+        pd.put("id",product.getId());
+        pd.put("version",product.getVersion());
+        pd.put("uuser",uuser);
+        pd.put("stockCount",count);
+        productMapper.updateStockCount(pd);
     }
 }
 

@@ -9,6 +9,8 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import java.beans.IntrospectionException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 import java.util.Iterator;
 import java.math.BigDecimal;
@@ -126,6 +128,7 @@ public class HttpUtils {
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
+                        throw new RestException("", "数据类型转换异常，请检查输入数据是否规范！");
                     }
                 }
             }
@@ -134,7 +137,7 @@ public class HttpUtils {
         return entityObj;
     }
 
-    public static PageData entity2PageData(Object entityObj, PageData pageData) {
+    public static PageData entity2PageData(Object entityObj, PageData pageData){
         if (pageData == null) {pageData = new PageData();}
         if (entityObj == null) {return pageData;}
 
