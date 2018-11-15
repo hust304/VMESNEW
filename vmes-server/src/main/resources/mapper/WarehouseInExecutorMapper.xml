@@ -115,15 +115,27 @@
             executor.id id,
             executor.detail_id detailId,
             executor.executor_id executorId,
-            user.user_name executorName,
             executor.cuser cuser,
             DATE_FORMAT(executor.cdate,'%Y-%m-%d %T') cdate,
 
             executor.uuser uuser,
             executor.udate udate,
             executor.remark remark,
-            executor.isdisable isdisable
+            executor.isdisable isdisable,
+
+            user.user_code executorCode,
+            user.user_name executorName,
+            detail.state,
+            CASE
+                WHEN detail.state = '0' THEN '待派单'
+                WHEN detail.state = '1' THEN '执行中'
+                WHEN detail.state = '2' THEN '已完成'
+                WHEN detail.state = '-1' THEN '已取消'
+            ELSE null
+            END stateName
+
         from vmes_warehouse_in_executor executor
+            left join vmes_warehouse_in_detail detail on executor.detail_id = detail.id
             left join vmes_user user on executor.executor_id = user.id
         <where>
 
@@ -156,7 +168,10 @@
         <!-- 仓库货位表 -->
         warehouse.path_name pathName,
         ifnull(warehouseProduct.stock_count, 0) stockCount,
-        '' count
+
+        round(ifnull(detail.count,0), 2) inCount,
+        inExecute.executeCount executeCount,
+        round((ifnull(detail.count,0) - ifnull(inExecute.executeCount,0)), 2) count
         from vmes_warehouse_in_executor executor
             left join vmes_warehouse_in_detail detail on executor.detail_id = detail.id
             left join vmes_warehouse warehouse on detail.warehouse_id = warehouse.id
@@ -176,6 +191,19 @@
                 </where>
                 group by product_id,company_id,warehouse_id
             ) warehouseProduct on detail.warehouse_id = warehouseProduct.warehouse_id
+
+            left join (
+                select detail_id,round(sum(ifnull(count,0)), 2) executeCount
+                from vmes_warehouse_in_execute
+                <where>
+                    <if test="detailId != null and detailId != ''">
+                        and detail_id = #{detailId}
+                    </if>
+                    and isdisable = '1'
+                </where>
+                group by detail_id
+            ) inExecute on executor.detail_id = inExecute.detail_id
+
         <where>
             <if test="detailId != null and detailId != ''">
                 and executor.detail_id = #{detailId}

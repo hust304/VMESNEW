@@ -247,11 +247,15 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
         for (WarehouseInDetail detail : detailList) {
             String detailId = detail.getId();
             BigDecimal executeCount = mapObject.get(detailId);
+
+            //state:状态(0:待派单 1:执行中 2:已完成 -1.已取消)
             if (executeCount != null && detail.getCount() != null && executeCount.doubleValue() >= detail.getCount().doubleValue()) {
-                //state:状态(0:待派单 1:执行中 2:已完成 -1.已取消)
                 detail.setState("2");
-                this.update(detail);
+            } else if (executeCount != null && detail.getCount() != null && executeCount.doubleValue() < detail.getCount().doubleValue()) {
+                detail.setState("1");
             }
+
+            this.update(detail);
         }
 
         //3. 反写入库单(vmes_warehouse_in)状态

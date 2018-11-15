@@ -586,8 +586,11 @@ public class WarehouseController {
 
         //获取货位编码
         String companyID = pageData.getString("currentCompanyId");
+        warehouse.setCompanyId(companyID);
+
         String code = coderuleService.createCoder(companyID, "vmes_warehouse","WP");
         warehouse.setCode(code);
+
         //设置库位路径名称
         warehouse = warehouseService.paterObject2Warehouse(paterObj, warehouse);
 
