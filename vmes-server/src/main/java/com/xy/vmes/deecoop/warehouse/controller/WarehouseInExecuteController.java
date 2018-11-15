@@ -211,7 +211,13 @@ public class WarehouseInExecuteController {
                         warehouseInExecuteService.save(execute);
 
                         Product product = productService.findProductById(productId);
-                        productService.updateStockCount(product, count_Big, cuser);
+                        BigDecimal prodCount = BigDecimal.valueOf(0D);
+                        if (product.getStockCount() != null) {
+                            prodCount = product.getStockCount();
+                        }
+
+                        BigDecimal prodStockCount = BigDecimal.valueOf(prodCount.doubleValue() + count_Big.doubleValue());
+                        productService.updateStockCount(product, prodStockCount, cuser);
                     }
                 }
 
@@ -335,8 +341,15 @@ public class WarehouseInExecuteController {
                     String productId = detail.getProductId();
                     //入库数量(大于零或小于零)--小于零)反向操作(撤销入库)
                     double count = -1 * execute.getCount().doubleValue();
+
                     Product product = productService.findProductById(productId);
-                    productService.updateStockCount(product, BigDecimal.valueOf(count), cuser);
+                    BigDecimal prodCount = BigDecimal.valueOf(0D);
+                    if (product.getStockCount() != null) {
+                        prodCount = product.getStockCount();
+                    }
+
+                    BigDecimal prodStockCount = BigDecimal.valueOf(prodCount.doubleValue() + count);
+                    productService.updateStockCount(product, prodStockCount, cuser);
                 }
 
                 //C. 入库明细执行人 vmes_warehouse_in_executor
@@ -457,7 +470,14 @@ public class WarehouseInExecuteController {
             //产品ID
             String productId = detail.getProductId();
             Product product = productService.findProductById(productId);
-            productService.updateStockCount(product, count, cuser);
+
+            BigDecimal prodCount = BigDecimal.valueOf(0D);
+            if (product.getStockCount() != null) {
+                prodCount = product.getStockCount();
+            }
+
+            BigDecimal prodStockCount = BigDecimal.valueOf(prodCount.doubleValue() + count.doubleValue());
+            productService.updateStockCount(product, prodStockCount, cuser);
 
             //B. 修改入库执行明细
             execute.setCount(after);
@@ -527,7 +547,14 @@ public class WarehouseInExecuteController {
             //产品ID
             String productId = detail.getProductId();
             Product product = productService.findProductById(productId);
-            productService.updateStockCount(product, count, cuser);
+
+            BigDecimal prodCount = BigDecimal.valueOf(0D);
+            if (product.getStockCount() != null) {
+                prodCount = product.getStockCount();
+            }
+
+            BigDecimal prodStockCount = BigDecimal.valueOf(prodCount.doubleValue() + count.doubleValue());
+            productService.updateStockCount(product, prodStockCount, cuser);
 
             //B. 修改入库执行明细
             //是否启用(0:已禁用 1:启用)
