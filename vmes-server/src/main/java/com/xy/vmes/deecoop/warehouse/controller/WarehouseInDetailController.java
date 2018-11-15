@@ -323,8 +323,11 @@ public class WarehouseInDetailController {
         }
 
         WarehouseInDetail detail = warehouseInDetailService.findWarehouseInDetailById(detailId);
+        String checkState = detail.getState();
+        if ("-1".equals(checkState)) {checkState = "c";}
+
         //状态(0:待派单 1:执行中 2:已完成 -1.已取消)
-        if (detail.getState() != null && "1,2".indexOf(detail.getState().trim()) > -1) {
+        if (checkState != null && "1,2".indexOf(checkState.trim()) != -1) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("当前入库明细不可删除，该入库单明细状态(1:执行中 2:已完成)！");
             return model;

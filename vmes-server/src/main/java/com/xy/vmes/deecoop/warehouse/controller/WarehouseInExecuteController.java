@@ -42,6 +42,8 @@ public class WarehouseInExecuteController {
     private WarehouseInExecuteService warehouseInExecuteService;
     @Autowired
     private WarehouseProductService warehouseProductService;
+    @Autowired
+    private ProductService productService;
 
     @Autowired
     private ColumnService columnService;
@@ -207,6 +209,9 @@ public class WarehouseInExecuteController {
                         execute.setCount(count_Big);
                         execute.setCuser(cuser);
                         warehouseInExecuteService.save(execute);
+
+                        Product product = productService.findProductById(productId);
+                        productService.updateStockCount(product, count_Big, cuser);
                     }
                 }
 
@@ -325,6 +330,13 @@ public class WarehouseInExecuteController {
                         execute.setRemark(execute.getRemark()+"  退单原因:"+remark+" 操作时间："+ dateFormat.format(new Date()));
                     }
                     warehouseInExecuteService.update(execute);
+
+                    //产品ID
+                    String productId = detail.getProductId();
+                    //入库数量(大于零或小于零)--小于零)反向操作(撤销入库)
+                    double count = -1 * execute.getCount().doubleValue();
+                    Product product = productService.findProductById(productId);
+                    productService.updateStockCount(product, BigDecimal.valueOf(count), cuser);
                 }
 
                 //C. 入库明细执行人 vmes_warehouse_in_executor
@@ -442,6 +454,11 @@ public class WarehouseInExecuteController {
                 return model;
             }
 
+            //产品ID
+            String productId = detail.getProductId();
+            Product product = productService.findProductById(productId);
+            productService.updateStockCount(product, count, cuser);
+
             //B. 修改入库执行明细
             execute.setCount(after);
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
@@ -506,6 +523,11 @@ public class WarehouseInExecuteController {
                 model.putMsg(msgStr);
                 return model;
             }
+
+            //产品ID
+            String productId = detail.getProductId();
+            Product product = productService.findProductById(productId);
+            productService.updateStockCount(product, count, cuser);
 
             //B. 修改入库执行明细
             //是否启用(0:已禁用 1:启用)
