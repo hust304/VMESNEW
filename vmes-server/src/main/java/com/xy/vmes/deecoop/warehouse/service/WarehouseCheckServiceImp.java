@@ -133,7 +133,7 @@ public class WarehouseCheckServiceImp implements WarehouseCheckService {
         return warehouseCheckMapper.getDataListPage(pd, pg);
     }
 
-    public WarehouseCheck findWarehouseCheck(PageData object) {
+    public WarehouseCheck findWarehouseCheck(PageData object) throws Exception {
         if (object == null) {return null;}
 
         List<WarehouseCheck> objectList = this.findWarehouseCheckList(object);
@@ -144,7 +144,7 @@ public class WarehouseCheckServiceImp implements WarehouseCheckService {
         return null;
     }
 
-    public WarehouseCheck findWarehouseCheckById(String id) {
+    public WarehouseCheck findWarehouseCheckById(String id) throws Exception {
         if (id == null || id.trim().length() == 0) {return null;}
 
         PageData findMap = new PageData();
@@ -154,17 +154,10 @@ public class WarehouseCheckServiceImp implements WarehouseCheckService {
         return this.findWarehouseCheck(findMap);
     }
 
-    public List<WarehouseCheck> findWarehouseCheckList(PageData object) {
+    public List<WarehouseCheck> findWarehouseCheckList(PageData object) throws Exception {
         if (object == null) {return null;}
 
-        List<WarehouseCheck> objectList = new ArrayList<WarehouseCheck>();
-        try {
-            objectList = this.dataList(object);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return objectList;
+        return this.dataList(object);
     }
 
 }

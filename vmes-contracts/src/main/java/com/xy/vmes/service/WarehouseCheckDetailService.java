@@ -85,11 +85,13 @@ public interface WarehouseCheckDetailService {
      */
     List<Map> getDataListPage(PageData pd, Pagination pg) throws Exception;
 
-    WarehouseCheckDetail findWarehouseCheckDetail(PageData object);
-    WarehouseCheckDetail findWarehouseCheckDetailById(String id);
+    WarehouseCheckDetail findWarehouseCheckDetail(PageData object) throws Exception;
+    WarehouseCheckDetail findWarehouseCheckDetailById(String id) throws Exception;
 
-    List<WarehouseCheckDetail> findWarehouseCheckDetailList(PageData object);
-    List<WarehouseCheckDetail> findWarehouseCheckDetailListByParentId(String parentId);
+    List<WarehouseCheckDetail> findWarehouseCheckDetailList(PageData object) throws Exception;
+    List<WarehouseCheckDetail> findWarehouseCheckDetailListByParentId(String parentId) throws Exception;
+
+    List<WarehouseCheckDetail> mapList2DetailList(List<Map<String, String>> mapList, List<WarehouseCheckDetail> objectList);
 
     /////////////////////////////////////////////////////////////
     /**

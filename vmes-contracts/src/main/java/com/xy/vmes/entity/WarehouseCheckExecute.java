@@ -8,12 +8,12 @@ import java.util.*;
 import java.math.BigDecimal;
 
 /** 
- * 说明：vmes_warehouse_check_detail:仓库库存盘点明细 实体类
+ * 说明：vmes_warehouse_check_execute:仓库库存盘点审核明细 实体类
  * @author 陈刚 自动生成
- * @date 2018-11-14
+ * @date 2018-11-15
  */
-@TableName("vmes_warehouse_check_detail")
-public class WarehouseCheckDetail implements Serializable {
+@TableName("vmes_warehouse_check_execute")
+public class WarehouseCheckExecute implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	//
@@ -22,32 +22,21 @@ public class WarehouseCheckDetail implements Serializable {
 	//盘点单ID
 	@TableField("parent_id")
 	private String parentId;
-	//二维码-(图片相对路径)
-	@TableField("qrcode")
-	private String qrcode;
+	//入库明细ID
+	@TableField("detail_id")
+	private String detailId;
 	//执行人ID
-	@TableField("execute_id")
-	private String executeId;
-	//库存id
-	@TableField("warehouse_product_id")
-	private String warehouseProductId;
-
-	//货位ID(系统生成)
-	@TableField("warehouse_id")
-	private String warehouseId;
-	//货品ID(系统生成)
-	@TableField("product_id")
-	private String productId;
-	//货位批次号(系统生成)
-	@TableField("code")
-	private String code;
-	//库存数量
-	@TableField("stock_count")
-	private BigDecimal stockCount;
-	//状态(0:待派单 1:执行中 2:审核中 3:已完成 -1:已取消)
+	@TableField("executor_id")
+	private String executorId;
+	//审核人ID
+	@TableField("audit_id")
+	private String auditId;
+	//盘点数量
+	@TableField("count")
+	private BigDecimal count;
+	// 状态(0:待审核 2:同意 3:不同意)
 	@TableField("state")
 	private String state;
-
 	//创建用户id
 	@TableField("cuser")
 	private String cuser;
@@ -63,10 +52,10 @@ public class WarehouseCheckDetail implements Serializable {
 	//备注
 	@TableField("remark")
 	private String remark;
-
 	//是否启用(0:已禁用 1:启用)
 	@TableField("isdisable")
 	private String isdisable;
+
 
 
 	public void setId(String id) {
@@ -81,41 +70,29 @@ public class WarehouseCheckDetail implements Serializable {
 	public String getParentId() {
 		return parentId;
 	}
-	public void setQrcode(String qrcode) {
-		this.qrcode = qrcode;
+	public void setDetailId(String detailId) {
+		this.detailId = detailId;
 	}
-	public String getQrcode() {
-		return qrcode;
+	public String getDetailId() {
+		return detailId;
 	}
-	public void setExecuteId(String executeId) {
-		this.executeId = executeId;
+	public void setExecutorId(String executorId) {
+		this.executorId = executorId;
 	}
-	public String getExecuteId() {
-		return executeId;
+	public String getExecutorId() {
+		return executorId;
 	}
-	public void setWarehouseId(String warehouseId) {
-		this.warehouseId = warehouseId;
+	public void setAuditId(String auditId) {
+		this.auditId = auditId;
 	}
-	public String getWarehouseId() {
-		return warehouseId;
+	public String getAuditId() {
+		return auditId;
 	}
-	public void setProductId(String productId) {
-		this.productId = productId;
+	public void setCount(BigDecimal count) {
+		this.count = count;
 	}
-	public String getProductId() {
-		return productId;
-	}
-	public void setCode(String code) {
-		this.code = code;
-	}
-	public String getCode() {
-		return code;
-	}
-	public void setStockCount(BigDecimal stockCount) {
-		this.stockCount = stockCount;
-	}
-	public BigDecimal getStockCount() {
-		return stockCount;
+	public BigDecimal getCount() {
+		return count;
 	}
 	public void setState(String state) {
 		this.state = state;
@@ -159,12 +136,7 @@ public class WarehouseCheckDetail implements Serializable {
 	public String getIsdisable() {
 		return isdisable;
 	}
-	public String getWarehouseProductId() {
-		return warehouseProductId;
-	}
-	public void setWarehouseProductId(String warehouseProductId) {
-		this.warehouseProductId = warehouseProductId;
-	}
+
 /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 

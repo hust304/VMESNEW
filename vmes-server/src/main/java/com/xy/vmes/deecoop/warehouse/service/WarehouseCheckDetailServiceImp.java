@@ -7,11 +7,13 @@ import com.xy.vmes.entity.WarehouseCheckDetail;
 import com.xy.vmes.entity.WarehouseProduct;
 import com.xy.vmes.service.WarehouseCheckDetailService;
 import com.xy.vmes.service.WarehouseCheckService;
+import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import com.yvan.Conv;
@@ -149,7 +151,7 @@ public class WarehouseCheckDetailServiceImp implements WarehouseCheckDetailServi
         return warehouseCheckDetailMapper.getDataListPage(pd,pg);
     }
 
-    public WarehouseCheckDetail findWarehouseCheckDetail(PageData object) {
+    public WarehouseCheckDetail findWarehouseCheckDetail(PageData object) throws Exception {
         if (object == null) {return null;}
 
         List<WarehouseCheckDetail> objectList = this.findWarehouseCheckDetailList(object);
@@ -159,7 +161,7 @@ public class WarehouseCheckDetailServiceImp implements WarehouseCheckDetailServi
 
         return null;
     }
-    public WarehouseCheckDetail findWarehouseCheckDetailById(String id) {
+    public WarehouseCheckDetail findWarehouseCheckDetailById(String id) throws Exception {
         if (id == null || id.trim().length() == 0) {return null;}
 
         PageData findMap = new PageData();
@@ -169,20 +171,13 @@ public class WarehouseCheckDetailServiceImp implements WarehouseCheckDetailServi
         return this.findWarehouseCheckDetail(findMap);
     }
 
-    public List<WarehouseCheckDetail> findWarehouseCheckDetailList(PageData object) {
+    public List<WarehouseCheckDetail> findWarehouseCheckDetailList(PageData object) throws Exception {
         if (object == null) {return null;}
 
-        List<WarehouseCheckDetail> objectList = new ArrayList<WarehouseCheckDetail>();
-        try {
-            objectList = this.dataList(object);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return objectList;
+        return this.dataList(object);
     }
 
-    public List<WarehouseCheckDetail> findWarehouseCheckDetailListByParentId(String parentId) {
+    public List<WarehouseCheckDetail> findWarehouseCheckDetailListByParentId(String parentId) throws Exception {
         if (parentId == null || parentId.trim().length() == 0) {return null;}
 
         PageData findMap = new PageData();
@@ -192,6 +187,17 @@ public class WarehouseCheckDetailServiceImp implements WarehouseCheckDetailServi
         return this.findWarehouseCheckDetailList(findMap);
     }
 
+    public List<WarehouseCheckDetail> mapList2DetailList(List<Map<String, String>> mapList, List<WarehouseCheckDetail> objectList) {
+        if (objectList == null) {objectList = new ArrayList<WarehouseCheckDetail>();}
+        if (mapList == null || mapList.size() == 0) {return objectList;}
+
+        for (Map<String, String> mapObject : mapList) {
+            WarehouseCheckDetail detail = (WarehouseCheckDetail) HttpUtils.pageData2Entity(mapObject, new WarehouseCheckDetail());
+            objectList.add(detail);
+        }
+
+        return objectList;
+    }
     /////////////////////////////////////////////////////////////
     /**
      * 获取业务id字符串(逗号分隔的字符串)
@@ -228,9 +234,16 @@ public class WarehouseCheckDetailServiceImp implements WarehouseCheckDetailServi
             WarehouseCheckDetail detail = new WarehouseCheckDetail();
 
             detail.setParentId(parentObj.getId());
+            detail.setWarehouseProductId(warehouseProduct.getId());
             detail.setCode(warehouseProduct.getCode());
             detail.setProductId(warehouseProduct.getProductId());
             detail.setWarehouseId(warehouseProduct.getWarehouseId());
+
+            detail.setStockCount(BigDecimal.valueOf(0D));
+            if (warehouseProduct.getStockCount() != null) {
+                detail.setStockCount(warehouseProduct.getStockCount());
+            }
+
             //state: 状态(0:待派单 1:执行中 2:审核中 3:已完成 -1:已取消)
             detail.setState("0");
             detail.setCuser(parentObj.getCuser());

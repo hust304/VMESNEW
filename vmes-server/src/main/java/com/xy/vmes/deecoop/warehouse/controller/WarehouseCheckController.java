@@ -3,10 +3,7 @@ package com.xy.vmes.deecoop.warehouse.controller;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.StringUtil;
-import com.xy.vmes.entity.Column;
-import com.xy.vmes.entity.WarehouseCheck;
-import com.xy.vmes.entity.WarehouseCheckDetail;
-import com.xy.vmes.entity.WarehouseProduct;
+import com.xy.vmes.entity.*;
 import com.xy.vmes.service.*;
 import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
@@ -42,6 +39,8 @@ public class WarehouseCheckController {
     @Autowired
     private WarehouseProductService warehouseProductService;
 
+    @Autowired
+    private RoleService roleService;
     @Autowired
     private CoderuleService coderuleService;
     @Autowired
@@ -194,12 +193,13 @@ public class WarehouseCheckController {
         //盘点单编号
         warehouseCheck.setCompanyId(companyId);
         String code = coderuleService.createCoder(companyId, "vmes_warehouse_check", "C");
+        warehouseCheck.setMakeId(warehouseCheck.getCuser());
         warehouseCheck.setCode(code);
         //state:状态(0:未完成 1:已完成 -1:已取消)
         warehouseCheck.setState("0");
-        //warehouseCheckService.save(warehouseCheck);
+        warehouseCheckService.save(warehouseCheck);
 
-        //warehouseCheckDetailService.addWarehouseCheckDetail(warehouseCheck, warehouseProductList);
+        warehouseCheckDetailService.addWarehouseCheckDetail(warehouseCheck, warehouseProductList);
 
         Long endTime = System.currentTimeMillis();
         logger.info("################/warehouseCheck/addWarehouseCheck 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
@@ -291,6 +291,44 @@ public class WarehouseCheckController {
         return model;
     }
 
+    /**
+     * 验证当前登录用户是否含有(仓库盘点审核角色)
+     * @author 陈刚 自动创建，可以修改
+     * @date 2018-11-15
+     */
+    @PostMapping("/warehouseCheck/checkUserRoleByWarehouseAudit")
+    public ResultModel checkUserRoleByWarehouseAudit() throws Exception {
+        logger.info("################/warehouseCheck/checkUserRoleByWarehouseAudit 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        ResultModel model = new ResultModel();
+
+        PageData pageData = HttpUtils.parsePageData();
+        String companyId = pageData.getString("currentCompanyId");
+        String userRoleId = pageData.getString("userRoleId");
+        if (userRoleId == null || userRoleId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("当前登录用户角色id为空或空字符串！");
+            return model;
+        }
+
+        PageData findMap = new PageData();
+        findMap.put("name", "仓库盘点审核员");
+        findMap.put("currentCompanyId", companyId);
+        //isdisable: 是否启用(0:已禁用 1:启用)
+        findMap.put("isdisable", "1");
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+        List<Role> roleList = roleService.findRoleList(findMap);
+
+        if (roleList == null || roleList.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("您不是(仓库盘点审核员)角色，请与企业管理员联系！");
+            return model;
+        }
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/warehouseCheck/checkUserRoleByWarehouseAudit 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
 
     /**
      * Excel导出

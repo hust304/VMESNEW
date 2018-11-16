@@ -81,10 +81,10 @@ public interface WarehouseCheckService {
      */
     List<Map> getDataListPage(PageData pd, Pagination pg) throws Exception;
 
-    WarehouseCheck findWarehouseCheck(PageData object);
-    WarehouseCheck findWarehouseCheckById(String id);
+    WarehouseCheck findWarehouseCheck(PageData object) throws Exception;
+    WarehouseCheck findWarehouseCheckById(String id) throws Exception;
 
-    List<WarehouseCheck> findWarehouseCheckList(PageData object);
+    List<WarehouseCheck> findWarehouseCheckList(PageData object) throws Exception;
 
 
 
