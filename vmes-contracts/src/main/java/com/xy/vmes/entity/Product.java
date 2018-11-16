@@ -58,6 +58,9 @@ public class Product implements Serializable {
 	//保存期(yyyy-mm-dd)
 	@TableField("validity_date")
 	private Date validityDate;
+	//保质期(天)
+	@TableField("validity_days")
+	private BigDecimal validityDays;
 	//备注
 	@TableField("remark")
 	private String remark;
@@ -233,6 +236,13 @@ public class Product implements Serializable {
 	}
 	public void setVersion(Integer version) {
 		this.version = version;
+	}
+	public BigDecimal getValidityDays() {
+		return validityDays;
+	}
+
+	public void setValidityDays(BigDecimal validityDays) {
+		this.validityDays = validityDays;
 	}
 /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 

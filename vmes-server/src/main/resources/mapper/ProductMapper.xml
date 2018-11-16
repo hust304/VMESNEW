@@ -11,7 +11,6 @@
     <sql id="tableName">
 	vmes_product
     </sql>
-
     <!-- 字段 自动创建，禁止修改-->
     <sql id="Field">
 		company_id companyId,<!-- 公司ID-组织架构 -->
@@ -27,6 +26,7 @@
 		price price,<!-- 单价 -->
 		type type,<!-- 类型(字典表-vmes_dictionary.id) -->
 		validity_date validityDate,<!-- 保存期(yyyy-mm-dd) -->
+        validity_days validityDays,
 		remark remark,<!-- 备注 -->
 		cuser cuser,<!-- 创建用户id -->
 		cdate cdate,<!-- 创建时间 -->
@@ -55,6 +55,7 @@
 		#{price},<!-- 单价 -->
 		#{type},<!-- 类型(字典表-vmes_dictionary.id) -->
 		#{validityDate},<!-- 保存期(yyyy-mm-dd) -->
+        #{validityDays},
 		#{remark},<!-- 备注 -->
 		#{cuser},<!-- 创建用户id -->
 		#{cdate},<!-- 创建时间 -->
@@ -81,6 +82,7 @@
         '单价'  price,
         '类型(字典表-vmes_dictionary.id)'  type,
         '保存期(yyyy-mm-dd)'  validityDate,
+        '保质期（天）' validityDays,
         '备注'  remark,
         '创建用户id'  cuser,
         '创建时间'  cdate,
@@ -176,7 +178,7 @@
             (replace(uuid(), '-', ''),'product','lastRatio','结算比例',10, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'product','price','单价',11, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'product','type','类型(字典表-vmes_dictionary.id)',12, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'product','validityDate','保存期(yyyy-mm-dd)',13, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'product','validityDays','保质期(天)',13, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'product','remark','备注',14, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'product','cuser','创建用户id',15, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'product','cdate','创建时间',16, '1','1','1','0',now(), 'admin'),
@@ -266,13 +268,10 @@
 
             '' prodProperty,
 
-            prod.last_unit lastUnit,
-            lastUnit.name lastUnitName,
-            ROUND(prod.last_ratio, 2) lastRatio,
             ROUND(prod.price, 2) price,
             prod.type type,
             type.name typeName,
-            prod.validity_date validityDate,
+            prod.validity_days validityDays,
 
             prod.remark remark,
             prod.cuser cuser,
@@ -280,14 +279,13 @@
             prod.uuser uuser,
             DATE_FORMAT(prod.udate,'%Y-%m-%d %T') udate,
 
-            prod.stock_count stockCount,
+            ROUND(prod.stock_count, 2) stockCount,
             prod.version version,
             prod.isdisable isdisable
 
         from vmes_product prod
             left join vmes_dictionary genre on prod.genre = genre.id
             left join vmes_dictionary unit on prod.unit = unit.id
-            left join vmes_dictionary lastUnit on prod.last_unit = lastUnit.id
             left join vmes_dictionary type on prod.type = type.id
         <where>
             <if test="code != null and code != ''">
@@ -295,6 +293,15 @@
             </if>
             <if test="name != null and name != ''">
                 and prod.name LIKE CONCAT(CONCAT(#{name}),'%')
+            </if>
+            <if test="genreName != null and genreName != ''">
+                and genre.name LIKE CONCAT(CONCAT(#{genreName}),'%')
+            </if>
+            <if test="typeName != null and typeName != ''">
+                and type.name LIKE CONCAT(CONCAT(#{typeName}),'%')
+            </if>
+            <if test="unitName != null and unitName != ''">
+                and unit.name LIKE CONCAT(CONCAT(#{unitName}),'%')
             </if>
             <if test="currentCompanyId != null and currentCompanyId != ''" >
                 and prod.company_id=#{currentCompanyId}
