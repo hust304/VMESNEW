@@ -9,7 +9,7 @@
 
     <!-- 批量删除 自动创建，禁止修改-->
     <delete id="deleteByIds" parameterType="java.lang.String">
-        delete from vmes_warehouse_check_detail
+        delete from vmes_warehouse_check_executor
         where id in
         <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
             #{item}
@@ -18,7 +18,7 @@
 
     <!-- 自动创建，禁止修改-->
     <update id="updateToDisableByIds" parameterType="java.lang.String" >
-        update vmes_warehouse_check_detail
+        update vmes_warehouse_check_executor
         set isdisable = '0' ,udate = now()
         where id in
         <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
@@ -45,6 +45,24 @@
             (replace(uuid(), '-', ''),'warehouseCheckExecutor','isdisable','是否启用(0:已禁用 1:启用)',9, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'warehouseCheckExecutor','id','id',0, '1','1','1','0',now(), 'admin')
     </insert>
+
+    <update id="updateIsdisableByExecutor" parameterType="com.yvan.PageData" >
+        update vmes_warehouse_check_executor set
+        isdisable = #{isdisable},
+        remark = #{remark},
+        udate = now()
+        <where>
+            <if test="parentId != null and parentId != ''" >
+                and parent_id = #{parentId}
+            </if>
+            <if test="detailId != null and detailId != ''" >
+                and detail_id = #{detailId}
+            </if>
+            <if test="executorId != null and executorId != ''" >
+                and executor_id = #{}
+            </if>
+        </where>
+    </update>
 
     <!-- 列表(全部) 自动创建，禁止修改-->
     <select id="dataList" parameterType="com.yvan.PageData" resultType="com.xy.vmes.entity.WarehouseCheckExecutor">

@@ -28,7 +28,7 @@
 
     <!-- 批量删除 自动创建，禁止修改-->
     <delete id="deleteByIds" parameterType="java.lang.String">
-        delete from vmes_warehouse_check_detail
+        delete from vmes_warehouse_check_execute
         where id in
         <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
             #{item}
@@ -37,7 +37,7 @@
 
     <!-- 自动创建，禁止修改-->
     <update id="updateToDisableByIds" parameterType="java.lang.String" >
-        update vmes_warehouse_check_detail
+        update vmes_warehouse_check_execute
         set isdisable = '0' ,udate = now()
         where id in
         <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
@@ -67,6 +67,23 @@
             (replace(uuid(), '-', ''),'warehouseCheckexecute','isdisable','是否启用(0:已禁用 1:启用)',12, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'warehouseCheckexecute','id','id',0, '1','1','1','0',now(), 'admin')
     </insert>
+
+    <update id="updateIsdisableByExecute" parameterType="com.yvan.PageData" >
+        update vmes_warehouse_check_execute set
+        isdisable = #{isdisable},
+        udate = now()
+        <where>
+            <if test="parentId != null and parentId != ''" >
+                and parent_id = #{parentId}
+            </if>
+            <if test="detailId != null and detailId != ''" >
+                and detail_id = #{detailId}
+            </if>
+            <if test="executorId != null and executorId != ''" >
+                and executor_id = #{executorId}
+            </if>
+        </where>
+    </update>
 
     <!-- 列表(全部) 自动创建，禁止修改-->
     <select id="dataList" parameterType="com.yvan.PageData" resultType="com.xy.vmes.entity.WarehouseCheckExecute">
@@ -114,6 +131,24 @@
                         </choose>
                     </if>
 
+                    <if test="parentId != null and parentId != ''" >
+                        and parent_id = #{parentId}
+                    </if>
+                    <if test="detailId != null and detailId != ''" >
+                        and detail_id = #{detailId}
+                    </if>
+                    <if test="executorId != null and executorId != ''" >
+                        and executor_id = #{executorId}
+                    </if>
+                    <if test="auditId != null and auditId != ''" >
+                        and audit_id = #{auditId}
+                    </if>
+                    <if test="state != null and state != ''" >
+                        and state = #{state}
+                    </if>
+                    <if test="isdisable != null and isdisable != ''" >
+                        and isdisable = #{isdisable}
+                    </if>
 
                     <!--queryStr 自定义sql查询语句-->
                     <if test="queryStr != null and queryStr != ''" >

@@ -160,46 +160,46 @@ public class WarehouseCheckDetailController {
      * @date 2018-10-16
      * @throws Exception
      */
-    @PostMapping("/warehouseCheckDetail/recoveryWarehouseCheckDetail")
-    @Transactional
-    public ResultModel recoveryWarehouseCheckDetail() throws Exception {
-        logger.info("################/warehouseCheckDetail/recoveryWarehouseCheckDetail 执行开始 ################# ");
-        Long startTime = System.currentTimeMillis();
-        ResultModel model = new ResultModel();
-
-        PageData pageData = HttpUtils.parsePageData();
-        String detailId = pageData.getString("id");
-        if (detailId == null || detailId.trim().length() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("盘点明细id为空或空字符串！");
-            return model;
-        }
-
-        //状态(0:待派单 1:执行中 2:审核中 3:已完成 -1:已取消)
-        WarehouseCheckDetail detail = warehouseCheckDetailService.findWarehouseCheckDetailById(detailId);
-        if (detail.getState() != null && !"-1".equals(detail.getState().trim())) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("当前盘点明细不是取消状态，不可恢复！");
-            return model;
-        }
-
-        //1. 修改明细状态
-        //明细状态(0:待派单 1:执行中 2:审核中 3:已完成 -1:已取消)
-        detail.setState("0");
-        warehouseCheckDetailService.update(detail);
-
-        //2. 反写盘点单主表状态
-        //获取盘点单状态-根据盘点明细状态 -- 忽视状态(-1:已取消)
-        WarehouseCheck parent = new WarehouseCheck();
-        parent.setId(detail.getParentId());
-        if (parent != null) {
-            warehouseCheckDetailService.updateParentStateByDetailList(parent, null, "-1");
-        }
-
-        Long endTime = System.currentTimeMillis();
-        logger.info("################/warehouseCheckDetail/recoveryWarehouseCheckDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
-        return model;
-    }
+//    @PostMapping("/warehouseCheckDetail/recoveryWarehouseCheckDetail")
+//    @Transactional
+//    public ResultModel recoveryWarehouseCheckDetail() throws Exception {
+//        logger.info("################/warehouseCheckDetail/recoveryWarehouseCheckDetail 执行开始 ################# ");
+//        Long startTime = System.currentTimeMillis();
+//        ResultModel model = new ResultModel();
+//
+//        PageData pageData = HttpUtils.parsePageData();
+//        String detailId = pageData.getString("id");
+//        if (detailId == null || detailId.trim().length() == 0) {
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg("盘点明细id为空或空字符串！");
+//            return model;
+//        }
+//
+//        //状态(0:待派单 1:执行中 2:审核中 3:已完成 -1:已取消)
+//        WarehouseCheckDetail detail = warehouseCheckDetailService.findWarehouseCheckDetailById(detailId);
+//        if (detail.getState() != null && !"-1".equals(detail.getState().trim())) {
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg("当前盘点明细不是取消状态，不可恢复！");
+//            return model;
+//        }
+//
+//        //1. 修改明细状态
+//        //明细状态(0:待派单 1:执行中 2:审核中 3:已完成 -1:已取消)
+//        detail.setState("0");
+//        warehouseCheckDetailService.update(detail);
+//
+//        //2. 反写盘点单主表状态
+//        //获取盘点单状态-根据盘点明细状态 -- 忽视状态(-1:已取消)
+//        WarehouseCheck parent = new WarehouseCheck();
+//        parent.setId(detail.getParentId());
+//        if (parent != null) {
+//            warehouseCheckDetailService.updateParentStateByDetailList(parent, null, "-1");
+//        }
+//
+//        Long endTime = System.currentTimeMillis();
+//        logger.info("################/warehouseCheckDetail/recoveryWarehouseCheckDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+//        return model;
+//    }
 
     /**
      * 删除盘点单明细

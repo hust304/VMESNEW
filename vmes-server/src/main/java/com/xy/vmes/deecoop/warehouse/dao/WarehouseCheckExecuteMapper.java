@@ -33,7 +33,7 @@ public interface WarehouseCheckExecuteMapper extends BaseMapper<WarehouseCheckEx
     void updateToDisableByIds(String[] ids);
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
-
+    void updateIsdisableByExecute(PageData pd);
     /**
      * 创建人：陈刚
      * 创建时间：2018-11-15

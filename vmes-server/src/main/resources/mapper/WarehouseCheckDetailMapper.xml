@@ -127,8 +127,34 @@
         </if>
     </select>
 
+    <!--
+        <select id="findDetailExecuteList" parameterType="com.yvan.PageData" resultType="java.util.Map">
+            select
+                detail.id id,
+                detail.parent_id parentId,
+                detail.qrcode qrcode,
+                detail.execute_id executeId,
+                detail.warehouse_product_id warehouseProductId,
+
+                detail.stock_count stockCount,
+                detail.state state,
+                detail.remark remark,
+                detail.isdisable isdisable,
+
+                checkExecute.state executeState
+
+            from vmes_warehouse_check_detail detail
+                left join vmes_warehouse_check_execute checkExecute on detail.id = checkExecute.detail_id and checkExecute.isdisable = 1
+            <where>
+                <if test="detailId != null and detailId != ''" >
+                    and detail.id = #{detailId}
+                </if>
+            </where>
+        </select>
+        -->
+
     <!-- 自动创建，可以修改 -->
-    <select id="getDataListPage" parameterType="com.yvan.PageData"  resultType="java.util.Map">
+    <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
             detail.id id,
             detail.parent_id parentId,

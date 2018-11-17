@@ -147,8 +147,8 @@ public class WarehouseCheckDetailServiceImp implements WarehouseCheckDetailServi
      * 创建时间：2018-11-13
      */
     @Override
-    public List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception{
-        return warehouseCheckDetailMapper.getDataListPage(pd,pg);
+    public List<Map> getDataListPage(PageData pd, Pagination pg) throws Exception{
+        return warehouseCheckDetailMapper.getDataListPage(pd, pg);
     }
 
     public WarehouseCheckDetail findWarehouseCheckDetail(PageData object) throws Exception {
@@ -370,6 +370,23 @@ public class WarehouseCheckDetailServiceImp implements WarehouseCheckDetailServi
         }
 
         return parentState;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    public boolean isAllAuditStateByDetailExecuteList(String state, List<Map<String, Object>> mapList) {
+        if (state == null || state.trim().length() == 0) {return false;}
+        if (mapList == null || mapList.size() == 0) {return false;}
+
+        for (Map<String, Object> mapObject : mapList) {
+            String executeState = (String)mapObject.get("executeState");
+            if (executeState == null || executeState.trim().length() == 0) {return false;}
+
+            if (!state.equals(executeState)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
 }

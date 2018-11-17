@@ -45,6 +45,15 @@ public class Common {
     //系统小数四舍五入-默认2位小数
     public static final int SYS_NUMBER_FORMAT_DEFAULT = SYS_NUMBER_FORMAT_2;
 
+    //状态(0:待派单 1:执行中 2:审核中 3:已完成 -1:已取消)
+    public static final Map<String, String> SYS_WAREHOUSE_CHECK_DETAIL_STATE = new HashMap<String, String>() {{
+        put("0", "待派单");
+        put("1", "执行中");
+        put("2", "审核中");
+        put("3", "已完成");
+        put("-1", "已取消");
+    }};
+
     ///////////////--编码规则--//////////////////////////////////////////////////////////////////////////////////////////////////
     //业务编码规则-分隔符
     //public static final String CODE_RULE_SEPARATOR = "-";

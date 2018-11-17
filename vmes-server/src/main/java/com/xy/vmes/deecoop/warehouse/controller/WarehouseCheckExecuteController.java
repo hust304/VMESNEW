@@ -1,8 +1,7 @@
 package com.xy.vmes.deecoop.warehouse.controller;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
-import com.xy.vmes.common.util.ColumnUtil;
-import com.xy.vmes.common.util.StringUtil;
+import com.xy.vmes.common.util.Common;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.entity.WarehouseCheck;
 import com.xy.vmes.entity.WarehouseCheckDetail;
@@ -10,11 +9,10 @@ import com.xy.vmes.entity.WarehouseCheckExecute;
 import com.xy.vmes.service.ColumnService;
 import com.xy.vmes.service.WarehouseCheckDetailService;
 import com.xy.vmes.service.WarehouseCheckExecuteService;
-import com.yvan.ExcelUtil;
+import com.xy.vmes.service.WarehouseCheckExecutorService;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.YvanUtil;
-import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -22,13 +20,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import org.apache.commons.lang.StringUtils;
-
-import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
+import java.text.MessageFormat;
 import java.util.*;
-
 
 
 /**
@@ -43,6 +37,8 @@ public class WarehouseCheckExecuteController {
 
     @Autowired
     private WarehouseCheckDetailService warehouseCheckDetailService;
+    @Autowired
+    private WarehouseCheckExecutorService warehouseCheckExecutorService;
     @Autowired
     private WarehouseCheckExecuteService warehouseCheckExecuteService;
 
@@ -188,6 +184,401 @@ public class WarehouseCheckExecuteController {
         logger.info("################/warehouseCheckExecute/addWarehouseCheckExecute 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
+
+    /**
+     * (退单)退回盘点明细(退回单个盘点明细)
+     * 1. 填写退回原因
+     * 2. 盘点明细必须是(1:执行中)-允许退回
+     * 3. 退回成功后盘点明细状态(0:待派单)
+     * 4. 修改盘点明细执行人表(vmes_warehouse_check_executor.isdisable)状态
+     *
+     * rebackDetailJsonStr
+     * {id:"",parentId:"",state:""}
+     *
+     * @author 陈刚
+     * @date 2018-11-16
+     * @throws Exception
+     */
+    @PostMapping("/warehouseCheckExecute/rebackWarehouseCheckByDetail")
+    @Transactional
+    public ResultModel rebackWarehouseCheckByDetail() throws Exception {
+        logger.info("################/warehouseCheckExecute/rebackWarehouseCheckByDetail 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        ResultModel model = new ResultModel();
+
+        PageData pageData = HttpUtils.parsePageData();
+        String cuser = pageData.getString("cuser");
+        String rebackDetailJsonStr = pageData.getString("rebackDetailJsonStr");
+
+        String remark = pageData.getString("remark");
+        if (remark == null || remark.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("退单原因为空或空字符串，退单原因为必填不可为空！");
+            return model;
+        }
+
+        if (rebackDetailJsonStr == null || rebackDetailJsonStr.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("请至少勾选一条盘点数据！");
+            return model;
+        }
+
+        List<Map<String, Object>> mapList = (List<Map<String, Object>>) YvanUtil.jsonToList(rebackDetailJsonStr);
+        if (mapList == null || mapList.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("盘点明细退单 Json字符串-转换成List错误！");
+            return model;
+        }
+
+        List<WarehouseCheckDetail> detailList = new ArrayList<WarehouseCheckDetail>();
+        for (Map<String, Object> mapObject : mapList) {
+            WarehouseCheckDetail detail = (WarehouseCheckDetail) HttpUtils.pageData2Entity(mapObject, new WarehouseCheckDetail());
+            detailList.add(detail);
+        }
+
+        String msgStr = this.checkStateByDetailList(detailList);
+        if (msgStr != null && msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
+
+        Map<String, String> parentMap = new HashMap<String, String>();
+        for (WarehouseCheckDetail detail : detailList) {
+            //盘点明细状态(0:待派单 1:执行中 2:审核中 3:已完成 -1:已取消)
+            detail.setState("0");
+            warehouseCheckDetailService.update(detail);
+
+            //isdisable: 是否启用(0:已禁用 1:启用)
+            warehouseCheckExecutorService.updateIsdisableByExecutor("0",
+                    remark,
+                    null,
+                    detail.getId(),
+                    cuser);
+
+            parentMap.put(detail.getParentId(), detail.getParentId());
+        }
+
+        //修改盘点单状态
+        if (parentMap.size() > 0) {
+            for (Iterator iterator = parentMap.keySet().iterator(); iterator.hasNext();) {
+                String parentId = (String) iterator.next();
+
+                WarehouseCheck parent = new WarehouseCheck();
+                parent.setId(parentId);
+                //盘点明细状态(0:待派单 1:执行中 2:审核中 3:已完成 -1:已取消)--忽视状态(-1)
+                warehouseCheckDetailService.updateParentStateByDetailList(parent, null, "-1");
+            }
+        }
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/warehouseCheckExecute/rebackWarehouseCheckByDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 撤回盘点明细(撤回单个盘点明细)
+     * 1. 盘点明细必须是(2:审核中)- and 无审批记录 - 允许撤回条件(盘点明细已经提交审核 and 无审批记录)
+     * 2. 删除盘点明细执行表
+     * 3. 退回成功后盘点明细状态(1:执行中)
+     *
+     * cancelAuditExecuteJsonStr
+     * {id:"",parentId:"",detailId:"",executorId:"",state:"":detailState:""}
+     *
+     * @return
+     * @throws Exception
+     */
+    @PostMapping("/warehouseCheckExecute/cancelAuditWarehouseCheckByExecute")
+    @Transactional
+    public ResultModel cancelAuditWarehouseCheckByExecute() throws Exception {
+        logger.info("################/warehouseCheckExecute/cancelAuditWarehouseCheckByExecute 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        ResultModel model = new ResultModel();
+
+        PageData pageData = HttpUtils.parsePageData();
+        String cuser = pageData.getString("cuser");
+        String cancelAuditExecuteJsonStr = pageData.getString("cancelAuditExecuteJsonStr");
+
+        if (cancelAuditExecuteJsonStr == null || cancelAuditExecuteJsonStr.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("请至少勾选一条盘点数据！");
+            return model;
+        }
+
+        List<Map<String, Object>> mapList = (List<Map<String, Object>>) YvanUtil.jsonToList(cancelAuditExecuteJsonStr);
+        if (mapList == null || mapList.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("盘点明细撤回 Json字符串-转换成List错误！");
+            return model;
+        }
+
+        //盘点明细必须是(2:审核中)
+        String msgStr = this.checkDetailStateByExecuteMapList(mapList);
+        if (msgStr != null && msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
+        //验证盘点明细id(vmes_warehouse_check_execute)审核记录
+        msgStr = this.checkAuditHistoryByByExecuteMapList(mapList);
+        if (msgStr != null && msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
+
+        Map<String, String> parentMap = new HashMap<String, String>();
+        //{id:"",parentId:"",detailId:"",state:"":detailState:""}
+        for (Map<String, Object> mapObject : mapList) {
+            WarehouseCheckExecute execute = (WarehouseCheckExecute) HttpUtils.pageData2Entity(mapObject, new WarehouseCheckExecute());
+            warehouseCheckExecuteService.deleteById(execute.getId());
+
+            WarehouseCheckDetail detail = new WarehouseCheckDetail();
+            detail.setId(execute.getDetailId());
+            //状态(0:待派单 1:执行中 2:审核中 3:已完成 -1:已取消)
+            detail.setState("1");
+            warehouseCheckDetailService.update(detail);
+
+            parentMap.put(execute.getParentId(), execute.getParentId());
+        }
+
+        //修改盘点单状态
+        if (parentMap.size() > 0) {
+            for (Iterator iterator = parentMap.keySet().iterator(); iterator.hasNext();) {
+                String parentId = (String) iterator.next();
+
+                WarehouseCheck parent = new WarehouseCheck();
+                parent.setId(parentId);
+                //盘点明细状态(0:待派单 1:执行中 2:审核中 3:已完成 -1:已取消)--忽视状态(-1)
+                warehouseCheckDetailService.updateParentStateByDetailList(parent, null, "-1");
+            }
+        }
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/warehouseCheckExecute/rebackWarehouseCheckByDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+    ///////////////////////////////////////////////////////////////////
+    /**
+     * 审核同意
+     * auditExecuteJsonStr
+     * {id:"",parentId:"",detailId:""}
+     * @return
+     * @throws Exception
+     */
+    @PostMapping("/warehouseCheckExecute/auditPassWarehouseCheckExecute")
+    @Transactional
+    public ResultModel auditPassWarehouseCheckExecute() throws Exception {
+        logger.info("################/warehouseCheckExecute/auditPassWarehouseCheckExecute 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        ResultModel model = new ResultModel();
+
+        PageData pageData = HttpUtils.parsePageData();
+        String cuser = pageData.getString("cuser");
+        String auditExecuteJsonStr = pageData.getString("auditExecuteJsonStr");
+
+        if (auditExecuteJsonStr == null || auditExecuteJsonStr.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("请至少勾选一条盘点数据！");
+            return model;
+        }
+
+        List<Map<String, Object>> mapList = (List<Map<String, Object>>) YvanUtil.jsonToList(auditExecuteJsonStr);
+        if (mapList == null || mapList.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("盘点明细审核 Json字符串-转换成List错误！");
+            return model;
+        }
+
+        Map<String, String> parentMap = new HashMap<String, String>();
+        for (Map<String, Object> mapObject : mapList) {
+            WarehouseCheckExecute execute = (WarehouseCheckExecute) HttpUtils.pageData2Entity(mapObject, new WarehouseCheckExecute());
+            //状态(0:待审核 2:同意 3:不同意)
+            execute.setState("2");
+            execute.setAuditId(cuser);
+            warehouseCheckExecuteService.update(execute);
+
+            //修改盘点明细状态
+            WarehouseCheckDetail detail = new WarehouseCheckDetail();
+            //状态(0:待派单 1:执行中 2:审核中 3:已完成 -1:已取消)
+            detail.setState("3");
+            warehouseCheckDetailService.update(detail);
+
+            parentMap.put(execute.getParentId(), execute.getParentId());
+        }
+
+        //修改盘点单状态
+        if (parentMap.size() > 0) {
+            for (Iterator iterator = parentMap.keySet().iterator(); iterator.hasNext();) {
+                String parentId = (String) iterator.next();
+
+                WarehouseCheck parent = new WarehouseCheck();
+                parent.setId(parentId);
+                //盘点明细状态(0:待派单 1:执行中 2:审核中 3:已完成 -1:已取消)--忽视状态(-1)
+                warehouseCheckDetailService.updateParentStateByDetailList(parent, null, "-1");
+            }
+        }
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/warehouseCheckExecute/auditPassWarehouseCheckExecute 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 审核不同意
+     * @return
+     * @throws Exception
+     */
+    @PostMapping("/warehouseCheckExecute/auditDisagreeWarehouseCheckExecute")
+    @Transactional
+    public ResultModel auditDisagreeWarehouseCheckExecute() throws Exception {
+        logger.info("################/warehouseCheckExecute/auditDisagreeWarehouseCheckExecute 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        ResultModel model = new ResultModel();
+
+        PageData pageData = HttpUtils.parsePageData();
+        String cuser = pageData.getString("cuser");
+
+        String remark = pageData.getString("remark");
+        if (remark == null || remark.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("审核意见为空或空字符串，审核意见为必填不可为空！");
+            return model;
+        }
+
+        String auditExecuteJsonStr = pageData.getString("auditExecuteJsonStr");
+        if (auditExecuteJsonStr == null || auditExecuteJsonStr.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("请至少勾选一条盘点数据！");
+            return model;
+        }
+
+        List<Map<String, Object>> mapList = (List<Map<String, Object>>) YvanUtil.jsonToList(auditExecuteJsonStr);
+        if (mapList == null || mapList.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("盘点明细审核 Json字符串-转换成List错误！");
+            return model;
+        }
+
+        Map<String, String> parentMap = new HashMap<String, String>();
+        for (Map<String, Object> mapObject : mapList) {
+            WarehouseCheckExecute execute = (WarehouseCheckExecute) HttpUtils.pageData2Entity(mapObject, new WarehouseCheckExecute());
+            //状态(0:待审核 2:同意 3:不同意)
+            execute.setState("3");
+            execute.setAuditId(cuser);
+            execute.setRemark(remark);
+            //是否启用(0:已禁用 1:启用)
+            execute.setIsdisable("0");
+            warehouseCheckExecuteService.update(execute);
+
+            //修改盘点明细状态
+            WarehouseCheckDetail detail = new WarehouseCheckDetail();
+            //状态(0:待派单 1:执行中 2:审核中 3:已完成 -1:已取消)
+            detail.setState("1");
+            warehouseCheckDetailService.update(detail);
+
+            parentMap.put(execute.getParentId(), execute.getParentId());
+        }
+
+        //修改盘点单状态
+        if (parentMap.size() > 0) {
+            for (Iterator iterator = parentMap.keySet().iterator(); iterator.hasNext();) {
+                String parentId = (String) iterator.next();
+
+                WarehouseCheck parent = new WarehouseCheck();
+                parent.setId(parentId);
+                //盘点明细状态(0:待派单 1:执行中 2:审核中 3:已完成 -1:已取消)--忽视状态(-1)
+                warehouseCheckDetailService.updateParentStateByDetailList(parent, null, "-1");
+            }
+        }
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/warehouseCheckExecute/auditDisagreeWarehouseCheckExecute 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////
+    private String checkStateByDetailList(List<WarehouseCheckDetail> detailList) {
+        StringBuffer msgBuf = new StringBuffer();
+        if (detailList == null || detailList.size() == 0) {return msgBuf.toString();}
+
+        String msgTemp = "第 {0} 行: 盘点明细状态({1})，盘点明细状态必须是(执行中)允许退回！" + Common.SYS_ENDLINE_DEFAULT;
+        for (int i = 0; i < detailList.size(); i++) {
+            WarehouseCheckDetail detail = detailList.get(i);
+            //明细状态(0:待派单 1:执行中 2:审核中 3:已完成 -1:已取消)
+            if (!"1".equals(detail.getState())) {
+                String msgStr = MessageFormat.format(msgTemp,
+                        (i+1),
+                        Common.SYS_WAREHOUSE_CHECK_DETAIL_STATE.get(detail.getState()));
+                msgBuf.append(msgStr);
+            }
+        }
+
+        return msgBuf.toString();
+    }
+
+
+    //1. 盘点明细必须是(2:审核中)
+    private String checkDetailStateByExecuteMapList(List<Map<String, Object>> mapList) {
+        StringBuffer msgBuf = new StringBuffer();
+        if (mapList == null || mapList.size() == 0) {return msgBuf.toString();}
+
+        String msgTemp = "第 {0} 行: 盘点明细状态({1})，{2}无需(撤回)操作！" + Common.SYS_ENDLINE_DEFAULT;
+        for (int i = 0; i < mapList.size(); i++) {
+            Map<String, Object> mapObject = mapList.get(i);
+            //{id:"",parentId:"",detailId:"",state:"":detailState:""}
+            //明细状态(0:待派单 1:执行中 2:审核中 3:已完成 -1:已取消)
+
+            String detailState = (String)mapObject.get("detailState");
+            if ("0,1".indexOf(detailState) != -1) {
+                String msgStr = MessageFormat.format(msgTemp,
+                        (i+1),
+                        Common.SYS_WAREHOUSE_CHECK_DETAIL_STATE.get(detailState),
+                        "没有进行盘点操作");
+                msgBuf.append(msgStr);
+            } else if ("3,-1".indexOf(detailState) != -1) {
+                String msgStr = MessageFormat.format(msgTemp,
+                        (i+1),
+                        Common.SYS_WAREHOUSE_CHECK_DETAIL_STATE.get(detailState),
+                        "");
+                msgBuf.append(msgStr);
+            }
+        }
+
+        return msgBuf.toString();
+    }
+
+    /**
+     * 验证盘点明细id(vmes_warehouse_check_execute)审核记录
+     * @param mapList
+     * @return
+     */
+    private String checkAuditHistoryByByExecuteMapList(List<Map<String, Object>> mapList) throws Exception {
+        StringBuffer msgBuf = new StringBuffer();
+        if (mapList == null || mapList.size() == 0) {return msgBuf.toString();}
+
+        String msgTemp = "第 {0} 行: 盘点明细状态(审核中)，审核状态(不同意)不可撤回操作！" + Common.SYS_ENDLINE_DEFAULT;
+        for (int i = 0; i < mapList.size(); i++) {
+            Map<String, Object> mapObject = mapList.get(i);
+
+            //{id:"",parentId:"",detailId:"",state:"":detailState:""}
+            String detailId = (String)mapObject.get("detailId");
+
+            PageData findMap = new PageData();
+            findMap.put("detailId", detailId);
+            //state:状态(0:待审核 2:同意 3:不同意)
+            findMap.put("state", "3");
+            findMap.put("mapSize", Integer.valueOf(findMap.size()));
+            List<WarehouseCheckExecute> executeList = warehouseCheckExecuteService.findWarehouseCheckExecuteList(findMap);
+            if (executeList != null && executeList.size() > 0) {
+                String msgStr = MessageFormat.format(msgTemp, (i+1));
+                msgBuf.append(msgStr);
+            }
+        }
+
+        return msgBuf.toString();
+    }
+
 
 }
 

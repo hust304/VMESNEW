@@ -3,13 +3,11 @@ package com.xy.vmes.deecoop.warehouse.service;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.warehouse.dao.WarehouseCheckExecutorMapper;
-import com.xy.vmes.entity.WarehouseCheck;
 import com.xy.vmes.entity.WarehouseCheckDetail;
 import com.xy.vmes.entity.WarehouseCheckExecutor;
 import com.xy.vmes.service.WarehouseCheckExecutorService;
 import com.yvan.PageData;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -118,6 +116,28 @@ public class WarehouseCheckExecutorServiceImp implements WarehouseCheckExecutorS
     }
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+    public void updateIsdisableByExecutor(String isdisable,
+                                          String remark,
+                                          String parentId,
+                                          String detailId,
+                                          String executorId) {
+        if (isdisable == null || isdisable.trim().length() == 0) {return;}
+        if (detailId == null || detailId.trim().length() == 0) {return;}
+        if (executorId == null || executorId.trim().length() == 0) {return;}
+
+        PageData mapObject = new PageData();
+        mapObject.put("isdisable", isdisable);
+        mapObject.put("detailId", detailId);
+        mapObject.put("executorId", executorId);
+        if (parentId != null && parentId.trim().length() > 0) {
+            mapObject.put("parentId", parentId);
+        }
+        if (remark != null && remark.trim().length() > 0) {
+            mapObject.put("remark", remark);
+        }
+
+        warehouseCheckExecutorMapper.updateIsdisableByExecutor(mapObject);
+    }
     /**
      * 创建人：陈刚
      * 创建时间：2018-11-15

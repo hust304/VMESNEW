@@ -149,6 +149,8 @@ public interface WarehouseCheckDetailService {
      * @return
      */
     String findParentStateByDetailList(String ignoreState, List<WarehouseCheckDetail> dtlList);
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    //boolean isAllAuditStateByDetailExecuteList(String state, List<Map<String, Object>> mapList);
 
 }
 

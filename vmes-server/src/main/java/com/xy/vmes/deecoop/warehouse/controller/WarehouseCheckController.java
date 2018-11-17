@@ -207,28 +207,65 @@ public class WarehouseCheckController {
     }
 
     /**
-     * 修改盘点单
+     * 取消盘点单
      * @author 陈刚
      * @date 2018-11-13
      * @throws Exception
      */
-//    @PostMapping("/warehouseCheck/updateWarehouseCheck")
-//    @Transactional
-//    public ResultModel updateWarehouseCheck() throws Exception {
-//        logger.info("################/warehouseCheck/updateWarehouseCheck 执行开始 ################# ");
-//        Long startTime = System.currentTimeMillis();
-//
-//        ResultModel model = new ResultModel();
-//        PageData pageData = HttpUtils.parsePageData();
-//
-//
-//
-//        Long endTime = System.currentTimeMillis();
-//        logger.info("################/warehouseCheck/updateWarehouseCheck 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
-//        return model;
-//    }
+    @PostMapping("/warehouseCheck/cancelWarehouseCheck")
+    @Transactional
+    public ResultModel cancelWarehouseCheck() throws Exception {
+        logger.info("################/warehouseCheck/cancelWarehouseCheck 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        ResultModel model = new ResultModel();
 
-    //cancelWarehouseCheck
+        PageData pageData = HttpUtils.parsePageData();
+        String ids = pageData.getString("ids");
+        if (ids == null || ids.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("请至少选择一条盘点单！");
+            return model;
+        }
+
+        //验证盘点单-明细中状态()-是否允许取消
+        //允许删除-明细中状态全部是(待派单)或全部是(已取消)
+        StringBuffer msgBuf = new StringBuffer();
+        String[] idArry = ids.split(",");
+        for(int i = 0; i < idArry.length; i++) {
+            String parentId = idArry[i];
+
+            PageData findMap = new PageData();
+            findMap.put("parentId", parentId);
+            //盘点明细状态(0:待派单 1:执行中 2:审核中 3:已完成 -1:已取消) 忽视状态(-1:已取消)
+            findMap.put("queryStr", "state in ('1','2','3')");
+            findMap.put("mapSize", Integer.valueOf(findMap.size()));
+            List<WarehouseCheckDetail> detailList = warehouseCheckDetailService.findWarehouseCheckDetailList(findMap);
+            if (detailList != null && detailList.size() > 0) {
+                msgBuf.append("第 " + (i+1) + " 行: 盘点单明细中含有(执行中,审核中,已完成)状态，该盘点单不可取消！");
+            }
+        }
+        if (msgBuf.toString().trim().length() > 0) {
+            msgBuf.append("盘点明细全部是(待派单)或全部是(已取消)允许取消！");
+
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgBuf.toString());
+            return model;
+        }
+
+        for (String parentId : idArry) {
+            //盘点明细状态(0:待派单 1:执行中 2:审核中 3:已完成 -1:已取消)
+            warehouseCheckDetailService.updateStateByDetail(parentId, "-1");
+
+            WarehouseCheck parent = new WarehouseCheck();
+            //状态(0:未完成 1:已完成 -1:已取消)
+            parent.setState("-1");
+            warehouseCheckService.update(parent);
+        }
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/warehouseCheck/cancelWarehouseCheck 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
 
     /**
      * 删除盘点单
