@@ -91,7 +91,7 @@ public class WarehouseCheckExecuteController {
         result.put("hideTitles",titlesHideList);
         result.put("titles",titlesList);
 
-        pd.put("orderStr", "executor.cdate asc");
+        pd.put("orderStr", "checkExecute.cdate asc");
         String orderStr = pd.getString("orderStr");
         if (orderStr != null && orderStr.trim().length() > 0) {
             pd.put("orderStr", orderStr);
@@ -400,6 +400,7 @@ public class WarehouseCheckExecuteController {
 
             //修改盘点明细状态
             WarehouseCheckDetail detail = new WarehouseCheckDetail();
+            detail.setId(execute.getDetailId());
             //状态(0:待派单 1:执行中 2:审核中 3:已完成 -1:已取消)
             detail.setState("3");
             warehouseCheckDetailService.update(detail);
@@ -426,6 +427,9 @@ public class WarehouseCheckExecuteController {
 
     /**
      * 审核不同意
+     * auditExecuteJsonStr
+     * {id:"",parentId:"",detailId:""}
+     *
      * @return
      * @throws Exception
      */
@@ -473,6 +477,7 @@ public class WarehouseCheckExecuteController {
 
             //修改盘点明细状态
             WarehouseCheckDetail detail = new WarehouseCheckDetail();
+            detail.setId(execute.getDetailId());
             //状态(0:待派单 1:执行中 2:审核中 3:已完成 -1:已取消)
             detail.setState("1");
             warehouseCheckDetailService.update(detail);

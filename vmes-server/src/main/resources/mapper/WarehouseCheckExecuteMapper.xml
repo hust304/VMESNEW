@@ -205,15 +205,16 @@
             checkExecute.parent_id parentId,
             checkExecute.detail_id detailId,
             checkExecute.executor_id executorId,
+            user.user_name executorName,
             checkExecute.audit_id auditId,
 
             round(ifnull(checkExecute.count, 0), 2) count,
             checkExecute.state state,
             checkExecute.cuser cuser,
-            checkExecute.cdate cdate,
+            DATE_FORMAT(checkExecute.cdate,'%Y-%m-%d %T') cdate,
             checkExecute.uuser uuser,
 
-            checkExecute.udate udate,
+            DATE_FORMAT(checkExecute.udate,'%Y-%m-%d %T') udate,
             checkExecute.remark remark,
             checkExecute.isdisable isdisable,
 
@@ -227,6 +228,15 @@
             detail.product_id productId,
             detail.code code,
             detail.state detailState,
+            CASE
+                WHEN detail.state = '0' THEN '待派单'
+                WHEN detail.state = '1' THEN '执行中'
+                WHEN detail.state = '2' THEN '审核中'
+                WHEN detail.state = '3' THEN '已完成'
+                WHEN detail.state = '-1' THEN '已取消'
+            ELSE null
+            END detailStateName,
+
             round(ifnull(wp.stock_count, 0), 2) stockCount,
 
             <!--货品表-->
@@ -239,6 +249,7 @@
             unit.name productUnitName,
             genre.name productGenreName
         from vmes_warehouse_check_execute checkExecute
+            left join vmes_user user on checkExecute.executor_id = user.id
             left join vmes_warehouse_check_detail detail on checkExecute.detail_id = detail.id
             left join vmes_warehouse_product wp on detail.warehouse_product_id = wp.id
             left join vmes_warehouse warehouse on detail.warehouse_id = warehouse.id and warehouse.isdisable = '1'
