@@ -121,6 +121,7 @@
     <!-- 自动创建，可以修改 -->
     <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
+            distinct
             parent.id id,
             parent.id parentId,
             parent.company_id companyId,
@@ -150,6 +151,11 @@
             parent.isdisable isdisable
         from vmes_warehouse_check parent
             left join vmes_user user on parent.make_id = user.id
+
+            left join vmes_warehouse_in_detail detail on parent.id = detail.parent_id
+            left join vmes_product prod on detail.product_id = prod.id
+            left join vmes_dictionary genre on prod.genre = genre.id
+            left join vmes_dictionary unit on prod.unit = unit.id
         <where>
             <if test="code != null and code != ''" >
                 and parent.code = #{code}
@@ -159,6 +165,37 @@
             </if>
             <if test="type != null and type != ''" >
                 and parent.type = #{type}
+            </if>
+
+            <if test="detailState != null and detailState != ''" >
+                and detail.state = #{detailState}
+            </if>
+
+            <!--按货品属性 查询语句-->
+            <if test="productCode != null and productCode != ''">
+                and prod.code LIKE CONCAT(CONCAT(#{productCode}),'%')
+            </if>
+            <if test="productName != null and productName != ''">
+                and prod.name LIKE CONCAT(CONCAT(#{productName}),'%')
+            </if>
+            <if test="productSpec != null and productSpec != ''">
+                and prod.spec LIKE CONCAT(CONCAT(#{productSpec}),'%')
+            </if>
+            <if test="productGenreName != null and productGenreName != ''">
+                and genre.name LIKE CONCAT(CONCAT(#{productGenreName}),'%')
+            </if>
+            <if test="productUnitName != null and productUnitName != ''">
+                and unit.name LIKE CONCAT(CONCAT(#{productUnitName}),'%')
+            </if>
+
+            <!--过滤(待审核)(vmes_warehouse_check_execute) 查询语句-->
+            <if test="'true' == isNeedAudit">
+                and parent.id in (
+                    select parent_id
+                    from vmes_warehouse_check_execute
+                    where isdisable = '1' and state = '0'
+                    group by parent_id
+                )
             </if>
 
             <!--queryStr 自定义sql查询语句-->

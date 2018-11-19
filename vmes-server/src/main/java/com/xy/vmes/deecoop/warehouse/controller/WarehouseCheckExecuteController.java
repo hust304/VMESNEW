@@ -283,7 +283,7 @@ public class WarehouseCheckExecuteController {
      * 3. 退回成功后盘点明细状态(1:执行中)
      *
      * cancelAuditExecuteJsonStr
-     * {id:"",parentId:"",detailId:"",executorId:"",state:"":detailState:""}
+     * {id:"",parentId:"",detailId:""}
      *
      * @return
      * @throws Exception
@@ -511,7 +511,7 @@ public class WarehouseCheckExecuteController {
         for (int i = 0; i < detailList.size(); i++) {
             WarehouseCheckDetail detail = detailList.get(i);
             //明细状态(0:待派单 1:执行中 2:审核中 3:已完成 -1:已取消)
-            if (!"1".equals(detail.getState())) {
+            if ("2,3".indexOf(detail.getState()) != -1) {
                 String msgStr = MessageFormat.format(msgTemp,
                         (i+1),
                         Common.SYS_WAREHOUSE_CHECK_DETAIL_STATE.get(detail.getState()));

@@ -159,9 +159,11 @@
             detail.id id,
             detail.parent_id parentId,
             detail.qrcode qrcode,
-            detail.execute_id executeId,
-            detail.warehouse_product_id warehouseProductId,
+            executor.executor_id executorId,
+            user.user_code executorUserCode,
+            user.user_name executorUserName,
 
+            detail.warehouse_product_id warehouseProductId,
             detail.warehouse_id warehouseId,
             detail.product_id productId,
             detail.code code,
@@ -183,6 +185,9 @@
             detail.remark remark,
             detail.isdisable isdisable,
 
+            checkExecute.id executeId,
+            checkExecute.state executeState,
+
             warehouse.path_name pathName,
             warehouse.code warehouseCode,
 
@@ -201,9 +206,12 @@
             left join vmes_product product on detail.product_id = product.id and product.isdisable = '1'
             left join vmes_dictionary unit on product.unit = unit.id
             left join vmes_dictionary genre on product.genre = genre.id
+            left join vmes_warehouse_check_executor executor on detail.id = executor.detail_id and executor.isdisable = '1'
+            left join vmes_user user on executor.executor_id = user.id
+            left join vmes_warehouse_check_execute checkExecute on detail.id = checkExecute.detail_id and checkExecute.isdisable = '1'
         <where>
             <if test="parentId != null and parentId != ''" >
-                and parent_id = #{parentId}
+                and detail.parent_id = #{parentId}
             </if>
 
             <!--queryStr 自定义sql查询语句-->

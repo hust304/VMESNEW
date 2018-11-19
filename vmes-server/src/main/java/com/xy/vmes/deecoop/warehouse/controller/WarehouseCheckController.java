@@ -37,6 +37,8 @@ public class WarehouseCheckController {
     @Autowired
     private WarehouseCheckDetailService warehouseCheckDetailService;
     @Autowired
+    private WarehouseCheckExecutorService warehouseCheckExecutorService;
+    @Autowired
     private WarehouseProductService warehouseProductService;
 
     @Autowired
@@ -267,6 +269,86 @@ public class WarehouseCheckController {
         return model;
     }
 
+    /**
+     * (退单)退回盘点单(退回整个盘点单)
+     * 1. 填写退回原因
+     * 2. 盘点明细必须是(<=1:执行中)-允许退回
+     * 3. 退回成功后盘点明细状态(0:待派单)
+     * 4. 修改盘点明细执行人表(vmes_warehouse_check_executor.isdisable)状态
+     *
+     * @author 陈刚
+     * @date 2018-11-16
+     * @throws Exception
+     */
+    @PostMapping("/warehouseCheck/rebackWarehouseCheck")
+    @Transactional
+    public ResultModel rebackWarehouseCheck() throws Exception {
+        logger.info("################/warehouseCheck/rebackWarehouseCheck 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        ResultModel model = new ResultModel();
+
+        PageData pageData = HttpUtils.parsePageData();
+        String cuser = pageData.getString("cuser");
+
+        String ids = pageData.getString("ids");
+        if (ids == null || ids.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("请至少选择一条盘点单！");
+            return model;
+        }
+
+        String remark = pageData.getString("remark");
+        if (remark == null || remark.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("退单原因为空或空字符串，退单原因为必填不可为空！");
+            return model;
+        }
+
+        //验证盘点单-明细中状态()-是否允许退回
+        //盘点明细必须是(<=1:执行中)-允许退回
+        StringBuffer msgBuf = new StringBuffer();
+        String[] idArry = ids.split(",");
+        for(int i = 0; i < idArry.length; i++) {
+            String parentId = idArry[i];
+
+            PageData findMap = new PageData();
+            findMap.put("parentId", parentId);
+            //盘点明细状态(0:待派单 1:执行中 2:审核中 3:已完成 -1:已取消) 忽视状态(-1:已取消)
+            findMap.put("queryStr", "state in ('2','3')");
+            findMap.put("mapSize", Integer.valueOf(findMap.size()));
+            List<WarehouseCheckDetail> detailList = warehouseCheckDetailService.findWarehouseCheckDetailList(findMap);
+            if (detailList != null && detailList.size() > 0) {
+                msgBuf.append("第 " + (i+1) + " 行: 盘点单明细中含有(审核中,已完成)状态，该盘点单不可退回！");
+            }
+        }
+        if (msgBuf.toString().trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgBuf.toString());
+            return model;
+        }
+
+        for (String parentId : idArry) {
+            //盘点明细状态(0:待派单 1:执行中 2:审核中 3:已完成 -1:已取消)
+            warehouseCheckDetailService.updateStateByDetail(parentId, "0");
+
+            Map<String, String> columnMap = new HashMap<String, String>();
+            columnMap.put("parent_id", parentId);
+            columnMap.put("executor_id", cuser);
+            //是否启用(0:已禁用 1:启用)
+            columnMap.put("isdisable", "1");
+            warehouseCheckExecutorService.deleteByColumnMap(columnMap);
+
+            WarehouseCheck parent = new WarehouseCheck();
+            //状态(0:未完成 1:已完成 -1:已取消)
+            parent.setState("0");
+            warehouseCheckService.update(parent);
+        }
+
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/warehouseCheck/rebackWarehouseCheck 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
     /**
      * 删除盘点单
      * @author 陈刚
