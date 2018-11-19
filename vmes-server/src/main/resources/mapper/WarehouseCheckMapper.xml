@@ -188,6 +188,21 @@
                 and unit.name LIKE CONCAT(CONCAT(#{productUnitName}),'%')
             </if>
 
+            <!--过滤出当前登录用户是(入库)执行人 (vmes_warehouse_check_executor) 查询语句-->
+            <if test="'true' == isNeedExecutor">
+                and parent.id in (
+                    select parent_id
+                    from vmes_warehouse_check_executor
+                    <where>
+                        <if test="cuser != null and cuser != ''" >
+                            and executor_id = #{cuser}
+                        </if>
+                        and isdisable = '1'
+                    </where>
+                    group by parent_id
+                )
+            </if>
+
             <!--过滤(待审核)(vmes_warehouse_check_execute) 查询语句-->
             <if test="'true' == isNeedAudit">
                 and parent.id in (
