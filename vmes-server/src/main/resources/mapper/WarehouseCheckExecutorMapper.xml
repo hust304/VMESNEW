@@ -59,7 +59,7 @@
                 and detail_id = #{detailId}
             </if>
             <if test="executorId != null and executorId != ''" >
-                and executor_id = #{}
+                and executor_id = #{executorId}
             </if>
         </where>
     </update>

@@ -259,6 +259,7 @@ public class WarehouseCheckController {
             warehouseCheckDetailService.updateStateByDetail(parentId, "-1");
 
             WarehouseCheck parent = new WarehouseCheck();
+            parent.setId(parentId);
             //状态(0:未完成 1:已完成 -1:已取消)
             parent.setState("-1");
             warehouseCheckService.update(parent);
@@ -339,6 +340,7 @@ public class WarehouseCheckController {
             warehouseCheckExecutorService.deleteByColumnMap(columnMap);
 
             WarehouseCheck parent = new WarehouseCheck();
+            parent.setId(parentId);
             //状态(0:未完成 1:已完成 -1:已取消)
             parent.setState("0");
             warehouseCheckService.update(parent);
@@ -423,8 +425,8 @@ public class WarehouseCheckController {
 
         PageData pageData = HttpUtils.parsePageData();
         String companyId = pageData.getString("currentCompanyId");
-        String userRoleId = pageData.getString("userRoleId");
-        if (userRoleId == null || userRoleId.trim().length() == 0) {
+        String userRoleIds = pageData.getString("userRoleIds");
+        if (userRoleIds == null || userRoleIds.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("当前登录用户角色id为空或空字符串！");
             return model;
@@ -440,7 +442,14 @@ public class WarehouseCheckController {
 
         if (roleList == null || roleList.size() == 0) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("您不是(仓库盘点审核员)角色，请与企业管理员联系！");
+            model.putMsg("当前系统中无(仓库盘点审核员)角色，请与企业管理员联系！");
+            return model;
+        }
+
+        String roleId = roleList.get(0).getId();
+        if (userRoleIds.trim().indexOf(roleId) == -1) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("您的账号不属于(仓库盘点审核员)角色，请与企业管理员联系！");
             return model;
         }
 

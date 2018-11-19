@@ -151,7 +151,7 @@ public class WarehouseCheckDetailController {
         WarehouseCheck parent = new WarehouseCheck();
         parent.setId(detail.getParentId());
         if (parent != null) {
-            warehouseCheckDetailService.updateParentStateByDetailList(parent, null, "-1");
+            warehouseCheckDetailService.updateParentStateByDetailList(parent, null, null);
         }
 
         Long endTime = System.currentTimeMillis();
@@ -199,7 +199,7 @@ public class WarehouseCheckDetailController {
         WarehouseCheck parent = new WarehouseCheck();
         parent.setId(detail.getParentId());
         if (parent != null) {
-            warehouseCheckDetailService.updateParentStateByDetailList(parent, null, "-1");
+            warehouseCheckDetailService.updateParentStateByDetailList(parent, null, null);
         }
 
         Long endTime = System.currentTimeMillis();
