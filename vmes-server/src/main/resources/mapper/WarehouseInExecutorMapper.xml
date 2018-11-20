@@ -9,7 +9,7 @@
 
     <!-- 批量删除 自动创建，禁止修改-->
     <delete id="deleteByIds" parameterType="java.lang.String">
-        delete from vmes_warehouse_in_execute
+        delete from vmes_warehouse_in_executor
         where id in
         <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
             #{item}
@@ -18,7 +18,7 @@
 
     <!-- 自动创建，禁止修改-->
     <update id="updateToDisableByIds" parameterType="java.lang.String" >
-        update vmes_warehouse_in_execute
+        update vmes_warehouse_in_executor
         set isdisable = '0' ,udate = now()
         where id in
         <foreach item="item" index="index" collection="array" open="(" separator="," close=")">

@@ -69,6 +69,8 @@ public interface WarehouseCheckService {
     List<WarehouseCheck> selectByColumnMap(Map columnMap) throws Exception;
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+    void deleteWarehouseInTable();
+
     /**
      * 创建人：陈刚
      * 创建时间：2018-11-13

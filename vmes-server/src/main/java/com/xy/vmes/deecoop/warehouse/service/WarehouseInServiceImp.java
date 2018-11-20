@@ -124,6 +124,13 @@ public class WarehouseInServiceImp implements WarehouseInService {
     }
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+    public void deleteWarehouseInTable() {
+        warehouseInMapper.deleteTableByParent();
+        warehouseInMapper.deleteTableByDetail();
+        warehouseInMapper.deleteTableByExecutor();
+        warehouseInMapper.deleteTableByExecute();
+    }
+
     public WarehouseIn findWarehouseIn(PageData object) {
         if (object == null) {return null;}
 

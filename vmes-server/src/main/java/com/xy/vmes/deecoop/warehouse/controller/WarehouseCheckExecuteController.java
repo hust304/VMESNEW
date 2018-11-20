@@ -2,14 +2,8 @@ package com.xy.vmes.deecoop.warehouse.controller;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.Common;
-import com.xy.vmes.entity.Column;
-import com.xy.vmes.entity.WarehouseCheck;
-import com.xy.vmes.entity.WarehouseCheckDetail;
-import com.xy.vmes.entity.WarehouseCheckExecute;
-import com.xy.vmes.service.ColumnService;
-import com.xy.vmes.service.WarehouseCheckDetailService;
-import com.xy.vmes.service.WarehouseCheckExecuteService;
-import com.xy.vmes.service.WarehouseCheckExecutorService;
+import com.xy.vmes.entity.*;
+import com.xy.vmes.service.*;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.YvanUtil;
@@ -41,6 +35,11 @@ public class WarehouseCheckExecuteController {
     private WarehouseCheckExecutorService warehouseCheckExecutorService;
     @Autowired
     private WarehouseCheckExecuteService warehouseCheckExecuteService;
+
+    @Autowired
+    private WarehouseProductService warehouseProductService;
+    @Autowired
+    private ProductService productService;
 
     @Autowired
     private ColumnService columnService;
@@ -375,6 +374,7 @@ public class WarehouseCheckExecuteController {
 
         PageData pageData = HttpUtils.parsePageData();
         String cuser = pageData.getString("cuser");
+        String companyId = pageData.getString("currentCompanyId");
         String auditExecuteJsonStr = pageData.getString("auditExecuteJsonStr");
 
         if (auditExecuteJsonStr == null || auditExecuteJsonStr.trim().length() == 0) {
@@ -392,6 +392,63 @@ public class WarehouseCheckExecuteController {
 
         Map<String, String> parentMap = new HashMap<String, String>();
         for (Map<String, Object> mapObject : mapList) {
+            //stockCount 台账数量
+            String stockCountStr = (String)mapObject.get("stockCount");
+            BigDecimal stockCount_big = BigDecimal.valueOf(0D);
+            if (stockCountStr != null && stockCountStr.trim().length() > 0) {
+                try {
+                    stockCount_big = new BigDecimal(stockCountStr);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            //count 盘点数量
+            String countStr = (String)mapObject.get("count");
+            BigDecimal count_big = BigDecimal.valueOf(0D);
+            if (countStr != null && countStr.trim().length() > 0) {
+                try {
+                    count_big = new BigDecimal(countStr);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            String code = (String)mapObject.get("code");
+            String productId = (String)mapObject.get("productId");
+            String warehouseId = (String)mapObject.get("warehouseId");
+
+            double modifyCount = count_big.doubleValue() - stockCount_big.doubleValue();
+            if (modifyCount != 0) {
+                if (code != null && code.trim().length() > 0
+                    && productId != null && productId.trim().length() > 0
+                    && warehouseId != null && warehouseId.trim().length() > 0
+                ) {
+                    //A. 变更库存数量
+                    //入库操作
+                    WarehouseProduct inObject = new WarehouseProduct();
+                    //货位批次号
+                    inObject.setCode(code);
+                    //产品ID
+                    inObject.setProductId(productId);
+                    //(实际)货位ID
+                    inObject.setWarehouseId(warehouseId);
+
+                    //(修改库存数量)退回已经入库数量
+                    warehouseProductService.inStockCount(inObject, BigDecimal.valueOf(modifyCount), cuser, companyId);
+
+                    //B. 修改产品数量
+                    Product product = productService.findProductById(productId);
+                    BigDecimal prodCount = BigDecimal.valueOf(0D);
+                    if (product.getStockCount() != null) {
+                        prodCount = product.getStockCount();
+                    }
+
+                    BigDecimal prodStockCount = BigDecimal.valueOf(prodCount.doubleValue() + modifyCount);
+                    productService.updateStockCount(product, prodStockCount, cuser);
+                }
+            }
+
             WarehouseCheckExecute execute = (WarehouseCheckExecute) HttpUtils.pageData2Entity(mapObject, new WarehouseCheckExecute());
             //状态(0:待审核 2:同意 3:不同意)
             execute.setState("2");

@@ -136,6 +136,21 @@
 
 
     <!-- ***************************************************以上为自动生成代码禁止修改，请在下面添加业务代码************************************************* -->
+    <delete id="deleteTableByParent">
+        delete from vmes_warehouse_out
+    </delete>
+    <delete id="deleteTableByDetail">
+        delete from vmes_warehouse_out_detail
+    </delete>
+    <delete id="deleteTableByExecute">
+        delete from vmes_warehouse_out_execute
+    </delete>
+    <delete id="deleteTableByExecutor">
+        delete from vmes_warehouse_out_executor
+    </delete>
+
+
+
     <insert id="insertColumn" >
         delete from vmes_column where model_code = 'WarehouseOut' ;
         insert into vmes_column (

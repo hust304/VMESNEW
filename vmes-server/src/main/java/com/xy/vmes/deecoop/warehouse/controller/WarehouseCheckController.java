@@ -447,11 +447,11 @@ public class WarehouseCheckController {
         }
 
         String roleId = roleList.get(0).getId();
-        if (userRoleIds.trim().indexOf(roleId) == -1) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("您的账号不属于(仓库盘点审核员)角色，请与企业管理员联系！");
-            return model;
-        }
+//        if (userRoleIds.trim().indexOf(roleId) == -1) {
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg("您的账号不属于(仓库盘点审核员)角色，请与企业管理员联系！");
+//            return model;
+//        }
 
         Long endTime = System.currentTimeMillis();
         logger.info("################/warehouseCheck/checkUserRoleByWarehouseAudit 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
