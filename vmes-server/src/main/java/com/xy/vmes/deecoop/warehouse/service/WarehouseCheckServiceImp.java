@@ -114,7 +114,7 @@ public class WarehouseCheckServiceImp implements WarehouseCheckService {
     }
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
-    public void deleteWarehouseInTable() {
+    public void deleteTableByWarehouseCheck() {
         warehouseCheckMapper.deleteTableByParent();
         warehouseCheckMapper.deleteTableByDetail();
         warehouseCheckMapper.deleteTableByExecutor();

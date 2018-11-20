@@ -188,7 +188,7 @@ public class WarehouseOutServiceImp implements WarehouseOutService {
     }
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
-    public void deleteWarehouseInTable() {
+    public void deleteTableByWarehouseOut() {
         warehouseOutMapper.deleteTableByParent();
         warehouseOutMapper.deleteTableByDetail();
         warehouseOutMapper.deleteTableByExecutor();
