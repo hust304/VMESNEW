@@ -1,6 +1,7 @@
 package com.xy.vmes.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.entity.WarehouseMove;
 import com.xy.vmes.entity.WarehouseMoveDetail;
 import com.yvan.PageData;
 
@@ -114,6 +115,12 @@ public interface WarehouseMoveDetailService {
     void updateToDisableByIds(String[] ids)throws Exception;
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+
+    List<WarehouseMoveDetail> mapList2DetailList(List<Map<String, String>> mapList, List<WarehouseMoveDetail> objectList);
+
+    void addWarehouseMoveDetail(WarehouseMove parentObj, List<WarehouseMoveDetail> objectList) throws Exception;
+
+    void addWarehouseMoveDetail(WarehouseMove parentObj, WarehouseMoveDetail detail) throws Exception;
 
 }
 

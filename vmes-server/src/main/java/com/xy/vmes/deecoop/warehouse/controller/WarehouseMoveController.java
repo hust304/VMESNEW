@@ -3,13 +3,9 @@ package com.xy.vmes.deecoop.warehouse.controller;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.StringUtil;
-import com.xy.vmes.entity.Column;
-import com.xy.vmes.entity.WarehouseMove;
-import com.xy.vmes.service.ColumnService;
-import com.xy.vmes.service.WarehouseMoveService;
-import com.yvan.ExcelUtil;
-import com.yvan.HttpUtils;
-import com.yvan.PageData;
+import com.xy.vmes.entity.*;
+import com.xy.vmes.service.*;
+import com.yvan.*;
 import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
 import lombok.extern.slf4j.Slf4j;
@@ -42,6 +38,15 @@ public class WarehouseMoveController {
 
     @Autowired
     private ColumnService columnService;
+
+    @Autowired
+    private CoderuleService coderuleService;
+
+    @Autowired
+    private WarehouseMoveDetailService warehouseMoveDetailService;
+
+    @Autowired
+    private WarehouseMoveExecutorService warehouseMoveExecutorService;
 
     /**
     * @author 刘威 自动创建，禁止修改
@@ -198,6 +203,85 @@ public class WarehouseMoveController {
 
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+
+
+
+    /**
+     * @author 刘威 自动创建，禁止修改
+     * @date 2018-11-16
+     */
+    @PostMapping("/warehouseMove/saveWarehouseMove")
+    @Transactional
+    public ResultModel saveWarehouseMove()  throws Exception {
+
+        logger.info("################warehouseMove/saveWarehouseMove 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        HttpServletResponse response  = HttpUtils.currentResponse();
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+        String dtlJsonStr = pd.getString("dtlJsonStr");
+        String executorIdsStr = pd.getString("executorIdsStr");
+
+        if (dtlJsonStr == null || dtlJsonStr.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("请至少添加选择一条数据！");
+            return model;
+        }
+
+        List<Map<String, String>> mapList = (List<Map<String, String>>) YvanUtil.jsonToList(dtlJsonStr);
+        if (mapList == null || mapList.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("移库单明细Json字符串-转换成List错误！");
+            return model;
+        }
+
+        String companyID = pd.getString("currentCompanyId");
+        String warehouseId = pd.getString("warehouseId");
+
+        WarehouseMove warehouseMove = new WarehouseMove();
+        //1. 添加移库单
+        String id = Conv.createUuid();
+        warehouseMove.setId(id);
+        //状态(0:未完成 1:已完成 -1:已取消)
+        warehouseMove.setState("0");
+        warehouseMove.setCompanyId(companyID);
+        warehouseMove.setType("b73d12669b4646e68c1a633da5b5d22d");//移库类型：移库
+        warehouseMove.setWarehouseId(warehouseId);
+        //出库单编号
+        String code = coderuleService.createCoder(companyID, "vmes_warehouse_move", "O");
+        warehouseMove.setCode(code);
+        warehouseMoveService.save(warehouseMove);
+
+        //2.添加移库单明细
+        List<WarehouseMoveDetail> detailList = warehouseMoveDetailService.mapList2DetailList(mapList, null);
+        warehouseMoveDetailService.addWarehouseMoveDetail(warehouseMove, detailList);
+
+        //3.移库单派工添加执行人信息
+        if(detailList!=null&&detailList.size()>0){
+            for(int i=0;i<detailList.size();i++){
+                WarehouseMoveDetail detail = detailList.get(i);
+                //新增移库执行人记录
+                if(!StringUtils.isEmpty(executorIdsStr)){
+                    String[] executorIds = executorIdsStr.split(",");
+                    if(executorIds!=null&&executorIds.length>0){
+                        for(int j=0;j<executorIds.length;j++){
+                            String executorId = executorIds[j];
+                            WarehouseMoveExecutor executor = new WarehouseMoveExecutor();
+                            executor.setExecutorId(executorId);
+                            executor.setDetailId(detail.getId());
+                            warehouseMoveExecutorService.save(executor);
+                        }
+                    }
+                }
+            }
+        }
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################warehouseMove/saveWarehouseMove 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
     /**
     * @author 刘威 自动创建，可以修改
     * @date 2018-11-16

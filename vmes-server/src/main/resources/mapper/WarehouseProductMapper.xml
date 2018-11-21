@@ -27,10 +27,6 @@
     </update>
 
     <!-- ***************************************************以上为自动生成代码禁止修改，请在下面添加业务代码************************************************* -->
-    <delete id="deleteTable">
-        delete from vmes_warehouse_product
-    </delete>
-
     <insert id="insertColumn" >
         delete from vmes_column where model_code = 'warehouseProduct' ;
         insert into vmes_column (
@@ -197,6 +193,8 @@
         (replace(uuid(), '-', ''),'WarehouseProductView','typeName','货品类型',10, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'WarehouseProductView','safetyCount','安全库存',11, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'WarehouseProductView','stockCount','库存',12, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseProductView','warehouseProductID','货位产品ID',13, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseProductView','pathName','货位路径',14, '1','0','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'WarehouseProductView','id','id',0, '1','0','1','0',now(), 'admin')
     </insert>
 
@@ -213,6 +211,31 @@
         (replace(uuid(), '-', ''),'WarehouseDetailView','code','批次号',4, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'WarehouseDetailView','stockCount','数量',5, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'WarehouseDetailView','id','id',0, '1','0','1','0',now(), 'admin')
+    </insert>
+
+
+    <insert id="insertColumn5" >
+        delete from vmes_column where model_code = 'WarehouseProductMove' ;
+        insert into vmes_column (
+        id,model_code,title_key,title_name,serial_number,
+        isdisable,ishide,isedit,ismust,cdate,
+        cuser
+        ) VALUES
+        (replace(uuid(), '-', ''),'WarehouseProductMove','pathId','货位路径ID',1, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseProductMove','pathName','货位路径',1, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseProductMove','wpCode','产品批次',1, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseProductMove','code','货品编码',2, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseProductMove','name','货品名称',3, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseProductMove','spec','规格/型号',4, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseProductMove','genre','属性ID',5, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseProductMove','genreName','属性',6, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseProductMove','unit','计量单位ID',7, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseProductMove','unitName','计量单位',8, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseProductMove','type','货品类型ID',9, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseProductMove','typeName','货品类型',10, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseProductMove','stockCount','库存',11, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseProductMove','moveCount','移动数量',12, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseProductMove','id','id',0, '1','0','1','0',now(), 'admin')
     </insert>
 
 
@@ -255,6 +278,7 @@
         select
         distinct
         warehouse.path_id pathId,
+        warehouse.path_name pathName,
         prod.code,
         prod.name,
         prod.spec,
@@ -324,6 +348,79 @@
     </select>
 
 
+    <!-- 自动创建，可以修改 -->
+    <select id="warehouseProductMove"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
+        select
+        distinct
+        warehouse.path_id pathId,
+        warehouse.path_name pathName,
+        prod.code,
+        prod.name,
+        prod.spec,
+        prod.genre genre,
+        genre.name genreName,
+        prod.unit unit,
+        unit.name unitName,
+        prod.type,
+        type.name typeName,
+        round(wp.stock_count,2) stockCount,
+        wp.code wpCode,
+        wp.id
+        from vmes_warehouse_product wp
+        left join vmes_product prod on wp.product_id = prod.id
+        left join vmes_dictionary genre on prod.genre = genre.id
+        left join vmes_dictionary unit on prod.unit = unit.id
+        left join vmes_dictionary type on prod.type = type.id
+        left join vmes_warehouse warehouse on warehouse.id = wp.warehouse_id
+
+        <where>
+            <!--queryStr 自定义sql查询语句-->
+            <if test="queryStr != null and queryStr != ''" >
+                and ${queryStr}
+            </if>
+            <if test="isSafeStock == 0"> <!-- 小于安全库存 -->
+                <![CDATA[ and prod.stock_count < prod.safety_count ]]>
+            </if>
+            <if test="isSafeStock == 1">  <!-- 大于等于安全库存 -->
+                <![CDATA[ and prod.stock_count >= prod.safety_count ]]>
+            </if>
+            <if test="productId != null and productId != ''">
+                and wp.product_id = #{productId}
+            </if>
+            <if test="code != null and code != ''">
+                and prod.code LIKE CONCAT(CONCAT('%', #{code}),'%')
+            </if>
+            <if test="name != null and name != ''">
+                and prod.name LIKE CONCAT(CONCAT('%', #{name}),'%')
+            </if>
+            <if test="spec != null and spec != ''">
+                and prod.spec LIKE CONCAT(CONCAT('%', #{spec}),'%')
+            </if>
+            <if test="genreName != null and genreName != ''">
+                and genre.name LIKE CONCAT(CONCAT('%', #{genreName}),'%')
+            </if>
+            <if test="unitName != null and unitName != ''">
+                and unit.name LIKE CONCAT(CONCAT('%', #{unitName}),'%')
+            </if>
+            <if test="typeName != null and typeName != ''">
+                and type.name LIKE CONCAT(CONCAT('%', #{typeName}),'%')
+            </if>
+            <if test="warehouseId != null and warehouseId != ''">
+                and warehouse.path_id LIKE CONCAT(CONCAT('%', #{warehouseId}),'%')
+            </if>
+            <if test="currentCompanyId != null and currentCompanyId != ''">
+                and wp.company_id = #{currentCompanyId}
+            </if>
+            <![CDATA[ and (prod.stock_count > 0 or prod.stock_count < 0) ]]>
+        </where>
+
+        <if test="orderByStock == 0"><!-- 由多到少 -->
+            order by prod.stock_count desc
+        </if>
+        <if test="orderByStock == 1"><!-- 由少到多 -->
+            order by prod.stock_count asc
+        </if>
+    </select>
 
 
     <!-- 自动创建，可以修改 -->

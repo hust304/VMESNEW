@@ -2,19 +2,19 @@ package com.xy.vmes.deecoop.warehouse.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.deecoop.warehouse.dao.WarehouseMoveDetailMapper;
+import com.xy.vmes.entity.WarehouseMove;
 import com.xy.vmes.entity.WarehouseMoveDetail;
 import com.xy.vmes.service.WarehouseMoveDetailService;
+import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
+import java.util.*;
+
 import com.yvan.Conv;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
 * 说明：移库单明细 实现类
@@ -184,6 +184,41 @@ public class WarehouseMoveDetailServiceImp implements WarehouseMoveDetailService
     }
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+
+    @Override
+    public List<WarehouseMoveDetail> mapList2DetailList(List<Map<String, String>> mapList, List<WarehouseMoveDetail> objectList){
+        if (objectList == null) {objectList = new ArrayList<WarehouseMoveDetail>();}
+        if (mapList == null || mapList.size() == 0) {return objectList;}
+        for (Map<String, String> mapObject : mapList) {
+            WarehouseMoveDetail detail = (WarehouseMoveDetail) HttpUtils.pageData2Entity(mapObject, new WarehouseMoveDetail());
+            String id = Conv.createUuid();
+            detail.setId(id);
+            //状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+            detail.setState("1");
+            objectList.add(detail);
+        }
+        return objectList;
+    }
+
+    @Override
+    public void addWarehouseMoveDetail(WarehouseMove parentObj, List<WarehouseMoveDetail> objectList) throws Exception{
+        if (parentObj == null) {return;}
+        if (objectList == null || objectList.size() == 0) {return;}
+
+        for (WarehouseMoveDetail detail : objectList) {
+            detail.setParentId(parentObj.getId());
+            detail.setCuser(parentObj.getCuser());
+            this.save(detail);
+        }
+    }
+
+    @Override
+    public void addWarehouseMoveDetail(WarehouseMove parentObj, WarehouseMoveDetail detail) throws Exception{
+        if (parentObj == null) {return;}
+        detail.setParentId(parentObj.getId());
+        detail.setCuser(parentObj.getCuser());
+        this.save(detail);
+    }
 }
 
 
