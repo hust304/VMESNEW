@@ -234,10 +234,9 @@ public class WarehouseMoveController {
             model.putMsg("移库单明细Json字符串-转换成List错误！");
             return model;
         }
-
+        String currentUserId = pd.getString("currentUserId");
         String companyID = pd.getString("currentCompanyId");
         String warehouseId = pd.getString("warehouseId");
-
         WarehouseMove warehouseMove = new WarehouseMove();
         //1. 添加移库单
         String id = Conv.createUuid();
@@ -246,6 +245,8 @@ public class WarehouseMoveController {
         warehouseMove.setState("0");
         warehouseMove.setCompanyId(companyID);
         warehouseMove.setType("b73d12669b4646e68c1a633da5b5d22d");//移库类型：移库
+        warehouseMove.setMakeId(currentUserId);
+        warehouseMove.setCuser(currentUserId);
         warehouseMove.setWarehouseId(warehouseId);
         //出库单编号
         String code = coderuleService.createCoder(companyID, "vmes_warehouse_move", "O");
@@ -269,6 +270,7 @@ public class WarehouseMoveController {
                             WarehouseMoveExecutor executor = new WarehouseMoveExecutor();
                             executor.setExecutorId(executorId);
                             executor.setDetailId(detail.getId());
+                            executor.setCuser(currentUserId);
                             warehouseMoveExecutorService.save(executor);
                         }
                     }

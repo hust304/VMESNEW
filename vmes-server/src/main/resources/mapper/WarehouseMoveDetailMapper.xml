@@ -145,17 +145,20 @@
         (replace(uuid(), '-', ''),'WarehouseMoveDetail','parentId','移库单ID',8, '1','0','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'WarehouseMoveDetail','warehouseId',' 货位ID',10, '1','0','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'WarehouseMoveDetail','productId','产品ID',11, '1','0','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'WarehouseMoveDetail','code','批次号',12, '1','0','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'WarehouseMoveDetail','count','移库数量',13, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'WarehouseMoveDetail','executeCount','已移库数量',14, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'WarehouseMoveDetail','state','状态',15, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'WarehouseMoveDetail','cuser','创建用户id',16, '1','0','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'WarehouseMoveDetail','cdate','创建时间',17, '1','0','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'WarehouseMoveDetail','uuser','修改用户id',18, '1','0','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'WarehouseMoveDetail','udate','修改时间',19, '1','0','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'WarehouseMoveDetail','remark','备注',20, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'WarehouseMoveDetail','isdisable','是否启用',21, '1','0','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'WarehouseMoveDetail','qrcode','二维码',22, '1','0','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'WarehouseMoveDetail','pathName','当前库位',12, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveDetail','code','批次号',13, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveDetail','stockCount','库存数量',14, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveDetail','count','移库数量',15, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveDetail','executeCount','已移库数量',16, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveDetail','state','状态',17, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveDetail','cuser','创建用户id',18, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveDetail','cdate','创建时间',19, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveDetail','uuser','修改用户id',20, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveDetail','udate','修改时间',21, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveDetail','remark','备注',22, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveDetail','isdisable','是否启用',23, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveDetail','qrcode','二维码',24, '1','0','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'WarehouseMoveDetail','id','id',0, '1','0','1','0',now(), 'admin')
     </insert>
 
@@ -211,10 +214,11 @@
 
     <!-- 字段 自动创建，可以修改-->
     <sql id="Field1">
-detail.parent_id parentId,
+        detail.parent_id parentId,
         whprod.warehouse_id warehouseId,
         whprod.product_id productId,
         whprod.code code,
+        whprod.stock_count stockCount,
         round(detail.count,2) count,
         case when detail.state=-1 then '已取消' when detail.state=0 then '待派单' when detail.state=1 then '执行中' when detail.state=2 then '已完成' else null end state,
         detail.cuser cuser,
@@ -233,6 +237,7 @@ detail.parent_id parentId,
         prod.unit productUnit,
         unit.name productUnitName,
 
+        warehouse.path_name pathName,
         whmove.code warehouseMoveCode,
         round(moveexecute.count,2) executeCount,
         detail.id id
@@ -267,7 +272,7 @@ detail.parent_id parentId,
 
     <!-- 自动创建，可以修改 -->
     <select id="getDataList"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
-        select parentId,warehouseId,productId,code,count,state,cuser,cdate,udate,remark,isdisable,qrcode,
+        select parentId,warehouseId,productId,code,count,state,cuser,cdate,udate,remark,isdisable,qrcode,stockCount,pathName,
         productCode,productName,productSpec,productGenre,productGenreName,productUnit,productUnitName,round(sum(ifnull(executeCount,0)),2) executeCount,warehouseMoveCode,id
 
         from (
@@ -283,6 +288,7 @@ detail.parent_id parentId,
         left join vmes_dictionary unit on prod.unit = unit.id
         left join vmes_dictionary lastUnit on prod.last_unit = lastUnit.id
         left join vmes_dictionary type on prod.type = type.id
+        left join vmes_warehouse warehouse on warehouse.id = whprod.warehouse_id
         <where>
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >
@@ -321,7 +327,7 @@ detail.parent_id parentId,
 
     <!-- 自动创建，可以修改 -->
     <select id="getDataListPage"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
-        select parentId,warehouseId,productId,code,count,state,cuser,cdate,udate,remark,isdisable,qrcode,
+        select parentId,warehouseId,productId,code,count,state,cuser,cdate,udate,remark,isdisable,qrcode,stockCount,pathName,
         productCode,productName,productSpec,productGenre,productGenreName,productUnit,productUnitName,round(sum(ifnull(executeCount,0)),2) executeCount,warehouseMoveCode,id
 
         from (
@@ -337,6 +343,7 @@ detail.parent_id parentId,
         left join vmes_dictionary unit on prod.unit = unit.id
         left join vmes_dictionary lastUnit on prod.last_unit = lastUnit.id
         left join vmes_dictionary type on prod.type = type.id
+        left join vmes_warehouse warehouse on warehouse.id = whprod.warehouse_id
         <where>
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >
