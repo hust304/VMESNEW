@@ -38,18 +38,23 @@
         isdisable,ishide,isedit,ismust,cdate,
         cuser
         ) VALUES
+            (replace(uuid(), '-', ''),'warehouseProduct','id','id',0, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'warehouseProduct','qrcode','qrcode',0, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'warehouseProduct','companyId','companyId',0, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'warehouseProduct','warehouseId','仓库货位ID',1, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'warehouseProduct','productId','产品ID',2, '1','1','1','0',now(), 'admin'),
+
             (replace(uuid(), '-', ''),'warehouseProduct','code','货位批次号',3, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'warehouseProduct','stockCount','库存数量',4, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'warehouseProduct','cuser','创建用户id',5, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'warehouseProduct','cdate','创建时间',6, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'warehouseProduct','uuser','修改用户id',7, '1','1','1','0',now(), 'admin'),
+
+            (replace(uuid(), '-', ''),'warehouseProduct','auditDate','审核时间',8, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'warehouseProduct','udate','修改时间',8, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'warehouseProduct','remark','备注',9, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'warehouseProduct','isdisable','是否启用(0:已禁用 1:启用)',10, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'warehouseProduct','version','版本号(库存数量修改时)',11, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'warehouseProduct','id','id',0, '1','1','1','0',now(), 'admin')
+            (replace(uuid(), '-', ''),'warehouseProduct','version','版本号(库存数量修改时)',11, '1','1','1','0',now(), 'admin')
     </insert>
 
     <!-- 列表(全部) 自动创建，禁止修改-->
