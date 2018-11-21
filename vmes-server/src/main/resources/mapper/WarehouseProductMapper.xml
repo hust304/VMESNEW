@@ -27,6 +27,10 @@
     </update>
 
     <!-- ***************************************************以上为自动生成代码禁止修改，请在下面添加业务代码************************************************* -->
+    <delete id="deleteTable">
+        delete from vmes_warehouse_product
+    </delete>
+
     <insert id="insertColumn" >
         delete from vmes_column where model_code = 'warehouseProduct' ;
         insert into vmes_column (

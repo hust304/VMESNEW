@@ -81,6 +81,8 @@ public interface WarehouseProductService {
     void updateToDisableByIds(String[] ids)throws Exception;
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+    void deleteTable();
+
     void updateStockCount(PageData pd) throws Exception;
 
     /**

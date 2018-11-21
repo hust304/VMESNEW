@@ -159,6 +159,10 @@
 
 
     <!-- ***************************************************以上为自动生成代码禁止修改，请在下面添加业务代码************************************************* -->
+    <update id="updateProductInitialByStockCount">
+        update vmes_product set stock_count = 0
+    </update>
+
     <insert id="insertColumn" >
         delete from vmes_column where model_code = 'product' ;
         insert into vmes_column (
@@ -232,10 +236,19 @@
                     <if test="genre != null and genre != ''" >
                         and genre=#{genre}
                     </if>
+
+                    <if test="spec != null and spec != ''" >
+                        and spec=#{spec}
+                    </if>
+                    <if test="unit != null and unit != ''" >
+                        and unit=#{unit}
+                    </if>
                     <if test="type != null and type != ''" >
                         and type=#{type}
                     </if>
-
+                    <if test="isdisable != null and isdisable != ''" >
+                        and isdisable=#{isdisable}
+                    </if>
 
                     <!--queryStr 自定义sql查询语句-->
                     <if test="queryStr != null and queryStr != ''" >

@@ -205,6 +205,8 @@ public class DictionaryServiceImp implements DictionaryService {
         if (companyId != null && companyId.trim().length() > 0) {
             findMap.put("currentCompanyId", companyId.trim());
         }
+        //是否启用(0:已禁用 1:启用)
+        findMap.put("isdisable", "1");
         findMap.put("mapSize", Integer.valueOf(findMap.size()));
 
         List<Dictionary> objectList = this.findDictionaryList(findMap);

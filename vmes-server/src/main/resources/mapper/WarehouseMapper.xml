@@ -161,6 +161,9 @@
                     <if test="layer != null and layer != ''" >
                         and layer=#{layer}
                     </if>
+                    <if test="pathName != null and pathName != ''" >
+                        and path_name=#{pathName}
+                    </if>
 
                     <!--queryStr 自定义sql查询语句-->
                     <if test="queryStr != null and queryStr != ''" >
