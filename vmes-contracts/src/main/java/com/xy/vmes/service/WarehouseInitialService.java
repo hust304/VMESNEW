@@ -84,7 +84,7 @@ public interface WarehouseInitialService {
     List<Map> getDataListPage(PageData pd, Pagination pg) throws Exception;
 
     void initialByWarehouse(String cuser, String companyId) throws Exception;
-    void deleteTableByBusiness() throws Exception;
+    void deleteTableByBusiness(String companyId) throws Exception;
 }
 
 

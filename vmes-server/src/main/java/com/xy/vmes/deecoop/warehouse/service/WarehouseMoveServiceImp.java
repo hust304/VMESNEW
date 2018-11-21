@@ -10,11 +10,9 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
+import java.util.*;
+
 import com.yvan.Conv;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
 * 说明：移库单 实现类
@@ -184,11 +182,17 @@ public class WarehouseMoveServiceImp implements WarehouseMoveService {
     }
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
-    public void deleteTableByWarehouseMove() {
-        warehouseMoveMapper.deleteTableByParent();
-        warehouseMoveMapper.deleteTableByDetail();
-        warehouseMoveMapper.deleteTableByExecutor();
-        warehouseMoveMapper.deleteTableByExecute();
+    public void deleteTableByWarehouseMove(String companyId) throws Exception {
+        PageData pageData = new PageData();
+        pageData.put("companyId", companyId);
+
+        warehouseMoveMapper.deleteTableByExecute(pageData);
+        warehouseMoveMapper.deleteTableByExecutor(pageData);
+        warehouseMoveMapper.deleteTableByDetail(pageData);
+
+        Map<String, String> columnMap = new HashMap<String, String>();
+        columnMap.put("company_id", companyId);
+        this.deleteByColumnMap(columnMap);
     }
 }
 

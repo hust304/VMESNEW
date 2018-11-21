@@ -28,17 +28,46 @@
     </update>
 
     <!-- ***************************************************以上为自动生成代码禁止修改，请在下面添加业务代码************************************************* -->
-    <delete id="deleteTableByParent">
-        delete from vmes_warehouse_in
-    </delete>
-    <delete id="deleteTableByDetail">
+    <delete id="deleteTableByDetail" parameterType="com.yvan.PageData">
         delete from vmes_warehouse_in_detail
+        where parent_id in (
+            select id from vmes_warehouse_in
+            <where>
+                <if test="companyId != null and companyId != ''" >
+                    and company_id = #{companyId}
+                </if>
+            </where>
+        )
     </delete>
-    <delete id="deleteTableByExecute">
-        delete from vmes_warehouse_in_execute
-    </delete>
-    <delete id="deleteTableByExecutor">
+
+    <delete id="deleteTableByExecutor" parameterType="com.yvan.PageData">
         delete from vmes_warehouse_in_executor
+        where detail_id in (
+            select id from vmes_warehouse_in_detail
+            where parent_id in (
+                select id from vmes_warehouse_in
+                <where>
+                    <if test="companyId != null and companyId != ''" >
+                        and company_id = #{companyId}
+                    </if>
+                </where>
+            )
+        )
+    </delete>
+
+    <delete id="deleteTableByExecute" parameterType="com.yvan.PageData">
+        delete from vmes_warehouse_in_execute
+        where detail_id in (
+            select id from vmes_warehouse_in_detail
+            where parent_id in (
+                select id from vmes_warehouse_in
+                <where>
+                    <if test="companyId != null and companyId != ''" >
+                        and company_id = #{companyId}
+                    </if>
+                </where>
+            )
+        )
     </delete>
 
     <insert id="insertColumn" >

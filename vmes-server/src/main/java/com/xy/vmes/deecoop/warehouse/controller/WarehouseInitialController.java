@@ -145,9 +145,9 @@ public class WarehouseInitialController {
     * @author 陈刚 自动创建，可以修改
     * @date 2018-11-20
     */
-    @PostMapping("/warehouseInitial/exportExcelWarehouseInitials")
-    public void exportExcelWarehouseInitials() throws Exception {
-        logger.info("################warehouseInitial/exportExcelWarehouseInitials 执行开始 ################# ");
+    @PostMapping("/warehouseInitial/exportExcelWarehouseInitial")
+    public void exportExcelWarehouseInitial() throws Exception {
+        logger.info("################warehouseInitial/exportExcelWarehouseInitial 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
 
         List<Column> columnList = columnService.findColumnList("warehouseInitial");
@@ -162,7 +162,7 @@ public class WarehouseInitialController {
         if (ids != null && ids.trim().length() > 0) {
             ids = StringUtil.stringTrimSpace(ids);
             ids = "'" + ids.replace(",", "','") + "'";
-            queryStr = "id in (" + ids + ")";
+            queryStr = "wp.id in (" + ids + ")";
         }
         pd.put("queryStr", queryStr);
 
@@ -184,7 +184,7 @@ public class WarehouseInitialController {
         fileName = new String(fileName.getBytes("utf-8"),"ISO-8859-1");
         ExcelUtil.excelExportByDataList(response, fileName, dataMapList);
         Long endTime = System.currentTimeMillis();
-        logger.info("################warehouseInitial/exportExcelWarehouseInitials 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################warehouseInitial/exportExcelWarehouseInitial 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
     }
 
     /**
@@ -239,7 +239,6 @@ public class WarehouseInitialController {
         }
         dataMapLst.remove(0);
 
-
         StringBuffer checkColumnMsgStr = new StringBuffer();
         //1. Excel导入字段(非空,数据有效性验证[数字类型,字典表(大小)类是否匹配])
         String msgStr = warehouseProductExcelService.checkColumnImportExcel(dataMapLst,
@@ -263,7 +262,6 @@ public class WarehouseInitialController {
             checkColumnMsgStr.append(msgStr);
         }
 
-
         if (checkColumnMsgStr.toString().trim().length() > 0) {
             StringBuffer msgBuf = new StringBuffer();
             msgBuf.append("Excel导入失败！" + Common.SYS_ENDLINE_DEFAULT);
@@ -274,7 +272,6 @@ public class WarehouseInitialController {
             model.putMsg(msgBuf.toString());
             return model;
         }
-
 
         //3. 遍历Excel导入List-Map<String, WarehouseProduct>
         Map<String, WarehouseProduct> warehouseProductMap = new HashMap<String, WarehouseProduct>();

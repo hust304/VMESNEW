@@ -11,10 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
 * 说明：vmes_warehouse_in:仓库入库单 实现类
@@ -124,11 +121,17 @@ public class WarehouseInServiceImp implements WarehouseInService {
     }
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
-    public void deleteTableByWarehouseIn() {
-        warehouseInMapper.deleteTableByParent();
-        warehouseInMapper.deleteTableByDetail();
-        warehouseInMapper.deleteTableByExecutor();
-        warehouseInMapper.deleteTableByExecute();
+    public void deleteTableByWarehouseIn(String companyId) throws Exception {
+        PageData pageData = new PageData();
+        pageData.put("companyId", companyId);
+
+        warehouseInMapper.deleteTableByExecute(pageData);
+        warehouseInMapper.deleteTableByExecutor(pageData);
+        warehouseInMapper.deleteTableByDetail(pageData);
+
+        Map<String, String> columnMap = new HashMap<String, String>();
+        columnMap.put("company_id", companyId);
+        this.deleteByColumnMap(columnMap);
     }
 
     public WarehouseIn findWarehouseIn(PageData object) {

@@ -176,8 +176,10 @@ public class ProductServiceImp implements ProductService {
     }
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
-    public void initialProductByStockCount() throws Exception {
-        productMapper.updateProductInitialByStockCount();
+    public void initialProductByStockCount(String companyId) throws Exception {
+        PageData pageData = new PageData();
+        pageData.put("companyId", companyId);
+        productMapper.updateProductInitialByStockCount(pageData);
     }
 
     public Product findProductById(String id) {

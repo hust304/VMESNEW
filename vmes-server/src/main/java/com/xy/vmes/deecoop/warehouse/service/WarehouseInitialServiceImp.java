@@ -11,6 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import com.yvan.Conv;
+
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -153,7 +155,7 @@ public class WarehouseInitialServiceImp implements WarehouseInitialService {
     }
 
     public void initialByWarehouse(String cuser, String companyId) throws Exception {
-        this.deleteTableByBusiness();
+        this.deleteTableByBusiness(companyId);
 
         //是否启用(0:已禁用 1:启用)
         this.updateIsdisable("0", companyId);
@@ -164,20 +166,23 @@ public class WarehouseInitialServiceImp implements WarehouseInitialService {
         this.save(addObject);
     }
 
-    public void deleteTableByBusiness() throws Exception {
+    public void deleteTableByBusiness(String companyId) throws Exception {
         //删除入库业务表
-        warehouseInService.deleteTableByWarehouseIn();
+        warehouseInService.deleteTableByWarehouseIn(companyId);
         //删除出库业务表
-        warehouseOutService.deleteTableByWarehouseOut();
+        warehouseOutService.deleteTableByWarehouseOut(companyId);
         //删除仓库盘点业务表
-        warehouseCheckService.deleteTableByWarehouseCheck();
+        warehouseCheckService.deleteTableByWarehouseCheck(companyId);
         //删除移库业务表
-        warehouseMoveService.deleteTableByWarehouseMove();
+        warehouseMoveService.deleteTableByWarehouseMove(companyId);
 
         //删除仓库货品表(库存表)
-        warehouseProductService.deleteTable();
+        Map<String, String> columnMap = new HashMap<String, String>();
+        columnMap.put("company_id", companyId);
+        warehouseProductService.deleteByColumnMap(columnMap);
+
         //货品表(库存数量)初始化
-        productService.initialProductByStockCount();
+        productService.initialProductByStockCount(companyId);
     }
 }
 

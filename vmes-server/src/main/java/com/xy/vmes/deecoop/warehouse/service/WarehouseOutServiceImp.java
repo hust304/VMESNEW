@@ -188,11 +188,17 @@ public class WarehouseOutServiceImp implements WarehouseOutService {
     }
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
-    public void deleteTableByWarehouseOut() {
-        warehouseOutMapper.deleteTableByParent();
-        warehouseOutMapper.deleteTableByDetail();
-        warehouseOutMapper.deleteTableByExecutor();
-        warehouseOutMapper.deleteTableByExecute();
+    public void deleteTableByWarehouseOut(String companyId) throws Exception {
+        PageData pageData = new PageData();
+        pageData.put("companyId", companyId);
+
+        warehouseOutMapper.deleteTableByExecute(pageData);
+        warehouseOutMapper.deleteTableByExecutor(pageData);
+        warehouseOutMapper.deleteTableByDetail(pageData);
+
+        Map<String, String> columnMap = new HashMap<String, String>();
+        columnMap.put("company_id", companyId);
+        this.deleteByColumnMap(columnMap);
     }
 
     public String checkColumn(WarehouseOut object) {

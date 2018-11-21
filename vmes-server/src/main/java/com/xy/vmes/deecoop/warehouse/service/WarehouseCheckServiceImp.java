@@ -11,6 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import com.yvan.Conv;
+
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -114,11 +116,17 @@ public class WarehouseCheckServiceImp implements WarehouseCheckService {
     }
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
-    public void deleteTableByWarehouseCheck() {
-        warehouseCheckMapper.deleteTableByParent();
-        warehouseCheckMapper.deleteTableByDetail();
-        warehouseCheckMapper.deleteTableByExecutor();
-        warehouseCheckMapper.deleteTableByExecute();
+    public void deleteTableByWarehouseCheck(String companyId) throws Exception {
+        PageData pageData = new PageData();
+        pageData.put("companyId", companyId);
+
+        warehouseCheckMapper.deleteTableByExecute(pageData);
+        warehouseCheckMapper.deleteTableByExecutor(pageData);
+        warehouseCheckMapper.deleteTableByDetail(pageData);
+
+        Map<String, String> columnMap = new HashMap<String, String>();
+        columnMap.put("company_id", companyId);
+        this.deleteByColumnMap(columnMap);
     }
 
     /**
