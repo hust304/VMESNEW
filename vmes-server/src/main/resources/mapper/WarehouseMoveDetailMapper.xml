@@ -195,7 +195,12 @@
                             </otherwise>
                         </choose>
                     </if>
-
+                    <if test="parentId != null and parentId != ''" >
+                        and parent_id = #{parentId}
+                    </if>
+                    <if test="warehouseProductId != null and warehouseProductId != ''" >
+                        and warehouse_product_id = #{warehouseProductId}
+                    </if>
 
                     <!--queryStr 自定义sql查询语句-->
                     <if test="queryStr != null and queryStr != ''" >
@@ -218,7 +223,7 @@
         whprod.warehouse_id warehouseId,
         whprod.product_id productId,
         whprod.code code,
-        whprod.stock_count stockCount,
+        round(whprod.stock_count,2) stockCount,
         round(detail.count,2) count,
         case when detail.state=-1 then '已取消' when detail.state=0 then '待派单' when detail.state=1 then '执行中' when detail.state=2 then '已完成' else null end state,
         detail.cuser cuser,

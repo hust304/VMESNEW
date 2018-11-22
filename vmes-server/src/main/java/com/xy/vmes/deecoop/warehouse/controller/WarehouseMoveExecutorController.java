@@ -4,8 +4,10 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.Column;
+import com.xy.vmes.entity.WarehouseMoveExecute;
 import com.xy.vmes.entity.WarehouseMoveExecutor;
 import com.xy.vmes.service.ColumnService;
+import com.xy.vmes.service.WarehouseMoveExecuteService;
 import com.xy.vmes.service.WarehouseMoveExecutorService;
 import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
@@ -42,6 +44,9 @@ public class WarehouseMoveExecutorController {
 
     @Autowired
     private ColumnService columnService;
+
+    @Autowired
+    private WarehouseMoveExecuteService warehouseMoveExecuteService;
 
     /**
     * @author 刘威 自动创建，禁止修改
@@ -198,6 +203,72 @@ public class WarehouseMoveExecutorController {
 
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+
+
+
+
+
+    /**
+     * @author 刘威 自动创建，禁止修改
+     * @date 2018-11-01
+     */
+    @PostMapping("/warehouseMoveExecutor/updateExecutor")
+    @Transactional
+    public ResultModel updateExecutor()  throws Exception {
+
+        logger.info("################warehouseMoveExecutor/updateExecutor 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        HttpServletResponse response  = HttpUtils.currentResponse();
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+        String detailId = pd.getString("detailId");
+        String executorIds = pd.getString("executorIds");
+        pd.put("queryStr","detail_id ='"+detailId+"' and isdisable = '1' ");
+        List<WarehouseMoveExecute> warehouseMoveExecuteList = warehouseMoveExecuteService.dataList(pd);
+        if(warehouseMoveExecuteList!=null&&warehouseMoveExecuteList.size()>0){
+            model.putCode("1");
+            model.putMsg("该移库单执行人已开始执行，不能直接更换执行人，请联系当前执行人与其沟通后撤回单据！");
+            return model;
+        }
+
+        if(!StringUtils.isEmpty(executorIds)){
+            String[] executorIdArr = executorIds.split(",");
+            if(executorIdArr!=null&&executorIdArr.length>0){
+                Map columnMap = new HashMap();
+                columnMap.put("detail_id",detailId);
+                List<WarehouseMoveExecutor> warehouseMoveExecutorList = warehouseMoveExecutorService.selectByColumnMap(columnMap);
+                if(warehouseMoveExecutorList!=null&&warehouseMoveExecutorList.size()>0){
+                    for(int i=0;i<warehouseMoveExecutorList.size();i++){
+                        WarehouseMoveExecutor warehouseMoveExecutor = warehouseMoveExecutorList.get(i);
+                        warehouseMoveExecutor.setIsdisable("0");
+                        warehouseMoveExecutor.setRemark("执行人变更");
+                        warehouseMoveExecutorService.update(warehouseMoveExecutor);
+                    }
+                }
+
+                for(int i=0;i<executorIdArr.length;i++){
+                    WarehouseMoveExecutor warehouseMoveExecutor = new WarehouseMoveExecutor();
+                    warehouseMoveExecutor.setDetailId(detailId);
+                    warehouseMoveExecutor.setExecutorId(executorIdArr[i]);
+                    warehouseMoveExecutorService.save(warehouseMoveExecutor);
+                }
+            }
+        }else {
+            model.putCode("2");
+            model.putMsg("未勾选记录，请重新选择！");
+            return model;
+        }
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################warehouseMoveExecutor/updateExecutor 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+
+
+
+
     /**
     * @author 刘威 自动创建，可以修改
     * @date 2018-11-16

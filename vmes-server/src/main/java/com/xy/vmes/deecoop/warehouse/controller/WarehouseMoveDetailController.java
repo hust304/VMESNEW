@@ -5,8 +5,11 @@ import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.entity.WarehouseMoveDetail;
+import com.xy.vmes.entity.WarehouseMoveExecute;
 import com.xy.vmes.service.ColumnService;
 import com.xy.vmes.service.WarehouseMoveDetailService;
+import com.xy.vmes.service.WarehouseMoveExecuteService;
+import com.xy.vmes.service.WarehouseMoveService;
 import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
@@ -43,6 +46,11 @@ public class WarehouseMoveDetailController {
     @Autowired
     private ColumnService columnService;
 
+    @Autowired
+    private WarehouseMoveService warehouseMoveService;
+
+    @Autowired
+    private WarehouseMoveExecuteService warehouseMoveExecuteService;
     /**
     * @author 刘威 自动创建，禁止修改
     * @date 2018-11-16
@@ -198,6 +206,145 @@ public class WarehouseMoveDetailController {
 
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+
+
+
+    /**
+     * 删除移库单明细
+     * @author 刘威
+     * @date 2018-10-16
+     * @throws Exception
+     */
+    @PostMapping("/warehouseMoveDetail/deleteWarehouseMoveDetail")
+    @Transactional
+    public ResultModel deleteWarehouseMoveDetail() throws Exception {
+        logger.info("################/warehouseMoveDetail/deleteWarehouseMoveDetail 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        ResultModel model = new ResultModel();
+
+        PageData pageData = HttpUtils.parsePageData();
+        String detailId = pageData.getString("id");
+        if (detailId == null || detailId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("移库单明细id为空或空字符串！");
+            return model;
+        }
+
+        WarehouseMoveDetail detail = warehouseMoveDetailService.findWarehouseMoveDetailById(detailId);
+        //状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+        if (detail.getState() != null && "1,2".indexOf(detail.getState().trim()) > -1) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("当前移库明细不可删除，该移库单明细状态(1:执行中 2:已完成)！");
+            return model;
+        }
+
+
+        //1. 删除移库明细
+        warehouseMoveDetailService.deleteById(detailId);
+        //2.返写移库单状态
+        warehouseMoveService.updateState(detail.getParentId());
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/warehouseMoveDetail/deleteWarehouseMoveDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+    /**
+     * 取消移库单明细
+     * @author 刘威
+     * @date 2018-10-16
+     * @throws Exception
+     */
+    @PostMapping("/warehouseMoveDetail/cancelWarehouseMoveDetail")
+    @Transactional
+    public ResultModel cancelWarehouseMoveDetail() throws Exception {
+        logger.info("################/warehouseMoveDetail/cancelWarehouseMoveDetail 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        ResultModel model = new ResultModel();
+
+        PageData pageData = HttpUtils.parsePageData();
+        String detailId = pageData.getString("id");
+        if (detailId == null || detailId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("移库单明细id为空或空字符串！");
+            return model;
+        }
+
+        WarehouseMoveDetail detail = warehouseMoveDetailService.findWarehouseMoveDetailById(detailId);
+        //状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+        if (detail.getState() != null && "2".indexOf(detail.getState().trim()) > -1) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("当前移库明细是已完成状态，不可取消！");
+            return model;
+        }
+
+        PageData pd = new PageData();
+        pd.put("queryStr","detail_id ='"+detail.getId()+"' and isdisable = '1' ");
+        List<WarehouseMoveExecute> warehouseMoveExecuteList = warehouseMoveExecuteService.dataList(pd);
+        if(warehouseMoveExecuteList!=null&&warehouseMoveExecuteList.size()>0){
+            model.putCode("1");
+            model.putMsg("该移库单执行人已开始执行，不能直接更换执行人，请联系当前执行人与其沟通后撤回单据！");
+            return model;
+        }
+
+
+        //1. 修改明细状态
+        //明细状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+        detail.setState("-1");
+        warehouseMoveDetailService.update(detail);
+        //2.返写移库单状态
+        warehouseMoveService.updateState(detail.getParentId());
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/warehouseMoveDetail/cancelWarehouseMoveDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+    /**
+     * 恢复移库单明细
+     * @author 刘威
+     * @date 2018-10-16
+     * @throws Exception
+     */
+    @PostMapping("/warehouseMoveDetail/recoveryWarehouseMoveDetail")
+    @Transactional
+    public ResultModel recoveryWarehouseMoveDetail() throws Exception {
+        logger.info("################/warehouseMoveDetail/recoveryWarehouseMoveDetail 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        ResultModel model = new ResultModel();
+
+        PageData pageData = HttpUtils.parsePageData();
+        String detailId = pageData.getString("id");
+        if (detailId == null || detailId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("移库单明细id为空或空字符串！");
+            return model;
+        }
+
+        WarehouseMoveDetail detail = warehouseMoveDetailService.findWarehouseMoveDetailById(detailId);
+        //状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+        if (detail.getState() != null && !"-1".equals(detail.getState().trim())) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("当前移库明细不是取消状态，不能执行恢复操作！");
+            return model;
+        }
+
+        //1. 修改明细状态
+        //明细状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+        detail.setState("1");
+        warehouseMoveDetailService.update(detail);
+        //2.返写移库单状态
+        warehouseMoveService.updateState(detail.getParentId());
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/warehouseMoveDetail/recoveryWarehouseMoveDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+
     /**
     * @author 刘威 自动创建，可以修改
     * @date 2018-11-16

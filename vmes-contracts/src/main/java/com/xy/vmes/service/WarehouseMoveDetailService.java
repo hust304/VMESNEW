@@ -3,6 +3,7 @@ package com.xy.vmes.service;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.entity.WarehouseMove;
 import com.xy.vmes.entity.WarehouseMoveDetail;
+import com.xy.vmes.entity.WarehouseOutDetail;
 import com.yvan.PageData;
 
 import java.util.LinkedHashMap;
@@ -121,6 +122,15 @@ public interface WarehouseMoveDetailService {
     void addWarehouseMoveDetail(WarehouseMove parentObj, List<WarehouseMoveDetail> objectList) throws Exception;
 
     void addWarehouseMoveDetail(WarehouseMove parentObj, WarehouseMoveDetail detail) throws Exception;
+
+
+    List<WarehouseMoveDetail> findWarehouseMoveDetailListByParentId(String parentId) throws Exception;
+
+    boolean isAllExistStateByDetailList(String state, String ignoreState, List<WarehouseMoveDetail> detailList) throws Exception;
+
+//    void updateStateByDetail(PageData mapDetail) throws Exception;
+
+    WarehouseMoveDetail findWarehouseMoveDetailById(String detailId);
 
 }
 
