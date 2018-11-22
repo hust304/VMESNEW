@@ -141,7 +141,7 @@
             wp.product_id productId,
 
             wp.code code,
-            wp.stock_count stockCount,
+            round(ifnull(wp.stock_count, 0), 2) stockCount,
             wp.cuser cuser,
             wp.cdate cdate,
             wp.uuser uuser,

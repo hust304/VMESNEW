@@ -155,6 +155,8 @@ public class WarehouseInitialServiceImp implements WarehouseInitialService {
     }
 
     public void initialByWarehouse(String cuser, String companyId) throws Exception {
+        if (companyId == null || companyId.trim().length() == 0) {return;}
+
         this.deleteTableByBusiness(companyId);
 
         //是否启用(0:已禁用 1:启用)

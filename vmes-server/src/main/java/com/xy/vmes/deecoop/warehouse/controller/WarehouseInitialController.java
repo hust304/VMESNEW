@@ -5,10 +5,9 @@ import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.Common;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.Column;
+import com.xy.vmes.entity.Product;
 import com.xy.vmes.entity.WarehouseProduct;
-import com.xy.vmes.service.ColumnService;
-import com.xy.vmes.service.WarehouseInitialService;
-import com.xy.vmes.service.WarehouseProductExcelService;
+import com.xy.vmes.service.*;
 import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
@@ -24,6 +23,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.math.BigDecimal;
+import java.text.MessageFormat;
 import java.util.*;
 
 
@@ -41,7 +42,11 @@ public class WarehouseInitialController {
     @Autowired
     private WarehouseInitialService warehouseInitialService;
     @Autowired
+    private WarehouseProductService warehouseProductService;
+    @Autowired
     private WarehouseProductExcelService warehouseProductExcelService;
+    @Autowired
+    private ProductService productService;
 
     @Autowired
     private ColumnService columnService;
@@ -133,10 +138,138 @@ public class WarehouseInitialController {
         String companyId = pageData.getString("currentCompanyId");
 
         //初始化仓库业务表
+        if (companyId == null || companyId.trim().length() == 0) {
+            model.putCode("1");
+            model.putMsg("企业id为空或空字符串！");
+            return model;
+        }
         warehouseInitialService.initialByWarehouse(cuser, companyId);
 
         Long endTime = System.currentTimeMillis();
         logger.info("################/warehouseInitial/initialWarehouse 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 修改仓库货品(库存数量)
+     * @author 陈刚
+     * @date 2018-10-16
+     * @throws Exception
+     */
+    @PostMapping("/warehouseInitial/updateWarehouseProduct")
+    @Transactional
+    public ResultModel updateWarehouseProduct() throws Exception {
+        logger.info("################/warehouseInitial/updateWarehouseProduct 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        ResultModel model = new ResultModel();
+
+        PageData pageData = HttpUtils.parsePageData();
+        String cuser = pageData.getString("cuser");
+        String id = pageData.getString("id");
+        if (id == null || id.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("仓库货品id(库存id)为空或空字符串！");
+            return model;
+        }
+
+        //库存数量(修改后)
+        String afterCountStr = pageData.getString("stockCount");
+        BigDecimal afterCountBig = BigDecimal.valueOf(0D);
+
+        if (afterCountStr == null || afterCountStr.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("库存数量为空或空字符串，库存数量为必填项不可为空！");
+            return model;
+        } else {
+            afterCountStr = afterCountStr.trim();
+            try {
+                //全数字
+                BigDecimal bigDecimal = new BigDecimal(afterCountStr);
+                //四舍五入到2位小数
+                afterCountBig = bigDecimal.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+
+            } catch (NumberFormatException e) {
+                String msg_column_error = "{0}:{1} 输入错误，请输入正确的数字(大于零的整数，或大于零的(1,2)位小数)！" + Common.SYS_ENDLINE_DEFAULT;
+                //String msg_column_error = "第 {0} 行: {1}:{2} 输入错误，请输入正确的数字(大于零的整数，或大于零的(1,2)位小数)！"
+                String str_error = MessageFormat.format(msg_column_error, "库存数量", afterCountStr);
+                model.putCode(Integer.valueOf(1));
+                model.putMsg(str_error);
+                return model;
+            }
+        }
+
+        WarehouseProduct warehouseProduct = warehouseProductService.findWarehouseProductById(id);
+        BigDecimal beforeCountBig = BigDecimal.valueOf(0D);
+        if (warehouseProduct.getStockCount() != null) {
+            beforeCountBig = warehouseProduct.getStockCount();
+        }
+
+        warehouseProduct.setUuser(cuser);
+        warehouseProduct.setStockCount(afterCountBig);
+        warehouseProductService.update(warehouseProduct);
+
+        Product product = productService.findProductById(warehouseProduct.getProductId());
+        BigDecimal prodCount = BigDecimal.valueOf(0D);
+        if (product.getStockCount() != null) {
+            prodCount = product.getStockCount();
+        }
+
+        BigDecimal modifyCount = BigDecimal.valueOf(afterCountBig.doubleValue() - beforeCountBig.doubleValue());
+        BigDecimal prodStockCount = BigDecimal.valueOf(prodCount.doubleValue() + modifyCount.doubleValue());
+        //四舍五入到2位小数
+        prodStockCount = prodStockCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+        productService.updateStockCount(product, prodStockCount, cuser);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/warehouseInitial/updateWarehouseProduct 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 删除仓库货品(删除库存记录)
+     * @author 陈刚
+     * @date 2018-10-16
+     * @throws Exception
+     */
+    @PostMapping("/warehouseInitial/deleteWarehouseProduct")
+    @Transactional
+    public ResultModel deleteWarehouseProduct() throws Exception {
+        logger.info("################/warehouseInitial/deleteWarehouseProduct 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        ResultModel model = new ResultModel();
+
+        PageData pageData = HttpUtils.parsePageData();
+        String cuser = pageData.getString("cuser");
+        String id = pageData.getString("id");
+        if (id == null || id.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("仓库货品id(库存id)为空或空字符串！");
+            return model;
+        }
+
+        WarehouseProduct warehouseProduct = warehouseProductService.findWarehouseProductById(id);
+        String productId = warehouseProduct.getProductId();
+        BigDecimal stockCount = BigDecimal.valueOf(0D);
+        if (warehouseProduct.getStockCount() != null) {
+            stockCount = warehouseProduct.getStockCount();
+        }
+
+        //删除库存表(vmes_warehouse_product:仓库货位产品库存表)
+        warehouseProductService.deleteById(id);
+
+        Product product = productService.findProductById(productId);
+        BigDecimal prodCount = BigDecimal.valueOf(0D);
+        if (product.getStockCount() != null) {
+            prodCount = product.getStockCount();
+        }
+
+        BigDecimal prodStockCount = BigDecimal.valueOf(prodCount.doubleValue() - stockCount.doubleValue());
+        //四舍五入到2位小数
+        prodStockCount = prodStockCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+        productService.updateStockCount(product, prodStockCount, cuser);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/warehouseInitial/deleteWarehouseProduct 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
