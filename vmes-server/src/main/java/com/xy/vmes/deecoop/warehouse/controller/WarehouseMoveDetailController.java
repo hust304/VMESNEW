@@ -2,14 +2,11 @@ package com.xy.vmes.deecoop.warehouse.controller;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
+import com.xy.vmes.common.util.Common;
 import com.xy.vmes.common.util.StringUtil;
-import com.xy.vmes.entity.Column;
-import com.xy.vmes.entity.WarehouseMoveDetail;
-import com.xy.vmes.entity.WarehouseMoveExecute;
-import com.xy.vmes.service.ColumnService;
-import com.xy.vmes.service.WarehouseMoveDetailService;
-import com.xy.vmes.service.WarehouseMoveExecuteService;
-import com.xy.vmes.service.WarehouseMoveService;
+import com.xy.vmes.entity.*;
+import com.xy.vmes.exception.TableVersionException;
+import com.xy.vmes.service.*;
 import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
@@ -25,6 +22,9 @@ import org.springframework.web.multipart.MultipartFile;
 import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.http.HttpServletResponse;
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 
@@ -51,6 +51,12 @@ public class WarehouseMoveDetailController {
 
     @Autowired
     private WarehouseMoveExecuteService warehouseMoveExecuteService;
+
+    @Autowired
+    private WarehouseMoveExecutorService warehouseMoveExecutorService;
+
+    @Autowired
+    private WarehouseProductService warehouseProductService;
     /**
     * @author 刘威 自动创建，禁止修改
     * @date 2018-11-16
@@ -209,6 +215,107 @@ public class WarehouseMoveDetailController {
 
 
 
+
+
+    /**
+     * 出库单明细退单
+     * @author 刘威
+     * @date 2018-10-16
+     * @throws Exception
+     */
+    @PostMapping("/warehouseMoveDetail/rebackWarehouseMoveDetail")
+    @Transactional
+    public ResultModel rebackWarehouseMoveDetail() throws Exception {
+        logger.info("################/warehouseMoveDetail/rebackWarehouseMoveDetail 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        ResultModel model = new ResultModel();
+
+        PageData pageData = HttpUtils.parsePageData();
+        String detailId = pageData.getString("id");
+        String currentUserId = pageData.getString("currentUserId");
+        String currentCompanyId = pageData.getString("currentCompanyId");
+        String rebackBill = pageData.getString("rebackBill");
+
+        Map columnMap = new HashMap();
+        columnMap.put("detail_id",detailId);
+        columnMap.put("executor_id",currentUserId);
+        columnMap.put("isdisable","1");
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        //取消出库执行人并记录退单原因
+        List<WarehouseMoveExecutor> warehouseMoveExecutorList = warehouseMoveExecutorService.selectByColumnMap(columnMap);
+        if(warehouseMoveExecutorList!=null&&warehouseMoveExecutorList.size()>0){
+            for(int i=0;i<warehouseMoveExecutorList.size();i++){
+                WarehouseMoveExecutor warehouseMoveExecutor = warehouseMoveExecutorList.get(i);
+                if(StringUtils.isEmpty(warehouseMoveExecutor.getRemark())){
+                    warehouseMoveExecutor.setRemark("退单原因:"+rebackBill+" 操作时间："+ dateFormat.format(new Date()));
+                }else {
+                    warehouseMoveExecutor.setRemark(warehouseMoveExecutor.getRemark()+"  退单原因:"+rebackBill+" 操作时间："+ dateFormat.format(new Date()));
+                }
+//                warehouseMoveExecutor.setIsdisable("0");
+                warehouseMoveExecutorService.update(warehouseMoveExecutor);
+            }
+        }
+        //取消出库记录并记录退单原因
+        List<WarehouseMoveExecute> warehouseMoveExecuteList = warehouseMoveExecuteService.selectByColumnMap(columnMap);
+        if(warehouseMoveExecuteList!=null&&warehouseMoveExecuteList.size()>0){
+            for(int i=0;i<warehouseMoveExecuteList.size();i++){
+                WarehouseMoveExecute warehouseMoveExecute = warehouseMoveExecuteList.get(i);
+                warehouseMoveExecute.setIsdisable("0");
+                if(StringUtils.isEmpty(warehouseMoveExecute.getRemark())){
+                    warehouseMoveExecute.setRemark("退单原因:"+rebackBill+" 操作时间："+ dateFormat.format(new Date()));
+                }else {
+                    warehouseMoveExecute.setRemark(warehouseMoveExecute.getRemark()+"  退单原因:"+rebackBill+" 操作时间："+ dateFormat.format(new Date()));
+                }
+                warehouseMoveExecuteService.update(warehouseMoveExecute);
+                //取消出库执行
+                try {
+                    //出库操作
+                    WarehouseProduct outObject = warehouseProductService.selectById(warehouseMoveExecute.getWarehouseProductId());
+                    WarehouseProduct inObject = warehouseProductService.selectById(warehouseMoveExecute.getNewWarehouseProductId());
+                    String msgStr = warehouseProductService.moveStockCount(outObject,inObject,warehouseMoveExecute.getCount().negate(), currentUserId, currentCompanyId);
+                    if (msgStr != null && msgStr.trim().length() > 0) {
+                        model.putCode(Integer.valueOf(1));
+                        model.putMsg(msgStr);
+                        return model;
+                    }
+                } catch (TableVersionException tabExc) {
+                    //库存变更 version 锁
+                    if (Common.SYS_STOCKCOUNT_ERRORCODE.equals(tabExc.getErrorCode())) {
+                        model.putCode(Integer.valueOf(1));
+                        model.putMsg(tabExc.getMessage());
+                        return model;
+                    }
+                }
+            }
+        }
+
+//        //删除推荐库位信息
+//        columnMap = new HashMap();
+//        columnMap.put("detail_id",detailId);
+//        warehouseMoveRecommendService.deleteByColumnMap(columnMap);
+
+        //更新出库单及出库明细状态
+        WarehouseMoveDetail detail = warehouseMoveDetailService.selectById(detailId);
+
+        columnMap = new HashMap();
+        columnMap.put("detail_id",detailId);
+        columnMap.put("isdisable","1");
+        List<WarehouseMoveExecutor> checkList = warehouseMoveExecutorService.selectByColumnMap(columnMap);
+
+        //明细状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+        detail.setState("1");
+
+        warehouseMoveDetailService.update(detail);
+        warehouseMoveService.updateState(detail.getParentId());
+
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/warehouseMoveDetail/rebackWarehouseMoveDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
     /**
      * 删除移库单明细
      * @author 刘威
@@ -343,6 +450,213 @@ public class WarehouseMoveDetailController {
         return model;
     }
 
+
+    public Map getTitleList(List<Column> columnList){
+        Map result = new HashMap();
+        List<LinkedHashMap> titlesList = new ArrayList<LinkedHashMap>();
+        List<String> titlesHideList = new ArrayList<String>();
+        Map<String, String> varModelMap = new HashMap<String, String>();
+        if(columnList!=null&&columnList.size()>0){
+            for (Column column : columnList) {
+                if(column!=null){
+                    if("0".equals(column.getIshide())){
+                        titlesHideList.add(column.getTitleKey());
+                    }
+                    LinkedHashMap titlesLinkedMap = new LinkedHashMap();
+                    titlesLinkedMap.put(column.getTitleKey(),column.getTitleName());
+                    varModelMap.put(column.getTitleKey(),"");
+                    titlesList.add(titlesLinkedMap);
+                }
+            }
+        }
+        result.put("hideTitles",titlesHideList);
+        result.put("titles",titlesList);
+        result.put("varModel",varModelMap);
+        return result;
+    }
+
+
+    public List<Map> getExecuteChildrenList(Map rootMap,Map childrenTitleMap,PageData pd)  throws Exception {
+
+        Pagination pg = HttpUtils.parsePagination(pd);
+        pd.put("parentId",rootMap.get("id"));
+
+        List<Map> childrenMapList = new ArrayList();
+        List<Map> varList = warehouseMoveDetailService.getDataListPage(pd,pg);
+        if(varList!=null&&varList.size()>0){
+            for(int i=0;i<varList.size();i++){
+                Map map = varList.get(i);
+                Map<String, String> varMap = new HashMap<String, String>();
+                varMap.putAll((Map<String, String>)childrenTitleMap.get("varModel"));
+                for (Map.Entry<String, String> entry : varMap.entrySet()) {
+                    varMap.put(entry.getKey(),map.get(entry.getKey())!=null?map.get(entry.getKey()).toString():"");
+                }
+                varMap.put("pid",rootMap.get("id").toString());
+                childrenMapList.add(varMap);
+            }
+        }
+        return childrenMapList;
+    }
+
+    /**
+     * @author 刘威 自动创建，可以修改
+     * @date 2018-10-23
+     */
+    @PostMapping("/warehouseMoveDetail/listPageWarehouseMoveDetailsExecute")
+    public ResultModel listPageWarehouseMoveDetailsExecute()  throws Exception {
+
+        logger.info("################warehouseMoveDetail/listPageWarehouseMoveDetailsExecute 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        HttpServletResponse response  = HttpUtils.currentResponse();
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+        Pagination pg = HttpUtils.parsePagination(pd);
+        Map result = new HashMap();
+
+        List<Column> columnList = columnService.findColumnList("WarehouseMove");
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
+        }
+        //获取根节点表头
+        Map rootTitleMap = getTitleList(columnList);
+
+        result.put("hideTitles",rootTitleMap.get("hideTitles"));
+        result.put("titles",rootTitleMap.get("titles"));
+
+        columnList = columnService.findColumnList("WarehouseMoveDetailExecute");
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
+        }
+        //获取子节点表头
+        Map childrenTitleMap = getTitleList(columnList);
+
+
+
+        List<Map> varMapList = new ArrayList();
+        List<Map> varList = warehouseMoveService.getDataListPage(pd,pg);
+        if(varList!=null&&varList.size()>0){
+            for(int i=0;i<varList.size();i++){
+                Map map = varList.get(i);
+                Map<String, Object> varMap = new HashMap<String, Object>();
+                varMap.putAll((Map<String, String>)rootTitleMap.get("varModel"));
+                for (Map.Entry<String, Object> entry : varMap.entrySet()) {
+                    varMap.put(entry.getKey(),map.get(entry.getKey())!=null?map.get(entry.getKey()).toString():"");
+                }
+                varMap.put("hideTitles",childrenTitleMap.get("hideTitles"));
+                varMap.put("titles",childrenTitleMap.get("titles"));
+                varMap.put("pid",null);
+                varMap.put("children",getExecuteChildrenList(map,childrenTitleMap,pd));
+                varMapList.add(varMap);
+            }
+        }
+        result.put("varList",varMapList);
+        result.put("pageData", pg);
+
+        model.putResult(result);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################warehouseMoveDetail/listPageWarehouseMoveDetailsExecute 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+
+    /**
+     * @author 刘威 自动创建，可以修改
+     * @date 2018-10-23
+     */
+    @PostMapping("/warehouseMoveDetail/listPageWarehouseMoveDetailsRecords")
+    public ResultModel listPageWarehouseMoveDetailsRecords()  throws Exception {
+
+        logger.info("################warehouseMoveDetail/listPageWarehouseMoveDetailsRecords 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        HttpServletResponse response  = HttpUtils.currentResponse();
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+        Pagination pg = HttpUtils.parsePagination(pd);
+        Map result = new HashMap();
+
+        List<Column> columnList = columnService.findColumnList("WarehouseMoveDetailRecords");
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
+        }
+        //获取根节点表头
+        Map rootTitleMap = getTitleList(columnList);
+
+        result.put("hideTitles",rootTitleMap.get("hideTitles"));
+        result.put("titles",rootTitleMap.get("titles"));
+
+        columnList = columnService.findColumnList("WarehouseMoveExecute");
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
+        }
+        //获取子节点表头
+        Map childrenTitleMap = getTitleList(columnList);
+
+
+
+        List<Map> varMapList = new ArrayList();
+        List<Map> varList = warehouseMoveDetailService.getDataListPage(pd,pg);
+        if(varList!=null&&varList.size()>0){
+            for(int i=0;i<varList.size();i++){
+                Map map = varList.get(i);
+                Map<String, Object> varMap = new HashMap<String, Object>();
+                varMap.putAll((Map<String, String>)rootTitleMap.get("varModel"));
+                for (Map.Entry<String, Object> entry : varMap.entrySet()) {
+                    varMap.put(entry.getKey(),map.get(entry.getKey())!=null?map.get(entry.getKey()).toString():"");
+                }
+                varMap.put("hideTitles",childrenTitleMap.get("hideTitles"));
+                varMap.put("titles",childrenTitleMap.get("titles"));
+                varMap.put("pid",null);
+                varMap.put("children",getOutRecordsChildrenList(map,childrenTitleMap));
+                varMapList.add(varMap);
+            }
+        }
+        result.put("varList",varMapList);
+        result.put("pageData", pg);
+
+        model.putResult(result);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################warehouseMoveDetail/listPageWarehouseMoveDetailsRecords 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+
+
+    public List<Map> getOutRecordsChildrenList(Map rootMap,Map childrenTitleMap)  throws Exception {
+        PageData pd = new PageData();
+        Pagination pg = HttpUtils.parsePagination(pd);
+        pd.put("detailId",rootMap.get("id"));
+
+        DecimalFormat df = new DecimalFormat("0.00");
+
+        List<Map> childrenMapList = new ArrayList();
+        List<Map> varList = warehouseMoveExecuteService.getDataListPage(pd,pg);
+        if(varList!=null&&varList.size()>0){
+            for(int i=0;i<varList.size();i++){
+                Map map = varList.get(i);
+                Map<String, String> varMap = new HashMap<String, String>();
+                varMap.putAll((Map<String, String>)childrenTitleMap.get("varModel"));
+                for (Map.Entry<String, String> entry : varMap.entrySet()) {
+                    varMap.put(entry.getKey(),map.get(entry.getKey())!=null?map.get(entry.getKey()).toString():"");
+                }
+                varMap.put("pid",rootMap.get("id").toString());
+                double actualCount = Double.parseDouble((String)varMap.get("actualCount"));
+
+                varMap.put("actualCount",df.format(actualCount));
+                childrenMapList.add(varMap);
+            }
+        }
+        return childrenMapList;
+    }
 
 
     /**

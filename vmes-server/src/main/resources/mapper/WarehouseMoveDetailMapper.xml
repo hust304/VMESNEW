@@ -144,13 +144,14 @@
 
         (replace(uuid(), '-', ''),'WarehouseMoveDetail','parentId','移库单ID',8, '1','0','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'WarehouseMoveDetail','warehouseId',' 货位ID',10, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveDetail','warehouseProductId',' 货位产品ID',10, '1','0','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'WarehouseMoveDetail','productId','产品ID',11, '1','0','1','0',now(), 'admin'),
 
         (replace(uuid(), '-', ''),'WarehouseMoveDetail','pathName','当前库位',12, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'WarehouseMoveDetail','code','批次号',13, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'WarehouseMoveDetail','stockCount','库存数量',14, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'WarehouseMoveDetail','count','移库数量',15, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'WarehouseMoveDetail','executeCount','已移库数量',16, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveDetail','executeCount','已完成数量',16, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'WarehouseMoveDetail','state','状态',17, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'WarehouseMoveDetail','cuser','创建用户id',18, '1','0','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'WarehouseMoveDetail','cdate','创建时间',19, '1','0','1','0',now(), 'admin'),
@@ -160,6 +161,83 @@
         (replace(uuid(), '-', ''),'WarehouseMoveDetail','isdisable','是否启用',23, '1','0','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'WarehouseMoveDetail','qrcode','二维码',24, '1','0','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'WarehouseMoveDetail','id','id',0, '1','0','1','0',now(), 'admin')
+    </insert>
+
+
+
+    <insert id="insertColumn1" >
+        delete from vmes_column where model_code = 'WarehouseMoveDetailExecute' ;
+        insert into vmes_column (
+        id,model_code,title_key,title_name,serial_number,
+        isdisable,ishide,isedit,ismust,cdate,
+        cuser
+        ) VALUES
+        (replace(uuid(), '-', ''),'WarehouseMoveDetailExecute','productCode','货品编码',1, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveDetailExecute','productName','货品名称',2, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveDetailExecute','productSpec',' 规格/型号',3, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveDetailExecute','productGenre','货品属性ID',4, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveDetailExecute','productGenreName','货品属性',5, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveDetailExecute','productUnit','计量单位ID',6, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveDetailExecute','productUnitName','计量单位',7, '1','1','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'WarehouseMoveDetailExecute','parentId','移库单ID',8, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveDetailExecute','warehouseId',' 货位ID',10, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveDetailExecute','warehouseProductId',' 货位产品ID',10, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveDetailExecute','productId','产品ID',11, '1','0','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'WarehouseMoveDetailExecute','pathName','当前库位',12, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveDetailExecute','code','批次号',13, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveDetailExecute','stockCount','库存数量',14, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveDetailExecute','count','移库数量',15, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveDetailExecute','executeCount','已完成数量',16, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveDetailExecute','suggestCount','待执行数量',17, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveDetailExecute','state','状态',17, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveDetailExecute','cuser','创建用户id',18, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveDetailExecute','cdate','创建时间',19, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveDetailExecute','uuser','修改用户id',20, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveDetailExecute','udate','修改时间',21, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveDetailExecute','remark','备注',22, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveDetailExecute','isdisable','是否启用',23, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveDetailExecute','qrcode','二维码',24, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveDetailExecute','id','id',0, '1','0','1','0',now(), 'admin')
+    </insert>
+
+
+
+    <insert id="insertColumn2" >
+        delete from vmes_column where model_code = 'WarehouseMoveDetailRecords' ;
+        insert into vmes_column (
+        id,model_code,title_key,title_name,serial_number,
+        isdisable,ishide,isedit,ismust,cdate,
+        cuser
+        ) VALUES
+        (replace(uuid(), '-', ''),'WarehouseMoveDetailRecords','productCode','货品编码',1, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveDetailRecords','productName','货品名称',2, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveDetailRecords','productSpec',' 规格/型号',3, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveDetailRecords','productGenre','货品属性ID',4, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveDetailRecords','productGenreName','货品属性',5, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveDetailRecords','productUnit','计量单位ID',6, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveDetailRecords','productUnitName','计量单位',7, '1','1','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'WarehouseMoveDetailRecords','parentId','移库单ID',8, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveDetailRecords','warehouseId',' 货位ID',10, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveDetailRecords','warehouseProductId',' 货位产品ID',10, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveDetailRecords','productId','产品ID',11, '1','0','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'WarehouseMoveDetailRecords','pathName','当前库位',12, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveDetailRecords','code','批次号',13, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveDetailRecords','stockCount','库存数量',14, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveDetailRecords','count','移库数量',15, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveDetailRecords','executeCount','已完成数量',16, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveDetailRecords','state','状态',17, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveDetailRecords','cuser','创建用户id',18, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveDetailRecords','cdate','创建时间',19, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveDetailRecords','uuser','修改用户id',20, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveDetailRecords','udate','修改时间',21, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveDetailRecords','remark','备注',22, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveDetailRecords','isdisable','是否启用',23, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveDetailRecords','qrcode','二维码',24, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveDetailRecords','id','id',0, '1','0','1','0',now(), 'admin')
     </insert>
 
 
@@ -221,6 +299,7 @@
     <sql id="Field1">
         detail.parent_id parentId,
         whprod.warehouse_id warehouseId,
+        whprod.id warehouseProductId,
         whprod.product_id productId,
         whprod.code code,
         round(whprod.stock_count,2) stockCount,
@@ -277,7 +356,7 @@
 
     <!-- 自动创建，可以修改 -->
     <select id="getDataList"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
-        select parentId,warehouseId,productId,code,count,state,cuser,cdate,udate,remark,isdisable,qrcode,stockCount,pathName,
+        select parentId,warehouseId,warehouseProductId,productId,code,count,state,cuser,cdate,udate,remark,isdisable,qrcode,stockCount,pathName,
         productCode,productName,productSpec,productGenre,productGenreName,productUnit,productUnitName,round(sum(ifnull(executeCount,0)),2) executeCount,warehouseMoveCode,id
 
         from (
@@ -332,7 +411,7 @@
 
     <!-- 自动创建，可以修改 -->
     <select id="getDataListPage"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
-        select parentId,warehouseId,productId,code,count,state,cuser,cdate,udate,remark,isdisable,qrcode,stockCount,pathName,
+        select parentId,warehouseId,warehouseProductId,productId,code,count,state,cuser,cdate,udate,remark,isdisable,qrcode,stockCount,pathName,
         productCode,productName,productSpec,productGenre,productGenreName,productUnit,productUnitName,round(sum(ifnull(executeCount,0)),2) executeCount,warehouseMoveCode,id
 
         from (
