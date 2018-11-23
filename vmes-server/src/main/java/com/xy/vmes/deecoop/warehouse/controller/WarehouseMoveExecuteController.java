@@ -2,14 +2,12 @@ package com.xy.vmes.deecoop.warehouse.controller;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
+import com.xy.vmes.common.util.Common;
 import com.xy.vmes.common.util.StringUtil;
-import com.xy.vmes.entity.Column;
-import com.xy.vmes.entity.WarehouseMoveExecute;
-import com.xy.vmes.service.ColumnService;
-import com.xy.vmes.service.WarehouseMoveExecuteService;
-import com.yvan.ExcelUtil;
-import com.yvan.HttpUtils;
-import com.yvan.PageData;
+import com.xy.vmes.entity.*;
+import com.xy.vmes.exception.TableVersionException;
+import com.xy.vmes.service.*;
+import com.yvan.*;
 import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +20,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.http.HttpServletResponse;
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 
@@ -43,6 +43,17 @@ public class WarehouseMoveExecuteController {
     @Autowired
     private ColumnService columnService;
 
+    @Autowired
+    private WarehouseProductService warehouseProductService;
+
+    @Autowired
+    private ProductService productService;
+
+    @Autowired
+    private WarehouseMoveDetailService warehouseMoveDetailService;
+
+    @Autowired
+    private WarehouseMoveService warehouseMoveService;
     /**
     * @author 刘威 自动创建，禁止修改
     * @date 2018-11-16
@@ -198,6 +209,326 @@ public class WarehouseMoveExecuteController {
 
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+
+
+
+    /**
+     * 出库执行
+     * @author 刘威
+     * @date 2018-10-16
+     * @throws Exception
+     */
+    @PostMapping("/warehouseMoveExecute/executeWarehouseMoveExecute")
+    @Transactional
+    public ResultModel executeWarehouseMoveExecute() throws Exception {
+        logger.info("################/warehouseMoveExecute/executeWarehouseMoveExecute 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        ResultModel model = new ResultModel();
+
+        PageData pageData = HttpUtils.parsePageData();
+        String jsonDataStr = pageData.getString("jsonDataStr");
+        String currentUserId = pageData.getString("currentUserId");
+        String currentCompanyId = pageData.getString("currentCompanyId");
+        List<Map<String, Object>> mapList = (List<Map<String, Object>>) YvanUtil.jsonToList(jsonDataStr);
+
+
+
+        if(mapList!=null&&mapList.size()>0){
+            for(int j=0;j<mapList.size();j++){
+                Map<String, Object> rootMap = mapList.get(j);
+                if(rootMap!=null&&rootMap.get("children")!=null){
+                    String newWarehouseId = (String)rootMap.get("warehouseId");
+                    if(!StringUtils.isEmpty(newWarehouseId)){
+                        //新增推荐库位记录
+                        List childrenList = (List) rootMap.get("children");
+                        if(childrenList!=null&&childrenList.size()>0){
+                            for(int k=0;k<childrenList.size();k++){
+                                Map<String, Object> childrenMap = (Map<String, Object>)childrenList.get(k);
+                                String warehouseProductId = (String)childrenMap.get("warehouseProductId");
+                                String suggestCount = (String)childrenMap.get("suggestCount");
+                                String detailId = (String)childrenMap.get("id");
+                                BigDecimal count = StringUtils.isEmpty(suggestCount)? BigDecimal.ZERO:BigDecimal.valueOf(Double.parseDouble(suggestCount));
+
+
+
+
+                                WarehouseProduct outObject = warehouseProductService.selectById(warehouseProductId);
+
+                                WarehouseProduct inObject = new WarehouseProduct();
+
+                                PageData findMap = new PageData();
+                                findMap.put("code", outObject.getCode());
+                                findMap.put("productId", outObject.getProductId());
+                                findMap.put("warehouseId", newWarehouseId);
+                                findMap.put("mapSize", Integer.valueOf(findMap.size()));
+                                inObject = warehouseProductService.findWarehouseProduct(findMap);
+                                if(inObject==null){
+                                    inObject = new WarehouseProduct();
+                                    String id = Conv.createUuid();
+                                    inObject.setId(id);
+                                    inObject.setCompanyId(outObject.getCompanyId());
+                                    inObject.setCode(outObject.getCode());
+                                    inObject.setProductId(outObject.getProductId());
+                                    inObject.setWarehouseId(newWarehouseId);
+                                    inObject.setCdate(new Date());
+                                    inObject.setQrcode(outObject.getQrcode());
+                                    warehouseProductService.save(inObject);
+                                }
+
+
+
+                                //移库执行
+                                try {
+                                    String msgStr = warehouseProductService.moveStockCount(outObject,inObject, count, currentUserId, currentCompanyId);
+                                    if (msgStr != null && msgStr.trim().length() > 0) {
+                                        model.putCode(Integer.valueOf(1));
+                                        model.putMsg(msgStr);
+                                        return model;
+                                    }
+                                } catch (TableVersionException tabExc) {
+                                    //库存变更 version 锁
+                                    if (Common.SYS_STOCKCOUNT_ERRORCODE.equals(tabExc.getErrorCode())) {
+                                        model.putCode(Integer.valueOf(1));
+                                        model.putMsg(tabExc.getMessage());
+                                        return model;
+                                    }
+                                }
+
+
+                                WarehouseMoveExecute execute = new WarehouseMoveExecute();
+                                execute.setDetailId(detailId);
+                                execute.setExecutorId(currentUserId);
+                                execute.setWarehouseProductId(outObject.getId());
+                                execute.setNewWarehouseProductId(inObject.getId());
+                                execute.setCount(count);
+                                warehouseMoveExecuteService.save(execute);
+
+                                //更新出库单及出库明细状态
+                                WarehouseMoveDetail detail = warehouseMoveDetailService.selectById(detailId);
+
+                                Map columnMap = new HashMap();
+                                columnMap.put("detail_id",detailId);
+                                columnMap.put("isdisable","1");
+                                BigDecimal totalCount = BigDecimal.ZERO;
+                                List<WarehouseMoveExecute> warehouseMoveExecuteList = warehouseMoveExecuteService.selectByColumnMap(columnMap);
+                                if(warehouseMoveExecuteList!=null&&warehouseMoveExecuteList.size()>0){
+                                    for(int i=0;i<warehouseMoveExecuteList.size();i++){
+                                        WarehouseMoveExecute warehouseMoveExecute = warehouseMoveExecuteList.get(i);
+                                        if(warehouseMoveExecute!=null&&warehouseMoveExecute.getCount()!=null){
+                                            totalCount = totalCount.add(warehouseMoveExecute.getCount());
+                                        }
+                                    }
+                                }
+                                //明细状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+                                if(detail.getCount().compareTo(totalCount)>0){
+                                    detail.setState("1");
+                                }else {
+                                    detail.setState("2");
+                                }
+
+                                warehouseMoveDetailService.update(detail);
+                                warehouseMoveService.updateState(detail.getParentId());
+
+
+                            }
+                        }
+
+
+
+                    }
+                }
+
+            }
+        }
+
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/warehouseMoveExecute/executeWarehouseMoveExecute 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+    /**
+     * 移库删除
+     * @author 刘威
+     * @date 2018-10-16
+     * @throws Exception
+     */
+    @PostMapping("/warehouseMoveExecute/deleteWarehouseMoveExecute")
+    @Transactional
+    public ResultModel deleteWarehouseMoveExecute() throws Exception {
+        logger.info("################/warehouseMoveExecute/deleteWarehouseMoveExecute 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        ResultModel model = new ResultModel();
+
+        PageData pageData = HttpUtils.parsePageData();
+        String id = pageData.getString("id");
+        String currentUserId = pageData.getString("currentUserId");
+        String currentCompanyId = pageData.getString("currentCompanyId");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        WarehouseMoveExecute execute = warehouseMoveExecuteService.selectById(id);
+        execute.setIsdisable("0");
+        if(StringUtils.isEmpty(execute.getRemark())){
+            execute.setRemark("操作记录：删除  操作时间："+ dateFormat.format(new Date()));
+        }else {
+            execute.setRemark(execute.getRemark()+"  操作记录：删除  操作时间："+ dateFormat.format(new Date()));
+        }
+        warehouseMoveExecuteService.update(execute);
+
+
+        try {
+            //还原移库操作
+            WarehouseProduct outObject = warehouseProductService.selectById(execute.getWarehouseProductId());
+            WarehouseProduct inObject = warehouseProductService.selectById(execute.getNewWarehouseProductId());
+            String msgStr = warehouseProductService.moveStockCount(outObject,inObject,execute.getCount().negate(), currentUserId, currentCompanyId);
+
+//            Product product = productService.selectById(outObject.getProductId());
+//            productService.updateStockCount(product,product.getStockCount().add(execute.getCount()),currentUserId);
+
+            if (msgStr != null && msgStr.trim().length() > 0) {
+                model.putCode(Integer.valueOf(1));
+                model.putMsg(msgStr);
+                return model;
+            }
+        } catch (TableVersionException tabExc) {
+            //库存变更 version 锁
+            if (Common.SYS_STOCKCOUNT_ERRORCODE.equals(tabExc.getErrorCode())) {
+                model.putCode(Integer.valueOf(1));
+                model.putMsg(tabExc.getMessage());
+                return model;
+            }
+        }
+
+
+
+        //更新出库单及出库明细状态
+        WarehouseMoveDetail detail = warehouseMoveDetailService.selectById(execute.getDetailId());
+
+        Map columnMap = new HashMap();
+        columnMap.put("detail_id",execute.getDetailId());
+        columnMap.put("isdisable","1");
+        BigDecimal totalCount = BigDecimal.ZERO;
+        List<WarehouseMoveExecute> warehouseMoveExecuteList = warehouseMoveExecuteService.selectByColumnMap(columnMap);
+        if(warehouseMoveExecuteList!=null&&warehouseMoveExecuteList.size()>0){
+            for(int i=0;i<warehouseMoveExecuteList.size();i++){
+                WarehouseMoveExecute warehouseMoveExecute = warehouseMoveExecuteList.get(i);
+                if(warehouseMoveExecute!=null&&warehouseMoveExecute.getCount()!=null){
+                    totalCount = totalCount.add(warehouseMoveExecute.getCount());
+                }
+            }
+        }
+        //明细状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+        if(detail.getCount().compareTo(totalCount)>0){
+            detail.setState("1");
+        }else {
+            detail.setState("2");
+        }
+
+        warehouseMoveDetailService.update(detail);
+        warehouseMoveService.updateState(detail.getParentId());
+
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/warehouseMoveExecute/deleteWarehouseMoveExecute 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+
+    /**
+     * 出库编辑
+     * @author 刘威
+     * @date 2018-10-16
+     * @throws Exception
+     */
+    @PostMapping("/warehouseMoveExecute/updateWarehouseMoveExecute")
+    @Transactional
+    public ResultModel updateWarehouseMoveExecute() throws Exception {
+        logger.info("################/warehouseMoveExecute/updateWarehouseMoveExecute 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        ResultModel model = new ResultModel();
+
+        PageData pageData = HttpUtils.parsePageData();
+        String id = pageData.getString("id");
+        String beforeCount = pageData.getString("beforeCount");
+        String afterCount = pageData.getString("afterCount");
+        String currentUserId = pageData.getString("currentUserId");
+        String currentCompanyId = pageData.getString("currentCompanyId");
+
+        if((!StringUtils.isEmpty(beforeCount))&&(!StringUtils.isEmpty(afterCount))){
+
+            BigDecimal before = BigDecimal.valueOf(Double.parseDouble(beforeCount)).setScale(2, BigDecimal.ROUND_HALF_UP);
+            BigDecimal after = BigDecimal.valueOf(Double.parseDouble(afterCount)).setScale(2, BigDecimal.ROUND_HALF_UP);
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+
+            WarehouseMoveExecute execute = warehouseMoveExecuteService.selectById(id);
+            execute.setCount(after);
+            if(StringUtils.isEmpty(execute.getRemark())){
+                execute.setRemark("操作记录：修改前（"+beforeCount+"） 修改后 （"+afterCount+"） 操作时间："+ dateFormat.format(new Date()));
+            }else {
+                execute.setRemark(execute.getRemark()+"  操作记录：修改前（"+beforeCount+"） 修改后 （"+afterCount+"） 操作时间："+ dateFormat.format(new Date()));
+            }
+
+            warehouseMoveExecuteService.update(execute);
+
+
+            try {
+                //修改移库操作
+                WarehouseProduct outObject = warehouseProductService.selectById(execute.getWarehouseProductId());
+                WarehouseProduct inObject = warehouseProductService.selectById(execute.getNewWarehouseProductId());
+                String msgStr = warehouseProductService.moveStockCount(outObject,inObject,after.subtract(before), currentUserId, currentCompanyId);
+
+//                Product product = productService.selectById(outObject.getProductId());
+//                productService.updateStockCount(product,product.getStockCount().subtract(after.subtract(before)),currentUserId);
+
+                if (msgStr != null && msgStr.trim().length() > 0) {
+                    model.putCode(Integer.valueOf(1));
+                    model.putMsg(msgStr);
+                    return model;
+                }
+            } catch (TableVersionException tabExc) {
+                //库存变更 version 锁
+                if (Common.SYS_STOCKCOUNT_ERRORCODE.equals(tabExc.getErrorCode())) {
+                    model.putCode(Integer.valueOf(1));
+                    model.putMsg(tabExc.getMessage());
+                    return model;
+                }
+            }
+
+            //更新出库单及出库明细状态
+            WarehouseMoveDetail detail = warehouseMoveDetailService.selectById(execute.getDetailId());
+
+            Map columnMap = new HashMap();
+            columnMap.put("detail_id",execute.getDetailId());
+            columnMap.put("isdisable","1");
+            BigDecimal totalCount = BigDecimal.ZERO;
+            List<WarehouseMoveExecute> warehouseMoveExecuteList = warehouseMoveExecuteService.selectByColumnMap(columnMap);
+            if(warehouseMoveExecuteList!=null&&warehouseMoveExecuteList.size()>0){
+                for(int i=0;i<warehouseMoveExecuteList.size();i++){
+                    WarehouseMoveExecute warehouseMoveExecute = warehouseMoveExecuteList.get(i);
+                    if(warehouseMoveExecute!=null&&warehouseMoveExecute.getCount()!=null){
+                        totalCount = totalCount.add(warehouseMoveExecute.getCount());
+                    }
+                }
+            }
+            //明细状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+            if(detail.getCount().compareTo(totalCount)>0){
+                detail.setState("1");
+            }else {
+                detail.setState("2");
+            }
+            warehouseMoveDetailService.update(detail);
+            warehouseMoveService.updateState(detail.getParentId());
+        }
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/warehouseMoveExecute/updateWarehouseMoveExecute 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+
+
     /**
     * @author 刘威 自动创建，可以修改
     * @date 2018-11-16

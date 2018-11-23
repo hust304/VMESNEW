@@ -12,11 +12,13 @@
 	vmes_warehouse_move_execute
     </sql>
 
+
     <!-- 字段 自动创建，禁止修改-->
     <sql id="Field">
 		detail_id detailId,<!-- 移库明细ID -->
 		executor_id executorId,<!-- 执行人ID -->
 		warehouse_product_id warehouseProductId,<!-- 产品货位ID -->
+        new_warehouse_product_id newWarehouseProductId,
 		count count,<!-- 当前移库数量 -->
 		cuser cuser,<!-- 创建用户id -->
 		cdate cdate,<!-- 创建时间 -->
@@ -32,6 +34,7 @@
 		#{detailId},<!-- 移库明细ID -->
 		#{executorId},<!-- 执行人ID -->
 		#{warehouseProductId},<!-- 产品货位ID -->
+        #{newWarehouseProductId},<!-- 产品货位ID -->
 		#{count},<!-- 当前移库数量 -->
 		#{cuser},<!-- 创建用户id -->
 		#{cdate},<!-- 创建时间 -->
@@ -48,6 +51,7 @@
         '移库明细ID'  detailId,
         '执行人ID'  executorId,
         '产品货位ID'  warehouseProductId,
+        '移库后的新库位'  newWarehouseProductId,
         '当前移库数量'  count,
         '创建用户id'  cuser,
         '创建时间'  cdate,
@@ -124,6 +128,9 @@
 
 
     <!-- ***************************************************以上为自动生成代码禁止修改，请在下面添加业务代码************************************************* -->
+
+
+
     <insert id="insertColumn" >
         delete from vmes_column where model_code = 'WarehouseMoveExecute' ;
         insert into vmes_column (
@@ -131,17 +138,23 @@
         isdisable,ishide,isedit,ismust,cdate,
         cuser
         ) VALUES
-            (replace(uuid(), '-', ''),'WarehouseMoveExecute','detailId','移库明细ID',1, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseMoveExecute','executorId','执行人ID',2, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseMoveExecute','warehouseProductId','产品货位ID',3, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseMoveExecute','count','当前移库数量',4, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseMoveExecute','cuser','创建用户id',5, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseMoveExecute','cdate','创建时间',6, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseMoveExecute','uuser','修改用户id',7, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseMoveExecute','udate','修改时间',8, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseMoveExecute','remark','备注',9, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseMoveExecute','isdisable','是否启用(0:已禁用 1:启用)',10, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseMoveExecute','id','id',0, '1','1','1','0',now(), 'admin')
+        (replace(uuid(), '-', ''),'WarehouseMoveExecute','name','移库前货位',1, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveExecute','newname','移库后货位',2, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveExecute','code','批次号',3, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveExecute','stockCount','库存数量',4, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveExecute','actualCount','实际移货数量',5, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveExecute','warehouseId','仓库货位ID',6, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveExecute','warehouseProductId','(原)货位ID',7, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveExecute','newWarehouseProductId','(新)货位ID',7, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveExecute','productId','产品ID',7, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveExecute','executorName','执行人',8, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveExecute','startDate','执行开始时间',9, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveExecute','endDate','执行完成时间',9, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveExecute','isdisable','状态',10, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveExecute','remark','备注',11, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveExecute','companyId','公司ID',12, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveExecute','qrcode','二维码',12, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveExecute','id','id',0, '1','0','1','0',now(), 'admin')
     </insert>
 
 
@@ -196,17 +209,23 @@
 
     <!-- 字段 自动创建，可以修改-->
     <sql id="Field1">
-        detail_id detailId,<!-- 移库明细ID -->
-        executor_id executorId,<!-- 执行人ID -->
-        warehouse_product_id warehouseProductId,<!-- 产品货位ID -->
-        count count,<!-- 当前移库数量 -->
-        cuser cuser,<!-- 创建用户id -->
-        cdate cdate,<!-- 创建时间 -->
-        uuser uuser,<!-- 修改用户id -->
-        udate udate,<!-- 修改时间 -->
-        remark remark,<!-- 备注 -->
-        isdisable isdisable,<!-- 是否启用(0:已禁用 1:启用) -->
-        id id <!-- id -->
+        execut.id id,
+        product.company_id companyId,
+        product.warehouse_id warehouseId,
+        product.product_id productId,
+        product.code code,
+        round(product.stock_count,2) stockCount,
+        execut.isdisable isdisable,
+        product.qrcode qrcode,
+        round(execut.count,2) actualCount,
+        execut.warehouse_product_id warehouseProductId,
+        execut.new_warehouse_product_id newWarehouseProductId,
+        execut.remark remark,
+        executor.cdate startDate,
+        execut.cdate endDate,
+        vmesuser.user_name executorName,
+        warehouse.path_name name,
+        newwarehouse.path_name newname
     </sql>
 
     <!-- 字段值 自动创建，可以修改-->
@@ -240,22 +259,26 @@
         select
         <include refid="Field1"></include>
         from
-        <include refid="tableName"></include>
+        vmes_warehouse_move_execute execut
+        left join vmes_warehouse_product product on execut.warehouse_product_id = product.id
+        left join vmes_warehouse_product newproduct on execut.new_warehouse_product_id = newproduct.id
+        left join vmes_warehouse warehouse on warehouse.id = product.warehouse_id
+        left join vmes_warehouse newwarehouse on newwarehouse.id = newproduct.warehouse_id
+        left join vmes_user vmesuser on vmesuser.id = execut.executor_id
+        left join vmes_warehouse_move_executor executor on executor.detail_id = execut.detail_id and executor.executor_id = execut.executor_id and executor.isdisable = '1'
         <where>
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >
                 and ${queryStr}
             </if>
-            <if test="code != null and code != ''">
-                and code LIKE CONCAT(CONCAT('%', #{code}),'%')
+            <if test="detailId != null and detailId != ''">
+                and execut.detail_id = #{detailId}
             </if>
-            <if test="name != null and name != ''">
-                and name LIKE CONCAT(CONCAT('%', #{name}),'%')
+            <if test="currentCompanyId != null and currentCompanyId != ''">
+                and product.company_id = #{currentCompanyId}
             </if>
         </where>
-        <if test="orderStr != null and orderStr != ''" >
-            order by ${orderStr}
-        </if>
+        order by execut.isdisable desc ,execut.cdate desc
     </select>
 
     <!-- 自动创建，可以修改 -->
@@ -263,22 +286,26 @@
         select
         <include refid="Field1"></include>
         from
-        <include refid="tableName"></include>
+        vmes_warehouse_move_execute execut
+        left join vmes_warehouse_product product on execut.warehouse_product_id = product.id
+        left join vmes_warehouse_product newproduct on execut.new_warehouse_product_id = newproduct.id
+        left join vmes_warehouse warehouse on warehouse.id = product.warehouse_id
+        left join vmes_warehouse newwarehouse on newwarehouse.id = newproduct.warehouse_id
+        left join vmes_user vmesuser on vmesuser.id = execut.executor_id
+        left join vmes_warehouse_move_executor executor on executor.detail_id = execut.detail_id and executor.executor_id = execut.executor_id and executor.isdisable = '1'
         <where>
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >
                 and ${queryStr}
             </if>
-            <if test="code != null and code != ''">
-                and code LIKE CONCAT(CONCAT('%', #{code}),'%')
+            <if test="detailId != null and detailId != ''">
+                and execut.detail_id = #{detailId}
             </if>
-            <if test="name != null and name != ''">
-                and name LIKE CONCAT(CONCAT('%', #{name}),'%')
+            <if test="currentCompanyId != null and currentCompanyId != ''">
+                and product.company_id = #{currentCompanyId}
             </if>
         </where>
-        <if test="orderStr != null and orderStr != ''" >
-            order by ${orderStr}
-        </if>
+        order by execut.isdisable desc ,execut.cdate desc
     </select>
 
 

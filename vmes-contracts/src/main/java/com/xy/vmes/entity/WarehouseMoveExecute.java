@@ -28,6 +28,9 @@ public class WarehouseMoveExecute implements Serializable {
 	//产品货位ID
 	@TableField("warehouse_product_id")
 	private String warehouseProductId;
+	//产品货位ID
+	@TableField("new_warehouse_product_id")
+	private String newWarehouseProductId;
 	//当前移库数量
 	@TableField("count")
 	private BigDecimal count;
@@ -119,6 +122,13 @@ public class WarehouseMoveExecute implements Serializable {
 		return isdisable;
 	}
 
+	public String getNewWarehouseProductId() {
+		return newWarehouseProductId;
+	}
+
+	public void setNewWarehouseProductId(String newWarehouseProductId) {
+		this.newWarehouseProductId = newWarehouseProductId;
+	}
 /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 
