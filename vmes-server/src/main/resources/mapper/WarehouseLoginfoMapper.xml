@@ -15,23 +15,25 @@
         isdisable,ishide,isedit,ismust,cdate,
         cuser
         ) VALUES
+            (replace(uuid(), '-', ''),'warehouseLoginfo','id','id',0, '1','1','1','0',now(), 'admin')
             (replace(uuid(), '-', ''),'warehouseLoginfo','companyId','企业ID',1, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'warehouseLoginfo','businessId','明细id(出入库明细id 库存盘点明细id)',2, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'warehouseLoginfo','code','货位批次号',3, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'warehouseLoginfo','productId','产品ID',4, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'warehouseLoginfo','warehouseId','仓库货位ID',5, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'warehouseLoginfo','detailId','明细id(出入库明细id 库存盘点明细id)',2, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'warehouseLoginfo','sourceWpId','源库存id',3, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'warehouseLoginfo','targetWpId','目标库存id',4, '1','1','1','0',now(), 'admin'),
+
             (replace(uuid(), '-', ''),'warehouseLoginfo','count','当前操作数量',6, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'warehouseLoginfo','beforeCount','操作变更前数量(业务相关)',7, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'warehouseLoginfo','afterCount','操作变更后数量(业务相关)',8, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'warehouseLoginfo','beforeStockCount','库存变更前数量(库存相关)',9, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'warehouseLoginfo','afterStockCount','库存变更后数量(库存相关)',10, '1','1','1','0',now(), 'admin'),
+
             (replace(uuid(), '-', ''),'warehouseLoginfo','operationCount','操作数量(正数:加库存 负数:减库存)',11, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'warehouseLoginfo','businessType','业务类型(in:入库 out:出库: move:移库 check:库存盘点)',12, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'warehouseLoginfo','operation','操作类型(add:添加 modify:修改 delete:删除:)',13, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'warehouseLoginfo','cuser','创建用户id',14, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'warehouseLoginfo','cdate','创建时间',15, '1','1','1','0',now(), 'admin'),
+
             (replace(uuid(), '-', ''),'warehouseLoginfo','remark','备注',16, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'warehouseLoginfo','id','id',0, '1','1','1','0',now(), 'admin')
     </insert>
 
     <!-- 列表(全部) 自动创建，禁止修改-->
@@ -39,22 +41,23 @@
         select
             id id,
             company_id companyId,
-            business_id businessId,
-            code code,
-            product_id productId,
+            detail_id detailId,
+            source_wp_id sourceWpId,
+            target_wp_id targetWpId,
 
-            warehouse_id warehouseId,
             count count,
             before_count beforeCount,
             after_count afterCount,
-            before_stock_count beforeStockCount,
+            source_before_stockcount sourceBeforeStockcount,
+            source_after_stockcount sourceAfterStockcount,
 
-            after_stock_count afterStockCount,
+            target_before_stockcount targetBeforeStockcount,
+            target_after_stockcount targetAfterStockcount,
             operation_count operationCount,
             business_type businessType,
             operation operation,
-            cuser cuser,
 
+            cuser cuser,
             cdate cdate,
             remark remark
         from vmes_warehouse_loginfo
@@ -85,17 +88,18 @@
                         </choose>
                     </if>
 
+                    <if test="detailId != null and detailId != ''" >
+                        and detail_id = #{detailId}
+                    </if>
                     <if test="companyId != null and companyId != ''" >
                         and company_id = #{companyId}
                     </if>
-                    <if test="code != null and code != ''" >
-                        and code = #{code}
+
+                    <if test="targetWpId != null and targetWpId != ''" >
+                        and target_wp_id = #{targetWpId}
                     </if>
-                    <if test="productId != null and productId != ''" >
-                        and product_id = #{productId}
-                    </if>
-                    <if test="warehouseId != null and warehouseId != ''" >
-                        and warehouse_id = #{warehouseId}
+                    <if test="sourceWpId != null and sourceWpId != ''" >
+                        and source_wp_id = #{sourceWpId}
                     </if>
 
                     <!--queryStr 自定义sql查询语句-->
@@ -116,22 +120,23 @@
         select
             id id,
             company_id companyId,
-            business_id businessId,
-            code code,
-            product_id productId,
+            detail_id detailId,
+            source_wp_id sourceWpId,
+            target_wp_id targetWpId,
 
-            warehouse_id warehouseId,
             count count,
             before_count beforeCount,
             after_count afterCount,
-            before_stock_count beforeStockCount,
+            source_before_stockcount sourceBeforeStockcount,
+            source_after_stockcount sourceAfterStockcount,
 
-            after_stock_count afterStockCount,
+            target_before_stockcount targetBeforeStockcount,
+            target_after_stockcount targetAfterStockcount,
             operation_count operationCount,
             business_type businessType,
             operation operation,
-            cuser cuser,
 
+            cuser cuser,
             cdate cdate,
             remark remark
         from vmes_warehouse_loginfo

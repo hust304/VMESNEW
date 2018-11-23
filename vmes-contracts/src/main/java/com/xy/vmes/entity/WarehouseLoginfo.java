@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 /** 
  * 说明：vmes_warehouse_loginfo:库存变更日志表 实体类
  * @author 陈刚 自动生成
- * @date 2018-11-06
+ * @date 2018-11-23
  */
 @TableName("vmes_warehouse_loginfo")
 public class WarehouseLoginfo implements Serializable {
@@ -23,41 +23,47 @@ public class WarehouseLoginfo implements Serializable {
 	@TableField("company_id")
 	private String companyId;
 	//明细id(出入库明细id 库存盘点明细id)
-	@TableField("business_id")
-	private String businessId;
-	//货位批次号
-	@TableField("code")
-	private String code;
-	//产品ID
-	@TableField("product_id")
-	private String productId;
-	//仓库货位ID
-	@TableField("warehouse_id")
-	private String warehouseId;
+	@TableField("detail_id")
+	private String detailId;
+	//源库存id-(出库,移库时填写)
+	@TableField("source_wp_id")
+	private String sourceWpId;
+	//目标库存id-(入库,盘点,移库,填写)
+	@TableField("target_wp_id")
+	private String targetWpId;
+
 	//当前操作数量
 	@TableField("count")
-	private BigDecimal count = BigDecimal.valueOf(0D);
+	private BigDecimal count;
 	//操作变更前数量(业务相关)
 	@TableField("before_count")
-	private BigDecimal beforeCount = BigDecimal.valueOf(0D);
+	private BigDecimal beforeCount;
 	//操作变更后数量(业务相关)
 	@TableField("after_count")
-	private BigDecimal afterCount = BigDecimal.valueOf(0D);
-	//库存变更前数量(库存相关)
-	@TableField("before_stock_count")
-	private BigDecimal beforeStockCount = BigDecimal.valueOf(0D);
-	//库存变更后数量(库存相关)
-	@TableField("after_stock_count")
-	private BigDecimal afterStockCount = BigDecimal.valueOf(0D);
+	private BigDecimal afterCount;
+	//(源)库存变更前数量(出库,移库时填写)
+	@TableField("source_before_stockcount")
+	private BigDecimal sourceBeforeStockcount;
+	//(源)库存变更后数量(出库,移库时填写)
+	@TableField("source_after_stockcount")
+	private BigDecimal sourceAfterStockcount;
+
+	//(目标)库存变更前数量(入库,盘点,移库,填写)
+	@TableField("target_before_stockcount")
+	private BigDecimal targetBeforeStockcount;
+	//(目标)库存变更后数量(入库,盘点,移库,填写)
+	@TableField("target_after_stockcount")
+	private BigDecimal targetAfterStockcount;
 	//操作数量(正数:加库存 负数:减库存)
 	@TableField("operation_count")
-	private BigDecimal operationCount = BigDecimal.valueOf(0D);
+	private BigDecimal operationCount;
 	//业务类型(in:入库 out:出库: move:移库 check:库存盘点)
 	@TableField("business_type")
 	private String businessType;
-	//操作类型(add:添加 modify:修改 delete:删除:)
+	//操作类型(add:添加 modify:修改 delete:删除 reback:退单 checkAudit:盘点审核)
 	@TableField("operation")
 	private String operation;
+
 	//创建用户id
 	@TableField("cuser")
 	private String cuser;
@@ -81,35 +87,29 @@ public class WarehouseLoginfo implements Serializable {
 	public String getCompanyId() {
 		return companyId;
 	}
-	public void setBusinessId(String businessId) {
-		this.businessId = businessId;
+	public void setDetailId(String detailId) {
+		this.detailId = detailId;
 	}
-	public String getBusinessId() {
-		return businessId;
+	public String getDetailId() {
+		return detailId;
 	}
-	public void setCode(String code) {
-		this.code = code;
+	public void setSourceWpId(String sourceWpId) {
+		this.sourceWpId = sourceWpId;
 	}
-	public String getCode() {
-		return code;
+	public String getSourceWpId() {
+		return sourceWpId;
 	}
-	public void setProductId(String productId) {
-		this.productId = productId;
+	public void setTargetWpId(String targetWpId) {
+		this.targetWpId = targetWpId;
 	}
-	public String getProductId() {
-		return productId;
-	}
-	public void setWarehouseId(String warehouseId) {
-		this.warehouseId = warehouseId;
-	}
-	public String getWarehouseId() {
-		return warehouseId;
-	}
-	public BigDecimal getCount() {
-		return count;
+	public String getTargetWpId() {
+		return targetWpId;
 	}
 	public void setCount(BigDecimal count) {
 		this.count = count;
+	}
+	public BigDecimal getCount() {
+		return count;
 	}
 	public void setBeforeCount(BigDecimal beforeCount) {
 		this.beforeCount = beforeCount;
@@ -123,17 +123,29 @@ public class WarehouseLoginfo implements Serializable {
 	public BigDecimal getAfterCount() {
 		return afterCount;
 	}
-	public void setBeforeStockCount(BigDecimal beforeStockCount) {
-		this.beforeStockCount = beforeStockCount;
+	public void setSourceBeforeStockcount(BigDecimal sourceBeforeStockcount) {
+		this.sourceBeforeStockcount = sourceBeforeStockcount;
 	}
-	public BigDecimal getBeforeStockCount() {
-		return beforeStockCount;
+	public BigDecimal getSourceBeforeStockcount() {
+		return sourceBeforeStockcount;
 	}
-	public void setAfterStockCount(BigDecimal afterStockCount) {
-		this.afterStockCount = afterStockCount;
+	public void setSourceAfterStockcount(BigDecimal sourceAfterStockcount) {
+		this.sourceAfterStockcount = sourceAfterStockcount;
 	}
-	public BigDecimal getAfterStockCount() {
-		return afterStockCount;
+	public BigDecimal getSourceAfterStockcount() {
+		return sourceAfterStockcount;
+	}
+	public void setTargetBeforeStockcount(BigDecimal targetBeforeStockcount) {
+		this.targetBeforeStockcount = targetBeforeStockcount;
+	}
+	public BigDecimal getTargetBeforeStockcount() {
+		return targetBeforeStockcount;
+	}
+	public void setTargetAfterStockcount(BigDecimal targetAfterStockcount) {
+		this.targetAfterStockcount = targetAfterStockcount;
+	}
+	public BigDecimal getTargetAfterStockcount() {
+		return targetAfterStockcount;
 	}
 	public void setOperationCount(BigDecimal operationCount) {
 		this.operationCount = operationCount;
