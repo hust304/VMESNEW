@@ -136,7 +136,6 @@ public interface WarehouseInDetailService {
     String findParentStateByDetailList(String ignoreState, List<WarehouseInDetail> dtlList);
 
     ///////////////////////////////////////////////////////////////////////////////
-    WarehouseLoginfo warehouseInDetail2Loginfo(WarehouseInDetail detail, WarehouseLoginfo loginfo);
 
 
 }

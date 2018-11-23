@@ -103,7 +103,6 @@ public interface WarehouseInExecuteService {
     String checkColumnExecuteList(List<WarehouseInExecute> objectList);
 
     ///////////////////////////////////////////////////////////////////////////////
-    WarehouseLoginfo warehouseInExecute2Loginfo(WarehouseInExecute execute, WarehouseLoginfo loginfo);
 
 }
 

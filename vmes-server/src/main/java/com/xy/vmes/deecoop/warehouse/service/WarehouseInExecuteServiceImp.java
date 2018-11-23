@@ -263,32 +263,6 @@ public class WarehouseInExecuteServiceImp implements WarehouseInExecuteService {
     }
 
     ///////////////////////////////////////////////////////////////////////////////
-    public WarehouseLoginfo warehouseInExecute2Loginfo(WarehouseInExecute execute, WarehouseLoginfo loginfo) {
-        if (loginfo == null) {loginfo = new WarehouseLoginfo();}
-        if (execute == null) {return loginfo;}
-
-        //companyId企业ID
-        //businessId 明细id(出入库明细id 库存盘点明细id)
-        //code货位批次号
-        //productId 产品ID
-        //warehouseId 仓库货位ID
-        loginfo.setWarehouseId(execute.getWarehouseId());
-        //count 当前操作数量
-        loginfo.setCount(execute.getCount());
-        //before_count 操作变更前数量(业务相关)
-        //after_count 操作变更后数量(业务相关)
-        //beforeStockCount 库存变更前数量(库存相关)
-        //afterStockCount 库存变更后数量(库存相关)
-        //operation_count 操作数量(正数:加库存 负数:减库存)
-        //business_type 业务类型(in:入库 out:出库: move:移库 check:库存盘点)
-        loginfo.setBusinessType("in");
-        //operation 操作类型(add:添加 modify:修改 delete:删除:)
-        //cuser 创建用户id
-        //cdate 创建时间
-        //remark 备注
-
-        return loginfo;
-    }
 }
 
 
