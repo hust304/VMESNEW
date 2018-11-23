@@ -22,9 +22,9 @@ public class WarehouseLoginfo implements Serializable {
 	//企业ID
 	@TableField("company_id")
 	private String companyId;
-	//明细id(出入库明细id 库存盘点明细id)
-	@TableField("detail_id")
-	private String detailId;
+	//执行ID(出入库执行ID 库存盘点执行ID)
+	@TableField("execute_id")
+	private String executeId;
 	//源库存id-(出库,移库时填写)
 	@TableField("source_wp_id")
 	private String sourceWpId;
@@ -87,11 +87,11 @@ public class WarehouseLoginfo implements Serializable {
 	public String getCompanyId() {
 		return companyId;
 	}
-	public void setDetailId(String detailId) {
-		this.detailId = detailId;
+	public String getExecuteId() {
+		return executeId;
 	}
-	public String getDetailId() {
-		return detailId;
+	public void setExecuteId(String executeId) {
+		this.executeId = executeId;
 	}
 	public void setSourceWpId(String sourceWpId) {
 		this.sourceWpId = sourceWpId;

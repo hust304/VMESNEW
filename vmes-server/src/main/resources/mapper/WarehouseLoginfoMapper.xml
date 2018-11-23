@@ -41,7 +41,7 @@
         select
             id id,
             company_id companyId,
-            detail_id detailId,
+            execute_id executeId,
             source_wp_id sourceWpId,
             target_wp_id targetWpId,
 
@@ -88,8 +88,8 @@
                         </choose>
                     </if>
 
-                    <if test="detailId != null and detailId != ''" >
-                        and detail_id = #{detailId}
+                    <if test="executeId != null and executeId != ''" >
+                        and execute_id = #{executeId}
                     </if>
                     <if test="companyId != null and companyId != ''" >
                         and company_id = #{companyId}
@@ -116,11 +116,11 @@
 
 
     <!-- 自动创建，可以修改 -->
-    <select id="getDataListPage"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
+    <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
             id id,
             company_id companyId,
-            detail_id detailId,
+            execute_id executeId,,
             source_wp_id sourceWpId,
             target_wp_id targetWpId,
 
@@ -143,15 +143,6 @@
         <where>
             <if test="companyId != null and companyId != ''" >
                 and company_id = #{companyId}
-            </if>
-            <if test="code != null and code != ''" >
-                and code = #{code}
-            </if>
-            <if test="productId != null and productId != ''" >
-                and product_id = #{productId}
-            </if>
-            <if test="warehouseId != null and warehouseId != ''" >
-                and warehouse_id = #{warehouseId}
             </if>
 
             <!--queryStr 自定义sql查询语句-->
