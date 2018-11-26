@@ -144,6 +144,10 @@ public interface WarehouseProductService {
                            BigDecimal count,
                            WarehouseLoginfo loginfo) throws TableVersionException,Exception;
 
+    String updateStockCount(WarehouseProduct object,
+                           BigDecimal count,
+                           WarehouseLoginfo loginfo) throws TableVersionException,Exception;
+
     /**
      * 移库(变更库存数量)
      * @param source  变更源对象

@@ -63,7 +63,7 @@ public class WarehouseLoginfo implements Serializable {
 	//操作数量(正数:加库存 负数:减库存)
 	@TableField("operation_count")
 	private BigDecimal operationCount;
-	//业务类型(in:入库 out:出库: move:移库 check:库存盘点)
+	//业务类型(in:入库 out:出库: move:移库 check:库存盘点 库存修改:update)
 
 	@TableField("business_type")
 	private String businessType;

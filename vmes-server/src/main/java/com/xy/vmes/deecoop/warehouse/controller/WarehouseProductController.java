@@ -5,6 +5,7 @@ import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.entity.Product;
+import com.xy.vmes.entity.WarehouseLoginfo;
 import com.xy.vmes.entity.WarehouseProduct;
 import com.xy.vmes.service.ColumnService;
 import com.xy.vmes.service.ProductService;
@@ -178,19 +179,32 @@ public class WarehouseProductController {
     @PostMapping("/warehouseProduct/updateWarehouseProduct")
     @Transactional
     public ResultModel updateWarehouseProduct()  throws Exception {
-
         logger.info("################warehouseProduct/updateWarehouseProduct 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
+
         PageData pd = HttpUtils.parsePageData();
+        String uuser = pd.getString("uuser");
+        String companyId = pd.getString("currentCompanyId");
+
         String productId = pd.getString("productId");
         BigDecimal beforeCount = BigDecimal.valueOf(Double.parseDouble( pd.getString("beforeCount")));
         BigDecimal afterCount = BigDecimal.valueOf(Double.parseDouble( pd.getString("afterCount")));
-        String uuser = pd.getString("uuser");
         WarehouseProduct warehouseProduct = (WarehouseProduct)HttpUtils.pageData2Entity(pd, new WarehouseProduct());
         warehouseProduct.setStockCount(afterCount);
-        warehouseProductService.update(warehouseProduct);
+        //warehouseProductService.update(warehouseProduct);
+
+        WarehouseLoginfo loginfo = new WarehouseLoginfo();
+        loginfo.setCuser(uuser);
+        loginfo.setCompanyId(companyId);
+        //操作变更前数量(业务相关)
+        loginfo.setBeforeCount(beforeCount);
+        //操作变更后数量(业务相关)
+        loginfo.setAfterCount(afterCount);
+        warehouseProductService.updateStockCount(warehouseProduct,
+                BigDecimal.valueOf(afterCount.doubleValue() - beforeCount.doubleValue()),
+                loginfo);
 
         //添加修改产品库存的代码
         Product product = productService.selectById(productId);

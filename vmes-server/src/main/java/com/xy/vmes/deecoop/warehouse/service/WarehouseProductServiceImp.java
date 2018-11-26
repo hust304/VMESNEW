@@ -540,6 +540,37 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
         return msgBuf.toString();
     }
 
+    public String updateStockCount(WarehouseProduct object,
+                            BigDecimal count,
+                            WarehouseLoginfo loginfo) throws TableVersionException,Exception {
+        StringBuffer msgBuf = new StringBuffer();
+
+        String msgStr = this.checkInWarehouseProduct(object);
+        if (msgStr != null && msgStr.trim().length() > 0) {
+            msgBuf.append(msgStr);
+        }
+        if (count == null) {
+            msgBuf.append("盘点数量为空" + Common.SYS_ENDLINE_DEFAULT);
+        }
+        if (msgBuf.toString().trim().length() > 0) {
+            return msgBuf.toString().trim();
+        }
+
+        object.setCuser(loginfo.getCuser());
+        object.setCompanyId(loginfo.getCompanyId());
+
+        //设置库存变更日志-基本信息
+        //business_type:业务类型(in:入库 out:出库: move:移库 check:库存盘点 update:库存修改)
+        loginfo.setBusinessType("update");
+        //count:业务数量
+        loginfo.setCount(count);
+
+        //type:(in:入库 out:出库 move:移库, check:盘点)
+        this.modifyStockCount(null, object, "update", count, loginfo);
+
+        return msgBuf.toString();
+    }
+
     /**
      * 移库(变更库存数量)
      * @param source  变更源对象
@@ -591,7 +622,7 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
      *   productId:   is not null 货品id
      *   warehouseId: is not null 库位id
      *
-     * (操作类型)type:(in:入库 out:出库 move:移库, check:盘点)
+     * (操作类型)type:(in:入库 out:出库 move:移库, check:盘点, update:库存修改)
      * (变更数量)count: 大于零或小于零，(小于零)反向操作 退回或撤销业务等
      *
      * in:入库
@@ -643,25 +674,13 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
 //            return msgBuf.toString();
 //        }
 
-        if ("in".equals(type)) {
-            String strTemp = this.checkInWarehouseProduct(target);
-            if (strTemp.trim().length() > 0) {
-                msgBuf.append(strTemp);
-                return msgBuf.toString();
-            }
-        } else if ("out".equals(type)) {
-            String strTemp = this.checkOutWarehouseProduct(source);
-            if (strTemp.trim().length() > 0) {
-                msgBuf.append(strTemp);
-                return msgBuf.toString();
-            }
-        } else if ("move".equals(type)) {
+        if ("move".equals(type)) {
             String strTemp = this.checkMoveWarehouseProduct(source, target);
             if (strTemp.trim().length() > 0) {
                 msgBuf.append(strTemp);
                 return msgBuf.toString();
             }
-        } else if ("check".equals(type)) {
+        } else if ("in,out,check,update".indexOf(type) != -1) {
             String strTemp = this.checkInWarehouseProduct(target);
             if (strTemp.trim().length() > 0) {
                 msgBuf.append(strTemp);
