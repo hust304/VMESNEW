@@ -65,6 +65,13 @@
             </if>
         ) a
         <where>
+            <if test="code != null and code != ''">
+                and a.code=#{code}
+            </if>
+            <if test="name != null and name != ''">
+                and a.name=#{name}
+            </if>
+
             <if test="type != null and type != ''">
                 and a.type=#{type}
             </if>

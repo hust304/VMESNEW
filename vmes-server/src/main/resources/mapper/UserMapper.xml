@@ -454,12 +454,20 @@
             <if test="userType!= null and userType != ''"><!-- 关键词检索 -->
                 and vmesuser.user_type = #{userType}
             </if>
+
             <if test="userCode!= null and userCode != ''"><!-- 关键词检索 -->
                 and vmesuser.user_code LIKE CONCAT(CONCAT('%', #{userCode}),'%')
+            </if>
+            <if test="code!= null and code != ''"><!-- 关键词检索 -->
+                and vmesuser.user_code LIKE CONCAT(CONCAT('%', #{code}),'%')
             </if>
             <if test="userName!= null and userName != ''"><!-- 关键词检索 -->
                 and vmesuser.user_name LIKE CONCAT(CONCAT('%', #{userName}),'%')
             </if>
+            <if test="name!= null and name != ''"><!-- 关键词检索 -->
+                and vmesuser.user_name LIKE CONCAT(CONCAT('%', #{name}),'%')
+            </if>
+
             <if test="mobile!= null and mobile != ''"><!-- 关键词检索 -->
                 and vmesuser.mobile LIKE CONCAT(CONCAT('%', #{mobile}),'%')
             </if>
