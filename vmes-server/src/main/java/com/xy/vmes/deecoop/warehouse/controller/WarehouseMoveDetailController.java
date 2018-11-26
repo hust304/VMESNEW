@@ -252,7 +252,7 @@ public class WarehouseMoveDetailController {
                 }else {
                     warehouseMoveExecutor.setRemark(warehouseMoveExecutor.getRemark()+"  退单原因:"+rebackBill+" 操作时间："+ dateFormat.format(new Date()));
                 }
-//                warehouseMoveExecutor.setIsdisable("0");
+                warehouseMoveExecutor.setIsdisable("0");
                 warehouseMoveExecutorService.update(warehouseMoveExecutor);
             }
         }
@@ -320,8 +320,8 @@ public class WarehouseMoveDetailController {
         List<WarehouseMoveExecutor> checkList = warehouseMoveExecutorService.selectByColumnMap(columnMap);
 
         //明细状态(0:待派单 1:执行中 2:已完成 -1.已取消)
-        detail.setState("1");
-
+        detail.setState("0");
+        detail.setRemark("退单原因:"+rebackBill+" 操作时间："+ dateFormat.format(new Date()));
         warehouseMoveDetailService.update(detail);
         warehouseMoveService.updateState(detail.getParentId());
 

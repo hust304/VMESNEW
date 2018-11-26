@@ -4,9 +4,11 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.Column;
+import com.xy.vmes.entity.WarehouseMoveDetail;
 import com.xy.vmes.entity.WarehouseMoveExecute;
 import com.xy.vmes.entity.WarehouseMoveExecutor;
 import com.xy.vmes.service.ColumnService;
+import com.xy.vmes.service.WarehouseMoveDetailService;
 import com.xy.vmes.service.WarehouseMoveExecuteService;
 import com.xy.vmes.service.WarehouseMoveExecutorService;
 import com.yvan.ExcelUtil;
@@ -47,6 +49,9 @@ public class WarehouseMoveExecutorController {
 
     @Autowired
     private WarehouseMoveExecuteService warehouseMoveExecuteService;
+
+    @Autowired
+    private WarehouseMoveDetailService warehouseMoveDetailService;
 
     /**
     * @author 刘威 自动创建，禁止修改
@@ -253,6 +258,10 @@ public class WarehouseMoveExecutorController {
                     warehouseMoveExecutorService.save(warehouseMoveExecutor);
                 }
             }
+
+            WarehouseMoveDetail warehouseMoveDetail = warehouseMoveDetailService.selectById(detailId);
+            warehouseMoveDetail.setState("1");
+            warehouseMoveDetailService.update(warehouseMoveDetail);
         }else {
             model.putCode("2");
             model.putMsg("未勾选记录，请重新选择！");

@@ -329,7 +329,7 @@ public class WarehouseOutDetailController {
         }else {
             detail.setState("0");
         }
-
+        detail.setRemark("退单原因:"+rebackBill+" 操作时间："+ dateFormat.format(new Date()));
         warehouseOutDetailService.update(detail);
         warehouseOutService.updateState(detail.getParentId());
 

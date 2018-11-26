@@ -260,7 +260,6 @@
         warehousemove.make_id makeId,<!-- 制单人ID -->
         case when warehousemove.state=-1 then '已取消' when warehousemove.state=0 then '未完成' when warehousemove.state=1 then '已完成' else null end state,<!-- 状态(0:未完成 1:已完成 -1:已取消) -->
         warehousemove.cuser cuser,<!-- 创建用户id -->
-        warehousemove.cdate cdate,<!-- 创建时间 -->
         DATE_FORMAT(warehousemove.cdate,'%Y-%m-%d') cdate,
         warehousemove.uuser uuser,<!-- 修改用户id -->
         DATE_FORMAT(warehousemove.udate,'%Y-%m-%d') udate,
