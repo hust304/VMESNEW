@@ -92,6 +92,12 @@ public interface ProductPropertyService {
 
     String prodPropertyList2JsonString(List<ProductProperty> objectList);
 
+    /////////////////////////////////////////////////////////////////////////////////////
+    Map<String, String> findProdPropertyJsonByProductPropertyList(List<ProductProperty> objectList);
+    Map<String, String> findProdPropertyNameByProductPropertyList(List<ProductProperty> objectList);
+
+    Map<String, List<ProductProperty>> findProdPropertyMap(List<ProductProperty> objectList);
+    Map<String, String> findProdPropertyJson(Map<String, List<ProductProperty>> mapObject);
 
 }
 

@@ -260,6 +260,26 @@ public class ProductController {
         Pagination pg = HttpUtils.parsePagination(pd);
         List<Map> varMapList = new ArrayList();
         List<Map> varList = productService.getDataListPage(pd, pg);
+
+
+        //当前查询页数据-获取货品id字符串(','逗号分隔的字符串)
+        String ids = productService.findIdsByPageMapList(varList);
+        String queryStr = "";
+        if (ids != null && ids.trim().length() > 0) {
+            queryStr = "'" + ids.replace(",", "','") + "'";
+        }
+
+        //当前查询页数据-货品id查询(货品属性表)
+        PageData findMap = new PageData();
+        findMap.put("queryProdIdsStr", queryStr);
+        findMap.put("isdisable", "1");
+        findMap.put("orderStr", "prod_id,cdate");
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+        List<ProductProperty> productPropertyList = productPropertyService.findProductPropertyList(findMap);
+
+        Map<String, String> mapObject = productPropertyService.findProdPropertyJsonByProductPropertyList(productPropertyList);
+        Map<String, String> nameMap = productPropertyService.findProdPropertyNameByProductPropertyList(productPropertyList);
+
         if(varList!=null&&varList.size()>0){
             for(int i=0;i<varList.size();i++){
                 Map map = varList.get(i);
@@ -269,14 +289,24 @@ public class ProductController {
                     String mapKey = entry.getKey();
                     Object mapValue = map.get(mapKey);
                     //获取产品物料-自定义属性
-                    if ("prodProperty".equals(mapKey)) {
+                    if ("prodPropertyJsonStr".equals(mapKey)) {
                         String prodId = (String)map.get("id");
-                        List<ProductProperty> objectList = productPropertyService.findProductPropertyListByProdId(prodId);
-                        String jsonString = productPropertyService.prodPropertyList2JsonString(objectList);
-                        varMap.put(mapKey, jsonString);
+                        String jsonString = "";
+                        if (mapObject.get(prodId) != null) {
+                            jsonString = mapObject.get(prodId).trim();
+                            varMap.put(mapKey, jsonString);
+                        }
+                    } else if ("prodProperty".equals(mapKey)) {
+                        String prodId = (String)map.get("id");
+                        String propertyNames = "";
+                        if (nameMap.get(prodId) != null) {
+                            propertyNames = nameMap.get(prodId).trim();
+                            varMap.put(mapKey, propertyNames);
+                        }
                     } else {
                         varMap.put(mapKey, mapValue != null ? mapValue.toString() : "");
                     }
+
                 }
                 varMapList.add(varMap);
             }

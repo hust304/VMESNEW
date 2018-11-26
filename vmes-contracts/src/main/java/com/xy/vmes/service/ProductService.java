@@ -117,7 +117,7 @@ public interface ProductService {
     List<Product> findProductList(PageData object);
 
     String findIdsByProductList(List<Product> objectList);
-
+    String findIdsByPageMapList(List<Map> mapList);
 
     void updateStockCount(Product product, BigDecimal count, String uuser) throws Exception;
 }

@@ -271,6 +271,76 @@ public class ProductPropertyServiceImp implements ProductPropertyService {
 
         return YvanUtil.toJson(mapList);
     }
+
+    /////////////////////////////////////////////////////////////////////////////////////
+    public Map<String, String> findProdPropertyJsonByProductPropertyList(List<ProductProperty> objectList) {
+        if (objectList == null || objectList.size() == 0) {return new HashMap<String, String>();}
+
+        Map<String, List<ProductProperty>> mapObject = this.findProdPropertyMap(objectList);
+        return this.findProdPropertyJson(mapObject);
+    }
+
+    public Map<String, String> findProdPropertyNameByProductPropertyList(List<ProductProperty> objectList) {
+        Map<String, String> mapObje = new HashMap<String, String>();
+        if (objectList == null || objectList.size() == 0) {return mapObje;}
+
+        Map<String, List<ProductProperty>> mapObject = this.findProdPropertyMap(objectList);
+        for (Iterator iterator = mapObject.keySet().iterator(); iterator.hasNext();) {
+            String mapKey = (String)iterator.next();
+            List<ProductProperty> prodPropertyList = mapObject.get(mapKey);
+
+            String propertyNames = "";
+            if (prodPropertyList != null && prodPropertyList.size() > 0) {
+                for (ProductProperty object : objectList) {
+                    if (object.getName() != null && object.getName().trim().length() > 0) {
+                        propertyNames = propertyNames + object.getName().trim() + ",";
+                    }
+                }
+            }
+
+            mapObje.put(mapKey, propertyNames);
+        }
+
+        return mapObje;
+    }
+
+    public Map<String, List<ProductProperty>> findProdPropertyMap(List<ProductProperty> objectList) {
+        Map<String, List<ProductProperty>> mapObject = new HashMap<String, List<ProductProperty>>();
+
+        if (objectList == null || objectList.size() == 0) {return mapObject;}
+        for (ProductProperty object : objectList) {
+            String prodId = object.getProdId();
+            String mapKey = prodId;
+            if (mapObject.get(mapKey) == null) {
+                List<ProductProperty> prodPropertyList = new ArrayList<ProductProperty>();
+                prodPropertyList.add(object);
+                mapObject.put(mapKey, prodPropertyList);
+            } else if (mapObject.get(mapKey) != null) {
+                List<ProductProperty> prodPropertyList = mapObject.get(mapKey);
+                prodPropertyList.add(object);
+                mapObject.put(mapKey, prodPropertyList);
+            }
+        }
+
+        return mapObject;
+    }
+
+    public Map<String, String> findProdPropertyJson(Map<String, List<ProductProperty>> mapObject) {
+        Map<String, String> mapObj = new HashMap<String, String>();
+        if (mapObject == null || mapObject.size() == 0) {return mapObj;}
+
+        for (Iterator iterator = mapObject.keySet().iterator(); iterator.hasNext();) {
+            String mapKey = (String)iterator.next();
+            List<ProductProperty> prodPropertyList = mapObject.get(mapKey);
+
+            String jsonStr = this.prodPropertyList2JsonString(prodPropertyList);
+            if (jsonStr != null && jsonStr.trim().length() > 0) {
+                mapObj.put(mapKey, jsonStr);
+            }
+        }
+
+        return mapObj;
+    }
 }
 
 

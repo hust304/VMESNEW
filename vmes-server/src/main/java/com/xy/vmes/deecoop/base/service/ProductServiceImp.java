@@ -234,6 +234,25 @@ public class ProductServiceImp implements ProductService {
         return strBuf.toString();
     }
 
+    public String findIdsByPageMapList(List<Map> mapList) {
+        if (mapList == null || mapList.size() == 0) {return new String();}
+
+        StringBuffer strBuf = new StringBuffer();
+        for (Map<String, Object> mapObject : mapList) {
+            String productId = (String)mapObject.get("id");
+            if (productId != null && productId.trim().length() > 0) {
+                strBuf.append(productId.trim());
+                strBuf.append(",");
+            }
+        }
+
+        String strTemp = strBuf.toString();
+        if (strTemp.trim().length() > 0 && strTemp.lastIndexOf(",") != -1) {
+            strTemp = strTemp.substring(0, strTemp.lastIndexOf(","));
+        }
+        return strTemp;
+    }
+
     @Override
     public void updateStockCount(Product product, BigDecimal count,String uuser) throws Exception {
         PageData pd = new PageData();

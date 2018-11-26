@@ -90,8 +90,16 @@
                             </otherwise>
                         </choose>
                     </if>
+                    <!--queryStr 自定义sql查询语句-->
+                    <if test="queryProdIdsStr != null and queryProdIdsStr != ''" >
+                        and prod_id in (${queryProdIdsStr})
+                    </if>
+
                     <if test="prodId != null and prodId != ''" >
                         and prod_id=#{prodId}
+                    </if>
+                    <if test="isdisable != null and isdisable != ''" >
+                        and isdisable=#{isdisable}
                     </if>
 
                     <!--queryStr 自定义sql查询语句-->
