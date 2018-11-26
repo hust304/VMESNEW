@@ -285,10 +285,13 @@ public class WarehouseOutDetailController {
                     //operation 操作类型(add:添加 modify:修改 delete:删除 reback:退单)
                     loginfo.setOperation("reback");
 
-//                    //beforeCount 操作变更前数量(业务相关)
-//                    loginfo.setBeforeCount(execute.getCount());
-//                    //afterCount 操作变更后数量(业务相关)
-//                    loginfo.setAfterCount(BigDecimal.valueOf(execute.getCount().doubleValue() + count));
+                    //beforeCount 操作变更前数量(业务相关)
+                    loginfo.setBeforeCount(warehouseOutExecute.getCount());
+                    //afterCount 操作变更后数量(业务相关)
+                    loginfo.setAfterCount(BigDecimal.ZERO);
+
+                    loginfo.setExecuteId(warehouseOutExecute.getId());
+                    loginfo.setDetailId(warehouseOutExecute.getDetailId());
 
                     String msgStr = warehouseProductService.outStockCount(outObject, warehouseOutExecute.getCount().negate(), loginfo);
                     if (msgStr != null && msgStr.trim().length() > 0) {

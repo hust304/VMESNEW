@@ -277,18 +277,17 @@ public class WarehouseMoveDetailController {
 
                     //库存变更日志
                     WarehouseLoginfo loginfo = new WarehouseLoginfo();
-                    loginfo.setParentId("");
-                    loginfo.setDetailId("");
-                    loginfo.setExecuteId("");
+                    loginfo.setDetailId(warehouseMoveExecute.getDetailId());
+                    loginfo.setExecuteId(warehouseMoveExecute.getId());
                     loginfo.setCompanyId(currentCompanyId);
                     loginfo.setCuser(currentUserId);
                     //operation 操作类型(add:添加 modify:修改 delete:删除 reback:退单)
                     loginfo.setOperation("reback");
 
-//                                    //beforeCount 操作变更前数量(业务相关)
-//                                    loginfo.setBeforeCount(execute.getCount());
-//                                    //afterCount 操作变更后数量(业务相关)
-//                                    loginfo.setAfterCount(BigDecimal.valueOf(execute.getCount().doubleValue() + count));
+                    //beforeCount 操作变更前数量(业务相关)
+                    loginfo.setBeforeCount(warehouseMoveExecute.getCount());
+                    //afterCount 操作变更后数量(业务相关)
+                    loginfo.setAfterCount(BigDecimal.ZERO);
 
                     String msgStr = warehouseProductService.moveStockCount(outObject,inObject,warehouseMoveExecute.getCount().negate(), loginfo);
                     if (msgStr != null && msgStr.trim().length() > 0) {

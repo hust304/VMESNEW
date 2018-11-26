@@ -266,10 +266,14 @@ public class WarehouseOutExecuteController {
                 //operation 操作类型(add:添加 modify:修改 delete:删除 reback:退单)
                 loginfo.setOperation("modify");
 
-//                //beforeCount 操作变更前数量(业务相关)
-//                loginfo.setBeforeCount(before);
-//                //afterCount 操作变更后数量(业务相关)
-//                loginfo.setAfterCount(after);
+                //beforeCount 操作变更前数量(业务相关)
+                loginfo.setBeforeCount(before);
+                //afterCount 操作变更后数量(业务相关)
+                loginfo.setAfterCount(after);
+
+
+                loginfo.setExecuteId(execute.getId());
+                loginfo.setDetailId(execute.getDetailId());
 
                 String msgStr = warehouseProductService.outStockCount(outObject, after.subtract(before), loginfo);
 
@@ -368,11 +372,14 @@ public class WarehouseOutExecuteController {
             //operation 操作类型(add:添加 modify:修改 delete:删除 reback:退单)
             loginfo.setOperation("delete");
 
-//            //beforeCount 操作变更前数量(业务相关)
-//            loginfo.setBeforeCount(executeCountount);
-//            //afterCount 操作变更后数量(业务相关)
-//            loginfo.setAfterCount(BigDecimal.valueOf(executeCountount.doubleValue() + count.doubleValue()));
-//
+            //beforeCount 操作变更前数量(业务相关)
+            loginfo.setBeforeCount(execute.getCount());
+            //afterCount 操作变更后数量(业务相关)
+            loginfo.setAfterCount(BigDecimal.ZERO);
+
+            loginfo.setExecuteId(execute.getId());
+            loginfo.setDetailId(execute.getDetailId());
+
             String msgStr = warehouseProductService.outStockCount(outObject, execute.getCount().negate(), loginfo);
 
             Product product = productService.selectById(outObject.getProductId());
@@ -489,11 +496,14 @@ public class WarehouseOutExecuteController {
                                     //operation 操作类型(add:添加 modify:修改 delete:删除:)
                                     loginfo.setOperation("add");
 
-//                                    //beforeCount 操作变更前数量(业务相关)
-//                                    loginfo.setBeforeCount(BigDecimal.valueOf(0D));
-//                                    //afterCount 操作变更后数量(业务相关)
-//                                    loginfo.setAfterCount(count_Big);
-//
+                                    //beforeCount 操作变更前数量(业务相关)
+                                    loginfo.setBeforeCount(BigDecimal.ZERO);
+                                    //afterCount 操作变更后数量(业务相关)
+                                    loginfo.setAfterCount(execute.getCount());
+
+                                    loginfo.setExecuteId(execute.getId());
+                                    loginfo.setDetailId(execute.getDetailId());
+
                                     String msgStr = warehouseProductService.outStockCount(outObject, count, loginfo);
 
                                     Product product = productService.selectById(outObject.getProductId());
