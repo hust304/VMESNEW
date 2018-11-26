@@ -608,10 +608,10 @@ public class MenuButtonController {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
-        String menuKey = pageData.getString("menuKey");
-        if (menuKey == null || menuKey.trim().length() == 0) {
+        String menuId = pageData.getString("menuId");
+        if (menuId == null || menuId.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("菜单Key为空或空字符串！");
+            model.putMsg("菜单ID为空或空字符串！");
             return model;
         }
 
@@ -650,7 +650,7 @@ public class MenuButtonController {
 
             //3. (菜单id, 按钮id)-查询(vmes_menu_button)-菜单按钮表
             findMap = new PageData();
-            findMap.put("menuId", menuKey);
+            findMap.put("menuId", menuId);
             //是否禁用(0:已禁用 1:启用)
             findMap.put("isdisable", "1");
             if (buttonIds.trim().length() > 0) {
