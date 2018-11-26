@@ -266,9 +266,7 @@
                 <![CDATA[ and a.cdate >= #{startDate} and a.cdate <=  #{endDate}]]>
             </if>
         </where>
-        <if test="orderStr != null and orderStr != ''" >
-            order by ${orderStr}
-        </if>
+        order by t.cdate desc
     </select>
 
     <!-- 自动创建，可以修改 -->
@@ -311,9 +309,7 @@
                 <![CDATA[ and t.cdate >= #{startDate} and t.cdate <=  #{endDate}]]>
             </if>
         </where>
-        <if test="orderStr != null and orderStr != ''" >
-            order by ${orderStr}
-        </if>
+        order by t.cdate desc
     </select>
 
 </mapper>

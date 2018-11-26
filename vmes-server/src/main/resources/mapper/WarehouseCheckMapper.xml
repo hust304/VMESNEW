@@ -188,7 +188,7 @@
         from vmes_warehouse_check parent
             left join vmes_user user on parent.make_id = user.id
 
-            left join vmes_warehouse_in_detail detail on parent.id = detail.parent_id
+            left join vmes_warehouse_check_detail detail on parent.id = detail.parent_id
             left join vmes_product prod on detail.product_id = prod.id
             left join vmes_dictionary genre on prod.genre = genre.id
             left join vmes_dictionary unit on prod.unit = unit.id

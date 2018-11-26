@@ -306,6 +306,21 @@
             left join vmes_dictionary unit on prod.unit = unit.id
             left join vmes_dictionary type on prod.type = type.id
         <where>
+            <!-- 过滤出库存产品 -->
+            <if test="'true' == isNeedWarehouseProduct">
+                and prod.id in (
+                    select product_id from vmes_warehouse_product
+                    <where>
+                        <if test="currentCompanyId != null and currentCompanyId != ''" >
+                            and company_id=#{currentCompanyId}
+                        </if>
+                        and isdisable = '1'
+
+                    </where>
+                    group by product_id
+                )
+            </if>
+
             <if test="code != null and code != ''">
                 and prod.code LIKE CONCAT(CONCAT(#{code}),'%')
             </if>
@@ -330,7 +345,9 @@
             <if test="pid != null and pid != ''and pid != '4c4bd1b59954438c8bf56facd97a0c7e'" >
                 and prod.genre=#{pid}
             </if>
-
+            <if test="isdisable != null and isdisable != ''" >
+                and prod.isdisable=#{isdisable}
+            </if>
 
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >
