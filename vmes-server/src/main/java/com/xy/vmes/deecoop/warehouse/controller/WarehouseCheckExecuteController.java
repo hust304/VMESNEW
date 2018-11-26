@@ -392,6 +392,10 @@ public class WarehouseCheckExecuteController {
 
         Map<String, String> parentMap = new HashMap<String, String>();
         for (Map<String, Object> mapObject : mapList) {
+            String executeId = (String)mapObject.get("id");
+            String parentId = (String)mapObject.get("parentId");
+            String detailId = (String)mapObject.get("detailId");
+
             //stockCount 台账数量
             String stockCountStr = (String)mapObject.get("stockCount");
             BigDecimal stockCount_big = BigDecimal.valueOf(0D);
@@ -418,6 +422,7 @@ public class WarehouseCheckExecuteController {
             String productId = (String)mapObject.get("productId");
             String warehouseId = (String)mapObject.get("warehouseId");
 
+            //(count 盘点数量)after - (stockCount 台账数量)before
             double modifyCount = count_big.doubleValue() - stockCount_big.doubleValue();
             if (modifyCount != 0) {
                 if (code != null && code.trim().length() > 0
@@ -434,8 +439,23 @@ public class WarehouseCheckExecuteController {
                     //(实际)货位ID
                     inObject.setWarehouseId(warehouseId);
 
-                    //(修改库存数量)退回已经入库数量
-                    warehouseProductService.inStockCount(inObject, BigDecimal.valueOf(modifyCount), cuser, companyId);
+                    //库存变更日志
+                    WarehouseLoginfo loginfo = new WarehouseLoginfo();
+                    loginfo.setParentId(parentId);
+                    loginfo.setDetailId(detailId);
+                    loginfo.setExecuteId(executeId);
+                    loginfo.setCompanyId(companyId);
+                    loginfo.setCuser(cuser);
+                    //operation 操作类型(add:添加 modify:修改 delete:删除 reback:退单 checkAudit:盘点审核)
+                    loginfo.setOperation("checkAudit");
+
+                    //beforeCount 操作变更前数量(业务相关)-(stockCount 台账数量)
+                    loginfo.setBeforeCount(stockCount_big);
+                    //afterCount 操作变更后数量(业务相关)-(count 盘点数量)
+                    loginfo.setAfterCount(count_big);
+
+                    //(修改库存数量)
+                    warehouseProductService.checkStockCount(inObject, BigDecimal.valueOf(modifyCount), loginfo);
 
                     //B. 修改产品数量
                     Product product = productService.findProductById(productId);

@@ -257,7 +257,21 @@ public class WarehouseOutExecuteController {
             try {
                 //还原出库操作
                 WarehouseProduct outObject = warehouseProductService.selectById(execute.getWarehouseProductId());
-                String msgStr = warehouseProductService.outStockCount(outObject, after.subtract(before), currentUserId, currentCompanyId);
+
+
+                //库存变更日志
+                WarehouseLoginfo loginfo = new WarehouseLoginfo();
+                loginfo.setCompanyId(currentCompanyId);
+                loginfo.setCuser(currentUserId);
+                //operation 操作类型(add:添加 modify:修改 delete:删除 reback:退单)
+                loginfo.setOperation("modify");
+
+//                //beforeCount 操作变更前数量(业务相关)
+//                loginfo.setBeforeCount(before);
+//                //afterCount 操作变更后数量(业务相关)
+//                loginfo.setAfterCount(after);
+
+                String msgStr = warehouseProductService.outStockCount(outObject, after.subtract(before), loginfo);
 
                 Product product = productService.selectById(outObject.getProductId());
                 productService.updateStockCount(product,product.getStockCount().subtract(after.subtract(before)),currentUserId);
@@ -345,7 +359,21 @@ public class WarehouseOutExecuteController {
         try {
             //还原出库操作
             WarehouseProduct outObject = warehouseProductService.selectById(execute.getWarehouseProductId());
-            String msgStr = warehouseProductService.outStockCount(outObject, execute.getCount().negate(), currentUserId, currentCompanyId);
+
+
+            //库存变更日志
+            WarehouseLoginfo loginfo = new WarehouseLoginfo();
+            loginfo.setCompanyId(currentCompanyId);
+            loginfo.setCuser(currentUserId);
+            //operation 操作类型(add:添加 modify:修改 delete:删除 reback:退单)
+            loginfo.setOperation("delete");
+
+//            //beforeCount 操作变更前数量(业务相关)
+//            loginfo.setBeforeCount(executeCountount);
+//            //afterCount 操作变更后数量(业务相关)
+//            loginfo.setAfterCount(BigDecimal.valueOf(executeCountount.doubleValue() + count.doubleValue()));
+//
+            String msgStr = warehouseProductService.outStockCount(outObject, execute.getCount().negate(), loginfo);
 
             Product product = productService.selectById(outObject.getProductId());
             productService.updateStockCount(product,product.getStockCount().add(execute.getCount()),currentUserId);
@@ -452,7 +480,21 @@ public class WarehouseOutExecuteController {
                                 try {
                                     //出库操作
                                     WarehouseProduct outObject = warehouseProductService.selectById(id);
-                                    String msgStr = warehouseProductService.outStockCount(outObject, count, currentUserId, currentCompanyId);
+
+
+                                    //库存变更日志
+                                    WarehouseLoginfo loginfo = new WarehouseLoginfo();
+                                    loginfo.setCompanyId(currentCompanyId);
+                                    loginfo.setCuser(currentUserId);
+                                    //operation 操作类型(add:添加 modify:修改 delete:删除:)
+                                    loginfo.setOperation("add");
+
+//                                    //beforeCount 操作变更前数量(业务相关)
+//                                    loginfo.setBeforeCount(BigDecimal.valueOf(0D));
+//                                    //afterCount 操作变更后数量(业务相关)
+//                                    loginfo.setAfterCount(count_Big);
+//
+                                    String msgStr = warehouseProductService.outStockCount(outObject, count, loginfo);
 
                                     Product product = productService.selectById(outObject.getProductId());
                                     productService.updateStockCount(product,product.getStockCount().subtract(count),currentUserId);

@@ -3,13 +3,11 @@ package com.xy.vmes.deecoop.warehouse.service;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.Common;
 import com.xy.vmes.common.util.StringUtil;
-import com.xy.vmes.entity.Product;
-import com.xy.vmes.entity.WarehouseOut;
+import com.xy.vmes.entity.*;
 import com.xy.vmes.exception.TableVersionException;
 import com.xy.vmes.deecoop.warehouse.dao.WarehouseProductMapper;
-import com.xy.vmes.entity.Warehouse;
-import com.xy.vmes.entity.WarehouseProduct;
 import com.xy.vmes.service.ProductService;
+import com.xy.vmes.service.WarehouseLoginfoService;
 import com.xy.vmes.service.WarehouseProductService;
 import com.xy.vmes.service.WarehouseService;
 import com.yvan.PageData;
@@ -35,6 +33,8 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
     private WarehouseProductMapper warehouseProductMapper;
     @Autowired
     private WarehouseService warehouseService;
+    @Autowired
+    private WarehouseLoginfoService warehouseLoginfoService;
     @Autowired
     private ProductService productService;
 
@@ -434,10 +434,11 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
      * 入库(变更库存数量)
      * @param object  入库库存信息
      * @param count   入库数量(大于零或小于零)--小于零)反向操作(撤销入库)
-     * @param cuser
-     * @param companyId
+     * @param loginfo
      */
-    public String inStockCount(WarehouseProduct object, BigDecimal count, String cuser, String companyId) throws TableVersionException,Exception {
+    public String inStockCount(WarehouseProduct object,
+                               BigDecimal count,
+                               WarehouseLoginfo loginfo) throws TableVersionException,Exception {
         StringBuffer msgBuf = new StringBuffer();
 
         String msgStr = this.checkInWarehouseProduct(object);
@@ -451,10 +452,17 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
             return msgBuf.toString().trim();
         }
 
-        //type:(in:入库 out:出库 move:移库)
-        object.setCuser(cuser);
-        object.setCompanyId(companyId);
-        this.modifyStockCount(null, object, "in", count);
+        object.setCuser(loginfo.getCuser());
+        object.setCompanyId(loginfo.getCompanyId());
+
+        //设置库存变更日志-基本信息
+        //business_type:业务类型(in:入库 out:出库: move:移库 check:库存盘点)
+        loginfo.setBusinessType("in");
+        //count:业务数量
+        loginfo.setCount(count);
+
+        //type:(in:入库 out:出库 move:移库, check:盘点)
+        this.modifyStockCount(null, object, "in", count, loginfo);
 
         return msgBuf.toString();
     }
@@ -462,10 +470,11 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
      * 出库(变更库存数量)
      * @param object  出库库存信息
      * @param count   出库数量(大于零或小于零)--小于零)反向操作(撤销出库)
-     * @param cuser
-     * @param companyId
+     * @param loginfo
      */
-    public String outStockCount(WarehouseProduct object, BigDecimal count, String cuser, String companyId) throws TableVersionException,Exception {
+    public String outStockCount(WarehouseProduct object,
+                                BigDecimal count,
+                                WarehouseLoginfo loginfo) throws TableVersionException,Exception {
         StringBuffer msgBuf = new StringBuffer();
 
         String msgStr = this.checkOutWarehouseProduct(object);
@@ -479,10 +488,54 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
             return msgBuf.toString().trim();
         }
 
-        //type:(in:入库 out:出库 move:移库)
-        object.setCuser(cuser);
-        object.setCompanyId(companyId);
-        this.modifyStockCount(object, null, "out", count);
+        object.setCuser(loginfo.getCuser());
+        object.setCompanyId(loginfo.getCompanyId());
+
+        //设置库存变更日志-基本信息
+        //business_type:业务类型(in:入库 out:出库: move:移库 check:库存盘点)
+        loginfo.setBusinessType("out");
+        //count:业务数量
+        loginfo.setCount(count);
+
+        //type:(in:入库 out:出库 move:移库, check:盘点)
+        this.modifyStockCount(object, null, "out", count, loginfo);
+
+        return msgBuf.toString();
+    }
+
+    /**
+     * 盘点(变更库存数量)
+     * @param object  盘点库存信息
+     * @param count   盘点数量(大于零或小于零)--小于零)反向操作(撤销盘点)
+     * @param loginfo
+     */
+    public String checkStockCount(WarehouseProduct object,
+                                  BigDecimal count,
+                                  WarehouseLoginfo loginfo) throws TableVersionException,Exception {
+        StringBuffer msgBuf = new StringBuffer();
+
+        String msgStr = this.checkInWarehouseProduct(object);
+        if (msgStr != null && msgStr.trim().length() > 0) {
+            msgBuf.append(msgStr);
+        }
+        if (count == null) {
+            msgBuf.append("盘点数量为空" + Common.SYS_ENDLINE_DEFAULT);
+        }
+        if (msgBuf.toString().trim().length() > 0) {
+            return msgBuf.toString().trim();
+        }
+
+        object.setCuser(loginfo.getCuser());
+        object.setCompanyId(loginfo.getCompanyId());
+
+        //设置库存变更日志-基本信息
+        //business_type:业务类型(in:入库 out:出库: move:移库 check:库存盘点)
+        loginfo.setBusinessType("check");
+        //count:业务数量
+        loginfo.setCount(count);
+
+        //type:(in:入库 out:出库 move:移库, check:盘点)
+        this.modifyStockCount(null, object, "check", count, loginfo);
 
         return msgBuf.toString();
     }
@@ -493,7 +546,7 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
      * @param target  变更目标对象
      * @param count   变更数量(大于零或小于零)
      */
-    public String moveStockCount(WarehouseProduct source, WarehouseProduct target, BigDecimal count, String cuser, String companyId) throws TableVersionException,Exception {
+    public String moveStockCount(WarehouseProduct source, WarehouseProduct target, BigDecimal count, WarehouseLoginfo loginfo) throws TableVersionException,Exception {
         StringBuffer msgBuf = new StringBuffer();
 
         String msgStr = this.checkMoveWarehouseProduct(source, target);
@@ -507,13 +560,19 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
             return msgBuf.toString().trim();
         }
 
-        source.setCuser(cuser);
-        source.setCompanyId(companyId);
+        source.setCuser(loginfo.getCuser());
+        source.setCompanyId(loginfo.getCompanyId());
 
-        target.setCuser(cuser);
-        target.setCompanyId(companyId);
+        target.setCuser(loginfo.getCuser());
+        target.setCompanyId(loginfo.getCompanyId());
 
-        this.modifyStockCount(source, target, "move", count);
+        //设置库存变更日志-基本信息
+        //business_type:业务类型(in:入库 out:出库: move:移库 check:库存盘点)
+        loginfo.setBusinessType("move");
+        //count:业务数量
+        loginfo.setCount(count);
+
+        this.modifyStockCount(source, target, "move", count, loginfo);
 
         return msgBuf.toString();
     }
@@ -532,7 +591,7 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
      *   productId:   is not null 货品id
      *   warehouseId: is not null 库位id
      *
-     * (操作类型)type:(in:入库 out:出库 move:移库)
+     * (操作类型)type:(in:入库 out:出库 move:移库, check:盘点)
      * (变更数量)count: 大于零或小于零，(小于零)反向操作 退回或撤销业务等
      *
      * in:入库
@@ -563,7 +622,7 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
      * @param count   (不可为空)变更数量
      * @return
      */
-    public String modifyStockCount(WarehouseProduct source, WarehouseProduct target, String type, BigDecimal count) throws TableVersionException,Exception {
+    public String modifyStockCount(WarehouseProduct source, WarehouseProduct target, String type, BigDecimal count, WarehouseLoginfo loginfo) throws TableVersionException,Exception {
         StringBuffer msgBuf = new StringBuffer();
 
         //基本入口参数(非空判断)
@@ -602,16 +661,22 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
                 msgBuf.append(strTemp);
                 return msgBuf.toString();
             }
+        } else if ("check".equals(type)) {
+            String strTemp = this.checkInWarehouseProduct(target);
+            if (strTemp.trim().length() > 0) {
+                msgBuf.append(strTemp);
+                return msgBuf.toString();
+            }
         }
 
         //(源)source 变更库存数量
         if (source != null) {
-            this.modifyBySource(source, count);
+            this.modifyBySource(source, count, loginfo);
         }
 
         //(目标)target 变更库存数量
         if (target != null) {
-            this.modifyByTarget(target, count);
+            this.modifyByTarget(target, count, loginfo);
         }
 
         return msgBuf.toString();
@@ -628,21 +693,29 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
      * @param object
      * @param count
      */
-    private void modifyBySource(WarehouseProduct object, BigDecimal count) throws TableVersionException,Exception {
+    private void modifyBySource(WarehouseProduct object, BigDecimal count, WarehouseLoginfo loginfo) throws TableVersionException,Exception {
         if (object == null) {return;}
         if (count == null) {return;}
 
         //(货位批次号,货品id,库位id)查询库存表
         //非空判断 -- 接口入口已经验证
-        PageData findMap = new PageData();
-        findMap.put("code", object.getCode());
-        findMap.put("productId", object.getProductId());
-        findMap.put("warehouseId", object.getWarehouseId());
-        findMap.put("mapSize", Integer.valueOf(findMap.size()));
-        WarehouseProduct objectDB = this.findWarehouseProduct(findMap);
+
+        WarehouseProduct objectDB = null;
+        if (object.getId() != null && object.getId().trim().length() > 0) {
+            objectDB = this.findWarehouseProductById(object.getId().trim());
+        } else {
+            PageData findMap = new PageData();
+            findMap.put("code", object.getCode());
+            findMap.put("productId", object.getProductId());
+            findMap.put("warehouseId", object.getWarehouseId());
+            findMap.put("mapSize", Integer.valueOf(findMap.size()));
+            objectDB = this.findWarehouseProduct(findMap);
+        }
 
         //当前需要变更库存数量 (大于零:加库存 小于零:减库存)
         double tempCount = -1 * count.doubleValue();
+        //operationCount 操作数量(正数:加库存 负数:减库存)
+        loginfo.setOperationCount(BigDecimal.valueOf(tempCount));
 
         if (objectDB == null) {
             WarehouseProduct addObj = new WarehouseProduct();
@@ -653,17 +726,33 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
             addObj.setCuser(object.getCuser());
             addObj.setCompanyId(object.getCompanyId());
             this.save(addObj);
+
+            loginfo.setSourceWpId(addObj.getId());
+            loginfo.setSourceBeforeStockcount(BigDecimal.valueOf(0D));
+            loginfo.setSourceAfterStockcount(BigDecimal.valueOf(tempCount));
+
+            //库存变更日志
+            //businessType 业务类型(in:入库 out:出库: move:移库 check:库存盘点)
+            if (!"move".equals(loginfo.getBusinessType())) {
+                warehouseLoginfoService.save(loginfo);
+            }
         } else {
-            //(源)库存数量 - 变更数量 := 变更后库存数量
+            loginfo.setSourceWpId(objectDB.getId());
+
+            //变更前库存数量
+            //sourceBeforeStockcount (源)库存变更前数量(出库,移库时填写)
             double stockCountDB = 0D;
             if (objectDB.getStockCount() != null) {
                 stockCountDB = objectDB.getStockCount().doubleValue();
             }
+            loginfo.setSourceBeforeStockcount(BigDecimal.valueOf(stockCountDB));
 
+            //变更后库存数量 := (源)库存数量 + (-1 * 变更数量)
+            //sourceAfterStockcount (源)库存变更后数量(出库,移库时填写)
             double modifyCount = stockCountDB + tempCount;
-
             //四舍五入到2位小数
             BigDecimal bigDecimal = BigDecimal.valueOf(modifyCount).setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+            loginfo.setSourceAfterStockcount(bigDecimal);
 
             PageData modifyMap = new PageData();
             modifyMap.put("stockCount", bigDecimal.toString());
@@ -673,11 +762,15 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
             modifyMap.put("version", objectDB.getVersion().toString());
             try {
                 this.updateStockCount(modifyMap);
+
+                //库存变更日志
+                //businessType 业务类型(in:入库 out:出库: move:移库 check:库存盘点)
+                if (!"move".equals(loginfo.getBusinessType())) {
+                    warehouseLoginfoService.save(loginfo);
+                }
             } catch (Exception e) {
                 throw new TableVersionException(Common.SYS_STOCKCOUNT_ERRORCODE, "当前系统繁忙，请稍后操作！");
             }
-
-            //库存变更日志
         }
     }
 
@@ -689,21 +782,30 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
      * @param object
      * @param count
      */
-    private void modifyByTarget(WarehouseProduct object, BigDecimal count) throws TableVersionException,Exception {
+    private void modifyByTarget(WarehouseProduct object, BigDecimal count, WarehouseLoginfo loginfo) throws TableVersionException,Exception {
         if (object == null) {return;}
         if (count == null) {return;}
 
         //(货位批次号,货品id,库位id)查询库存表
         //非空判断 -- 接口入口已经验证
-        PageData findMap = new PageData();
-        findMap.put("code", object.getCode());
-        findMap.put("productId", object.getProductId());
-        findMap.put("warehouseId", object.getWarehouseId());
-        findMap.put("mapSize", Integer.valueOf(findMap.size()));
-        WarehouseProduct objectDB = this.findWarehouseProduct(findMap);
+
+        WarehouseProduct objectDB = null;
+        if (object.getId() != null && object.getId().trim().length() > 0) {
+            objectDB = this.findWarehouseProductById(object.getId().trim());
+        } else {
+            PageData findMap = new PageData();
+            findMap.put("code", object.getCode());
+            findMap.put("productId", object.getProductId());
+            findMap.put("warehouseId", object.getWarehouseId());
+            findMap.put("mapSize", Integer.valueOf(findMap.size()));
+            objectDB = this.findWarehouseProduct(findMap);
+        }
 
         //当前需要变更库存数量 (大于零:加库存 小于零:减库存)
         double tempCount = count.doubleValue();
+        //库存变更日志
+        //operationCount 操作数量(正数:加库存 负数:减库存)
+        loginfo.setOperationCount(BigDecimal.valueOf(tempCount));
 
         if (objectDB == null) {
             WarehouseProduct addObj = new WarehouseProduct();
@@ -714,16 +816,30 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
             addObj.setCuser(object.getCuser());
             addObj.setCompanyId(object.getCompanyId());
             this.save(addObj);
+
+            loginfo.setTargetWpId(addObj.getId());
+            loginfo.setTargetBeforeStockcount(BigDecimal.valueOf(0D));
+            loginfo.setTargetAfterStockcount(BigDecimal.valueOf(tempCount));
+
+            //库存变更日志
+            warehouseLoginfoService.save(loginfo);
         } else {
-            //(目标)库存数量 + 变更数量 := 变更后库存数量
+            loginfo.setTargetWpId(objectDB.getId());
+
+            //变更前库存数量
+            //targetBeforeStockcount (目标)库存变更前数量(入库,盘点,移库,填写)
             double stockCountDB = 0D;
             if (objectDB.getStockCount() != null) {
                 stockCountDB = objectDB.getStockCount().doubleValue();
             }
+            loginfo.setTargetBeforeStockcount(BigDecimal.valueOf(stockCountDB));
 
+            //变更后库存数量 := (目标)库存数量 + 变更数量
+            //targetAfterStockcount (目标)库存变更后数量(入库,盘点,移库,填写)
             double modifyCount = stockCountDB + tempCount;
             //四舍五入到2位小数
             BigDecimal bigDecimal = BigDecimal.valueOf(modifyCount).setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+            loginfo.setTargetAfterStockcount(bigDecimal);
 
             PageData modifyMap = new PageData();
             modifyMap.put("stockCount", bigDecimal.toString());
@@ -734,12 +850,13 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
 
             try {
                 this.updateStockCount(modifyMap);
+
+                //库存变更日志
+                warehouseLoginfoService.save(loginfo);
             } catch (Exception e) {
                 e.printStackTrace();
                 throw new TableVersionException(Common.SYS_STOCKCOUNT_ERRORCODE, "当前系统繁忙，请稍后操作！");
             }
-
-            //库存变更日志
         }
     }
 

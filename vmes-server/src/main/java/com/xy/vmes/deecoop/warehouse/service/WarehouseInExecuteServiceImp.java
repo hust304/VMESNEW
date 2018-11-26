@@ -37,7 +37,6 @@ public class WarehouseInExecuteServiceImp implements WarehouseInExecuteService {
     */
     @Override
     public void save(WarehouseInExecute warehouseInExecute) throws Exception{
-        warehouseInExecute.setId(Conv.createUuid());
         warehouseInExecute.setCdate(new Date());
         warehouseInExecute.setUdate(new Date());
         warehouseInExecuteMapper.insert(warehouseInExecute);

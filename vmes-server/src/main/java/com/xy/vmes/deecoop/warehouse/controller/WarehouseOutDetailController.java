@@ -276,7 +276,21 @@ public class WarehouseOutDetailController {
                 try {
                     //出库操作
                     WarehouseProduct outObject = warehouseProductService.selectById(warehouseOutExecute.getWarehouseProductId());
-                    String msgStr = warehouseProductService.outStockCount(outObject, warehouseOutExecute.getCount().negate(), currentUserId, currentCompanyId);
+
+
+                    //库存变更日志
+                    WarehouseLoginfo loginfo = new WarehouseLoginfo();
+                    loginfo.setCompanyId(currentCompanyId);
+                    loginfo.setCuser(currentUserId);
+                    //operation 操作类型(add:添加 modify:修改 delete:删除 reback:退单)
+                    loginfo.setOperation("reback");
+
+//                    //beforeCount 操作变更前数量(业务相关)
+//                    loginfo.setBeforeCount(execute.getCount());
+//                    //afterCount 操作变更后数量(业务相关)
+//                    loginfo.setAfterCount(BigDecimal.valueOf(execute.getCount().doubleValue() + count));
+
+                    String msgStr = warehouseProductService.outStockCount(outObject, warehouseOutExecute.getCount().negate(), loginfo);
                     if (msgStr != null && msgStr.trim().length() > 0) {
                         model.putCode(Integer.valueOf(1));
                         model.putMsg(msgStr);

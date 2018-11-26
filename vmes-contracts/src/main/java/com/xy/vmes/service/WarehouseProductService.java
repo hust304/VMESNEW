@@ -1,6 +1,7 @@
 package com.xy.vmes.service;
 
 import com.xy.vmes.entity.Product;
+import com.xy.vmes.entity.WarehouseLoginfo;
 import com.xy.vmes.exception.TableVersionException;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.entity.WarehouseProduct;
@@ -118,28 +119,42 @@ public interface WarehouseProductService {
      * 入库(变更库存数量)
      * @param object  入库库存信息
      * @param count   入库数量(大于零或小于零)--小于零)反向操作(撤销入库)
-     * @param cuser
-     * @param companyId
+     * @param loginfo
      */
-    String inStockCount(WarehouseProduct object, BigDecimal count, String cuser, String companyId) throws TableVersionException,Exception;
+    String inStockCount(WarehouseProduct object,
+                        BigDecimal count,
+                        WarehouseLoginfo loginfo) throws TableVersionException,Exception;
     /**
      * 出库(变更库存数量)
      * @param object  出库库存信息
      * @param count   出库数量(大于零或小于零)--小于零)反向操作(撤销出库)
-     * @param cuser
-     * @param companyId
+     * @param loginfo
      */
-    String outStockCount(WarehouseProduct object, BigDecimal count, String cuser, String companyId) throws TableVersionException,Exception;
+    String outStockCount(WarehouseProduct object,
+                         BigDecimal count,
+                         WarehouseLoginfo loginfo) throws TableVersionException,Exception;
+
+    /**
+     * 盘点(变更库存数量)
+     * @param object  盘点库存信息
+     * @param count   盘点数量(大于零或小于零)--小于零)反向操作(撤销盘点)
+     * @param loginfo
+     */
+    String checkStockCount(WarehouseProduct object,
+                           BigDecimal count,
+                           WarehouseLoginfo loginfo) throws TableVersionException,Exception;
 
     /**
      * 移库(变更库存数量)
      * @param source  变更源对象
      * @param target  变更目标对象
      * @param count   变更数量(大于零或小于零)
-     * @param cuser
-     * @param companyId
+     * @param loginfo
      */
-    String moveStockCount(WarehouseProduct source, WarehouseProduct target, BigDecimal count, String cuser, String companyId) throws TableVersionException,Exception;
+    String moveStockCount(WarehouseProduct source,
+                          WarehouseProduct target,
+                          BigDecimal count,
+                          WarehouseLoginfo loginfo) throws TableVersionException,Exception;
 
     /**
      * 变更库存数量唯一接口
@@ -187,7 +202,7 @@ public interface WarehouseProductService {
      * @param count   (不可为空)变更数量
      * @return
      */
-    String modifyStockCount(WarehouseProduct source, WarehouseProduct target, String type, BigDecimal count) throws Exception;
+    String modifyStockCount(WarehouseProduct source, WarehouseProduct target, String type, BigDecimal count, WarehouseLoginfo loginfo) throws Exception;
 
 
     List<Map> getWarehouseProductView(PageData pd,Pagination pg) throws Exception;

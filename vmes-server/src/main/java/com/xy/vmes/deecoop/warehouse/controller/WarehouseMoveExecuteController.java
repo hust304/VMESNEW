@@ -279,7 +279,23 @@ public class WarehouseMoveExecuteController {
 
                                 //移库执行
                                 try {
-                                    String msgStr = warehouseProductService.moveStockCount(outObject,inObject, count, currentUserId, currentCompanyId);
+                                    //库存变更日志
+                                    WarehouseLoginfo loginfo = new WarehouseLoginfo();
+                                    loginfo.setParentId("");
+                                    loginfo.setDetailId("");
+                                    loginfo.setExecuteId("");
+                                    loginfo.setCompanyId(currentCompanyId);
+                                    loginfo.setCuser(currentUserId);
+                                    //operation 操作类型(add:添加 modify:修改 delete:删除 reback:退单)
+                                    loginfo.setOperation("add");
+
+//                                    //beforeCount 操作变更前数量(业务相关)
+//                                    loginfo.setBeforeCount(execute.getCount());
+//                                    //afterCount 操作变更后数量(业务相关)
+//                                    loginfo.setAfterCount(BigDecimal.valueOf(execute.getCount().doubleValue() + count));
+
+
+                                    String msgStr = warehouseProductService.moveStockCount(outObject,inObject, count, loginfo);
                                     if (msgStr != null && msgStr.trim().length() > 0) {
                                         model.putCode(Integer.valueOf(1));
                                         model.putMsg(msgStr);
@@ -380,7 +396,24 @@ public class WarehouseMoveExecuteController {
             //还原移库操作
             WarehouseProduct outObject = warehouseProductService.selectById(execute.getWarehouseProductId());
             WarehouseProduct inObject = warehouseProductService.selectById(execute.getNewWarehouseProductId());
-            String msgStr = warehouseProductService.moveStockCount(outObject,inObject,execute.getCount().negate(), currentUserId, currentCompanyId);
+
+            //库存变更日志
+            WarehouseLoginfo loginfo = new WarehouseLoginfo();
+            loginfo.setParentId("");
+            loginfo.setDetailId("");
+            loginfo.setExecuteId("");
+            loginfo.setCompanyId(currentCompanyId);
+            loginfo.setCuser(currentUserId);
+            //operation 操作类型(add:添加 modify:修改 delete:删除 reback:退单)
+            loginfo.setOperation("delete");
+
+//                                    //beforeCount 操作变更前数量(业务相关)
+//                                    loginfo.setBeforeCount(execute.getCount());
+//                                    //afterCount 操作变更后数量(业务相关)
+//                                    loginfo.setAfterCount(BigDecimal.valueOf(execute.getCount().doubleValue() + count));
+
+
+            String msgStr = warehouseProductService.moveStockCount(outObject,inObject,execute.getCount().negate(), loginfo);
 
 //            Product product = productService.selectById(outObject.getProductId());
 //            productService.updateStockCount(product,product.getStockCount().add(execute.getCount()),currentUserId);
@@ -476,7 +509,22 @@ public class WarehouseMoveExecuteController {
                 //修改移库操作
                 WarehouseProduct outObject = warehouseProductService.selectById(execute.getWarehouseProductId());
                 WarehouseProduct inObject = warehouseProductService.selectById(execute.getNewWarehouseProductId());
-                String msgStr = warehouseProductService.moveStockCount(outObject,inObject,after.subtract(before), currentUserId, currentCompanyId);
+
+                //库存变更日志
+                WarehouseLoginfo loginfo = new WarehouseLoginfo();
+                loginfo.setParentId("");
+                loginfo.setDetailId("");
+                loginfo.setExecuteId("");
+                loginfo.setCompanyId(currentCompanyId);
+                loginfo.setCuser(currentUserId);
+                //operation 操作类型(add:添加 modify:修改 delete:删除 reback:退单)
+                loginfo.setOperation("modify");
+
+//                                    //beforeCount 操作变更前数量(业务相关)
+//                                    loginfo.setBeforeCount(execute.getCount());
+//                                    //afterCount 操作变更后数量(业务相关)
+//                                    loginfo.setAfterCount(BigDecimal.valueOf(execute.getCount().doubleValue() + count));
+                String msgStr = warehouseProductService.moveStockCount(outObject,inObject,after.subtract(before), loginfo);
 
 //                Product product = productService.selectById(outObject.getProductId());
 //                productService.updateStockCount(product,product.getStockCount().subtract(after.subtract(before)),currentUserId);

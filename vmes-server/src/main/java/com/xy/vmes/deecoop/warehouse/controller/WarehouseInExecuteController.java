@@ -6,6 +6,7 @@ import com.xy.vmes.common.util.Common;
 import com.xy.vmes.entity.*;
 import com.xy.vmes.exception.TableVersionException;
 import com.xy.vmes.service.*;
+import com.yvan.Conv;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.YvanUtil;
@@ -198,11 +199,29 @@ public class WarehouseInExecuteController {
                     inObject.setProductId(productId);
                     //(实际)货位ID
                     inObject.setWarehouseId(warehouseId);
-                    String msgStr = warehouseProductService.inStockCount(inObject, count_Big, cuser, companyId);
+
+                    //库存变更日志
+                    String executeId = Conv.createUuid();
+                    WarehouseLoginfo loginfo = new WarehouseLoginfo();
+                    loginfo.setParentId(parentId);
+                    loginfo.setDetailId(detailId);
+                    loginfo.setExecuteId(executeId);
+                    loginfo.setCompanyId(companyId);
+                    loginfo.setCuser(cuser);
+                    //operation 操作类型(add:添加 modify:修改 delete:删除:)
+                    loginfo.setOperation("add");
+
+                    //beforeCount 操作变更前数量(业务相关)
+                    loginfo.setBeforeCount(BigDecimal.valueOf(0D));
+                    //afterCount 操作变更后数量(业务相关)
+                    loginfo.setAfterCount(count_Big);
+
+                    String msgStr = warehouseProductService.inStockCount(inObject, count_Big, loginfo);
                     if (msgStr != null && msgStr.trim().length() > 0) {
                         msgBuf.append("第 " + (i+1) + " 条: " + "入库操作失败:" + msgStr);
                     } else {
                         WarehouseInExecute execute = new WarehouseInExecute();
+                        execute.setExecutorId(executeId);
                         execute.setDetailId(detailId);
                         execute.setWarehouseId(warehouseId);
                         execute.setExecutorId(cuser);
@@ -312,8 +331,25 @@ public class WarehouseInExecuteController {
 
                 //入库数量(大于零或小于零)--小于零)反向操作(撤销入库)
                 double count = -1 * execute.getCount().doubleValue();
+
+                //库存变更日志
+                WarehouseLoginfo loginfo = new WarehouseLoginfo();
+                loginfo.setParentId(detail.getParentId());
+                loginfo.setDetailId(detail.getId());
+                loginfo.setExecuteId(execute.getId());
+
+                loginfo.setCompanyId(companyId);
+                loginfo.setCuser(cuser);
+                //operation 操作类型(add:添加 modify:修改 delete:删除 reback:退单)
+                loginfo.setOperation("reback");
+
+                //beforeCount 操作变更前数量(业务相关)
+                loginfo.setBeforeCount(execute.getCount());
+                //afterCount 操作变更后数量(业务相关)
+                loginfo.setAfterCount(BigDecimal.valueOf(execute.getCount().doubleValue() + count));
+
                 //(修改库存数量)退回已经入库数量
-                String msgStr = warehouseProductService.inStockCount(inObject, BigDecimal.valueOf(count), cuser, companyId);
+                String msgStr = warehouseProductService.inStockCount(inObject, BigDecimal.valueOf(count), loginfo);
                 if (msgStr != null && msgStr.trim().length() > 0) {
                     msgBuf.append("第 " + (i+1) + " 条: " + "入库操作失败:" + msgStr);
                 }
@@ -437,7 +473,7 @@ public class WarehouseInExecuteController {
             return model;
         } else {
             try {
-                BigDecimal afterCount_big = new BigDecimal(afterCount);
+                new BigDecimal(afterCount);
             } catch (NumberFormatException e) {
                 e.printStackTrace();
                 model.putCode(Integer.valueOf(1));
@@ -460,7 +496,24 @@ public class WarehouseInExecuteController {
             warehouseProduct.setWarehouseId(execute.getWarehouseId());
 
             BigDecimal count = BigDecimal.valueOf(after.doubleValue() - before.doubleValue());
-            String msgStr = warehouseProductService.inStockCount(warehouseProduct, count, cuser, companyId);
+
+            //库存变更日志
+            WarehouseLoginfo loginfo = new WarehouseLoginfo();
+            loginfo.setParentId(detail.getParentId());
+            loginfo.setDetailId(detail.getId());
+            loginfo.setExecuteId(execute.getId());
+
+            loginfo.setCompanyId(companyId);
+            loginfo.setCuser(cuser);
+            //operation 操作类型(add:添加 modify:修改 delete:删除 reback:退单)
+            loginfo.setOperation("modify");
+
+            //beforeCount 操作变更前数量(业务相关)
+            loginfo.setBeforeCount(before);
+            //afterCount 操作变更后数量(业务相关)
+            loginfo.setAfterCount(after);
+
+            String msgStr = warehouseProductService.inStockCount(warehouseProduct, count, loginfo);
             if (msgStr != null && msgStr.trim().length() > 0) {
                 model.putCode(Integer.valueOf(1));
                 model.putMsg(msgStr);
@@ -537,7 +590,24 @@ public class WarehouseInExecuteController {
             warehouseProduct.setWarehouseId(execute.getWarehouseId());
 
             BigDecimal count = BigDecimal.valueOf(-1 * executeCountount.doubleValue());
-            String msgStr = warehouseProductService.inStockCount(warehouseProduct, count, cuser, companyId);
+
+            //库存变更日志
+            WarehouseLoginfo loginfo = new WarehouseLoginfo();
+            loginfo.setParentId(detail.getParentId());
+            loginfo.setDetailId(detail.getId());
+            loginfo.setExecuteId(execute.getId());
+
+            loginfo.setCompanyId(companyId);
+            loginfo.setCuser(cuser);
+            //operation 操作类型(add:添加 modify:修改 delete:删除 reback:退单)
+            loginfo.setOperation("delete");
+
+            //beforeCount 操作变更前数量(业务相关)
+            loginfo.setBeforeCount(executeCountount);
+            //afterCount 操作变更后数量(业务相关)
+            loginfo.setAfterCount(BigDecimal.valueOf(executeCountount.doubleValue() + count.doubleValue()));
+
+            String msgStr = warehouseProductService.inStockCount(warehouseProduct, count, loginfo);
             if (msgStr != null && msgStr.trim().length() > 0) {
                 model.putCode(Integer.valueOf(1));
                 model.putMsg(msgStr);
