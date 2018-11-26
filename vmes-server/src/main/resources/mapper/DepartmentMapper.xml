@@ -357,6 +357,9 @@
             <if test="name != null and name != ''"><!-- 关键词检索 -->
                 and a.name LIKE CONCAT(CONCAT('%', #{name}),'%')
             </if>
+            <if test="isdisable!= null and isdisable != ''"><!-- 关键词检索 -->
+                and a.isdisable = #{isdisable}
+            </if>
             <if test="pid!= null and pid != '' and layer == null"><!-- 关键词检索 -->
                 and a.pid = #{pid}
             </if>
