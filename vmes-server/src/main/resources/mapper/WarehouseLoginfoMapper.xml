@@ -40,23 +40,25 @@
     <select id="dataList" parameterType="com.yvan.PageData" resultType="com.xy.vmes.entity.WarehouseLoginfo">
         select
             id id,
-            company_id companyId,
+            parent_id parentId,
+            detail_id detailId,
             execute_id executeId,
+            company_id companyId,
+
             source_wp_id sourceWpId,
             target_wp_id targetWpId,
-
             count count,
             before_count beforeCount,
             after_count afterCount,
+
             source_before_stockcount sourceBeforeStockcount,
             source_after_stockcount sourceAfterStockcount,
-
             target_before_stockcount targetBeforeStockcount,
             target_after_stockcount targetAfterStockcount,
             operation_count operationCount,
+
             business_type businessType,
             operation operation,
-
             cuser cuser,
             cdate cdate,
             remark remark
@@ -88,6 +90,9 @@
                         </choose>
                     </if>
 
+                    <if test="parentId != null and parentId != ''" >
+                        and parent_id = #{parentId}
+                    </if>
                     <if test="executeId != null and executeId != ''" >
                         and execute_id = #{executeId}
                     </if>
@@ -119,28 +124,33 @@
     <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
             id id,
+            parent_id parentId,
+            detail_id detailId,
+            execute_id executeId,
             company_id companyId,
-            execute_id executeId,,
+
             source_wp_id sourceWpId,
             target_wp_id targetWpId,
-
             count count,
             before_count beforeCount,
             after_count afterCount,
+
             source_before_stockcount sourceBeforeStockcount,
             source_after_stockcount sourceAfterStockcount,
-
             target_before_stockcount targetBeforeStockcount,
             target_after_stockcount targetAfterStockcount,
             operation_count operationCount,
+
             business_type businessType,
             operation operation,
-
             cuser cuser,
             cdate cdate,
             remark remark
         from vmes_warehouse_loginfo
         <where>
+            <if test="parentId != null and parentId != ''" >
+                and parent_id = #{parentId}
+            </if>
             <if test="companyId != null and companyId != ''" >
                 and company_id = #{companyId}
             </if>

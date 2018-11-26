@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 /** 
  * 说明：vmes_warehouse_loginfo:库存变更日志表 实体类
  * @author 陈刚 自动生成
- * @date 2018-11-23
+ * @date 2018-11-26
  */
 @TableName("vmes_warehouse_loginfo")
 public class WarehouseLoginfo implements Serializable {
@@ -19,19 +19,25 @@ public class WarehouseLoginfo implements Serializable {
 	//
 	@TableField("id")
 	private String id;
+	//业务ID
+	@TableField("parent_id")
+	private String parentId;
+	//业务明细ID
+	@TableField("detail_id")
+	private String detailId;
+	//执行ID
+	@TableField("execute_id")
+	private String executeId;
 	//企业ID
 	@TableField("company_id")
 	private String companyId;
-	//执行ID(出入库执行ID 库存盘点执行ID)
-	@TableField("execute_id")
-	private String executeId;
+
 	//源库存id-(出库,移库时填写)
 	@TableField("source_wp_id")
 	private String sourceWpId;
-	//目标库存id-(入库,盘点,移库,填写)
+	//目标库存id-(入库,盘点,填写)
 	@TableField("target_wp_id")
 	private String targetWpId;
-
 	//当前操作数量
 	@TableField("count")
 	private BigDecimal count;
@@ -41,13 +47,13 @@ public class WarehouseLoginfo implements Serializable {
 	//操作变更后数量(业务相关)
 	@TableField("after_count")
 	private BigDecimal afterCount;
+
 	//(源)库存变更前数量(出库,移库时填写)
 	@TableField("source_before_stockcount")
 	private BigDecimal sourceBeforeStockcount;
 	//(源)库存变更后数量(出库,移库时填写)
 	@TableField("source_after_stockcount")
 	private BigDecimal sourceAfterStockcount;
-
 	//(目标)库存变更前数量(入库,盘点,移库,填写)
 	@TableField("target_before_stockcount")
 	private BigDecimal targetBeforeStockcount;
@@ -58,12 +64,12 @@ public class WarehouseLoginfo implements Serializable {
 	@TableField("operation_count")
 	private BigDecimal operationCount;
 	//业务类型(in:入库 out:出库: move:移库 check:库存盘点)
+
 	@TableField("business_type")
 	private String businessType;
-	//操作类型(add:添加 modify:修改 delete:删除 reback:退单 checkAudit:盘点审核)
+	//操作类型(add:添加 modify:修改 delete:删除:)
 	@TableField("operation")
 	private String operation;
-
 	//创建用户id
 	@TableField("cuser")
 	private String cuser;
@@ -81,17 +87,29 @@ public class WarehouseLoginfo implements Serializable {
 	public String getId() {
 		return id;
 	}
+	public void setParentId(String parentId) {
+		this.parentId = parentId;
+	}
+	public String getParentId() {
+		return parentId;
+	}
+	public void setDetailId(String detailId) {
+		this.detailId = detailId;
+	}
+	public String getDetailId() {
+		return detailId;
+	}
+	public void setExecuteId(String executeId) {
+		this.executeId = executeId;
+	}
+	public String getExecuteId() {
+		return executeId;
+	}
 	public void setCompanyId(String companyId) {
 		this.companyId = companyId;
 	}
 	public String getCompanyId() {
 		return companyId;
-	}
-	public String getExecuteId() {
-		return executeId;
-	}
-	public void setExecuteId(String executeId) {
-		this.executeId = executeId;
 	}
 	public void setSourceWpId(String sourceWpId) {
 		this.sourceWpId = sourceWpId;
