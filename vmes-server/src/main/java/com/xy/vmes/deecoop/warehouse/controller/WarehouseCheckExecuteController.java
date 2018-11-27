@@ -246,6 +246,7 @@ public class WarehouseCheckExecuteController {
         for (WarehouseCheckDetail detail : detailList) {
             //盘点明细状态(0:待派单 1:执行中 2:审核中 3:已完成 -1:已取消)
             detail.setState("0");
+            detail.setRemark(remark);
             warehouseCheckDetailService.update(detail);
 
             //isdisable: 是否启用(0:已禁用 1:启用)

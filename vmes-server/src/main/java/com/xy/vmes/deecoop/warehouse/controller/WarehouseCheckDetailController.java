@@ -83,6 +83,13 @@ public class WarehouseCheckDetailController {
         result.put("hideTitles",titlesHideList);
         result.put("titles",titlesList);
 
+        //设置查询排序
+        pd.put("orderStr", "detail.cdate asc");
+        String orderStr = pd.getString("orderStr");
+        if (orderStr != null && orderStr.trim().length() > 0) {
+            pd.put("orderStr", orderStr);
+        }
+
         Pagination pg = HttpUtils.parsePagination(pd);
         List<Map> varMapList = new ArrayList();
         List<Map> varList = warehouseCheckDetailService.getDataListPage(pd, pg);

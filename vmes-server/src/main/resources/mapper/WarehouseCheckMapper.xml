@@ -196,8 +196,11 @@
             <if test="code != null and code != ''" >
                 and parent.code = #{code}
             </if>
-            <if test="companyId != null and companyId != ''" >
-                and parent.company_id = #{companyId}
+            <if test="currentCompanyId != null and currentCompanyId != ''" >
+                and parent.company_id = #{currentCompanyId}
+            </if>
+            <if test="state != null and state != ''" >
+                and parent.state = #{state}
             </if>
             <if test="type != null and type != ''" >
                 and parent.type = #{type}

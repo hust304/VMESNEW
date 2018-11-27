@@ -223,7 +223,7 @@
 
                 <!--入库单表-->
                 parent.code parentCode,
-
+                parent.make_id makeId,
                 <!--获取已执行数量-入库执行表-->
                 inexecute.count executeCount
             from vmes_warehouse_in_detail a
