@@ -124,18 +124,9 @@
             executor.isdisable isdisable,
 
             user.user_code executorCode,
-            user.user_name executorName,
-            detail.state,
-            CASE
-                WHEN detail.state = '0' THEN '待派单'
-                WHEN detail.state = '1' THEN '执行中'
-                WHEN detail.state = '2' THEN '已完成'
-                WHEN detail.state = '-1' THEN '已取消'
-            ELSE null
-            END stateName
+            user.user_name executorName
 
         from vmes_warehouse_in_executor executor
-            left join vmes_warehouse_in_detail detail on executor.detail_id = detail.id
             left join vmes_user user on executor.executor_id = user.id
         <where>
 

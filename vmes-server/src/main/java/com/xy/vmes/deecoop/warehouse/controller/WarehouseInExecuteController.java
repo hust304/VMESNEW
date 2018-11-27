@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
+import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -360,16 +361,20 @@ public class WarehouseInExecuteController {
                 model.putMsg(msgBuf.toString());
                 return model;
             } else {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+                String strTemp = " 退单原因:{0} 操作时间：{1} ";
+                String remarkStr = MessageFormat.format(remark, dateFormat.format(new Date()));
+
                 //B. 修改入库执行表 vmes_warehouse_in_execute
                 for (WarehouseInExecute execute : executeList) {
                     //isdisable: 是否启用(0:已禁用 1:启用)
                     execute.setIsdisable("0");
 
-                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+
                     if (execute.getRemark() == null) {
-                        execute.setRemark("退单原因:"+remark+" 操作时间："+ dateFormat.format(new Date()));
+                        execute.setRemark(remarkStr);
                     } else {
-                        execute.setRemark(execute.getRemark()+"  退单原因:"+remark+" 操作时间："+ dateFormat.format(new Date()));
+                        execute.setRemark(execute.getRemark() + remarkStr);
                     }
                     warehouseInExecuteService.update(execute);
 
@@ -394,11 +399,10 @@ public class WarehouseInExecuteController {
                         //isdisable: 是否启用(0:已禁用 1:启用)
                         executor.setIsdisable("0");
 
-                        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
                         if (executor.getRemark() == null) {
-                            executor.setRemark("退单原因:"+remark+" 操作时间："+ dateFormat.format(new Date()));
+                            executor.setRemark(remarkStr);
                         } else {
-                            executor.setRemark(executor.getRemark() + " 退单原因:"+remark+" 操作时间："+ dateFormat.format(new Date()));
+                            executor.setRemark(executor.getRemark() + remarkStr);
                         }
 
                         warehouseInExecutorService.update(executor);
@@ -417,6 +421,11 @@ public class WarehouseInExecuteController {
                     detail.setState("1");
                 }else {
                     detail.setState("0");
+                }
+                if (detail.getRemark() == null) {
+                    detail.setRemark(remarkStr);
+                } else {
+                    detail.setRemark(detail.getRemark() + remarkStr);
                 }
                 warehouseInDetailService.update(detail);
 

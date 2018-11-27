@@ -3,8 +3,11 @@ package com.xy.vmes.deecoop.warehouse.controller;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.entity.Column;
+import com.xy.vmes.entity.WarehouseInExecute;
+import com.xy.vmes.entity.WarehouseInExecutor;
 import com.xy.vmes.service.ColumnService;
 import com.xy.vmes.service.WarehouseInDetailService;
+import com.xy.vmes.service.WarehouseInExecuteService;
 import com.xy.vmes.service.WarehouseInExecutorService;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
@@ -13,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -33,6 +37,8 @@ public class WarehouseInExecutorController {
     @Autowired
     private WarehouseInExecutorService warehouseInExecutorService;
     @Autowired
+    private WarehouseInExecuteService warehouseInExecuteService;
+    @Autowired
     private ColumnService columnService;
 
     /**
@@ -46,7 +52,7 @@ public class WarehouseInExecutorController {
         Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
 
-        List<Column> columnList = columnService.findColumnList("WarehouseInExecutor");
+        List<Column> columnList = columnService.findColumnList("warehouseInExecutor");
         if (columnList == null || columnList.size() == 0) {
             model.putCode("1");
             model.putMsg("数据库没有生成TabCol，请联系管理员！");
@@ -213,5 +219,66 @@ public class WarehouseInExecutorController {
         }
 
         return secondMapList;
+    }
+
+    /**
+     * 修改入库明细执行人
+     * @author 陈刚
+     * @date 2018-11-01
+     */
+    @PostMapping("/warehouseInExecutor/updateExecutor")
+    @Transactional
+    public ResultModel updateExecutor() throws Exception {
+        logger.info("################warehouseInExecutor/updateExecutor 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        ResultModel model = new ResultModel();
+
+        PageData pd = HttpUtils.parsePageData();
+        String cuser = pd.getString("cuser");
+        String detailId = pd.getString("detailId");
+        if (detailId == null || detailId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("入库单明细id为空或空字符串！");
+            return model;
+        }
+
+        String executorIds = pd.getString("executorIds");
+        if (executorIds == null || executorIds.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("执行人id为空或空字符串！");
+            return model;
+        }
+
+        PageData findMap = new PageData();
+        findMap.put("detailId", detailId);
+        //是否启用(0:已禁用 1:启用)
+        findMap.put("isdisable", "1");
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+        List<WarehouseInExecute> executeLiset = warehouseInExecuteService.findWarehouseInExecuteList(findMap);
+        if(executeLiset != null && executeLiset.size() > 0) {
+            model.putCode("1");
+            model.putMsg("该入库单执行人已开始执行，不可修改执行人，请联系当前执行人与其沟通后撤回单据！");
+            return model;
+        }
+
+        List<WarehouseInExecutor> executorLiset = warehouseInExecutorService.findWarehouseInExecutorList(findMap);
+        for (WarehouseInExecutor executor : executorLiset) {
+            executor.setIsdisable("0");
+            executor.setRemark("执行人变更");
+            warehouseInExecutorService.update(executor);
+        }
+
+        String[] executorIdArr = executorIds.split(",");
+        for (String executorId : executorIdArr) {
+            WarehouseInExecutor executor = new WarehouseInExecutor();
+            executor.setCuser(cuser);
+            executor.setDetailId(detailId);
+            executor.setExecutorId(executorId);
+            warehouseInExecutorService.save(executor);
+        }
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################warehouseInExecutor/updateExecutor 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
     }
 }
