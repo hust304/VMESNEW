@@ -425,7 +425,7 @@ public class ProductController {
         productService.save(product);
 
         //3. 添加产品属性表(vmes_product_property)
-        String dataListJsonStr = pageData.getString("prodProperty");
+        String dataListJsonStr = pageData.getString("prodPropertyJsonStr");
         //测试代码-真实环境无此代码
         //dataListJsonStr = "[{\"name\":\"属性名称_1\",\"value\":\"属性值_1\",\"remark\":\"备注_1\"},{\"name\":\"属性名称_2\",\"value\":\"属性值_2\",\"remark\":\"备注_2\"}]";
 
