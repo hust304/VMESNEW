@@ -137,17 +137,17 @@
             (replace(uuid(), '-', ''),'WarehouseOutExecute','name','货位名称',1, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'WarehouseOutExecute','code','批次号',2, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'WarehouseOutExecute','stockCount','库存数量',3, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseOutExecute','actualCount','实际出货数量',4, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'WarehouseOutExecute','actualCount','实际出库数量',4, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'WarehouseOutExecute','warehouseId','仓库货位ID',5, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'WarehouseOutExecute','warehouseProductId','(实际)货位ID',6, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'WarehouseOutExecute','productId','产品ID',7, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'WarehouseOutExecute','executorName','执行人',8, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'WarehouseOutExecute','startDate','执行开始时间',9, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseOutExecute','endDate','执行完成时间',9, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseOutExecute','isdisable','状态',10, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseOutExecute','remark','备注',11, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseOutExecute','companyId','公司ID',12, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseOutExecute','qrcode','二维码',12, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'WarehouseOutExecute','endDate','执行完成时间',10, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'WarehouseOutExecute','isdisable','状态',11, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'WarehouseOutExecute','remark','备注',12, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'WarehouseOutExecute','companyId','公司ID',13, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'WarehouseOutExecute','qrcode','二维码',14, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'WarehouseOutExecute','id','id',0, '1','0','1','0',now(), 'admin')
     </insert>
 

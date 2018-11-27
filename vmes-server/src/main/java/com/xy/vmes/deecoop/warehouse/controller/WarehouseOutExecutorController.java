@@ -222,6 +222,7 @@ public class WarehouseOutExecutorController {
         String detailId = pd.getString("detailId");
         String executorIds = pd.getString("executorIds");
         pd.put("queryStr","detail_id ='"+detailId+"' and isdisable = '1' ");
+        pd.put("mapSize", Integer.valueOf(pd.size()));
         List<WarehouseOutExecute> warehouseOutExecuteList = warehouseOutExecuteService.dataList(pd);
         if(warehouseOutExecuteList!=null&&warehouseOutExecuteList.size()>0){
             model.putCode("1");

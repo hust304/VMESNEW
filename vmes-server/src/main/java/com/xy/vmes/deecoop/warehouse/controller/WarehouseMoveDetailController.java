@@ -404,6 +404,7 @@ public class WarehouseMoveDetailController {
 
         PageData pd = new PageData();
         pd.put("queryStr","detail_id ='"+detail.getId()+"' and isdisable = '1' ");
+        pd.put("mapSize", Integer.valueOf(pd.size()));
         List<WarehouseMoveExecute> warehouseMoveExecuteList = warehouseMoveExecuteService.dataList(pd);
         if(warehouseMoveExecuteList!=null&&warehouseMoveExecuteList.size()>0){
             model.putCode("1");

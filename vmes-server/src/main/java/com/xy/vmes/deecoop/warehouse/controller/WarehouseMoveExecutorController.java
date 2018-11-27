@@ -229,6 +229,7 @@ public class WarehouseMoveExecutorController {
         String detailId = pd.getString("detailId");
         String executorIds = pd.getString("executorIds");
         pd.put("queryStr","detail_id ='"+detailId+"' and isdisable = '1' ");
+        pd.put("mapSize", Integer.valueOf(pd.size()));
         List<WarehouseMoveExecute> warehouseMoveExecuteList = warehouseMoveExecuteService.dataList(pd);
         if(warehouseMoveExecuteList!=null&&warehouseMoveExecuteList.size()>0){
             model.putCode("1");
