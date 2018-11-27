@@ -386,7 +386,7 @@ public class WarehouseOutController {
 
         //出库单状态:state:状态(0:未完成 1:已完成 -1:已取消)
         //验证出库单是否允许取消
-        if ("-1".equals(warehouseOut.getState())) {
+        if (!"-1".equals(warehouseOut.getState())) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("当前出库单不是取消状态，不能恢复！");
             return model;
