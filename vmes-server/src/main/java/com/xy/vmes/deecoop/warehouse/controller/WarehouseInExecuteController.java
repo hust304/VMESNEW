@@ -283,7 +283,7 @@ public class WarehouseInExecuteController {
         String cuser = pageData.getString("cuser");
         String companyId = pageData.getString("currentCompanyId");
 
-        String detailId = pageData.getString("detailId");
+        String detailId = pageData.getString("id");
         if (detailId == null || detailId.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("入库单明细id为空或空字符串！");
@@ -433,7 +433,7 @@ public class WarehouseInExecuteController {
                 WarehouseIn parent = new WarehouseIn();
                 parent.setId(detail.getParentId());
                 //入库单明细状态(0:待派单 1:执行中 2:已完成 -1:已取消) --忽视明细状态(-1:已取消)
-                warehouseInDetailService.updateParentStateByDetailList(parent, null, "-1");
+                warehouseInDetailService.updateParentStateByDetailList(parent, null, null);
             }
         } catch (TableVersionException tabExc) {
             //库存变更 version 锁

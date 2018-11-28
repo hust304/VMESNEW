@@ -247,7 +247,7 @@ public class WarehouseInDetailController {
         //2.返写入库单状态
         //获取入库单状态-根据入库单明细状态 -- 忽视状态(-1:已取消)
         if (warehouseIn != null) {
-            warehouseInDetailService.updateParentStateByDetailList(warehouseIn, null, "-1");
+            warehouseInDetailService.updateParentStateByDetailList(warehouseIn, null, null);
         }
 
         Long endTime = System.currentTimeMillis();
@@ -293,7 +293,7 @@ public class WarehouseInDetailController {
         WarehouseIn warehouseIn = warehouseInService.findWarehouseInById(detail.getParentId());
         //获取入库单状态-根据入库单明细状态 -- 忽视状态(-1:已取消)
         if (warehouseIn != null) {
-            warehouseInDetailService.updateParentStateByDetailList(warehouseIn, null, "-1");
+            warehouseInDetailService.updateParentStateByDetailList(warehouseIn, null, null);
         }
 
         Long endTime = System.currentTimeMillis();
@@ -347,7 +347,7 @@ public class WarehouseInDetailController {
         //2.返写入库单状态
         //获取入库单状态-根据入库单明细状态 -- 忽视状态(-1:已取消)
         if (warehouseIn != null) {
-            warehouseInDetailService.updateParentStateByDetailList(warehouseIn, null, "-1");
+            warehouseInDetailService.updateParentStateByDetailList(warehouseIn, null, null);
         }
 
         Long endTime = System.currentTimeMillis();

@@ -261,7 +261,7 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
         //3. 反写入库单(vmes_warehouse_in)状态
         WarehouseIn warehouseIn = new WarehouseIn();
         warehouseIn.setId(parentId);
-        this.updateParentStateByDetailList(warehouseIn, detailList, "-1");
+        this.updateParentStateByDetailList(warehouseIn, detailList, null);
     }
 
     /**

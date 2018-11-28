@@ -175,7 +175,7 @@
             <!--货品表-->
             productCode,productName,productSpec,productUnit,productUnitName,productGenre,productGenreName,productType,
             <!--入库单表-->
-            parentCode,
+            parentCode,makeId,
             <!--获取已执行数量-入库执行表-->
             round(sum(ifnull(executeCount,0)),2) executeCount,
             <!--剩余数量-->
