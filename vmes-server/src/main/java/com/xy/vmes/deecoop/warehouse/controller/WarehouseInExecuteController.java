@@ -203,6 +203,7 @@ public class WarehouseInExecuteController {
 
                     //库存变更日志
                     String executeId = Conv.createUuid();
+
                     WarehouseLoginfo loginfo = new WarehouseLoginfo();
                     loginfo.setParentId(parentId);
                     loginfo.setDetailId(detailId);
@@ -222,6 +223,7 @@ public class WarehouseInExecuteController {
                         msgBuf.append("第 " + (i+1) + " 条: " + "入库操作失败:" + msgStr);
                     } else {
                         WarehouseInExecute execute = new WarehouseInExecute();
+                        execute.setId(executeId);
                         execute.setExecutorId(executeId);
                         execute.setDetailId(detailId);
                         execute.setWarehouseId(warehouseId);
