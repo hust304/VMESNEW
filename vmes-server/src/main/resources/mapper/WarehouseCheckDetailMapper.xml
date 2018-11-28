@@ -167,7 +167,8 @@
             detail.warehouse_id warehouseId,
             detail.product_id productId,
             detail.code code,
-            round(ifnull(detail.stock_count, 0), 2) stockCount,
+            round(ifnull(wp.stock_count, 0), 2) stockCount,
+
             detail.state state,
             CASE
                 WHEN detail.state = '0' THEN '待派单'
@@ -209,6 +210,7 @@
             left join vmes_warehouse_check_executor executor on detail.id = executor.detail_id and executor.isdisable = '1'
             left join vmes_user user on executor.executor_id = user.id
             left join vmes_warehouse_check_execute checkExecute on detail.id = checkExecute.detail_id and checkExecute.isdisable = '1'
+            left join vmes_warehouse_product wp on detail.warehouse_product_id = wp.id
         <where>
             <if test="parentId != null and parentId != ''" >
                 and detail.parent_id = #{parentId}
