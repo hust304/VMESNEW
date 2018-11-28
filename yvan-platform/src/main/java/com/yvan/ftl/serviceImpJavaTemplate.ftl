@@ -15,6 +15,7 @@ import com.yvan.Conv;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.ArrayList;
 
 /**
 * 说明：${TITLE} 实现类
@@ -184,6 +185,28 @@ public class ${objectName}ServiceImp implements ${objectName}Service {
     }
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+    /**
+    *
+    * @param pageData    查询参数对象<HashMap>
+    * @param isQueryAll  是否查询全部
+    *   true: 无查询条件返回表全部结果集
+    *   false: (false or is null)无查询条件-查询结果集返回空或
+    *
+    * @return
+    * @throws Exception
+    */
+    public List<${objectName}> findDataList(PageData pageData, Boolean isQueryAll) throws Exception {
+        int pageDataSize = 0;
+        if (pageData != null && pageData.size() > 0) {
+            pageDataSize = pageData.size();
+        }
+
+        if ((isQueryAll == null || true != isQueryAll.booleanValue()) && pageDataSize == 0) {
+            return new ArrayList<${objectName}>();
+        }
+
+        return this.dataList(pageData);
+    }
 }
 
 

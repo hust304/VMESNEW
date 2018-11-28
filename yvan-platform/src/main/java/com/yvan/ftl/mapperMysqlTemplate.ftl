@@ -147,41 +147,28 @@
         <include refid="Field"></include>
         from
         <include refid="tableName"></include>
-        <choose>
-            <!--
-                mapSize (0 or is null) 无查询参数-业务层传入
-                isQueryAll 是否查询全部
-                fasle: (false or is null) 无查询条件-查询结果集返回空或list.size()==0
-                true : 无查询条件-返回全部业务表数据
+        <where>
+            <!--isSelfExist 是否考虑自己在业务表中是否存在
+                false: (false or is null) 无需考虑自己在业务表中是否存在
+                true : 需要考虑自己在业务表中是否存在
             -->
-            <when test="(mapSize == null || mapSize == 0) and 'true' != isQueryAll ">
-                where 1=2
-            </when>
-            <otherwise>
-                <where>
-                    <!--isSelfExist 是否考虑自己在业务表中是否存在
-                        false: (false or is null) 无需考虑自己在业务表中是否存在
-                        true : 需要考虑自己在业务表中是否存在
-                    -->
-                    <if test="id != null and id != ''" >
-                        <choose>
-                            <when test="'true' == isSelfExist">
-                                <![CDATA[ and id <> ${r"#{"}id${r"}"} ]]>
-                            </when>
-                            <otherwise>
-                                and id = ${r"#{"}id${r"}"}
-                            </otherwise>
-                        </choose>
-                    </if>
+            <if test="id != null and id != ''" >
+                <choose>
+                    <when test="'true' == isSelfExist">
+                        <![CDATA[ and id <> ${r"#{"}id${r"}"} ]]>
+                    </when>
+                    <otherwise>
+                        and id = ${r"#{"}id${r"}"}
+                    </otherwise>
+                </choose>
+            </if>
 
 
-                    <!--queryStr 自定义sql查询语句-->
-                    <if test="queryStr != null and queryStr != ''" >
-                        and ${r"${"}queryStr${r"}"}
-                    </if>
-                </where>
-            </otherwise>
-        </choose>
+            <!--queryStr 自定义sql查询语句-->
+            <if test="queryStr != null and queryStr != ''" >
+                and ${r"${"}queryStr${r"}"}
+            </if>
+        </where>
         <if test="orderStr != null and orderStr != ''" >
             order by ${r"${"}orderStr${r"}"}
         </if>
