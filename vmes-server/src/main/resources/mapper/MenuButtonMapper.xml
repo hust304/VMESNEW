@@ -291,6 +291,9 @@
             </if>
 
         </where>
+        <if test="orderStr != null and orderStr != ''" >
+            order by ${orderStr}
+        </if>
     </select>
 
     <!-- 自动创建，可以修改-->

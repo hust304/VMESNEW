@@ -237,15 +237,15 @@ public class MenuButtonController {
 
         //2. (菜单)按钮名称-按钮属性值-不可重复
         StringBuffer msgBuf = new StringBuffer();
-        if (menuButtonService.isExistByName(buttonObj.getMenuId(), null, buttonObj.getName())) {
-            String msgTemp = "菜单名称: {0}" + Common.SYS_ENDLINE_DEFAULT +
-                    "按钮名称: {1}" + Common.SYS_ENDLINE_DEFAULT +
-                    "在系统中已经重复！" + Common.SYS_ENDLINE_DEFAULT;
-            String msgExist = MessageFormat.format(msgTemp,
-                    menuObj.getName(),
-                    buttonObj.getName());
-            msgBuf.append(msgExist);
-        }
+//        if (menuButtonService.isExistByName(buttonObj.getMenuId(), null, buttonObj.getName())) {
+//            String msgTemp = "菜单名称: {0}" + Common.SYS_ENDLINE_DEFAULT +
+//                    " 按钮名称: {1}" + Common.SYS_ENDLINE_DEFAULT +
+//                    " 在系统中已经重复！" + Common.SYS_ENDLINE_DEFAULT;
+//            String msgExist = MessageFormat.format(msgTemp,
+//                    menuObj.getName(),
+//                    buttonObj.getName());
+//            msgBuf.append(msgExist);
+//        }
         if (menuButtonService.isExistByNameEn(buttonObj.getMenuId(), null, buttonObj.getNameEn())) {
             String msgTemp = "菜单名称: {0}" + Common.SYS_ENDLINE_DEFAULT +
                     "按钮英文名: {1}" + Common.SYS_ENDLINE_DEFAULT +
@@ -318,15 +318,15 @@ public class MenuButtonController {
 
         //2. (菜单)按钮名称-按钮属性值-不可重复
         StringBuffer msgBuf = new StringBuffer();
-        if (menuButtonService.isExistByName(buttonObj.getMenuId(), buttonObj.getId(), buttonObj.getName())) {
-            String msgTemp = "菜单名称: {0}" + Common.SYS_ENDLINE_DEFAULT +
-                    "按钮名称: {1}" + Common.SYS_ENDLINE_DEFAULT +
-                    "在系统中已经重复！" + Common.SYS_ENDLINE_DEFAULT;
-            String msgExist = MessageFormat.format(msgTemp,
-                    menuObj.getName(),
-                    buttonObj.getName());
-            msgBuf.append(msgExist);
-        }
+//        if (menuButtonService.isExistByName(buttonObj.getMenuId(), buttonObj.getId(), buttonObj.getName())) {
+//            String msgTemp = "菜单名称: {0}" + Common.SYS_ENDLINE_DEFAULT +
+//                    "按钮名称: {1}" + Common.SYS_ENDLINE_DEFAULT +
+//                    "在系统中已经重复！" + Common.SYS_ENDLINE_DEFAULT;
+//            String msgExist = MessageFormat.format(msgTemp,
+//                    menuObj.getName(),
+//                    buttonObj.getName());
+//            msgBuf.append(msgExist);
+//        }
         if (menuButtonService.isExistByNameEn(buttonObj.getMenuId(), buttonObj.getId(), buttonObj.getNameEn())) {
             String msgTemp = "菜单名称: {0}" + Common.SYS_ENDLINE_DEFAULT +
                     "按钮英文名: {1}" + Common.SYS_ENDLINE_DEFAULT +
@@ -513,9 +513,16 @@ public class MenuButtonController {
         mapObj.put("titles", YvanUtil.toJson(titlesList));
 
         //2. 分页查询数据List
-        List<Map<String, String>> varMapList = new ArrayList<Map<String, String>>();
         PageData pd = HttpUtils.parsePageData();
+        //设置查询排序
+        pd.put("orderStr", "cdate asc");
+        String orderStr = pd.getString("orderStr");
+        if (orderStr != null && orderStr.trim().length() > 0) {
+            pd.put("orderStr", orderStr);
+        }
+
         Pagination pg = HttpUtils.parsePagination(pd);
+        List<Map<String, String>> varMapList = new ArrayList<Map<String, String>>();
         List<Map> varList = menuButtonService.getDataListPage(pd, pg);
         if(varList != null && varList.size() > 0) {
             for (Map<String, Object> map : varList) {
