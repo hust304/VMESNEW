@@ -244,7 +244,7 @@ public class ProductController {
         result.put("hideTitles",titlesHideList);
         result.put("titles",titlesList);
 
-        pd.put("orderStr", "prod.cdate desc");
+        pd.put("orderStr", "prod.stock_count desc");
         String orderStr = pd.getString("orderStr");
         if (orderStr != null && orderStr.trim().length() > 0) {
             pd.put("orderStr", orderStr);
