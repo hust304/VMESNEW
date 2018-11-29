@@ -210,6 +210,12 @@
 
             round(ifnull(checkExecute.count, 0), 2) count,
             checkExecute.state state,
+            CASE
+                WHEN checkExecute.state = '0' THEN '待审核'
+                WHEN checkExecute.state = '2' THEN '同意'
+                WHEN checkExecute.state = '3' THEN '不同意'
+            ELSE null
+            END stateName,
             checkExecute.cuser cuser,
             DATE_FORMAT(checkExecute.cdate,'%Y-%m-%d %T') cdate,
             checkExecute.uuser uuser,

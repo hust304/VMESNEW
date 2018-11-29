@@ -292,7 +292,7 @@ public class WarehouseInExecuteController {
             return model;
         }
 
-        String remark = pageData.getString("remark");
+        String remark = pageData.getString("rebackRemark");
         if (remark == null || remark.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("退单原因为空或空字符串，退单原因为必填不可为空！");
@@ -312,7 +312,7 @@ public class WarehouseInExecuteController {
         List<WarehouseInExecute> executeList = warehouseInExecuteService.findWarehouseInExecuteList(findMap);
         List<WarehouseInExecutor> executorList = warehouseInExecutorService.findWarehouseInExecutorList(findMap);
 
-        if (executeList == null || executeList.size() == 0) {return model;}
+        if (executorList == null || executorList.size() == 0) {return model;}
 
         StringBuffer msgBuf = new StringBuffer();
         try {
@@ -371,7 +371,6 @@ public class WarehouseInExecuteController {
                 for (WarehouseInExecute execute : executeList) {
                     //isdisable: 是否启用(0:已禁用 1:启用)
                     execute.setIsdisable("0");
-
 
                     if (execute.getRemark() == null) {
                         execute.setRemark(remarkStr);

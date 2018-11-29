@@ -556,6 +556,7 @@ public class WarehouseCheckExecuteController {
             //修改盘点明细状态
             WarehouseCheckDetail detail = new WarehouseCheckDetail();
             detail.setId(execute.getDetailId());
+            detail.setRemark(remark);
             //状态(0:待派单 1:执行中 2:审核中 3:已完成 -1:已取消)
             detail.setState("1");
             warehouseCheckDetailService.update(detail);
