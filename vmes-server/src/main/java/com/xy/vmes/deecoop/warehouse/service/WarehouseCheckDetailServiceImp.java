@@ -259,7 +259,7 @@ public class WarehouseCheckDetailServiceImp implements WarehouseCheckDetailServi
      * 盘点明细状态(0:待派单 1:执行中 2:审核中 3:已完成 -1:已取消)
      *
      * @param parent       入库单对象
-     * @param dtlList     入库单明细List<WarehouseCheckDetail>
+     * @param dtlList      入库单明细List<WarehouseCheckDetail>
      * @param ignoreState  忽视状态
      */
     public void updateParentStateByDetailList(WarehouseCheck parent, List<WarehouseCheckDetail> dtlList, String ignoreState) throws Exception {
@@ -270,11 +270,14 @@ public class WarehouseCheckDetailServiceImp implements WarehouseCheckDetailServi
             dtlList = this.findWarehouseCheckDetailListByParentId(parent.getId());
         }
 
-        //获取入库单状态-根据入库单明细状态
-        String parentState = this.findParentStateByDetailList(ignoreState, dtlList);
-
-        parent.setState(parentState);
-        warehouseCheckService.update(parent);
+        if (dtlList != null && dtlList.size() == 0) {
+            warehouseCheckService.deleteById(parent.getId());
+        } else {
+            //获取入库单状态-根据入库单明细状态
+            String parentState = this.findParentStateByDetailList(ignoreState, dtlList);
+            parent.setState(parentState);
+            warehouseCheckService.update(parent);
+        }
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////

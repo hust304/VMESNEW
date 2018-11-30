@@ -182,11 +182,11 @@ public class WarehouseCheckController {
         //type: 盘点类型(1:按货位 2:货品)
         String typeName = "";
         if ("1".equals(warehouseCheck.getType().trim())) {
-            typeName = "货位";
+            typeName = "货位无存放货品，该货位属于空货位！";
             String queryWarehouseStr = "warehouse_id in (" + queryIds + ")";
             findMap.put("queryWarehouseStr", queryWarehouseStr);
         } else if ("2".equals(warehouseCheck.getType().trim())) {
-            typeName = "货品";
+            typeName = "货品在仓库中不存在！";
             String queryProductStr = "product_id in (" + queryIds + ")";
             findMap.put("queryProductStr", queryProductStr);
         }
@@ -195,7 +195,7 @@ public class WarehouseCheckController {
         List<WarehouseProduct> warehouseProductList = warehouseProductService.findWarehouseProductList(findMap);
         if (warehouseProductList == null || warehouseProductList.size() == 0) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("您所勾选的("+typeName+")在系统库存中不存在！");
+            model.putMsg("您所勾选的" + typeName);
             return model;
         }
 

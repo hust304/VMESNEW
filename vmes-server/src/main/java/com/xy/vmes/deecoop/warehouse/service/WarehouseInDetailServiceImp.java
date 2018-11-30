@@ -281,11 +281,14 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
             dtlList = this.findWarehouseInDetailListByParentId(parent.getId());
         }
 
-        //获取入库单状态-根据入库单明细状态
-        String parentState = this.findParentStateByDetailList(ignoreState, dtlList);
-
-        parent.setState(parentState);
-        warehouseInService.update(parent);
+        if (dtlList.size() == 0) {
+            warehouseInService.deleteById(parent.getId());
+        } else {
+            //获取入库单状态-根据入库单明细状态
+            String parentState = this.findParentStateByDetailList(ignoreState, dtlList);
+            parent.setState(parentState);
+            warehouseInService.update(parent);
+        }
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
