@@ -213,7 +213,7 @@ public class Common {
 
         //******销售******
         //order: '销售',
-        put("order", "94caec1bca7e4131b16bfcee9b1351e2");
+        put("sale", "94caec1bca7e4131b16bfcee9b1351e2");
 
         //******生产******
         //product: '生产',

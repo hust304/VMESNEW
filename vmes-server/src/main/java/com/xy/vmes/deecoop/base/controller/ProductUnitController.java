@@ -2,10 +2,13 @@ package com.xy.vmes.deecoop.base.controller;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
+import com.xy.vmes.common.util.Common;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.entity.ProductUnit;
+import com.xy.vmes.entity.ProductUnitPrice;
 import com.xy.vmes.service.ColumnService;
+import com.xy.vmes.service.ProductUnitPriceService;
 import com.xy.vmes.service.ProductUnitService;
 import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
@@ -22,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.http.HttpServletResponse;
+import java.math.BigDecimal;
 import java.util.*;
 
 
@@ -34,11 +38,12 @@ import java.util.*;
 @RestController
 @Slf4j
 public class ProductUnitController {
-
     private Logger logger = LoggerFactory.getLogger(ProductUnitController.class);
 
     @Autowired
     private ProductUnitService productUnitService;
+    @Autowired
+    private ProductUnitPriceService productUnitPriceService;
 
     @Autowired
     private ColumnService columnService;
@@ -204,20 +209,21 @@ public class ProductUnitController {
     */
     @PostMapping("/productUnit/listPageProductUnits")
     public ResultModel listPageProductUnits()  throws Exception {
-
         logger.info("################productUnit/listPageProductUnits 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
-        PageData pd = HttpUtils.parsePageData();
-        Pagination pg = HttpUtils.parsePagination(pd);
-        Map result = new HashMap();
 
         List<Column> columnList = columnService.findColumnList("ProductUnit");
         if (columnList == null || columnList.size() == 0) {
             model.putCode("1");
             model.putMsg("数据库没有生成TabCol，请联系管理员！");
             return model;
+        }
+
+        PageData pd = HttpUtils.parsePageData();
+        String fieldCode = pd.getString("fieldCode");
+        if (fieldCode != null && fieldCode.trim().length() > 0) {
+            columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
         }
 
         List<LinkedHashMap> titlesList = new ArrayList<LinkedHashMap>();
@@ -236,9 +242,11 @@ public class ProductUnitController {
                 }
             }
         }
+        Map result = new HashMap();
         result.put("hideTitles",titlesHideList);
         result.put("titles",titlesList);
 
+        Pagination pg = HttpUtils.parsePagination(pd);
         List<Map> varMapList = new ArrayList();
         List<Map> varList = productUnitService.getDataListPage(pd,pg);
         if(varList!=null&&varList.size()>0){
@@ -258,6 +266,74 @@ public class ProductUnitController {
         model.putResult(result);
         Long endTime = System.currentTimeMillis();
         logger.info("################productUnit/listPageProductUnits 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * @author 刘威 自动创建，禁止修改
+     * @date 2018-11-15
+     */
+    @PostMapping("/productUnit/updateProductUnitPrice")
+    @Transactional
+    public ResultModel updateProductUnitPrice()  throws Exception {
+        logger.info("################productUnit/updateProductUnitPrice 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        ResultModel model = new ResultModel();
+
+        PageData pd = HttpUtils.parsePageData();
+        String id = pd.getString("id");
+        String productId = pd.getString("productId");
+
+        //punit 计价单位Id
+        String punit = pd.getString("punit");
+        if (punit == null || punit.trim().length() == 0) {
+            model.putCode("1");
+            model.putMsg("计价单位为空或空字符串，请在(单位换算)中设定(计价单位)！");
+            return model;
+        }
+
+        //货品单价 productPrice
+        String productPrice = pd.getString("productPrice");
+        if (productPrice == null || productPrice.trim().length() == 0) {
+            model.putCode("1");
+            model.putMsg("货品单价为空，货品单价为必填项不可为空！");
+            return model;
+        }
+
+        BigDecimal productPrice_big = BigDecimal.valueOf(0D);
+        try {
+            productPrice_big = new BigDecimal(productPrice);
+            //四舍五入到2位小数
+            productPrice_big = productPrice_big.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
+
+        PageData findMap = new PageData();
+        findMap.put("productId", productId);
+        findMap.put("unit", punit);
+        findMap.put("productPrice", productPrice_big.toString());
+        //isdisable:是否启用(0:已禁用 1:启用)
+        findMap.put("isdisable", "1");
+
+        ProductUnit productUnit = productUnitService.findProductUnit(findMap);
+        if (productUnit == null) {
+            //添加 vmes_product_unit_price:货品价格
+            ProductUnitPrice productUnitPrice = new ProductUnitPrice();
+            productUnitPrice.setProductId(productId);
+            productUnitPrice.setPriceUnit(punit);
+            productUnitPrice.setProductPrice(productPrice_big);
+            productUnitPriceService.save(productUnitPrice);
+
+            //修改 vmes_product_unit
+            ProductUnit productUnit_update = new ProductUnit();
+            productUnit_update.setId(id);
+            productUnit_update.setProductPrice(productPrice_big);
+            productUnitService.update(productUnit_update);
+        }
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################productUnit/updateProductUnitPrice 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 

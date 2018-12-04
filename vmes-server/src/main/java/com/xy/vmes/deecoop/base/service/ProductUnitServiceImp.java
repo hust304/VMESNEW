@@ -10,11 +10,9 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
+import java.util.*;
+
 import com.yvan.Conv;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
 * 说明：产品计价单位 实现类
@@ -184,6 +182,51 @@ public class ProductUnitServiceImp implements ProductUnitService {
     }
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+    /**
+     *
+     * @param pageData    查询参数对象<HashMap>
+     * @param isQueryAll  是否查询全部
+     *   true: 无查询条件返回表全部结果集
+     *   false: (false or is null)无查询条件-查询结果集返回空或
+     *
+     * @return
+     * @throws Exception
+     */
+    public List<ProductUnit> findDataList(PageData pageData, Boolean isQueryAll) throws Exception {
+        int pageDataSize = 0;
+        if (pageData != null && pageData.size() > 0) {
+            pageDataSize = pageData.size();
+        }
+
+        if ((isQueryAll == null || true != isQueryAll.booleanValue()) && pageDataSize == 0) {
+            return new ArrayList<ProductUnit>();
+        }
+
+        return this.dataList(pageData);
+    }
+
+    public ProductUnit findProductUnit(PageData object) throws Exception {
+        List<ProductUnit> objectList = this.findProductUnitList(object);
+        if (objectList != null && objectList.size() > 0) {
+            return objectList.get(0);
+        }
+
+        return null;
+    }
+
+    public ProductUnit findProductUnitById(String id) throws Exception {
+        if (id == null || id.trim().length() == 0) {return null;}
+
+        PageData findMap = new PageData();
+        findMap.put("id", id);
+
+        return this.findProductUnit(findMap);
+    }
+
+    public List<ProductUnit> findProductUnitList(PageData object) throws Exception {
+        return this.findDataList(object, null);
+    }
+
 }
 
 

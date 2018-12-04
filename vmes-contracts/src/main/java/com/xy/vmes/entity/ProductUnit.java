@@ -31,6 +31,7 @@ public class ProductUnit implements Serializable {
 	//名称
 	@TableField("name")
 	private String name;
+
 	//计量单位转换计价单位
 	@TableField("np_formula")
 	private String npFormula;
@@ -46,6 +47,7 @@ public class ProductUnit implements Serializable {
 	//创建人账号
 	@TableField("cuser")
 	private String cuser;
+
 	//修改时间
 	@TableField("udate")
 	private Date udate;
@@ -55,7 +57,9 @@ public class ProductUnit implements Serializable {
 	//备注
 	@TableField("remark")
 	private String remark;
-
+	//货品单价
+	@TableField("product_price")
+	private BigDecimal productPrice;
 
 
 	public void setId(String id) {
@@ -136,7 +140,12 @@ public class ProductUnit implements Serializable {
 	public String getRemark() {
 		return remark;
 	}
-
+	public BigDecimal getProductPrice() {
+		return productPrice;
+	}
+	public void setProductPrice(BigDecimal productPrice) {
+		this.productPrice = productPrice;
+	}
 /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 

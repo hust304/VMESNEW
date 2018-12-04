@@ -377,9 +377,9 @@ public class MenuController {
         }
 
         //2. (菜单名称)在同一层名称不可重复
-        if (menuService.isExistByName(menuObj.getPid(), null, menuObj.getName())) {
+        if (menuService.isExistByName(menuObj.getPid(), null, menuObj.getUrl())) {
             String msgTemp = "上级菜单名称: {0}" + Common.SYS_ENDLINE_DEFAULT +
-                    "菜单名称: {1}" + Common.SYS_ENDLINE_DEFAULT +
+                    "页面路径: {1}" + Common.SYS_ENDLINE_DEFAULT +
                     "在系统中已经重复！" + Common.SYS_ENDLINE_DEFAULT;
             String str_isnull = MessageFormat.format(msgTemp,
                     paterObj.getName(),
@@ -475,9 +475,9 @@ public class MenuController {
         }
 
         //2. (菜单名称)在同一层名称不可重复
-        if (menuService.isExistByName(menuObj.getPid(), menuObj.getId(), menuObj.getName())) {
+        if (menuService.isExistByName(menuObj.getPid(), menuObj.getId(), menuObj.getUrl())) {
             String msgTemp = "上级菜单名称: {0}" + Common.SYS_ENDLINE_DEFAULT +
-                    "菜单名称: {1}" + Common.SYS_ENDLINE_DEFAULT +
+                    "页面路径: {1}" + Common.SYS_ENDLINE_DEFAULT +
                     "在系统中已经重复！" + Common.SYS_ENDLINE_DEFAULT;
             msgTemp = MessageFormat.format(msgTemp,
                     paterObj.getName(),
