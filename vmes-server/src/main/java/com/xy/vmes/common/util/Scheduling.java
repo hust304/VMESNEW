@@ -9,10 +9,10 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @EnableScheduling
-public class ScheduledUtil {
+public class Scheduling {
 
-    @Scheduled(fixedDelay = 20000)    // 每20s执行1次
-    public void test() {
-        System.out.println("定时任务测试");
-    }
+//    @Scheduled(fixedDelay = 20000)    // 每20s执行1次
+//    public void test() {
+//        System.out.println("定时任务测试");
+//    }
 }
