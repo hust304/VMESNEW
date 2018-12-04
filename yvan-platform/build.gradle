@@ -48,6 +48,11 @@ dependencies {
 
     //compile 'com.google.code.gson:gson:2.8.5'
     compile 'com.google.zxing:core:3.2.1'
+
+    compile 'org.springframework.boot:spring-boot-starter-activemq'
+    compile 'org.springframework:spring-jms'
+    compile 'org.apache.activemq:activemq-pool:5.12.1'
+
 }
 
 artifacts {

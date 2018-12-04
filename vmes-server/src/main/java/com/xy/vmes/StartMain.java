@@ -1,10 +1,15 @@
 package com.xy.vmes;
 
+import org.apache.activemq.command.ActiveMQQueue;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.jms.annotation.EnableJms;
+
+import javax.jms.Queue;
 
 /**
  * Created by luoyifan on 2018/7/14.
@@ -15,11 +20,9 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 @EnableCaching(proxyTargetClass = true)
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 public class StartMain {
-
     public static void main(String[] args) throws Exception {
         SpringApplication application = new SpringApplication(StartMain.class);
         application.run(args);
-
     }
 
 }

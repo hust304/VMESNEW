@@ -52,7 +52,7 @@ public class ComonFilter implements Filter {
         ModifyParametersWrapper mParametersWrapper = new ModifyParametersWrapper(httpRequest);
 
         //请求地址中含有字符串“login”和“error”的不参与sessionId校验
-        if(uri.indexOf("login".toLowerCase()) < 0 && uri.indexOf("error".toLowerCase()) < 0 && uri.indexOf("file".toLowerCase())<0 && uri.indexOf("importExcel".toLowerCase())<0){
+        if(uri.indexOf("login".toLowerCase()) < 0 && uri.indexOf("error".toLowerCase()) < 0 && uri.indexOf("file".toLowerCase())<0 && uri.indexOf("importExcel".toLowerCase())<0 && uri.indexOf("test".toLowerCase())<0){
             if (!this.checkSession(httpRequest)) {
                 httpResponse.sendRedirect(httpRequest.getHeader("referer") + "api/error/401");
                 return;
