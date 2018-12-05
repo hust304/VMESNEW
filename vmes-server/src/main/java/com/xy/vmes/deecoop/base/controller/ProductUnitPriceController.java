@@ -1,29 +1,19 @@
 package com.xy.vmes.deecoop.base.controller;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
-import com.xy.vmes.common.util.ColumnUtil;
-import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.Column;
-import com.xy.vmes.entity.ProductUnitPrice;
 import com.xy.vmes.service.ColumnService;
 import com.xy.vmes.service.ProductUnitPriceService;
-import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
-import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import org.apache.commons.lang.StringUtils;
 
-import javax.servlet.http.HttpServletResponse;
 import java.util.*;
-
 
 
 /**
@@ -86,6 +76,13 @@ public class ProductUnitPriceController {
         Map result = new HashMap();
         result.put("hideTitles",titlesHideList);
         result.put("titles",titlesList);
+
+        //设置查询排序
+        pd.put("orderStr", "prodPrice.udate desc");
+        String orderStr = pd.getString("orderStr");
+        if (orderStr != null && orderStr.trim().length() > 0) {
+            pd.put("orderStr", orderStr);
+        }
 
         Pagination pg = HttpUtils.parsePagination(pd);
         List<Map> varMapList = new ArrayList();

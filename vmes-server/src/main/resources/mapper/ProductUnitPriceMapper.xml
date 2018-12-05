@@ -91,36 +91,43 @@
     <!-- 自动创建，可以修改 -->
     <select id="getDataListPage"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
         select
-            id id,
-            product_id productId,
-            price_unit priceUnit,
-            product_price productPrice,
-            remark remark,
+            prodPrice.id id,
+            prodPrice.product_id productId,
+            prodPrice.price_unit priceUnit,
+            priceUnit.name priceUnitName,
+            round(ifnull(prodPrice.product_price, 0), 2) productPrice,
+            prodPrice.remark remark,
 
-            cuser cuser,
-            cdate cdate,
-            uuser uuser,
-            udate udate,
-            isdisable isdisable
-        from vmes_product_unit_price
+            prodPrice.cuser cuser,
+            DATE_FORMAT(prodPrice.cdate,'%Y-%m-%d %T') cdate,
+            prodPrice.uuser uuser,
+            DATE_FORMAT(prodPrice.udate,'%Y-%m-%d %T') udate,
+            prodPrice.isdisable isdisable,
+
+            prod.name prodName,
+            prod.unit prodUnit,
+            prodUnit.name prodUnitName
+        from vmes_product_unit_price prodPrice
+            left join vmes_product prod on prodPrice.product_id = prod.id
+            left join vmes_dictionary prodUnit on prod.unit = prodUnit.id
+            left join vmes_dictionary priceUnit on prodPrice.price_unit = priceUnit.id
         <where>
+            <if test="productId != null and productId != ''">
+                and prodPrice.product_id = #{productId}
+            </if>
+            <if test="isdisable != null and isdisable != ''">
+                and prodPrice.isdisable = #{isdisable}
+            </if>
+
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >
                 and ${queryStr}
             </if>
-            <if test="code != null and code != ''">
-                and code LIKE CONCAT(CONCAT('%', #{code}),'%')
-            </if>
-            <if test="name != null and name != ''">
-                and name LIKE CONCAT(CONCAT('%', #{name}),'%')
-            </if>
+
         </where>
         <if test="orderStr != null and orderStr != ''" >
             order by ${orderStr}
         </if>
     </select>
-
-
-
 
 </mapper>
