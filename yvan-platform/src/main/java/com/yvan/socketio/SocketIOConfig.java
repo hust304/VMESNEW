@@ -30,7 +30,7 @@ public class SocketIOConfig {
             System.out.println("this is  windows");
             config.setHostname("192.168.0.112");
         } else {
-            config.setHostname("47.93.44.177");   //部署到你的远程服务器正式发布环境时用服务器公网ip
+            config.setHostname("116.196.105.79");   //部署到你的远程服务器正式发布环境时用服务器公网ip
         }
         // 协议升级超时时间（毫秒），默认10000。HTTP握手升级为ws协议超时时间
         config.setUpgradeTimeout(10000);
