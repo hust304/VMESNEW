@@ -40,7 +40,7 @@ public class SocketIOConfig {
         // Ping消息超时时间（毫秒），默认60000，这个时间间隔内没有接收到心跳消息就会发送超时事件
         config.setPingTimeout(180000);
         // 设置监听端口
-        config.setPort(9092);
+        config.setPort(8090);
 
 		/*config.setAuthorizationListener(new AuthorizationListener() {//类似过滤器
 			@Override
