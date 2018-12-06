@@ -32,6 +32,7 @@ public class SocketIOConfig {
         } else {
             config.setHostname("116.196.105.79");   //部署到你的远程服务器正式发布环境时用服务器公网ip
         }
+        config.setHostname("0.0.0.0");
         // 协议升级超时时间（毫秒），默认10000。HTTP握手升级为ws协议超时时间
         config.setUpgradeTimeout(10000);
         // Ping消息间隔（毫秒），默认25000。客户端向服务器发送一条心跳消息间隔
