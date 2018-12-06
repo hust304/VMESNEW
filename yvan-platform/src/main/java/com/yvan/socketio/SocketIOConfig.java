@@ -30,8 +30,9 @@ public class SocketIOConfig {
             System.out.println("this is  windows");
             config.setHostname("192.168.0.112");
         } else {
-            config.setHostname("47.93.44.177");   //部署到你的远程服务器正式发布环境时用服务器公网ip
+            config.setHostname("116.196.105.79");   //部署到你的远程服务器正式发布环境时用服务器公网ip
         }
+        config.setHostname("0.0.0.0");
         // 协议升级超时时间（毫秒），默认10000。HTTP握手升级为ws协议超时时间
         config.setUpgradeTimeout(10000);
         // Ping消息间隔（毫秒），默认25000。客户端向服务器发送一条心跳消息间隔
@@ -39,7 +40,7 @@ public class SocketIOConfig {
         // Ping消息超时时间（毫秒），默认60000，这个时间间隔内没有接收到心跳消息就会发送超时事件
         config.setPingTimeout(180000);
         // 设置监听端口
-        config.setPort(9092);
+        config.setPort(8090);
 
 		/*config.setAuthorizationListener(new AuthorizationListener() {//类似过滤器
 			@Override
@@ -121,9 +122,9 @@ public class SocketIOConfig {
         return server;
     }
 
-    @Bean
-    public SpringAnnotationScanner springAnnotationScanner(SocketIOServer socketServer) {
-        return new SpringAnnotationScanner(socketServer);
-    }
+//    @Bean
+//    public SpringAnnotationScanner springAnnotationScanner(SocketIOServer socketServer) {
+//        return new SpringAnnotationScanner(socketServer);
+//    }
 
 }
