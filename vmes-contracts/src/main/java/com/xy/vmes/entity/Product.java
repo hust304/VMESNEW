@@ -31,6 +31,7 @@ public class Product implements Serializable {
 	//产品名称
 	@TableField("name")
 	private String name;
+
 	//英文名称
 	@TableField("name_en")
 	private String nameEn;
@@ -46,6 +47,7 @@ public class Product implements Serializable {
 	//结算单位(字典表-vmes_dictionary.id)
 	@TableField("last_unit")
 	private String lastUnit;
+
 	//结算比例
 	@TableField("last_ratio")
 	private BigDecimal lastRatio;
@@ -61,6 +63,7 @@ public class Product implements Serializable {
 	//保质期(天)
 	@TableField("validity_days")
 	private BigDecimal validityDays;
+
 	//备注
 	@TableField("remark")
 	private String remark;
@@ -76,13 +79,13 @@ public class Product implements Serializable {
 	//修改时间
 	@TableField("udate")
 	private Date udate;
+
 	//是否启用(0:已禁用 1:启用)
 	@TableField("isdisable")
 	private String isdisable;
 	//产品图片
 	@TableField("photo")
 	private String photo;
-
 	//库存数量
 	@TableField("stock_count")
 	private BigDecimal stockCount;
@@ -92,6 +95,10 @@ public class Product implements Serializable {
 	//乐观锁
 	@TableField("version")
 	private Integer version;
+
+	//锁定库存数量
+	@TableField("lock_count")
+	private BigDecimal lockCount;
 
 	public void setId(String id) {
 		this.id = id;
@@ -239,6 +246,12 @@ public class Product implements Serializable {
 	}
 	public BigDecimal getValidityDays() {
 		return validityDays;
+	}
+	public BigDecimal getLockCount() {
+		return lockCount;
+	}
+	public void setLockCount(BigDecimal lockCount) {
+		this.lockCount = lockCount;
 	}
 
 	public void setValidityDays(BigDecimal validityDays) {
