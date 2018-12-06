@@ -121,9 +121,9 @@ public class SocketIOConfig {
         return server;
     }
 
-    @Bean
-    public SpringAnnotationScanner springAnnotationScanner(SocketIOServer socketServer) {
-        return new SpringAnnotationScanner(socketServer);
-    }
+//    @Bean
+//    public SpringAnnotationScanner springAnnotationScanner(SocketIOServer socketServer) {
+//        return new SpringAnnotationScanner(socketServer);
+//    }
 
 }
