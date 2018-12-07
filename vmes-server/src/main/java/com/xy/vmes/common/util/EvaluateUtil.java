@@ -26,7 +26,7 @@ public class EvaluateUtil {
         Binding binding = new Binding();
         for (Iterator iterator = parmMap.keySet().iterator(); iterator.hasNext();) {
             String mapkey = (String)iterator.next();
-            String value = (String)parmMap.get(mapkey);
+            String value = parmMap.get(mapkey).toString();
             binding.setVariable(mapkey, new BigDecimal(value));
         }
 
@@ -67,7 +67,7 @@ public class EvaluateUtil {
         //parmMap.put("P", "10");
 
         parmMap.put("F", "2.5");
-        parmMap.put("T", "30");
+        parmMap.put("T", Integer.valueOf(30));
         parmMap.put("A", "100");
         parmMap.put("P0", "100");
 
