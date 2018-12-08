@@ -265,12 +265,13 @@
         left join vmes_dictionary nunit on product.unit = nunit.id
         left join vmes_dictionary punit on pu.unit = punit.id
         <where>
+            <if test="productId != null and productId != ''">
+                and pu.product_id = #{productId}
+            </if>
+
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >
                 and ${queryStr}
-            </if>
-            <if test="productId != null and productId != ''">
-                and product.product_id = #{productId}
             </if>
         </where>
         <if test="orderStr != null and orderStr != ''" >

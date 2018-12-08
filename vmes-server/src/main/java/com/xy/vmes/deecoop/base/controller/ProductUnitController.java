@@ -3,6 +3,7 @@ package com.xy.vmes.deecoop.base.controller;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.Common;
+import com.xy.vmes.common.util.EvaluateUtil;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.entity.ProductUnit;
@@ -13,6 +14,7 @@ import com.xy.vmes.service.ProductUnitService;
 import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
+import com.yvan.YvanUtil;
 import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
 import lombok.extern.slf4j.Slf4j;
@@ -337,6 +339,165 @@ public class ProductUnitController {
         return model;
     }
 
+    /**
+     * @author 陈刚 自动创建，可以修改
+     * @date 2018-12-06
+     */
+    @PostMapping("/productUnit/findListProductUnit")
+    public ResultModel findListProductUnit() throws Exception {
+        logger.info("################productUnit/findListProductUnit 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        ResultModel model = new ResultModel();
+
+        String priceUnitListStr = "";
+        String unitPriceMapStr = "";
+        String unitFormulaMapStr = "";
+
+        //获取指定栏位字符串-重新调整List<Column>
+        PageData pd = HttpUtils.parsePageData();
+        String productId = pd.getString("productId");
+        if (productId == null || productId.trim().length() == 0) {
+            model.set("priceUnitListStr", priceUnitListStr);
+            model.set("unitPriceMapStr", unitPriceMapStr);
+            model.set("unitFormulaMapStr", unitFormulaMapStr);
+            return model;
+        }
+
+        //设置查询排序
+        pd.put("orderStr", "pu.cdate asc");
+        String orderStr = pd.getString("orderStr");
+        if (orderStr != null && orderStr.trim().length() > 0) {
+            pd.put("orderStr", orderStr);
+        }
+
+        pd.put("queryStr", "pu.unit is not null and punit.name is not null");
+
+        //<计价单位id, 计价单位名称> Map
+        List<LinkedHashMap<String, String>> priceUnitList = new ArrayList<LinkedHashMap<String, String>>();
+        //<计价单位id, 货品价格> Map
+        Map<String, String> unitPriceMap = new HashMap<String, String>();
+        //<计价单位id, 计量转换计价单位 数量转换公式> Map
+        Map<String, String> unitFormulaMap = new HashMap<String, String>();
+
+        List<Map> mapList = productUnitService.getDataListPage(pd);
+        for (Map<String, Object> mapObject : mapList) {
+            LinkedHashMap<String, String> priceUnitMap = new LinkedHashMap<String, String>();
+
+            //计价单位id priceUnit -- punit
+            String priceUnit = (String)mapObject.get("punit");
+            //计价单位名称 priceUnitName
+            String priceUnitName = (String)mapObject.get("punitName");
+            //货品价格 productPrice
+            BigDecimal productPrice = (BigDecimal)mapObject.get("productPrice");
+
+            //计量单位转换计价单位 数量转换公式 npFormula
+            String prod2priceFormula = "";
+            if (mapObject.get("npFormula") != null && mapObject.get("npFormula").toString().trim().length() > 0) {
+                prod2priceFormula = mapObject.get("npFormula").toString().trim();
+            }
+
+            priceUnitMap.put("value", priceUnit);
+            priceUnitMap.put("label", priceUnitName);
+            priceUnitList.add(priceUnitMap);
+
+            unitPriceMap.put(priceUnit, productPrice.toString());
+            unitFormulaMap.put(priceUnit, prod2priceFormula);
+        }
+        priceUnitListStr = YvanUtil.toJson(priceUnitList);
+
+        //计价单位id 对应的货品价格
+        ArrayList<ArrayList<String>> unitPriceList = new ArrayList<ArrayList<String>>();
+        //遍历 <计价单位id, 货品价格> Map
+        for (Iterator iterator = unitPriceMap.keySet().iterator(); iterator.hasNext();) {
+            ArrayList<String> priceList = new ArrayList<String>();
+
+            String mapKey = (String)iterator.next();
+            priceList.add(mapKey);
+
+            String mapValue = unitPriceMap.get(mapKey);
+            priceList.add(mapValue);
+
+            unitPriceList.add(priceList);
+        }
+        unitPriceMapStr = YvanUtil.toJson(unitPriceList);
+
+        //计价单位id 对应的单位换算公式
+        ArrayList<ArrayList<String>> unitFormulaList = new ArrayList<ArrayList<String>>();
+        //遍历 <计价单位id, 计量转换计价单位 数量转换公式> Map
+        for (Iterator iterator = unitFormulaMap.keySet().iterator(); iterator.hasNext();) {
+            ArrayList<String> formulaList = new ArrayList<String>();
+
+            String mapKey = (String)iterator.next();
+            formulaList.add(mapKey);
+
+            String mapValue = unitFormulaMap.get(mapKey);
+            formulaList.add(mapValue);
+
+            unitFormulaList.add(formulaList);
+        }
+        unitFormulaMapStr = YvanUtil.toJson(unitFormulaList);
+
+        model.set("priceUnitListStr", priceUnitListStr);
+        model.set("unitPriceMapStr", unitPriceMapStr);
+        model.set("unitFormulaMapStr", unitFormulaMapStr);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################productUnit/findListProductUnit 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 公式计算(货品数量)
+     * @author 陈刚 自动创建，可以修改
+     * @date 2018-12-06
+     */
+    @PostMapping("/productUnit/formulaReckonByProductCount")
+    public ResultModel formulaReckonByProductCount() throws Exception {
+        logger.info("################productUnit/formulaReckonByProductCount 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        ResultModel model = new ResultModel();
+
+        PageData pd = HttpUtils.parsePageData();
+        //库存数量 stockCount
+        String stockCount = pd.getString("stockCount");
+
+        //库存可用数量 productStockCount
+        String productStockCount = pd.getString("productStockCount");
+
+        //公式 formula (计量转换计价单位 公式计算)
+        //P=8*N  N(计量单位数量) P(计价单位数量)
+        String formula = pd.getString("formula");
+
+        Map<String, Object> parmMap = new HashMap<String, Object>();
+
+        //1. 库存数量 stockCount
+        BigDecimal stockCountBig = BigDecimal.valueOf(0D);
+        parmMap.put("N", stockCount);
+        //计价单位(库存数量) 通过公式 单位换算
+        BigDecimal valueBig = EvaluateUtil.formulaReckon(parmMap, formula);
+        if (valueBig != null) {
+            stockCountBig = valueBig;
+        }
+        //四舍五入到2位小数
+        stockCountBig = stockCountBig.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+        model.set("stockCount", stockCountBig.toString());
+
+        //2. 库存可用数量 productStockCount
+        BigDecimal productStockCountBig = BigDecimal.valueOf(0D);
+        parmMap.put("N", productStockCount);
+        //计价单位(库存可用数量) 通过公式 单位换算
+        valueBig = EvaluateUtil.formulaReckon(parmMap, formula);
+        if (valueBig != null) {
+            productStockCountBig = valueBig;
+        }
+        //四舍五入到2位小数
+        productStockCountBig = productStockCountBig.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+        model.set("productStockCount", productStockCountBig.toString());
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################productUnit/formulaReckonByProductCount 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
 
     /**
     * Excel导出
