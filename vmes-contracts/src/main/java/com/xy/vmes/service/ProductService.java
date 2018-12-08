@@ -2,6 +2,8 @@ package com.xy.vmes.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.entity.Product;
+import com.xy.vmes.entity.ProductUnit;
+import com.xy.vmes.entity.ProductUnitPrice;
 import com.yvan.PageData;
 
 import java.math.BigDecimal;
@@ -120,6 +122,8 @@ public interface ProductService {
     String findIdsByPageMapList(List<Map> mapList);
 
     void updateStockCount(Product product, BigDecimal count, String uuser) throws Exception;
+    ProductUnit product2ProductUnit(Product product, ProductUnit productUnit);
+    ProductUnitPrice product2ProductUnitPrice(Product product, ProductUnitPrice productUnitPrice);
 }
 
 

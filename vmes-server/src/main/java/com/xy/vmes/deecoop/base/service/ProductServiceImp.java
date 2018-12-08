@@ -3,6 +3,8 @@ package com.xy.vmes.deecoop.base.service;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.deecoop.base.dao.ProductMapper;
 import com.xy.vmes.entity.Product;
+import com.xy.vmes.entity.ProductUnit;
+import com.xy.vmes.entity.ProductUnitPrice;
 import com.xy.vmes.service.ProductService;
 import com.yvan.PageData;
 import com.yvan.platform.RestException;
@@ -261,6 +263,44 @@ public class ProductServiceImp implements ProductService {
         pd.put("uuser",uuser);
         pd.put("stockCount",count);
         productMapper.updateStockCount(pd);
+    }
+
+    public ProductUnit product2ProductUnit(Product product, ProductUnit productUnit) {
+        if (productUnit == null) {productUnit = new ProductUnit();}
+        if (product == null) {return productUnit;}
+
+        //货品id productId
+        productUnit.setProductId(product.getId());
+        //计价单位 unit
+        productUnit.setUnit(product.getUnit());
+        //计量转换计价单位 单位换算公式 np_formula
+        productUnit.setNpFormula("P=1*N");
+        //计价转换计量单位 单位换算公式 pn_formula
+        productUnit.setPnFormula("N=P/1");
+        //创建人id
+        productUnit.setCuser(product.getCuser());
+        //货品单价 productPrice
+        if (product.getPrice() != null) {
+            productUnit.setProductPrice(product.getPrice());
+        }
+
+        return productUnit;
+    }
+
+    public ProductUnitPrice product2ProductUnitPrice(Product product, ProductUnitPrice productUnitPrice) {
+        if (productUnitPrice == null) {productUnitPrice = new ProductUnitPrice();}
+        if (product == null) {return productUnitPrice;}
+
+        //货品ID productId
+        productUnitPrice.setProductId(product.getId());
+        //计价单位ID priceUnit
+        productUnitPrice.setPriceUnit(product.getUnit());
+        //货品单价 productPrice
+        productUnitPrice.setProductPrice(product.getPrice());
+        //创建用户id cuser
+        productUnitPrice.setCuser(product.getCuser());
+
+        return productUnitPrice;
     }
 }
 

@@ -4,9 +4,7 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.Common;
 import com.xy.vmes.common.util.StringUtil;
-import com.xy.vmes.entity.Column;
-import com.xy.vmes.entity.Product;
-import com.xy.vmes.entity.ProductProperty;
+import com.xy.vmes.entity.*;
 import com.xy.vmes.service.*;
 import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
@@ -39,6 +37,10 @@ public class ProductController {
 
     @Autowired
     private ProductService productService;
+    @Autowired
+    private ProductUnitService productUnitService;
+    @Autowired
+    private ProductUnitPriceService productUnitPriceService;
     @Autowired
     private ProductPropertyService productPropertyService;
 
@@ -197,15 +199,13 @@ public class ProductController {
         return model;
     }
 
-
-
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
     /**
     * @author 陈刚 自动创建，可以修改
     * @date 2018-09-21
     */
     @PostMapping("/product/listPageProducts")
-    public ResultModel listPageProducts()  throws Exception {
+    public ResultModel listPageProducts() throws Exception {
         logger.info("################product/listPageProducts 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
@@ -426,7 +426,17 @@ public class ProductController {
         }
         productService.save(product);
 
-        //3. 添加产品属性表(vmes_product_property)
+        //3. 添加 vmes_product_unit
+        ProductUnit productUnit = productService.product2ProductUnit(product, null);
+        productUnitService.save(productUnit);
+
+        //4. 添加 vmes_product_unit_price
+        if (product.getPrice() != null) {
+            ProductUnitPrice productUnitPrice = productService.product2ProductUnitPrice(product, null);
+            productUnitPriceService.save(productUnitPrice);
+        }
+
+        //5. 添加产品属性表(vmes_product_property)
         String dataListJsonStr = pageData.getString("prodPropertyJsonStr");
         //测试代码-真实环境无此代码
         //dataListJsonStr = "[{\"name\":\"属性名称_1\",\"value\":\"属性值_1\",\"remark\":\"备注_1\"},{\"name\":\"属性名称_2\",\"value\":\"属性值_2\",\"remark\":\"备注_2\"}]";
