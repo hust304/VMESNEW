@@ -1,0 +1,227 @@
+package com.xy.vmes.entity;
+
+import com.baomidou.mybatisplus.annotations.TableField;
+import com.baomidou.mybatisplus.annotations.TableName;
+
+import java.io.Serializable;
+import java.util.*;
+import java.math.BigDecimal;
+
+/** 
+ * 说明：vmes_sale_order:订单表 实体类
+ * @author 陈刚 自动生成
+ * @date 2018-12-05
+ */
+@TableName("vmes_sale_order")
+public class SaleOrder implements Serializable {
+	private static final long serialVersionUID = 1L;
+
+	//
+	@TableField("id")
+	private String id;
+	//企业ID
+	@TableField("company_id")
+	private String companyId;
+	//订单编号(用户)
+	@TableField("order_number")
+	private String orderNumber;
+	//订单编号(系统生成)
+	@TableField("sys_code")
+	private String sysCode;
+	//发票类型(1:不开票 2:普票发票 3:增值税发票)
+	@TableField("receipt_type")
+	private String receiptType;
+
+	//计价类型(1:先计价 2:后计价)
+	@TableField("price_type")
+	private String priceType;
+	//订单状态(0:待提交 1:待审核 2:待出库 3:待发货 4:已发货 5:已完成 -1:已取消)
+	@TableField("state")
+	private String state;
+	//制单人ID
+	@TableField("make_id")
+	private String makeId;
+	//客户ID
+	@TableField("customer_id")
+	private String customerId;
+	//下单日期
+	@TableField("order_date")
+	private Date orderDate;
+
+	//交付日期
+	@TableField("deliver_date")
+	private Date deliverDate;
+	//合计金额
+	@TableField("total_sum")
+	private BigDecimal totalSum;
+	//折扣金额
+	@TableField("discount_sum")
+	private BigDecimal discountSum;
+	//订单金额(合计金额 - 折扣金额)
+	@TableField("order_sum")
+	private BigDecimal orderSum;
+	//预付款(定金)
+	@TableField("advance_sum")
+	private BigDecimal advanceSum;
+
+	//应收款(发货金额-预付款)(发货完成填写)
+	@TableField("receivables")
+	private BigDecimal receivables;
+	//创建用户id
+	@TableField("cuser")
+	private String cuser;
+	//创建时间
+	@TableField("cdate")
+	private Date cdate;
+	//修改用户id
+	@TableField("uuser")
+	private String uuser;
+	//修改时间
+	@TableField("udate")
+	private Date udate;
+
+	//备注
+	@TableField("remark")
+	private String remark;
+	//是否启用(0:已禁用 1:启用)
+	@TableField("isdisable")
+	private String isdisable;
+
+
+	public void setId(String id) {
+		this.id = id;
+	}
+	public String getId() {
+		return id;
+	}
+	public void setCompanyId(String companyId) {
+		this.companyId = companyId;
+	}
+	public String getCompanyId() {
+		return companyId;
+	}
+	public void setOrderNumber(String orderNumber) {
+		this.orderNumber = orderNumber;
+	}
+	public String getOrderNumber() {
+		return orderNumber;
+	}
+	public void setSysCode(String sysCode) {
+		this.sysCode = sysCode;
+	}
+	public String getSysCode() {
+		return sysCode;
+	}
+	public String getReceiptType() {
+		return receiptType;
+	}
+	public void setReceiptType(String receiptType) {
+		this.receiptType = receiptType;
+	}
+	public void setPriceType(String priceType) {
+		this.priceType = priceType;
+	}
+	public String getPriceType() {
+		return priceType;
+	}
+	public void setState(String state) {
+		this.state = state;
+	}
+	public String getState() {
+		return state;
+	}
+	public void setMakeId(String makeId) {
+		this.makeId = makeId;
+	}
+	public String getMakeId() {
+		return makeId;
+	}
+	public void setCustomerId(String customerId) {
+		this.customerId = customerId;
+	}
+	public String getCustomerId() {
+		return customerId;
+	}
+	public void setOrderDate(Date orderDate) {
+		this.orderDate = orderDate;
+	}
+	public Date getOrderDate() {
+		return orderDate;
+	}
+	public void setDeliverDate(Date deliverDate) {
+		this.deliverDate = deliverDate;
+	}
+	public Date getDeliverDate() {
+		return deliverDate;
+	}
+	public void setTotalSum(BigDecimal totalSum) {
+		this.totalSum = totalSum;
+	}
+	public BigDecimal getTotalSum() {
+		return totalSum;
+	}
+	public void setDiscountSum(BigDecimal discountSum) {
+		this.discountSum = discountSum;
+	}
+	public BigDecimal getDiscountSum() {
+		return discountSum;
+	}
+	public void setOrderSum(BigDecimal orderSum) {
+		this.orderSum = orderSum;
+	}
+	public BigDecimal getOrderSum() {
+		return orderSum;
+	}
+	public void setAdvanceSum(BigDecimal advanceSum) {
+		this.advanceSum = advanceSum;
+	}
+	public BigDecimal getAdvanceSum() {
+		return advanceSum;
+	}
+	public void setReceivables(BigDecimal receivables) {
+		this.receivables = receivables;
+	}
+	public BigDecimal getReceivables() {
+		return receivables;
+	}
+	public void setCuser(String cuser) {
+		this.cuser = cuser;
+	}
+	public String getCuser() {
+		return cuser;
+	}
+	public void setCdate(Date cdate) {
+		this.cdate = cdate;
+	}
+	public Date getCdate() {
+		return cdate;
+	}
+	public void setUuser(String uuser) {
+		this.uuser = uuser;
+	}
+	public String getUuser() {
+		return uuser;
+	}
+	public void setUdate(Date udate) {
+		this.udate = udate;
+	}
+	public Date getUdate() {
+		return udate;
+	}
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
+	public String getRemark() {
+		return remark;
+	}
+	public void setIsdisable(String isdisable) {
+		this.isdisable = isdisable;
+	}
+	public String getIsdisable() {
+		return isdisable;
+	}
+
+/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+
+
+}
