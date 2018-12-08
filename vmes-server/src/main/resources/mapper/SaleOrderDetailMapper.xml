@@ -69,7 +69,11 @@
             (replace(uuid(), '-', ''), 'saleOrderDetail', 'lockDate', '锁定开始时间', 27, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
             (replace(uuid(), '-', ''), 'saleOrderDetail', 'isneedproduce', '是否需要生产(0:无需 1:需要 库存不够)', 28, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
             (replace(uuid(), '-', ''), 'saleOrderDetail', 'outDetailId', '出库明细ID', 29, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
-            (replace(uuid(), '-', ''), 'saleOrderDetail', 'planDetailId', '生产计划明细ID', 30, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin')
+            (replace(uuid(), '-', ''), 'saleOrderDetail', 'planDetailId', '生产计划明细ID', 30, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+
+            (replace(uuid(), '-', ''), 'saleOrderDetail', 'stockCountByPrice', '库存数量', 13, '1', '1', '1', '0', '2018-12-6 09:16:39', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetail', 'productStockCountByPrice', '库存可用数量', 14, '1', '1', '1', '0', '2018-12-6 09:16:39', 'admin'),
+
     </insert>
 
     <!-- 列表(全部) 自动创建，禁止修改-->
