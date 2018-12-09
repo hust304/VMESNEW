@@ -340,6 +340,12 @@ public class ProductUnitController {
     }
 
     /**
+     * 根据货品id查询(vmes_product_unit) 获取该货品id全部(计价单位,单位换算公式,货品价格)
+     * 1. 计价单位Map     <计价单位id, 计价单位名称> Map
+     * 2. 计价单位货品价格 <计价单位id, 货品价格> Map
+     * 3. 计价单位换算公式 <计价单位id, 计量转换计价单位 数量转换公式> Map
+     * 4. 计价单位换算公式 <计价单位id, 计价转换计量单位 数量转换公式> Map
+     *
      * @author 陈刚 自动创建，可以修改
      * @date 2018-12-06
      */
@@ -351,7 +357,8 @@ public class ProductUnitController {
 
         String priceUnitListStr = "";
         String unitPriceMapStr = "";
-        String unitFormulaMapStr = "";
+        String unitFormulaMapN2PStr = "";
+        String unitFormulaMapP2NStr = "";
 
         //获取指定栏位字符串-重新调整List<Column>
         PageData pd = HttpUtils.parsePageData();
@@ -359,7 +366,8 @@ public class ProductUnitController {
         if (productId == null || productId.trim().length() == 0) {
             model.set("priceUnitListStr", priceUnitListStr);
             model.set("unitPriceMapStr", unitPriceMapStr);
-            model.set("unitFormulaMapStr", unitFormulaMapStr);
+            model.set("unitFormulaMapN2PStr", unitFormulaMapN2PStr);
+            model.set("unitFormulaMapP2NStr", unitFormulaMapP2NStr);
             return model;
         }
 
@@ -376,8 +384,11 @@ public class ProductUnitController {
         List<LinkedHashMap<String, String>> priceUnitList = new ArrayList<LinkedHashMap<String, String>>();
         //<计价单位id, 货品价格> Map
         Map<String, String> unitPriceMap = new HashMap<String, String>();
+
         //<计价单位id, 计量转换计价单位 数量转换公式> Map
-        Map<String, String> unitFormulaMap = new HashMap<String, String>();
+        Map<String, String> unitFormulaMap_N2P = new HashMap<String, String>();
+        //<计价单位id, 计价转换计量单位 数量转换公式> Map
+        Map<String, String> unitFormulaMap_P2N = new HashMap<String, String>();
 
         List<Map> mapList = productUnitService.getDataListPage(pd);
         for (Map<String, Object> mapObject : mapList) {
@@ -390,10 +401,16 @@ public class ProductUnitController {
             //货品价格 productPrice
             BigDecimal productPrice = (BigDecimal)mapObject.get("productPrice");
 
-            //计量单位转换计价单位 数量转换公式 npFormula
-            String prod2priceFormula = "";
+            //计量转换计价单位 数量转换公式 npFormula
+            String n2pFormula = "";
             if (mapObject.get("npFormula") != null && mapObject.get("npFormula").toString().trim().length() > 0) {
-                prod2priceFormula = mapObject.get("npFormula").toString().trim();
+                n2pFormula = mapObject.get("npFormula").toString().trim();
+            }
+
+            //计价转换计量单位 数量转换公式 pn_formula
+            String p2nFormula = "";
+            if (mapObject.get("pnFormula") != null && mapObject.get("pnFormula").toString().trim().length() > 0) {
+                p2nFormula = mapObject.get("pnFormula").toString().trim();
             }
 
             priceUnitMap.put("value", priceUnit);
@@ -401,9 +418,11 @@ public class ProductUnitController {
             priceUnitList.add(priceUnitMap);
 
             unitPriceMap.put(priceUnit, productPrice.toString());
-            unitFormulaMap.put(priceUnit, prod2priceFormula);
+            unitFormulaMap_N2P.put(priceUnit, n2pFormula);
+            unitFormulaMap_P2N.put(priceUnit, p2nFormula);
         }
         priceUnitListStr = YvanUtil.toJson(priceUnitList);
+        model.set("priceUnitListStr", priceUnitListStr);
 
         //计价单位id 对应的货品价格
         ArrayList<ArrayList<String>> unitPriceList = new ArrayList<ArrayList<String>>();
@@ -420,26 +439,40 @@ public class ProductUnitController {
             unitPriceList.add(priceList);
         }
         unitPriceMapStr = YvanUtil.toJson(unitPriceList);
+        model.set("unitPriceMapStr", unitPriceMapStr);
 
         //计价单位id 对应的单位换算公式
         ArrayList<ArrayList<String>> unitFormulaList = new ArrayList<ArrayList<String>>();
         //遍历 <计价单位id, 计量转换计价单位 数量转换公式> Map
-        for (Iterator iterator = unitFormulaMap.keySet().iterator(); iterator.hasNext();) {
+        for (Iterator iterator = unitFormulaMap_N2P.keySet().iterator(); iterator.hasNext();) {
             ArrayList<String> formulaList = new ArrayList<String>();
 
             String mapKey = (String)iterator.next();
             formulaList.add(mapKey);
 
-            String mapValue = unitFormulaMap.get(mapKey);
+            String mapValue = unitFormulaMap_N2P.get(mapKey);
             formulaList.add(mapValue);
 
             unitFormulaList.add(formulaList);
         }
-        unitFormulaMapStr = YvanUtil.toJson(unitFormulaList);
+        unitFormulaMapN2PStr = YvanUtil.toJson(unitFormulaList);
+        model.set("unitFormulaMapN2PStr", unitFormulaMapN2PStr);
 
-        model.set("priceUnitListStr", priceUnitListStr);
-        model.set("unitPriceMapStr", unitPriceMapStr);
-        model.set("unitFormulaMapStr", unitFormulaMapStr);
+        unitFormulaList = new ArrayList<ArrayList<String>>();
+        //遍历 <计价单位id, 计价转换计量单位 数量转换公式> Map
+        for (Iterator iterator = unitFormulaMap_P2N.keySet().iterator(); iterator.hasNext();) {
+            ArrayList<String> formulaList = new ArrayList<String>();
+
+            String mapKey = (String)iterator.next();
+            formulaList.add(mapKey);
+
+            String mapValue = unitFormulaMap_P2N.get(mapKey);
+            formulaList.add(mapValue);
+
+            unitFormulaList.add(formulaList);
+        }
+        unitFormulaMapP2NStr = YvanUtil.toJson(unitFormulaList);
+        model.set("unitFormulaMapP2NStr", unitFormulaMapP2NStr);
 
         Long endTime = System.currentTimeMillis();
         logger.info("################productUnit/findListProductUnit 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
@@ -447,7 +480,15 @@ public class ProductUnitController {
     }
 
     /**
-     * 公式计算(货品数量)
+     * 订单管理(计量单位,计价单位)单位换算公式计算(货品数量)
+     *
+     * 参数说明:
+     * formula:           单位换算公式
+     * parmKey:           公式中的参数key 本接口中取值为(P:计价单位 N:计量单位)
+     * stockCount:        (计量单位)库存数量
+     * productStockCount: (计量单位)库存可用数量
+     * count:             (计价单位)订购数量
+     *
      * @author 陈刚 自动创建，可以修改
      * @date 2018-12-06
      */
@@ -458,41 +499,61 @@ public class ProductUnitController {
         ResultModel model = new ResultModel();
 
         PageData pd = HttpUtils.parsePageData();
-        //库存数量 stockCount
-        String stockCount = pd.getString("stockCount");
-
-        //库存可用数量 productStockCount
-        String productStockCount = pd.getString("productStockCount");
-
         //公式 formula (计量转换计价单位 公式计算)
         //P=8*N  N(计量单位数量) P(计价单位数量)
         String formula = pd.getString("formula");
 
+        //N(计量单位数量) P(计价单位数量)
+        String parmKey = pd.getString("parmKey");
+
         Map<String, Object> parmMap = new HashMap<String, Object>();
+        BigDecimal valueBig = null;
 
-        //1. 库存数量 stockCount
+        //1. 库存数量 stockCount  计量转换计价 (单位换算)
         BigDecimal stockCountBig = BigDecimal.valueOf(0D);
-        parmMap.put("N", stockCount);
-        //计价单位(库存数量) 通过公式 单位换算
-        BigDecimal valueBig = EvaluateUtil.formulaReckon(parmMap, formula);
-        if (valueBig != null) {
-            stockCountBig = valueBig;
-        }
-        //四舍五入到2位小数
-        stockCountBig = stockCountBig.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-        model.set("stockCount", stockCountBig.toString());
+        String stockCount = pd.getString("stockCount");
+        if (stockCount != null && stockCount.trim().length() > 0) {
+            parmMap.put(parmKey, stockCount);
 
-        //2. 库存可用数量 productStockCount
-        BigDecimal productStockCountBig = BigDecimal.valueOf(0D);
-        parmMap.put("N", productStockCount);
-        //计价单位(库存可用数量) 通过公式 单位换算
-        valueBig = EvaluateUtil.formulaReckon(parmMap, formula);
-        if (valueBig != null) {
-            productStockCountBig = valueBig;
+            //(库存数量) 计量转换计价 通过公式 单位换算
+            valueBig = EvaluateUtil.formulaReckon(parmMap, formula);
+            if (valueBig != null) {
+                stockCountBig = valueBig;
+            }
+            //四舍五入到2位小数
+            stockCountBig = stockCountBig.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+            model.set("stockCount_n2p", stockCountBig.toString());
         }
-        //四舍五入到2位小数
-        productStockCountBig = productStockCountBig.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-        model.set("productStockCount", productStockCountBig.toString());
+
+        //2. 库存可用数量 productStockCount 计量转换计价 (单位换算)
+        BigDecimal productStockCountBig = BigDecimal.valueOf(0D);
+        String productStockCount = pd.getString("productStockCount");
+        if (productStockCount != null && productStockCount.trim().length() > 0) {
+            parmMap.put(parmKey, productStockCount);
+            //(库存可用数量) 计量转换计价 通过公式 单位换算
+            valueBig = EvaluateUtil.formulaReckon(parmMap, formula);
+            if (valueBig != null) {
+                productStockCountBig = valueBig;
+            }
+            //四舍五入到2位小数
+            productStockCountBig = productStockCountBig.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+            model.set("productStockCount_n2p", productStockCountBig.toString());
+        }
+
+        //3. (计价单位数量)订购数量 count  计价转换计量 (单位换算)
+        BigDecimal countBig = BigDecimal.valueOf(0D);
+        String count = pd.getString("count");
+        if (count != null && count.trim().length() > 0) {
+            parmMap.put(parmKey, count);
+            //(订购数量) 计价转换计量 通过公式 单位换算
+            valueBig = EvaluateUtil.formulaReckon(parmMap, formula);
+            if (valueBig != null) {
+                countBig = valueBig;
+            }
+            //四舍五入到2位小数
+            countBig = countBig.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+            model.set("count_p2n", countBig.toString());
+        }
 
         Long endTime = System.currentTimeMillis();
         logger.info("################productUnit/formulaReckonByProductCount 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
