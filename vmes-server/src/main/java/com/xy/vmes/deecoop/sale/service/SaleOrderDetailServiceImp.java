@@ -1,14 +1,19 @@
 package com.xy.vmes.deecoop.sale.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.common.util.Common;
 import com.xy.vmes.deecoop.sale.dao.SaleOrderDetailMapper;
+import com.xy.vmes.entity.SaleOrder;
 import com.xy.vmes.entity.SaleOrderDetail;
 import com.xy.vmes.service.SaleOrderDetailService;
+import com.xy.vmes.service.SaleOrderService;
+import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import com.yvan.Conv;
 import java.util.List;
@@ -23,8 +28,8 @@ import java.util.ArrayList;
 @Service
 @Transactional(readOnly = false)
 public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
-
-
+    @Autowired
+    private SaleOrderService saleOrderService;
     @Autowired
     private SaleOrderDetailMapper saleOrderDetailMapper;
 
@@ -187,6 +192,151 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
         findMap.put("parentId", parentId);
 
         return this.findSaleOrderDetailList(findMap);
+    }
+
+    public List<SaleOrderDetail> mapList2DetailList(List<Map<String, String>> mapList, List<SaleOrderDetail> objectList) {
+        if (objectList == null) {objectList = new ArrayList<SaleOrderDetail>();}
+        if (mapList == null || mapList.size() == 0) {return objectList;}
+
+        for (Map<String, String> mapObject : mapList) {
+            SaleOrderDetail detail = (SaleOrderDetail) HttpUtils.pageData2Entity(mapObject, new SaleOrderDetail());
+            objectList.add(detail);
+        }
+
+        return objectList;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    public void addSaleOrderDetail(SaleOrder parentObj, List<SaleOrderDetail> objectList) throws Exception {
+        if (parentObj == null) {return;}
+        if (objectList == null || objectList.size() == 0) {return;}
+
+        for (SaleOrderDetail detail : objectList) {
+            //订单状态(0:待提交 1:待审核 2:待出库 3:待发货 4:已发货 5:已完成 -1:已取消)
+            detail.setState("0");
+            detail.setParentId(parentObj.getId());
+            detail.setCuser(parentObj.getCuser());
+
+            this.save(detail);
+        }
+    }
+
+    public void updateStateByDetail(PageData pd) throws Exception {
+        saleOrderDetailMapper.updateStateByDetail(pd);
+    }
+
+    /**
+     * 根据订单明细状态-反写订单状态
+     * 订单状态(0:待提交 1:待审核 2:待出库 3:待发货 4:已发货 5:已完成 -1:已取消)
+     * 订单明细状态(0:待提交 1:待审核 2:待出库 3:待发货 4:已发货 5:已完成 -1:已取消)
+     *
+     * @param parent       订单对象
+     * @param dtlList      订单明细List<SaleOrderDetail>
+     */
+    public void updateParentStateByDetailList(SaleOrder parent, List<SaleOrderDetail> dtlList) throws Exception {
+        if (parent == null) {return;}
+        if (parent.getId() == null || parent.getId().trim().length() == 0) {return;}
+
+        if (dtlList == null) {
+            dtlList = this.findSaleOrderDetailListByParentId(parent.getId());
+        }
+
+        if (dtlList.size() == 0) {
+            saleOrderService.deleteById(parent.getId());
+        } else {
+            //获取订单状态-根据订单明细状态
+            String parentState = this.findParentStateByDetailList(dtlList);
+            parent.setState(parentState);
+            saleOrderService.update(parent);
+        }
+    }
+
+    public BigDecimal findTotalSumByDetailList(List<SaleOrderDetail> objectList) {
+        double totalSum_double = 0D;
+        if (objectList == null || objectList.size() == 0) {return BigDecimal.valueOf(0D);}
+
+        for (SaleOrderDetail detail : objectList) {
+            //订购数量(计价数量)
+            double count_double = 0D;
+            if (detail.getCount() != null) {
+                count_double = detail.getCount().doubleValue();
+            }
+
+            //货品单价
+            double productPrice_double = 0D;
+            if (detail.getProductPrice() != null) {
+                productPrice_double = detail.getProductPrice().doubleValue();
+            }
+
+            //货品金额(货品金额:=订购数量 * 货品单价)
+            BigDecimal productSum = BigDecimal.valueOf(count_double * productPrice_double);
+            //四舍五入到2位小数
+            productSum = productSum.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+            detail.setProductSum(productSum);
+
+            totalSum_double = totalSum_double + (count_double * productPrice_double);
+        }
+
+        //四舍五入到2位小数
+        return BigDecimal.valueOf(totalSum_double).setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /**
+     * 订单明细状态，在订单明细List<SaleOrderDetail>中是否全部相同
+     *   true : 全部相同，在订单明细List
+     *   false: 一条或多条不同，在订单明细List
+     *
+     * @param state       明细状态(0:待提交 1:待审核 2:待出库 3:待发货 4:已发货 5:已完成 -1:已取消)
+     * @param objectList  订单明细List<SaleOrderDetail>
+     * @return
+     */
+    public boolean isAllExistStateByDetailList(String state, List<SaleOrderDetail> objectList) {
+        if (state == null || state.trim().length() == 0) {return false;}
+        if (objectList == null || objectList.size() == 0) {return false;}
+
+        for (SaleOrderDetail detail : objectList) {
+            String dtl_state = detail.getState();
+            if (dtl_state == null || dtl_state.trim().length() == 0) {return false;}
+            if (!state.trim().equals(dtl_state.trim())) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * 获取订单状态-根据订单明细状态
+     * 订单状态(0:待提交 1:待审核 2:待出库 3:待发货 4:已发货 5:已完成 -1:已取消)
+     * 订单明细状态(0:待提交 1:待审核 2:待出库 3:待发货 4:已发货 5:已完成 -1:已取消)
+     *
+     * @param dtlList      订单明细List<SaleOrderDetail>
+     * @return
+     */
+    public String findParentStateByDetailList(List<SaleOrderDetail> dtlList) {
+        String parentState = new String("0");
+        if (dtlList == null || dtlList.size() == 0) {return parentState;}
+
+        //1. 验证订单状态(4:已发货) --> 全部明细状态 (4:已发货) -- 忽视状态(-1:已取消)
+        String checkDtlState = "4";
+        if (this.isAllExistStateByDetailList(checkDtlState, dtlList)) {
+            return "4";
+        }
+
+        //2. 验证订单状态(5:已完成) --> 全部明细状态 (5:已完成) -- 忽视状态(-1:已取消)
+        checkDtlState = "5";
+        if (this.isAllExistStateByDetailList(checkDtlState, dtlList)) {
+            return "5";
+        }
+
+        //3. 验证订单状态(-1:已取消) --> 全部明细状态 (-1:已取消) -- 忽视状态 null
+        checkDtlState = "-1";
+        if (this.isAllExistStateByDetailList(checkDtlState, dtlList)) {
+            return "-1";
+        }
+
+        return parentState;
     }
 }
 

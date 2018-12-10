@@ -4,9 +4,11 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.Column;
+import com.xy.vmes.entity.SaleOrder;
 import com.xy.vmes.entity.SaleOrderDetail;
 import com.xy.vmes.service.ColumnService;
 import com.xy.vmes.service.SaleOrderDetailService;
+import com.xy.vmes.service.SaleOrderService;
 import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
@@ -19,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
@@ -35,6 +36,8 @@ import java.util.*;
 public class SaleOrderDetailController {
     private Logger logger = LoggerFactory.getLogger(SaleOrderDetailController.class);
 
+    @Autowired
+    private SaleOrderService saleOrderService;
     @Autowired
     private SaleOrderDetailService saleOrderDetailService;
 
@@ -119,6 +122,107 @@ public class SaleOrderDetailController {
         model.putResult(result);
         Long endTime = System.currentTimeMillis();
         logger.info("################saleOrderDetail/listPageSaleOrderDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 取消订单明细
+     * @author 陈刚
+     * @date 2018-12-10
+     * @throws Exception
+     */
+    @PostMapping("/saleOrderDetail/cancelSaleOrderDetail")
+    @Transactional
+    public ResultModel cancelSaleOrderDetail() throws Exception {
+        logger.info("################/saleOrderDetail/cancelSaleOrderDetail 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        ResultModel model = new ResultModel();
+
+        PageData pageData = HttpUtils.parsePageData();
+        String detailId = pageData.getString("id");
+        if (detailId == null || detailId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("订单明细id为空或空字符串！");
+            return model;
+        }
+
+        SaleOrderDetail detail = saleOrderDetailService.findSaleOrderDetailById(detailId);
+        //明细状态(0:待提交 1:待审核 2:待出库 3:待发货 4:已发货 5:已完成 -1:已取消)
+        if (detail.getState() != null && "1,2,3,4,5".indexOf(detail.getState().trim()) > -1) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("当前订单明细不可取消，该订单明细状态(1:待审核 2:待出库 3:待发货 4:已发货 5:已完成)！");
+            return model;
+        }
+
+        SaleOrder order = saleOrderService.findSaleOrderById(detail.getParentId());
+        //订单状态(0:待提交 1:待审核 2:待出库 3:待发货 4:已发货 5:已完成 -1:已取消)
+        if (order != null && order.getState() != null && "1,2,3,4,5".indexOf(detail.getState().trim()) > -1) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("当前入库明细不可取消，该订单已经(1:待审核 2:待出库 3:待发货 4:已发货 5:已完成)！");
+            return model;
+        }
+
+        //1. 修改明细状态
+        //明细状态(0:待提交 1:待审核 2:待出库 3:待发货 4:已发货 5:已完成 -1:已取消)
+        detail.setState("-1");
+        saleOrderDetailService.update(detail);
+
+        //2.返写订单状态
+        //获取订单状态-根据订单明细状态 -- 忽视状态(-1:已取消)
+        if (order != null) {
+            saleOrderDetailService.updateParentStateByDetailList(order, null);
+        }
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/saleOrderDetail/cancelSaleOrderDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 删除订单明细
+     * @author 陈刚
+     * @date 2018-12-10
+     * @throws Exception
+     */
+    @PostMapping("/saleOrderDetail/deleteSaleOrderDetail")
+    @Transactional
+    public ResultModel deleteSaleOrderDetail() throws Exception {
+        logger.info("################/saleOrderDetail/deleteSaleOrderDetail 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        ResultModel model = new ResultModel();
+
+        PageData pageData = HttpUtils.parsePageData();
+        String detailId = pageData.getString("id");
+        if (detailId == null || detailId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("订单明细id为空或空字符串！");
+            return model;
+        }
+
+        SaleOrderDetail detail = saleOrderDetailService.findSaleOrderDetailById(detailId);
+        String checkState = detail.getState();
+        if ("-1".equals(checkState)) {checkState = "c";}
+
+        //订单状态(0:待提交 1:待审核 2:待出库 3:待发货 4:已发货 5:已完成 -1:已取消)
+        if (checkState != null && "1,2,3,4,5".indexOf(checkState.trim()) != -1) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("当前入库明细不可删除，该订单明细状态(1:待审核 2:待出库 3:待发货 4:已发货 5:已完成)！");
+            return model;
+        }
+
+
+        //1. 删除入库明细
+        saleOrderDetailService.deleteById(detailId);
+
+        //2.返写订单状态
+        //获取订单状态-根据订单明细状态 -- 忽视状态(-1:已取消)
+        SaleOrder order = saleOrderService.findSaleOrderById(detail.getParentId());
+        if (order != null) {
+            saleOrderDetailService.updateParentStateByDetailList(order, null);
+        }
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/saleOrderDetail/deleteSaleOrderDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 

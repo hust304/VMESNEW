@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
-import com.yvan.Conv;
 import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
@@ -33,7 +32,6 @@ public class SaleOrderServiceImp implements SaleOrderService {
     */
     @Override
     public void save(SaleOrder saleOrder) throws Exception{
-        saleOrder.setId(Conv.createUuid());
         saleOrder.setCdate(new Date());
         saleOrder.setUdate(new Date());
         saleOrderMapper.insert(saleOrder);

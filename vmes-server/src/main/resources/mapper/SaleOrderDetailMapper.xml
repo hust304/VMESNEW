@@ -76,6 +76,17 @@
 
     </insert>
 
+    <update id="updateStateByDetail" parameterType="com.yvan.PageData" >
+        update vmes_sale_order_detail set
+        state = #{state},
+        udate = now()
+        <where>
+            <if test="parentId != null and parentId != ''" >
+                and parent_id = #{parentId}
+            </if>
+        </where>
+    </update>
+
     <!-- 列表(全部) 自动创建，禁止修改-->
     <select id="dataList" parameterType="com.yvan.PageData" resultType="com.xy.vmes.entity.SaleOrderDetail">
         select
@@ -191,8 +202,10 @@
 
             product.type productType,
             round(ifnull(product.stock_count, 0), 2) stockCount,
+            round(ifnull(product.stock_count, 0), 2) stockCountByPrice,
             round(ifnull(product.lock_count, 0), 2) productLockCount,
             round((ifnull(product.stock_count, 0) - ifnull(product.lock_count, 0)), 2) productStockCount,
+            round((ifnull(product.stock_count, 0) - ifnull(product.lock_count, 0)), 2) productStockCountByPrice,
             productUnit.name productUnitName,
 
             priceUnit.name priceUnitName,

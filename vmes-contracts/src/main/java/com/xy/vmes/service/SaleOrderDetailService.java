@@ -1,9 +1,11 @@
 package com.xy.vmes.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.entity.SaleOrder;
 import com.xy.vmes.entity.SaleOrderDetail;
 import com.yvan.PageData;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -100,6 +102,44 @@ public interface SaleOrderDetailService {
     List<SaleOrderDetail> findSaleOrderDetailList(PageData object) throws Exception;
     List<SaleOrderDetail> findSaleOrderDetailListByParentId(String parentId) throws Exception;
 
+    List<SaleOrderDetail> mapList2DetailList(List<Map<String, String>> mapList, List<SaleOrderDetail> objectList);
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    BigDecimal findTotalSumByDetailList(List<SaleOrderDetail> objectList);
+    void addSaleOrderDetail(SaleOrder parentObj, List<SaleOrderDetail> objectList) throws Exception;
+    void updateStateByDetail(PageData pd) throws Exception;
+
+    /**
+     * 根据订单明细状态-反写订单状态
+     * 订单状态(0:待提交 1:待审核 2:待出库 3:待发货 4:已发货 5:已完成 -1:已取消)
+     * 订单明细状态(0:待提交 1:待审核 2:待出库 3:待发货 4:已发货 5:已完成 -1:已取消)
+     *
+     * @param parent       订单对象
+     * @param dtllList     订单明细List<SaleOrderDetail>
+     */
+    void updateParentStateByDetailList(SaleOrder parent, List<SaleOrderDetail> dtllList) throws Exception;
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /**
+     * 订单明细状态，在订单明细List<SaleOrderDetail>中是否全部相同
+     *   true : 全部相同，在入库单明细List
+     *   false: 一条或多条不同，在入库单明细List
+     *
+     * @param state       明细状态(0:待提交 1:待审核 2:待出库 3:待发货 4:已发货 5:已完成 -1:已取消)
+     * @param objectList  订单明细List<SaleOrderDetail>
+     * @return
+     */
+    boolean isAllExistStateByDetailList(String state, List<SaleOrderDetail> objectList);
+
+    /**
+     * 获取订单状态-根据订单明细状态
+     * 订单状态(0:待提交 1:待审核 2:待出库 3:待发货 4:已发货 5:已完成 -1:已取消)
+     * 订单明细状态(0:待提交 1:待审核 2:待出库 3:待发货 4:已发货 5:已完成 -1:已取消)
+     *
+     * @param dtlList      订单明细List<SaleOrderDetail>
+     * @return
+     */
+    String findParentStateByDetailList(List<SaleOrderDetail> dtlList);
 }
 
 
