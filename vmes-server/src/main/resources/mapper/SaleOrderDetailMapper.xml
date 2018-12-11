@@ -84,8 +84,12 @@
             <if test="parentId != null and parentId != ''" >
                 and parent_id = #{parentId}
             </if>
+            <if test="parentIds != null and parentIds != ''" >
+                and ${parentIds}
+            </if>
         </where>
     </update>
+
 
     <!-- 列表(全部) 自动创建，禁止修改-->
     <select id="dataList" parameterType="com.yvan.PageData" resultType="com.xy.vmes.entity.SaleOrderDetail">

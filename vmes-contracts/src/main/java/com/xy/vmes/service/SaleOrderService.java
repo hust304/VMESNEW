@@ -69,7 +69,7 @@ public interface SaleOrderService {
     List<SaleOrder> selectByColumnMap(Map columnMap) throws Exception;
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
-
+    void updateStateByOrder(String state, String ids) throws Exception;
     /**
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2018-12-05
@@ -98,6 +98,8 @@ public interface SaleOrderService {
     SaleOrder findSaleOrderById(String id) throws Exception;
 
     List<SaleOrder> findSaleOrderList(PageData object) throws Exception;
+
+    List<SaleOrder> mapList2OrderList(List<Map<String, String>> mapList, List<SaleOrder> objectList);
 
 }
 

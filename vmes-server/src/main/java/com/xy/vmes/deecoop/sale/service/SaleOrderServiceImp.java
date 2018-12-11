@@ -1,9 +1,11 @@
 package com.xy.vmes.deecoop.sale.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.sale.dao.SaleOrderMapper;
 import com.xy.vmes.entity.SaleOrder;
 import com.xy.vmes.service.SaleOrderService;
+import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -113,7 +115,19 @@ public class SaleOrderServiceImp implements SaleOrderService {
     }
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+    public void updateStateByOrder(String state, String ids) throws Exception {
+        if (state == null || state.trim().length() == 0) {return;}
+        if (ids == null || ids.trim().length() == 0) {return;}
 
+        PageData pageData = new PageData();
+        pageData.put("state", state);
+
+        ids = StringUtil.stringTrimSpace(ids);
+        ids = "'" + ids.replace(",", "','") + "'";
+        pageData.put("ids", "id in (" + ids + ")");
+
+        saleOrderMapper.updateStateByOrder(pageData);
+    }
     /**
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2018-12-05
@@ -175,6 +189,18 @@ public class SaleOrderServiceImp implements SaleOrderService {
 
     public List<SaleOrder> findSaleOrderList(PageData object) throws Exception{
         return this.findDataList(object, null);
+    }
+
+    public List<SaleOrder> mapList2OrderList(List<Map<String, String>> mapList, List<SaleOrder> objectList) {
+        if (objectList == null) {objectList = new ArrayList<SaleOrder>();}
+        if (mapList == null || mapList.size() == 0) {return objectList;}
+
+        for (Map<String, String> mapObject : mapList) {
+            SaleOrder order = (SaleOrder) HttpUtils.pageData2Entity(mapObject, new SaleOrder());
+            objectList.add(order);
+        }
+
+        return objectList;
     }
 }
 

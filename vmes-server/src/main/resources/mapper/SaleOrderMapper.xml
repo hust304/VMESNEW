@@ -64,6 +64,17 @@
 
     </insert>
 
+    <update id="updateStateByOrder" parameterType="com.yvan.PageData" >
+        update vmes_sale_order set
+        state = #{state},
+        udate = now()
+        <where>
+            <if test="ids != null and ids != ''" >
+                and ${ids}
+            </if>
+        </where>
+    </update>
+
     <!-- 列表(全部) 自动创建，禁止修改-->
     <select id="dataList" parameterType="com.yvan.PageData" resultType="com.xy.vmes.entity.SaleOrder">
         select
@@ -193,6 +204,9 @@
             </if>
             <if test="orderNumber != null and orderNumber != ''" >
                 and saleOrder.order_number = #{orderNumber}
+            </if>
+            <if test="priceType != null and priceType != ''" >
+                and saleOrder.price_type = #{priceType}
             </if>
 
             <!--queryStr 自定义sql查询语句-->

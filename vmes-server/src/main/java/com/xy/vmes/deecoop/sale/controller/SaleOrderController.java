@@ -362,6 +362,55 @@ public class SaleOrderController {
         return model;
     }
 
+    /**
+     * 提交订单
+     * @author 陈刚
+     * @date 2018-12-11
+     * @throws Exception
+     */
+    @PostMapping("/saleOrder/submitSaleOrder")
+    @Transactional
+    public ResultModel submitSaleOrder() throws Exception {
+        logger.info("################saleOrder/cancelSaleOrder 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        ResultModel model = new ResultModel();
+
+        PageData pageData = HttpUtils.parsePageData();
+        String orderJsonStr = pageData.getString("orderJsonStr");
+        if (orderJsonStr == null || orderJsonStr.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("请至少选择一行数据！");
+            return model;
+        }
+
+        List<Map<String, String>> mapList = (List<Map<String, String>>) YvanUtil.jsonToList(orderJsonStr);
+        if (mapList == null || mapList.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("订单Json字符串-转换成List错误！");
+            return model;
+        }
+
+        //获取订单
+        String ids = "";
+        List<SaleOrder> orderList = saleOrderService.mapList2OrderList(mapList, null);
+        for (SaleOrder order : orderList) {
+            if (order.getId() != null && order.getId().trim().length() > 0) {
+                ids = ids + order.getId().trim() + ",";
+            }
+        }
+        ids = StringUtil.stringTrimSpace(ids);
+
+        //1. 订单状态(0:待提交 1:待审核 2:待出库 3:待发货 4:已发货 5:已完成 -1:已取消)
+        saleOrderService.updateStateByOrder("1", ids);
+
+        //2. 订单明细状态(0:待提交 1:待审核 2:待出库 3:待发货 4:已发货 5:已完成 -1:已取消)
+        saleOrderDetailService.updateStateByDetail("1", ids);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################saleOrder/submitSaleOrder 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
 
     /**
     * Excel导出

@@ -2,6 +2,7 @@ package com.xy.vmes.deecoop.sale.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.Common;
+import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.sale.dao.SaleOrderDetailMapper;
 import com.xy.vmes.entity.SaleOrder;
 import com.xy.vmes.entity.SaleOrderDetail;
@@ -223,6 +224,20 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
 
     public void updateStateByDetail(PageData pd) throws Exception {
         saleOrderDetailMapper.updateStateByDetail(pd);
+    }
+
+    public void updateStateByDetail(String state, String parentIds) throws Exception {
+        if (state == null || state.trim().length() == 0) {return;}
+        if (parentIds == null || parentIds.trim().length() == 0) {return;}
+
+        PageData pageData = new PageData();
+        pageData.put("state", state);
+
+        parentIds = StringUtil.stringTrimSpace(parentIds);
+        parentIds = "'" + parentIds.replace(",", "','") + "'";
+        pageData.put("parentIds", "parent_id in (" + parentIds + ")");
+
+        saleOrderDetailMapper.updateStateByDetail(pageData);
     }
 
     /**

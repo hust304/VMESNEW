@@ -108,6 +108,7 @@ public interface SaleOrderDetailService {
     BigDecimal findTotalSumByDetailList(List<SaleOrderDetail> objectList);
     void addSaleOrderDetail(SaleOrder parentObj, List<SaleOrderDetail> objectList) throws Exception;
     void updateStateByDetail(PageData pd) throws Exception;
+    void updateStateByDetail(String state, String parentIds) throws Exception;
 
     /**
      * 根据订单明细状态-反写订单状态
