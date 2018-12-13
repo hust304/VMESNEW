@@ -207,6 +207,27 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
         return objectList;
     }
 
+    public String findProductIdsByDetailList(List<SaleOrderDetail> objectList) {
+        if (objectList == null || objectList.size() == 0) {return new String();}
+
+        StringBuffer strBuf = new StringBuffer();
+        for (SaleOrderDetail object : objectList) {
+            String productId = object.getProductId();
+            if (productId != null && productId.trim().length() > 0)  {
+                strBuf.append(productId.trim());
+                strBuf.append(",");
+            }
+        }
+
+        String strTemp = strBuf.toString();
+        if (strTemp.trim().length() > 0 && strTemp.lastIndexOf(",") != -1) {
+            strTemp = strTemp.substring(0, strTemp.lastIndexOf(","));
+            return strTemp;
+        }
+
+        return strTemp;
+    }
+
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public void addSaleOrderDetail(SaleOrder parentObj, List<SaleOrderDetail> objectList) throws Exception {
         if (parentObj == null) {return;}

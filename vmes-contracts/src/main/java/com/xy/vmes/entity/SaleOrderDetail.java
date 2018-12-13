@@ -54,7 +54,7 @@ public class SaleOrderDetail implements Serializable {
 	//计价单位id
 	@TableField("price_unit")
 	private String priceUnit;
-	//是否锁定仓库(0:无锁定 1:锁定)
+	//是否锁定仓库(0:未锁定 1:已锁定
 	@TableField("is_lock_warehouse")
 	private String isLockWarehouse;
 	//是否需要生产(0:无需 1:需要 库存不够)

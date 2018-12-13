@@ -233,6 +233,9 @@
                             </otherwise>
                         </choose>
                     </if>
+                    <if test="ids != null and ids != ''" >
+                        and id in (${ids})
+                    </if>
                     <if test="code != null and code != ''" >
                         and code=#{code}
                     </if>

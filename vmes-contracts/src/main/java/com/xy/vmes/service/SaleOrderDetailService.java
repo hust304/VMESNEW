@@ -103,6 +103,7 @@ public interface SaleOrderDetailService {
     List<SaleOrderDetail> findSaleOrderDetailListByParentId(String parentId) throws Exception;
 
     List<SaleOrderDetail> mapList2DetailList(List<Map<String, String>> mapList, List<SaleOrderDetail> objectList);
+    String findProductIdsByDetailList(List<SaleOrderDetail> objectList);
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     BigDecimal findTotalSumByDetailList(List<SaleOrderDetail> objectList);

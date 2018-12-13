@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+说明：订单明细审核 Mapper.xml
+创建人：陈刚
+创建时间：2018-12-11
+ -->
+<mapper namespace="com.xy.vmes.deecoop.sale.dao.SaleOrderDetailCustomerPriceMapper">
+    <select id="findOrderDetaiListByCustomer" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+            custDetail.customer_id customerId,
+            custDetail.product_id productId,
+            custDetail.price_unit priceUnit,
+            CONCAT_WS('-', custDetail.product_id, custDetail.price_unit) productKey,
+            round(ifnull(custDetail.product_price, 0), 2) productPrice
+        from (
+            select
+                CONCAT_WS('-', parent.customer_id, detail.product_id, detail.price_unit, DATE_FORMAT(max(detail.cdate),'%Y-%m-%d-%T')) productKey,
+                parent.customer_id,
+                detail.product_id,
+                detail.price_unit,
+                detail.product_price
+            from vmes_sale_order_detail detail
+                left join vmes_sale_order parent on detail.parent_id = parent.id
+            <where>
+                <if test="customerId != null and customerId != ''" >
+                    and parent.customer_id = #{customerId}
+                </if>
+                <if test="orderId != null and orderId != ''" >
+                    and parent.id = #{orderId}
+                </if>
+                <if test="productId != null and productId != ''" >
+                    and detail.product_id = #{productId}
+                </if>
+                <if test="productIds != null and productIds != ''" >
+                    and detail.product_id in (${productIds})
+                </if>
+                <!-- and parent.state = 5 -->
+                <!-- queryStr 自定义sql查询语句-->
+                <if test="queryStr != null and queryStr != ''" >
+                    and ${queryStr}
+                </if>
+            </where>
+        ) custDetail left join (
+            select
+                parent.customer_id,
+                detail.product_id,
+                detail.price_unit,
+                DATE_FORMAT(max(detail.cdate),'%Y-%m-%d-%T') cdate,
+                CONCAT_WS('-', parent.customer_id, detail.product_id, detail.price_unit, DATE_FORMAT(max(detail.cdate),'%Y-%m-%d-%T')) productKey
+            from vmes_sale_order_detail detail
+                left join vmes_sale_order parent on detail.parent_id = parent.id
+            <where>
+                <if test="customerId != null and customerId != ''" >
+                    and parent.customer_id = #{customerId}
+                </if>
+                <if test="orderId != null and orderId != ''" >
+                    and parent.id = #{orderId}
+                </if>
+                <if test="productId != null and productId != ''" >
+                    and detail.product_id = #{productId}
+                </if>
+                <if test="productIds != null and productIds != ''" >
+                    and detail.product_id in (${productIds})
+                </if>
+                <!--and parent.state = 5-->
+                <!--queryStr 自定义sql查询语句-->
+                <if test="queryStr != null and queryStr != ''" >
+                    and ${queryStr}
+                </if>
+            </where>
+            group by parent.customer_id,detail.product_id,detail.price_unit
+        ) custProd on custDetail.productKey = custProd.productKey
+
+        where custDetail.customer_id is not null and custDetail.product_id is not null and custDetail.price_unit is not null and custDetail.product_price is not null
+
+    </select>
+</mapper>
