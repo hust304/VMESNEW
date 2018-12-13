@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableName;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.*;
 
 /** 
@@ -63,7 +64,49 @@ public class Customer implements Serializable {
 	@TableField("isdisable")
 	private String isdisable;
 
+	@TableField("balance")
+	private BigDecimal balance;
 
+	@TableField("password")
+	private String password;
+
+	@TableField("account_days")
+	private BigDecimal accountDays;
+
+	@TableField("account_type")
+	private String accountType;
+
+	public String getAccountType() {
+		return accountType;
+	}
+
+	public void setAccountType(String accountType) {
+		this.accountType = accountType;
+	}
+
+	public BigDecimal getAccountDays() {
+		return accountDays;
+	}
+
+	public void setAccountDays(BigDecimal accountDays) {
+		this.accountDays = accountDays;
+	}
+
+	public BigDecimal getBalance() {
+		return balance;
+	}
+
+	public void setBalance(BigDecimal balance) {
+		this.balance = balance;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
 
 	public void setId(String id) {
 		this.id = id;

@@ -280,7 +280,7 @@ public class ProductController {
         List<ProductProperty> productPropertyList = productPropertyService.findProductPropertyList(findMap);
 
         Map<String, String> mapObject = productPropertyService.findProdPropertyJsonByProductPropertyList(productPropertyList);
-        Map<String, String> nameMap = productPropertyService.findProdPropertyNameByProductPropertyList(productPropertyList);
+//        Map<String, String> nameMap = productPropertyService.findProdPropertyNameByProductPropertyList(productPropertyList);
 
         if(varList!=null&&varList.size()>0){
             for(int i=0;i<varList.size();i++){
@@ -300,10 +300,9 @@ public class ProductController {
                         }
                     } else if ("prodProperty".equals(mapKey)) {
                         String prodId = (String)map.get("id");
-                        String propertyNames = "";
-                        if (nameMap.get(prodId) != null) {
-                            propertyNames = nameMap.get(prodId).trim();
-                            varMap.put(mapKey, propertyNames);
+                        if (mapObject.get(prodId) != null) {
+                            String showString = mapObject.get(prodId+"_show").trim();
+                            varMap.put(mapKey, showString);
                         }
                     } else {
                         varMap.put(mapKey, mapValue != null ? mapValue.toString() : "");

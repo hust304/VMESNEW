@@ -546,8 +546,8 @@ public class PostController {
         String deptId = (String)pd.get("currentCompanyId");
 
         PageData findMap = new PageData();
-        //findMap.put("deptDisable", "1");
-        //findMap.put("postDisable", "1");
+        findMap.put("deptDisable", pd.getString("deptDisable"));
+        findMap.put("postDisable", pd.getString("postDisable"));
         if (deptId != null && deptId.trim().length() > 0) {
             String queryIdStr = departmentService.findDeptidById(deptId, null, null);
             findMap.put("deptQuery", queryIdStr);
@@ -595,8 +595,8 @@ public class PostController {
         String deptId = pd.getString("currentCompanyId");
 
         PageData findMap = new PageData();
-        //findMap.put("deptDisable", "1");
-        //findMap.put("postDisable", "1");
+        findMap.put("deptDisable", pd.getString("deptDisable"));
+        findMap.put("postDisable", pd.getString("postDisable"));
         if (deptId != null && deptId.trim().length() > 0) {
             String queryIdStr = departmentService.findDeptidById(deptId, null, null);
             findMap.put("deptQuery", queryIdStr);

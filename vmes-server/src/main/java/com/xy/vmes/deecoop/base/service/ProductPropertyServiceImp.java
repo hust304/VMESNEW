@@ -332,11 +332,28 @@ public class ProductPropertyServiceImp implements ProductPropertyService {
         for (Iterator iterator = mapObject.keySet().iterator(); iterator.hasNext();) {
             String mapKey = (String)iterator.next();
             List<ProductProperty> prodPropertyList = mapObject.get(mapKey);
+            if(prodPropertyList!=null&&prodPropertyList.size()>0){
+                String jsonStr = this.prodPropertyList2JsonString(prodPropertyList);
+                if (jsonStr != null && jsonStr.trim().length() > 0) {
+                    mapObj.put(mapKey, jsonStr);
+                }
 
-            String jsonStr = this.prodPropertyList2JsonString(prodPropertyList);
-            if (jsonStr != null && jsonStr.trim().length() > 0) {
-                mapObj.put(mapKey, jsonStr);
+                String showStr = "";
+                for(int i=0;i<prodPropertyList.size();i++){
+                    ProductProperty productProperty = prodPropertyList.get(i);
+                    if(productProperty!=null){
+                        if(showStr!=null&&showStr.length()>0){
+                            showStr = showStr + ";" + productProperty.getName() + ":" + productProperty.getValue();
+                        }else{
+                            showStr = productProperty.getName() + ":" + productProperty.getValue();
+                        }
+                    }
+                }
+                if(showStr!=null&&showStr.trim().length()>0){
+                    mapObj.put(mapKey+"_show", showStr);
+                }
             }
+
         }
 
         return mapObj;

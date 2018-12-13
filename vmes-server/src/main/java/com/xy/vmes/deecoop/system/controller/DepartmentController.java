@@ -454,6 +454,9 @@ public class DepartmentController {
             Integer maxCount = departmentService.findMaxSerialNumber(deptObj.getPid());
             deptDB.setSerialNumber(Integer.valueOf(maxCount.intValue() + 1));
         }
+
+        deptDB.setRemark(deptObj.getRemark());
+
         departmentService.update(deptDB);
         Long endTime = System.currentTimeMillis();
         logger.info("################/department/updateDepartment 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");

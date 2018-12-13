@@ -347,7 +347,7 @@ public class UserController {
         User user = userService.findUserById(pd.getString("id"));
 
         //A. 手机号验证
-        String mobile = user.getMobile();
+        String mobile = pd.getString("mobile");
         if(mobile == null || mobile.trim().length() == 0){
             model.putCode(1);
             model.putMsg("该用户手机号不能为空！");

@@ -150,7 +150,7 @@
             (replace(uuid(), '-', ''),'BomTree','prodId','产品id',12, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'BomTree','parentProdId','上级产品id',13, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'BomTree','layer','级别',14, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'BomTree','ratio','用料比例',15, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTree','ratio','单件用量',15, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'BomTree','cuser','创建用户id',16, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'BomTree','cdate','创建时间',17, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'BomTree','uuser','修改用户id',18, '1','0','1','0',now(), 'admin'),

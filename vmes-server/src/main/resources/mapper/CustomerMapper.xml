@@ -19,7 +19,10 @@
 		code code,<!-- 客户编码 -->
 		name name,<!-- 客户名称 -->
 		name_en nameEn,<!-- 英文名称 -->
-
+        balance balance,
+        password password,
+        account_days accountDays,
+        account_type accountType,
         genre genre,<!-- 属性(1:客户 2:供应商) -->
         type type
 		province province,<!-- 省 -->
@@ -39,6 +42,10 @@
 		#{qrcode},<!-- 二维码-(图片相对路径) -->
 		#{code},<!-- 客户编码 -->
 		#{name},<!-- 客户名称 -->
+        #{balance},
+        #{password},
+        #{accountDays},
+        #{accountType},
 		#{nameEn},<!-- 英文名称 -->
 		#{genre},<!-- 属性(1:客户 2:供应商) -->
 		#{province},<!-- 省 -->
@@ -62,6 +69,10 @@
         '属性(1:客户 2:供应商)'  genre,
         '省'  province,
         '备注'  remark,
+        '余额' balance,
+        '密码' password,
+        '账期' accountDays,
+        '账期核算方式' accountType,
         '创建用户id'  cuser,
         '创建时间'  cdate,
         '修改用户id'  uuser,
@@ -157,6 +168,36 @@
             (replace(uuid(), '-', ''),'customer','id','id',0, '1','1','1','0',now(), 'admin')
     </insert>
 
+    <insert id="insertColumn1" >
+        delete from vmes_column where model_code = 'customerAccountDays' ;
+        insert into vmes_column (
+        id,model_code,title_key,title_name,serial_number,
+        isdisable,ishide,isedit,ismust,cdate,
+        cuser
+        ) VALUES
+        (replace(uuid(), '-', ''),'customerAccountDays','companyId','公司ID',1, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'customerAccountDays','qrcode','二维码',2, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'customerAccountDays','code','客户编码',3, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'customerAccountDays','name','客户名称',4, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'customerAccountDays','type','客户类型ID',5, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'customerAccountDays','typeName','客户类型',6, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'customerAccountDays','accountDays','账期（天）',7, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'customerAccountDays','accountType','账期开始时间',7, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'customerAccountDays','balance','账户余额',8, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'customerAccountDays','genre','属性',9, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'customerAccountDays','genreName','属性名称',10, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'customerAccountDays','province','省',11, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'customerAccountDays','provinceName','省',12, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'customerAccountDays','remark','备注',13, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'customerAccountDays','cuser','创建用户id',14, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'customerAccountDays','cdate','创建时间',15, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'customerAccountDays','uuser','修改用户id',16, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'customerAccountDays','udate','修改时间',17, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'customerAccountDays','isdisable','是否启用',18, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'customerAccountDays','id','id',0, '1','0','1','0',now(), 'admin')
+    </insert>
+
+
     <!-- 列表(全部) 自动创建，禁止修改-->
     <select id="dataList" parameterType="com.yvan.PageData" resultType="com.xy.vmes.entity.Customer">
         select <include refid="Field"/>
@@ -229,7 +270,9 @@
             cust.remark remark,
             cust.isdisable isdisable,
             cust.company_id companyId,
-
+            ROUND(cust.account_days, 2) accountDays,
+            cust.account_type accountType,
+            ROUND(cust.balance, 2)  balance,
             cust.qrcode qrcode,
             cust.cuser cuser,
             cust.cdate cdate,
