@@ -161,7 +161,7 @@
             product.code productCode,
             product.name productName,
             product.spec productSpec,
-            product.unit productUnit,
+            produnit.unit productUnit,
             product.genre productGenre,
             product.type productType,
             unit.name productUnitName,
@@ -170,7 +170,8 @@
         from vmes_warehouse_product wp
             left join vmes_warehouse warehouse on wp.warehouse_id = warehouse.id and warehouse.isdisable = '1'
             left join vmes_product product on wp.product_id = product.id and product.isdisable = '1'
-            left join vmes_dictionary unit on product.unit = unit.id
+            left join vmes_product_unit produnit on produnit.product_id = product.id and produnit.type = 1
+            left join vmes_dictionary unit on produnit.unit = unit.id
             left join vmes_dictionary genre on product.genre = genre.id
         <where>
             <if test="currentCompanyId != null and currentCompanyId != ''" >

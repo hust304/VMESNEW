@@ -528,7 +528,7 @@
             b.genre productGenre,
 
             b.type productType,
-            b.unit productUnit,
+            produnit.unit productUnit,
             b.last_unit productLastUnit,
             b.last_ratio productLastRatio,
             b.price productPrice,
@@ -540,6 +540,7 @@
 
         from vmes_warehouse_product a
             left join vmes_product b on a.product_id = b.id
+            left join vmes_product_unit produnit on b.id = produnit.product_id and produnit.type = 1
         <where>
             <if test="companyId != null and companyId != ''" >
                 and a.company_id=#{companyId}

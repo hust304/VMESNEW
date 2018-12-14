@@ -265,14 +265,14 @@ public class ProductServiceImp implements ProductService {
         productMapper.updateStockCount(pd);
     }
 
-    public ProductUnit product2ProductUnit(Product product, ProductUnit productUnit) {
+    public ProductUnit product2ProductUnit(Product product, ProductUnit productUnit,String unit) {
         if (productUnit == null) {productUnit = new ProductUnit();}
         if (product == null) {return productUnit;}
 
         //货品id productId
         productUnit.setProductId(product.getId());
         //计价单位 unit
-        productUnit.setUnit(product.getUnit());
+        productUnit.setUnit(unit);
         //计量转换计价单位 单位换算公式 np_formula
         productUnit.setNpFormula("P=N");
         //计价转换计量单位 单位换算公式 pn_formula
@@ -289,14 +289,14 @@ public class ProductServiceImp implements ProductService {
         return productUnit;
     }
 
-    public ProductUnitPrice product2ProductUnitPrice(Product product, ProductUnitPrice productUnitPrice) {
+    public ProductUnitPrice product2ProductUnitPrice(Product product, ProductUnitPrice productUnitPrice,String unit) {
         if (productUnitPrice == null) {productUnitPrice = new ProductUnitPrice();}
         if (product == null) {return productUnitPrice;}
 
         //货品ID productId
         productUnitPrice.setProductId(product.getId());
         //计价单位ID priceUnit
-        productUnitPrice.setPriceUnit(product.getUnit());
+        productUnitPrice.setPriceUnit(unit);
         //货品单价 productPrice
         productUnitPrice.setProductPrice(product.getPrice());
         //创建用户id cuser

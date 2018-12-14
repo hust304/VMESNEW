@@ -51,7 +51,7 @@
                 b.spec productSpec,
                 b.genre productGenre,
                 b.type productType,
-                b.unit productUnit,
+                produnit.unit productUnit,
                 unit.name productUnitName,
                 type.name productTypeName,
                 genre.name productGenreName
@@ -69,7 +69,8 @@
                 group by product_id,warehouse_id
             ) a
                 left join vmes_product b on a.product_id = b.id
-                left join vmes_dictionary unit on b.unit = unit.id
+                left join vmes_product_unit produnit on produnit.product_id = b.id and produnit.type = 1
+                left join vmes_dictionary unit on produnit.unit = unit.id
                 left join vmes_dictionary genre on b.genre = genre.id
                 left join vmes_dictionary type on b.type = type.id
             where b.isdisable = '1'

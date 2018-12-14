@@ -43,7 +43,7 @@ public class Product implements Serializable {
 	private String genre;
 	//计量单位(字典表-vmes_dictionary.id)
 //	@TableField("unit")
-	private String unit;
+//	private String unit;
 	//结算单位(字典表-vmes_dictionary.id)
 	@TableField("last_unit")
 	private String lastUnit;
@@ -148,12 +148,12 @@ public class Product implements Serializable {
 	public String getGenre() {
 		return genre;
 	}
-	public void setUnit(String unit) {
-		this.unit = unit;
-	}
-	public String getUnit() {
-		return unit;
-	}
+//	public void setUnit(String unit) {
+//		this.unit = unit;
+//	}
+//	public String getUnit() {
+//		return unit;
+//	}
 	public void setLastUnit(String lastUnit) {
 		this.lastUnit = lastUnit;
 	}

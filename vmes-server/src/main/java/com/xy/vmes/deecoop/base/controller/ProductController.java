@@ -426,12 +426,12 @@ public class ProductController {
         productService.save(product);
 
         //3. 添加 vmes_product_unit
-        ProductUnit productUnit = productService.product2ProductUnit(product, null);
+        ProductUnit productUnit = productService.product2ProductUnit(product, null,pageData.getString("unit"));
         productUnitService.save(productUnit);
 
         //4. 添加 vmes_product_unit_price
         if (product.getPrice() != null) {
-            ProductUnitPrice productUnitPrice = productService.product2ProductUnitPrice(product, null);
+            ProductUnitPrice productUnitPrice = productService.product2ProductUnitPrice(product, null,pageData.getString("unit"));
             productUnitPriceService.save(productUnitPrice);
         }
 

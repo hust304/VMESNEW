@@ -217,7 +217,7 @@
         product.spec spec,
         product.genre genre,
         genre.name genreName,
-        product.unit unit,
+        produnit.unit unit,
         unit.name unitName,
         product.type type,
         type.name typeName,
@@ -271,8 +271,9 @@
         from
         vmes_bom_tree tree
         left join vmes_product product on product.id = tree.prod_id
+        left join vmes_product_unit produnit on produnit.product_id = product.id and produnit.type = 1
         left join vmes_dictionary genre on product.genre = genre.id
-        left join vmes_dictionary unit on product.unit = unit.id
+        left join vmes_dictionary unit on produnit.unit = unit.id
         left join vmes_dictionary type on product.type = type.id
         <where>
             <!--queryStr 自定义sql查询语句-->
@@ -309,8 +310,9 @@
         from
         vmes_bom_tree tree
         left join vmes_product product on product.id = tree.prod_id
+        left join vmes_product_unit produnit on produnit.product_id = product.id and produnit.type = 1
         left join vmes_dictionary genre on product.genre = genre.id
-        left join vmes_dictionary unit on product.unit = unit.id
+        left join vmes_dictionary unit on produnit.unit = unit.id
         left join vmes_dictionary type on product.type = type.id
         <where>
             <!--queryStr 自定义sql查询语句-->

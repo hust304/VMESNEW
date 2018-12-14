@@ -122,8 +122,8 @@ public interface ProductService {
     String findIdsByPageMapList(List<Map> mapList);
 
     void updateStockCount(Product product, BigDecimal count, String uuser) throws Exception;
-    ProductUnit product2ProductUnit(Product product, ProductUnit productUnit);
-    ProductUnitPrice product2ProductUnitPrice(Product product, ProductUnitPrice productUnitPrice);
+    ProductUnit product2ProductUnit(Product product, ProductUnit productUnit,String unit);
+    ProductUnitPrice product2ProductUnitPrice(Product product, ProductUnitPrice productUnitPrice,String unit);
 }
 
 
