@@ -309,8 +309,9 @@
         left join vmes_warehouse_move_detail detail on detail.parent_id = warehousemove.id
         left join vmes_warehouse_product wp on wp.id = detail.warehouse_product_id
         left join vmes_product prod on prod.id = wp.product_id
+        left join vmes_product_unit produnit on produnit.product_id = prod.id and produnit.type = 1
         left join vmes_dictionary genre on prod.genre = genre.id
-        left join vmes_dictionary unit on prod.unit = unit.id
+        left join vmes_dictionary unit on produnit.unit = unit.id
         <where>
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >
@@ -372,8 +373,9 @@
         left join vmes_warehouse_move_detail detail on detail.parent_id = warehousemove.id
         left join vmes_warehouse_product wp on wp.id = detail.warehouse_product_id
         left join vmes_product prod on prod.id = wp.product_id
+        left join vmes_product_unit produnit on produnit.product_id = prod.id and produnit.type = 1
         left join vmes_dictionary genre on prod.genre = genre.id
-        left join vmes_dictionary unit on prod.unit = unit.id
+        left join vmes_dictionary unit on produnit.unit = unit.id
         <where>
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >

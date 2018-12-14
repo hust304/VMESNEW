@@ -284,7 +284,7 @@
         prod.spec,
         prod.genre genre,
         genre.name genreName,
-        prod.unit unit,
+        produnit.unit unit,
         unit.name unitName,
         prod.type,
         type.name typeName,
@@ -293,8 +293,9 @@
         prod.id
         from vmes_warehouse_product wp
         left join vmes_product prod on wp.product_id = prod.id
+        left join vmes_product_unit produnit on produnit.product_id = prod.id and produnit.type = 1
         left join vmes_dictionary genre on prod.genre = genre.id
-        left join vmes_dictionary unit on prod.unit = unit.id
+        left join vmes_dictionary unit on produnit.unit = unit.id
         left join vmes_dictionary type on prod.type = type.id
         left join vmes_warehouse warehouse on warehouse.id = wp.warehouse_id
 
@@ -359,7 +360,7 @@
         prod.spec,
         prod.genre genre,
         genre.name genreName,
-        prod.unit unit,
+        produnit.unit unit,
         unit.name unitName,
         prod.type,
         type.name typeName,
@@ -368,8 +369,9 @@
         wp.id
         from vmes_warehouse_product wp
         left join vmes_product prod on wp.product_id = prod.id
+        left join vmes_product_unit produnit on produnit.product_id = prod.id and produnit.type = 1
         left join vmes_dictionary genre on prod.genre = genre.id
-        left join vmes_dictionary unit on prod.unit = unit.id
+        left join vmes_dictionary unit on produnit.unit = unit.id
         left join vmes_dictionary type on prod.type = type.id
         left join vmes_warehouse warehouse on warehouse.id = wp.warehouse_id
 

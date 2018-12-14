@@ -318,7 +318,7 @@
         prod.spec productSpec,
         prod.genre productGenre,
         genre.name productGenreName,
-        prod.unit productUnit,
+        produnit.unit productUnit,
         unit.name productUnitName,
 
         warehouse.path_name pathName,
@@ -368,8 +368,9 @@
         left join vmes_warehouse_move_execute moveexecute on moveexecute.detail_id = detail.id and moveexecute.isdisable = '1'
         left join vmes_warehouse_product whprod on whprod.id = detail.warehouse_product_id
         left join vmes_product prod on prod.id = whprod.product_id
+        left join vmes_product_unit produnit on produnit.product_id = prod.id and produnit.type = 1
         left join vmes_dictionary genre on prod.genre = genre.id
-        left join vmes_dictionary unit on prod.unit = unit.id
+        left join vmes_dictionary unit on produnit.unit = unit.id
         left join vmes_dictionary lastUnit on prod.last_unit = lastUnit.id
         left join vmes_dictionary type on prod.type = type.id
         left join vmes_warehouse warehouse on warehouse.id = whprod.warehouse_id
@@ -423,8 +424,9 @@
         left join vmes_warehouse_move_execute moveexecute on moveexecute.detail_id = detail.id and moveexecute.isdisable = '1'
         left join vmes_warehouse_product whprod on whprod.id = detail.warehouse_product_id
         left join vmes_product prod on prod.id = whprod.product_id
+        left join vmes_product_unit produnit on produnit.product_id = prod.id and produnit.type = 1
         left join vmes_dictionary genre on prod.genre = genre.id
-        left join vmes_dictionary unit on prod.unit = unit.id
+        left join vmes_dictionary unit on produnit.unit = unit.id
         left join vmes_dictionary lastUnit on prod.last_unit = lastUnit.id
         left join vmes_dictionary type on prod.type = type.id
         left join vmes_warehouse warehouse on warehouse.id = whprod.warehouse_id

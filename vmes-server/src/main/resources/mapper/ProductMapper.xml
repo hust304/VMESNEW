@@ -20,7 +20,6 @@
 		name_en nameEn,<!-- 英文名称 -->
 		spec spec,<!-- 规格型号 -->
 		genre genre,<!-- 产品属性(字典表-vmes_dictionary.id) -->
-		unit unit,<!-- 计量单位(字典表-vmes_dictionary.id) -->
 		last_unit lastUnit,<!-- 结算单位(字典表-vmes_dictionary.id) -->
 		last_ratio lastRatio,<!-- 结算比例 -->
 		price price,<!-- 单价 -->
@@ -50,7 +49,6 @@
 		#{nameEn},<!-- 英文名称 -->
 		#{spec},<!-- 规格型号 -->
 		#{genre},<!-- 产品属性(字典表-vmes_dictionary.id) -->
-		#{unit},<!-- 计量单位(字典表-vmes_dictionary.id) -->
 		#{lastUnit},<!-- 结算单位(字典表-vmes_dictionary.id) -->
 		#{lastRatio},<!-- 结算比例 -->
 		#{price},<!-- 单价 -->
@@ -77,7 +75,6 @@
         '英文名称'  nameEn,
         '规格型号'  spec,
         '产品属性(字典表-vmes_dictionary.id)'  genre,
-        '计量单位(字典表-vmes_dictionary.id)'  unit,
         '结算单位(字典表-vmes_dictionary.id)'  lastUnit,
         '结算比例'  lastRatio,
         '单价'  price,
@@ -288,7 +285,7 @@
             prod.spec spec,
             prod.genre genre,
             genre.name genreName,
-            prod.unit unit,
+            produnit.unit unit,
             unit.name unitName,
 
             '' prodProperty,
@@ -312,8 +309,9 @@
             prod.isdisable isdisable
 
         from vmes_product prod
+            left join vmes_product_unit produnit on produnit.product_id = prod.id and produnit.type = 1
             left join vmes_dictionary genre on prod.genre = genre.id
-            left join vmes_dictionary unit on prod.unit = unit.id
+            left join vmes_dictionary unit on produnit.unit = unit.id
             left join vmes_dictionary type on prod.type = type.id
         <where>
             <!-- 过滤出库存产品 -->

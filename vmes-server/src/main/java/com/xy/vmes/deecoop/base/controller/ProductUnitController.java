@@ -104,6 +104,11 @@ public class ProductUnitController {
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         ProductUnit productUnit = (ProductUnit)HttpUtils.pageData2Entity(pd, new ProductUnit());
+        if("计量单位".equals(productUnit.getType())){
+            productUnit.setType("1");
+        }else{
+            productUnit.setType("0");
+        }
         productUnitService.update(productUnit);
         Long endTime = System.currentTimeMillis();
         logger.info("################productUnit/update 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
@@ -205,6 +210,35 @@ public class ProductUnitController {
 
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+
+
+
+
+    /**
+     * @author 刘威 自动创建，禁止修改
+     * @date 2018-09-20
+     */
+    @PostMapping("/productUnit/updateIsDefaultProductUnit")
+    @Transactional
+    public ResultModel updateIsDefaultProductUnit()  throws Exception {
+
+        logger.info("################bom/updateIsDefaultProductUnit 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        HttpServletResponse response  = HttpUtils.currentResponse();
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+        ProductUnit productUnit = (ProductUnit)HttpUtils.pageData2Entity(pd, new ProductUnit());
+        if(!StringUtils.isEmpty(productUnit.getProductId())){
+            productUnitService.updateToNotDefaultByPorId(productUnit.getProductId());
+        }
+        productUnitService.update(productUnit);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################productUnit/updateIsDefaultProductUnit 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+
     /**
     * @author 刘威 自动创建，可以修改
     * @date 2018-11-15

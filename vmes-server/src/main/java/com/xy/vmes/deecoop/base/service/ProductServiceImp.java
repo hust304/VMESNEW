@@ -274,9 +274,11 @@ public class ProductServiceImp implements ProductService {
         //计价单位 unit
         productUnit.setUnit(product.getUnit());
         //计量转换计价单位 单位换算公式 np_formula
-        productUnit.setNpFormula("P=1*N");
+        productUnit.setNpFormula("P=N");
         //计价转换计量单位 单位换算公式 pn_formula
-        productUnit.setPnFormula("N=P/1");
+        productUnit.setPnFormula("N=P");
+        productUnit.setIsdefault("1");
+        productUnit.setType("1");
         //创建人id
         productUnit.setCuser(product.getCuser());
         //货品单价 productPrice

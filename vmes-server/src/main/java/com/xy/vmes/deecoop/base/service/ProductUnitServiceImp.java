@@ -185,6 +185,12 @@ public class ProductUnitServiceImp implements ProductUnitService {
     }
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+
+
+    public void updateToNotDefaultByPorId(String productId) throws Exception{
+        productUnitMapper.updateToNotDefaultByPorId(productId);
+    }
+
     /**
      *
      * @param pageData    查询参数对象<HashMap>

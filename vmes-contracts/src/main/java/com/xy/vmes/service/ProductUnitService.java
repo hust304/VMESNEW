@@ -132,6 +132,7 @@ public interface ProductUnitService {
 
     List<ProductUnit> findProductUnitList(PageData object) throws Exception;
 
+    void updateToNotDefaultByPorId(String productId) throws Exception;
 }
 
 

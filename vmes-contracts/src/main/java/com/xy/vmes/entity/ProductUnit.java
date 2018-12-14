@@ -62,6 +62,28 @@ public class ProductUnit implements Serializable {
 	private BigDecimal productPrice;
 
 
+	@TableField("isdefault")
+	private String isdefault;
+
+	@TableField("type")
+	private String type;
+
+	public String getIsdefault() {
+		return isdefault;
+	}
+
+	public void setIsdefault(String isdefault) {
+		this.isdefault = isdefault;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
 	public void setId(String id) {
 		this.id = id;
 	}

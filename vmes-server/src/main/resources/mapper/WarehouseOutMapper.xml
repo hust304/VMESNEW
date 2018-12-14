@@ -332,8 +332,9 @@
 
         left join vmes_warehouse_out_detail detail on detail.parent_id = warehouseout.id
         left join vmes_product prod on prod.id = detail.product_id
+        left join vmes_product_unit produnit on produnit.product_id = prod.id and produnit.type = 1
         left join vmes_dictionary genre on prod.genre = genre.id
-        left join vmes_dictionary unit on prod.unit = unit.id
+        left join vmes_dictionary unit on produnit.unit = unit.id
 
         <where>
             <!--queryStr 自定义sql查询语句-->
@@ -399,8 +400,9 @@
 
         left join vmes_warehouse_out_detail detail on detail.parent_id = warehouseout.id
         left join vmes_product prod on prod.id = detail.product_id
+        left join vmes_product_unit produnit on produnit.product_id = prod.id and produnit.type = 1
         left join vmes_dictionary genre on prod.genre = genre.id
-        left join vmes_dictionary unit on prod.unit = unit.id
+        left join vmes_dictionary unit on produnit.unit = unit.id
 
         <where>
             <!--queryStr 自定义sql查询语句-->

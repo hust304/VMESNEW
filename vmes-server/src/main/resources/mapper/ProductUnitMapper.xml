@@ -29,6 +29,8 @@
         uuser uuser,<!-- 修改人账号 -->
 		remark remark,<!-- 备注 -->
 		id id, <!-- id -->
+        isdefault isdefault,
+        type type,
         product_price productPrice
     </sql>
 
@@ -46,6 +48,8 @@
 		#{udate},<!-- 修改时间 -->
 		#{uuser},<!-- 修改人账号 -->
 		#{remark},<!-- 备注 -->
+        #{isdefault},
+        #{type},
 		#{id} <!-- id -->
     </sql>
 
@@ -64,6 +68,8 @@
         '修改时间'  udate,
         '修改人账号'  uuser,
         '备注'  remark,
+        '是否默认' isdefault,
+        '是否计量单位' type,
         'id' id_hide
     </sql>
 
@@ -143,18 +149,19 @@
             (replace(uuid(), '-', ''),'ProductUnit','productId','货品Id',1, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'ProductUnit','code','货品编码',2, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'ProductUnit','name','货品名称',3, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'ProductUnit','nunit','计量单位Id',4, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'ProductUnit','nunitName','计量单位',5, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'ProductUnit','punit','计价单位Id',6, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'ProductUnit','punitName','计价单位',7, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'ProductUnit','type','单位类型',4, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'ProductUnit','punit','单位Id',5, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'ProductUnit','punitName','单位',6, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'ProductUnit','productPrice','单价',7, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'ProductUnit','npFormula','计量单位转换计价单位',8, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'ProductUnit','pnFormula','计价单位转换计量单位',9, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'ProductUnit','isdisable','是否启用',10, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'ProductUnit','cdate','创建时间',11, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'ProductUnit','cuser','创建人账号',12, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'ProductUnit','udate','修改时间',13, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'ProductUnit','uuser','修改人账号',14, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'ProductUnit','remark','备注',15, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'ProductUnit','isdefault','是否默认',11, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'ProductUnit','cdate','创建时间',13, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'ProductUnit','cuser','创建人账号',14, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'ProductUnit','udate','修改时间',15, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'ProductUnit','uuser','修改人账号',16, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'ProductUnit','remark','备注',17, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'ProductUnit','id','id',0, '1','0','1','0',now(), 'admin')
     </insert>
 
@@ -213,8 +220,6 @@
         punit.name punitName,
         product.code code,<!-- 编码 -->
         product.name name,<!-- 名称 -->
-        product.unit nunit,
-        nunit.name nunitName,
         pu.np_formula npFormula,<!-- 计量单位转换计价单位 -->
         pu.pn_formula pnFormula,<!-- 计价单位转换计量单位 -->
         pu.isdisable isdisable,<!-- 是否禁用(0:已禁用 1:启用) -->
@@ -224,6 +229,8 @@
         pu.uuser uuser,<!-- 修改人账号 -->
         pu.remark remark,<!-- 备注 -->
         pu.id id, <!-- id -->
+        pu.isdefault isdefault,
+        case when pu.type=0 then '计价单位' when pu.type=1 then '计量单位' else null end type,
         round(ifnull(pu.product_price, 0), 2) productPrice
     </sql>
 
@@ -262,7 +269,6 @@
         from
         vmes_product_unit pu
         left join vmes_product product on product.id = pu.product_id
-        left join vmes_dictionary nunit on product.unit = nunit.id
         left join vmes_dictionary punit on pu.unit = punit.id
         <where>
             <if test="productId != null and productId != ''">
@@ -286,7 +292,6 @@
         from
         vmes_product_unit pu
         left join vmes_product product on product.id = pu.product_id
-        left join vmes_dictionary nunit on product.unit = nunit.id
         left join vmes_dictionary punit on pu.unit = punit.id
         <where>
             <!--queryStr 自定义sql查询语句-->
@@ -302,7 +307,14 @@
         </if>
     </select>
 
-
+    <!-- 自动创建，禁止修改-->
+    <update id="updateToNotDefaultByPorId" parameterType="java.lang.String" >
+        update
+        <include refid="tableName"></include>
+        set isdefault = '0' ,udate = now()
+        where
+        product_id  = #{productId}
+    </update>
 
 
 </mapper>

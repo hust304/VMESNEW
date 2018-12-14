@@ -293,8 +293,9 @@
         vmes_bom bom
         left join vmes_bom_tree bomtree on bom.id = bomtree.bom_id and bomtree.layer = 0
         left join vmes_product prod on prod.id = bomtree.prod_id
+        left join vmes_product_unit produnit on produnit.product_id = prod.id and produnit.type = 1
         left join vmes_dictionary genre on prod.genre = genre.id
-        left join vmes_dictionary unit on prod.unit = unit.id
+        left join vmes_dictionary unit on produnit.unit = unit.id
         left join vmes_dictionary type on prod.type = type.id
         <where>
             <!--queryStr 自定义sql查询语句-->
@@ -336,8 +337,9 @@
         vmes_bom bom
         left join vmes_bom_tree bomtree on bom.id = bomtree.bom_id and bomtree.layer = 0
         left join vmes_product prod on prod.id = bomtree.prod_id
+        left join vmes_product_unit produnit on produnit.product_id = prod.id and produnit.type = 1
         left join vmes_dictionary genre on prod.genre = genre.id
-        left join vmes_dictionary unit on prod.unit = unit.id
+        left join vmes_dictionary unit on produnit.unit = unit.id
         left join vmes_dictionary type on prod.type = type.id
         <where>
             <!--queryStr 自定义sql查询语句-->

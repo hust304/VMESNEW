@@ -105,11 +105,12 @@
             prodPrice.isdisable isdisable,
 
             prod.name prodName,
-            prod.unit prodUnit,
-            prodUnit.name prodUnitName
+            produnit.unit prodUnit,
+            unit.name prodUnitName
         from vmes_product_unit_price prodPrice
             left join vmes_product prod on prodPrice.product_id = prod.id
-            left join vmes_dictionary prodUnit on prod.unit = prodUnit.id
+            left join vmes_product_unit produnit on produnit.product_id = prod.id and produnit.type = 1
+            left join vmes_dictionary unit on produnit.unit = unit.id
             left join vmes_dictionary priceUnit on prodPrice.price_unit = priceUnit.id
         <where>
             <if test="productId != null and productId != ''">

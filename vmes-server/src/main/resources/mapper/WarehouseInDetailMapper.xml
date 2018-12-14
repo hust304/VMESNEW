@@ -215,7 +215,7 @@
                 prod.code productCode,
                 prod.name productName,
                 prod.spec productSpec,
-                prod.unit productUnit,
+                produnit.unit productUnit,
                 unit.name productUnitName,
                 prod.genre productGenre,
                 genre.name productGenreName,
@@ -230,7 +230,8 @@
                 left join vmes_warehouse warehouse on a.warehouse_id = warehouse.id
                 left join vmes_warehouse_in parent on a.parent_id = parent.id
                 left join vmes_product prod on a.product_id = prod.id
-                left join vmes_dictionary unit on prod.unit = unit.id
+                left join vmes_product_unit produnit on produnit.product_id = prod.id and produnit.type = 1
+                left join vmes_dictionary unit on produnit.unit = unit.id
                 left join vmes_dictionary genre on prod.genre = genre.id
                 <!--left join vmes_user user on a.execute_id = user.id-->
                 left join vmes_warehouse_in_execute inexecute on a.id = inexecute.detail_id and inexecute.isdisable = '1'
