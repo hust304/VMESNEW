@@ -441,6 +441,9 @@ public class EmployeeController {
         //id:主键id-(vmes_employ:员工岗位表)
         String employeeId = (String)pageData.get("employeeId");
         String isdisable = (String)pageData.get("isdisable");
+        String id = (String)pageData.get("id");
+        String userId = (String)pageData.get("userId");
+
 
         String msgStr = new String();
         if (employeeId == null || employeeId.trim().length() == 0) {
@@ -455,10 +458,24 @@ public class EmployeeController {
             return model;
         }
 
-        Employee employDB = employeeService.findEmployeeById(employeeId);
-        employDB.setIsdisable(isdisable);
-        employDB.setUuser(pageData.getString("uuser"));
-        employeeService.update(employDB);
+        EmployPost employPost = employPostService.selectById(id);
+        employPost.setIsdisable(isdisable);
+        employPost.setUuser(pageData.getString("uuser"));
+        employPostService.update(employPost);
+
+        if("0".equals(employPost.getIsplurality())){
+            Employee employDB = employeeService.findEmployeeById(employeeId);
+            employDB.setIsdisable(isdisable);
+            employDB.setUuser(pageData.getString("uuser"));
+            employeeService.update(employDB);
+
+            User user = userService.selectById(userId);
+            user.setIsdisable(isdisable);
+            user.setUuser(pageData.getString("uuser"));
+            userService.update(user);
+        }
+
+
 
         Long endTime = System.currentTimeMillis();
         logger.info("################employee/updateDisableEmployee 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");

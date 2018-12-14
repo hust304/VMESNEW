@@ -348,6 +348,8 @@ public class UserController {
 
         //A. 手机号验证
         String mobile = pd.getString("mobile");
+        String email = pd.getString("email");
+        String userName = pd.getString("userName");
         if(mobile == null || mobile.trim().length() == 0){
             model.putCode(1);
             model.putMsg("该用户手机号不能为空！");
@@ -413,16 +415,19 @@ public class UserController {
                 employee.setUserId(user.getId());
                 //是否开通用户(0:不开通 1:开通 is null 不开通)
                 employee.setIsOpenUser("1");
+                employee.setMobile(mobile);
+                employee.setEmail(email);
+//                employee.setName(userName);
                 employeeService.update(employee);
             }
 
             user.setEmployId(employeeId);
             //mobile:手机号码
-            user.setMobile(employee.getMobile());
+            user.setMobile(mobile);
             //email:邮箱地址
-            user.setEmail(employee.getEmail());
+            user.setEmail(email);
             //user_name:姓名->name:员工姓名
-            user.setUserName(employee.getName());
+            user.setUserName(userName);
         }
         userService.update(user);
 
