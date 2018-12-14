@@ -247,7 +247,7 @@
                 and parent.id in (
                     select parent_id
                     from vmes_warehouse_check_execute
-                    where isdisable = '1' and state = '0'
+                    where isdisable = '1' and state in ('0','2','3')
                     group by parent_id
                 )
             </if>
