@@ -3,8 +3,10 @@ package com.xy.vmes.deecoop.warehouse.service;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.Common;
 import com.xy.vmes.deecoop.warehouse.dao.WarehouseOutMapper;
+import com.xy.vmes.entity.Warehouse;
 import com.xy.vmes.entity.WarehouseOut;
 import com.xy.vmes.entity.WarehouseOutDetail;
+import com.xy.vmes.service.CoderuleService;
 import com.xy.vmes.service.WarehouseOutDetailService;
 import com.xy.vmes.service.WarehouseOutService;
 import com.yvan.PageData;
@@ -26,12 +28,12 @@ import com.yvan.Conv;
 @Transactional(readOnly = false)
 public class WarehouseOutServiceImp implements WarehouseOutService {
 
-
     @Autowired
     private WarehouseOutMapper warehouseOutMapper;
-
     @Autowired
     private WarehouseOutDetailService warehouseOutDetailService;
+    @Autowired
+    private CoderuleService coderuleService;
 
     /**
     * 创建人：刘威 自动创建，禁止修改
@@ -301,6 +303,26 @@ public class WarehouseOutServiceImp implements WarehouseOutService {
             this.update(warehouseOut);
         }
 
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////
+    public WarehouseOut createWarehouseOut(String deptId, String deptName, String cuser, String companyId, String outType) {
+        WarehouseOut warehouseOut = new WarehouseOut();
+        //出库单编号
+        String code = coderuleService.createCoder(companyId, "vmes_warehouse_out", "O");
+        warehouseOut.setCode(code);
+
+        warehouseOut.setCompanyId(companyId);
+        //出库类型 销售发货出库
+        warehouseOut.setType(outType);
+        warehouseOut.setDeptId(deptId);
+        warehouseOut.setDeptName(deptName);
+        //状态(0:未完成 1:已完成 -1:已取消)
+        warehouseOut.setState("0");
+        warehouseOut.setMakeId(cuser);
+        warehouseOut.setCuser(cuser);
+
+        return warehouseOut;
     }
 }
 

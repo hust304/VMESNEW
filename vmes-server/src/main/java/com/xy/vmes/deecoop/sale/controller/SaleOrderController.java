@@ -7,10 +7,7 @@ import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.entity.SaleOrder;
 import com.xy.vmes.entity.SaleOrderDetail;
-import com.xy.vmes.service.CoderuleService;
-import com.xy.vmes.service.ColumnService;
-import com.xy.vmes.service.SaleOrderDetailService;
-import com.xy.vmes.service.SaleOrderService;
+import com.xy.vmes.service.*;
 import com.yvan.*;
 import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
@@ -41,6 +38,9 @@ public class SaleOrderController {
     private SaleOrderService saleOrderService;
     @Autowired
     private SaleOrderDetailService saleOrderDetailService;
+
+    @Autowired
+    private WarehouseOutService warehouseOutService;
 
     @Autowired
     private CoderuleService coderuleService;
@@ -173,7 +173,7 @@ public class SaleOrderController {
 
         String parentId = Conv.createUuid();
         order.setId(parentId);
-        //状态(0:待提交 1:待审核 2:待出库 3:待发货 4:已发货 5:已完成 -1:已取消)
+        //状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
         order.setState("0");
         String companyID = pageData.getString("currentCompanyId");
         order.setCompanyId(companyID);
@@ -247,7 +247,7 @@ public class SaleOrderController {
             for (SaleOrderDetail detail : detailList) {
                 String detailId = detail.getId();
                 if (detailId == null || detailId.trim().length() == 0) {
-                    //状态(0:待提交 1:待审核 2:待出库 3:待发货 4:已发货 5:已完成 -1:已取消)
+                    //明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已发货 6:已完成 -1:已取消)
                     detail.setState("0");
                     detail.setParentId(order.getId());
                     detail.setCuser(order.getCuser());
@@ -353,7 +353,7 @@ public class SaleOrderController {
         //3. 修改抬头表状态
         SaleOrder order = new SaleOrder();
         order.setId(parentId);
-        //state:状态(0:待提交 1:待审核 2:待出库 3:待发货 4:已发货 5:已完成 -1:已取消)
+        //state:状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
         order.setState("-1");
         saleOrderService.update(order);
 

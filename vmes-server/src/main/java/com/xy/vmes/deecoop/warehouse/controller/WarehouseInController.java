@@ -441,7 +441,7 @@ public class WarehouseInController {
         //入库单状态:state:状态(0:未完成 1:已完成 -1:已取消)
         WarehouseIn warehouseIn = warehouseInService.findWarehouseInById(parentId);
         //验证出库单是否允许取消
-        if ("-1".equals(warehouseIn.getState())) {
+        if (!"-1".equals(warehouseIn.getState())) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("当前入库单不是取消状态，不可恢复！");
             return model;

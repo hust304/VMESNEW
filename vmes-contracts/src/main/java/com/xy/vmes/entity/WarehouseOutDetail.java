@@ -25,7 +25,7 @@ public class WarehouseOutDetail implements Serializable {
 	//二维码
 	@TableField("qrcode")
 	private String qrcode;
-	//业务id
+	//业务id(订单明细id)
 	@TableField("business_id")
 	private String businessId;
 	//执行人ID
@@ -40,7 +40,7 @@ public class WarehouseOutDetail implements Serializable {
 	//货位批次号
 	@TableField("code")
 	private String code;
-	//入库数量
+	//出库数量
 	@TableField("count")
 	private BigDecimal count;
 	//状态(0:待派单 1:执行中 2:已完成)

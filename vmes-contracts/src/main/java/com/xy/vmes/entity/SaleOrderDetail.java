@@ -22,7 +22,7 @@ public class SaleOrderDetail implements Serializable {
 	//订单ID
 	@TableField("parent_id")
 	private String parentId;
-	//订单状态(0:待提交 1:待审核 2:待出库 3:待发货 4:已发货 5:已完成 -1:已取消)
+	//订单状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已发货 6:已完成 -1:已取消)
 	@TableField("state")
 	private String state;
 	//附件地址
@@ -67,9 +67,9 @@ public class SaleOrderDetail implements Serializable {
 	//锁定开始时间
 	@TableField("lock_date")
 	private Date lockDate;
-	//出库明细ID
-	@TableField("out_detail_id")
-	private String outDetailId;
+	//发货明细ID
+	@TableField("deliver_detail_id")
+	private String deliverDetailId;
 	//生产计划明细ID
 	@TableField("plan_detail_id")
 	private String planDetailId;
@@ -190,12 +190,13 @@ public class SaleOrderDetail implements Serializable {
 	public Date getLockDate() {
 		return lockDate;
 	}
-	public void setOutDetailId(String outDetailId) {
-		this.outDetailId = outDetailId;
+	public void setDeliverDetailId(String outDetailId) {
+		this.deliverDetailId = outDetailId;
 	}
-	public String getOutDetailId() {
-		return outDetailId;
+	public String getDeliverDetailId() {
+		return deliverDetailId;
 	}
+
 	public void setPlanDetailId(String planDetailId) {
 		this.planDetailId = planDetailId;
 	}

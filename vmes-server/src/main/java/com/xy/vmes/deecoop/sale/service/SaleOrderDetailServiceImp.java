@@ -4,8 +4,10 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.Common;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.sale.dao.SaleOrderDetailMapper;
+import com.xy.vmes.entity.SaleDeliverDetail;
 import com.xy.vmes.entity.SaleOrder;
 import com.xy.vmes.entity.SaleOrderDetail;
+import com.xy.vmes.entity.WarehouseOutDetail;
 import com.xy.vmes.service.SaleOrderDetailService;
 import com.xy.vmes.service.SaleOrderService;
 import com.yvan.HttpUtils;
@@ -228,13 +230,68 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
         return strTemp;
     }
 
+    public SaleDeliverDetail orderDetail2DeliverDetail(SaleOrderDetail orderDetail, SaleDeliverDetail deliverDetail) {
+        if (deliverDetail == null) {deliverDetail = new SaleDeliverDetail();}
+        if (orderDetail == null) {return deliverDetail;}
+
+        //orderId 订单ID
+        deliverDetail.setOrderId(orderDetail.getParentId());
+        //orderDetaiId 订单明细ID
+        deliverDetail.setOrderDetaiId(orderDetail.getId());
+        //productId货品ID
+        deliverDetail.setProductId(orderDetail.getProductId());
+        //productPrice 货品单价
+        deliverDetail.setProductPrice(orderDetail.getProductPrice());
+        //count 发货数量
+        deliverDetail.setCount(orderDetail.getLockCount());
+
+        return deliverDetail;
+    }
+
+    public List<SaleDeliverDetail> orderDtlList2DeliverDtllList(List<SaleOrderDetail> orderDtlList, List<SaleDeliverDetail> deliverDtlList) {
+        if (deliverDtlList == null) {deliverDtlList = new ArrayList<SaleDeliverDetail>();}
+        if (orderDtlList == null || orderDtlList.size() == 0) {return deliverDtlList;}
+
+        for (SaleOrderDetail orderDtl : orderDtlList) {
+            SaleDeliverDetail deliverDtl = this.orderDetail2DeliverDetail(orderDtl, null);
+            deliverDtlList.add(deliverDtl);
+        }
+
+        return deliverDtlList;
+    }
+
+    public WarehouseOutDetail orderDetail2OutDetail(SaleOrderDetail orderDetail, WarehouseOutDetail outDetail) {
+        if (outDetail == null) {outDetail = new WarehouseOutDetail();}
+        if (orderDetail == null) {return outDetail;}
+
+        //productId 产品ID
+        outDetail.setProductId(orderDetail.getProductId());
+        //count 出库数量
+        outDetail.setCount(orderDetail.getLockCount());
+        //businessId 业务id(订单明细id)
+        outDetail.setBusinessId(orderDetail.getId());
+
+        return outDetail;
+    }
+
+    public List<WarehouseOutDetail> orderDtlList2OutDtlList(List<SaleOrderDetail> orderDtlList, List<WarehouseOutDetail> outDtlList) {
+        if (outDtlList == null) {outDtlList = new ArrayList<WarehouseOutDetail>();}
+        if (orderDtlList == null || orderDtlList.size() == 0) {return outDtlList;}
+
+        for (SaleOrderDetail orderDtl : orderDtlList) {
+            WarehouseOutDetail outDetail = this.orderDetail2OutDetail(orderDtl, null);
+            outDtlList.add(outDetail);
+        }
+
+        return outDtlList;
+    }
+
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public void addSaleOrderDetail(SaleOrder parentObj, List<SaleOrderDetail> objectList) throws Exception {
         if (parentObj == null) {return;}
         if (objectList == null || objectList.size() == 0) {return;}
 
         for (SaleOrderDetail detail : objectList) {
-            //订单状态(0:待提交 1:待审核 2:待出库 3:待发货 4:已发货 5:已完成 -1:已取消)
             detail.setState("0");
             detail.setParentId(parentObj.getId());
             detail.setCuser(parentObj.getCuser());

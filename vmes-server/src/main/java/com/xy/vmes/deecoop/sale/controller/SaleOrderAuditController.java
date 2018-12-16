@@ -395,7 +395,7 @@ public class SaleOrderAuditController {
             userName = pageData.getString("userName").trim();
         }
 
-        //1. 订单状态(0:待提交 1:待审核 2:待出库 3:待发货 4:已发货 5:已完成 -1:已取消)
+        //1. 订单状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
         SaleOrder order = new SaleOrder();
         String msgTemp = "{0}{3}审核人:{1}{3}审核时间:{2}";
         String remarkStr = MessageFormat.format(msgTemp,

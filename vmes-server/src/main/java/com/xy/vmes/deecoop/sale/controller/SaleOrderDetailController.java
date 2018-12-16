@@ -95,6 +95,14 @@ public class SaleOrderDetailController {
             pd.put("queryStr", "1=2");
         }
 
+        //订单明细 ids
+        String ids = pd.getString("ids");
+        if (ids != null && ids.trim().length() > 0) {
+            ids = StringUtil.stringTrimSpace(ids);
+            ids = "'" + ids.replace(",", "','") + "'";
+            pd.put("ids", ids);
+        }
+
         //设置查询排序
         pd.put("orderStr", "detail.cdate asc");
         String orderStr = pd.getString("orderStr");
@@ -163,7 +171,7 @@ public class SaleOrderDetailController {
         }
 
         //1. 修改明细状态
-        //明细状态(0:待提交 1:待审核 2:待出库 3:待发货 4:已发货 5:已完成 -1:已取消)
+        //明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已发货 6:已完成 -1:已取消)
         detail.setState("-1");
         saleOrderDetailService.update(detail);
 

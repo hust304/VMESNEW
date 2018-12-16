@@ -204,20 +204,22 @@ public class ${objectName}Controller {
     */
     @PostMapping("/${objectNameLower}/listPage${objectName}s")
     public ResultModel listPage${objectName}s()  throws Exception {
-
         logger.info("################${objectNameLower}/listPage${objectName}s 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
-        PageData pd = HttpUtils.parsePageData();
-        Pagination pg = HttpUtils.parsePagination(pd);
-        Map result = new HashMap();
 
         List<Column> columnList = columnService.findColumnList("${modelCode}");
         if (columnList == null || columnList.size() == 0) {
             model.putCode("1");
             model.putMsg("数据库没有生成TabCol，请联系管理员！");
             return model;
+        }
+
+        //获取指定栏位字符串-重新调整List<Column>
+        PageData pd = HttpUtils.parsePageData();
+        String fieldCode = pd.getString("fieldCode");
+        if (fieldCode != null && fieldCode.trim().length() > 0) {
+            columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
         }
 
         List<LinkedHashMap> titlesList = new ArrayList<LinkedHashMap>();
@@ -236,9 +238,11 @@ public class ${objectName}Controller {
                 }
             }
         }
+        Map result = new HashMap();
         result.put("hideTitles",titlesHideList);
         result.put("titles",titlesList);
 
+        Pagination pg = HttpUtils.parsePagination(pd);
         List<Map> varMapList = new ArrayList();
         List<Map> varList = ${objectNameLower}Service.getDataListPage(pd,pg);
         if(varList!=null&&varList.size()>0){
