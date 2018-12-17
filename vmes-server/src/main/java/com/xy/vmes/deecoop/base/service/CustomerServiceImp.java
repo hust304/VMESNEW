@@ -3,6 +3,7 @@ package com.xy.vmes.deecoop.base.service;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.deecoop.base.dao.CustomerMapper;
 import com.xy.vmes.entity.Customer;
+import com.xy.vmes.entity.TreeEntity;
 import com.xy.vmes.service.CustomerService;
 import com.yvan.PageData;
 import com.yvan.platform.RestException;
@@ -163,6 +164,13 @@ public class CustomerServiceImp implements CustomerService {
     }
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+
+
+    @Override
+    public List<TreeEntity> getTreeList(PageData pd) throws Exception{
+        return  customerMapper.getTreeList(pd);
+    }
+
     public Customer findCustomer(PageData object) {
         if (object == null) {return null;}
 

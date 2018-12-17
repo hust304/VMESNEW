@@ -306,4 +306,36 @@
         </if>
     </select>
 
+    <!-- 自动创建，可以修改 -->
+    <select id="getTreeList"  parameterType="com.yvan.PageData"  resultType="com.xy.vmes.entity.TreeEntity">
+        select
+        id,
+        name,
+        'khlb' pid,
+        id value,
+        name label,
+        isdisable
+        from
+        <include refid="tableName"/>
+        <where>
+
+            <if test="currentCompanyId != null and currentCompanyId != ''">
+                and company_id = #{currentCompanyId}
+            </if>
+            <if test="isdisable!= null and isdisable != ''">
+                and isdisable = #{isdisable}
+            </if>
+            <if test="name!= null and name != ''">
+                and name LIKE CONCAT(CONCAT('%', #{name}),'%')
+            </if>
+
+            <if test="queryStr != null and queryStr!=''" >
+               and ${queryStr}
+            </if>
+            <if test="selfQueryStr != null and selfQueryStr != ''" >
+                or ${selfQueryStr}
+            </if>
+        </where>
+    </select>
+
 </mapper>

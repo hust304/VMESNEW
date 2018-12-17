@@ -3,6 +3,7 @@ package com.xy.vmes.deecoop.base.dao;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.entity.Customer;
+import com.xy.vmes.entity.TreeEntity;
 import com.yvan.PageData;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
@@ -66,6 +67,10 @@ public interface CustomerMapper extends BaseMapper<Customer> {
      */
     void updateToDisableByIds(String[] ids);
 
+
+
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+
+    List<TreeEntity> getTreeList(PageData pd);
 }
 

@@ -4,8 +4,10 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.Common;
 import com.xy.vmes.common.util.StringUtil;
+import com.xy.vmes.common.util.TreeUtil;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.entity.Customer;
+import com.xy.vmes.entity.TreeEntity;
 import com.xy.vmes.service.*;
 import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
@@ -598,6 +600,39 @@ public class CustomerController {
         //6. 遍历List<业务表DB> 对业务表添加或修改
         Long endTime = System.currentTimeMillis();
         logger.info("################customer/importExcelCustomers 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * @author 刘威
+     * @date 2018-07-31
+     */
+    @PostMapping("/customer/listTreeCustomer")
+    public ResultModel listTreeCustomer()  throws Exception {
+        logger.info("################customer/listTreeCustomer 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        ResultModel model = new ResultModel();
+
+        PageData pd = HttpUtils.parsePageData();
+        //获取全部字典树-查询条件
+
+        List<TreeEntity> treeList = customerService.getTreeList(pd);
+        TreeEntity treeEntity = new TreeEntity();
+        treeEntity.setId("khlb");
+        treeEntity.setPid("root");
+        treeEntity.setLabel("客户列表");
+        treeEntity.setName("客户列表");
+        treeEntity.setValue("khlb");
+        treeEntity.setIsdisable("1");
+        treeList.add(treeEntity);
+        TreeEntity treeObj = TreeUtil.switchTree("root", treeList);
+
+        Map result = new HashMap();
+        result.put("treeList", treeObj);
+        model.putResult(result);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################customer/listTreeCustomer 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
