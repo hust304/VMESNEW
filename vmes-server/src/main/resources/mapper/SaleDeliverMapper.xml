@@ -50,30 +50,42 @@
             (replace(uuid(), '-', ''),'saleDeliver','isdisable','是否启用(0:已禁用 1:启用)',14, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'saleDeliver','id','id',0, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'saleDeliver','customer_id','customer_id',0, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleDeliver','customerName','customerName',0, '1','1','1','0',now(), 'admin')
+            (replace(uuid(), '-', ''),'saleDeliver','customerName','customerName',0, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'saleDeliver','deliverCode','deliverCode',0, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'saleDeliver','customerCode','customerCode',0, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'saleDeliver','customerTypeName','customerTypeName',0, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'saleDeliver','stateName','stateName',0, '1','1','1','0',now(), 'admin'),
+
+            (replace(uuid(), '-', ''),'saleDeliver','customeAddressId','customeAddressId',0, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'saleDeliver','custAddressName','custAddressName',0, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'saleDeliver','custPhone','custPhone',0, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'saleDeliver','custAddress','custAddress',0, '1','1','1','0',now(), 'admin')
+
     </insert>
 
     <!-- 列表(全部) 自动创建，禁止修改-->
     <select id="dataList" parameterType="com.yvan.PageData" resultType="com.xy.vmes.entity.SaleDeliver">
         select
         id id,
+        deliver_code deliverCode,
         company_id companyId,
         customer_id customerId,
         state state,
-        type type,
 
+        type type,
         make_id makeId,
         waybill_company waybillCompany,
         waybill_code waybillCode,
         car_code carCode,
-        date date,
 
+        custome_address_id customeAddressId,
+        deliver_date deliverDate,
         cuser cuser,
         cdate cdate,
         uuser uuser,
+
         udate udate,
         remark remark,
-
         isdisable isdisable
         from vmes_sale_deliver
         <where>
@@ -106,34 +118,54 @@
     <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
         deliver.id id,
+        deliver.deliver_code deliverCode,
         deliver.company_id companyId,
         deliver.customer_id customerId,
         deliver.state state,
+        CASE
+            WHEN deliver.state = '0' THEN '待发货'
+            WHEN deliver.state = '1' THEN '已发货'
+            WHEN deliver.state = '-1' THEN '已取消'
+        ELSE null
+        END stateName,
+
         deliver.type type,
         CASE
-        WHEN deliver.type = '1' THEN '发货'
-        WHEN deliver.type = '2' THEN '送货'
-        WHEN deliver.type = '3' THEN '客户自提'
+            WHEN deliver.type = '1' THEN '发货'
+            WHEN deliver.type = '2' THEN '送货'
+            WHEN deliver.type = '3' THEN '客户自提'
         ELSE null
         END typeName,
-
         deliver.make_id makeId,
         deliver.waybill_company waybillCompany,
         deliver.waybill_code waybillCode,
         deliver.car_code carCode,
-        DATE_FORMAT(deliver.date,'%Y-%m-%d') date,
 
+        deliver.custome_address_id customeAddressId,
+        DATE_FORMAT(deliver.deliver_date,'%Y-%m-%d') deliverDate,
         deliver.cuser cuser,
-        deliver.cdate cdate,
+        DATE_FORMAT(deliver.cdate,'%Y-%m-%d %T') cdate,
         deliver.uuser uuser,
         deliver.udate udate,
-        deliver.remark remark,
 
+        DATE_FORMAT(deliver.udate,'%Y-%m-%d %T') udate,
+        deliver.remark remark,
         deliver.isdisable isdisable,
-        customer.name customerName
+
+        makeUser.user_name makeName,
+        customer.code customerCode,
+        customer.name customerName,
+        custType.name customerTypeName,
+
+        address.name custAddressName,
+        address.phone custMobile,
+        address.address custAddress
 
         from vmes_sale_deliver deliver
+            left join vmes_user makeUser on deliver.make_id = makeUser.id
             left join vmes_customer customer on deliver.customer_id = customer.id
+            left join vmes_customer_address address on deliver.custome_address_id = address.id
+            left join vmes_dictionary custType on customer.type = custType.id
         <where>
             <if test="currentCompanyId != null and currentCompanyId != ''" >
                 and deliver.company_id = #{currentCompanyId}
@@ -153,7 +185,7 @@
             </if>
             <if test="carCode != null and carCode != ''">
                 and deliver.car_code LIKE CONCAT(CONCAT('%', #{carCode}),'%')
-            </if> carCode
+            </if>
 
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >

@@ -1,6 +1,7 @@
 package com.xy.vmes.deecoop.sale.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.sale.dao.SaleDeliverDetailMapper;
 import com.xy.vmes.entity.SaleDeliver;
 import com.xy.vmes.entity.SaleDeliverDetail;
@@ -159,7 +160,7 @@ public class SaleDeliverDetailServiceImp implements SaleDeliverDetailService {
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    public void addDeliverDetail(SaleDeliver parentObj, List<SaleDeliverDetail> detailList) throws Exception {
+    public void addDeliverDetail(SaleDeliver parentObj, List<SaleDeliverDetail> detailList, Map<String, String> orderDtl2OutDtlMap) throws Exception {
         if (parentObj == null) {return;}
         if (detailList == null || detailList.size() == 0) {return;}
 
@@ -169,8 +170,28 @@ public class SaleDeliverDetailServiceImp implements SaleDeliverDetailService {
             detail.setParentId(parentObj.getId());
             detail.setCuser(parentObj.getCuser());
 
+            //订单明细id
+            String orderDtlId = detail.getOrderDetaiId();
+            if (orderDtl2OutDtlMap.get(orderDtlId) != null) {
+                detail.setOutDetailId(orderDtl2OutDtlMap.get(orderDtlId));
+            }
+
             this.save(detail);
         }
+    }
+
+    public void updateStateByDetail(String state, String parentIds) throws Exception {
+        if (state == null || state.trim().length() == 0) {return;}
+        if (parentIds == null || parentIds.trim().length() == 0) {return;}
+
+        PageData pageData = new PageData();
+        pageData.put("state", state);
+
+        parentIds = StringUtil.stringTrimSpace(parentIds);
+        parentIds = "'" + parentIds.replace(",", "','") + "'";
+        pageData.put("parentIds", "parent_id in (" + parentIds + ")");
+
+        saleDeliverDetailMapper.updateStateByDetail(pageData);
     }
 }
 

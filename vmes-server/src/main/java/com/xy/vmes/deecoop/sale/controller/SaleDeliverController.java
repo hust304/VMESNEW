@@ -54,6 +54,8 @@ public class SaleDeliverController {
 
     @Autowired
     private ColumnService columnService;
+    @Autowired
+    private CoderuleService coderuleService;
 
 
     /**
@@ -188,9 +190,17 @@ public class SaleDeliverController {
 
         List<WarehouseOutDetail> outDtlList = saleOrderDetailService.orderDtlList2OutDtlList(orderDtlList, null);
         warehouseOutDetailService.addWarehouseOutDetail(warehouseOut, outDtlList);
+        //订单明细id --> 出库明细id -- <订单明细id, 出库明细id>Map
+        Map<String, String> orderDtl2OutDtlMap = new HashMap<String, String>();
+        for (WarehouseOutDetail outDtl : outDtlList) {
+            orderDtl2OutDtlMap.put(outDtl.getBusinessId(), outDtl.getId());
+        }
 
         //2. 创建发货单
         SaleDeliver saleDeliver = new SaleDeliver();
+        //发货单编号
+        String code = coderuleService.createCoder(companyId, "vmes_sale_deliver", "F");
+        saleDeliver.setDeliverCode(code);
         saleDeliver.setCustomerId(customerId);
         saleDeliver.setCompanyId(companyId);
         //state:状态(0:待发货 1:已发货 -1:已取消)
@@ -200,10 +210,63 @@ public class SaleDeliverController {
         saleDeliverService.save(saleDeliver);
 
         List<SaleDeliverDetail> deliverDtlList = saleOrderDetailService.orderDtlList2DeliverDtllList(orderDtlList, null);
-        saleDeliverDetailService.addDeliverDetail(saleDeliver, deliverDtlList);
+        saleDeliverDetailService.addDeliverDetail(saleDeliver, deliverDtlList, orderDtl2OutDtlMap);
+
+        //3. 反写订单明细
+        //订单明细id --> 发货明细id -- <订单明细id, 发货明细id>Map
+        Map<String, String> orderDtl2DeliverDtlMap = new HashMap<String, String>();
+        for (SaleDeliverDetail deliverDtl : deliverDtlList) {
+            orderDtl2DeliverDtlMap.put(deliverDtl.getOrderDetaiId(), deliverDtl.getId());
+        }
+
+        for (SaleOrderDetail orderDtl : orderDtlList) {
+            String orderDtl_id = orderDtl.getId();
+            if (orderDtl2DeliverDtlMap.get(orderDtl_id) != null) {
+                //发货明细ID
+                orderDtl.setDeliverDetailId(orderDtl2DeliverDtlMap.get(orderDtl_id));
+                //明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已发货 6:已完成 -1:已取消)
+                orderDtl.setState("4");
+                saleOrderDetailService.update(orderDtl);
+            }
+        }
 
         Long endTime = System.currentTimeMillis();
         logger.info("################saleDeliver/addSaleDeliver 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 修改发货单(发货类型)
+     * @author 陈刚
+     * @date 2018-12-17
+     * @throws Exception
+     */
+    @PostMapping("/saleDeliver/updateSaleDeliverByDeliverType")
+    @Transactional
+    public ResultModel updateSaleDeliverByDeliverType() throws Exception {
+        logger.info("################saleDeliver/updateSaleDeliverByDeliverType 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        ResultModel model = new ResultModel();
+
+        PageData pageData = HttpUtils.parsePageData();
+        String deliverId = pageData.getString("deliverId");
+        if (deliverId == null || deliverId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("发货单id为空或空字符串！");
+            return model;
+        }
+
+        SaleDeliver saleDeliver = (SaleDeliver)HttpUtils.pageData2Entity(pageData, new SaleDeliver());
+        saleDeliver.setId(deliverId);
+        //状态(0:待发货 1:已发货 -1:已取消)
+        saleDeliver.setState("1");
+        saleDeliverService.update(saleDeliver);
+
+        //状态(0:待发货 1:已发货 -1:已取消)
+        saleDeliverDetailService.updateStateByDetail("1", deliverId);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################saleDeliver/updateSaleDeliverByDeliverType 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 

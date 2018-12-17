@@ -96,7 +96,8 @@ public interface SaleDeliverDetailService {
     List<SaleDeliverDetail> findDataList(PageData pageData, Boolean isQueryAll) throws Exception;
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    void addDeliverDetail(SaleDeliver parentObj, List<SaleDeliverDetail> detailList) throws Exception;
+    void addDeliverDetail(SaleDeliver parentObj, List<SaleDeliverDetail> detailList, Map<String, String> orderDtl2OutDtlMap) throws Exception;
+    void updateStateByDetail(String state, String parentIds) throws Exception;
 
 }
 

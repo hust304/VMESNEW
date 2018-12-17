@@ -19,6 +19,9 @@ public class SaleDeliver implements Serializable {
 	//
 	@TableField("id")
 	private String id;
+	//发货单编号
+	@TableField("deliver_code")
+	private String deliverCode;
 	//企业ID
 	@TableField("company_id")
 	private String companyId;
@@ -28,10 +31,10 @@ public class SaleDeliver implements Serializable {
 	//发货状态(0:待发货 1:已发货 -1:已取消)
 	@TableField("state")
 	private String state;
+
 	//发货类型(1:发货 2:送货 3:客户自提)
 	@TableField("type")
 	private String type;
-
 	//制单人ID
 	@TableField("make_id")
 	private String makeId;
@@ -44,11 +47,13 @@ public class SaleDeliver implements Serializable {
 	//车牌号
 	@TableField("car_code")
 	private String carCode;
-	//发货日期
-	@TableField("date")
-	private Date date;
 
-	//创建用户id
+	//车牌号
+	@TableField("custome_address_id")
+	private String customeAddressId;
+	//发货日期
+	@TableField("deliver_date")
+	private Date deliverDate;
 	@TableField("cuser")
 	private String cuser;
 	//创建时间
@@ -57,17 +62,16 @@ public class SaleDeliver implements Serializable {
 	//修改用户id
 	@TableField("uuser")
 	private String uuser;
+
 	//修改时间
 	@TableField("udate")
 	private Date udate;
 	//备注
 	@TableField("remark")
 	private String remark;
-
 	//是否启用(0:已禁用 1:启用)
 	@TableField("isdisable")
 	private String isdisable;
-
 
 
 	public void setId(String id) {
@@ -75,6 +79,12 @@ public class SaleDeliver implements Serializable {
 	}
 	public String getId() {
 		return id;
+	}
+	public String getDeliverCode() {
+		return deliverCode;
+	}
+	public void setDeliverCode(String deliverCode) {
+		this.deliverCode = deliverCode;
 	}
 	public void setCompanyId(String companyId) {
 		this.companyId = companyId;
@@ -118,11 +128,11 @@ public class SaleDeliver implements Serializable {
 	public String getCarCode() {
 		return carCode;
 	}
-	public void setDate(Date date) {
-		this.date = date;
+	public Date getDeliverDate() {
+		return deliverDate;
 	}
-	public Date getDate() {
-		return date;
+	public void setDeliverDate(Date deliverDate) {
+		this.deliverDate = deliverDate;
 	}
 	public void setCuser(String cuser) {
 		this.cuser = cuser;
@@ -166,7 +176,13 @@ public class SaleDeliver implements Serializable {
 	public void setCustomerId(String customerId) {
 		this.customerId = customerId;
 	}
-	/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+	public String getCustomeAddressId() {
+		return customeAddressId;
+	}
+	public void setCustomeAddressId(String customeAddressId) {
+		this.customeAddressId = customeAddressId;
+	}
+/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 
 }

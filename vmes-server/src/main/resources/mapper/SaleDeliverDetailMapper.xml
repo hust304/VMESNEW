@@ -78,7 +78,7 @@
             (replace(uuid(), '-', ''),'saleDeliverDetail','isdisable','是否启用(0:已禁用 1:启用)',16, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'saleDeliverDetail','id','id',0, '1','1','1','0',now(), 'admin'),
 
-            (replace(uuid(), '-', ''),'saleDeliverDetail', 'sysCode', '订单编号', 2, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
+            (replace(uuid(), '-', ''),'saleDeliverDetail', 'sysOrderCode', '订单编号', 2, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
             (replace(uuid(), '-', ''),'saleDeliverDetail', 'priceType', '计价类型(1:先计价 2:后计价)', 10, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
             (replace(uuid(), '-', ''), 'saleDeliverDetail', 'priceUnit', '计价单位id', 8, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
             (replace(uuid(), '-', ''), 'saleDeliverDetail', 'priceUnitName', '单位', 8, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
@@ -87,9 +87,24 @@
             (replace(uuid(), '-', ''), 'saleDeliverDetail', 'productName', '货品名称', 3, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
             (replace(uuid(), '-', ''), 'saleDeliverDetail', 'productSpec', '规格型号', 4, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
             (replace(uuid(), '-', ''), 'saleDeliverDetail', 'productGenre', '货品属性id', 5, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
-            (replace(uuid(), '-', ''), 'saleDeliverDetail', 'productGenreName', '货品属性', 5, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin')
+            (replace(uuid(), '-', ''), 'saleDeliverDetail', 'productGenreName', '货品属性', 5, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleDeliverDetail', 'productId', 'productId', 5, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin')
 
     </insert>
+
+    <update id="updateStateByDetail" parameterType="com.yvan.PageData" >
+        update vmes_sale_deliver_detail set
+        state = #{state},
+        udate = now()
+        <where>
+            <if test="parentId != null and parentId != ''" >
+                and parent_id = #{parentId}
+            </if>
+            <if test="parentIds != null and parentIds != ''" >
+                and ${parentIds}
+            </if>
+        </where>
+    </update>
 
     <!-- 列表(全部) 自动创建，禁止修改-->
     <select id="dataList" parameterType="com.yvan.PageData" resultType="com.xy.vmes.entity.SaleDeliverDetail">
@@ -107,7 +122,7 @@
         last_number lastNumber,
 
         sum sum,
-        date date,
+        deliver_date deliverDate,
         cuser cuser,
         cdate cdate,
         uuser uuser,
@@ -160,21 +175,23 @@
 
         detail.product_id productId,
         detail.state state,
-        detail.product_price productPrice,
-        detail.count count,
-        detail.last_number lastNumber,
+        round(ifnull(detail.product_price, 0), 2) productPrice,
+        round(ifnull(detail.count, 0), 2) count,
+        round(ifnull(detail.last_number, 0), 2) lastNumber,
 
-        detail.sum sum,
-        DATE_FORMAT(detail.date,'%Y-%m-%d') date,
+        round(ifnull(detail.sum, 0), 2) sum,
+        DATE_FORMAT(detail.deliver_date,'%Y-%m-%d') deliverDate,
         detail.cuser cuser,
         detail.cdate cdate,
+        DATE_FORMAT(detail.cdate,'%Y-%m-%d %T') cdate,
         detail.uuser uuser,
 
         detail.udate udate,
+        DATE_FORMAT(detail.udate,'%Y-%m-%d %T') udate,
         detail.remark remark,
         detail.isdisable isdisable,
 
-        saleOrder.sys_code sysCode,
+        saleOrder.sys_code sysOrderCode,
         saleOrder.price_type priceType,
 
         orderDtl.price_unit priceUnit,

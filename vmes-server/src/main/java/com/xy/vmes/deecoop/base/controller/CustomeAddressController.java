@@ -210,6 +210,13 @@ public class CustomeAddressController {
             return model;
         }
 
+        //获取指定栏位字符串-重新调整List<Column>
+        PageData pd = HttpUtils.parsePageData();
+        String fieldCode = pd.getString("fieldCode");
+        if (fieldCode != null && fieldCode.trim().length() > 0) {
+            columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
+        }
+
         List<LinkedHashMap> titlesList = new ArrayList<LinkedHashMap>();
         List<String> titlesHideList = new ArrayList<String>();
         Map<String, String> varModelMap = new HashMap<String, String>();
@@ -231,7 +238,6 @@ public class CustomeAddressController {
         result.put("titles",titlesList);
 
         List<Map> varMapList = new ArrayList();
-        PageData pd = HttpUtils.parsePageData();
         Pagination pg = HttpUtils.parsePagination(pd);
         List<Map> varList = customeAddressService.getDataListPage(pd,pg);
         if(varList!=null&&varList.size()>0){

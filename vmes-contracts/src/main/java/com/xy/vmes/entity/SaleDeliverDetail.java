@@ -52,8 +52,8 @@ public class SaleDeliverDetail implements Serializable {
 	@TableField("sum")
 	private BigDecimal sum;
 	//发货日期
-	@TableField("date")
-	private Date date;
+	@TableField("deliver_date")
+	private Date deliverDate;
 	//创建用户id
 	@TableField("cuser")
 	private String cuser;
@@ -136,11 +136,11 @@ public class SaleDeliverDetail implements Serializable {
 	public BigDecimal getSum() {
 		return sum;
 	}
-	public void setDate(Date date) {
-		this.date = date;
+	public Date getDeliverDate() {
+		return deliverDate;
 	}
-	public Date getDate() {
-		return date;
+	public void setDeliverDate(Date deliverDate) {
+		this.deliverDate = deliverDate;
 	}
 	public void setCuser(String cuser) {
 		this.cuser = cuser;
