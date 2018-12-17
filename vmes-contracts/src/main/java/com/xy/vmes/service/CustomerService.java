@@ -2,6 +2,7 @@ package com.xy.vmes.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.entity.Customer;
+import com.xy.vmes.entity.TreeEntity;
 import com.yvan.PageData;
 
 import java.util.LinkedHashMap;
@@ -125,6 +126,7 @@ public interface CustomerService {
      */
     Map<String, String> findDeleteCustIdsByIds(String ids);
 
+    List<TreeEntity> getTreeList(PageData pd) throws Exception;
 }
 
 
