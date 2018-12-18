@@ -310,9 +310,9 @@ public class SaleUnitPriceController {
      *
      * @date 2018-12-18
      */
-    @PostMapping("/saleUnitPrice/listPageSaleUnitPrices")
+    @PostMapping("/saleUnitPrice/findSaleUnitPrices")
     public ResultModel findSaleUnitPrices() throws Exception {
-        logger.info("################saleUnitPrice/listPageSaleUnitPrices 执行开始 ################# ");
+        logger.info("################saleUnitPrice/findSaleUnitPrices 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
 
@@ -357,7 +357,7 @@ public class SaleUnitPriceController {
         }
 
         Long endTime = System.currentTimeMillis();
-        logger.info("################saleUnitPrice/updateSaleUnitPriceByPrice 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################saleUnitPrice/findSaleUnitPrices 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 

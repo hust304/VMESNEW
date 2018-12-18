@@ -6,6 +6,7 @@ import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.sale.dao.SaleDeliverDetailMapper;
 import com.xy.vmes.entity.SaleDeliver;
 import com.xy.vmes.entity.SaleDeliverDetail;
+import com.xy.vmes.exception.ApplicationException;
 import com.xy.vmes.service.SaleDeliverDetailService;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
@@ -260,6 +261,39 @@ public class SaleDeliverDetailServiceImp implements SaleDeliverDetailService {
         pageData.put("parentIds", "parent_id in (" + parentIds + ")");
 
         saleDeliverDetailMapper.updateStateByDetail(pageData);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * 验证发货单明细是否全部完成出库
+     *
+     * @param deliverId 发货单id
+     * @return
+     *  Boolean.TRUE  全部出库完成
+     *  Boolean.FALSE 一条或多条出库未完成
+     *  is null 无出库明细
+     */
+    public Boolean checkIsAllOutByDeliverId(String deliverId) throws ApplicationException {
+        if (deliverId == null || deliverId.trim().length() == 0) {
+            throw new ApplicationException("发货单id为空或空字符串");
+        }
+
+        PageData findMap = new PageData();
+        findMap.put("deliverId", deliverId);
+        List<Map<String, Object>> mapList = saleDeliverDetailMapper.findDeliverDetailByOutDetail(findMap);
+        if (mapList == null || mapList.size() ==0) {return null;}
+
+        for (Map<String, Object> mapObject : mapList) {
+            //outDtlState 出库明细状态
+            //状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+            String outDtlState = (String)mapObject.get("outDtlState");
+            if (!"2".equals(outDtlState)) {
+                return Boolean.FALSE;
+            }
+        }
+
+        return Boolean.TRUE;
     }
 }
 

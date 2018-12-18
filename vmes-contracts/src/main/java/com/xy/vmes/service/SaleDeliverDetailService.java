@@ -3,6 +3,7 @@ package com.xy.vmes.service;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.entity.SaleDeliver;
 import com.xy.vmes.entity.SaleDeliverDetail;
+import com.xy.vmes.exception.ApplicationException;
 import com.yvan.PageData;
 
 import java.math.BigDecimal;
@@ -107,8 +108,17 @@ public interface SaleDeliverDetailService {
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     BigDecimal findTotalSumByDetailList(List<SaleDeliverDetail> objectList);
     void addDeliverDetail(SaleDeliver parentObj, List<SaleDeliverDetail> detailList, Map<String, String> orderDtl2OutDtlMap) throws Exception;
-
     void updateStateByDetail(String state, String parentIds) throws Exception;
+
+    ////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * 验证发货单明细是否全部完成出库
+     *
+     * @param deliverId 发货单id
+     * @return
+     */
+    Boolean checkIsAllOutByDeliverId(String deliverId) throws ApplicationException;
 
 }
 

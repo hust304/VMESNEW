@@ -227,5 +227,25 @@
         </if>
     </select>
 
+    <!--发货单明细与出库单明细 关联查询-->
+    <select id="findDeliverDetailByOutDetail" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+          deliverDtl.parent_id deliverId,
+          deliverDtl.id deliverDtlId
+          deliverDtl.out_detail_id outDtlId,
+          outDtl.state outDtlState
+        from vmes_sale_deliver_detail deliverDtl
+          left join vmes_warehouse_out_detail outDtl on deliverDtl.out_detail_id = outDtl.id
+        <where>
+            <if test="deliverId != null and deliverId != ''" >
+                and deliverDtl.parent_id = #{deliverId}
+            </if>
+
+            <!--queryStr 自定义sql查询语句-->
+            <if test="queryStr != null and queryStr != ''" >
+                and ${queryStr}
+            </if>
+        </where>
+    </select>
 
 </mapper>
