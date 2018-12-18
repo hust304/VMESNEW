@@ -2,6 +2,7 @@ package com.xy.vmes.deecoop.sale.controller;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
+import com.xy.vmes.common.util.Common;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.entity.SaleUnitPrice;
@@ -22,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.http.HttpServletResponse;
+import java.math.BigDecimal;
 import java.util.*;
 
 
@@ -261,6 +263,103 @@ public class SaleUnitPriceController {
         return model;
     }
 
+    /**
+     * 修改客户价格
+     * {productId:货品id unit:单位id customerId:客户id productPrice: 货品单价}
+     *
+     * @author 陈刚
+     * @date 2018-12-18
+     * @throws Exception
+     */
+    @PostMapping("/saleUnitPrice/updateSaleUnitPriceByPrice")
+    @Transactional
+    public ResultModel updateSaleUnitPriceByPrice() throws Exception {
+        logger.info("################saleUnitPrice/updateSaleUnitPriceByPrice 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        ResultModel model = new ResultModel();
+
+        PageData pageData = HttpUtils.parsePageData();
+        SaleUnitPrice saleUnitPrice = (SaleUnitPrice)HttpUtils.pageData2Entity(pageData, new SaleUnitPrice());
+        String msgStr = saleUnitPriceService.checkColumn(saleUnitPrice);
+        if (msgStr != null && msgStr.trim().length() > 0) {
+            model.putCode("1");
+            model.putMsg(msgStr);
+            return model;
+        }
+
+        PageData findMap = new PageData();
+        findMap.put("productId", saleUnitPrice.getProductId());
+        findMap.put("unit", saleUnitPrice.getUnit());
+        findMap.put("customerId", saleUnitPrice.getCustomerId());
+
+        SaleUnitPrice objectDB = saleUnitPriceService.findSaleUnitPrice(findMap);
+        if (objectDB == null) {
+            saleUnitPriceService.save(saleUnitPrice);
+        } else {
+            saleUnitPriceService.update(saleUnitPrice);
+        }
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################saleUnitPrice/updateSaleUnitPriceByPrice 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 获取客户货品价格
+     * {productId:货品id unit:单位id customerId:客户id }
+     *
+     * @date 2018-12-18
+     */
+    @PostMapping("/saleUnitPrice/listPageSaleUnitPrices")
+    public ResultModel findSaleUnitPrices() throws Exception {
+        logger.info("################saleUnitPrice/listPageSaleUnitPrices 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        ResultModel model = new ResultModel();
+
+        PageData pageData = HttpUtils.parsePageData();
+        String productId = pageData.getString("productId");
+        String unit = pageData.getString("unit");
+        String customerId = pageData.getString("customerId");
+
+        if (productId == null || productId.trim().length() == 0) {
+            model.putCode("1");
+            model.putMsg("货品id为空或空字符串！");
+            return model;
+        }
+        if (unit == null || unit.trim().length() == 0) {
+            model.putCode("1");
+            model.putMsg("单位id为空或空字符串！");
+            return model;
+        }
+        if (customerId == null || customerId.trim().length() == 0) {
+            model.putCode("1");
+            model.putMsg("客户id为空或空字符串！");
+            return model;
+        }
+
+        //isdisable:是否启用(0:已禁用 1:启用)
+        pageData.put("isdisable", "1");
+        if (pageData.getString("isdisable") != null && pageData.getString("isdisable").trim().length() > 0) {
+            pageData.put("isdisable", pageData.getString("isdisable").trim());
+        }
+
+        pageData.put("orderStr", "cdate desc");
+        if (pageData.getString("orderStr") != null && pageData.getString("orderStr").trim().length() > 0) {
+            pageData.put("orderStr", pageData.getString("orderStr").trim());
+        }
+
+        List<SaleUnitPrice> objectList = saleUnitPriceService.findSaleUnitPriceList(pageData);
+        if (objectList != null && objectList.size() > 0 && objectList.get(0).getProductPrice() != null) {
+            BigDecimal productPrice = objectList.get(0).getProductPrice();
+            //四舍五入到2位小数
+            productPrice = productPrice.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+            model.set("productPrice", productPrice.toString());
+        }
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################saleUnitPrice/updateSaleUnitPriceByPrice 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
 
     /**
     * Excel导出

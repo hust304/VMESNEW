@@ -167,7 +167,18 @@
                     </otherwise>
                 </choose>
             </if>
-
+            <if test="productId != null and productId != ''" >
+                and product_id = #{productId}
+            </if>
+            <if test="unit != null and unit != ''" >
+                and unit = #{unit}
+            </if>
+            <if test="customerId != null and customerId != ''" >
+                and customer_id = #{customerId}
+            </if>
+            <if test="isdisable != null and isdisable != ''" >
+                and isdisable = #{isdisable}
+            </if>
 
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >

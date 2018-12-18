@@ -1,6 +1,7 @@
 package com.xy.vmes.deecoop.sale.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.common.util.Common;
 import com.xy.vmes.deecoop.sale.dao.SaleUnitPriceMapper;
 import com.xy.vmes.entity.SaleUnitPrice;
 import com.xy.vmes.service.SaleUnitPriceService;
@@ -10,6 +11,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.MessageFormat;
 import java.util.Date;
 import com.yvan.Conv;
 import java.util.LinkedHashMap;
@@ -206,6 +208,90 @@ public class SaleUnitPriceServiceImp implements SaleUnitPriceService {
         }
 
         return this.dataList(pageData);
+    }
+
+    public SaleUnitPrice findSaleUnitPrice(PageData object) throws Exception {
+        List<SaleUnitPrice> objectList = this.findSaleUnitPriceList(object);
+        if (objectList != null && objectList.size() > 0) {
+            return objectList.get(0);
+        }
+
+        return null;
+    }
+    public SaleUnitPrice findSaleUnitPriceById(String id) throws Exception {
+        if (id == null || id.trim().length() == 0) {return null;}
+
+        PageData findMap = new PageData();
+        findMap.put("id", id);
+
+        return this.findSaleUnitPrice(findMap);
+    }
+    public List<SaleUnitPrice> findSaleUnitPriceList(PageData object) throws Exception {
+        return this.findDataList(object, null);
+    }
+
+    public String checkColumn(SaleUnitPrice object) {
+        if (object == null) {return new String();}
+
+        StringBuffer msgBuf = new StringBuffer();
+        String column_isnull = "({0})输入为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT;
+
+        //productId 货品ID
+        if (object.getProductId() == null || object.getProductId().trim().length() == 0) {
+            String str_isnull = MessageFormat.format(column_isnull, "货品ID");
+            msgBuf.append(str_isnull);
+        }
+
+        //unit 单位id
+        if (object.getUnit() == null || object.getUnit().trim().length() == 0) {
+            String str_isnull = MessageFormat.format(column_isnull, "单位id");
+            msgBuf.append(str_isnull);
+        }
+
+        //customerId 客户ID
+        if (object.getCustomerId() == null || object.getCustomerId().trim().length() == 0) {
+            String str_isnull = MessageFormat.format(column_isnull, "客户ID");
+            msgBuf.append(str_isnull);
+        }
+
+        //productPrice 货品单价
+        if (object.getProductPrice() == null) {
+            String str_isnull = MessageFormat.format(column_isnull, "货品单价");
+            msgBuf.append(str_isnull);
+        }
+
+        return msgBuf.toString();
+    }
+
+    public void modifySaleUnitPrice(SaleUnitPrice object) throws Exception {
+        //productId 货品ID
+        if (object.getProductId() == null || object.getProductId().trim().length() == 0) {
+            return;
+        }
+        //unit 单位id
+        if (object.getUnit() == null || object.getUnit().trim().length() == 0) {
+            return;
+        }
+        //customerId 客户ID
+        if (object.getCustomerId() == null || object.getCustomerId().trim().length() == 0) {
+            return;
+        }
+        //productPrice 货品单价
+        if (object.getProductPrice() == null) {
+            return;
+        }
+
+        PageData findMap = new PageData();
+        findMap.put("productId", object.getProductId());
+        findMap.put("unit", object.getUnit());
+        findMap.put("customerId", object.getCustomerId());
+
+        SaleUnitPrice objectDB = this.findSaleUnitPrice(findMap);
+        if (objectDB == null) {
+            this.save(object);
+        } else {
+            this.update(object);
+        }
     }
 }
 

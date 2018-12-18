@@ -126,6 +126,14 @@ public interface SaleUnitPriceService {
      */
     List<SaleUnitPrice> findDataList(PageData pageData, Boolean isQueryAll) throws Exception;
 
+    SaleUnitPrice findSaleUnitPrice(PageData object) throws Exception;
+    SaleUnitPrice findSaleUnitPriceById(String id) throws Exception;
+    List<SaleUnitPrice> findSaleUnitPriceList(PageData object) throws Exception;
+
+    ////////////////////////////////////////////////////////////////
+    String checkColumn(SaleUnitPrice object);
+    void modifySaleUnitPrice(SaleUnitPrice object) throws Exception;
+
 }
 
 
