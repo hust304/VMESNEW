@@ -210,6 +210,24 @@ public class SaleUnitPriceServiceImp implements SaleUnitPriceService {
         return this.dataList(pageData);
     }
 
+    /**
+     * 创建人：刘威
+     * 创建时间：2018-12-14
+     */
+    @Override
+    public List<Map> getCustomerUnitPriceListPage(PageData pd,Pagination pg) throws Exception{
+        return saleUnitPriceMapper.getCustomerUnitPriceListPage(pd,pg);
+        }
+
+    /**
+     * 创建人：刘威
+     * 创建时间：2018-12-14
+     */
+    @Override
+    public List<Map> getCustomerUnitPriceHisListPage(PageData pd,Pagination pg) throws Exception{
+        return saleUnitPriceMapper.getCustomerUnitPriceHisListPage(pd,pg);
+    }
+
     public SaleUnitPrice findSaleUnitPrice(PageData object) throws Exception {
         List<SaleUnitPrice> objectList = this.findSaleUnitPriceList(object);
         if (objectList != null && objectList.size() > 0) {

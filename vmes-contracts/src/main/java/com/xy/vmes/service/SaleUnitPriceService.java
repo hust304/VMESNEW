@@ -134,6 +134,10 @@ public interface SaleUnitPriceService {
     String checkColumn(SaleUnitPrice object);
     void modifySaleUnitPrice(SaleUnitPrice object) throws Exception;
 
+    List<Map> getCustomerUnitPriceListPage(PageData pd,Pagination pg) throws Exception;
+
+    List<Map> getCustomerUnitPriceHisListPage(PageData pd,Pagination pg) throws Exception;
+
 }
 
 
