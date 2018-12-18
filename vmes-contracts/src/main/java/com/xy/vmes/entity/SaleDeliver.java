@@ -54,15 +54,18 @@ public class SaleDeliver implements Serializable {
 	//发货日期
 	@TableField("deliver_date")
 	private Date deliverDate;
+	//合计金额
+	@TableField("total_sum")
+	private BigDecimal totalSum;
 	@TableField("cuser")
 	private String cuser;
 	//创建时间
 	@TableField("cdate")
 	private Date cdate;
+
 	//修改用户id
 	@TableField("uuser")
 	private String uuser;
-
 	//修改时间
 	@TableField("udate")
 	private Date udate;
@@ -181,6 +184,12 @@ public class SaleDeliver implements Serializable {
 	}
 	public void setCustomeAddressId(String customeAddressId) {
 		this.customeAddressId = customeAddressId;
+	}
+	public BigDecimal getTotalSum() {
+		return totalSum;
+	}
+	public void setTotalSum(BigDecimal totalSum) {
+		this.totalSum = totalSum;
 	}
 /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 

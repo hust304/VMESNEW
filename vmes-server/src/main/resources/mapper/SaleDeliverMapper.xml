@@ -59,7 +59,8 @@
             (replace(uuid(), '-', ''),'saleDeliver','customeAddressId','customeAddressId',0, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'saleDeliver','custAddressName','custAddressName',0, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'saleDeliver','custPhone','custPhone',0, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleDeliver','custAddress','custAddress',0, '1','1','1','0',now(), 'admin')
+            (replace(uuid(), '-', ''),'saleDeliver','custAddress','custAddress',0, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'saleDeliver','totalSum','totalSum',0, '1','1','1','0',now(), 'admin')
 
     </insert>
 
@@ -80,10 +81,11 @@
 
         custome_address_id customeAddressId,
         deliver_date deliverDate,
+        total_sum totalSum,
         cuser cuser,
         cdate cdate,
-        uuser uuser,
 
+        uuser uuser,
         udate udate,
         remark remark,
         isdisable isdisable
@@ -117,6 +119,7 @@
     <!-- 自动创建，可以修改 -->
     <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
+        distinct
         deliver.id id,
         deliver.deliver_code deliverCode,
         deliver.company_id companyId,
@@ -143,11 +146,11 @@
 
         deliver.custome_address_id customeAddressId,
         DATE_FORMAT(deliver.deliver_date,'%Y-%m-%d') deliverDate,
+        round(ifnull(deliver.total_sum, 0),2) totalSum,
         deliver.cuser cuser,
         DATE_FORMAT(deliver.cdate,'%Y-%m-%d %T') cdate,
-        deliver.uuser uuser,
-        deliver.udate udate,
 
+        deliver.uuser uuser,
         DATE_FORMAT(deliver.udate,'%Y-%m-%d %T') udate,
         deliver.remark remark,
         deliver.isdisable isdisable,
@@ -162,6 +165,8 @@
         address.address custAddress
 
         from vmes_sale_deliver deliver
+            left join vmes_sale_deliver_detail detail on deliver.id = detail.parent_id
+            left join vmes_sale_order saleOrder on detail.order_id = saleOrder.id
             left join vmes_user makeUser on deliver.make_id = makeUser.id
             left join vmes_customer customer on deliver.customer_id = customer.id
             left join vmes_customer_address address on deliver.custome_address_id = address.id
@@ -177,6 +182,9 @@
                 and deliver.type = #{type}
             </if>
 
+            <if test="priceType != null and priceType != ''">
+                and saleOrder.price_type = #{priceType}
+            </if>
             <if test="waybillCompany != null and waybillCompany != ''">
                 and deliver.waybill_company LIKE CONCAT(CONCAT('%', #{waybillCompany}),'%')
             </if>

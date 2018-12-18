@@ -2,14 +2,18 @@ package com.xy.vmes.deecoop.sale.controller;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
+import com.xy.vmes.common.util.Common;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.Column;
+import com.xy.vmes.entity.SaleDeliver;
 import com.xy.vmes.entity.SaleDeliverDetail;
 import com.xy.vmes.service.ColumnService;
 import com.xy.vmes.service.SaleDeliverDetailService;
+import com.xy.vmes.service.SaleDeliverService;
 import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
+import com.yvan.YvanUtil;
 import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.http.HttpServletResponse;
+import java.math.BigDecimal;
 import java.util.*;
 
 
@@ -37,6 +42,8 @@ public class SaleDeliverDetailController {
 
     private Logger logger = LoggerFactory.getLogger(SaleDeliverDetailController.class);
 
+    @Autowired
+    private SaleDeliverService saleDeliverService;
     @Autowired
     private SaleDeliverDetailService saleDeliverDetailService;
 
@@ -107,6 +114,78 @@ public class SaleDeliverDetailController {
         model.putResult(result);
         Long endTime = System.currentTimeMillis();
         logger.info("################saleDeliverDetail/listPageSaleDeliverDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 修改发货单(发货明细)
+     * 后计价修改货品单价
+     *
+     * @author 陈刚
+     * @date 2018-12-17
+     * @throws Exception
+     */
+    @PostMapping("/saleDeliverDetail/updateSaleDeliverDetailByPrice")
+    @Transactional
+    public ResultModel updateSaleDeliverDetailByPrice() throws Exception {
+        logger.info("################saleDeliverDetail/updateSaleDeliverDetailByPrice 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        ResultModel model = new ResultModel();
+
+        PageData pageData = HttpUtils.parsePageData();
+        String deliverId = pageData.getString("deliverId");
+        if (deliverId == null || deliverId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("发货单id为空或空字符串！");
+            return model;
+        }
+
+        String dtlJsonStr = pageData.getString("dtlJsonStr");
+        if (dtlJsonStr == null || dtlJsonStr.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("请至少选择一条发货明细数据！");
+            return model;
+        }
+
+        List<Map<String, String>> mapList = (List<Map<String, String>>) YvanUtil.jsonToList(dtlJsonStr);
+        if (mapList == null || mapList.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("订单明细Json字符串-转换成List错误！");
+            return model;
+        }
+
+        //1. 修改发货单明细价格
+        List<SaleDeliverDetail> deliverDtlList = saleDeliverDetailService.mapList2DetailList(mapList, null);
+        for (SaleDeliverDetail deliverDtl : deliverDtlList) {
+            //count 发货数量
+            BigDecimal count = BigDecimal.valueOf(0D);
+            if (deliverDtl.getCount() != null) {
+                count = deliverDtl.getCount();
+            }
+            //productPrice 货品单价
+            BigDecimal productPrice = BigDecimal.valueOf(0D);
+            if (deliverDtl.getProductPrice() != null) {
+                productPrice = deliverDtl.getProductPrice();
+            }
+
+            //sum 发货金额
+            BigDecimal sum = BigDecimal.valueOf(count.doubleValue() * productPrice.doubleValue());
+            //四舍五入到2位小数
+            sum = sum.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+            deliverDtl.setSum(sum);
+
+            saleDeliverDetailService.update(deliverDtl);
+        }
+
+        //2. 修改发货单价格
+        BigDecimal totalSum = saleDeliverDetailService.findTotalSumByDetailList(deliverDtlList);
+        SaleDeliver saleDeliver = new SaleDeliver();
+        saleDeliver.setId(deliverId);
+        saleDeliver.setTotalSum(totalSum);
+        saleDeliverService.update(saleDeliver);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################saleDeliverDetail/updateSaleDeliverDetailByPrice 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 

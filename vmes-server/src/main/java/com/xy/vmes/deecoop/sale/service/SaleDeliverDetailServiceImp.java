@@ -1,16 +1,19 @@
 package com.xy.vmes.deecoop.sale.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.common.util.Common;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.sale.dao.SaleDeliverDetailMapper;
 import com.xy.vmes.entity.SaleDeliver;
 import com.xy.vmes.entity.SaleDeliverDetail;
 import com.xy.vmes.service.SaleDeliverDetailService;
+import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import com.yvan.Conv;
 import java.util.List;
@@ -159,7 +162,72 @@ public class SaleDeliverDetailServiceImp implements SaleDeliverDetailService {
         return this.dataList(pageData);
     }
 
+    public SaleDeliverDetail findSaleDeliverDetail(PageData object) throws Exception {
+        List<SaleDeliverDetail> objectList = this.findSaleDeliverDetailList(object);
+        if (objectList != null && objectList.size() > 0) {
+            return objectList.get(0);
+        }
+
+        return null;
+    }
+    public SaleDeliverDetail findSaleDeliverDetailById(String id) throws Exception {
+        if (id == null || id.trim().length() == 0) {return null;}
+
+        PageData findMap = new PageData();
+        findMap.put("id", id);
+
+        return this.findSaleDeliverDetail(findMap);
+    }
+
+    public List<SaleDeliverDetail> findSaleDeliverDetailList(PageData object) throws Exception {
+        return this.findDataList(object, null);
+    }
+    public List<SaleDeliverDetail> findSaleDeliverDetailListByParentId(String parentId) throws Exception {
+        if (parentId == null || parentId.trim().length() == 0) {return null;}
+
+        PageData findMap = new PageData();
+        findMap.put("parentId", parentId);
+
+        return this.findSaleDeliverDetailList(findMap);
+    }
+
+    public List<SaleDeliverDetail> mapList2DetailList(List<Map<String, String>> mapList, List<SaleDeliverDetail> objectList) {
+        if (objectList == null) {objectList = new ArrayList<SaleDeliverDetail>();}
+        if (mapList == null || mapList.size() == 0) {return objectList;}
+
+        for (Map<String, String> mapObject : mapList) {
+            SaleDeliverDetail detail = (SaleDeliverDetail) HttpUtils.pageData2Entity(mapObject, new SaleDeliverDetail());
+            objectList.add(detail);
+        }
+
+        return objectList;
+    }
+
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    public BigDecimal findTotalSumByDetailList(List<SaleDeliverDetail> objectList) {
+        double totalSum_double = 0D;
+        if (objectList == null || objectList.size() == 0) {return BigDecimal.valueOf(0D);}
+
+        for (SaleDeliverDetail detail : objectList) {
+            //发货数量
+            double count_double = 0D;
+            if (detail.getCount() != null) {
+                count_double = detail.getCount().doubleValue();
+            }
+
+            //货品单价
+            double productPrice_double = 0D;
+            if (detail.getProductPrice() != null) {
+                productPrice_double = detail.getProductPrice().doubleValue();
+            }
+
+            totalSum_double = totalSum_double + (count_double * productPrice_double);
+        }
+
+        //四舍五入到2位小数
+        return BigDecimal.valueOf(totalSum_double).setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+    }
+
     public void addDeliverDetail(SaleDeliver parentObj, List<SaleDeliverDetail> detailList, Map<String, String> orderDtl2OutDtlMap) throws Exception {
         if (parentObj == null) {return;}
         if (detailList == null || detailList.size() == 0) {return;}

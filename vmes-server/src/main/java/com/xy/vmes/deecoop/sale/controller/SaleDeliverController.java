@@ -270,6 +270,51 @@ public class SaleDeliverController {
         return model;
     }
 
+    /**
+     * 取消发货单
+     * @author 陈刚
+     * @date 2018-12-10
+     * @throws Exception
+     */
+    @PostMapping("/saleDeliver/cancelSaleDeliver")
+    @Transactional
+    public ResultModel cancelSaleDeliver() throws Exception {
+        logger.info("################saleDeliver/cancelSaleDeliver 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        ResultModel model = new ResultModel();
+
+        PageData pageData = HttpUtils.parsePageData();
+        String deliverId = pageData.getString("id");
+        if (deliverId == null || deliverId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("发货单id为空或空字符串！");
+            return model;
+        }
+
+        //状态(0:待发货 1:已发货 -1:已取消)
+        SaleDeliver saleDeliver = saleDeliverService.findSaleDeliverById(deliverId);
+        if ("1".equals(saleDeliver.getState())) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("当前发货单状态(已发货)，不可取消发货单！");
+            return model;
+        }
+
+        //取消出库单
+
+        //清除订单明细与发货明细的关联关系
+
+        //取消发货单
+        //状态(0:待发货 1:已发货 -1:已取消)
+        saleDeliver.setState("-1");
+        saleDeliverService.update(saleDeliver);
+
+        //发货明细状态(0:待发货 1:已发货 -1:已取消)
+        saleDeliverDetailService.updateStateByDetail("-1", deliverId);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################saleDeliver/cancelSaleDeliver 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
 
     /**
     * Excel导出

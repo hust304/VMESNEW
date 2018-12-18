@@ -157,6 +157,27 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
         return this.dataList(pageData);
     }
 
+    public SaleDeliver findSaleDeliver(PageData object) throws Exception {
+        List<SaleDeliver> objectList = this.findSaleDeliverList(object);
+        if (objectList != null && objectList.size() > 0) {
+            return objectList.get(0);
+        }
+
+        return null;
+    }
+    public SaleDeliver findSaleDeliverById(String id) throws Exception {
+        if (id == null || id.trim().length() == 0) {return null;}
+
+        PageData findMap = new PageData();
+        findMap.put("id", id);
+
+        return this.findSaleDeliver(findMap);
+    }
+
+    public List<SaleDeliver> findSaleDeliverList(PageData object) throws Exception {
+        return this.findDataList(object, null);
+    }
+
     ////////////////////////////////////////////////////////////////
 
     /**

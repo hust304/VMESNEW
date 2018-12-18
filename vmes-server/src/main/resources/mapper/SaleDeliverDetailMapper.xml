@@ -186,7 +186,6 @@
         DATE_FORMAT(detail.cdate,'%Y-%m-%d %T') cdate,
         detail.uuser uuser,
 
-        detail.udate udate,
         DATE_FORMAT(detail.udate,'%Y-%m-%d %T') udate,
         detail.remark remark,
         detail.isdisable isdisable,

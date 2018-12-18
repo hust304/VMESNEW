@@ -94,6 +94,11 @@ public interface SaleDeliverService {
      */
     List<SaleDeliver> findDataList(PageData pageData, Boolean isQueryAll) throws Exception;
 
+    SaleDeliver findSaleDeliver(PageData object) throws Exception;
+    SaleDeliver findSaleDeliverById(String id) throws Exception;
+
+    List<SaleDeliver> findSaleDeliverList(PageData object) throws Exception;
+
     ////////////////////////////////////////////////////////////////
 
     /**

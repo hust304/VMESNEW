@@ -5,6 +5,7 @@ import com.xy.vmes.entity.SaleDeliver;
 import com.xy.vmes.entity.SaleDeliverDetail;
 import com.yvan.PageData;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -95,8 +96,18 @@ public interface SaleDeliverDetailService {
      */
     List<SaleDeliverDetail> findDataList(PageData pageData, Boolean isQueryAll) throws Exception;
 
+    SaleDeliverDetail findSaleDeliverDetail(PageData object) throws Exception;
+    SaleDeliverDetail findSaleDeliverDetailById(String id) throws Exception;
+
+    List<SaleDeliverDetail> findSaleDeliverDetailList(PageData object) throws Exception;
+    List<SaleDeliverDetail> findSaleDeliverDetailListByParentId(String parentId) throws Exception;
+
+    List<SaleDeliverDetail> mapList2DetailList(List<Map<String, String>> mapList, List<SaleDeliverDetail> objectList);
+
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    BigDecimal findTotalSumByDetailList(List<SaleDeliverDetail> objectList);
     void addDeliverDetail(SaleDeliver parentObj, List<SaleDeliverDetail> detailList, Map<String, String> orderDtl2OutDtlMap) throws Exception;
+
     void updateStateByDetail(String state, String parentIds) throws Exception;
 
 }
