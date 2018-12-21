@@ -193,7 +193,7 @@
         (replace(uuid(), '-', ''),'WarehouseOutDetailDispatch','productId','产品ID',11, '1','0','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'WarehouseOutDetailDispatch','code','批次号',12, '1','0','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'WarehouseOutDetailDispatch','count','出库数量',13, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'WarehouseOutDetailDispatch','executeCount','已出库数量',14, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutDetailDispatch','executeCount','已出库数量',14, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'WarehouseOutDetailDispatch','state','状态',15, '1','0','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'WarehouseOutDetailDispatch','cuser','创建用户id',16, '1','0','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'WarehouseOutDetailDispatch','cdate','创建时间',17, '1','0','1','0',now(), 'admin'),

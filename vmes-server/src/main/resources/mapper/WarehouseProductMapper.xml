@@ -304,10 +304,10 @@
             <if test="queryStr != null and queryStr != ''" >
                 and ${queryStr}
             </if>
-            <if test="isSafeStock == 0"> <!-- 小于安全库存 -->
+            <if test="isSafeStock == 1"> <!-- 小于安全库存 -->
                 <![CDATA[ and prod.stock_count < prod.safety_count ]]>
             </if>
-            <if test="isSafeStock == 1">  <!-- 大于等于安全库存 -->
+            <if test="isSafeStock == 2">  <!-- 大于等于安全库存 -->
                 <![CDATA[ and prod.stock_count >= prod.safety_count ]]>
             </if>
             <if test="productId != null and productId != ''">

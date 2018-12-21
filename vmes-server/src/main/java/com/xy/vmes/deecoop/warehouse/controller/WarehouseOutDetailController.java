@@ -815,19 +815,37 @@ public class WarehouseOutDetailController {
                 varMap.put("pid",rootMap.get("id").toString());
                 double suggestCount = Double.parseDouble((String)varMap.get("suggestCount"));
                 double stockCount = Double.parseDouble((String)varMap.get("stockCount"));
-                if(stockCount<suggestCount){
+
+                if(stockCount<=suggestCount&&stockCount<=(count-executeCount)){
                     varMap.put("suggestCount",df.format(stockCount));
                     childrenMapList.add(varMap);
-                }else {
-                    if(suggestCount>(count-executeCount)){
-                        varMap.put("suggestCount",df.format(count-executeCount));
-                        childrenMapList.add(varMap);
-                    }else {
-                        varMap.put("suggestCount",df.format(suggestCount));
-                        childrenMapList.add(varMap);
-                    }
-
+                }else if(stockCount<=suggestCount&&stockCount>(count-executeCount)){
+                    varMap.put("suggestCount",df.format(count-executeCount));
+                    childrenMapList.add(varMap);
+                }else if(stockCount>suggestCount&&stockCount<=(count-executeCount)){
+                    varMap.put("suggestCount",df.format(suggestCount));
+                    childrenMapList.add(varMap);
+                }else if(stockCount>suggestCount&&stockCount>(count-executeCount)&&suggestCount>(count-executeCount)){
+                    varMap.put("suggestCount",df.format(count-executeCount));
+                    childrenMapList.add(varMap);
+                }else if(stockCount>suggestCount&&stockCount>(count-executeCount)&&suggestCount<=(count-executeCount)){
+                    varMap.put("suggestCount",df.format(suggestCount));
+                    childrenMapList.add(varMap);
                 }
+
+//                if(stockCount<suggestCount){
+//                    varMap.put("suggestCount",df.format(stockCount));
+//                    childrenMapList.add(varMap);
+//                }else {
+//                    if(suggestCount>(count-executeCount)){
+//                        varMap.put("suggestCount",df.format(count-executeCount));
+//                        childrenMapList.add(varMap);
+//                    }else {
+//                        varMap.put("suggestCount",df.format(suggestCount));
+//                        childrenMapList.add(varMap);
+//                    }
+//
+//                }
             }
         }
         return childrenMapList;

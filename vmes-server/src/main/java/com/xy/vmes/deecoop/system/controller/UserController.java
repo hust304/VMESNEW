@@ -369,7 +369,7 @@ public class UserController {
 
         //B. 通过手机号-设置用户默认密码
         //如果用户设置了密码那就用设置的密码加密，如果没有设置密码，那么就用手机号后六位进行加密作为默认密码
-        if(StringUtils.isEmpty(user.getPassword())){
+        if(StringUtils.isEmpty(pd.getString("password"))){
             if(mobile!=null&&mobile.trim().length()>6){
                 mobile = mobile.trim();
                 String password = mobile.substring(mobile.length()-6,mobile.length());
@@ -380,7 +380,7 @@ public class UserController {
                 return model;
             }
         }else{
-            user.setPassword(MD5Utils.MD5(user.getPassword()));
+            user.setPassword(MD5Utils.MD5(pd.getString("password")));
         }
 
         //删除用户角色信息

@@ -9,7 +9,7 @@ import com.xy.vmes.entity.Menu;
 import com.xy.vmes.entity.TreeEntity;
 import com.xy.vmes.service.*;
 import com.yvan.*;
-import com.yvan.cache.RedisClient;
+//import com.yvan.cache.RedisClient;
 import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
 import com.yvan.template.ExcelAjaxTemplate;
@@ -195,8 +195,8 @@ public class MenuController {
 
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
-    @Autowired
-    RedisClient redisClient;
+//    @Autowired
+//    RedisClient redisClient;
 
     /**
      * 菜单列表分页
