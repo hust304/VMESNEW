@@ -60,7 +60,8 @@ public class ComonFilter implements Filter {
                     return;
                 }else {
                     if (!this.checkSession(httpRequest)) {
-                        httpResponse.sendRedirect(httpRequest.getHeader("referer") + "api/error/401");
+//                        httpResponse.sendRedirect(httpRequest.getHeader("referer") + "api/error/401");
+                        httpResponse.sendRedirect( "/error/401");
                         return;
                     }
 
