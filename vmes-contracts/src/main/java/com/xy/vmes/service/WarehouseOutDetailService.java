@@ -130,6 +130,7 @@ public interface WarehouseOutDetailService {
     boolean isAllExistStateByDetailList(String state, String ignoreState, List<WarehouseOutDetail> detailList) throws Exception;
 
     void updateStateByDetail(PageData mapDetail) throws Exception;
+    void updateStateByDetail(String state, String parentIds) throws Exception;
 
     WarehouseOutDetail findWarehouseOutDetailById(String detailId);
 }

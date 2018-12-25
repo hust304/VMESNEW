@@ -1,9 +1,8 @@
 package com.xy.vmes.deecoop.warehouse.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.warehouse.dao.WarehouseOutDetailMapper;
-import com.xy.vmes.entity.WarehouseIn;
-import com.xy.vmes.entity.WarehouseInDetail;
 import com.xy.vmes.entity.WarehouseOut;
 import com.xy.vmes.entity.WarehouseOutDetail;
 import com.xy.vmes.service.CoderuleService;
@@ -11,7 +10,6 @@ import com.xy.vmes.service.WarehouseOutDetailService;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -291,6 +289,20 @@ public class WarehouseOutDetailServiceImp implements WarehouseOutDetailService {
     @Override
     public void updateStateByDetail(PageData pd) throws Exception{
         warehouseOutDetailMapper.updateStateByDetail(pd);
+    }
+
+    public void updateStateByDetail(String state, String parentIds) throws Exception {
+        if (state == null || state.trim().length() == 0) {return;}
+        if (parentIds == null || parentIds.trim().length() == 0) {return;}
+
+        PageData pageData = new PageData();
+        pageData.put("state", state);
+
+        parentIds = StringUtil.stringTrimSpace(parentIds);
+        parentIds = "'" + parentIds.replace(",", "','") + "'";
+        pageData.put("parentIds", "parent_id in (" + parentIds + ")");
+
+        this.updateStateByDetail(pageData);
     }
 
     @Override

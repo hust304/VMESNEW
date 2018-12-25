@@ -121,6 +121,7 @@ public interface WarehouseOutService {
     WarehouseOut findWarehouseOutById(String id)throws Exception;
 
     void updateState(String id) throws Exception;
+    void updateStateByOut(String state, String ids) throws Exception;
 
     ////////////////////////////////////////////////////////////////////////////////
     WarehouseOut createWarehouseOut(String customerId, String customerName, String cuser, String companyId, String outType);

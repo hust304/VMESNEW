@@ -178,6 +178,17 @@
         )
     </delete>
 
+    <update id="updateStateByOut" parameterType="com.yvan.PageData" >
+        update vmes_warehouse_out set
+        state = #{state},
+        udate = now()
+        <where>
+            <if test="ids != null and ids != ''" >
+                and ${ids}
+            </if>
+        </where>
+    </update>
+
     <insert id="insertColumn" >
         delete from vmes_column where model_code = 'WarehouseOut' ;
         insert into vmes_column (

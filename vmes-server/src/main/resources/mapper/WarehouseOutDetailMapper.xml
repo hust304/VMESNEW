@@ -286,6 +286,18 @@
                     <if test="warehouseId != null and warehouseId != ''" >
                         and warehouse_id = #{warehouseId}
                     </if>
+                    <if test="state != null and state != ''" >
+                        and state = #{state}
+                    </if>
+
+                    <!--isNeedDeliver-->
+                    <if test="'true' == isNeedDeliver" >
+                        and id in (
+                            select out_detail_id
+                            from vmes_sale_deliver_detail
+                            where parent_id = #{deliverId}
+                        )
+                    </if>
 
                     <!--queryStr 自定义sql查询语句-->
                     <if test="queryStr != null and queryStr != ''" >
@@ -475,6 +487,9 @@
         <where>
             <if test="parentId != null and parentId != ''" >
                 and parent_id = #{parentId}
+            </if>
+            <if test="parentIds != null and parentIds != ''" >
+                and ${parentIds}
             </if>
         </where>
     </update>

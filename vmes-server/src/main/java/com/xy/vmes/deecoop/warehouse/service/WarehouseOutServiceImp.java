@@ -2,6 +2,7 @@ package com.xy.vmes.deecoop.warehouse.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.Common;
+import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.warehouse.dao.WarehouseOutMapper;
 import com.xy.vmes.entity.Warehouse;
 import com.xy.vmes.entity.WarehouseOut;
@@ -303,6 +304,20 @@ public class WarehouseOutServiceImp implements WarehouseOutService {
             this.update(warehouseOut);
         }
 
+    }
+
+    public void updateStateByOut(String state, String ids) throws Exception {
+        if (state == null || state.trim().length() == 0) {return;}
+        if (ids == null || ids.trim().length() == 0) {return;}
+
+        PageData pageData = new PageData();
+        pageData.put("state", state);
+
+        ids = StringUtil.stringTrimSpace(ids);
+        ids = "'" + ids.replace(",", "','") + "'";
+        pageData.put("ids", "id in (" + ids + ")");
+
+        warehouseOutMapper.updateStateByOut(pageData);
     }
 
     ////////////////////////////////////////////////////////////////////////////////
