@@ -1,6 +1,7 @@
 package com.xy.vmes.deecoop.base.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.common.util.Common;
 import com.xy.vmes.deecoop.base.dao.ProductMapper;
 import com.xy.vmes.entity.Product;
 import com.xy.vmes.entity.ProductUnit;
@@ -263,6 +264,34 @@ public class ProductServiceImp implements ProductService {
         pd.put("uuser",uuser);
         pd.put("stockCount",count);
         productMapper.updateStockCount(pd);
+    }
+
+    public void updateLockCount(String productId, Product oldProduct, BigDecimal lockCount, String uuser) throws Exception {
+        if (productId == null || productId.trim().length() == 0) {return;}
+        if (lockCount == null) {return;}
+        if (oldProduct == null) {oldProduct = this.findProductById(productId);}
+
+        double old_lockCount = 0D;
+        if (oldProduct != null && oldProduct.getLockCount() != null) {
+            old_lockCount = oldProduct.getLockCount().doubleValue();
+        }
+        double new_lockCount = old_lockCount + lockCount.doubleValue();
+
+        BigDecimal lockCountBig = BigDecimal.valueOf(0D);
+        if (new_lockCount > 0) {
+            //四舍五入到2位小数
+            lockCountBig = BigDecimal.valueOf(new_lockCount);
+            lockCountBig = lockCountBig.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+        }
+
+        Product product = new Product();
+        product.setId(productId);
+        product.setLockCount(lockCountBig);
+        if (uuser != null && uuser.trim().length() > 0) {
+            product.setUuser(uuser);
+        }
+
+        this.update(product);
     }
 
     public ProductUnit product2ProductUnit(Product product, ProductUnit productUnit,String unit) {

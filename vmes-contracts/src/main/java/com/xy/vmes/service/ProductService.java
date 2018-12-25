@@ -122,6 +122,17 @@ public interface ProductService {
     String findIdsByPageMapList(List<Map> mapList);
 
     void updateStockCount(Product product, BigDecimal count, String uuser) throws Exception;
+
+    /**
+     * 修改锁定库存数量
+     * @param productId   货品id
+     * @param oldProduct  原货品对象
+     * @param lockCount   修改的货品锁定数量
+     * @param uuser       用户id
+     * @throws Exception
+     */
+    void updateLockCount(String productId, Product oldProduct, BigDecimal lockCount, String uuser) throws Exception;
+
     ProductUnit product2ProductUnit(Product product, ProductUnit productUnit,String unit);
     ProductUnitPrice product2ProductUnitPrice(Product product, ProductUnitPrice productUnitPrice,String unit);
 }
