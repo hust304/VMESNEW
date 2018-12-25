@@ -319,27 +319,27 @@ public class SaleDeliverDetailServiceImp implements SaleDeliverDetailService {
      *  Boolean.FALSE 一条或多条出库未完成
      *  is null 无出库明细
      */
-//    public Boolean checkIsAllOutByDeliverId(String deliverId) throws ApplicationException {
-//        if (deliverId == null || deliverId.trim().length() == 0) {
-//            throw new ApplicationException("发货单id为空或空字符串");
-//        }
-//
-//        PageData findMap = new PageData();
-//        findMap.put("deliverId", deliverId);
-//        List<Map<String, Object>> mapList = saleDeliverDetailMapper.findDeliverDetailByOutDetail(findMap);
-//        if (mapList == null || mapList.size() ==0) {return null;}
-//
-//        for (Map<String, Object> mapObject : mapList) {
-//            //outDtlState 出库明细状态
-//            //状态(0:待派单 1:执行中 2:已完成 -1.已取消)
-//            String outDtlState = (String)mapObject.get("outDtlState");
-//            if (!"2".equals(outDtlState)) {
-//                return Boolean.FALSE;
-//            }
-//        }
-//
-//        return Boolean.TRUE;
-//    }
+    public Boolean checkIsAllOutByDeliverId(String deliverId) throws ApplicationException {
+        if (deliverId == null || deliverId.trim().length() == 0) {
+            throw new ApplicationException("发货单id为空或空字符串");
+        }
+
+        PageData findMap = new PageData();
+        findMap.put("deliverId", deliverId);
+        List<Map<String, Object>> mapList = saleDeliverDetailMapper.findDeliverDetailByOutDetail(findMap);
+        if (mapList == null || mapList.size() ==0) {return null;}
+
+        for (Map<String, Object> mapObject : mapList) {
+            //outDtlState 出库明细状态
+            //状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+            String outDtlState = (String)mapObject.get("outDtlState");
+            if (!"2".equals(outDtlState)) {
+                return Boolean.FALSE;
+            }
+        }
+
+        return Boolean.TRUE;
+    }
 
     /**
      * 发货单取消

@@ -5,6 +5,7 @@ import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.Common;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.*;
+import com.xy.vmes.exception.ApplicationException;
 import com.xy.vmes.service.*;
 import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
@@ -259,6 +260,20 @@ public class SaleDeliverController {
             return model;
         }
 
+        //1. 验证当前出库单id-对应的出库明细状态(是否全部完成出库)
+        try {
+            Boolean isAllOut = saleDeliverDetailService.checkIsAllOutByDeliverId(deliverId);
+            if (isAllOut != null && !isAllOut.booleanValue()) {
+                model.putCode(Integer.valueOf(1));
+                model.putMsg("当前发货明细对应的出库明细状态(待派单,执行中,已取消)，必须全部出库完成，！");
+                return model;
+            }
+        } catch (ApplicationException e) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(e.getMessage());
+            return model;
+        }
+
         SaleDeliver saleDeliver = (SaleDeliver)HttpUtils.pageData2Entity(pageData, new SaleDeliver());
         saleDeliver.setId(deliverId);
         //状态(0:待发货 1:已发货 -1:已取消)
@@ -268,19 +283,19 @@ public class SaleDeliverController {
         //状态(0:待发货 1:已发货 -1:已取消)
         saleDeliverDetailService.updateStateByDetail("1", deliverId);
 
-        //获取订单id的发货金额 Map<订单id, 发货金额>
-        Map<String, BigDecimal> orderDeliverSumMap = saleDeliverDetailService.findOrderDeliverSumByDeliverId(deliverId, null);
-        if (orderDeliverSumMap != null && orderDeliverSumMap.size() > 0) {
-            for (Iterator iterator = orderDeliverSumMap.keySet().iterator(); iterator.hasNext();) {
-                String mapKey = (String)iterator.next();
-                BigDecimal deliverSum = orderDeliverSumMap.get(mapKey);
-
-                SaleOrder order = new SaleOrder();
-                order.setId(mapKey);
-                order.setDeliverSum(deliverSum);
-                saleOrderService.update(order);
-            }
-        }
+//        //获取订单id的发货金额 Map<订单id, 发货金额>
+//        Map<String, BigDecimal> orderDeliverSumMap = saleDeliverDetailService.findOrderDeliverSumByDeliverId(deliverId, null);
+//        if (orderDeliverSumMap != null && orderDeliverSumMap.size() > 0) {
+//            for (Iterator iterator = orderDeliverSumMap.keySet().iterator(); iterator.hasNext();) {
+//                String mapKey = (String)iterator.next();
+//                BigDecimal deliverSum = orderDeliverSumMap.get(mapKey);
+//
+//                SaleOrder order = new SaleOrder();
+//                order.setId(mapKey);
+//                order.setDeliverSum(deliverSum);
+//                saleOrderService.update(order);
+//            }
+//        }
 
         Long endTime = System.currentTimeMillis();
         logger.info("################saleDeliver/updateSaleDeliverByDeliverType 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");

@@ -128,8 +128,11 @@ public interface SaleDeliverDetailService {
      *
      * @param deliverId 发货单id
      * @return
+     *  Boolean.TRUE  全部出库完成
+     *  Boolean.FALSE 一条或多条出库未完成
+     *  is null 无出库明细
      */
-    //Boolean checkIsAllOutByDeliverId(String deliverId) throws ApplicationException;
+    Boolean checkIsAllOutByDeliverId(String deliverId) throws ApplicationException;
 
     /**
      * 发货单取消
