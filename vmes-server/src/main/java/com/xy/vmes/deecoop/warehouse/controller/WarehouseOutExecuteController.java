@@ -58,6 +58,8 @@ public class WarehouseOutExecuteController {
 
     @Autowired
     private ProductService productService;
+    @Autowired
+    SaleDeliverOutDetailService saleDeliverOutDetailService;
 
     /**
     * @author 刘威 自动创建，禁止修改
@@ -317,6 +319,7 @@ public class WarehouseOutExecuteController {
                 detail.setState("1");
             }else {
                 detail.setState("2");
+                saleDeliverOutDetailService.finishOutDetailUnlock(detail.getId());
             }
 
             warehouseOutDetailService.update(detail);
@@ -422,6 +425,7 @@ public class WarehouseOutExecuteController {
             detail.setState("1");
         }else {
             detail.setState("2");
+            saleDeliverOutDetailService.finishOutDetailUnlock(detail.getId());
         }
 
         warehouseOutDetailService.update(detail);
@@ -550,6 +554,7 @@ public class WarehouseOutExecuteController {
                             detail.setState("1");
                         }else {
                             detail.setState("2");
+                            saleDeliverOutDetailService.finishOutDetailUnlock(detail.getId());
                         }
 
                         warehouseOutDetailService.update(detail);
