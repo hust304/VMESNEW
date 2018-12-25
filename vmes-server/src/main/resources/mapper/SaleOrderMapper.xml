@@ -55,6 +55,7 @@
             (replace(uuid(), '-', ''),'saleOrder', 'discountSum', '折扣金额', 14, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
             (replace(uuid(), '-', ''),'saleOrder', 'orderSum', '订单金额(合计金额 - 折扣金额)', 15, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
             (replace(uuid(), '-', ''),'saleOrder', 'advanceSum', '预付款(定金)', 16, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+            (replace(uuid(), '-', ''),'saleOrder', 'deliverSum', 'deliverSum', 16, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
             (replace(uuid(), '-', ''),'saleOrder', 'receivables', '应收款(发货金额-预付款)(发货完成填写)', 17, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
             (replace(uuid(), '-', ''),'saleOrder', 'cuser', '创建用户id', 18, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
             (replace(uuid(), '-', ''),'saleOrder', 'cdate', '创建时间', 19, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
@@ -96,12 +97,13 @@
         order_sum orderSum,
         advance_sum advanceSum,
 
+        deliver_sum deliverSum,
         receivables receivables,
         cuser cuser,
         cdate cdate,
         uuser uuser,
-        udate udate,
 
+        udate udate,
         remark remark,
         isdisable isdisable
         from vmes_sale_order
@@ -179,7 +181,8 @@
             round(ifnull(saleOrder.order_sum, 0),2) orderSum,
             round(ifnull(saleOrder.advance_sum, 0),2) advanceSum,
 
-            round(ifnull(saleOrder.receivables, 0),2) receivables,
+            round(ifnull(saleOrder.deliver_sum, 0),2) deliverSum,
+            round((ifnull(saleOrder.deliver_sum, 0) - ifnull(saleOrder.advance_sum, 0)), 2) receivables,
             saleOrder.cuser cuser,
             DATE_FORMAT(saleOrder.cdate,'%Y-%m-%d %T') cdate,
             saleOrder.uuser uuser,

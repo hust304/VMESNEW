@@ -22,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.http.HttpServletResponse;
+import java.math.BigDecimal;
 import java.util.*;
 
 
@@ -41,14 +42,15 @@ public class SaleDeliverController {
     private SaleDeliverService saleDeliverService;
     @Autowired
     private SaleDeliverDetailService saleDeliverDetailService;
+    @Autowired
+    private SaleOrderService saleOrderService;
+    @Autowired
+    private SaleOrderDetailService saleOrderDetailService;
 
     @Autowired
     private WarehouseOutService warehouseOutService;
     @Autowired
     private WarehouseOutDetailService warehouseOutDetailService;
-
-    @Autowired
-    private SaleOrderDetailService saleOrderDetailService;
     @Autowired
     private WarehouseService warehouseService;
 
@@ -236,7 +238,8 @@ public class SaleDeliverController {
     }
 
     /**
-     * 修改发货单(发货类型)
+     * 修改发货单(发货类型)-发货完成
+     *
      * @author 陈刚
      * @date 2018-12-17
      * @throws Exception
@@ -264,6 +267,20 @@ public class SaleDeliverController {
 
         //状态(0:待发货 1:已发货 -1:已取消)
         saleDeliverDetailService.updateStateByDetail("1", deliverId);
+
+        //获取订单id的发货金额 Map<订单id, 发货金额>
+        Map<String, BigDecimal> orderDeliverSumMap = saleDeliverDetailService.findOrderDeliverSumByDeliverId(deliverId, null);
+        if (orderDeliverSumMap != null && orderDeliverSumMap.size() > 0) {
+            for (Iterator iterator = orderDeliverSumMap.keySet().iterator(); iterator.hasNext();) {
+                String mapKey = (String)iterator.next();
+                BigDecimal deliverSum = orderDeliverSumMap.get(mapKey);
+
+                SaleOrder order = new SaleOrder();
+                order.setId(mapKey);
+                order.setDeliverSum(deliverSum);
+                saleOrderService.update(order);
+            }
+        }
 
         Long endTime = System.currentTimeMillis();
         logger.info("################saleDeliver/updateSaleDeliverByDeliverType 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
@@ -299,9 +316,27 @@ public class SaleDeliverController {
             return model;
         }
 
-        //取消出库单
+        //验证发货单是否允许取消
+        //出库单明细状态(状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+        String msgStr = saleDeliverDetailService.checkOutDetailStateByCancelDeliver(deliverId);
+        if (msgStr != null && msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
 
-        //清除订单明细与发货明细的关联关系
+        //1. 取消出库单
+        String outParentIds = saleDeliverDetailService.findOutIdsByDeliverId(deliverId);
+        if (outParentIds != null && outParentIds.trim().length() > 0) {
+            //取消出库单状态(0:未完成 1:已完成 -1:已取消)
+            warehouseOutService.updateStateByOut("-1", outParentIds);
+
+            //取消出库单明细状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+            warehouseOutDetailService.updateStateByDetail("-1", outParentIds);
+        }
+
+        //2. 清除订单明细与发货明细的关联关系
+        saleDeliverDetailService.updateOrderDetailByCancelDeliver(deliverId);
 
         //取消发货单
         //状态(0:待发货 1:已发货 -1:已取消)

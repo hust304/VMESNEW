@@ -233,6 +233,8 @@
           deliverDtl.parent_id deliverId,
           deliverDtl.id deliverDtlId
           deliverDtl.out_detail_id outDtlId,
+
+          outDtl.parent_id outParentId,
           outDtl.state outDtlState
         from vmes_sale_deliver_detail deliverDtl
           left join vmes_warehouse_out_detail outDtl on deliverDtl.out_detail_id = outDtl.id
@@ -247,5 +249,15 @@
             </if>
         </where>
     </select>
+
+    <!--清除订单明细与发货明细的关联关系(发货单取消)-->
+    <update id="updateOrderDetailByCancelDeliver" parameterType="com.yvan.PageData" >
+        update vmes_sale_order_detail set deliver_detail_id = null
+        where deliver_detail_id in (
+            select id
+            from vmes_sale_deliver_detail
+            where parent_id = #{deliverId}
+        )
+    </update>
 
 </mapper>

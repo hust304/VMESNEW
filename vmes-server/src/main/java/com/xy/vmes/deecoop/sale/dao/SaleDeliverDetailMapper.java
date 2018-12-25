@@ -54,6 +54,14 @@ public interface SaleDeliverDetailMapper extends BaseMapper<SaleDeliverDetail> {
      * @return
      */
     List<Map<String, Object>> findDeliverDetailByOutDetail(PageData pd);
+
+    /**
+     * 发货单取消
+     * 清除订单明细与发货明细的关联关系(vmes_sale_order_detail.deliver_detail_id)
+     *
+     * @param pd
+     */
+    void updateOrderDetailByCancelDeliver(PageData pd);
 }
 
 

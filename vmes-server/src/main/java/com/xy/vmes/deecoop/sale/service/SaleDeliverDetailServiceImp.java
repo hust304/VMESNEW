@@ -6,8 +6,10 @@ import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.sale.dao.SaleDeliverDetailMapper;
 import com.xy.vmes.entity.SaleDeliver;
 import com.xy.vmes.entity.SaleDeliverDetail;
+import com.xy.vmes.entity.WarehouseOutDetail;
 import com.xy.vmes.exception.ApplicationException;
 import com.xy.vmes.service.SaleDeliverDetailService;
+import com.xy.vmes.service.WarehouseOutDetailService;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,11 +17,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.util.*;
+
 import com.yvan.Conv;
-import java.util.List;
-import java.util.Map;
-import java.util.ArrayList;
 
 /**
 * 说明：vmes_sale_deliver_detail:发货明细 实现类
@@ -32,6 +32,8 @@ public class SaleDeliverDetailServiceImp implements SaleDeliverDetailService {
 
     @Autowired
     private SaleDeliverDetailMapper saleDeliverDetailMapper;
+    @Autowired
+    private WarehouseOutDetailService warehouseOutDetailService;
 
     /**
     * 创建人：陈刚 自动创建，禁止修改
@@ -188,6 +190,7 @@ public class SaleDeliverDetailServiceImp implements SaleDeliverDetailService {
 
         PageData findMap = new PageData();
         findMap.put("parentId", parentId);
+        findMap.put("orderStr", "order_id asc");
 
         return this.findSaleDeliverDetailList(findMap);
     }
@@ -263,6 +266,48 @@ public class SaleDeliverDetailServiceImp implements SaleDeliverDetailService {
         saleDeliverDetailMapper.updateStateByDetail(pageData);
     }
 
+    /**
+     * 获取订单id的发货金额 Map<订单id, 发货金额>
+     *
+     * @param deliverId   发货单id
+     * @param detailList  发货明细
+     *
+     * @return
+     *     Map<订单id, 发货金额>
+     */
+    public Map<String, BigDecimal> findOrderDeliverSumByDeliverId(String deliverId, List<SaleDeliverDetail> detailList) throws Exception {
+        if (deliverId == null || deliverId.trim().length() == 0) {return null;}
+        if (detailList == null) {
+            detailList = this.findSaleDeliverDetailListByParentId(deliverId);
+        }
+
+        Map<String, List<SaleDeliverDetail>> orderDeliverDtlMap = new HashMap<String, List<SaleDeliverDetail>>();
+        if (detailList == null || detailList.size() == 0) {return null;}
+
+        for (SaleDeliverDetail detail : detailList) {
+            String orderId = detail.getOrderId();
+
+            List<SaleDeliverDetail> mapList = orderDeliverDtlMap.get(orderId);
+            if(mapList == null) {
+                mapList = new ArrayList<SaleDeliverDetail>();
+                orderDeliverDtlMap.put(orderId, mapList);
+            }
+            mapList.add(detail);
+        }
+
+        Map<String, BigDecimal> orderDeliverSumMap = new HashMap<String, BigDecimal>();
+        for (Iterator iterator = orderDeliverDtlMap.keySet().iterator(); iterator.hasNext();) {
+            String mapKey = (String)iterator.next();
+
+            List<SaleDeliverDetail> deliverDtlList = orderDeliverDtlMap.get(mapKey);
+            BigDecimal deliverSum = this.findTotalSumByDetailList(deliverDtlList);
+
+            orderDeliverSumMap.put(mapKey, deliverSum);
+        }
+
+        return orderDeliverSumMap;
+    }
+
     ////////////////////////////////////////////////////////////////////////////////
 
     /**
@@ -274,26 +319,101 @@ public class SaleDeliverDetailServiceImp implements SaleDeliverDetailService {
      *  Boolean.FALSE 一条或多条出库未完成
      *  is null 无出库明细
      */
-    public Boolean checkIsAllOutByDeliverId(String deliverId) throws ApplicationException {
+//    public Boolean checkIsAllOutByDeliverId(String deliverId) throws ApplicationException {
+//        if (deliverId == null || deliverId.trim().length() == 0) {
+//            throw new ApplicationException("发货单id为空或空字符串");
+//        }
+//
+//        PageData findMap = new PageData();
+//        findMap.put("deliverId", deliverId);
+//        List<Map<String, Object>> mapList = saleDeliverDetailMapper.findDeliverDetailByOutDetail(findMap);
+//        if (mapList == null || mapList.size() ==0) {return null;}
+//
+//        for (Map<String, Object> mapObject : mapList) {
+//            //outDtlState 出库明细状态
+//            //状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+//            String outDtlState = (String)mapObject.get("outDtlState");
+//            if (!"2".equals(outDtlState)) {
+//                return Boolean.FALSE;
+//            }
+//        }
+//
+//        return Boolean.TRUE;
+//    }
+
+    /**
+     * 发货单取消
+     * 清除订单明细与发货明细的关联关系(vmes_sale_order_detail.deliver_detail_id)
+     *
+     * @param deliverId 发货单id
+     */
+    public void updateOrderDetailByCancelDeliver(String deliverId) {
         if (deliverId == null || deliverId.trim().length() == 0) {
-            throw new ApplicationException("发货单id为空或空字符串");
+            return;
         }
 
+        PageData pageData = new PageData();
+        pageData.put("deliverId", deliverId);
+        saleDeliverDetailMapper.updateOrderDetailByCancelDeliver(pageData);
+    }
+
+    /**
+     * 验证出库单明细状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+     *
+     * @param deliverId 发货单id
+     * @return
+     */
+    public String checkOutDetailStateByCancelDeliver(String deliverId) throws Exception {
+        if (deliverId == null || deliverId.trim().length() == 0) {return new String();}
+
+        PageData findMap = new PageData();
+        findMap.put("isNeedDeliver", "true");
+        findMap.put("deliverId", deliverId);
+        //出库单明细状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+        findMap.put("queryStr", "state in ('1','2')");
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+
+        List<WarehouseOutDetail> outDetailLiset = warehouseOutDetailService.dataList(findMap);
+        if (outDetailLiset != null && outDetailLiset.size() > 0) {
+            return new String("当前发货单含有出库(执行中,已完成)，不可取消发货单");
+        }
+
+        return new String();
+    }
+
+    /**
+     * 获取出库单id字符串(','逗号分隔的字符串)，根据发货单id(发货明细表,出库明细表)关联查询
+     *
+     * @param deliverId
+     * @return
+     */
+    public String findOutIdsByDeliverId(String deliverId) {
+        if (deliverId == null || deliverId.trim().length() == 0) {return new String();}
+
+        //1. 根据发货单id(发货明细表,出库明细表)关联查询
         PageData findMap = new PageData();
         findMap.put("deliverId", deliverId);
         List<Map<String, Object>> mapList = saleDeliverDetailMapper.findDeliverDetailByOutDetail(findMap);
-        if (mapList == null || mapList.size() ==0) {return null;}
+        if (mapList == null || mapList.size() == 0) {return new String();}
 
+        //2. 遍历查询结果集-将(出库单id)放入Map<出库单id, 出库单id>
+        Map<String, String> idMap = new LinkedHashMap<String, String>();
         for (Map<String, Object> mapObject : mapList) {
-            //outDtlState 出库明细状态
-            //状态(0:待派单 1:执行中 2:已完成 -1.已取消)
-            String outDtlState = (String)mapObject.get("outDtlState");
-            if (!"2".equals(outDtlState)) {
-                return Boolean.FALSE;
+            String outParentId = (String)mapObject.get("outParentId");
+            if (outParentId != null && outParentId.trim().length() > 0) {
+                idMap.put(outParentId, outParentId);
             }
         }
 
-        return Boolean.TRUE;
+        //3. 获取出库单id字符(','逗号分隔的字符串)--串遍历Map<出库单id, 出库单id>
+        StringBuffer outIds = new StringBuffer();
+        for (Iterator iterator = idMap.keySet().iterator(); iterator.hasNext();) {
+            String mapKey = (String) iterator.next();
+            outIds.append(mapKey);
+            outIds.append(",");
+        }
+
+        return outIds.toString();
     }
 }
 

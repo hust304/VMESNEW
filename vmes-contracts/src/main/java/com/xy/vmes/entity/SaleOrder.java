@@ -64,7 +64,10 @@ public class SaleOrder implements Serializable {
 	@TableField("advance_sum")
 	private BigDecimal advanceSum;
 
-	//应收款(发货金额-预付款)(发货完成填写)
+	//发货金额
+	@TableField("deliver_sum")
+	private BigDecimal deliverSum;
+	//应收款(发货金额-预付款)(废弃不用)
 	@TableField("receivables")
 	private BigDecimal receivables;
 	//创建用户id
@@ -76,10 +79,10 @@ public class SaleOrder implements Serializable {
 	//修改用户id
 	@TableField("uuser")
 	private String uuser;
+
 	//修改时间
 	@TableField("udate")
 	private Date udate;
-
 	//备注
 	@TableField("remark")
 	private String remark;
@@ -220,7 +223,12 @@ public class SaleOrder implements Serializable {
 	public String getIsdisable() {
 		return isdisable;
 	}
-
+	public BigDecimal getDeliverSum() {
+		return deliverSum;
+	}
+	public void setDeliverSum(BigDecimal deliverSum) {
+		this.deliverSum = deliverSum;
+	}
 /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 

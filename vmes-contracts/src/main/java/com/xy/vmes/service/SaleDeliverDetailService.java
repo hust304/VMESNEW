@@ -110,6 +110,17 @@ public interface SaleDeliverDetailService {
     void addDeliverDetail(SaleDeliver parentObj, List<SaleDeliverDetail> detailList, Map<String, String> orderDtl2OutDtlMap) throws Exception;
     void updateStateByDetail(String state, String parentIds) throws Exception;
 
+    /**
+     * 获取订单id的发货金额 Map<订单id, 发货金额>
+     *
+     * @param deliverId   发货单id
+     * @param detailList  发货明细
+     *
+     * @return
+     *     Map<订单id, 发货金额>
+     */
+    Map<String, BigDecimal> findOrderDeliverSumByDeliverId(String deliverId, List<SaleDeliverDetail> detailList) throws Exception;
+
     ////////////////////////////////////////////////////////////////////////////////
 
     /**
@@ -118,7 +129,31 @@ public interface SaleDeliverDetailService {
      * @param deliverId 发货单id
      * @return
      */
-    Boolean checkIsAllOutByDeliverId(String deliverId) throws ApplicationException;
+    //Boolean checkIsAllOutByDeliverId(String deliverId) throws ApplicationException;
+
+    /**
+     * 发货单取消
+     * 清除订单明细与发货明细的关联关系(vmes_sale_order_detail.deliver_detail_id)
+     *
+     * @param deliverId 发货单id
+     */
+    void updateOrderDetailByCancelDeliver(String deliverId);
+
+    /**
+     * 验证出库单明细状态(状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+     *
+     * @param deliverId 发货单id
+     * @return
+     */
+    String checkOutDetailStateByCancelDeliver(String deliverId) throws Exception;
+
+    /**
+     * 获取出库单id字符串(','逗号分隔的字符串)，根据发货单id(发货明细表,出库明细表)关联查询
+     *
+     * @param deliverId
+     * @return
+     */
+    String findOutIdsByDeliverId(String deliverId);
 
 }
 
