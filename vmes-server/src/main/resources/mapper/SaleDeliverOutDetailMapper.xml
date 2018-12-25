@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+说明：发货出库 Mapper.xml
+创建人：陈刚
+创建时间：2018-12-25
+ -->
+<mapper namespace="com.xy.vmes.deecoop.sale.dao.SaleDeliverOutDetailMapper">
+    <!--发货出库: 出库完成查询语句，(出库明细,发货明细,订单明细) -->
+    <select id="findOutDetailByOrderDetail" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+            outDetail.id outDtlId,
+            outDetail.parent_id outId,
+            outDetail.product_id productId,
+            outDetail.state outDetailState,
+            round(ifnull(outDetail.count, 0), 2) outDetailCount,
+
+            deliverDetail.id deliverDtlId,
+            deliverDetail.parent_id deliverId,
+
+            orderDetail.id orderDtlId,
+            orderDetail.parent_id orderId,
+            orderDetail.lock_count lockCount
+        from vmes_warehouse_out_detail outDetail
+            left join vmes_sale_deliver_detail deliverDetail on outDetail.id = deliverDetail.out_detail_id
+            left join vmes_sale_order_detail orderDetail on deliverDetail.order_detai_id = orderDetail.id
+        <where>
+            and deliverDetail.id is not null and orderDetail.id is not null
+            <if test="outDtlId != null and outDtlId != ''" >
+                and outDetail.id = #{outDtlId}
+            </if>
+            <if test="outDetailState != null and outDetailState != ''" >
+                and outDetail.state = #{outDetailState}
+            </if>
+        </where>
+    </select>
+
+</mapper>
