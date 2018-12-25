@@ -7,6 +7,7 @@ import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.common.util.TreeUtil;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.entity.Customer;
+import com.xy.vmes.entity.SaleReceiveRecord;
 import com.xy.vmes.entity.TreeEntity;
 import com.xy.vmes.service.*;
 import com.yvan.ExcelUtil;
@@ -24,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.http.HttpServletResponse;
+import java.math.BigDecimal;
 import java.util.*;
 
 
@@ -49,6 +51,8 @@ public class CustomerController {
     private CoderuleService coderuleService;
     @Autowired
     private ColumnService columnService;
+    @Autowired
+    private SaleReceiveRecordService saleReceiveRecordService;
 
     /**
      * @author 陈刚 自动创建，禁止修改
@@ -201,6 +205,64 @@ public class CustomerController {
 
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+
+
+    @PostMapping("/customer/addCustomerBalance")
+    public ResultModel addCustomerBalance()  throws Exception {
+
+        logger.info("################customer/addCustomerBalance 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        HttpServletResponse response  = HttpUtils.currentResponse();
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+        BigDecimal addBalance = BigDecimal.valueOf(Double.parseDouble(pd.getString("addBalance")));
+        Customer Customer = customerService.selectById(pd.getString("id"));
+        customerService.updateCustomerBalance(Customer,Customer.getBalance().add(addBalance),pd.getString("uuser"));
+        SaleReceiveRecord saleReceiveRecord = new SaleReceiveRecord();
+        saleReceiveRecord.setBeforeAmount(Customer.getBalance());
+        saleReceiveRecord.setAfterAmount(Customer.getBalance().add(addBalance));
+        saleReceiveRecord.setAmount(addBalance);
+        saleReceiveRecord.setCustomerId(Customer.getId());
+        saleReceiveRecord.setType("1");
+        saleReceiveRecord.setRemark("录入收款："+ addBalance.setScale(2, BigDecimal.ROUND_HALF_UP));
+        saleReceiveRecord.setUuser(pd.getString("uuser"));
+        saleReceiveRecord.setCuser(pd.getString("cuser"));
+        saleReceiveRecordService.save(saleReceiveRecord);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################customer/addCustomerBalance 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+    @PostMapping("/customer/updateCustomerBalance")
+    public ResultModel updateCustomerBalance()  throws Exception {
+
+        logger.info("################customer/updateCustomerBalance 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        HttpServletResponse response  = HttpUtils.currentResponse();
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+        Customer newCustomer = (Customer)HttpUtils.pageData2Entity(pd, new Customer());
+        Customer oldCustomer = customerService.selectById(newCustomer.getId());
+        customerService.updateCustomerBalance(oldCustomer,newCustomer.getBalance(),pd.getString("uuser"));
+        SaleReceiveRecord saleReceiveRecord = new SaleReceiveRecord();
+        saleReceiveRecord.setBeforeAmount(oldCustomer.getBalance());
+        saleReceiveRecord.setAfterAmount(newCustomer.getBalance());
+        saleReceiveRecord.setAmount(newCustomer.getBalance().subtract(oldCustomer.getBalance()));
+        saleReceiveRecord.setCustomerId(newCustomer.getId());
+        saleReceiveRecord.setType("0");
+        saleReceiveRecord.setRemark("操作前："+oldCustomer.getBalance().setScale(2, BigDecimal.ROUND_HALF_UP)+"      操作后："+newCustomer.getBalance().setScale(2, BigDecimal.ROUND_HALF_UP));
+        saleReceiveRecord.setUuser(pd.getString("uuser"));
+        saleReceiveRecord.setCuser(pd.getString("cuser"));
+        saleReceiveRecordService.save(saleReceiveRecord);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################customer/updateCustomerBalance 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+
+
     /**
      * @author 陈刚 自动创建，可以修改
      * @date 2018-09-18
@@ -320,7 +382,7 @@ public class CustomerController {
 
         List<Map> varMapList = new ArrayList();
         Pagination pg = HttpUtils.parsePagination(pd);
-        List<Map> varList = customerService.getDataListPage(pd, pg);
+        List<Map> varList = customerService.getReceiveDataListPage(pd, pg);
         if(varList!=null&&varList.size()>0){
             for(int i=0;i<varList.size();i++){
                 Map map = varList.get(i);

@@ -198,6 +198,29 @@
     </insert>
 
 
+    <insert id="insertColumn2" >
+        delete from vmes_column where model_code = 'customerReceive' ;
+        insert into vmes_column (
+        id,model_code,title_key,title_name,serial_number,
+        isdisable,ishide,isedit,ismust,cdate,
+        cuser
+        ) VALUES
+        (replace(uuid(), '-', ''),'customerReceive','code','客户编码',1, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'customerReceive','name','客户名称',2, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'customerReceive','type','客户类型ID',3, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'customerReceive','typeName','客户类型',4, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'customerReceive','accountDays','账期（天）',5, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'customerReceive','balance','预收款',6, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'customerReceive','acceptAmount','已收款',7, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'customerReceive','deliverAmount','已发货款',8, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'customerReceive','delayAcceptAmount','逾期收款',9, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'customerReceive','delayDeliverAmount','逾期发货款',10, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'customerReceive','receiveAmount','应收款',11, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'customerReceive','delayAmount','逾期账款',12, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'customerReceive','id','id',0, '1','0','1','0',now(), 'admin')
+    </insert>
+
+
     <!-- 列表(全部) 自动创建，禁止修改-->
     <select id="dataList" parameterType="com.yvan.PageData" resultType="com.xy.vmes.entity.Customer">
         select <include refid="Field"/>
@@ -306,6 +329,83 @@
         </if>
     </select>
 
+
+
+    <!-- 自动创建，可以修改 -->
+    <select id="getReceiveDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+        id,code,name,type,typeName,round(balance,2) balance,round(accountDays,2) accountDays,
+        round(SUM(IFNULL(acceptAmount,0)),2) acceptAmount,round(SUM(IFNULL(deliverAmount,0)),2) deliverAmount,
+        round(SUM(IFNULL(delayAcceptAmount,0)),2) delayAcceptAmount,round(SUM(IFNULL(delayDeliverAmount,0)),2) delayDeliverAmount,
+        round(SUM(IFNULL(deliverAmount,0)) - SUM(IFNULL(acceptAmount,0)),2) receiveAmount,
+        round(SUM(IFNULL(delayDeliverAmount,0)) - SUM(IFNULL(delayAcceptAmount,0)),2) delayAmount
+        from (
+            select
+            customer.id,
+            customer.code,
+            customer.name,
+            customer.type,
+            type.name typeName,
+            customer.balance balance,
+            customer.account_days accountDays,
+            sum(ifnull(detail.receive_amount,0)) acceptAmount,
+            0.0000 deliverAmount,
+            sum(
+            case when now() > date_add(deliver.deliver_date, interval customer.account_days day)
+            then ifnull(detail.receive_amount,0) else 0 end
+            )  delayAcceptAmount,
+            0.0000 delayDeliverAmount
+            from vmes_customer customer
+            left join vmes_dictionary type on customer.type = type.id
+            left join vmes_sale_receive receive on receive.customer_id = customer.id
+            left join vmes_sale_receive_detail detail on detail.parent_id = receive.id
+            left join vmes_sale_deliver_detail deliverdetail on deliverdetail.id = detail.deliver_detail_id
+            left join vmes_sale_deliver deliver on deliver.id = deliverdetail.parent_id
+            <where>
+                <if test="currentCompanyId != null and currentCompanyId != ''">
+                    and customer.company_id=#{currentCompanyId}
+                </if>
+                <if test="queryStr != null and queryStr != ''" >
+                    and ${queryStr}
+                </if>
+            </where>
+
+            group by customer.id
+
+            union all
+
+            select
+            customer.id,
+            customer.code,
+            customer.name,
+            customer.type,
+            type.name typeName,
+            customer.balance balance,
+            customer.account_days accountDays,
+            0.0000 acceptAmount,
+            sum(ifnull(detail.sum,0)) deliverAmount,
+            0.0000 delayAcceptAmount,
+            sum(
+            case when now() > date_add(deliver.deliver_date, interval customer.account_days day)
+            then ifnull(detail.sum,0) else 0 end
+            ) delayDeliverAmount
+            from vmes_customer customer
+            left join vmes_dictionary type on customer.type = type.id
+            left join vmes_sale_deliver deliver on deliver.customer_id = customer.id
+            left join vmes_sale_deliver_detail detail on detail.parent_id = deliver.id
+            <where>
+                <if test="currentCompanyId != null and currentCompanyId != ''">
+                    and customer.company_id=#{currentCompanyId}
+                </if>
+                <if test="queryStr != null and queryStr != ''" >
+                    and ${queryStr}
+                </if>
+            </where>
+            group by customer.id
+        ) tab
+        group by id,code,name,type,typeName,balance,accountDays
+    </select>
+
     <!-- 自动创建，可以修改 -->
     <select id="getTreeList"  parameterType="com.yvan.PageData"  resultType="com.xy.vmes.entity.TreeEntity">
         select
@@ -337,5 +437,23 @@
             </if>
         </where>
     </select>
+
+    <!--库存数量-并发(version)控制-->
+    <update id="updateCustomerBalance" parameterType="com.yvan.PageData">
+        update vmes_customer
+        set
+        balance = ${balance},
+        uuser = #{uuser},
+        udate = now(),
+        version = version + 1
+        <where>
+            <if test="id != null and id != ''" >
+                and id=#{id}
+            </if>
+            <if test="version != null and version != ''" >
+                and version=${version}
+            </if>
+        </where>
+    </update>
 
 </mapper>

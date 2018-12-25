@@ -72,5 +72,10 @@ public interface CustomerMapper extends BaseMapper<Customer> {
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
     List<TreeEntity> getTreeList(PageData pd);
+
+    List<Map> getReceiveDataListPage(PageData pd,Pagination pg);
+
+    void updateCustomerBalance(PageData pd);
+
 }
 

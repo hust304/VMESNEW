@@ -5,6 +5,7 @@ import com.xy.vmes.entity.Customer;
 import com.xy.vmes.entity.TreeEntity;
 import com.yvan.PageData;
 
+import java.math.BigDecimal;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -127,6 +128,10 @@ public interface CustomerService {
     Map<String, String> findDeleteCustIdsByIds(String ids);
 
     List<TreeEntity> getTreeList(PageData pd) throws Exception;
+
+    List<Map> getReceiveDataListPage(PageData pd,Pagination pg) throws Exception;
+
+    void updateCustomerBalance(Customer customer, BigDecimal balance, String uuser) throws Exception;
 }
 
 

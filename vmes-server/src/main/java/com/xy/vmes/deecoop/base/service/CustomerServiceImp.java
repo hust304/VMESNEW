@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 import com.yvan.Conv;
@@ -167,6 +168,12 @@ public class CustomerServiceImp implements CustomerService {
 
 
     @Override
+    public List<Map> getReceiveDataListPage(PageData pd,Pagination pg) throws Exception{
+        return customerMapper.getReceiveDataListPage(pd,pg);
+    }
+
+
+    @Override
     public List<TreeEntity> getTreeList(PageData pd) throws Exception{
         return  customerMapper.getTreeList(pd);
     }
@@ -260,5 +267,16 @@ public class CustomerServiceImp implements CustomerService {
         mapObject.put("UpdateIds", updateIds);
 
         return mapObject;
+    }
+
+
+    @Override
+    public void updateCustomerBalance(Customer customer, BigDecimal balance, String uuser) throws Exception {
+        PageData pd = new PageData();
+        pd.put("id",customer.getId());
+        pd.put("version",customer.getVersion());
+        pd.put("uuser",uuser);
+        pd.put("balance",balance);
+        customerMapper.updateCustomerBalance(pd);
     }
 }

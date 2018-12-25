@@ -3,7 +3,7 @@
 <!--
 说明：收款记录 Mapper.xml
 创建人：刘威 自动创建
-创建时间：2018-12-24
+创建时间：2018-12-25
  -->
 <mapper namespace="com.xy.vmes.deecoop.sale.dao.SaleReceiveRecordMapper">
 
@@ -15,7 +15,10 @@
     <!-- 字段 自动创建，禁止修改-->
     <sql id="Field">
 		customer_id customerId,<!-- 客户ID -->
-		receive_amount receiveAmount,<!-- 收款金额 -->
+		type type,<!-- 操作类型（0：改 1：加  -1：减 ） -->
+		amount amount,<!-- 操作值 -->
+		after_amount afterAmount,<!-- 操作后余额 -->
+		before_amount beforeAmount,<!-- 操作前余额 -->
 		cuser cuser,<!-- 创建用户id -->
 		cdate cdate,<!-- 创建时间 -->
 		uuser uuser,<!-- 修改用户id -->
@@ -28,7 +31,10 @@
     <!-- 字段值 自动创建，禁止修改-->
     <sql id="FieldValue">
 		#{customerId},<!-- 客户ID -->
-		#{receiveAmount},<!-- 收款金额 -->
+		#{type},<!-- 操作类型（0：改 1：加  -1：减 ） -->
+		#{amount},<!-- 操作值 -->
+		#{afterAmount},<!-- 操作后余额 -->
+		#{beforeAmount},<!-- 操作前余额 -->
 		#{cuser},<!-- 创建用户id -->
 		#{cdate},<!-- 创建时间 -->
 		#{uuser},<!-- 修改用户id -->
@@ -42,7 +48,10 @@
     <!-- 字段名称  '_hide' 表示前端列表隐藏 自动创建，禁止修改-->
     <sql id="Column">
         '客户ID'  customerId,
-        '收款金额'  receiveAmount,
+        '操作类型（0：改 1：加  -1：减 ）'  type,
+        '操作值'  amount,
+        '操作后余额'  afterAmount,
+        '操作前余额'  beforeAmount,
         '创建用户id'  cuser,
         '创建时间'  cdate,
         '修改用户id'  uuser,
@@ -125,15 +134,20 @@
         isdisable,ishide,isedit,ismust,cdate,
         cuser
         ) VALUES
-            (replace(uuid(), '-', ''),'SaleReceiveRecord','customerId','客户ID',1, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleReceiveRecord','receiveAmount','收款金额',2, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleReceiveRecord','cuser','创建用户id',3, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleReceiveRecord','cdate','创建时间',4, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleReceiveRecord','uuser','修改用户id',5, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleReceiveRecord','udate','修改时间',6, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleReceiveRecord','remark','备注',7, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleReceiveRecord','isdisable','是否启用(0:已禁用 1:启用)',8, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleReceiveRecord','id','id',0, '1','1','1','0',now(), 'admin')
+            (replace(uuid(), '-', ''),'SaleReceiveRecord','customerId','客户ID',1, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceiveRecord','type','操作类型',2, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceiveRecord','amount','操作值',3, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceiveRecord','beforeAmount','操作前',4, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceiveRecord','afterAmount','操作后',5, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceiveRecord','cuser','创建用户id',6, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceiveRecord','cuserCode','操作人编码',6, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceiveRecord','cuserName','操作人姓名',6, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceiveRecord','cdate','操作时间',7, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceiveRecord','uuser','修改用户id',8, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceiveRecord','udate','修改时间',9, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceiveRecord','remark','备注',10, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceiveRecord','isdisable','是否启用0',11, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceiveRecord','id','id',0, '1','0','1','0',now(), 'admin')
     </insert>
 
 
@@ -175,22 +189,30 @@
 
     <!-- 字段 自动创建，可以修改-->
     <sql id="Field1">
-        customer_id customerId,<!-- 客户ID -->
-        receive_amount receiveAmount,<!-- 收款金额 -->
-        cuser cuser,<!-- 创建用户id -->
-        cdate cdate,<!-- 创建时间 -->
-        uuser uuser,<!-- 修改用户id -->
-        udate udate,<!-- 修改时间 -->
-        remark remark,<!-- 备注 -->
-        isdisable isdisable,<!-- 是否启用(0:已禁用 1:启用) -->
-        id id <!-- id -->
+        record.customer_id customerId,<!-- 客户ID -->
+        case when record.type='0' then '改' when record.type='1' then '加' else '减' end  type,<!-- 操作类型（0：改 1：加  -1：减 ） -->
+        round(record.amount,2) amount,<!-- 操作值 -->
+        round(record.after_amount,2) afterAmount,<!-- 操作后余额 -->
+        round(record.before_amount,2) beforeAmount,<!-- 操作前余额 -->
+        record.cuser cuser,<!-- 创建用户id -->
+        vmesuser.user_code cuserCode,
+        vmesuser.user_name cuserName,
+        record.cdate cdate,<!-- 创建时间 -->
+        record.uuser uuser,<!-- 修改用户id -->
+        record.udate udate,<!-- 修改时间 -->
+        record.remark remark,<!-- 备注 -->
+        record.isdisable isdisable,<!-- 是否启用(0:已禁用 1:启用) -->
+        record.id id <!-- id -->
     </sql>
 
     <!-- 字段值 自动创建，可以修改-->
     <!--
     <sql id="Column1">
             '客户ID'  customerId,
-            '收款金额'  receiveAmount,
+            '操作类型（0：改 1：加  -1：减 ）'  type,
+            '操作值'  amount,
+            '操作后余额'  afterAmount,
+            '操作前余额'  beforeAmount,
             '创建用户id'  cuser,
             '创建时间'  cdate,
             '修改用户id'  uuser,
@@ -215,17 +237,15 @@
         select
         <include refid="Field1"></include>
         from
-        <include refid="tableName"></include>
+        vmes_sale_receive_record record
+        left join vmes_user vmesuser on vmesuser.id = record.cuser
         <where>
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >
                 and ${queryStr}
             </if>
-            <if test="code != null and code != ''">
-                and code LIKE CONCAT(CONCAT('%', #{code}),'%')
-            </if>
-            <if test="name != null and name != ''">
-                and name LIKE CONCAT(CONCAT('%', #{name}),'%')
+            <if test="customerId != null and customerId != ''">
+                and record.customer_id = #{customerId}
             </if>
         </where>
         <if test="orderStr != null and orderStr != ''" >
@@ -238,17 +258,15 @@
         select
         <include refid="Field1"></include>
         from
-        <include refid="tableName"></include>
+        vmes_sale_receive_record record
+        left join vmes_user vmesuser on vmesuser.id = record.cuser
         <where>
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >
                 and ${queryStr}
             </if>
-            <if test="code != null and code != ''">
-                and code LIKE CONCAT(CONCAT('%', #{code}),'%')
-            </if>
-            <if test="name != null and name != ''">
-                and name LIKE CONCAT(CONCAT('%', #{name}),'%')
+            <if test="customerId != null and customerId != ''">
+                and record.customer_id = #{customerId}
             </if>
         </where>
         <if test="orderStr != null and orderStr != ''" >

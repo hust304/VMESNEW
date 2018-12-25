@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 /** 
  * 说明：收款记录 实体类
  * @author 刘威 自动生成
- * @date 2018-12-24
+ * @date 2018-12-25
  */
 @TableName("vmes_sale_receive_record")
 public class SaleReceiveRecord implements Serializable {
@@ -22,9 +22,18 @@ public class SaleReceiveRecord implements Serializable {
 	//客户ID
 	@TableField("customer_id")
 	private String customerId;
-	//收款金额
-	@TableField("receive_amount")
-	private BigDecimal receiveAmount;
+	//操作类型（0：改 1：加  -1：减 ）
+	@TableField("type")
+	private String type;
+	//操作值
+	@TableField("amount")
+	private BigDecimal amount;
+	//操作后余额
+	@TableField("after_amount")
+	private BigDecimal afterAmount;
+	//操作前余额
+	@TableField("before_amount")
+	private BigDecimal beforeAmount;
 	//创建用户id
 	@TableField("cuser")
 	private String cuser;
@@ -58,11 +67,29 @@ public class SaleReceiveRecord implements Serializable {
 	public String getCustomerId() {
 		return customerId;
 	}
-	public void setReceiveAmount(BigDecimal receiveAmount) {
-		this.receiveAmount = receiveAmount;
+	public void setType(String type) {
+		this.type = type;
 	}
-	public BigDecimal getReceiveAmount() {
-		return receiveAmount;
+	public String getType() {
+		return type;
+	}
+	public void setAmount(BigDecimal amount) {
+		this.amount = amount;
+	}
+	public BigDecimal getAmount() {
+		return amount;
+	}
+	public void setAfterAmount(BigDecimal afterAmount) {
+		this.afterAmount = afterAmount;
+	}
+	public BigDecimal getAfterAmount() {
+		return afterAmount;
+	}
+	public void setBeforeAmount(BigDecimal beforeAmount) {
+		this.beforeAmount = beforeAmount;
+	}
+	public BigDecimal getBeforeAmount() {
+		return beforeAmount;
 	}
 	public void setCuser(String cuser) {
 		this.cuser = cuser;

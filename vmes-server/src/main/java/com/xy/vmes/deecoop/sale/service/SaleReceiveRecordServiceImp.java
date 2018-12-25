@@ -20,7 +20,7 @@ import java.util.ArrayList;
 /**
 * 说明：收款记录 实现类
 * 创建人：刘威 自动创建
-* 创建时间：2018-12-24
+* 创建时间：2018-12-25
 */
 @Service
 @Transactional(readOnly = false)
@@ -32,7 +32,7 @@ public class SaleReceiveRecordServiceImp implements SaleReceiveRecordService {
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-12-24
+    * 创建时间：2018-12-25
     */
     @Override
     public void save(SaleReceiveRecord saleReceiveRecord) throws Exception{
@@ -45,7 +45,7 @@ public class SaleReceiveRecordServiceImp implements SaleReceiveRecordService {
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-12-24
+    * 创建时间：2018-12-25
     */
     @Override
     public void update(SaleReceiveRecord saleReceiveRecord) throws Exception{
@@ -55,7 +55,7 @@ public class SaleReceiveRecordServiceImp implements SaleReceiveRecordService {
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-12-24
+    * 创建时间：2018-12-25
     */
     @Override
     public void updateAll(SaleReceiveRecord saleReceiveRecord) throws Exception{
@@ -65,7 +65,7 @@ public class SaleReceiveRecordServiceImp implements SaleReceiveRecordService {
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-12-24
+    * 创建时间：2018-12-25
     */
     @Override
     //@Cacheable(cacheNames = "saleReceiveRecord", key = "''+#id")
@@ -75,7 +75,7 @@ public class SaleReceiveRecordServiceImp implements SaleReceiveRecordService {
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-12-24
+    * 创建时间：2018-12-25
     */
     @Override
     public void deleteById(String id) throws Exception{
@@ -84,7 +84,7 @@ public class SaleReceiveRecordServiceImp implements SaleReceiveRecordService {
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-12-24
+    * 创建时间：2018-12-25
     */
     @Override
     public void deleteByIds(String[] ids) throws Exception{
@@ -93,7 +93,7 @@ public class SaleReceiveRecordServiceImp implements SaleReceiveRecordService {
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-12-24
+    * 创建时间：2018-12-25
     */
     @Override
     public List<SaleReceiveRecord> dataListPage(PageData pd,Pagination pg) throws Exception{
@@ -102,7 +102,7 @@ public class SaleReceiveRecordServiceImp implements SaleReceiveRecordService {
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-12-24
+    * 创建时间：2018-12-25
     */
     @Override
     public List<SaleReceiveRecord> dataList(PageData pd) throws Exception{
@@ -111,7 +111,7 @@ public class SaleReceiveRecordServiceImp implements SaleReceiveRecordService {
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-12-24
+    * 创建时间：2018-12-25
     */
     @Override
     public List<LinkedHashMap> findColumnList() throws Exception{
@@ -120,7 +120,7 @@ public class SaleReceiveRecordServiceImp implements SaleReceiveRecordService {
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-12-24
+    * 创建时间：2018-12-25
     */
     @Override
     public List<Map> findDataList(PageData pd) throws Exception{
@@ -130,7 +130,7 @@ public class SaleReceiveRecordServiceImp implements SaleReceiveRecordService {
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-12-24
+    * 创建时间：2018-12-25
     */
     @Override
     public void deleteByColumnMap(Map columnMap) throws Exception{
@@ -139,7 +139,7 @@ public class SaleReceiveRecordServiceImp implements SaleReceiveRecordService {
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-12-24
+    * 创建时间：2018-12-25
     */
     @Override
     public List<SaleReceiveRecord> selectByColumnMap(Map columnMap) throws Exception{
@@ -150,7 +150,7 @@ public class SaleReceiveRecordServiceImp implements SaleReceiveRecordService {
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-12-24
+    * 创建时间：2018-12-25
     */
     @Override
     public List<LinkedHashMap> getColumnList() throws Exception{
@@ -159,7 +159,7 @@ public class SaleReceiveRecordServiceImp implements SaleReceiveRecordService {
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-12-24
+    * 创建时间：2018-12-25
     */
     @Override
     public List<Map> getDataList(PageData pd) throws Exception{
@@ -168,7 +168,7 @@ public class SaleReceiveRecordServiceImp implements SaleReceiveRecordService {
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-12-24
+    * 创建时间：2018-12-25
     */
     @Override
     public List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception{
@@ -177,7 +177,7 @@ public class SaleReceiveRecordServiceImp implements SaleReceiveRecordService {
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-12-24
+    * 创建时间：2018-12-25
     */
     @Override
     public void updateToDisableByIds(String[] ids)throws Exception{
