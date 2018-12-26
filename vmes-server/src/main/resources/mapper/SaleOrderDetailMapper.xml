@@ -34,14 +34,14 @@
         isdisable,ishide,isedit,ismust,cdate,
         cuser
         ) VALUES
-            (replace(uuid(), '-', ''), 'saleOrderDetail', 'parentId', '订单id', 0, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
             (replace(uuid(), '-', ''), 'saleOrderDetail', 'id', 'id', 0, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetail', 'parentId', '订单id', 0, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
             (replace(uuid(), '-', ''), 'saleOrderDetail', 'productId', '货品id', 1, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
             (replace(uuid(), '-', ''), 'saleOrderDetail', 'productCode', '货品编码', 2, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
             (replace(uuid(), '-', ''), 'saleOrderDetail', 'productName', '货品名称', 3, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
             (replace(uuid(), '-', ''), 'saleOrderDetail', 'productSpec', '规格型号', 4, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
-            (replace(uuid(), '-', ''), 'saleOrderDetail', 'productGenre', '货品属性id', 5, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
             (replace(uuid(), '-', ''), 'saleOrderDetail', 'productGenreName', '货品属性', 5, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetail', 'productGenre', '货品属性id', 5, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
             (replace(uuid(), '-', ''), 'saleOrderDetail', 'productUnit', '计量单位id', 6, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
             (replace(uuid(), '-', ''), 'saleOrderDetail', 'productUnitName', '计量单位', 6, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
             (replace(uuid(), '-', ''), 'saleOrderDetail', 'productType', '货品类型id', 7, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
@@ -52,6 +52,8 @@
             (replace(uuid(), '-', ''), 'saleOrderDetail', 'productSum', '金额', 11, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
             (replace(uuid(), '-', ''), 'saleOrderDetail', 'productCount', '货品数量(计量数量)', 12, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
             (replace(uuid(), '-', ''), 'saleOrderDetail', 'stockCount', '库存数量', 13, '1', '1', '1', '0', '2018-12-6 09:16:39', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetail', 'stockCountByPrice', '库存数量', 13, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetail', 'productStockCountByPrice', '库存可用数量', 14, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
             (replace(uuid(), '-', ''), 'saleOrderDetail', 'productStockCount', '库存可用数量', 14, '1', '1', '1', '0', '2018-12-6 09:16:39', 'admin'),
             (replace(uuid(), '-', ''), 'saleOrderDetail', 'productLockCount', '库存锁定数量', 15, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
             (replace(uuid(), '-', ''), 'saleOrderDetail', 'deliverDate', '交付日期', 16, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
@@ -70,12 +72,10 @@
             (replace(uuid(), '-', ''), 'saleOrderDetail', 'isneedproduce', '是否需要生产(0:无需 1:需要 库存不够)', 28, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
             (replace(uuid(), '-', ''), 'saleOrderDetail', 'deliverDetailId', '发货明细ID', 29, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
             (replace(uuid(), '-', ''), 'saleOrderDetail', 'planDetailId', '生产计划明细ID', 30, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
-
-            (replace(uuid(), '-', ''), 'saleOrderDetail', 'stockCountByPrice', '库存数量', 13, '1', '1', '1', '0', '2018-12-6 09:16:39', 'admin'),
-            (replace(uuid(), '-', ''), 'saleOrderDetail', 'productStockCountByPrice', '库存可用数量', 14, '1', '1', '1', '0', '2018-12-6 09:16:39', 'admin'),
             (replace(uuid(), '-', ''), 'saleOrderDetail', 'priceType', 'priceType', 31, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
             (replace(uuid(), '-', ''), 'saleOrderDetail', 'customerId', 'customerId', 32, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
             (replace(uuid(), '-', ''), 'saleOrderDetail', 'customerName', 'customerName', 33, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin')
+
     </insert>
 
     <update id="updateStateByDetail" parameterType="com.yvan.PageData" >
