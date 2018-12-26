@@ -3,10 +3,11 @@ package com.xy.vmes.deecoop.sale.service;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.deecoop.sale.dao.SaleLockDateMapper;
 import com.xy.vmes.entity.SaleLockDate;
+import com.xy.vmes.exception.ApplicationException;
 import com.xy.vmes.service.SaleLockDateService;
+import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -206,6 +207,91 @@ public class SaleLockDateServiceImp implements SaleLockDateService {
         }
 
         return this.dataList(pageData);
+    }
+
+    public SaleLockDate findSaleLockDate(PageData object) throws Exception {
+        List<SaleLockDate> objectList = this.findSaleLockDateList(object);
+        if (objectList != null && objectList.size() > 0) {
+            return objectList.get(0);
+        }
+
+        return null;
+    }
+    public SaleLockDate findSaleLockDateById(String id) throws Exception {
+        if (id == null || id.trim().length() == 0) {return null;}
+
+        PageData findMap = new PageData();
+        findMap.put("id", id);
+
+        return this.findSaleLockDate(findMap);
+    }
+
+    public SaleLockDate findSaleLockDateByCompanyId(String companyId) throws Exception {
+        if (companyId == null || companyId.trim().length() == 0) {return null;}
+
+        PageData findMap = new PageData();
+        findMap.put("companyId", companyId);
+
+        return this.findSaleLockDate(findMap);
+    }
+
+    public List<SaleLockDate> findSaleLockDateList(PageData object) throws Exception {
+        return this.findDataList(object, null);
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+
+    /**
+     * 根据企业id查询(vmes_sale_lock_date)获取该企业锁库时长(毫秒)
+     * @param companyId  企业id
+     * @return
+     * @throws ApplicationException
+     */
+    public Long findLockDateMillisecondByCompanyId(String companyId) throws ApplicationException {
+        if (companyId == null || companyId.trim().length() == 0) {
+            throw new ApplicationException("企业id为空或空字符串");
+        }
+
+        SaleLockDate object = null;
+        try {
+            object = this.findSaleLockDateByCompanyId(companyId);
+        } catch (Exception e) {
+            throw new ApplicationException(e.getMessage());
+        }
+        if (object == null) {return Long.valueOf(0L);}
+
+        //锁库时长(毫秒)
+        long lockTimeMillisecond = 0L;
+
+        //天
+        long day = 0L;
+        if (object.getDay() != null) {
+            day = object.getDay().longValue();
+        }
+        lockTimeMillisecond = lockTimeMillisecond + (day * 24 * 60 * 60 * 1000);
+
+        //时
+        long hour = 0L;
+        if (object.getHour() != null) {
+            hour = object.getHour().longValue();
+        }
+        lockTimeMillisecond = lockTimeMillisecond + (hour * 60 * 60 * 1000);
+
+        //分
+        long minute = 0L;
+        if (object.getMinute() != null) {
+            minute = object.getMinute().longValue();
+        }
+        lockTimeMillisecond = lockTimeMillisecond + (minute * 60 * 1000);
+
+        //秒
+        long second = 0L;
+        if (object.getSecond() != null) {
+            second = object.getSecond().longValue();
+        }
+        lockTimeMillisecond = lockTimeMillisecond + (second * 1000);
+
+        return Long.valueOf(lockTimeMillisecond);
     }
 }
 

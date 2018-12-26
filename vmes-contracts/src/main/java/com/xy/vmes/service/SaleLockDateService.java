@@ -2,6 +2,7 @@ package com.xy.vmes.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.entity.SaleLockDate;
+import com.xy.vmes.exception.ApplicationException;
 import com.yvan.PageData;
 
 import java.util.LinkedHashMap;
@@ -125,6 +126,15 @@ public interface SaleLockDateService {
      * @throws Exception
      */
     List<SaleLockDate> findDataList(PageData pageData, Boolean isQueryAll) throws Exception;
+
+    SaleLockDate findSaleLockDate(PageData object) throws Exception;
+    SaleLockDate findSaleLockDateById(String id) throws Exception;
+    SaleLockDate findSaleLockDateByCompanyId(String companyId) throws Exception;
+
+    List<SaleLockDate> findSaleLockDateList(PageData object) throws Exception;
+
+    //////////////////////////////////////////////////////////////////////////
+    Long findLockDateMillisecondByCompanyId(String companyId) throws ApplicationException;
 
 }
 

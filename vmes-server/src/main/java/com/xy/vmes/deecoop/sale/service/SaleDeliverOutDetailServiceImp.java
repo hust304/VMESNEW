@@ -88,7 +88,9 @@ public class SaleDeliverOutDetailServiceImp implements SaleDeliverOutDetailServi
             if (orderDtlId != null && orderDtlId.trim().length() > 0) {
                 SaleOrderDetail orderDetail = new SaleOrderDetail();
                 orderDetail.setId(orderDtlId);
-                orderDetail.setLockCount(null);
+                //isLockWarehouse 是否锁定仓库(0:未锁定 1:已锁定
+                orderDetail.setIsLockWarehouse("0");
+                orderDetail.setLockCount(BigDecimal.valueOf(0D));
                 saleOrderDetailService.update(orderDetail);
             }
         }

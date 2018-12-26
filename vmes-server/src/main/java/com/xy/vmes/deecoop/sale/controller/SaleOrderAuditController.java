@@ -1,11 +1,13 @@
 package com.xy.vmes.deecoop.sale.controller;
 
 import com.xy.vmes.common.util.Common;
+import com.xy.vmes.common.util.Producer;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.entity.Product;
 import com.xy.vmes.entity.SaleOrder;
 import com.xy.vmes.entity.SaleOrderDetail;
+import com.xy.vmes.exception.ApplicationException;
 import com.xy.vmes.service.*;
 import com.yvan.DateUtils;
 import com.yvan.HttpUtils;
@@ -37,12 +39,18 @@ public class SaleOrderAuditController {
     @Autowired
     private SaleOrderAuditService saleOrderAuditService;
     @Autowired
-    SaleOrderDetailCustomerPriceService saleOrderDetailCustomerPriceService;
+    private SaleOrderDetailCustomerPriceService saleOrderDetailCustomerPriceService;
 
     @Autowired
     private ProductService productService;
     @Autowired
     private ColumnService columnService;
+
+    @Autowired
+    private SaleLockDateService saleLockDateService;
+    //消息队列
+    @Autowired
+    private Producer producer;
 
     @PostMapping("/saleOrderAudit/listPageSaleOrderDetailByLockStock")
     public ResultModel listPageSaleOrderDetailByLockStock() throws Exception {
@@ -197,10 +205,9 @@ public class SaleOrderAuditController {
         logger.info("################saleOrderAudit/updateSaleOrderDetailByLockStock 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
-
         PageData pageData = HttpUtils.parsePageData();
-        String dtlJsonStr = pageData.getString("dtlJsonStr");
 
+        String dtlJsonStr = pageData.getString("dtlJsonStr");
         List<Map<String, String>> mapList = (List<Map<String, String>>) YvanUtil.jsonToList(dtlJsonStr);
         if (mapList == null || mapList.size() == 0) {
             model.putCode(Integer.valueOf(1));
@@ -228,6 +235,10 @@ public class SaleOrderAuditController {
             }
         }
 
+        //获取企业id对应的锁定库存时长(毫秒)
+        String companyId = pageData.getString("currentCompanyId");
+        Long lockTime = saleLockDateService.findLockDateMillisecondByCompanyId(companyId);
+
         //获取订单明细
         List<SaleOrderDetail> detailList = saleOrderDetailService.mapList2DetailList(mapList, null);
         for (SaleOrderDetail detail : detailList) {
@@ -252,6 +263,11 @@ public class SaleOrderAuditController {
                 new_lockCount = new_lockCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
                 product.setLockCount(new_lockCount);
                 productService.update(product);
+            }
+
+            //将订单明细id作为消息体放入消息队列中，消息时长(毫秒)-根据企业id查询(vmes_sale_lock_date)
+            if (lockTime != null && lockTime.longValue() > 0) {
+                producer.sendMsg(detail.getId(), lockTime.longValue());
             }
         }
 
