@@ -365,6 +365,9 @@
                 <if test="currentCompanyId != null and currentCompanyId != ''">
                     and customer.company_id=#{currentCompanyId}
                 </if>
+                <if test="genre != null and genre != ''">
+                    and customer.genre=#{genre}
+                </if>
                 <if test="queryStr != null and queryStr != ''" >
                     and ${queryStr}
                 </if>
@@ -396,6 +399,9 @@
             <where>
                 <if test="currentCompanyId != null and currentCompanyId != ''">
                     and customer.company_id=#{currentCompanyId}
+                </if>
+                <if test="genre != null and genre != ''">
+                    and customer.genre=#{genre}
                 </if>
                 <if test="queryStr != null and queryStr != ''" >
                     and ${queryStr}
