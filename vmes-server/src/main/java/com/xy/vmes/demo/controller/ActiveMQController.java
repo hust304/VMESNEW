@@ -15,11 +15,19 @@ public class ActiveMQController {
     @Autowired
     private Producer producer;
 
-    //这里就是队列消息生产，方便使用postman测试
-    @GetMapping("/test/send/{msg}")
-    public void send(@PathVariable("msg") String msg) throws JMSException {
-        System.out.println("Receiver发送的报文为:"+msg);
-        producer.sendMsg(msg,(long)60000);
+    @GetMapping("/test/sendTest")
+    public void sendTest() throws JMSException {
+        String msg_1 = "11111";
+        System.out.println("Receiver发送的报文为:"+msg_1);
+        producer.sendMsg(msg_1, Long.valueOf(10 * 1000));
+
+        String msg_2 = "22222";
+        System.out.println("Receiver发送的报文为:"+msg_2);
+        producer.sendMsg(msg_2, Long.valueOf(10 * 1000));
+
+        String msg_3 = "33333";
+        System.out.println("Receiver发送的报文为:"+msg_3);
+        producer.sendMsg(msg_3, Long.valueOf(10 * 1000));
     }
 
 }

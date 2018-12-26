@@ -13,9 +13,14 @@ import javax.jms.Queue;
 @Configuration
 public class ActiveMQConfig {
 
+    /**
+     * 销售-订单管理-订单明细-订单明细货品锁定库存-消息队列定义
+     *
+     * @return
+     */
     @Bean
-    public Queue queue() {
-        return new ActiveMQQueue("sample.queue");
+    public Queue orderDetailByProductLockcountQueue() {
+        return new ActiveMQQueue("sale.orderDetail.ProductLockcount.queue");
     }
 
 
