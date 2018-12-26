@@ -1,9 +1,13 @@
 package com.xy.vmes.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.entity.Customer;
 import com.xy.vmes.entity.SaleReceiveRecord;
+import com.xy.vmes.exception.ApplicationException;
+import com.xy.vmes.exception.TableVersionException;
 import com.yvan.PageData;
 
+import java.math.BigDecimal;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -125,6 +129,16 @@ public interface SaleReceiveRecordService {
      * @throws Exception
      */
     List<SaleReceiveRecord> findDataList(PageData pageData, Boolean isQueryAll) throws Exception;
+
+    /**
+     *
+     * @param customerId  客户id
+     * @param customer    客户对象
+     * @param editType    类型(add:添加 modify:修改 delete:删除)
+     * @param editBalance 修改客户余额
+     * @param user        用户id
+     */
+    void editCustomerBalance(String customerId, Customer customer, String editType, BigDecimal editBalance, String user) throws ApplicationException,TableVersionException;
 
 }
 

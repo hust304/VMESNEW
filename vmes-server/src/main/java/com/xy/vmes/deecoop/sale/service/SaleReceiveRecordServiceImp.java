@@ -1,8 +1,13 @@
 package com.xy.vmes.deecoop.sale.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.common.util.Common;
 import com.xy.vmes.deecoop.sale.dao.SaleReceiveRecordMapper;
+import com.xy.vmes.entity.Customer;
 import com.xy.vmes.entity.SaleReceiveRecord;
+import com.xy.vmes.exception.ApplicationException;
+import com.xy.vmes.exception.TableVersionException;
+import com.xy.vmes.service.CustomerService;
 import com.xy.vmes.service.SaleReceiveRecordService;
 import com.yvan.PageData;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +15,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import com.yvan.Conv;
 import java.util.LinkedHashMap;
@@ -26,7 +32,8 @@ import java.util.ArrayList;
 @Transactional(readOnly = false)
 public class SaleReceiveRecordServiceImp implements SaleReceiveRecordService {
 
-
+    @Autowired
+    private CustomerService customerService;
     @Autowired
     private SaleReceiveRecordMapper saleReceiveRecordMapper;
 
@@ -206,6 +213,65 @@ public class SaleReceiveRecordServiceImp implements SaleReceiveRecordService {
         }
 
         return this.dataList(pageData);
+    }
+
+    /**
+     * 修改客户余额
+     * 1. 修改客户表(vmes_customer)
+     * 2. 添加历史表(vmes_sale_receive_record)
+     *
+     * @param customerId  客户id
+     * @param customer    客户对象
+     * @param editType    类型(add:添加 modify:修改 delete:删除)
+     * @param editBalance 修改客户余额
+     * @param user        用户id
+     */
+    public void editCustomerBalance(String customerId, Customer customer, String editType, BigDecimal editBalance, String user) throws ApplicationException,TableVersionException {
+        if (customerId == null || customerId.trim().length() == 0) {return;}
+        if (editBalance == null) {return;}
+        if (editType == null || editType.trim().length() == 0) {
+            throw new ApplicationException("编辑类型(editType)为空或空字符串！");
+        }
+        if (customer == null) {customer = customerService.findCustomerById(customerId);}
+        if (customer == null) {return;}
+
+        if ("modify".equals(editType)) {
+            //变更前
+            BigDecimal before_balance = BigDecimal.valueOf(0D);
+            if (customer.getBalance() != null) {
+                before_balance = customer.getBalance();
+            }
+
+            //变更后
+            double new_balance = before_balance.doubleValue() + editBalance.doubleValue();
+            BigDecimal new_balanceBig = BigDecimal.valueOf(new_balance);
+            //四舍五入到2位小数
+            new_balanceBig = new_balanceBig.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+
+            //1. 修改客户表(vmes_customer)
+            try {
+                customerService.updateCustomerBalance(customer, new_balanceBig, user);
+            } catch (Exception e) {
+                throw new TableVersionException(Common.SYS_STOCKCOUNT_ERRORCODE, "当前系统繁忙，请稍后操作！");
+            }
+
+            //2. 添加历史表(vmes_sale_receive_record)
+            SaleReceiveRecord saleReceiveRecord = new SaleReceiveRecord();
+            saleReceiveRecord.setBeforeAmount(before_balance);
+            saleReceiveRecord.setAfterAmount(new_balanceBig);
+            saleReceiveRecord.setAmount(editBalance);
+            saleReceiveRecord.setCustomerId(customerId);
+            //（0：改 1：加  -1：减 ）
+            saleReceiveRecord.setType("0");
+            saleReceiveRecord.setRemark("录入收款："+ editBalance.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP));
+            saleReceiveRecord.setUuser(user);
+            saleReceiveRecord.setCuser(user);
+            try {
+                this.save(saleReceiveRecord);
+            } catch (Exception e) {
+                throw new ApplicationException(e.getMessage());
+            }
+        }
     }
 }
 
