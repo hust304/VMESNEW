@@ -134,11 +134,10 @@ public interface SaleReceiveRecordService {
      *
      * @param customerId  客户id
      * @param customer    客户对象
-     * @param editType    类型(add:添加 modify:修改 delete:删除)
      * @param editBalance 修改客户余额
      * @param user        用户id
      */
-    void editCustomerBalance(String customerId, Customer customer, String editType, BigDecimal editBalance, String user) throws ApplicationException,TableVersionException;
+    void editCustomerBalanceByOrder(String customerId, Customer customer, BigDecimal editBalance, String user) throws ApplicationException,TableVersionException;
 
 }
 
