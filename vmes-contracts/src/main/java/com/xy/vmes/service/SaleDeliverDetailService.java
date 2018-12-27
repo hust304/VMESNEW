@@ -158,6 +158,7 @@ public interface SaleDeliverDetailService {
      */
     String findOutIdsByDeliverId(String deliverId);
 
+    List<Map> getData2SelectListPage(PageData pd, Pagination pg) throws Exception;
 }
 
 

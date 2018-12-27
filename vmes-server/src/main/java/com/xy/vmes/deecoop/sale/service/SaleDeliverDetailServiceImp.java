@@ -415,6 +415,11 @@ public class SaleDeliverDetailServiceImp implements SaleDeliverDetailService {
 
         return outIds.toString();
     }
+
+    @Override
+    public List<Map> getData2SelectListPage(PageData pd, Pagination pg) throws Exception {
+        return saleDeliverDetailMapper.getData2SelectListPage(pd,pg);
+    }
 }
 
 

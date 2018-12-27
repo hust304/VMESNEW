@@ -260,4 +260,106 @@
         )
     </update>
 
+
+
+    <insert id="insertColumn1" >
+        delete from vmes_column where model_code = 'deliverDetail2Select' ;
+        insert into vmes_column (
+        id,model_code,title_key,title_name,serial_number,
+        isdisable,ishide,isedit,ismust,cdate,
+        cuser
+        ) VALUES
+        (replace(uuid(), '-', ''),'deliverDetail2Select','parentId','发货单ID',0, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'deliverDetail2Select','orderId','订单ID',0, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'deliverDetail2Select','orderDetaiId','订单明细ID',0, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'deliverDetail2Select','outDetailId','出单明细id',0, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''), 'deliverDetail2Select', 'productId', 'productId', 0, '1', '0', '1', '0', now(), 'admin'),
+        (replace(uuid(), '-', ''),'deliverDetail2Select','state','发货状态(0:待发货 1:已发货 -1:已取消)',0, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''), 'deliverDetail2Select', 'productGenre', '货品属性id', 0, '1', '0', '1', '0', now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'deliverDetail2Select', 'priceType', '计价类型(1:先计价 2:后计价)', 0, '1', '0', '1', '0', now(), 'admin'),
+        (replace(uuid(), '-', ''),'deliverDetail2Select','cuser','创建用户id',0, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'deliverDetail2Select','cdate','创建时间',0, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'deliverDetail2Select','uuser','修改用户id',0, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'deliverDetail2Select','udate','修改时间',0, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'deliverDetail2Select','remark','备注',0, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'deliverDetail2Select','isdisable','是否启用(0:已禁用 1:启用)',0, '1','0','1','0',now(), 'admin'),
+
+
+        (replace(uuid(), '-', ''),'deliverDetail2Select', 'deliverCode', '发货编码', 1, '1', '1', '1', '0', now(), 'admin'),
+        (replace(uuid(), '-', ''),'deliverDetail2Select', 'sysOrderCode', '订单编号', 2, '1', '1', '1', '0', now(), 'admin'),
+        (replace(uuid(), '-', ''), 'deliverDetail2Select', 'productCode', '货品编码', 3, '1', '1', '1', '0', now(), 'admin'),
+        (replace(uuid(), '-', ''), 'deliverDetail2Select', 'productName', '货品名称', 4, '1', '1', '1', '0', now(), 'admin'),
+        (replace(uuid(), '-', ''), 'deliverDetail2Select', 'productSpec', '规格型号', 5, '1', '1', '1', '0', now(), 'admin'),
+        (replace(uuid(), '-', ''), 'deliverDetail2Select', 'productGenreName', '货品属性', 7, '1', '1', '1', '0', now(), 'admin'),
+        (replace(uuid(), '-', ''),'deliverDetail2Select','productPrice','货品单价',8, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'deliverDetail2Select','count','发货数量',9, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'deliverDetail2Select','sum','发货金额',10, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'deliverDetail2Select','date','发货日期',11, '1','1','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'deliverDetail2Select','id','id',0, '1','0','1','0',now(), 'admin')
+
+    </insert>
+
+
+    <!-- 自动创建，可以修改 -->
+    <select id="getData2SelectListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+        detail.id id,
+        detail.parent_id parentId,
+        detail.order_id orderId,
+        detail.order_detai_id orderDetaiId,
+        detail.out_detail_id outDetailId,
+        detail.product_id productId,
+
+        detail.state state,
+        round(ifnull(detail.product_price, 0), 2) productPrice,
+        round(ifnull(detail.count, 0), 2) count,
+        round(ifnull(detail.sum, 0), 2) sum,
+        DATE_FORMAT(detail.deliver_date,'%Y-%m-%d') deliverDate,
+        detail.cuser cuser,
+        detail.cdate cdate,
+        DATE_FORMAT(detail.cdate,'%Y-%m-%d %T') cdate,
+        detail.uuser uuser,
+        DATE_FORMAT(detail.udate,'%Y-%m-%d %T') udate,
+        detail.remark remark,
+        detail.isdisable isdisable,
+
+        deliver.deliver_code deliverCode,
+        saleOrder.sys_code sysOrderCode,
+        saleOrder.price_type priceType,
+
+        <!--货品表-->
+        product.code productCode,
+        product.name productName,
+        product.spec productSpec,
+        product.genre productGenre,
+        genre.name productGenreName
+
+        from vmes_sale_deliver_detail detail
+        left join vmes_sale_deliver deliver on detail.parent_id = deliver.id
+        left join vmes_sale_order saleOrder on detail.order_id = saleOrder.id
+        left join vmes_product product on detail.product_id = product.id
+        left join vmes_dictionary genre on product.genre = genre.id
+        <where>
+            <if test="parentId != null and parentId != ''" >
+                and detail.parent_id = #{parentId}
+            </if>
+            <if test="orderId != null and orderId != ''" >
+                and detail.order_id = #{orderId}
+            </if>
+            <if test="customerId != null and customerId != ''" >
+                and deliver.customer_id = #{customerId}
+            </if>
+            <!--queryStr 自定义sql查询语句-->
+            <if test="queryStr != null and queryStr != ''" >
+                and ${queryStr}
+            </if>
+        </where>
+        <if test="orderStr != null and orderStr != ''" >
+            order by ${orderStr}
+        </if>
+    </select>
+
+
 </mapper>
