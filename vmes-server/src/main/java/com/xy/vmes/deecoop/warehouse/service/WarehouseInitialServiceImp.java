@@ -193,7 +193,7 @@ public class WarehouseInitialServiceImp implements WarehouseInitialService {
         columnMap.put("company_id", companyId);
         warehouseProductService.deleteByColumnMap(columnMap);
 
-        //货品表(库存数量)初始化
+        //货品表(库存数量,锁定库存数量)初始化为零
         productService.initialProductByStockCount(companyId);
     }
 }
