@@ -115,6 +115,15 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
     }
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+    public void deleteTableByDeliver(String companyId) throws Exception {
+        PageData pageData = new PageData();
+        pageData.put("companyId", companyId);
+        saleDeliverMapper.deleteTableByDetail(pageData);
+
+        Map<String, String> columnMap = new HashMap<String, String>();
+        columnMap.put("company_id", companyId);
+        this.deleteByColumnMap(columnMap);
+    }
 
     /**
      * 创建人：陈刚 自动创建，禁止修改

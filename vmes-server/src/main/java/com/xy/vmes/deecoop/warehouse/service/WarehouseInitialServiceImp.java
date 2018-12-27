@@ -41,6 +41,12 @@ public class WarehouseInitialServiceImp implements WarehouseInitialService {
     @Autowired
     private ProductService productService;
 
+    //销售
+    @Autowired
+    private SaleOrderService saleOrderService;
+    @Autowired
+    private SaleDeliverService saleDeliverService;
+
     /**
     * 创建人：陈刚 自动创建，禁止修改
     * 创建时间：2018-11-20
@@ -177,6 +183,10 @@ public class WarehouseInitialServiceImp implements WarehouseInitialService {
         warehouseCheckService.deleteTableByWarehouseCheck(companyId);
         //删除移库业务表
         warehouseMoveService.deleteTableByWarehouseMove(companyId);
+
+        //销售
+        saleOrderService.deleteTableByOrder(companyId);
+        saleDeliverService.deleteTableByDeliver(companyId);
 
         //删除仓库货品表(库存表)
         Map<String, String> columnMap = new HashMap<String, String>();

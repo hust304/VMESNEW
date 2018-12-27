@@ -11,10 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.ArrayList;
+import java.util.*;
 
 /**
 * 说明：vmes_sale_order:订单表 实现类
@@ -115,6 +112,16 @@ public class SaleOrderServiceImp implements SaleOrderService {
     }
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+    public void deleteTableByOrder(String companyId) throws Exception {
+        PageData pageData = new PageData();
+        pageData.put("companyId", companyId);
+        saleOrderMapper.deleteTableByDetail(pageData);
+
+        Map<String, String> columnMap = new HashMap<String, String>();
+        columnMap.put("company_id", companyId);
+        this.deleteByColumnMap(columnMap);
+    }
+
     public void updateStateByOrder(String state, String ids) throws Exception {
         if (state == null || state.trim().length() == 0) {return;}
         if (ids == null || ids.trim().length() == 0) {return;}
