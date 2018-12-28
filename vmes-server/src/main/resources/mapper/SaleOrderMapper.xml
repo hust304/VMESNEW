@@ -73,7 +73,8 @@
             (replace(uuid(), '-', ''), 'saleOrder', 'cdate', '创建时间', 19, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
             (replace(uuid(), '-', ''), 'saleOrder', 'uuser', '修改用户id', 20, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
             (replace(uuid(), '-', ''), 'saleOrder', 'udate', '修改时间', 21, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
-            (replace(uuid(), '-', ''), 'saleOrder', 'isdisable', '是否启用(0:已禁用 1:启用)', 22, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin')
+            (replace(uuid(), '-', ''), 'saleOrder', 'isdisable', '是否启用(0:已禁用 1:启用)', 22, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrder', 'orderStateByQuery', '订单状态', 7, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin')
 
     </insert>
 
@@ -166,13 +167,14 @@
             saleOrder.receipt_type receiptType,
             CASE
                 WHEN saleOrder.receipt_type = '1' THEN '不开票'
-                WHEN saleOrder.receipt_type = '2' THEN '普票发票'
+                WHEN saleOrder.receipt_type = '2' THEN '普通发票'
                 WHEN saleOrder.receipt_type = '3' THEN '增值税发票'
             ELSE null
             END receiptTypeName,
 
             saleOrder.price_type priceType,
             saleOrder.state state,
+            saleOrder.state orderStateByQuery,
             CASE
                 WHEN saleOrder.state = '0' THEN '待提交'
                 WHEN saleOrder.state = '1' THEN '待审核'
@@ -224,6 +226,20 @@
             </if>
             <if test="priceType != null and priceType != ''" >
                 and saleOrder.price_type = #{priceType}
+            </if>
+
+            <!--模块查询条件-->
+            <if test="customerName != null and customerName != ''">
+                and customer.name LIKE CONCAT(CONCAT(#{customerName}),'%')
+            </if>
+            <if test="receiptType != null and receiptType != ''" >
+                and saleOrder.receipt_type = #{receiptType}
+            </if>
+            <if test="orderDateBegin != null and orderDateBegin != ''">
+                <![CDATA[ and saleOrder.order_date >= #{orderDateBegin} ]]>
+            </if>
+            <if test="orderDateEnd != null and orderDateEnd != ''">
+                <![CDATA[ and saleOrder.order_date <= #{orderDateEnd} ]]>
             </if>
 
             <!--过滤(允许生成发货单)-->
