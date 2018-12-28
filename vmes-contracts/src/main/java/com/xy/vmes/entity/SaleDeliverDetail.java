@@ -41,13 +41,16 @@ public class SaleDeliverDetail implements Serializable {
 	//货品单价
 	@TableField("product_price")
 	private BigDecimal productPrice;
+	//订单明细单位id
+	@TableField("order_unit")
+	private String orderUnit;
+	//后计价单位id(后计价)
+	@TableField("last_unit")
+	private String lastUnit;
+
 	//发货数量
 	@TableField("count")
 	private BigDecimal count;
-	//结算数量(后计价)
-	@TableField("last_number")
-	private BigDecimal lastNumber;
-
 	//发货金额
 	@TableField("sum")
 	private BigDecimal sum;
@@ -60,10 +63,10 @@ public class SaleDeliverDetail implements Serializable {
 	//创建时间
 	@TableField("cdate")
 	private Date cdate;
+
 	//修改用户id
 	@TableField("uuser")
 	private String uuser;
-
 	//修改时间
 	@TableField("udate")
 	private Date udate;
@@ -73,7 +76,6 @@ public class SaleDeliverDetail implements Serializable {
 	//是否启用(0:已禁用 1:启用)
 	@TableField("isdisable")
 	private String isdisable;
-
 
 
 	public void setId(String id) {
@@ -123,12 +125,6 @@ public class SaleDeliverDetail implements Serializable {
 	}
 	public BigDecimal getCount() {
 		return count;
-	}
-	public void setLastNumber(BigDecimal lastNumber) {
-		this.lastNumber = lastNumber;
-	}
-	public BigDecimal getLastNumber() {
-		return lastNumber;
 	}
 	public void setSum(BigDecimal sum) {
 		this.sum = sum;
@@ -184,8 +180,18 @@ public class SaleDeliverDetail implements Serializable {
     public String getProductId() {
         return productId;
     }
-
-
+	public String getOrderUnit() {
+		return orderUnit;
+	}
+	public void setOrderUnit(String orderUnit) {
+		this.orderUnit = orderUnit;
+	}
+	public String getLastUnit() {
+		return lastUnit;
+	}
+	public void setLastUnit(String lastUnit) {
+		this.lastUnit = lastUnit;
+	}
 /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 
