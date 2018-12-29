@@ -24,6 +24,7 @@
 
         orderDetaiQuery.productUnit,
         orderDetaiQuery.priceUnit,
+        orderDetaiQuery.priceUnit orderUnit,
         orderDetaiQuery.isLockWarehouse,
         orderDetaiQuery.isNeedProduce,
         orderDetaiQuery.lockCount,
@@ -209,7 +210,8 @@
         (replace(uuid(), '-', ''), 'saleOrderDetailQueryByDeliver', 'planDetailId', '生产计划明细ID', 33, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
 
         (replace(uuid(), '-', ''), 'saleOrderDetailQueryByDeliver', 'npFormula', 'npFormula', 0, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
-        (replace(uuid(), '-', ''), 'saleOrderDetailQueryByDeliver', 'pnFormula', 'pnFormula', 0, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin')
+        (replace(uuid(), '-', ''), 'saleOrderDetailQueryByDeliver', 'pnFormula', 'pnFormula', 0, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailQueryByDeliver', 'orderUnit', 'orderUnit', 0, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin')
 
     </insert>
 

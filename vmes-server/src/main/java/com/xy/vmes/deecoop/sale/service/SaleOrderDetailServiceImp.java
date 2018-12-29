@@ -242,6 +242,13 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
         deliverDetail.setProductId(orderDetail.getProductId());
         //productPrice 货品单价
         deliverDetail.setProductPrice(orderDetail.getProductPrice());
+
+        //(先计价) (orderUnit,priceUnit) 值相同
+        //(后计价) (orderUnit,priceUnit) 值不相同
+        //orderUnit订单明细单位id
+        deliverDetail.setOrderUnit(orderDetail.getOrderUnit());
+        //priceUnit计价单位id
+        deliverDetail.setPriceUnit(orderDetail.getPriceUnit());
         //count 发货数量(订单明细 计价单位数量)
         deliverDetail.setCount(orderDetail.getCount());
 

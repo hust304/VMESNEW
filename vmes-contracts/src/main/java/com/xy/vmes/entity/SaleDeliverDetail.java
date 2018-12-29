@@ -44,9 +44,9 @@ public class SaleDeliverDetail implements Serializable {
 	//订单明细单位id
 	@TableField("order_unit")
 	private String orderUnit;
-	//后计价单位id(后计价)
-	@TableField("last_unit")
-	private String lastUnit;
+	//计价单位id
+	@TableField("price_unit")
+	private String priceUnit;
 
 	//发货数量
 	@TableField("count")
@@ -186,13 +186,13 @@ public class SaleDeliverDetail implements Serializable {
 	public void setOrderUnit(String orderUnit) {
 		this.orderUnit = orderUnit;
 	}
-	public String getLastUnit() {
-		return lastUnit;
+	public String getPriceUnit() {
+		return priceUnit;
 	}
-	public void setLastUnit(String lastUnit) {
-		this.lastUnit = lastUnit;
+	public void setPriceUnit(String priceUnit) {
+		this.priceUnit = priceUnit;
 	}
-/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+	/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 
 }

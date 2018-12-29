@@ -102,7 +102,7 @@
             state state,
             product_price productPrice,
             order_unit orderUnit,
-            last_unit lastUnit,
+            price_unit priceUnit,
 
             count count,
             sum sum,
@@ -161,7 +161,7 @@
             detail.state state,
             round(ifnull(detail.product_price, 0), 2) productPrice,
             detail.order_unit orderUnit,
-            detail.last_unit lastUnit,
+            detail.price_unit priceUnit,
 
             round(ifnull(detail.count, 0), 2) count,
             round(ifnull(detail.sum, 0), 2) sum,
