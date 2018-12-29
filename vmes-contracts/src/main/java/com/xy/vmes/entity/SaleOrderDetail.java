@@ -96,6 +96,7 @@ public class SaleOrderDetail implements Serializable {
 	/////////////////////////////////////////////////////////
 	//非实体类字段:界面传值用
 	private String orderUnit;
+	private String deliverDtlRemark;
 
 
 	public void setId(String id) {
@@ -249,7 +250,13 @@ public class SaleOrderDetail implements Serializable {
 	public void setOrderUnit(String orderUnit) {
 		this.orderUnit = orderUnit;
 	}
-/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+	public String getDeliverDtlRemark() {
+		return deliverDtlRemark;
+	}
+	public void setDeliverDtlRemark(String deliverDtlRemark) {
+		this.deliverDtlRemark = deliverDtlRemark;
+	}
+	/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 
 }

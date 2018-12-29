@@ -252,6 +252,8 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
         //count 发货数量(订单明细 计价单位数量)
         deliverDetail.setCount(orderDetail.getCount());
 
+        deliverDetail.setRemark(orderDetail.getDeliverDtlRemark());
+
         return deliverDetail;
     }
 

@@ -39,6 +39,7 @@
         orderDetaiQuery.udate,
         orderDetaiQuery.remark,
         orderDetaiQuery.isdisable,
+        '' deliverDtlRemark,
 
         <!--货品表-->
         orderDetaiQuery.npFormula,
