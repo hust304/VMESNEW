@@ -3,6 +3,7 @@ package com.xy.vmes.service;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.entity.SaleDeliver;
 import com.xy.vmes.entity.SaleDeliverDetail;
+import com.xy.vmes.entity.SaleOrderDetail;
 import com.xy.vmes.exception.ApplicationException;
 import com.yvan.PageData;
 
@@ -105,6 +106,18 @@ public interface SaleDeliverDetailService {
 
     List<SaleDeliverDetail> mapList2DetailList(List<Map<String, String>> mapList, List<SaleDeliverDetail> objectList);
 
+    /**
+     * model_code = 'saleOrderDetailQueryByDeliver'
+     * 1. 本次发货数量(计价单位)
+     * 2. 公式:P(计价单位) 转换 N(计量单位)
+     * 3. count:订购数量(计价数量) -- 本次发货数量(计价单位)
+     *    productCount:货品数量(计量数量) --本次发货数量(计量单位)
+     *
+     * @param mapList
+     * @param objectList
+     * @return
+     */
+    List<SaleOrderDetail> mapList2OrderDetailList(List<Map<String, String>> mapList, List<SaleOrderDetail> objectList);
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     BigDecimal findTotalSumByDetailList(List<SaleDeliverDetail> objectList);
     void addDeliverDetail(SaleDeliver parentObj, List<SaleDeliverDetail> detailList, Map<String, String> orderDtl2OutDtlMap) throws Exception;

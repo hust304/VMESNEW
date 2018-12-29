@@ -171,7 +171,11 @@ public class SaleDeliverController {
         String customerName = mapList.get(0).get("customerName");
 
         //获取订单明细
-        List<SaleOrderDetail> orderDtlList = saleOrderDetailService.mapList2DetailList(mapList, null);
+        //1. 本次发货数量(计价单位)
+        //2. 公式:P(计价单位) 转换 N(计量单位)
+        //3. count:订购数量(计价数量) -- 本次发货数量(计价单位)
+        //   productCount:货品数量(计量数量) --本次发货数量(计量单位)
+        List<SaleOrderDetail> orderDtlList = saleDeliverDetailService.mapList2OrderDetailList(mapList, null);
 
         //1. 创建出库单
         WarehouseOut warehouseOut = warehouseOutService.createWarehouseOut(customerId,

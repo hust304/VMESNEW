@@ -2,10 +2,12 @@ package com.xy.vmes.deecoop.sale.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.Common;
+import com.xy.vmes.common.util.EvaluateUtil;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.sale.dao.SaleDeliverDetailMapper;
 import com.xy.vmes.entity.SaleDeliver;
 import com.xy.vmes.entity.SaleDeliverDetail;
+import com.xy.vmes.entity.SaleOrderDetail;
 import com.xy.vmes.entity.WarehouseOutDetail;
 import com.xy.vmes.exception.ApplicationException;
 import com.xy.vmes.service.SaleDeliverDetailService;
@@ -201,6 +203,56 @@ public class SaleDeliverDetailServiceImp implements SaleDeliverDetailService {
 
         for (Map<String, String> mapObject : mapList) {
             SaleDeliverDetail detail = (SaleDeliverDetail) HttpUtils.pageData2Entity(mapObject, new SaleDeliverDetail());
+            objectList.add(detail);
+        }
+
+        return objectList;
+    }
+
+    /**
+     * model_code = 'saleOrderDetailQueryByDeliver'
+     * 1. 本次发货数量(计价单位)
+     * 2. 公式:P(计价单位) 转换 N(计量单位)
+     * 3. count:订购数量(计价数量) -- 本次发货数量(计价单位)
+     *    productCount:货品数量(计量数量) --本次发货数量(计量单位)
+     *
+     * @param mapList
+     * @param objectList
+     * @return
+     */
+    public List<SaleOrderDetail> mapList2OrderDetailList(List<Map<String, String>> mapList, List<SaleOrderDetail> objectList) {
+        if (objectList == null) {objectList = new ArrayList<SaleOrderDetail>();}
+        if (mapList == null || mapList.size() == 0) {return objectList;}
+
+        for (Map<String, String> mapObject : mapList) {
+            SaleOrderDetail detail = (SaleOrderDetail) HttpUtils.pageData2Entity(mapObject, new SaleOrderDetail());
+
+            //needDeliverCount (计价单位)本次发货数量
+            BigDecimal needDeliverCount = BigDecimal.valueOf(0D);
+            if (mapObject.get("needDeliverCount") != null && mapObject.get("needDeliverCount").trim().length() > 0) {
+                try {
+                    needDeliverCount = new BigDecimal(mapObject.get("needDeliverCount").trim());
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            //pnFormula 计价单位转换计量单位
+            String pnFormula = mapObject.get("pnFormula");
+            BigDecimal valueBig = BigDecimal.valueOf(0D);
+            //P(计价单位) --> N(计量单位)
+            if (pnFormula != null && pnFormula.trim().length() > 0) {
+                Map<String, Object> parmMap = new HashMap<String, Object>();
+                parmMap.put("P", needDeliverCount);
+                valueBig = EvaluateUtil.formulaReckon(parmMap, pnFormula);
+            }
+
+            //count:订购数量(计价数量) -- 本次发货数量(计价单位)
+            detail.setCount(needDeliverCount);
+
+            //productCount:货品数量(计量数量) --本次发货数量(计量单位)
+            detail.setProductCount(valueBig);
+
             objectList.add(detail);
         }
 

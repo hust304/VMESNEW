@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.service.ColumnService;
-import com.xy.vmes.service.SaleOrderDetailByQueryService;
+import com.xy.vmes.service.SaleOrderDetailQueryByDeliveService;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
@@ -19,26 +19,27 @@ import java.util.*;
 
 /**
  * 说明：订单明细查询汇总 Controller
+ * (先计价)销售-发货管理-生成发货单-(订单明细勾选后界面)
+ *
  * @author 陈刚
- * @date 2018-12-27
+ * @date 2018-12-29
  */
 @RestController
 @Slf4j
-public class SaleOrderDetailByQueryController {
-    private Logger logger = LoggerFactory.getLogger(SaleOrderDetailByQueryController.class);
+public class SaleOrderDetailQueryByDeliverController {private Logger logger = LoggerFactory.getLogger(SaleOrderDetailQueryByDeliverController.class);
 
     @Autowired
-    private SaleOrderDetailByQueryService orderDetailByQueryService;
+    private SaleOrderDetailQueryByDeliveService orderDetailQueryByDeliveService;
     @Autowired
     private ColumnService columnService;
 
-    @PostMapping("/saleOrderDetailByQuery/listPageOrderDetailByQuery")
-    public ResultModel listPageOrderDetailByQuery() throws Exception {
-        logger.info("################saleOrderDetailByQuery/listPageOrderDetailByQuery 执行开始 ################# ");
+    @PostMapping("/saleOrderDetailQueryByDeliver/listPageOrderDetailQueryByDeliver")
+    public ResultModel listPageOrderDetailQueryByDeliver() throws Exception {
+        logger.info("################saleOrderDetailQueryByDeliver/listPageOrderDetailQueryByDeliver 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
 
-        List<Column> columnList = columnService.findColumnList("saleOrderDetailByQuery");
+        List<Column> columnList = columnService.findColumnList("saleOrderDetailQueryByDeliver");
         if (columnList == null || columnList.size() == 0) {
             model.putCode("1");
             model.putMsg("数据库没有生成TabCol，请联系管理员！");
@@ -87,9 +88,8 @@ public class SaleOrderDetailByQueryController {
             pd.put("orderStr", orderStr);
         }
 
-        Pagination pg = HttpUtils.parsePagination(pd);
         List<Map> varMapList = new ArrayList();
-        List<Map> varList = orderDetailByQueryService.findListPageOrderDetaiByQuery(pd, pg);
+        List<Map> varList = orderDetailQueryByDeliveService.listOrderDetaiQueryByDeliver(pd);
         if(varList!=null&&varList.size()>0){
             for(int i=0;i<varList.size();i++){
                 Map map = varList.get(i);
@@ -102,11 +102,10 @@ public class SaleOrderDetailByQueryController {
             }
         }
         result.put("varList",varMapList);
-        result.put("pageData", pg);
 
         model.putResult(result);
         Long endTime = System.currentTimeMillis();
-        logger.info("################saleOrderDetailByQuery/listPageOrderDetailByQuery 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################saleOrderDetailQueryByDeliver/listPageOrderDetailQueryByDeliver 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 }

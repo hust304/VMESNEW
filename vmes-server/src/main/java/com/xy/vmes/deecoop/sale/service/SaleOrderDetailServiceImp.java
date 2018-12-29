@@ -242,8 +242,8 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
         deliverDetail.setProductId(orderDetail.getProductId());
         //productPrice 货品单价
         deliverDetail.setProductPrice(orderDetail.getProductPrice());
-        //count 发货数量
-        deliverDetail.setCount(orderDetail.getLockCount());
+        //count 发货数量(订单明细 计价单位数量)
+        deliverDetail.setCount(orderDetail.getCount());
 
         return deliverDetail;
     }
@@ -266,8 +266,8 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
 
         //productId 产品ID
         outDetail.setProductId(orderDetail.getProductId());
-        //count 出库数量
-        outDetail.setCount(orderDetail.getLockCount());
+        //count 出库数量 (订单明细 计量单位数量)
+        outDetail.setCount(orderDetail.getProductCount());
         //businessId 业务id(订单明细id)
         outDetail.setBusinessId(orderDetail.getId());
 

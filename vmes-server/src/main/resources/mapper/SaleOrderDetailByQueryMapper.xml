@@ -8,10 +8,62 @@
 <mapper namespace="com.xy.vmes.deecoop.sale.dao.SaleOrderDetailByQueryMapper">
     <select id="findListPageOrderDetaiByQuery" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
-            orderDtl.id id,
-            orderDtl.parent_id parentId,
-            orderDtl.state state,
-            CASE
+            <!--订单明细表-->
+            orderDetaiQuery.id,
+            orderDetaiQuery.parentId,
+            orderDetaiQuery.state,
+            orderDetaiQuery.stateName,
+            orderDetaiQuery.fileUrl,
+            orderDetaiQuery.deliverDate,
+
+            orderDetaiQuery.count,
+            orderDetaiQuery.productCount,
+            orderDetaiQuery.productId,
+            orderDetaiQuery.productPrice,
+
+            orderDetaiQuery.productUnit,
+            orderDetaiQuery.priceUnit,
+            orderDetaiQuery.isLockWarehouse,
+            orderDetaiQuery.isNeedProduce,
+            orderDetaiQuery.lockCount,
+
+            orderDetaiQuery.lockDate,
+            orderDetaiQuery.deliverDetailId,
+            orderDetaiQuery.planDetailId,
+            orderDetaiQuery.cuser,
+            orderDetaiQuery.cdate,
+
+            orderDetaiQuery.uuser,
+            orderDetaiQuery.udate,
+            orderDetaiQuery.remark,
+            orderDetaiQuery.isdisable,
+
+            <!--货品表-->
+            orderDetaiQuery.productCode,
+            orderDetaiQuery.productName,
+            orderDetaiQuery.productSpec,
+            orderDetaiQuery.productGenre,
+            orderDetaiQuery.productType,
+
+            orderDetaiQuery.productUnitName,
+            orderDetaiQuery.priceUnitName,
+            orderDetaiQuery.productGenreName,
+
+            orderDetaiQuery.stockCount,
+            orderDetaiQuery.productLockCount,
+            orderDetaiQuery.endDeliverCount,
+
+            round((orderDetaiQuery.stockCount - orderDetaiQuery.productLockCount), 2) productStockCount,
+            orderDetaiQuery.notDeliverCount,
+            orderDetaiQuery.notDeliverCount needDeliverCount,
+            round(orderDetaiQuery.notDeliverCount * orderDetaiQuery.productPrice ,2) productSum
+
+        from (
+            select
+                orderDtl.id id,
+                orderDtl.parent_id parentId,
+                orderDtl.state state,
+                CASE
                 WHEN orderDtl.state = '0' THEN '待提交'
                 WHEN orderDtl.state = '1' THEN '待审核'
                 WHEN orderDtl.state = '2' THEN '待出库'
@@ -19,83 +71,89 @@
                 WHEN orderDtl.state = '4' THEN '已发货'
                 WHEN orderDtl.state = '5' THEN '已完成'
                 WHEN orderDtl.state = '-1' THEN '已取消'
-            ELSE null
-            END stateName,
-            orderDtl.file_url fileUrl,
-            DATE_FORMAT(orderDtl.deliver_date,'%Y-%m-%d') deliverDate,
+                ELSE null
+                END stateName,
+                orderDtl.file_url fileUrl,
+                DATE_FORMAT(orderDtl.deliver_date,'%Y-%m-%d') deliverDate,
 
-            round(ifnull(orderDtl.count, 0),2) count,
-            round(ifnull(orderDtl.product_count, 0),2) productCount,
-            orderDtl.product_id productId,
-            round(ifnull(orderDtl.product_price, 0),2) productPrice,
-            round(ifnull(orderDtl.product_sum, 0),2) productSum,
+                round(ifnull(orderDtl.count, 0),2) count,
+                round(ifnull(orderDtl.product_count, 0),2) productCount,
+                orderDtl.product_id productId,
+                round(ifnull(orderDtl.product_price, 0),2) productPrice,
 
-            orderDtl.product_unit productUnit,
-            orderDtl.price_unit priceUnit,
-            orderDtl.is_lock_warehouse isLockWarehouse,
-            orderDtl.is_need_produce isNeedProduce,
-            orderDtl.lock_count lockCount,
 
-            orderDtl.lock_date lockDate,
-            orderDtl.deliver_detail_id deliverDetailId,
-            orderDtl.plan_detail_id planDetailId,
-            orderDtl.cuser cuser,
-            DATE_FORMAT(orderDtl.cdate,'%Y-%m-%d %T') cdate,
+                orderDtl.product_unit productUnit,
+                orderDtl.price_unit priceUnit,
+                orderDtl.is_lock_warehouse isLockWarehouse,
+                orderDtl.is_need_produce isNeedProduce,
+                orderDtl.lock_count lockCount,
 
-            orderDtl.uuser uuser,
-            DATE_FORMAT(orderDtl.udate,'%Y-%m-%d %T') udate,
-            orderDtl.remark remark,
-            orderDtl.isdisable isdisable,
+                orderDtl.lock_date lockDate,
+                orderDtl.deliver_detail_id deliverDetailId,
+                orderDtl.plan_detail_id planDetailId,
+                orderDtl.cuser cuser,
+                DATE_FORMAT(orderDtl.cdate,'%Y-%m-%d %T') cdate,
 
-            <!--货品表-->
-            product.code productCode,
-            product.name productName,
-            product.spec productSpec,
-            product.genre productGenre,
-            product.type productType,
+                orderDtl.uuser uuser,
+                DATE_FORMAT(orderDtl.udate,'%Y-%m-%d %T') udate,
+                orderDtl.remark remark,
+                orderDtl.isdisable isdisable,
 
-            productUnit.name productUnitName,
-            priceUnit.name priceUnitName,
-            genre.name productGenreName,
+                unit.np_formula npFormula,
+                unit.pn_formula pnFormula,
 
-            round(ifnull(product.stock_count, 0), 2) stockCount,
-            round(ifnull(product.lock_count, 0), 2) productLockCount,
-            round((ifnull(product.stock_count, 0) - ifnull(product.lock_count, 0)), 2) productStockCount,
+                <!--货品表-->
+                product.code productCode,
+                product.name productName,
+                product.spec productSpec,
+                product.genre productGenre,
+                product.type productType,
 
-            round(ifnull(deliverDtl.count, 0), 2) endDeliverCount,
-            round((ifnull(orderDtl.count, 0) - ifnull(deliverDtl.count, 0)), 2) notDeliverCount,
-            round((ifnull(orderDtl.count, 0) - ifnull(deliverDtl.count, 0)), 2) needDeliverCount
+                productUnit.name productUnitName,
+                priceUnit.name priceUnitName,
+                genre.name productGenreName,
 
-        from vmes_sale_order_detail orderDtl
-            left join vmes_product product on orderDtl.product_id = product.id
-            left join vmes_dictionary productUnit on orderDtl.product_unit = productUnit.id
-            left join vmes_dictionary priceUnit on orderDtl.price_unit = priceUnit.id
-            left join vmes_dictionary genre on product.genre = genre.id
-            <!--根据订单明细id汇总查询(发货明细) 已生成发货单数量-->
-            left join (
-                select order_detai_id, sum(count) count
-                from vmes_sale_deliver_detail
-                where <![CDATA[ state <> '-1' ]]>
-                group by order_detai_id
-            ) deliverDtl on orderDtl.id = deliverDtl.order_detai_id
+                round(ifnull(product.stock_count, 0), 2) stockCount,
+                round(ifnull(product.lock_count, 0), 2) productLockCount,
+                round(ifnull(deliverDtl.count, 0), 2) endDeliverCount,
+                round((ifnull(orderDtl.count, 0) - ifnull(deliverDtl.count, 0)), 2) notDeliverCount
 
+            from vmes_sale_order_detail orderDtl
+                left join vmes_product product on orderDtl.product_id = product.id
+                left join vmes_dictionary productUnit on orderDtl.product_unit = productUnit.id
+                left join vmes_dictionary priceUnit on orderDtl.price_unit = priceUnit.id
+                left join vmes_dictionary genre on product.genre = genre.id
+                left join vmes_product_unit unit on orderDtl.price_unit = unit.id
+        <!--根据订单明细id汇总查询(发货明细) 已生成发货单数量-->
+                left join (
+                    select order_detai_id, sum(count) count
+                    from vmes_sale_deliver_detail
+                    where <![CDATA[ state <> '-1' ]]>
+                    group by order_detai_id
+                ) deliverDtl on orderDtl.id = deliverDtl.order_detai_id
+            <where>
+                <if test="orderDtlIds != null and orderDtlIds != ''" >
+                    and orderDtl.id in (${orderDtlIds})
+                </if>
+                <if test="parentId != null and parentId != ''" >
+                    and orderDtl.parent_id = #{parentId}
+                </if>
+                <if test="orderState != null and orderState != ''" >
+                    and orderDtl.state = #{orderState}
+                </if>
+
+                <!--queryStr 自定义sql查询语句-->
+                <if test="queryStr != null and queryStr != ''" >
+                    and ${queryStr}
+                </if>
+            </where>
+        ) orderDetaiQuery
         <where>
-            <if test="orderDtlIds != null and orderDtlIds != ''" >
-                and orderDtl.id in (${orderDtlIds})
+            <if test="'true' == isNeedDeliverCount" >
+                and orderDetaiQuery.notDeliverCount > 0
             </if>
-            <if test="parentId != null and parentId != ''" >
-                and orderDtl.parent_id = #{parentId}
-            </if>
-            <if test="orderState != null and orderState != ''" >
-                and orderDtl.state = #{orderState}
-            </if>
-
-            <!--queryStr 自定义sql查询语句-->
-            <if test="queryStr != null and queryStr != ''" >
-                and ${queryStr}
-            </if>
-
         </where>
+
 
     </select>
 
