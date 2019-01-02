@@ -1,10 +1,7 @@
 package com.xy.vmes.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
-import com.xy.vmes.entity.SaleDeliverDetail;
-import com.xy.vmes.entity.SaleOrder;
-import com.xy.vmes.entity.SaleOrderDetail;
-import com.xy.vmes.entity.WarehouseOutDetail;
+import com.xy.vmes.entity.*;
 import com.yvan.PageData;
 
 import java.math.BigDecimal;
@@ -107,11 +104,11 @@ public interface SaleOrderDetailService {
     List<SaleOrderDetail> mapList2DetailList(List<Map<String, String>> mapList, List<SaleOrderDetail> objectList);
     String findProductIdsByDetailList(List<SaleOrderDetail> objectList);
 
-    SaleDeliverDetail orderDetail2DeliverDetail(SaleOrderDetail orderDetail, SaleDeliverDetail deliverDetail);
-    List<SaleDeliverDetail> orderDtlList2DeliverDtllList(List<SaleOrderDetail> orderDtlList, List<SaleDeliverDetail> deliverDtlList);
+    SaleDeliverDetail orderDetail2DeliverDetail(SaleOrderDetailEntity orderDetail, SaleDeliverDetail deliverDetail);
+    List<SaleDeliverDetail> orderDtlList2DeliverDtllList(List<SaleOrderDetailEntity> orderDtlList, List<SaleDeliverDetail> deliverDtlList);
 
-    WarehouseOutDetail orderDetail2OutDetail(SaleOrderDetail orderDetail, WarehouseOutDetail outDetail);
-    List<WarehouseOutDetail> orderDtlList2OutDtlList(List<SaleOrderDetail> orderDtlList, List<WarehouseOutDetail> outDtlList);
+    WarehouseOutDetail orderDetail2OutDetail(SaleOrderDetailEntity orderDetail, WarehouseOutDetail outDetail);
+    List<WarehouseOutDetail> orderDtlList2OutDtlList(List<SaleOrderDetailEntity> orderDtlList, List<WarehouseOutDetail> outDtlList);
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     BigDecimal findTotalSumByDetailList(List<SaleOrderDetail> objectList);
     void addSaleOrderDetail(SaleOrder parentObj, List<SaleOrderDetail> objectList) throws Exception;

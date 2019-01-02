@@ -7,6 +7,7 @@ import com.xy.vmes.deecoop.sale.dao.SaleOrderDetailMapper;
 import com.xy.vmes.entity.SaleDeliverDetail;
 import com.xy.vmes.entity.SaleOrder;
 import com.xy.vmes.entity.SaleOrderDetail;
+import com.xy.vmes.entity.SaleOrderDetailEntity;
 import com.xy.vmes.entity.WarehouseOutDetail;
 import com.xy.vmes.service.SaleOrderDetailService;
 import com.xy.vmes.service.SaleOrderService;
@@ -230,7 +231,7 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
         return strTemp;
     }
 
-    public SaleDeliverDetail orderDetail2DeliverDetail(SaleOrderDetail orderDetail, SaleDeliverDetail deliverDetail) {
+    public SaleDeliverDetail orderDetail2DeliverDetail(SaleOrderDetailEntity orderDetail, SaleDeliverDetail deliverDetail) {
         if (deliverDetail == null) {deliverDetail = new SaleDeliverDetail();}
         if (orderDetail == null) {return deliverDetail;}
 
@@ -257,11 +258,11 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
         return deliverDetail;
     }
 
-    public List<SaleDeliverDetail> orderDtlList2DeliverDtllList(List<SaleOrderDetail> orderDtlList, List<SaleDeliverDetail> deliverDtlList) {
+    public List<SaleDeliverDetail> orderDtlList2DeliverDtllList(List<SaleOrderDetailEntity> orderDtlList, List<SaleDeliverDetail> deliverDtlList) {
         if (deliverDtlList == null) {deliverDtlList = new ArrayList<SaleDeliverDetail>();}
         if (orderDtlList == null || orderDtlList.size() == 0) {return deliverDtlList;}
 
-        for (SaleOrderDetail orderDtl : orderDtlList) {
+        for (SaleOrderDetailEntity orderDtl : orderDtlList) {
             SaleDeliverDetail deliverDtl = this.orderDetail2DeliverDetail(orderDtl, null);
             deliverDtlList.add(deliverDtl);
         }
@@ -269,7 +270,7 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
         return deliverDtlList;
     }
 
-    public WarehouseOutDetail orderDetail2OutDetail(SaleOrderDetail orderDetail, WarehouseOutDetail outDetail) {
+    public WarehouseOutDetail orderDetail2OutDetail(SaleOrderDetailEntity orderDetail, WarehouseOutDetail outDetail) {
         if (outDetail == null) {outDetail = new WarehouseOutDetail();}
         if (orderDetail == null) {return outDetail;}
 
@@ -283,11 +284,11 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
         return outDetail;
     }
 
-    public List<WarehouseOutDetail> orderDtlList2OutDtlList(List<SaleOrderDetail> orderDtlList, List<WarehouseOutDetail> outDtlList) {
+    public List<WarehouseOutDetail> orderDtlList2OutDtlList(List<SaleOrderDetailEntity> orderDtlList, List<WarehouseOutDetail> outDtlList) {
         if (outDtlList == null) {outDtlList = new ArrayList<WarehouseOutDetail>();}
         if (orderDtlList == null || orderDtlList.size() == 0) {return outDtlList;}
 
-        for (SaleOrderDetail orderDtl : orderDtlList) {
+        for (SaleOrderDetailEntity orderDtl : orderDtlList) {
             WarehouseOutDetail outDetail = this.orderDetail2OutDetail(orderDtl, null);
             outDtlList.add(outDetail);
         }

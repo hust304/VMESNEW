@@ -93,12 +93,6 @@ public class SaleOrderDetail implements Serializable {
 	@TableField("isdisable")
 	private String isdisable;
 
-	/////////////////////////////////////////////////////////
-	//非实体类字段:界面传值用
-	private String orderUnit;
-	private String deliverDtlRemark;
-
-
 	public void setId(String id) {
 		this.id = id;
 	}
@@ -244,18 +238,7 @@ public class SaleOrderDetail implements Serializable {
 	public String getIsdisable() {
 		return isdisable;
 	}
-	public String getOrderUnit() {
-		return orderUnit;
-	}
-	public void setOrderUnit(String orderUnit) {
-		this.orderUnit = orderUnit;
-	}
-	public String getDeliverDtlRemark() {
-		return deliverDtlRemark;
-	}
-	public void setDeliverDtlRemark(String deliverDtlRemark) {
-		this.deliverDtlRemark = deliverDtlRemark;
-	}
+
 	/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 

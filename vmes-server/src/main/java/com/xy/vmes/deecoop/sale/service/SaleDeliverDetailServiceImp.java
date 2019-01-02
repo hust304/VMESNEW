@@ -5,10 +5,7 @@ import com.xy.vmes.common.util.Common;
 import com.xy.vmes.common.util.EvaluateUtil;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.sale.dao.SaleDeliverDetailMapper;
-import com.xy.vmes.entity.SaleDeliver;
-import com.xy.vmes.entity.SaleDeliverDetail;
-import com.xy.vmes.entity.SaleOrderDetail;
-import com.xy.vmes.entity.WarehouseOutDetail;
+import com.xy.vmes.entity.*;
 import com.xy.vmes.exception.ApplicationException;
 import com.xy.vmes.service.SaleDeliverDetailService;
 import com.xy.vmes.service.WarehouseOutDetailService;
@@ -220,12 +217,12 @@ public class SaleDeliverDetailServiceImp implements SaleDeliverDetailService {
      * @param objectList
      * @return
      */
-    public List<SaleOrderDetail> mapList2OrderDetailList(List<Map<String, String>> mapList, List<SaleOrderDetail> objectList) {
-        if (objectList == null) {objectList = new ArrayList<SaleOrderDetail>();}
+    public List<SaleOrderDetailEntity> mapList2OrderDetailList(List<Map<String, String>> mapList, List<SaleOrderDetailEntity> objectList) {
+        if (objectList == null) {objectList = new ArrayList<SaleOrderDetailEntity>();}
         if (mapList == null || mapList.size() == 0) {return objectList;}
 
         for (Map<String, String> mapObject : mapList) {
-            SaleOrderDetail detail = (SaleOrderDetail) HttpUtils.pageData2Entity(mapObject, new SaleOrderDetail());
+            SaleOrderDetailEntity detail = (SaleOrderDetailEntity) HttpUtils.pageData2Entity(mapObject, new SaleOrderDetailEntity());
 
             //needDeliverCount (计价单位)本次发货数量
             BigDecimal needDeliverCount = BigDecimal.valueOf(0D);

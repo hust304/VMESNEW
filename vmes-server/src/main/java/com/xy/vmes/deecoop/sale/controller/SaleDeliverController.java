@@ -175,7 +175,7 @@ public class SaleDeliverController {
         //2. 公式:P(计价单位) 转换 N(计量单位)
         //3. count:订购数量(计价数量) -- 本次发货数量(计价单位)
         //   productCount:货品数量(计量数量) --本次发货数量(计量单位)
-        List<SaleOrderDetail> orderDtlList = saleDeliverDetailService.mapList2OrderDetailList(mapList, null);
+        List<SaleOrderDetailEntity> orderDtlList = saleDeliverDetailService.mapList2OrderDetailList(mapList, null);
 
         //1. 创建出库单
         WarehouseOut warehouseOut = warehouseOutService.createWarehouseOut(customerId,
@@ -226,14 +226,16 @@ public class SaleDeliverController {
             orderDtl2DeliverDtlMap.put(deliverDtl.getOrderDetaiId(), deliverDtl.getId());
         }
 
-        for (SaleOrderDetail orderDtl : orderDtlList) {
+        for (SaleOrderDetailEntity orderDtl : orderDtlList) {
             String orderDtl_id = orderDtl.getId();
             if (orderDtl2DeliverDtlMap.get(orderDtl_id) != null) {
+                SaleOrderDetail orderDetail = new SaleOrderDetail();
+                orderDetail.setId(orderDtl_id);
                 //发货明细ID
-                orderDtl.setDeliverDetailId(orderDtl2DeliverDtlMap.get(orderDtl_id));
+                orderDetail.setDeliverDetailId(orderDtl2DeliverDtlMap.get(orderDtl_id));
                 //明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已发货 6:已完成 -1:已取消)
-                orderDtl.setState("4");
-                saleOrderDetailService.update(orderDtl);
+                orderDetail.setState("4");
+                saleOrderDetailService.update(orderDetail);
             }
         }
 

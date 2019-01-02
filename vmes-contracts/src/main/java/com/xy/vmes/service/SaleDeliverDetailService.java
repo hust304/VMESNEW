@@ -3,7 +3,7 @@ package com.xy.vmes.service;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.entity.SaleDeliver;
 import com.xy.vmes.entity.SaleDeliverDetail;
-import com.xy.vmes.entity.SaleOrderDetail;
+import com.xy.vmes.entity.SaleOrderDetailEntity;
 import com.xy.vmes.exception.ApplicationException;
 import com.yvan.PageData;
 
@@ -117,7 +117,7 @@ public interface SaleDeliverDetailService {
      * @param objectList
      * @return
      */
-    List<SaleOrderDetail> mapList2OrderDetailList(List<Map<String, String>> mapList, List<SaleOrderDetail> objectList);
+    List<SaleOrderDetailEntity> mapList2OrderDetailList(List<Map<String, String>> mapList, List<SaleOrderDetailEntity> objectList);
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     BigDecimal findTotalSumByDetailList(List<SaleDeliverDetail> objectList);
     void addDeliverDetail(SaleDeliver parentObj, List<SaleDeliverDetail> detailList, Map<String, String> orderDtl2OutDtlMap) throws Exception;
