@@ -207,6 +207,17 @@
                 and deliver.car_code LIKE CONCAT(CONCAT('%', #{carCode}),'%')
             </if>
 
+            <!--模块查询条件-->
+            <if test="customerName != null and customerName != ''">
+                and customer.name LIKE CONCAT(CONCAT(#{customerName}),'%')
+            </if>
+            <if test="deliverDateBegin != null and deliverDateBegin != ''">
+                <![CDATA[ and deliver.deliver_date >= #{deliverDateBegin} ]]>
+            </if>
+            <if test="deliverDateEnd != null and deliverDateEnd != ''">
+                <![CDATA[ and deliver.deliver_date <= #{deliverDateEnd} ]]>
+            </if>
+
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >
                 and ${queryStr}
