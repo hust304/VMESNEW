@@ -234,7 +234,7 @@ public class SaleDeliverController {
                 //发货明细ID
                 orderDetail.setDeliverDetailId(orderDtl2DeliverDtlMap.get(orderDtl_id));
                 //明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已发货 6:已完成 -1:已取消)
-                orderDetail.setState("4");
+                orderDetail.setState("3");
                 saleOrderDetailService.update(orderDetail);
             }
         }

@@ -177,7 +177,7 @@
             saleOrder.sys_code sysOrderCode,
             saleOrder.price_type priceType,
             orderUnit.name orderUnitName,
-            lastUnit.name lastUnitName,
+            priceUnit.name priceUnitName,
 
             <!--货品表-->
             product.code productCode,
@@ -191,7 +191,7 @@
             left join vmes_product product on detail.product_id = product.id
             left join vmes_dictionary genre on product.genre = genre.id
             left join vmes_dictionary orderUnit on detail.order_unit = orderUnit.id
-            left join vmes_dictionary lastUnit on detail.last_unit = lastUnit.id
+            left join vmes_dictionary priceUnit on detail.price_unit = priceUnit.id
         <where>
             <if test="parentId != null and parentId != ''" >
                 and detail.parent_id = #{parentId}

@@ -241,19 +241,31 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
         deliverDetail.setOrderDetaiId(orderDetail.getId());
         //productId货品ID
         deliverDetail.setProductId(orderDetail.getProductId());
-        //productPrice 货品单价
-        deliverDetail.setProductPrice(orderDetail.getProductPrice());
-
         //(先计价) (orderUnit,priceUnit) 值相同
         //(后计价) (orderUnit,priceUnit) 值不相同
         //orderUnit订单明细单位id
         deliverDetail.setOrderUnit(orderDetail.getOrderUnit());
         //priceUnit计价单位id
         deliverDetail.setPriceUnit(orderDetail.getPriceUnit());
-        //count 发货数量(订单明细 计价单位数量)
-        deliverDetail.setCount(orderDetail.getCount());
 
         deliverDetail.setRemark(orderDetail.getDeliverDtlRemark());
+
+        //productPrice 货品单价
+        deliverDetail.setProductPrice(BigDecimal.valueOf(0D));
+        if (orderDetail.getProductPrice() != null) {
+            deliverDetail.setProductPrice(orderDetail.getProductPrice());
+        }
+        //count 发货数量(订单明细 计价单位数量)
+        deliverDetail.setCount(BigDecimal.valueOf(0D));
+        if (orderDetail.getCount() != null) {
+            deliverDetail.setCount(orderDetail.getCount());
+        }
+
+        //sum 发货金额 := 货品单价 * 发货数量
+        //四舍五入到2位小数
+        BigDecimal sum = BigDecimal.valueOf(deliverDetail.getProductPrice().doubleValue() * deliverDetail.getCount().doubleValue());
+        sum = sum.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+        deliverDetail.setSum(sum);
 
         return deliverDetail;
     }
