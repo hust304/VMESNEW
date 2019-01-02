@@ -342,8 +342,8 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
 
     /**
      * 根据订单明细状态-反写订单状态
-     * 订单状态(0:待提交 1:待审核 2:待出库 3:待发货 4:已发货 5:已完成 -1:已取消)
-     * 订单明细状态(0:待提交 1:待审核 2:待出库 3:待发货 4:已发货 5:已完成 -1:已取消)
+     * 订单状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
+     * 订单明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已发货 6:已完成 -1:已取消)
      *
      * @param parent       订单对象
      * @param dtlList      订单明细List<SaleOrderDetail>
@@ -402,7 +402,7 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
      *   true : 全部相同，在订单明细List
      *   false: 一条或多条不同，在订单明细List
      *
-     * @param state       明细状态(0:待提交 1:待审核 2:待出库 3:待发货 4:已发货 5:已完成 -1:已取消)
+     * @param state       明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已发货 6:已完成 -1:已取消)
      * @param objectList  订单明细List<SaleOrderDetail>
      * @return
      */
@@ -423,8 +423,8 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
 
     /**
      * 获取订单状态-根据订单明细状态
-     * 订单状态(0:待提交 1:待审核 2:待出库 3:待发货 4:已发货 5:已完成 -1:已取消)
-     * 订单明细状态(0:待提交 1:待审核 2:待出库 3:待发货 4:已发货 5:已完成 -1:已取消)
+     * 订单状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
+     * 订单明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已发货 6:已完成 -1:已取消)
      *
      * @param dtlList      订单明细List<SaleOrderDetail>
      * @return
@@ -433,16 +433,16 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
         String parentState = new String("0");
         if (dtlList == null || dtlList.size() == 0) {return parentState;}
 
-        //1. 验证订单状态(4:已发货) --> 全部明细状态 (4:已发货) -- 忽视状态(-1:已取消)
-        String checkDtlState = "4";
+        //1. 验证订单状态(3:已发货) --> 全部明细状态 (5:已发货) -- 忽视状态(-1:已取消)
+        String checkDtlState = "5";
         if (this.isAllExistStateByDetailList(checkDtlState, dtlList)) {
-            return "4";
+            return "3";
         }
 
-        //2. 验证订单状态(5:已完成) --> 全部明细状态 (5:已完成) -- 忽视状态(-1:已取消)
-        checkDtlState = "5";
+        //2. 验证订单状态(4:已完成) --> 全部明细状态 (6:已完成) -- 忽视状态(-1:已取消)
+        checkDtlState = "6";
         if (this.isAllExistStateByDetailList(checkDtlState, dtlList)) {
-            return "5";
+            return "4";
         }
 
         //3. 验证订单状态(-1:已取消) --> 全部明细状态 (-1:已取消) -- 忽视状态 null

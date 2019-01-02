@@ -117,8 +117,8 @@ public interface SaleOrderDetailService {
 
     /**
      * 根据订单明细状态-反写订单状态
-     * 订单状态(0:待提交 1:待审核 2:待出库 3:待发货 4:已发货 5:已完成 -1:已取消)
-     * 订单明细状态(0:待提交 1:待审核 2:待出库 3:待发货 4:已发货 5:已完成 -1:已取消)
+     * 订单状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
+     * 订单明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已发货 6:已完成 -1:已取消)
      *
      * @param parent       订单对象
      * @param dtllList     订单明细List<SaleOrderDetail>
@@ -131,7 +131,7 @@ public interface SaleOrderDetailService {
      *   true : 全部相同，在入库单明细List
      *   false: 一条或多条不同，在入库单明细List
      *
-     * @param state       明细状态(0:待提交 1:待审核 2:待出库 3:待发货 4:已发货 5:已完成 -1:已取消)
+     * @param state       明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已发货 6:已完成 -1:已取消)
      * @param objectList  订单明细List<SaleOrderDetail>
      * @return
      */
@@ -139,8 +139,8 @@ public interface SaleOrderDetailService {
 
     /**
      * 获取订单状态-根据订单明细状态
-     * 订单状态(0:待提交 1:待审核 2:待出库 3:待发货 4:已发货 5:已完成 -1:已取消)
-     * 订单明细状态(0:待提交 1:待审核 2:待出库 3:待发货 4:已发货 5:已完成 -1:已取消)
+     * 订单状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
+     * 订单明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已发货 6:已完成 -1:已取消)
      *
      * @param dtlList      订单明细List<SaleOrderDetail>
      * @return
