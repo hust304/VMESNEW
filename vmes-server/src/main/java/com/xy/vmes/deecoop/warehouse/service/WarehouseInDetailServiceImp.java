@@ -207,18 +207,18 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
         if (parentObj == null) {return;}
         if (objectList == null || objectList.size() == 0) {return;}
 
+        //获取批次号
+        //PC+yyyyMMdd+00001 = 15位
+        String code = coderuleService.createCoderCdateByDate(parentObj.getCompanyId(),
+                "vmes_warehouse_in_detail",
+                "yyyyMMdd",
+                "PC");
+
         for (WarehouseInDetail detail : objectList) {
             //状态(0:待派单 1:执行中 2:已完成 -1.已取消)
             detail.setState("0");
             detail.setParentId(parentObj.getId());
             detail.setCuser(parentObj.getCuser());
-
-            //获取批次号
-            //PC+yyyyMMdd+00001 = 15位
-            String code = coderuleService.createCoderCdateByDate(parentObj.getCompanyId(),
-                    "vmes_warehouse_in_detail",
-                    "yyyyMMdd",
-                    "PC");
             detail.setCode(code);
             this.save(detail);
         }
