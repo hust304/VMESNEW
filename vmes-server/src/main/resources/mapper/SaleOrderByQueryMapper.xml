@@ -58,13 +58,17 @@
         makeUser.user_name makeName,
         customer.name customerName,
 
-        '' receiveProgress,
+        <!--订单付款进度 付款明细表汇总 view_sale_receive_detail-->
+        round(ifnull(receive.amount, 0),2) receiveSum,
+        round((ifnull(receive.amount, 0) / ifnull(saleOrder.order_sum, 0)), 0) receiveProgress,
         '' isInvoice
 
         from vmes_sale_order saleOrder
         left join vmes_customer customer on saleOrder.customer_id = customer.id
         left join vmes_user makeUser on saleOrder.make_id = makeUser.id
         left join vmes_sale_order_detail orderDetail on saleOrder.id = orderDetail.parent_id
+        <!--付款明细表汇总 view_sale_receive_detail-->
+        left join view_sale_receive_detail receive on saleOrder.id = receive.order_id
         <where>
             <if test="currentCompanyId != null and currentCompanyId != ''" >
                 and saleOrder.company_id = #{currentCompanyId}

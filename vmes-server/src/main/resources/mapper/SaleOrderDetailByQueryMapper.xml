@@ -51,12 +51,17 @@
 
             orderDetaiQuery.stockCount,
             orderDetaiQuery.productLockCount,
-            orderDetaiQuery.endDeliverCount,
+
 
             round((orderDetaiQuery.stockCount - orderDetaiQuery.productLockCount), 2) productStockCount,
             orderDetaiQuery.notDeliverCount,
             orderDetaiQuery.notDeliverCount needDeliverCount,
-            round(orderDetaiQuery.notDeliverCount * orderDetaiQuery.productPrice ,2) productSum
+            round(orderDetaiQuery.notDeliverCount * orderDetaiQuery.productPrice ,2) productSum,
+
+            <!--已发货百分比-->
+            orderDetaiQuery.deliverCount,
+            orderDetaiQuery.endDeliverCount,
+            round((orderDetaiQuery.endDeliverCount / orderDetaiQuery.deliverCount), 2) deliverProgress
 
         from (
             select
@@ -115,8 +120,12 @@
 
                 round(ifnull(product.stock_count, 0), 2) stockCount,
                 round(ifnull(product.lock_count, 0), 2) productLockCount,
-                round(ifnull(deliverDtl.count, 0), 2) endDeliverCount,
-                round((ifnull(orderDtl.count, 0) - ifnull(deliverDtl.count, 0)), 2) notDeliverCount
+
+                <!--发货总数-->
+                round(ifnull(deliverDtl_1.count, 0), 2) deliverCount,
+                round((ifnull(orderDtl.count, 0) - ifnull(deliverDtl_1.count, 0)), 2) notDeliverCount,
+                <!--已发货数量-->
+                round(ifnull(deliverDtl_2.count, 0), 2) endDeliverCount
 
             from vmes_sale_order_detail orderDtl
                 left join vmes_product product on orderDtl.product_id = product.id
@@ -124,13 +133,21 @@
                 left join vmes_dictionary priceUnit on orderDtl.price_unit = priceUnit.id
                 left join vmes_dictionary genre on product.genre = genre.id
                 left join vmes_product_unit unit on orderDtl.price_unit = unit.id
-        <!--根据订单明细id汇总查询(发货明细) 已生成发货单数量-->
+                <!--根据订单明细id汇总查询(发货明细) 已生成发货单数量-->
                 left join (
                     select order_detai_id, sum(count) count
                     from vmes_sale_deliver_detail
                     where <![CDATA[ state <> '-1' ]]>
                     group by order_detai_id
-                ) deliverDtl on orderDtl.id = deliverDtl.order_detai_id
+                ) deliverDtl_1 on orderDtl.id = deliverDtl_1.order_detai_id
+
+                <!--根据订单明细id汇总查询(发货明细) 已发货数量-->
+                left join (
+                select order_detai_id, sum(count) count
+                from vmes_sale_deliver_detail
+                where state = '1'
+                group by order_detai_id
+                ) deliverDtl_2 on orderDtl.id = deliverDtl_1.order_detai_id
             <where>
                 <if test="orderDtlIds != null and orderDtlIds != ''" >
                     and orderDtl.id in (${orderDtlIds})
@@ -209,7 +226,11 @@
         (replace(uuid(), '-', ''), 'saleOrderDetailByQuery', 'planDetailId', '生产计划明细ID', 30, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderDetailByQuery', 'deliverCount', 'deliverCount', 31, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderDetailByQuery', 'notDeliverCount', 'notDeliverCount', 32, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
-        (replace(uuid(), '-', ''), 'saleOrderDetailByQuery', 'needDeliverCount', 'needDeliverCount', 33, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin')
+        (replace(uuid(), '-', ''), 'saleOrderDetailByQuery', 'needDeliverCount', 'needDeliverCount', 33, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
+
+(replace(uuid(), '-', ''), 'saleOrderDetailByQuery', 'deliverCount', 'deliverCount', 34, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
+(replace(uuid(), '-', ''), 'saleOrderDetailByQuery', 'endDeliverCount', 'endDeliverCount', 35, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin')
+        (replace(uuid(), '-', ''), 'saleOrderDetailByQuery', 'deliverProgress', '发货进度', 36, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin')
 
     </insert>
 
