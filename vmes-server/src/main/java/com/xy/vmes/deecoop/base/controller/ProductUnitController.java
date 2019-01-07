@@ -375,6 +375,86 @@ public class ProductUnitController {
 
     /**
      * 根据货品id查询(vmes_product_unit) 获取该货品id全部(计价单位,单位换算公式,货品价格)
+     *
+     * @author 陈刚 自动创建，可以修改
+     * @date 2018-12-06
+     */
+    @PostMapping("/productUnit/findListProductUnitByProduct")
+    public ResultModel findListProductUnitByProduct() throws Exception {
+        logger.info("################productUnit/findListProductUnitByProduct 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        ResultModel model = new ResultModel();
+
+        List<LinkedHashMap<String, String>> unitPriceMapList = new ArrayList<LinkedHashMap<String, String>>();
+
+        //获取指定栏位字符串-重新调整List<Column>
+        PageData pd = HttpUtils.parsePageData();
+        String productId = pd.getString("productId");
+        if (productId == null || productId.trim().length() == 0) {
+            Map result = new HashMap();
+            result.put("options", unitPriceMapList);
+            model.putResult(result);
+            return model;
+        }
+        pd.put("queryStr", "pu.unit is not null and punit.name is not null");
+
+        //设置查询排序
+        pd.put("orderStr", "pu.cdate asc");
+        String orderStr = pd.getString("orderStr");
+        if (orderStr != null && orderStr.trim().length() > 0) {
+            pd.put("orderStr", orderStr);
+        }
+
+        List<Map> mapList = productUnitService.getDataListPage(pd);
+        for (Map<String, Object> mapObject : mapList) {
+            LinkedHashMap<String, String> priceUnitMap = new LinkedHashMap<String, String>();
+
+            //计价单位id punit
+            String priceUnitId = (String)mapObject.get("punit");
+            priceUnitMap.put("id", priceUnitId);
+
+            //计价单位名称 priceUnitName
+            String priceUnitName = (String)mapObject.get("punitName");
+            priceUnitMap.put("label", priceUnitName);
+
+            //货品价格 productPrice
+            BigDecimal productPrice = BigDecimal.valueOf(0D);
+            if (mapObject.get("productPrice") != null) {
+                productPrice = (BigDecimal)mapObject.get("productPrice");
+            }
+            //四舍五入到2位小数
+            productPrice = productPrice.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+            priceUnitMap.put("productPrice", productPrice.toString());
+
+            //计量转换计价单位 数量转换公式 npFormula
+            String n2pFormula = "";
+            if (mapObject.get("npFormula") != null && mapObject.get("npFormula").toString().trim().length() > 0) {
+                n2pFormula = mapObject.get("npFormula").toString().trim();
+            }
+            priceUnitMap.put("n2pFormula", n2pFormula);
+
+            //计价转换计量单位 数量转换公式 pn_formula
+            String p2nFormula = "";
+            if (mapObject.get("pnFormula") != null && mapObject.get("pnFormula").toString().trim().length() > 0) {
+                p2nFormula = mapObject.get("pnFormula").toString().trim();
+            }
+            priceUnitMap.put("p2nFormula", p2nFormula);
+
+            unitPriceMapList.add(priceUnitMap);
+        }
+
+        Map result = new HashMap();
+        result.put("options", unitPriceMapList);
+        model.putResult(result);
+
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################productUnit/findListProductUnitByProduct 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 根据货品id查询(vmes_product_unit) 获取该货品id全部(计价单位,单位换算公式,货品价格)
      * 1. 计价单位Map     <计价单位id, 计价单位名称> Map
      * 2. 计价单位货品价格 <计价单位id, 货品价格> Map
      * 3. 计价单位换算公式 <计价单位id, 计量转换计价单位 数量转换公式> Map
