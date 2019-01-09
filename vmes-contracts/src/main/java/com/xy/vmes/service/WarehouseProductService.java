@@ -206,7 +206,7 @@ public interface WarehouseProductService {
      * @param count   (不可为空)变更数量
      * @return
      */
-    String modifyStockCount(WarehouseProduct source, WarehouseProduct target, String type, BigDecimal count, WarehouseLoginfo loginfo) throws Exception;
+    String modifyStockCount(WarehouseProduct source, WarehouseProduct target, String type, BigDecimal count, WarehouseLoginfo loginfo) throws TableVersionException,Exception;
 
 
     List<Map> getWarehouseProductView(PageData pd,Pagination pg) throws Exception;
