@@ -44,7 +44,7 @@ public class CompanyController {
     @Autowired
     private UserRoleService userRoleService;
     @Autowired
-    UserDefinedMenuService userDefinedMenuService;
+    private UserDefinedMenuService userDefinedMenuService;
 
     @Autowired
     private CoderuleService coderuleService;

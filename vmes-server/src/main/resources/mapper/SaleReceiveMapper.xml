@@ -22,6 +22,8 @@
 		udate udate,<!-- 修改时间 -->
 		remark remark,<!-- 备注 -->
 		isdisable isdisable,<!-- 是否启用(0:已禁用 1:启用) -->
+        code code,
+        company_id companyId,
 		id id <!-- id -->
     </sql>
 
@@ -35,6 +37,8 @@
 		#{udate},<!-- 修改时间 -->
 		#{remark},<!-- 备注 -->
 		#{isdisable},<!-- 是否启用(0:已禁用 1:启用) -->
+        #{code},
+        #{companyId},
 		#{id} <!-- id -->
     </sql>
 
@@ -49,6 +53,8 @@
         '修改时间'  udate,
         '备注'  remark,
         '是否启用(0:已禁用 1:启用)'  isdisable,
+        '编码' code,
+        '公司ID' companyId,
         'id' id_hide
     </sql>
 
@@ -183,6 +189,8 @@
         udate udate,<!-- 修改时间 -->
         remark remark,<!-- 备注 -->
         isdisable isdisable,<!-- 是否启用(0:已禁用 1:启用) -->
+        code code,
+        company_id companyId,
         id id <!-- id -->
     </sql>
 

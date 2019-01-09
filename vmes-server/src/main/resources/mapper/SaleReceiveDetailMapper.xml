@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <!--
-说明：收款单明细 Mapper.xml
+说明：收款明细 Mapper.xml
 创建人：刘威 自动创建
-创建时间：2018-12-24
+创建时间：2019-01-08
  -->
 <mapper namespace="com.xy.vmes.deecoop.sale.dao.SaleReceiveDetailMapper">
 
@@ -15,10 +15,12 @@
     <!-- 字段 自动创建，禁止修改-->
     <sql id="Field">
 		order_id orderId,<!-- 订单ID -->
+		deliver_detail_id deliverDetailId,<!-- 发货单明细ID -->
 		parent_id parentId,<!-- 上级ID -->
-		type type,<!-- 收款类型(1:预收款 2:普通收款) -->
+		type type,<!-- 收款类型(1:预收款 2:发货收款 3:订单收款) -->
 		state state,<!-- 收款单状态(0:待收款 1:已收款 -1:已取消) -->
-		receive_amount receiveAmount,<!-- 已收款 -->
+		receive_amount receiveAmount,<!-- 实收金额 -->
+		discount_amount discountAmount,<!-- 折扣金额 -->
 		cuser cuser,<!-- 创建用户id -->
 		cdate cdate,<!-- 创建时间 -->
 		uuser uuser,<!-- 修改用户id -->
@@ -31,10 +33,12 @@
     <!-- 字段值 自动创建，禁止修改-->
     <sql id="FieldValue">
 		#{orderId},<!-- 订单ID -->
+		#{deliverDetailId},<!-- 发货单明细ID -->
 		#{parentId},<!-- 上级ID -->
-		#{type},<!-- 收款类型(1:预收款 2:普通收款) -->
+		#{type},<!-- 收款类型(1:预收款 2:发货收款 3:订单收款) -->
 		#{state},<!-- 收款单状态(0:待收款 1:已收款 -1:已取消) -->
-		#{receiveAmount},<!-- 已收款 -->
+		#{receiveAmount},<!-- 实收金额 -->
+		#{discountAmount},<!-- 折扣金额 -->
 		#{cuser},<!-- 创建用户id -->
 		#{cdate},<!-- 创建时间 -->
 		#{uuser},<!-- 修改用户id -->
@@ -48,10 +52,12 @@
     <!-- 字段名称  '_hide' 表示前端列表隐藏 自动创建，禁止修改-->
     <sql id="Column">
         '订单ID'  orderId,
+        '发货单明细ID'  deliverDetailId,
         '上级ID'  parentId,
-        '收款类型(1:预收款 2:普通收款)'  type,
+        '收款类型(1:预收款 2:发货收款 3:订单收款)'  type,
         '收款单状态(0:待收款 1:已收款 -1:已取消)'  state,
-        '已收款'  receiveAmount,
+        '实收金额'  receiveAmount,
+        '折扣金额'  discountAmount,
         '创建用户id'  cuser,
         '创建时间'  cdate,
         '修改用户id'  uuser,
@@ -135,16 +141,18 @@
         cuser
         ) VALUES
             (replace(uuid(), '-', ''),'SaleReceiveDetail','orderId','订单ID',1, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleReceiveDetail','parentId','上级ID',2, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleReceiveDetail','type','收款类型(1:预收款 2:普通收款)',3, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleReceiveDetail','state','收款单状态(0:待收款 1:已收款 -1:已取消)',4, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleReceiveDetail','receiveAmount','已收款',5, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleReceiveDetail','cuser','创建用户id',6, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleReceiveDetail','cdate','创建时间',7, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleReceiveDetail','uuser','修改用户id',8, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleReceiveDetail','udate','修改时间',9, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleReceiveDetail','remark','备注',10, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleReceiveDetail','isdisable','是否启用(0:已禁用 1:启用)',11, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceiveDetail','deliverDetailId','发货单明细ID',2, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceiveDetail','parentId','上级ID',3, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceiveDetail','type','收款类型(1:预收款 2:发货收款 3:订单收款)',4, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceiveDetail','state','收款单状态(0:待收款 1:已收款 -1:已取消)',5, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceiveDetail','receiveAmount','实收金额',6, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceiveDetail','discountAmount','折扣金额',7, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceiveDetail','cuser','创建用户id',8, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceiveDetail','cdate','创建时间',9, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceiveDetail','uuser','修改用户id',10, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceiveDetail','udate','修改时间',11, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceiveDetail','remark','备注',12, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceiveDetail','isdisable','是否启用(0:已禁用 1:启用)',13, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'SaleReceiveDetail','id','id',0, '1','1','1','0',now(), 'admin')
     </insert>
 
@@ -188,10 +196,12 @@
     <!-- 字段 自动创建，可以修改-->
     <sql id="Field1">
         order_id orderId,<!-- 订单ID -->
+        deliver_detail_id deliverDetailId,<!-- 发货单明细ID -->
         parent_id parentId,<!-- 上级ID -->
-        type type,<!-- 收款类型(1:预收款 2:普通收款) -->
+        type type,<!-- 收款类型(1:预收款 2:发货收款 3:订单收款) -->
         state state,<!-- 收款单状态(0:待收款 1:已收款 -1:已取消) -->
-        receive_amount receiveAmount,<!-- 已收款 -->
+        receive_amount receiveAmount,<!-- 实收金额 -->
+        discount_amount discountAmount,<!-- 折扣金额 -->
         cuser cuser,<!-- 创建用户id -->
         cdate cdate,<!-- 创建时间 -->
         uuser uuser,<!-- 修改用户id -->
@@ -205,10 +215,12 @@
     <!--
     <sql id="Column1">
             '订单ID'  orderId,
+            '发货单明细ID'  deliverDetailId,
             '上级ID'  parentId,
-            '收款类型(1:预收款 2:普通收款)'  type,
+            '收款类型(1:预收款 2:发货收款 3:订单收款)'  type,
             '收款单状态(0:待收款 1:已收款 -1:已取消)'  state,
-            '已收款'  receiveAmount,
+            '实收金额'  receiveAmount,
+            '折扣金额'  discountAmount,
             '创建用户id'  cuser,
             '创建时间'  cdate,
             '修改用户id'  uuser,

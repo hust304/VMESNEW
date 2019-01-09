@@ -43,8 +43,28 @@ public class SaleReceive implements Serializable {
 	//是否启用(0:已禁用 1:启用)
 	@TableField("isdisable")
 	private String isdisable;
+	//编码
+	@TableField("code")
+	private String code;
+	//公司ID
+	@TableField("company_id")
+	private String companyId;
 
+	public String getCompanyId() {
+		return companyId;
+	}
 
+	public void setCompanyId(String companyId) {
+		this.companyId = companyId;
+	}
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
 
 	public void setId(String id) {
 		this.id = id;

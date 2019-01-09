@@ -217,17 +217,7 @@ public class CustomerController {
         PageData pd = HttpUtils.parsePageData();
         BigDecimal addBalance = BigDecimal.valueOf(Double.parseDouble(pd.getString("addBalance")));
         Customer Customer = customerService.selectById(pd.getString("id"));
-        customerService.updateCustomerBalance(Customer,Customer.getBalance().add(addBalance),pd.getString("uuser"));
-        SaleReceiveRecord saleReceiveRecord = new SaleReceiveRecord();
-        saleReceiveRecord.setBeforeAmount(Customer.getBalance());
-        saleReceiveRecord.setAfterAmount(Customer.getBalance().add(addBalance));
-        saleReceiveRecord.setAmount(addBalance);
-        saleReceiveRecord.setCustomerId(Customer.getId());
-        saleReceiveRecord.setType("1");
-        saleReceiveRecord.setRemark("录入收款："+ addBalance.setScale(2, BigDecimal.ROUND_HALF_UP));
-        saleReceiveRecord.setUuser(pd.getString("uuser"));
-        saleReceiveRecord.setCuser(pd.getString("cuser"));
-        saleReceiveRecordService.save(saleReceiveRecord);
+        customerService.updateCustomerBalance(Customer,Customer.getBalance().add(addBalance),pd.getString("uuser"),"1");//操作类型(0:变更 1:录入收款 -1:费用分摊)
         Long endTime = System.currentTimeMillis();
         logger.info("################customer/addCustomerBalance 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
@@ -244,17 +234,7 @@ public class CustomerController {
         PageData pd = HttpUtils.parsePageData();
         Customer newCustomer = (Customer)HttpUtils.pageData2Entity(pd, new Customer());
         Customer oldCustomer = customerService.selectById(newCustomer.getId());
-        customerService.updateCustomerBalance(oldCustomer,newCustomer.getBalance(),pd.getString("uuser"));
-        SaleReceiveRecord saleReceiveRecord = new SaleReceiveRecord();
-        saleReceiveRecord.setBeforeAmount(oldCustomer.getBalance());
-        saleReceiveRecord.setAfterAmount(newCustomer.getBalance());
-        saleReceiveRecord.setAmount(newCustomer.getBalance().subtract(oldCustomer.getBalance()));
-        saleReceiveRecord.setCustomerId(newCustomer.getId());
-        saleReceiveRecord.setType("0");
-        saleReceiveRecord.setRemark("操作前："+oldCustomer.getBalance().setScale(2, BigDecimal.ROUND_HALF_UP)+"      操作后："+newCustomer.getBalance().setScale(2, BigDecimal.ROUND_HALF_UP));
-        saleReceiveRecord.setUuser(pd.getString("uuser"));
-        saleReceiveRecord.setCuser(pd.getString("cuser"));
-        saleReceiveRecordService.save(saleReceiveRecord);
+        customerService.updateCustomerBalance(oldCustomer,newCustomer.getBalance(),pd.getString("uuser"),"0");//操作类型(0:变更 1:录入收款 -1:费用分摊)
         Long endTime = System.currentTimeMillis();
         logger.info("################customer/updateCustomerBalance 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;

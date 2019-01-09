@@ -3,8 +3,10 @@ package com.xy.vmes.deecoop.base.service;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.deecoop.base.dao.CustomerMapper;
 import com.xy.vmes.entity.Customer;
+import com.xy.vmes.entity.SaleReceiveRecord;
 import com.xy.vmes.entity.TreeEntity;
 import com.xy.vmes.service.CustomerService;
+import com.xy.vmes.service.SaleReceiveRecordService;
 import com.yvan.PageData;
 import com.yvan.platform.RestException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +30,10 @@ public class CustomerServiceImp implements CustomerService {
 
     @Autowired
     private CustomerMapper customerMapper;
+
+
+    @Autowired
+    private SaleReceiveRecordService saleReceiveRecordService;
 
     /**
      * 创建人：陈刚 自动创建，禁止修改
@@ -271,12 +277,30 @@ public class CustomerServiceImp implements CustomerService {
 
 
     @Override
-    public void updateCustomerBalance(Customer customer, BigDecimal balance, String uuser) throws Exception {
+    public void updateCustomerBalance(Customer oldCustomer, BigDecimal balance, String uuser,String type) throws Exception {
         PageData pd = new PageData();
-        pd.put("id",customer.getId());
-        pd.put("version",customer.getVersion());
+        pd.put("id",oldCustomer.getId());
+        pd.put("version",oldCustomer.getVersion());
         pd.put("uuser",uuser);
         pd.put("balance",balance);
         customerMapper.updateCustomerBalance(pd);
+
+        SaleReceiveRecord saleReceiveRecord = new SaleReceiveRecord();
+        saleReceiveRecord.setBeforeAmount(oldCustomer.getBalance());
+        saleReceiveRecord.setAfterAmount(balance);
+        saleReceiveRecord.setAmount(balance.subtract(oldCustomer.getBalance()));
+        saleReceiveRecord.setCustomerId(oldCustomer.getId());
+        saleReceiveRecord.setType(type);//操作类型(0:变更 1:录入收款 -1:费用分摊)
+        if("1".equals(type)){
+            saleReceiveRecord.setRemark("录入收款："+ balance.subtract(oldCustomer.getBalance()).setScale(2, BigDecimal.ROUND_HALF_UP));
+        }else if("0".equals(type)){
+            saleReceiveRecord.setRemark("变更前："+oldCustomer.getBalance().setScale(2, BigDecimal.ROUND_HALF_UP)+"      变更后："+balance.setScale(2, BigDecimal.ROUND_HALF_UP));
+        }else if("-1".equals(type)){
+            saleReceiveRecord.setRemark("费用分摊："+oldCustomer.getBalance().subtract(balance).setScale(2, BigDecimal.ROUND_HALF_UP));
+        }
+
+        saleReceiveRecord.setUuser(uuser);
+        saleReceiveRecord.setCuser(uuser);
+        saleReceiveRecordService.save(saleReceiveRecord);
     }
 }

@@ -217,9 +217,10 @@
         (replace(uuid(), '-', ''),'customerReceive','delayDeliverAmount','逾期发货款',10, '1','0','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'customerReceive','receiveAmount','应收款',11, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'customerReceive','delayAmount','逾期账款',12, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'customerReceive','province','地域ID',13, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'customerReceive','provinceName','地域',14, '1','0','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'customerReceive','id','id',0, '1','0','1','0',now(), 'admin')
     </insert>
-
 
     <!-- 列表(全部) 自动创建，禁止修改-->
     <select id="dataList" parameterType="com.yvan.PageData" resultType="com.xy.vmes.entity.Customer">
@@ -334,7 +335,7 @@
     <!-- 自动创建，可以修改 -->
     <select id="getReceiveDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
-        id,code,name,type,typeName,round(balance,2) balance,round(accountDays,2) accountDays,
+        id,code,name,type,typeName,province,provinceName,round(balance,2) balance,round(accountDays,2) accountDays,
         round(SUM(IFNULL(acceptAmount,0)),2) acceptAmount,round(SUM(IFNULL(deliverAmount,0)),2) deliverAmount,
         round(SUM(IFNULL(delayAcceptAmount,0)),2) delayAcceptAmount,round(SUM(IFNULL(delayDeliverAmount,0)),2) delayDeliverAmount,
         round(SUM(IFNULL(deliverAmount,0)) - SUM(IFNULL(acceptAmount,0)),2) receiveAmount,
@@ -346,6 +347,8 @@
             customer.name,
             customer.type,
             type.name typeName,
+            customer.province province,
+            province.name provinceName,
             customer.balance balance,
             customer.account_days accountDays,
             sum(ifnull(detail.receive_amount,0)) acceptAmount,
@@ -357,6 +360,7 @@
             0.0000 delayDeliverAmount
             from vmes_customer customer
             left join vmes_dictionary type on customer.type = type.id
+            left join vmes_dictionary province on customer.province = province.id
             left join vmes_sale_receive receive on receive.customer_id = customer.id
             left join vmes_sale_receive_detail detail on detail.parent_id = receive.id
             left join vmes_sale_deliver_detail deliverdetail on deliverdetail.id = detail.deliver_detail_id
@@ -383,6 +387,8 @@
             customer.name,
             customer.type,
             type.name typeName,
+            customer.province province,
+            province.name provinceName,
             customer.balance balance,
             customer.account_days accountDays,
             0.0000 acceptAmount,
@@ -394,6 +400,7 @@
             ) delayDeliverAmount
             from vmes_customer customer
             left join vmes_dictionary type on customer.type = type.id
+            left join vmes_dictionary province on customer.province = province.id
             left join vmes_sale_deliver deliver on deliver.customer_id = customer.id
             left join vmes_sale_deliver_detail detail on detail.parent_id = deliver.id
             <where>
@@ -409,7 +416,7 @@
             </where>
             group by customer.id
         ) tab
-        group by id,code,name,type,typeName,balance,accountDays
+        group by id,code,name,type,typeName,province,provinceName,balance,accountDays
     </select>
 
     <!-- 自动创建，可以修改 -->

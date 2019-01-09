@@ -27,9 +27,9 @@ import java.util.*;
 
 
 /**
-* 说明：收款单明细Controller
+* 说明：收款明细Controller
 * @author 刘威 自动生成
-* @date 2018-12-24
+* @date 2019-01-08
 */
 @RestController
 @Slf4j
@@ -45,7 +45,7 @@ public class SaleReceiveDetailController {
 
     /**
     * @author 刘威 自动创建，禁止修改
-    * @date 2018-12-24
+    * @date 2019-01-08
     */
     @GetMapping("/saleReceiveDetail/selectById/{id}")
     public ResultModel selectById(@PathVariable("id") String id)  throws Exception {
@@ -65,7 +65,7 @@ public class SaleReceiveDetailController {
 
     /**
     * @author 刘威 自动创建，禁止修改
-    * @date 2018-12-24
+    * @date 2019-01-08
     */
     @PostMapping("/saleReceiveDetail/save")
     @Transactional
@@ -85,7 +85,7 @@ public class SaleReceiveDetailController {
 
     /**
     * @author 刘威 自动创建，禁止修改
-    * @date 2018-12-24
+    * @date 2019-01-08
     */
     @PostMapping("/saleReceiveDetail/update")
     @Transactional
@@ -106,7 +106,7 @@ public class SaleReceiveDetailController {
 
     /**
     * @author 刘威 自动创建，禁止修改
-    * @date 2018-12-24
+    * @date 2019-01-08
     */
     @GetMapping("/saleReceiveDetail/deleteById/{id}")
     @Transactional
@@ -125,7 +125,7 @@ public class SaleReceiveDetailController {
 
     /**
     * @author 刘威 自动创建，禁止修改
-    * @date 2018-12-24
+    * @date 2019-01-08
     */
     @PostMapping("/saleReceiveDetail/deleteByIds")
     @Transactional
@@ -155,7 +155,7 @@ public class SaleReceiveDetailController {
 
     /**
     * @author 刘威 自动创建，禁止修改
-    * @date 2018-12-24
+    * @date 2019-01-08
     */
     @PostMapping("/saleReceiveDetail/dataListPage")
     public ResultModel dataListPage()  throws Exception {
@@ -178,7 +178,7 @@ public class SaleReceiveDetailController {
 
     /**
     * @author 刘威 自动创建，禁止修改
-    * @date 2018-12-24
+    * @date 2019-01-08
     */
     @PostMapping("/saleReceiveDetail/dataList")
     public ResultModel dataList()  throws Exception {
@@ -200,7 +200,7 @@ public class SaleReceiveDetailController {
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
     /**
     * @author 刘威 自动创建，可以修改
-    * @date 2018-12-24
+    * @date 2019-01-08
     */
     @PostMapping("/saleReceiveDetail/listPageSaleReceiveDetails")
     public ResultModel listPageSaleReceiveDetails()  throws Exception {
@@ -269,7 +269,7 @@ public class SaleReceiveDetailController {
     /**
     * Excel导出
     * @author 刘威 自动创建，可以修改
-    * @date 2018-12-24
+    * @date 2019-01-08
     */
     @PostMapping("/saleReceiveDetail/exportExcelSaleReceiveDetails")
     public void exportExcelSaleReceiveDetails() throws Exception {
@@ -317,7 +317,7 @@ public class SaleReceiveDetailController {
     * Excel导入
     *
     * @author 刘威 自动创建，可以修改
-    * @date 2018-12-24
+    * @date 2019-01-08
     */
     @PostMapping("/saleReceiveDetail/importExcelSaleReceiveDetails")
     public ResultModel importExcelSaleReceiveDetails(@RequestParam(value="excelFile") MultipartFile file) throws Exception  {

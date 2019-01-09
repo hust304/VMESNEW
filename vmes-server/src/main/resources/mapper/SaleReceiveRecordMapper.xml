@@ -190,7 +190,7 @@
     <!-- 字段 自动创建，可以修改-->
     <sql id="Field1">
         record.customer_id customerId,<!-- 客户ID -->
-        case when record.type='0' then '改' when record.type='1' then '加' else '减' end  type,<!-- 操作类型（0：改 1：加  -1：减 ） -->
+        case when record.type='0' then '变更' when record.type='1' then '录入收款' else '费用分摊' end  type,<!-- 操作类型(0:变更 1:录入收款 -1:费用分摊) -->
         round(record.amount,2) amount,<!-- 操作值 -->
         round(record.after_amount,2) afterAmount,<!-- 操作后余额 -->
         round(record.before_amount,2) beforeAmount,<!-- 操作前余额 -->
@@ -209,7 +209,7 @@
     <!--
     <sql id="Column1">
             '客户ID'  customerId,
-            '操作类型（0：改 1：加  -1：减 ）'  type,
+            '操作类型(0:变更 1:录入收款 -1:费用分摊)'  type,
             '操作值'  amount,
             '操作后余额'  afterAmount,
             '操作前余额'  beforeAmount,

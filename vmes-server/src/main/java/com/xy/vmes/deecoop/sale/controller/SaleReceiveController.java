@@ -3,13 +3,9 @@ package com.xy.vmes.deecoop.sale.controller;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.StringUtil;
-import com.xy.vmes.entity.Column;
-import com.xy.vmes.entity.SaleReceive;
-import com.xy.vmes.service.ColumnService;
-import com.xy.vmes.service.SaleReceiveService;
-import com.yvan.ExcelUtil;
-import com.yvan.HttpUtils;
-import com.yvan.PageData;
+import com.xy.vmes.entity.*;
+import com.xy.vmes.service.*;
+import com.yvan.*;
 import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.http.HttpServletResponse;
+import java.math.BigDecimal;
 import java.util.*;
 
 
@@ -43,6 +40,14 @@ public class SaleReceiveController {
     @Autowired
     private ColumnService columnService;
 
+    @Autowired
+    private CoderuleService coderuleService;
+
+    @Autowired
+    private SaleReceiveDetailService saleReceiveDetailService;
+
+    @Autowired
+    private CustomerService customerService;
     /**
     * @author 刘威 自动创建，禁止修改
     * @date 2018-12-24
@@ -198,6 +203,88 @@ public class SaleReceiveController {
 
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+
+
+    /**
+     * @author 刘威 自动创建，禁止修改
+     * @date 2018-12-24
+     */
+    @PostMapping("/saleReceive/saveSaleReceiveAndDetail")
+    @Transactional
+    public ResultModel saveSaleReceiveAndDetail()  throws Exception {
+
+        logger.info("################saleReceive/saveSaleReceiveAndDetail 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        HttpServletResponse response  = HttpUtils.currentResponse();
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+
+
+
+        String dtlJsonStr = pd.getString("dtlJsonStr");
+
+        if (dtlJsonStr == null || dtlJsonStr.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("请至少添加一条分摊明细数据！");
+            return model;
+        }
+
+        List<Map<String, String>> mapList = (List<Map<String, String>>) YvanUtil.jsonToList(dtlJsonStr);
+        if (mapList == null || mapList.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("Json字符串-转换成List错误！");
+            return model;
+        }
+
+        String customerId = pd.getString("id");
+        BigDecimal addBalance = BigDecimal.valueOf(Double.parseDouble(pd.getString("addBalance")));
+        BigDecimal currentBalance = BigDecimal.valueOf(Double.parseDouble(pd.getString("currentBalance")));
+        Customer oldCustomer = customerService.selectById(customerId);
+        customerService.updateCustomerBalance(oldCustomer,oldCustomer.getBalance().add(addBalance),pd.getString("uuser"),"1");//操作类型(0:变更 1:录入收款 -1:费用分摊)
+
+
+        SaleReceive saleReceive = new SaleReceive();
+        String id = Conv.createUuid();
+        String companyID = pd.getString("currentCompanyId");
+        //出库单编号
+        String code = coderuleService.createCoder(companyID, "vmes_sale_receive", "O");
+        saleReceive.setId(id);
+        saleReceive.setCode(code);
+        saleReceive.setCustomerId(pd.getString("id"));
+        saleReceive.setReceiveSum(currentBalance);
+        saleReceive.setCompanyId(companyID);
+        saleReceive.setUuser(pd.getString("cuser"));
+        saleReceive.setCuser(pd.getString("cuser"));
+        saleReceiveService.save(saleReceive);
+
+
+        if(mapList!=null&&mapList.size()>0){
+            for(int i=0;i<mapList.size();i++){
+                Map<String, String> detailMap = mapList.get(i);
+                SaleReceiveDetail detail = new SaleReceiveDetail();
+                detail.setParentId(saleReceive.getId());
+                detail.setOrderId(detailMap.get("orderId"));
+                detail.setDeliverDetailId(detailMap.get("id"));
+                detail.setDiscountAmount(BigDecimal.valueOf(Double.parseDouble(detailMap.get("discountAmount"))));
+                detail.setReceiveAmount(BigDecimal.valueOf(Double.parseDouble(detailMap.get("acceptAmount"))));
+                detail.setType("2");//收款类型(1:预收款 2:发货收款 3:订单收款)
+                detail.setState("1");//收款单状态(0:待收款 1:已收款 -1:已取消)
+                detail.setUuser(pd.getString("cuser"));
+                detail.setCuser(pd.getString("cuser"));
+                saleReceiveDetailService.save(detail);
+            }
+        }
+
+        oldCustomer = customerService.selectById(customerId);
+        customerService.updateCustomerBalance(oldCustomer,oldCustomer.getBalance().subtract(currentBalance),pd.getString("uuser"),"-1");//操作类型(0:变更 1:录入收款 -1:费用分摊)
+        Long endTime = System.currentTimeMillis();
+        logger.info("################saleReceive/saveSaleReceiveAndDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+
+
     /**
     * @author 刘威 自动创建，可以修改
     * @date 2018-12-24

@@ -12,9 +12,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
-* 说明：收款单明细 Mapper.java
+* 说明：收款明细 Mapper.java
 * 创建人：刘威 自动创建
-* 创建时间：2018-12-24
+* 创建时间：2019-01-08
 */
 @Mapper
 @Repository
@@ -23,60 +23,60 @@ public interface SaleReceiveDetailMapper extends BaseMapper<SaleReceiveDetail> {
 
 	/**
 	* 创建人：刘威 自动创建，禁止修改
-	* 创建时间：2018-12-24
+	* 创建时间：2019-01-08
 	*/
     List<SaleReceiveDetail> dataListPage(PageData pd,Pagination pg);
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-12-24
+    * 创建时间：2019-01-08
     */
 	List<SaleReceiveDetail> dataList(PageData pd);
 
 	/**
 	* 创建人：刘威 自动创建，禁止修改
-	* 创建时间：2018-12-24
+	* 创建时间：2019-01-08
 	*/
 	void deleteByIds(String[] ids);
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-12-24
+    * 创建时间：2019-01-08
     */
     List<LinkedHashMap> findColumnList();
 
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-12-24
+    * 创建时间：2019-01-08
     */
     List<Map> findDataList(PageData pd);
 
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-12-24
+    * 创建时间：2019-01-08
     */
     List<LinkedHashMap> getColumnList();
 
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-12-24
+    * 创建时间：2019-01-08
     */
     List<Map> getDataList(PageData pd);
 
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-12-24
+    * 创建时间：2019-01-08
     */
     List<Map> getDataListPage(PageData pd,Pagination pg);
 
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-12-24
+    * 创建时间：2019-01-08
     */
     void updateToDisableByIds(String[] ids);
 

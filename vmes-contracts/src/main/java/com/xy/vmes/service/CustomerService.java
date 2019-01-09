@@ -131,7 +131,7 @@ public interface CustomerService {
 
     List<Map> getReceiveDataListPage(PageData pd,Pagination pg) throws Exception;
 
-    void updateCustomerBalance(Customer customer, BigDecimal balance, String uuser) throws Exception;
+    void updateCustomerBalance(Customer customer, BigDecimal balance, String uuser,String type) throws Exception;
 }
 
 

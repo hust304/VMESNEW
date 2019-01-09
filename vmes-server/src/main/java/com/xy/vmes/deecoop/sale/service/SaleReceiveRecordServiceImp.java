@@ -242,27 +242,28 @@ public class SaleReceiveRecordServiceImp implements SaleReceiveRecordService {
         new_balanceBig = new_balanceBig.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
 
         try {
-            customerService.updateCustomerBalance(customer, new_balanceBig, user);
+            customerService.updateCustomerBalance(customer, new_balanceBig, user,"1");
         } catch (Exception e) {
+            e.printStackTrace();
             throw new TableVersionException(Common.SYS_STOCKCOUNT_ERRORCODE, "当前系统繁忙，请稍后操作！");
         }
 
-        //2. 添加历史表(vmes_sale_receive_record)
-        SaleReceiveRecord saleReceiveRecord = new SaleReceiveRecord();
-        saleReceiveRecord.setBeforeAmount(before_balance);
-        saleReceiveRecord.setAfterAmount(new_balanceBig);
-        saleReceiveRecord.setAmount(editBalance);
-        saleReceiveRecord.setCustomerId(customerId);
-        //(0:修改 1:添加 2:取消 -1:删除)
-        saleReceiveRecord.setType("0");
-        saleReceiveRecord.setRemark("录入收款："+ editBalance.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP));
-        saleReceiveRecord.setUuser(user);
-        saleReceiveRecord.setCuser(user);
-        try {
-            this.save(saleReceiveRecord);
-        } catch (Exception e) {
-            throw new ApplicationException(e.getMessage());
-        }
+//        //2. 添加历史表(vmes_sale_receive_record)
+//        SaleReceiveRecord saleReceiveRecord = new SaleReceiveRecord();
+//        saleReceiveRecord.setBeforeAmount(before_balance);
+//        saleReceiveRecord.setAfterAmount(new_balanceBig);
+//        saleReceiveRecord.setAmount(editBalance);
+//        saleReceiveRecord.setCustomerId(customerId);
+//        //(0:修改 1:添加 2:取消 -1:删除)
+//        saleReceiveRecord.setType("0");
+//        saleReceiveRecord.setRemark("录入收款："+ editBalance.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP));
+//        saleReceiveRecord.setUuser(user);
+//        saleReceiveRecord.setCuser(user);
+//        try {
+//            this.save(saleReceiveRecord);
+//        } catch (Exception e) {
+//            throw new ApplicationException(e.getMessage());
+//        }
 
     }
 }
