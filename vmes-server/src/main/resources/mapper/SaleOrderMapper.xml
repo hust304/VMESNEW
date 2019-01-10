@@ -212,7 +212,7 @@
             DATE_FORMAT(saleOrder.expect_date,'%Y-%m-%d') expectDate,
             DATE_FORMAT(saleOrder.pay_date,'%Y-%m-%d') payDate,
 
-            saleOrder.pay_state payState
+            saleOrder.pay_state payState,
 
             makeUser.user_name makeName,
             customer.name customerName
