@@ -48,9 +48,6 @@ public class SaleOrder implements Serializable {
 	@TableField("order_date")
 	private Date orderDate;
 
-	//交付日期
-	@TableField("deliver_date")
-	private Date deliverDate;
 	//合计金额
 	@TableField("total_sum")
 	private BigDecimal totalSum;
@@ -63,10 +60,10 @@ public class SaleOrder implements Serializable {
 	//预付款(定金)
 	@TableField("advance_sum")
 	private BigDecimal advanceSum;
-
 	//发货金额
 	@TableField("deliver_sum")
 	private BigDecimal deliverSum;
+
 	//应收款(发货金额-预付款)(废弃不用)
 	@TableField("receivables")
 	private BigDecimal receivables;
@@ -79,16 +76,29 @@ public class SaleOrder implements Serializable {
 	//修改用户id
 	@TableField("uuser")
 	private String uuser;
-
 	//修改时间
 	@TableField("udate")
 	private Date udate;
+
 	//备注
 	@TableField("remark")
 	private String remark;
 	//是否启用(0:已禁用 1:启用)
 	@TableField("isdisable")
 	private String isdisable;
+	//约定交期
+	@TableField("expect_date")
+	private Date expectDate;
+	//发货完成日期
+	@TableField("deliver_date")
+	private Date deliverDate;
+	//付款完成日期
+	@TableField("pay_date")
+	private Date payDate;
+
+	//付款状态(0:未付款 1:付款中 2:已付款)
+	@TableField("pay_state")
+	private String payState;
 
 
 	public void setId(String id) {
@@ -228,6 +238,24 @@ public class SaleOrder implements Serializable {
 	}
 	public void setDeliverSum(BigDecimal deliverSum) {
 		this.deliverSum = deliverSum;
+	}
+	public Date getExpectDate() {
+		return expectDate;
+	}
+	public void setExpectDate(Date expectDate) {
+		this.expectDate = expectDate;
+	}
+	public Date getPayDate() {
+		return payDate;
+	}
+	public void setPayDate(Date payDate) {
+		this.payDate = payDate;
+	}
+	public String getPayState() {
+		return payState;
+	}
+	public void setPayState(String payState) {
+		this.payState = payState;
 	}
 /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 

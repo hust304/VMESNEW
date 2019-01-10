@@ -5,13 +5,11 @@ import com.xy.vmes.common.util.Common;
 import com.xy.vmes.deecoop.sale.dao.SaleReceiveRecordMapper;
 import com.xy.vmes.entity.Customer;
 import com.xy.vmes.entity.SaleReceiveRecord;
-import com.xy.vmes.exception.ApplicationException;
 import com.xy.vmes.exception.TableVersionException;
 import com.xy.vmes.service.CustomerService;
 import com.xy.vmes.service.SaleReceiveRecordService;
 import com.yvan.PageData;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -222,7 +220,7 @@ public class SaleReceiveRecordServiceImp implements SaleReceiveRecordService {
      * @param editBalance 修改客户余额 (订单取消，订单删除 该参数为负数)
      * @param user        用户id
      */
-    public void editCustomerBalanceByOrder(String customerId, Customer customer, BigDecimal editBalance, String user) throws ApplicationException,TableVersionException {
+    public void editCustomerBalanceByOrder(String customerId, Customer customer, BigDecimal editBalance, String user) throws TableVersionException {
         if (customerId == null || customerId.trim().length() == 0) {return;}
         if (editBalance == null) {return;}
         if (customer == null) {customer = customerService.findCustomerById(customerId);}

@@ -54,6 +54,7 @@
             (replace(uuid(), '-', ''), 'saleOrder', 'customerId', '客户id', 3, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
             (replace(uuid(), '-', ''), 'saleOrder', 'orderDate', '下单日期', 4, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
             (replace(uuid(), '-', ''), 'saleOrder', 'deliverDate', '交付日期', 5, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrder', 'expectDate', '交付日期', 5, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
             (replace(uuid(), '-', ''), 'saleOrder', 'makeName', '制单人', 6, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
             (replace(uuid(), '-', ''), 'saleOrder', 'makeId', '制单人id', 6, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
             (replace(uuid(), '-', ''), 'saleOrder', 'stateName', '订单状态', 7, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
@@ -104,21 +105,25 @@
         customer_id customerId,
         order_date orderDate,
 
-        deliver_date deliverDate,
         total_sum totalSum,
         discount_sum discountSum,
         order_sum orderSum,
         advance_sum advanceSum,
-
         deliver_sum deliverSum,
+
         receivables receivables,
         cuser cuser,
         cdate cdate,
         uuser uuser,
-
         udate udate,
+
         remark remark,
-        isdisable isdisable
+        isdisable isdisable,
+        expect_date expectDate,
+        deliver_date deliverDate,
+        pay_date payDate,
+
+        pay_state payState
         from vmes_sale_order
         <where>
             <!--isSelfExist 是否考虑自己在业务表中是否存在
@@ -188,13 +193,13 @@
             saleOrder.customer_id customerId,
             DATE_FORMAT(saleOrder.order_date,'%Y-%m-%d') orderDate,
 
-            DATE_FORMAT(saleOrder.deliver_date,'%Y-%m-%d') deliverDate,
+
             round(ifnull(saleOrder.total_sum, 0),2) totalSum,
             round(ifnull(saleOrder.discount_sum, 0),2) discountSum,
             round(ifnull(saleOrder.order_sum, 0),2) orderSum,
             round(ifnull(saleOrder.advance_sum, 0),2) advanceSum,
-
             round(ifnull(saleOrder.deliver_sum, 0),2) deliverSum,
+
             round((ifnull(saleOrder.deliver_sum, 0) - ifnull(saleOrder.advance_sum, 0)), 2) receivables,
             saleOrder.cuser cuser,
             DATE_FORMAT(saleOrder.cdate,'%Y-%m-%d %T') cdate,
@@ -203,9 +208,15 @@
 
             saleOrder.remark remark,
             saleOrder.isdisable isdisable,
+            DATE_FORMAT(saleOrder.deliver_date,'%Y-%m-%d') deliverDate,
+            DATE_FORMAT(saleOrder.expect_date,'%Y-%m-%d') expectDate,
+            DATE_FORMAT(saleOrder.pay_date,'%Y-%m-%d') payDate,
+
+            saleOrder.pay_state payState
 
             makeUser.user_name makeName,
             customer.name customerName
+
         from vmes_sale_order saleOrder
             left join vmes_customer customer on saleOrder.customer_id = customer.id
             left join vmes_user makeUser on saleOrder.make_id = makeUser.id

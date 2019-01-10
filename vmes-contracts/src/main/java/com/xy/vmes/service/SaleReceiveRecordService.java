@@ -3,7 +3,6 @@ package com.xy.vmes.service;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.entity.Customer;
 import com.xy.vmes.entity.SaleReceiveRecord;
-import com.xy.vmes.exception.ApplicationException;
 import com.xy.vmes.exception.TableVersionException;
 import com.yvan.PageData;
 
@@ -137,7 +136,7 @@ public interface SaleReceiveRecordService {
      * @param editBalance 修改客户余额
      * @param user        用户id
      */
-    void editCustomerBalanceByOrder(String customerId, Customer customer, BigDecimal editBalance, String user) throws ApplicationException,TableVersionException;
+    void editCustomerBalanceByOrder(String customerId, Customer customer, BigDecimal editBalance, String user) throws TableVersionException;
 
 }
 

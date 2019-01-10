@@ -5,6 +5,7 @@ import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.Common;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.Column;
+import com.xy.vmes.entity.Customer;
 import com.xy.vmes.entity.SaleOrder;
 import com.xy.vmes.entity.SaleOrderDetail;
 import com.xy.vmes.service.*;
@@ -40,7 +41,7 @@ public class SaleOrderController {
     private SaleOrderDetailService saleOrderDetailService;
 
     @Autowired
-    private WarehouseOutService warehouseOutService;
+    private SaleReceiveRecordService saleReceiveRecordService;
 
     @Autowired
     private CoderuleService coderuleService;
@@ -153,7 +154,7 @@ public class SaleOrderController {
         }
 
         //获取订单明细
-        List<SaleOrderDetail> detailList = saleOrderDetailService.mapList2DetailList(mapList, null);
+        List<SaleOrderDetail> detailList = saleOrderDetailService.mapList2OrderDetailListByEdit(mapList, null);
 
         //total_sum:合计金额
         BigDecimal totalSum = saleOrderDetailService.findTotalSumByDetailList(detailList);
@@ -188,6 +189,12 @@ public class SaleOrderController {
 
         //2.添加订单明细
         saleOrderDetailService.addSaleOrderDetail(order, detailList);
+
+        //3.修改客户余额(vmes_customer.balance)
+        //advance_sum:预付款(定金)
+        if (order.getAdvanceSum() != null) {
+            saleReceiveRecordService.editCustomerBalanceByOrder(order.getCustomerId(), null, order.getAdvanceSum(), order.getCuser());
+        }
 
         Long endTime = System.currentTimeMillis();
         logger.info("################saleOrder/addSaleOrder 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
@@ -224,8 +231,10 @@ public class SaleOrderController {
             return model;
         }
 
+        SaleOrder order_old = saleOrderService.findSaleOrderById(order.getId());
+
         //获取订单明细
-        List<SaleOrderDetail> detailList = saleOrderDetailService.mapList2DetailList(mapList, null);
+        List<SaleOrderDetail> detailList = saleOrderDetailService.mapList2OrderDetailListByEdit(mapList, null);
 
         //total_sum:合计金额
         BigDecimal totalSum = saleOrderDetailService.findTotalSumByDetailList(detailList);
@@ -260,6 +269,25 @@ public class SaleOrderController {
 
         //2.修改订单表头
         saleOrderService.update(order);
+
+        //3.修改客户余额(vmes_customer.balance)
+        //advance_sum:预付款(定金)
+        BigDecimal new_advanceSum = BigDecimal.valueOf(0D);
+        if (order.getAdvanceSum() != null) {
+            new_advanceSum = order.getAdvanceSum();
+        }
+
+        BigDecimal old_advanceSum = BigDecimal.valueOf(0D);
+        if (order_old.getAdvanceSum() != null) {
+            old_advanceSum = order_old.getAdvanceSum();
+        }
+
+        if ((new_advanceSum.doubleValue() - old_advanceSum.doubleValue()) != 0D) {
+            BigDecimal editBalance = BigDecimal.valueOf(new_advanceSum.doubleValue() - old_advanceSum.doubleValue());
+            //四舍五入到2位小数
+            editBalance = editBalance.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+            saleReceiveRecordService.editCustomerBalanceByOrder(order.getCustomerId(), null, editBalance, order.getCuser());
+        }
 
         Long endTime = System.currentTimeMillis();
         logger.info("################saleOrder/updateSaleOrder 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");

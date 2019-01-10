@@ -39,7 +39,7 @@
         saleOrder.customer_id customerId,
         DATE_FORMAT(saleOrder.order_date,'%Y-%m-%d') orderDate,
 
-        DATE_FORMAT(saleOrder.deliver_date,'%Y-%m-%d') deliverDate,
+        DATE_FORMAT(saleOrder.expect_date,'%Y-%m-%d') expectDate,
         round(ifnull(saleOrder.total_sum, 0),2) totalSum,
         round(ifnull(saleOrder.discount_sum, 0),2) discountSum,
         round(ifnull(saleOrder.order_sum, 0),2) orderSum,
@@ -146,6 +146,7 @@
         (replace(uuid(), '-', ''), 'saleOrderByQuery', 'customerId', '客户id', 3, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderByQuery', 'orderDate', '下单日期', 4, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderByQuery', 'deliverDate', '交付日期', 5, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderByQuery', 'expectDate', '约定交期', 5, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderByQuery', 'makeName', '制单人', 6, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderByQuery', 'makeId', '制单人id', 6, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderByQuery', 'stateName', '订单状态', 7, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),

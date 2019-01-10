@@ -2,6 +2,7 @@ package com.xy.vmes.deecoop.sale.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.Common;
+import com.xy.vmes.common.util.EvaluateUtil;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.sale.dao.SaleOrderDetailMapper;
 import com.xy.vmes.entity.SaleDeliverDetail;
@@ -18,11 +19,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.util.*;
+
 import com.yvan.Conv;
-import java.util.List;
-import java.util.Map;
-import java.util.ArrayList;
 
 /**
 * 说明：vmes_sale_order_detail:订单明细 实现类
@@ -204,6 +203,40 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
 
         for (Map<String, String> mapObject : mapList) {
             SaleOrderDetail detail = (SaleOrderDetail) HttpUtils.pageData2Entity(mapObject, new SaleOrderDetail());
+            objectList.add(detail);
+        }
+
+        return objectList;
+    }
+    public List<SaleOrderDetail> mapList2OrderDetailListByEdit(List<Map<String, String>> mapList, List<SaleOrderDetail> objectList) {
+        if (objectList == null) {objectList = new ArrayList<SaleOrderDetail>();}
+        if (mapList == null || mapList.size() == 0) {return objectList;}
+
+        for (Map<String, String> mapObject : mapList) {
+            SaleOrderDetail detail = (SaleOrderDetail) HttpUtils.pageData2Entity(mapObject, new SaleOrderDetail());
+
+            //count 订购数量(计价数量)
+            BigDecimal count = BigDecimal.valueOf(0D);
+            if (detail.getCount() != null) {
+                count = detail.getCount();
+            }
+
+            //计价转换计量单位 数量转换公式 p2nFormula
+            String p2nFormula = mapObject.get("p2nFormula");
+            BigDecimal valueBig = BigDecimal.valueOf(0D);
+            //P(计价单位) --> N(计量单位)
+            if (p2nFormula != null && p2nFormula.trim().length() > 0) {
+                Map<String, Object> parmMap = new HashMap<String, Object>();
+                parmMap.put("P", count);
+                valueBig = EvaluateUtil.formulaReckon(parmMap, p2nFormula);
+            }
+
+            //count:订购数量(计价数量)
+            detail.setCount(count);
+
+            //productCount:货品数量(计量数量)
+            detail.setProductCount(valueBig);
+
             objectList.add(detail);
         }
 
