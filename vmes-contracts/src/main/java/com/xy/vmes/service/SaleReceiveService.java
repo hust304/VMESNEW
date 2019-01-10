@@ -11,105 +11,105 @@ import java.util.Map;
 /**
 * 说明：收款单 接口类
 * 创建人：刘威 自动生成
-* 创建时间：2018-12-24
+* 创建时间：2019-01-10
 */
 public interface SaleReceiveService {
 
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-12-24
+    * 创建时间：2019-01-10
     */
     void save(SaleReceive saleReceive) throws Exception;
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-12-24
+    * 创建时间：2019-01-10
     */
     void update(SaleReceive saleReceive) throws Exception;
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-12-24
+    * 创建时间：2019-01-10
     */
     void updateAll(SaleReceive saleReceive) throws Exception;
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-12-24
+    * 创建时间：2019-01-10
     */
     void deleteById(String id) throws Exception;
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-12-24
+    * 创建时间：2019-01-10
     */
     void deleteByIds(String[] ids) throws Exception;
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-12-24
+    * 创建时间：2019-01-10
     */
     SaleReceive selectById(String id) throws Exception;
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-12-24
+    * 创建时间：2019-01-10
     */
     List<SaleReceive> dataListPage(PageData pd,Pagination pg) throws Exception;
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-12-24
+    * 创建时间：2019-01-10
     */
     List<SaleReceive> dataList(PageData pd) throws Exception;
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-12-24
+    * 创建时间：2019-01-10
     */
     List<LinkedHashMap> findColumnList() throws Exception;
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-12-24
+    * 创建时间：2019-01-10
     */
     List<Map> findDataList(PageData pd) throws Exception;
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-12-24
+    * 创建时间：2019-01-10
     */
     void deleteByColumnMap(Map columnMap) throws Exception;
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-12-24
+    * 创建时间：2019-01-10
     */
     List<SaleReceive> selectByColumnMap(Map columnMap) throws Exception;
 
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-12-24
+    * 创建时间：2019-01-10
     */
     List<LinkedHashMap> getColumnList() throws Exception;
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-12-24
+    * 创建时间：2019-01-10
     */
     List<Map> getDataList(PageData pd) throws Exception;
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-12-24
+    * 创建时间：2019-01-10
     */
     List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception;
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-12-24
+    * 创建时间：2019-01-10
     */
     void updateToDisableByIds(String[] ids)throws Exception;
 

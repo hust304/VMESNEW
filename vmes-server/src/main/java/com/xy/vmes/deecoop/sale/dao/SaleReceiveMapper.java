@@ -14,7 +14,7 @@ import java.util.Map;
 /**
 * 说明：收款单 Mapper.java
 * 创建人：刘威 自动创建
-* 创建时间：2018-12-24
+* 创建时间：2019-01-10
 */
 @Mapper
 @Repository
@@ -23,60 +23,60 @@ public interface SaleReceiveMapper extends BaseMapper<SaleReceive> {
 
 	/**
 	* 创建人：刘威 自动创建，禁止修改
-	* 创建时间：2018-12-24
+	* 创建时间：2019-01-10
 	*/
     List<SaleReceive> dataListPage(PageData pd,Pagination pg);
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-12-24
+    * 创建时间：2019-01-10
     */
 	List<SaleReceive> dataList(PageData pd);
 
 	/**
 	* 创建人：刘威 自动创建，禁止修改
-	* 创建时间：2018-12-24
+	* 创建时间：2019-01-10
 	*/
 	void deleteByIds(String[] ids);
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-12-24
+    * 创建时间：2019-01-10
     */
     List<LinkedHashMap> findColumnList();
 
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-12-24
+    * 创建时间：2019-01-10
     */
     List<Map> findDataList(PageData pd);
 
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-12-24
+    * 创建时间：2019-01-10
     */
     List<LinkedHashMap> getColumnList();
 
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-12-24
+    * 创建时间：2019-01-10
     */
     List<Map> getDataList(PageData pd);
 
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-12-24
+    * 创建时间：2019-01-10
     */
     List<Map> getDataListPage(PageData pd,Pagination pg);
 
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-12-24
+    * 创建时间：2019-01-10
     */
     void updateToDisableByIds(String[] ids);
 

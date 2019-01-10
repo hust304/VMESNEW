@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 /** 
  * 说明：收款明细 实体类
  * @author 刘威 自动生成
- * @date 2019-01-08
+ * @date 2019-01-10
  */
 @TableName("vmes_sale_receive_detail")
 public class SaleReceiveDetail implements Serializable {
@@ -22,15 +22,9 @@ public class SaleReceiveDetail implements Serializable {
 	//订单ID
 	@TableField("order_id")
 	private String orderId;
-	//发货单明细ID
-	@TableField("deliver_detail_id")
-	private String deliverDetailId;
 	//上级ID
 	@TableField("parent_id")
 	private String parentId;
-	//收款类型(1:预收款 2:发货收款 3:订单收款)
-	@TableField("type")
-	private String type;
 	//收款单状态(0:待收款 1:已收款 -1:已取消)
 	@TableField("state")
 	private String state;
@@ -73,23 +67,11 @@ public class SaleReceiveDetail implements Serializable {
 	public String getOrderId() {
 		return orderId;
 	}
-	public void setDeliverDetailId(String deliverDetailId) {
-		this.deliverDetailId = deliverDetailId;
-	}
-	public String getDeliverDetailId() {
-		return deliverDetailId;
-	}
 	public void setParentId(String parentId) {
 		this.parentId = parentId;
 	}
 	public String getParentId() {
 		return parentId;
-	}
-	public void setType(String type) {
-		this.type = type;
-	}
-	public String getType() {
-		return type;
 	}
 	public void setState(String state) {
 		this.state = state;

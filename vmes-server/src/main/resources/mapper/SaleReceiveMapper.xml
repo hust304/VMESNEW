@@ -3,7 +3,7 @@
 <!--
 说明：收款单 Mapper.xml
 创建人：刘威 自动创建
-创建时间：2018-12-24
+创建时间：2019-01-10
  -->
 <mapper namespace="com.xy.vmes.deecoop.sale.dao.SaleReceiveMapper">
 
@@ -14,6 +14,8 @@
 
     <!-- 字段 自动创建，禁止修改-->
     <sql id="Field">
+		code code,<!-- 收款单编码 -->
+		type type,<!-- 收款单类型（0：预收款 1：普通收款） -->
 		customer_id customerId,<!-- 客户ID -->
 		receive_sum receiveSum,<!-- 收款单总额 -->
 		cuser cuser,<!-- 创建用户id -->
@@ -22,13 +24,14 @@
 		udate udate,<!-- 修改时间 -->
 		remark remark,<!-- 备注 -->
 		isdisable isdisable,<!-- 是否启用(0:已禁用 1:启用) -->
-        code code,
-        company_id companyId,
+		company_id companyId,<!-- 公司ID -->
 		id id <!-- id -->
     </sql>
 
     <!-- 字段值 自动创建，禁止修改-->
     <sql id="FieldValue">
+		#{code},<!-- 收款单编码 -->
+		#{type},<!-- 收款单类型（0：预收款 1：普通收款） -->
 		#{customerId},<!-- 客户ID -->
 		#{receiveSum},<!-- 收款单总额 -->
 		#{cuser},<!-- 创建用户id -->
@@ -37,14 +40,15 @@
 		#{udate},<!-- 修改时间 -->
 		#{remark},<!-- 备注 -->
 		#{isdisable},<!-- 是否启用(0:已禁用 1:启用) -->
-        #{code},
-        #{companyId},
+		#{companyId},<!-- 公司ID -->
 		#{id} <!-- id -->
     </sql>
 
 
     <!-- 字段名称  '_hide' 表示前端列表隐藏 自动创建，禁止修改-->
     <sql id="Column">
+        '收款单编码'  code,
+        '收款单类型（0：预收款 1：普通收款）'  type,
         '客户ID'  customerId,
         '收款单总额'  receiveSum,
         '创建用户id'  cuser,
@@ -53,8 +57,7 @@
         '修改时间'  udate,
         '备注'  remark,
         '是否启用(0:已禁用 1:启用)'  isdisable,
-        '编码' code,
-        '公司ID' companyId,
+        '公司ID'  companyId,
         'id' id_hide
     </sql>
 
@@ -131,14 +134,17 @@
         isdisable,ishide,isedit,ismust,cdate,
         cuser
         ) VALUES
-            (replace(uuid(), '-', ''),'SaleReceive','customerId','客户ID',1, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleReceive','receiveSum','收款单总额',2, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleReceive','cuser','创建用户id',3, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleReceive','cdate','创建时间',4, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleReceive','uuser','修改用户id',5, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleReceive','udate','修改时间',6, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleReceive','remark','备注',7, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleReceive','isdisable','是否启用(0:已禁用 1:启用)',8, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceive','code','收款单编码',1, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceive','type','收款单类型（0：预收款 1：普通收款）',2, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceive','customerId','客户ID',3, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceive','receiveSum','收款单总额',4, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceive','cuser','创建用户id',5, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceive','cdate','创建时间',6, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceive','uuser','修改用户id',7, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceive','udate','修改时间',8, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceive','remark','备注',9, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceive','isdisable','是否启用(0:已禁用 1:启用)',10, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceive','companyId','公司ID',11, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'SaleReceive','id','id',0, '1','1','1','0',now(), 'admin')
     </insert>
 
@@ -181,6 +187,8 @@
 
     <!-- 字段 自动创建，可以修改-->
     <sql id="Field1">
+        code code,<!-- 收款单编码 -->
+        type type,<!-- 收款单类型（0：预收款 1：普通收款） -->
         customer_id customerId,<!-- 客户ID -->
         receive_sum receiveSum,<!-- 收款单总额 -->
         cuser cuser,<!-- 创建用户id -->
@@ -189,14 +197,15 @@
         udate udate,<!-- 修改时间 -->
         remark remark,<!-- 备注 -->
         isdisable isdisable,<!-- 是否启用(0:已禁用 1:启用) -->
-        code code,
-        company_id companyId,
+        company_id companyId,<!-- 公司ID -->
         id id <!-- id -->
     </sql>
 
     <!-- 字段值 自动创建，可以修改-->
     <!--
     <sql id="Column1">
+            '收款单编码'  code,
+            '收款单类型（0：预收款 1：普通收款）'  type,
             '客户ID'  customerId,
             '收款单总额'  receiveSum,
             '创建用户id'  cuser,
@@ -205,6 +214,7 @@
             '修改时间'  udate,
             '备注'  remark,
             '是否启用(0:已禁用 1:启用)'  isdisable,
+            '公司ID'  companyId,
             'id' id_hide
     </sql>
      -->

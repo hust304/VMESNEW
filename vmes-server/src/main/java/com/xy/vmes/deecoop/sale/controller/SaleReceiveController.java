@@ -3,7 +3,10 @@ package com.xy.vmes.deecoop.sale.controller;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.StringUtil;
-import com.xy.vmes.entity.*;
+import com.xy.vmes.entity.Column;
+import com.xy.vmes.entity.Customer;
+import com.xy.vmes.entity.SaleReceive;
+import com.xy.vmes.entity.SaleReceiveDetail;
 import com.xy.vmes.service.*;
 import com.yvan.*;
 import com.yvan.platform.RestException;
@@ -26,7 +29,7 @@ import java.util.*;
 /**
 * 说明：收款单Controller
 * @author 刘威 自动生成
-* @date 2018-12-24
+* @date 2019-01-10
 */
 @RestController
 @Slf4j
@@ -50,7 +53,7 @@ public class SaleReceiveController {
     private CustomerService customerService;
     /**
     * @author 刘威 自动创建，禁止修改
-    * @date 2018-12-24
+    * @date 2019-01-10
     */
     @GetMapping("/saleReceive/selectById/{id}")
     public ResultModel selectById(@PathVariable("id") String id)  throws Exception {
@@ -70,7 +73,7 @@ public class SaleReceiveController {
 
     /**
     * @author 刘威 自动创建，禁止修改
-    * @date 2018-12-24
+    * @date 2019-01-10
     */
     @PostMapping("/saleReceive/save")
     @Transactional
@@ -90,7 +93,7 @@ public class SaleReceiveController {
 
     /**
     * @author 刘威 自动创建，禁止修改
-    * @date 2018-12-24
+    * @date 2019-01-10
     */
     @PostMapping("/saleReceive/update")
     @Transactional
@@ -111,7 +114,7 @@ public class SaleReceiveController {
 
     /**
     * @author 刘威 自动创建，禁止修改
-    * @date 2018-12-24
+    * @date 2019-01-10
     */
     @GetMapping("/saleReceive/deleteById/{id}")
     @Transactional
@@ -130,7 +133,7 @@ public class SaleReceiveController {
 
     /**
     * @author 刘威 自动创建，禁止修改
-    * @date 2018-12-24
+    * @date 2019-01-10
     */
     @PostMapping("/saleReceive/deleteByIds")
     @Transactional
@@ -160,7 +163,7 @@ public class SaleReceiveController {
 
     /**
     * @author 刘威 自动创建，禁止修改
-    * @date 2018-12-24
+    * @date 2019-01-10
     */
     @PostMapping("/saleReceive/dataListPage")
     public ResultModel dataListPage()  throws Exception {
@@ -183,7 +186,7 @@ public class SaleReceiveController {
 
     /**
     * @author 刘威 自动创建，禁止修改
-    * @date 2018-12-24
+    * @date 2019-01-10
     */
     @PostMapping("/saleReceive/dataList")
     public ResultModel dataList()  throws Exception {
@@ -210,7 +213,8 @@ public class SaleReceiveController {
      * @date 2018-12-24
      */
     @PostMapping("/saleReceive/saveSaleReceiveAndDetail")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
+    //注解为事务范围的方法中，事务的回滚仅仅对于unchecked的异常有效。对于checked异常无效。也就是说事务回滚仅仅发生在出现RuntimeException或Error的时候。如果希望一般的异常也能触发事务回滚，需要在注解了@Transactional的方法上，将@Transactional回滚参数设为：@Transactional(rollbackFor=Exception.class)
     public ResultModel saveSaleReceiveAndDetail()  throws Exception {
 
         logger.info("################saleReceive/saveSaleReceiveAndDetail 执行开始 ################# ");
@@ -235,10 +239,26 @@ public class SaleReceiveController {
             model.putMsg("Json字符串-转换成List错误！");
             return model;
         }
-
         String customerId = pd.getString("id");
         BigDecimal addBalance = BigDecimal.valueOf(Double.parseDouble(pd.getString("addBalance")));
         BigDecimal currentBalance = BigDecimal.valueOf(Double.parseDouble(pd.getString("currentBalance")));
+        BigDecimal detailBalance = BigDecimal.ZERO;
+
+        if(mapList!=null&&mapList.size()>0) {
+            for (int i = 0; i < mapList.size(); i++) {
+                Map<String, String> detailMap = mapList.get(i);
+                detailBalance = detailBalance.add(BigDecimal.valueOf(Double.parseDouble(detailMap.get("receiveAmount"))));
+            }
+        }
+
+        if(detailBalance.compareTo(currentBalance)!=0){
+//            throw new Exception("分摊明细总额必须与本次分摊总额一致！");
+            model.putCode("1");
+            model.putMsg("分摊明细总额必须与本次分摊总额一致！");
+            return model;
+        }
+
+
         Customer oldCustomer = customerService.selectById(customerId);
         customerService.updateCustomerBalance(oldCustomer,oldCustomer.getBalance().add(addBalance),pd.getString("uuser"),"1");//操作类型(0:变更 1:录入收款 -1:费用分摊)
 
@@ -250,7 +270,8 @@ public class SaleReceiveController {
         String code = coderuleService.createCoder(companyID, "vmes_sale_receive", "O");
         saleReceive.setId(id);
         saleReceive.setCode(code);
-        saleReceive.setCustomerId(pd.getString("id"));
+        saleReceive.setType("1");//收款类型(0:预收款 1:普通收款 )
+        saleReceive.setCustomerId(customerId);
         saleReceive.setReceiveSum(currentBalance);
         saleReceive.setCompanyId(companyID);
         saleReceive.setUuser(pd.getString("cuser"));
@@ -263,15 +284,14 @@ public class SaleReceiveController {
                 Map<String, String> detailMap = mapList.get(i);
                 SaleReceiveDetail detail = new SaleReceiveDetail();
                 detail.setParentId(saleReceive.getId());
-                detail.setOrderId(detailMap.get("orderId"));
-                detail.setDeliverDetailId(detailMap.get("id"));
+                detail.setOrderId(detailMap.get("id"));
                 detail.setDiscountAmount(BigDecimal.valueOf(Double.parseDouble(detailMap.get("discountAmount"))));
-                detail.setReceiveAmount(BigDecimal.valueOf(Double.parseDouble(detailMap.get("acceptAmount"))));
-                detail.setType("2");//收款类型(1:预收款 2:发货收款 3:订单收款)
+                detail.setReceiveAmount(BigDecimal.valueOf(Double.parseDouble(detailMap.get("receiveAmount"))));
                 detail.setState("1");//收款单状态(0:待收款 1:已收款 -1:已取消)
                 detail.setUuser(pd.getString("cuser"));
                 detail.setCuser(pd.getString("cuser"));
                 saleReceiveDetailService.save(detail);
+
             }
         }
 
@@ -287,7 +307,7 @@ public class SaleReceiveController {
 
     /**
     * @author 刘威 自动创建，可以修改
-    * @date 2018-12-24
+    * @date 2019-01-10
     */
     @PostMapping("/saleReceive/listPageSaleReceives")
     public ResultModel listPageSaleReceives()  throws Exception {
@@ -356,7 +376,7 @@ public class SaleReceiveController {
     /**
     * Excel导出
     * @author 刘威 自动创建，可以修改
-    * @date 2018-12-24
+    * @date 2019-01-10
     */
     @PostMapping("/saleReceive/exportExcelSaleReceives")
     public void exportExcelSaleReceives() throws Exception {
@@ -404,7 +424,7 @@ public class SaleReceiveController {
     * Excel导入
     *
     * @author 刘威 自动创建，可以修改
-    * @date 2018-12-24
+    * @date 2019-01-10
     */
     @PostMapping("/saleReceive/importExcelSaleReceives")
     public ResultModel importExcelSaleReceives(@RequestParam(value="excelFile") MultipartFile file) throws Exception  {

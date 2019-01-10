@@ -212,9 +212,9 @@
         (replace(uuid(), '-', ''),'customerReceive','accountDays','账期（天）',5, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'customerReceive','balance','预收款',6, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'customerReceive','acceptAmount','已收款',7, '1','0','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'customerReceive','deliverAmount','已发货款',8, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'customerReceive','orderAmount','订单金额',8, '1','0','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'customerReceive','delayAcceptAmount','逾期收款',9, '1','0','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'customerReceive','delayDeliverAmount','逾期发货款',10, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'customerReceive','delayOrderAmount','逾期订单金额',10, '1','0','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'customerReceive','receiveAmount','应收款',11, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'customerReceive','delayAmount','逾期账款',12, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'customerReceive','province','地域ID',13, '1','0','1','0',now(), 'admin'),
@@ -334,13 +334,13 @@
 
     <!-- 自动创建，可以修改 -->
     <select id="getReceiveDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
-        select
-        id,code,name,type,typeName,province,provinceName,round(balance,2) balance,round(accountDays,2) accountDays,
-        round(SUM(IFNULL(acceptAmount,0)),2) acceptAmount,round(SUM(IFNULL(deliverAmount,0)),2) deliverAmount,
-        round(SUM(IFNULL(delayAcceptAmount,0)),2) delayAcceptAmount,round(SUM(IFNULL(delayDeliverAmount,0)),2) delayDeliverAmount,
-        round(SUM(IFNULL(deliverAmount,0)) - SUM(IFNULL(acceptAmount,0)),2) receiveAmount,
-        round(SUM(IFNULL(delayDeliverAmount,0)) - SUM(IFNULL(delayAcceptAmount,0)),2) delayAmount
-        from (
+            select
+            id,code,name,type,typeName,province,provinceName,round(balance,2) balance,round(accountDays,2) accountDays,
+            round(SUM(IFNULL(acceptAmount,0)),2) acceptAmount,round(SUM(IFNULL(orderAmount,0)),2) orderAmount,
+            round(SUM(IFNULL(delayAcceptAmount,0)),2) delayAcceptAmount,round(SUM(IFNULL(delayOrderAmount,0)),2) delayOrderAmount,
+            round(SUM(IFNULL(orderAmount,0)) - SUM(IFNULL(acceptAmount,0)),2) receiveAmount,
+            round(SUM(IFNULL(delayOrderAmount,0)) - SUM(IFNULL(delayAcceptAmount,0)),2) delayAmount
+            from (
             select
             customer.id,
             customer.code,
@@ -352,19 +352,18 @@
             customer.balance balance,
             customer.account_days accountDays,
             sum(ifnull(detail.receive_amount,0)) acceptAmount,
-            0.0000 deliverAmount,
+            0.0000 orderAmount,
             sum(
-            case when now() > date_add(deliver.deliver_date, interval customer.account_days day)
+            case when now() > date_add(saleoder.deliver_date, interval customer.account_days day)
             then ifnull(detail.receive_amount,0) else 0 end
             )  delayAcceptAmount,
-            0.0000 delayDeliverAmount
+            0.0000 delayOrderAmount
             from vmes_customer customer
             left join vmes_dictionary type on customer.type = type.id
             left join vmes_dictionary province on customer.province = province.id
             left join vmes_sale_receive receive on receive.customer_id = customer.id
-            left join vmes_sale_receive_detail detail on detail.parent_id = receive.id
-            left join vmes_sale_deliver_detail deliverdetail on deliverdetail.id = detail.deliver_detail_id
-            left join vmes_sale_deliver deliver on deliver.id = deliverdetail.parent_id
+            left join vmes_sale_receive_detail detail on detail.parent_id = receive.id  and detail.state = '1'
+            left join vmes_sale_order saleoder on saleoder.id = detail.order_id
             <where>
                 <if test="currentCompanyId != null and currentCompanyId != ''">
                     and customer.company_id=#{currentCompanyId}
@@ -392,17 +391,16 @@
             customer.balance balance,
             customer.account_days accountDays,
             0.0000 acceptAmount,
-            sum(ifnull(detail.sum,0)) deliverAmount,
+            sum(ifnull(saleoder.order_sum,0)) orderAmount,
             0.0000 delayAcceptAmount,
             sum(
-            case when now() > date_add(deliver.deliver_date, interval customer.account_days day)
-            then ifnull(detail.sum,0) else 0 end
-            ) delayDeliverAmount
+            case when now() > date_add(saleoder.deliver_date, interval customer.account_days day)
+            then ifnull(saleoder.order_sum,0) else 0 end
+            ) delayOrderAmount
             from vmes_customer customer
             left join vmes_dictionary type on customer.type = type.id
             left join vmes_dictionary province on customer.province = province.id
-            left join vmes_sale_deliver deliver on deliver.customer_id = customer.id
-            left join vmes_sale_deliver_detail detail on detail.parent_id = deliver.id
+            left join vmes_sale_order saleoder on saleoder.customer_id = customer.id
             <where>
                 <if test="currentCompanyId != null and currentCompanyId != ''">
                     and customer.company_id=#{currentCompanyId}

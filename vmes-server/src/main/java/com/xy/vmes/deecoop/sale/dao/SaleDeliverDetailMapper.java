@@ -63,7 +63,6 @@ public interface SaleDeliverDetailMapper extends BaseMapper<SaleDeliverDetail> {
      */
     void updateOrderDetailByCancelDeliver(PageData pd);
 
-    List<Map> getData2SelectListPage(PageData pd, Pagination pg);
 }
 
 

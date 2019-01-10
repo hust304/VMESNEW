@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 /** 
  * 说明：收款单 实体类
  * @author 刘威 自动生成
- * @date 2018-12-24
+ * @date 2019-01-10
  */
 @TableName("vmes_sale_receive")
 public class SaleReceive implements Serializable {
@@ -19,6 +19,12 @@ public class SaleReceive implements Serializable {
 	//
 	@TableField("id")
 	private String id;
+	//收款单编码
+	@TableField("code")
+	private String code;
+	//收款单类型（0：预收款 1：普通收款）
+	@TableField("type")
+	private String type;
 	//客户ID
 	@TableField("customer_id")
 	private String customerId;
@@ -43,34 +49,29 @@ public class SaleReceive implements Serializable {
 	//是否启用(0:已禁用 1:启用)
 	@TableField("isdisable")
 	private String isdisable;
-	//编码
-	@TableField("code")
-	private String code;
 	//公司ID
 	@TableField("company_id")
 	private String companyId;
 
-	public String getCompanyId() {
-		return companyId;
-	}
 
-	public void setCompanyId(String companyId) {
-		this.companyId = companyId;
-	}
-
-	public String getCode() {
-		return code;
-	}
-
-	public void setCode(String code) {
-		this.code = code;
-	}
 
 	public void setId(String id) {
 		this.id = id;
 	}
 	public String getId() {
 		return id;
+	}
+	public void setCode(String code) {
+		this.code = code;
+	}
+	public String getCode() {
+		return code;
+	}
+	public void setType(String type) {
+		this.type = type;
+	}
+	public String getType() {
+		return type;
 	}
 	public void setCustomerId(String customerId) {
 		this.customerId = customerId;
@@ -119,6 +120,12 @@ public class SaleReceive implements Serializable {
 	}
 	public String getIsdisable() {
 		return isdisable;
+	}
+	public void setCompanyId(String companyId) {
+		this.companyId = companyId;
+	}
+	public String getCompanyId() {
+		return companyId;
 	}
 
 /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/

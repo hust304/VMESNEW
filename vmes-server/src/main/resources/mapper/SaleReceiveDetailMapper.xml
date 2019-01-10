@@ -3,7 +3,7 @@
 <!--
 说明：收款明细 Mapper.xml
 创建人：刘威 自动创建
-创建时间：2019-01-08
+创建时间：2019-01-10
  -->
 <mapper namespace="com.xy.vmes.deecoop.sale.dao.SaleReceiveDetailMapper">
 
@@ -15,9 +15,7 @@
     <!-- 字段 自动创建，禁止修改-->
     <sql id="Field">
 		order_id orderId,<!-- 订单ID -->
-		deliver_detail_id deliverDetailId,<!-- 发货单明细ID -->
 		parent_id parentId,<!-- 上级ID -->
-		type type,<!-- 收款类型(1:预收款 2:发货收款 3:订单收款) -->
 		state state,<!-- 收款单状态(0:待收款 1:已收款 -1:已取消) -->
 		receive_amount receiveAmount,<!-- 实收金额 -->
 		discount_amount discountAmount,<!-- 折扣金额 -->
@@ -33,9 +31,7 @@
     <!-- 字段值 自动创建，禁止修改-->
     <sql id="FieldValue">
 		#{orderId},<!-- 订单ID -->
-		#{deliverDetailId},<!-- 发货单明细ID -->
 		#{parentId},<!-- 上级ID -->
-		#{type},<!-- 收款类型(1:预收款 2:发货收款 3:订单收款) -->
 		#{state},<!-- 收款单状态(0:待收款 1:已收款 -1:已取消) -->
 		#{receiveAmount},<!-- 实收金额 -->
 		#{discountAmount},<!-- 折扣金额 -->
@@ -52,9 +48,7 @@
     <!-- 字段名称  '_hide' 表示前端列表隐藏 自动创建，禁止修改-->
     <sql id="Column">
         '订单ID'  orderId,
-        '发货单明细ID'  deliverDetailId,
         '上级ID'  parentId,
-        '收款类型(1:预收款 2:发货收款 3:订单收款)'  type,
         '收款单状态(0:待收款 1:已收款 -1:已取消)'  state,
         '实收金额'  receiveAmount,
         '折扣金额'  discountAmount,
@@ -141,20 +135,39 @@
         cuser
         ) VALUES
             (replace(uuid(), '-', ''),'SaleReceiveDetail','orderId','订单ID',1, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleReceiveDetail','deliverDetailId','发货单明细ID',2, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleReceiveDetail','parentId','上级ID',3, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleReceiveDetail','type','收款类型(1:预收款 2:发货收款 3:订单收款)',4, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleReceiveDetail','state','收款单状态(0:待收款 1:已收款 -1:已取消)',5, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleReceiveDetail','receiveAmount','实收金额',6, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleReceiveDetail','discountAmount','折扣金额',7, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleReceiveDetail','cuser','创建用户id',8, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleReceiveDetail','cdate','创建时间',9, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleReceiveDetail','uuser','修改用户id',10, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleReceiveDetail','udate','修改时间',11, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleReceiveDetail','remark','备注',12, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleReceiveDetail','isdisable','是否启用(0:已禁用 1:启用)',13, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceiveDetail','parentId','上级ID',2, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceiveDetail','state','收款单状态(0:待收款 1:已收款 -1:已取消)',3, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceiveDetail','receiveAmount','实收金额',4, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceiveDetail','discountAmount','折扣金额',5, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceiveDetail','cuser','创建用户id',6, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceiveDetail','cdate','创建时间',7, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceiveDetail','uuser','修改用户id',8, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceiveDetail','udate','修改时间',9, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceiveDetail','remark','备注',10, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceiveDetail','isdisable','是否启用(0:已禁用 1:启用)',11, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'SaleReceiveDetail','id','id',0, '1','1','1','0',now(), 'admin')
     </insert>
+
+    <insert id="insertColumn1" >
+        delete from vmes_column where model_code = 'OrderReceiveDetail' ;
+        insert into vmes_column (
+        id,model_code,title_key,title_name,serial_number,
+        isdisable,ishide,isedit,ismust,cdate,
+        cuser
+        ) VALUES
+        (replace(uuid(), '-', ''),'OrderReceiveDetail','customerId','客户ID',1, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'OrderReceiveDetail','sysCode','订单号',2, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'OrderReceiveDetail','orderDate','下单日期',3, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'OrderReceiveDetail','orderSum','订单金额',4, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'OrderReceiveDetail','discountedAmount','折扣金额',5, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'OrderReceiveDetail','receivedAmount','已收款',6, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'OrderReceiveDetail','noReceiveAmount','应收款',7, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'OrderReceiveDetail','state','订单状态',8, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'OrderReceiveDetail','discountAmount','本次折扣金额',9, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'OrderReceiveDetail','receiveAmount','本次收款',10, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'OrderReceiveDetail','id','id',0, '1','0','1','0',now(), 'admin')
+    </insert>
+
 
 
     <!-- 列表(全部) 自动创建，禁止修改-->
@@ -196,9 +209,7 @@
     <!-- 字段 自动创建，可以修改-->
     <sql id="Field1">
         order_id orderId,<!-- 订单ID -->
-        deliver_detail_id deliverDetailId,<!-- 发货单明细ID -->
         parent_id parentId,<!-- 上级ID -->
-        type type,<!-- 收款类型(1:预收款 2:发货收款 3:订单收款) -->
         state state,<!-- 收款单状态(0:待收款 1:已收款 -1:已取消) -->
         receive_amount receiveAmount,<!-- 实收金额 -->
         discount_amount discountAmount,<!-- 折扣金额 -->
@@ -215,9 +226,7 @@
     <!--
     <sql id="Column1">
             '订单ID'  orderId,
-            '发货单明细ID'  deliverDetailId,
             '上级ID'  parentId,
-            '收款类型(1:预收款 2:发货收款 3:订单收款)'  type,
             '收款单状态(0:待收款 1:已收款 -1:已取消)'  state,
             '实收金额'  receiveAmount,
             '折扣金额'  discountAmount,
@@ -285,6 +294,56 @@
             order by ${orderStr}
         </if>
     </select>
+
+
+
+    <!-- 自动创建，可以修改 -->
+    <select id="getOrderReceiveDetailDataListPage"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
+        select
+        saleOrder.id,
+        saleOrder.customer_id customerId,
+        saleOrder.sys_code sysCode,
+        DATE_FORMAT(saleOrder.order_date,'%Y-%m-%d') orderDate,
+        round(ifnull(saleOrder.order_sum, 0),2) orderSum,
+        CASE
+        WHEN saleOrder.state = '0' THEN '待提交'
+        WHEN saleOrder.state = '1' THEN '待审核'
+        WHEN saleOrder.state = '2' THEN '待发货'
+        WHEN saleOrder.state = '3' THEN '已发货'
+        WHEN saleOrder.state = '4' THEN '已完成'
+        WHEN saleOrder.state = '-1' THEN '已取消'
+        ELSE null
+        END state,
+        round(sum(ifnull(detail.discount_amount, 0)),2) discountedAmount,
+        round(sum(ifnull(detail.receive_amount, 0)),2) receivedAmount,
+        round(ifnull(saleOrder.order_sum, 0)-sum(ifnull(detail.discount_amount, 0))-sum(ifnull(detail.receive_amount, 0)),2) noReceiveAmount,
+        0.00 discountAmount,
+        0.00 receiveAmount
+        from vmes_sale_order saleOrder
+        left join vmes_customer customer on  saleOrder.customer_id = customer.id
+        left join vmes_sale_receive_detail detail on  detail.order_id = saleOrder.id and detail.state = '1'
+        <where>
+            <!--queryStr 自定义sql查询语句-->
+            <if test="queryStr != null and queryStr != ''" >
+                and ${queryStr}
+            </if>
+            <if test="sysCode != null and sysCode != ''">
+                and saleOrder.sys_code LIKE CONCAT(CONCAT('%', #{sysCode}),'%')
+            </if>
+            <if test="customerId != null and customerId != ''">
+                and saleOrder.customer_id = #{customerId}
+            </if>
+            <if test="currentCompanyId != null and currentCompanyId != ''">
+                and saleOrder.company_id = #{currentCompanyId}
+            </if>
+        </where>
+        group by saleOrder.id,saleOrder.customer_id,saleOrder.sys_code,saleOrder.order_date,saleOrder.order_sum,saleOrder.state
+        <if test="orderStr != null and orderStr != ''" >
+            order by ${orderStr}
+        </if>
+    </select>
+
+
 
 
 
