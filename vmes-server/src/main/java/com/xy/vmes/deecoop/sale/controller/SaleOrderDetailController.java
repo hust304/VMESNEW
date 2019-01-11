@@ -2,6 +2,7 @@ package com.xy.vmes.deecoop.sale.controller;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
+import com.xy.vmes.common.util.EvaluateUtil;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.entity.SaleOrder;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.math.BigDecimal;
 import java.util.*;
 
 
@@ -124,6 +126,36 @@ public class SaleOrderDetailController {
                 varMapList.add(varMap);
             }
         }
+
+        //遍历结果集
+        //(计量单位)(库存数量,库存可用数量) 单位换算公式(n2pFormula) (计价单位)(库存数量,库存可用数量)
+        for (Map mapObject : varMapList) {
+            //n2pFormula (计量单位转换计价单位公式)
+            String n2pFormula = (String)mapObject.get("n2pFormula");
+
+            //stockCount (计量单位)库存数量
+            String stockCount_str = (String)mapObject.get("stockCount");
+            //stockCountByPrice        (计价单位)库存数量
+            if (n2pFormula != null && stockCount_str != null) {
+                Map<String, Object> formulaParmMap = new HashMap<String, Object>();
+                formulaParmMap.put("N", new BigDecimal(stockCount_str));
+
+                BigDecimal valueBig = EvaluateUtil.formulaReckon(formulaParmMap, n2pFormula);
+                mapObject.put("stockCountByPrice", valueBig);
+            }
+
+            //productStockCount (计量单位)库存可用数量
+            String productStockCount_str = (String)mapObject.get("productStockCount");
+            //productStockCountByPrice (计价单位)库存可用数量
+            if (n2pFormula != null && productStockCount_str != null) {
+                Map<String, Object> formulaParmMap = new HashMap<String, Object>();
+                formulaParmMap.put("N", new BigDecimal(productStockCount_str));
+
+                BigDecimal valueBig = EvaluateUtil.formulaReckon(formulaParmMap, n2pFormula);
+                mapObject.put("productStockCountByPrice", valueBig);
+            }
+        }
+
         result.put("varList",varMapList);
         result.put("pageData", pg);
 
