@@ -134,19 +134,20 @@
         isdisable,ishide,isedit,ismust,cdate,
         cuser
         ) VALUES
-            (replace(uuid(), '-', ''),'SaleReceiveDetail','orderId','订单ID',1, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleReceiveDetail','parentId','上级ID',2, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleReceiveDetail','state','收款单状态(0:待收款 1:已收款 -1:已取消)',3, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleReceiveDetail','receiveAmount','实收金额',4, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleReceiveDetail','discountAmount','折扣金额',5, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleReceiveDetail','cuser','创建用户id',6, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleReceiveDetail','cdate','创建时间',7, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleReceiveDetail','uuser','修改用户id',8, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleReceiveDetail','udate','修改时间',9, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleReceiveDetail','remark','备注',10, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleReceiveDetail','isdisable','是否启用(0:已禁用 1:启用)',11, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleReceiveDetail','id','id',0, '1','1','1','0',now(), 'admin')
+            (replace(uuid(), '-', ''),'SaleReceiveDetail','orderId','订单ID',1, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceiveDetail','parentId','上级ID',2, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceiveDetail','sysCode','订单号',3, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceiveDetail','productName','产品',4, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceiveDetail','orderSum','订单金额',5, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceiveDetail','discountAmount','折扣金额',6, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceiveDetail','receiveAmount','收款金额',7, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceiveDetail','remark','备注',8, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceiveDetail','state','收款单状态',9, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceiveDetail','isdisable','是否启用',10, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceiveDetail','id','id',0, '1','0','1','0',now(), 'admin')
     </insert>
+
+
 
     <insert id="insertColumn1" >
         delete from vmes_column where model_code = 'OrderReceiveDetail' ;
@@ -252,21 +253,35 @@
     <!-- 自动创建，可以修改 -->
     <select id="getDataList"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
         select
-        <include refid="Field1"></include>
-        from
-        <include refid="tableName"></include>
+        detail.id,
+        detail.order_id orderId,
+        detail.parent_id parentId,
+        case when detail.state='0' then '待收款' when detail.state='1' then '已收款' else '已取消' end state,
+        saleorder.sys_code sysCode,
+        round(ifnull(saleorder.order_sum,0),2) orderSum,
+        round(ifnull(detail.discount_amount,0),2) discountAmount,
+        round(ifnull(detail.receive_amount,0),2) receiveAmount,
+        group_concat(product.name  order by product.name asc) productName
+        from vmes_sale_receive_detail detail
+        left join vmes_sale_order saleorder on saleorder.id =  detail.order_id
+        left join vmes_sale_order_detail orderdetail on orderdetail.parent_id = saleorder.id
+        left join vmes_product product on product.id = orderdetail.product_id
         <where>
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >
                 and ${queryStr}
             </if>
-            <if test="code != null and code != ''">
-                and code LIKE CONCAT(CONCAT('%', #{code}),'%')
+            <if test="sysCode != null and sysCode != ''">
+                and saleorder.sys_code LIKE CONCAT(CONCAT('%', #{sysCode}),'%')
             </if>
-            <if test="name != null and name != ''">
-                and name LIKE CONCAT(CONCAT('%', #{name}),'%')
+            <if test="productName != null and productName != ''">
+                and product.name LIKE CONCAT(CONCAT('%', #{productName}),'%')
+            </if>
+            <if test="parentId != null and parentId != ''">
+                and detail.parent_id = #{parentId}
             </if>
         </where>
+        group by detail.id,detail.parent_id,saleorder.sys_code,saleorder.order_sum,detail.discount_amount,detail.receive_amount
         <if test="orderStr != null and orderStr != ''" >
             order by ${orderStr}
         </if>
@@ -275,21 +290,35 @@
     <!-- 自动创建，可以修改 -->
     <select id="getDataListPage"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
         select
-        <include refid="Field1"></include>
-        from
-        <include refid="tableName"></include>
+        detail.id,
+        detail.order_id orderId,
+        detail.parent_id parentId,
+        case when detail.state='0' then '待收款' when detail.state='1' then '已收款' else '已取消' end state,
+        saleorder.sys_code sysCode,
+        round(ifnull(saleorder.order_sum,0),2) orderSum,
+        round(ifnull(detail.discount_amount,0),2) discountAmount,
+        round(ifnull(detail.receive_amount,0),2) receiveAmount,
+        group_concat(product.name  order by product.name asc) productName
+        from vmes_sale_receive_detail detail
+        left join vmes_sale_order saleorder on saleorder.id =  detail.order_id
+        left join vmes_sale_order_detail orderdetail on orderdetail.parent_id = saleorder.id
+        left join vmes_product product on product.id = orderdetail.product_id
         <where>
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >
                 and ${queryStr}
             </if>
-            <if test="code != null and code != ''">
-                and code LIKE CONCAT(CONCAT('%', #{code}),'%')
+            <if test="sysCode != null and sysCode != ''">
+                and saleorder.sys_code LIKE CONCAT(CONCAT('%', #{sysCode}),'%')
             </if>
-            <if test="name != null and name != ''">
-                and name LIKE CONCAT(CONCAT('%', #{name}),'%')
+            <if test="productName != null and productName != ''">
+                and product.name LIKE CONCAT(CONCAT('%', #{productName}),'%')
+            </if>
+            <if test="parentId != null and parentId != ''">
+                and detail.parent_id = #{parentId}
             </if>
         </where>
+        group by detail.id,detail.parent_id,saleorder.sys_code,saleorder.order_sum,detail.discount_amount,detail.receive_amount
         <if test="orderStr != null and orderStr != ''" >
             order by ${orderStr}
         </if>

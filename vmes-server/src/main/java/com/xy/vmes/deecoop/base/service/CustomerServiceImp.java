@@ -303,4 +303,14 @@ public class CustomerServiceImp implements CustomerService {
         saleReceiveRecord.setCuser(uuser);
         saleReceiveRecordService.save(saleReceiveRecord);
     }
+
+    @Override
+    public List<Map> getPreReceiveAmount(PageData pd) throws Exception{
+        return  customerMapper.getPreReceiveAmount(pd);
+    }
+
+    @Override
+    public List<Map> getNowReceiveAmount(PageData pd) throws Exception{
+        return  customerMapper.getNowReceiveAmount(pd);
+    }
 }

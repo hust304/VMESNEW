@@ -77,5 +77,8 @@ public interface CustomerMapper extends BaseMapper<Customer> {
 
     void updateCustomerBalance(PageData pd);
 
+    List<Map> getPreReceiveAmount(PageData pd);
+
+    List<Map> getNowReceiveAmount(PageData pd);
 }
 
