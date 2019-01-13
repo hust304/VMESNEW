@@ -6,6 +6,7 @@ import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.entity.SaleInvoice;
 import com.xy.vmes.service.ColumnService;
+import com.xy.vmes.service.SaleInvoiceDetailService;
 import com.xy.vmes.service.SaleInvoiceService;
 import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
@@ -19,11 +20,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
-
 
 
 /**
@@ -34,11 +33,12 @@ import java.util.*;
 @RestController
 @Slf4j
 public class SaleInvoiceController {
-
     private Logger logger = LoggerFactory.getLogger(SaleInvoiceController.class);
 
     @Autowired
     private SaleInvoiceService saleInvoiceService;
+    @Autowired
+    private SaleInvoiceDetailService saleInvoiceDetailService;
 
     @Autowired
     private ColumnService columnService;
@@ -47,12 +47,16 @@ public class SaleInvoiceController {
     * @author 陈刚 自动创建，可以修改
     * @date 2019-01-08
     */
-    @PostMapping("/saleInvoice/listPageSaleInvoices")
-    public ResultModel listPageSaleInvoices()  throws Exception {
-        logger.info("################saleInvoice/listPageSaleInvoices 执行开始 ################# ");
+    @PostMapping("/saleInvoice/listPageSaleInvoice")
+    public ResultModel listPageSaleInvoice() throws Exception {
+        logger.info("################saleInvoice/listPageSaleInvoice 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        ResultModel model = new ResultModel();
 
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+        Map result = new HashMap();
+
+        //A. 第一级: 获取入库单明细Title列表
         List<Column> columnList = columnService.findColumnList("saleInvoice");
         if (columnList == null || columnList.size() == 0) {
             model.putCode("1");
@@ -60,44 +64,45 @@ public class SaleInvoiceController {
             return model;
         }
 
-        //获取指定栏位字符串-重新调整List<Column>
-        PageData pd = HttpUtils.parsePageData();
-        String fieldCode = pd.getString("fieldCode");
-        if (fieldCode != null && fieldCode.trim().length() > 0) {
-            columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
+        String firstFieldCode = pd.getString("firstFieldCode");
+        if (firstFieldCode != null && firstFieldCode.trim().length() > 0) {
+            columnList = columnService.modifyColumnByFieldCode(firstFieldCode, columnList);
         }
 
-        List<LinkedHashMap> titlesList = new ArrayList<LinkedHashMap>();
-        List<String> titlesHideList = new ArrayList<String>();
-        Map<String, String> varModelMap = new HashMap<String, String>();
-        if(columnList!=null&&columnList.size()>0){
-            for (Column column : columnList) {
-                if(column!=null){
-                    if("0".equals(column.getIshide())){
-                        titlesHideList.add(column.getTitleKey());
-                    }
-                    LinkedHashMap titlesLinkedMap = new LinkedHashMap();
-                    titlesLinkedMap.put(column.getTitleKey(),column.getTitleName());
-                    varModelMap.put(column.getTitleKey(),"");
-                    titlesList.add(titlesLinkedMap);
-                }
-            }
-        }
-        Map result = new HashMap();
-        result.put("hideTitles",titlesHideList);
-        result.put("titles",titlesList);
+        Map<String, Object> firstTitleMap = ColumnUtil.findTitleMapByColumnList(columnList);
+        result.put("hideTitles",firstTitleMap.get("hideTitles"));
+        result.put("titles",firstTitleMap.get("titles"));
 
+        //B. 第二级: 获取订单明细汇总查询
+        columnList = columnService.findColumnList("saleInvoiceDetail");
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
+        }
+        String secondFieldCode = pd.getString("secondFieldCode");
+        if (secondFieldCode != null && secondFieldCode.trim().length() > 0) {
+            columnList = columnService.modifyColumnByFieldCode(secondFieldCode, columnList);
+        }
+        Map<String, Object> secondTitleMap = ColumnUtil.findTitleMapByColumnList(columnList);
+
+        //C. 查询第一层数据
         Pagination pg = HttpUtils.parsePagination(pd);
         List<Map> varMapList = new ArrayList();
-        List<Map> varList = saleInvoiceService.getDataListPage(pd,pg);
-        if(varList!=null&&varList.size()>0){
-            for(int i=0;i<varList.size();i++){
+        List<Map> varList = saleInvoiceService.getDataListPage(pd, pg);
+        if (varList != null && varList.size() > 0) {
+            for(int i = 0; i < varList.size(); i++) {
                 Map map = varList.get(i);
-                Map<String, String> varMap = new HashMap<String, String>();
-                varMap.putAll(varModelMap);
-                for (Map.Entry<String, String> entry : varMap.entrySet()) {
-                    varMap.put(entry.getKey(),map.get(entry.getKey())!=null?map.get(entry.getKey()).toString():"");
+                Map<String, Object> varMap = new HashMap<String, Object>();
+                varMap.putAll((Map<String, String>)firstTitleMap.get("varModel"));
+                for (Map.Entry<String, Object> entry : varMap.entrySet()) {
+                    varMap.put(entry.getKey(), map.get(entry.getKey()) != null ? map.get(entry.getKey()).toString() : "");
                 }
+                varMap.put("hideTitles", secondTitleMap.get("hideTitles"));
+                varMap.put("titles", secondTitleMap.get("titles"));
+                varMap.put("pid", null);
+                //查询第二层数据
+                varMap.put("children", this.findSecondList(map, secondTitleMap));
                 varMapList.add(varMap);
             }
         }
@@ -106,10 +111,9 @@ public class SaleInvoiceController {
 
         model.putResult(result);
         Long endTime = System.currentTimeMillis();
-        logger.info("################saleInvoice/listPageSaleInvoices 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################saleInvoice/listPageSaleInvoice 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
-
 
     /**
     * Excel导出
@@ -208,6 +212,31 @@ public class SaleInvoiceController {
         Long endTime = System.currentTimeMillis();
         logger.info("################saleInvoice/importExcelSaleInvoices 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
+    }
+
+    private List<Map> findSecondList(Map firstRowMap, Map<String, Object> secondTitleMap) throws Exception {
+        String parentId = (String)firstRowMap.get("parentId");
+
+        PageData findMap = new PageData();
+        findMap.put("parentId", parentId);
+
+        List<Map> secondMapList = new ArrayList();
+        List<Map> varList = saleInvoiceDetailService.getDataListPage(findMap);
+        if(varList != null && varList.size() > 0) {
+            for(int i = 0; i < varList.size(); i++) {
+                Map map = varList.get(i);
+                Map<String, String> varMap = new HashMap<String, String>();
+                varMap.putAll((Map<String, String>)secondTitleMap.get("varModel"));
+                for (Map.Entry<String, String> entry : varMap.entrySet()) {
+                    varMap.put(entry.getKey(), map.get(entry.getKey()) != null ? map.get(entry.getKey()).toString() : "");
+                }
+                varMap.put("pid",firstRowMap.get("id").toString());
+                secondMapList.add(varMap);
+
+            }
+        }
+
+        return secondMapList;
     }
 
 }

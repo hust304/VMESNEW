@@ -134,6 +134,9 @@ public class SaleInvoiceDetailServiceImp implements SaleInvoiceDetailService {
     public List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception{
         return saleInvoiceDetailMapper.getDataListPage(pd,pg);
     }
+    public List<Map> getDataListPage(PageData pd) throws Exception {
+        return saleInvoiceDetailMapper.getDataListPage(pd);
+    }
 
     /**
     *

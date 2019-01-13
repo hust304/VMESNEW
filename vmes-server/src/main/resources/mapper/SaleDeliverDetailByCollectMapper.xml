@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+说明：发货明细汇总- Mapper.xml
+创建人：陈刚 自动创建
+创建时间：2019-01-11
+ -->
+<mapper namespace="com.xy.vmes.deecoop.sale.dao.SaleDeliverByCollectMapper">
+    <!--发货明细(按订单明细id)汇总-->
+    <select id="findDeliverDetailByOrderDetai" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+        order_detai_id orderDetaiId,
+        sum(count) orderDetaiDeliverCount,
+        sum(sum) orderDetaiDeliverSum
+        from vmes_sale_deliver_detail
+        <where>
+            <if test="orderDetaiId != null and orderDetaiId != ''" >
+                and order_detai_id = #{orderDetaiId}
+            </if>
+            <if test="state != null and state != ''" >
+                and state = #{state}
+            </if>
+        </where>
+        group by order_detai_id
+    </select>
+
+    <!--发货明细(按订单明细id)汇总(已发货数量)-->
+    <!--用于:发货已完成后,变更(订单,订单明细)状态-->
+    <select id="findDeliverDetailByOrder" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+        orderDetail.parent_id orderId,
+        orderDetail.count orderDetaiCount,
+
+        deliver.order_detai_id orderDetaiId,
+        deliver.deliverCount orderDetaiDeliverCount
+        from (
+            select
+            order_detai_id,
+            sum(count) deliverCount
+            from vmes_sale_deliver_detail
+            <where>
+                <if test="orderId != null and orderId != ''" >
+                    and order_id = #{orderId}
+                </if>
+                and state = '1'
+            </where>
+            group by order_detai_id
+        ) deliver
+            left join vmes_sale_order_detail orderDetail on deliver.order_detai_id = orderDetail.id
+        <where>
+            <if test="orderId != null and orderId != ''" >
+                and orderDetail.parent_id = #{orderId}
+            </if>
+
+        </where>
+    </select>
+
+    <!--发货出库单-->
+    <!--查询发货明细表-获取(订单,订单明细)对应的出库明细状态-->
+    <!--用于:出库完成后,变更(订单,订单明细)状态-->
+    <select id="findDeliverDetailOnWarehouseOutDetailByOrder" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+            deliverDetail.order_id orderId,
+            deliverDetail.order_detai_id orderDetaiId,
+            deliverDetail.out_detail_id outDetailId,
+            outDetail.state outDetailState
+        from vmes_sale_deliver_detail deliverDetail
+            left join vmes_warehouse_out_detail outDetail on deliverDetail.out_detail_id = outDetail.id
+        <where>
+            <if test="orderId != null and orderId != ''" >
+                and deliverDetail.order_id = #{orderId}
+            </if>
+            <if test="outDetailState != null and outDetailState != ''" >
+                and outDetail.state = #{outDetailState}
+            </if>
+
+        </where>
+
+    </select>
+
+
+</mapper>

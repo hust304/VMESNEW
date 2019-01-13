@@ -43,6 +43,7 @@ public interface SaleInvoiceDetailMapper extends BaseMapper<SaleInvoiceDetail> {
      * 创建时间：2019-01-08
      */
     List<Map> getDataListPage(PageData pd,Pagination pg);
+    List<Map> getDataListPage(PageData pd);
 
     /**
      * 创建人：陈刚

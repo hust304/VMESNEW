@@ -48,8 +48,7 @@
         cuser
         ) VALUES
             (replace(uuid(), '-', ''),'saleInvoiceDetail','parentId','发票ID',1, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleInvoiceDetail','orderId','订单ID',2, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleInvoiceDetail','orderDetaiId','订单明细ID',3, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'saleInvoiceDetail','deliverDetaiId','发货明细ID',3, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'saleInvoiceDetail','state','发票状态(0:待开票 1:已开票 -1:已开票)',4, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'saleInvoiceDetail','count','开票数量',5, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'saleInvoiceDetail','productPrice','货品单价',6, '1','1','1','0',now(), 'admin'),
@@ -60,7 +59,21 @@
             (replace(uuid(), '-', ''),'saleInvoiceDetail','udate','修改时间',11, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'saleInvoiceDetail','remark','备注',12, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'saleInvoiceDetail','isdisable','是否启用(0:已禁用 1:启用)',13, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleInvoiceDetail','id','id',0, '1','1','1','0',now(), 'admin')
+            (replace(uuid(), '-', ''),'saleInvoiceDetail','id','id',0, '1','1','1','0',now(), 'admin'),
+
+            (replace(uuid(), '-', ''),'saleInvoiceDetail','stateName','stateName',0, '1','1','1','0',now(), 'admin'),
+
+            (replace(uuid(), '-', ''), 'saleInvoiceDetail', 'productId', 'productId', 5, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleInvoiceDetail', 'priceUnit', 'priceUnit', 5, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleInvoiceDetail', 'priceUnitName', 'priceUnitName', 5, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+
+            (replace(uuid(), '-', ''), 'saleInvoiceDetail', 'productCode', '货品编码', 2, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleInvoiceDetail', 'productName', '货品名称', 3, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleInvoiceDetail', 'productSpec', '规格型号', 4, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleInvoiceDetail', 'productGenre', '货品属性id', 5, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleInvoiceDetail', 'productGenreName', '货品属性', 5, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin')
+
+
     </insert>
 
 
@@ -69,16 +82,17 @@
         select
         id id,
         parent_id parentId,
-        order_id orderId,
-        order_detai_id orderDetaiId,
-        state state,
+        order_detail_id orderDetaiId,
+        product_id productId,
+        price_unit priceUnit,
 
         count count,
         product_price productPrice,
         sum sum,
+        state state,
         cuser cuser,
-        cdate cdate,
 
+        cdate cdate,
         uuser uuser,
         udate udate,
         remark remark,
@@ -121,23 +135,43 @@
     <!-- 自动创建，可以修改 -->
     <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
-        id id,
-        parent_id parentId,
-        order_id orderId,
-        order_detai_id orderDetaiId,
-        state state,
+        invoiceDtl.id id,
+        invoiceDtl.parent_id parentId,
+        invoiceDtl.order_detail_id orderDetaiId,
+        invoiceDtl.product_id productId,
+        invoiceDtl.price_unit priceUnit,
 
-        count count,
-        product_price productPrice,
-        sum sum,
-        cuser cuser,
-        cdate cdate,
+        round(ifnull(invoiceDtl.count, 0), 2) count,
+        round(ifnull(invoiceDtl.product_price, 0), 2) productPrice,
+        round(ifnull(invoiceDtl.sum, 0), 2) sum,
+        invoiceDtl.state state,
+        CASE
+        WHEN invoiceDtl.state = '0' THEN '待开票'
+        WHEN invoiceDtl.state = '1' THEN '已开票'
+        WHEN invoiceDtl.state = '-1' THEN '已取消'
+        ELSE null
+        END stateName,
+        invoiceDtl.cuser cuser,
 
-        uuser uuser,
-        udate udate,
-        remark remark,
-        isdisable isdisable
-        from vmes_sale_invoice_detail
+        DATE_FORMAT(invoiceDtl.cdate,'%Y-%m-%d %T') cdate,
+        invoiceDtl.uuser uuser,
+        DATE_FORMAT(invoiceDtl.udate,'%Y-%m-%d %T') udate,
+        invoiceDtl.remark remark,
+        invoiceDtl.isdisable isdisable,
+
+        <!--货品表-->
+        priceUnit.name priceUnitName,
+        product.code productCode,
+        product.name productName,
+        product.spec productSpec,
+        product.genre productGenre,
+        genre.name productGenreName
+
+        from vmes_sale_invoice_detail invoiceDtl
+        left join vmes_product product on invoiceDtl.product_id = product.id
+        left join vmes_dictionary priceUnit on invoiceDtl.price_unit = priceUnit.id
+        left join vmes_dictionary genre on product.genre = genre.id
+
         <where>
             <if test="ids != null and ids != ''" >
                 and id in (${ids})

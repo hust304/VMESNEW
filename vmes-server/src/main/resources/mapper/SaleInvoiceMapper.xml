@@ -58,7 +58,25 @@
             (replace(uuid(), '-', ''),'saleInvoice','udate','修改时间',10, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'saleInvoice','remark','备注',11, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'saleInvoice','isdisable','是否启用(0:已禁用 1:启用)',12, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleInvoice','id','id',0, '1','1','1','0',now(), 'admin')
+            (replace(uuid(), '-', ''),'saleInvoice','id','id',0, '1','1','1','0',now(), 'admin'),
+
+            (replace(uuid(), '-', ''),'saleInvoice','stateName','stateName',0, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'saleInvoice','cuserName','cuserName',0, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'saleInvoice','cuserDeptName','cuserDeptName',0, '1','1','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'saleInvoice','orderSysCode','orderSysCode',0, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'saleInvoice','orderNumber','orderNumber',0, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'saleInvoice','customerName','customerName',0, '1','1','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'saleInvoice','custInvoiceCompanyName','custInvoiceCompanyName',0, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'saleInvoice','custInvoiceNumber','custInvoiceNumber',0, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'saleInvoice','custInvoiceAddress','custInvoiceAddress',0, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'saleInvoice','custInvoiceBankName','custInvoiceBankName',0, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'saleInvoice','custInvoiceBankCode','custInvoiceBankCode',0, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'saleInvoice','custInvoicePhone','custInvoicePhone',0, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'saleInvoice','custInvoiceMobile','custInvoiceMobile',0, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'saleInvoice','totalSum','totalSum',0, '1','1','1','0',now(), 'admin')
+
     </insert>
 
 
@@ -72,11 +90,12 @@
         sys_code sysCode,
 
         invoice_number invoiceNumber,
+        total_sum totalSum,
         state state,
         cuser cuser,
         cdate cdate,
-        uuser uuser,
 
+        uuser uuser,
         udate udate,
         remark remark,
         isdisable isdisable
@@ -111,31 +130,75 @@
     <!-- 自动创建，可以修改 -->
     <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
-        id id,
-        company_id companyId,
-        customer_id customerId,
-        order_id orderId,
-        sys_code sysCode,
+        invoice.id id,
+        invoice.company_id companyId,
+        invoice.customer_id customerId,
+        invoice.order_id orderId,
+        invoice.sys_code sysCode,
 
-        invoice_number invoiceNumber,
-        state state,
-        cuser cuser,
-        cdate cdate,
-        uuser uuser,
+        invoice.invoice_number invoiceNumber,
+        invoice.total_sum totalSum,
+        invoice.state state,
+        CASE
+        WHEN invoice.state = '0' THEN '待开票'
+        WHEN invoice.state = '1' THEN '已开票'
+        WHEN invoice.state = '-1' THEN '已取消'
+        ELSE null
+        END stateName,
+        invoice.cuser cuser,
+        cuser.user_name cuserName,
+        cuser.dept_id cuserDeptId,
+        cuserDept.name cuserDeptName,
+        invoice.cdate cdate,
+        DATE_FORMAT(invoice.cdate,'%Y-%m-%d') cdate,
 
-        udate udate,
-        remark remark,
-        isdisable isdisable
-        from vmes_sale_invoice
+        invoice.uuser uuser,
+        invoice.udate udate,
+        DATE_FORMAT(invoice.udate,'%Y-%m-%d %T') udate,
+        invoice.remark remark,
+        invoice.isdisable isdisable,
+
+        saleOrder.sys_code orderSysCode,
+        saleOrder.order_number orderNumber,
+        customer.name customerName,
+
+        <!-- 客户开票信息 -->
+        customerInvoice.company_name custInvoiceCompanyName,
+        customerInvoice.invoice_number custInvoiceNumber,
+        customerInvoice.address custInvoiceAddress,
+        customerInvoice.bank_name custInvoiceBankName,
+        customerInvoice.bank_code custInvoiceBankCode,
+        customerInvoice.phone custInvoicePhone,
+        customerInvoice.mobile custInvoiceMobile
+
+        from vmes_sale_invoice invoice
+        left join vmes_user cuser on invoice.cuser = cuser.id
+        left join vmes_department cuserDept on cuser.dept_id = cuserDept.id
+        left join vmes_sale_order saleOrder on invoice.order_id = saleOrder.id
+        left join vmes_customer customer on invoice.customer_id = customer.id
+        left join vmes_customer_invoice customerInvoice on invoice.customer_id = customerInvoice.customer_id and customerInvoice.isdefault = '1'
         <where>
             <if test="currentCompanyId != null and currentCompanyId != ''" >
-                and company_id = #{currentCompanyId}
+                and invoice.company_id = #{currentCompanyId}
             </if>
             <if test="sysCode != null and sysCode != ''" >
-                and sys_code = #{sysCode}
+                and invoice.sys_code = #{sysCode}
             </if>
             <if test="invoiceNumber != null and invoiceNumber != ''" >
-                and invoice_number = #{orderNumber}
+                and invoice.invoice_number = #{orderNumber}
+            </if>
+            <if test="state != null and state != ''" >
+                and invoice.state = #{state}
+            </if>
+
+            <if test="orderSysCode != null and orderSysCode != ''" >
+                and saleOrder.sys_code = #{orderSysCode}
+            </if>
+            <if test="orderNumber != null and orderNumber != ''" >
+                and saleOrder.order_number = #{orderNumber}
+            </if>
+            <if test="customerName != null and customerName != ''">
+                and customer.name LIKE CONCAT(CONCAT(#{customerName}),'%')
             </if>
 
             <!--queryStr 自定义sql查询语句-->

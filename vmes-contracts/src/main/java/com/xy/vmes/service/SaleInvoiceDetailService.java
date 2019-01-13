@@ -80,6 +80,7 @@ public interface SaleInvoiceDetailService {
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2019-01-08
      */
+    List<Map> getDataListPage(PageData pd) throws Exception;
     List<Map> getDataListPage(PageData pd, Pagination pg) throws Exception;
 
     /**

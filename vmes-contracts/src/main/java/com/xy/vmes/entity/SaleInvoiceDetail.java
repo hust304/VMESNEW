@@ -22,15 +22,15 @@ public class SaleInvoiceDetail implements Serializable {
 	//发票ID
 	@TableField("parent_id")
 	private String parentId;
-	//订单ID
-	@TableField("order_id")
-	private String orderId;
-	//订单明细ID
-	@TableField("order_detai_id")
+	//订单明细id
+	@TableField("order_detail_id")
 	private String orderDetaiId;
-	//发票状态(0:待开票 1:已开票 -1:已开票)
-	@TableField("state")
-	private String state;
+	//货品ID
+	@TableField("product_id")
+	private String productId;
+	//计价单位id
+	@TableField("price_unit")
+	private String priceUnit;
 
 	//开票数量
 	@TableField("count")
@@ -41,13 +41,16 @@ public class SaleInvoiceDetail implements Serializable {
 	//发票金额
 	@TableField("sum")
 	private BigDecimal sum;
+	//发票状态(0:待开票 1:已开票 -1:已开票)
+	@TableField("state")
+	private String state;
 	//创建用户id
 	@TableField("cuser")
 	private String cuser;
+
 	//创建时间
 	@TableField("cdate")
 	private Date cdate;
-
 	//修改用户id
 	@TableField("uuser")
 	private String uuser;
@@ -74,17 +77,11 @@ public class SaleInvoiceDetail implements Serializable {
 	public String getParentId() {
 		return parentId;
 	}
-	public void setOrderId(String orderId) {
-		this.orderId = orderId;
-	}
-	public String getOrderId() {
-		return orderId;
+	public String getOrderDetaiId() {
+		return orderDetaiId;
 	}
 	public void setOrderDetaiId(String orderDetaiId) {
 		this.orderDetaiId = orderDetaiId;
-	}
-	public String getOrderDetaiId() {
-		return orderDetaiId;
 	}
 	public void setState(String state) {
 		this.state = state;

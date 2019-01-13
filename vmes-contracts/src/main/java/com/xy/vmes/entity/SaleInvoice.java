@@ -35,6 +35,9 @@ public class SaleInvoice implements Serializable {
 	//发票编号(用户)
 	@TableField("invoice_number")
 	private String invoiceNumber;
+	//合计金额
+	@TableField("total_sum")
+	BigDecimal totalSum;
 	//发票状态(0:待开票 1:已开票 -1:已开票)
 	@TableField("state")
 	private String state;
@@ -44,10 +47,10 @@ public class SaleInvoice implements Serializable {
 	//创建时间
 	@TableField("cdate")
 	private Date cdate;
+
 	//修改用户id
 	@TableField("uuser")
 	private String uuser;
-
 	//修改时间
 	@TableField("udate")
 	private Date udate;
@@ -137,7 +140,12 @@ public class SaleInvoice implements Serializable {
 	public String getIsdisable() {
 		return isdisable;
 	}
-
+	public BigDecimal getTotalSum() {
+		return totalSum;
+	}
+	public void setTotalSum(BigDecimal totalSum) {
+		this.totalSum = totalSum;
+	}
 /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 

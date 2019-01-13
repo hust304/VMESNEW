@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+说明：订单明细查询汇总 Mapper.xml
+销售-开票管理-申请开票-(勾选订单明细)-弹出界面查询
+创建人：陈刚 自动创建
+创建时间：2019-01-11
+ -->
+<mapper namespace="com.xy.vmes.deecoop.sale.dao.SaleOrderDetailByInvoiceMapper">
+    <!--view_sale_order_detail_by_invoice 订单查询视图-->
+    <!--price_type:计价类型(1:先计价 2:后计价)-->
+    <!--1:先计价 订单可以随时开票-->
+    <!--2:后计价 订单明细状态(5:已发货)-->
+    <select id="findListPageOrderDetailByInvoice" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+            orderDetail.id id,
+            orderDetail.parent_id parentId,
+            orderDetail.state state,
+            CASE
+                WHEN orderDetail.state = '0' THEN '待提交'
+                WHEN orderDetail.state = '1' THEN '待审核'
+                WHEN orderDetail.state = '2' THEN '待生产'
+                WHEN orderDetail.state = '3' THEN '待出库'
+                WHEN orderDetail.state = '4' THEN '待发货'
+                WHEN orderDetail.state = '5' THEN '已发货'
+                WHEN orderDetail.state = '6' THEN '已完成'
+                WHEN orderDetail.state = '-1' THEN '已取消'
+            ELSE null
+            END stateName,
+
+            orderDetail.file_url fileUrl,
+            DATE_FORMAT(orderDetail.deliver_date,'%Y-%m-%d') deliverDate,
+
+            round(ifnull(orderDetail.count, 0),2) count,
+            round(ifnull(orderDetail.product_count, 0),2) productCount,
+            orderDetail.product_id productId,
+            round(ifnull(orderDetail.product_price, 0),2) productPrice,
+            round(ifnull(orderDetail.product_sum, 0),2) productSum,
+
+            orderDetail.product_unit productUnit,
+            orderDetail.price_unit priceUnit,
+            orderDetail.is_lock_warehouse isLockWarehouse,
+            orderDetail.is_need_produce isNeedProduce,
+            orderDetail.lock_count lockCount,
+
+            orderDetail.lock_date lockDate,
+            orderDetail.deliver_detail_id deliverDetailId,
+            orderDetail.plan_detail_id planDetailId,
+            orderDetail.cuser cuser,
+            DATE_FORMAT(orderDetail.cdate,'%Y-%m-%d %T') cdate,
+
+            orderDetail.uuser uuser,
+            DATE_FORMAT(orderDetail.udate,'%Y-%m-%d %T') udate,
+            orderDetail.remark remark,
+            orderDetail.isdisable isdisable,
+
+            <!--货品表-->
+            product.code productCode,
+            product.name productName,
+            product.spec productSpec,
+            product.genre productGenre,
+
+            priceUnit.name priceUnitName,
+            genre.name productGenreName,
+
+            <!--发货完成数量-->
+            deliver.deliver_count deliverCount,
+            <!--开票完成数量-->
+            invoice.invoice_count invoiceCount
+
+        from view_sale_order_detail_by_invoice orderDetail
+            left join vmes_product product on orderDetail.product_id = product.id
+            left join vmes_dictionary priceUnit on orderDetail.price_unit = priceUnit.id
+            left join vmes_dictionary genre on product.genre = genre.id
+
+            <!--发货明细表汇总(1:已发货) vmes_sale_deliver_detail-->
+            left join (
+                select order_detai_id,product_id,order_unit, sum(count) deliver_count
+                from vmes_sale_deliver_detail
+                where state = '1'
+                group by order_detai_id,product_id,order_unit
+            ) deliver on (orderDetail.id = deliver.order_detai_id)
+                      and (orderDetail.product_id = deliver.product_id)
+                      and (orderDetail.price_unit = deliver.order_unit)
+
+            <!--开票明细表汇总(1:已开票) vmes_sale_invoice_detail-->
+            left join (
+                select order_detail_id,product_id,price_unit, sum(count) invoice_count
+                from vmes_sale_invoice_detail
+                where state = '1'
+            group by order_detail_id,product_id,price_unit
+            ) invoice on (orderDetail.id = invoice.order_detail_id)
+                        and (orderDetail.product_id = invoice.product_id)
+                        and (orderDetail.price_unit = invoice.price_unit)
+
+    </select>
+
+</mapper>
