@@ -134,19 +134,18 @@
         isdisable,ishide,isedit,ismust,cdate,
         cuser
         ) VALUES
-            (replace(uuid(), '-', ''),'SaleReceive','code','收款单编码',1, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleReceive','type','收款单类型（0：预收款 1：普通收款）',2, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleReceive','customerId','客户ID',3, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleReceive','receiveSum','收款单总额',4, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleReceive','cuser','创建用户id',5, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleReceive','cdate','创建时间',6, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleReceive','uuser','修改用户id',7, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleReceive','udate','修改时间',8, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleReceive','remark','备注',9, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleReceive','isdisable','是否启用(0:已禁用 1:启用)',10, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleReceive','companyId','公司ID',11, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleReceive','id','id',0, '1','1','1','0',now(), 'admin')
+            (replace(uuid(), '-', ''),'SaleReceive','code','收款单号',1, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceive','name','客户名称',2, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceive','type','收款类型',3, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceive','customerId','客户ID',4, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceive','receiveSum','收款总额',5, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceive','cdate','收款日期',6, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceive','remark','备注',7, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceive','isdisable','是否启用',8, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceive','companyId','公司ID',9, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceive','id','id',0, '1','0','1','0',now(), 'admin')
     </insert>
+
 
 
     <!-- 列表(全部) 自动创建，禁止修改-->
@@ -231,19 +230,28 @@
     <!-- 自动创建，可以修改 -->
     <select id="getDataList"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
         select
-        <include refid="Field1"></include>
-        from
-        <include refid="tableName"></include>
+        receive.id,
+        receive.code,
+        customer.id customerId,
+        customer.name,
+        round(ifnull(receive.receive_sum, 0),2) receiveSum,
+        case when receive.type='1' then '普通收款' when receive.type='0' then '预收款' else null end type,
+        DATE_FORMAT(receive.cdate,'%Y-%m-%d') cdate
+        from vmes_sale_receive receive
+        left join vmes_customer customer on customer.id = receive.customer_id
         <where>
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >
                 and ${queryStr}
             </if>
             <if test="code != null and code != ''">
-                and code LIKE CONCAT(CONCAT('%', #{code}),'%')
+                and receive.code LIKE CONCAT(CONCAT('%', #{code}),'%')
             </if>
             <if test="name != null and name != ''">
-                and name LIKE CONCAT(CONCAT('%', #{name}),'%')
+                and customer.name LIKE CONCAT(CONCAT('%', #{name}),'%')
+            </if>
+            <if test="customerId != null and customerId != ''">
+                and customer.id = #{customerId}
             </if>
         </where>
         <if test="orderStr != null and orderStr != ''" >
@@ -254,19 +262,28 @@
     <!-- 自动创建，可以修改 -->
     <select id="getDataListPage"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
         select
-        <include refid="Field1"></include>
-        from
-        <include refid="tableName"></include>
+        receive.id,
+        receive.code,
+        customer.id customerId,
+        customer.name,
+        round(ifnull(receive.receive_sum, 0),2) receiveSum,
+        case when receive.type='1' then '普通收款' when receive.type='0' then '预收款' else null end type,
+        DATE_FORMAT(receive.cdate,'%Y-%m-%d') cdate
+        from vmes_sale_receive receive
+        left join vmes_customer customer on customer.id = receive.customer_id
         <where>
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >
                 and ${queryStr}
             </if>
             <if test="code != null and code != ''">
-                and code LIKE CONCAT(CONCAT('%', #{code}),'%')
+                and receive.code LIKE CONCAT(CONCAT('%', #{code}),'%')
             </if>
             <if test="name != null and name != ''">
-                and name LIKE CONCAT(CONCAT('%', #{name}),'%')
+                and customer.name LIKE CONCAT(CONCAT('%', #{name}),'%')
+            </if>
+            <if test="customerId != null and customerId != ''">
+                and customer.id = #{customerId}
             </if>
         </where>
         <if test="orderStr != null and orderStr != ''" >

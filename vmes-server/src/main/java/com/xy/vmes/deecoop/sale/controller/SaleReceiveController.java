@@ -267,7 +267,7 @@ public class SaleReceiveController {
         String id = Conv.createUuid();
         String companyID = pd.getString("currentCompanyId");
         //出库单编号
-        String code = coderuleService.createCoder(companyID, "vmes_sale_receive", "O");
+        String code = coderuleService.createCoder(companyID, "vmes_sale_receive", "R");
         saleReceive.setId(id);
         saleReceive.setCode(code);
         saleReceive.setType("1");//收款类型(0:预收款 1:普通收款 )

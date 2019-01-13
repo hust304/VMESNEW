@@ -377,6 +377,16 @@ public class CustomerController {
         result.put("varList",varMapList);
         result.put("pageData", pg);
 
+        List<Map> preReceive = customerService.getPreReceiveAmount(pd);
+        if(preReceive!=null&&preReceive.size()>0){
+            result.put("preReceiveAmount", preReceive.get(0).get("preReceiveAmount"));
+        }
+
+        List<Map> nowReceive = customerService.getNowReceiveAmount(pd);
+        if(nowReceive!=null&&nowReceive.size()>0){
+            result.put("nowReceiveAmount", nowReceive.get(0).get("nowReceiveAmount"));
+        }
+
         model.putResult(result);
         Long endTime = System.currentTimeMillis();
         logger.info("################customer/listPageCustomerReceive 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");

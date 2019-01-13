@@ -417,6 +417,74 @@
         group by id,code,name,type,typeName,province,provinceName,balance,accountDays
     </select>
 
+
+
+    <!-- 自动创建，可以修改 -->
+    <select id="getPreReceiveAmount"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
+        select round(sum(ifnull(balance,0)),2) preReceiveAmount
+        from vmes_customer customer
+        <where>
+            and customer.isdisable = 1
+            and customer.genre = 'df7cb67fca4148bc9632c908e4a7fdea'
+            <if test="currentCompanyId != null and currentCompanyId != ''">
+                and customer.company_id = #{currentCompanyId}
+            </if>
+            <if test="queryStr != null and queryStr!=''" >
+                and ${queryStr}
+            </if>
+            <if test="selfQueryStr != null and selfQueryStr != ''" >
+                or ${selfQueryStr}
+            </if>
+        </where>
+        group by customer.company_id
+    </select>
+
+    <select id="getNowReceiveAmount"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
+        select
+          round(SUM(IFNULL(orderAmount,0)) - SUM(IFNULL(acceptAmount,0)),2) nowReceiveAmount
+        from (
+            select
+                customer.company_id companyId,
+                sum(ifnull(detail.receive_amount,0)) acceptAmount,
+                0.0000 orderAmount
+            from vmes_customer customer
+            left join vmes_sale_receive receive on receive.customer_id = customer.id
+            left join vmes_sale_receive_detail detail on detail.parent_id = receive.id  and detail.state = '1'
+            <where>
+                and customer.isdisable = 1
+                and customer.genre = 'df7cb67fca4148bc9632c908e4a7fdea'
+                <if test="currentCompanyId != null and currentCompanyId != ''">
+                    and customer.company_id = #{currentCompanyId}
+                </if>
+                <if test="queryStr != null and queryStr!=''" >
+                    and ${queryStr}
+                </if>
+            </where>
+            group by customer.id
+
+            union all
+
+            select
+                customer.company_id companyId,
+                0.0000 acceptAmount,
+                sum(ifnull(saleoder.order_sum,0)) orderAmount
+            from vmes_customer customer
+            left join vmes_sale_order saleoder on saleoder.customer_id = customer.id
+            <where>
+                and customer.isdisable = 1
+                and customer.genre = 'df7cb67fca4148bc9632c908e4a7fdea'
+                <if test="currentCompanyId != null and currentCompanyId != ''">
+                    and customer.company_id = #{currentCompanyId}
+                </if>
+                <if test="queryStr != null and queryStr!=''" >
+                    and ${queryStr}
+                </if>
+            </where>
+            group by customer.id
+        ) tab
+        group by companyId
+    </select>
+
     <!-- 自动创建，可以修改 -->
     <select id="getTreeList"  parameterType="com.yvan.PageData"  resultType="com.xy.vmes.entity.TreeEntity">
         select
@@ -448,6 +516,7 @@
             </if>
         </where>
     </select>
+
 
     <!--库存数量-并发(version)控制-->
     <update id="updateCustomerBalance" parameterType="com.yvan.PageData">
