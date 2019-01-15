@@ -28,10 +28,13 @@ public class SaleInvoice implements Serializable {
 	//订单ID
 	@TableField("order_id")
 	private String orderId;
+	//发票类型(1:不开票 2:普票发票 3:增值税发票)
+	@TableField("receipt_type")
+	private String receiptType;
+
 	//发票编号(系统生成)
 	@TableField("sys_code")
 	private String sysCode;
-
 	//发票编号(用户)
 	@TableField("invoice_number")
 	private String invoiceNumber;
@@ -44,10 +47,10 @@ public class SaleInvoice implements Serializable {
 	//创建用户id
 	@TableField("cuser")
 	private String cuser;
+
 	//创建时间
 	@TableField("cdate")
 	private Date cdate;
-
 	//修改用户id
 	@TableField("uuser")
 	private String uuser;
@@ -145,6 +148,12 @@ public class SaleInvoice implements Serializable {
 	}
 	public void setTotalSum(BigDecimal totalSum) {
 		this.totalSum = totalSum;
+	}
+	public String getReceiptType() {
+		return receiptType;
+	}
+	public void setReceiptType(String receiptType) {
+		this.receiptType = receiptType;
 	}
 /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 

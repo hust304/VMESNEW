@@ -1,6 +1,9 @@
 package com.xy.vmes.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.entity.SaleDeliver;
+import com.xy.vmes.entity.SaleDeliverDetail;
+import com.xy.vmes.entity.SaleInvoice;
 import com.xy.vmes.entity.SaleInvoiceDetail;
 import com.yvan.PageData;
 
@@ -100,6 +103,9 @@ public interface SaleInvoiceDetailService {
 
     List<SaleInvoiceDetail> findSaleInvoiceDetailList(PageData object) throws Exception;
     List<SaleInvoiceDetail> findSaleInvoiceDetailListByParentId(String parentId) throws Exception;
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    void addInvoiceDetail(SaleInvoice parentObj, List<SaleInvoiceDetail> detailList) throws Exception;
 
 
 }

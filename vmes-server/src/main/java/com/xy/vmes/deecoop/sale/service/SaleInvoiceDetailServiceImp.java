@@ -3,6 +3,7 @@ package com.xy.vmes.deecoop.sale.service;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.sale.dao.SaleInvoiceDetailMapper;
+import com.xy.vmes.entity.SaleInvoice;
 import com.xy.vmes.entity.SaleInvoiceDetail;
 import com.xy.vmes.service.SaleInvoiceDetailService;
 import com.yvan.PageData;
@@ -205,6 +206,21 @@ public class SaleInvoiceDetailServiceImp implements SaleInvoiceDetailService {
         pageData.put("parentIds", "parent_id in (" + parentIds + ")");
 
         saleInvoiceDetailMapper.updateStateByDetail(pageData);
+    }
+
+
+    public void addInvoiceDetail(SaleInvoice parentObj, List<SaleInvoiceDetail> detailList) throws Exception {
+        if (parentObj == null) {return;}
+        if (detailList == null || detailList.size() == 0) {return;}
+
+        for (SaleInvoiceDetail detail : detailList) {
+            //state:状态(0:待开票 1:已开票 -1:已取消)
+            detail.setState("0");
+            detail.setParentId(parentObj.getId());
+            detail.setCuser(parentObj.getCuser());
+
+            this.save(detail);
+        }
     }
 }
 

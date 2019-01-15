@@ -17,5 +17,6 @@ import java.util.Map;
 @Mapper
 @Repository
 public interface SaleOrderDetailByInvoiceMapper {
+    List<Map> findListPageOrderDetailByInvoice(PageData pd);
     List<Map> findListPageOrderDetailByInvoice(PageData pd, Pagination pg);
 }

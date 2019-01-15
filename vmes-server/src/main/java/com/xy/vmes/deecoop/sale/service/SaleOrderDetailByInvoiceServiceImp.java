@@ -17,6 +17,9 @@ public class SaleOrderDetailByInvoiceServiceImp implements SaleOrderDetailByInvo
     @Autowired
     private SaleOrderDetailByInvoiceMapper saleOrderDetailByInvoiceMapper;
 
+    public List<Map> findListPageOrderDetailByInvoice(PageData pd) throws Exception {
+        return saleOrderDetailByInvoiceMapper.findListPageOrderDetailByInvoice(pd);
+    }
     public List<Map> findListPageOrderDetailByInvoice(PageData pd, Pagination pg) throws Exception {
         return saleOrderDetailByInvoiceMapper.findListPageOrderDetailByInvoice(pd, pg);
     }

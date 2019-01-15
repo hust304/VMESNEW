@@ -34,7 +34,7 @@
         udate = now()
         <where>
             <if test="ids != null and ids != ''" >
-                and ${ids}
+                and id in (${ids})
             </if>
         </where>
     </update>
@@ -46,36 +46,36 @@
         isdisable,ishide,isedit,ismust,cdate,
         cuser
         ) VALUES
-            (replace(uuid(), '-', ''),'saleInvoice','companyId','企业ID',1, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleInvoice','customerId','客户ID',2, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleInvoice','orderId','订单ID',3, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleInvoice','sysCode','发票编号(系统生成)',4, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleInvoice','invoiceNumber','发票编号(用户)',5, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleInvoice','state','发票状态(0:待开票 1:已开票 -1:已开票)',6, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleInvoice','cuser','创建用户id',7, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleInvoice','cdate','创建时间',8, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleInvoice','uuser','修改用户id',9, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleInvoice','udate','修改时间',10, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleInvoice','remark','备注',11, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleInvoice','isdisable','是否启用(0:已禁用 1:启用)',12, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleInvoice','id','id',0, '1','1','1','0',now(), 'admin'),
-
-            (replace(uuid(), '-', ''),'saleInvoice','stateName','stateName',0, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleInvoice','cuserName','cuserName',0, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleInvoice','cuserDeptName','cuserDeptName',0, '1','1','1','0',now(), 'admin'),
-
-        (replace(uuid(), '-', ''),'saleInvoice','orderSysCode','orderSysCode',0, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'saleInvoice','orderNumber','orderNumber',0, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'saleInvoice','customerName','customerName',0, '1','1','1','0',now(), 'admin'),
-
-        (replace(uuid(), '-', ''),'saleInvoice','custInvoiceCompanyName','custInvoiceCompanyName',0, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'saleInvoice','custInvoiceNumber','custInvoiceNumber',0, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'saleInvoice','custInvoiceAddress','custInvoiceAddress',0, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'saleInvoice','custInvoiceBankName','custInvoiceBankName',0, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'saleInvoice','custInvoiceBankCode','custInvoiceBankCode',0, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'saleInvoice','custInvoicePhone','custInvoicePhone',0, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'saleInvoice','custInvoiceMobile','custInvoiceMobile',0, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'saleInvoice','totalSum','totalSum',0, '1','1','1','0',now(), 'admin')
+            (replace(uuid(), '-', ''), 'saleInvoice', 'parentId', '开票单id', 0, '1', '0', '1', '0', '2018-12-5 17:35:26', 'admin'),
+            (replace(uuid(), '-', ''), 'saleInvoice', 'receiptTypeName', '发票类型', 0, '1', '1', '1', '0', '2018-12-6 10:53:24', 'admin'),
+            (replace(uuid(), '-', ''), 'saleInvoice', 'id', 'id', 0, '1', '0', '1', '0', '2019-1-11 12:20:39', 'admin'),
+            (replace(uuid(), '-', ''), 'saleInvoice', 'orderId', '订单ID', 1, '1', '0', '1', '0', '2019-1-11 12:20:39', 'admin'),
+            (replace(uuid(), '-', ''), 'saleInvoice', 'customerId', '客户ID', 2, '1', '0', '1', '0', '2019-1-11 12:20:39', 'admin'),
+            (replace(uuid(), '-', ''), 'saleInvoice', 'companyId', '企业ID', 3, '1', '0', '1', '0', '2019-1-11 12:20:39', 'admin'),
+            (replace(uuid(), '-', ''), 'saleInvoice', 'orderSysCode', '订单编号', 4, '1', '1', '1', '0', '2019-1-11 12:20:39', 'admin'),
+            (replace(uuid(), '-', ''), 'saleInvoice', 'orderNumber', '订单编号', 5, '1', '0', '1', '0', '2019-1-11 12:20:39', 'admin'),
+            (replace(uuid(), '-', ''), 'saleInvoice', 'sysCode', '发票编号', 6, '1', '0', '1', '0', '2019-1-11 12:20:39', 'admin'),
+            (replace(uuid(), '-', ''), 'saleInvoice', 'invoiceNumber', '发票编号', 7, '1', '0', '1', '0', '2019-1-11 12:20:39', 'admin'),
+            (replace(uuid(), '-', ''), 'saleInvoice', 'totalSum', '开票金额', 8, '1', '1', '1', '0', '2019-1-11 14:29:40', 'admin'),
+            (replace(uuid(), '-', ''), 'saleInvoice', 'state', '状态id', 9, '1', '0', '1', '0', '2019-1-11 12:20:39', 'admin'),
+            (replace(uuid(), '-', ''), 'saleInvoice', 'stateName', '状态', 9, '1', '1', '1', '0', '2019-1-11 12:20:39', 'admin'),
+            (replace(uuid(), '-', ''), 'saleInvoice', 'cuserDeptId', '申请部门id', 10, '1', '0', '1', '0', '2019-1-11 13:12:02', 'admin'),
+            (replace(uuid(), '-', ''), 'saleInvoice', 'cuserDeptName', '申请部门', 10, '1', '1', '1', '0', '2019-1-11 13:09:50', 'admin'),
+            (replace(uuid(), '-', ''), 'saleInvoice', 'cuserName', '申请人', 11, '1', '1', '1', '0', '2019-1-11 12:20:39', 'admin'),
+            (replace(uuid(), '-', ''), 'saleInvoice', 'cuser', '申请人id', 11, '1', '0', '1', '0', '2019-1-11 12:20:39', 'admin'),
+            (replace(uuid(), '-', ''), 'saleInvoice', 'cdate', '申请日期', 12, '1', '1', '1', '0', '2019-1-11 12:20:39', 'admin'),
+            (replace(uuid(), '-', ''), 'saleInvoice', 'uuser', '修改用户id', 13, '1', '0', '1', '0', '2019-1-11 12:20:39', 'admin'),
+            (replace(uuid(), '-', ''), 'saleInvoice', 'udate', '修改时间', 14, '1', '0', '1', '0', '2019-1-11 12:20:39', 'admin'),
+            (replace(uuid(), '-', ''), 'saleInvoice', 'remark', '备注', 16, '1', '0', '1', '0', '2019-1-11 12:20:39', 'admin'),
+            (replace(uuid(), '-', ''), 'saleInvoice', 'isdisable', '是否启用', 17, '1', '0', '1', '0', '2019-1-11 12:20:39', 'admin'),
+            (replace(uuid(), '-', ''), 'saleInvoice', 'customerName', '客户名称', 18, '1', '1', '1', '0', '2019-1-11 12:20:39', 'admin'),
+            (replace(uuid(), '-', ''), 'saleInvoice', 'custInvoiceCompanyName', '公司名称', 19, '1', '1', '1', '0', '2019-1-11 12:20:39', 'admin'),
+            (replace(uuid(), '-', ''), 'saleInvoice', 'custInvoiceNumber', '税号', 20, '1', '1', '1', '0', '2019-1-11 12:20:39', 'admin'),
+            (replace(uuid(), '-', ''), 'saleInvoice', 'custInvoiceAddress', '地址', 21, '1', '1', '1', '0', '2019-1-11 12:20:39', 'admin'),
+            (replace(uuid(), '-', ''), 'saleInvoice', 'custInvoiceBankName', '开户行', 22, '1', '1', '1', '0', '2019-1-11 12:20:39', 'admin'),
+            (replace(uuid(), '-', ''), 'saleInvoice', 'custInvoiceBankCode', '银行账号', 23, '1', '1', '1', '0', '2019-1-11 12:20:39', 'admin'),
+            (replace(uuid(), '-', ''), 'saleInvoice', 'custInvoicePhone', '电话', 24, '1', '0', '1', '0', '2019-1-11 12:20:39', 'admin'),
+            (replace(uuid(), '-', ''), 'saleInvoice', 'custInvoiceMobile', '客户手机', 25, '1', '1', '1', '0', '2019-1-11 12:20:39', 'admin'),
 
     </insert>
 
@@ -87,14 +87,15 @@
         company_id companyId,
         customer_id customerId,
         order_id orderId,
-        sys_code sysCode,
+        receipt_type receiptType,
 
+        sys_code sysCode,
         invoice_number invoiceNumber,
         total_sum totalSum,
         state state,
         cuser cuser,
-        cdate cdate,
 
+        cdate cdate,
         uuser uuser,
         udate udate,
         remark remark,
@@ -131,13 +132,21 @@
     <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
         invoice.id id,
+        invoice.id parentId,
         invoice.company_id companyId,
         invoice.customer_id customerId,
         invoice.order_id orderId,
-        invoice.sys_code sysCode,
+        invoice.receipt_type receiptType,
+        CASE
+        WHEN saleOrder.receipt_type = '1' THEN '不开票'
+        WHEN saleOrder.receipt_type = '2' THEN '普通发票'
+        WHEN saleOrder.receipt_type = '3' THEN '增值税发票'
+        ELSE null
+        END receiptTypeName,
 
+        invoice.sys_code sysCode,
         invoice.invoice_number invoiceNumber,
-        invoice.total_sum totalSum,
+        round(ifnull(invoice.total_sum, 0),2) totalSum,
         invoice.state state,
         CASE
         WHEN invoice.state = '0' THEN '待开票'
@@ -149,11 +158,9 @@
         cuser.user_name cuserName,
         cuser.dept_id cuserDeptId,
         cuserDept.name cuserDeptName,
-        invoice.cdate cdate,
-        DATE_FORMAT(invoice.cdate,'%Y-%m-%d') cdate,
 
+        DATE_FORMAT(invoice.cdate,'%Y-%m-%d %T') cdate,
         invoice.uuser uuser,
-        invoice.udate udate,
         DATE_FORMAT(invoice.udate,'%Y-%m-%d %T') udate,
         invoice.remark remark,
         invoice.isdisable isdisable,

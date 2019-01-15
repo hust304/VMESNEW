@@ -58,6 +58,15 @@
             makeUser.user_name makeName,
             customer.name customerName,
 
+            <!-- 客户开票信息 -->
+            customerInvoice.company_name custInvoiceCompanyName,
+            customerInvoice.invoice_number custInvoiceNumber,
+            customerInvoice.address custInvoiceAddress,
+            customerInvoice.bank_name custInvoiceBankName,
+            customerInvoice.bank_code custInvoiceBankCode,
+            customerInvoice.phone custInvoicePhone,
+            customerInvoice.mobile custInvoiceMobile,
+
             <!--Y:已生成开票订单 N:未生成开票订单-->
         <!--
             CASE
@@ -66,8 +75,6 @@
             ELSE 'N'
             END isOrderInvoice,
         -->
-            <!--已生成开票订单ID-->
-            orderInvoice.order_id invoiceOrderId,
 
             <!--已收款-->
             round(ifnull(receive.receive_sum, 0), 2) receiveSum,
@@ -78,11 +85,12 @@
         from view_sale_order_by_invoice saleOrder
         left join vmes_customer customer on saleOrder.customer_id = customer.id
         left join vmes_user makeUser on saleOrder.make_id = makeUser.id
+        left join vmes_customer_invoice customerInvoice on saleOrder.customer_id = customerInvoice.customer_id and customerInvoice.isdefault = '1'
 
         <!--付款明细表汇总 view_sale_receive_detail-->
         left join view_sale_receive_detail receive on saleOrder.id = receive.order_id
 
-        <!--开票明细表汇总(1:已发货) view_sale_invoice_detail-->
+        <!--开票明细表汇总(1:已开票) view_sale_invoice_detail-->
         left join view_sale_invoice_detail invoice on saleOrder.id = receive.order_id
 
         <!--发货明细表汇总(1:已发货) vmes_sale_deliver_detail-->
@@ -94,6 +102,7 @@
         ) deliver on saleOrder.id = deliver.order_id
 
         <!--已生成开票订单查询-->
+        <!--
         left join (
             select b.parent_id order_id
             from vmes_sale_invoice_detail a
@@ -101,6 +110,7 @@
             where a.state in ('0','1')
             group by b.parent_id
         ) orderInvoice on saleOrder.id = orderInvoice.order_id
+        -->
         <where>
             <if test="currentCompanyId != null and currentCompanyId != ''" >
                 and saleOrder.company_id = #{currentCompanyId}
@@ -118,7 +128,58 @@
                 and customer.name LIKE CONCAT(CONCAT(#{customerName}),'%')
             </if>
         </where>
-
+        <if test="orderStr != null and orderStr != ''" >
+            order by ${orderStr}
+        </if>
     </select>
+
+    <insert id="insertColumn" >
+        delete from vmes_column where model_code = 'saleOrderByInvoice' ;
+        insert into vmes_column (
+        id,model_code,title_key,title_name,serial_number,
+        isdisable,ishide,isedit,ismust,cdate,
+        cuser
+        ) VALUES
+            (replace(uuid(), '-', ''), 'saleOrderByInvoice', 'id', 'id', 0, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderByInvoice', 'parentId', '订单id', 0, '1', '0', '1', '0', '2018-12-5 17:35:26', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderByInvoice', 'orderNumber', '订单编号', 1, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderByInvoice', 'sysCode', '订单编号', 2, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderByInvoice', 'customerName', '客户名称', 3, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderByInvoice', 'customerId', '客户id', 3, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderByInvoice', 'orderDate', '下单日期', 4, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderByInvoice', 'expectDate', '约定交期', 5, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderByInvoice', 'deliverDate', '发货完成日期', 5, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderByInvoice', 'makeId', '制单人id', 6, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderByInvoice', 'makeName', '制单人', 6, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderByInvoice', 'state', '订单状态id', 7, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderByInvoice', 'orderStateByQuery', '订单状态', 7, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderByInvoice', 'stateName', '订单状态', 7, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderByInvoice', 'remark', '备注', 8, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderByInvoice', 'companyId', '企业ID', 9, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderByInvoice', 'priceType', '计价类型(1:先计价 2:后计价)', 10, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderByInvoice', 'receiptType', '发票类型id', 11, '1', '0', '1', '0', '2018-12-6 10:53:24', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderByInvoice', 'receiptTypeName', '发票类型', 12, '1', '0', '1', '0', '2018-12-6 10:53:24', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderByInvoice', 'totalSum', '合计金额', 13, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderByInvoice', 'discountSum', '折扣金额', 14, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderByInvoice', 'orderSum', '订单金额', 15, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderByInvoice', 'advanceSum', '预付款', 16, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderByInvoice', 'receivables', '应收款(发货金额-预付款)', 17, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderByInvoice', 'receiveSum', '已收款', 18, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderByInvoice', 'invoiceSum', '开票金额(已完成)', 19, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderByInvoice', 'deliverSum', '发货金额', 20, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderByInvoice', 'cuser', '创建用户id', 22, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderByInvoice', 'cdate', '创建时间', 23, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderByInvoice', 'uuser', '修改用户id', 24, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderByInvoice', 'udate', '修改时间', 25, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderByInvoice', 'isdisable', '是否启用(0:已禁用 1:启用)', 26, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderByInvoice', 'custInvoiceCompanyName', 'custInvoiceCompanyName', 27, '1', '0', '1', '0', '2019-1-14 17:21:56', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderByInvoice', 'custInvoiceNumber', 'custInvoiceNumber', 28, '1', '0', '1', '0', '2019-1-14 17:21:56', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderByInvoice', 'custInvoiceAddress', 'custInvoiceAddress', 29, '1', '0', '1', '0', '2019-1-14 17:21:56', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderByInvoice', 'custInvoiceBankName', 'custInvoiceBankName', 30, '1', '0', '1', '0', '2019-1-14 17:21:56', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderByInvoice', 'custInvoiceBankCode', 'custInvoiceBankCode', 31, '1', '0', '1', '0', '2019-1-14 17:21:56', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderByInvoice', 'custInvoicePhone', 'custInvoicePhone', 32, '1', '0', '1', '0', '2019-1-14 17:21:56', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderByInvoice', 'custInvoiceMobile', 'custInvoiceMobile', 33, '1', '0', '1', '0', '2019-1-14 17:21:56', 'admin')
+
+    </insert>
 
 </mapper>

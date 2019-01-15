@@ -13,6 +13,8 @@
     <!--2:后计价 订单明细状态(5:已发货)-->
     <select id="findListPageOrderDetailByInvoice" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
+            orderDetail.price_type priceType,
+
             orderDetail.id id,
             orderDetail.parent_id parentId,
             orderDetail.state state,
@@ -27,32 +29,16 @@
                 WHEN orderDetail.state = '-1' THEN '已取消'
             ELSE null
             END stateName,
-
             orderDetail.file_url fileUrl,
             DATE_FORMAT(orderDetail.deliver_date,'%Y-%m-%d') deliverDate,
 
             round(ifnull(orderDetail.count, 0),2) count,
-            round(ifnull(orderDetail.product_count, 0),2) productCount,
+            '' nowInvoiceCount,
+            '' nowInvoiceSum,
             orderDetail.product_id productId,
             round(ifnull(orderDetail.product_price, 0),2) productPrice,
             round(ifnull(orderDetail.product_sum, 0),2) productSum,
-
-            orderDetail.product_unit productUnit,
             orderDetail.price_unit priceUnit,
-            orderDetail.is_lock_warehouse isLockWarehouse,
-            orderDetail.is_need_produce isNeedProduce,
-            orderDetail.lock_count lockCount,
-
-            orderDetail.lock_date lockDate,
-            orderDetail.deliver_detail_id deliverDetailId,
-            orderDetail.plan_detail_id planDetailId,
-            orderDetail.cuser cuser,
-            DATE_FORMAT(orderDetail.cdate,'%Y-%m-%d %T') cdate,
-
-            orderDetail.uuser uuser,
-            DATE_FORMAT(orderDetail.udate,'%Y-%m-%d %T') udate,
-            orderDetail.remark remark,
-            orderDetail.isdisable isdisable,
 
             <!--货品表-->
             product.code productCode,
@@ -64,9 +50,9 @@
             genre.name productGenreName,
 
             <!--发货完成数量-->
-            deliver.deliver_count deliverCount,
-            <!--开票完成数量-->
-            invoice.invoice_count invoiceCount
+            round(ifnull(deliver.deliver_count, 0),2) deliverCount,
+            <!--开票数量(已生成)-->
+            round(ifnull(invoice.invoice_count, 0),2) invoiceCount
 
         from view_sale_order_detail_by_invoice orderDetail
             left join vmes_product product on orderDetail.product_id = product.id
@@ -75,24 +61,73 @@
 
             <!--发货明细表汇总(1:已发货) vmes_sale_deliver_detail-->
             left join (
-                select order_detai_id,product_id,order_unit, sum(count) deliver_count
+                select order_detai_id,product_id,price_unit, sum(count) deliver_count
                 from vmes_sale_deliver_detail
                 where state = '1'
-                group by order_detai_id,product_id,order_unit
+                group by order_detai_id,product_id,price_unit
             ) deliver on (orderDetail.id = deliver.order_detai_id)
                       and (orderDetail.product_id = deliver.product_id)
-                      and (orderDetail.price_unit = deliver.order_unit)
+                      and (orderDetail.price_unit = deliver.price_unit)
 
-            <!--开票明细表汇总(1:已开票) vmes_sale_invoice_detail-->
+            <!--开票明细表汇总(0:待开票 1:已开票) vmes_sale_invoice_detail-->
             left join (
                 select order_detail_id,product_id,price_unit, sum(count) invoice_count
                 from vmes_sale_invoice_detail
-                where state = '1'
+                where state in ('0','1')
             group by order_detail_id,product_id,price_unit
             ) invoice on (orderDetail.id = invoice.order_detail_id)
                         and (orderDetail.product_id = invoice.product_id)
                         and (orderDetail.price_unit = invoice.price_unit)
+        <where>
+            <if test="parentId != null and parentId != ''" >
+                and orderDetail.parent_id = #{parentId}
+            </if>
+
+            <!--queryStr 自定义sql查询语句-->
+            <if test="queryStr != null and queryStr != ''" >
+                and ${queryStr}
+            </if>
+        </where>
+        <if test="orderStr != null and orderStr != ''" >
+            order by ${orderStr}
+        </if>
 
     </select>
+
+    <insert id="insertColumn" >
+        delete from vmes_column where model_code = 'saleOrderDetailByInvoice' ;
+        insert into vmes_column (
+        id,model_code,title_key,title_name,serial_number,
+        isdisable,ishide,isedit,ismust,cdate,
+        cuser
+        ) VALUES
+            (replace(uuid(), '-', ''), 'saleOrderDetailByInvoice', 'parentId', '订单id', 0, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByInvoice', 'id', 'id', 0, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByInvoice', 'productId', '货品id', 1, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByInvoice', 'productCode', '货品编码', 2, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByInvoice', 'productName', '货品名称', 3, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByInvoice', 'productSpec', '规格型号', 4, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByInvoice', 'productGenreName', '货品属性', 5, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByInvoice', 'productGenre', '货品属性id', 5, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByInvoice', 'productUnit', '计量单位id', 6, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByInvoice', 'productUnitName', '计量单位', 6, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByInvoice', 'productType', '货品类型id', 7, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByInvoice', 'priceUnit', '计价单位id', 8, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByInvoice', 'priceUnitName', '单位', 8, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByInvoice', 'count', '订购数量', 9, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByInvoice', 'productPrice', '单价', 10, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByInvoice', 'productSum', '订购金额', 11, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByInvoice', 'deliverCount', '已发货数量', 12, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByInvoice', 'invoiceCount', '开票数量(已生成)', 13, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByInvoice', 'nowInvoiceCount', '开票数量', 14, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByInvoice', 'nowInvoiceSum', '开票金额', 15, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByInvoice', 'deliverDate', '约定交期', 18, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByInvoice', 'fileUrl', '附件地址', 19, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByInvoice', 'remark', '备注', 20, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByInvoice', 'stateName', '状态', 21, '1', '0', '1', '0', '2018-12-6 09:25:40', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByInvoice', 'state', '明细状态id', 21, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByInvoice', 'priceType', 'priceType', 33, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin')
+
+    </insert>
 
 </mapper>

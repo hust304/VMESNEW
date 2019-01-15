@@ -143,7 +143,18 @@ public class SaleInvoiceDetail implements Serializable {
 	public String getIsdisable() {
 		return isdisable;
 	}
-
+	public String getProductId() {
+		return productId;
+	}
+	public void setProductId(String productId) {
+		this.productId = productId;
+	}
+	public String getPriceUnit() {
+		return priceUnit;
+	}
+	public void setPriceUnit(String priceUnit) {
+		this.priceUnit = priceUnit;
+	}
 /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 

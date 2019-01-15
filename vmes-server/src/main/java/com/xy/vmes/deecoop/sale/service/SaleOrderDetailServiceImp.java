@@ -5,11 +5,7 @@ import com.xy.vmes.common.util.Common;
 import com.xy.vmes.common.util.EvaluateUtil;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.sale.dao.SaleOrderDetailMapper;
-import com.xy.vmes.entity.SaleDeliverDetail;
-import com.xy.vmes.entity.SaleOrder;
-import com.xy.vmes.entity.SaleOrderDetail;
-import com.xy.vmes.entity.SaleOrderDetailEntity;
-import com.xy.vmes.entity.WarehouseOutDetail;
+import com.xy.vmes.entity.*;
 import com.xy.vmes.service.SaleOrderDetailService;
 import com.xy.vmes.service.SaleOrderService;
 import com.yvan.HttpUtils;
@@ -339,6 +335,44 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
         }
 
         return outDtlList;
+    }
+
+    public SaleInvoiceDetail orderDetail2InvoiceDetail(SaleOrderDetail orderDetail, SaleInvoiceDetail invoiceDetail) {
+        if (invoiceDetail == null) {invoiceDetail = new SaleInvoiceDetail();}
+        if (orderDetail == null) {return invoiceDetail;}
+
+        invoiceDetail.setOrderDetaiId(orderDetail.getId());
+        invoiceDetail.setProductId(orderDetail.getProductId());
+        invoiceDetail.setPriceUnit(orderDetail.getPriceUnit());
+
+        //productPrice 货品单价
+        invoiceDetail.setProductPrice(BigDecimal.valueOf(0D));
+        if (orderDetail.getProductPrice() != null) {
+            invoiceDetail.setProductPrice(orderDetail.getProductPrice());
+        }
+        //count 开票数量
+        invoiceDetail.setCount(BigDecimal.valueOf(0D));
+        if (orderDetail.getCount() != null) {
+            invoiceDetail.setCount(orderDetail.getCount());
+        }
+        //sum 发票金额 := 货品单价 * 开票数量
+        //四舍五入到2位小数
+        BigDecimal sum = BigDecimal.valueOf(invoiceDetail.getProductPrice().doubleValue() * invoiceDetail.getCount().doubleValue());
+        sum = sum.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+        invoiceDetail.setSum(sum);
+
+        return invoiceDetail;
+    }
+    public List<SaleInvoiceDetail> orderDtlList2InvoiceDtlList(List<SaleOrderDetail> orderDtlList, List<SaleInvoiceDetail> invoiceDtlList) {
+        if (invoiceDtlList == null) {invoiceDtlList = new ArrayList<SaleInvoiceDetail>();}
+        if (orderDtlList == null || orderDtlList.size() == 0) {return invoiceDtlList;}
+
+        for (SaleOrderDetail orderDtl : orderDtlList) {
+            SaleInvoiceDetail invoiceDetail = this.orderDetail2InvoiceDetail(orderDtl, null);
+            invoiceDtlList.add(invoiceDetail);
+        }
+
+        return invoiceDtlList;
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////

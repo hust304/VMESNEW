@@ -95,7 +95,7 @@ public class SaleOrderAuditController {
         String detailIds = pd.getString("detailIds");
         if (detailIds != null && detailIds.trim().length() > 0) {
             detailIds = StringUtil.stringTrimSpace(detailIds);
-            detailIds = "'" + detailIds.replace("'", "','") + "'";
+            detailIds = "'" + detailIds.replace(",", "','") + "'";
             pd.put("detailIds", detailIds);
         }
 

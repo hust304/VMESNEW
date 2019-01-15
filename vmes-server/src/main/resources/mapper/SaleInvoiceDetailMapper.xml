@@ -35,7 +35,7 @@
                 and parent_id = #{parentId}
             </if>
             <if test="parentIds != null and parentIds != ''" >
-                and ${parentIds}
+                and parent_id in (${parentIds})
             </if>
         </where>
     </update>
@@ -47,31 +47,28 @@
         isdisable,ishide,isedit,ismust,cdate,
         cuser
         ) VALUES
-            (replace(uuid(), '-', ''),'saleInvoiceDetail','parentId','发票ID',1, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleInvoiceDetail','deliverDetaiId','发货明细ID',3, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleInvoiceDetail','state','发票状态(0:待开票 1:已开票 -1:已开票)',4, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleInvoiceDetail','count','开票数量',5, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleInvoiceDetail','productPrice','货品单价',6, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleInvoiceDetail','sum','发票金额',7, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleInvoiceDetail','cuser','创建用户id',8, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleInvoiceDetail','cdate','创建时间',9, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleInvoiceDetail','uuser','修改用户id',10, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleInvoiceDetail','udate','修改时间',11, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleInvoiceDetail','remark','备注',12, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleInvoiceDetail','isdisable','是否启用(0:已禁用 1:启用)',13, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleInvoiceDetail','id','id',0, '1','1','1','0',now(), 'admin'),
-
-            (replace(uuid(), '-', ''),'saleInvoiceDetail','stateName','stateName',0, '1','1','1','0',now(), 'admin'),
-
-            (replace(uuid(), '-', ''), 'saleInvoiceDetail', 'productId', 'productId', 5, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
-            (replace(uuid(), '-', ''), 'saleInvoiceDetail', 'priceUnit', 'priceUnit', 5, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
-            (replace(uuid(), '-', ''), 'saleInvoiceDetail', 'priceUnitName', 'priceUnitName', 5, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
-
-            (replace(uuid(), '-', ''), 'saleInvoiceDetail', 'productCode', '货品编码', 2, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
-            (replace(uuid(), '-', ''), 'saleInvoiceDetail', 'productName', '货品名称', 3, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
-            (replace(uuid(), '-', ''), 'saleInvoiceDetail', 'productSpec', '规格型号', 4, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
-            (replace(uuid(), '-', ''), 'saleInvoiceDetail', 'productGenre', '货品属性id', 5, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
-            (replace(uuid(), '-', ''), 'saleInvoiceDetail', 'productGenreName', '货品属性', 5, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin')
+            (replace(uuid(), '-', ''), 'saleInvoiceDetail', 'id', 'id', 0, '1', '0', '1', '0', '2019-1-11 15:01:13', 'admin'),
+            (replace(uuid(), '-', ''), 'saleInvoiceDetail', 'parentId', '发票ID', 1, '1', '0', '1', '0', '2019-1-11 15:01:13', 'admin'),
+            (replace(uuid(), '-', ''), 'saleInvoiceDetail', 'orderDetaiId', '订单明细ID', 2, '1', '0', '1', '0', '2019-1-11 15:01:13', 'admin'),
+            (replace(uuid(), '-', ''), 'saleInvoiceDetail', 'productId', '货品id', 3, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleInvoiceDetail', 'productCode', '货品编码', 4, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleInvoiceDetail', 'productName', '货品名称', 5, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleInvoiceDetail', 'productSpec', '规格型号', 6, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleInvoiceDetail', 'productGenreName', '货品属性', 7, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleInvoiceDetail', 'productGenre', '货品属性id', 7, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleInvoiceDetail', 'priceUnit', '单位id', 8, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleInvoiceDetail', 'priceUnitName', '单位', 8, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleInvoiceDetail', 'count', '开票数量', 9, '1', '1', '1', '0', '2019-1-11 15:01:13', 'admin'),
+            (replace(uuid(), '-', ''), 'saleInvoiceDetail', 'productPrice', '货品单价', 10, '1', '1', '1', '0', '2019-1-11 15:01:13', 'admin'),
+            (replace(uuid(), '-', ''), 'saleInvoiceDetail', 'sum', '发票金额', 11, '1', '1', '1', '0', '2019-1-11 15:01:13', 'admin'),
+            (replace(uuid(), '-', ''), 'saleInvoiceDetail', 'stateName', '状态', 12, '1', '0', '1', '0', '2019-1-11 15:01:13', 'admin'),
+            (replace(uuid(), '-', ''), 'saleInvoiceDetail', 'state', '状态id', 12, '1', '0', '1', '0', '2019-1-11 15:01:13', 'admin'),
+            (replace(uuid(), '-', ''), 'saleInvoiceDetail', 'cuser', '创建用户id', 13, '1', '0', '1', '0', '2019-1-11 15:01:13', 'admin'),
+            (replace(uuid(), '-', ''), 'saleInvoiceDetail', 'cdate', '创建时间', 14, '1', '0', '1', '0', '2019-1-11 15:01:13', 'admin'),
+            (replace(uuid(), '-', ''), 'saleInvoiceDetail', 'uuser', '修改用户id', 15, '1', '0', '1', '0', '2019-1-11 15:01:13', 'admin'),
+            (replace(uuid(), '-', ''), 'saleInvoiceDetail', 'udate', '修改时间', 16, '1', '0', '1', '0', '2019-1-11 15:01:13', 'admin'),
+            (replace(uuid(), '-', ''), 'saleInvoiceDetail', 'remark', '备注', 17, '1', '0', '1', '0', '2019-1-11 15:01:13', 'admin'),
+            (replace(uuid(), '-', ''), 'saleInvoiceDetail', 'isdisable', '是否启用(0:已禁用 1:启用)', 18, '1', '0', '1', '0', '2019-1-11 15:01:13', 'admin')
 
 
     </insert>

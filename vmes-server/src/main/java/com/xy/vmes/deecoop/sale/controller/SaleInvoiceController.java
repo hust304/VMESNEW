@@ -3,14 +3,12 @@ package com.xy.vmes.deecoop.sale.controller;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.StringUtil;
-import com.xy.vmes.entity.Column;
-import com.xy.vmes.entity.SaleInvoice;
-import com.xy.vmes.service.ColumnService;
-import com.xy.vmes.service.SaleInvoiceDetailService;
-import com.xy.vmes.service.SaleInvoiceService;
+import com.xy.vmes.entity.*;
+import com.xy.vmes.service.*;
 import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
+import com.yvan.YvanUtil;
 import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.math.BigDecimal;
 import java.util.*;
 
 
@@ -41,7 +40,12 @@ public class SaleInvoiceController {
     private SaleInvoiceDetailService saleInvoiceDetailService;
 
     @Autowired
+    private SaleOrderDetailService saleOrderDetailService;
+
+    @Autowired
     private ColumnService columnService;
+    @Autowired
+    private CoderuleService coderuleService;
 
     /**
     * @author 陈刚 自动创建，可以修改
@@ -112,6 +116,181 @@ public class SaleInvoiceController {
         model.putResult(result);
         Long endTime = System.currentTimeMillis();
         logger.info("################saleInvoice/listPageSaleInvoice 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 新增开票单
+     * @author 陈刚
+     * @date 2019-01-08
+     * @throws Exception
+     */
+    @PostMapping("/saleInvoice/addSaleInvoice")
+    @Transactional
+    public ResultModel addSaleInvoice() throws Exception {
+        logger.info("################saleInvoice/addSaleInvoice 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        ResultModel model = new ResultModel();
+
+        PageData pageData = HttpUtils.parsePageData();
+        SaleOrder order = (SaleOrder)HttpUtils.pageData2Entity(pageData, new SaleOrder());
+        String companyId = pageData.getString("currentCompanyId");
+        String cuser = pageData.getString("cuser");
+
+        String dtlJsonStr = pageData.getString("dtlJsonStr");
+        if (dtlJsonStr == null || dtlJsonStr.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("请至少选择一行数据！");
+            return model;
+        }
+
+        List<Map<String, String>> mapList = (List<Map<String, String>>) YvanUtil.jsonToList(dtlJsonStr);
+        if (mapList == null || mapList.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("明细Json字符串-转换成List错误！");
+            return model;
+        }
+
+        //获取订单明细
+        List<SaleOrderDetail> orderDtlList = saleOrderDetailService.mapList2OrderDetailListByEdit(mapList, null);
+        //total_sum:合计金额
+        BigDecimal totalSum = saleOrderDetailService.findTotalSumByDetailList(orderDtlList);
+
+        //1. 创建开票单
+        SaleInvoice invoice = new SaleInvoice();
+
+        //开票单编号
+        //String code = coderuleService.createCoder(companyId, "vmes_sale_invoice", "FP");
+        //invoice.setSysCode(code);
+        invoice.setReceiptType(order.getReceiptType());
+        invoice.setCompanyId(companyId);
+        invoice.setCustomerId(order.getCustomerId());
+        invoice.setOrderId(order.getId());
+        invoice.setTotalSum(totalSum);
+        //state:状态(0:待开票 1:已开票 -1:已取消)
+        invoice.setState("0");
+        invoice.setCuser(cuser);
+        saleInvoiceService.save(invoice);
+
+        //2. 创建开票单明细
+        List<SaleInvoiceDetail> invoiceDtlList = saleOrderDetailService.orderDtlList2InvoiceDtlList(orderDtlList, null);
+        saleInvoiceDetailService.addInvoiceDetail(invoice, invoiceDtlList);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################saleInvoice/addSaleInvoice 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 修改开票单
+     * @author 陈刚
+     * @date 2019-01-08
+     * @throws Exception
+     */
+    @PostMapping("/saleInvoice/updateSaleInvoice")
+    @Transactional
+    public ResultModel updateSaleInvoice() throws Exception {
+        logger.info("################saleInvoice/updateSaleInvoice 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        ResultModel model = new ResultModel();
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################saleInvoice/updateSaleInvoice 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 完成开票单
+     * @author 陈刚
+     * @date 2019-01-08
+     * @throws Exception
+     */
+    @PostMapping("/saleInvoice/updateStateBySaleInvoice")
+    @Transactional
+    public ResultModel updateStateBySaleInvoice() throws Exception {
+        logger.info("################saleInvoice/updateStateBySaleInvoice 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        ResultModel model = new ResultModel();
+
+        PageData pageData = HttpUtils.parsePageData();
+        String ids = pageData.getString("ids");
+        if (ids == null || ids.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("请至少选择一行数据！");
+            return model;
+        }
+
+        ids = StringUtil.stringTrimSpace(ids);
+        ids = "'" + ids.replace(",", "','") + "'";
+
+        //修改开票明细状态(0:待开票 1:已开票 -1:已取消)
+        saleOrderDetailService.updateStateByDetail("1", ids);
+
+        //修改开票单状态(0:待开票 1:已开票 -1:已取消)
+        saleInvoiceService.updateStateByInvoice("1", ids);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################saleInvoice/updateStateBySaleInvoice 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 删除开票单
+     * @author 陈刚
+     * @date 2019-01-08
+     * @throws Exception
+     */
+    @PostMapping("/saleInvoice/deleteSaleInvoice")
+    @Transactional
+    public ResultModel deleteSaleInvoice() throws Exception {
+        logger.info("################saleInvoice/deleteSaleInvoice 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        ResultModel model = new ResultModel();
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################saleInvoice/deleteSaleInvoice 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 取消开票单
+     * @author 陈刚
+     * @date 2019-01-08
+     * @throws Exception
+     */
+    @PostMapping("/saleInvoice/cancelSaleInvoice")
+    @Transactional
+    public ResultModel cancelSaleInvoice() throws Exception {
+        logger.info("################saleInvoice/cancelSaleInvoice 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        ResultModel model = new ResultModel();
+
+        PageData pageData = HttpUtils.parsePageData();
+        String invoiceId = pageData.getString("id");
+        if (invoiceId == null || invoiceId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("开票单id为空或空字符串！");
+            return model;
+        }
+
+        //状态(0:待开票 1:已开票 -1:已取消)
+        SaleInvoice invoice = saleInvoiceService.findSaleInvoiceById(invoiceId);
+        if ("1".equals(invoice.getState())) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("当前开票单状态(已开票)，不可取消开票单！");
+            return model;
+        }
+
+        //取消开票单
+        //状态(0:待开票 1:已开票 -1:已取消)
+        invoice.setState("-1");
+        saleInvoiceService.update(invoice);
+
+        //开票明细状态(0:待开票 1:已开票 -1:已取消)
+        saleInvoiceDetailService.updateStateByDetail("-1", invoiceId);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################saleInvoice/cancelSaleInvoice 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 

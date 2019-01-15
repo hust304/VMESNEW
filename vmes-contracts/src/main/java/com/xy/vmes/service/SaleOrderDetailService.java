@@ -110,6 +110,9 @@ public interface SaleOrderDetailService {
 
     WarehouseOutDetail orderDetail2OutDetail(SaleOrderDetailEntity orderDetail, WarehouseOutDetail outDetail);
     List<WarehouseOutDetail> orderDtlList2OutDtlList(List<SaleOrderDetailEntity> orderDtlList, List<WarehouseOutDetail> outDtlList);
+
+    SaleInvoiceDetail orderDetail2InvoiceDetail(SaleOrderDetail orderDetail, SaleInvoiceDetail invoiceDetail);
+    List<SaleInvoiceDetail> orderDtlList2InvoiceDtlList(List<SaleOrderDetail> orderDtlList, List<SaleInvoiceDetail> invoiceDtlList);
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     BigDecimal findTotalSumByDetailList(List<SaleOrderDetail> objectList);
     void addSaleOrderDetail(SaleOrder parentObj, List<SaleOrderDetail> objectList) throws Exception;

@@ -46,19 +46,20 @@
         isdisable,ishide,isedit,ismust,cdate,
         cuser
         ) VALUES
-            (replace(uuid(), '-', ''), 'saleOrder', 'id', 'id', 0, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
             (replace(uuid(), '-', ''), 'saleOrder', 'parentId', '订单id', 0, '1', '0', '1', '0', '2018-12-5 17:35:26', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrder', 'id', 'id', 0, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
             (replace(uuid(), '-', ''), 'saleOrder', 'orderNumber', '订单编号', 1, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
             (replace(uuid(), '-', ''), 'saleOrder', 'sysCode', '订单编号', 2, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
             (replace(uuid(), '-', ''), 'saleOrder', 'customerName', '客户名称', 3, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
             (replace(uuid(), '-', ''), 'saleOrder', 'customerId', '客户id', 3, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
             (replace(uuid(), '-', ''), 'saleOrder', 'orderDate', '下单日期', 4, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
-            (replace(uuid(), '-', ''), 'saleOrder', 'deliverDate', '交付日期', 5, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
-            (replace(uuid(), '-', ''), 'saleOrder', 'expectDate', '交付日期', 5, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
-            (replace(uuid(), '-', ''), 'saleOrder', 'makeName', '制单人', 6, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrder', 'expectDate', '约定交期', 5, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrder', 'deliverDate', '发货完成日期', 5, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
             (replace(uuid(), '-', ''), 'saleOrder', 'makeId', '制单人id', 6, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
-            (replace(uuid(), '-', ''), 'saleOrder', 'stateName', '订单状态', 7, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrder', 'makeName', '制单人', 6, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
             (replace(uuid(), '-', ''), 'saleOrder', 'state', '订单状态id', 7, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrder', 'stateName', '订单状态', 7, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrder', 'orderStateByQuery', '订单状态', 7, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
             (replace(uuid(), '-', ''), 'saleOrder', 'remark', '备注', 8, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
             (replace(uuid(), '-', ''), 'saleOrder', 'companyId', '企业ID', 9, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
             (replace(uuid(), '-', ''), 'saleOrder', 'priceType', '计价类型(1:先计价 2:后计价)', 10, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
@@ -74,8 +75,7 @@
             (replace(uuid(), '-', ''), 'saleOrder', 'cdate', '创建时间', 19, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
             (replace(uuid(), '-', ''), 'saleOrder', 'uuser', '修改用户id', 20, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
             (replace(uuid(), '-', ''), 'saleOrder', 'udate', '修改时间', 21, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
-            (replace(uuid(), '-', ''), 'saleOrder', 'isdisable', '是否启用(0:已禁用 1:启用)', 22, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
-            (replace(uuid(), '-', ''), 'saleOrder', 'orderStateByQuery', '订单状态', 7, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin')
+            (replace(uuid(), '-', ''), 'saleOrder', 'isdisable', '是否启用(0:已禁用 1:启用)', 22, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin')
 
     </insert>
 
