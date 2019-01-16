@@ -34,6 +34,7 @@
         isdisable,ishide,isedit,ismust,cdate,
         cuser
         ) VALUES
+            (replace(uuid(), '-', ''), 'saleOrderDetail', 'maxExpectDate', '最大约定交期', 0, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
             (replace(uuid(), '-', ''), 'saleOrderDetail', 'id', 'id', 0, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
             (replace(uuid(), '-', ''), 'saleOrderDetail', 'parentId', '订单id', 0, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
             (replace(uuid(), '-', ''), 'saleOrderDetail', 'productId', '货品id', 1, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
