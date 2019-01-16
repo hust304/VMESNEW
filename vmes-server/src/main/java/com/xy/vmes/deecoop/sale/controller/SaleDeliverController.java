@@ -271,7 +271,7 @@ public class SaleDeliverController {
             Boolean isAllOut = saleDeliverDetailService.checkIsAllOutByDeliverId(deliverId);
             if (isAllOut != null && !isAllOut.booleanValue()) {
                 model.putCode(Integer.valueOf(1));
-                model.putMsg("当前发货明细对应的出库明细状态(待派单,执行中,已取消)，必须全部出库完成，！");
+                model.putMsg("当前发货明细对应的出库明细状态(待派单,执行中,已取消)，必须全部出库完成！");
                 return model;
             }
         } catch (ApplicationException e) {

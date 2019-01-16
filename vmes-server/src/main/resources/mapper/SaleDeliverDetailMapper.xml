@@ -214,7 +214,7 @@
     <select id="findDeliverDetailByOutDetail" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
           deliverDtl.parent_id deliverId,
-          deliverDtl.id deliverDtlId
+          deliverDtl.id deliverDtlId,
           deliverDtl.out_detail_id outDtlId,
 
           outDtl.parent_id outParentId,
