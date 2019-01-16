@@ -167,7 +167,7 @@ public class SaleInvoiceServiceImp implements SaleInvoiceService {
 
         ids = StringUtil.stringTrimSpace(ids);
         ids = "'" + ids.replace(",", "','") + "'";
-        pageData.put("ids", "id in (" + ids + ")");
+        pageData.put("ids", ids);
 
         saleInvoiceMapper.updateStateByInvoice(pageData);
     }

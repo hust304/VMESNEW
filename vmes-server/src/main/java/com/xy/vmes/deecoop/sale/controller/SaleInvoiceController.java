@@ -266,7 +266,7 @@ public class SaleInvoiceController {
         }
 
         ids = StringUtil.stringTrimSpace(ids);
-        ids = "'" + ids.replace(",", "','") + "'";
+        //ids = "'" + ids.replace(",", "','") + "'";
 
         //修改开票明细状态(0:待开票 1:已开票 -1:已取消)
         saleInvoiceDetailService.updateStateByDetail("1", ids);
