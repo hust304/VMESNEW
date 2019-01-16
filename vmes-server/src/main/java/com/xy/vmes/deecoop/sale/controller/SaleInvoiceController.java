@@ -194,6 +194,51 @@ public class SaleInvoiceController {
         Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
 
+        PageData pageData = HttpUtils.parsePageData();
+        SaleInvoice invoiceByPage = (SaleInvoice)HttpUtils.pageData2Entity(pageData, new SaleInvoice());
+        //state:状态(0:待开票 1:已开票 -1:已取消)
+        if ("1".equals(invoiceByPage.getState())) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("该开票单状态(已开票)，不可修改！");
+            return model;
+        }
+
+        //total_sum:合计金额
+        BigDecimal totalSum = BigDecimal.valueOf(0D);
+        List<SaleInvoiceDetail> invoiceDtlList = new ArrayList<SaleInvoiceDetail>();
+
+        String dtlJsonStr = pageData.getString("dtlJsonStr");
+        if (dtlJsonStr != null && dtlJsonStr.trim().length() > 0) {
+            List<Map<String, String>> mapList = (List<Map<String, String>>) YvanUtil.jsonToList(dtlJsonStr);
+            if (mapList == null || mapList.size() == 0) {
+                model.putCode(Integer.valueOf(1));
+                model.putMsg("明细Json字符串-转换成List错误！");
+                return model;
+            }
+
+            //获取订单明细
+            List<SaleOrderDetail> orderDtlList = saleOrderDetailService.mapList2OrderDetailListByEdit(mapList, null);
+            //total_sum:合计金额
+            totalSum = saleOrderDetailService.findTotalSumByDetailList(orderDtlList);
+            invoiceDtlList = saleOrderDetailService.orderDtlList2InvoiceDtlList(orderDtlList, null);
+        }
+
+        //1. 修改开票单
+        SaleInvoice invoiceDB = saleInvoiceService.findSaleInvoiceById(invoiceByPage.getId());
+        invoiceDB.setReceiptType(invoiceByPage.getReceiptType());
+        invoiceDB.setTotalSum(totalSum);
+        saleInvoiceService.update(invoiceDB);
+
+        //2. 删除开票单明细
+        Map<String, String> columnMap = new HashMap<String, String>();
+        columnMap.put("parent_id", invoiceDB.getId());
+        saleInvoiceDetailService.deleteByColumnMap(columnMap);
+
+        //3. 创建开票单明细
+        if (invoiceDtlList.size() > 0) {
+            saleInvoiceDetailService.addInvoiceDetail(invoiceDB, invoiceDtlList);
+        }
+
         Long endTime = System.currentTimeMillis();
         logger.info("################saleInvoice/updateSaleInvoice 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
@@ -224,7 +269,7 @@ public class SaleInvoiceController {
         ids = "'" + ids.replace(",", "','") + "'";
 
         //修改开票明细状态(0:待开票 1:已开票 -1:已取消)
-        saleOrderDetailService.updateStateByDetail("1", ids);
+        saleInvoiceDetailService.updateStateByDetail("1", ids);
 
         //修改开票单状态(0:待开票 1:已开票 -1:已取消)
         saleInvoiceService.updateStateByInvoice("1", ids);
@@ -246,6 +291,30 @@ public class SaleInvoiceController {
         logger.info("################saleInvoice/deleteSaleInvoice 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
+
+        PageData pageData = HttpUtils.parsePageData();
+        String parentId = pageData.getString("id");
+        if (parentId == null || parentId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("开票单id为空或空字符串！");
+            return model;
+        }
+
+        SaleInvoice invoiceDB = saleInvoiceService.findSaleInvoiceById(parentId);
+        //state:状态(0:待开票 1:已开票 -1:已取消)
+        if ("1".equals(invoiceDB.getState())) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("该开票单状态(已开票)，不可删除！");
+            return model;
+        }
+
+        //2. 删除开票单明细
+        Map columnMap = new HashMap();
+        columnMap.put("parent_id", parentId);
+        saleInvoiceDetailService.deleteByColumnMap(columnMap);
+
+        //3. 删除订单
+        saleInvoiceService.deleteById(parentId);
 
         Long endTime = System.currentTimeMillis();
         logger.info("################saleInvoice/deleteSaleInvoice 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");

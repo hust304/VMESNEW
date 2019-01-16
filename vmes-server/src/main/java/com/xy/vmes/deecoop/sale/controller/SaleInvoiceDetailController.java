@@ -47,9 +47,9 @@ public class SaleInvoiceDetailController {
     * @author 陈刚 自动创建，可以修改
     * @date 2019-01-08
     */
-    @PostMapping("/saleInvoiceDetail/listPageSaleInvoiceDetails")
-    public ResultModel listPageSaleInvoiceDetails()  throws Exception {
-        logger.info("################saleInvoiceDetail/listPageSaleInvoiceDetails 执行开始 ################# ");
+    @PostMapping("/saleInvoiceDetail/listPageSaleInvoiceDetail")
+    public ResultModel listPageSaleInvoiceDetail()  throws Exception {
+        logger.info("################saleInvoiceDetail/listPageSaleInvoiceDetail 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
 
@@ -106,7 +106,7 @@ public class SaleInvoiceDetailController {
 
         model.putResult(result);
         Long endTime = System.currentTimeMillis();
-        logger.info("################saleInvoiceDetail/listPageSaleInvoiceDetails 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################saleInvoiceDetail/listPageSaleInvoiceDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 

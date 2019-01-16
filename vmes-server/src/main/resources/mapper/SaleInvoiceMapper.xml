@@ -47,6 +47,7 @@
         cuser
         ) VALUES
             (replace(uuid(), '-', ''), 'saleInvoice', 'parentId', '开票单id', 0, '1', '0', '1', '0', '2018-12-5 17:35:26', 'admin'),
+            (replace(uuid(), '-', ''), 'saleInvoice', 'receiptType', '发票类型id', 0, '1', '1', '1', '0', '2018-12-6 10:53:24', 'admin'),
             (replace(uuid(), '-', ''), 'saleInvoice', 'receiptTypeName', '发票类型', 0, '1', '1', '1', '0', '2018-12-6 10:53:24', 'admin'),
             (replace(uuid(), '-', ''), 'saleInvoice', 'id', 'id', 0, '1', '0', '1', '0', '2019-1-11 12:20:39', 'admin'),
             (replace(uuid(), '-', ''), 'saleInvoice', 'orderId', '订单ID', 1, '1', '0', '1', '0', '2019-1-11 12:20:39', 'admin'),
@@ -138,9 +139,9 @@
         invoice.order_id orderId,
         invoice.receipt_type receiptType,
         CASE
-        WHEN saleOrder.receipt_type = '1' THEN '不开票'
-        WHEN saleOrder.receipt_type = '2' THEN '普通发票'
-        WHEN saleOrder.receipt_type = '3' THEN '增值税发票'
+        WHEN invoice.receipt_type = '1' THEN '不开票'
+        WHEN invoice.receipt_type = '2' THEN '普通发票'
+        WHEN invoice.receipt_type = '3' THEN '增值税发票'
         ELSE null
         END receiptTypeName,
 
