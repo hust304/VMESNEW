@@ -155,51 +155,32 @@ public class RedisUtils {
 //        return null;
 //    }
 
+//    public static String findRedisUuidByUserID(RedisClient redisClient, String userID, String loginType) {
+//        if ("app".equals(loginType)) {
+//            return RedisUtils.findRedisUuidByUserID(redisClient, userID);
+//        } else if ("web".equals(loginType)) {
+//            return RedisUtils.findMobileRedisUuidByUserID(redisClient, userID);
+//        }
+//        return new String();
+//    }
+
     /**
      * 根据userID-获取Redis缓存中的会话ID(Uuid)
-     *  Redis缓存Key:(uuid:用户ID:企业ID:deecoop:userLoginMap)
+     * (手机端)Redis缓存Key:   (uuid:用户ID:企业ID:deecoop:userLoginMap:mobile)
+     * (web端)Redis缓存Key:   (uuid:用户ID:企业ID:deecoop:userLoginMap:web)
      *
      * @param userID  系统用户ID
      * @return
      */
-    public static String findRedisUuidByUserID(RedisClient redisClient, String userID) {
+    //
+    //
+    public static String findRedisUuidByUserID(RedisClient redisClient, String userID, String loginType) {
         if (userID == null || userID.trim().length() == 0) {return null;}
 
         Jedis jedis = null;
         try {
             jedis = redisClient.getJedisPool().getResource();
-            String strTemp = ":" + userID;
-            Set<String> keySet = jedis.keys("*" + strTemp + "*");
-            if (keySet == null || keySet.size() == 0) {return null;}
-
-            for (Iterator iterator = keySet.iterator(); iterator.hasNext();) {
-                String key = (String) iterator.next();
-                String[] strArry = key.split(":");
-                if (strArry.length > 0) {return strArry[0];}
-            }
-        } catch (Exception e){
-            e.printStackTrace();
-        }finally {
-            if (jedis != null) jedis.close();
-        }
-
-        return null;
-    }
-    /**
-     * 根据userID-获取Redis缓存中的会话ID(Uuid)
-     * Redis缓存Key:(uuid:mobile:用户ID:企业ID:deecoop:userLoginMap)
-     *
-     * @param userID  系统用户ID
-     * @return
-     */
-    public static String findMobileRedisUuidByUserID(RedisClient redisClient, String userID) {
-        if (userID == null || userID.trim().length() == 0) {return null;}
-
-        Jedis jedis = null;
-        try {
-            jedis = redisClient.getJedisPool().getResource();
-            String strTemp = "mobile:" + userID;
-            Set<String> keySet = jedis.keys("*" + strTemp + "*");
+            Set<String> keySet = jedis.keys("*" + userID + "*" + loginType);
             if (keySet == null || keySet.size() == 0) {return null;}
 
             for (Iterator iterator = keySet.iterator(); iterator.hasNext();) {
@@ -218,16 +199,18 @@ public class RedisUtils {
 
     /**
      * 根据userID-移除Redis缓存数据
+     * (手机端)Redis缓存Key:   (uuid:用户ID:企业ID:deecoop:userLoginMap:mobile)
+     * (web端)Redis缓存Key:   (uuid:用户ID:企业ID:deecoop:userLoginMap:web)
+     *
      * @param userID
      */
-    public static void removeByUserID(RedisClient redisClient, String userID) {
+    public static void removeByUserID(RedisClient redisClient, String userID, String loginType) {
         if (userID == null || userID.trim().length() == 0) {return;}
 
         Jedis jedis = null;
         try {
             jedis = redisClient.getJedisPool().getResource();
-            String strTemp = ":" + userID;
-            Set<String> keySet = jedis.keys("*" + strTemp + "*");
+            Set<String> keySet = jedis.keys("*" + userID + "*" + loginType);
             for (Iterator iterator = keySet.iterator(); iterator.hasNext();) {
                 String key = (String) iterator.next();
                 if(jedis.exists(key)){
@@ -242,29 +225,6 @@ public class RedisUtils {
             }
         }
     }
-    public static void removeMobileByUserID(RedisClient redisClient, String userID) {
-        if (userID == null || userID.trim().length() == 0) {return;}
-
-        Jedis jedis = null;
-        try {
-            jedis = redisClient.getJedisPool().getResource();
-            String strTemp = "mobile:" + userID;
-            Set<String> keySet = jedis.keys("*" + strTemp + "*");
-            for (Iterator iterator = keySet.iterator(); iterator.hasNext();) {
-                String key = (String) iterator.next();
-                if(jedis.exists(key)){
-                    jedis.del(key);
-                }
-            }
-        } catch (Exception e){
-            e.printStackTrace();
-        }finally {
-            if (jedis != null) {
-                jedis.close();
-            }
-        }
-    }
-
 
     /**
      * 根据uuid-移除Redis缓存数据

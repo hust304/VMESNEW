@@ -85,7 +85,8 @@ public class UserLoginController {
      *     ResultModel.result
      *     ResultModel.sessionID(Redis缓存Key:uuid:用户ID:企业ID:deecoop:userLoginMap)
 
-     * Redis缓存Key:   (uuid:用户ID:企业ID:deecoop:userLoginMap)
+     * (手机端)Redis缓存Key:   (uuid:用户ID:企业ID:deecoop:userLoginMap:app)
+     * (web端)Redis缓存Key:   (uuid:用户ID:企业ID:deecoop:userLoginMap:web)
      * Redis缓存Value: JsonString--Map<String, String>
      *     userID:    用户ID
      *     userCode:  系统账号
@@ -109,6 +110,9 @@ public class UserLoginController {
         //非空判断
         StringBuffer msgBuf = new StringBuffer();
         PageData pageData = HttpUtils.parsePageData();
+        //登录类型(loginType):(app,web)
+        String loginType = new String();
+
         if (pageData == null || pageData.size() == 0) {
             msgBuf.append("参数错误：用户登录参数(pageData)为空！");
         } else {
@@ -120,12 +124,21 @@ public class UserLoginController {
                 msgBuf.append("参数错误：密码输入为空或空字符串，密码为必填项不可为空！");
                 msgBuf.append(Common.SYS_ENDLINE_DEFAULT);
             }
+            if (pageData.get("loginType") == null || pageData.get("loginType").toString().trim().length() == 0 ) {
+                msgBuf.append("参数错误：登录类型(loginType)为空或空字符串，密码为必填项不可为空！");
+                msgBuf.append(Common.SYS_ENDLINE_DEFAULT);
+            } else if ("app,web".indexOf(pageData.get("loginType").toString().trim()) == -1) {
+                msgBuf.append("参数错误：登录类型(loginType)必须为(app,web)！");
+                msgBuf.append(Common.SYS_ENDLINE_DEFAULT);
+            } else {
+                loginType = pageData.get("loginType").toString().trim();
+            }
 
-            if (pageData.get("securityCode") == null || pageData.get("securityCode").toString().trim().length() == 0 ) {
+            if ("web".equals(loginType) && (pageData.get("securityCode") == null || pageData.get("securityCode").toString().trim().length() == 0)) {
                 msgBuf.append("参数错误：验证码入为空或空字符串，验证码为必填项不可为空！");
                 msgBuf.append(Common.SYS_ENDLINE_DEFAULT);
             }
-            if (pageData.get("securityCodeKey") == null || pageData.get("securityCodeKey").toString().trim().length() == 0 ) {
+            if ("web".equals(loginType) && (pageData.get("securityCodeKey") == null || pageData.get("securityCodeKey").toString().trim().length() == 0)) {
                 msgBuf.append("参数错误：验证码(Redis缓存Key)为空或空字符串！");
                 msgBuf.append(Common.SYS_ENDLINE_DEFAULT);
             }
@@ -138,12 +151,14 @@ public class UserLoginController {
         }
 
         //验证码-是否过期
-        String securityCode = pageData.get("securityCode").toString().trim();
-        String old_securityCode = redisClient.get(pageData.get("securityCodeKey").toString().trim());
-        if (!securityCode.equalsIgnoreCase(old_securityCode)) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("验证码输入错误或已经过期，请重新输入验证码！");
-            return model;
+        if ("web".equals(loginType)) {
+            String securityCode = pageData.get("securityCode").toString().trim();
+            String old_securityCode = redisClient.get(pageData.get("securityCodeKey").toString().trim());
+            if (!securityCode.equalsIgnoreCase(old_securityCode)) {
+                model.putCode(Integer.valueOf(1));
+                model.putMsg("验证码输入错误或已经过期，请重新输入验证码！");
+                return model;
+            }
         }
 
         //1. (用户账号, 密码MD5)-
@@ -191,7 +206,7 @@ public class UserLoginController {
         String new_uuid = Conv.createUuid();
         String redis_uuid = "";
         try{
-            redis_uuid = RedisUtils.findRedisUuidByUserID(redisClient, userID);
+            redis_uuid = RedisUtils.findRedisUuidByUserID(redisClient, userID, loginType);
             if (redis_uuid != null && redis_uuid.trim().length() > 0) {redis_uuid = redis_uuid.toLowerCase();}
         } catch (Exception e) {
             throw new RestException("", e.getMessage());
@@ -202,7 +217,7 @@ public class UserLoginController {
         //清空历史Redis缓存Key(系统用户ID)字符串匹配
         if (redis_uuid != null && redis_uuid.trim().length() > 0
                 && !new_uuid.trim().equals(redis_uuid.trim())) {
-            RedisUtils.removeByUserID(redisClient, userID);
+            RedisUtils.removeByUserID(redisClient, userID, loginType);
         }
 
 
@@ -245,7 +260,8 @@ public class UserLoginController {
         //userButton按钮权限()
 
         //缓存业务数据
-        //Redis缓存Key:(uuid:用户ID:企业ID:deecoop:userLoginMap)
+        //(手机端)Redis缓存Key:   (uuid:用户ID:企业ID:deecoop:userLoginMap:mobile)
+        //(web端)Redis缓存Key:   (uuid:用户ID:企业ID:deecoop:userLoginMap:web)
         String Redis_userLogin_Key = new_uuid + ":" +
                                     userID + ":" +
                                     companyID + ":" +
@@ -706,10 +722,17 @@ public class UserLoginController {
             return model;
         }
 
+        String loginType = (String)pageData.get("loginType");
+        if (loginType == null || loginType.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("loginType为空或空字符串！");
+            return model;
+        }
+
         if ("uuid".equals(codeKey)) {
             RedisUtils.removeByUuid(redisClient, codeValue);
         } else if ("userID".equals(codeKey)) {
-            RedisUtils.removeByUserID(redisClient, codeValue);
+            RedisUtils.removeByUserID(redisClient, codeValue, loginType);
         } else {
             RedisUtils.removeByCode(redisClient, codeValue);
         }
