@@ -22,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
+import java.text.MessageFormat;
 import java.util.*;
 
 
@@ -231,7 +232,16 @@ public class SaleOrderController {
             return model;
         }
 
+        //订单状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
         SaleOrder order_old = saleOrderService.findSaleOrderById(order.getId());
+        if (!"0".equals(order_old.getState())) {
+            String msgTemp = "订单状态({0})不可修改！";
+            String msgStr = MessageFormat.format(msgTemp, Common.SYS_SALE_ORDER_STATE.get(order_old.getState()));
+
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
 
         //获取订单明细
         List<SaleOrderDetail> detailList = saleOrderDetailService.mapList2OrderDetailListByEdit(mapList, null);
@@ -315,19 +325,14 @@ public class SaleOrderController {
             return model;
         }
 
-        //明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已发货 6:已完成 -1:已取消)
-        //验证明细是否允许删除
-        //判断明细中是否全部(0:待提交) 忽视状态:-1:已取消
+        //1. 订单状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
+        SaleOrder order_old = saleOrderService.findSaleOrderById(parentId);
+        if (!"0".equals(order_old.getState())) {
+            String msgTemp = "订单状态({0})不可删除！";
+            String msgStr = MessageFormat.format(msgTemp, Common.SYS_SALE_ORDER_STATE.get(order_old.getState()));
 
-        //1. 根据(订单id)-查询订单明细(vmes_sale_order_detail)
-        PageData findMap = new PageData();
-        findMap.put("parentId", parentId);
-        findMap.put("queryStr", "state in ('1','2','3','4','5','6')");
-        List<SaleOrderDetail> detailList = saleOrderDetailService.findSaleOrderDetailList(findMap);
-
-        if (detailList != null && detailList.size() > 0) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("当前订单不可删除，该订单中含有(待审核,待出库,待发货,已发货,已完成)状态，请核对后再次操作！");
+            model.putMsg(msgStr);
             return model;
         }
 
@@ -365,21 +370,21 @@ public class SaleOrderController {
             return model;
         }
 
-        //1. 根据(订单id)-查询订单明细(vmes_sale_order_detail)
-        List<SaleOrderDetail> detailList = saleOrderDetailService.findSaleOrderDetailListByParentId(parentId);
-        //明细状态(0:待提交 1:待审核 2:待出库 3:待发货 4:已发货 5:已完成 -1:已取消)
-        //验证明细是否允许删除
-        //判断明细中是否全部(0:待提交) 忽视状态:-1:已取消
-        if (!saleOrderDetailService.isAllExistStateByDetailList("0", detailList)) {
+        //1. 订单状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
+        SaleOrder order_old = saleOrderService.findSaleOrderById(parentId);
+        if (!"0".equals(order_old.getState())) {
+            String msgTemp = "订单状态({0})不可取消！";
+            String msgStr = MessageFormat.format(msgTemp, Common.SYS_SALE_ORDER_STATE.get(order_old.getState()));
+
             model.putCode(Integer.valueOf(1));
-            model.putMsg("当前订单不可取消，该订单中含有(待审核,待出库,待发货,已发货,已完成)状态，请核对后再次操作！");
+            model.putMsg(msgStr);
             return model;
         }
 
         //2. 修改明细状态
         PageData mapDetail = new PageData();
         mapDetail.put("parentId", parentId);
-        //明细状态(0:待提交 1:待审核 2:待出库 3:待发货 4:已发货 5:已完成 -1:已取消)
+        //明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已发货 6:已完成 -1:已取消)
         mapDetail.put("state", "-1");
         saleOrderDetailService.updateStateByDetail(mapDetail);
 

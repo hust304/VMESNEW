@@ -14,12 +14,12 @@ public class CreateCodeUtil {
 
         PageData pd = new PageData();
         //模块编码
-        String modelCode = "LogInfo";
-        String objectName = "LogInfo";//类名
-        String tableName = "vmes_loginfo";//表名
-        String title = "操作日志";
-        String author = "刘威";
-        String projectName = "deecoop.system";//项目名
+        String modelCode = "customerInvoice";
+        String objectName = "CustomerInvoice";//类名
+        String tableName = "vmes_customer_invoice";//表名
+        String title = "vmes_customer_invoice:客户开票信息";
+        String author = "陈刚";
+        String projectName = "deecoop.base";//项目名
 
 
         pd.put("dbtype","mysql");//数据库类型
