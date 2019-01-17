@@ -84,6 +84,13 @@ public interface WarehouseOutDetailMapper extends BaseMapper<WarehouseOutDetail>
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
     void updateStateByDetail(PageData pd);
+
+
+
+
+    //////////////////////////////////////////////////////////////////////////////////
+    //手机端功能
+    List<Map> findListPageWarehouseOutDetail(PageData pd, Pagination pg);
 }
 
 

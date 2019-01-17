@@ -185,42 +185,42 @@ public class WarehouseCheckExecuteController {
     }
 
     /**
-     * (退单)退回盘点明细(退回单个盘点明细)
-     * 1. 填写退回原因
-     * 2. 盘点明细必须是(1:执行中)-允许退回
-     * 3. 退回成功后盘点明细状态(0:待派单)
-     * 4. 修改盘点明细执行人表(vmes_warehouse_check_executor.isdisable)状态
-     *
-     * rebackDetailJsonStr
-     * {id:"",parentId:"",state:""}
-     *
-     * @author 陈刚
-     * @date 2018-11-16
-     * @throws Exception
-     */
-    @PostMapping("/warehouseCheckExecute/rebackWarehouseCheckByDetail")
-    @Transactional
-    public ResultModel rebackWarehouseCheckByDetail() throws Exception {
-        logger.info("################/warehouseCheckExecute/rebackWarehouseCheckByDetail 执行开始 ################# ");
-        Long startTime = System.currentTimeMillis();
-        ResultModel model = new ResultModel();
+         * (退单)退回盘点明细(退回单个盘点明细)
+         * 1. 填写退回原因
+         * 2. 盘点明细必须是(1:执行中)-允许退回
+         * 3. 退回成功后盘点明细状态(0:待派单)
+         * 4. 修改盘点明细执行人表(vmes_warehouse_check_executor.isdisable)状态
+         *
+         * rebackDetailJsonStr
+         * {id:"",parentId:"",state:""}
+         *
+         * @author 陈刚
+         * @date 2018-11-16
+         * @throws Exception
+         */
+        @PostMapping("/warehouseCheckExecute/rebackWarehouseCheckByDetail")
+        @Transactional
+        public ResultModel rebackWarehouseCheckByDetail() throws Exception {
+            logger.info("################/warehouseCheckExecute/rebackWarehouseCheckByDetail 执行开始 ################# ");
+            Long startTime = System.currentTimeMillis();
+            ResultModel model = new ResultModel();
 
-        PageData pageData = HttpUtils.parsePageData();
-        String cuser = pageData.getString("cuser");
-        String rebackDetailJsonStr = pageData.getString("rebackDetailJsonStr");
+            PageData pageData = HttpUtils.parsePageData();
+            String cuser = pageData.getString("cuser");
+            String rebackDetailJsonStr = pageData.getString("rebackDetailJsonStr");
 
-        String remark = pageData.getString("remark");
-        if (remark == null || remark.trim().length() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("退单原因为空或空字符串，退单原因为必填不可为空！");
-            return model;
-        }
+            String remark = pageData.getString("remark");
+            if (remark == null || remark.trim().length() == 0) {
+                model.putCode(Integer.valueOf(1));
+                model.putMsg("退单原因为空或空字符串，退单原因为必填不可为空！");
+                return model;
+            }
 
-        if (rebackDetailJsonStr == null || rebackDetailJsonStr.trim().length() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("请至少勾选一条盘点数据！");
-            return model;
-        }
+            if (rebackDetailJsonStr == null || rebackDetailJsonStr.trim().length() == 0) {
+                model.putCode(Integer.valueOf(1));
+                model.putMsg("请至少勾选一条盘点数据！");
+                return model;
+            }
 
         List<Map<String, Object>> mapList = (List<Map<String, Object>>) YvanUtil.jsonToList(rebackDetailJsonStr);
         if (mapList == null || mapList.size() == 0) {

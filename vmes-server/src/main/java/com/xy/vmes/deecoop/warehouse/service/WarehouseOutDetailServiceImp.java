@@ -326,6 +326,12 @@ public class WarehouseOutDetailServiceImp implements WarehouseOutDetailService {
 
         return null;
     }
+
+
+    ///////////////////////////////////////////////////////////////////////////////
+    public List<Map> findListPageWarehouseOutDetail(PageData pd, Pagination pg) throws Exception {
+        return warehouseOutDetailMapper.findListPageWarehouseOutDetail(pd,pg);
+    }
 }
 
 

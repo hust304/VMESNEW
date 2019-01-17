@@ -133,6 +133,12 @@ public interface WarehouseOutDetailService {
     void updateStateByDetail(String state, String parentIds) throws Exception;
 
     WarehouseOutDetail findWarehouseOutDetailById(String detailId);
+
+
+
+    ///////////////////////////////////////////////////////////////////////////////
+    //手机端出库详情
+    List<Map> findListPageWarehouseOutDetail(PageData pd, Pagination pg) throws Exception;
 }
 
 
