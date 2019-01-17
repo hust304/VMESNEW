@@ -38,7 +38,9 @@ public class RedisClient {
         Jedis jedis = null;
         try {
             jedis = jedisPool.getResource();
-            jedis.set(key, value, "NX", "EX", exptime);
+//            jedis.set(key, value, "NX", "EX", exptime);
+            jedis.set(key, value);
+            jedis.pexpire(key, exptime);
         } catch (Exception e){
             e.printStackTrace();
         }finally {
