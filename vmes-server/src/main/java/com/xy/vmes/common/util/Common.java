@@ -45,7 +45,8 @@ public class Common {
     //系统小数四舍五入-默认2位小数
     public static final int SYS_NUMBER_FORMAT_DEFAULT = SYS_NUMBER_FORMAT_2;
 
-    //状态(0:待派单 1:执行中 2:审核中 3:已完成 -1:已取消)
+    //(仓库)盘点
+    //盘点明细状态(0:待派单 1:执行中 2:审核中 3:已完成 -1:已取消)
     public static final Map<String, String> SYS_WAREHOUSE_CHECK_DETAIL_STATE = new HashMap<String, String>() {{
         put("0", "待派单");
         put("1", "执行中");
@@ -53,6 +54,28 @@ public class Common {
         put("3", "已完成");
         put("-1", "已取消");
     }};
+
+    //订单状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
+    public static final Map<String, String> SYS_SALE_ORDER_STATE = new HashMap<String, String>() {{
+        put("0", "待提交");
+        put("1", "待审核");
+        put("2", "待发货");
+        put("3", "已发货");
+        put("4", "已完成");
+        put("-1", "已取消");
+    }};
+    //订单明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已发货 6:已完成 -1:已取消)
+    public static final Map<String, String> SYS_SALE_ORDER_DETAIL_STATE = new HashMap<String, String>() {{
+        put("0", "待提交");
+        put("1", "待审核");
+        put("2", "待生产");
+        put("3", "待出库");
+        put("4", "待发货");
+        put("5", "已发货");
+        put("6", "已完成");
+        put("-1", "已取消");
+    }};
+
 
     ///////////////--编码规则--//////////////////////////////////////////////////////////////////////////////////////////////////
     //业务编码规则-分隔符
