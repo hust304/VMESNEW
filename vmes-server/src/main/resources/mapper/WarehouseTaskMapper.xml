@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+说明：仓库管理(入库,出库,盘点,移库)任务单
+创建人：房兆琦
+创建时间：2018-10-16
+ -->
+<mapper namespace="com.xy.vmes.deecoop.mobile.dao.WarehouseTaskMapper">
+
+    <select id="findListPageWarehouseTaskList" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+        '1' as taskType,
+        detail.id taskDetailID,
+        executor.cdate cDate,
+        executor.udate uDate,
+        detail.product_id productID,
+        detail.count taskCount,
+        product.name productName,
+        product.spec spec,
+        genre.name genreName,
+        unit.name unitName,
+        win.code code
+
+        from vmes_warehouse_in_executor executor
+        left join vmes_warehouse_in_detail detail on executor.detail_id = detail.id
+        left join vmes_warehouse_in win on win.id = detail.parent_id
+        left join vmes_product product on detail.product_id = product .id
+        left join vmes_product_unit produnit on produnit.product_id = product .id and produnit.type = 1
+        left join vmes_dictionary unit on produnit.unit = unit.id
+        left join vmes_dictionary genre on product.genre = genre.id
+        <where>
+            <if test="executorId != null and executorId != ''" >
+                and executor.executor_id=#{executorId}
+            </if>
+        </where>
+
+        union all
+
+        select
+        '2' as taskType,
+        detail.id taskDetailID,
+        executor.cdate cDate,
+        executor.udate uDate,
+        detail.product_id productID,
+        detail.count taskCount,
+        product.name productName,
+        product.spec spec,
+        genre.name genreName,
+        unit.name unitName,
+        wout.code code
+
+        from vmes_warehouse_out_executor executor
+        left join vmes_warehouse_out_detail detail on executor.detail_id = detail.id
+        left join vmes_warehouse_out wout on wout.id = detail.parent_id
+        left join vmes_product product on detail.product_id = product .id
+        left join vmes_product_unit produnit on produnit.product_id = product .id and produnit.type = 1
+        left join vmes_dictionary unit on produnit.unit = unit.id
+        left join vmes_dictionary genre on product.genre = genre.id
+        <where>
+            <if test="executorId != null and executorId != ''" >
+                and executor.executor_id=#{executorId}
+            </if>
+        </where>
+
+        union all
+
+        select
+        '3' as taskType,
+        detail.id taskDetailID,
+        executor.cdate cDate,
+        executor.udate uDate,
+        detail.product_id productID,
+        detail.stock_count taskCount,
+        product.name productName,
+        product.spec spec,
+        genre.name genreName,
+        unit.name unitName,
+        wcheck.code code
+
+        from vmes_warehouse_check_executor executor
+        left join vmes_warehouse_check_detail detail on executor.detail_id = detail.id
+        left join vmes_warehouse_check wcheck on wcheck.id = detail.parent_id
+        left join vmes_product product on detail.product_id = product .id
+        left join vmes_product_unit produnit on produnit.product_id = product .id and produnit.type = 1
+        left join vmes_dictionary unit on produnit.unit = unit.id
+        left join vmes_dictionary genre on product.genre = genre.id
+        <where>
+            <if test="executorId != null and executorId != ''" >
+                and executor.executor_id=#{executorId}
+            </if>
+        </where>
+
+        union all
+
+        select
+        '4' as taskType,
+        detail.id detailId,
+        executor.cdate cDate,
+        executor.udate uDate,
+        detail.warehouse_product_id productID,
+        detail.count taskCount,
+        product.name productName,
+        product.spec spec,
+        genre.name genreName,
+        unit.name unitName,
+        wmove.code code
+
+        from vmes_warehouse_move_executor executor
+        left join vmes_warehouse_move_detail detail on executor.detail_id = detail.id
+        left join vmes_warehouse_move wmove on wmove.id = detail.parent_id
+        left join vmes_product product on detail.warehouse_product_id = product .id
+        left join vmes_product_unit produnit on produnit.product_id = product .id and produnit.type = 1
+        left join vmes_dictionary unit on produnit.unit = unit.id
+        left join vmes_dictionary genre on product.genre = genre.id
+        <where>
+            <if test="executorId != null and executorId != ''" >
+                and executor.executor_id=#{executorId}
+            </if>
+        </where>
+
+        order by taskType,cDate desc,uDate desc
+
+    </select>
+
+
+</mapper>

@@ -113,8 +113,13 @@ public interface TemplateService {
     */
     void updateToDisableByIds(String[] ids)throws Exception;
 
+
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
+
+    List<Map> getTestDataListPage(PageData pd, Pagination pg) throws Exception;
+
+    List<Map> getTestDataList2Page(PageData pd, Pagination pg) throws Exception;
 }
 
 

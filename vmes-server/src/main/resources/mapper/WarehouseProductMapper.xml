@@ -587,5 +587,30 @@
         </where>
     </update>
 
+    <!--手机端库存详情接口-->
+    <select id="findListPageWarehouseByProduct" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+        prod.code code,
+        prod.cdate cDate,
+        prod.stock_count stockCount,
+        prod.company_id companyId,
+        prod.product_id productId,
+        warehouse.path_name path
+
+        from vmes_warehouse_product prod
+            LEFT JOIN vmes_warehouse warehouse ON prod.warehouse_id = warehouse.id
+        <where>
+            <if test="companyId != null and companyId != ''" >
+                and prod.company_id=#{companyId}
+            </if>
+            <if test="productId != null and productId != ''" >
+                and prod.product_id=#{productId}
+            </if>
+        </where>
+        <if test="orderStr != null and orderStr != ''" >
+            order by ${orderStr}
+        </if>
+    </select>
+
 
 </mapper>

@@ -80,7 +80,13 @@ public interface TemplateMapper extends BaseMapper<Template> {
     */
     void updateToDisableByIds(String[] ids);
 
+
+
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+
+    List<Map> getTestDataListPage(PageData pd, Pagination pg);
+
+    List<Map> getTestDataList2Page(PageData pd, Pagination pg);
 }
 
 

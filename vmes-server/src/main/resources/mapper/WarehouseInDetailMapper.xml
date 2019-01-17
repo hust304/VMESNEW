@@ -270,4 +270,39 @@
 
     </select>
 
+    <!-- 手机端获得入库详细信息 -->
+    <select id="findListPageWarehouseInDetail" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+        detail.id detailId,
+        win.id parentId,
+        type.name typeType,
+        win.dept_name deptName,
+        round(detail.count,2) taskCount,
+        round(sum(ifnull(execute.count,0)),2) taskDone,
+        round((round(detail.count,2)-(sum(ifnull(execute.count,0)))),2) taskLeft,
+        product.code productCode,
+        product.name productName,
+        product.spec spec,
+        genre.name genreName,
+        unit.name unitName,
+        detail.code pathCode,
+        warehouse.path_name pathName
+
+        from vmes_warehouse_in_detail detail
+        left join vmes_warehouse_in win on win.id = detail.parent_id
+        left join vmes_dictionary type on win.type = type.id
+        left join vmes_warehouse_in_execute execute on execute.detail_id = detail.id
+        left join vmes_product product on detail.product_id = product.id
+        left join vmes_product_unit produnit on produnit.product_id = product .id and produnit.type = 1
+        left join vmes_dictionary unit on produnit.unit = unit.id
+        left join vmes_dictionary genre on product.genre = genre.id
+        left join vmes_warehouse warehouse on warehouse.id = detail.warehouse_id
+
+        <where>
+            <if test="detailId != null and detailId != ''" >
+                and detail.id = #{detailId}
+            </if>
+        </where>
+    </select>
+
 </mapper>

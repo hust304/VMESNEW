@@ -333,6 +333,11 @@ public class ProductServiceImp implements ProductService {
 
         return productUnitPrice;
     }
+
+    //手机端功能
+    public List<Map> findListPageProduct(PageData pd, Pagination pg) throws Exception {
+        return productMapper.findListPageProduct(pd,pg);
+    }
 }
 
 

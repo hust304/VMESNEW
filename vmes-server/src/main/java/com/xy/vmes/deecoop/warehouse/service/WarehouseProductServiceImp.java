@@ -995,6 +995,13 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
         return warehouseProductMapper.warehouseProductMove(pd,pg);
     }
 
+
+
+    /////////////////////////////////////////////////////////////////////////////////
+    //手机端功能
+    public List<Map> findListPageWarehouseByProduct(PageData pd, Pagination pg) throws Exception {
+        return warehouseProductMapper.findListPageWarehouseByProduct(pd,pg);
+    }
 }
 
 

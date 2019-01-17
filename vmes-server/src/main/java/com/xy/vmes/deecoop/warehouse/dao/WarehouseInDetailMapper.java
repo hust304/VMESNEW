@@ -43,6 +43,9 @@ public interface WarehouseInDetailMapper extends BaseMapper<WarehouseInDetail> {
      * 创建时间：2018-10-16
      */
     List<Map> getDataListPage(PageData pd, Pagination pg);
+    //////////////////////////////////////////////////////////////////////////////////
+    //手机端功能
+    List<Map> findListPageWarehouseInDetail(PageData pd, Pagination pg);
 }
 
 

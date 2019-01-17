@@ -293,6 +293,11 @@ public class WarehouseMoveDetailServiceImp implements WarehouseMoveDetailService
         return null;
     }
 
+    ///////////////////////////////////////////////////////////////////////////////
+    //手机端
+    public List<Map> findListPageWarehouseMoveDetail(PageData pd, Pagination pg) throws Exception {
+        return warehouseMoveDetailMapper.findListPageWarehouseMoveDetail(pd,pg);
+    }
 
 }
 

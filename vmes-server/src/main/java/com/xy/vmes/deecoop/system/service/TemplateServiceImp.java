@@ -184,7 +184,19 @@ public class TemplateServiceImp implements TemplateService {
         templateMapper.updateToDisableByIds(ids);
     }
 
+
+
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+
+
+    @Override
+    public List<Map> getTestDataListPage(PageData pd, Pagination pg) throws Exception {
+        return templateMapper.getTestDataListPage(pd,pg);
+    }
+
+    public List<Map> getTestDataList2Page(PageData pd, Pagination pg) throws Exception {
+        return templateMapper.getTestDataList2Page(pd,pg);
+    }
 }
 
 

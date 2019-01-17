@@ -215,6 +215,10 @@ public interface WarehouseProductService {
 
     List<Map> getWarehouseProductMove(PageData pd,Pagination pg) throws Exception;
 
+    //////////////////////////////////////////////////////////////////////////////////
+    //手机端功能
+    List<Map> findListPageWarehouseByProduct(PageData pd, Pagination pg) throws Exception;
+
 }
 
 

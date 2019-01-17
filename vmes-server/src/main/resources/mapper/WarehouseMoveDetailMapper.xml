@@ -466,6 +466,42 @@
         </if>
     </select>
 
+    <!-- 手机端获取移库信息 -->
+    <select id="findListPageWarehouseMoveDetail"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
+        select
+        detail.id detailId,
+        wmove.id parentId,
+        round(detail.count,2) taskCount,
+        round(sum(ifnull(execute.count,0)),2) taskDone,
+        round((round(detail.count,2)-(sum(ifnull(execute.count,0)))),2) taskLeft,
+        product.name productName,
+        product.code productCode,
+        product.spec spec,
+        genre.name genreName,
+        unit.name unitName,
+        wproduct.code pathCode,
+        oldwarehouse.path_name originPath,
+        newwarehouse.path_name targetPath
+
+        from vmes_warehouse_move_detail detail
+        left join vmes_warehouse_move wmove on wmove.id = detail.parent_id
+        left join vmes_warehouse_move_execute execute on execute.detail_id = detail.id
+        left join vmes_warehouse_product wproduct on detail.warehouse_product_id = wproduct.id
+        left join vmes_warehouse oldwarehouse on oldwarehouse.id = wproduct.warehouse_id
+        left join vmes_warehouse_product wproduct2 on execute.new_warehouse_product_id = wproduct2.id
+        left join vmes_warehouse newwarehouse on newwarehouse.id = wproduct2.warehouse_id
+        left join vmes_product product on wproduct.product_id = product.id
+        left join vmes_product_unit produnit on produnit.product_id = product .id and produnit.type = 1
+        left join vmes_dictionary unit on produnit.unit = unit.id
+        left join vmes_dictionary genre on product.genre = genre.id
+
+        <where>
+            <if test="detailId != null and detailId != ''">
+                and detail.id =  #{detailId}
+            </if>
+        </where>
+
+    </select>
 
 
 

@@ -197,6 +197,7 @@
     </sql>
 
     <insert id="insertColumn" >
+        delete from vmes_column where model_code = 'template' ;
         insert into vmes_column (
         id,model_code,title_key,title_name,serial_number,
         isdisable,ishide,isedit,ismust,cdate,
@@ -214,6 +215,43 @@
         (replace(uuid(), '-', ''),'template','id','id',0, '1','0','1','0',now(), 'admin')
     </insert>
 
+    <insert id="insertColumn1" >
+        delete from vmes_column where model_code = 'templateTest' ;
+        insert into vmes_column (
+        id,model_code,title_key,title_name,serial_number,
+        isdisable,ishide,isedit,ismust,cdate,
+        cuser
+        ) VALUES
+        (replace(uuid(), '-', ''),'templateTest','code','编码test',1, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'templateTest','name','名称test',2, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'templateTest','isdisable','是否启用test',3, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'templateTest','cdate','创建时间test',4, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'templateTest','uuser','创建人账号test',5, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'templateTest','udate','修改人账号test',6, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'templateTest','uuser','修改人账号test',7, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'templateTest','remark','备注test',8, '1','1','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'templateTest','id','id',0, '1','0','1','0',now(), 'admin')
+    </insert>
+
+    <insert id="insertColumn2" >
+        delete from vmes_column where model_code = 'templateTest2' ;
+        insert into vmes_column (
+        id,model_code,title_key,title_name,serial_number,
+        isdisable,ishide,isedit,ismust,cdate,
+        cuser
+        ) VALUES
+        (replace(uuid(), '-', ''),'templateTest2','code','编码',1, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'templateTest2','name','名称',2, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'templateTest2','isdisable','是否启用',3, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'templateTest2','cdate','创建时间',4, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'templateTest2','uuser','创建人账号',5, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'templateTest2','udate','修改人账号',6, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'templateTest2','uuser','修改人账号t',7, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'templateTest2','remark','备注',8, '1','1','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'templateTest2','id','id',0, '1','0','1','0',now(), 'admin')
+    </insert>
 
     <!-- 自动创建，可以修改 -->
     <select id="getColumnList"  resultType="java.util.LinkedHashMap">
@@ -247,6 +285,42 @@
         <if test="orderStr != null and orderStr != ''" >
             order by ${orderStr}
         </if>
+    </select>
+
+
+    <!-- 自动创建，可以修改 -->
+    <select id="getTestDataListPage"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
+        select
+        code code,<!-- 编码 -->
+        name name,<!-- 名称 -->
+        isdisable isdisable,<!-- 是否启用 -->
+        cdate cdate,<!-- 创建时间 -->
+        cuser cuser,<!-- 创建人账号 -->
+        udate udate,<!-- 修改时间 -->
+        uuser uuser,<!-- 修改人账号 -->
+        remark remark,<!-- 备注 -->
+        id id <!-- id -->
+        from
+        vmes_template
+        where code = '11'
+    </select>
+
+
+    <!-- 自动创建，可以修改 fffffffffffffff-->
+    <select id="getTestDataList2Page"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
+        select
+        code code,<!-- 编码 -->
+        name name,<!-- 名称 -->
+        isdisable isdisable,<!-- 是否启用 -->
+        cdate cdate,<!-- 创建时间 -->
+        cuser cuser,<!-- 创建人账号 -->
+        udate udate,<!-- 修改时间 -->
+        uuser uuser,<!-- 修改人账号 -->
+        remark remark,<!-- 备注 -->
+        id id <!-- id -->
+        from
+        vmes_template
+        where code like '%2%'
     </select>
 
     <!-- 自动创建，可以修改 -->

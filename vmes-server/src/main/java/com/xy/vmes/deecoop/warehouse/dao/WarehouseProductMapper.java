@@ -64,6 +64,11 @@ public interface WarehouseProductMapper extends BaseMapper<WarehouseProduct> {
     List<Map> warehouseProductMove(PageData pd, Pagination pg);
 
     List<Map> warehouseDetailView(PageData pd, Pagination pg);
+
+
+    //////////////////////////////////////////////////////////////////////////////////
+    //手机端功能
+    List<Map> findListPageWarehouseByProduct(PageData pd, Pagination pg);
 }
 
 

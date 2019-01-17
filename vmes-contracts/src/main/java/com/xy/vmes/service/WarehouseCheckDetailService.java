@@ -152,6 +152,11 @@ public interface WarehouseCheckDetailService {
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     //boolean isAllAuditStateByDetailExecuteList(String state, List<Map<String, Object>> mapList);
 
+
+    ///////////////////////////////////////////////////////////////////////////////
+    //手机端移库详情
+    List<Map> findListPageWarehouseCheckDetail(PageData pd, Pagination pg) throws Exception;
+
 }
 
 

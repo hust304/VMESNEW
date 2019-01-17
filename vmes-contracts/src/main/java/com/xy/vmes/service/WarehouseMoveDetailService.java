@@ -132,6 +132,11 @@ public interface WarehouseMoveDetailService {
 
     WarehouseMoveDetail findWarehouseMoveDetailById(String detailId);
 
+
+    ///////////////////////////////////////////////////////////////////////////////
+    //手机端移库详情
+    List<Map> findListPageWarehouseMoveDetail(PageData pd, Pagination pg) throws Exception;
+
 }
 
 
