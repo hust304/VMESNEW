@@ -10,17 +10,18 @@
     <select id="findListPageWarehouseTaskList" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
         '1' as taskType,
+        'warehouseIn' taskTypeName,
+        win.code code,
         detail.id taskDetailID,
-        executor.cdate cDate,
-        executor.udate uDate,
+        round(ifnull(detail.count,0), 2) taskCount,
         detail.product_id productID,
-        detail.count taskCount,
+        product.code productCode,
         product.name productName,
         product.spec spec,
         genre.name genreName,
         unit.name unitName,
-        win.code code
-
+        executor.cdate cDate,
+        executor.udate uDate
         from vmes_warehouse_in_executor executor
         left join vmes_warehouse_in_detail detail on executor.detail_id = detail.id
         left join vmes_warehouse_in win on win.id = detail.parent_id
@@ -29,6 +30,9 @@
         left join vmes_dictionary unit on produnit.unit = unit.id
         left join vmes_dictionary genre on product.genre = genre.id
         <where>
+            <if test="currentCompanyId != null and currentCompanyId != ''" >
+                and win.company_id=#{currentCompanyId}
+            </if>
             <if test="executorId != null and executorId != ''" >
                 and executor.executor_id=#{executorId}
             </if>
@@ -38,17 +42,18 @@
 
         select
         '2' as taskType,
+        'warehouseOut' taskTypeName,
+        wout.code code,
         detail.id taskDetailID,
-        executor.cdate cDate,
-        executor.udate uDate,
+        round(ifnull(detail.count,0), 2) taskCount,
         detail.product_id productID,
-        detail.count taskCount,
+        product.code productCode,
         product.name productName,
         product.spec spec,
         genre.name genreName,
         unit.name unitName,
-        wout.code code
-
+        executor.cdate cDate,
+        executor.udate uDate
         from vmes_warehouse_out_executor executor
         left join vmes_warehouse_out_detail detail on executor.detail_id = detail.id
         left join vmes_warehouse_out wout on wout.id = detail.parent_id
@@ -57,6 +62,9 @@
         left join vmes_dictionary unit on produnit.unit = unit.id
         left join vmes_dictionary genre on product.genre = genre.id
         <where>
+            <if test="currentCompanyId != null and currentCompanyId != ''" >
+                and wout.company_id=#{currentCompanyId}
+            </if>
             <if test="executorId != null and executorId != ''" >
                 and executor.executor_id=#{executorId}
             </if>
@@ -66,17 +74,18 @@
 
         select
         '3' as taskType,
+        'warehouseCheck' taskTypeName,
+        wcheck.code code,
         detail.id taskDetailID,
-        executor.cdate cDate,
-        executor.udate uDate,
+        round(ifnull(detail.stock_count,0), 2) taskCount,
         detail.product_id productID,
-        detail.stock_count taskCount,
+        product.code productCode,
         product.name productName,
         product.spec spec,
         genre.name genreName,
         unit.name unitName,
-        wcheck.code code
-
+        executor.cdate cDate,
+        executor.udate uDate
         from vmes_warehouse_check_executor executor
         left join vmes_warehouse_check_detail detail on executor.detail_id = detail.id
         left join vmes_warehouse_check wcheck on wcheck.id = detail.parent_id
@@ -85,6 +94,9 @@
         left join vmes_dictionary unit on produnit.unit = unit.id
         left join vmes_dictionary genre on product.genre = genre.id
         <where>
+            <if test="currentCompanyId != null and currentCompanyId != ''" >
+                and wcheck.company_id=#{currentCompanyId}
+            </if>
             <if test="executorId != null and executorId != ''" >
                 and executor.executor_id=#{executorId}
             </if>
@@ -94,16 +106,18 @@
 
         select
         '4' as taskType,
-        detail.id detailId,
-        executor.cdate cDate,
-        executor.udate uDate,
+        'warehouseMove' taskTypeName,
+        wmove.code code,
+        detail.id taskDetailID,
+        round(ifnull(detail.count,0), 2) taskCount,
         detail.warehouse_product_id productID,
-        detail.count taskCount,
+        product.code productCode,
         product.name productName,
         product.spec spec,
         genre.name genreName,
         unit.name unitName,
-        wmove.code code
+        executor.cdate cDate,
+        executor.udate uDate
 
         from vmes_warehouse_move_executor executor
         left join vmes_warehouse_move_detail detail on executor.detail_id = detail.id
@@ -113,12 +127,15 @@
         left join vmes_dictionary unit on produnit.unit = unit.id
         left join vmes_dictionary genre on product.genre = genre.id
         <where>
+            <if test="currentCompanyId != null and currentCompanyId != ''" >
+                and wmove.company_id=#{currentCompanyId}
+            </if>
             <if test="executorId != null and executorId != ''" >
                 and executor.executor_id=#{executorId}
             </if>
         </where>
 
-        order by taskType,cDate desc,uDate desc
+        order by taskType,cDate desc
 
     </select>
 
