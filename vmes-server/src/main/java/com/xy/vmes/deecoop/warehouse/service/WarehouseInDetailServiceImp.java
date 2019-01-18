@@ -4,10 +4,10 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.deecoop.warehouse.dao.WarehouseInDetailMapper;
 import com.xy.vmes.entity.WarehouseIn;
 import com.xy.vmes.entity.WarehouseInDetail;
-import com.xy.vmes.entity.WarehouseLoginfo;
 import com.xy.vmes.service.*;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
+import com.yvan.YvanUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,13 +27,15 @@ import com.yvan.Conv;
 public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
     @Autowired
     private WarehouseInDetailMapper warehouseInDetailMapper;
-
     @Autowired
     private WarehouseInService warehouseInService;
     @Autowired
     private WarehouseInExecuteService warehouseInExecuteService;
+
     @Autowired
     private CoderuleService coderuleService;
+    @Autowired
+    private FileService fileService;
 
     /**
     * 创建人：陈刚 自动创建，禁止修改
@@ -41,7 +43,6 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
     */
     @Override
     public void save(WarehouseInDetail warehouseInDetail) throws Exception{
-        warehouseInDetail.setId(Conv.createUuid());
         warehouseInDetail.setCdate(new Date());
         warehouseInDetail.setUdate(new Date());
         warehouseInDetailMapper.insert(warehouseInDetail);
@@ -186,6 +187,18 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
 
         return objectList;
     }
+    public WarehouseInDetail warehouseInDtl2QRCodeObj(WarehouseInDetail warehouseInDtl, WarehouseInDetail QRCodeObj) {
+        if (QRCodeObj == null) {QRCodeObj = new WarehouseInDetail();}
+        if (warehouseInDtl == null) {return QRCodeObj;}
+
+        QRCodeObj.setId(warehouseInDtl.getId());
+        QRCodeObj.setParentId(warehouseInDtl.getParentId());
+        QRCodeObj.setProductId(warehouseInDtl.getProductId());
+        QRCodeObj.setWarehouseId(warehouseInDtl.getWarehouseId());
+        QRCodeObj.setCode(warehouseInDtl.getCode());
+
+        return QRCodeObj;
+    }
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public String checkDispatcheDetailList(List<WarehouseInDetail> objectList) {
         if (objectList == null || objectList.size() == 0) {
@@ -215,11 +228,20 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
                 "PC");
 
         for (WarehouseInDetail detail : objectList) {
+            String id = Conv.createUuid();
+            detail.setId(id);
             //状态(0:待派单 1:执行中 2:已完成 -1.已取消)
             detail.setState("0");
             detail.setParentId(parentObj.getId());
             detail.setCuser(parentObj.getCuser());
             detail.setCode(code);
+
+            //生成二维码
+            WarehouseInDetail QRCodeObj = this.warehouseInDtl2QRCodeObj(detail, null);
+            String qrcode = fileService.createQRCode("warehouseBase", YvanUtil.toJson(QRCodeObj));
+            if (qrcode != null && qrcode.trim().length() > 0) {
+                detail.setQrcode(qrcode);
+            }
             this.save(detail);
         }
     }

@@ -21,6 +21,7 @@ public interface WarehouseCheckDetailService {
      * 创建时间：2018-11-13
      */
     void save(WarehouseCheckDetail object) throws Exception;
+    void saveObject(WarehouseCheckDetail object) throws Exception;
 
     /**
      * 创建人：陈刚 自动创建，禁止修改
@@ -92,7 +93,7 @@ public interface WarehouseCheckDetailService {
     List<WarehouseCheckDetail> findWarehouseCheckDetailListByParentId(String parentId) throws Exception;
 
     List<WarehouseCheckDetail> mapList2DetailList(List<Map<String, String>> mapList, List<WarehouseCheckDetail> objectList);
-
+    WarehouseCheckDetail warehouseCheckDtl2QRCodeObj(WarehouseCheckDetail warehouseCheckDtl, WarehouseCheckDetail QRCodeObj);
     /////////////////////////////////////////////////////////////
     /**
      * 获取业务id字符串(逗号分隔的字符串)

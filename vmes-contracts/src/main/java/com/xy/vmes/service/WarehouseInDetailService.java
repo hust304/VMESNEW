@@ -3,7 +3,6 @@ package com.xy.vmes.service;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.entity.WarehouseIn;
 import com.xy.vmes.entity.WarehouseInDetail;
-import com.xy.vmes.entity.WarehouseLoginfo;
 import com.yvan.PageData;
 
 import java.util.List;
@@ -83,6 +82,7 @@ public interface WarehouseInDetailService {
     List<WarehouseInDetail> findWarehouseInDetailListByParentId(String parentId);
 
     List<WarehouseInDetail> mapList2DetailList(List<Map<String, String>> mapList, List<WarehouseInDetail> objectList);
+    WarehouseInDetail warehouseInDtl2QRCodeObj(WarehouseInDetail warehouseInDtl, WarehouseInDetail QRCodeObj);
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     String checkDispatcheDetailList(List<WarehouseInDetail> objectList);

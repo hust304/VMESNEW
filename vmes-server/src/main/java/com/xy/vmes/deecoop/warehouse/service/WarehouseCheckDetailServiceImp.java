@@ -5,10 +5,12 @@ import com.xy.vmes.deecoop.warehouse.dao.WarehouseCheckDetailMapper;
 import com.xy.vmes.entity.WarehouseCheck;
 import com.xy.vmes.entity.WarehouseCheckDetail;
 import com.xy.vmes.entity.WarehouseProduct;
+import com.xy.vmes.service.FileService;
 import com.xy.vmes.service.WarehouseCheckDetailService;
 import com.xy.vmes.service.WarehouseCheckService;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
+import com.yvan.YvanUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,9 +33,10 @@ public class WarehouseCheckDetailServiceImp implements WarehouseCheckDetailServi
 
     @Autowired
     private WarehouseCheckDetailMapper warehouseCheckDetailMapper;
-
     @Autowired
     private WarehouseCheckService warehouseCheckService;
+    @Autowired
+    private FileService fileService;
 
     /**
     * 创建人：陈刚 自动创建，禁止修改
@@ -45,6 +48,12 @@ public class WarehouseCheckDetailServiceImp implements WarehouseCheckDetailServi
         warehouseCheckDetail.setCdate(new Date());
         warehouseCheckDetail.setUdate(new Date());
         warehouseCheckDetailMapper.insert(warehouseCheckDetail);
+    }
+
+    public void saveObject(WarehouseCheckDetail object) throws Exception {
+        object.setCdate(new Date());
+        object.setUdate(new Date());
+        warehouseCheckDetailMapper.insert(object);
     }
 
     /**
@@ -198,6 +207,20 @@ public class WarehouseCheckDetailServiceImp implements WarehouseCheckDetailServi
 
         return objectList;
     }
+
+    public WarehouseCheckDetail warehouseCheckDtl2QRCodeObj(WarehouseCheckDetail warehouseCheckDtl, WarehouseCheckDetail QRCodeObj) {
+        if (QRCodeObj == null) {QRCodeObj = new WarehouseCheckDetail();}
+        if (warehouseCheckDtl == null) {return QRCodeObj;}
+
+        QRCodeObj.setId(warehouseCheckDtl.getId());
+        QRCodeObj.setParentId(warehouseCheckDtl.getParentId());
+        QRCodeObj.setWarehouseProductId(warehouseCheckDtl.getWarehouseProductId());
+        QRCodeObj.setProductId(warehouseCheckDtl.getProductId());
+        QRCodeObj.setWarehouseId(warehouseCheckDtl.getWarehouseId());
+        QRCodeObj.setCode(warehouseCheckDtl.getCode());
+
+        return QRCodeObj;
+    }
     /////////////////////////////////////////////////////////////
     /**
      * 获取业务id字符串(逗号分隔的字符串)
@@ -233,6 +256,8 @@ public class WarehouseCheckDetailServiceImp implements WarehouseCheckDetailServi
         for (WarehouseProduct warehouseProduct : objectList) {
             WarehouseCheckDetail detail = new WarehouseCheckDetail();
 
+            String id = Conv.createUuid();
+            detail.setId(id);
             detail.setParentId(parentObj.getId());
             detail.setWarehouseProductId(warehouseProduct.getId());
             detail.setCode(warehouseProduct.getCode());
@@ -248,7 +273,14 @@ public class WarehouseCheckDetailServiceImp implements WarehouseCheckDetailServi
             detail.setState("0");
             detail.setCuser(parentObj.getCuser());
 
-            this.save(detail);
+            //获取二维码信息
+            WarehouseCheckDetail QRCodeObj = this.warehouseCheckDtl2QRCodeObj(detail, null);
+            String qrcode = fileService.createQRCode("warehouseCheck", YvanUtil.toJson(QRCodeObj));
+            if (qrcode != null && qrcode.trim().length() > 0) {
+                detail.setQrcode(qrcode);
+            }
+
+            this.saveObject(detail);
         }
 
     }
