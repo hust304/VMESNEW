@@ -186,7 +186,8 @@ public class RedisUtils {
             }
 
             jedis = redisClient.getJedisPool().getResource();
-            Set<String> keySet = jedis.keys("*" + strTemp);
+            //strTemp := "*:userID*:loginType"
+            Set<String> keySet = jedis.keys(strTemp);
             if (keySet == null || keySet.size() == 0) {return null;}
 
             for (Iterator iterator = keySet.iterator(); iterator.hasNext();) {
