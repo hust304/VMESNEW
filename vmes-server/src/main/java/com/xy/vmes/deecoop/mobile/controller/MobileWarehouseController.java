@@ -67,7 +67,7 @@ public class MobileWarehouseController {
                 layer_int = Integer.valueOf(layer).intValue();
             } catch (NumberFormatException numberExc) {
                 model.putCode(Integer.valueOf(1));
-                model.putMsg("layer(" + layer + ")错误！");
+                model.putMsg("layer(" + layer + ")错误，layer必须是正整数！");
                 return model;
             }
         }
