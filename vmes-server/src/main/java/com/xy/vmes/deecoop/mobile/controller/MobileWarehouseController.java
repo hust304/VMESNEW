@@ -84,7 +84,7 @@ public class MobileWarehouseController {
         List<TreeEntity> treeList = warehouseService.warehouseList2TreeList(objectList, null);
 
         TreeEntity nodeObject = new TreeEntity();
-        nodeObject.setName(Integer.valueOf(layer_int-1).toString() + "级货位");
+        nodeObject.setName(Integer.valueOf(layer_int).toString() + "级货位");
         nodeObject.setChildren(treeList);
 
         String nodeJsonStr = YvanUtil.toJson(nodeObject);
