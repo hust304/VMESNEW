@@ -63,6 +63,9 @@ public class UserLoginController {
 
     /**
      * 系统用户登录(web,手机)端-通用登录接口
+     * 登录类型(loginType)
+     *   手机端:app
+     *   web端:web
      * Redis缓存Key:(uuid:用户ID:deecoop)
      *
      * 1. (用户账号, 密码MD5)-查询(v_vmes_user_employee)
@@ -260,13 +263,14 @@ public class UserLoginController {
         //userButton按钮权限()
 
         //缓存业务数据
-        //(手机端)Redis缓存Key:   (uuid:用户ID:企业ID:deecoop:userLoginMap:mobile)
+        //(手机端)Redis缓存Key:   (uuid:用户ID:企业ID:deecoop:userLoginMap:app)
         //(web端)Redis缓存Key:   (uuid:用户ID:企业ID:deecoop:userLoginMap:web)
         String Redis_userLogin_Key = new_uuid + ":" +
                                     userID + ":" +
                                     companyID + ":" +
                                     "deecoop" + ":" +
-                                    Common.REDIS_USERLOGINMAP;
+                                    Common.REDIS_USERLOGINMAP + ":" +
+                                    loginType;
         //redisClient.set(Redis_userLogin_Key, YvanUtil.toJson(RedisMap));
         //30 * 60 * 1000 (半小时)
         redisClient.setWithExpireTime(Redis_userLogin_Key, YvanUtil.toJson(RedisMap), Common.REDIS_SESSIONID_LONG);

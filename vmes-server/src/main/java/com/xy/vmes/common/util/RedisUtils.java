@@ -176,11 +176,17 @@ public class RedisUtils {
     //
     public static String findRedisUuidByUserID(RedisClient redisClient, String userID, String loginType) {
         if (userID == null || userID.trim().length() == 0) {return null;}
+        if (loginType == null) {loginType = new String();}
 
         Jedis jedis = null;
         try {
+            String strTemp = new String("*:" + userID);
+            if (loginType.trim().length() > 0) {
+                strTemp = strTemp + "*:" + loginType;
+            }
+
             jedis = redisClient.getJedisPool().getResource();
-            Set<String> keySet = jedis.keys("*" + userID + "*" + loginType);
+            Set<String> keySet = jedis.keys("*" + strTemp);
             if (keySet == null || keySet.size() == 0) {return null;}
 
             for (Iterator iterator = keySet.iterator(); iterator.hasNext();) {
