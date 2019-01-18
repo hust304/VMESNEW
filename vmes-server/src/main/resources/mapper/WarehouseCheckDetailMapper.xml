@@ -234,6 +234,7 @@
     <!-- 手机端获取盘点信息 -->
     <select id="findListPageWarehouseCheckDetail"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
         select
+        detail.product_id productId,
         detail.id detailId,
         wcheck.id parentId,
         warehouse.path_name pathName,

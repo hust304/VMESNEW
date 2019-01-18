@@ -469,6 +469,7 @@
     <!-- 手机端获取移库信息 -->
     <select id="findListPageWarehouseMoveDetail"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
         select
+        detail.product_id productId,
         detail.id detailId,
         wmove.id parentId,
         round(detail.count,2) taskCount,

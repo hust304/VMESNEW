@@ -273,6 +273,7 @@
     <!-- 手机端获得入库详细信息 -->
     <select id="findListPageWarehouseInDetail" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
+        detail.product_id productId,
         detail.id detailId,
         win.id parentId,
         type.name typeType,
