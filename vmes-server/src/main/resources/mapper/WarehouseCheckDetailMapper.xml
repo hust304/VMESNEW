@@ -238,6 +238,7 @@
         detail.id detailId,
         wcheck.id parentId,
         warehouse.path_name pathName,
+        detail.warehouse_id warehouseId,
         product.code productCode,
         product.name productName,
         product.spec spec,

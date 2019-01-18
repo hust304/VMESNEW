@@ -481,7 +481,9 @@
         genre.name genreName,
         unit.name unitName,
         wproduct.code pathCode,
+        oldwarehouse.id originWarehouseId,
         oldwarehouse.path_name originPath,
+        newwarehouse.id targetWarehouseId,
         newwarehouse.path_name targetPath
 
         from vmes_warehouse_move_detail detail

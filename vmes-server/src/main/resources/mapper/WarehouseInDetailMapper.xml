@@ -287,7 +287,8 @@
         genre.name genreName,
         unit.name unitName,
         detail.code pathCode,
-        warehouse.path_name pathName
+        warehouse.path_name pathName,
+        detail.warehouse_id warehouseId
 
         from vmes_warehouse_in_detail detail
         left join vmes_warehouse_in win on win.id = detail.parent_id
