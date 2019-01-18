@@ -414,7 +414,8 @@ public class WarehouseController {
         warehouse = warehouseService.paterObject2Warehouse(paterObj, warehouse);
 
         //生成仓库(实体库)二维码
-        String qrcode = fileService.createQRCode("warehouseBase", YvanUtil.toJson(warehouse));
+        Warehouse QRCodeObj = warehouseService.warehouseObj2QRCodeObj(warehouse, null);
+        String qrcode = fileService.createQRCode("warehouseBase", YvanUtil.toJson(QRCodeObj));
         if (qrcode != null && qrcode.trim().length() > 0) {
             warehouse.setQrcode(qrcode);
         }
@@ -502,7 +503,8 @@ public class WarehouseController {
         warehouse = warehouseService.paterObject2Warehouse(paterObj, warehouse);
 
         //生成仓库(虚拟库)二维码
-        String qrcode = fileService.createQRCode("warehouseBase", YvanUtil.toJson(warehouse));
+        Warehouse QRCodeObj = warehouseService.warehouseObj2QRCodeObj(warehouse, null);
+        String qrcode = fileService.createQRCode("warehouseBase", YvanUtil.toJson(QRCodeObj));
         if (qrcode != null && qrcode.trim().length() > 0) {
             warehouse.setQrcode(qrcode);
         }
@@ -595,7 +597,8 @@ public class WarehouseController {
         warehouse = warehouseService.paterObject2Warehouse(paterObj, warehouse);
 
         //生成货位二维码
-        String qrcode = fileService.createQRCode("warehouseBase", YvanUtil.toJson(warehouse));
+        Warehouse QRCodeObj = warehouseService.warehouseObj2QRCodeObj(warehouse, null);
+        String qrcode = fileService.createQRCode("warehouseBase", YvanUtil.toJson(QRCodeObj));
         if (qrcode != null && qrcode.trim().length() > 0) {
             warehouse.setQrcode(qrcode);
         }

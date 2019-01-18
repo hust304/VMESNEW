@@ -104,6 +104,7 @@ public interface WarehouseService {
     String checkColumnByVirtual(Warehouse object);
     Warehouse paterObject2Warehouse(Warehouse paterObject, Warehouse objectDB);
     Warehouse clearWarehouseByPath(Warehouse objectDB);
+    Warehouse warehouseObj2QRCodeObj(Warehouse warehouseObj, Warehouse QRCodeObj);
 
     String findPidsByWarehouseList(List<Warehouse> objectList);
 

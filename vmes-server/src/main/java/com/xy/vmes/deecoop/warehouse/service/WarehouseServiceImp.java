@@ -466,6 +466,20 @@ public class WarehouseServiceImp implements WarehouseService {
         return objectDB;
     }
 
+    public Warehouse warehouseObj2QRCodeObj(Warehouse warehouseObj, Warehouse QRCodeObj) {
+        if (QRCodeObj == null) {QRCodeObj = new Warehouse();}
+        if (warehouseObj == null) {return QRCodeObj;}
+
+        QRCodeObj.setId(warehouseObj.getId());
+        QRCodeObj.setPid(warehouseObj.getPid());
+        QRCodeObj.setLayer(warehouseObj.getLayer());
+        QRCodeObj.setName(warehouseObj.getName());
+        QRCodeObj.setPathName(warehouseObj.getPathName());
+
+        return QRCodeObj;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////
     public String findPidsByWarehouseList(List<Warehouse> objectList) {
         if (objectList == null || objectList.size() == 0) {return new String();}
 
@@ -526,7 +540,8 @@ public class WarehouseServiceImp implements WarehouseService {
 
             try {
                 //生成货位二维码
-                String qrcode = fileService.createQRCode("warehouseBase", YvanUtil.toJson(warehouse));
+                Warehouse QRCodeObj = this.warehouseObj2QRCodeObj(warehouse, null);
+                String qrcode = fileService.createQRCode("warehouseBase", YvanUtil.toJson(QRCodeObj));
                 if (qrcode != null && qrcode.trim().length() > 0) {
                     warehouse.setQrcode(qrcode);
                 }
@@ -574,7 +589,8 @@ public class WarehouseServiceImp implements WarehouseService {
 
             try {
                 //生成货位二维码
-                String qrcode = fileService.createQRCode("warehouseBase", YvanUtil.toJson(warehouse));
+                Warehouse QRCodeObj = this.warehouseObj2QRCodeObj(warehouse, null);
+                String qrcode = fileService.createQRCode("warehouseBase", YvanUtil.toJson(QRCodeObj));
                 if (qrcode != null && qrcode.trim().length() > 0) {
                     warehouse.setQrcode(qrcode);
                 }
