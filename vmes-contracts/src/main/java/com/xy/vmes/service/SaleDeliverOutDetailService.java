@@ -18,12 +18,12 @@ public interface SaleDeliverOutDetailService {
     Map<String, Object> findOutDetailByOrderDetail(String outDtlId, String state);
 
     /**
-     * (发货出库)出库明细出库完成，该出库明细货品解锁库存锁定数量，修改该订单明细(库存锁定数量)
-     * 1. 根据出库明细id关联查询(出库明细,发货明细,订单明细)
-     * 2. 货品id：修改该货品的库存锁定数量
-     * 3. 订单明细id：修改订单明细(库存锁定数量)
+     * (发货出库)出库明细出库完成，
+     * 根据(出库明细id,出库状态:(2已完成))关联查询(出库明细,发货明细,订单明细)
+     * 1. (出库数量)修改货品库存锁定数量
+     * 2. (出库数量)修改订单明细(库存锁定数量)
+     * 3. (出库数量)修改订单明细状态:(订单订购数量,订单明细出库数量)
      *
-     * 出库明细id
      * @param outDtlId 出库明细id
      */
     void finishOutDetailUnlock(String outDtlId) throws Exception;

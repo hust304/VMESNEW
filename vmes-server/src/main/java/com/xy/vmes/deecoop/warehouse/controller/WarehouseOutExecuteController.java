@@ -319,14 +319,12 @@ public class WarehouseOutExecuteController {
                 detail.setState("1");
             }else {
                 detail.setState("2");
-                saleDeliverOutDetailService.finishOutDetailUnlock(detail.getId());
             }
 
             warehouseOutDetailService.update(detail);
             warehouseOutService.updateState(detail.getParentId());
-
+            //saleDeliverOutDetailService.finishOutDetailUnlock(detail.getId());
         }
-
 
 
         Long endTime = System.currentTimeMillis();
@@ -425,11 +423,11 @@ public class WarehouseOutExecuteController {
             detail.setState("1");
         }else {
             detail.setState("2");
-            saleDeliverOutDetailService.finishOutDetailUnlock(detail.getId());
         }
 
         warehouseOutDetailService.update(detail);
         warehouseOutService.updateState(detail.getParentId());
+        //saleDeliverOutDetailService.finishOutDetailUnlock(detail.getId());
 
 
         Long endTime = System.currentTimeMillis();
@@ -554,15 +552,13 @@ public class WarehouseOutExecuteController {
                             detail.setState("1");
                         }else {
                             detail.setState("2");
-                            saleDeliverOutDetailService.finishOutDetailUnlock(detail.getId());
                         }
 
                         warehouseOutDetailService.update(detail);
                         warehouseOutService.updateState(detail.getParentId());
-
+                        saleDeliverOutDetailService.finishOutDetailUnlock(detail.getId());
                     }
                 }
-
             }
         }
 

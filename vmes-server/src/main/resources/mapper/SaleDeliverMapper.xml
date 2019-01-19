@@ -72,7 +72,8 @@
             (replace(uuid(), '-', ''),'saleDeliver','custAddressName','custAddressName',0, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'saleDeliver','custPhone','custPhone',0, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'saleDeliver','custAddress','custAddress',0, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleDeliver','totalSum','totalSum',0, '1','1','1','0',now(), 'admin')
+            (replace(uuid(), '-', ''),'saleDeliver','totalSum','totalSum',0, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'saleDeliver','parentId','parentId',0, '1','1','1','0',now(), 'admin')
 
     </insert>
 
@@ -133,6 +134,7 @@
         select
         distinct
         deliver.id id,
+        deliver.id parentId,
         deliver.deliver_code deliverCode,
         deliver.company_id companyId,
         deliver.customer_id customerId,

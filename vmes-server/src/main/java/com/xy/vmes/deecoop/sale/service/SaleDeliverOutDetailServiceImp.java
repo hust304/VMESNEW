@@ -2,9 +2,7 @@ package com.xy.vmes.deecoop.sale.service;
 
 import com.xy.vmes.deecoop.sale.dao.SaleDeliverOutDetailMapper;
 import com.xy.vmes.entity.SaleOrderDetail;
-import com.xy.vmes.service.ProductService;
-import com.xy.vmes.service.SaleDeliverOutDetailService;
-import com.xy.vmes.service.SaleOrderDetailService;
+import com.xy.vmes.service.*;
 import com.yvan.PageData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,9 +24,11 @@ public class SaleDeliverOutDetailServiceImp implements SaleDeliverOutDetailServi
 
     @Autowired
     private SaleDeliverOutDetailMapper saleDeliverOutDetailMapper;
-
+    @Autowired
+    private SaleDeliverByCollectService saleDeliverByCollectService;
     @Autowired
     private ProductService productService;
+
     @Autowired
     private SaleOrderDetailService saleOrderDetailService;
 
@@ -39,7 +39,6 @@ public class SaleDeliverOutDetailServiceImp implements SaleDeliverOutDetailServi
      * @param state    出库明细状态
      * @return
      */
-    @Override
     public Map<String, Object> findOutDetailByOrderDetail(String outDtlId, String state) {
         if (outDtlId == null || outDtlId.trim().length() == 0) {return new HashMap<String, Object>();}
         if (state == null || state.trim().length() == 0) {return new HashMap<String, Object>();}
@@ -57,18 +56,16 @@ public class SaleDeliverOutDetailServiceImp implements SaleDeliverOutDetailServi
     }
 
     /**
-     * (发货出库)出库明细出库完成，该出库明细货品解锁库存锁定数量，修改该订单明细(库存锁定数量)
-     * 1. 根据出库明细id关联查询(出库明细,发货明细,订单明细)
-     * 2. 货品id：修改该货品的库存锁定数量
-     * 3. 订单明细id：修改订单明细(库存锁定数量)
-     * <p>
-     * 出库明细id
+     * (发货出库)出库明细出库完成，
+     * 根据(出库明细id,出库状态:(2已完成))关联查询(出库明细,发货明细,订单明细)
+     * 1. (出库数量)修改货品库存锁定数量
+     * 2. (出库数量)修改订单明细(库存锁定数量)
+     * 3. (出库数量)修改订单明细状态:(订单订购数量,订单明细出库数量)
      *
      * @param outDtlId 出库明细id
      */
-    @Override
     public void finishOutDetailUnlock(String outDtlId) throws Exception {
-        //出库明细状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+        //发货出库单-出库明细状态(0:待派单 1:执行中 2:已完成 -1.已取消)
         Map<String, Object> mapObject = findOutDetailByOrderDetail(outDtlId, "2");
 
         if (mapObject != null && mapObject.size() > 0) {
@@ -86,11 +83,29 @@ public class SaleDeliverOutDetailServiceImp implements SaleDeliverOutDetailServi
             //订单明细id：修改订单明细(库存锁定数量)
             String orderDtlId = (String)mapObject.get("orderDtlId");
             if (orderDtlId != null && orderDtlId.trim().length() > 0) {
+                //获取发货出库订单(订单明细id,订购数量,出库数量)
+                PageData findMap = new PageData();
+                findMap.put("orderDetailId", orderDtlId);
+                Map<String, Object> mapObj = saleDeliverByCollectService.findDeliverDetailOnWarehouseOutDetailByOrder(findMap);
+
                 SaleOrderDetail orderDetail = new SaleOrderDetail();
                 orderDetail.setId(orderDtlId);
                 //isLockWarehouse 是否锁定仓库(0:未锁定 1:已锁定
                 orderDetail.setIsLockWarehouse("0");
                 orderDetail.setLockCount(BigDecimal.valueOf(0D));
+
+                //订单明细id 出库是否完成 (订单明细订购数量(计量单位))productCount (订单明细出库数量)deliverOutCount
+                if (mapObj != null
+                    && mapObj.get("productCount") != null
+                    && mapObj.get("deliverOutCount") != null
+                ) {
+                    BigDecimal productCount = (BigDecimal)mapObj.get("productCount");
+                    BigDecimal deliverOutCount = (BigDecimal)mapObj.get("deliverOutCount");
+                    if (deliverOutCount.doubleValue() >= productCount.doubleValue()) {
+                        //订单明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已发货 6:已完成 -1:已取消)
+                        orderDetail.setState("4");
+                    }
+                }
                 saleOrderDetailService.update(orderDetail);
             }
         }

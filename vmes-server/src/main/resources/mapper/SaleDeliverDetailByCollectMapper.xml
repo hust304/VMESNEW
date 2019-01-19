@@ -60,22 +60,31 @@
     <!--用于:出库完成后,变更(订单,订单明细)状态-->
     <select id="findDeliverDetailOnWarehouseOutDetailByOrder" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
-            deliverDetail.order_id orderId,
-            deliverDetail.order_detai_id orderDetaiId,
-            deliverDetail.out_detail_id outDetailId,
-            outDetail.state outDetailState
-        from vmes_sale_deliver_detail deliverDetail
-            left join vmes_warehouse_out_detail outDetail on deliverDetail.out_detail_id = outDetail.id
+            deliverDtl.orderDetailId,
+            round(ifnull(orderDtl.product_count, 0), 2) productCount,
+            round(ifnull(deliverOutDtl.deliverOutCount, 0), 2) deliverOutCount
+        from (
+            select order_detai_id orderDetailId
+            from vmes_sale_deliver_detail
+            where out_detail_id is not null
+            group by order_detai_id
+        ) deliverDtl
+            left join vmes_sale_order_detail orderDtl on deliverDtl.orderDetailId = orderDtl.id
+            left join (
+                select
+                  deliverDetail.order_detai_id orderDetaiId,
+                  sum(outDetail.count) deliverOutCount
+                from vmes_sale_deliver_detail deliverDetail
+                  left join vmes_warehouse_out_detail outDetail on deliverDetail.out_detail_id = outDetail.id
+                where outDetail.state = '2'
+                group by deliverDetail.order_detai_id
+            ) deliverOutDtl on deliverDtl.orderDetailId = deliverOutDtl.orderDetaiId
+
         <where>
-            <if test="orderId != null and orderId != ''" >
-                and deliverDetail.order_id = #{orderId}
+            <if test="orderDetailId != null and orderDetailId != ''" >
+                and deliverDtl.orderDetailId = #{orderDetailId}
             </if>
-            <if test="outDetailState != null and outDetailState != ''" >
-                and outDetail.state = #{outDetailState}
-            </if>
-
         </where>
-
     </select>
 
 
