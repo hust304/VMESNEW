@@ -44,7 +44,10 @@ public class SaleDeliverController {
     @Autowired
     private SaleDeliverDetailService saleDeliverDetailService;
     @Autowired
-    private SaleOrderService saleOrderService;
+    private SaleDeliverByCollectService saleDeliverByCollectService;
+
+    //@Autowired
+    //private SaleOrderService saleOrderService;
     @Autowired
     private SaleOrderDetailService saleOrderDetailService;
 
@@ -289,19 +292,58 @@ public class SaleDeliverController {
         //状态(0:待发货 1:已发货 -1:已取消)
         saleDeliverDetailService.updateStateByDetail("1", deliverId);
 
-//        //获取订单id的发货金额 Map<订单id, 发货金额>
-//        Map<String, BigDecimal> orderDeliverSumMap = saleDeliverDetailService.findOrderDeliverSumByDeliverId(deliverId, null);
-//        if (orderDeliverSumMap != null && orderDeliverSumMap.size() > 0) {
-//            for (Iterator iterator = orderDeliverSumMap.keySet().iterator(); iterator.hasNext();) {
-//                String mapKey = (String)iterator.next();
-//                BigDecimal deliverSum = orderDeliverSumMap.get(mapKey);
-//
-//                SaleOrder order = new SaleOrder();
-//                order.setId(mapKey);
-//                order.setDeliverSum(deliverSum);
-//                saleOrderService.update(order);
-//            }
-//        }
+        //发货单id获取发货明细List
+        List<SaleDeliverDetail> deliverDtlList = saleDeliverDetailService.findSaleDeliverDetailListByParentId(deliverId);
+        String orderDtlIds = saleDeliverDetailService.findOrderDtlIdsByDeliverDtlList(deliverDtlList);
+        if (orderDtlIds != null && orderDtlIds.trim().length() > 0) {
+            orderDtlIds = StringUtil.stringTrimSpace(orderDtlIds);
+            orderDtlIds = "'" + orderDtlIds.replace(",", "','") + "'";
+        }
+
+        //根据发货单id-获取(订单明细id,订购数量,发货数量)
+        //发货明细状态(0:待发货 1:已发货 -1:已取消)
+        Map<String, Map<String, BigDecimal>> orderDtlMap = saleDeliverByCollectService.findMapOrderDetaiCountByDeliverId(
+                deliverId,
+                "1",
+                orderDtlIds);
+
+
+        //遍历发货单明细List-修改发货明细对应的订单明细状态
+        Map<String, String> orderIdMap = new HashMap<String, String>();
+        for (SaleDeliverDetail deliverDetail : deliverDtlList) {
+            String orderId = deliverDetail.getOrderId();
+            orderIdMap.put(orderId, orderId);
+
+            String orderDetaiId = deliverDetail.getOrderDetaiId();
+            Map<String, BigDecimal> valueMap = orderDtlMap.get(orderDetaiId);
+            if (valueMap != null) {
+                //订单明细订购数量 productCount
+                BigDecimal productCount = valueMap.get("productCount");
+                //订单明细发货数量 orderDtlDeliverCount
+                BigDecimal orderDtlDeliverCount = valueMap.get("orderDtlDeliverCount");
+
+                if (orderDtlDeliverCount != null
+                        && productCount != null
+                        && orderDtlDeliverCount.doubleValue() >= productCount.doubleValue()
+                        ) {
+                    SaleOrderDetail orderDetail = new SaleOrderDetail();
+                    orderDetail.setId(orderDetaiId);
+                    //订单明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已发货 6:已完成 -1:已取消)
+                    orderDetail.setState("5");
+                    saleOrderDetailService.update(orderDetail);
+                }
+            }
+        }
+
+        //反写订单状态
+        if (orderIdMap.size() > 0) {
+            for (Iterator iterator = orderIdMap.keySet().iterator(); iterator.hasNext();) {
+                SaleOrder order = new SaleOrder();
+                String orderId = (String)iterator.next();
+                order.setId(orderId);
+                saleOrderDetailService.updateParentStateByDetailList(order, null);
+            }
+        }
 
         Long endTime = System.currentTimeMillis();
         logger.info("################saleDeliver/updateSaleDeliverByDeliverType 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");

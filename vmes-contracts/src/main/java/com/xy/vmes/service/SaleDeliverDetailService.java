@@ -171,6 +171,8 @@ public interface SaleDeliverDetailService {
      */
     String findOutIdsByDeliverId(String deliverId);
 
+    String findOrderDtlIdsByDeliverDtlList(List<SaleDeliverDetail> detailList);
+
 }
 
 

@@ -465,6 +465,19 @@ public class SaleDeliverDetailServiceImp implements SaleDeliverDetailService {
         return outIds.toString();
     }
 
+    public String findOrderDtlIdsByDeliverDtlList(List<SaleDeliverDetail> detailList) {
+        if (detailList == null || detailList.size() == 0) {return new String();}
+
+        StringBuffer orderDtlIds = new StringBuffer();
+        for (SaleDeliverDetail detail : detailList) {
+            if (detail.getOrderDetaiId() != null && detail.getOrderDetaiId().trim().length() > 0) {
+                orderDtlIds.append(detail.getOrderDetaiId().trim() + ",");
+            }
+
+        }
+        return orderDtlIds.toString();
+    }
+
 
 }
 

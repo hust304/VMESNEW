@@ -26,33 +26,40 @@
 
     <!--发货明细(按订单明细id)汇总(已发货数量)-->
     <!--用于:发货已完成后,变更(订单,订单明细)状态-->
-    <select id="findDeliverDetailByOrder" parameterType="com.yvan.PageData" resultType="java.util.Map">
+    <select id="findDeliverDetailByOrderDetaiCount" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
-        orderDetail.parent_id orderId,
-        orderDetail.count orderDetaiCount,
-
-        deliver.order_detai_id orderDetaiId,
-        deliver.deliverCount orderDetaiDeliverCount
+        deliverDtl.order_detai_id orderDetailId,
+        round(ifnull(orderDtl.product_count, 0), 2) productCount,
+        deliverOrderDtl.count orderDtlDeliverCount
         from (
-            select
-            order_detai_id,
-            sum(count) deliverCount
+            select order_detai_id
             from vmes_sale_deliver_detail
             <where>
-                <if test="orderId != null and orderId != ''" >
-                    and order_id = #{orderId}
+                <if test="deliverId != null and deliverId != ''" >
+                    and parent_id = #{deliverId}
                 </if>
-                and state = '1'
             </where>
             group by order_detai_id
-        ) deliver
-            left join vmes_sale_order_detail orderDetail on deliver.order_detai_id = orderDetail.id
-        <where>
-            <if test="orderId != null and orderId != ''" >
-                and orderDetail.parent_id = #{orderId}
-            </if>
-
-        </where>
+        ) deliverDtl
+            left join (
+                select
+                    order_detai_id,
+                    sum(count) count
+                from vmes_sale_deliver_detail
+                <where>
+                    <if test="orderDtlId != null and orderDtlId != ''" >
+                        and order_detai_id = #{orderDtlId}
+                    </if>
+                    <if test="orderDtlIds != null and orderDtlIds != ''" >
+                        and order_detai_id in (${orderDtlIds})
+                    </if>
+                    <if test="deliveDtlState != null and deliveDtlState != ''" >
+                        and state = #{deliveDtlState}
+                    </if>
+                </where>
+                group by order_detai_id
+            ) deliverOrderDtl on deliverDtl.order_detai_id = deliverOrderDtl.order_detai_id
+            left join vmes_sale_order_detail orderDtl on deliverDtl.order_detai_id = orderDtl.id
     </select>
 
     <!--发货出库单-->

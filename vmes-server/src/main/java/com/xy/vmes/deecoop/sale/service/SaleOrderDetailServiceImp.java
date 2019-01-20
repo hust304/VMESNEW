@@ -427,8 +427,9 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
             saleOrderService.deleteById(parent.getId());
         } else {
             //获取订单状态-根据订单明细状态
-            String parentState = this.findParentStateByDetailList(dtlList);
-            parent.setState(parentState);
+            //String parentState = this.findParentStateByDetailList(dtlList);
+            //parent.setState(parentState);
+            parent = this.findParentStateByDetailList(parent, dtlList);
             saleOrderService.update(parent);
         }
     }
@@ -500,16 +501,16 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
         String parentState = new String("0");
         if (dtlList == null || dtlList.size() == 0) {return parentState;}
 
-        //1. 验证订单状态(3:已发货) --> 全部明细状态 (5:已发货) -- 忽视状态(-1:已取消)
-        String checkDtlState = "5";
-        if (this.isAllExistStateByDetailList(checkDtlState, dtlList)) {
-            return "3";
-        }
-
-        //2. 验证订单状态(4:已完成) --> 全部明细状态 (6:已完成) -- 忽视状态(-1:已取消)
-        checkDtlState = "6";
+        //1. 验证订单状态(4:已完成) --> 全部明细状态 (6:已完成) -- 忽视状态(-1:已取消)
+        String checkDtlState = "6";
         if (this.isAllExistStateByDetailList(checkDtlState, dtlList)) {
             return "4";
+        }
+
+        //2. 验证订单状态(3:已发货) --> 全部明细状态 (5:已发货) -- 忽视状态(-1:已取消)
+        checkDtlState = "5";
+        if (this.isAllExistStateByDetailList(checkDtlState, dtlList)) {
+            return "3";
         }
 
         //3. 验证订单状态(-1:已取消) --> 全部明细状态 (-1:已取消) -- 忽视状态 null
@@ -519,6 +520,43 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
         }
 
         return parentState;
+    }
+
+    /**
+     * 获取订单状态-根据订单明细状态
+     * 订单状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
+     * 订单明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已发货 6:已完成 -1:已取消)
+     *
+     * @param dtlList      订单明细List<SaleOrderDetail>
+     * @return
+     */
+    public SaleOrder findParentStateByDetailList(SaleOrder parent, List<SaleOrderDetail> dtlList) {
+        if (parent == null) {return null;}
+        if (dtlList == null || dtlList.size() == 0) {return null;}
+
+        //1. 验证订单状态(4:已完成) --> 全部明细状态 (6:已完成) -- 忽视状态(-1:已取消)
+        String checkDtlState = "6";
+        if (this.isAllExistStateByDetailList(checkDtlState, dtlList)) {
+            parent.setState("4");
+            return parent;
+        }
+
+        //2. 验证订单状态(3:已发货) --> 全部明细状态 (5:已发货) -- 忽视状态(-1:已取消)
+        checkDtlState = "5";
+        if (this.isAllExistStateByDetailList(checkDtlState, dtlList)) {
+            parent.setState("3");
+            parent.setDeliverDate(new Date());
+            return parent;
+        }
+
+        //3. 验证订单状态(-1:已取消) --> 全部明细状态 (-1:已取消) -- 忽视状态 null
+        checkDtlState = "-1";
+        if (this.isAllExistStateByDetailList(checkDtlState, dtlList)) {
+            parent.setState("-1");
+            return parent;
+        }
+
+        return parent;
     }
 }
 

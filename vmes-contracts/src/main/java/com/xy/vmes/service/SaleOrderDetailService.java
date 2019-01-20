@@ -150,6 +150,7 @@ public interface SaleOrderDetailService {
      * @return
      */
     String findParentStateByDetailList(List<SaleOrderDetail> dtlList);
+    SaleOrder findParentStateByDetailList(SaleOrder parent, List<SaleOrderDetail> dtlList);
 }
 
 
