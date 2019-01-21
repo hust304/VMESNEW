@@ -60,8 +60,8 @@ public class ComonFilter implements Filter {
                     return;
                 }else {
                     if (!this.checkSession(httpRequest)) {
-//                        httpResponse.sendRedirect(httpRequest.getHeader("referer") + "api/error/401");
-                        httpResponse.sendRedirect( "/error/401");
+                        httpResponse.sendRedirect(httpRequest.getHeader("referer") + "api/error/401");
+//                        httpResponse.sendRedirect( "/error/401");
                         return;
                     }
 
@@ -94,7 +94,7 @@ public class ComonFilter implements Filter {
         if (redisClient.get(sessionID) != null && redisClient.get(sessionID).trim().length() > 0) {
             sessionValue = redisClient.get(sessionID).trim();
         }
-        redisClient.setWithExpireTime(sessionID, sessionValue, 30 * 60);
+        redisClient.setWithExpireTime(sessionID, sessionValue, 30*60*1000);
     }
 
     public boolean checkSession(HttpServletRequest httpRequest) {
