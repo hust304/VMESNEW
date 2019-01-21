@@ -28,7 +28,7 @@ public class SaleInvoice implements Serializable {
 	//订单ID
 	@TableField("order_id")
 	private String orderId;
-	//发票类型(1:不开票 2:普票发票 3:增值税发票)
+	//发票类型(1:不开票 2:增值税普票发票 3:增值税专用发票)
 	@TableField("receipt_type")
 	private String receiptType;
 

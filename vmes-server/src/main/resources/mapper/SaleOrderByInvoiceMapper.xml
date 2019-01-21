@@ -21,8 +21,8 @@
             saleOrder.receipt_type receiptType,
             CASE
             WHEN saleOrder.receipt_type = '1' THEN '不开票'
-            WHEN saleOrder.receipt_type = '2' THEN '普通发票'
-            WHEN saleOrder.receipt_type = '3' THEN '增值税发票'
+            WHEN saleOrder.receipt_type = '2' THEN '增值税普通发票'
+            WHEN saleOrder.receipt_type = '3' THEN '增值税专用发票'
             ELSE null
             END receiptTypeName,
 

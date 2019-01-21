@@ -28,7 +28,7 @@ public class SaleOrder implements Serializable {
 	//订单编号(系统生成)
 	@TableField("sys_code")
 	private String sysCode;
-	//发票类型(1:不开票 2:普票发票 3:增值税发票)
+	//发票类型(1:不开票 2:增值税普票发票 3:增值税专用发票)
 	@TableField("receipt_type")
 	private String receiptType;
 
