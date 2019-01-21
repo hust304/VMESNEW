@@ -497,7 +497,7 @@
 
 
     <!-- 手机端获得出库产品详细信息 -->
-    <select id="findListPageWarehouseOutDetail" parameterType="com.yvan.PageData" resultType="java.util.Map">
+    <select id="findWarehouseOutMobile" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
         detail.product_id productId,
         detail.id detailId,

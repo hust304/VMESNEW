@@ -53,7 +53,7 @@ public interface WarehouseCheckDetailMapper extends BaseMapper<WarehouseCheckDet
 
 
     //手机端盘点详情
-    List<Map> findListPageWarehouseCheckDetail(PageData pd, Pagination pg);
+    List<Map> findWarehouseCheckMobile(PageData pd);
 }
 
 

@@ -137,7 +137,7 @@ public interface WarehouseInDetailService {
 
     ///////////////////////////////////////////////////////////////////////////////
     //手机端入库详情
-    List<Map> findListPageWarehouseInDetail(PageData pd, Pagination pg) throws Exception;
+    List<Map> findWarehouseInMobile(PageData pd) throws Exception;
 
 }
 

@@ -90,7 +90,7 @@ public interface WarehouseOutDetailMapper extends BaseMapper<WarehouseOutDetail>
 
     //////////////////////////////////////////////////////////////////////////////////
     //手机端功能
-    List<Map> findListPageWarehouseOutDetail(PageData pd, Pagination pg);
+    List<Map> findWarehouseOutMobile(PageData pd);
 }
 
 

@@ -83,7 +83,7 @@ public interface WarehouseMoveDetailMapper extends BaseMapper<WarehouseMoveDetai
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
     //手机端功能
-    List<Map> findListPageWarehouseMoveDetail(PageData pd, Pagination pg);
+    List<Map> findWarehouseMoveMobile(PageData pd);
 
 
 
