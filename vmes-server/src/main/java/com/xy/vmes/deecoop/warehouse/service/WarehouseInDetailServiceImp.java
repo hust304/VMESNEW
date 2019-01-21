@@ -376,8 +376,8 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
     }
 
     ///////////////////////////////////////////////////////////////////////////////
-    public List<Map> findListPageWarehouseInDetail(PageData pd, Pagination pg) throws Exception {
-        return warehouseInDetailMapper.findListPageWarehouseInDetail(pd,pg);
+    public List<Map> findWarehouseInMobile(PageData pd) throws Exception {
+        return warehouseInDetailMapper.findWarehouseInMobile(pd);
     }
 
 }

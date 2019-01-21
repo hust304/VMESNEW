@@ -426,8 +426,8 @@ public class WarehouseCheckDetailServiceImp implements WarehouseCheckDetailServi
 
     ///////////////////////////////////////////////////////////////////////////////
     //手机端
-    public List<Map> findListPageWarehouseCheckDetail(PageData pd) throws Exception {
-        return warehouseCheckDetailMapper.findListPageWarehouseCheckDetail(pd);
+    public List<Map> findWarehouseCheckMobile(PageData pd) throws Exception {
+        return warehouseCheckDetailMapper.findWarehouseCheckMobile(pd);
     }
 
 }

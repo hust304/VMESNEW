@@ -295,8 +295,8 @@ public class WarehouseMoveDetailServiceImp implements WarehouseMoveDetailService
 
     ///////////////////////////////////////////////////////////////////////////////
     //手机端
-    public List<Map> findListPageWarehouseMoveDetail(PageData pd, Pagination pg) throws Exception {
-        return warehouseMoveDetailMapper.findListPageWarehouseMoveDetail(pd,pg);
+    public List<Map> findWarehouseMoveMobile(PageData pd) throws Exception {
+        return warehouseMoveDetailMapper.findWarehouseMoveMobile(pd);
     }
 
 }

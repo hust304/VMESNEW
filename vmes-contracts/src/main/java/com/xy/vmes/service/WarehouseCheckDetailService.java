@@ -156,7 +156,7 @@ public interface WarehouseCheckDetailService {
 
     ///////////////////////////////////////////////////////////////////////////////
     //手机端移库详情
-    List<Map> findListPageWarehouseCheckDetail(PageData pd) throws Exception;
+    List<Map> findWarehouseCheckMobile(PageData pd) throws Exception;
 
 }
 

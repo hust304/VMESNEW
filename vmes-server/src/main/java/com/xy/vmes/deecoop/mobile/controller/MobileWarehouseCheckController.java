@@ -1,6 +1,5 @@
 package com.xy.vmes.deecoop.mobile.controller;
 
-import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.service.WarehouseCheckDetailService;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
@@ -12,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,16 +21,15 @@ public class MobileWarehouseCheckController {
     private Logger logger = LoggerFactory.getLogger(MobileWarehouseCheckController.class);
     @Autowired
     private WarehouseCheckDetailService warehouseCheckDetailService;
-    @PostMapping("/mobileWarehouseCheck/listPageWarehouseCheckDetailByDetail ")
-    //@GetMapping("/mobileWarehouseCheck/listPageWarehouseCheckDetailByDetail ")
-    public ResultModel listPageWarehouseCheckDetailByDetail()  throws Exception {
-        logger.info("################/mobileWarehouseCheck/listPageWarehouseCheckDetailByDetail  执行开始 ################# ");
+    @PostMapping("/mobileWarehouseCheck/findWarehouseCheckByDetailId")
+    //@GetMapping("/mobileWarehouseCheck/findWarehouseCheckByDetailId")
+    public ResultModel findWarehouseCheckByDetailId()  throws Exception {
+        logger.info("################/mobileWarehouseCheck/findWarehouseCheckByDetailId执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
 
-
-        List<Map> varList = warehouseCheckDetailService.findListPageWarehouseCheckDetail(pd);
+        List<Map> varList = warehouseCheckDetailService.findWarehouseCheckMobile(pd);
         if(varList!=null&&varList.size()>0){
             model.putResult(varList.get(0));
         }else {
@@ -41,7 +38,7 @@ public class MobileWarehouseCheckController {
         }
 
         Long endTime = System.currentTimeMillis();
-        logger.info("################/mobileWarehouseCheck/listPageWarehouseCheckDetailByDetail  执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/mobileWarehouseCheck/findWarehouseCheckByDetailId  执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
 
     }

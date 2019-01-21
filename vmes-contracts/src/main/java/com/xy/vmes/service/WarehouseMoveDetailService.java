@@ -135,7 +135,7 @@ public interface WarehouseMoveDetailService {
 
     ///////////////////////////////////////////////////////////////////////////////
     //手机端移库详情
-    List<Map> findListPageWarehouseMoveDetail(PageData pd, Pagination pg) throws Exception;
+    List<Map> findWarehouseMoveMobile(PageData pd) throws Exception;
 
 }
 
