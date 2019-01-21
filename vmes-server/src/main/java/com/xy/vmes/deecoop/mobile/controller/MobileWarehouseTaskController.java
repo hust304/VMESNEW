@@ -26,10 +26,10 @@ public class MobileWarehouseTaskController {
     @Autowired
     private WarehouseTaskService warehouseTaskService;
 
-    @PostMapping("/MobileWarehouseTask/listPageWarehouseTaskList")
+    @PostMapping("/mobileWarehouseTask/listPageWarehouseTaskList")
     //@GetMapping("/MobileWarehouseTask/listPageWarehouseTaskList")
     public ResultModel listPageWarehouseTaskList()  throws Exception {
-        logger.info("################MobileWarehouseTask/listPageWarehouseTaskList 执行开始 ################# ");
+        logger.info("################mobileWarehouseTask/listPageWarehouseTaskList 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
@@ -44,7 +44,7 @@ public class MobileWarehouseTaskController {
 
         model.putResult(result);
         Long endTime = System.currentTimeMillis();
-        logger.info("################MobileWarehouseTask/listPageWarehouseTaskList 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################mobileWarehouseTask/listPageWarehouseTaskList 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
 
     }

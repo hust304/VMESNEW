@@ -9,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,15 +18,15 @@ import java.util.Map;
 
 @RestController
 @Slf4j
-public class MobileWarehouseInDetailController {
+public class MobileWarehouseInController {
 
-    private Logger logger = LoggerFactory.getLogger(MobileWarehouseInDetailController.class);
+    private Logger logger = LoggerFactory.getLogger(MobileWarehouseInController.class);
     @Autowired
     private WarehouseInDetailService warehouseInDetailService;
-    @PostMapping("/MobileWarehouseInDetailController/listPageWarehouseInDetailByDetail")
-    //@GetMapping("/MobileWarehouseInDetailController/listPageWarehouseInDetailByDetail")
+    @PostMapping("/mobileWarehouseIn/listPageWarehouseInDetailByDetail")
+    //@GetMapping(" /mobileWarehouseIn/listPageWarehouseInDetailByDetail")
     public ResultModel listPageWarehouseInDetailByDetail()  throws Exception {
-        logger.info("################MobileWarehouseInDetailController/listPageWarehouseInDetailByDetail 执行开始 ################# ");
+        logger.info("################  /mobileWarehouseIn/listPageWarehouseInDetailByDetail 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
@@ -42,7 +41,7 @@ public class MobileWarehouseInDetailController {
 
         model.putResult(result);
         Long endTime = System.currentTimeMillis();
-        logger.info("################MobileWarehouseInDetailController/listPageWarehouseInDetailByDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################ /mobileWarehouseIn/listPageWarehouseInDetailByDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
 
     }
