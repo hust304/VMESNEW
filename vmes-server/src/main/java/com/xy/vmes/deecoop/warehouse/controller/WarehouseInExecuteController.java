@@ -755,152 +755,152 @@ public class WarehouseInExecuteController {
         return model;
     }
 
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /**
-     * 手机端
-     * 新增入库单明细执行
-     * @author fang
-     * @date 2018-10-18
-     * @throws Exception
-     */
-    @PostMapping("/warehouseInExecute/moblileAddWarehouseInExecute")
-    @Transactional
-    public ResultModel moblileAddWarehouseInExecute() throws Exception {
-        logger.info("################/warehouseInExecute/moblileAddWarehouseInExecute 执行开始 ################# ");
-        Long startTime = System.currentTimeMillis();
-        ResultModel model = new ResultModel();
-
-        PageData pageData = HttpUtils.parsePageData();
-        String cuser = pageData.getString("cuser");
-        String companyId = pageData.getString("currentCompanyId");
-
-        String parentId = pageData.getString("parentId");
-        if (parentId == null || parentId.trim().length() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("入库单id为空或空字符串");
-            return model;
-        }
-        String detailId = pageData.getString("detailId");
-        if (detailId == null || detailId.trim().length() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("入库单明细id为空或空字符串");
-            return model;
-        }
-
-        String productId = pageData.getString("productId");
-        if (productId == null || productId.trim().length() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("货品id为空或空字符串");
-            return model;
-        }
-        String warehouseId = pageData.getString("warehouseId");
-        if (warehouseId == null || warehouseId.trim().length() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("货位id为空或空字符串");
-            return model;
-        }
-        String code = pageData.getString("code");
-        if (code == null || code.trim().length() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("批次号为空或空字符串");
-            return model;
-        }
-
-        //入库数量 count
-        String count = pageData.getString("count");
-        BigDecimal countBig = BigDecimal.valueOf(0D);
-        if (count == null || count.trim().length() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("入库数量为空或空字符串！");
-            return model;
-        } else {
-            try {
-                BigDecimal doubleBig = new BigDecimal(count);
-                if (doubleBig.doubleValue() < 0) {
-                    model.putCode(Integer.valueOf(1));
-                    model.putMsg("入库数量(" + count + ")输入错误，请输入大于零的整数或2为小数");
-                    return model;
-                }
-                countBig = doubleBig;
-            } catch (NumberFormatException numberExc) {
-                model.putCode(Integer.valueOf(1));
-                model.putMsg("入库数量(" + count + ")输入错误，请输入大于零的整数或2为小数");
-                return model;
-            }
-        }
-
-
-        StringBuffer msgBuf = new StringBuffer();
-        try {
-            //入库操作
-            WarehouseProduct inObject = new WarehouseProduct();
-            //货位批次号
-            inObject.setCode(code);
-            //产品ID
-            inObject.setProductId(productId);
-            //(实际)货位ID
-            inObject.setWarehouseId(warehouseId);
-
-            //库存变更日志
-            String executeId = Conv.createUuid();
-
-            WarehouseLoginfo loginfo = new WarehouseLoginfo();
-            loginfo.setParentId(parentId);
-            loginfo.setDetailId(detailId);
-            loginfo.setExecuteId(executeId);
-            loginfo.setCompanyId(companyId);
-            loginfo.setCuser(cuser);
-            //operation 操作类型(add:添加 modify:修改 delete:删除:)
-            loginfo.setOperation("add");
-
-            //beforeCount 操作变更前数量(业务相关)
-            loginfo.setBeforeCount(BigDecimal.valueOf(0D));
-            //afterCount 操作变更后数量(业务相关)
-            loginfo.setAfterCount(countBig);
-
-            String msgStr = warehouseProductService.inStockCount(inObject, countBig, loginfo);
-            if (msgStr != null && msgStr.trim().length() > 0) {
-                msgBuf.append( "入库操作失败:" + msgStr);
-            } else {
-                WarehouseInExecute execute = new WarehouseInExecute();
-                execute.setId(executeId);
-                execute.setDetailId(detailId);
-                execute.setWarehouseId(warehouseId);
-                execute.setExecutorId(cuser);
-                execute.setCount(countBig);
-                execute.setCuser(cuser);
-                warehouseInExecuteService.save(execute);
-
-                Product product = productService.findProductById(productId);
-                BigDecimal prodCount = BigDecimal.valueOf(0D);
-                if (product.getStockCount() != null) {
-                    prodCount = product.getStockCount();
-                }
-
-                BigDecimal prodStockCount = BigDecimal.valueOf(prodCount.doubleValue() + countBig.doubleValue());
-                productService.updateStockCount(product, prodStockCount, cuser);
-
-                //2. 修改修改当前入库单明细状态--同时反写入库单状态
-                List<WarehouseInDetail> detailList = warehouseInDetailService.findWarehouseInDetailListByParentId(parentId);
-                warehouseInDetailService.updateStateWarehouseInDetail(detailList);
-            }
-        } catch (TableVersionException tabExc) {
-            //库存变更 version 锁
-            if (Common.SYS_STOCKCOUNT_ERRORCODE.equals(tabExc.getErrorCode())) {
-                model.putCode(Integer.valueOf(1));
-                model.putMsg(tabExc.getMessage());
-                return model;
-            }
-        }
-
-        if (msgBuf.toString().trim().length() > 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg(msgBuf.toString());
-            return model;
-        }
-
-        Long endTime = System.currentTimeMillis();
-        logger.info("################/warehouseInExecute/moblileAddWarehouseInExecute 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
-        return model;
-    }
+//    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//    /**
+//     * 手机端
+//     * 新增入库单明细执行
+//     * @author fang
+//     * @date 2018-10-18
+//     * @throws Exception
+//     */
+//    @PostMapping("/warehouseInExecute/moblileAddWarehouseInExecute")
+//    @Transactional
+//    public ResultModel moblileAddWarehouseInExecute() throws Exception {
+//        logger.info("################/warehouseInExecute/moblileAddWarehouseInExecute 执行开始 ################# ");
+//        Long startTime = System.currentTimeMillis();
+//        ResultModel model = new ResultModel();
+//
+//        PageData pageData = HttpUtils.parsePageData();
+//        String cuser = pageData.getString("cuser");
+//        String companyId = pageData.getString("currentCompanyId");
+//
+//        String parentId = pageData.getString("parentId");
+//        if (parentId == null || parentId.trim().length() == 0) {
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg("入库单id为空或空字符串");
+//            return model;
+//        }
+//        String detailId = pageData.getString("detailId");
+//        if (detailId == null || detailId.trim().length() == 0) {
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg("入库单明细id为空或空字符串");
+//            return model;
+//        }
+//
+//        String productId = pageData.getString("productId");
+//        if (productId == null || productId.trim().length() == 0) {
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg("货品id为空或空字符串");
+//            return model;
+//        }
+//        String warehouseId = pageData.getString("warehouseId");
+//        if (warehouseId == null || warehouseId.trim().length() == 0) {
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg("货位id为空或空字符串");
+//            return model;
+//        }
+//        String code = pageData.getString("code");
+//        if (code == null || code.trim().length() == 0) {
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg("批次号为空或空字符串");
+//            return model;
+//        }
+//
+//        //入库数量 count
+//        String count = pageData.getString("count");
+//        BigDecimal countBig = BigDecimal.valueOf(0D);
+//        if (count == null || count.trim().length() == 0) {
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg("入库数量为空或空字符串！");
+//            return model;
+//        } else {
+//            try {
+//                BigDecimal doubleBig = new BigDecimal(count);
+//                if (doubleBig.doubleValue() < 0) {
+//                    model.putCode(Integer.valueOf(1));
+//                    model.putMsg("入库数量(" + count + ")输入错误，请输入大于零的整数或2为小数");
+//                    return model;
+//                }
+//                countBig = doubleBig;
+//            } catch (NumberFormatException numberExc) {
+//                model.putCode(Integer.valueOf(1));
+//                model.putMsg("入库数量(" + count + ")输入错误，请输入大于零的整数或2为小数");
+//                return model;
+//            }
+//        }
+//
+//
+//        StringBuffer msgBuf = new StringBuffer();
+//        try {
+//            //入库操作
+//            WarehouseProduct inObject = new WarehouseProduct();
+//            //货位批次号
+//            inObject.setCode(code);
+//            //产品ID
+//            inObject.setProductId(productId);
+//            //(实际)货位ID
+//            inObject.setWarehouseId(warehouseId);
+//
+//            //库存变更日志
+//            String executeId = Conv.createUuid();
+//
+//            WarehouseLoginfo loginfo = new WarehouseLoginfo();
+//            loginfo.setParentId(parentId);
+//            loginfo.setDetailId(detailId);
+//            loginfo.setExecuteId(executeId);
+//            loginfo.setCompanyId(companyId);
+//            loginfo.setCuser(cuser);
+//            //operation 操作类型(add:添加 modify:修改 delete:删除:)
+//            loginfo.setOperation("add");
+//
+//            //beforeCount 操作变更前数量(业务相关)
+//            loginfo.setBeforeCount(BigDecimal.valueOf(0D));
+//            //afterCount 操作变更后数量(业务相关)
+//            loginfo.setAfterCount(countBig);
+//
+//            String msgStr = warehouseProductService.inStockCount(inObject, countBig, loginfo);
+//            if (msgStr != null && msgStr.trim().length() > 0) {
+//                msgBuf.append( "入库操作失败:" + msgStr);
+//            } else {
+//                WarehouseInExecute execute = new WarehouseInExecute();
+//                execute.setId(executeId);
+//                execute.setDetailId(detailId);
+//                execute.setWarehouseId(warehouseId);
+//                execute.setExecutorId(cuser);
+//                execute.setCount(countBig);
+//                execute.setCuser(cuser);
+//                warehouseInExecuteService.save(execute);
+//
+//                Product product = productService.findProductById(productId);
+//                BigDecimal prodCount = BigDecimal.valueOf(0D);
+//                if (product.getStockCount() != null) {
+//                    prodCount = product.getStockCount();
+//                }
+//
+//                BigDecimal prodStockCount = BigDecimal.valueOf(prodCount.doubleValue() + countBig.doubleValue());
+//                productService.updateStockCount(product, prodStockCount, cuser);
+//
+//                //2. 修改修改当前入库单明细状态--同时反写入库单状态
+//                List<WarehouseInDetail> detailList = warehouseInDetailService.findWarehouseInDetailListByParentId(parentId);
+//                warehouseInDetailService.updateStateWarehouseInDetail(detailList);
+//            }
+//        } catch (TableVersionException tabExc) {
+//            //库存变更 version 锁
+//            if (Common.SYS_STOCKCOUNT_ERRORCODE.equals(tabExc.getErrorCode())) {
+//                model.putCode(Integer.valueOf(1));
+//                model.putMsg(tabExc.getMessage());
+//                return model;
+//            }
+//        }
+//
+//        if (msgBuf.toString().trim().length() > 0) {
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg(msgBuf.toString());
+//            return model;
+//        }
+//
+//        Long endTime = System.currentTimeMillis();
+//        logger.info("################/warehouseInExecute/moblileAddWarehouseInExecute 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+//        return model;
+//    }
 }
