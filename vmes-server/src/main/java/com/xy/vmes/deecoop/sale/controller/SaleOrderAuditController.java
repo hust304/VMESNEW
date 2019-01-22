@@ -331,6 +331,11 @@ public class SaleOrderAuditController {
         BigDecimal orderSum = BigDecimal.valueOf(totalSum.doubleValue() - order.getDiscountSum().doubleValue()).setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
         order.setOrderSum(orderSum);
 
+        //2:后计价 无订单总金额 无订单金额
+        if (order.getPriceType() != null && "2".equals(order.getPriceType().trim())) {
+            order.setTotalSum(BigDecimal.valueOf(0D));
+            order.setOrderSum(BigDecimal.valueOf(0D));
+        }
         saleOrderService.update(order);
 
         Long endTime = System.currentTimeMillis();

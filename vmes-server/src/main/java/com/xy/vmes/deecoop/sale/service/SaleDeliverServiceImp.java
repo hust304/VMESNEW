@@ -207,16 +207,44 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
             Map<String, String> detailMap = mapList.get(i);
 
             String customerId = detailMap.get("customerId");
-            if (customerMap.size() == 1 && customerMap.get(customerId) == null) {
+            if (customerMap.get(customerId) != null) {
                 String msg_Str = MessageFormat.format(msgTemp, (i+1));
                 msgBuf.append(msg_Str);
-            } else if (customerMap.size() == 0) {
+            } else {
                 customerMap.put(customerId, customerId);
             }
         }
 
         if (msgBuf.toString().trim().length() > 0) {
             msgBuf.append("请通过查询条件过滤出相同客户名称的订单！" + Common.SYS_ENDLINE_DEFAULT);
+        }
+
+        return msgBuf.toString();
+    }
+
+    /**
+     * 验证计价类型(1:先计价 2:后计价)是否相同，订单明细生成发货单
+     *
+     * @param mapList
+     * @return
+     */
+    public String checkPricetypeByOrderDetailList(List<Map<String, String>> mapList) {
+        if (mapList == null || mapList.size() == 0) {return new String();}
+
+        StringBuffer msgBuf = new StringBuffer();
+        String msgTemp = "第 {0} 行: 勾选的数据(计价类型1:先计价 2:后计价)不相同" + Common.SYS_ENDLINE_DEFAULT;
+
+        Map<String, String> priceTypeMap = new HashMap<String, String>();
+        for (int i = 0; i < mapList.size(); i++) {
+            Map<String, String> detailMap = mapList.get(i);
+
+            String priceType = detailMap.get("priceType");
+            if (priceTypeMap.get(priceType) != null) {
+                String msg_Str = MessageFormat.format(msgTemp, (i+1));
+                msgBuf.append(msg_Str);
+            } else {
+                priceTypeMap.put(priceType, priceType);
+            }
         }
 
         return msgBuf.toString();

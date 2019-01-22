@@ -226,12 +226,8 @@ public class SaleDeliverDetailServiceImp implements SaleDeliverDetailService {
 
             //needDeliverCount (计价单位)本次发货数量
             BigDecimal needDeliverCount = BigDecimal.valueOf(0D);
-            if (mapObject.get("needDeliverCount") != null && mapObject.get("needDeliverCount").trim().length() > 0) {
-                try {
-                    needDeliverCount = new BigDecimal(mapObject.get("needDeliverCount").trim());
-                } catch (NumberFormatException e) {
-                    e.printStackTrace();
-                }
+            if (detail.getNeedDeliverCount() != null ) {
+                needDeliverCount = detail.getNeedDeliverCount();
             }
 
             //pnFormula 计价单位转换计量单位
@@ -244,10 +240,10 @@ public class SaleDeliverDetailServiceImp implements SaleDeliverDetailService {
                 valueBig = EvaluateUtil.formulaReckon(parmMap, pnFormula);
             }
 
-            //count:订购数量(计价数量) -- 本次发货数量(计价单位)
-            detail.setCount(needDeliverCount);
+            //priceCount 货品数量(计价数量) --> 本次发货数量(计价单位)
+            detail.setPriceCount(needDeliverCount);
 
-            //productCount:货品数量(计量数量) --本次发货数量(计量单位)
+            //productCount:货品数量(计量数量) --> 本次发货数量(计量单位)
             detail.setProductCount(valueBig);
 
             objectList.add(detail);

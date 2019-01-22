@@ -60,6 +60,8 @@ public class SaleOrderDetailEntity {
     //是否启用(0:已禁用 1:启用)
     private String isdisable;
 
+    //(计价单位)本次发货数量
+    private BigDecimal needDeliverCount;
     //非实体类字段:界面传值用
     private String deliverDtlRemark;
 
@@ -219,5 +221,11 @@ public class SaleOrderDetailEntity {
     }
     public void setDeliverDtlRemark(String deliverDtlRemark) {
         this.deliverDtlRemark = deliverDtlRemark;
+    }
+    public BigDecimal getNeedDeliverCount() {
+        return needDeliverCount;
+    }
+    public void setNeedDeliverCount(BigDecimal needDeliverCount) {
+        this.needDeliverCount = needDeliverCount;
     }
 }

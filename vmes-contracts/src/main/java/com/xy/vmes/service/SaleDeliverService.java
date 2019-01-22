@@ -109,6 +109,14 @@ public interface SaleDeliverService {
      */
     String checkCustomerByOrderDetailList(List<Map<String, String>> mapList);
 
+    /**
+     * 验证计价类型(1:先计价 2:后计价)是否相同，订单明细生成发货单
+     *
+     * @param mapList
+     * @return
+     */
+    String checkPricetypeByOrderDetailList(List<Map<String, String>> mapList);
+
 }
 
 

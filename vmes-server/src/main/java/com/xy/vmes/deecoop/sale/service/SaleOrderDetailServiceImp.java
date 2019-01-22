@@ -211,11 +211,15 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
         for (Map<String, String> mapObject : mapList) {
             SaleOrderDetail detail = (SaleOrderDetail) HttpUtils.pageData2Entity(mapObject, new SaleOrderDetail());
 
-            //count 订购数量(计价数量)
-            BigDecimal count = BigDecimal.valueOf(0D);
-            if (detail.getCount() != null) {
-                count = detail.getCount();
+            //orderCount 订单订购数量 := 货品数量(计价数量)
+            BigDecimal orderCount = BigDecimal.valueOf(0D);
+            if (detail.getOrderCount() != null) {
+                orderCount = detail.getOrderCount();
             }
+            //orderCount:订购数量(计价数量)
+            detail.setOrderCount(orderCount);
+            //priceCount 货品数量(计价数量)
+            detail.setPriceCount(orderCount);
 
             //计价转换计量单位 数量转换公式 p2nFormula
             String p2nFormula = mapObject.get("p2nFormula");
@@ -223,13 +227,9 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
             //P(计价单位) --> N(计量单位)
             if (p2nFormula != null && p2nFormula.trim().length() > 0) {
                 Map<String, Object> parmMap = new HashMap<String, Object>();
-                parmMap.put("P", count);
+                parmMap.put("P", orderCount);
                 valueBig = EvaluateUtil.formulaReckon(parmMap, p2nFormula);
             }
-
-            //count:订购数量(计价数量)
-            detail.setCount(count);
-
             //productCount:货品数量(计量数量)
             detail.setProductCount(valueBig);
 
@@ -270,10 +270,11 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
         deliverDetail.setOrderDetaiId(orderDetail.getId());
         //productId货品ID
         deliverDetail.setProductId(orderDetail.getProductId());
-        //(先计价) (orderUnit,priceUnit) 值相同
-        //(后计价) (orderUnit,priceUnit) 值不相同
         //orderUnit订单明细单位id
         deliverDetail.setOrderUnit(orderDetail.getOrderUnit());
+
+        //(先计价) (orderUnit,priceUnit) 值相同
+        //(后计价) (orderUnit,priceUnit) 值不相同
         //priceUnit计价单位id
         deliverDetail.setPriceUnit(orderDetail.getPriceUnit());
 
@@ -284,10 +285,10 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
         if (orderDetail.getProductPrice() != null) {
             deliverDetail.setProductPrice(orderDetail.getProductPrice());
         }
-        //count 发货数量(订单明细 计价单位数量)
+        //priceCount 货品数量(计价数量) --> 本次发货数量(计价单位)
         deliverDetail.setCount(BigDecimal.valueOf(0D));
-        if (orderDetail.getCount() != null) {
-            deliverDetail.setCount(orderDetail.getCount());
+        if (orderDetail.getPriceCount() != null) {
+            deliverDetail.setCount(orderDetail.getPriceCount());
         }
 
         //sum 发货金额 := 货品单价 * 发货数量
@@ -352,8 +353,8 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
         }
         //count 开票数量
         invoiceDetail.setCount(BigDecimal.valueOf(0D));
-        if (orderDetail.getCount() != null) {
-            invoiceDetail.setCount(orderDetail.getCount());
+        if (orderDetail.getOrderCount() != null) {
+            invoiceDetail.setCount(orderDetail.getOrderCount());
         }
         //sum 发票金额 := 货品单价 * 开票数量
         //四舍五入到2位小数
@@ -441,8 +442,8 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
         for (SaleOrderDetail detail : objectList) {
             //订购数量(计价数量)
             double count_double = 0D;
-            if (detail.getCount() != null) {
-                count_double = detail.getCount().doubleValue();
+            if (detail.getOrderCount() != null) {
+                count_double = detail.getOrderCount().doubleValue();
             }
 
             //货品单价

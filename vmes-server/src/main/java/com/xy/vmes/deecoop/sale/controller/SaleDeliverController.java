@@ -170,6 +170,13 @@ public class SaleDeliverController {
             return model;
         }
 
+        msgStr = saleDeliverService.checkPricetypeByOrderDetailList(mapList);
+        if (msgStr != null && msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
+
         String customerId = mapList.get(0).get("customerId");
         String customerName = mapList.get(0).get("customerName");
 
@@ -229,18 +236,32 @@ public class SaleDeliverController {
             orderDtl2DeliverDtlMap.put(deliverDtl.getOrderDetaiId(), deliverDtl.getId());
         }
 
+        //priceType 订单计价类型
+        String priceType = mapList.get(0).get("priceType");
+
         for (SaleOrderDetailEntity orderDtl : orderDtlList) {
             String orderDtl_id = orderDtl.getId();
             if (orderDtl2DeliverDtlMap.get(orderDtl_id) != null) {
                 SaleOrderDetail orderDetail = new SaleOrderDetail();
                 orderDetail.setId(orderDtl_id);
-                //发货明细ID
-                //orderDetail.setDeliverDetailId(orderDtl2DeliverDtlMap.get(orderDtl_id));
                 //明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已发货 6:已完成 -1:已取消)
                 orderDetail.setState("3");
+                //price_type:计价类型(1:先计价 2:后计价)
+                if (priceType != null && "2".equals(priceType.trim())) {
+                    //计价单位id
+                    orderDetail.setPriceUnit(orderDtl.getPriceUnit());
+                    //货品数量(计价数量) === 发货数量
+                    orderDetail.setPriceCount(orderDtl.getPriceCount());
+                    //货品数量(计量数量)
+                    orderDetail.setProductCount(orderDtl.getProductCount());
+                }
+
                 saleOrderDetailService.update(orderDetail);
             }
         }
+
+        //price_type:计价类型(1:先计价 2:后计价)
+        //price_type:2:后计价 (反写订单金额)
 
         Long endTime = System.currentTimeMillis();
         logger.info("################saleDeliver/addSaleDeliver 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");

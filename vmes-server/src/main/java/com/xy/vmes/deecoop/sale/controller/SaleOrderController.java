@@ -186,6 +186,13 @@ public class SaleOrderController {
                 "yyyyMMdd",
                 "D");
         order.setSysCode(code);
+
+        //priceType计价类型(1:先计价 2:后计价)
+        //2:后计价 无订单总金额 无订单金额
+        if (order.getPriceType() != null && "2".equals(order.getPriceType().trim())) {
+            order.setTotalSum(BigDecimal.valueOf(0D));
+            order.setOrderSum(BigDecimal.valueOf(0D));
+        }
         saleOrderService.save(order);
 
         //2.添加订单明细
@@ -278,6 +285,11 @@ public class SaleOrderController {
         }
 
         //2.修改订单表头
+        //2:后计价 无订单总金额 无订单金额
+        if (order.getPriceType() != null && "2".equals(order.getPriceType().trim())) {
+            order.setTotalSum(BigDecimal.valueOf(0D));
+            order.setOrderSum(BigDecimal.valueOf(0D));
+        }
         saleOrderService.update(order);
 
         //3.修改客户余额(vmes_customer.balance)
