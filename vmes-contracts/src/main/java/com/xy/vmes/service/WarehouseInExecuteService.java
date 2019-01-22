@@ -5,6 +5,7 @@ import com.xy.vmes.entity.WarehouseInDetail;
 import com.xy.vmes.entity.WarehouseInExecute;
 import com.xy.vmes.entity.WarehouseLoginfo;
 import com.yvan.PageData;
+import com.yvan.springmvc.ResultModel;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -101,6 +102,12 @@ public interface WarehouseInExecuteService {
     //BigDecimal findSumCountByExecuteList(List<WarehouseInExecute> objectList);
 
     String checkColumnExecuteList(List<WarehouseInExecute> objectList);
+
+    ResultModel batchAddWarehouseInExecute(PageData pageData) throws Exception;
+
+    ResultModel addWarehouseInExecute(PageData pageData) throws Exception;
+
+    ResultModel rebackWarehouseInExecute(PageData pageData) throws Exception;
 
     ///////////////////////////////////////////////////////////////////////////////
 

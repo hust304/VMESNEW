@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+说明：出库明细 Mapper.xml
+创建人：刘威 自动创建
+创建时间：2018-10-23
+ -->
+<mapper namespace="com.xy.vmes.deecoop.mobile.dao.MobileWarehouseOutMapper">
+
+    <!-- 手机端获得出库产品详细信息 -->
+    <select id="findWarehouseOutByDetailId" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select tab1.productId,tab1.detailId,tab1.parentId,tab1.typeName,tab1.deptName,tab1.productName,tab1.productCode,tab1.spec,
+        tab1.genreName,tab1.unitName,tab1.count,tab1.completeCount,tab1.unCompleteCount,round(sum(ifnull(tab2.stockCount,0)),2) stockCount,tab2.warehouseCode,tab2.pathName,
+        <![CDATA[ case when tab1.unCompleteCount>round(sum(ifnull(tab2.stockCount,0)),2) then round(sum(ifnull(tab2.stockCount,0)),2) else tab1.unCompleteCount end suggestCount ]]>
+
+        from(
+        select
+        detail.product_id productId,
+        detail.id detailId,
+        wout.id parentId,
+        type.name typeName,
+        wout.dept_name deptName,
+        product.name productName,
+        product.code productCode,
+        product.spec spec,
+        genre.name genreName,
+        unit.name unitName,
+        round(detail.count,2) count,
+        round(sum(ifnull(execute.count,0)),2) completeCount,
+        round(detail.count-sum(ifnull(execute.count,0)),2) unCompleteCount
+
+        from vmes_warehouse_out_detail detail
+        left join vmes_warehouse_out wout on wout.id = detail.parent_id
+        left join vmes_dictionary type on wout.type = type.id
+        left join vmes_product product on detail.product_id = product.id
+        left join vmes_product_unit produnit on produnit.product_id = product .id and produnit.type = 1
+        left join vmes_dictionary unit on produnit.unit = unit.id
+        left join vmes_dictionary genre on product.genre = genre.id
+        left join vmes_warehouse_out_execute execute on execute.detail_id = detail.id and execute.isdisable = 1
+        group by detail.id
+        ) tab1
+        left join
+        (
+        select
+        recommend.detail_id detailId,
+        warehouseProduct.code warehouseCode,
+        warehouse.path_name pathName,
+        warehouseProduct.stock_count stockCount
+        from vmes_warehouse_out_recommend recommend
+        left join vmes_warehouse_product warehouseProduct on warehouseProduct.id = recommend.warehouse_product_id and warehouseProduct.stock_count>0
+        left join vmes_warehouse warehouse on warehouse.id = warehouseProduct.warehouse_id
+        )tab2 on tab1.detailId = tab2.detailId
+
+        <where>
+            <if test="detailId != null and detailId != ''" >
+                and tab1.detailId = #{detailId}
+            </if>
+        </where>
+
+        order by tab2.warehouseCode asc  limit 1
+    </select>
+
+
+    <select id="listWarehousePath" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select DISTINCT warehouse.path_name pathName,warehouse.id warehouseId,warehouseProduct.product_id productId
+        from vmes_warehouse_product warehouseProduct
+        left join vmes_warehouse warehouse on warehouse.id = warehouseProduct.warehouse_id
+        <where>
+            <if test="warehouseId != null and warehouseId != ''" >
+                and warehouseProduct.warehouse_id = #{warehouseId}
+            </if>
+            <if test="productId != null and productId != ''" >
+                and warehouseProduct.product_id = #{productId}
+            </if>
+            <![CDATA[ and warehouseProduct.stock_count > 0 ]]>
+        </where>
+        order by warehouseProduct.code asc
+    </select>
+
+
+    <select id="listWarehouseCode" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select  warehouseProduct.code warehouseCode,warehouseProduct.stock_count stockCount,warehouseProduct.id warehouseProductId,warehouse.path_name pathName,warehouse.id warehouseId,warehouseProduct.product_id productId
+        from vmes_warehouse_product warehouseProduct
+        left join vmes_warehouse warehouse on warehouse.id = warehouseProduct.warehouse_id
+        <where>
+            <if test="warehouseId != null and warehouseId != ''" >
+                and warehouseProduct.warehouse_id = #{warehouseId}
+            </if>
+            <if test="productId != null and productId != ''" >
+                and warehouseProduct.product_id = #{productId}
+            </if>
+            <if test="warehouseCode != null and warehouseCode != ''" >
+                and warehouseProduct.code = #{warehouseCode}
+            </if>
+            <![CDATA[ and warehouseProduct.stock_count > 0 ]]>
+        </where>
+        order by warehouseProduct.code asc
+    </select>
+
+</mapper>

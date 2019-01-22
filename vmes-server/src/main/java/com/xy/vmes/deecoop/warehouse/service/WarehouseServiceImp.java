@@ -9,17 +9,14 @@ import com.xy.vmes.entity.Warehouse;
 import com.xy.vmes.service.CoderuleService;
 import com.xy.vmes.service.FileService;
 import com.xy.vmes.service.WarehouseService;
-import com.yvan.Numbers;
-import com.yvan.PageData;
-import com.yvan.YvanUtil;
+import com.yvan.*;
+import com.yvan.springmvc.ResultModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.MessageFormat;
 import java.util.*;
-
-import com.yvan.Conv;
 
 /**
 * 说明：vmes_warehouse:仓库货位表 实现类
@@ -647,6 +644,63 @@ public class WarehouseServiceImp implements WarehouseService {
             treeList.add(tree);
         }
         return treeList;
+    }
+
+    @Override
+    public ResultModel listWarehouseNodeByPid(PageData pd) throws Exception {
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+        String companyId = pageData.getString("currentCompanyId");
+        if (companyId == null || companyId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("企业id为空或空字符串");
+            return model;
+        }
+
+        String pid = pageData.getString("pid");
+        if (pid == null || pid.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("pid为空或空字符串");
+            return model;
+        }
+
+        int layer_int = 0;
+        String layer = pageData.getString("layer");
+        if (layer == null || layer.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("layer为空或空字符串");
+            return model;
+        } else {
+            try {
+                layer_int = Integer.valueOf(layer).intValue();
+            } catch (NumberFormatException numberExc) {
+                model.putCode(Integer.valueOf(1));
+                model.putMsg("layer(" + layer + ")错误，layer必须是正整数！");
+                return model;
+            }
+        }
+
+        PageData findMap = new PageData();
+        findMap.put("companyId", companyId);
+        findMap.put("pid", pid);
+        //是否启用(0:已禁用 1:启用)
+        findMap.put("isdisable", "1");
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+        findMap.put("orderStr", "serial_number asc");
+
+        List<Warehouse> objectList = this.findWarehouseList(findMap);
+        List<TreeEntity> treeList = this.warehouseList2TreeList(objectList, null);
+
+        TreeEntity nodeObject = new TreeEntity();
+        nodeObject.setName(Integer.valueOf(layer_int).toString() + "级货位");
+        nodeObject.setChildren(treeList);
+
+        String nodeJsonStr = YvanUtil.toJson(nodeObject);
+        System.out.println("nodeJsonStr: " + nodeJsonStr);
+
+        model.putResult(nodeObject);
+
+        return model;
     }
 }
 

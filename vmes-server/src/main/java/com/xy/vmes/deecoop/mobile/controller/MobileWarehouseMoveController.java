@@ -25,11 +25,11 @@ public class MobileWarehouseMoveController {
     private MobileWarehouseMoveService mobileWarehouseMoveService;
 
     // 获得移库任务详细信息
-    @PostMapping("/mobileWarehouseMove/findWarehouseMoveByDetailId")
+    @PostMapping("/mobile/mobileWarehouseMove/findWarehouseMoveByDetailId")
     //@GetMapping("/mobileWarehouseMove/findWarehouseMoveByDetailId")
     public ResultModel findWarehouseMoveByDetailId()  throws Exception {
 
-        logger.info("################/mobileWarehouseMove/findWarehouseMoveByDetailId 执行开始 ################# ");
+        logger.info("################/mobile/mobileWarehouseMove/findWarehouseMoveByDetailId 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
@@ -42,7 +42,7 @@ public class MobileWarehouseMoveController {
             model.putMsg("未查到任何数据！");
         }
         Long endTime = System.currentTimeMillis();
-        logger.info("################/mobileWarehouseMove/findWarehouseMoveByDetailId 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/mobile/mobileWarehouseMove/findWarehouseMoveByDetailId 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
 
     }

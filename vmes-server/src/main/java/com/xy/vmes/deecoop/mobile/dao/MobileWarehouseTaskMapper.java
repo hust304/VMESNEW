@@ -15,7 +15,7 @@ import java.util.Map;
  */
 @Mapper
 @Repository
-public interface WarehouseTaskMapper {
+public interface MobileWarehouseTaskMapper {
 
     List<Map> findListPageWarehouseTaskList(PageData pd, Pagination pg);
 

@@ -5,6 +5,7 @@ import com.xy.vmes.entity.WarehouseOut;
 import com.xy.vmes.entity.WarehouseOutDetail;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
+import com.yvan.springmvc.ResultModel;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -137,8 +138,8 @@ public interface WarehouseOutDetailService {
 
 
     ///////////////////////////////////////////////////////////////////////////////
-    //手机端出库详情
-    List<Map> findWarehouseOutMobile(PageData pd) throws Exception;
+
+    ResultModel rebackWarehouseOutDetail(PageData pageData) throws Exception;
 }
 
 

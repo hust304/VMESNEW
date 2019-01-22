@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.entity.TreeEntity;
 import com.xy.vmes.entity.Warehouse;
 import com.yvan.PageData;
+import com.yvan.springmvc.ResultModel;
 
 import java.util.List;
 import java.util.Map;
@@ -119,6 +120,8 @@ public interface WarehouseService {
 
     TreeEntity warehouse2Tree(Warehouse warehouse, TreeEntity tree);
     List<TreeEntity> warehouseList2TreeList(List<Warehouse> warehouseList, List<TreeEntity> treeList);
+
+    ResultModel listWarehouseNodeByPid(PageData pd) throws Exception;
 }
 
 

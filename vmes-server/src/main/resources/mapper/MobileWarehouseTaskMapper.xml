@@ -5,7 +5,7 @@
 创建人：房兆琦
 创建时间：2018-10-16
  -->
-<mapper namespace="com.xy.vmes.deecoop.mobile.dao.WarehouseTaskMapper">
+<mapper namespace="com.xy.vmes.deecoop.mobile.dao.MobileWarehouseTaskMapper">
 
     <select id="findListPageWarehouseTaskList" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select

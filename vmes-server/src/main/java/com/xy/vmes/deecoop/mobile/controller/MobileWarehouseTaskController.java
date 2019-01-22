@@ -2,7 +2,7 @@ package com.xy.vmes.deecoop.mobile.controller;
 
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
-import com.xy.vmes.service.WarehouseTaskService;
+import com.xy.vmes.service.MobileWarehouseTaskService;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
@@ -10,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -24,27 +23,18 @@ public class MobileWarehouseTaskController {
     private Logger logger = LoggerFactory.getLogger(MobileWarehouseTaskController.class);
 
     @Autowired
-    private WarehouseTaskService warehouseTaskService;
+    private MobileWarehouseTaskService mobileWarehouseTaskService;
 
-    @PostMapping("/mobileWarehouseTask/listPageWarehouseTaskList")
+    @PostMapping("/mobile/mobileWarehouseTask/listPageWarehouseTaskList")
     //@GetMapping("/MobileWarehouseTask/listPageWarehouseTaskList")
     public ResultModel listPageWarehouseTaskList()  throws Exception {
-        logger.info("################mobileWarehouseTask/listPageWarehouseTaskList 执行开始 ################# ");
+        logger.info("################/mobile/mobileWarehouseTask/listPageWarehouseTaskList 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         Pagination pg = HttpUtils.parsePagination(pd);
-
-        List<Map> varList = warehouseTaskService.findListPageWarehouseTaskList(pd,pg);
-
-
-        Map result = new HashMap();
-        result.put("varList", varList);
-        result.put("pageData", pg);
-
-        model.putResult(result);
+        ResultModel model = mobileWarehouseTaskService.findListPageWarehouseTaskList(pd,pg);
         Long endTime = System.currentTimeMillis();
-        logger.info("################mobileWarehouseTask/listPageWarehouseTaskList 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/mobile/mobileWarehouseTask/listPageWarehouseTaskList 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
 
     }

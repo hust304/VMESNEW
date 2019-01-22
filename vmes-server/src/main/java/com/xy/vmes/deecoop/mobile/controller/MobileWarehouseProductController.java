@@ -25,10 +25,10 @@ public class MobileWarehouseProductController {
     @Autowired
     private WarehouseProductService warehouseProductService;
 
-    @PostMapping("/mobileWarehouseProduct/listPageWarehouseByProduct")
+    @PostMapping("/mobile/mobileWarehouseProduct/listPageWarehouseByProduct")
     //@GetMapping("/mobileWarehouseProduct/listPageWarehouseByProduct")
     public ResultModel listPageWarehouseByProduct()  throws Exception {
-        logger.info("################/mobileWarehouseProduct/listPageWarehouseByProduct 执行开始 ################# ");
+        logger.info("################/mobile/mobileWarehouseProduct/listPageWarehouseByProduct 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
@@ -43,7 +43,7 @@ public class MobileWarehouseProductController {
 
         model.putResult(result);
         Long endTime = System.currentTimeMillis();
-        logger.info("################/mobileWarehouseProduct/listPageWarehouseByProduct 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/mobile/mobileWarehouseProduct/listPageWarehouseByProduct 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
 
     }

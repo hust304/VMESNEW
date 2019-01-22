@@ -3,7 +3,9 @@ package com.xy.vmes.service;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.entity.WarehouseOutExecute;
 import com.yvan.PageData;
+import com.yvan.springmvc.ResultModel;
 
+import java.math.BigDecimal;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -113,8 +115,15 @@ public interface WarehouseOutExecuteService {
     */
     void updateToDisableByIds(String[] ids)throws Exception;
 
+
+
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
+    ResultModel addWarehouseOutExecute(String detailId, String warehouseId, String warehouseProductId, String currentUserId,String currentCompanyId, BigDecimal count) throws Exception;
+
+    ResultModel updateWarehouseOutState(String detailId) throws Exception;
+
+    ResultModel executeWarehouseOutExecute(PageData pageData) throws Exception;
 }
 
 

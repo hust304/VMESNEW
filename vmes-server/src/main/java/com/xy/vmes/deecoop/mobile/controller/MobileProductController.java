@@ -25,10 +25,9 @@ public class MobileProductController {
     @Autowired
     private MobileProductService mobileProductService;
 
-    @PostMapping("/mobileProduct/listPageProducts")
-    //@GetMapping("/mobileProduct/listPageProducts")
+    @PostMapping("/mobile/mobileProduct/listPageProducts")
     public ResultModel listPageProducts() throws Exception {
-        logger.info("################mobileProduct/listPageProducts 执行开始 ################# ");
+        logger.info("################/mobile/mobileProduct/listPageProducts 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
 
@@ -46,7 +45,7 @@ public class MobileProductController {
 
         model.putResult(result);
         Long endTime = System.currentTimeMillis();
-        logger.info("################mobileProduct/listPageProducts 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/mobile/mobileProduct/listPageProducts 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
 
 

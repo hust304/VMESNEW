@@ -41,10 +41,10 @@ public class MobileWarehouseCheckController {
     private MobileWarehouseCheckService mobileWarehouseCheckService;
 
     //获得盘点任务详细信息
-    @PostMapping("/mobileWarehouseCheck/findWarehouseCheckByDetailId")
+    @PostMapping("/mobile/mobileWarehouseCheck/findWarehouseCheckByDetailId")
     //@GetMapping("/mobileWarehouseCheck/findWarehouseCheckByDetailId")
     public ResultModel findWarehouseCheckByDetailId()  throws Exception {
-        logger.info("################/mobileWarehouseCheck/findWarehouseCheckByDetailId执行开始 ################# ");
+        logger.info("################/mobile/mobileWarehouseCheck/findWarehouseCheckByDetailId执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
@@ -58,7 +58,7 @@ public class MobileWarehouseCheckController {
         }
 
         Long endTime = System.currentTimeMillis();
-        logger.info("################/mobileWarehouseCheck/findWarehouseCheckByDetailId  执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/mobile/mobileWarehouseCheck/findWarehouseCheckByDetailId  执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
 
     }
@@ -69,10 +69,10 @@ public class MobileWarehouseCheckController {
      * @date 2018-11-16
      * @throws Exception
      */
-    @PostMapping("/mobileWarehouseCheck/addWarehouseCheckExecute")
+    @PostMapping("/mobile/mobileWarehouseCheck/addWarehouseCheckExecute")
     @Transactional
     public ResultModel addWarehouseCheckExecute() throws Exception {
-        logger.info("################/mobileWarehouseCheck/addWarehouseCheckExecute执行开始 ################# ");
+        logger.info("################/mobile/mobileWarehouseCheck/addWarehouseCheckExecute执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
 
@@ -124,7 +124,7 @@ public class MobileWarehouseCheckController {
         }
 
         Long endTime = System.currentTimeMillis();
-        logger.info("################/mobileWarehouseCheck/addWarehouseCheckExecute执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/mobile/mobileWarehouseCheck/addWarehouseCheckExecute执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
