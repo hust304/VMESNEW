@@ -1,5 +1,6 @@
 package com.xy.vmes.deecoop.mobile.controller;
 
+import com.xy.vmes.service.MobileWarehouseMoveService;
 import com.xy.vmes.service.WarehouseMoveDetailService;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
@@ -8,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,7 +22,9 @@ public class MobileWarehouseMoveController {
 
     private Logger logger = LoggerFactory.getLogger(MobileWarehouseMoveController.class);
     @Autowired
-    private WarehouseMoveDetailService warehouseMoveDetailService;
+    private MobileWarehouseMoveService mobileWarehouseMoveService;
+
+    // 获得移库任务详细信息
     @PostMapping("/mobileWarehouseMove/findWarehouseMoveByDetailId")
     //@GetMapping("/mobileWarehouseMove/findWarehouseMoveByDetailId")
     public ResultModel findWarehouseMoveByDetailId()  throws Exception {
@@ -30,7 +34,7 @@ public class MobileWarehouseMoveController {
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
 
-        List<Map> varList = warehouseMoveDetailService.findWarehouseMoveMobile(pd);
+        List<Map> varList = mobileWarehouseMoveService.findWarehouseMove(pd);
         if(varList!=null&&varList.size()>0){
             model.putResult(varList.get(0));
         }else {

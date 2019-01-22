@@ -135,10 +135,6 @@ public interface WarehouseInDetailService {
      */
     String findParentStateByDetailList(String ignoreState, List<WarehouseInDetail> dtlList);
 
-    ///////////////////////////////////////////////////////////////////////////////
-    //手机端入库详情
-    List<Map> findWarehouseInMobile(PageData pd) throws Exception;
-
 }
 
 

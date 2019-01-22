@@ -2,6 +2,7 @@ package com.xy.vmes.deecoop.mobile.controller;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 
+import com.xy.vmes.service.MobileProductService;
 import com.xy.vmes.service.ProductService;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
@@ -22,7 +23,7 @@ public class MobileProductController {
     private Logger logger = LoggerFactory.getLogger(MobileProductController.class);
 
     @Autowired
-    private ProductService productService;
+    private MobileProductService mobileProductService;
 
     @PostMapping("/mobileProduct/listPageProducts")
     //@GetMapping("/mobileProduct/listPageProducts")
@@ -36,7 +37,7 @@ public class MobileProductController {
         //List<Map> varMapList = new ArrayList();
 
         //List<Map> varList = productService.getDataListPage(pd,pg);
-        List<Map> varList = productService.findListPageProduct(pd,pg);
+        List<Map> varList = mobileProductService.findListPageProduct(pd,pg);
 
 
         Map result = new HashMap();

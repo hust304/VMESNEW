@@ -78,9 +78,9 @@ public interface ProductMapper extends BaseMapper<Product> {
 
     void updateStockCount(PageData pd);
 
-    //////////////////////////////////////////////////////////////////////////////////
-    //手机端功能
-    List<Map> findListPageProduct(PageData pd, Pagination pg);
+//    //////////////////////////////////////////////////////////////////////////////////
+//    //手机端功能
+//    List<Map> findListPageProduct(PageData pd, Pagination pg);
 }
 
 

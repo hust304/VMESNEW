@@ -136,9 +136,6 @@ public interface ProductService {
     ProductUnit product2ProductUnit(Product product, ProductUnit productUnit,String unit);
     ProductUnitPrice product2ProductUnitPrice(Product product, ProductUnitPrice productUnitPrice,String unit);
 
-    //////////////////////////////////////////////////////////////////////////////////
-    //手机端功能
-    List<Map> findListPageProduct(PageData pd, Pagination pg) throws Exception;
 }
 
 

@@ -231,36 +231,6 @@
     </select>
 
 
-    <!-- 手机端获取盘点信息 -->
-    <select id="findWarehouseCheckMobile"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
-        select
-        detail.product_id productId,
-        detail.id detailId,
-        wcheck.id parentId,
-        warehouse.path_name pathName,
-        detail.warehouse_id warehouseId,
-        product.code productCode,
-        product.name productName,
-        product.spec spec,
-        genre.name genreName,
-        unit.name unitName,
-        detail.code code,
-        round(ifnull(detail.stock_count, 0), 2) stockCount
 
-        from vmes_warehouse_check_detail detail
-        left join vmes_warehouse_check wcheck on wcheck.id = detail.parent_id
-        left join vmes_product product on detail.product_id = product.id
-        left join vmes_product_unit produnit on produnit.product_id = product .id and produnit.type = 1
-        left join vmes_dictionary unit on produnit.unit = unit.id
-        left join vmes_dictionary genre on product.genre = genre.id
-        left join vmes_warehouse warehouse on warehouse.id = detail.warehouse_id
-        <where>
-        <if test="detailId != null and detailId != ''" >
-            and detail.id = #{detailId}
-        </if>
-        </where>
-
-
-    </select>
 
 </mapper>

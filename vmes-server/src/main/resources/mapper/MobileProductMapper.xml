@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+说明：仓库管理(入库,出库,盘点,移库)任务单
+创建人：房兆琦
+创建时间：2018-10-16
+ -->
+<mapper namespace="com.xy.vmes.deecoop.mobile.dao.MobileProductMapper">
+
+    <!--手机端库存查询接口-->
+    <select id="findListPageProduct" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+        prod.name productName,
+        prod.spec spec,
+        genre.name genreName,
+        unit.name unitName,
+        prod.id id,
+        prod.company_id companyId,
+        prod.qrcode qrcode,
+        prod.photo photo,
+        prod.code code,
+        prod.genre genre,
+
+        '' prodProperty,
+
+        ROUND(prod.price, 2) price,
+        prod.type type,
+        prod.validity_days validityDays,
+        prod.remark remark,
+        prod.cuser cuser,
+        DATE_FORMAT(prod.cdate,'%Y-%m-%d %T') cdate,
+        prod.uuser uuser,
+        DATE_FORMAT(prod.udate,'%Y-%m-%d %T') udate,
+
+        round(ifnull(prod.lock_count, 0), 2) lockCount,
+        round(ifnull(prod.stock_count, 0), 2) stockCount,
+        round((ifnull(prod.stock_count, 0) - ifnull(prod.lock_count, 0)), 2) productStockCount
+
+        from vmes_product prod
+        left join vmes_product_unit produnit on produnit.product_id = prod.id and produnit.type = 1
+        left join vmes_dictionary unit on produnit.unit = unit.id
+        left join vmes_dictionary genre on prod.genre = genre.id
+        <where>
+            <if test="companyId != null and companyId != ''" >
+                and prod.company_id=#{companyId}
+            </if>
+            <if test="code != null and code != ''" >
+                and prod.code=#{code}
+            </if>
+            <if test="name!= null and name != ''" >
+                and prod.name=#{name}
+            </if>
+            <if test="spec != null and spec != ''" >
+                and prod.spec=#{spec}
+            </if>
+            <if test="genre != null and genre != ''" >
+                and genre.name=#{genre}
+            </if>
+
+            <if test="max != null and max != ''" >
+                <![CDATA[ and prod.spec <= #{max} ]]>
+            </if>
+
+            <if test="min != null and min != ''" >
+                <![CDATA[ and prod.spec >= #{min} ]]>
+            </if>
+
+        </where>
+        <if test="orderStr != null and orderStr != ''" >
+            order by ${orderStr}
+        </if>
+    </select>
+
+
+</mapper>

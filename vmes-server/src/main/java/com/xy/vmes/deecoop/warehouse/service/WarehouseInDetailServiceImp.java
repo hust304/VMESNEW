@@ -375,10 +375,6 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
         return parentState;
     }
 
-    ///////////////////////////////////////////////////////////////////////////////
-    public List<Map> findWarehouseInMobile(PageData pd) throws Exception {
-        return warehouseInDetailMapper.findWarehouseInMobile(pd);
-    }
 
 }
 
