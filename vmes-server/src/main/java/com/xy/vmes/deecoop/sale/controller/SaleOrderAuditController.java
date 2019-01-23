@@ -358,6 +358,7 @@ public class SaleOrderAuditController {
         ResultModel model = new ResultModel();
 
         PageData pageData = HttpUtils.parsePageData();
+        String cuser = pageData.getString("cuser");
         //是否更新客户货品价格(Y:需要更新 (N or is null)无需更新)
         String isCustomerPrice = pageData.getString("isCustomerPrice");
 
@@ -370,7 +371,11 @@ public class SaleOrderAuditController {
 
         //1. 订单状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
         SaleOrder order = new SaleOrder();
-        saleOrderService.updateStateByOrder("2", orderId);
+        order.setId(orderId);
+        //审核人ID
+        order.setAuditId(cuser);
+        order.setState("2");
+        saleOrderService.update(order);
 
         //2. 订单明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已发货 6:已完成 -1:已取消)
         saleOrderDetailService.updateStateByDetail("3", orderId);
@@ -396,6 +401,7 @@ public class SaleOrderAuditController {
         ResultModel model = new ResultModel();
 
         PageData pageData = HttpUtils.parsePageData();
+        String cuser = pageData.getString("cuser");
         String orderId = pageData.getString("orderId");
         if (orderId == null || orderId.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
@@ -427,6 +433,8 @@ public class SaleOrderAuditController {
                 Common.SYS_ENDLINE_DEFAULT);
         order.setRemark(remarkStr);
         order.setState("0");
+        //审核人ID
+        order.setAuditId(cuser);
         saleOrderService.update(order);
 
         //2. 订单明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已发货 6:已完成 -1:已取消)

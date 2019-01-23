@@ -102,27 +102,28 @@
         price_type priceType,
         state state,
         make_id makeId,
+        audit_id auditId,
         customer_id customerId,
-        order_date orderDate,
 
+        order_date orderDate,
         total_sum totalSum,
         discount_sum discountSum,
         order_sum orderSum,
         advance_sum advanceSum,
-        deliver_sum deliverSum,
 
+        deliver_sum deliverSum,
         receivables receivables,
         cuser cuser,
         cdate cdate,
         uuser uuser,
-        udate udate,
 
+        udate udate,
         remark remark,
         isdisable isdisable,
         expect_date expectDate,
         deliver_date deliverDate,
-        pay_date payDate,
 
+        pay_date payDate,
         pay_state payState
         from vmes_sale_order
         <where>

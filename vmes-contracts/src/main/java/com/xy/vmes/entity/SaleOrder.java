@@ -41,13 +41,16 @@ public class SaleOrder implements Serializable {
 	//制单人ID
 	@TableField("make_id")
 	private String makeId;
+	//审核人ID
+	@TableField("audit_id")
+	private String auditId;
 	//客户ID
 	@TableField("customer_id")
 	private String customerId;
+
 	//下单日期
 	@TableField("order_date")
 	private Date orderDate;
-
 	//合计金额
 	@TableField("total_sum")
 	private BigDecimal totalSum;
@@ -60,10 +63,10 @@ public class SaleOrder implements Serializable {
 	//预付款(定金)
 	@TableField("advance_sum")
 	private BigDecimal advanceSum;
+
 	//发货金额
 	@TableField("deliver_sum")
 	private BigDecimal deliverSum;
-
 	//应收款(发货金额-预付款)(废弃不用)
 	@TableField("receivables")
 	private BigDecimal receivables;
@@ -76,10 +79,10 @@ public class SaleOrder implements Serializable {
 	//修改用户id
 	@TableField("uuser")
 	private String uuser;
+
 	//修改时间
 	@TableField("udate")
 	private Date udate;
-
 	//备注
 	@TableField("remark")
 	private String remark;
@@ -92,10 +95,10 @@ public class SaleOrder implements Serializable {
 	//发货完成日期
 	@TableField("deliver_date")
 	private Date deliverDate;
+
 	//付款完成日期
 	@TableField("pay_date")
 	private Date payDate;
-
 	//付款状态(0:未付款 1:付款中 2:已付款)
 	@TableField("pay_state")
 	private String payState;
@@ -256,6 +259,12 @@ public class SaleOrder implements Serializable {
 	}
 	public void setPayState(String payState) {
 		this.payState = payState;
+	}
+	public String getAuditId() {
+		return auditId;
+	}
+	public void setAuditId(String auditId) {
+		this.auditId = auditId;
 	}
 /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
