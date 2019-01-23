@@ -325,7 +325,7 @@ public class WarehouseOutExecuteServiceImp implements WarehouseOutExecuteService
                                 String suggestCount = (String)childrenMap.get("suggestCount");
                                 BigDecimal count = StringUtils.isEmpty(suggestCount)?BigDecimal.ZERO:BigDecimal.valueOf(Double.parseDouble(suggestCount));
                                 model = this.addWarehouseOutExecute(detailId,warehouseId,warehouseProductId,currentUserId,currentCompanyId,count);
-                                if(!"0".equals(model.getCode().toString())){
+                                if(model.get("code") != null && !"0".equals(model.get("code").toString().trim())){
                                     return model;
                                 }
                             }

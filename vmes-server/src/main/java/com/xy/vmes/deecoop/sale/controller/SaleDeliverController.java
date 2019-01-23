@@ -46,8 +46,8 @@ public class SaleDeliverController {
     @Autowired
     private SaleDeliverByCollectService saleDeliverByCollectService;
 
-    //@Autowired
-    //private SaleOrderService saleOrderService;
+    @Autowired
+    private SaleOrderService saleOrderService;
     @Autowired
     private SaleOrderDetailService saleOrderDetailService;
 
@@ -230,38 +230,89 @@ public class SaleDeliverController {
         saleDeliverDetailService.addDeliverDetail(saleDeliver, deliverDtlList, orderDtl2OutDtlMap);
 
         //3. 反写订单明细
-        //订单明细id --> 发货明细id -- <订单明细id, 发货明细id>Map
-        Map<String, String> orderDtl2DeliverDtlMap = new HashMap<String, String>();
-        for (SaleDeliverDetail deliverDtl : deliverDtlList) {
-            orderDtl2DeliverDtlMap.put(deliverDtl.getOrderDetaiId(), deliverDtl.getId());
-        }
+        //<订单id, 订单合计金额>Map
+        Map<String, BigDecimal> orderTotalsumMap = new HashMap<String, BigDecimal>();
 
         //priceType 订单计价类型
         String priceType = mapList.get(0).get("priceType");
 
         for (SaleOrderDetailEntity orderDtl : orderDtlList) {
-            String orderDtl_id = orderDtl.getId();
-            if (orderDtl2DeliverDtlMap.get(orderDtl_id) != null) {
-                SaleOrderDetail orderDetail = new SaleOrderDetail();
-                orderDetail.setId(orderDtl_id);
-                //明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已发货 6:已完成 -1:已取消)
-                orderDetail.setState("3");
-                //price_type:计价类型(1:先计价 2:后计价)
-                if (priceType != null && "2".equals(priceType.trim())) {
-                    //计价单位id
-                    orderDetail.setPriceUnit(orderDtl.getPriceUnit());
-                    //货品数量(计价数量) === 发货数量
-                    orderDetail.setPriceCount(orderDtl.getPriceCount());
-                    //货品数量(计量数量)
-                    orderDetail.setProductCount(orderDtl.getProductCount());
-                }
-
-                saleOrderDetailService.update(orderDetail);
+            //productPrice货品单价(货品计价单位匹配获得)
+            BigDecimal productPrice = BigDecimal.valueOf(0D);
+            if (orderDtl.getProductPrice() != null) {
+                productPrice = orderDtl.getProductPrice();
             }
+            //priceCount 货品数量(计价数量)
+            BigDecimal priceCount = BigDecimal.valueOf(0D);
+            if (orderDtl.getPriceCount() != null) {
+                priceCount = orderDtl.getPriceCount();
+            }
+            //productSum 货品金额(订购数量 * 货品单价)
+            BigDecimal productSum = BigDecimal.valueOf(productPrice.doubleValue() * priceCount.doubleValue());
+
+            String orderId = orderDtl.getParentId();
+            if (orderTotalsumMap.get(orderId) != null) {
+                BigDecimal Totalsum = orderTotalsumMap.get(orderId);
+                Totalsum = BigDecimal.valueOf(Totalsum.doubleValue() + productSum.doubleValue());
+                orderTotalsumMap.put(orderId, Totalsum);
+            } else {
+                orderTotalsumMap.put(orderId, productSum);
+            }
+
+            String orderDtl_id = orderDtl.getId();
+            SaleOrderDetail orderDetail = new SaleOrderDetail();
+            orderDetail.setId(orderDtl_id);
+            //明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已发货 6:已完成 -1:已取消)
+            orderDetail.setState("3");
+            //price_type:计价类型(1:先计价 2:后计价)
+            if (priceType != null && "2".equals(priceType.trim())) {
+                //计价单位id
+                orderDetail.setPriceUnit(orderDtl.getPriceUnit());
+                //货品数量(计价数量) === 发货数量
+                orderDetail.setPriceCount(orderDtl.getPriceCount());
+                //货品数量(计量数量)
+                orderDetail.setProductCount(orderDtl.getProductCount());
+
+                //四舍五入到2位小数
+                productSum = productSum.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                orderDetail.setProductSum(productSum);
+            }
+
+            saleOrderDetailService.update(orderDetail);
         }
 
         //price_type:计价类型(1:先计价 2:后计价)
         //price_type:2:后计价 (反写订单金额)
+        if (priceType != null && "2".equals(priceType.trim()) && orderTotalsumMap != null && orderTotalsumMap.size() > 0) {
+            for (Iterator iterator = orderTotalsumMap.keySet().iterator(); iterator.hasNext();) {
+                String mapKey = (String) iterator.next();
+                //合计金额
+                BigDecimal totalSum = BigDecimal.valueOf(0D);
+                if (orderTotalsumMap.get(mapKey) != null) {
+                    totalSum = orderTotalsumMap.get(mapKey);
+                }
+
+                SaleOrder orderDB = saleOrderService.findSaleOrderById(mapKey);
+                //discountSum 折扣金额
+                BigDecimal discountSum = BigDecimal.valueOf(0D);
+                if (orderDB.getDiscountSum() != null) {
+                    discountSum = orderDB.getDiscountSum();
+                }
+
+                //orderSum 订单金额(合计金额 - 折扣金额)
+                BigDecimal orderSum = BigDecimal.valueOf(totalSum.doubleValue() - discountSum.doubleValue());
+                //四舍五入到2位小数
+                orderSum = orderSum.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+
+                //四舍五入到2位小数
+                totalSum = totalSum.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+
+                orderDB.setTotalSum(totalSum);
+                orderDB.setOrderSum(orderSum);
+
+                saleOrderService.update(orderDB);
+            }
+        }
 
         Long endTime = System.currentTimeMillis();
         logger.info("################saleDeliver/addSaleDeliver 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");

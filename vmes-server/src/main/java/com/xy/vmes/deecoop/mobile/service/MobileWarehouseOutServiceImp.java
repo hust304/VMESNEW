@@ -65,7 +65,7 @@ public class MobileWarehouseOutServiceImp implements MobileWarehouseOutService {
         String currentCompanyId = pageData.getString("currentCompanyId");
         BigDecimal count = StringUtils.isEmpty(countStr)?BigDecimal.ZERO:BigDecimal.valueOf(Double.parseDouble(countStr));
         ResultModel model = warehouseOutExecuteService.addWarehouseOutExecute(detailId,warehouseId,warehouseProductId,currentUserId,currentCompanyId,count);
-        if(!"0".equals(model.getCode().toString())){
+        if(model.get("code") != null && !"0".equals(model.get("code").toString().trim())){
             return model;
         }
         //更新出库单及出库明细状态
