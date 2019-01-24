@@ -619,7 +619,7 @@ public class WarehouseInExecuteServiceImp implements WarehouseInExecuteService {
             } else {
                 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
                 String strTemp = " 退单原因:{0} 操作时间：{1} ";
-                String remarkStr = MessageFormat.format(remark, dateFormat.format(new Date()));
+                String remarkStr = MessageFormat.format(strTemp, remark, dateFormat.format(new Date()));
 
                 //B. 修改入库执行表 vmes_warehouse_in_execute
                 for (WarehouseInExecute execute : executeList) {
