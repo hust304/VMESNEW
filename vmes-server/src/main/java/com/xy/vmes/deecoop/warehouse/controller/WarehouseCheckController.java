@@ -52,7 +52,7 @@ public class WarehouseCheckController {
      * @author 陈刚
      * @date 2018-11-13
      */
-    @PostMapping("/warehouseCheck/listPagewarehouseChecks")
+    @PostMapping("/warehouse/warehouseCheck/listPagewarehouseChecks")
     public ResultModel listPagewarehouseChecks() throws Exception {
         logger.info("################warehouseCheck/listPagewarehouseChecks 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -128,7 +128,7 @@ public class WarehouseCheckController {
      * @date 2018-11-13
      * @throws Exception
      */
-    @PostMapping("/warehouseCheck/addWarehouseCheck")
+    @PostMapping("/warehouse/warehouseCheck/addWarehouseCheck")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel addWarehouseCheck() throws Exception {
         logger.info("################/warehouseCheck/addWarehouseCheck 执行开始 ################# ");
@@ -221,7 +221,7 @@ public class WarehouseCheckController {
      * @date 2018-11-13
      * @throws Exception
      */
-    @PostMapping("/warehouseCheck/cancelWarehouseCheck")
+    @PostMapping("/warehouse/warehouseCheck/cancelWarehouseCheck")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel cancelWarehouseCheck() throws Exception {
         logger.info("################/warehouseCheck/cancelWarehouseCheck 执行开始 ################# ");
@@ -288,7 +288,7 @@ public class WarehouseCheckController {
      * @date 2018-11-16
      * @throws Exception
      */
-    @PostMapping("/warehouseCheck/rebackWarehouseCheck")
+    @PostMapping("/warehouse/warehouseCheck/rebackWarehouseCheck")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel rebackWarehouseCheck() throws Exception {
         logger.info("################/warehouseCheck/rebackWarehouseCheck 执行开始 ################# ");
@@ -364,7 +364,7 @@ public class WarehouseCheckController {
      * @date 2018-11-13
      * @throws Exception
      */
-    @PostMapping("/warehouseCheck/deleteWarehouseCheck")
+    @PostMapping("/warehouse/warehouseCheck/deleteWarehouseCheck")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteWarehouseCheck() throws Exception {
         logger.info("################/warehouseCheck/deleteWarehouseCheck 执行开始 ################# ");
@@ -424,7 +424,7 @@ public class WarehouseCheckController {
      * @author 陈刚 自动创建，可以修改
      * @date 2018-11-15
      */
-    @PostMapping("/warehouseCheck/checkUserRoleByWarehouseAudit")
+    @PostMapping("/warehouse/warehouseCheck/checkUserRoleByWarehouseAudit")
     public ResultModel checkUserRoleByWarehouseAudit() throws Exception {
         logger.info("################/warehouseCheck/checkUserRoleByWarehouseAudit 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -470,7 +470,7 @@ public class WarehouseCheckController {
      * @author 陈刚 自动创建，可以修改
      * @date 2018-11-13
      */
-    @PostMapping("/warehouseCheck/exportExcelwarehouseChecks")
+    @PostMapping("/warehouse/warehouseCheck/exportExcelwarehouseChecks")
     public void exportExcelwarehouseChecks() throws Exception {
         logger.info("################warehouseCheck/exportExcelwarehouseChecks 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -518,7 +518,7 @@ public class WarehouseCheckController {
      * @author 陈刚 自动创建，可以修改
      * @date 2018-11-13
      */
-    @PostMapping("/warehouseCheck/importExcelwarehouseChecks")
+    @PostMapping("/warehouse/warehouseCheck/importExcelwarehouseChecks")
     public ResultModel importExcelwarehouseChecks(@RequestParam(value="excelFile") MultipartFile file) throws Exception  {
         logger.info("################warehouseCheck/importExcelwarehouseChecks 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();

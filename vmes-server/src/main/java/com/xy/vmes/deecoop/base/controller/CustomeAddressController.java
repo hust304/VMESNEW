@@ -47,7 +47,7 @@ public class CustomeAddressController {
     * @author 陈刚 自动创建，禁止修改
     * @date 2018-09-20
     */
-    @GetMapping("/customeAddress/selectById/{id}")
+    @GetMapping("/base/customeAddress/selectById/{id}")
     public ResultModel selectById(@PathVariable("id") String id)  throws Exception {
 
         logger.info("################customeAddress/selectById 执行开始 ################# ");
@@ -67,7 +67,7 @@ public class CustomeAddressController {
     * @author 陈刚 自动创建，禁止修改
     * @date 2018-09-20
     */
-    @PostMapping("/customeAddress/save")
+    @PostMapping("/base/customeAddress/save")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel save()  throws Exception {
 
@@ -87,7 +87,7 @@ public class CustomeAddressController {
     * @author 陈刚 自动创建，禁止修改
     * @date 2018-09-20
     */
-    @PostMapping("/customeAddress/update")
+    @PostMapping("/base/customeAddress/update")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel update()  throws Exception {
 
@@ -108,7 +108,7 @@ public class CustomeAddressController {
     * @author 陈刚 自动创建，禁止修改
     * @date 2018-09-20
     */
-    @GetMapping("/customeAddress/deleteById/{id}")
+    @GetMapping("/base/customeAddress/deleteById/{id}")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteById(@PathVariable("id") String id)  throws Exception {
 
@@ -127,7 +127,7 @@ public class CustomeAddressController {
     * @author 陈刚 自动创建，禁止修改
     * @date 2018-09-20
     */
-    @PostMapping("/customeAddress/deleteByIds")
+    @PostMapping("/base/customeAddress/deleteByIds")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteByIds()  throws Exception {
 
@@ -157,7 +157,7 @@ public class CustomeAddressController {
     * @author 陈刚 自动创建，禁止修改
     * @date 2018-09-20
     */
-    @PostMapping("/customeAddress/dataListPage")
+    @PostMapping("/base/customeAddress/dataListPage")
     public ResultModel dataListPage()  throws Exception {
 
         logger.info("################customeAddress/dataListPage 执行开始 ################# ");
@@ -180,7 +180,7 @@ public class CustomeAddressController {
     * @author 陈刚 自动创建，禁止修改
     * @date 2018-09-20
     */
-    @PostMapping("/customeAddress/dataList")
+    @PostMapping("/base/customeAddress/dataList")
     public ResultModel dataList()  throws Exception {
 
         logger.info("################customeAddress/dataList 执行开始 ################# ");
@@ -202,7 +202,7 @@ public class CustomeAddressController {
     * @author 陈刚 自动创建，可以修改
     * @date 2018-09-20
     */
-    @PostMapping("/customeAddress/listPageCustomeAddress")
+    @PostMapping("/base/customeAddress/listPageCustomeAddress")
     public ResultModel listPageCustomeAddress() throws Exception {
         logger.info("################customeAddress/listPageCustomeAddress 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -271,7 +271,7 @@ public class CustomeAddressController {
      * @author 陈刚
      * @date 2018-09-20
      */
-    @PostMapping("/customeAddress/addCustomerAddress")
+    @PostMapping("/base/customeAddress/addCustomerAddress")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel addCustomerAddress() throws Exception {
         logger.info("################/customeAddress/addCustomerAddress 执行开始 ################# ");
@@ -323,7 +323,7 @@ public class CustomeAddressController {
      * @author 陈刚
      * @date 2018-09-20
      */
-    @PostMapping("/customeAddress/updateCustomerAddress")
+    @PostMapping("/base/customeAddress/updateCustomerAddress")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel updateCustomerAddress() throws Exception {
         logger.info("################/customeAddress/updateCustomerAddress 执行开始 ################# ");
@@ -354,7 +354,7 @@ public class CustomeAddressController {
      * @author 陈刚
      * @date 2018-09-20
      */
-    @PostMapping("/customeAddress/updateDefaultCustomerAddress")
+    @PostMapping("/base/customeAddress/updateDefaultCustomerAddress")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel updateDefaultCustomerAddress() throws Exception {
         logger.info("################/customeAddress/updateDefaultCustomerAddress 执行开始 ################# ");
@@ -414,7 +414,7 @@ public class CustomeAddressController {
      * @author 陈刚
      * @date 2018-09-20
      */
-    @PostMapping("/customeAddress/deleteCustomerAddress")
+    @PostMapping("/base/customeAddress/deleteCustomerAddress")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteCustomerAddress() throws Exception {
         logger.info("################/customeAddress/deleteCustomerAddress 执行开始 ################# ");
@@ -444,7 +444,7 @@ public class CustomeAddressController {
     * @author 陈刚 自动创建，可以修改
     * @date 2018-09-20
     */
-    @PostMapping("/customeAddress/exportExcelCustomeAddresss")
+    @PostMapping("/base/customeAddress/exportExcelCustomeAddresss")
     public void exportExcelCustomeAddresss() throws Exception {
         logger.info("################customeAddress/exportExcelCustomeAddresss 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -492,7 +492,7 @@ public class CustomeAddressController {
     * @author 陈刚 自动创建，可以修改
     * @date 2018-09-20
     */
-    @PostMapping("/customeAddress/importExcelCustomeAddresss")
+    @PostMapping("/base/customeAddress/importExcelCustomeAddresss")
     public ResultModel importExcelCustomeAddresss(@RequestParam(value="excelFile") MultipartFile file) throws Exception  {
         logger.info("################customeAddress/importExcelCustomeAddresss 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();

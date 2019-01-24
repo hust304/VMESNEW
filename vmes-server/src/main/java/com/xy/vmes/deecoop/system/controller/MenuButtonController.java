@@ -51,7 +51,7 @@ public class MenuButtonController {
     * @author 陈刚 自动创建，禁止修改
     * @date 2018-08-03
     */
-    @GetMapping("/button/selectById/{id}")
+    @GetMapping("/system/button/selectById/{id}")
     public ResultModel selectById(@PathVariable("id") String id)  throws Exception {
 
         logger.info("################button/selectById 执行开始 ################# ");
@@ -71,7 +71,7 @@ public class MenuButtonController {
     * @author 陈刚 自动创建，禁止修改
     * @date 2018-08-03
     */
-    @PostMapping("/button/save")
+    @PostMapping("/system/button/save")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel save()  throws Exception {
 
@@ -91,7 +91,7 @@ public class MenuButtonController {
     * @author 陈刚 自动创建，禁止修改
     * @date 2018-08-03
     */
-    @PostMapping("/button/update")
+    @PostMapping("/system/button/update")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel update()  throws Exception {
 
@@ -112,7 +112,7 @@ public class MenuButtonController {
     * @author 陈刚 自动创建，禁止修改
     * @date 2018-08-03
     */
-    @GetMapping("/button/deleteById/{id}")
+    @GetMapping("/system/button/deleteById/{id}")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteById(@PathVariable("id") String id)  throws Exception {
 
@@ -130,7 +130,7 @@ public class MenuButtonController {
     * @author 陈刚 自动创建，禁止修改
     * @date 2018-08-03
     */
-    @PostMapping("/button/dataListPage")
+    @PostMapping("/system/button/dataListPage")
     public ResultModel dataListPage()  throws Exception {
 
         logger.info("################button/dataListPage 执行开始 ################# ");
@@ -150,7 +150,7 @@ public class MenuButtonController {
     * @author 陈刚 自动创建，禁止修改
     * @date 2018-08-03
     */
-    @PostMapping("/button/dataList")
+    @PostMapping("/system/button/dataList")
     public ResultModel dataList()  throws Exception {
 
         logger.info("################button/dataList 执行开始 ################# ");
@@ -169,7 +169,7 @@ public class MenuButtonController {
     * @author 陈刚 自动创建，禁止修改
     * @date 2018-08-03
     */
-    @GetMapping("/button/excelExport")
+    @GetMapping("/system/button/excelExport")
     public void excelExport()  throws Exception {
 
         logger.info("################button/excelExport 执行开始 ################# ");
@@ -203,7 +203,7 @@ public class MenuButtonController {
      * @author 陈刚
      * @date 2018-08-03
      */
-    @PostMapping("/button/addMeunButton")
+    @PostMapping("/system/button/addMeunButton")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel addMeunButton() throws Exception {
         logger.info("################button/addMeunButton 执行开始 ################# ");
@@ -285,7 +285,7 @@ public class MenuButtonController {
      * @author 陈刚
      * @date 2018-08-03
      */
-    @PostMapping("/button/updateMeunButton")
+    @PostMapping("/system/button/updateMeunButton")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel updateMeunButton() throws Exception {
         logger.info("################button/updateMeunButton 执行开始 ################# ");
@@ -369,7 +369,7 @@ public class MenuButtonController {
      * @author 陈刚
      * @date 2018-08-03
      */
-    @PostMapping("/button/updateDisableMeunButton")
+    @PostMapping("/system/button/updateDisableMeunButton")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel updateDisableMeunButton() throws Exception {
         logger.info("################button/updateDisableMeunButton 执行开始 ################# ");
@@ -416,7 +416,7 @@ public class MenuButtonController {
      * @author 陈刚
      * @date 2018-08-03
      */
-    @PostMapping("/button/deleteMeunButtons")
+    @PostMapping("/system/button/deleteMeunButtons")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteMeunButtons() throws Exception {
         logger.info("################button/deleteMeunButtons 执行开始 ################# ");
@@ -487,7 +487,7 @@ public class MenuButtonController {
      * @author 陈刚
      * @date 2018-08-08
      */
-    @PostMapping("/button/listPageMenuButtons")
+    @PostMapping("/system/button/listPageMenuButtons")
     public ResultModel listPageMenuButtons() throws Exception {
         logger.info("################button/listPageMenuButtons 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -564,7 +564,7 @@ public class MenuButtonController {
      *
      * @throws Exception
      */
-    @PostMapping("/button/exportExcelMenuButtons")
+    @PostMapping("/system/button/exportExcelMenuButtons")
     public void exportExcelMenuButtons() throws Exception {
         logger.info("################button/exportExcelMenuButtons 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -615,7 +615,7 @@ public class MenuButtonController {
      * @author 陈刚
      * @date 2018-09-14
      */
-    @PostMapping("/button/initMenuButtons")
+    @PostMapping("/system/button/initMenuButtons")
     public ResultModel initMenuButtons() throws Exception {
         logger.info("################button/initMenuButtons 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();

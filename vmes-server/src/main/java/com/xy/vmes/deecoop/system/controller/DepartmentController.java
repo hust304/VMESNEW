@@ -52,7 +52,7 @@ public class DepartmentController {
     * @author 陈刚 自动创建，禁止修改
     * @date 2018-07-23
     */
-    @GetMapping("/department/selectById/{id}")
+    @GetMapping("/system/department/selectById/{id}")
     public ResultModel selectById(@PathVariable("id") String id)  throws Exception {
 
         logger.info("################department/dataList 执行开始 ################# ");
@@ -72,7 +72,7 @@ public class DepartmentController {
     * @author 陈刚 自动创建，禁止修改
     * @date 2018-07-23
     */
-    @PostMapping("/department/save")
+    @PostMapping("/system/department/save")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel save()  throws Exception {
 
@@ -92,7 +92,7 @@ public class DepartmentController {
     * @author 陈刚 自动创建，禁止修改
     * @date 2018-07-23
     */
-    @PostMapping("/department/update")
+    @PostMapping("/system/department/update")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel update()  throws Exception {
 
@@ -113,7 +113,7 @@ public class DepartmentController {
     * @author 陈刚 自动创建，禁止修改
     * @date 2018-07-23
     */
-    @GetMapping("/department/deleteById/{id}")
+    @GetMapping("/system/department/deleteById/{id}")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteById(@PathVariable("id") String id)  throws Exception {
 
@@ -131,7 +131,7 @@ public class DepartmentController {
     * @author 陈刚 自动创建，禁止修改
     * @date 2018-07-23
     */
-    @PostMapping("/department/dataListPage")
+    @PostMapping("/system/department/dataListPage")
     public ResultModel dataListPage()  throws Exception {
 
         logger.info("################department/dataList 执行开始 ################# ");
@@ -151,7 +151,7 @@ public class DepartmentController {
     * @author 陈刚 自动创建，禁止修改
     * @date 2018-07-23
     */
-    @PostMapping("/department/dataList")
+    @PostMapping("/system/department/dataList")
     public ResultModel dataList()  throws Exception {
 
         logger.info("################department/dataList 执行开始 ################# ");
@@ -170,7 +170,7 @@ public class DepartmentController {
     * @author 陈刚 自动创建，禁止修改
     * @date 2018-07-23
     */
-    @GetMapping("/department/excelExport")
+    @GetMapping("/system/department/excelExport")
     public void excelExport()  throws Exception {
 
         logger.info("################department/dataList 执行开始 ################# ");
@@ -202,7 +202,7 @@ public class DepartmentController {
      * @author 刘威
      * @date 2018-07-31
      */
-    @PostMapping("/department/treeDepartments")
+    @PostMapping("/system/department/treeDepartments")
     public ResultModel treeDepartments()  throws Exception {
         logger.info("################/department/treeDepartments 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -257,7 +257,7 @@ public class DepartmentController {
      * @author 陈刚
      * @date 2018-07-27
      */
-    @PostMapping("/department/addDepartment")
+    @PostMapping("/system/department/addDepartment")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel addDepartment() throws Exception {
         logger.info("################department/addDepartment 执行开始 ################# ");
@@ -382,7 +382,7 @@ public class DepartmentController {
      * @author 陈刚
      * @date 2018-07-27
      */
-    @PostMapping("/department/updateDepartment")
+    @PostMapping("/system/department/updateDepartment")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel updateDepartment() throws Exception {
         logger.info("################department/updateDepartment 执行开始 ################# ");
@@ -474,7 +474,7 @@ public class DepartmentController {
      * @author 陈刚
      * @date 2018-07-27
      */
-    @PostMapping("/department/updateDisableDept")
+    @PostMapping("/system/department/updateDisableDept")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel updateDisableDept() throws Exception {
         logger.info("################department/updateDisableDept 执行开始 ################# ");
@@ -529,7 +529,7 @@ public class DepartmentController {
      * @author 陈刚
      * @date 2018-07-27
      */
-    @PostMapping("/department/deleteDepartments")
+    @PostMapping("/system/department/deleteDepartments")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteDepartments() throws Exception {
         logger.info("################department/deleteDepartments 执行开始 ################# ");
@@ -628,7 +628,7 @@ public class DepartmentController {
      * @author 刘威 自动创建，可以修改
      * @date 2018-08-23
      */
-    @PostMapping("/department/listPageDepartments")
+    @PostMapping("/system/department/listPageDepartments")
     public ResultModel listPageDepartments()  throws Exception {
 
         logger.info("################department/listPageDepartments 执行开始 ################# ");
@@ -737,7 +737,7 @@ public class DepartmentController {
      *
      * @throws Exception
      */
-    @PostMapping("/department/exportExcelDepartments")
+    @PostMapping("/system/department/exportExcelDepartments")
     public void exportExcelDepartments() throws Exception {
         logger.info("################department/exportExcelDepartments 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -786,7 +786,7 @@ public class DepartmentController {
      * @return
      * @throws Exception
      */
-    @PostMapping("/department/importExcelDepartments")
+    @PostMapping("/system/department/importExcelDepartments")
     public ResultModel importExcelDepartments(@RequestParam(value="excelFile") MultipartFile file) throws Exception {
         logger.info("################department/importExcelDepartments 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();

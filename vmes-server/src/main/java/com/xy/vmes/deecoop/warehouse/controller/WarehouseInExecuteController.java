@@ -56,7 +56,7 @@ public class WarehouseInExecuteController {
      * @date 2018-10-18
      * @throws Exception
      */
-    @PostMapping("/warehouseInExecute/findListWarehouseInExecuteByEdit")
+    @PostMapping("/warehouse/warehouseInExecute/findListWarehouseInExecuteByEdit")
     public ResultModel findListWarehouseInExecuteByEdit() throws Exception {
         logger.info("################warehouseInExecute/findListWarehouseInExecuteByEdit 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -132,7 +132,7 @@ public class WarehouseInExecuteController {
      * @date 2018-10-18
      * @throws Exception
      */
-    @PostMapping("/warehouseInExecute/addWarehouseInExecute")
+    @PostMapping("/warehouse/warehouseInExecute/addWarehouseInExecute")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel addWarehouseInExecute() throws Exception {
         logger.info("################/warehouseInExecute/addWarehouseInExecute 执行开始 ################# ");
@@ -150,7 +150,7 @@ public class WarehouseInExecuteController {
      * @date 2018-10-18
      * @throws Exception
      */
-    @PostMapping("/warehouseInExecute/rebackWarehouseInExecute")
+    @PostMapping("/warehouse/warehouseInExecute/rebackWarehouseInExecute")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel rebackWarehouseInExecute() throws Exception {
         logger.info("################/warehouseInExecute/rebackWarehouseInExecute 执行开始 ################# ");
@@ -168,7 +168,7 @@ public class WarehouseInExecuteController {
      * @date 2018-11-09
      * @throws Exception
      */
-    @PostMapping("/warehouseInExecute/updateWarehouseInExecute")
+    @PostMapping("/warehouse/warehouseInExecute/updateWarehouseInExecute")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel updateWarehouseInExecute() throws Exception {
         logger.info("################/warehouseInExecute/updateWarehouseInExecute 执行开始 ################# ");
@@ -317,7 +317,7 @@ public class WarehouseInExecuteController {
      * @date 2018-11-09
      * @throws Exception
      */
-    @PostMapping("/warehouseInExecute/deleteWarehouseInExecute")
+    @PostMapping("/warehouse/warehouseInExecute/deleteWarehouseInExecute")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteWarehouseInExecute() throws Exception {
         logger.info("################/warehouseInExecute/deleteWarehouseInExecute 执行开始 ################# ");
@@ -472,7 +472,7 @@ public class WarehouseInExecuteController {
      * @date 2018-10-18
      * @throws Exception
      */
-    @PostMapping("/warehouseInExecute/updateCancelWarehouseInExecute")
+    @PostMapping("/warehouse/warehouseInExecute/updateCancelWarehouseInExecute")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel updateCancelWarehouseInExecute() throws Exception {
         logger.info("################/warehouseInExecute/updateCancelWarehouseInExecute 执行开始 ################# ");

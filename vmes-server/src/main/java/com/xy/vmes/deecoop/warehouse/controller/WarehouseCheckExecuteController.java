@@ -49,7 +49,7 @@ public class WarehouseCheckExecuteController {
      * @date 2018-10-18
      * @throws Exception
      */
-    @PostMapping("/warehouseCheckExecute/findListByWarehouseCheckExecute")
+    @PostMapping("/warehouse/warehouseCheckExecute/findListByWarehouseCheckExecute")
     public ResultModel findListByWarehouseCheckExecute() throws Exception {
         logger.info("################warehouseCheckExecute/findListByWarehouseCheckExecute 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -124,7 +124,7 @@ public class WarehouseCheckExecuteController {
      * @date 2018-11-16
      * @throws Exception
      */
-    @PostMapping("/warehouseCheckExecute/addWarehouseCheckExecute")
+    @PostMapping("/warehouse/warehouseCheckExecute/addWarehouseCheckExecute")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel addWarehouseCheckExecute() throws Exception {
         logger.info("################/warehouseCheckExecute/addWarehouseCheckExecute 执行开始 ################# ");
@@ -150,7 +150,7 @@ public class WarehouseCheckExecuteController {
      * @date 2018-11-16
      * @throws Exception
      */
-    @PostMapping("/warehouseCheckExecute/rebackWarehouseCheckByDetail")
+    @PostMapping("/warehouse/warehouseCheckExecute/rebackWarehouseCheckByDetail")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel rebackWarehouseCheckByDetail() throws Exception {
         logger.info("################/warehouseCheckExecute/rebackWarehouseCheckByDetail 执行开始 ################# ");
@@ -174,7 +174,7 @@ public class WarehouseCheckExecuteController {
      * @return
      * @throws Exception
      */
-    @PostMapping("/warehouseCheckExecute/cancelAuditWarehouseCheckByExecute")
+    @PostMapping("/warehouse/warehouseCheckExecute/cancelAuditWarehouseCheckByExecute")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel cancelAuditWarehouseCheckByExecute() throws Exception {
         logger.info("################/warehouseCheckExecute/cancelAuditWarehouseCheckByExecute 执行开始 ################# ");
@@ -252,7 +252,7 @@ public class WarehouseCheckExecuteController {
      * @return
      * @throws Exception
      */
-    @PostMapping("/warehouseCheckExecute/auditPassWarehouseCheckExecute")
+    @PostMapping("/warehouse/warehouseCheckExecute/auditPassWarehouseCheckExecute")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel auditPassWarehouseCheckExecute() throws Exception {
         logger.info("################/warehouseCheckExecute/auditPassWarehouseCheckExecute 执行开始 ################# ");
@@ -397,7 +397,7 @@ public class WarehouseCheckExecuteController {
      * @return
      * @throws Exception
      */
-    @PostMapping("/warehouseCheckExecute/auditDisagreeWarehouseCheckExecute")
+    @PostMapping("/warehouse/warehouseCheckExecute/auditDisagreeWarehouseCheckExecute")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel auditDisagreeWarehouseCheckExecute() throws Exception {
         logger.info("################/warehouseCheckExecute/auditDisagreeWarehouseCheckExecute 执行开始 ################# ");

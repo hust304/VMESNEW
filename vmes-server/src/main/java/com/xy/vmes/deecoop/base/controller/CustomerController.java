@@ -59,7 +59,7 @@ public class CustomerController {
      * @author 陈刚 自动创建，禁止修改
      * @date 2018-09-18
      */
-    @GetMapping("/customer/selectById/{id}")
+    @GetMapping("/base/customer/selectById/{id}")
     public ResultModel selectById(@PathVariable("id") String id)  throws Exception {
 
         logger.info("################customer/selectById 执行开始 ################# ");
@@ -79,7 +79,7 @@ public class CustomerController {
      * @author 陈刚 自动创建，禁止修改
      * @date 2018-09-18
      */
-    @PostMapping("/customer/save")
+    @PostMapping("/base/customer/save")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel save()  throws Exception {
 
@@ -99,7 +99,7 @@ public class CustomerController {
      * @author 陈刚 自动创建，禁止修改
      * @date 2018-09-18
      */
-    @PostMapping("/customer/update")
+    @PostMapping("/base/customer/update")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel update()  throws Exception {
 
@@ -120,7 +120,7 @@ public class CustomerController {
      * @author 陈刚 自动创建，禁止修改
      * @date 2018-09-18
      */
-    @GetMapping("/customer/deleteById/{id}")
+    @GetMapping("/base/customer/deleteById/{id}")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteById(@PathVariable("id") String id)  throws Exception {
 
@@ -139,7 +139,7 @@ public class CustomerController {
      * @author 陈刚 自动创建，禁止修改
      * @date 2018-09-18
      */
-    @PostMapping("/customer/deleteByIds")
+    @PostMapping("/base/customer/deleteByIds")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteByIds()  throws Exception {
 
@@ -169,7 +169,7 @@ public class CustomerController {
      * @author 陈刚 自动创建，禁止修改
      * @date 2018-09-18
      */
-    @PostMapping("/customer/dataListPage")
+    @PostMapping("/base/customer/dataListPage")
     public ResultModel dataListPage()  throws Exception {
 
         logger.info("################customer/dataListPage 执行开始 ################# ");
@@ -192,7 +192,7 @@ public class CustomerController {
      * @author 陈刚 自动创建，禁止修改
      * @date 2018-09-18
      */
-    @PostMapping("/customer/dataList")
+    @PostMapping("/base/customer/dataList")
     public ResultModel dataList()  throws Exception {
 
         logger.info("################customer/dataList 执行开始 ################# ");
@@ -212,7 +212,7 @@ public class CustomerController {
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 
-    @PostMapping("/customer/addCustomerBalance")
+    @PostMapping("/base/customer/addCustomerBalance")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel addCustomerBalance()  throws Exception {
 
@@ -230,7 +230,7 @@ public class CustomerController {
     }
 
 
-    @PostMapping("/customer/updateCustomerBalance")
+    @PostMapping("/base/customer/updateCustomerBalance")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel updateCustomerBalance()  throws Exception {
 
@@ -254,7 +254,7 @@ public class CustomerController {
      * @author 陈刚 自动创建，可以修改
      * @date 2018-09-18
      */
-    @PostMapping("/customer/listPageCustomers")
+    @PostMapping("/base/customer/listPageCustomers")
     public ResultModel listPageCustomers()  throws Exception {
         logger.info("################customer/listPageCustomers 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -324,7 +324,7 @@ public class CustomerController {
 
 
 
-    @PostMapping("/customer/listPageCustomerReceive")
+    @PostMapping("/base/customer/listPageCustomerReceive")
     public ResultModel listPageCustomerReceive()  throws Exception {
         logger.info("################customer/listPageCustomerReceive 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -403,7 +403,7 @@ public class CustomerController {
 
 
 
-    @PostMapping("/customer/listPageCustomerAccountDays")
+    @PostMapping("/base/customer/listPageCustomerAccountDays")
     public ResultModel listPageCustomerAccountDays()  throws Exception {
         logger.info("################customer/listPageCustomerAccountDays 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -476,7 +476,7 @@ public class CustomerController {
      * @author 陈刚
      * @date 2018-09-19
      */
-    @PostMapping("/customer/addCustomer")
+    @PostMapping("/base/customer/addCustomer")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel addCustomer() throws Exception {
         logger.info("################/customer/addCustomer 执行开始 ################# ");
@@ -524,7 +524,7 @@ public class CustomerController {
      * @author 陈刚
      * @date 2018-09-19
      */
-    @PostMapping("/customer/updateCustomer")
+    @PostMapping("/base/customer/updateCustomer")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel updateCustomer() throws Exception {
         logger.info("################/customer/updateCustomer 执行开始 ################# ");
@@ -556,7 +556,7 @@ public class CustomerController {
      * @author 陈刚
      * @date 2018-09-19
      */
-    @PostMapping("/customer/updateDisableCustomer")
+    @PostMapping("/base/customer/updateDisableCustomer")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel updateDisableCustomer() throws Exception {
         logger.info("################/customer/updateDisableCustomer 执行开始 ################# ");
@@ -606,7 +606,7 @@ public class CustomerController {
      * @author 陈刚
      * @date 2018-09-19
      */
-    @PostMapping("/customer/deleteCustomers")
+    @PostMapping("/base/customer/deleteCustomers")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteCustomers() throws Exception {
         logger.info("################/customer/deleteCustomers 执行开始 ################# ");
@@ -644,7 +644,7 @@ public class CustomerController {
      * @author 陈刚 自动创建，可以修改
      * @date 2018-09-18
      */
-    @PostMapping("/customer/exportExcelCustomers")
+    @PostMapping("/base/customer/exportExcelCustomers")
     public void exportExcelCustomers() throws Exception {
         logger.info("################customer/exportExcelCustomers 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -692,7 +692,7 @@ public class CustomerController {
      * @author 陈刚 自动创建，可以修改
      * @date 2018-09-18
      */
-    @PostMapping("/customer/importExcelCustomers")
+    @PostMapping("/base/customer/importExcelCustomers")
     public ResultModel importExcelCustomers(@RequestParam(value="excelFile") MultipartFile file) throws Exception  {
         logger.info("################customer/importExcelCustomers 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -742,7 +742,7 @@ public class CustomerController {
      * @author 刘威
      * @date 2018-07-31
      */
-    @PostMapping("/customer/listTreeCustomer")
+    @PostMapping("/base/customer/listTreeCustomer")
     public ResultModel listTreeCustomer()  throws Exception {
         logger.info("################customer/listTreeCustomer 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();

@@ -46,7 +46,7 @@ public class WarehouseInExecutorController {
      * @author 陈刚 自动创建，可以修改
      * @date 2018-10-16
      */
-    @PostMapping("/warehouseInExecutor/listPageWarehouseInExecutor")
+    @PostMapping("/warehouse/warehouseInExecutor/listPageWarehouseInExecutor")
     public ResultModel listPageWarehouseInExecutor() throws Exception {
         logger.info("################warehouseInExecutor/listPageWarehouseInExecutor 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -121,7 +121,7 @@ public class WarehouseInExecutorController {
      * @date 2018-10-18
      * @throws Exception
      */
-    @PostMapping("/warehouseInExecutor/findListByWarehouseInExecutor")
+    @PostMapping("/warehouse/warehouseInExecutor/findListByWarehouseInExecutor")
     public ResultModel findListByWarehouseInExecutor() throws Exception {
         logger.info("################warehouseInExecutor/findListByWarehouseInExecutor 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -226,7 +226,7 @@ public class WarehouseInExecutorController {
      * @author 陈刚
      * @date 2018-11-01
      */
-    @PostMapping("/warehouseInExecutor/updateExecutor")
+    @PostMapping("/warehouse/warehouseInExecutor/updateExecutor")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel updateExecutor() throws Exception {
         logger.info("################warehouseInExecutor/updateExecutor 执行开始 ################# ");

@@ -56,7 +56,7 @@ public class WarehouseProductController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-10-31
     */
-    @PostMapping("/warehouseProduct/save")
+    @PostMapping("/warehouse/warehouseProduct/save")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel save()  throws Exception {
 
@@ -76,7 +76,7 @@ public class WarehouseProductController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-10-31
     */
-    @PostMapping("/warehouseProduct/update")
+    @PostMapping("/warehouse/warehouseProduct/update")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel update()  throws Exception {
 
@@ -97,7 +97,7 @@ public class WarehouseProductController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-10-31
     */
-    @GetMapping("/warehouseProduct/deleteById/{id}")
+    @GetMapping("/warehouse/warehouseProduct/deleteById/{id}")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteById(@PathVariable("id") String id)  throws Exception {
 
@@ -116,7 +116,7 @@ public class WarehouseProductController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-10-31
     */
-    @PostMapping("/warehouseProduct/deleteByIds")
+    @PostMapping("/warehouse/warehouseProduct/deleteByIds")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteByIds()  throws Exception {
 
@@ -147,7 +147,7 @@ public class WarehouseProductController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-10-31
     */
-    @PostMapping("/warehouseProduct/dataList")
+    @PostMapping("/warehouse/warehouseProduct/dataList")
     public ResultModel dataList()  throws Exception {
 
         logger.info("################warehouseProduct/dataList 执行开始 ################# ");
@@ -176,7 +176,7 @@ public class WarehouseProductController {
      * @author 刘威
      * @date 2018-10-31
      */
-    @PostMapping("/warehouseProduct/updateWarehouseProduct")
+    @PostMapping("/warehouse/warehouseProduct/updateWarehouseProduct")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel updateWarehouseProduct()  throws Exception {
         logger.info("################warehouseProduct/updateWarehouseProduct 执行开始 ################# ");
@@ -223,7 +223,7 @@ public class WarehouseProductController {
      * @author 刘威 自动创建，可以修改
      * @date 2018-10-31
      */
-    @PostMapping("/warehouseProduct/listPageWarehouseProductView")
+    @PostMapping("/warehouse/warehouseProduct/listPageWarehouseProductView")
     public ResultModel listPageWarehouseProductView()  throws Exception {
 
         logger.info("################warehouseProduct/listPageWarehouseProductView 执行开始 ################# ");
@@ -288,7 +288,7 @@ public class WarehouseProductController {
      * @author 刘威 自动创建，可以修改
      * @date 2018-10-31
      */
-    @PostMapping("/warehouseProduct/listPageWarehouseProductMove")
+    @PostMapping("/warehouse/warehouseProduct/listPageWarehouseProductMove")
     public ResultModel listPageWarehouseProductMove()  throws Exception {
 
         logger.info("################warehouseProduct/listPageWarehouseProductMove 执行开始 ################# ");
@@ -358,7 +358,7 @@ public class WarehouseProductController {
      * @author 刘威 自动创建，可以修改
      * @date 2018-10-31
      */
-    @PostMapping("/warehouseProduct/listPageWarehouseDetailView")
+    @PostMapping("/warehouse/warehouseProduct/listPageWarehouseDetailView")
     public ResultModel listPageWarehouseDetailView()  throws Exception {
 
         logger.info("################warehouseProduct/listPageWarehouseDetailView 执行开始 ################# ");
@@ -434,7 +434,7 @@ public class WarehouseProductController {
     * @author 刘威 自动创建，可以修改
     * @date 2018-10-31
     */
-    @PostMapping("/warehouseProduct/listPageWarehouseProductsDispatch")
+    @PostMapping("/warehouse/warehouseProduct/listPageWarehouseProductsDispatch")
     public ResultModel listPageWarehouseProductsDispatch()  throws Exception {
 
         logger.info("################warehouseProduct/listPageWarehouseProductsDispatch 执行开始 ################# ");
@@ -512,7 +512,7 @@ public class WarehouseProductController {
      * @author 刘威 自动创建，可以修改
      * @date 2018-10-31
      */
-    @PostMapping("/warehouseProduct/listPageWarehouseProductsDispatchOption")
+    @PostMapping("/warehouse/warehouseProduct/listPageWarehouseProductsDispatchOption")
     public ResultModel listPageWarehouseProductsDispatchOption()  throws Exception {
 
         logger.info("################warehouseProduct/listPageWarehouseProductsDispatchOption 执行开始 ################# ");
@@ -577,7 +577,7 @@ public class WarehouseProductController {
     * @author 刘威 自动创建，可以修改
     * @date 2018-10-31
     */
-    @PostMapping("/warehouseProduct/exportExcelWarehouseProducts")
+    @PostMapping("/warehouse/warehouseProduct/exportExcelWarehouseProducts")
     public void exportExcelWarehouseProducts() throws Exception {
         logger.info("################warehouseProduct/exportExcelWarehouseProducts 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -625,7 +625,7 @@ public class WarehouseProductController {
     * @author 刘威 自动创建，可以修改
     * @date 2018-10-31
     */
-    @PostMapping("/warehouseProduct/importExcelWarehouseProducts")
+    @PostMapping("/warehouse/warehouseProduct/importExcelWarehouseProducts")
     public ResultModel importExcelWarehouseProducts(@RequestParam(value="excelFile") MultipartFile file) throws Exception  {
         logger.info("################warehouseProduct/importExcelWarehouseProducts 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();

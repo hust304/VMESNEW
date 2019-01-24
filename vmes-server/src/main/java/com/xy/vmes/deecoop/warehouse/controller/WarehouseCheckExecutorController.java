@@ -44,7 +44,7 @@ public class WarehouseCheckExecutorController {
      * @date 2018-10-18
      * @throws Exception
      */
-    @PostMapping("/warehouseCheckExecutor/findListByWarehouseCheckExecutor")
+    @PostMapping("/warehouse/warehouseCheckExecutor/findListByWarehouseCheckExecutor")
     public ResultModel findListByWarehouseCheckExecutor() throws Exception {
         logger.info("################warehouseCheckExecutor/findListByWarehouseCheckExecutor 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -119,7 +119,7 @@ public class WarehouseCheckExecutorController {
      * @date 2018-10-18
      * @throws Exception
      */
-    @PostMapping("/warehouseCheckExecutor/addWarehouseCheckExecutor")
+    @PostMapping("/warehouse/warehouseCheckExecutor/addWarehouseCheckExecutor")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel addWarehouseCheckExecutor() throws Exception {
         logger.info("################/warehouseCheckExecutor/addWarehouseCheckExecutor 执行开始 ################# ");

@@ -48,7 +48,7 @@ public class WarehouseInDispatchController {
      * @author 陈刚 自动创建，可以修改
      * @date 2018-10-16
      */
-    @PostMapping("/warehouseInDispatch/listPageWarehouseInDetail")
+    @PostMapping("/warehouse/warehouseInDispatch/listPageWarehouseInDetail")
     public ResultModel listPageWarehouseInDetail() throws Exception {
         logger.info("################/warehouseInDispatch/listPageWarehouseInDetail 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -158,7 +158,7 @@ public class WarehouseInDispatchController {
      * @return
      * @throws Exception
      */
-    @PostMapping("/warehouseInDispatch/findWarehouseListByWarehouseIn")
+    @PostMapping("/warehouse/warehouseInDispatch/findWarehouseListByWarehouseIn")
     public ResultModel findWarehouseListByWarehouseIn() throws Exception {
         logger.info("################/warehouseInDispatch/findWarehouseListByWarehouseIn 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -242,7 +242,7 @@ public class WarehouseInDispatchController {
      * @date 2018-10-18
      * @throws Exception
      */
-    @PostMapping("/warehouseInDispatch/updateWarehouseInDispatch")
+    @PostMapping("/warehouse/warehouseInDispatch/updateWarehouseInDispatch")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel updateWarehouseInDispatch() throws Exception {
         logger.info("################/warehouseInDispatch/updateWarehouseInDispatch 执行开始 ################# ");

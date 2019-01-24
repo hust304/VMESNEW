@@ -54,7 +54,7 @@ public class ProductUnitController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-11-15
     */
-    @GetMapping("/productUnit/selectById/{id}")
+    @GetMapping("/base/productUnit/selectById/{id}")
     public ResultModel selectById(@PathVariable("id") String id)  throws Exception {
 
         logger.info("################productUnit/selectById 执行开始 ################# ");
@@ -74,7 +74,7 @@ public class ProductUnitController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-11-15
     */
-    @PostMapping("/productUnit/save")
+    @PostMapping("/base/productUnit/save")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel save()  throws Exception {
 
@@ -94,7 +94,7 @@ public class ProductUnitController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-11-15
     */
-    @PostMapping("/productUnit/update")
+    @PostMapping("/base/productUnit/update")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel update()  throws Exception {
 
@@ -120,7 +120,7 @@ public class ProductUnitController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-11-15
     */
-    @GetMapping("/productUnit/deleteById/{id}")
+    @GetMapping("/base/productUnit/deleteById/{id}")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteById(@PathVariable("id") String id)  throws Exception {
 
@@ -139,7 +139,7 @@ public class ProductUnitController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-11-15
     */
-    @PostMapping("/productUnit/deleteByIds")
+    @PostMapping("/base/productUnit/deleteByIds")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteByIds()  throws Exception {
 
@@ -169,7 +169,7 @@ public class ProductUnitController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-11-15
     */
-    @PostMapping("/productUnit/dataListPage")
+    @PostMapping("/base/productUnit/dataListPage")
     public ResultModel dataListPage()  throws Exception {
 
         logger.info("################productUnit/dataListPage 执行开始 ################# ");
@@ -192,7 +192,7 @@ public class ProductUnitController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-11-15
     */
-    @PostMapping("/productUnit/dataList")
+    @PostMapping("/base/productUnit/dataList")
     public ResultModel dataList()  throws Exception {
 
         logger.info("################productUnit/dataList 执行开始 ################# ");
@@ -218,7 +218,7 @@ public class ProductUnitController {
      * @author 刘威 自动创建，禁止修改
      * @date 2018-09-20
      */
-    @PostMapping("/productUnit/updateIsDefaultProductUnit")
+    @PostMapping("/base/productUnit/updateIsDefaultProductUnit")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel updateIsDefaultProductUnit()  throws Exception {
 
@@ -243,7 +243,7 @@ public class ProductUnitController {
     * @author 刘威 自动创建，可以修改
     * @date 2018-11-15
     */
-    @PostMapping("/productUnit/listPageProductUnits")
+    @PostMapping("/base/productUnit/listPageProductUnits")
     public ResultModel listPageProductUnits()  throws Exception {
         logger.info("################productUnit/listPageProductUnits 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -309,7 +309,7 @@ public class ProductUnitController {
      * @author 刘威 自动创建，禁止修改
      * @date 2018-11-15
      */
-    @PostMapping("/productUnit/updateProductUnitPrice")
+    @PostMapping("/base/productUnit/updateProductUnitPrice")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel updateProductUnitPrice()  throws Exception {
         logger.info("################productUnit/updateProductUnitPrice 执行开始 ################# ");
@@ -379,7 +379,7 @@ public class ProductUnitController {
      * @author 陈刚 自动创建，可以修改
      * @date 2018-12-06
      */
-    @PostMapping("/productUnit/findListProductUnitByProduct")
+    @PostMapping("/base/productUnit/findListProductUnitByProduct")
     public ResultModel findListProductUnitByProduct() throws Exception {
         logger.info("################productUnit/findListProductUnitByProduct 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -463,7 +463,7 @@ public class ProductUnitController {
      * @author 陈刚 自动创建，可以修改
      * @date 2018-12-06
      */
-    @PostMapping("/productUnit/findListProductUnit")
+    @PostMapping("/base/productUnit/findListProductUnit")
     public ResultModel findListProductUnit() throws Exception {
         logger.info("################productUnit/findListProductUnit 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -606,7 +606,7 @@ public class ProductUnitController {
      * @author 陈刚 自动创建，可以修改
      * @date 2018-12-06
      */
-    @PostMapping("/productUnit/formulaReckonByProductCount")
+    @PostMapping("/base/productUnit/formulaReckonByProductCount")
     public ResultModel formulaReckonByProductCount() throws Exception {
         logger.info("################productUnit/formulaReckonByProductCount 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -679,7 +679,7 @@ public class ProductUnitController {
     * @author 刘威 自动创建，可以修改
     * @date 2018-11-15
     */
-    @PostMapping("/productUnit/exportExcelProductUnits")
+    @PostMapping("/base/productUnit/exportExcelProductUnits")
     public void exportExcelProductUnits() throws Exception {
         logger.info("################productUnit/exportExcelProductUnits 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -727,7 +727,7 @@ public class ProductUnitController {
     * @author 刘威 自动创建，可以修改
     * @date 2018-11-15
     */
-    @PostMapping("/productUnit/importExcelProductUnits")
+    @PostMapping("/base/productUnit/importExcelProductUnits")
     public ResultModel importExcelProductUnits(@RequestParam(value="excelFile") MultipartFile file) throws Exception  {
         logger.info("################productUnit/importExcelProductUnits 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();

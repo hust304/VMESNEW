@@ -38,7 +38,7 @@ public class TreeLoadController {
      * 创建人：陈刚
      * 创建时间：2018-07-20
      */
-    @GetMapping("/treeLoad/menuTreeLoad")
+    @GetMapping("/system/treeLoad/menuTreeLoad")
     public ResultModel menuTreeLoad() {
         ResultModel model = new ResultModel();
 

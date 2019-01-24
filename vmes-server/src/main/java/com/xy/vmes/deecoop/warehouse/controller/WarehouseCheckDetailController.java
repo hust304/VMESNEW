@@ -43,7 +43,7 @@ public class WarehouseCheckDetailController {
      * @author 陈刚
      * @date 2018-11-13
      */
-    @PostMapping("/warehouseCheckDetail/listPageWarehouseCheckDetails")
+    @PostMapping("/warehouse/warehouseCheckDetail/listPageWarehouseCheckDetails")
     public ResultModel listPageWarehouseCheckDetails() throws Exception {
         logger.info("################warehouseCheckDetail/listPageWarehouseCheckDetails 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -119,7 +119,7 @@ public class WarehouseCheckDetailController {
      * @date 2018-10-16
      * @throws Exception
      */
-    @PostMapping("/warehouseCheckDetail/cancelWarehouseCheckDetail")
+    @PostMapping("/warehouse/warehouseCheckDetail/cancelWarehouseCheckDetail")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel cancelWarehouseCheckDetail() throws Exception {
         logger.info("################/warehouseCheckDetail/cancelWarehouseCheckDetail 执行开始 ################# ");
@@ -172,7 +172,7 @@ public class WarehouseCheckDetailController {
      * @date 2018-10-16
      * @throws Exception
      */
-    @PostMapping("/warehouseCheckDetail/deleteWarehouseCheckDetail")
+    @PostMapping("/warehouse/warehouseCheckDetail/deleteWarehouseCheckDetail")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteWarehouseCheckDetail() throws Exception {
         logger.info("################/warehouseCheckDetail/deleteWarehouseCheckDetail 执行开始 ################# ");

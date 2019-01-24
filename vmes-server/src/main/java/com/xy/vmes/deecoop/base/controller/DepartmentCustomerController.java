@@ -36,9 +36,9 @@ public class DepartmentCustomerController {
      * @author 陈刚 自动创建，可以修改
      * @date 2018-09-18
      */
-    @PostMapping("/base/listPageDepartmentCustomer")
+    @PostMapping("/base/departmentCustomer/listPageDepartmentCustomer")
     public ResultModel listPageDepartmentCustomer()  throws Exception {
-        logger.info("################base/listPageDepartmentCustomer 执行开始 ################# ");
+        logger.info("################base/departmentCustomer/listPageDepartmentCustomer 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
 
@@ -99,7 +99,7 @@ public class DepartmentCustomerController {
 
         model.putResult(result);
         Long endTime = System.currentTimeMillis();
-        logger.info("################base/listPageDepartmentCustomer 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################base/departmentCustomer/listPageDepartmentCustomer 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 }

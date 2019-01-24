@@ -47,7 +47,7 @@ public class LogInfoController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-08-28
     */
-    @GetMapping("/logInfo/selectById/{id}")
+    @GetMapping("/system/logInfo/selectById/{id}")
     public ResultModel selectById(@PathVariable("id") String id)  throws Exception {
 
         logger.info("################logInfo/selectById 执行开始 ################# ");
@@ -67,7 +67,7 @@ public class LogInfoController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-08-28
     */
-    @PostMapping("/logInfo/save")
+    @PostMapping("/system/logInfo/save")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel save()  throws Exception {
 
@@ -87,7 +87,7 @@ public class LogInfoController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-08-28
     */
-    @PostMapping("/logInfo/update")
+    @PostMapping("/system/logInfo/update")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel update()  throws Exception {
 
@@ -108,7 +108,7 @@ public class LogInfoController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-08-28
     */
-    @GetMapping("/logInfo/deleteById/{id}")
+    @GetMapping("/system/logInfo/deleteById/{id}")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteById(@PathVariable("id") String id)  throws Exception {
 
@@ -127,7 +127,7 @@ public class LogInfoController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-08-28
     */
-    @PostMapping("/logInfo/deleteByIds")
+    @PostMapping("/system/logInfo/deleteByIds")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteByIds()  throws Exception {
 
@@ -157,7 +157,7 @@ public class LogInfoController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-08-28
     */
-    @PostMapping("/logInfo/dataListPage")
+    @PostMapping("/system/logInfo/dataListPage")
     public ResultModel dataListPage()  throws Exception {
 
         logger.info("################logInfo/dataListPage 执行开始 ################# ");
@@ -180,7 +180,7 @@ public class LogInfoController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-08-28
     */
-    @PostMapping("/logInfo/dataList")
+    @PostMapping("/system/logInfo/dataList")
     public ResultModel dataList()  throws Exception {
 
         logger.info("################logInfo/dataList 执行开始 ################# ");
@@ -202,7 +202,7 @@ public class LogInfoController {
     * @author 刘威 自动创建，可以修改
     * @date 2018-08-28
     */
-    @PostMapping("/logInfo/listPageLogInfos")
+    @PostMapping("/system/logInfo/listPageLogInfos")
     public ResultModel listPageLogInfos()  throws Exception {
 
         logger.info("################logInfo/listPageLogInfos 执行开始 ################# ");
@@ -277,7 +277,7 @@ public class LogInfoController {
     * @author 刘威 自动创建，可以修改
     * @date 2018-08-28
     */
-    @PostMapping("/logInfo/exportExcelLogInfos")
+    @PostMapping("/system/logInfo/exportExcelLogInfos")
     public void exportExcelLogInfos() throws Exception {
         logger.info("################logInfo/exportExcelLogInfos 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -329,7 +329,7 @@ public class LogInfoController {
     * @author 刘威 自动创建，可以修改
     * @date 2018-08-28
     */
-    @PostMapping("/logInfo/importExcelLogInfos")
+    @PostMapping("/system/logInfo/importExcelLogInfos")
     public ResultModel importExcelLogInfos(@RequestParam(value="excelFile") MultipartFile file) throws Exception  {
         logger.info("################logInfo/importExcelLogInfos 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();

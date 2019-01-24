@@ -56,7 +56,7 @@ public class ProductController {
     * @author 陈刚 自动创建，禁止修改
     * @date 2018-09-21
     */
-    @GetMapping("/product/selectById/{id}")
+    @GetMapping("/base/product/selectById/{id}")
     public ResultModel selectById(@PathVariable("id") String id)  throws Exception {
 
         logger.info("################product/selectById 执行开始 ################# ");
@@ -76,7 +76,7 @@ public class ProductController {
     * @author 陈刚 自动创建，禁止修改
     * @date 2018-09-21
     */
-    @PostMapping("/product/save")
+    @PostMapping("/base/product/save")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel save()  throws Exception {
 
@@ -96,7 +96,7 @@ public class ProductController {
     * @author 陈刚 自动创建，禁止修改
     * @date 2018-09-21
     */
-    @PostMapping("/product/update")
+    @PostMapping("/base/product/update")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel update()  throws Exception {
 
@@ -117,7 +117,7 @@ public class ProductController {
     * @author 陈刚 自动创建，禁止修改
     * @date 2018-09-21
     */
-    @GetMapping("/product/deleteById/{id}")
+    @GetMapping("/base/product/deleteById/{id}")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteById(@PathVariable("id") String id)  throws Exception {
 
@@ -136,7 +136,7 @@ public class ProductController {
     * @author 陈刚 自动创建，禁止修改
     * @date 2018-09-21
     */
-    @PostMapping("/product/deleteByIds")
+    @PostMapping("/base/product/deleteByIds")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteByIds()  throws Exception {
 
@@ -166,7 +166,7 @@ public class ProductController {
     * @author 陈刚 自动创建，禁止修改
     * @date 2018-09-21
     */
-    @PostMapping("/product/dataListPage")
+    @PostMapping("/base/product/dataListPage")
     public ResultModel dataListPage()  throws Exception {
 
         logger.info("################product/dataListPage 执行开始 ################# ");
@@ -189,7 +189,7 @@ public class ProductController {
     * @author 陈刚 自动创建，禁止修改
     * @date 2018-09-21
     */
-    @PostMapping("/product/dataList")
+    @PostMapping("/base/product/dataList")
     public ResultModel dataList()  throws Exception {
 
         logger.info("################product/dataList 执行开始 ################# ");
@@ -209,7 +209,7 @@ public class ProductController {
     * @author 陈刚 自动创建，可以修改
     * @date 2018-09-21
     */
-    @PostMapping("/product/listPageProducts")
+    @PostMapping("/base/product/listPageProducts")
     public ResultModel listPageProducts() throws Exception {
         logger.info("################product/listPageProducts 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -326,7 +326,7 @@ public class ProductController {
         return model;
     }
 
-    @PostMapping("/product/listPageProductPropertys")
+    @PostMapping("/base/product/listPageProductPropertys")
     public ResultModel listPageProductPropertys() throws Exception {
         logger.info("################product/listPageProductPropertys 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -392,7 +392,7 @@ public class ProductController {
      * @author 陈刚
      * @date 2018-09-19
      */
-    @PostMapping("/product/addProduct")
+    @PostMapping("/base/product/addProduct")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel addProduct() throws Exception {
         logger.info("################/product/addProduct 执行开始 ################# ");
@@ -472,7 +472,7 @@ public class ProductController {
      * @author 陈刚
      * @date 2018-09-19
      */
-    @PostMapping("/product/updateProduct")
+    @PostMapping("/base/product/updateProduct")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel updateProduct() throws Exception {
         logger.info("################/product/updateProduct 执行开始 ################# ");
@@ -527,7 +527,7 @@ public class ProductController {
      * @author 陈刚
      * @date 2018-09-19
      */
-    @PostMapping("/product/updateDisableProduct")
+    @PostMapping("/base/product/updateDisableProduct")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel updateDisableProduct() throws Exception {
         logger.info("################/product/updateDisableProduct 执行开始 ################# ");
@@ -570,7 +570,7 @@ public class ProductController {
      * @author 陈刚
      * @date 2018-09-19
      */
-    @PostMapping("/product/deleteProduct")
+    @PostMapping("/base/product/deleteProduct")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteProduct() throws Exception {
         logger.info("################/product/deleteProduct 执行开始 ################# ");
@@ -608,7 +608,7 @@ public class ProductController {
     * @author 陈刚 自动创建，可以修改
     * @date 2018-09-21
     */
-    @PostMapping("/product/exportExcelProducts")
+    @PostMapping("/base/product/exportExcelProducts")
     public void exportExcelProducts() throws Exception {
         logger.info("################product/exportExcelProducts 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -656,7 +656,7 @@ public class ProductController {
     * @author 陈刚 自动创建，可以修改
     * @date 2018-09-21
     */
-    @PostMapping("/product/importExcelProducts")
+    @PostMapping("/base/product/importExcelProducts")
     public ResultModel importExcelProducts(@RequestParam(value="excelFile") MultipartFile file) throws Exception  {
         logger.info("################product/importExcelProducts 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();

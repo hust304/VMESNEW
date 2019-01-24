@@ -1,9 +1,7 @@
-package com.xy.vmes.deecoop.fileio.controller;
+package com.xy.vmes.deecoop.fileIO.controller;
 
 import com.xy.vmes.service.FileService;
-import com.yvan.FileUploadUtils;
 import com.yvan.HttpUtils;
-import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
@@ -19,7 +17,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
 
 /**
  * 说明：文件IO Controller
@@ -37,7 +34,7 @@ public class FileController {
      * @author 刘威 自动创建，禁止修改
      * @date 2018-08-02
      */
-    @GetMapping("/file/uploadFile")
+    @GetMapping("/fileIO/file/uploadFile")
     @Transactional(rollbackFor=Exception.class)
     public void uploadFile()  throws Exception {
 
@@ -58,7 +55,7 @@ public class FileController {
      * @author 刘威 自动创建，禁止修改
      * @date 2018-08-02
      */
-    @GetMapping("/file/downloadFile")
+    @GetMapping("/fileIO/file/downloadFile")
     @Transactional(rollbackFor=Exception.class)
     public void downloadFile()  throws Exception {
 
@@ -77,7 +74,7 @@ public class FileController {
      * @author 刘威
      * @date 2018-08-02
      */
-    @PostMapping("/file/uploadPhoto")
+    @PostMapping("/fileIO/file/uploadPhoto")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel uploadPhoto(@RequestParam("fileName") MultipartFile file)  throws Exception {
         logger.info("################file/uploadPhoto 执行开始 ################# ");
@@ -104,7 +101,7 @@ public class FileController {
         return model;
     }
 
-//    @PostMapping("/file/uploadEmployeePhoto")
+//    @PostMapping("/fileIO/file/uploadEmployeePhoto")
 //    public ResultModel uploadEmployeePhoto(@RequestParam("fileName") MultipartFile file) throws Exception {
 //        HttpServletResponse response  = HttpUtils.currentResponse();
 //        HttpServletRequest request  = HttpUtils.currentRequest();

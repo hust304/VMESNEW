@@ -47,7 +47,7 @@ public class WarehouseOutRecommendController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-11-07
     */
-    @GetMapping("/warehouseOutRecommend/selectById/{id}")
+    @GetMapping("/warehouse/warehouseOutRecommend/selectById/{id}")
     public ResultModel selectById(@PathVariable("id") String id)  throws Exception {
 
         logger.info("################warehouseOutRecommend/selectById 执行开始 ################# ");
@@ -67,7 +67,7 @@ public class WarehouseOutRecommendController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-11-07
     */
-    @PostMapping("/warehouseOutRecommend/save")
+    @PostMapping("/warehouse/warehouseOutRecommend/save")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel save()  throws Exception {
 
@@ -87,7 +87,7 @@ public class WarehouseOutRecommendController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-11-07
     */
-    @PostMapping("/warehouseOutRecommend/update")
+    @PostMapping("/warehouse/warehouseOutRecommend/update")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel update()  throws Exception {
 
@@ -108,7 +108,7 @@ public class WarehouseOutRecommendController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-11-07
     */
-    @GetMapping("/warehouseOutRecommend/deleteById/{id}")
+    @GetMapping("/warehouse/warehouseOutRecommend/deleteById/{id}")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteById(@PathVariable("id") String id)  throws Exception {
 
@@ -127,7 +127,7 @@ public class WarehouseOutRecommendController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-11-07
     */
-    @PostMapping("/warehouseOutRecommend/deleteByIds")
+    @PostMapping("/warehouse/warehouseOutRecommend/deleteByIds")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteByIds()  throws Exception {
 
@@ -157,7 +157,7 @@ public class WarehouseOutRecommendController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-11-07
     */
-    @PostMapping("/warehouseOutRecommend/dataListPage")
+    @PostMapping("/warehouse/warehouseOutRecommend/dataListPage")
     public ResultModel dataListPage()  throws Exception {
 
         logger.info("################warehouseOutRecommend/dataListPage 执行开始 ################# ");
@@ -180,7 +180,7 @@ public class WarehouseOutRecommendController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-11-07
     */
-    @PostMapping("/warehouseOutRecommend/dataList")
+    @PostMapping("/warehouse/warehouseOutRecommend/dataList")
     public ResultModel dataList()  throws Exception {
 
         logger.info("################warehouseOutRecommend/dataList 执行开始 ################# ");
@@ -202,7 +202,7 @@ public class WarehouseOutRecommendController {
     * @author 刘威 自动创建，可以修改
     * @date 2018-11-07
     */
-    @PostMapping("/warehouseOutRecommend/listPageWarehouseOutRecommends")
+    @PostMapping("/warehouse/warehouseOutRecommend/listPageWarehouseOutRecommends")
     public ResultModel listPageWarehouseOutRecommends()  throws Exception {
 
         logger.info("################warehouseOutRecommend/listPageWarehouseOutRecommends 执行开始 ################# ");
@@ -267,7 +267,7 @@ public class WarehouseOutRecommendController {
     * @author 刘威 自动创建，可以修改
     * @date 2018-11-07
     */
-    @PostMapping("/warehouseOutRecommend/exportExcelWarehouseOutRecommends")
+    @PostMapping("/warehouse/warehouseOutRecommend/exportExcelWarehouseOutRecommends")
     public void exportExcelWarehouseOutRecommends() throws Exception {
         logger.info("################warehouseOutRecommend/exportExcelWarehouseOutRecommends 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -315,7 +315,7 @@ public class WarehouseOutRecommendController {
     * @author 刘威 自动创建，可以修改
     * @date 2018-11-07
     */
-    @PostMapping("/warehouseOutRecommend/importExcelWarehouseOutRecommends")
+    @PostMapping("/warehouse/warehouseOutRecommend/importExcelWarehouseOutRecommends")
     public ResultModel importExcelWarehouseOutRecommends(@RequestParam(value="excelFile") MultipartFile file) throws Exception  {
         logger.info("################warehouseOutRecommend/importExcelWarehouseOutRecommends 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();

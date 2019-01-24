@@ -1,4 +1,4 @@
-package com.xy.vmes.deecoop.fileio.service;
+package com.xy.vmes.deecoop.fileIO.service;
 
 import com.xy.vmes.service.FileService;
 import com.yvan.FileUploadUtils;

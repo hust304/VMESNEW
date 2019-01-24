@@ -47,7 +47,7 @@ public class CustomerInvoiceController {
     * @author 陈刚 自动创建，可以修改
     * @date 2019-01-09
     */
-    @PostMapping("/customerInvoice/listPageCustomerInvoices")
+    @PostMapping("/base/customerInvoice/listPageCustomerInvoices")
     public ResultModel listPageCustomerInvoices()  throws Exception {
         logger.info("################customerInvoice/listPageCustomerInvoices 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -116,7 +116,7 @@ public class CustomerInvoiceController {
     * @author 陈刚 自动创建，可以修改
     * @date 2019-01-09
     */
-    @PostMapping("/customerInvoice/exportExcelCustomerInvoices")
+    @PostMapping("/base/customerInvoice/exportExcelCustomerInvoices")
     public void exportExcelCustomerInvoices() throws Exception {
         logger.info("################customerInvoice/exportExcelCustomerInvoices 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -164,7 +164,7 @@ public class CustomerInvoiceController {
     * @author 陈刚 自动创建，可以修改
     * @date 2019-01-09
     */
-    @PostMapping("/customerInvoice/importExcelCustomerInvoices")
+    @PostMapping("/base/customerInvoice/importExcelCustomerInvoices")
     public ResultModel importExcelCustomerInvoices(@RequestParam(value="excelFile") MultipartFile file) throws Exception  {
         logger.info("################customerInvoice/importExcelCustomerInvoices 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();

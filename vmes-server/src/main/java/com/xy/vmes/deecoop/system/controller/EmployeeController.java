@@ -63,7 +63,7 @@ public class EmployeeController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-08-02
     */
-    @GetMapping("/employee/selectById/{id}")
+    @GetMapping("/system/employee/selectById/{id}")
     public ResultModel selectById(@PathVariable("id") String id)  throws Exception {
 
         logger.info("################employee/selectById 执行开始 ################# ");
@@ -83,7 +83,7 @@ public class EmployeeController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-08-02
     */
-    @PostMapping("/employee/save")
+    @PostMapping("/system/employee/save")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel save()  throws Exception {
 
@@ -103,7 +103,7 @@ public class EmployeeController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-08-02
     */
-    @PostMapping("/employee/update")
+    @PostMapping("/system/employee/update")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel update()  throws Exception {
 
@@ -124,7 +124,7 @@ public class EmployeeController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-08-02
     */
-    @GetMapping("/employee/deleteById/{id}")
+    @GetMapping("/system/employee/deleteById/{id}")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteById(@PathVariable("id") String id)  throws Exception {
 
@@ -142,7 +142,7 @@ public class EmployeeController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-08-02
     */
-    @PostMapping("/employee/dataListPage")
+    @PostMapping("/system/employee/dataListPage")
     public ResultModel dataListPage()  throws Exception {
 
         logger.info("################employee/dataListPage 执行开始 ################# ");
@@ -162,7 +162,7 @@ public class EmployeeController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-08-02
     */
-    @GetMapping("/employee/dataList")
+    @GetMapping("/system/employee/dataList")
     public ResultModel dataList()  throws Exception {
 
         logger.info("################employee/dataList 执行开始 ################# ");
@@ -181,7 +181,7 @@ public class EmployeeController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-08-02
     */
-    @GetMapping("/employee/excelExport")
+    @GetMapping("/system/employee/excelExport")
     public void excelExport()  throws Exception {
 
         logger.info("################employee/excelExport 执行开始 ################# ");
@@ -248,7 +248,7 @@ public class EmployeeController {
      * @author 刘威 新增员工信息同时需要根据情况新增用户信息
      * @date 2018-08-02
      */
-    @PostMapping("/employee/addEmployeeAndUser")
+    @PostMapping("/system/employee/addEmployeeAndUser")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel addEmployeeAndUser()  throws Exception {
         logger.info("################employee/addEmployeeAndUser 执行开始 ################# ");
@@ -344,7 +344,7 @@ public class EmployeeController {
      * @author 刘威 修改员工信息同时修改或新增用户信息（手机号，邮箱，角色）
      * @date 2018-08-02
      */
-    @PostMapping("/employee/updateEmployeeAndUser")
+    @PostMapping("/system/employee/updateEmployeeAndUser")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel updateEmployeeAndUser()  throws Exception {
         logger.info("################employee/updateEmployeeAndUser 执行开始 ################# ");
@@ -436,7 +436,7 @@ public class EmployeeController {
         return model;
     }
 
-    @PostMapping("/employee/updateDisableEmployee")
+    @PostMapping("/system/employee/updateDisableEmployee")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel updateDisableEmployee()  throws Exception {
         logger.info("################employee/updateDisableEmployee 执行开始 ################# ");
@@ -494,7 +494,7 @@ public class EmployeeController {
      * @author 刘威  禁用员工信息包含主岗兼岗，同时禁用员工账号（支持批量删除，不支持物理删除）
      * @date 2018-08-02
      */
-    @PostMapping("/employee/deleteEmployees")
+    @PostMapping("/system/employee/deleteEmployees")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteEmployees()  throws Exception {
         logger.info("################employee/deleteEmployees 执行开始 ################# ");
@@ -565,7 +565,7 @@ public class EmployeeController {
      * @author 刘威  单独启用禁用员工信息包含主岗兼岗，同时禁用员工账号
      * @date 2018-08-02
      */
-    @PostMapping("/employee/updateEmployeePostState")
+    @PostMapping("/system/employee/updateEmployeePostState")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel updateEmployeePostState()  throws Exception {
 
@@ -630,7 +630,7 @@ public class EmployeeController {
      * @author 刘威
      * @date 2018-08-02
      */
-    @PostMapping("/employee/updateForChangeEmployeePost")
+    @PostMapping("/system/employee/updateForChangeEmployeePost")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel updateForChangeEmployeePost()  throws Exception {
 
@@ -684,7 +684,7 @@ public class EmployeeController {
      * @author 刘威
      * @date 2018-08-02
      */
-    @PostMapping("/employee/addEmployToUser")
+    @PostMapping("/system/employee/addEmployToUser")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel addEmployToUser()  throws Exception {
 //        employRoles ="[{\"employId\":\"3\",\"roleId\":\"1\"}," +
@@ -780,7 +780,7 @@ public class EmployeeController {
      * @author 刘威
      * @date 2018-08-02
      */
-    @PostMapping("/employee/addEmployeePluralityPost")
+    @PostMapping("/system/employee/addEmployeePluralityPost")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel addEmployeePluralityPost()  throws Exception {
         logger.info("################employee/addEmployeePluralityPost 执行开始 ################# ");
@@ -845,7 +845,7 @@ public class EmployeeController {
      * @return
      * @throws Exception
      */
-    @PostMapping("/employee/addEmployeeMainPost")
+    @PostMapping("/system/employee/addEmployeeMainPost")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel addEmployeeMainPost()  throws Exception {
         logger.info("################employee/addEmployeeMainPost 执行开始 ################# ");
@@ -907,7 +907,7 @@ public class EmployeeController {
      * @author 刘威 员工信息列表查询分页
      * @date 2018-07-26
      */
-    @PostMapping("/employee/listPageEmployees")
+    @PostMapping("/system/employee/listPageEmployees")
     public ResultModel listPageEmployees()  throws Exception {
 
         logger.info("################employee/listPageEmployees 执行开始 ################# ");
@@ -1002,7 +1002,7 @@ public class EmployeeController {
      *
      * @throws Exception
      */
-    @PostMapping("/employee/exportExcelEmployees")
+    @PostMapping("/system/employee/exportExcelEmployees")
     public void exportExcelEmployees() throws Exception {
         logger.info("################employee/exportExcelEmployees 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -1048,7 +1048,7 @@ public class EmployeeController {
     /**
      * @author 刘威 自动创建，禁止修改
      * @date 2018-07-26
-     */    @GetMapping("/employee/exportExcelUsers")
+     */    @GetMapping("/system/employee/exportExcelUsers")
 //    public void exportExcelUsers()  throws Exception {
 //
 //        logger.info("################employee/exportExcelUsers 执行开始 ################# ");
@@ -1078,7 +1078,7 @@ public class EmployeeController {
      * @author 刘威 通过ID查询
      * @date 2018-07-26
      */
-    @PostMapping("/employee/selectEmployeeAndUserById/{employPostId}")
+    @PostMapping("/system/employee/selectEmployeeAndUserById/{employPostId}")
     public ResultModel selectEmployeeAndUserById(@PathVariable("employPostId") String employPostId)  throws Exception {
 
         logger.info("################employee/selectEmployeeAndUserById 执行开始 ################# ");

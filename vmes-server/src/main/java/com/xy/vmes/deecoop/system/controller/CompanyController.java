@@ -53,7 +53,7 @@ public class CompanyController {
     @Autowired
     private ColumnService columnService;
 
-//    @PostMapping("/company/listPageCompanyAdmins")
+//    @PostMapping("/system/company/listPageCompanyAdmins")
 //    public ResultModel listPageCompanyAdmins() throws Exception {
 //        ResultModel model = new ResultModel();
 //
@@ -119,7 +119,7 @@ public class CompanyController {
      * @author 刘威 自动创建，可以修改
      * @date 2018-08-23
      */
-    @PostMapping("/company/listPageCompanyAdmins")
+    @PostMapping("/system/company/listPageCompanyAdmins")
     public ResultModel listPageCompanyAdmins()  throws Exception {
         logger.info("################company/listPageCompanyAdmins 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -194,7 +194,7 @@ public class CompanyController {
      *
      * @throws Exception
      */
-    @PostMapping("/company/exportExcelCompanys")
+    @PostMapping("/system/company/exportExcelCompanys")
     public void exportExcelCompanys() throws Exception {
         logger.info("################company/exportExcelCompanys 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -236,7 +236,7 @@ public class CompanyController {
      * @author 陈刚
      * @date 2018-08-06
      */
-    @PostMapping("/company/addCompanyAdmin")
+    @PostMapping("/system/company/addCompanyAdmin")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel addCompanyAdmin() throws Exception {
         logger.info("################company/addCompanyAdmin 执行开始 ################# ");
@@ -387,7 +387,7 @@ public class CompanyController {
      * @author 陈刚
      * @date 2018-08-06
      */
-    @PostMapping("/company/updateCompany")
+    @PostMapping("/system/company/updateCompany")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel updateCompany() throws Exception {
         logger.info("################company/updateCompany 执行开始 ################# ");
@@ -511,7 +511,7 @@ public class CompanyController {
      * @author 陈刚
      * @date 2018-08-06
      */
-    @PostMapping("/company/updateAdmin")
+    @PostMapping("/system/company/updateAdmin")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel updateAdmin() {
 
@@ -526,7 +526,7 @@ public class CompanyController {
      * @author 陈刚
      * @date 2018-08-06
      */
-//    @PostMapping("/company/updateDisableCompany")
+//    @PostMapping("/system/company/updateDisableCompany")
 //    public ResultModel updateDisableCompany() {
 //        ResultModel model = new ResultModel();
 //        PageData pageData = HttpUtils.parsePageData();
@@ -544,7 +544,7 @@ public class CompanyController {
      * @author 陈刚
      * @date 2018-08-06
      */
-    @PostMapping("/company/deleteCompanyAdmins")
+    @PostMapping("/system/company/deleteCompanyAdmins")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteCompanyAdmins() throws Exception {
         logger.info("################company/deleteCompanyAdmins 执行开始 ################# ");

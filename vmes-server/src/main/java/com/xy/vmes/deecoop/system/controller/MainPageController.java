@@ -50,7 +50,7 @@ public class MainPageController {
      * @author 刘威 修改用户密码
      * @date 2018-07-27
      */
-    @PostMapping("/mainPage/changePassWord")
+    @PostMapping("/system/mainPage/changePassWord")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel changePassWord()  throws Exception {
 
@@ -73,7 +73,7 @@ public class MainPageController {
      * @author 刘威 修改界面样式
      * @date 2018-07-27
      */
-    @PostMapping("/mainPage/changePageStyle")
+    @PostMapping("/system/mainPage/changePageStyle")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel changePageStyle()  throws Exception {
 
@@ -95,7 +95,7 @@ public class MainPageController {
      * @author 刘威 保存用户自定义菜单
      * @date 2018-07-27
      */
-    @PostMapping("/mainPage/saveUserDefinedMenu")
+    @PostMapping("/system/mainPage/saveUserDefinedMenu")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel saveUserDefinedMenu()  throws Exception {
 
@@ -156,7 +156,7 @@ public class MainPageController {
      * @author 刘威  查询用户自定义菜单
      * @date 2018-07-27
      */
-    @PostMapping("/mainPage/listUserDefinedMenu")
+    @PostMapping("/system/mainPage/listUserDefinedMenu")
     public ResultModel listUserDefinedMenu()  throws Exception {
 
         logger.info("################mainPage/listUserDefinedMenu 执行开始 ################# ");
@@ -230,7 +230,7 @@ public class MainPageController {
      * @author 陈刚
      * @date 2018-07-27
      */
-    @PostMapping("/mainPage/listRoleMeunAll")
+    @PostMapping("/system/mainPage/listRoleMeunAll")
     public ResultModel listRoleMeunAll() throws Exception {
         logger.info("################mainPage/listRoleMeunAll 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();

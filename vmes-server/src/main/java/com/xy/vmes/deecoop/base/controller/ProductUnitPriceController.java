@@ -36,7 +36,7 @@ public class ProductUnitPriceController {
     * @author 陈刚 自动创建，可以修改
     * @date 2018-12-04
     */
-    @PostMapping("/productUnitPrice/listPageProductUnitPrices")
+    @PostMapping("/base/productUnitPrice/listPageProductUnitPrices")
     public ResultModel listPageProductUnitPrices()  throws Exception {
         logger.info("################productUnitPrice/listPageProductUnitPrices 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();

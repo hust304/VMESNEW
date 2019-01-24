@@ -57,7 +57,7 @@ public class PostController {
      * @author 刘威 自动创建，禁止修改
      * @date 2018-08-01
      */
-    @GetMapping("/post/selectById/{id}")
+    @GetMapping("/system/post/selectById/{id}")
     public ResultModel selectById(@PathVariable("id") String id)  throws Exception {
 
         logger.info("################post/selectById 执行开始 ################# ");
@@ -77,7 +77,7 @@ public class PostController {
      * @author 刘威 自动创建，禁止修改
      * @date 2018-08-01
      */
-    @PostMapping("/post/save")
+    @PostMapping("/system/post/save")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel save()  throws Exception {
 
@@ -97,7 +97,7 @@ public class PostController {
      * @author 刘威 自动创建，禁止修改
      * @date 2018-08-01
      */
-    @PostMapping("/post/update")
+    @PostMapping("/system/post/update")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel update()  throws Exception {
 
@@ -118,7 +118,7 @@ public class PostController {
      * @author 刘威 自动创建，禁止修改
      * @date 2018-08-01
      */
-    @GetMapping("/post/deleteById/{id}")
+    @GetMapping("/system/post/deleteById/{id}")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteById(@PathVariable("id") String id)  throws Exception {
 
@@ -138,7 +138,7 @@ public class PostController {
      * @author 刘威 自动创建，禁止修改
      * @date 2018-08-01
      */
-    @PostMapping("/post/dataListPage")
+    @PostMapping("/system/post/dataListPage")
     public ResultModel dataListPage()  throws Exception {
 
         logger.info("################post/dataListPage 执行开始 ################# ");
@@ -158,7 +158,7 @@ public class PostController {
      * @author 刘威 自动创建，禁止修改
      * @date 2018-08-01
      */
-    @PostMapping("/post/dataList")
+    @PostMapping("/system/post/dataList")
     public ResultModel dataList()  throws Exception {
 
         logger.info("################post/dataList 执行开始 ################# ");
@@ -177,7 +177,7 @@ public class PostController {
      * @author 刘威 自动创建，禁止修改
      * @date 2018-08-01
      */
-//    @GetMapping("/post/excelExport")
+//    @GetMapping("/system/post/excelExport")
 //    public void excelExport()  throws Exception {
 //
 //        logger.info("################post/excelExport 执行开始 ################# ");
@@ -208,7 +208,7 @@ public class PostController {
      * @author 刘威
      * @date 2018-08-01
      */
-    @PostMapping("/post/addPost")
+    @PostMapping("/system/post/addPost")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel addPost()  throws Exception {
 
@@ -256,7 +256,7 @@ public class PostController {
      * @author 刘威
      * @date 2018-08-01
      */
-    @PostMapping("/post/updatePost")
+    @PostMapping("/system/post/updatePost")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel updatePost()  throws Exception {
         logger.info("################post/updatePost 执行开始 ################# ");
@@ -276,7 +276,7 @@ public class PostController {
      * @author 陈刚
      * @date 2018-07-27
      */
-    @PostMapping("/post/updateDisablePost")
+    @PostMapping("/system/post/updateDisablePost")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel updateDisablePost() throws Exception {
         ResultModel model = new ResultModel();
@@ -350,7 +350,7 @@ public class PostController {
      * @author 刘威
      * @date 2018-08-01
      */
-    @PostMapping("/post/deletePosts")
+    @PostMapping("/system/post/deletePosts")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel deletePosts()  throws Exception {
         logger.info("################post/deletePosts 执行开始 ################# ");
@@ -420,7 +420,7 @@ public class PostController {
      * @author 刘威
      * @date 2018-08-01
      */
-    @PostMapping("/post/listPagePosts")
+    @PostMapping("/system/post/listPagePosts")
     public ResultModel listPagePosts()  throws Exception {
         logger.info("################post/listPagePosts 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -499,7 +499,7 @@ public class PostController {
      *
      * @throws Exception
      */
-    @PostMapping("/post/exportExcelPosts")
+    @PostMapping("/system/post/exportExcelPosts")
     public void exportExcelPosts() throws Exception {
         logger.info("################post/exportExcelPosts 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -542,7 +542,7 @@ public class PostController {
      * @author 陈刚
      * @date 2018-08-28
      */
-    @PostMapping("/post/treeDeptPosts")
+    @PostMapping("/system/post/treeDeptPosts")
     public ResultModel treeDeptPosts()  throws Exception {
         logger.info("################/post/treeDeptPosts 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -590,7 +590,7 @@ public class PostController {
      * @author 陈刚
      * @date 2018-08-28
      */
-    @PostMapping("/post/treeDeptPostsNotMainPost")
+    @PostMapping("/system/post/treeDeptPostsNotMainPost")
     public ResultModel treeDeptPostsNotMainPost() throws Exception {
         logger.info("################/post/treeDeptPosts 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();

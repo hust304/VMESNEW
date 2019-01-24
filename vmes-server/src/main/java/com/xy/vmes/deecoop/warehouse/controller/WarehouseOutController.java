@@ -56,7 +56,7 @@ public class WarehouseOutController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-10-22
     */
-    @GetMapping("/warehouseOut/selectById/{id}")
+    @GetMapping("/warehouse/warehouseOut/selectById/{id}")
     public ResultModel selectById(@PathVariable("id") String id)  throws Exception {
 
         logger.info("################warehouseOut/selectById 执行开始 ################# ");
@@ -76,7 +76,7 @@ public class WarehouseOutController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-10-22
     */
-    @PostMapping("/warehouseOut/save")
+    @PostMapping("/warehouse/warehouseOut/save")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel save()  throws Exception {
 
@@ -96,7 +96,7 @@ public class WarehouseOutController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-10-22
     */
-    @PostMapping("/warehouseOut/update")
+    @PostMapping("/warehouse/warehouseOut/update")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel update()  throws Exception {
 
@@ -117,7 +117,7 @@ public class WarehouseOutController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-10-22
     */
-    @GetMapping("/warehouseOut/deleteById/{id}")
+    @GetMapping("/warehouse/warehouseOut/deleteById/{id}")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteById(@PathVariable("id") String id)  throws Exception {
 
@@ -136,7 +136,7 @@ public class WarehouseOutController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-10-22
     */
-    @PostMapping("/warehouseOut/deleteByIds")
+    @PostMapping("/warehouse/warehouseOut/deleteByIds")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteByIds()  throws Exception {
 
@@ -166,7 +166,7 @@ public class WarehouseOutController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-10-22
     */
-    @PostMapping("/warehouseOut/dataListPage")
+    @PostMapping("/warehouse/warehouseOut/dataListPage")
     public ResultModel dataListPage()  throws Exception {
 
         logger.info("################warehouseOut/dataListPage 执行开始 ################# ");
@@ -189,7 +189,7 @@ public class WarehouseOutController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-10-22
     */
-    @PostMapping("/warehouseOut/dataList")
+    @PostMapping("/warehouse/warehouseOut/dataList")
     public ResultModel dataList()  throws Exception {
 
         logger.info("################warehouseOut/dataList 执行开始 ################# ");
@@ -217,7 +217,7 @@ public class WarehouseOutController {
      * @date 2018-10-16
      * @throws Exception
      */
-    @PostMapping("/warehouseOut/updateWarehouseOut")
+    @PostMapping("/warehouse/warehouseOut/updateWarehouseOut")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel updateWarehouseOut() throws Exception {
         logger.info("################/warehouseOut/updateWarehouseOut 执行开始 ################# ");
@@ -297,7 +297,7 @@ public class WarehouseOutController {
      * @date 2018-10-16
      * @throws Exception
      */
-    @PostMapping("/warehouseOut/addWarehouseOut")
+    @PostMapping("/warehouse/warehouseOut/addWarehouseOut")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel addWarehouseOut() throws Exception {
         logger.info("################/warehouseOut/addWarehouseOut 执行开始 ################# ");
@@ -368,7 +368,7 @@ public class WarehouseOutController {
      * @date 2018-10-16
      * @throws Exception
      */
-    @PostMapping("/warehouseOut/recoveryWarehouseOut")
+    @PostMapping("/warehouse/warehouseOut/recoveryWarehouseOut")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel recoveryWarehouseOut() throws Exception {
         logger.info("################/warehouseOut/recoveryWarehouseOut 执行开始 ################# ");
@@ -417,7 +417,7 @@ public class WarehouseOutController {
      * @date 2018-10-16
      * @throws Exception
      */
-    @PostMapping("/warehouseOut/cancelWarehouseOut")
+    @PostMapping("/warehouse/warehouseOut/cancelWarehouseOut")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel cancelWarehouseOut() throws Exception {
         logger.info("################/warehouseOut/cancelWarehouseOut 执行开始 ################# ");
@@ -468,7 +468,7 @@ public class WarehouseOutController {
      * @date 2018-10-16
      * @throws Exception
      */
-    @PostMapping("/warehouseOut/deleteWarehouseOut")
+    @PostMapping("/warehouse/warehouseOut/deleteWarehouseOut")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteWarehouseOut() throws Exception {
         logger.info("################/warehouseOut/deleteWarehouseOut 执行开始 ################# ");
@@ -513,7 +513,7 @@ public class WarehouseOutController {
     * @author 刘威 自动创建，可以修改
     * @date 2018-10-22
     */
-    @PostMapping("/warehouseOut/listPageWarehouseOuts")
+    @PostMapping("/warehouse/warehouseOut/listPageWarehouseOuts")
     public ResultModel listPageWarehouseOuts()  throws Exception {
 
         logger.info("################warehouseOut/listPageWarehouseOuts 执行开始 ################# ");
@@ -578,7 +578,7 @@ public class WarehouseOutController {
     * @author 刘威 自动创建，可以修改
     * @date 2018-10-22
     */
-    @PostMapping("/warehouseOut/exportExcelWarehouseOuts")
+    @PostMapping("/warehouse/warehouseOut/exportExcelWarehouseOuts")
     public void exportExcelWarehouseOuts() throws Exception {
         logger.info("################warehouseOut/exportExcelWarehouseOuts 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -626,7 +626,7 @@ public class WarehouseOutController {
     * @author 刘威 自动创建，可以修改
     * @date 2018-10-22
     */
-    @PostMapping("/warehouseOut/importExcelWarehouseOuts")
+    @PostMapping("/warehouse/warehouseOut/importExcelWarehouseOuts")
     public ResultModel importExcelWarehouseOuts(@RequestParam(value="excelFile") MultipartFile file) throws Exception  {
         logger.info("################warehouseOut/importExcelWarehouseOuts 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();

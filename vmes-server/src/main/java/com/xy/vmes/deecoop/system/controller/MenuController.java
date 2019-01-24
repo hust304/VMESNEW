@@ -56,7 +56,7 @@ public class MenuController {
     * @author 陈刚 自动创建，禁止修改
     * @date 2018-08-01
     */
-    @GetMapping("/menu/selectById/{id}")
+    @GetMapping("/system/menu/selectById/{id}")
     public ResultModel selectById(@PathVariable("id") String id)  throws Exception {
 
         logger.info("################menu/selectById 执行开始 ################# ");
@@ -76,7 +76,7 @@ public class MenuController {
     * @author 陈刚 自动创建，禁止修改
     * @date 2018-08-01
     */
-    @PostMapping("/menu/save")
+    @PostMapping("/system/menu/save")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel save()  throws Exception {
 
@@ -96,7 +96,7 @@ public class MenuController {
     * @author 陈刚 自动创建，禁止修改
     * @date 2018-08-01
     */
-    @PostMapping("/menu/update")
+    @PostMapping("/system/menu/update")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel update()  throws Exception {
 
@@ -117,7 +117,7 @@ public class MenuController {
     * @author 陈刚 自动创建，禁止修改
     * @date 2018-08-01
     */
-    @GetMapping("/menu/deleteById/{id}")
+    @GetMapping("/system/menu/deleteById/{id}")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteById(@PathVariable("id") String id)  throws Exception {
 
@@ -135,7 +135,7 @@ public class MenuController {
     * @author 陈刚 自动创建，禁止修改
     * @date 2018-08-01
     */
-    @PostMapping("/menu/dataListPage")
+    @PostMapping("/system/menu/dataListPage")
     public ResultModel dataListPage()  throws Exception {
 
         logger.info("################menu/dataListPage 执行开始 ################# ");
@@ -155,7 +155,7 @@ public class MenuController {
     * @author 陈刚 自动创建，禁止修改
     * @date 2018-08-01
     */
-    @PostMapping("/menu/dataList")
+    @PostMapping("/system/menu/dataList")
     public ResultModel dataList()  throws Exception {
 
         logger.info("################menu/dataList 执行开始 ################# ");
@@ -174,7 +174,7 @@ public class MenuController {
     * @author 陈刚 自动创建，禁止修改
     * @date 2018-08-01
     */
-    @GetMapping("/menu/excelExport")
+    @GetMapping("/system/menu/excelExport")
     public void excelExport()  throws Exception {
 
         logger.info("################menu/excelExport 执行开始 ################# ");
@@ -208,7 +208,7 @@ public class MenuController {
      * @author 陈刚
      * @date 2018-08-01
      */
-    @PostMapping("/menu/listPageMenus")
+    @PostMapping("/system/menu/listPageMenus")
     public ResultModel listPageMenus() throws Exception {
         logger.info("################menu/listPageMenus 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -280,7 +280,7 @@ public class MenuController {
      *
      * @throws Exception
      */
-    @GetMapping("/menu/exportExcelMenus")
+    @GetMapping("/system/menu/exportExcelMenus")
     public void exportExcelMenus() throws Exception {
         logger.info("################menu/exportExcelMenus 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -332,7 +332,7 @@ public class MenuController {
      * @author 陈刚
      * @date 2018-08-01
      */
-    @PostMapping("/menu/addMenu")
+    @PostMapping("/system/menu/addMenu")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel addMenu() throws Exception {
         logger.info("################menu/addMenu 执行开始 ################# ");
@@ -429,7 +429,7 @@ public class MenuController {
      * @author 陈刚
      * @date 2018-08-01
      */
-    @PostMapping("/menu/updateMenu")
+    @PostMapping("/system/menu/updateMenu")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel updateMenu() throws Exception {
         logger.info("################menu/updateMenu 执行开始 ################# ");
@@ -522,7 +522,7 @@ public class MenuController {
      * @author 陈刚
      * @date 2018-08-01
      */
-    @PostMapping("/menu/updateDisableMenu")
+    @PostMapping("/system/menu/updateDisableMenu")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel updateDisableMenu() throws Exception {
         logger.info("################menu/updateDisableMenu 执行开始 ################# ");
@@ -577,7 +577,7 @@ public class MenuController {
      * @author 陈刚
      * @date 2018-08-01
      */
-    @PostMapping("/menu/deleteMenus")
+    @PostMapping("/system/menu/deleteMenus")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteMenus() throws Exception {
         logger.info("################menu/deleteMenus 执行开始 ################# ");
@@ -642,7 +642,7 @@ public class MenuController {
 //     * @author 陈刚
 //     * @date 2018-08-01
 //     */
-//    @PostMapping("/menu/exportExcelMenus")
+//    @PostMapping("/system/menu/exportExcelMenus")
 //    public ResultModel exportExcelMenus() throws Exception {
 //        logger.info("################menu/exportExcelMenus 执行开始 ################# ");
 //        Long startTime = System.currentTimeMillis();
@@ -664,7 +664,7 @@ public class MenuController {
      * @author 陈刚
      * @date 2018-08-01
      */
-    @PostMapping("/menu/importExcelMenus")
+    @PostMapping("/system/menu/importExcelMenus")
     public ResultModel importExcelMenus(@RequestParam(value="excelFile") MultipartFile file) {
         logger.info("################menu/importExcelMenus 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -723,8 +723,8 @@ public class MenuController {
      * @author 陈刚
      * @date 2018-08-01
      */
-    //@GetMapping("/menu/treeMeuns")
-    @PostMapping("/menu/treeMeuns")
+    //@GetMapping("/system/menu/treeMeuns")
+    @PostMapping("/system/menu/treeMeuns")
     public ResultModel treeMeuns() {
         logger.info("################menu/treeMeuns 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();

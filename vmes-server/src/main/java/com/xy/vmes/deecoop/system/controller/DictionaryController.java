@@ -54,7 +54,7 @@ public class DictionaryController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-07-31
     */
-    @GetMapping("/dictionary/selectById/{id}")
+    @GetMapping("/system/dictionary/selectById/{id}")
     public ResultModel selectById(@PathVariable("id") String id)  throws Exception {
 
         logger.info("################dictionary/selectById 执行开始 ################# ");
@@ -74,7 +74,7 @@ public class DictionaryController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-07-31
     */
-    @PostMapping("/dictionary/save")
+    @PostMapping("/system/dictionary/save")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel save()  throws Exception {
 
@@ -94,7 +94,7 @@ public class DictionaryController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-07-31
     */
-    @PostMapping("/dictionary/update")
+    @PostMapping("/systemdictionary/update")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel update()  throws Exception {
 
@@ -115,7 +115,7 @@ public class DictionaryController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-07-31
     */
-    @GetMapping("/dictionary/deleteById/{id}")
+    @GetMapping("/system/dictionary/deleteById/{id}")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteById(@PathVariable("id") String id)  throws Exception {
 
@@ -133,7 +133,7 @@ public class DictionaryController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-07-31
     */
-    @PostMapping("/dictionary/dataListPage")
+    @PostMapping("/system/dictionary/dataListPage")
     public ResultModel dataListPage()  throws Exception {
 
         logger.info("################dictionary/dataListPage 执行开始 ################# ");
@@ -153,7 +153,7 @@ public class DictionaryController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-07-31
     */
-    @PostMapping("/dictionary/dataList")
+    @PostMapping("/system/dictionary/dataList")
     public ResultModel dataList()  throws Exception {
 
         logger.info("################dictionary/dataList 执行开始 ################# ");
@@ -172,7 +172,7 @@ public class DictionaryController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-07-31
     */
-    @GetMapping("/dictionary/excelExport")
+    @GetMapping("/system/dictionary/excelExport")
     public void excelExport()  throws Exception {
 
         logger.info("################dictionary/excelExport 执行开始 ################# ");
@@ -203,7 +203,7 @@ public class DictionaryController {
      * @author 刘威
      * @date 2018-07-31
      */
-    @PostMapping("/dictionary/addDictionary")
+    @PostMapping("/system/dictionary/addDictionary")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel addDictionary()  throws Exception {
         logger.info("################dictionary/addDictionary 执行开始 ################# ");
@@ -280,7 +280,7 @@ public class DictionaryController {
      * @author 刘威
      * @date 2018-07-31
      */
-    @PostMapping("/dictionary/updateDictionary")
+    @PostMapping("/system/dictionary/updateDictionary")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel updateDictionary()  throws Exception {
         logger.info("################dictionary/updateDictionary 执行开始 ################# ");
@@ -336,7 +336,7 @@ public class DictionaryController {
      * @author 陈刚
      * @date 2018-07-27
      */
-    @PostMapping("/dictionary/updateDisableDictionary")
+    @PostMapping("/system/dictionary/updateDisableDictionary")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel updateDisableDictionary() throws Exception {
         logger.info("################dictionary/updateDisableDictionary 执行开始 ################# ");
@@ -392,7 +392,7 @@ public class DictionaryController {
      * @author 刘威
      * @date 2018-07-31
      */
-    @PostMapping("/dictionary/deleteDictionarys")
+    @PostMapping("/system/dictionary/deleteDictionarys")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteDictionarys()  throws Exception {
         logger.info("################dictionary/deleteDictionarys 执行开始 ################# ");
@@ -430,7 +430,7 @@ public class DictionaryController {
      * @author 刘威
      * @date 2018-07-31
      */
-    @PostMapping("/dictionary/listPageDictionarys")
+    @PostMapping("/system/dictionary/listPageDictionarys")
     public ResultModel listPageDictionarys()  throws Exception {
 
         logger.info("################dictionary/listPageDictionarys 执行开始 ################# ");
@@ -504,7 +504,7 @@ public class DictionaryController {
      * @author 刘威
      * @date 2018-08-01
      */
-//    @GetMapping("/dictionary/exportExcelDictionarys")
+//    @GetMapping("/system/dictionary/exportExcelDictionarys")
 //    public void exportExcelDictionarys()  throws Exception {
 //
 //        logger.info("################dictionary/exportExcelDictionarys 执行开始 ################# ");
@@ -540,7 +540,7 @@ public class DictionaryController {
      *
      * @throws Exception
      */
-    @PostMapping("/dictionary/exportExcelDictionarys")
+    @PostMapping("/system/dictionary/exportExcelDictionarys")
     public void exportExcelDictionarys() throws Exception {
         logger.info("################dictionary/exportExcelDictionarys 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -582,7 +582,7 @@ public class DictionaryController {
      * @author 刘威
      * @date 2018-07-31
      */
-    @PostMapping("/dictionary/treeDictionarys")
+    @PostMapping("/system/dictionary/treeDictionarys")
     public ResultModel treeDictionarys()  throws Exception {
         logger.info("################dictionary/treeDictionarys 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -622,7 +622,7 @@ public class DictionaryController {
      * @author 刘威
      * @date 2018-07-31
      */
-    @PostMapping("/dictionary/getDictionarys")
+    @PostMapping("/system/dictionary/getDictionarys")
     public ResultModel getDictionarys()  throws Exception {
         logger.info("################dictionary/getDictionarys 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -674,7 +674,7 @@ public class DictionaryController {
      * @author 刘威 自动创建，禁止修改
      * @date 2018-07-31
      */
-    @PostMapping("/dictionary/dataListDictionarys")
+    @PostMapping("/system/dictionary/dataListDictionarys")
     public ResultModel dataListDictionarys()  throws Exception {
 
         logger.info("################dictionary/dataListDictionarys 执行开始 ################# ");

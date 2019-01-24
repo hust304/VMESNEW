@@ -56,7 +56,7 @@ public class EquipmentController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-09-20
     */
-    @GetMapping("/equipment/selectById/{id}")
+    @GetMapping("/base/equipment/selectById/{id}")
     public ResultModel selectById(@PathVariable("id") String id)  throws Exception {
 
         logger.info("################equipment/selectById 执行开始 ################# ");
@@ -76,7 +76,7 @@ public class EquipmentController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-09-20
     */
-    @PostMapping("/equipment/save")
+    @PostMapping("/base/equipment/save")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel save()  throws Exception {
 
@@ -96,7 +96,7 @@ public class EquipmentController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-09-20
     */
-    @PostMapping("/equipment/update")
+    @PostMapping("/base/equipment/update")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel update()  throws Exception {
 
@@ -117,7 +117,7 @@ public class EquipmentController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-09-20
     */
-    @GetMapping("/equipment/deleteById/{id}")
+    @GetMapping("/base/equipment/deleteById/{id}")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteById(@PathVariable("id") String id)  throws Exception {
 
@@ -136,7 +136,7 @@ public class EquipmentController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-09-20
     */
-    @PostMapping("/equipment/deleteByIds")
+    @PostMapping("/base/equipment/deleteByIds")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteByIds()  throws Exception {
 
@@ -166,7 +166,7 @@ public class EquipmentController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-09-20
     */
-    @PostMapping("/equipment/dataListPage")
+    @PostMapping("/base/equipment/dataListPage")
     public ResultModel dataListPage()  throws Exception {
 
         logger.info("################equipment/dataListPage 执行开始 ################# ");
@@ -189,7 +189,7 @@ public class EquipmentController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-09-20
     */
-    @PostMapping("/equipment/dataList")
+    @PostMapping("/base/equipment/dataList")
     public ResultModel dataList()  throws Exception {
 
         logger.info("################equipment/dataList 执行开始 ################# ");
@@ -211,7 +211,7 @@ public class EquipmentController {
     * @author 刘威 自动创建，可以修改
     * @date 2018-09-20
     */
-    @PostMapping("/equipment/listPageEquipments")
+    @PostMapping("/base/equipment/listPageEquipments")
     public ResultModel listPageEquipments()  throws Exception {
 
         logger.info("################equipment/listPageEquipments 执行开始 ################# ");
@@ -276,7 +276,7 @@ public class EquipmentController {
     * @author 刘威 自动创建，可以修改
     * @date 2018-09-20
     */
-    @PostMapping("/equipment/exportExcelEquipments")
+    @PostMapping("/base/equipment/exportExcelEquipments")
     public void exportExcelEquipments() throws Exception {
         logger.info("################equipment/exportExcelEquipments 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -324,7 +324,7 @@ public class EquipmentController {
     * @author 刘威 自动创建，可以修改
     * @date 2018-09-20
     */
-    @PostMapping("/equipment/importExcelEquipments")
+    @PostMapping("/base/equipment/importExcelEquipments")
     public ResultModel importExcelEquipments(@RequestParam(value="excelFile") MultipartFile file) throws Exception  {
         logger.info("################equipment/importExcelEquipments 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -374,7 +374,7 @@ public class EquipmentController {
      * @author 刘威 自动创建，禁止修改
      * @date 2018-09-20
      */
-    @PostMapping("/equipment/addEquipment")
+    @PostMapping("/base/equipment/addEquipment")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel addEquipment()  throws Exception {
 
@@ -404,7 +404,7 @@ public class EquipmentController {
      * @author 刘威 自动创建，禁止修改
      * @date 2018-09-20
      */
-    @PostMapping("/equipment/updateEquipment")
+    @PostMapping("/base/equipment/updateEquipment")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel updateEquipment()  throws Exception {
 

@@ -58,7 +58,7 @@ public class BomController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-09-29
     */
-    @GetMapping("/bom/selectById/{id}")
+    @GetMapping("/base/bom/selectById/{id}")
     public ResultModel selectById(@PathVariable("id") String id)  throws Exception {
 
         logger.info("################bom/selectById 执行开始 ################# ");
@@ -78,7 +78,7 @@ public class BomController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-09-29
     */
-    @PostMapping("/bom/save")
+    @PostMapping("/base/bom/save")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel save()  throws Exception {
 
@@ -98,7 +98,7 @@ public class BomController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-09-29
     */
-    @PostMapping("/bom/update")
+    @PostMapping("/base/bom/update")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel update()  throws Exception {
 
@@ -119,7 +119,7 @@ public class BomController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-09-29
     */
-    @GetMapping("/bom/deleteById/{id}")
+    @GetMapping("/base/bom/deleteById/{id}")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteById(@PathVariable("id") String id)  throws Exception {
 
@@ -138,7 +138,7 @@ public class BomController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-09-29
     */
-    @PostMapping("/bom/deleteByIds")
+    @PostMapping("/base/bom/deleteByIds")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteByIds()  throws Exception {
 
@@ -168,7 +168,7 @@ public class BomController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-09-29
     */
-    @PostMapping("/bom/dataListPage")
+    @PostMapping("/base/bom/dataListPage")
     public ResultModel dataListPage()  throws Exception {
 
         logger.info("################bom/dataListPage 执行开始 ################# ");
@@ -191,7 +191,7 @@ public class BomController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-09-29
     */
-    @PostMapping("/bom/dataList")
+    @PostMapping("/base/bom/dataList")
     public ResultModel dataList()  throws Exception {
 
         logger.info("################bom/dataList 执行开始 ################# ");
@@ -213,7 +213,7 @@ public class BomController {
     * @author 刘威 自动创建，可以修改
     * @date 2018-09-29
     */
-    @PostMapping("/bom/listPageBoms")
+    @PostMapping("/base/bom/listPageBoms")
     public ResultModel listPageBoms()  throws Exception {
 
         logger.info("################bom/listPageBoms 执行开始 ################# ");
@@ -278,7 +278,7 @@ public class BomController {
     * @author 刘威 自动创建，可以修改
     * @date 2018-09-29
     */
-    @PostMapping("/bom/exportExcelBoms")
+    @PostMapping("/base/bom/exportExcelBoms")
     public void exportExcelBoms() throws Exception {
         logger.info("################bom/exportExcelBoms 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -326,7 +326,7 @@ public class BomController {
     * @author 刘威 自动创建，可以修改
     * @date 2018-09-29
     */
-    @PostMapping("/bom/importExcelBoms")
+    @PostMapping("/base/bom/importExcelBoms")
     public ResultModel importExcelBoms(@RequestParam(value="excelFile") MultipartFile file) throws Exception  {
         logger.info("################bom/importExcelBoms 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -377,7 +377,7 @@ public class BomController {
      * @author 刘威 自动创建，禁止修改
      * @date 2018-09-20
      */
-    @PostMapping("/bom/addBom")
+    @PostMapping("/base/bom/addBom")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel addBom()  throws Exception {
 
@@ -434,7 +434,7 @@ public class BomController {
      * @author 刘威 自动创建，禁止修改
      * @date 2018-09-20
      */
-    @PostMapping("/bom/updateBom")
+    @PostMapping("/base/bom/updateBom")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel updateBom()  throws Exception {
 
@@ -454,7 +454,7 @@ public class BomController {
      * @author 刘威 自动创建，禁止修改
      * @date 2018-09-20
      */
-    @PostMapping("/bom/updateIsDefaultBom")
+    @PostMapping("/base/bom/updateIsDefaultBom")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel updateIsDefaultBom()  throws Exception {
 
@@ -478,7 +478,7 @@ public class BomController {
      * @author 刘威 自动创建，禁止修改
      * @date 2018-09-20
      */
-    @PostMapping("/bom/deleteBoms")
+    @PostMapping("/base/bom/deleteBoms")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteBoms()  throws Exception {
         logger.info("################bom/deleteBoms 执行开始 ################# ");

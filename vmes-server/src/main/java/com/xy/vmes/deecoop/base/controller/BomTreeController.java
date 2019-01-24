@@ -49,7 +49,7 @@ public class BomTreeController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-10-09
     */
-    @GetMapping("/bomTree/selectById/{id}")
+    @GetMapping("/base/bomTree/selectById/{id}")
     public ResultModel selectById(@PathVariable("id") String id)  throws Exception {
 
         logger.info("################bomTree/selectById 执行开始 ################# ");
@@ -69,7 +69,7 @@ public class BomTreeController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-10-09
     */
-    @PostMapping("/bomTree/save")
+    @PostMapping("/base/bomTree/save")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel save()  throws Exception {
 
@@ -89,7 +89,7 @@ public class BomTreeController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-10-09
     */
-    @PostMapping("/bomTree/update")
+    @PostMapping("/base/bomTree/update")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel update()  throws Exception {
 
@@ -110,7 +110,7 @@ public class BomTreeController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-10-09
     */
-    @GetMapping("/bomTree/deleteById/{id}")
+    @GetMapping("/base/bomTree/deleteById/{id}")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteById(@PathVariable("id") String id)  throws Exception {
 
@@ -129,7 +129,7 @@ public class BomTreeController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-10-09
     */
-    @PostMapping("/bomTree/deleteByIds")
+    @PostMapping("/base/bomTree/deleteByIds")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteByIds()  throws Exception {
 
@@ -159,7 +159,7 @@ public class BomTreeController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-10-09
     */
-    @PostMapping("/bomTree/dataListPage")
+    @PostMapping("/base/bomTree/dataListPage")
     public ResultModel dataListPage()  throws Exception {
 
         logger.info("################bomTree/dataListPage 执行开始 ################# ");
@@ -182,7 +182,7 @@ public class BomTreeController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-10-09
     */
-    @PostMapping("/bomTree/dataList")
+    @PostMapping("/base/bomTree/dataList")
     public ResultModel dataList()  throws Exception {
 
         logger.info("################bomTree/dataList 执行开始 ################# ");
@@ -204,7 +204,7 @@ public class BomTreeController {
     * @author 刘威 自动创建，可以修改
     * @date 2018-10-09
     */
-    @PostMapping("/bomTree/listPageBomTrees")
+    @PostMapping("/base/bomTree/listPageBomTrees")
     public ResultModel listPageBomTrees()  throws Exception {
 
         logger.info("################bomTree/listPageBomTrees 执行开始 ################# ");
@@ -269,7 +269,7 @@ public class BomTreeController {
     * @author 刘威 自动创建，可以修改
     * @date 2018-10-09
     */
-    @PostMapping("/bomTree/exportExcelBomTrees")
+    @PostMapping("/base/bomTree/exportExcelBomTrees")
     public void exportExcelBomTrees() throws Exception {
         logger.info("################bomTree/exportExcelBomTrees 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -317,7 +317,7 @@ public class BomTreeController {
     * @author 刘威 自动创建，可以修改
     * @date 2018-10-09
     */
-    @PostMapping("/bomTree/importExcelBomTrees")
+    @PostMapping("/base/bomTree/importExcelBomTrees")
     public ResultModel importExcelBomTrees(@RequestParam(value="excelFile") MultipartFile file) throws Exception  {
         logger.info("################bomTree/importExcelBomTrees 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -368,7 +368,7 @@ public class BomTreeController {
      * @author 刘威
      * @date 2018-07-31
      */
-    @PostMapping("/bomTree/getBomTree")
+    @PostMapping("/base/bomTree/getBomTree")
     public ResultModel getBomTree()  throws Exception {
         logger.info("################/bomTree/getBomTree 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -396,7 +396,7 @@ public class BomTreeController {
      * @author 刘威 自动创建，禁止修改
      * @date 2018-09-20
      */
-    @PostMapping("/bomTree/addBomTree")
+    @PostMapping("/base/bomTree/addBomTree")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel addBomTree()  throws Exception {
 
@@ -422,7 +422,7 @@ public class BomTreeController {
      * @author 刘威 自动创建，禁止修改
      * @date 2018-09-20
      */
-    @PostMapping("/bomTree/updateBomTree")
+    @PostMapping("/base/bomTree/updateBomTree")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel updateBomTree()  throws Exception {
 
@@ -466,7 +466,7 @@ public class BomTreeController {
      * @author 刘威 自动创建，禁止修改
      * @date 2018-09-20
      */
-    @PostMapping("/bomTree/deleteBomTree")
+    @PostMapping("/base/bomTree/deleteBomTree")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteBomTree()  throws Exception {
         logger.info("################bomTree/deleteBomTree 执行开始 ################# ");

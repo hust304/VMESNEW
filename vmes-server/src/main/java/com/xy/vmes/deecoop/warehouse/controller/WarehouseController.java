@@ -53,7 +53,7 @@ public class WarehouseController {
     * @author 陈刚 自动创建，禁止修改
     * @date 2018-10-10
     */
-    @PostMapping("/warehouseBase/save")
+    @PostMapping("/warehouse/warehouseBase/save")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel save()  throws Exception {
 
@@ -73,7 +73,7 @@ public class WarehouseController {
     * @author 陈刚 自动创建，禁止修改
     * @date 2018-10-10
     */
-    @PostMapping("/warehouseBase/update")
+    @PostMapping("/warehouse/warehouseBase/update")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel update()  throws Exception {
 
@@ -94,7 +94,7 @@ public class WarehouseController {
     * @author 陈刚 自动创建，禁止修改
     * @date 2018-10-10
     */
-    @PostMapping("/warehouseBase/deleteById/{id}")
+    @PostMapping("/warehouse/warehouseBase/deleteById/{id}")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteById(@PathVariable("id") String id)  throws Exception {
 
@@ -113,7 +113,7 @@ public class WarehouseController {
     * @author 陈刚 自动创建，禁止修改
     * @date 2018-10-10
     */
-    @PostMapping("/warehouseBase/deleteByIds")
+    @PostMapping("/warehouse/warehouseBase/deleteByIds")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteByIds()  throws Exception {
 
@@ -142,7 +142,7 @@ public class WarehouseController {
     * @author 陈刚 自动创建，禁止修改
     * @date 2018-10-10
     */
-    @PostMapping("/warehouseBase/dataList")
+    @PostMapping("/warehouse/warehouseBase/dataList")
     public ResultModel dataList()  throws Exception {
 
         logger.info("################/warehouseBase/dataList 执行开始 ################# ");
@@ -168,7 +168,7 @@ public class WarehouseController {
      * @author 陈刚
      * @date 2018-10-10
      */
-    @PostMapping("/warehouseBase/treeWarehouse")
+    @PostMapping("/warehouse/warehouseBase/treeWarehouse")
     public ResultModel treeWarehouse() throws Exception {
         logger.info("################warehouseBase/treeWarehouse 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -219,7 +219,7 @@ public class WarehouseController {
     * @author 陈刚
     * @date 2018-10-10
     */
-    @PostMapping("/warehouseBase/listPageWarehouse")
+    @PostMapping("/warehouse/warehouseBase/listPageWarehouse")
     public ResultModel listPageWarehouse() throws Exception {
         logger.info("################/warehouseBase/listPageWarehouse 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -281,7 +281,7 @@ public class WarehouseController {
     }
 
     //获取全部仓库货位记录，同时带出该(货位,货品)库存数量
-    @PostMapping("/warehouseBase/findListWarehouseByWarehouseProduct")
+    @PostMapping("/warehouse/warehouseBase/findListWarehouseByWarehouseProduct")
     public ResultModel findListWarehouseByWarehouseProduct() throws Exception {
         logger.info("################/warehouseBase/findListWarehouseByWarehouseProduct 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -359,7 +359,7 @@ public class WarehouseController {
      * @date 2018-10-10
      * @throws Exception
      */
-    @PostMapping("/warehouseBase/addWarehouseByEntity")
+    @PostMapping("/warehouse/warehouseBase/addWarehouseByEntity")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel addWarehouseByEntity() throws Exception {
         logger.info("################/warehouseBase/addWarehouseByEntity 执行开始 ################# ");
@@ -448,7 +448,7 @@ public class WarehouseController {
      * @date 2018-10-10
      * @throws Exception
      */
-    @PostMapping("/warehouseBase/addWarehouseByVirtual")
+    @PostMapping("/warehouse/warehouseBase/addWarehouseByVirtual")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel addWarehouseByVirtual() throws Exception {
         logger.info("################/warehouseBase/addWarehouseByVirtual 执行开始 ################# ");
@@ -535,7 +535,7 @@ public class WarehouseController {
      * @date 2018-10-10
      * @throws Exception
      */
-    @PostMapping("/warehouseBase/addWarehousePosition")
+    @PostMapping("/warehouse/warehouseBase/addWarehousePosition")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel addWarehousePosition() throws Exception {
         logger.info("################/warehouseBase/addWarehousePosition 执行开始 ################# ");
@@ -635,7 +635,7 @@ public class WarehouseController {
      * @date 2018-10-10
      * @throws Exception
      */
-    @PostMapping("/warehouseBase/addWarehousePositionByRange")
+    @PostMapping("/warehouse/warehouseBase/addWarehousePositionByRange")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel addWarehousePositionByRange() throws Exception {
         logger.info("################/warehouseBase/addWarehousePositionByRange 执行开始 ################# ");
@@ -719,7 +719,7 @@ public class WarehouseController {
      * @date 2018-10-10
      * @throws Exception
      */
-    @PostMapping("/warehouseBase/updateWarehouseByEntity")
+    @PostMapping("/warehouse/warehouseBase/updateWarehouseByEntity")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel updateWarehouseByEntity() throws Exception {
         logger.info("################/warehouseBase/updateWarehouseByEntity 执行开始 ################# ");
@@ -787,7 +787,7 @@ public class WarehouseController {
      * @date 2018-10-10
      * @throws Exception
      */
-    @PostMapping("/warehouseBase/updateWarehouseByVirtual")
+    @PostMapping("/warehouse/warehouseBase/updateWarehouseByVirtual")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel updateWarehouseByVirtual() throws Exception {
         logger.info("################/warehouseBase/updateWarehouseByVirtual 执行开始 ################# ");
@@ -861,7 +861,7 @@ public class WarehouseController {
      * @date 2018-10-10
      * @throws Exception
      */
-    @PostMapping("/warehouseBase/updateWarehousePositionByName")
+    @PostMapping("/warehouse/warehouseBase/updateWarehousePositionByName")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel updateWarehousePositionByName() throws Exception {
         logger.info("################/warehouseBase/updateWarehousePositionByName 执行开始 ################# ");
@@ -927,7 +927,7 @@ public class WarehouseController {
      * @date 2018-10-10
      * @throws Exception
      */
-    @PostMapping("/warehouseBase/deleteWarehouse")
+    @PostMapping("/warehouse/warehouseBase/deleteWarehouse")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteWarehouse() throws Exception {
         logger.info("################/warehouseBase/deleteWarehouse 执行开始 ################# ");
@@ -957,7 +957,7 @@ public class WarehouseController {
     * @author 陈刚 自动创建，可以修改
     * @date 2018-10-10
     */
-    @PostMapping("/warehouseBase/exportExcelWarehouse")
+    @PostMapping("/warehouse/warehouseBase/exportExcelWarehouse")
     public void exportExcelWarehouse() throws Exception {
         logger.info("################/warehouseBase/exportExcelWarehouse 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -1005,7 +1005,7 @@ public class WarehouseController {
     * @author 陈刚 自动创建，可以修改
     * @date 2018-10-10
     */
-    @PostMapping("/warehouseBase/importExcelWarehouse")
+    @PostMapping("/warehouse/warehouseBase/importExcelWarehouse")
     public ResultModel importExcelWarehouse(@RequestParam(value="excelFile") MultipartFile file) throws Exception  {
         logger.info("################/warehouseBase/importExcelWarehouse 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();

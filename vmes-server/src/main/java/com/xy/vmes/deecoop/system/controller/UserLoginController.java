@@ -105,7 +105,7 @@ public class UserLoginController {
      * 创建人：陈刚
      * 创建时间：2018-07-20
      */
-    @PostMapping("/userLogin/loginIn")
+    @PostMapping("/system/userLogin/loginIn")
     public ResultModel loginIn() throws Exception {
         logger.info("################userLogin/loginIn 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -298,7 +298,7 @@ public class UserLoginController {
      * 创建人：陈刚
      * 创建时间：2018-07-24
      */
-    @PostMapping("/userLogin/createSecurityCode")
+    @PostMapping("/system/userLogin/createSecurityCode")
     public ResultModel createSecurityCode() {
         logger.info("################userLogin/createSecurityCode 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -327,7 +327,7 @@ public class UserLoginController {
      *
      * @return
      */
-    @PostMapping("/userLogin/changePassWord")
+    @PostMapping("/system/userLogin/changePassWord")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel changePassWord() throws Exception {
         logger.info("################userLogin/changePassWord 执行开始 ################# ");
@@ -393,7 +393,7 @@ public class UserLoginController {
      * 创建时间：2018-07-25
      * @return
      */
-    @PostMapping("/userLogin/findPassWord")
+    @PostMapping("/system/userLogin/findPassWord")
     public ResultModel findPassWord() throws Exception {
         logger.info("################userLogin/findPassWord 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -498,7 +498,7 @@ public class UserLoginController {
      * 创建时间：2018-07-25
      * @return
      */
-    @PostMapping("/userLogin/loginOut")
+    @PostMapping("/system/userLogin/loginOut")
     public ResultModel loginOut() {
         logger.info("################userLogin/loginOut 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -535,7 +535,7 @@ public class UserLoginController {
      * Redis缓存Key:(uuid:用户ID:企业ID:deecoop:userLoginMap)
      * @return
      */
-//    @GetMapping("/userLogin/test_findAllRedisKeyByUserID")
+//    @GetMapping("/system/userLogin/test_findAllRedisKeyByUserID")
 //    public ResultModel test_findAllRedisKeyByUserID() {
 //        logger.info("################userLogin/test_findAllRedisKeyByUserID 执行开始 ################# ");
 //        Long startTime = System.currentTimeMillis();
@@ -589,7 +589,7 @@ public class UserLoginController {
      * Redis缓存Key:(uuid:用户ID:企业ID:deecoop:userLoginMap)
      * @return
      */
-//    @GetMapping("/userLogin/test_findAllRedisKeyByUuid")
+//    @GetMapping("/system/userLogin/test_findAllRedisKeyByUuid")
 //    public ResultModel test_findAllRedisKeyByUuid() {
 //        logger.info("################userLogin/test_findAllRedisKeyByUuid 执行开始 ################# ");
 //        Long startTime = System.currentTimeMillis();
@@ -642,7 +642,7 @@ public class UserLoginController {
      * Redis缓存Key:(uuid:用户ID:企业ID:deecoop:userLoginMap)
      * @return
      */
-    @GetMapping("/userLogin/test_findAllRedisKeyByCodeKey")
+    @GetMapping("/system/userLogin/test_findAllRedisKeyByCodeKey")
     public ResultModel test_findAllRedisKeyByCodeKey() {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
@@ -702,7 +702,7 @@ public class UserLoginController {
         return model;
     }
 
-    @GetMapping("/userLogin/test_removeRedisKeyByCodeKey")
+    @GetMapping("/system/userLogin/test_removeRedisKeyByCodeKey")
     public ResultModel test_removeRedisKeyByCodeKey() {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
@@ -753,7 +753,7 @@ public class UserLoginController {
      * Redis缓存Key:(uuid:用户ID:企业ID:deecoop:userLoginMap)
      * @return
      */
-//    @GetMapping("/userLogin/test_removeRedisKeyByUserID")
+//    @GetMapping("/system/userLogin/test_removeRedisKeyByUserID")
 //    public ResultModel test_removeRedisKeyByUserID() {
 //        logger.info("################userLogin/test_removeRedisKeyByUserID 执行开始 ################# ");
 //        Long startTime = System.currentTimeMillis();
@@ -785,7 +785,7 @@ public class UserLoginController {
      * Redis缓存Key:(uuid:用户ID:企业ID:deecoop:userLoginMap)
      * @return
      */
-//    @GetMapping("/userLogin/test_removeRedisKeyByUuid")
+//    @GetMapping("/system/userLogin/test_removeRedisKeyByUuid")
 //    public ResultModel test_removeRedisKeyByUuid() {
 //        logger.info("################userLogin/test_removeRedisKeyByUuid 执行开始 ################# ");
 //        Long startTime = System.currentTimeMillis();
@@ -812,7 +812,7 @@ public class UserLoginController {
 //        return model;
 //    }
 
-    @GetMapping("/userLogin/test_findRedisJsonStringBySessionID")
+    @GetMapping("/system/userLogin/test_findRedisJsonStringBySessionID")
     public ResultModel test_findRedisJsonStringBySessionID() {
         logger.info("################userLogin/test_findRedisJsonStringBySessionID 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();

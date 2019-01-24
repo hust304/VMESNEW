@@ -62,7 +62,7 @@ public class UserController {
      * @author 刘威 自动创建，禁止修改
      * @date 2018-07-26
      */
-    @GetMapping("/user/selectById/{id}")
+    @GetMapping("/system/user/selectById/{id}")
     public ResultModel selectById(@PathVariable("id") String id)  throws Exception {
 
         logger.info("################user/selectById 执行开始 ################# ");
@@ -82,7 +82,7 @@ public class UserController {
      * @author 刘威 自动创建，禁止修改
      * @date 2018-07-26
      */
-    @PostMapping("/user/save")
+    @PostMapping("/system/user/save")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel save()  throws Exception {
 
@@ -102,7 +102,7 @@ public class UserController {
      * @author 刘威 自动创建，禁止修改
      * @date 2018-07-26
      */
-    @PostMapping("/user/update")
+    @PostMapping("/system/user/update")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel update()  throws Exception {
 
@@ -123,7 +123,7 @@ public class UserController {
      * @author 刘威 自动创建，禁止修改
      * @date 2018-07-26
      */
-    @GetMapping("/user/deleteById/{id}")
+    @GetMapping("/system/user/deleteById/{id}")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteById(@PathVariable("id") String id)  throws Exception {
 
@@ -141,7 +141,7 @@ public class UserController {
      * @author 刘威 自动创建，禁止修改
      * @date 2018-07-26
      */
-    @PostMapping("/user/dataListPage")
+    @PostMapping("/system/user/dataListPage")
     public ResultModel dataListPage()  throws Exception {
 
         logger.info("################user/dataListPage 执行开始 ################# ");
@@ -161,7 +161,7 @@ public class UserController {
      * @author 刘威 自动创建，禁止修改
      * @date 2018-07-26
      */
-    @PostMapping("/user/dataList")
+    @PostMapping("/system/user/dataList")
     public ResultModel dataList()  throws Exception {
 
         logger.info("################user/dataList 执行开始 ################# ");
@@ -180,7 +180,7 @@ public class UserController {
      * @author 刘威 自动创建，禁止修改
      * @date 2018-07-26
      */
-    @GetMapping("/user/excelExport")
+    @GetMapping("/system/user/excelExport")
     public void excelExport()  throws Exception {
 
         logger.info("################user/excelExport 执行开始 ################# ");
@@ -212,7 +212,7 @@ public class UserController {
      * @author 刘威 创建用户并且分配角色
      * @date 2018-07-26
      */
-    @PostMapping("/user/addUser")
+    @PostMapping("/system/user/addUser")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel addUser()  throws Exception {
         logger.info("################user/addUser 执行开始 ################# ");
@@ -342,7 +342,7 @@ public class UserController {
      * @author 刘威 修改用户及角色信息
      * @date 2018-07-26
      */
-    @PostMapping("/user/updateUser")
+    @PostMapping("/system/user/updateUser")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel updateUser()  throws Exception {
         logger.info("################user/updateUser 执行开始 ################# ");
@@ -462,7 +462,7 @@ public class UserController {
      * @author 刘威 批量重置密码
      * @date 2018-07-26
      */
-    @PostMapping("/user/updatePasswords")
+    @PostMapping("/system/user/updatePasswords")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel updatePasswords()  throws Exception {
 
@@ -510,7 +510,7 @@ public class UserController {
      * @author 刘威 解除当前用户绑定员工
      * @date 2018-07-26
      */
-    @PostMapping("/user/updateEmployeeUserUnbind")
+    @PostMapping("/system/user/updateEmployeeUserUnbind")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel updateEmployeeUserUnbind()  throws Exception {
 
@@ -546,7 +546,7 @@ public class UserController {
      * @author 刘威 当前用户绑定员工
      * @date 2018-07-26
      */
-    @PostMapping("/user/updateEmployeeUserBind")
+    @PostMapping("/system/user/updateEmployeeUserBind")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel updateEmployeeUserBind() throws Exception {
 
@@ -619,7 +619,7 @@ public class UserController {
      * @author 刘威 查询公司用户使用情况
      * @date 2018-07-26
      */
-    @PostMapping("/user/selectCountUserNum")
+    @PostMapping("/system/user/selectCountUserNum")
     public ResultModel selectCountUserNum()  throws Exception {
 
         logger.info("################user/selectCountUserNum 执行开始 ################# ");
@@ -654,7 +654,7 @@ public class UserController {
      * @author 刘威 修改用户及角色信息
      * @date 2018-07-26
      */
-    @PostMapping("/user/deleteUsers")
+    @PostMapping("/system/user/deleteUsers")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteUsers()  throws Exception {
 
@@ -699,7 +699,7 @@ public class UserController {
      * @author 刘威 用户列表分页
      * @date 2018-07-26
      */
-    @PostMapping("/user/listPageUsers")
+    @PostMapping("/system/user/listPageUsers")
     public ResultModel listPageUsers()  throws Exception {
 
         logger.info("################user/listPageUsers 执行开始 ################# ");
@@ -776,7 +776,7 @@ public class UserController {
      *
      * @throws Exception
      */
-    @PostMapping("/user/exportExcelUsers")
+    @PostMapping("/system/user/exportExcelUsers")
     public void exportExcelUsers() throws Exception {
         logger.info("################user/exportExcelUsers 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -819,7 +819,7 @@ public class UserController {
 //     * @author 刘威 自动创建，禁止修改
 //     * @date 2018-07-26
 //     */
-//    @GetMapping("/user/exportExcelUsers")
+//    @GetMapping("/system/user/exportExcelUsers")
 //    public void exportExcelUsers()  throws Exception {
 //
 //        logger.info("################user/exportExcelUsers 执行开始 ################# ");

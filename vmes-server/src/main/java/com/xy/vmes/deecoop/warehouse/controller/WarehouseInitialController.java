@@ -55,7 +55,7 @@ public class WarehouseInitialController {
     * @author 陈刚 自动创建，可以修改
     * @date 2018-11-20
     */
-    @PostMapping("/warehouseInitial/listPageWarehouseInitial")
+    @PostMapping("/warehouse/warehouseInitial/listPageWarehouseInitial")
     public ResultModel listPageWarehouseInitial()  throws Exception {
         logger.info("################warehouseInitial/listPageWarehouseInitial 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -126,7 +126,7 @@ public class WarehouseInitialController {
      * @date 2018-11-20
      * @throws Exception
      */
-    @PostMapping("/warehouseInitial/initialWarehouse")
+    @PostMapping("/warehouse/warehouseInitial/initialWarehouse")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel initialWarehouse() throws Exception {
         logger.info("################/warehouseInitial/initialWarehouse 执行开始 ################# ");
@@ -156,7 +156,7 @@ public class WarehouseInitialController {
      * @date 2018-10-16
      * @throws Exception
      */
-    @PostMapping("/warehouseInitial/updateWarehouseProduct")
+    @PostMapping("/warehouse/warehouseInitial/updateWarehouseProduct")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel updateWarehouseProduct() throws Exception {
         logger.info("################/warehouseInitial/updateWarehouseProduct 执行开始 ################# ");
@@ -231,7 +231,7 @@ public class WarehouseInitialController {
      * @date 2018-10-16
      * @throws Exception
      */
-    @PostMapping("/warehouseInitial/deleteWarehouseProduct")
+    @PostMapping("/warehouse/warehouseInitial/deleteWarehouseProduct")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteWarehouseProduct() throws Exception {
         logger.info("################/warehouseInitial/deleteWarehouseProduct 执行开始 ################# ");
@@ -278,7 +278,7 @@ public class WarehouseInitialController {
     * @author 陈刚 自动创建，可以修改
     * @date 2018-11-20
     */
-    @PostMapping("/warehouseInitial/exportExcelWarehouseInitial")
+    @PostMapping("/warehouse/warehouseInitial/exportExcelWarehouseInitial")
     public void exportExcelWarehouseInitial() throws Exception {
         logger.info("################warehouseInitial/exportExcelWarehouseInitial 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -326,7 +326,7 @@ public class WarehouseInitialController {
     * @author 陈刚 自动创建，可以修改
     * @date 2018-11-20
     */
-    @PostMapping("/warehouseInitial/importExcelWarehouseInitial")
+    @PostMapping("/warehouse/warehouseInitial/importExcelWarehouseInitial")
     public ResultModel importExcelWarehouseInitial(@RequestParam(value="excelFile") MultipartFile file) throws Exception  {
         logger.info("################warehouseInitial/importExcelWarehouseInitial 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();

@@ -50,7 +50,7 @@ public class WarehouseOutExecutorController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-11-01
     */
-    @GetMapping("/warehouseOutExecutor/selectById/{id}")
+    @GetMapping("/warehouse/warehouseOutExecutor/selectById/{id}")
     public ResultModel selectById(@PathVariable("id") String id)  throws Exception {
 
         logger.info("################warehouseOutExecutor/selectById 执行开始 ################# ");
@@ -70,7 +70,7 @@ public class WarehouseOutExecutorController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-11-01
     */
-    @PostMapping("/warehouseOutExecutor/save")
+    @PostMapping("/warehouse/warehouseOutExecutor/save")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel save()  throws Exception {
 
@@ -90,7 +90,7 @@ public class WarehouseOutExecutorController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-11-01
     */
-    @PostMapping("/warehouseOutExecutor/update")
+    @PostMapping("/warehouse/warehouseOutExecutor/update")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel update()  throws Exception {
 
@@ -111,7 +111,7 @@ public class WarehouseOutExecutorController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-11-01
     */
-    @GetMapping("/warehouseOutExecutor/deleteById/{id}")
+    @GetMapping("/warehouse/warehouseOutExecutor/deleteById/{id}")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteById(@PathVariable("id") String id)  throws Exception {
 
@@ -130,7 +130,7 @@ public class WarehouseOutExecutorController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-11-01
     */
-    @PostMapping("/warehouseOutExecutor/deleteByIds")
+    @PostMapping("/warehouse/warehouseOutExecutor/deleteByIds")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteByIds()  throws Exception {
 
@@ -160,7 +160,7 @@ public class WarehouseOutExecutorController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-11-01
     */
-    @PostMapping("/warehouseOutExecutor/dataListPage")
+    @PostMapping("/warehouse/warehouseOutExecutor/dataListPage")
     public ResultModel dataListPage()  throws Exception {
 
         logger.info("################warehouseOutExecutor/dataListPage 执行开始 ################# ");
@@ -183,7 +183,7 @@ public class WarehouseOutExecutorController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-11-01
     */
-    @PostMapping("/warehouseOutExecutor/dataList")
+    @PostMapping("/warehouse/warehouseOutExecutor/dataList")
     public ResultModel dataList()  throws Exception {
 
         logger.info("################warehouseOutExecutor/dataList 执行开始 ################# ");
@@ -210,7 +210,7 @@ public class WarehouseOutExecutorController {
      * @author 刘威 自动创建，禁止修改
      * @date 2018-11-01
      */
-    @PostMapping("/warehouseOutExecutor/updateExecutor")
+    @PostMapping("/warehouse/warehouseOutExecutor/updateExecutor")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel updateExecutor()  throws Exception {
 
@@ -269,7 +269,7 @@ public class WarehouseOutExecutorController {
     * @author 刘威 自动创建，可以修改
     * @date 2018-11-01
     */
-    @PostMapping("/warehouseOutExecutor/listPageWarehouseOutExecutors")
+    @PostMapping("/warehouse/warehouseOutExecutor/listPageWarehouseOutExecutors")
     public ResultModel listPageWarehouseOutExecutors()  throws Exception {
 
         logger.info("################warehouseOutExecutor/listPageWarehouseOutExecutors 执行开始 ################# ");
@@ -334,7 +334,7 @@ public class WarehouseOutExecutorController {
     * @author 刘威 自动创建，可以修改
     * @date 2018-11-01
     */
-    @PostMapping("/warehouseOutExecutor/exportExcelWarehouseOutExecutors")
+    @PostMapping("/warehouse/warehouseOutExecutor/exportExcelWarehouseOutExecutors")
     public void exportExcelWarehouseOutExecutors() throws Exception {
         logger.info("################warehouseOutExecutor/exportExcelWarehouseOutExecutors 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -382,7 +382,7 @@ public class WarehouseOutExecutorController {
     * @author 刘威 自动创建，可以修改
     * @date 2018-11-01
     */
-    @PostMapping("/warehouseOutExecutor/importExcelWarehouseOutExecutors")
+    @PostMapping("/warehouse/warehouseOutExecutor/importExcelWarehouseOutExecutors")
     public ResultModel importExcelWarehouseOutExecutors(@RequestParam(value="excelFile") MultipartFile file) throws Exception  {
         logger.info("################warehouseOutExecutor/importExcelWarehouseOutExecutors 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();

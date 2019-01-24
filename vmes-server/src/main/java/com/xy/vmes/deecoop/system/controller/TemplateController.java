@@ -46,7 +46,7 @@ public class TemplateController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-08-23
     */
-    @GetMapping("/template/selectById/{id}")
+    @GetMapping("/system/template/selectById/{id}")
     public ResultModel selectById(@PathVariable("id") String id)  throws Exception {
 
         logger.info("################template/selectById 执行开始 ################# ");
@@ -66,7 +66,7 @@ public class TemplateController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-08-23
     */
-    @PostMapping("/template/save")
+    @PostMapping("/system/template/save")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel save()  throws Exception {
 
@@ -86,7 +86,7 @@ public class TemplateController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-08-23
     */
-    @PostMapping("/template/update")
+    @PostMapping("/system/template/update")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel update()  throws Exception {
 
@@ -107,7 +107,7 @@ public class TemplateController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-08-23
     */
-    @GetMapping("/template/deleteById/{id}")
+    @GetMapping("/system/template/deleteById/{id}")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteById(@PathVariable("id") String id)  throws Exception {
 
@@ -126,7 +126,7 @@ public class TemplateController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-08-23
     */
-    @PostMapping("/template/deleteByIds")
+    @PostMapping("/system/template/deleteByIds")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteByIds()  throws Exception {
 
@@ -156,7 +156,7 @@ public class TemplateController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-08-23
     */
-    @PostMapping("/template/dataListPage")
+    @PostMapping("/system/template/dataListPage")
     public ResultModel dataListPage()  throws Exception {
 
         logger.info("################template/dataListPage 执行开始 ################# ");
@@ -179,7 +179,7 @@ public class TemplateController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-08-23
     */
-    @PostMapping("/template/dataList")
+    @PostMapping("/system/template/dataList")
     public ResultModel dataList()  throws Exception {
 
         logger.info("################template/dataList 执行开始 ################# ");
@@ -334,7 +334,7 @@ public class TemplateController {
      * @author 刘威 自动创建，可以修改
      * @date 2018-08-23
      */
-    @PostMapping("/template/listPageTemplates")
+    @PostMapping("/system/template/listPageTemplates")
     public ResultModel listPageTemplates()  throws Exception {
 
         logger.info("################template/listPageTemplates 执行开始 ################# ");
@@ -409,7 +409,7 @@ public class TemplateController {
      *
      * @throws Exception
      */
-    @PostMapping("/template/exportExcelTemplates")
+    @PostMapping("/system/template/exportExcelTemplates")
     public void exportExcelTemplates() throws Exception {
         logger.info("################template/exportExcelTemplates 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -461,7 +461,7 @@ public class TemplateController {
     * @author 刘威 自动创建，可以修改
     * @date 2018-08-23
     */
-    @PostMapping("/template/importExcelTemplates")
+    @PostMapping("/system/template/importExcelTemplates")
     public ResultModel importExcelTemplates(@RequestParam(value="excelFile") MultipartFile file) throws Exception  {
         logger.info("################template/importExcelTemplates 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();

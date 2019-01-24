@@ -67,7 +67,7 @@ public class RoleController {
     * @author 陈刚 自动创建，禁止修改
     * @date 2018-07-30
     */
-    @GetMapping("/role/selectById/{id}")
+    @GetMapping("/system/role/selectById/{id}")
     public ResultModel selectById(@PathVariable("id") String id)  throws Exception {
 
         logger.info("################role/selectById 执行开始 ################# ");
@@ -87,7 +87,7 @@ public class RoleController {
     * @author 陈刚 自动创建，禁止修改
     * @date 2018-07-30
     */
-    @PostMapping("/role/save")
+    @PostMapping("/system/role/save")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel save()  throws Exception {
 
@@ -107,7 +107,7 @@ public class RoleController {
     * @author 陈刚 自动创建，禁止修改
     * @date 2018-07-30
     */
-    @PostMapping("/role/update")
+    @PostMapping("/system/role/update")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel update()  throws Exception {
 
@@ -128,7 +128,7 @@ public class RoleController {
     * @author 陈刚 自动创建，禁止修改
     * @date 2018-07-30
     */
-    @GetMapping("/role/deleteById/{id}")
+    @GetMapping("/system/role/deleteById/{id}")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteById(@PathVariable("id") String id)  throws Exception {
 
@@ -146,7 +146,7 @@ public class RoleController {
     * @author 陈刚 自动创建，禁止修改
     * @date 2018-07-30
     */
-    @PostMapping("/role/dataListPage")
+    @PostMapping("/system/role/dataListPage")
     public ResultModel dataListPage()  throws Exception {
 
         logger.info("################role/dataListPage 执行开始 ################# ");
@@ -166,7 +166,7 @@ public class RoleController {
     * @author 陈刚 自动创建，禁止修改
     * @date 2018-07-30
     */
-    @PostMapping("/role/dataList")
+    @PostMapping("/system/role/dataList")
     public ResultModel dataList()  throws Exception {
 
         logger.info("################role/dataList 执行开始 ################# ");
@@ -185,7 +185,7 @@ public class RoleController {
     * @author 陈刚 自动创建，禁止修改
     * @date 2018-07-30
     */
-    @GetMapping("/role/excelExport")
+    @GetMapping("/system/role/excelExport")
     public void excelExport()  throws Exception {
 
         logger.info("################role/excelExport 执行开始 ################# ");
@@ -215,7 +215,7 @@ public class RoleController {
      * @author 陈刚
      * @date 2018-07-30
      */
-    @PostMapping("/role/listPageRoles")
+    @PostMapping("/system/role/listPageRoles")
     public ResultModel listPageRoles() throws Exception{
         logger.info("################role/listPageRoles 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -288,7 +288,7 @@ public class RoleController {
      *
      * @throws Exception
      */
-    @PostMapping("/role/exportExcelRoles")
+    @PostMapping("/system/role/exportExcelRoles")
     public void exportExcelRoles() throws Exception {
         logger.info("################role/exportExcelRoles 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -335,7 +335,7 @@ public class RoleController {
      * @author 陈刚
      * @date 2018-07-30
      */
-    @PostMapping("/role/addRole")
+    @PostMapping("/system/role/addRole")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel addRole() throws Exception {
         logger.info("################role/addRole 执行开始 ################# ");
@@ -412,7 +412,7 @@ public class RoleController {
      * @author 陈刚
      * @date 2018-07-30
      */
-    @PostMapping("/role/updateRole")
+    @PostMapping("/system/role/updateRole")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel updateRole() throws Exception {
         logger.info("################role/updateRole 执行开始 ################# ");
@@ -466,7 +466,7 @@ public class RoleController {
      * @author 陈刚
      * @date 2018-07-30
      */
-    @PostMapping("/role/updateDisableRole")
+    @PostMapping("/system/role/updateDisableRole")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel updateDisableRole() throws Exception {
         logger.info("################role/updateDisableRole 执行开始 ################# ");
@@ -518,7 +518,7 @@ public class RoleController {
      * @author 陈刚
      * @date 2018-07-30
      */
-    @PostMapping("/role/deleteRoles")
+    @PostMapping("/system/role/deleteRoles")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteRoles() throws Exception {
         logger.info("################role/deleteRoles 执行开始 ################# ");
@@ -568,7 +568,7 @@ public class RoleController {
      * @author 陈刚
      * @date 2018-07-30
      */
-//    @PostMapping("/role/importExcelRoles")
+//    @PostMapping("/system/role/importExcelRoles")
 //    public ResultModel importExcelRoles() {
 //        ResultModel model = new ResultModel();
 //        PageData pageData = HttpUtils.parsePageData();
@@ -580,7 +580,7 @@ public class RoleController {
 //     * @author 陈刚
 //     * @date 2018-07-30
 //     */
-//    @PostMapping("/role/exportExcelRoles")
+//    @PostMapping("/system/role/exportExcelRoles")
 //    public ResultModel exportExcelRoles() {
 //        ResultModel model = new ResultModel();
 //        PageData pageData = HttpUtils.parsePageData();
@@ -593,7 +593,7 @@ public class RoleController {
      * @author 陈刚
      * @date 2018-07-30
      */
-    @PostMapping("/role/saveRoleUsers")
+    @PostMapping("/system/role/saveRoleUsers")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel saveRoleUsers() throws Exception {
         logger.info("################role/saveRoleUsers 执行开始 ################# ");
@@ -631,7 +631,7 @@ public class RoleController {
      * @author 陈刚
      * @date 2018-07-30
      */
-    @PostMapping("/role/saveRoleMeuns")
+    @PostMapping("/system/role/saveRoleMeuns")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel saveRoleMeuns() throws Exception {
         logger.info("################role/saveRoleMeuns 执行开始 ################# ");
@@ -687,7 +687,7 @@ public class RoleController {
      * @author 陈刚
      * @date 2018-08-23
      */
-    @PostMapping("/role/treeRoleMeunsAll")
+    @PostMapping("/system/role/treeRoleMeunsAll")
     public ResultModel treeRoleMeunsAll() {
         logger.info("################role/treeRoleMeunsAll 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -743,7 +743,7 @@ public class RoleController {
      * @author 陈刚
      * @date 2018-07-30
      */
-    @PostMapping("/role/treeRoleMeunsSelected")
+    @PostMapping("/system/role/treeRoleMeunsSelected")
     public ResultModel treeRoleMeunsSelected() {
         logger.info("################role/treeRoleMeunsSelected 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -789,7 +789,7 @@ public class RoleController {
      * @author 陈刚
      * @date 2018-07-30
      */
-    @PostMapping("/role/listRoleMeunsButtonsAll")
+    @PostMapping("/system/role/listRoleMeunsButtonsAll")
     public ResultModel listRoleMeunsButtonsAll() {
         ResultModel model = new ResultModel();
 
@@ -830,7 +830,7 @@ public class RoleController {
      * @author 陈刚
      * @date 2018-07-30
      */
-    @PostMapping("/role/saveRoleMeunsButtons")
+    @PostMapping("/system/role/saveRoleMeunsButtons")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel saveRoleMeunsButtons() throws Exception {
         logger.info("################role/saveRoleMeunsButtons 执行开始 ################# ");
@@ -892,7 +892,7 @@ public class RoleController {
      * @author 陈刚 自动创建，禁止修改
      * @date 2018-07-30
      */
-    @PostMapping("/role/dataListRoles")
+    @PostMapping("/system/role/dataListRoles")
     public ResultModel dataListRoles()  throws Exception {
 
         logger.info("################role/dataListRoles 执行开始 ################# ");
@@ -914,7 +914,7 @@ public class RoleController {
      * @author 陈刚
      * @date 2018-07-30
      */
-    @PostMapping("/role/listAllUsersByDeptId")
+    @PostMapping("/system/role/listAllUsersByDeptId")
     public ResultModel listAllUsersByDeptId() throws Exception{
         logger.info("################role/listAllUsersByDeptId 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -1003,7 +1003,7 @@ public class RoleController {
      * @author 陈刚
      * @date 2018-07-30
      */
-    @PostMapping("/role/listUsersByRole")
+    @PostMapping("/system/role/listUsersByRole")
     public ResultModel listUsersByRole() throws Exception{
         logger.info("################role/listUsersByRole 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -1076,7 +1076,7 @@ public class RoleController {
      * @author 陈刚
      * @date 2018-07-30
      */
-    @PostMapping("/role/findListUserByRole")
+    @PostMapping("/system/role/findListUserByRole")
     public ResultModel findListUserByRole() throws Exception {
         logger.info("################role/findListUserByRole 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -1114,7 +1114,7 @@ public class RoleController {
      * @author 陈刚
      * @date 2018-07-30
      */
-    @PostMapping("/role/getRoles")
+    @PostMapping("/system/role/getRoles")
     public ResultModel getRoles() throws Exception{
         logger.info("################role/getRoles 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -1146,7 +1146,7 @@ public class RoleController {
         return model;
     }
 
-    @PostMapping("/role/addRoleByName")
+    @PostMapping("/system/role/addRoleByName")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel addRoleByName() throws Exception {
         logger.info("################role/addRoleByName 执行开始 ################# ");

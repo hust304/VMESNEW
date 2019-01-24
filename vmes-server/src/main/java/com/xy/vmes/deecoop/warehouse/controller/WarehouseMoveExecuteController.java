@@ -56,7 +56,7 @@ public class WarehouseMoveExecuteController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-11-16
     */
-    @GetMapping("/warehouseMoveExecute/selectById/{id}")
+    @GetMapping("/warehouse/warehouseMoveExecute/selectById/{id}")
     public ResultModel selectById(@PathVariable("id") String id)  throws Exception {
 
         logger.info("################warehouseMoveExecute/selectById 执行开始 ################# ");
@@ -76,7 +76,7 @@ public class WarehouseMoveExecuteController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-11-16
     */
-    @PostMapping("/warehouseMoveExecute/save")
+    @PostMapping("/warehouse/warehouseMoveExecute/save")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel save()  throws Exception {
 
@@ -96,7 +96,7 @@ public class WarehouseMoveExecuteController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-11-16
     */
-    @PostMapping("/warehouseMoveExecute/update")
+    @PostMapping("/warehouse/warehouseMoveExecute/update")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel update()  throws Exception {
 
@@ -117,7 +117,7 @@ public class WarehouseMoveExecuteController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-11-16
     */
-    @GetMapping("/warehouseMoveExecute/deleteById/{id}")
+    @GetMapping("/warehouse/warehouseMoveExecute/deleteById/{id}")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteById(@PathVariable("id") String id)  throws Exception {
 
@@ -136,7 +136,7 @@ public class WarehouseMoveExecuteController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-11-16
     */
-    @PostMapping("/warehouseMoveExecute/deleteByIds")
+    @PostMapping("/warehouse/warehouseMoveExecute/deleteByIds")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteByIds()  throws Exception {
 
@@ -166,7 +166,7 @@ public class WarehouseMoveExecuteController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-11-16
     */
-    @PostMapping("/warehouseMoveExecute/dataListPage")
+    @PostMapping("/warehouse/warehouseMoveExecute/dataListPage")
     public ResultModel dataListPage()  throws Exception {
 
         logger.info("################warehouseMoveExecute/dataListPage 执行开始 ################# ");
@@ -189,7 +189,7 @@ public class WarehouseMoveExecuteController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-11-16
     */
-    @PostMapping("/warehouseMoveExecute/dataList")
+    @PostMapping("/warehouse/warehouseMoveExecute/dataList")
     public ResultModel dataList()  throws Exception {
 
         logger.info("################warehouseMoveExecute/dataList 执行开始 ################# ");
@@ -216,7 +216,7 @@ public class WarehouseMoveExecuteController {
      * @date 2018-10-16
      * @throws Exception
      */
-    @PostMapping("/warehouseMoveExecute/executeWarehouseMoveExecute")
+    @PostMapping("/warehouse/warehouseMoveExecute/executeWarehouseMoveExecute")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel executeWarehouseMoveExecute() throws Exception {
         logger.info("################/warehouseMoveExecute/executeWarehouseMoveExecute 执行开始 ################# ");
@@ -235,7 +235,7 @@ public class WarehouseMoveExecuteController {
      * @date 2018-10-16
      * @throws Exception
      */
-    @PostMapping("/warehouseMoveExecute/deleteWarehouseMoveExecute")
+    @PostMapping("/warehouse/warehouseMoveExecute/deleteWarehouseMoveExecute")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteWarehouseMoveExecute() throws Exception {
         logger.info("################/warehouseMoveExecute/deleteWarehouseMoveExecute 执行开始 ################# ");
@@ -339,7 +339,7 @@ public class WarehouseMoveExecuteController {
      * @date 2018-10-16
      * @throws Exception
      */
-    @PostMapping("/warehouseMoveExecute/updateWarehouseMoveExecute")
+    @PostMapping("/warehouse/warehouseMoveExecute/updateWarehouseMoveExecute")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel updateWarehouseMoveExecute() throws Exception {
         logger.info("################/warehouseMoveExecute/updateWarehouseMoveExecute 执行开始 ################# ");
@@ -447,7 +447,7 @@ public class WarehouseMoveExecuteController {
     * @author 刘威 自动创建，可以修改
     * @date 2018-11-16
     */
-    @PostMapping("/warehouseMoveExecute/listPageWarehouseMoveExecutes")
+    @PostMapping("/warehouse/warehouseMoveExecute/listPageWarehouseMoveExecutes")
     public ResultModel listPageWarehouseMoveExecutes()  throws Exception {
 
         logger.info("################warehouseMoveExecute/listPageWarehouseMoveExecutes 执行开始 ################# ");
@@ -512,7 +512,7 @@ public class WarehouseMoveExecuteController {
     * @author 刘威 自动创建，可以修改
     * @date 2018-11-16
     */
-    @PostMapping("/warehouseMoveExecute/exportExcelWarehouseMoveExecutes")
+    @PostMapping("/warehouse/warehouseMoveExecute/exportExcelWarehouseMoveExecutes")
     public void exportExcelWarehouseMoveExecutes() throws Exception {
         logger.info("################warehouseMoveExecute/exportExcelWarehouseMoveExecutes 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -560,7 +560,7 @@ public class WarehouseMoveExecuteController {
     * @author 刘威 自动创建，可以修改
     * @date 2018-11-16
     */
-    @PostMapping("/warehouseMoveExecute/importExcelWarehouseMoveExecutes")
+    @PostMapping("/warehouse/warehouseMoveExecute/importExcelWarehouseMoveExecutes")
     public ResultModel importExcelWarehouseMoveExecutes(@RequestParam(value="excelFile") MultipartFile file) throws Exception  {
         logger.info("################warehouseMoveExecute/importExcelWarehouseMoveExecutes 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
