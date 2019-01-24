@@ -13,7 +13,7 @@
         detail.product_id productId,
         detail.id detailId,
         win.id parentId,
-        type.name typeType,
+        type.name typeName,
         win.dept_name deptName,
         round(detail.count,2) taskCount,
         round(sum(ifnull(execute.count,0)),2) taskDone,

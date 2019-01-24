@@ -4,6 +4,10 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.Common;
 import com.xy.vmes.deecoop.warehouse.dao.WarehouseInMapper;
 import com.xy.vmes.entity.WarehouseIn;
+import com.xy.vmes.entity.WarehouseInDetail;
+import com.xy.vmes.entity.WarehouseMove;
+import com.xy.vmes.entity.WarehouseMoveDetail;
+import com.xy.vmes.service.WarehouseInDetailService;
 import com.xy.vmes.service.WarehouseInService;
 import com.yvan.PageData;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +28,9 @@ public class WarehouseInServiceImp implements WarehouseInService {
 
     @Autowired
     private WarehouseInMapper warehouseInMapper;
+
+    @Autowired
+    private WarehouseInDetailService warehouseInDetailService;
 
     /**
     * 创建人：陈刚 自动创建，禁止修改
@@ -188,6 +195,50 @@ public class WarehouseInServiceImp implements WarehouseInService {
         }
 
         return msgBuf.toString();
+    }
+
+    @Override
+    public void updateState(String id) throws Exception {
+        WarehouseIn warehouseIn = this.findWarehouseInById(id);
+        int yqx = 0;//已取消
+        int dpd = 0;//待派单
+        int zxz = 0;//执行中
+        int ywc = 0;//已完成
+        if(warehouseIn!=null){
+            List<WarehouseInDetail> detailList = warehouseInDetailService.findWarehouseInDetailListByParentId(id);
+            if(detailList!=null&&detailList.size()>0){
+                for(int i=0;i<detailList.size();i++){
+                    WarehouseInDetail warehouseInDetail = detailList.get(i);
+                    if("-1".equals(warehouseInDetail.getState())){
+                        yqx = yqx + 1;
+                    }else if("0".equals(warehouseInDetail.getState())){
+                        dpd = dpd + 1;
+                    }else if("1".equals(warehouseInDetail.getState())){
+                        zxz = zxz + 1;
+                    }else if("2".equals(warehouseInDetail.getState())){
+                        ywc = ywc + 1;
+                    }
+                }
+            }else{
+                //如果当前出库单没有明细则自动删除当前出库单
+                this.deleteById(id);
+                return;
+            }
+            //该出库单明细状态全是已取消状态，则说明当前出库单状态为已取消
+            if(yqx>0&&dpd==0&&zxz==0&&ywc==0){
+                warehouseIn.setState("-1");//已取消
+            }
+            //该出库单明细状态全是已完成和已取消状态，则说明当前出库单状态为已完成
+            else if(ywc>0&&yqx>=0&&zxz==0&&dpd==0){
+                warehouseIn.setState("1");//已完成
+            }
+            //除了以上两种特殊情况，其他情况下的出库单状态均为未完成
+            else{
+                warehouseIn.setState("0");//未完成
+            }
+            this.update(warehouseIn);
+        }
+
     }
 }
 

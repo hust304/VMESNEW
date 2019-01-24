@@ -84,6 +84,8 @@ public interface WarehouseInService {
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
     String checkColumn(WarehouseIn object);
+
+    void updateState(String id) throws Exception;
 }
 
 

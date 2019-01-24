@@ -8,6 +8,7 @@ import com.xy.vmes.service.*;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.YvanUtil;
+import com.yvan.springmvc.ResultModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -285,6 +286,7 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
         warehouseIn.setId(parentId);
         this.updateParentStateByDetailList(warehouseIn, detailList, null);
     }
+
 
     /**
      * 根据入库单明细状态-反写入库单状态

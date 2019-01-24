@@ -75,6 +75,7 @@ public class MobileWarehouseOutServiceImp implements MobileWarehouseOutService {
 
     @Override
     public ResultModel rebackWarehouseOutDetail(PageData pd) throws Exception {
+        pd.put("id",pd.getString("detailId"));
         return warehouseOutDetailService.rebackWarehouseOutDetail(pd);
     }
 

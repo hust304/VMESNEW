@@ -9,10 +9,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -31,20 +33,40 @@ public class MobileWarehouseMoveController {
 
         logger.info("################/mobile/mobileWarehouseMove/findWarehouseMoveByDetailId 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
-
-        List<Map> varList = mobileWarehouseMoveService.findWarehouseMove(pd);
-        if(varList!=null&&varList.size()>0){
-            model.putResult(varList.get(0));
-        }else {
-            model.putCode("1");
-            model.putMsg("未查到任何数据！");
-        }
+        ResultModel model = mobileWarehouseMoveService.findWarehouseMove(pd);
         Long endTime = System.currentTimeMillis();
         logger.info("################/mobile/mobileWarehouseMove/findWarehouseMoveByDetailId 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
 
     }
+
+
+
+    @PostMapping("/mobile/mobileWarehouseMove/addWarehouseMoveExecute")
+    @Transactional
+    public ResultModel addWarehouseMoveExecute() throws Exception {
+        logger.info("################/mobile/mobileWarehouseMove/addWarehouseMoveExecute执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pageData = HttpUtils.parsePageData();
+        ResultModel model = mobileWarehouseMoveService.addWarehouseMoveExecute(pageData);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/mobile/mobileWarehouseMove/addWarehouseMoveExecute执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+    @PostMapping("/mobile/mobileWarehouseMove/rebackWarehouseMoveDetail")
+    @Transactional
+    public ResultModel rebackWarehouseMoveDetail() throws Exception {
+        logger.info("################/mobile/mobileWarehouseMove/rebackWarehouseMoveDetail执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pageData = HttpUtils.parsePageData();
+        ResultModel model = mobileWarehouseMoveService.rebackWarehouseMoveDetail(pageData);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/mobile/mobileWarehouseMove/rebackWarehouseMoveDetail执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
 
 }

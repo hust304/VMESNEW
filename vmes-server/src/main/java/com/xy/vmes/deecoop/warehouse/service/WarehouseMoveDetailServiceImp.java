@@ -1,17 +1,22 @@
 package com.xy.vmes.deecoop.warehouse.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.common.util.Common;
 import com.xy.vmes.deecoop.warehouse.dao.WarehouseMoveDetailMapper;
-import com.xy.vmes.entity.WarehouseMove;
-import com.xy.vmes.entity.WarehouseMoveDetail;
-import com.xy.vmes.service.WarehouseMoveDetailService;
+import com.xy.vmes.entity.*;
+import com.xy.vmes.exception.TableVersionException;
+import com.xy.vmes.service.*;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
+import com.yvan.springmvc.ResultModel;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import com.yvan.Conv;
@@ -29,6 +34,17 @@ public class WarehouseMoveDetailServiceImp implements WarehouseMoveDetailService
     @Autowired
     private WarehouseMoveDetailMapper warehouseMoveDetailMapper;
 
+    @Autowired
+    private WarehouseMoveService warehouseMoveService;
+
+    @Autowired
+    private WarehouseMoveExecuteService warehouseMoveExecuteService;
+
+    @Autowired
+    private WarehouseMoveExecutorService warehouseMoveExecutorService;
+
+    @Autowired
+    private WarehouseProductService warehouseProductService;
     /**
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-11-16
@@ -280,6 +296,107 @@ public class WarehouseMoveDetailServiceImp implements WarehouseMoveDetailService
         findMap.put("mapSize", Integer.valueOf(findMap.size()));
 
         return this.findWarehouseMoveDetail(findMap);
+    }
+
+    @Override
+    public ResultModel rebackWarehouseMoveDetail(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+
+        String detailId = pageData.getString("id");
+        String currentUserId = pageData.getString("currentUserId");
+        String currentCompanyId = pageData.getString("currentCompanyId");
+        String rebackBill = pageData.getString("rebackBillReason");
+
+        Map columnMap = new HashMap();
+        columnMap.put("detail_id",detailId);
+        columnMap.put("executor_id",currentUserId);
+        columnMap.put("isdisable","1");
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        //取消出库执行人并记录退单原因
+        List<WarehouseMoveExecutor> warehouseMoveExecutorList = warehouseMoveExecutorService.selectByColumnMap(columnMap);
+        if(warehouseMoveExecutorList!=null&&warehouseMoveExecutorList.size()>0){
+            for(int i=0;i<warehouseMoveExecutorList.size();i++){
+                WarehouseMoveExecutor warehouseMoveExecutor = warehouseMoveExecutorList.get(i);
+                if(StringUtils.isEmpty(warehouseMoveExecutor.getRemark())){
+                    warehouseMoveExecutor.setRemark("退单原因:"+rebackBill+" 操作时间："+ dateFormat.format(new Date()));
+                }else {
+                    warehouseMoveExecutor.setRemark(warehouseMoveExecutor.getRemark()+"  退单原因:"+rebackBill+" 操作时间："+ dateFormat.format(new Date()));
+                }
+                warehouseMoveExecutor.setIsdisable("0");
+                warehouseMoveExecutorService.update(warehouseMoveExecutor);
+            }
+        }
+        //取消出库记录并记录退单原因
+        List<WarehouseMoveExecute> warehouseMoveExecuteList = warehouseMoveExecuteService.selectByColumnMap(columnMap);
+        if(warehouseMoveExecuteList!=null&&warehouseMoveExecuteList.size()>0){
+            for(int i=0;i<warehouseMoveExecuteList.size();i++){
+                WarehouseMoveExecute warehouseMoveExecute = warehouseMoveExecuteList.get(i);
+                warehouseMoveExecute.setIsdisable("0");
+                if(StringUtils.isEmpty(warehouseMoveExecute.getRemark())){
+                    warehouseMoveExecute.setRemark("退单原因:"+rebackBill+" 操作时间："+ dateFormat.format(new Date()));
+                }else {
+                    warehouseMoveExecute.setRemark(warehouseMoveExecute.getRemark()+"  退单原因:"+rebackBill+" 操作时间："+ dateFormat.format(new Date()));
+                }
+                warehouseMoveExecuteService.update(warehouseMoveExecute);
+                //取消出库执行
+                try {
+                    //出库操作
+                    WarehouseProduct outObject = warehouseProductService.selectById(warehouseMoveExecute.getWarehouseProductId());
+                    WarehouseProduct inObject = warehouseProductService.selectById(warehouseMoveExecute.getNewWarehouseProductId());
+
+
+                    //库存变更日志
+                    WarehouseLoginfo loginfo = new WarehouseLoginfo();
+                    loginfo.setDetailId(warehouseMoveExecute.getDetailId());
+                    loginfo.setExecuteId(warehouseMoveExecute.getId());
+                    loginfo.setCompanyId(currentCompanyId);
+                    loginfo.setCuser(currentUserId);
+                    //operation 操作类型(add:添加 modify:修改 delete:删除 reback:退单)
+                    loginfo.setOperation("reback");
+
+                    //beforeCount 操作变更前数量(业务相关)
+                    loginfo.setBeforeCount(warehouseMoveExecute.getCount());
+                    //afterCount 操作变更后数量(业务相关)
+                    loginfo.setAfterCount(BigDecimal.ZERO);
+
+                    String msgStr = warehouseProductService.moveStockCount(outObject,inObject,warehouseMoveExecute.getCount().negate(), loginfo);
+                    if (msgStr != null && msgStr.trim().length() > 0) {
+                        model.putCode(Integer.valueOf(1));
+                        model.putMsg(msgStr);
+                        return model;
+                    }
+                } catch (TableVersionException tabExc) {
+                    //库存变更 version 锁
+                    if (Common.SYS_STOCKCOUNT_ERRORCODE.equals(tabExc.getErrorCode())) {
+                        model.putCode(Integer.valueOf(1));
+                        model.putMsg(tabExc.getMessage());
+                        return model;
+                    }
+                }
+            }
+        }
+
+//        //删除推荐库位信息
+//        columnMap = new HashMap();
+//        columnMap.put("detail_id",detailId);
+//        warehouseMoveRecommendService.deleteByColumnMap(columnMap);
+
+        //更新出库单及出库明细状态
+        WarehouseMoveDetail detail = this.selectById(detailId);
+
+        columnMap = new HashMap();
+        columnMap.put("detail_id",detailId);
+        columnMap.put("isdisable","1");
+        List<WarehouseMoveExecutor> checkList = warehouseMoveExecutorService.selectByColumnMap(columnMap);
+
+        //明细状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+        detail.setState("0");
+        detail.setRemark("退单原因:"+rebackBill+" 操作时间："+ dateFormat.format(new Date()));
+        this.update(detail);
+        warehouseMoveService.updateState(detail.getParentId());
+
+        return model;
     }
 
     public WarehouseMoveDetail findWarehouseMoveDetail(PageData object) {

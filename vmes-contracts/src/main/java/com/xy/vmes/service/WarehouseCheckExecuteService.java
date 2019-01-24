@@ -1,8 +1,10 @@
 package com.xy.vmes.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.entity.WarehouseCheckDetail;
 import com.xy.vmes.entity.WarehouseCheckExecute;
 import com.yvan.PageData;
+import com.yvan.springmvc.ResultModel;
 
 import java.util.List;
 import java.util.Map;
@@ -88,6 +90,11 @@ public interface WarehouseCheckExecuteService {
     List<WarehouseCheckExecute> findWarehouseCheckExecuteList(PageData object) throws Exception;
     List<WarehouseCheckExecute> findWarehouseCheckExecuteListByDetailId(String detailId) throws Exception;
 
+    ResultModel addWarehouseCheckExecute(PageData pageData) throws Exception;
+
+    ResultModel rebackWarehouseCheckByDetail(PageData pageData) throws Exception;
+
+    void rebackWarehouseCheck(List<WarehouseCheckDetail> detailList, String rebackBillReason, String cuser) throws Exception;
 }
 
 

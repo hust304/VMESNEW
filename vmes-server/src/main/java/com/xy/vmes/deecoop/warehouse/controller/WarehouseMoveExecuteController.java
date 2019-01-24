@@ -46,8 +46,6 @@ public class WarehouseMoveExecuteController {
     @Autowired
     private WarehouseProductService warehouseProductService;
 
-    @Autowired
-    private ProductService productService;
 
     @Autowired
     private WarehouseMoveDetailService warehouseMoveDetailService;
@@ -223,143 +221,8 @@ public class WarehouseMoveExecuteController {
     public ResultModel executeWarehouseMoveExecute() throws Exception {
         logger.info("################/warehouseMoveExecute/executeWarehouseMoveExecute 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        ResultModel model = new ResultModel();
-
         PageData pageData = HttpUtils.parsePageData();
-        String jsonDataStr = pageData.getString("jsonDataStr");
-        String currentUserId = pageData.getString("currentUserId");
-        String currentCompanyId = pageData.getString("currentCompanyId");
-        List<Map<String, Object>> mapList = (List<Map<String, Object>>) YvanUtil.jsonToList(jsonDataStr);
-
-
-
-        if(mapList!=null&&mapList.size()>0){
-            for(int j=0;j<mapList.size();j++){
-                Map<String, Object> rootMap = mapList.get(j);
-                if(rootMap!=null&&rootMap.get("children")!=null){
-                    String newWarehouseId = (String)rootMap.get("warehouseId");
-                    if(!StringUtils.isEmpty(newWarehouseId)){
-                        //新增推荐库位记录
-                        List childrenList = (List) rootMap.get("children");
-                        if(childrenList!=null&&childrenList.size()>0){
-                            for(int k=0;k<childrenList.size();k++){
-                                Map<String, Object> childrenMap = (Map<String, Object>)childrenList.get(k);
-                                String warehouseProductId = (String)childrenMap.get("warehouseProductId");
-                                String suggestCount = (String)childrenMap.get("suggestCount");
-                                String detailId = (String)childrenMap.get("id");
-                                BigDecimal count = StringUtils.isEmpty(suggestCount)? BigDecimal.ZERO:BigDecimal.valueOf(Double.parseDouble(suggestCount));
-
-
-
-
-                                WarehouseProduct outObject = warehouseProductService.selectById(warehouseProductId);
-
-                                WarehouseProduct inObject = new WarehouseProduct();
-
-                                PageData findMap = new PageData();
-                                findMap.put("code", outObject.getCode());
-                                findMap.put("productId", outObject.getProductId());
-                                findMap.put("warehouseId", newWarehouseId);
-                                findMap.put("mapSize", Integer.valueOf(findMap.size()));
-                                inObject = warehouseProductService.findWarehouseProduct(findMap);
-                                if(inObject==null){
-                                    inObject = new WarehouseProduct();
-                                    String id = Conv.createUuid();
-                                    inObject.setId(id);
-                                    inObject.setCompanyId(outObject.getCompanyId());
-                                    inObject.setCode(outObject.getCode());
-                                    inObject.setProductId(outObject.getProductId());
-                                    inObject.setWarehouseId(newWarehouseId);
-                                    inObject.setCdate(new Date());
-                                    inObject.setQrcode(outObject.getQrcode());
-                                    warehouseProductService.save(inObject);
-                                }
-
-
-                                WarehouseMoveExecute execute = new WarehouseMoveExecute();
-                                execute.setDetailId(detailId);
-                                execute.setExecutorId(currentUserId);
-                                execute.setWarehouseProductId(outObject.getId());
-                                execute.setNewWarehouseProductId(inObject.getId());
-                                execute.setCount(count);
-                                warehouseMoveExecuteService.save(execute);
-
-
-                                //移库执行
-                                try {
-                                    //库存变更日志
-                                    WarehouseLoginfo loginfo = new WarehouseLoginfo();
-                                    loginfo.setParentId("");
-                                    loginfo.setDetailId(execute.getDetailId());
-                                    loginfo.setExecuteId(execute.getId());
-                                    loginfo.setCompanyId(currentCompanyId);
-                                    loginfo.setCuser(currentUserId);
-                                    //operation 操作类型(add:添加 modify:修改 delete:删除 reback:退单)
-                                    loginfo.setOperation("add");
-
-                                    //beforeCount 操作变更前数量(业务相关)
-                                    loginfo.setBeforeCount(BigDecimal.ZERO);
-                                    //afterCount 操作变更后数量(业务相关)
-                                    loginfo.setAfterCount(execute.getCount());
-
-
-                                    String msgStr = warehouseProductService.moveStockCount(outObject,inObject, count, loginfo);
-                                    if (msgStr != null && msgStr.trim().length() > 0) {
-                                        model.putCode(Integer.valueOf(1));
-                                        model.putMsg(msgStr);
-                                        return model;
-                                    }
-                                } catch (TableVersionException tabExc) {
-                                    //库存变更 version 锁
-                                    if (Common.SYS_STOCKCOUNT_ERRORCODE.equals(tabExc.getErrorCode())) {
-                                        model.putCode(Integer.valueOf(1));
-                                        model.putMsg(tabExc.getMessage());
-                                        return model;
-                                    }
-                                }
-
-
-
-
-                                //更新出库单及出库明细状态
-                                WarehouseMoveDetail detail = warehouseMoveDetailService.selectById(detailId);
-
-                                Map columnMap = new HashMap();
-                                columnMap.put("detail_id",detailId);
-                                columnMap.put("isdisable","1");
-                                BigDecimal totalCount = BigDecimal.ZERO;
-                                List<WarehouseMoveExecute> warehouseMoveExecuteList = warehouseMoveExecuteService.selectByColumnMap(columnMap);
-                                if(warehouseMoveExecuteList!=null&&warehouseMoveExecuteList.size()>0){
-                                    for(int i=0;i<warehouseMoveExecuteList.size();i++){
-                                        WarehouseMoveExecute warehouseMoveExecute = warehouseMoveExecuteList.get(i);
-                                        if(warehouseMoveExecute!=null&&warehouseMoveExecute.getCount()!=null){
-                                            totalCount = totalCount.add(warehouseMoveExecute.getCount());
-                                        }
-                                    }
-                                }
-                                //明细状态(0:待派单 1:执行中 2:已完成 -1.已取消)
-                                if(detail.getCount().compareTo(totalCount)>0){
-                                    detail.setState("1");
-                                }else {
-                                    detail.setState("2");
-                                }
-
-                                warehouseMoveDetailService.update(detail);
-                                warehouseMoveService.updateState(detail.getParentId());
-
-
-                            }
-                        }
-
-
-
-                    }
-                }
-
-            }
-        }
-
-
+        ResultModel model = warehouseMoveExecuteService.executeWarehouseMoveExecute(pageData);
         Long endTime = System.currentTimeMillis();
         logger.info("################/warehouseMoveExecute/executeWarehouseMoveExecute 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;

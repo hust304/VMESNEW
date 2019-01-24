@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.entity.WarehouseIn;
 import com.xy.vmes.entity.WarehouseInDetail;
 import com.yvan.PageData;
+import com.yvan.springmvc.ResultModel;
 
 import java.util.List;
 import java.util.Map;
@@ -100,6 +101,7 @@ public interface WarehouseInDetailService {
      * @param detailList
      */
     void updateStateWarehouseInDetail(List<WarehouseInDetail> detailList) throws Exception;
+
 
     /**
      * 根据入库单明细状态-反写入库单状态

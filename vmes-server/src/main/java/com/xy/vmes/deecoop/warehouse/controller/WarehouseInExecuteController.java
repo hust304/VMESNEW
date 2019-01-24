@@ -265,8 +265,38 @@ public class WarehouseInExecuteController {
             warehouseInExecuteService.update(execute);
 
             //C. 修改修改当前入库单明细状态--同时反写入库单状态
-            List<WarehouseInDetail> detailList = warehouseInDetailService.findWarehouseInDetailListByParentId(detail.getParentId());
-            warehouseInDetailService.updateStateWarehouseInDetail(detailList);
+//            List<WarehouseInDetail> detailList = warehouseInDetailService.findWarehouseInDetailListByParentId(detail.getParentId());
+//            warehouseInDetailService.updateStateWarehouseInDetail(detailList);
+
+//            WarehouseInDetail detail = warehouseInDetailService.findWarehouseInDetailById(detailId);
+
+            Map columnMap = new HashMap();
+            columnMap.put("detail_id",detail.getId());
+            columnMap.put("isdisable","1");
+            BigDecimal totalCount = BigDecimal.ZERO;
+            List<WarehouseInExecute> warehouseInExecuteList = warehouseInExecuteService.selectByColumnMap(columnMap);
+            if(warehouseInExecuteList!=null&&warehouseInExecuteList.size()>0){
+                for(int i=0;i<warehouseInExecuteList.size();i++){
+                    WarehouseInExecute warehouseInExecute = warehouseInExecuteList.get(i);
+                    if(warehouseInExecute!=null&&warehouseInExecute.getCount()!=null){
+                        totalCount = totalCount.add(warehouseInExecute.getCount());
+                    }
+                }
+            }
+            Map countResult = new HashMap();
+            //明细状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+            if(detail.getCount().compareTo(totalCount)>0){
+                detail.setState("1");
+                countResult.put("unCompleteCount",(detail.getCount().subtract(totalCount).setScale(2,BigDecimal.ROUND_HALF_UP)).doubleValue());
+            }else {
+                detail.setState("2");
+                countResult.put("unCompleteCount",0.00);
+            }
+            model.putResult(countResult);
+            warehouseInDetailService.update(detail);
+            warehouseInService.updateState(detail.getParentId());
+
+
 
         } catch (TableVersionException tabExc) {
             if (Common.SYS_STOCKCOUNT_ERRORCODE.equals(tabExc.getErrorCode())) {
@@ -360,8 +390,38 @@ public class WarehouseInExecuteController {
             warehouseInExecuteService.update(execute);
 
             //C. 修改修改当前入库单明细状态--同时反写入库单状态
-            List<WarehouseInDetail> detailList = warehouseInDetailService.findWarehouseInDetailListByParentId(detail.getParentId());
-            warehouseInDetailService.updateStateWarehouseInDetail(detailList);
+//            List<WarehouseInDetail> detailList = warehouseInDetailService.findWarehouseInDetailListByParentId(detail.getParentId());
+//            warehouseInDetailService.updateStateWarehouseInDetail(detailList);
+
+
+//            WarehouseInDetail detail = warehouseInDetailService.findWarehouseInDetailById(detailId);
+
+            Map columnMap = new HashMap();
+            columnMap.put("detail_id",detail.getId());
+            columnMap.put("isdisable","1");
+            BigDecimal totalCount = BigDecimal.ZERO;
+            List<WarehouseInExecute> warehouseInExecuteList = warehouseInExecuteService.selectByColumnMap(columnMap);
+            if(warehouseInExecuteList!=null&&warehouseInExecuteList.size()>0){
+                for(int i=0;i<warehouseInExecuteList.size();i++){
+                    WarehouseInExecute warehouseInExecute = warehouseInExecuteList.get(i);
+                    if(warehouseInExecute!=null&&warehouseInExecute.getCount()!=null){
+                        totalCount = totalCount.add(warehouseInExecute.getCount());
+                    }
+                }
+            }
+            Map countResult = new HashMap();
+            //明细状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+            if(detail.getCount().compareTo(totalCount)>0){
+                detail.setState("1");
+                countResult.put("unCompleteCount",(detail.getCount().subtract(totalCount).setScale(2,BigDecimal.ROUND_HALF_UP)).doubleValue());
+            }else {
+                detail.setState("2");
+                countResult.put("unCompleteCount",0.00);
+            }
+            model.putResult(countResult);
+            warehouseInDetailService.update(detail);
+            warehouseInService.updateState(detail.getParentId());
+
 
         } catch (TableVersionException tabExc) {
             if (Common.SYS_STOCKCOUNT_ERRORCODE.equals(tabExc.getErrorCode())) {

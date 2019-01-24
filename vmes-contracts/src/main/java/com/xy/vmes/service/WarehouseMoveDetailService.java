@@ -5,6 +5,7 @@ import com.xy.vmes.entity.WarehouseMove;
 import com.xy.vmes.entity.WarehouseMoveDetail;
 import com.xy.vmes.entity.WarehouseOutDetail;
 import com.yvan.PageData;
+import com.yvan.springmvc.ResultModel;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -130,11 +131,10 @@ public interface WarehouseMoveDetailService {
 
 //    void updateStateByDetail(PageData mapDetail) throws Exception;
 
-    WarehouseMoveDetail findWarehouseMoveDetailById(String detailId);
+    WarehouseMoveDetail findWarehouseMoveDetailById(String detailId) throws Exception;
 
 
-
-
+    ResultModel rebackWarehouseMoveDetail(PageData pageData) throws Exception;
 }
 
 
