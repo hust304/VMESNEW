@@ -10,7 +10,7 @@
     <!-- 手机端获得出库产品详细信息 -->
     <select id="findWarehouseOutByDetailId" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select tab1.productId,tab1.detailId,tab1.parentId,tab1.typeName,tab1.deptName,tab1.productName,tab1.productCode,tab1.spec,
-        tab1.genreName,tab1.unitName,tab1.count,tab1.completeCount,tab1.unCompleteCount,round(sum(ifnull(tab2.stockCount,0)),2) stockCount,tab2.warehouseCode,tab2.pathName,
+        tab1.genreName,tab1.unitName,tab1.taskCount,tab1.completeCount,tab1.unCompleteCount,round(sum(ifnull(tab2.stockCount,0)),2) stockCount,tab2.warehouseCode,tab2.pathName,
         <![CDATA[ case when tab1.unCompleteCount>round(sum(ifnull(tab2.stockCount,0)),2) then round(sum(ifnull(tab2.stockCount,0)),2) else tab1.unCompleteCount end suggestCount ]]>
 
         from(
@@ -25,9 +25,9 @@
         product.spec spec,
         genre.name genreName,
         unit.name unitName,
-        round(detail.count,2) count,
-        round(sum(ifnull(execute.count,0)),2) completeCount,
-        round(detail.count-sum(ifnull(execute.count,0)),2) unCompleteCount
+        round(detail.count,2) taskCount,
+        round(sum(ifnull(outexecute.count,0)),2) completeCount,
+        round(detail.count-sum(ifnull(outexecute.count,0)),2) unCompleteCount
 
         from vmes_warehouse_out_detail detail
         left join vmes_warehouse_out wout on wout.id = detail.parent_id
@@ -36,7 +36,7 @@
         left join vmes_product_unit produnit on produnit.product_id = product .id and produnit.type = 1
         left join vmes_dictionary unit on produnit.unit = unit.id
         left join vmes_dictionary genre on product.genre = genre.id
-        left join vmes_warehouse_out_execute execute on execute.detail_id = detail.id and execute.isdisable = 1
+        left join vmes_warehouse_out_execute outexecute on outexecute.detail_id = detail.id and outexecute.isdisable = 1
         group by detail.id
         ) tab1
         left join

@@ -14,8 +14,8 @@
         detail.id detailId,
         wmove.id parentId,
         round(detail.count,2) taskCount,
-        round(sum(ifnull(execute.count,0)),2) taskDone,
-        round((round(detail.count,2)-(sum(ifnull(execute.count,0)))),2) taskLeft,
+        round(sum(ifnull(moveexecute.count,0)),2) completeCount,
+        round(detail.count-sum(ifnull(moveexecute.count,0)),2) unCompleteCount,
         product.name productName,
         product.code productCode,
         product.spec spec,
@@ -25,15 +25,15 @@
         oldwarehouse.id originWarehouseId,
         oldwarehouse.path_name originPath,
         newwarehouse.id targetWarehouseId,
-        newwarehouse.path_name targetPath
+        newwarehouse.path_name targetPath,
+        detail.warehouse_product_id warehouseProductId
 
         from vmes_warehouse_move_detail detail
         left join vmes_warehouse_move wmove on wmove.id = detail.parent_id
-        left join vmes_warehouse_move_execute execute on execute.detail_id = detail.id
+        left join vmes_warehouse_move_execute moveexecute on moveexecute.detail_id = detail.id and moveexecute.isdisable = 1
         left join vmes_warehouse_product wproduct on detail.warehouse_product_id = wproduct.id
         left join vmes_warehouse oldwarehouse on oldwarehouse.id = wproduct.warehouse_id
-        left join vmes_warehouse_product wproduct2 on execute.new_warehouse_product_id = wproduct2.id
-        left join vmes_warehouse newwarehouse on newwarehouse.id = wproduct2.warehouse_id
+        left join vmes_warehouse newwarehouse on newwarehouse.id = wmove.warehouse_id
         left join vmes_product product on wproduct.product_id = product.id
         left join vmes_product_unit produnit on produnit.product_id = product .id and produnit.type = 1
         left join vmes_dictionary unit on produnit.unit = unit.id

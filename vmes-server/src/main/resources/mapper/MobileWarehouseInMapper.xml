@@ -16,8 +16,8 @@
         type.name typeName,
         win.dept_name deptName,
         round(detail.count,2) taskCount,
-        round(sum(ifnull(execute.count,0)),2) taskDone,
-        round((round(detail.count,2)-(sum(ifnull(execute.count,0)))),2) taskLeft,
+        round(sum(ifnull(inexecute.count,0)),2) completeCount,
+        round(detail.count-sum(ifnull(inexecute.count,0)),2) unCompleteCount,
         product.code productCode,
         product.name productName,
         product.spec spec,
@@ -30,7 +30,7 @@
         from vmes_warehouse_in_detail detail
         left join vmes_warehouse_in win on win.id = detail.parent_id
         left join vmes_dictionary type on win.type = type.id
-        left join vmes_warehouse_in_execute execute on execute.detail_id = detail.id
+        left join vmes_warehouse_in_execute inexecute on inexecute.detail_id = detail.id and inexecute.isdisable = 1
         left join vmes_product product on detail.product_id = product.id
         left join vmes_product_unit produnit on produnit.product_id = product .id and produnit.type = 1
         left join vmes_dictionary unit on produnit.unit = unit.id
