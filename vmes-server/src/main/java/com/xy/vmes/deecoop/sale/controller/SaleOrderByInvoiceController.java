@@ -39,9 +39,9 @@ public class SaleOrderByInvoiceController {
     @Autowired
     private ColumnService columnService;
 
-    @PostMapping("/saleOrder/listPageOrderByInvoice")
+    @PostMapping("/sale/saleOrder/listPageOrderByInvoice")
     public ResultModel listPageOrderByInvoice() throws Exception {
-        logger.info("################saleOrder/listPageOrderByInvoice 执行开始 ################# ");
+        logger.info("################/sale/saleOrder/listPageOrderByInvoice 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
 
         ResultModel model = new ResultModel();
@@ -103,7 +103,7 @@ public class SaleOrderByInvoiceController {
         model.putResult(result);
 
         Long endTime = System.currentTimeMillis();
-        logger.info("################saleOrder/listPageOrderByInvoice 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleOrder/listPageOrderByInvoice 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 

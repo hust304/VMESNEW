@@ -100,16 +100,17 @@
 
             product_id productId,
             state state,
-            product_price productPrice,
             order_unit orderUnit,
+            order_count orderCount,
             price_unit priceUnit,
 
-            count count,
+            price_count priceCount,
+            product_price productPrice,
             sum sum,
             deliver_date deliverDate,
             cuser cuser,
-            cdate cdate,
 
+            cdate cdate,
             uuser uuser,
             udate udate,
             remark remark,
@@ -159,16 +160,17 @@
 
             detail.product_id productId,
             detail.state state,
-            round(ifnull(detail.product_price, 0), 2) productPrice,
             detail.order_unit orderUnit,
+            round(ifnull(detail.order_count, 0), 2) orderCount,
             detail.price_unit priceUnit,
 
-            round(ifnull(detail.count, 0), 2) count,
+            round(ifnull(detail.price_count, 0), 2) priceCount,
+            round(ifnull(detail.product_price, 0), 2) productPrice,
             round(ifnull(detail.sum, 0), 2) sum,
             DATE_FORMAT(detail.deliver_date,'%Y-%m-%d') deliverDate,
             detail.cuser cuser,
-            DATE_FORMAT(detail.cdate,'%Y-%m-%d %T') cdate,
 
+            DATE_FORMAT(detail.cdate,'%Y-%m-%d %T') cdate,
             detail.uuser uuser,
             DATE_FORMAT(detail.udate,'%Y-%m-%d %T') udate,
             detail.remark remark,

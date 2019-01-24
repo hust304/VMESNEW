@@ -52,9 +52,9 @@ public class SaleOrderAuditController {
     @Autowired
     private Producer producer;
 
-    @PostMapping("/saleOrderAudit/listPageSaleOrderDetailByLockStock")
+    @PostMapping("/sale/saleOrderAudit/listPageSaleOrderDetailByLockStock")
     public ResultModel listPageSaleOrderDetailByLockStock() throws Exception {
-        logger.info("################saleOrderAudit/listPageSaleOrderDetailByLockStock 执行开始 ################# ");
+        logger.info("################/sale/saleOrderAudit/listPageSaleOrderDetailByLockStock 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
 
@@ -123,7 +123,7 @@ public class SaleOrderAuditController {
 
         model.putResult(result);
         Long endTime = System.currentTimeMillis();
-        logger.info("################saleOrderAudit/listPageSaleOrderDetailByLockStock 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleOrderAudit/listPageSaleOrderDetailByLockStock 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -135,9 +135,9 @@ public class SaleOrderAuditController {
      * @author 陈刚 自动创建，可以修改
      * @date 2018-12-11
      */
-    @PostMapping("/saleOrderAudit/checkSaleOrderByAudit")
+    @PostMapping("/sale/saleOrderAudit/checkSaleOrderByAudit")
     public ResultModel checkSaleOrderByAudit() throws Exception {
-        logger.info("################saleOrderAudit/checkSaleOrderByAudit 执行开始 ################# ");
+        logger.info("################/sale/saleOrderAudit/checkSaleOrderByAudit 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
 
@@ -185,7 +185,7 @@ public class SaleOrderAuditController {
         }
 
         Long endTime = System.currentTimeMillis();
-        logger.info("################saleOrderAudit/checkSaleOrderByAudit 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleOrderAudit/checkSaleOrderByAudit 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -199,10 +199,10 @@ public class SaleOrderAuditController {
      * @date 2018-12-10
      * @throws Exception
      */
-    @PostMapping("/saleOrderAudit/updateSaleOrderDetailByLockStock")
+    @PostMapping("/sale/saleOrderAudit/updateSaleOrderDetailByLockStock")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel updateSaleOrderDetailByLockStock() throws Exception {
-        logger.info("################saleOrderAudit/updateSaleOrderDetailByLockStock 执行开始 ################# ");
+        logger.info("################/sale/saleOrderAudit/updateSaleOrderDetailByLockStock 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
@@ -272,7 +272,7 @@ public class SaleOrderAuditController {
         }
 
         Long endTime = System.currentTimeMillis();
-        logger.info("################saleOrderAudit/updateSaleOrderDetailByLockStock 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleOrderAudit/updateSaleOrderDetailByLockStock 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -283,10 +283,10 @@ public class SaleOrderAuditController {
      * @date 2018-12-10
      * @throws Exception
      */
-    @PostMapping("/saleOrderAudit/updateSaleOrderByAudit")
+    @PostMapping("/sale/saleOrderAudit/updateSaleOrderByAudit")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel updateSaleOrderByAudit() throws Exception {
-        logger.info("################saleOrderAudit/updateSaleOrderByAudit 执行开始 ################# ");
+        logger.info("################/sale/saleOrderAudit/updateSaleOrderByAudit 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
 
@@ -339,7 +339,7 @@ public class SaleOrderAuditController {
         saleOrderService.update(order);
 
         Long endTime = System.currentTimeMillis();
-        logger.info("################saleOrderAudit/updateSaleOrderByAudit 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleOrderAudit/updateSaleOrderByAudit 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -350,10 +350,10 @@ public class SaleOrderAuditController {
      * @date 2018-12-10
      * @throws Exception
      */
-    @PostMapping("/saleOrderAudit/auditPassSaleOrder")
+    @PostMapping("/sale/saleOrderAudit/auditPassSaleOrder")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel auditPassSaleOrder() throws Exception {
-        logger.info("################saleOrderAudit/auditPassSaleOrder 执行开始 ################# ");
+        logger.info("################/sale/saleOrderAudit/auditPassSaleOrder 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
 
@@ -381,7 +381,7 @@ public class SaleOrderAuditController {
         saleOrderDetailService.updateStateByDetail("3", orderId);
 
         Long endTime = System.currentTimeMillis();
-        logger.info("################saleOrderAudit/auditPassSaleOrder 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleOrderAudit/auditPassSaleOrder 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -393,10 +393,10 @@ public class SaleOrderAuditController {
      * @return
      * @throws Exception
      */
-    @PostMapping("/saleOrderAudit/auditDisagreeSaleOrder")
+    @PostMapping("/sale/saleOrderAudit/auditDisagreeSaleOrder")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel auditDisagreeSaleOrder() throws Exception {
-        logger.info("################/saleOrderAudit/auditDisagreeSaleOrder 执行开始 ################# ");
+        logger.info("################/sale/saleOrderAudit/auditDisagreeSaleOrder 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
 
@@ -441,7 +441,7 @@ public class SaleOrderAuditController {
         saleOrderDetailService.updateStateByDetail("0", orderId);
 
         Long endTime = System.currentTimeMillis();
-        logger.info("################saleOrderAudit/auditDisagreeSaleOrder 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleOrderAudit/auditDisagreeSaleOrder 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 }

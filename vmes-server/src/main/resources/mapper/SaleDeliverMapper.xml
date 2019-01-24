@@ -73,7 +73,19 @@
             (replace(uuid(), '-', ''),'saleDeliver','custPhone','custPhone',0, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'saleDeliver','custAddress','custAddress',0, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'saleDeliver','totalSum','totalSum',0, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleDeliver','parentId','parentId',0, '1','1','1','0',now(), 'admin')
+            (replace(uuid(), '-', ''),'saleDeliver','parentId','parentId',0, '1','1','1','0',now(), 'admin'),
+
+            (replace(uuid(), '-', ''),'saleDeliver','warehouseOutId','warehouseOutId',0, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'saleDeliver','warehouseOutId','warehouseOutId',0, '1','1','1','0',now(), 'admin')
+            (replace(uuid(), '-', ''),'saleDeliver','warehouseOutId','warehouseOutId',0, '1','1','1','0',now(), 'admin')
+            (replace(uuid(), '-', ''),'saleDeliver','warehouseOutId','warehouseOutId',0, '1','1','1','0',now(), 'admin')
+            (replace(uuid(), '-', ''),'saleDeliver','warehouseOutId','warehouseOutId',0, '1','1','1','0',now(), 'admin')
+            (replace(uuid(), '-', ''),'saleDeliver','warehouseOutId','warehouseOutId',0, '1','1','1','0',now(), 'admin')
+
+            out.code,out.deptName,DATE_FORMAT(out.cdate,'%Y-%m-%d') outCdate,
+            type.name outTypeName,
+            warehouse.name warehouseName,
+            user.user_name outMakeName,
 
     </insert>
 
@@ -176,15 +188,37 @@
 
         address.name custAddressName,
         address.phone custMobile,
+
+        <!--获取出库单id-->
+        <if test="'true' == isNeedOutId" >
+            warehouseOut.warehouseOutId,
+            out.code,out.deptName,DATE_FORMAT(out.cdate,'%Y-%m-%d') outCdate,
+            type.name outTypeName,
+            warehouse.name warehouseName,
+            user.user_name outMakeName,
+        </if>
         address.address custAddress
 
         from vmes_sale_deliver deliver
             left join vmes_sale_deliver_detail detail on deliver.id = detail.parent_id
-            left join vmes_sale_order saleOrder on detail.order_id = saleOrder.id
             left join vmes_user makeUser on deliver.make_id = makeUser.id
             left join vmes_customer customer on deliver.customer_id = customer.id
             left join vmes_customer_address address on deliver.custome_address_id = address.id
             left join vmes_dictionary custType on customer.type = custType.id
+            <!--获取出库单id-->
+            <if test="'true' == isNeedOutId" >
+                left join (
+                    select a.parent_id deliverId,b.parent_id warehouseOutId
+                    from vmes_sale_deliver_detail a
+                      left join vmes_warehouse_out_detail b on a.out_detail_id = b.id
+                    group by a.parent_id,b.parent_id
+                ) warehouseOut on deliver.id = warehouseOut.deliverId
+                left join vmes_warehouse_out out on warehouseOut.warehouseOutId = out.id
+                left join vmes_dictionary type on out.type = type.id
+                left join vmes_warehouse warehouse on out.warehouse_id = warehouse.id
+                left join vmes_user user on user.id = warehouseout.make_id
+            </if>
+
         <where>
             <if test="currentCompanyId != null and currentCompanyId != ''" >
                 and deliver.company_id = #{currentCompanyId}
@@ -195,10 +229,10 @@
             <if test="type != null and type != ''" >
                 and deliver.type = #{type}
             </if>
-
             <if test="priceType != null and priceType != ''">
-                and saleOrder.price_type = #{priceType}
+                and deliver.price_type = #{priceType}
             </if>
+
             <if test="waybillCompany != null and waybillCompany != ''">
                 and deliver.waybill_company LIKE CONCAT(CONCAT('%', #{waybillCompany}),'%')
             </if>

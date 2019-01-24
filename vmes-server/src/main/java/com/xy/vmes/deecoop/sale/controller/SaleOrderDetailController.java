@@ -51,9 +51,9 @@ public class SaleOrderDetailController {
     * @author 陈刚 自动创建，可以修改
     * @date 2018-12-05
     */
-    @PostMapping("/saleOrderDetail/listPageSaleOrderDetail")
+    @PostMapping("/sale/saleOrderDetail/listPageSaleOrderDetail")
     public ResultModel listPageSaleOrderDetail() throws Exception {
-        logger.info("################saleOrderDetail/listPageSaleOrderDetail 执行开始 ################# ");
+        logger.info("################/sale/saleOrderDetail/listPageSaleOrderDetail 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
 
@@ -161,7 +161,7 @@ public class SaleOrderDetailController {
 
         model.putResult(result);
         Long endTime = System.currentTimeMillis();
-        logger.info("################saleOrderDetail/listPageSaleOrderDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleOrderDetail/listPageSaleOrderDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -171,10 +171,10 @@ public class SaleOrderDetailController {
      * @date 2018-12-10
      * @throws Exception
      */
-    @PostMapping("/saleOrderDetail/cancelSaleOrderDetail")
+    @PostMapping("/sale/saleOrderDetail/cancelSaleOrderDetail")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel cancelSaleOrderDetail() throws Exception {
-        logger.info("################/saleOrderDetail/cancelSaleOrderDetail 执行开始 ################# ");
+        logger.info("################/sale/saleOrderDetail/cancelSaleOrderDetail 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
 
@@ -214,7 +214,7 @@ public class SaleOrderDetailController {
         }
 
         Long endTime = System.currentTimeMillis();
-        logger.info("################/saleOrderDetail/cancelSaleOrderDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleOrderDetail/cancelSaleOrderDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -224,10 +224,10 @@ public class SaleOrderDetailController {
      * @date 2018-12-10
      * @throws Exception
      */
-    @PostMapping("/saleOrderDetail/deleteSaleOrderDetail")
+    @PostMapping("/sale/saleOrderDetail/deleteSaleOrderDetail")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteSaleOrderDetail() throws Exception {
-        logger.info("################/saleOrderDetail/deleteSaleOrderDetail 执行开始 ################# ");
+        logger.info("################/sale/saleOrderDetail/deleteSaleOrderDetail 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
 
@@ -262,7 +262,7 @@ public class SaleOrderDetailController {
         }
 
         Long endTime = System.currentTimeMillis();
-        logger.info("################/saleOrderDetail/deleteSaleOrderDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleOrderDetail/deleteSaleOrderDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -271,9 +271,9 @@ public class SaleOrderDetailController {
     * @author 陈刚 自动创建，可以修改
     * @date 2018-12-05
     */
-    @PostMapping("/saleOrderDetail/exportExcelSaleOrderDetails")
+    @PostMapping("/sale/saleOrderDetail/exportExcelSaleOrderDetails")
     public void exportExcelSaleOrderDetails() throws Exception {
-        logger.info("################saleOrderDetail/exportExcelSaleOrderDetails 执行开始 ################# ");
+        logger.info("################/sale/saleOrderDetail/exportExcelSaleOrderDetails 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
 
         List<Column> columnList = columnService.findColumnList("saleOrderDetail");
@@ -310,7 +310,7 @@ public class SaleOrderDetailController {
         fileName = new String(fileName.getBytes("utf-8"),"ISO-8859-1");
         ExcelUtil.excelExportByDataList(response, fileName, dataMapList);
         Long endTime = System.currentTimeMillis();
-        logger.info("################saleOrderDetail/exportExcelSaleOrderDetails 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleOrderDetail/exportExcelSaleOrderDetails 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
     }
 
     /**
@@ -319,9 +319,9 @@ public class SaleOrderDetailController {
     * @author 陈刚 自动创建，可以修改
     * @date 2018-12-05
     */
-    @PostMapping("/saleOrderDetail/importExcelSaleOrderDetails")
+    @PostMapping("/sale/saleOrderDetail/importExcelSaleOrderDetails")
     public ResultModel importExcelSaleOrderDetails(@RequestParam(value="excelFile") MultipartFile file) throws Exception  {
-        logger.info("################saleOrderDetail/importExcelSaleOrderDetails 执行开始 ################# ");
+        logger.info("################/sale/saleOrderDetail/importExcelSaleOrderDetails 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
         //HttpServletRequest Request = HttpUtils.currentRequest();
@@ -361,7 +361,7 @@ public class SaleOrderDetailController {
         //5. List<ExcelEntity> --> (转换) List<业务表DB>对象
         //6. 遍历List<业务表DB> 对业务表添加或修改
         Long endTime = System.currentTimeMillis();
-        logger.info("################saleOrderDetail/importExcelSaleOrderDetails 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleOrderDetail/importExcelSaleOrderDetails 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 

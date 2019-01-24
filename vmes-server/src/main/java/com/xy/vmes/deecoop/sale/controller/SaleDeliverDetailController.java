@@ -54,9 +54,9 @@ public class SaleDeliverDetailController {
     * @author 陈刚 自动创建，可以修改
     * @date 2018-12-15
     */
-    @PostMapping("/saleDeliverDetail/listPageSaleDeliverDetail")
+    @PostMapping("/sale/saleDeliverDetail/listPageSaleDeliverDetail")
     public ResultModel listPageSaleDeliverDetail()  throws Exception {
-        logger.info("################saleDeliverDetail/listPageSaleDeliverDetail 执行开始 ################# ");
+        logger.info("################/sale/saleDeliverDetail/listPageSaleDeliverDetail 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
 
@@ -113,7 +113,7 @@ public class SaleDeliverDetailController {
 
         model.putResult(result);
         Long endTime = System.currentTimeMillis();
-        logger.info("################saleDeliverDetail/listPageSaleDeliverDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleDeliverDetail/listPageSaleDeliverDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -132,10 +132,10 @@ public class SaleDeliverDetailController {
      * @date 2018-12-17
      * @throws Exception
      */
-    @PostMapping("/saleDeliverDetail/updateSaleDeliverDetailByPrice")
+    @PostMapping("/sale/saleDeliverDetail/updateSaleDeliverDetailByPrice")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel updateSaleDeliverDetailByPrice() throws Exception {
-        logger.info("################saleDeliverDetail/updateSaleDeliverDetailByPrice 执行开始 ################# ");
+        logger.info("################/sale/saleDeliverDetail/updateSaleDeliverDetailByPrice 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
 
@@ -192,7 +192,7 @@ public class SaleDeliverDetailController {
         saleDeliverService.update(saleDeliver);
 
         Long endTime = System.currentTimeMillis();
-        logger.info("################saleDeliverDetail/updateSaleDeliverDetailByPrice 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleDeliverDetail/updateSaleDeliverDetailByPrice 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -202,9 +202,9 @@ public class SaleDeliverDetailController {
     * @author 陈刚 自动创建，可以修改
     * @date 2018-12-15
     */
-    @PostMapping("/saleDeliverDetail/exportExcelSaleDeliverDetails")
+    @PostMapping("/sale/saleDeliverDetail/exportExcelSaleDeliverDetails")
     public void exportExcelSaleDeliverDetails() throws Exception {
-        logger.info("################saleDeliverDetail/exportExcelSaleDeliverDetails 执行开始 ################# ");
+        logger.info("################/sale/saleDeliverDetail/exportExcelSaleDeliverDetails 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
 
         List<Column> columnList = columnService.findColumnList("saleDeliverDetail");
@@ -241,7 +241,7 @@ public class SaleDeliverDetailController {
         fileName = new String(fileName.getBytes("utf-8"),"ISO-8859-1");
         ExcelUtil.excelExportByDataList(response, fileName, dataMapList);
         Long endTime = System.currentTimeMillis();
-        logger.info("################saleDeliverDetail/exportExcelSaleDeliverDetails 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleDeliverDetail/exportExcelSaleDeliverDetails 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
     }
 
     /**
@@ -250,9 +250,9 @@ public class SaleDeliverDetailController {
     * @author 陈刚 自动创建，可以修改
     * @date 2018-12-15
     */
-    @PostMapping("/saleDeliverDetail/importExcelSaleDeliverDetails")
+    @PostMapping("/sale/saleDeliverDetail/importExcelSaleDeliverDetails")
     public ResultModel importExcelSaleDeliverDetails(@RequestParam(value="excelFile") MultipartFile file) throws Exception  {
-        logger.info("################saleDeliverDetail/importExcelSaleDeliverDetails 执行开始 ################# ");
+        logger.info("################/sale/saleDeliverDetail/importExcelSaleDeliverDetails 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
         //HttpServletRequest Request = HttpUtils.currentRequest();
@@ -292,7 +292,7 @@ public class SaleDeliverDetailController {
         //5. List<ExcelEntity> --> (转换) List<业务表DB>对象
         //6. 遍历List<业务表DB> 对业务表添加或修改
         Long endTime = System.currentTimeMillis();
-        logger.info("################saleDeliverDetail/importExcelSaleDeliverDetails 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleDeliverDetail/importExcelSaleDeliverDetails 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 

@@ -40,9 +40,9 @@ public class SaleOrderDetailByInvoiceController {
      * @author 陈刚
      * @date 2019-01-13
      */
-    @PostMapping("/saleOrderDetail/listPageOrderDetailByInvoice")
+    @PostMapping("/sale/saleOrderDetail/listPageOrderDetailByInvoice")
     public ResultModel listPageOrderDetailByInvoice() throws Exception {
-        logger.info("################saleOrderDetail/listPageOrderDetailByInvoice 执行开始 ################# ");
+        logger.info("################/sale/saleOrderDetail/listPageOrderDetailByInvoice 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
 
@@ -112,7 +112,7 @@ public class SaleOrderDetailByInvoiceController {
         model.putResult(result);
 
         Long endTime = System.currentTimeMillis();
-        logger.info("################saleOrderDetail/listPageOrderDetailByInvoice 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleOrderDetail/listPageOrderDetailByInvoice 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 }

@@ -293,6 +293,14 @@ public class SaleDeliverDetailServiceImp implements SaleDeliverDetailService {
                 detail.setOutDetailId(orderDtl2OutDtlMap.get(orderDtlId));
             }
 
+            //priceType 计价类型(1:先计价 2:后计价)
+            if ("2".equals(parentObj.getPriceType())) {
+                detail.setPriceUnit(null);
+                detail.setPriceCount(BigDecimal.valueOf(0D));
+                detail.setProductPrice(BigDecimal.valueOf(0D));
+                detail.setSum(BigDecimal.valueOf(0D));
+            }
+
             this.save(detail);
         }
     }

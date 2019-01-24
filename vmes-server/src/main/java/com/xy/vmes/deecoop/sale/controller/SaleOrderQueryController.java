@@ -33,9 +33,9 @@ public class SaleOrderQueryController {
     @Autowired
     private ColumnService columnService;
 
-    @PostMapping("/saleOrderQuery/listPageSaleOrderQuery")
+    @PostMapping("/sale/saleOrderQuery/listPageSaleOrderQuery")
     public ResultModel listPageSaleOrderQuery() throws Exception {
-        logger.info("################saleOrderQuery/listPageSaleOrderQuery 执行开始 ################# ");
+        logger.info("################/sale/saleOrderQuery/listPageSaleOrderQuery 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
 
         ResultModel model = new ResultModel();
@@ -97,7 +97,7 @@ public class SaleOrderQueryController {
 
         model.putResult(result);
         Long endTime = System.currentTimeMillis();
-        logger.info("################saleOrderQuery/listPageSaleOrderQuery 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleOrderQuery/listPageSaleOrderQuery 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 

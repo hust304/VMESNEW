@@ -47,17 +47,17 @@ public class SaleReceiveRecordController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-12-25
     */
-    @GetMapping("/saleReceiveRecord/selectById/{id}")
+    @GetMapping("/sale/saleReceiveRecord/selectById/{id}")
     public ResultModel selectById(@PathVariable("id") String id)  throws Exception {
 
-        logger.info("################saleReceiveRecord/selectById 执行开始 ################# ");
+        logger.info("################/sale/saleReceiveRecord/selectById 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         SaleReceiveRecord saleReceiveRecord = saleReceiveRecordService.selectById(id);
         model.putResult(saleReceiveRecord);
         Long endTime = System.currentTimeMillis();
-        logger.info("################saleReceiveRecord/selectById 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleReceiveRecord/selectById 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -67,11 +67,11 @@ public class SaleReceiveRecordController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-12-25
     */
-    @PostMapping("/saleReceiveRecord/save")
+    @PostMapping("/sale/saleReceiveRecord/save")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel save()  throws Exception {
 
-        logger.info("################saleReceiveRecord/save 执行开始 ################# ");
+        logger.info("################/sale/saleReceiveRecord/save 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
@@ -79,7 +79,7 @@ public class SaleReceiveRecordController {
         SaleReceiveRecord saleReceiveRecord = (SaleReceiveRecord)HttpUtils.pageData2Entity(pd, new SaleReceiveRecord());
         saleReceiveRecordService.save(saleReceiveRecord);
         Long endTime = System.currentTimeMillis();
-        logger.info("################saleReceiveRecord/save 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleReceiveRecord/save 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -87,11 +87,11 @@ public class SaleReceiveRecordController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-12-25
     */
-    @PostMapping("/saleReceiveRecord/update")
+    @PostMapping("/sale/saleReceiveRecord/update")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel update()  throws Exception {
 
-        logger.info("################saleReceiveRecord/update 执行开始 ################# ");
+        logger.info("################/sale/saleReceiveRecord/update 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
@@ -99,7 +99,7 @@ public class SaleReceiveRecordController {
         SaleReceiveRecord saleReceiveRecord = (SaleReceiveRecord)HttpUtils.pageData2Entity(pd, new SaleReceiveRecord());
         saleReceiveRecordService.update(saleReceiveRecord);
         Long endTime = System.currentTimeMillis();
-        logger.info("################saleReceiveRecord/update 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleReceiveRecord/update 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -108,17 +108,17 @@ public class SaleReceiveRecordController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-12-25
     */
-    @GetMapping("/saleReceiveRecord/deleteById/{id}")
+    @GetMapping("/sale/saleReceiveRecord/deleteById/{id}")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteById(@PathVariable("id") String id)  throws Exception {
 
-        logger.info("################saleReceiveRecord/deleteById 执行开始 ################# ");
+        logger.info("################/sale/saleReceiveRecord/deleteById 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         saleReceiveRecordService.deleteById(id);
         Long endTime = System.currentTimeMillis();
-        logger.info("################saleReceiveRecord/deleteById 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleReceiveRecord/deleteById 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -127,11 +127,11 @@ public class SaleReceiveRecordController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-12-25
     */
-    @PostMapping("/saleReceiveRecord/deleteByIds")
+    @PostMapping("/sale/saleReceiveRecord/deleteByIds")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteByIds()  throws Exception {
 
-        logger.info("################saleReceiveRecord/deleteByIds 执行开始 ################# ");
+        logger.info("################/sale/saleReceiveRecord/deleteByIds 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
         PageData pd = HttpUtils.parsePageData();
@@ -148,7 +148,7 @@ public class SaleReceiveRecordController {
             saleReceiveRecordService.deleteByIds(id_arry);
         }
         Long endTime = System.currentTimeMillis();
-        logger.info("################saleReceiveRecord/deleteByIds 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleReceiveRecord/deleteByIds 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -157,10 +157,10 @@ public class SaleReceiveRecordController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-12-25
     */
-    @PostMapping("/saleReceiveRecord/dataListPage")
+    @PostMapping("/sale/saleReceiveRecord/dataListPage")
     public ResultModel dataListPage()  throws Exception {
 
-        logger.info("################saleReceiveRecord/dataListPage 执行开始 ################# ");
+        logger.info("################/sale/saleReceiveRecord/dataListPage 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
@@ -172,7 +172,7 @@ public class SaleReceiveRecordController {
         result.put("pageData", pg);
         model.putResult(result);
         Long endTime = System.currentTimeMillis();
-        logger.info("################saleReceiveRecord/dataListPage 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleReceiveRecord/dataListPage 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -180,10 +180,10 @@ public class SaleReceiveRecordController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-12-25
     */
-    @PostMapping("/saleReceiveRecord/dataList")
+    @PostMapping("/sale/saleReceiveRecord/dataList")
     public ResultModel dataList()  throws Exception {
 
-        logger.info("################saleReceiveRecord/dataList 执行开始 ################# ");
+        logger.info("################/sale/saleReceiveRecord/dataList 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
@@ -191,7 +191,7 @@ public class SaleReceiveRecordController {
         List<SaleReceiveRecord> saleReceiveRecordList = saleReceiveRecordService.dataList(pd);
         model.putResult(saleReceiveRecordList);
         Long endTime = System.currentTimeMillis();
-        logger.info("################saleReceiveRecord/dataList 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleReceiveRecord/dataList 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -202,9 +202,9 @@ public class SaleReceiveRecordController {
     * @author 刘威 自动创建，可以修改
     * @date 2018-12-25
     */
-    @PostMapping("/saleReceiveRecord/listPageSaleReceiveRecords")
+    @PostMapping("/sale/saleReceiveRecord/listPageSaleReceiveRecords")
     public ResultModel listPageSaleReceiveRecords()  throws Exception {
-        logger.info("################saleReceiveRecord/listPageSaleReceiveRecords 执行开始 ################# ");
+        logger.info("################/sale/saleReceiveRecord/listPageSaleReceiveRecords 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
 
@@ -261,7 +261,7 @@ public class SaleReceiveRecordController {
 
         model.putResult(result);
         Long endTime = System.currentTimeMillis();
-        logger.info("################saleReceiveRecord/listPageSaleReceiveRecords 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleReceiveRecord/listPageSaleReceiveRecords 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -271,9 +271,9 @@ public class SaleReceiveRecordController {
     * @author 刘威 自动创建，可以修改
     * @date 2018-12-25
     */
-    @PostMapping("/saleReceiveRecord/exportExcelSaleReceiveRecords")
+    @PostMapping("/sale/saleReceiveRecord/exportExcelSaleReceiveRecords")
     public void exportExcelSaleReceiveRecords() throws Exception {
-        logger.info("################saleReceiveRecord/exportExcelSaleReceiveRecords 执行开始 ################# ");
+        logger.info("################/sale/saleReceiveRecord/exportExcelSaleReceiveRecords 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
 
         List<Column> columnList = columnService.findColumnList("SaleReceiveRecord");
@@ -310,7 +310,7 @@ public class SaleReceiveRecordController {
         fileName = new String(fileName.getBytes("utf-8"),"ISO-8859-1");
         ExcelUtil.excelExportByDataList(response, fileName, dataMapList);
         Long endTime = System.currentTimeMillis();
-        logger.info("################saleReceiveRecord/exportExcelSaleReceiveRecords 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleReceiveRecord/exportExcelSaleReceiveRecords 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
     }
 
     /**
@@ -319,9 +319,9 @@ public class SaleReceiveRecordController {
     * @author 刘威 自动创建，可以修改
     * @date 2018-12-25
     */
-    @PostMapping("/saleReceiveRecord/importExcelSaleReceiveRecords")
+    @PostMapping("/sale/saleReceiveRecord/importExcelSaleReceiveRecords")
     public ResultModel importExcelSaleReceiveRecords(@RequestParam(value="excelFile") MultipartFile file) throws Exception  {
-        logger.info("################saleReceiveRecord/importExcelSaleReceiveRecords 执行开始 ################# ");
+        logger.info("################/sale/saleReceiveRecord/importExcelSaleReceiveRecords 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
         //HttpServletRequest Request = HttpUtils.currentRequest();
@@ -361,7 +361,7 @@ public class SaleReceiveRecordController {
         //5. List<ExcelEntity> --> (转换) List<业务表DB>对象
         //6. 遍历List<业务表DB> 对业务表添加或修改
         Long endTime = System.currentTimeMillis();
-        logger.info("################saleReceiveRecord/importExcelSaleReceiveRecords 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleReceiveRecord/importExcelSaleReceiveRecords 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 

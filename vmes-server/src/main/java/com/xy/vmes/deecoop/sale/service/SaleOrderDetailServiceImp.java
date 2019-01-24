@@ -273,8 +273,12 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
         //orderUnit订单明细单位id
         deliverDetail.setOrderUnit(orderDetail.getOrderUnit());
 
-        //(先计价) (orderUnit,priceUnit) 值相同
-        //(后计价) (orderUnit,priceUnit) 值不相同
+        //orderCount 发货数量(订单单位)
+        deliverDetail.setOrderCount(BigDecimal.valueOf(0D));
+        if (orderDetail.getNeedDeliverCount() != null) {
+            deliverDetail.setOrderCount(orderDetail.getNeedDeliverCount());
+        }
+
         //priceUnit计价单位id
         deliverDetail.setPriceUnit(orderDetail.getPriceUnit());
 

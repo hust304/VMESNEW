@@ -47,9 +47,9 @@ public class SaleInvoiceDetailController {
     * @author 陈刚 自动创建，可以修改
     * @date 2019-01-08
     */
-    @PostMapping("/saleInvoiceDetail/listPageSaleInvoiceDetail")
+    @PostMapping("/sale/saleInvoiceDetail/listPageSaleInvoiceDetail")
     public ResultModel listPageSaleInvoiceDetail()  throws Exception {
-        logger.info("################saleInvoiceDetail/listPageSaleInvoiceDetail 执行开始 ################# ");
+        logger.info("################/sale/saleInvoiceDetail/listPageSaleInvoiceDetail 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
 
@@ -106,7 +106,7 @@ public class SaleInvoiceDetailController {
 
         model.putResult(result);
         Long endTime = System.currentTimeMillis();
-        logger.info("################saleInvoiceDetail/listPageSaleInvoiceDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleInvoiceDetail/listPageSaleInvoiceDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -116,9 +116,9 @@ public class SaleInvoiceDetailController {
     * @author 陈刚 自动创建，可以修改
     * @date 2019-01-08
     */
-    @PostMapping("/saleInvoiceDetail/exportExcelSaleInvoiceDetails")
+    @PostMapping("/sale/saleInvoiceDetail/exportExcelSaleInvoiceDetails")
     public void exportExcelSaleInvoiceDetails() throws Exception {
-        logger.info("################saleInvoiceDetail/exportExcelSaleInvoiceDetails 执行开始 ################# ");
+        logger.info("################/sale/saleInvoiceDetail/exportExcelSaleInvoiceDetails 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
 
         List<Column> columnList = columnService.findColumnList("saleInvoiceDetail");
@@ -155,7 +155,7 @@ public class SaleInvoiceDetailController {
         fileName = new String(fileName.getBytes("utf-8"),"ISO-8859-1");
         ExcelUtil.excelExportByDataList(response, fileName, dataMapList);
         Long endTime = System.currentTimeMillis();
-        logger.info("################saleInvoiceDetail/exportExcelSaleInvoiceDetails 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleInvoiceDetail/exportExcelSaleInvoiceDetails 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
     }
 
     /**
@@ -164,9 +164,9 @@ public class SaleInvoiceDetailController {
     * @author 陈刚 自动创建，可以修改
     * @date 2019-01-08
     */
-    @PostMapping("/saleInvoiceDetail/importExcelSaleInvoiceDetails")
+    @PostMapping("/sale/saleInvoiceDetail/importExcelSaleInvoiceDetails")
     public ResultModel importExcelSaleInvoiceDetails(@RequestParam(value="excelFile") MultipartFile file) throws Exception  {
-        logger.info("################saleInvoiceDetail/importExcelSaleInvoiceDetails 执行开始 ################# ");
+        logger.info("################/sale/saleInvoiceDetail/importExcelSaleInvoiceDetails 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
         //HttpServletRequest Request = HttpUtils.currentRequest();
@@ -206,7 +206,7 @@ public class SaleInvoiceDetailController {
         //5. List<ExcelEntity> --> (转换) List<业务表DB>对象
         //6. 遍历List<业务表DB> 对业务表添加或修改
         Long endTime = System.currentTimeMillis();
-        logger.info("################saleInvoiceDetail/importExcelSaleInvoiceDetails 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleInvoiceDetail/importExcelSaleInvoiceDetails 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 

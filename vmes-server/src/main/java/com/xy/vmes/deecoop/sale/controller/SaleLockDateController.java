@@ -47,17 +47,17 @@ public class SaleLockDateController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-12-12
     */
-    @GetMapping("/saleLockDate/selectById/{id}")
+    @GetMapping("/sale/saleLockDate/selectById/{id}")
     public ResultModel selectById(@PathVariable("id") String id)  throws Exception {
 
-        logger.info("################saleLockDate/selectById 执行开始 ################# ");
+        logger.info("################/sale/saleLockDate/selectById 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         SaleLockDate saleLockDate = saleLockDateService.selectById(id);
         model.putResult(saleLockDate);
         Long endTime = System.currentTimeMillis();
-        logger.info("################saleLockDate/selectById 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleLockDate/selectById 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -67,7 +67,7 @@ public class SaleLockDateController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-12-12
     */
-    @PostMapping("/saleLockDate/save")
+    @PostMapping("/sale/saleLockDate/save")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel save()  throws Exception {
 
@@ -87,11 +87,11 @@ public class SaleLockDateController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-12-12
     */
-    @PostMapping("/saleLockDate/update")
+    @PostMapping("/sale/saleLockDate/update")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel update()  throws Exception {
 
-        logger.info("################saleLockDate/update 执行开始 ################# ");
+        logger.info("################/sale/saleLockDate/update 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
@@ -99,7 +99,7 @@ public class SaleLockDateController {
         SaleLockDate saleLockDate = (SaleLockDate)HttpUtils.pageData2Entity(pd, new SaleLockDate());
         saleLockDateService.update(saleLockDate);
         Long endTime = System.currentTimeMillis();
-        logger.info("################saleLockDate/update 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleLockDate/update 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -108,17 +108,17 @@ public class SaleLockDateController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-12-12
     */
-    @GetMapping("/saleLockDate/deleteById/{id}")
+    @GetMapping("/sale/saleLockDate/deleteById/{id}")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteById(@PathVariable("id") String id)  throws Exception {
 
-        logger.info("################saleLockDate/deleteById 执行开始 ################# ");
+        logger.info("################/sale/saleLockDate/deleteById 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         saleLockDateService.deleteById(id);
         Long endTime = System.currentTimeMillis();
-        logger.info("################saleLockDate/deleteById 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleLockDate/deleteById 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -127,11 +127,11 @@ public class SaleLockDateController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-12-12
     */
-    @PostMapping("/saleLockDate/deleteByIds")
+    @PostMapping("/sale/saleLockDate/deleteByIds")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteByIds()  throws Exception {
 
-        logger.info("################saleLockDate/deleteByIds 执行开始 ################# ");
+        logger.info("################/sale/saleLockDate/deleteByIds 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
         PageData pd = HttpUtils.parsePageData();
@@ -148,7 +148,7 @@ public class SaleLockDateController {
             saleLockDateService.deleteByIds(id_arry);
         }
         Long endTime = System.currentTimeMillis();
-        logger.info("################saleLockDate/deleteByIds 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleLockDate/deleteByIds 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -157,10 +157,10 @@ public class SaleLockDateController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-12-12
     */
-    @PostMapping("/saleLockDate/dataListPage")
+    @PostMapping("/sale/saleLockDate/dataListPage")
     public ResultModel dataListPage()  throws Exception {
 
-        logger.info("################saleLockDate/dataListPage 执行开始 ################# ");
+        logger.info("################/sale/saleLockDate/dataListPage 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
@@ -172,7 +172,7 @@ public class SaleLockDateController {
         result.put("pageData", pg);
         model.putResult(result);
         Long endTime = System.currentTimeMillis();
-        logger.info("################saleLockDate/dataListPage 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleLockDate/dataListPage 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -180,10 +180,10 @@ public class SaleLockDateController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-12-12
     */
-    @PostMapping("/saleLockDate/dataList")
+    @PostMapping("/sale/saleLockDate/dataList")
     public ResultModel dataList()  throws Exception {
 
-        logger.info("################saleLockDate/dataList 执行开始 ################# ");
+        logger.info("################/sale/saleLockDate/dataList 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
@@ -191,7 +191,7 @@ public class SaleLockDateController {
         List<SaleLockDate> saleLockDateList = saleLockDateService.dataList(pd);
         model.putResult(saleLockDateList);
         Long endTime = System.currentTimeMillis();
-        logger.info("################saleLockDate/dataList 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleLockDate/dataList 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -200,11 +200,11 @@ public class SaleLockDateController {
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 
-    @PostMapping("/saleLockDate/updateSaleLockDate")
+    @PostMapping("/sale/saleLockDate/updateSaleLockDate")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel updateSaleLockDate()  throws Exception {
 
-        logger.info("################saleLockDate/updateSaleLockDate 执行开始 ################# ");
+        logger.info("################/sale/saleLockDate/updateSaleLockDate 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
@@ -216,16 +216,16 @@ public class SaleLockDateController {
         saleLockDate.setSecond(day*24*60*60+hour*60*60+minute*60);
         saleLockDateService.update(saleLockDate);
         Long endTime = System.currentTimeMillis();
-        logger.info("################saleLockDate/updateSaleLockDate 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleLockDate/updateSaleLockDate 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
 
-    @PostMapping("/saleLockDate/saveSaleLockDate")
+    @PostMapping("/sale/saleLockDate/saveSaleLockDate")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel saveSaleLockDate()  throws Exception {
 
-        logger.info("################saleLockDate/saveSaleLockDate 执行开始 ################# ");
+        logger.info("################/sale/saleLockDate/saveSaleLockDate 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
@@ -246,16 +246,16 @@ public class SaleLockDateController {
         saleLockDate.setSecond(day*24*60*60+hour*60*60+minute*60);
         saleLockDateService.save(saleLockDate);
         Long endTime = System.currentTimeMillis();
-        logger.info("################saleLockDate/saveSaleLockDate 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleLockDate/saveSaleLockDate 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
 
 
-    @PostMapping("/saleLockDate/selectSaleLockDateByCompanyId")
+    @PostMapping("/sale/saleLockDate/selectSaleLockDateByCompanyId")
     public ResultModel selectSaleLockDateByCompanyId()  throws Exception {
 
-        logger.info("################saleLockDate/selectSaleLockDateByCompanyId 执行开始 ################# ");
+        logger.info("################/sale/saleLockDate/selectSaleLockDateByCompanyId 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
@@ -267,7 +267,7 @@ public class SaleLockDateController {
         }
         model.putResult(saleLockDate);
         Long endTime = System.currentTimeMillis();
-        logger.info("################saleLockDate/selectSaleLockDateByCompanyId 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleLockDate/selectSaleLockDateByCompanyId 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -276,10 +276,10 @@ public class SaleLockDateController {
     * @author 刘威 自动创建，可以修改
     * @date 2018-12-12
     */
-    @PostMapping("/saleLockDate/listPageSaleLockDates")
+    @PostMapping("/sale/saleLockDate/listPageSaleLockDates")
     public ResultModel listPageSaleLockDates()  throws Exception {
 
-        logger.info("################saleLockDate/listPageSaleLockDates 执行开始 ################# ");
+        logger.info("################/sale/saleLockDate/listPageSaleLockDates 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
@@ -331,7 +331,7 @@ public class SaleLockDateController {
 
         model.putResult(result);
         Long endTime = System.currentTimeMillis();
-        logger.info("################saleLockDate/listPageSaleLockDates 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleLockDate/listPageSaleLockDates 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -341,9 +341,9 @@ public class SaleLockDateController {
     * @author 刘威 自动创建，可以修改
     * @date 2018-12-12
     */
-    @PostMapping("/saleLockDate/exportExcelSaleLockDates")
+    @PostMapping("/sale/saleLockDate/exportExcelSaleLockDates")
     public void exportExcelSaleLockDates() throws Exception {
-        logger.info("################saleLockDate/exportExcelSaleLockDates 执行开始 ################# ");
+        logger.info("################/sale/saleLockDate/exportExcelSaleLockDates 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
 
         List<Column> columnList = columnService.findColumnList("SaleLockDate");
@@ -380,7 +380,7 @@ public class SaleLockDateController {
         fileName = new String(fileName.getBytes("utf-8"),"ISO-8859-1");
         ExcelUtil.excelExportByDataList(response, fileName, dataMapList);
         Long endTime = System.currentTimeMillis();
-        logger.info("################saleLockDate/exportExcelSaleLockDates 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleLockDate/exportExcelSaleLockDates 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
     }
 
     /**
@@ -389,9 +389,9 @@ public class SaleLockDateController {
     * @author 刘威 自动创建，可以修改
     * @date 2018-12-12
     */
-    @PostMapping("/saleLockDate/importExcelSaleLockDates")
+    @PostMapping("/sale/saleLockDate/importExcelSaleLockDates")
     public ResultModel importExcelSaleLockDates(@RequestParam(value="excelFile") MultipartFile file) throws Exception  {
-        logger.info("################saleLockDate/importExcelSaleLockDates 执行开始 ################# ");
+        logger.info("################/sale/saleLockDate/importExcelSaleLockDates 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
         //HttpServletRequest Request = HttpUtils.currentRequest();
@@ -431,7 +431,7 @@ public class SaleLockDateController {
         //5. List<ExcelEntity> --> (转换) List<业务表DB>对象
         //6. 遍历List<业务表DB> 对业务表添加或修改
         Long endTime = System.currentTimeMillis();
-        logger.info("################saleLockDate/importExcelSaleLockDates 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleLockDate/importExcelSaleLockDates 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 

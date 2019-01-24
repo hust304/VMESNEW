@@ -49,17 +49,17 @@ public class SaleUnitPriceController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-12-14
     */
-    @GetMapping("/saleUnitPrice/selectById/{id}")
+    @GetMapping("/sale/saleUnitPrice/selectById/{id}")
     public ResultModel selectById(@PathVariable("id") String id)  throws Exception {
 
-        logger.info("################saleUnitPrice/selectById 执行开始 ################# ");
+        logger.info("################/sale/saleUnitPrice/selectById 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         SaleUnitPrice saleUnitPrice = saleUnitPriceService.selectById(id);
         model.putResult(saleUnitPrice);
         Long endTime = System.currentTimeMillis();
-        logger.info("################saleUnitPrice/selectById 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleUnitPrice/selectById 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -69,11 +69,11 @@ public class SaleUnitPriceController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-12-14
     */
-    @PostMapping("/saleUnitPrice/save")
+    @PostMapping("/sale/saleUnitPrice/save")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel save()  throws Exception {
 
-        logger.info("################saleUnitPrice/save 执行开始 ################# ");
+        logger.info("################/sale/saleUnitPrice/save 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
@@ -81,7 +81,7 @@ public class SaleUnitPriceController {
         SaleUnitPrice saleUnitPrice = (SaleUnitPrice)HttpUtils.pageData2Entity(pd, new SaleUnitPrice());
         saleUnitPriceService.save(saleUnitPrice);
         Long endTime = System.currentTimeMillis();
-        logger.info("################saleUnitPrice/save 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleUnitPrice/save 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -89,11 +89,11 @@ public class SaleUnitPriceController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-12-14
     */
-    @PostMapping("/saleUnitPrice/update")
+    @PostMapping("/sale/saleUnitPrice/update")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel update()  throws Exception {
 
-        logger.info("################saleUnitPrice/update 执行开始 ################# ");
+        logger.info("################/sale/saleUnitPrice/update 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
@@ -101,7 +101,7 @@ public class SaleUnitPriceController {
         SaleUnitPrice saleUnitPrice = (SaleUnitPrice)HttpUtils.pageData2Entity(pd, new SaleUnitPrice());
         saleUnitPriceService.update(saleUnitPrice);
         Long endTime = System.currentTimeMillis();
-        logger.info("################saleUnitPrice/update 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleUnitPrice/update 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -110,17 +110,17 @@ public class SaleUnitPriceController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-12-14
     */
-    @GetMapping("/saleUnitPrice/deleteById/{id}")
+    @GetMapping("/sale/saleUnitPrice/deleteById/{id}")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteById(@PathVariable("id") String id)  throws Exception {
 
-        logger.info("################saleUnitPrice/deleteById 执行开始 ################# ");
+        logger.info("################/sale/saleUnitPrice/deleteById 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         saleUnitPriceService.deleteById(id);
         Long endTime = System.currentTimeMillis();
-        logger.info("################saleUnitPrice/deleteById 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleUnitPrice/deleteById 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -129,11 +129,11 @@ public class SaleUnitPriceController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-12-14
     */
-    @PostMapping("/saleUnitPrice/deleteByIds")
+    @PostMapping("/sale/saleUnitPrice/deleteByIds")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteByIds()  throws Exception {
 
-        logger.info("################saleUnitPrice/deleteByIds 执行开始 ################# ");
+        logger.info("################/sale/saleUnitPrice/deleteByIds 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
         PageData pd = HttpUtils.parsePageData();
@@ -150,7 +150,7 @@ public class SaleUnitPriceController {
             saleUnitPriceService.deleteByIds(id_arry);
         }
         Long endTime = System.currentTimeMillis();
-        logger.info("################saleUnitPrice/deleteByIds 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleUnitPrice/deleteByIds 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -159,10 +159,10 @@ public class SaleUnitPriceController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-12-14
     */
-    @PostMapping("/saleUnitPrice/dataListPage")
+    @PostMapping("/sale/saleUnitPrice/dataListPage")
     public ResultModel dataListPage()  throws Exception {
 
-        logger.info("################saleUnitPrice/dataListPage 执行开始 ################# ");
+        logger.info("################/sale/saleUnitPrice/dataListPage 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
@@ -174,7 +174,7 @@ public class SaleUnitPriceController {
         result.put("pageData", pg);
         model.putResult(result);
         Long endTime = System.currentTimeMillis();
-        logger.info("################saleUnitPrice/dataListPage 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleUnitPrice/dataListPage 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -182,10 +182,10 @@ public class SaleUnitPriceController {
     * @author 刘威 自动创建，禁止修改
     * @date 2018-12-14
     */
-    @PostMapping("/saleUnitPrice/dataList")
+    @PostMapping("/sale/saleUnitPrice/dataList")
     public ResultModel dataList()  throws Exception {
 
-        logger.info("################saleUnitPrice/dataList 执行开始 ################# ");
+        logger.info("################/sale/saleUnitPrice/dataList 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
@@ -193,7 +193,7 @@ public class SaleUnitPriceController {
         List<SaleUnitPrice> saleUnitPriceList = saleUnitPriceService.dataList(pd);
         model.putResult(saleUnitPriceList);
         Long endTime = System.currentTimeMillis();
-        logger.info("################saleUnitPrice/dataList 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleUnitPrice/dataList 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -205,10 +205,10 @@ public class SaleUnitPriceController {
      * @author 刘威 自动创建，可以修改
      * @date 2018-12-14
      */
-    @PostMapping("/saleUnitPrice/listPageCustomerUnitPricesHis")
+    @PostMapping("/sale/saleUnitPrice/listPageCustomerUnitPricesHis")
     public ResultModel listPageCustomerUnitPricesHis()  throws Exception {
 
-        logger.info("################saleUnitPrice/listPageCustomerUnitPricesHis 执行开始 ################# ");
+        logger.info("################/sale/saleUnitPrice/listPageCustomerUnitPricesHis 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
@@ -260,7 +260,7 @@ public class SaleUnitPriceController {
 
         model.putResult(result);
         Long endTime = System.currentTimeMillis();
-        logger.info("################saleUnitPrice/listPageCustomerUnitPricesHis 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleUnitPrice/listPageCustomerUnitPricesHis 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -269,10 +269,10 @@ public class SaleUnitPriceController {
      * @author 刘威 自动创建，可以修改
      * @date 2018-12-14
      */
-    @PostMapping("/saleUnitPrice/listPageCustomerUnitPrices")
+    @PostMapping("/sale/saleUnitPrice/listPageCustomerUnitPrices")
     public ResultModel listPageCustomerUnitPrices()  throws Exception {
 
-        logger.info("################saleUnitPrice/listPageCustomerUnitPrices 执行开始 ################# ");
+        logger.info("################/sale/saleUnitPrice/listPageCustomerUnitPrices 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
@@ -324,17 +324,17 @@ public class SaleUnitPriceController {
 
         model.putResult(result);
         Long endTime = System.currentTimeMillis();
-        logger.info("################saleUnitPrice/listPageCustomerUnitPrices 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleUnitPrice/listPageCustomerUnitPrices 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
     /**
     * @author 刘威 自动创建，可以修改
     * @date 2018-12-14
     */
-    @PostMapping("/saleUnitPrice/listPageSaleUnitPrices")
+    @PostMapping("/sale/saleUnitPrice/listPageSaleUnitPrices")
     public ResultModel listPageSaleUnitPrices()  throws Exception {
 
-        logger.info("################saleUnitPrice/listPageSaleUnitPrices 执行开始 ################# ");
+        logger.info("################/sale/saleUnitPrice/listPageSaleUnitPrices 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
@@ -386,7 +386,7 @@ public class SaleUnitPriceController {
 
         model.putResult(result);
         Long endTime = System.currentTimeMillis();
-        logger.info("################saleUnitPrice/listPageSaleUnitPrices 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleUnitPrice/listPageSaleUnitPrices 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -398,10 +398,10 @@ public class SaleUnitPriceController {
      * @date 2018-12-18
      * @throws Exception
      */
-    @PostMapping("/saleUnitPrice/updateSaleUnitPriceByPrice")
+    @PostMapping("/sale/saleUnitPrice/updateSaleUnitPriceByPrice")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel updateSaleUnitPriceByPrice() throws Exception {
-        logger.info("################saleUnitPrice/updateSaleUnitPriceByPrice 执行开始 ################# ");
+        logger.info("################/sale/saleUnitPrice/updateSaleUnitPriceByPrice 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
 
@@ -427,7 +427,7 @@ public class SaleUnitPriceController {
         }
 
         Long endTime = System.currentTimeMillis();
-        logger.info("################saleUnitPrice/updateSaleUnitPriceByPrice 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleUnitPrice/updateSaleUnitPriceByPrice 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -437,9 +437,9 @@ public class SaleUnitPriceController {
      *
      * @date 2018-12-18
      */
-    @PostMapping("/saleUnitPrice/findSaleUnitPrice")
+    @PostMapping("/sale/saleUnitPrice/findSaleUnitPrice")
     public ResultModel findSaleUnitPrice() throws Exception {
-        logger.info("################saleUnitPrice/findSaleUnitPrice 执行开始 ################# ");
+        logger.info("################/sale/saleUnitPrice/findSaleUnitPrice 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
 
@@ -484,7 +484,7 @@ public class SaleUnitPriceController {
         }
 
         Long endTime = System.currentTimeMillis();
-        logger.info("################saleUnitPrice/findSaleUnitPrice 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleUnitPrice/findSaleUnitPrice 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -493,9 +493,9 @@ public class SaleUnitPriceController {
     * @author 刘威 自动创建，可以修改
     * @date 2018-12-14
     */
-    @PostMapping("/saleUnitPrice/exportExcelSaleUnitPrices")
+    @PostMapping("/sale/saleUnitPrice/exportExcelSaleUnitPrices")
     public void exportExcelSaleUnitPrices() throws Exception {
-        logger.info("################saleUnitPrice/exportExcelSaleUnitPrices 执行开始 ################# ");
+        logger.info("################/sale/saleUnitPrice/exportExcelSaleUnitPrices 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
 
         List<Column> columnList = columnService.findColumnList("SaleUnitPrice");
@@ -532,7 +532,7 @@ public class SaleUnitPriceController {
         fileName = new String(fileName.getBytes("utf-8"),"ISO-8859-1");
         ExcelUtil.excelExportByDataList(response, fileName, dataMapList);
         Long endTime = System.currentTimeMillis();
-        logger.info("################saleUnitPrice/exportExcelSaleUnitPrices 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleUnitPrice/exportExcelSaleUnitPrices 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
     }
 
     /**
@@ -541,9 +541,9 @@ public class SaleUnitPriceController {
     * @author 刘威 自动创建，可以修改
     * @date 2018-12-14
     */
-    @PostMapping("/saleUnitPrice/importExcelSaleUnitPrices")
+    @PostMapping("/sale/saleUnitPrice/importExcelSaleUnitPrices")
     public ResultModel importExcelSaleUnitPrices(@RequestParam(value="excelFile") MultipartFile file) throws Exception  {
-        logger.info("################saleUnitPrice/importExcelSaleUnitPrices 执行开始 ################# ");
+        logger.info("################/sale/saleUnitPrice/importExcelSaleUnitPrices 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
         //HttpServletRequest Request = HttpUtils.currentRequest();
@@ -583,7 +583,7 @@ public class SaleUnitPriceController {
         //5. List<ExcelEntity> --> (转换) List<业务表DB>对象
         //6. 遍历List<业务表DB> 对业务表添加或修改
         Long endTime = System.currentTimeMillis();
-        logger.info("################saleUnitPrice/importExcelSaleUnitPrices 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleUnitPrice/importExcelSaleUnitPrices 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 

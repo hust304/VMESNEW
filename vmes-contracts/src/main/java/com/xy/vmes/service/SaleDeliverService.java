@@ -19,6 +19,7 @@ public interface SaleDeliverService {
      * 创建时间：2018-12-15
      */
     void save(SaleDeliver object) throws Exception;
+    void save(String id, SaleDeliver object) throws Exception;
 
     /**
      * 创建人：陈刚 自动创建，禁止修改

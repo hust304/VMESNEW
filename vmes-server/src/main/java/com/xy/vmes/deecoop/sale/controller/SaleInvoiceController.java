@@ -51,9 +51,9 @@ public class SaleInvoiceController {
     * @author 陈刚 自动创建，可以修改
     * @date 2019-01-08
     */
-    @PostMapping("/saleInvoice/listPageSaleInvoice")
+    @PostMapping("/sale/saleInvoice/listPageSaleInvoice")
     public ResultModel listPageSaleInvoice() throws Exception {
-        logger.info("################saleInvoice/listPageSaleInvoice 执行开始 ################# ");
+        logger.info("################/sale/saleInvoice/listPageSaleInvoice 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
 
         ResultModel model = new ResultModel();
@@ -115,7 +115,7 @@ public class SaleInvoiceController {
 
         model.putResult(result);
         Long endTime = System.currentTimeMillis();
-        logger.info("################saleInvoice/listPageSaleInvoice 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleInvoice/listPageSaleInvoice 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -125,10 +125,10 @@ public class SaleInvoiceController {
      * @date 2019-01-08
      * @throws Exception
      */
-    @PostMapping("/saleInvoice/addSaleInvoice")
+    @PostMapping("/sale/saleInvoice/addSaleInvoice")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel addSaleInvoice() throws Exception {
-        logger.info("################saleInvoice/addSaleInvoice 执行开始 ################# ");
+        logger.info("################/sale/saleInvoice/addSaleInvoice 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
 
@@ -177,7 +177,7 @@ public class SaleInvoiceController {
         saleInvoiceDetailService.addInvoiceDetail(invoice, invoiceDtlList);
 
         Long endTime = System.currentTimeMillis();
-        logger.info("################saleInvoice/addSaleInvoice 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleInvoice/addSaleInvoice 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -187,10 +187,10 @@ public class SaleInvoiceController {
      * @date 2019-01-08
      * @throws Exception
      */
-    @PostMapping("/saleInvoice/updateSaleInvoice")
+    @PostMapping("/sale/saleInvoice/updateSaleInvoice")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel updateSaleInvoice() throws Exception {
-        logger.info("################saleInvoice/updateSaleInvoice 执行开始 ################# ");
+        logger.info("################/sale/saleInvoice/updateSaleInvoice 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
 
@@ -240,7 +240,7 @@ public class SaleInvoiceController {
         }
 
         Long endTime = System.currentTimeMillis();
-        logger.info("################saleInvoice/updateSaleInvoice 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleInvoice/updateSaleInvoice 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -250,10 +250,10 @@ public class SaleInvoiceController {
      * @date 2019-01-08
      * @throws Exception
      */
-    @PostMapping("/saleInvoice/updateStateBySaleInvoice")
+    @PostMapping("/sale/saleInvoice/updateStateBySaleInvoice")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel updateStateBySaleInvoice() throws Exception {
-        logger.info("################saleInvoice/updateStateBySaleInvoice 执行开始 ################# ");
+        logger.info("################/sale/saleInvoice/updateStateBySaleInvoice 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
 
@@ -275,7 +275,7 @@ public class SaleInvoiceController {
         saleInvoiceService.updateStateByInvoice("1", ids);
 
         Long endTime = System.currentTimeMillis();
-        logger.info("################saleInvoice/updateStateBySaleInvoice 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleInvoice/updateStateBySaleInvoice 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -285,10 +285,10 @@ public class SaleInvoiceController {
      * @date 2019-01-08
      * @throws Exception
      */
-    @PostMapping("/saleInvoice/deleteSaleInvoice")
+    @PostMapping("/sale/saleInvoice/deleteSaleInvoice")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteSaleInvoice() throws Exception {
-        logger.info("################saleInvoice/deleteSaleInvoice 执行开始 ################# ");
+        logger.info("################/sale/saleInvoice/deleteSaleInvoice 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
 
@@ -317,7 +317,7 @@ public class SaleInvoiceController {
         saleInvoiceService.deleteById(parentId);
 
         Long endTime = System.currentTimeMillis();
-        logger.info("################saleInvoice/deleteSaleInvoice 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleInvoice/deleteSaleInvoice 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -327,10 +327,10 @@ public class SaleInvoiceController {
      * @date 2019-01-08
      * @throws Exception
      */
-    @PostMapping("/saleInvoice/cancelSaleInvoice")
+    @PostMapping("/sale/saleInvoice/cancelSaleInvoice")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel cancelSaleInvoice() throws Exception {
-        logger.info("################saleInvoice/cancelSaleInvoice 执行开始 ################# ");
+        logger.info("################/sale/saleInvoice/cancelSaleInvoice 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
 
@@ -359,7 +359,7 @@ public class SaleInvoiceController {
         saleInvoiceDetailService.updateStateByDetail("-1", invoiceId);
 
         Long endTime = System.currentTimeMillis();
-        logger.info("################saleInvoice/cancelSaleInvoice 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleInvoice/cancelSaleInvoice 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -368,9 +368,9 @@ public class SaleInvoiceController {
     * @author 陈刚 自动创建，可以修改
     * @date 2019-01-08
     */
-    @PostMapping("/saleInvoice/exportExcelSaleInvoices")
+    @PostMapping("/sale/saleInvoice/exportExcelSaleInvoices")
     public void exportExcelSaleInvoices() throws Exception {
-        logger.info("################saleInvoice/exportExcelSaleInvoices 执行开始 ################# ");
+        logger.info("################/sale/saleInvoice/exportExcelSaleInvoices 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
 
         List<Column> columnList = columnService.findColumnList("saleInvoice");
@@ -407,7 +407,7 @@ public class SaleInvoiceController {
         fileName = new String(fileName.getBytes("utf-8"),"ISO-8859-1");
         ExcelUtil.excelExportByDataList(response, fileName, dataMapList);
         Long endTime = System.currentTimeMillis();
-        logger.info("################saleInvoice/exportExcelSaleInvoices 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleInvoice/exportExcelSaleInvoices 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
     }
 
     /**
@@ -416,9 +416,9 @@ public class SaleInvoiceController {
     * @author 陈刚 自动创建，可以修改
     * @date 2019-01-08
     */
-    @PostMapping("/saleInvoice/importExcelSaleInvoices")
+    @PostMapping("/sale/saleInvoice/importExcelSaleInvoices")
     public ResultModel importExcelSaleInvoices(@RequestParam(value="excelFile") MultipartFile file) throws Exception  {
-        logger.info("################saleInvoice/importExcelSaleInvoices 执行开始 ################# ");
+        logger.info("################/sale/saleInvoice/importExcelSaleInvoices 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
         //HttpServletRequest Request = HttpUtils.currentRequest();
@@ -458,7 +458,7 @@ public class SaleInvoiceController {
         //5. List<ExcelEntity> --> (转换) List<业务表DB>对象
         //6. 遍历List<业务表DB> 对业务表添加或修改
         Long endTime = System.currentTimeMillis();
-        logger.info("################saleInvoice/importExcelSaleInvoices 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleInvoice/importExcelSaleInvoices 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
