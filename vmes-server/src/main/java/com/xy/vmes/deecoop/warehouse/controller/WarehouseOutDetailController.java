@@ -648,6 +648,11 @@ public class WarehouseOutDetailController {
             model.putMsg("数据库没有生成TabCol，请联系管理员！");
             return model;
         }
+        //获取指定栏位字符串-重新调整List<Column>
+        String firstFieldCode = pd.getString("firstFieldCode");
+        if (firstFieldCode != null && firstFieldCode.trim().length() > 0) {
+            columnList = columnService.modifyColumnByFieldCode(firstFieldCode, columnList);
+        }
         //获取根节点表头
         Map rootTitleMap = getTitleList(columnList);
 
@@ -660,9 +665,12 @@ public class WarehouseOutDetailController {
             model.putMsg("数据库没有生成TabCol，请联系管理员！");
             return model;
         }
+        String secondFieldCode = pd.getString("secondFieldCode");
+        if (secondFieldCode != null && secondFieldCode.trim().length() > 0) {
+            columnList = columnService.modifyColumnByFieldCode(secondFieldCode, columnList);
+        }
         //获取子节点表头
         Map childrenTitleMap = getTitleList(columnList);
-
 
 
         List<Map> varMapList = new ArrayList();

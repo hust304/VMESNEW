@@ -76,16 +76,15 @@
             (replace(uuid(), '-', ''),'saleDeliver','parentId','parentId',0, '1','1','1','0',now(), 'admin'),
 
             (replace(uuid(), '-', ''),'saleDeliver','warehouseOutId','warehouseOutId',0, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleDeliver','warehouseOutId','warehouseOutId',0, '1','1','1','0',now(), 'admin')
-            (replace(uuid(), '-', ''),'saleDeliver','warehouseOutId','warehouseOutId',0, '1','1','1','0',now(), 'admin')
-            (replace(uuid(), '-', ''),'saleDeliver','warehouseOutId','warehouseOutId',0, '1','1','1','0',now(), 'admin')
-            (replace(uuid(), '-', ''),'saleDeliver','warehouseOutId','warehouseOutId',0, '1','1','1','0',now(), 'admin')
-            (replace(uuid(), '-', ''),'saleDeliver','warehouseOutId','warehouseOutId',0, '1','1','1','0',now(), 'admin')
+            (replace(uuid(), '-', ''),'saleDeliver','outCode','outCode',0, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'saleDeliver','outCdate','outCdate',0, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'saleDeliver','outTypeName','outTypeName',0, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'saleDeliver','warehouseName','warehouseName',0, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'saleDeliver','outMakeName','outMakeName',0, '1','1','1','0',now(), 'admin'),
 
-            out.code,out.deptName,DATE_FORMAT(out.cdate,'%Y-%m-%d') outCdate,
-            type.name outTypeName,
-            warehouse.name warehouseName,
-            user.user_name outMakeName,
+            (replace(uuid(), '-', ''),'saleDeliver','outState','outState',0, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'saleDeliver','outStateName','outStateName',0, '1','1','1','0',now(), 'admin')
+
 
     </insert>
 
@@ -192,7 +191,17 @@
         <!--获取出库单id-->
         <if test="'true' == isNeedOutId" >
             warehouseOut.warehouseOutId,
-            out.code,out.deptName,DATE_FORMAT(out.cdate,'%Y-%m-%d') outCdate,
+            out_.code outCode,
+            out_.dept_name outDeptName,
+            out_.state outState,
+            CASE
+            WHEN out_.state = '0' THEN '未完成'
+            WHEN out_.state = '1' THEN '已完成'
+            WHEN out_.state = '-1' THEN '已取消'
+            ELSE null
+            END outStateName,
+
+            DATE_FORMAT(out_.cdate,'%Y-%m-%d') outCdate,
             type.name outTypeName,
             warehouse.name warehouseName,
             user.user_name outMakeName,
@@ -213,10 +222,10 @@
                       left join vmes_warehouse_out_detail b on a.out_detail_id = b.id
                     group by a.parent_id,b.parent_id
                 ) warehouseOut on deliver.id = warehouseOut.deliverId
-                left join vmes_warehouse_out out on warehouseOut.warehouseOutId = out.id
-                left join vmes_dictionary type on out.type = type.id
-                left join vmes_warehouse warehouse on out.warehouse_id = warehouse.id
-                left join vmes_user user on user.id = warehouseout.make_id
+                left join vmes_warehouse_out out_ on warehouseOut.warehouseOutId = out_.id
+                left join vmes_dictionary type on out_.type = type.id
+                left join vmes_warehouse warehouse on out_.warehouse_id = warehouse.id
+                left join vmes_user user on out_.make_id = user.id
             </if>
 
         <where>
