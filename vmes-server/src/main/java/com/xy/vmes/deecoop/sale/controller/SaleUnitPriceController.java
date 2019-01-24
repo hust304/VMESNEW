@@ -70,7 +70,7 @@ public class SaleUnitPriceController {
     * @date 2018-12-14
     */
     @PostMapping("/saleUnitPrice/save")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel save()  throws Exception {
 
         logger.info("################saleUnitPrice/save 执行开始 ################# ");
@@ -90,7 +90,7 @@ public class SaleUnitPriceController {
     * @date 2018-12-14
     */
     @PostMapping("/saleUnitPrice/update")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel update()  throws Exception {
 
         logger.info("################saleUnitPrice/update 执行开始 ################# ");
@@ -111,7 +111,7 @@ public class SaleUnitPriceController {
     * @date 2018-12-14
     */
     @GetMapping("/saleUnitPrice/deleteById/{id}")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteById(@PathVariable("id") String id)  throws Exception {
 
         logger.info("################saleUnitPrice/deleteById 执行开始 ################# ");
@@ -130,7 +130,7 @@ public class SaleUnitPriceController {
     * @date 2018-12-14
     */
     @PostMapping("/saleUnitPrice/deleteByIds")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteByIds()  throws Exception {
 
         logger.info("################saleUnitPrice/deleteByIds 执行开始 ################# ");
@@ -399,7 +399,7 @@ public class SaleUnitPriceController {
      * @throws Exception
      */
     @PostMapping("/saleUnitPrice/updateSaleUnitPriceByPrice")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel updateSaleUnitPriceByPrice() throws Exception {
         logger.info("################saleUnitPrice/updateSaleUnitPriceByPrice 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();

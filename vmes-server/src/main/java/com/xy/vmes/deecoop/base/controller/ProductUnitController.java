@@ -75,7 +75,7 @@ public class ProductUnitController {
     * @date 2018-11-15
     */
     @PostMapping("/productUnit/save")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel save()  throws Exception {
 
         logger.info("################productUnit/save 执行开始 ################# ");
@@ -95,7 +95,7 @@ public class ProductUnitController {
     * @date 2018-11-15
     */
     @PostMapping("/productUnit/update")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel update()  throws Exception {
 
         logger.info("################productUnit/update 执行开始 ################# ");
@@ -121,7 +121,7 @@ public class ProductUnitController {
     * @date 2018-11-15
     */
     @GetMapping("/productUnit/deleteById/{id}")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteById(@PathVariable("id") String id)  throws Exception {
 
         logger.info("################productUnit/deleteById 执行开始 ################# ");
@@ -140,7 +140,7 @@ public class ProductUnitController {
     * @date 2018-11-15
     */
     @PostMapping("/productUnit/deleteByIds")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteByIds()  throws Exception {
 
         logger.info("################productUnit/deleteByIds 执行开始 ################# ");
@@ -219,7 +219,7 @@ public class ProductUnitController {
      * @date 2018-09-20
      */
     @PostMapping("/productUnit/updateIsDefaultProductUnit")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel updateIsDefaultProductUnit()  throws Exception {
 
         logger.info("################bom/updateIsDefaultProductUnit 执行开始 ################# ");
@@ -310,7 +310,7 @@ public class ProductUnitController {
      * @date 2018-11-15
      */
     @PostMapping("/productUnit/updateProductUnitPrice")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel updateProductUnitPrice()  throws Exception {
         logger.info("################productUnit/updateProductUnitPrice 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();

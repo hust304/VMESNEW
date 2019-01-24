@@ -19,6 +19,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -83,6 +84,7 @@ public class EmployeeController {
     * @date 2018-08-02
     */
     @PostMapping("/employee/save")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel save()  throws Exception {
 
         logger.info("################employee/save 执行开始 ################# ");
@@ -102,6 +104,7 @@ public class EmployeeController {
     * @date 2018-08-02
     */
     @PostMapping("/employee/update")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel update()  throws Exception {
 
         logger.info("################employee/update 执行开始 ################# ");
@@ -122,6 +125,7 @@ public class EmployeeController {
     * @date 2018-08-02
     */
     @GetMapping("/employee/deleteById/{id}")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteById(@PathVariable("id") String id)  throws Exception {
 
         logger.info("################employee/deleteById 执行开始 ################# ");
@@ -245,6 +249,7 @@ public class EmployeeController {
      * @date 2018-08-02
      */
     @PostMapping("/employee/addEmployeeAndUser")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel addEmployeeAndUser()  throws Exception {
         logger.info("################employee/addEmployeeAndUser 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -340,6 +345,7 @@ public class EmployeeController {
      * @date 2018-08-02
      */
     @PostMapping("/employee/updateEmployeeAndUser")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel updateEmployeeAndUser()  throws Exception {
         logger.info("################employee/updateEmployeeAndUser 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -431,6 +437,7 @@ public class EmployeeController {
     }
 
     @PostMapping("/employee/updateDisableEmployee")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel updateDisableEmployee()  throws Exception {
         logger.info("################employee/updateDisableEmployee 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -488,6 +495,7 @@ public class EmployeeController {
      * @date 2018-08-02
      */
     @PostMapping("/employee/deleteEmployees")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteEmployees()  throws Exception {
         logger.info("################employee/deleteEmployees 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -558,6 +566,7 @@ public class EmployeeController {
      * @date 2018-08-02
      */
     @PostMapping("/employee/updateEmployeePostState")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel updateEmployeePostState()  throws Exception {
 
         logger.info("################employee/updateEmployeePostState 执行开始 ################# ");
@@ -622,6 +631,7 @@ public class EmployeeController {
      * @date 2018-08-02
      */
     @PostMapping("/employee/updateForChangeEmployeePost")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel updateForChangeEmployeePost()  throws Exception {
 
         logger.info("################employee/updateForChangeEmployeePost 执行开始 ################# ");
@@ -675,6 +685,7 @@ public class EmployeeController {
      * @date 2018-08-02
      */
     @PostMapping("/employee/addEmployToUser")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel addEmployToUser()  throws Exception {
 //        employRoles ="[{\"employId\":\"3\",\"roleId\":\"1\"}," +
 //                "{\"employId\":\"3\",\"roleId\":1532599975000}," +
@@ -770,6 +781,7 @@ public class EmployeeController {
      * @date 2018-08-02
      */
     @PostMapping("/employee/addEmployeePluralityPost")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel addEmployeePluralityPost()  throws Exception {
         logger.info("################employee/addEmployeePluralityPost 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -834,6 +846,7 @@ public class EmployeeController {
      * @throws Exception
      */
     @PostMapping("/employee/addEmployeeMainPost")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel addEmployeeMainPost()  throws Exception {
         logger.info("################employee/addEmployeeMainPost 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();

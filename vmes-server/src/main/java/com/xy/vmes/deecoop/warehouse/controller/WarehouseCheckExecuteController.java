@@ -125,7 +125,7 @@ public class WarehouseCheckExecuteController {
      * @throws Exception
      */
     @PostMapping("/warehouseCheckExecute/addWarehouseCheckExecute")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel addWarehouseCheckExecute() throws Exception {
         logger.info("################/warehouseCheckExecute/addWarehouseCheckExecute 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -151,7 +151,7 @@ public class WarehouseCheckExecuteController {
      * @throws Exception
      */
     @PostMapping("/warehouseCheckExecute/rebackWarehouseCheckByDetail")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel rebackWarehouseCheckByDetail() throws Exception {
         logger.info("################/warehouseCheckExecute/rebackWarehouseCheckByDetail 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -175,7 +175,7 @@ public class WarehouseCheckExecuteController {
      * @throws Exception
      */
     @PostMapping("/warehouseCheckExecute/cancelAuditWarehouseCheckByExecute")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel cancelAuditWarehouseCheckByExecute() throws Exception {
         logger.info("################/warehouseCheckExecute/cancelAuditWarehouseCheckByExecute 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -253,7 +253,7 @@ public class WarehouseCheckExecuteController {
      * @throws Exception
      */
     @PostMapping("/warehouseCheckExecute/auditPassWarehouseCheckExecute")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel auditPassWarehouseCheckExecute() throws Exception {
         logger.info("################/warehouseCheckExecute/auditPassWarehouseCheckExecute 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -398,7 +398,7 @@ public class WarehouseCheckExecuteController {
      * @throws Exception
      */
     @PostMapping("/warehouseCheckExecute/auditDisagreeWarehouseCheckExecute")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel auditDisagreeWarehouseCheckExecute() throws Exception {
         logger.info("################/warehouseCheckExecute/auditDisagreeWarehouseCheckExecute 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();

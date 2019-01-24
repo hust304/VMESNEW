@@ -20,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.apache.commons.lang.StringUtils;
@@ -79,6 +80,7 @@ public class CustomerController {
      * @date 2018-09-18
      */
     @PostMapping("/customer/save")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel save()  throws Exception {
 
         logger.info("################customer/save 执行开始 ################# ");
@@ -98,6 +100,7 @@ public class CustomerController {
      * @date 2018-09-18
      */
     @PostMapping("/customer/update")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel update()  throws Exception {
 
         logger.info("################customer/update 执行开始 ################# ");
@@ -118,6 +121,7 @@ public class CustomerController {
      * @date 2018-09-18
      */
     @GetMapping("/customer/deleteById/{id}")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteById(@PathVariable("id") String id)  throws Exception {
 
         logger.info("################customer/deleteById 执行开始 ################# ");
@@ -136,6 +140,7 @@ public class CustomerController {
      * @date 2018-09-18
      */
     @PostMapping("/customer/deleteByIds")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteByIds()  throws Exception {
 
         logger.info("################customer/deleteById 执行开始 ################# ");
@@ -208,6 +213,7 @@ public class CustomerController {
 
 
     @PostMapping("/customer/addCustomerBalance")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel addCustomerBalance()  throws Exception {
 
         logger.info("################customer/addCustomerBalance 执行开始 ################# ");
@@ -225,6 +231,7 @@ public class CustomerController {
 
 
     @PostMapping("/customer/updateCustomerBalance")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel updateCustomerBalance()  throws Exception {
 
         logger.info("################customer/updateCustomerBalance 执行开始 ################# ");
@@ -470,6 +477,7 @@ public class CustomerController {
      * @date 2018-09-19
      */
     @PostMapping("/customer/addCustomer")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel addCustomer() throws Exception {
         logger.info("################/customer/addCustomer 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -517,6 +525,7 @@ public class CustomerController {
      * @date 2018-09-19
      */
     @PostMapping("/customer/updateCustomer")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel updateCustomer() throws Exception {
         logger.info("################/customer/updateCustomer 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -548,6 +557,7 @@ public class CustomerController {
      * @date 2018-09-19
      */
     @PostMapping("/customer/updateDisableCustomer")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel updateDisableCustomer() throws Exception {
         logger.info("################/customer/updateDisableCustomer 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -597,6 +607,7 @@ public class CustomerController {
      * @date 2018-09-19
      */
     @PostMapping("/customer/deleteCustomers")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteCustomers() throws Exception {
         logger.info("################/customer/deleteCustomers 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();

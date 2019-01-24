@@ -54,7 +54,7 @@ public class MobileWarehouseInController {
      * @throws Exception
      */
     @PostMapping("/mobile/mobileWarehouseIn/addWarehouseInExecute")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel addWarehouseInExecute() throws Exception {
         logger.info("################/mobile/mobileWarehouseIn/addWarehouseInExecute 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -72,7 +72,7 @@ public class MobileWarehouseInController {
      * @throws Exception
      */
     @PostMapping("/mobile/mobileWarehouseIn/rebackWarehouseInExecute")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel rebackWarehouseInExecute() throws Exception {
         logger.info("################/mobile/mobileWarehouseIn/rebackWarehouseInExecute执行开始 ################# ");
         Long startTime = System.currentTimeMillis();

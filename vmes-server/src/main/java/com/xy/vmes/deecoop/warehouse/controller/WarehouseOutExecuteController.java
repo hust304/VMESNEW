@@ -86,7 +86,7 @@ public class WarehouseOutExecuteController {
     * @date 2018-11-01
     */
     @PostMapping("/warehouseOutExecute/save")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel save()  throws Exception {
 
         logger.info("################warehouseOutExecute/save 执行开始 ################# ");
@@ -106,7 +106,7 @@ public class WarehouseOutExecuteController {
     * @date 2018-11-01
     */
     @PostMapping("/warehouseOutExecute/update")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel update()  throws Exception {
 
         logger.info("################warehouseOutExecute/update 执行开始 ################# ");
@@ -127,7 +127,7 @@ public class WarehouseOutExecuteController {
     * @date 2018-11-01
     */
     @GetMapping("/warehouseOutExecute/deleteById/{id}")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteById(@PathVariable("id") String id)  throws Exception {
 
         logger.info("################warehouseOutExecute/deleteById 执行开始 ################# ");
@@ -146,7 +146,7 @@ public class WarehouseOutExecuteController {
     * @date 2018-11-01
     */
     @PostMapping("/warehouseOutExecute/deleteByIds")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteByIds()  throws Exception {
 
         logger.info("################warehouseOutExecute/deleteByIds 执行开始 ################# ");
@@ -226,7 +226,7 @@ public class WarehouseOutExecuteController {
      * @throws Exception
      */
     @PostMapping("/warehouseOutExecute/updateWarehouseOutExecute")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel updateWarehouseOutExecute() throws Exception {
         logger.info("################/warehouseOutExecute/updateWarehouseOutExecute 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -340,7 +340,7 @@ public class WarehouseOutExecuteController {
      * @throws Exception
      */
     @PostMapping("/warehouseOutExecute/deleteWarehouseOutExecute")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteWarehouseOutExecute() throws Exception {
         logger.info("################/warehouseOutExecute/deleteWarehouseOutExecute 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -444,7 +444,7 @@ public class WarehouseOutExecuteController {
      * @throws Exception
      */
     @PostMapping("/warehouseOutExecute/executeWarehouseOutExecute")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel executeWarehouseOutExecute() throws Exception {
         logger.info("################/warehouseOutExecute/executeWarehouseOutExecute 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();

@@ -71,7 +71,7 @@ public class WarehouseOutExecutorController {
     * @date 2018-11-01
     */
     @PostMapping("/warehouseOutExecutor/save")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel save()  throws Exception {
 
         logger.info("################warehouseOutExecutor/save 执行开始 ################# ");
@@ -91,7 +91,7 @@ public class WarehouseOutExecutorController {
     * @date 2018-11-01
     */
     @PostMapping("/warehouseOutExecutor/update")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel update()  throws Exception {
 
         logger.info("################warehouseOutExecutor/update 执行开始 ################# ");
@@ -112,7 +112,7 @@ public class WarehouseOutExecutorController {
     * @date 2018-11-01
     */
     @GetMapping("/warehouseOutExecutor/deleteById/{id}")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteById(@PathVariable("id") String id)  throws Exception {
 
         logger.info("################warehouseOutExecutor/deleteById 执行开始 ################# ");
@@ -131,7 +131,7 @@ public class WarehouseOutExecutorController {
     * @date 2018-11-01
     */
     @PostMapping("/warehouseOutExecutor/deleteByIds")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteByIds()  throws Exception {
 
         logger.info("################warehouseOutExecutor/deleteByIds 执行开始 ################# ");
@@ -211,7 +211,7 @@ public class WarehouseOutExecutorController {
      * @date 2018-11-01
      */
     @PostMapping("/warehouseOutExecutor/updateExecutor")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel updateExecutor()  throws Exception {
 
         logger.info("################warehouseOutExecutor/updateExecutor 执行开始 ################# ");

@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.apache.commons.lang.StringUtils;
@@ -67,6 +68,7 @@ public class CustomeAddressController {
     * @date 2018-09-20
     */
     @PostMapping("/customeAddress/save")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel save()  throws Exception {
 
         logger.info("################customeAddress/save 执行开始 ################# ");
@@ -86,6 +88,7 @@ public class CustomeAddressController {
     * @date 2018-09-20
     */
     @PostMapping("/customeAddress/update")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel update()  throws Exception {
 
         logger.info("################customeAddress/update 执行开始 ################# ");
@@ -106,6 +109,7 @@ public class CustomeAddressController {
     * @date 2018-09-20
     */
     @GetMapping("/customeAddress/deleteById/{id}")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteById(@PathVariable("id") String id)  throws Exception {
 
         logger.info("################customeAddress/deleteById 执行开始 ################# ");
@@ -124,6 +128,7 @@ public class CustomeAddressController {
     * @date 2018-09-20
     */
     @PostMapping("/customeAddress/deleteByIds")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteByIds()  throws Exception {
 
         logger.info("################customeAddress/deleteById 执行开始 ################# ");
@@ -267,6 +272,7 @@ public class CustomeAddressController {
      * @date 2018-09-20
      */
     @PostMapping("/customeAddress/addCustomerAddress")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel addCustomerAddress() throws Exception {
         logger.info("################/customeAddress/addCustomerAddress 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -318,6 +324,7 @@ public class CustomeAddressController {
      * @date 2018-09-20
      */
     @PostMapping("/customeAddress/updateCustomerAddress")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel updateCustomerAddress() throws Exception {
         logger.info("################/customeAddress/updateCustomerAddress 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -348,6 +355,7 @@ public class CustomeAddressController {
      * @date 2018-09-20
      */
     @PostMapping("/customeAddress/updateDefaultCustomerAddress")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel updateDefaultCustomerAddress() throws Exception {
         logger.info("################/customeAddress/updateDefaultCustomerAddress 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -407,6 +415,7 @@ public class CustomeAddressController {
      * @date 2018-09-20
      */
     @PostMapping("/customeAddress/deleteCustomerAddress")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteCustomerAddress() throws Exception {
         logger.info("################/customeAddress/deleteCustomerAddress 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();

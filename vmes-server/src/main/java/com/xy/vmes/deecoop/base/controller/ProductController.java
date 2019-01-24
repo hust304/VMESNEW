@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.apache.commons.lang.StringUtils;
@@ -76,6 +77,7 @@ public class ProductController {
     * @date 2018-09-21
     */
     @PostMapping("/product/save")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel save()  throws Exception {
 
         logger.info("################product/save 执行开始 ################# ");
@@ -95,6 +97,7 @@ public class ProductController {
     * @date 2018-09-21
     */
     @PostMapping("/product/update")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel update()  throws Exception {
 
         logger.info("################product/update 执行开始 ################# ");
@@ -115,6 +118,7 @@ public class ProductController {
     * @date 2018-09-21
     */
     @GetMapping("/product/deleteById/{id}")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteById(@PathVariable("id") String id)  throws Exception {
 
         logger.info("################product/deleteById 执行开始 ################# ");
@@ -133,6 +137,7 @@ public class ProductController {
     * @date 2018-09-21
     */
     @PostMapping("/product/deleteByIds")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteByIds()  throws Exception {
 
         logger.info("################product/deleteByIds 执行开始 ################# ");
@@ -388,6 +393,7 @@ public class ProductController {
      * @date 2018-09-19
      */
     @PostMapping("/product/addProduct")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel addProduct() throws Exception {
         logger.info("################/product/addProduct 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -467,6 +473,7 @@ public class ProductController {
      * @date 2018-09-19
      */
     @PostMapping("/product/updateProduct")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel updateProduct() throws Exception {
         logger.info("################/product/updateProduct 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -521,6 +528,7 @@ public class ProductController {
      * @date 2018-09-19
      */
     @PostMapping("/product/updateDisableProduct")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel updateDisableProduct() throws Exception {
         logger.info("################/product/updateDisableProduct 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -563,6 +571,7 @@ public class ProductController {
      * @date 2018-09-19
      */
     @PostMapping("/product/deleteProduct")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteProduct() throws Exception {
         logger.info("################/product/deleteProduct 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();

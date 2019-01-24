@@ -18,6 +18,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -77,6 +78,7 @@ public class PostController {
      * @date 2018-08-01
      */
     @PostMapping("/post/save")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel save()  throws Exception {
 
         logger.info("################post/save 执行开始 ################# ");
@@ -96,6 +98,7 @@ public class PostController {
      * @date 2018-08-01
      */
     @PostMapping("/post/update")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel update()  throws Exception {
 
         logger.info("################post/update 执行开始 ################# ");
@@ -116,6 +119,7 @@ public class PostController {
      * @date 2018-08-01
      */
     @GetMapping("/post/deleteById/{id}")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteById(@PathVariable("id") String id)  throws Exception {
 
         logger.info("################post/deleteById 执行开始 ################# ");
@@ -205,6 +209,7 @@ public class PostController {
      * @date 2018-08-01
      */
     @PostMapping("/post/addPost")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel addPost()  throws Exception {
 
         logger.info("################post/addPost 执行开始 ################# ");
@@ -252,6 +257,7 @@ public class PostController {
      * @date 2018-08-01
      */
     @PostMapping("/post/updatePost")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel updatePost()  throws Exception {
         logger.info("################post/updatePost 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -271,6 +277,7 @@ public class PostController {
      * @date 2018-07-27
      */
     @PostMapping("/post/updateDisablePost")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel updateDisablePost() throws Exception {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
@@ -344,6 +351,7 @@ public class PostController {
      * @date 2018-08-01
      */
     @PostMapping("/post/deletePosts")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel deletePosts()  throws Exception {
         logger.info("################post/deletePosts 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();

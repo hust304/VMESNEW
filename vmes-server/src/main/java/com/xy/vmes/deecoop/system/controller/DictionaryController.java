@@ -18,6 +18,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -74,6 +75,7 @@ public class DictionaryController {
     * @date 2018-07-31
     */
     @PostMapping("/dictionary/save")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel save()  throws Exception {
 
         logger.info("################dictionary/save 执行开始 ################# ");
@@ -93,6 +95,7 @@ public class DictionaryController {
     * @date 2018-07-31
     */
     @PostMapping("/dictionary/update")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel update()  throws Exception {
 
         logger.info("################dictionary/update 执行开始 ################# ");
@@ -113,6 +116,7 @@ public class DictionaryController {
     * @date 2018-07-31
     */
     @GetMapping("/dictionary/deleteById/{id}")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteById(@PathVariable("id") String id)  throws Exception {
 
         logger.info("################dictionary/deleteById 执行开始 ################# ");
@@ -200,6 +204,7 @@ public class DictionaryController {
      * @date 2018-07-31
      */
     @PostMapping("/dictionary/addDictionary")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel addDictionary()  throws Exception {
         logger.info("################dictionary/addDictionary 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -276,6 +281,7 @@ public class DictionaryController {
      * @date 2018-07-31
      */
     @PostMapping("/dictionary/updateDictionary")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel updateDictionary()  throws Exception {
         logger.info("################dictionary/updateDictionary 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -331,6 +337,7 @@ public class DictionaryController {
      * @date 2018-07-27
      */
     @PostMapping("/dictionary/updateDisableDictionary")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel updateDisableDictionary() throws Exception {
         logger.info("################dictionary/updateDisableDictionary 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -386,6 +393,7 @@ public class DictionaryController {
      * @date 2018-07-31
      */
     @PostMapping("/dictionary/deleteDictionarys")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteDictionarys()  throws Exception {
         logger.info("################dictionary/deleteDictionarys 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();

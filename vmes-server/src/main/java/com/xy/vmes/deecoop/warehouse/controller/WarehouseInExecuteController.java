@@ -133,7 +133,7 @@ public class WarehouseInExecuteController {
      * @throws Exception
      */
     @PostMapping("/warehouseInExecute/addWarehouseInExecute")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel addWarehouseInExecute() throws Exception {
         logger.info("################/warehouseInExecute/addWarehouseInExecute 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -151,7 +151,7 @@ public class WarehouseInExecuteController {
      * @throws Exception
      */
     @PostMapping("/warehouseInExecute/rebackWarehouseInExecute")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel rebackWarehouseInExecute() throws Exception {
         logger.info("################/warehouseInExecute/rebackWarehouseInExecute 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -169,7 +169,7 @@ public class WarehouseInExecuteController {
      * @throws Exception
      */
     @PostMapping("/warehouseInExecute/updateWarehouseInExecute")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel updateWarehouseInExecute() throws Exception {
         logger.info("################/warehouseInExecute/updateWarehouseInExecute 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -318,7 +318,7 @@ public class WarehouseInExecuteController {
      * @throws Exception
      */
     @PostMapping("/warehouseInExecute/deleteWarehouseInExecute")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteWarehouseInExecute() throws Exception {
         logger.info("################/warehouseInExecute/deleteWarehouseInExecute 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -473,7 +473,7 @@ public class WarehouseInExecuteController {
      * @throws Exception
      */
     @PostMapping("/warehouseInExecute/updateCancelWarehouseInExecute")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel updateCancelWarehouseInExecute() throws Exception {
         logger.info("################/warehouseInExecute/updateCancelWarehouseInExecute 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();

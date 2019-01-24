@@ -19,6 +19,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -327,6 +328,7 @@ public class UserLoginController {
      * @return
      */
     @PostMapping("/userLogin/changePassWord")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel changePassWord() throws Exception {
         logger.info("################userLogin/changePassWord 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();

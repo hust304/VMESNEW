@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.apache.commons.lang.StringUtils;
@@ -66,6 +67,7 @@ public class TemplateController {
     * @date 2018-08-23
     */
     @PostMapping("/template/save")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel save()  throws Exception {
 
         logger.info("################template/save 执行开始 ################# ");
@@ -85,6 +87,7 @@ public class TemplateController {
     * @date 2018-08-23
     */
     @PostMapping("/template/update")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel update()  throws Exception {
 
         logger.info("################template/update 执行开始 ################# ");
@@ -105,6 +108,7 @@ public class TemplateController {
     * @date 2018-08-23
     */
     @GetMapping("/template/deleteById/{id}")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteById(@PathVariable("id") String id)  throws Exception {
 
         logger.info("################template/deleteById 执行开始 ################# ");
@@ -123,6 +127,7 @@ public class TemplateController {
     * @date 2018-08-23
     */
     @PostMapping("/template/deleteByIds")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteByIds()  throws Exception {
 
         logger.info("################template/deleteById 执行开始 ################# ");

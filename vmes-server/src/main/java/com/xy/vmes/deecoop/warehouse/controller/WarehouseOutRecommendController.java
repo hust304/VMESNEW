@@ -68,7 +68,7 @@ public class WarehouseOutRecommendController {
     * @date 2018-11-07
     */
     @PostMapping("/warehouseOutRecommend/save")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel save()  throws Exception {
 
         logger.info("################warehouseOutRecommend/save 执行开始 ################# ");
@@ -88,7 +88,7 @@ public class WarehouseOutRecommendController {
     * @date 2018-11-07
     */
     @PostMapping("/warehouseOutRecommend/update")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel update()  throws Exception {
 
         logger.info("################warehouseOutRecommend/update 执行开始 ################# ");
@@ -109,7 +109,7 @@ public class WarehouseOutRecommendController {
     * @date 2018-11-07
     */
     @GetMapping("/warehouseOutRecommend/deleteById/{id}")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteById(@PathVariable("id") String id)  throws Exception {
 
         logger.info("################warehouseOutRecommend/deleteById 执行开始 ################# ");
@@ -128,7 +128,7 @@ public class WarehouseOutRecommendController {
     * @date 2018-11-07
     */
     @PostMapping("/warehouseOutRecommend/deleteByIds")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteByIds()  throws Exception {
 
         logger.info("################warehouseOutRecommend/deleteByIds 执行开始 ################# ");

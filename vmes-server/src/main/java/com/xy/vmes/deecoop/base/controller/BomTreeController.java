@@ -70,7 +70,7 @@ public class BomTreeController {
     * @date 2018-10-09
     */
     @PostMapping("/bomTree/save")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel save()  throws Exception {
 
         logger.info("################bomTree/save 执行开始 ################# ");
@@ -90,7 +90,7 @@ public class BomTreeController {
     * @date 2018-10-09
     */
     @PostMapping("/bomTree/update")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel update()  throws Exception {
 
         logger.info("################bomTree/update 执行开始 ################# ");
@@ -111,7 +111,7 @@ public class BomTreeController {
     * @date 2018-10-09
     */
     @GetMapping("/bomTree/deleteById/{id}")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteById(@PathVariable("id") String id)  throws Exception {
 
         logger.info("################bomTree/deleteById 执行开始 ################# ");
@@ -130,7 +130,7 @@ public class BomTreeController {
     * @date 2018-10-09
     */
     @PostMapping("/bomTree/deleteByIds")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteByIds()  throws Exception {
 
         logger.info("################bomTree/deleteByIds 执行开始 ################# ");
@@ -397,7 +397,7 @@ public class BomTreeController {
      * @date 2018-09-20
      */
     @PostMapping("/bomTree/addBomTree")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel addBomTree()  throws Exception {
 
         logger.info("################bomTree/addBomTree 执行开始 ################# ");
@@ -423,7 +423,7 @@ public class BomTreeController {
      * @date 2018-09-20
      */
     @PostMapping("/bomTree/updateBomTree")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel updateBomTree()  throws Exception {
 
         logger.info("################bomTree/updateBomTree 执行开始 ################# ");
@@ -467,7 +467,7 @@ public class BomTreeController {
      * @date 2018-09-20
      */
     @PostMapping("/bomTree/deleteBomTree")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteBomTree()  throws Exception {
         logger.info("################bomTree/deleteBomTree 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();

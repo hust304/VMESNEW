@@ -44,7 +44,7 @@ public class MobileWarehouseMoveController {
 
 
     @PostMapping("/mobile/mobileWarehouseMove/addWarehouseMoveExecute")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel addWarehouseMoveExecute() throws Exception {
         logger.info("################/mobile/mobileWarehouseMove/addWarehouseMoveExecute执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -57,7 +57,7 @@ public class MobileWarehouseMoveController {
 
 
     @PostMapping("/mobile/mobileWarehouseMove/rebackWarehouseMoveDetail")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel rebackWarehouseMoveDetail() throws Exception {
         logger.info("################/mobile/mobileWarehouseMove/rebackWarehouseMoveDetail执行开始 ################# ");
         Long startTime = System.currentTimeMillis();

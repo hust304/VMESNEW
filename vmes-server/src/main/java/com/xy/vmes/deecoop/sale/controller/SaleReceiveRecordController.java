@@ -68,7 +68,7 @@ public class SaleReceiveRecordController {
     * @date 2018-12-25
     */
     @PostMapping("/saleReceiveRecord/save")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel save()  throws Exception {
 
         logger.info("################saleReceiveRecord/save 执行开始 ################# ");
@@ -88,7 +88,7 @@ public class SaleReceiveRecordController {
     * @date 2018-12-25
     */
     @PostMapping("/saleReceiveRecord/update")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel update()  throws Exception {
 
         logger.info("################saleReceiveRecord/update 执行开始 ################# ");
@@ -109,7 +109,7 @@ public class SaleReceiveRecordController {
     * @date 2018-12-25
     */
     @GetMapping("/saleReceiveRecord/deleteById/{id}")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteById(@PathVariable("id") String id)  throws Exception {
 
         logger.info("################saleReceiveRecord/deleteById 执行开始 ################# ");
@@ -128,7 +128,7 @@ public class SaleReceiveRecordController {
     * @date 2018-12-25
     */
     @PostMapping("/saleReceiveRecord/deleteByIds")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteByIds()  throws Exception {
 
         logger.info("################saleReceiveRecord/deleteByIds 执行开始 ################# ");

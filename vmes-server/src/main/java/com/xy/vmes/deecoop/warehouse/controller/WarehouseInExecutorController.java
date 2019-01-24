@@ -227,7 +227,7 @@ public class WarehouseInExecutorController {
      * @date 2018-11-01
      */
     @PostMapping("/warehouseInExecutor/updateExecutor")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel updateExecutor() throws Exception {
         logger.info("################warehouseInExecutor/updateExecutor 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();

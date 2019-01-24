@@ -79,7 +79,7 @@ public class BomController {
     * @date 2018-09-29
     */
     @PostMapping("/bom/save")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel save()  throws Exception {
 
         logger.info("################bom/save 执行开始 ################# ");
@@ -99,7 +99,7 @@ public class BomController {
     * @date 2018-09-29
     */
     @PostMapping("/bom/update")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel update()  throws Exception {
 
         logger.info("################bom/update 执行开始 ################# ");
@@ -120,7 +120,7 @@ public class BomController {
     * @date 2018-09-29
     */
     @GetMapping("/bom/deleteById/{id}")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteById(@PathVariable("id") String id)  throws Exception {
 
         logger.info("################bom/deleteById 执行开始 ################# ");
@@ -139,7 +139,7 @@ public class BomController {
     * @date 2018-09-29
     */
     @PostMapping("/bom/deleteByIds")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteByIds()  throws Exception {
 
         logger.info("################bom/deleteByIds 执行开始 ################# ");
@@ -378,7 +378,7 @@ public class BomController {
      * @date 2018-09-20
      */
     @PostMapping("/bom/addBom")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel addBom()  throws Exception {
 
         logger.info("################bom/addBom 执行开始 ################# ");
@@ -435,7 +435,7 @@ public class BomController {
      * @date 2018-09-20
      */
     @PostMapping("/bom/updateBom")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel updateBom()  throws Exception {
 
         logger.info("################bom/updateBom 执行开始 ################# ");
@@ -455,7 +455,7 @@ public class BomController {
      * @date 2018-09-20
      */
     @PostMapping("/bom/updateIsDefaultBom")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel updateIsDefaultBom()  throws Exception {
 
         logger.info("################bom/updateIsDefaultBom 执行开始 ################# ");
@@ -479,7 +479,7 @@ public class BomController {
      * @date 2018-09-20
      */
     @PostMapping("/bom/deleteBoms")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteBoms()  throws Exception {
         logger.info("################bom/deleteBoms 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();

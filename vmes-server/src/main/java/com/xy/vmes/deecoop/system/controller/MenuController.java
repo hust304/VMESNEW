@@ -18,6 +18,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -76,6 +77,7 @@ public class MenuController {
     * @date 2018-08-01
     */
     @PostMapping("/menu/save")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel save()  throws Exception {
 
         logger.info("################menu/save 执行开始 ################# ");
@@ -95,6 +97,7 @@ public class MenuController {
     * @date 2018-08-01
     */
     @PostMapping("/menu/update")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel update()  throws Exception {
 
         logger.info("################menu/update 执行开始 ################# ");
@@ -115,6 +118,7 @@ public class MenuController {
     * @date 2018-08-01
     */
     @GetMapping("/menu/deleteById/{id}")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteById(@PathVariable("id") String id)  throws Exception {
 
         logger.info("################menu/deleteById 执行开始 ################# ");
@@ -329,6 +333,7 @@ public class MenuController {
      * @date 2018-08-01
      */
     @PostMapping("/menu/addMenu")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel addMenu() throws Exception {
         logger.info("################menu/addMenu 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -425,6 +430,7 @@ public class MenuController {
      * @date 2018-08-01
      */
     @PostMapping("/menu/updateMenu")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel updateMenu() throws Exception {
         logger.info("################menu/updateMenu 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -517,6 +523,7 @@ public class MenuController {
      * @date 2018-08-01
      */
     @PostMapping("/menu/updateDisableMenu")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel updateDisableMenu() throws Exception {
         logger.info("################menu/updateDisableMenu 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -571,6 +578,7 @@ public class MenuController {
      * @date 2018-08-01
      */
     @PostMapping("/menu/deleteMenus")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteMenus() throws Exception {
         logger.info("################menu/deleteMenus 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();

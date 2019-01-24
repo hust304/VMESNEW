@@ -68,7 +68,7 @@ public class ${objectName}Controller {
     * @date ${nowDate?string("yyyy-MM-dd")}
     */
     @PostMapping("/${objectNameLower}/save")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel save()  throws Exception {
 
         logger.info("################${objectNameLower}/save 执行开始 ################# ");
@@ -88,7 +88,7 @@ public class ${objectName}Controller {
     * @date ${nowDate?string("yyyy-MM-dd")}
     */
     @PostMapping("/${objectNameLower}/update")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel update()  throws Exception {
 
         logger.info("################${objectNameLower}/update 执行开始 ################# ");
@@ -109,7 +109,7 @@ public class ${objectName}Controller {
     * @date ${nowDate?string("yyyy-MM-dd")}
     */
     @GetMapping("/${objectNameLower}/deleteById/{id}")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteById(@PathVariable("id") String id)  throws Exception {
 
         logger.info("################${objectNameLower}/deleteById 执行开始 ################# ");
@@ -128,7 +128,7 @@ public class ${objectName}Controller {
     * @date ${nowDate?string("yyyy-MM-dd")}
     */
     @PostMapping("/${objectNameLower}/deleteByIds")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteByIds()  throws Exception {
 
         logger.info("################${objectNameLower}/deleteByIds 执行开始 ################# ");

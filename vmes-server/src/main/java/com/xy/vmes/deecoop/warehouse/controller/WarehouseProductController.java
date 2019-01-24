@@ -57,7 +57,7 @@ public class WarehouseProductController {
     * @date 2018-10-31
     */
     @PostMapping("/warehouseProduct/save")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel save()  throws Exception {
 
         logger.info("################warehouseProduct/save 执行开始 ################# ");
@@ -77,7 +77,7 @@ public class WarehouseProductController {
     * @date 2018-10-31
     */
     @PostMapping("/warehouseProduct/update")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel update()  throws Exception {
 
         logger.info("################warehouseProduct/update 执行开始 ################# ");
@@ -98,7 +98,7 @@ public class WarehouseProductController {
     * @date 2018-10-31
     */
     @GetMapping("/warehouseProduct/deleteById/{id}")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteById(@PathVariable("id") String id)  throws Exception {
 
         logger.info("################warehouseProduct/deleteById 执行开始 ################# ");
@@ -117,7 +117,7 @@ public class WarehouseProductController {
     * @date 2018-10-31
     */
     @PostMapping("/warehouseProduct/deleteByIds")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteByIds()  throws Exception {
 
         logger.info("################warehouseProduct/deleteByIds 执行开始 ################# ");
@@ -177,7 +177,7 @@ public class WarehouseProductController {
      * @date 2018-10-31
      */
     @PostMapping("/warehouseProduct/updateWarehouseProduct")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel updateWarehouseProduct()  throws Exception {
         logger.info("################warehouseProduct/updateWarehouseProduct 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();

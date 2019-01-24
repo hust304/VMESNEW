@@ -129,7 +129,7 @@ public class WarehouseCheckController {
      * @throws Exception
      */
     @PostMapping("/warehouseCheck/addWarehouseCheck")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel addWarehouseCheck() throws Exception {
         logger.info("################/warehouseCheck/addWarehouseCheck 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -222,7 +222,7 @@ public class WarehouseCheckController {
      * @throws Exception
      */
     @PostMapping("/warehouseCheck/cancelWarehouseCheck")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel cancelWarehouseCheck() throws Exception {
         logger.info("################/warehouseCheck/cancelWarehouseCheck 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -289,7 +289,7 @@ public class WarehouseCheckController {
      * @throws Exception
      */
     @PostMapping("/warehouseCheck/rebackWarehouseCheck")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel rebackWarehouseCheck() throws Exception {
         logger.info("################/warehouseCheck/rebackWarehouseCheck 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -365,7 +365,7 @@ public class WarehouseCheckController {
      * @throws Exception
      */
     @PostMapping("/warehouseCheck/deleteWarehouseCheck")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteWarehouseCheck() throws Exception {
         logger.info("################/warehouseCheck/deleteWarehouseCheck 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();

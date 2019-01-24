@@ -243,7 +243,7 @@ public class WarehouseInDispatchController {
      * @throws Exception
      */
     @PostMapping("/warehouseInDispatch/updateWarehouseInDispatch")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel updateWarehouseInDispatch() throws Exception {
         logger.info("################/warehouseInDispatch/updateWarehouseInDispatch 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();

@@ -73,7 +73,7 @@ public class WarehouseMoveController {
     * @date 2018-11-16
     */
     @PostMapping("/warehouseMove/save")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel save()  throws Exception {
 
         logger.info("################warehouseMove/save 执行开始 ################# ");
@@ -93,7 +93,7 @@ public class WarehouseMoveController {
     * @date 2018-11-16
     */
     @PostMapping("/warehouseMove/update")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel update()  throws Exception {
 
         logger.info("################warehouseMove/update 执行开始 ################# ");
@@ -114,7 +114,7 @@ public class WarehouseMoveController {
     * @date 2018-11-16
     */
     @GetMapping("/warehouseMove/deleteById/{id}")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteById(@PathVariable("id") String id)  throws Exception {
 
         logger.info("################warehouseMove/deleteById 执行开始 ################# ");
@@ -133,7 +133,7 @@ public class WarehouseMoveController {
     * @date 2018-11-16
     */
     @PostMapping("/warehouseMove/deleteByIds")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteByIds()  throws Exception {
 
         logger.info("################warehouseMove/deleteByIds 执行开始 ################# ");
@@ -214,7 +214,7 @@ public class WarehouseMoveController {
      * @throws Exception
      */
     @PostMapping("/warehouseMove/deleteWarehouseMove")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteWarehouseMove() throws Exception {
         logger.info("################/warehouseMove/deleteWarehouseMove 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -258,7 +258,7 @@ public class WarehouseMoveController {
      * @date 2018-11-16
      */
     @PostMapping("/warehouseMove/saveWarehouseMove")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel saveWarehouseMove()  throws Exception {
 
         logger.info("################warehouseMove/saveWarehouseMove 执行开始 ################# ");

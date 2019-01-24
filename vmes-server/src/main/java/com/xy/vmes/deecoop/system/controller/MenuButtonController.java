@@ -18,6 +18,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -71,6 +72,7 @@ public class MenuButtonController {
     * @date 2018-08-03
     */
     @PostMapping("/button/save")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel save()  throws Exception {
 
         logger.info("################button/save 执行开始 ################# ");
@@ -90,6 +92,7 @@ public class MenuButtonController {
     * @date 2018-08-03
     */
     @PostMapping("/button/update")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel update()  throws Exception {
 
         logger.info("################button/update 执行开始 ################# ");
@@ -110,6 +113,7 @@ public class MenuButtonController {
     * @date 2018-08-03
     */
     @GetMapping("/button/deleteById/{id}")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteById(@PathVariable("id") String id)  throws Exception {
 
         logger.info("################button/deleteById 执行开始 ################# ");
@@ -200,6 +204,7 @@ public class MenuButtonController {
      * @date 2018-08-03
      */
     @PostMapping("/button/addMeunButton")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel addMeunButton() throws Exception {
         logger.info("################button/addMeunButton 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -281,6 +286,7 @@ public class MenuButtonController {
      * @date 2018-08-03
      */
     @PostMapping("/button/updateMeunButton")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel updateMeunButton() throws Exception {
         logger.info("################button/updateMeunButton 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -364,6 +370,7 @@ public class MenuButtonController {
      * @date 2018-08-03
      */
     @PostMapping("/button/updateDisableMeunButton")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel updateDisableMeunButton() throws Exception {
         logger.info("################button/updateDisableMeunButton 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -410,6 +417,7 @@ public class MenuButtonController {
      * @date 2018-08-03
      */
     @PostMapping("/button/deleteMeunButtons")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteMeunButtons() throws Exception {
         logger.info("################button/deleteMeunButtons 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();

@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.apache.commons.lang.StringUtils;
@@ -76,6 +77,7 @@ public class EquipmentController {
     * @date 2018-09-20
     */
     @PostMapping("/equipment/save")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel save()  throws Exception {
 
         logger.info("################equipment/save 执行开始 ################# ");
@@ -95,6 +97,7 @@ public class EquipmentController {
     * @date 2018-09-20
     */
     @PostMapping("/equipment/update")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel update()  throws Exception {
 
         logger.info("################equipment/update 执行开始 ################# ");
@@ -115,6 +118,7 @@ public class EquipmentController {
     * @date 2018-09-20
     */
     @GetMapping("/equipment/deleteById/{id}")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteById(@PathVariable("id") String id)  throws Exception {
 
         logger.info("################equipment/deleteById 执行开始 ################# ");
@@ -133,6 +137,7 @@ public class EquipmentController {
     * @date 2018-09-20
     */
     @PostMapping("/equipment/deleteByIds")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteByIds()  throws Exception {
 
         logger.info("################equipment/deleteByIds 执行开始 ################# ");
@@ -370,6 +375,7 @@ public class EquipmentController {
      * @date 2018-09-20
      */
     @PostMapping("/equipment/addEquipment")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel addEquipment()  throws Exception {
 
         logger.info("################equipment/addEquipment 执行开始 ################# ");
@@ -399,6 +405,7 @@ public class EquipmentController {
      * @date 2018-09-20
      */
     @PostMapping("/equipment/updateEquipment")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel updateEquipment()  throws Exception {
 
         logger.info("################equipment/updateEquipment 执行开始 ################# ");

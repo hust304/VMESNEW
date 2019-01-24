@@ -16,6 +16,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -72,6 +73,7 @@ public class DepartmentController {
     * @date 2018-07-23
     */
     @PostMapping("/department/save")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel save()  throws Exception {
 
         logger.info("################department/dataList 执行开始 ################# ");
@@ -91,6 +93,7 @@ public class DepartmentController {
     * @date 2018-07-23
     */
     @PostMapping("/department/update")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel update()  throws Exception {
 
         logger.info("################department/dataList 执行开始 ################# ");
@@ -111,6 +114,7 @@ public class DepartmentController {
     * @date 2018-07-23
     */
     @GetMapping("/department/deleteById/{id}")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteById(@PathVariable("id") String id)  throws Exception {
 
         logger.info("################department/dataList 执行开始 ################# ");
@@ -254,6 +258,7 @@ public class DepartmentController {
      * @date 2018-07-27
      */
     @PostMapping("/department/addDepartment")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel addDepartment() throws Exception {
         logger.info("################department/addDepartment 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -378,6 +383,7 @@ public class DepartmentController {
      * @date 2018-07-27
      */
     @PostMapping("/department/updateDepartment")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel updateDepartment() throws Exception {
         logger.info("################department/updateDepartment 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -469,6 +475,7 @@ public class DepartmentController {
      * @date 2018-07-27
      */
     @PostMapping("/department/updateDisableDept")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel updateDisableDept() throws Exception {
         logger.info("################department/updateDisableDept 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -523,6 +530,7 @@ public class DepartmentController {
      * @date 2018-07-27
      */
     @PostMapping("/department/deleteDepartments")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteDepartments() throws Exception {
         logger.info("################department/deleteDepartments 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();

@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.apache.commons.lang.StringUtils;
@@ -67,6 +68,7 @@ public class LogInfoController {
     * @date 2018-08-28
     */
     @PostMapping("/logInfo/save")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel save()  throws Exception {
 
         logger.info("################logInfo/save 执行开始 ################# ");
@@ -86,6 +88,7 @@ public class LogInfoController {
     * @date 2018-08-28
     */
     @PostMapping("/logInfo/update")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel update()  throws Exception {
 
         logger.info("################logInfo/update 执行开始 ################# ");
@@ -106,6 +109,7 @@ public class LogInfoController {
     * @date 2018-08-28
     */
     @GetMapping("/logInfo/deleteById/{id}")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteById(@PathVariable("id") String id)  throws Exception {
 
         logger.info("################logInfo/deleteById 执行开始 ################# ");
@@ -124,6 +128,7 @@ public class LogInfoController {
     * @date 2018-08-28
     */
     @PostMapping("/logInfo/deleteByIds")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteByIds()  throws Exception {
 
         logger.info("################logInfo/deleteById 执行开始 ################# ");

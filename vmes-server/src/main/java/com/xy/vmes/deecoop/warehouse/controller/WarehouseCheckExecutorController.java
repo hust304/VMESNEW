@@ -120,7 +120,7 @@ public class WarehouseCheckExecutorController {
      * @throws Exception
      */
     @PostMapping("/warehouseCheckExecutor/addWarehouseCheckExecutor")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel addWarehouseCheckExecutor() throws Exception {
         logger.info("################/warehouseCheckExecutor/addWarehouseCheckExecutor 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();

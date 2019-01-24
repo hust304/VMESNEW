@@ -17,6 +17,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -236,6 +237,7 @@ public class CompanyController {
      * @date 2018-08-06
      */
     @PostMapping("/company/addCompanyAdmin")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel addCompanyAdmin() throws Exception {
         logger.info("################company/addCompanyAdmin 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -386,6 +388,7 @@ public class CompanyController {
      * @date 2018-08-06
      */
     @PostMapping("/company/updateCompany")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel updateCompany() throws Exception {
         logger.info("################company/updateCompany 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -509,6 +512,7 @@ public class CompanyController {
      * @date 2018-08-06
      */
     @PostMapping("/company/updateAdmin")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel updateAdmin() {
 
         ResultModel model = new ResultModel();
@@ -541,6 +545,7 @@ public class CompanyController {
      * @date 2018-08-06
      */
     @PostMapping("/company/deleteCompanyAdmins")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteCompanyAdmins() throws Exception {
         logger.info("################company/deleteCompanyAdmins 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();

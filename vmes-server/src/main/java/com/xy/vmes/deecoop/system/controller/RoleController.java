@@ -17,6 +17,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -87,6 +88,7 @@ public class RoleController {
     * @date 2018-07-30
     */
     @PostMapping("/role/save")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel save()  throws Exception {
 
         logger.info("################role/save 执行开始 ################# ");
@@ -106,6 +108,7 @@ public class RoleController {
     * @date 2018-07-30
     */
     @PostMapping("/role/update")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel update()  throws Exception {
 
         logger.info("################role/update 执行开始 ################# ");
@@ -126,6 +129,7 @@ public class RoleController {
     * @date 2018-07-30
     */
     @GetMapping("/role/deleteById/{id}")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteById(@PathVariable("id") String id)  throws Exception {
 
         logger.info("################role/deleteById 执行开始 ################# ");
@@ -332,6 +336,7 @@ public class RoleController {
      * @date 2018-07-30
      */
     @PostMapping("/role/addRole")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel addRole() throws Exception {
         logger.info("################role/addRole 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -408,6 +413,7 @@ public class RoleController {
      * @date 2018-07-30
      */
     @PostMapping("/role/updateRole")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel updateRole() throws Exception {
         logger.info("################role/updateRole 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -461,6 +467,7 @@ public class RoleController {
      * @date 2018-07-30
      */
     @PostMapping("/role/updateDisableRole")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel updateDisableRole() throws Exception {
         logger.info("################role/updateDisableRole 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -512,6 +519,7 @@ public class RoleController {
      * @date 2018-07-30
      */
     @PostMapping("/role/deleteRoles")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteRoles() throws Exception {
         logger.info("################role/deleteRoles 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -586,6 +594,7 @@ public class RoleController {
      * @date 2018-07-30
      */
     @PostMapping("/role/saveRoleUsers")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel saveRoleUsers() throws Exception {
         logger.info("################role/saveRoleUsers 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -623,6 +632,7 @@ public class RoleController {
      * @date 2018-07-30
      */
     @PostMapping("/role/saveRoleMeuns")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel saveRoleMeuns() throws Exception {
         logger.info("################role/saveRoleMeuns 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -821,6 +831,7 @@ public class RoleController {
      * @date 2018-07-30
      */
     @PostMapping("/role/saveRoleMeunsButtons")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel saveRoleMeunsButtons() throws Exception {
         logger.info("################role/saveRoleMeunsButtons 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -1136,6 +1147,7 @@ public class RoleController {
     }
 
     @PostMapping("/role/addRoleByName")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel addRoleByName() throws Exception {
         logger.info("################role/addRoleByName 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();

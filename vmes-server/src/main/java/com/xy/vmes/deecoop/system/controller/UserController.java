@@ -18,6 +18,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -82,6 +83,7 @@ public class UserController {
      * @date 2018-07-26
      */
     @PostMapping("/user/save")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel save()  throws Exception {
 
         logger.info("################user/save 执行开始 ################# ");
@@ -101,6 +103,7 @@ public class UserController {
      * @date 2018-07-26
      */
     @PostMapping("/user/update")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel update()  throws Exception {
 
         logger.info("################user/update 执行开始 ################# ");
@@ -121,6 +124,7 @@ public class UserController {
      * @date 2018-07-26
      */
     @GetMapping("/user/deleteById/{id}")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteById(@PathVariable("id") String id)  throws Exception {
 
         logger.info("################user/deleteById 执行开始 ################# ");
@@ -209,6 +213,7 @@ public class UserController {
      * @date 2018-07-26
      */
     @PostMapping("/user/addUser")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel addUser()  throws Exception {
         logger.info("################user/addUser 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -338,6 +343,7 @@ public class UserController {
      * @date 2018-07-26
      */
     @PostMapping("/user/updateUser")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel updateUser()  throws Exception {
         logger.info("################user/updateUser 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -457,6 +463,7 @@ public class UserController {
      * @date 2018-07-26
      */
     @PostMapping("/user/updatePasswords")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel updatePasswords()  throws Exception {
 
         logger.info("################user/updatePasswords 执行开始 ################# ");
@@ -504,6 +511,7 @@ public class UserController {
      * @date 2018-07-26
      */
     @PostMapping("/user/updateEmployeeUserUnbind")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel updateEmployeeUserUnbind()  throws Exception {
 
         logger.info("################user/updateEmployeeUserUnbind 执行开始 ################# ");
@@ -539,6 +547,7 @@ public class UserController {
      * @date 2018-07-26
      */
     @PostMapping("/user/updateEmployeeUserBind")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel updateEmployeeUserBind() throws Exception {
 
         logger.info("################user/updateEmployeeUserBind 执行开始 ################# ");
@@ -646,6 +655,7 @@ public class UserController {
      * @date 2018-07-26
      */
     @PostMapping("/user/deleteUsers")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteUsers()  throws Exception {
 
         logger.info("################user/deleteUsers 执行开始 ################# ");

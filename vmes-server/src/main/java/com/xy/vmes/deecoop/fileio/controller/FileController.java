@@ -10,6 +10,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -37,6 +38,7 @@ public class FileController {
      * @date 2018-08-02
      */
     @GetMapping("/file/uploadFile")
+    @Transactional(rollbackFor=Exception.class)
     public void uploadFile()  throws Exception {
 
         logger.info("################file/uploadFile 执行开始 ################# ");
@@ -57,6 +59,7 @@ public class FileController {
      * @date 2018-08-02
      */
     @GetMapping("/file/downloadFile")
+    @Transactional(rollbackFor=Exception.class)
     public void downloadFile()  throws Exception {
 
         logger.info("################file/downloadFile 执行开始 ################# ");
@@ -75,6 +78,7 @@ public class FileController {
      * @date 2018-08-02
      */
     @PostMapping("/file/uploadPhoto")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel uploadPhoto(@RequestParam("fileName") MultipartFile file)  throws Exception {
         logger.info("################file/uploadPhoto 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();

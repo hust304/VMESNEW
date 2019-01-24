@@ -48,7 +48,7 @@ public class MobileWarehouseCheckController {
      * @throws Exception
      */
     @PostMapping("/mobile/mobileWarehouseCheck/addWarehouseCheckExecute")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel addWarehouseCheckExecute() throws Exception {
         logger.info("################/mobile/mobileWarehouseCheck/addWarehouseCheckExecute执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -65,8 +65,8 @@ public class MobileWarehouseCheckController {
      * @date 2018-11-16
      * @throws Exception
      */
-    @PostMapping("/mobile/mobileWarehouseCheck/addWarehouseCheckExecute")
-    @Transactional
+    @PostMapping("/mobile/mobileWarehouseCheck/rebackWarehouseCheckByDetail")
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel rebackWarehouseCheckByDetail() throws Exception {
         logger.info("################/mobile/mobileWarehouseCheck/addWarehouseCheckExecute执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
