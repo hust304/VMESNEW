@@ -68,7 +68,7 @@ public class SaleLockDateController {
     * @date 2018-12-12
     */
     @PostMapping("/saleLockDate/save")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel save()  throws Exception {
 
         logger.info("################saleLockDate/save 执行开始 ################# ");
@@ -88,7 +88,7 @@ public class SaleLockDateController {
     * @date 2018-12-12
     */
     @PostMapping("/saleLockDate/update")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel update()  throws Exception {
 
         logger.info("################saleLockDate/update 执行开始 ################# ");
@@ -109,7 +109,7 @@ public class SaleLockDateController {
     * @date 2018-12-12
     */
     @GetMapping("/saleLockDate/deleteById/{id}")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteById(@PathVariable("id") String id)  throws Exception {
 
         logger.info("################saleLockDate/deleteById 执行开始 ################# ");
@@ -128,7 +128,7 @@ public class SaleLockDateController {
     * @date 2018-12-12
     */
     @PostMapping("/saleLockDate/deleteByIds")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteByIds()  throws Exception {
 
         logger.info("################saleLockDate/deleteByIds 执行开始 ################# ");
@@ -201,7 +201,7 @@ public class SaleLockDateController {
 
 
     @PostMapping("/saleLockDate/updateSaleLockDate")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel updateSaleLockDate()  throws Exception {
 
         logger.info("################saleLockDate/updateSaleLockDate 执行开始 ################# ");
@@ -222,7 +222,7 @@ public class SaleLockDateController {
 
 
     @PostMapping("/saleLockDate/saveSaleLockDate")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel saveSaleLockDate()  throws Exception {
 
         logger.info("################saleLockDate/saveSaleLockDate 执行开始 ################# ");

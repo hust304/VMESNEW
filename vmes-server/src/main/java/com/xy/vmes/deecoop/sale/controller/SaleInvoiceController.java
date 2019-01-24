@@ -126,7 +126,7 @@ public class SaleInvoiceController {
      * @throws Exception
      */
     @PostMapping("/saleInvoice/addSaleInvoice")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel addSaleInvoice() throws Exception {
         logger.info("################saleInvoice/addSaleInvoice 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -188,7 +188,7 @@ public class SaleInvoiceController {
      * @throws Exception
      */
     @PostMapping("/saleInvoice/updateSaleInvoice")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel updateSaleInvoice() throws Exception {
         logger.info("################saleInvoice/updateSaleInvoice 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -251,7 +251,7 @@ public class SaleInvoiceController {
      * @throws Exception
      */
     @PostMapping("/saleInvoice/updateStateBySaleInvoice")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel updateStateBySaleInvoice() throws Exception {
         logger.info("################saleInvoice/updateStateBySaleInvoice 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -286,7 +286,7 @@ public class SaleInvoiceController {
      * @throws Exception
      */
     @PostMapping("/saleInvoice/deleteSaleInvoice")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteSaleInvoice() throws Exception {
         logger.info("################saleInvoice/deleteSaleInvoice 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -328,7 +328,7 @@ public class SaleInvoiceController {
      * @throws Exception
      */
     @PostMapping("/saleInvoice/cancelSaleInvoice")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel cancelSaleInvoice() throws Exception {
         logger.info("################saleInvoice/cancelSaleInvoice 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();

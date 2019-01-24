@@ -32,25 +32,28 @@ public class SaleDeliverDetail implements Serializable {
 	@TableField("out_detail_id")
 	private String outDetailId;
 
-    //货品ID
-    @TableField("product_id")
-    private String productId;
+	//货品ID
+	@TableField("product_id")
+	private String productId;
 	//发货状态(0:待发货 1:已发货 -1:已取消)
 	@TableField("state")
 	private String state;
-	//货品单价
-	@TableField("product_price")
-	private BigDecimal productPrice;
 	//订单明细单位id
 	@TableField("order_unit")
 	private String orderUnit;
+	//订单订购数量
+	@TableField("order_count")
+	private BigDecimal orderCount;
 	//计价单位id
 	@TableField("price_unit")
 	private String priceUnit;
 
-	//发货数量
-	@TableField("count")
-	private BigDecimal count;
+	//发货数量(计价数量)
+	@TableField("price_count")
+	private BigDecimal priceCount;
+	//货品单价
+	@TableField("product_price")
+	private BigDecimal productPrice;
 	//发货金额
 	@TableField("sum")
 	private BigDecimal sum;
@@ -60,10 +63,10 @@ public class SaleDeliverDetail implements Serializable {
 	//创建用户id
 	@TableField("cuser")
 	private String cuser;
+
 	//创建时间
 	@TableField("cdate")
 	private Date cdate;
-
 	//修改用户id
 	@TableField("uuser")
 	private String uuser;
@@ -108,11 +111,41 @@ public class SaleDeliverDetail implements Serializable {
 	public String getOutDetailId() {
 		return outDetailId;
 	}
+	public void setProductId(String productId) {
+		this.productId = productId;
+	}
+	public String getProductId() {
+		return productId;
+	}
 	public void setState(String state) {
 		this.state = state;
 	}
 	public String getState() {
 		return state;
+	}
+	public void setOrderUnit(String orderUnit) {
+		this.orderUnit = orderUnit;
+	}
+	public String getOrderUnit() {
+		return orderUnit;
+	}
+	public void setOrderCount(BigDecimal orderCount) {
+		this.orderCount = orderCount;
+	}
+	public BigDecimal getOrderCount() {
+		return orderCount;
+	}
+	public void setPriceUnit(String priceUnit) {
+		this.priceUnit = priceUnit;
+	}
+	public String getPriceUnit() {
+		return priceUnit;
+	}
+	public void setPriceCount(BigDecimal priceCount) {
+		this.priceCount = priceCount;
+	}
+	public BigDecimal getPriceCount() {
+		return priceCount;
 	}
 	public void setProductPrice(BigDecimal productPrice) {
 		this.productPrice = productPrice;
@@ -120,23 +153,17 @@ public class SaleDeliverDetail implements Serializable {
 	public BigDecimal getProductPrice() {
 		return productPrice;
 	}
-	public void setCount(BigDecimal count) {
-		this.count = count;
-	}
-	public BigDecimal getCount() {
-		return count;
-	}
 	public void setSum(BigDecimal sum) {
 		this.sum = sum;
 	}
 	public BigDecimal getSum() {
 		return sum;
 	}
-	public Date getDeliverDate() {
-		return deliverDate;
-	}
 	public void setDeliverDate(Date deliverDate) {
 		this.deliverDate = deliverDate;
+	}
+	public Date getDeliverDate() {
+		return deliverDate;
 	}
 	public void setCuser(String cuser) {
 		this.cuser = cuser;
@@ -173,24 +200,6 @@ public class SaleDeliverDetail implements Serializable {
 	}
 	public String getIsdisable() {
 		return isdisable;
-	}
-    public void setProductId(String productId) {
-        this.productId = productId;
-    }
-    public String getProductId() {
-        return productId;
-    }
-	public String getOrderUnit() {
-		return orderUnit;
-	}
-	public void setOrderUnit(String orderUnit) {
-		this.orderUnit = orderUnit;
-	}
-	public String getPriceUnit() {
-		return priceUnit;
-	}
-	public void setPriceUnit(String priceUnit) {
-		this.priceUnit = priceUnit;
 	}
 	/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 

@@ -131,7 +131,7 @@ public class SaleOrderController {
      * @throws Exception
      */
     @PostMapping("/saleOrder/addSaleOrder")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel addSaleOrder() throws Exception {
         logger.info("################saleOrder/addSaleOrder 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -216,7 +216,7 @@ public class SaleOrderController {
      * @throws Exception
      */
     @PostMapping("/saleOrder/updateSaleOrder")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel updateSaleOrder() throws Exception {
         logger.info("################saleOrder/updateSaleOrder 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -323,7 +323,7 @@ public class SaleOrderController {
      * @throws Exception
      */
     @PostMapping("/saleOrder/deleteSaleOrder")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteSaleOrder() throws Exception {
         logger.info("################saleOrder/deleteSaleOrder 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -368,7 +368,7 @@ public class SaleOrderController {
      * @throws Exception
      */
     @PostMapping("/saleOrder/cancelSaleOrder")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel cancelSaleOrder() throws Exception {
         logger.info("################saleOrder/cancelSaleOrder 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -419,7 +419,7 @@ public class SaleOrderController {
      * @throws Exception
      */
     @PostMapping("/saleOrder/submitSaleOrder")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel submitSaleOrder() throws Exception {
         logger.info("################saleOrder/cancelSaleOrder 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();

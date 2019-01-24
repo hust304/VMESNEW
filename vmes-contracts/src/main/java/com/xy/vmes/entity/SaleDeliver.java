@@ -35,6 +35,9 @@ public class SaleDeliver implements Serializable {
 	//发货类型(1:发货 2:送货 3:客户自提)
 	@TableField("type")
 	private String type;
+	//计价类型(1:先计价 2:后计价)
+	@TableField("price_type")
+	private String priceType;
 	//制单人ID
 	@TableField("make_id")
 	private String makeId;
@@ -44,10 +47,10 @@ public class SaleDeliver implements Serializable {
 	//物流单号
 	@TableField("waybill_code")
 	private String waybillCode;
+
 	//车牌号
 	@TableField("car_code")
 	private String carCode;
-
 	//车牌号
 	@TableField("custome_address_id")
 	private String customeAddressId;
@@ -59,10 +62,10 @@ public class SaleDeliver implements Serializable {
 	private BigDecimal totalSum;
 	@TableField("cuser")
 	private String cuser;
+
 	//创建时间
 	@TableField("cdate")
 	private Date cdate;
-
 	//修改用户id
 	@TableField("uuser")
 	private String uuser;
@@ -190,6 +193,12 @@ public class SaleDeliver implements Serializable {
 	}
 	public void setTotalSum(BigDecimal totalSum) {
 		this.totalSum = totalSum;
+	}
+	public String getPriceType() {
+		return priceType;
+	}
+	public void setPriceType(String priceType) {
+		this.priceType = priceType;
 	}
 /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 

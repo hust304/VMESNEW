@@ -200,7 +200,7 @@ public class SaleOrderAuditController {
      * @throws Exception
      */
     @PostMapping("/saleOrderAudit/updateSaleOrderDetailByLockStock")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel updateSaleOrderDetailByLockStock() throws Exception {
         logger.info("################saleOrderAudit/updateSaleOrderDetailByLockStock 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -284,7 +284,7 @@ public class SaleOrderAuditController {
      * @throws Exception
      */
     @PostMapping("/saleOrderAudit/updateSaleOrderByAudit")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel updateSaleOrderByAudit() throws Exception {
         logger.info("################saleOrderAudit/updateSaleOrderByAudit 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -351,7 +351,7 @@ public class SaleOrderAuditController {
      * @throws Exception
      */
     @PostMapping("/saleOrderAudit/auditPassSaleOrder")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel auditPassSaleOrder() throws Exception {
         logger.info("################saleOrderAudit/auditPassSaleOrder 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -394,7 +394,7 @@ public class SaleOrderAuditController {
      * @throws Exception
      */
     @PostMapping("/saleOrderAudit/auditDisagreeSaleOrder")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel auditDisagreeSaleOrder() throws Exception {
         logger.info("################/saleOrderAudit/auditDisagreeSaleOrder 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();

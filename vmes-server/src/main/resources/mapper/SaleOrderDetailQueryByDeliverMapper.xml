@@ -145,7 +145,7 @@
         left join vmes_product_unit unit on orderDtl.product_id = unit.product_id and orderDtl.order_unit = unit.unit
         <!--根据订单明细id汇总查询(发货明细) 已生成发货单数量-->
         left join (
-        select order_detai_id, sum(count) count
+        select order_detai_id, sum(order_count) count
         from vmes_sale_deliver_detail
         where <![CDATA[ state <> '-1' ]]>
         group by order_detai_id

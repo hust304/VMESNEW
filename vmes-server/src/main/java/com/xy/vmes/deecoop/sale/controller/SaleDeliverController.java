@@ -138,7 +138,7 @@ public class SaleDeliverController {
      * @throws Exception
      */
     @PostMapping("/saleDeliver/addSaleDeliver")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel addSaleDeliver() throws Exception {
         logger.info("################saleDeliver/addSaleDeliver 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -327,7 +327,7 @@ public class SaleDeliverController {
      * @throws Exception
      */
     @PostMapping("/saleDeliver/updateSaleDeliverByDeliverType")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel updateSaleDeliverByDeliverType() throws Exception {
         logger.info("################saleDeliver/updateSaleDeliverByDeliverType 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -429,7 +429,7 @@ public class SaleDeliverController {
      * @throws Exception
      */
     @PostMapping("/saleDeliver/cancelSaleDeliver")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel cancelSaleDeliver() throws Exception {
         logger.info("################saleDeliver/cancelSaleDeliver 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();

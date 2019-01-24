@@ -133,7 +133,7 @@ public class SaleDeliverDetailController {
      * @throws Exception
      */
     @PostMapping("/saleDeliverDetail/updateSaleDeliverDetailByPrice")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel updateSaleDeliverDetailByPrice() throws Exception {
         logger.info("################saleDeliverDetail/updateSaleDeliverDetailByPrice 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -164,10 +164,10 @@ public class SaleDeliverDetailController {
         //1. 修改发货单明细价格
         List<SaleDeliverDetail> deliverDtlList = saleDeliverDetailService.mapList2DetailList(mapList, null);
         for (SaleDeliverDetail deliverDtl : deliverDtlList) {
-            //count 发货数量
+            //price_count:发货数量(计价数量)
             BigDecimal count = BigDecimal.valueOf(0D);
-            if (deliverDtl.getCount() != null) {
-                count = deliverDtl.getCount();
+            if (deliverDtl.getPriceCount() != null) {
+                count = deliverDtl.getPriceCount();
             }
             //productPrice 货品单价
             BigDecimal productPrice = BigDecimal.valueOf(0D);

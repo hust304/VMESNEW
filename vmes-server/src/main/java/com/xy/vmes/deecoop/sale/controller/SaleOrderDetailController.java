@@ -172,7 +172,7 @@ public class SaleOrderDetailController {
      * @throws Exception
      */
     @PostMapping("/saleOrderDetail/cancelSaleOrderDetail")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel cancelSaleOrderDetail() throws Exception {
         logger.info("################/saleOrderDetail/cancelSaleOrderDetail 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -225,7 +225,7 @@ public class SaleOrderDetailController {
      * @throws Exception
      */
     @PostMapping("/saleOrderDetail/deleteSaleOrderDetail")
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteSaleOrderDetail() throws Exception {
         logger.info("################/saleOrderDetail/deleteSaleOrderDetail 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();

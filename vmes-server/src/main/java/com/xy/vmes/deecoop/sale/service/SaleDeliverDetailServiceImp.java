@@ -258,10 +258,10 @@ public class SaleDeliverDetailServiceImp implements SaleDeliverDetailService {
         if (objectList == null || objectList.size() == 0) {return BigDecimal.valueOf(0D);}
 
         for (SaleDeliverDetail detail : objectList) {
-            //发货数量
+            //price_count:发货数量(计价数量)
             double count_double = 0D;
-            if (detail.getCount() != null) {
-                count_double = detail.getCount().doubleValue();
+            if (detail.getPriceCount() != null) {
+                count_double = detail.getPriceCount().doubleValue();
             }
 
             //货品单价

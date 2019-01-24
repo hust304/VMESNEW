@@ -286,14 +286,14 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
             deliverDetail.setProductPrice(orderDetail.getProductPrice());
         }
         //priceCount 货品数量(计价数量) --> 本次发货数量(计价单位)
-        deliverDetail.setCount(BigDecimal.valueOf(0D));
+        deliverDetail.setPriceCount(BigDecimal.valueOf(0D));
         if (orderDetail.getPriceCount() != null) {
-            deliverDetail.setCount(orderDetail.getPriceCount());
+            deliverDetail.setPriceCount(orderDetail.getPriceCount());
         }
 
         //sum 发货金额 := 货品单价 * 发货数量
         //四舍五入到2位小数
-        BigDecimal sum = BigDecimal.valueOf(deliverDetail.getProductPrice().doubleValue() * deliverDetail.getCount().doubleValue());
+        BigDecimal sum = BigDecimal.valueOf(deliverDetail.getProductPrice().doubleValue() * deliverDetail.getPriceCount().doubleValue());
         sum = sum.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
         deliverDetail.setSum(sum);
 
