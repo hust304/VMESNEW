@@ -12,9 +12,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
-* 说明：vmes_template:标准开发模板 Mapper.java
+* 说明：vmes_template:模板 Mapper.java
 * 创建人：刘威 自动创建
-* 创建时间：2018-08-23
+* 创建时间：2019-01-25
 */
 @Mapper
 @Repository
@@ -23,70 +23,64 @@ public interface TemplateMapper extends BaseMapper<Template> {
 
 	/**
 	* 创建人：刘威 自动创建，禁止修改
-	* 创建时间：2018-08-23
+	* 创建时间：2019-01-25
 	*/
     List<Template> dataListPage(PageData pd,Pagination pg);
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-08-23
+    * 创建时间：2019-01-25
     */
 	List<Template> dataList(PageData pd);
 
 	/**
 	* 创建人：刘威 自动创建，禁止修改
-	* 创建时间：2018-08-23
+	* 创建时间：2019-01-25
 	*/
 	void deleteByIds(String[] ids);
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-08-23
+    * 创建时间：2019-01-25
     */
     List<LinkedHashMap> findColumnList();
 
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-08-23
+    * 创建时间：2019-01-25
     */
     List<Map> findDataList(PageData pd);
 
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-08-23
+    * 创建时间：2019-01-25
     */
     List<LinkedHashMap> getColumnList();
 
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-08-23
+    * 创建时间：2019-01-25
     */
     List<Map> getDataList(PageData pd);
 
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-08-23
+    * 创建时间：2019-01-25
     */
     List<Map> getDataListPage(PageData pd,Pagination pg);
 
 
     /**
     * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2018-08-23
+    * 创建时间：2019-01-25
     */
     void updateToDisableByIds(String[] ids);
 
-
-
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
-
-    List<Map> getTestDataListPage(PageData pd, Pagination pg);
-
-    List<Map> getTestDataList2Page(PageData pd, Pagination pg);
 }
 
 

@@ -8,9 +8,9 @@ import java.util.*;
 import java.math.BigDecimal;
 
 /** 
- * 说明：vmes_template:标准开发模板 实体类
+ * 说明：vmes_template:模板 实体类
  * @author 刘威 自动生成
- * @date 2018-08-23
+ * @date 2019-01-25
  */
 @TableName("vmes_template")
 public class Template implements Serializable {

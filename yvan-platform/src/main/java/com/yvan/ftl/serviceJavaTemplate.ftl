@@ -1,9 +1,11 @@
 package ${classPath};
 
-import com.baomidou.mybatisplus.plugins.pagination.Pagination;
-import com.xy.vmes.entity.${objectName};
-import com.yvan.PageData;
 
+import com.xy.vmes.entity.${objectName};
+import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.yvan.PageData;
+import com.yvan.springmvc.ResultModel;
+import org.springframework.web.multipart.MultipartFile;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -126,6 +128,29 @@ public interface ${objectName}Service {
      */
     List<${objectName}> findDataList(PageData pageData, Boolean isQueryAll) throws Exception;
 
+    /**
+    * 分页查询
+    * @param pd    查询参数对象PageData
+    * @param pg    分页参数对象Pagination
+    * @return      返回对象ResultModel
+    * @throws Exception
+    */
+    ResultModel listPage${objectName}s(PageData pd,Pagination pg) throws Exception;
+
+    /**
+    * 导出
+    * @param pd    查询参数对象PageData
+    * @param pg    分页参数对象Pagination
+    * @throws Exception
+    */
+    void exportExcel${objectName}s(PageData pd,Pagination pg) throws Exception;
+
+    /**
+    * 导入
+    * @return      返回对象ResultModel
+    * @throws Exception
+    */
+    ResultModel importExcel${objectName}s(MultipartFile file) throws Exception;
 }
 
 

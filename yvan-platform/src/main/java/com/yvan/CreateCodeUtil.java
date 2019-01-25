@@ -14,12 +14,14 @@ public class CreateCodeUtil {
 
         PageData pd = new PageData();
         //模块编码
-        String modelCode = "customerInvoice";
-        String objectName = "CustomerInvoice";//类名
-        String tableName = "vmes_customer_invoice";//表名
-        String title = "vmes_customer_invoice:客户开票信息";
-        String author = "陈刚";
-        String projectName = "deecoop.base";//项目名
+        String modelCode = "template";
+        String objectName = "Template";//类名
+        String tableName = "vmes_template";//表名
+        String title = "vmes_template:模板";
+        String author = "刘威";
+        String rootName = "deecoop";
+        String moduleName = "system";
+        String projectName = rootName+"."+moduleName;//项目名
 
 
         pd.put("dbtype","mysql");//数据库类型
@@ -32,6 +34,8 @@ public class CreateCodeUtil {
         List<String[]> fieldList = DbFH.getColumnParameterLsit(DbFH.getFHCon(pd),pd.getString("table"),pd.getString("databaseName")); //读取字段信息
 
         Map<String,Object> root = new HashMap<String,Object>();
+        //功能模块
+        root.put("moduleName", moduleName);
         //模块编码
         root.put("modelCode", modelCode);
         //表字段信息
