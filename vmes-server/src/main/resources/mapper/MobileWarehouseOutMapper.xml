@@ -10,8 +10,9 @@
     <!-- 手机端获得出库产品详细信息 -->
     <select id="findWarehouseOutByDetailId" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select tab1.productId,tab1.detailId,tab1.parentId,tab1.typeName,tab1.deptName,tab1.productName,tab1.productCode,tab1.spec,
-        tab1.genreName,tab1.unitName,tab1.taskCount,tab1.completeCount,tab1.unCompleteCount,round(sum(ifnull(tab2.stockCount,0)),2) stockCount,tab2.warehouseCode,tab2.pathName,
-        <![CDATA[ case when tab1.unCompleteCount>round(sum(ifnull(tab2.stockCount,0)),2) then round(sum(ifnull(tab2.stockCount,0)),2) else tab1.unCompleteCount end suggestCount ]]>
+        tab1.genreName,tab1.unitName,tab1.taskCount,tab1.completeCount,tab1.unCompleteCount,
+        tab2.stockCount,tab2.warehouseCode,tab2.pathName,tab2.warehouseId,tab2.warehouseProductId,
+        <![CDATA[ case when tab1.unCompleteCount>tab2.stockCount then tab2.stockCount else tab1.unCompleteCount end suggestCount ]]>
 
         from(
         select
@@ -37,27 +38,35 @@
         left join vmes_dictionary unit on produnit.unit = unit.id
         left join vmes_dictionary genre on product.genre = genre.id
         left join vmes_warehouse_out_execute outexecute on outexecute.detail_id = detail.id and outexecute.isdisable = 1
-        group by detail.id
+        <where>
+            <if test="detailId != null and detailId != ''" >
+                and detail.id = #{detailId}
+            </if>
+        </where>
+        group by detail.id,detail.product_id,wout.id,type.name,wout.dept_name,product.name,product.code,product.spec,genre.name,unit.name
+
         ) tab1
         left join
         (
         select
         recommend.detail_id detailId,
         warehouseProduct.code warehouseCode,
+        warehouse.id warehouseId,
+        warehouseProduct.id warehouseProductId,
         warehouse.path_name pathName,
-        warehouseProduct.stock_count stockCount
+        round(sum(ifnull(warehouseProduct.stock_count,0)),2) stockCount
         from vmes_warehouse_out_recommend recommend
         left join vmes_warehouse_product warehouseProduct on warehouseProduct.id = recommend.warehouse_product_id and warehouseProduct.stock_count>0
         left join vmes_warehouse warehouse on warehouse.id = warehouseProduct.warehouse_id
-        )tab2 on tab1.detailId = tab2.detailId
-
         <where>
             <if test="detailId != null and detailId != ''" >
-                and tab1.detailId = #{detailId}
+                and recommend.detail_id = #{detailId}
             </if>
         </where>
+        group by recommend.detail_id,warehouseProduct.code,warehouse.path_name,warehouse.id,warehouseProduct.id
+        order by warehouseProduct.code asc   limit 1
+        )tab2 on tab1.detailId = tab2.detailId
 
-        order by tab2.warehouseCode asc  limit 1
     </select>
 
 

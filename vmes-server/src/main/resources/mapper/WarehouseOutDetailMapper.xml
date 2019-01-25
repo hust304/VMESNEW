@@ -430,7 +430,8 @@
     <!-- 自动创建，可以修改 -->
     <select id="getDataListPage"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
         select parentId,warehouseId,productId,code,count,state,cuser,cdate,udate,remark,isdisable,qrcode,
-        businessId,productCode,productName,productSpec,productGenre,productGenreName,productUnit,productUnitName,round(sum(ifnull(executeCount,0)),2) executeCount,warehouseOutCode,id
+        businessId,productCode,productName,productSpec,productGenre,productGenreName,productUnit,productUnitName,warehouseOutCode,id,
+        round(sum(ifnull(executeCount,0)),2) executeCount
 
         from (
             select
@@ -474,7 +475,8 @@
                 </if>
             </where>
         ) tab
-        group by id
+        group by id,parentId,warehouseId,productId,code,count,state,cuser,cdate,udate,remark,isdisable,qrcode,
+        businessId,productCode,productName,productSpec,productGenre,productGenreName,productUnit,productUnitName,warehouseOutCode
         <if test="orderStr != null and orderStr != ''" >
             order by ${orderStr}
         </if>
