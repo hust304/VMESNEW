@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.entity.BomTree;
 import com.xy.vmes.entity.TreeEntity;
 import com.yvan.PageData;
+import com.yvan.springmvc.ResultModel;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -113,6 +115,20 @@ public interface BomTreeService {
     void deleteByBomIds(String[] id_arry)throws Exception;
 
     List<TreeEntity> getBomTreeList(PageData pd)throws Exception;
+
+    ResultModel listPageBomTrees(PageData pd, Pagination pg)throws Exception;
+
+    void exportExcelBomTrees(PageData pd, Pagination pg)throws Exception;
+
+    ResultModel importExcelBomTrees(MultipartFile file)throws Exception;
+
+    ResultModel getBomTree(PageData pd)throws Exception;
+
+    ResultModel addBomTree(PageData pd)throws Exception;
+
+    ResultModel updateBomTree(PageData pd)throws Exception;
+
+    ResultModel deleteBomTree(PageData pd)throws Exception;
 }
 
 

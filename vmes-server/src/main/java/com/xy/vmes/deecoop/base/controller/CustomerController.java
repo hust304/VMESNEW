@@ -52,8 +52,7 @@ public class CustomerController {
     private CoderuleService coderuleService;
     @Autowired
     private ColumnService columnService;
-    @Autowired
-    private SaleReceiveRecordService saleReceiveRecordService;
+
 
     /**
      * @author 陈刚 自动创建，禁止修改
@@ -218,12 +217,8 @@ public class CustomerController {
 
         logger.info("################customer/addCustomerBalance 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
-        ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
-        BigDecimal addBalance = BigDecimal.valueOf(Double.parseDouble(pd.getString("addBalance")));
-        Customer Customer = customerService.selectById(pd.getString("id"));
-        customerService.updateCustomerBalance(Customer,Customer.getBalance().add(addBalance),pd.getString("uuser"),"1");//操作类型(0:变更 1:录入收款 -1:费用分摊)
+        ResultModel model = customerService.addCustomerBalance(pd);
         Long endTime = System.currentTimeMillis();
         logger.info("################customer/addCustomerBalance 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
@@ -236,18 +231,12 @@ public class CustomerController {
 
         logger.info("################customer/updateCustomerBalance 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
-        ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
-        Customer newCustomer = (Customer)HttpUtils.pageData2Entity(pd, new Customer());
-        Customer oldCustomer = customerService.selectById(newCustomer.getId());
-        customerService.updateCustomerBalance(oldCustomer,newCustomer.getBalance(),pd.getString("uuser"),"0");//操作类型(0:变更 1:录入收款 -1:费用分摊)
+        ResultModel model = customerService.updateCustomerBalancee(pd);
         Long endTime = System.currentTimeMillis();
         logger.info("################customer/updateCustomerBalance 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
-
-
 
 
     /**
@@ -258,64 +247,9 @@ public class CustomerController {
     public ResultModel listPageCustomers()  throws Exception {
         logger.info("################customer/listPageCustomers 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        ResultModel model = new ResultModel();
-
-        List<Column> columnList = columnService.findColumnList("customer");
-        if (columnList == null || columnList.size() == 0) {
-            model.putCode("1");
-            model.putMsg("数据库没有生成TabCol，请联系管理员！");
-            return model;
-        }
-
-        List<LinkedHashMap> titlesList = new ArrayList<LinkedHashMap>();
-        List<String> titlesHideList = new ArrayList<String>();
-        Map<String, String> varModelMap = new HashMap<String, String>();
-        if(columnList!=null&&columnList.size()>0){
-            for (Column column : columnList) {
-                if(column!=null){
-                    if("0".equals(column.getIshide())){
-                        titlesHideList.add(column.getTitleKey());
-                    }
-                    LinkedHashMap titlesLinkedMap = new LinkedHashMap();
-                    titlesLinkedMap.put(column.getTitleKey(),column.getTitleName());
-                    varModelMap.put(column.getTitleKey(),"");
-                    titlesList.add(titlesLinkedMap);
-                }
-            }
-        }
-
-        Map result = new HashMap();
-        result.put("hideTitles",titlesHideList);
-        result.put("titles",titlesList);
-
         PageData pd = HttpUtils.parsePageData();
-        pd.put("orderStr", "cust.cdate desc");
-
-        String genreId = pd.getString("pid");
-        if (genreId != null && genreId.trim().length() > 0
-                && !Common.DICTIONARY_MAP.get("customerSupplierGenre").equals(genreId)
-                ) {
-            pd.put("genre", genreId);
-        }
-
-        List<Map> varMapList = new ArrayList();
         Pagination pg = HttpUtils.parsePagination(pd);
-        List<Map> varList = customerService.getDataListPage(pd, pg);
-        if(varList!=null&&varList.size()>0){
-            for(int i=0;i<varList.size();i++){
-                Map map = varList.get(i);
-                Map<String, String> varMap = new HashMap<String, String>();
-                varMap.putAll(varModelMap);
-                for (Map.Entry<String, String> entry : varMap.entrySet()) {
-                    varMap.put(entry.getKey(),map.get(entry.getKey())!=null?map.get(entry.getKey()).toString():"");
-                }
-                varMapList.add(varMap);
-            }
-        }
-        result.put("varList",varMapList);
-        result.put("pageData", pg);
-
-        model.putResult(result);
+        ResultModel model = customerService.listPageCustomers(pd,pg);
         Long endTime = System.currentTimeMillis();
         logger.info("################customer/listPageCustomers 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
@@ -328,143 +262,21 @@ public class CustomerController {
     public ResultModel listPageCustomerReceive()  throws Exception {
         logger.info("################customer/listPageCustomerReceive 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        ResultModel model = new ResultModel();
-
-        List<Column> columnList = columnService.findColumnList("customerReceive");
-        if (columnList == null || columnList.size() == 0) {
-            model.putCode("1");
-            model.putMsg("数据库没有生成TabCol，请联系管理员！");
-            return model;
-        }
-
-        //获取指定栏位字符串-重新调整List<Column>
         PageData pd = HttpUtils.parsePageData();
-        String fieldCode = pd.getString("fieldCode");
-        if (fieldCode != null && fieldCode.trim().length() > 0) {
-            columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
-        }
-
-
-        List<LinkedHashMap> titlesList = new ArrayList<LinkedHashMap>();
-        List<String> titlesHideList = new ArrayList<String>();
-        Map<String, String> varModelMap = new HashMap<String, String>();
-        if(columnList!=null&&columnList.size()>0){
-            for (Column column : columnList) {
-                if(column!=null){
-                    if("0".equals(column.getIshide())){
-                        titlesHideList.add(column.getTitleKey());
-                    }
-                    LinkedHashMap titlesLinkedMap = new LinkedHashMap();
-                    titlesLinkedMap.put(column.getTitleKey(),column.getTitleName());
-                    varModelMap.put(column.getTitleKey(),"");
-                    titlesList.add(titlesLinkedMap);
-                }
-            }
-        }
-
-        Map result = new HashMap();
-        result.put("hideTitles",titlesHideList);
-        result.put("titles",titlesList);
-
-
-        List<Map> varMapList = new ArrayList();
         Pagination pg = HttpUtils.parsePagination(pd);
-        List<Map> varList = customerService.getReceiveDataListPage(pd, pg);
-        if(varList!=null&&varList.size()>0){
-            for(int i=0;i<varList.size();i++){
-                Map map = varList.get(i);
-                Map<String, String> varMap = new HashMap<String, String>();
-                varMap.putAll(varModelMap);
-                for (Map.Entry<String, String> entry : varMap.entrySet()) {
-                    varMap.put(entry.getKey(),map.get(entry.getKey())!=null?map.get(entry.getKey()).toString():"");
-                }
-                varMapList.add(varMap);
-            }
-        }
-        result.put("varList",varMapList);
-        result.put("pageData", pg);
-
-        List<Map> preReceive = customerService.getPreReceiveAmount(pd);
-        if(preReceive!=null&&preReceive.size()>0){
-            result.put("preReceiveAmount", preReceive.get(0).get("preReceiveAmount"));
-        }
-
-        List<Map> nowReceive = customerService.getNowReceiveAmount(pd);
-        if(nowReceive!=null&&nowReceive.size()>0){
-            result.put("nowReceiveAmount", nowReceive.get(0).get("nowReceiveAmount"));
-        }
-
-        model.putResult(result);
+        ResultModel model = customerService.listPageCustomerReceive(pd,pg);
         Long endTime = System.currentTimeMillis();
         logger.info("################customer/listPageCustomerReceive 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
-
-
-
     @PostMapping("/base/customer/listPageCustomerAccountDays")
     public ResultModel listPageCustomerAccountDays()  throws Exception {
         logger.info("################customer/listPageCustomerAccountDays 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        ResultModel model = new ResultModel();
-
-        List<Column> columnList = columnService.findColumnList("customerAccountDays");
-        if (columnList == null || columnList.size() == 0) {
-            model.putCode("1");
-            model.putMsg("数据库没有生成TabCol，请联系管理员！");
-            return model;
-        }
-
-        List<LinkedHashMap> titlesList = new ArrayList<LinkedHashMap>();
-        List<String> titlesHideList = new ArrayList<String>();
-        Map<String, String> varModelMap = new HashMap<String, String>();
-        if(columnList!=null&&columnList.size()>0){
-            for (Column column : columnList) {
-                if(column!=null){
-                    if("0".equals(column.getIshide())){
-                        titlesHideList.add(column.getTitleKey());
-                    }
-                    LinkedHashMap titlesLinkedMap = new LinkedHashMap();
-                    titlesLinkedMap.put(column.getTitleKey(),column.getTitleName());
-                    varModelMap.put(column.getTitleKey(),"");
-                    titlesList.add(titlesLinkedMap);
-                }
-            }
-        }
-
-        Map result = new HashMap();
-        result.put("hideTitles",titlesHideList);
-        result.put("titles",titlesList);
-
         PageData pd = HttpUtils.parsePageData();
-        pd.put("orderStr", "cust.cdate desc");
-
-        String genreId = pd.getString("pid");
-        if (genreId != null && genreId.trim().length() > 0
-                && !Common.DICTIONARY_MAP.get("customerSupplierGenre").equals(genreId)
-                ) {
-            pd.put("genre", genreId);
-        }
-
-        List<Map> varMapList = new ArrayList();
         Pagination pg = HttpUtils.parsePagination(pd);
-        List<Map> varList = customerService.getDataListPage(pd, pg);
-        if(varList!=null&&varList.size()>0){
-            for(int i=0;i<varList.size();i++){
-                Map map = varList.get(i);
-                Map<String, String> varMap = new HashMap<String, String>();
-                varMap.putAll(varModelMap);
-                for (Map.Entry<String, String> entry : varMap.entrySet()) {
-                    varMap.put(entry.getKey(),map.get(entry.getKey())!=null?map.get(entry.getKey()).toString():"");
-                }
-                varMapList.add(varMap);
-            }
-        }
-        result.put("varList",varMapList);
-        result.put("pageData", pg);
-
-        model.putResult(result);
+        ResultModel model = customerService.listPageCustomerAccountDays(pd,pg);
         Long endTime = System.currentTimeMillis();
         logger.info("################customer/listPageCustomerAccountDays 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
@@ -481,38 +293,8 @@ public class CustomerController {
     public ResultModel addCustomer() throws Exception {
         logger.info("################/customer/addCustomer 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-
-        ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
-
-        //1. 非空判断
-        String name = pageData.getString("name");
-        if (name == null || name.trim().length() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("名称输入为空或空字符串，名称为必填不可为空！");
-            return model;
-        }
-
-        //获取客户供应商编码
-        String companyId = pageData.getString("currentCompanyId");
-        String code = coderuleService.createCoder(companyId,"vmes_customer","C");
-        if(StringUtils.isEmpty(code)){
-            model.putCode(1);
-            model.putMsg("客户供应商编码规则创建异常，请重新操作！");
-            return model;
-        }
-
-        Customer object = (Customer)HttpUtils.pageData2Entity(pageData, new Customer());
-        object.setCuser(pageData.getString("cuser"));
-        object.setCompanyId(companyId);
-        object.setCode(code);
-        //生成客户供应商二维码
-        String qrcode = fileService.createQRCode("customer", YvanUtil.toJson(object));
-        if (qrcode != null && qrcode.trim().length() > 0) {
-            object.setQrcode(qrcode);
-        }
-        customerService.save(object);
-
+        ResultModel model = customerService.addCustomer(pageData);
         Long endTime = System.currentTimeMillis();
         logger.info("################customer/addCustomer 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
@@ -529,22 +311,8 @@ public class CustomerController {
     public ResultModel updateCustomer() throws Exception {
         logger.info("################/customer/updateCustomer 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-
-        ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
-
-        //1. 非空判断
-        String name = pageData.getString("name");
-        if (name == null || name.trim().length() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("名称输入为空或空字符串，名称为必填不可为空！");
-            return model;
-        }
-
-        Customer objectDB = (Customer)HttpUtils.pageData2Entity(pageData, new Customer());
-        objectDB.setUuser(pageData.getString("cuser"));
-        customerService.update(objectDB);
-
+        ResultModel model = customerService.updateCustomer(pageData);
         Long endTime = System.currentTimeMillis();
         logger.info("################customer/updateCustomer 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
@@ -561,37 +329,8 @@ public class CustomerController {
     public ResultModel updateDisableCustomer() throws Exception {
         logger.info("################/customer/updateDisableCustomer 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-
-        ResultModel model = new ResultModel();
-
         PageData pageData = HttpUtils.parsePageData();
-        String id = pageData.getString("id");
-        String isdisable = pageData.getString("isdisable");
-
-        //1. 非空判断
-        String msgStr = new String();
-        if (id == null || id.trim().length() == 0) {
-            msgStr = msgStr + "id为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT;
-        }
-        if (isdisable == null || isdisable.trim().length() == 0) {
-            msgStr = msgStr + "isdisable为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT;
-        }
-        if (msgStr.trim().length() > 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg(msgStr);
-            return model;
-        }
-
-//        if (!customerService.checkDeleteCustomerByIds(id)) {
-//            model.putCode(Integer.valueOf(1));
-//            model.putMsg("当前禁用的数据系统正在使用中，不可禁用操作！");
-//            return model;
-//        }
-
-        //2. 修改客户供应商(禁用)状态
-        Customer objectDB = (Customer)HttpUtils.pageData2Entity(pageData, new Customer());
-        customerService.update(objectDB);
-
+        ResultModel model = customerService.updateDisableCustomer(pageData);
         Long endTime = System.currentTimeMillis();
         logger.info("################customer/updateDisableCustomer 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
@@ -611,29 +350,8 @@ public class CustomerController {
     public ResultModel deleteCustomers() throws Exception {
         logger.info("################/customer/deleteCustomers 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-
-        ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
-
-        //1. 非空判断
-        String ids = pageData.getString("ids");
-        if (ids == null || ids.trim().length() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("参数错误：请至少选择一行数据！");
-            return model;
-        }
-
-        //2. 删除客户供应商
-        ids = StringUtil.stringTrimSpace(ids);
-        customerService.deleteByIds(ids.split(","));
-
-        //3. 删除客户供应商地址
-        String[] id_arry = ids.split(",");
-        for (int i = 0; i < id_arry.length; i++) {
-            String id = id_arry[i];
-            customeAddressService.deleteCustAddrByCustId(id);
-        }
-
+        ResultModel model = customerService.deleteCustomers(pageData);
         Long endTime = System.currentTimeMillis();
         logger.info("################customer/deleteCustomers 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
@@ -648,40 +366,9 @@ public class CustomerController {
     public void exportExcelCustomers() throws Exception {
         logger.info("################customer/exportExcelCustomers 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-
-        List<Column> columnList = columnService.findColumnList("Customer");
-        if (columnList == null || columnList.size() == 0) {
-            throw new RestException("1","数据库没有生成TabCol，请联系管理员！");
-        }
-
-        //根据查询条件获取业务数据List
         PageData pd = HttpUtils.parsePageData();
-        String ids = (String)pd.getString("ids");
-        String queryStr = "";
-        if (ids != null && ids.trim().length() > 0) {
-            ids = StringUtil.stringTrimSpace(ids);
-            ids = "'" + ids.replace(",", "','") + "'";
-            queryStr = "id in (" + ids + ")";
-        }
-        pd.put("queryStr", queryStr);
-
         Pagination pg = HttpUtils.parsePagination(pd);
-        pg.setSize(100000);
-        List<Map> dataList = customerService.getDataListPage(pd, pg);
-
-        //查询数据转换成Excel导出数据
-        List<LinkedHashMap<String, String>> dataMapList = ColumnUtil.modifyDataList(columnList, dataList);
-        HttpServletResponse response = HttpUtils.currentResponse();
-
-        //查询数据-Excel文件导出
-        String fileName = pd.getString("fileName");
-        if (fileName == null || fileName.trim().length() == 0) {
-            fileName = "ExcelCustomer";
-        }
-
-        //导出文件名-中文转码
-        fileName = new String(fileName.getBytes("utf-8"),"ISO-8859-1");
-        ExcelUtil.excelExportByDataList(response, fileName, dataMapList);
+        customerService.exportExcelCustomers(pd,pg);
         Long endTime = System.currentTimeMillis();
         logger.info("################customer/exportExcelCustomers 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
     }
@@ -696,43 +383,7 @@ public class CustomerController {
     public ResultModel importExcelCustomers(@RequestParam(value="excelFile") MultipartFile file) throws Exception  {
         logger.info("################customer/importExcelCustomers 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        ResultModel model = new ResultModel();
-        //HttpServletRequest Request = HttpUtils.currentRequest();
-
-        if (file == null) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("请上传Excel文件！");
-            return model;
-        }
-
-        // 验证文件是否合法
-        // 获取上传的文件名(文件名.后缀)
-        String fileName = file.getOriginalFilename();
-        if (fileName == null
-                || !(fileName.matches("^.+\\.(?i)(xlsx)$")
-                || fileName.matches("^.+\\.(?i)(xls)$"))
-                ) {
-            String failMesg = "不是excel格式文件,请重新选择！";
-            model.putCode(Integer.valueOf(1));
-            model.putMsg(failMesg);
-            return model;
-        }
-
-        // 判断文件的类型，是2003还是2007
-        boolean isExcel2003 = true;
-        if (fileName.matches("^.+\\.(?i)(xlsx)$")) {
-            isExcel2003 = false;
-        }
-
-        List<List<String>> dataLst = ExcelUtil.readExcel(file.getInputStream(), isExcel2003);
-        List<LinkedHashMap<String, String>> dataMapLst = ExcelUtil.reflectMapList(dataLst);
-
-        //1. Excel文件数据dataMapLst -->(转换) ExcelEntity (属性为导入模板字段)
-        //2. Excel导入字段(非空,数据有效性验证[数字类型,字典表(大小)类是否匹配])
-        //3. Excel导入字段-名称唯一性判断-在Excel文件中
-        //4. Excel导入字段-名称唯一性判断-在业务表中判断
-        //5. List<ExcelEntity> --> (转换) List<业务表DB>对象
-        //6. 遍历List<业务表DB> 对业务表添加或修改
+        ResultModel model = customerService.importExcelCustomers(file);
         Long endTime = System.currentTimeMillis();
         logger.info("################customer/importExcelCustomers 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
@@ -746,26 +397,8 @@ public class CustomerController {
     public ResultModel listTreeCustomer()  throws Exception {
         logger.info("################customer/listTreeCustomer 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        ResultModel model = new ResultModel();
-
         PageData pd = HttpUtils.parsePageData();
-        //获取全部字典树-查询条件
-
-        List<TreeEntity> treeList = customerService.getTreeList(pd);
-        TreeEntity treeEntity = new TreeEntity();
-        treeEntity.setId("khlb");
-        treeEntity.setPid("root");
-        treeEntity.setLabel("客户列表");
-        treeEntity.setName("客户列表");
-        treeEntity.setValue("khlb");
-        treeEntity.setIsdisable("1");
-        treeList.add(treeEntity);
-        TreeEntity treeObj = TreeUtil.switchTree("root", treeList);
-
-        Map result = new HashMap();
-        result.put("treeList", treeObj);
-        model.putResult(result);
-
+        ResultModel model = customerService.listTreeCustomer(pd);
         Long endTime = System.currentTimeMillis();
         logger.info("################customer/listTreeCustomer 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;

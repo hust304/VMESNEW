@@ -3,6 +3,8 @@ package com.xy.vmes.service;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.entity.CustomeAddress;
 import com.yvan.PageData;
+import com.yvan.springmvc.ResultModel;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -118,6 +120,19 @@ public interface CustomeAddressService {
     void updateDefaultByCustId(PageData pageData);
     void deleteCustAddrByCustId(String custId) throws Exception;
 
+    ResultModel listPageCustomeAddress(PageData pd)throws Exception;
+
+    ResultModel addCustomerAddress(PageData pageData) throws Exception;
+
+    ResultModel updateCustomerAddress(PageData pageData)throws Exception;
+
+    ResultModel updateDefaultCustomerAddress(PageData pageData)throws Exception ;
+
+    ResultModel deleteCustomerAddress(PageData pageData)throws Exception ;
+
+    void exportExcelCustomeAddresss(PageData pd, Pagination pg)throws Exception;
+
+    ResultModel importExcelCustomeAddresss(MultipartFile file)throws Exception;
 }
 
 

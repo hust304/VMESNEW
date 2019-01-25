@@ -3,6 +3,8 @@ package com.xy.vmes.service;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.entity.CustomerInvoice;
 import com.yvan.PageData;
+import com.yvan.springmvc.ResultModel;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -98,6 +100,11 @@ public interface CustomerInvoiceService {
 
     List<CustomerInvoice> findCustomerInvoiceList(PageData object) throws Exception;
 
+    void exportExcelCustomerInvoices(PageData pd, Pagination pg) throws Exception;
+
+    ResultModel importExcelCustomerInvoices(MultipartFile file)throws Exception;
+
+    ResultModel listPageCustomerInvoices(PageData pd, Pagination pg)throws Exception;
 }
 
 

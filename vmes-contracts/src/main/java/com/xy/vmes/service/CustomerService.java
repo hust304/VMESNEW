@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.entity.Customer;
 import com.xy.vmes.entity.TreeEntity;
 import com.yvan.PageData;
+import com.yvan.springmvc.ResultModel;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.util.LinkedHashMap;
@@ -136,6 +138,31 @@ public interface CustomerService {
     List<Map> getPreReceiveAmount(PageData pd) throws Exception;
 
     List<Map> getNowReceiveAmount(PageData pd) throws Exception;
+
+
+    ResultModel addCustomerBalance(PageData pd)throws Exception;
+
+    ResultModel updateCustomerBalancee(PageData pd) throws Exception;
+
+    ResultModel listPageCustomers(PageData pd, Pagination pg)throws Exception;
+
+    ResultModel listPageCustomerReceive(PageData pd, Pagination pg)throws Exception;
+
+    ResultModel listPageCustomerAccountDays(PageData pd, Pagination pg)throws Exception;
+
+    ResultModel addCustomer(PageData pageData)throws Exception;
+
+    ResultModel updateCustomer(PageData pageData)throws Exception;
+
+    ResultModel updateDisableCustomer(PageData pageData)throws Exception;
+
+    ResultModel deleteCustomers(PageData pageData)throws Exception;
+
+    void exportExcelCustomers(PageData pd, Pagination pg)throws Exception;
+
+    ResultModel importExcelCustomers(MultipartFile file)throws Exception;
+
+    ResultModel listTreeCustomer(PageData pd)throws Exception;
 }
 
 
