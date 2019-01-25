@@ -19,7 +19,7 @@ public class MobileWarehouseOutController {
     @Autowired
     private MobileWarehouseOutService mobileWarehouseOutService;
 
-    @PostMapping("/mobileWarehouseOut/findWarehouseOutByDetailId")
+    @PostMapping("/mobile/mobileWarehouseOut/findWarehouseOutByDetailId")
     //@GetMapping("/mobileWarehouseOut/findWarehouseOutByDetailId")
     public ResultModel findWarehouseOutByDetailId()  throws Exception {
         logger.info("################/mobileWarehouseOut/findWarehouseOutByDetailId 执行开始 ################# ");
@@ -33,7 +33,7 @@ public class MobileWarehouseOutController {
     }
 
 
-    @PostMapping("/mobileWarehouseOut/findWarehousePathByQrcode")
+    @PostMapping("/mobile/mobileWarehouseOut/findWarehousePathByQrcode")
     public ResultModel findWarehousePathByQrcode()  throws Exception {
         logger.info("################/mobileWarehouseOut/findWarehousePathByQrcode 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -45,7 +45,7 @@ public class MobileWarehouseOutController {
     }
 
 
-    @PostMapping("/mobileWarehouseOut/listWarehousePathByProduct")
+    @PostMapping("/mobile/mobileWarehouseOut/listWarehousePathByProduct")
     public ResultModel listWarehousePathByProduct()  throws Exception {
         logger.info("################/mobileWarehouseOut/listWarehousePathByProduct 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -56,7 +56,7 @@ public class MobileWarehouseOutController {
         return model;
     }
 
-    @PostMapping("/mobileWarehouseOut/listWarehouseCodeByWarehouseId")
+    @PostMapping("/mobile/mobileWarehouseOut/listWarehouseCodeByWarehouseId")
     public ResultModel listWarehouseCodeByWarehouseId()  throws Exception {
         logger.info("################/mobileWarehouseOut/listWarehouseCodeByWarehouseId 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -68,7 +68,7 @@ public class MobileWarehouseOutController {
     }
 
 
-    @PostMapping("/mobileWarehouseOut/findWarehouseCodeByQrcode")
+    @PostMapping("/mobile/mobileWarehouseOut/findWarehouseCodeByQrcode")
     public ResultModel findWarehouseCodeByQrcode()  throws Exception {
         logger.info("################/mobileWarehouseOut/findWarehouseCodeByQrcode 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -81,7 +81,7 @@ public class MobileWarehouseOutController {
 
 
 
-    @PostMapping("/mobileWarehouseOut/addWarehouseOutExecute")
+    @PostMapping("/mobile/mobileWarehouseOut/addWarehouseOutExecute")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel addWarehouseOutExecute() throws Exception {
         logger.info("################/mobileWarehouseOut/addWarehouseOutExecute 执行开始 ################# ");
@@ -96,7 +96,7 @@ public class MobileWarehouseOutController {
 
 
 
-    @PostMapping("/mobileWarehouseOut/rebackWarehouseOutDetail")
+    @PostMapping("/mobile/mobileWarehouseOut/rebackWarehouseOutDetail")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel rebackWarehouseOutDetail() throws Exception {
         logger.info("################/mobileWarehouseOut/rebackWarehouseOutDetail 执行开始 ################# ");
