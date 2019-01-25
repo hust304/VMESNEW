@@ -3,6 +3,7 @@ package com.xy.vmes.service;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.entity.Department;
 import com.yvan.PageData;
+import com.yvan.springmvc.ResultModel;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -85,4 +86,11 @@ public interface CompanyService {
      */
     String checkCompanyValidityDate(String companyID);
 
+    void exportExcelCompanys (PageData pd, Pagination pg) throws Exception;
+
+    ResultModel addCompanyAdmin(PageData pageData) throws Exception;
+
+    ResultModel updateCompany(PageData pageData) throws Exception;
+
+    ResultModel deleteCompanyAdmins(PageData pageData) throws Exception;
 }

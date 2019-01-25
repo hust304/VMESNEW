@@ -1,17 +1,28 @@
 package com.xy.vmes.deecoop.system.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
-import com.xy.vmes.common.util.Common;
+import com.xy.vmes.common.util.*;
 import com.xy.vmes.deecoop.system.dao.DictionaryMapper;
+import com.xy.vmes.entity.Column;
 import com.xy.vmes.entity.Dictionary;
 import com.xy.vmes.entity.TreeEntity;
+import com.xy.vmes.entity.User;
+import com.xy.vmes.service.ColumnService;
 import com.xy.vmes.service.DictionaryService;
+import com.xy.vmes.service.UserService;
+import com.yvan.Conv;
+import com.yvan.ExcelUtil;
+import com.yvan.HttpUtils;
 import com.yvan.PageData;
+import com.yvan.cache.RedisClient;
 import com.yvan.platform.RestException;
+import com.yvan.springmvc.ResultModel;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletResponse;
 import java.text.MessageFormat;
 import java.util.*;
 
@@ -28,6 +39,15 @@ public class DictionaryServiceImp implements DictionaryService {
 
     @Autowired
     private DictionaryMapper dictionaryMapper;
+    @Autowired
+    private DictionaryService dictionaryService;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private RedisClient redisClient;
+
+    @Autowired
+    private ColumnService columnService;
 
     /**
     * 创建人：刘威 自动创建，禁止修改
@@ -459,6 +479,351 @@ public class DictionaryServiceImp implements DictionaryService {
         }
 
         return queryStr;
+    }
+
+    @Override
+    public ResultModel addDictionary(PageData pd) throws Exception {
+        ResultModel model = new ResultModel();
+        Dictionary dictionary = (Dictionary) HttpUtils.pageData2Entity(pd, new Dictionary());
+
+        String sessionID = pd.getString("sessionID");
+        User user = RedisUtils.getUserInfoBySessionID(redisClient,sessionID);
+        if(user == null){
+            user = userService.selectById(pd.getString("currentUserId"));
+        }
+
+        //默认pid:= 字典表根节点
+        String pid = Common.DICTIONARY_MAP.get("root");
+        if (dictionary.getPid() != null && dictionary.getPid().trim().length() > 0) {
+            pid = dictionary.getPid().trim();
+        }
+
+        //pid 获取父节点对象<Department>
+        Dictionary paterObj = dictionaryService.findDictionaryById(pid);
+        if (paterObj == null) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("(pid:"+ pid + ")系统中无数据，请与管理员联系！");
+            return model;
+        }
+
+        //2. (字典名称)在同一层名称不可重复
+        if (dictionaryService.isExistByName(pid, null, dictionary.getName(), pd.getString("currentCompanyId"))) {
+            String msgTemp = "上级字典名称: {0}{2}字典名称: {1}{2}在系统中已经重复！{2}";
+            String str_isnull = MessageFormat.format(msgTemp,
+                    paterObj.getName(),
+                    dictionary.getName(),
+                    Common.SYS_ENDLINE_DEFAULT);
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(str_isnull);
+            return model;
+        }
+
+        //3. 创建字典信息
+        String id = Conv.createUuid();
+        dictionary.setId(id);
+        dictionary.setCompanyId(user.getCompanyId());
+
+        //userType_admin:超级管理员 userType_company:企业管理员 userType_employee:普通用户 userType_outer:外部用户)
+        //isglobal: 0：否  1：是
+        if(Common.DICTIONARY_MAP.get("userType_admin").equals(user.getUserType())){
+            dictionary.setIsglobal("1");//超级管理员创建的数据字典都是全局设置
+        } else {
+            dictionary.setIsglobal("0");//非全局设置
+        }
+
+        dictionary = dictionaryService.id2DictionaryByLayer(id,
+                Integer.valueOf(paterObj.getLayer().intValue() + 1),
+                dictionary);
+        dictionary = dictionaryService.paterObject2ObjectDB(paterObj, dictionary);
+
+        //设置默认部门顺序
+        if (dictionary.getSerialNumber() == null) {
+            Integer maxCount = dictionaryService.findMaxSerialNumber(dictionary.getPid());
+            dictionary.setSerialNumber(Integer.valueOf(maxCount.intValue() + 1));
+        }
+        dictionaryService.save(dictionary);
+        return model;
+    }
+
+    @Override
+    public ResultModel updateDictionary(PageData pd) throws Exception {
+        ResultModel model = new ResultModel();
+        Dictionary dictionary = (Dictionary)HttpUtils.pageData2Entity(pd, new Dictionary());
+
+        //pid 获取父节点对象<Department>
+        Dictionary paterObj = dictionaryService.findDictionaryById(dictionary.getPid());
+        if (paterObj == null) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("(pid:"+ dictionary.getPid() + ")系统中无数据，请与管理员联系！");
+            return model;
+        }
+
+        //2. (字典名称)在同一层名称不可重复
+        if (dictionaryService.isExistByName(dictionary.getPid(), dictionary.getId(), dictionary.getName(),pd.getString("currentCompanyId"))) {
+            String msgTemp = "上级字典名称: {0}{2}字典名称: {1}{2}在系统中已经重复！{2}";
+            String str_isnull = MessageFormat.format(msgTemp,
+                    paterObj.getName(),
+                    dictionary.getName(),
+                    Common.SYS_ENDLINE_DEFAULT);
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(str_isnull);
+            return model;
+        }
+
+        //3. 修改部门信息
+        Dictionary dictionaryDB = dictionaryService.findDictionaryById(dictionary.getId());
+        dictionaryDB = dictionaryService.object2objectDB(dictionary, dictionaryDB);
+        dictionaryDB = dictionaryService.clearDictionaryByPath(dictionaryDB);
+        dictionaryDB = dictionaryService.id2DictionaryByLayer(dictionaryDB.getId(),
+                Integer.valueOf(paterObj.getLayer().intValue() + 1),
+                dictionaryDB);
+        dictionaryDB = dictionaryService.paterObject2ObjectDB(paterObj, dictionaryDB);
+
+//        //设置默认部门顺序
+//        if (dictionary.getSerialNumber() == null) {
+//            Integer maxCount = dictionaryService.findMaxSerialNumber(dictionary.getPid());
+//            dictionaryDB.setSerialNumber(Integer.valueOf(maxCount.intValue() + 1));
+//        }
+        dictionaryDB.setUuser((String)pd.get("uuser"));
+        dictionaryService.update(dictionaryDB);
+        return model;
+    }
+
+    @Override
+    public ResultModel updateDisableDictionary(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+        //1. 非空判断
+        if (pageData == null || pageData.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("参数错误：用户登录参数(pageData)为空！");
+            return model;
+        }
+
+        String id = (String)pageData.get("id");
+        String isdisable = (String)pageData.get("isdisable");
+
+        String msgStr = new String();
+        if (id == null || id.trim().length() == 0) {
+            msgStr = msgStr + "id为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT;
+        }
+        if (isdisable == null || isdisable.trim().length() == 0) {
+            msgStr = msgStr + "isdisable为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT;
+        }
+        if (msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
+
+        //2. 当前组织节点下是否含有(子节点-岗位)
+        msgStr = dictionaryService.checkDeleteDictionaryByIds(id);
+        if (msgStr != null && msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
+
+        //3. 修改组织架构(禁用)状态
+        Dictionary objectDB = dictionaryService.findDictionaryById(id);
+        objectDB.setIsdisable(isdisable);
+        objectDB.setUdate(new Date());
+        objectDB.setUuser((String)pageData.get("uuser"));
+        dictionaryService.update(objectDB);
+        return model;
+    }
+
+    @Override
+    public ResultModel deleteDictionarys(PageData pd) throws Exception {
+        ResultModel model = new ResultModel();
+        String ids = pd.getString("ids");
+        if(StringUtils.isEmpty(ids)){
+            model.putCode("1");
+            model.putMsg("未勾选删除记录，请重新选择！");
+            return model;
+        }
+
+        String id_str = StringUtil.stringTrimSpace(ids);
+        String msgStr = dictionaryService.checkDeleteDictionaryByIds(id_str);
+        if (msgStr != null && msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
+
+        String[] id_arry = id_str.split(",");
+        if(id_arry.length>0){
+            dictionaryService.deleteByIds(id_arry);
+        }
+        return model;
+    }
+
+    @Override
+    public ResultModel listPageDictionarys(PageData pd, Pagination pg) throws Exception {
+        ResultModel model = new ResultModel();
+        Map result = new HashMap();
+//        List<LinkedHashMap> titles = new ArrayList<LinkedHashMap>();
+        List<Column> columnList = columnService.findColumnList("dictionary");
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
+        }
+
+        List<LinkedHashMap> titlesList = new ArrayList<LinkedHashMap>();
+        List<String> titlesHideList = new ArrayList<String>();
+        Map<String, String> varModelMap = new HashMap<String, String>();
+        if(columnList!=null&&columnList.size()>0){
+            for (Column column : columnList) {
+                if(column!=null){
+                    if("0".equals(column.getIshide())){
+                        titlesHideList.add(column.getTitleKey());
+                    }
+                    LinkedHashMap titlesLinkedMap = new LinkedHashMap();
+                    titlesLinkedMap.put(column.getTitleKey(),column.getTitleName());
+                    varModelMap.put(column.getTitleKey(),"");
+                    titlesList.add(titlesLinkedMap);
+                }
+//                if(entry.getKey().indexOf("_hide")>0){
+//                    titlesLinkedMap.put(entry.getKey().replace("_hide",""),entry.getValue());
+//                    titlesHideList.add(entry.getKey().replace("_hide",""));
+//                    varModelMap.put(entry.getKey().replace("_hide",""),"");
+//                }else{
+//                    titlesLinkedMap.put(entry.getKey(),entry.getValue());
+//                    varModelMap.put(entry.getKey(),"");
+//                }
+//                titlesList.add(titlesLinkedMap);
+            }
+        }
+        result.put("hideTitles",titlesHideList);
+        result.put("titles",titlesList);
+
+        List<Map> varMapList = new ArrayList();
+        List<Map> varList = dictionaryService.getDataListPage(pd,pg);
+        if(varList!=null&&varList.size()>0){
+            for(int i=0;i<varList.size();i++){
+                Map map = varList.get(i);
+                Map<String, String> varMap = new HashMap<String, String>();
+                varMap.putAll(varModelMap);
+                for (Map.Entry<String, String> entry : varMap.entrySet()) {
+                    varMap.put(entry.getKey(),map.get(entry.getKey())!=null?map.get(entry.getKey()).toString():"");
+                }
+                varMapList.add(varMap);
+            }
+        }
+        result.put("varList",varMapList);
+        result.put("pageData", pg);
+        model.putResult(result);
+        return model;
+    }
+
+    @Override
+    public void exportExcelDictionarys(PageData pd) throws Exception {
+        List<Column> columnList = columnService.findColumnList("dictionary");
+        if (columnList == null || columnList.size() == 0) {
+            throw new RestException("1","数据库没有生成TabCol，请联系管理员！");
+        }
+
+        //根据查询条件获取业务数据List
+
+        String ids = pd.getString("ids");
+
+        String queryStr = "";
+        if (ids != null && ids.trim().length() > 0) {
+            ids = StringUtil.stringTrimSpace(ids);
+            ids = "'" + ids.replace(",", "','") + "'";
+            queryStr = "id in (" + ids + ")";
+        }
+        pd.put("queryStr", queryStr);
+
+        Pagination pg = HttpUtils.parsePagination(pd);
+        pg.setSize(100000);
+        List<Map> dataList = dictionaryService.getDataListPage(pd, pg);
+
+        //查询数据转换成Excel导出数据
+        List<LinkedHashMap<String, String>> dataMapList = ColumnUtil.modifyDataList(columnList, dataList);
+
+        HttpServletResponse response  = HttpUtils.currentResponse();
+        //查询数据-Excel文件导出
+        //String fileName = "Excel数据字典数据导出";
+        String fileName = "ExcelDictionary";
+        ExcelUtil.excelExportByDataList(response, fileName, dataMapList);
+    }
+
+    @Override
+    public ResultModel treeDictionarys(PageData pd) throws Exception {
+        ResultModel model = new ResultModel();
+        //获取全部字典树-查询条件
+        pd.put("isdisable", "1");
+        pd.put("queryStr", " and company_id = '"+pd.get("currentCompanyId")+"' or  isopen = '1'");
+
+        //获取指定节点及该节点下子节点-字典树-查询条件
+        String pid = null;
+        String dictionaryKey = pd.getString("dictionaryKey");
+        if (dictionaryKey != null && dictionaryKey.trim().length() > 0 && Common.DICTIONARY_MAP.get(dictionaryKey) != null) {
+            pid = Common.DICTIONARY_MAP.get(dictionaryKey).trim();
+            pd.put("pid", pid);
+            pd.put("selfQueryStr", "id = '" + pid + "'");
+            pd.put("queryStr", null);
+        }
+
+        List<TreeEntity> treeList = dictionaryService.getTreeList(pd);
+        TreeEntity treeObj = TreeUtil.switchTree(pid, treeList);
+//        String treeJsonStr = YvanUtil.toJson(treeObj);
+//        System.out.println("treeJsonStr: " + treeJsonStr);
+
+        Map result = new HashMap();
+        result.put("treeList", treeObj);
+        model.putResult(result);
+        return model;
+    }
+
+    @Override
+    public ResultModel getDictionarys(PageData pd) throws Exception {
+        ResultModel model = new ResultModel();
+        String dictionaryKey = pd.getString("dictionaryKey");
+        String isglobal = pd.getString("isglobal");
+        String queryStr = pd.getString("queryStr");
+        String id = Common.DICTIONARY_MAP.get(dictionaryKey);
+        pd.put("isdisable", "1");
+
+        if(StringUtils.isEmpty(isglobal)||"0".equals(isglobal)){
+            pd.put("queryStr", "  and company_id = '"+pd.get("currentCompanyId")+"'  and ( id = '"+id+"' or id_1 = '"+id+"'  )  " + queryStr);
+        }else if("1".equals(isglobal)){
+            pd.put("queryStr", "  and isglobal = '"+pd.get("isglobal")+"'  and ( id = '"+id+"' or id_1 = '"+id+"'  ) " + queryStr);
+        }
+        pd.put("selfQueryStr", "id = '" + id + "'");
+
+        List<TreeEntity> treeList = dictionaryService.getTreeList(pd);
+        TreeEntity treeObj = TreeUtil.switchTree(id, treeList);
+
+        dealWithTreeEntityChildren(treeObj);
+
+        Map result = new HashMap();
+        result.put("options", treeObj.getChildren());
+        model.putResult(result);
+        return model;
+    }
+
+    public void dealWithTreeEntityChildren(TreeEntity treeObj){
+        if(treeObj!=null&&treeObj.getChildren()!=null&&treeObj.getChildren().size()>0){
+            for(int i=0;i<treeObj.getChildren().size();i++){
+                dealWithTreeEntityChildren(treeObj.getChildren().get(i));
+            }
+        }else {
+            treeObj.setChildren(null);
+        }
+    }
+
+    @Override
+    public ResultModel dataListDictionarys(PageData pd) throws Exception {
+        ResultModel model = new ResultModel();
+        String dictionaryKey = pd.getString("dictionaryKey");
+        String pid = Common.DICTIONARY_MAP.get(dictionaryKey);
+        String queryStr =  pd.getString("queryStr")!=null?pd.getString("queryStr"):"";
+        pd.put("queryStr","(isdisable = '1' and pid = '"+pid+"' "+queryStr+" )");
+        List<Map> dictionaryList = dictionaryService.findDataList(pd);
+        model.putResult(dictionaryList);
+        return model;
     }
 }
 

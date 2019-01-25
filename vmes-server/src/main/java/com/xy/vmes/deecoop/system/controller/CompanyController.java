@@ -37,18 +37,7 @@ public class CompanyController {
     private Logger logger = LoggerFactory.getLogger(DepartmentController.class);
     @Autowired
     private CompanyService companyService;
-    @Autowired
-    private DepartmentService departmentService;
 
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private UserRoleService userRoleService;
-    @Autowired
-    private UserDefinedMenuService userDefinedMenuService;
-
-    @Autowired
-    private CoderuleService coderuleService;
 
     @Autowired
     private ColumnService columnService;
@@ -181,6 +170,8 @@ public class CompanyController {
     }
 
 
+
+
     /**
      * Excel导出功能：
      * 1. 勾选指定行导出-(','逗号分隔的id字符串)
@@ -198,35 +189,10 @@ public class CompanyController {
     public void exportExcelCompanys() throws Exception {
         logger.info("################company/exportExcelCompanys 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-
-        List<Column> columnList = columnService.findColumnList("company");
-        if (columnList == null || columnList.size() == 0) {
-            throw new RestException("1","数据库没有生成TabCol，请联系管理员！");
-        }
-
-        //根据查询条件获取业务数据List
         PageData pd = HttpUtils.parsePageData();
-        pd.put("layer", "1");
-        String ids = pd.getString("ids");
-        String queryStr = "";
-        if (ids != null && ids.trim().length() > 0) {
-            ids = StringUtil.stringTrimSpace(ids);
-            ids = "'" + ids.replace(",", "','") + "'";
-            queryStr = "id in (" + ids + ")";
-        }
-        pd.put("queryStr", queryStr);
-
         Pagination pg = HttpUtils.parsePagination(pd);
-        pg.setSize(100000);
-        List<Map> dataList = companyService.getDataListPage(pd, pg);
-        //查询数据转换成Excel导出数据
-        List<LinkedHashMap<String, String>> dataMapList = ColumnUtil.modifyDataList(columnList, dataList);
-        HttpServletResponse response  = HttpUtils.currentResponse();
 
-        //查询数据-Excel文件导出
-        //String fileName = "Excel数据字典数据导出";
-        String fileName = "ExcelCompany";
-        ExcelUtil.excelExportByDataList(response, fileName, dataMapList);
+        companyService.exportExcelCompanys(pd,pg);
         Long endTime = System.currentTimeMillis();
         logger.info("################company/exportExcelCompanys 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
     }
@@ -241,142 +207,9 @@ public class CompanyController {
     public ResultModel addCompanyAdmin() throws Exception {
         logger.info("################company/addCompanyAdmin 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
-        //1. 非空判断
-        if (pageData == null || pageData.size() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("参数错误：用户登录参数(pageData)为空！");
-            return model;
-        }
-
-        String roleId = (String)pageData.get("roleId");
-        if (roleId == null || roleId.trim().length() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("请选择一个角色套餐！");
-            return model;
-        }
-        Department companyObj = (Department)HttpUtils.pageData2Entity(pageData, new Department());
-        if (companyObj == null) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("参数错误：Map 转 组织对象Department 异常！");
-            return model;
-        }
-
-        String msgStr = companyService.checkColumnByAdd(companyObj);
-        if (msgStr.trim().length() > 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg(msgStr);
-            return model;
-        }
-
-        //pid 获取父节点对象<Department>-组织架构的根节点(pid:root)-企业挂在此节点上
-        Department rootObj = departmentService.findDepartmentByRoot();
-        if (rootObj == null) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("根节点(pid:root)系统中无数据，请与管理员联系！");
-            return model;
-        }
-
-        //2. (企业名称-企业编码)在同一层不可重复
-        StringBuffer msgBuf = new StringBuffer();
-        if (companyService.isExistByName(rootObj.getId(), null, companyObj.getName())) {
-            String msgTemp = "根名称: {0}" + Common.SYS_ENDLINE_DEFAULT +
-                    "企业名称: {1}" + Common.SYS_ENDLINE_DEFAULT +
-                    "在系统中已经重复！" + Common.SYS_ENDLINE_DEFAULT;
-            String msgExist = MessageFormat.format(msgTemp,
-                    rootObj.getName(),
-                    companyObj.getName());
-            msgBuf.append(msgExist);
-        }
-        if (companyService.isExistByCode(rootObj.getId(), null, companyObj.getCode())) {
-            String msgTemp = "根名称: {0}" + Common.SYS_ENDLINE_DEFAULT +
-                    "企业编码: {1}" + Common.SYS_ENDLINE_DEFAULT +
-                    "在系统中已经重复！" + Common.SYS_ENDLINE_DEFAULT;
-            String msgExist = MessageFormat.format(msgTemp,
-                    rootObj.getName(),
-                    companyObj.getCode());
-            msgBuf.append(msgExist);
-        }
-        if (msgBuf.toString().trim().length() > 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg(msgBuf.toString());
-            return model;
-        }
-
-        //3. 创建(企业-企业管理员)信息
-        String id = Conv.createUuid();
-        companyObj.setId(id);
-        //organizeType组织类型(1:公司 2:部门)
-        companyObj.setOrganizeType("1");
-        companyObj.setCuser(pageData.getString("cuser"));
-
-        companyObj = departmentService.id2DepartmentByLayer(id,
-                Integer.valueOf(rootObj.getLayer().intValue() + 1),
-                companyObj);
-        companyObj = departmentService.paterObject2ObjectDB(rootObj, companyObj);
-
-//        //获取(长名称,长编码)- 通过'-'连接的字符串
-//        Map<String, String> longNameCodeMpa = departmentService.findLongNameCodeByPater(rootObj);
-//        if (longNameCodeMpa != null
-//                && longNameCodeMpa.get("LongName") != null
-//                && longNameCodeMpa.get("LongName").trim().length() > 0
-//                ) {
-//            companyObj.setLongName(longNameCodeMpa.get("LongName").trim() + "-" + companyObj.getName());
-//        }
-//        if (longNameCodeMpa != null
-//                && longNameCodeMpa.get("LongCode") != null
-//                && longNameCodeMpa.get("LongCode").trim().length() > 0
-//                ) {
-//            companyObj.setLongCode(longNameCodeMpa.get("LongCode").trim() + "-" + companyObj.getCode());
-//        }
-        //该企业-在组织表级别
-        //companyObj.setLayer(Integer.valueOf(rootObj.getLayer().intValue() + 1));
-        //companyObj.setPid(rootObj.getId());
-
-        //排列顺序serialNumber
-        if (companyObj.getSerialNumber() == null) {
-            Integer maxCount = departmentService.findMaxSerialNumber(rootObj.getId());
-            companyObj.setSerialNumber(Integer.valueOf(maxCount.intValue() + 1));
-        }
-
-        departmentService.save(companyObj);
-
-        //4. 创建(企业管理员)账户
-
-        String userName = (String)pageData.get("userName");
-        String mobile = (String)pageData.get("mobile");
-        String email = (String)pageData.get("email");
-
-        User user = new User();
-        user.setCompanyId(companyObj.getId());
-        user.setDeptId(companyObj.getId());
-//        String userCode = coderuleService.createCoder(companyObj.getId(), "vmes_user");
-        String userCode = companyObj.getCode().toLowerCase()+"admin";
-        user.setUserCode(userCode);
-        user.setUserName(StringUtils.isEmpty(userName)?userCode:userName);
-        user.setMobile(mobile);
-        user.setEmail(email);
-
-        if(mobile!=null&&mobile.trim().length()>6){
-            mobile = mobile.trim();
-            String password = mobile.substring(mobile.length()-6,mobile.length());
-            user.setPassword(MD5Utils.MD5(password));
-        }else{
-        user.setPassword(MD5Utils.MD5(Common.DEFAULT_PASSWORD));
-        }
-
-
-        //用户类型(userType_admin:超级管理员 userType_company:企业管理员 userType_employee:普通用户 userType_outer:外部用户)
-        user.setUserType(Common.DICTIONARY_MAP.get("userType_company"));
-        userService.save(user);
-
-        //5. 创建(用户角色)
-        UserRole userRole = new UserRole();
-        userRole.setUserId(user.getId());
-        userRole.setRoleId(roleId);
-        userRoleService.save(userRole);
+        ResultModel model = companyService.addCompanyAdmin(pageData);
         Long endTime = System.currentTimeMillis();
         logger.info("################company/addCompanyAdmin 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
@@ -392,115 +225,10 @@ public class CompanyController {
     public ResultModel updateCompany() throws Exception {
         logger.info("################company/updateCompany 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
-        //1. 非空判断
-        if (pageData == null || pageData.size() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("参数错误：用户登录参数(pageData)为空！");
-            return model;
-        }
+        ResultModel model = companyService.updateCompany(pageData);
 
-        String roleId = (String)pageData.get("roleId");
-        if (roleId == null || roleId.trim().length() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("请选择一个角色套餐！");
-            return model;
-        }
-
-        Department companyObj = (Department)HttpUtils.pageData2Entity(pageData, new Department());
-        if (companyObj == null) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("参数错误：Map 转 组织对象Department 异常！");
-            return model;
-        }
-
-        String msgStr = companyService.checkColumnByEdit(companyObj);
-        if (msgStr.trim().length() > 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg(msgStr);
-            return model;
-        }
-
-        //pid 获取父节点对象<Department>-组织架构的根节点(pid:root)-企业挂在此节点上
-        Department rootObj = departmentService.findDepartmentByRoot();
-        if (rootObj == null) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("根节点(pid:root)系统中无数据，请与管理员联系！");
-            return model;
-        }
-
-        //2. (企业名称-企业编码)在同一层不可重复
-        StringBuffer msgBuf = new StringBuffer();
-        if (companyService.isExistByName(rootObj.getId(), companyObj.getId(), companyObj.getName())) {
-            String msgTemp = "根名称: {0}" + Common.SYS_ENDLINE_DEFAULT +
-                    "企业名称: {1}" + Common.SYS_ENDLINE_DEFAULT +
-                    "在系统中已经重复！" + Common.SYS_ENDLINE_DEFAULT;
-            String msgExist = MessageFormat.format(msgTemp,
-                    rootObj.getName(),
-                    companyObj.getName());
-            msgBuf.append(msgExist);
-        }
-        if (companyService.isExistByCode(rootObj.getId(), companyObj.getId(), companyObj.getCode())) {
-            String msgTemp = "根名称: {0}" + Common.SYS_ENDLINE_DEFAULT +
-                    "企业编码: {1}" + Common.SYS_ENDLINE_DEFAULT +
-                    "在系统中已经重复！" + Common.SYS_ENDLINE_DEFAULT;
-            String msgExist = MessageFormat.format(msgTemp,
-                    rootObj.getName(),
-                    companyObj.getCode());
-            msgBuf.append(msgExist);
-        }
-        if (msgBuf.toString().trim().length() > 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg(msgBuf.toString());
-            return model;
-        }
-
-        //3. 修改企业信息
-        Department companyDB = departmentService.findDepartmentById(companyObj.getId());
-        companyDB = companyService.object2objectDB(companyObj, companyDB);
-
-//        //获取(长名称,长编码)- 通过'-'连接的字符串
-//        Map<String, String> longNameCodeMpa = departmentService.findLongNameCodeByPater(rootObj);
-//        if (longNameCodeMpa != null
-//                && longNameCodeMpa.get("LongName") != null
-//                && longNameCodeMpa.get("LongName").trim().length() > 0
-//                ) {
-//            companyDB.setLongName(longNameCodeMpa.get("LongName").trim() + "-" + companyDB.getName());
-//        }
-//        if (longNameCodeMpa != null
-//                && longNameCodeMpa.get("LongCode") != null
-//                && longNameCodeMpa.get("LongCode").trim().length() > 0
-//                ) {
-//            companyDB.setLongCode(longNameCodeMpa.get("LongCode").trim() + "-" + companyDB.getCode());
-//        }
-        departmentService.update(companyDB);
-
-        //获取当前企业管理员
-
-        User user = userService.findCompanyAdmin(companyDB.getId());
-        if (user != null) {
-            String userName = (String)pageData.get("userName");
-            String mobile = (String)pageData.get("mobile");
-            String email = (String)pageData.get("email");
-            //4. 修改用户表
-            user.setUserName(userName);
-            user.setMobile(mobile);
-            user.setEmail(email);
-            userService.update(user);
-
-            //5. 修改用户角色表
-            PageData findMap = new PageData();
-            findMap.put("userId", user.getId());
-            findMap.put("mapSize", Integer.valueOf(findMap.size()));
-            UserRole userRole = userRoleService.findUserRole(findMap);
-
-            if (userRole != null) {
-                userRole.setRoleId(roleId);
-                userRoleService.update(userRole);
-            }
-        }
         Long endTime = System.currentTimeMillis();
         logger.info("################company/updateCompany 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
@@ -549,61 +277,9 @@ public class CompanyController {
     public ResultModel deleteCompanyAdmins() throws Exception {
         logger.info("################company/deleteCompanyAdmins 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
-        //非空判断
-        if (pageData == null || pageData.size() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("参数错误：用户登录参数(pageData)为空！/n");
-            return model;
-        }
-
-        String companyIds = (String)pageData.get("companyIds");
-        if (companyIds == null || companyIds.trim().length() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("参数错误：请至少选择一行数据！/n");
-            return model;
-        }
-
-        String companyId_str = StringUtil.stringTrimSpace(companyIds);
-        String[] companyId_arry = companyId_str.split(",");
-
-        //当前企业节点下是否含有子节点
-        String msgStr = companyService.checkDeleteCompanyByIds(companyId_str);
-        if (msgStr.trim().length() > 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg(msgStr);
-            return model;
-        }
-
-        for (int j = 0; j < companyId_arry.length; j++) {
-            String companyId = companyId_arry[j];
-
-            //(部门id,user_type)查询(vmes_user)用户表
-            PageData findMap = new PageData();
-            findMap.put("companyId", companyId);
-            findMap.put("deptId", companyId);
-            findMap.put("userType", Common.DICTIONARY_MAP.get("userType_company"));
-            findMap.put("mapSize", Integer.valueOf(findMap.size()));
-            User user = userService.findUser(findMap);
-
-            String userId = "";
-            if (user != null && user.getId() != null && user.getId().trim().length() > 0) {
-                userId = user.getId().trim();
-
-                //2. 删除(vmes_user)用户表
-                userService.deleteById(userId);
-                //3. 删除(vmes_user_role)用户角色表
-                userRoleService.deleteUserRoleByUserId(userId);
-                //4. 删除(vmes_user_defined_menu)用户主页表
-                userDefinedMenuService.deleteUserDefinedMenuByUserId(userId);
-            }
-        }
-
-        //删除企业
-        departmentService.deleteByIds(companyId_arry);
-
+        ResultModel model = companyService.deleteCompanyAdmins(pageData);
         Long endTime = System.currentTimeMillis();
         logger.info("################company/deleteCompanyAdmins 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;

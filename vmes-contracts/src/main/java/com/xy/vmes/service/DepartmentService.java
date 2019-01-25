@@ -6,6 +6,8 @@ import com.xy.vmes.entity.DeptExcelEntity;
 import com.xy.vmes.entity.TreeEntity;
 import com.yvan.PageData;
 import com.yvan.Tree;
+import com.yvan.springmvc.ResultModel;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -294,6 +296,22 @@ public interface DepartmentService {
                                  DeptExcelEntity excelEntity,
                                  List<String> nameList,
                                  int count);
+
+    ResultModel treeDepartments(PageData pd) throws Exception;
+
+    ResultModel addDepartment(PageData pageData) throws Exception;
+
+    ResultModel updateDepartment(PageData pageData) throws Exception;
+
+    ResultModel updateDisableDept(PageData pageData) throws Exception;
+
+    ResultModel deleteDepartments(PageData pageData) throws Exception;
+
+    ResultModel listPageDepartments(PageData pd, Pagination pg) throws Exception;
+
+    void exportExcelDepartments(PageData pd, Pagination pg)throws Exception;
+
+    ResultModel importExcelDepartments(MultipartFile file)throws Exception;
 }
 
 

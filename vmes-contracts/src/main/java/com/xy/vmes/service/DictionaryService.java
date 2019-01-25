@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.entity.Dictionary;
 import com.xy.vmes.entity.TreeEntity;
 import com.yvan.PageData;
+import com.yvan.springmvc.ResultModel;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -164,6 +165,24 @@ public interface DictionaryService {
     String checkDeleteDictionaryByIds(String ids);
 
     String findDictionaryIdById(String id, Integer layer, String prefix);
+
+    ResultModel addDictionary(PageData pd) throws Exception;
+
+    ResultModel updateDictionary(PageData pd) throws Exception;
+
+    ResultModel updateDisableDictionary(PageData pageData) throws Exception;
+
+    ResultModel deleteDictionarys(PageData pd)throws Exception;
+
+    ResultModel listPageDictionarys(PageData pd, Pagination pg) throws Exception;
+
+    void exportExcelDictionarys(PageData pd)throws Exception;
+
+    ResultModel treeDictionarys(PageData pd)throws Exception;
+
+    ResultModel getDictionarys(PageData pd)throws Exception;
+
+    ResultModel dataListDictionarys(PageData pd) throws Exception;
 }
 
 

@@ -3,6 +3,7 @@ package com.xy.vmes.service;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.entity.Employee;
 import com.yvan.PageData;
+import com.yvan.springmvc.ResultModel;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -125,6 +126,31 @@ public interface EmployeeService {
     List<Employee> findEmployeeList(PageData object);
     Employee findEmployeeById(String id);
     boolean isExistByMobile(String id, String mobile);
+
+    ResultModel addEmployeeAndUser(PageData pd) throws Exception;
+
+
+    ResultModel updateEmployeeAndUser(PageData pd) throws Exception;
+
+    ResultModel updateDisableEmployee(PageData pageData) throws Exception;
+
+    ResultModel deleteEmployees(PageData pd)throws Exception;
+
+    ResultModel updateEmployeePostState(PageData pd)throws Exception;
+
+    ResultModel updateForChangeEmployeePost(PageData pd) throws Exception;
+
+    ResultModel addEmployToUser(PageData pd) throws Exception;
+
+    ResultModel addEmployeePluralityPost(PageData pageData)throws Exception;
+
+    ResultModel addEmployeeMainPost(PageData pageData)throws Exception;
+
+    ResultModel listPageEmployees(PageData pd, Pagination pg)throws Exception;
+
+    void exportExcelEmployees(PageData pd, Pagination pg)throws Exception;
+
+    ResultModel selectEmployeeAndUserById(String employPostId) throws Exception;
 }
 
 
