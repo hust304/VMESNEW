@@ -1,15 +1,16 @@
 package com.xy.vmes.deecoop.system.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.Common;
+import com.xy.vmes.common.util.StringUtil;
+import com.xy.vmes.common.util.TreeUtil;
 import com.xy.vmes.deecoop.system.dao.RoleMapper;
 import com.xy.vmes.entity.*;
-import com.xy.vmes.service.RoleButtonService;
-import com.xy.vmes.service.RoleMenuService;
-import com.xy.vmes.service.RoleService;
-import com.xy.vmes.service.UserRoleService;
-import com.yvan.PageData;
+import com.xy.vmes.service.*;
+import com.yvan.*;
 import com.yvan.platform.RestException;
+import com.yvan.springmvc.ResultModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.text.MessageFormat;
 import java.util.*;
 
-import com.yvan.Conv;
+import javax.servlet.http.HttpServletResponse;
 
 /**
 * 说明：vmes_role:角色 实现类
@@ -32,11 +33,22 @@ public class RoleServiceImp implements RoleService {
     @Autowired
     private RoleMapper roleMapper;
     @Autowired
-    private UserRoleService userRoleService;
-    @Autowired
     private RoleMenuService roleMenuService;
     @Autowired
     private RoleButtonService roleButtonService;
+    @Autowired
+    private UserRoleService userRoleService;
+    @Autowired
+    private CoderuleService coderuleService;
+
+    @Autowired
+    private DepartmentService departmentService;
+    @Autowired
+    private MenuService menuService;
+    @Autowired
+    private MenuTreeService menuTreeService;
+    @Autowired
+    private ColumnService columnService;
 
     /**
     * 创建人：陈刚 自动创建，禁止修改
@@ -287,6 +299,761 @@ public class RoleServiceImp implements RoleService {
         if (objectList != null && objectList.size() > 0) {return true;}
 
         return false;
+    }
+
+    @Override
+    public ResultModel listPageRoles(PageData pd, Pagination pg) throws Exception {
+        ResultModel model = new ResultModel();
+        //1. 查询遍历List列表
+        List<Column> columnList = columnService.findColumnList("role");
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
+        }
+
+        List<LinkedHashMap> titlesList = new ArrayList<LinkedHashMap>();
+        List<String> titlesHideList = new ArrayList<String>();
+        Map<String, String> varModelMap = new HashMap<String, String>();
+        if(columnList!=null&&columnList.size()>0){
+            for (Column column : columnList) {
+                if(column!=null){
+                    if("0".equals(column.getIshide())){
+                        titlesHideList.add(column.getTitleKey());
+                    }
+                    LinkedHashMap titlesLinkedMap = new LinkedHashMap();
+                    titlesLinkedMap.put(column.getTitleKey(),column.getTitleName());
+                    varModelMap.put(column.getTitleKey(),"");
+                    titlesList.add(titlesLinkedMap);
+                }
+            }
+        }
+        Map<String, Object> mapObj = new HashMap<String, Object>();
+        mapObj.put("hideTitles", titlesHideList);
+        mapObj.put("titles", YvanUtil.toJson(titlesList));
+
+        //2. 分页查询数据List
+
+        pd.put("cuser", null);
+
+        List<Map> varList = this.getDataListPage(pd, pg);
+        List<Map<String, String>> varMapList = new ArrayList<Map<String, String>>();
+        if(varList != null && varList.size() > 0) {
+            for (Map<String, Object> map : varList) {
+                Map<String, String> varMap = new HashMap<String, String>();
+                varMap.putAll(varModelMap);
+                for (Map.Entry<String, String> entry : varMap.entrySet()) {
+                    varMap.put(entry.getKey(), map.get(entry.getKey()) != null ? map.get(entry.getKey()).toString() : "");
+                }
+                varMapList.add(varMap);
+            }
+        }
+        mapObj.put("varList", YvanUtil.toJson(varMapList));
+        mapObj.put("pageData", YvanUtil.toJson(pg));
+        model.putResult(mapObj);
+        return model;
+    }
+
+    @Override
+    public void exportExcelRoles(PageData pd, Pagination pg) throws Exception {
+        List<Column> columnList = columnService.findColumnList("role");
+        if (columnList == null || columnList.size() == 0) {
+            throw new RestException("1","数据库没有生成TabCol，请联系管理员！");
+        }
+
+        //根据查询条件获取业务数据List
+        //1. 获取Excel导出数据查询条件
+
+        pd.put("cuser", null);
+        String ids = pd.getString("ids");
+
+        String queryStr = "";
+        if (ids != null && ids.trim().length() > 0) {
+            ids = StringUtil.stringTrimSpace(ids);
+            ids = "'" + ids.replace(",", "','") + "'";
+            queryStr = "id in (" + ids + ")";
+        }
+        pd.put("queryStr", queryStr);
+
+
+        pg.setSize(100000);
+        List<Map> dataList = this.getDataListPage(pd, pg);
+
+        //查询数据转换成Excel导出数据
+        List<LinkedHashMap<String, String>> dataMapList = ColumnUtil.modifyDataList(columnList, dataList);
+        HttpServletResponse response  = HttpUtils.currentResponse();
+
+
+        //查询数据-Excel文件导出
+        //String fileName = "Excel数据字典数据导出";
+        String fileName = "ExcelRole";
+        ExcelUtil.excelExportByDataList(response, fileName, dataMapList);
+    }
+
+    @Override
+    public ResultModel addRole(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+        //1. 非空判断
+        if (pageData == null || pageData.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("参数错误：参数(pageData)为空！");
+            return model;
+        }
+
+        String name = (String)pageData.get("name");
+        if (name == null || name.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("(角色名称)输入为空或空字符串，(角色名称)是必填字段不可为空！");
+            return model;
+        }
+
+        String userId = (String)pageData.get("userId");
+        String companyId = "";
+        if (pageData.get("companyId") != null) {
+            companyId = (String)pageData.get("companyId");
+        }
+
+        //角色名称是否相同
+        if (this.isExistByName(companyId, null, name)) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("角色名称：" + name + " 在系统中已经存在！");
+            return model;
+        }
+
+        //获取角色编码
+        String code = coderuleService.createCoder(companyId, "vmes_role", "R");
+        if (code == null || code.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("生成角色编码失败，请与管理员联系！");
+            return model;
+        }
+
+        //3. 添加角色
+        Role role = new Role();
+        if (companyId != null && companyId.trim().length() > 0) {
+            role.setCompanyId(companyId.trim());
+        }
+        role.setCuser(userId);
+        role.setCode(code);
+        role.setName(name);
+        role.setRemark(pageData.getString("remark"));
+        this.save(role);
+
+        //4. 添加角色菜单
+        RoleMenu roleMenu_1 = new RoleMenu();
+        roleMenu_1.setRoleId(role.getId());
+        roleMenu_1.setMenuId(Common.SYS_MENU_MAP.get("root"));
+        roleMenu_1.setCuser(userId);
+        roleMenuService.save(roleMenu_1);
+
+        RoleMenu roleMenu_2 = new RoleMenu();
+        roleMenu_2.setRoleId(role.getId());
+        roleMenu_2.setMenuId(Common.SYS_MENU_MAP.get("home"));
+        roleMenu_2.setCuser(userId);
+        roleMenuService.save(roleMenu_2);
+
+        return model;
+    }
+
+    @Override
+    public ResultModel updateRole(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+        //1. 非空判断
+        if (pageData == null || pageData.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("参数错误：用户登录参数(pageData)为空！");
+            return model;
+        }
+
+        String id = (String)pageData.get("id");
+        String name = (String)pageData.get("name");
+        String companyId = (String)pageData.get("companyId");
+
+        String msgStr = new String();
+        if (id == null || id.trim().length() == 0) {
+            msgStr = msgStr + "id为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT;
+        }
+        if (name == null || name.trim().length() == 0) {
+            msgStr = msgStr + "(角色名称)输入为空或空字符串，(角色名称)是必填字段不可为空！" + Common.SYS_ENDLINE_DEFAULT;
+        }
+        if (msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
+
+        //角色名称是否相同
+        if (this.isExistByName(companyId, id, name)) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("角色名称：" + name + " 在系统中已经存在！");
+            return model;
+        }
+
+        //3. 修改角色
+        Role objectDB = this.findRoleById(id);
+        objectDB.setName(name);
+        objectDB.setRemark(pageData.getString("remark"));
+        this.update(objectDB);
+        return model;
+    }
+
+    @Override
+    public ResultModel updateDisableRole(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+        //1. 非空判断
+        if (pageData == null || pageData.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("参数错误：用户登录参数(pageData)为空！");
+            return model;
+        }
+
+        String id = (String)pageData.get("id");
+        String isdisable = (String)pageData.get("isdisable");
+
+        String msgStr = new String();
+        if (id == null || id.trim().length() == 0) {
+            msgStr = msgStr + "id为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT;
+        }
+        if (isdisable == null || isdisable.trim().length() == 0) {
+            msgStr = msgStr + "isdisable为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT;
+        }
+        if (msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
+
+        //修改角色(禁用)状态
+        Role objectDB = (Role)HttpUtils.pageData2Entity(pageData, new Role());
+        this.update(objectDB);
+
+        return model;
+    }
+
+    @Override
+    public ResultModel deleteRoles(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+        //1. 非空判断
+        if (pageData == null || pageData.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("参数错误：用户登录参数(pageData)为空！");
+            return model;
+        }
+
+        String ids = (String)pageData.get("ids");
+        if (ids == null || ids.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("参数错误：请至少选择一行数据！");
+            return model;
+        }
+
+        ids = StringUtil.stringTrimSpace(ids);
+        String[] id_arry = ids.split(",");
+        for (int i = 0; i < id_arry.length; i++) {
+            String roleID = id_arry[i];
+            try {
+                //1. 当前角色ID-禁用(用户角色)
+                userRoleService.deleteUserRoleByRoleId(roleID);
+                //2. 当前角色ID-禁用(角色菜单)
+                roleMenuService.deleteRoleMenuByRoleId(roleID);
+                //3. 当前角色ID-禁用(角色按钮)
+                roleButtonService.deleteRoleButtonByRoleId(roleID);
+
+            } catch (Exception e) {
+                throw new RestException("", e.getMessage());
+            }
+        }
+
+        this.deleteByIds(ids.split(","));
+
+        return model;
+    }
+
+    @Override
+    public ResultModel saveRoleUsers(PageData pageData) throws Exception {
+
+        ResultModel model = new ResultModel();
+        //1. 非空判断
+        if (pageData == null || pageData.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("参数错误：用户登录参数(pageData)为空！");
+            return model;
+        }
+
+        String roleId = (String)pageData.get("roleId");
+        if (roleId == null || roleId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("roleId为空或空字符串！");
+            return model;
+        }
+
+        //2. 删除角色用户(当前角色)
+        userRoleService.deleteUserRoleByRoleId(roleId);
+
+        String userIds = (String)pageData.get("userIds");
+        //3. 添加角色用户(当前角色)
+        userRoleService.addUserRoleByUserIds(roleId, userIds, (String)pageData.get("cuser"));
+        return model;
+    }
+
+    @Override
+    public ResultModel saveRoleMeuns(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+        //1. 非空判断
+        if (pageData == null || pageData.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("参数错误：用户登录参数(pageData)为空！");
+            return model;
+        }
+
+        String msgStr = new String();
+        String roleID = (String)pageData.get("roleID");
+        if (roleID == null || roleID.trim().length() == 0) {
+            msgStr = msgStr + "roleID为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT;
+        }
+        String meunIds = (String)pageData.get("meunIds");
+        if (meunIds == null || meunIds.trim().length() == 0) {
+            msgStr = msgStr + "meunIds为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT;
+        }
+        if (msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
+
+//        //2.当前角色ID(用户角色,角色菜单,角色按钮)-是否使用
+//        msgStr = roleService.checkDeleteRoleByRoleIds(roleID);
+//        if (msgStr.trim().length() > 0) {
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg(msgStr);
+//            return model;
+//        }
+
+        //3. 删除角色菜单(当前角色)
+        roleMenuService.deleteRoleMenuByRoleId(roleID);
+
+        //4. 添加角色菜单(当前角色)
+        roleMenuService.addRoleMenuByMeunIds(roleID, meunIds);
+        return model;
+    }
+
+    @Override
+    public ResultModel treeRoleMeunsAll(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+        //角色List页面-勾选的角色id
+        String roleIds = pageData.getString("roleIds");
+        if (roleIds == null || roleIds.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("角色ID为空或空字符串！");
+            return model;
+        }
+
+        roleIds = StringUtil.stringTrimSpace(roleIds);
+        roleIds = "'" + roleIds.replace(",", "','") + "'";
+        String queryRoleIds = "b.role_id in (" +  roleIds + ")";
+
+        PageData findMap = new PageData();
+        findMap.put("queryRoleIds", queryRoleIds);
+
+        //B. 获取用户角色相关菜单树-查询条件-
+        //获取当前登录用户-用户类型
+        String userType = pageData.getString("userType");
+        if (!Common.DICTIONARY_MAP.get("userType_admin").equals(userType)) {
+            //获取当前登录用户-用户角色id
+            String userRoleId = pageData.getString("userRoleId");
+            if (userRoleId != null && userRoleId.trim().length() > 0) {
+                String menuIds = roleMenuService.findMenuidByRoleIds(userRoleId);
+                menuIds = StringUtil.stringTrimSpace(menuIds);
+                menuIds = "'" + menuIds.replace(",", "','") + "'";
+
+                String queryStr = "a.id in (" +  menuIds + ")";
+                findMap.put("queryStr", queryStr);
+            }
+            findMap.put("rootStr", "a.pid in ('root')");
+        }
+
+        List<Map<String, Object>> roleMenuMapList = roleMenuService.listMenuMapByRole(findMap);
+        List<TreeEntity> treeList = roleMenuService.roleMenuList2TreeList(roleMenuMapList, null);
+        List<TreeEntity> menuTreeList = TreeUtil.listSwitchTree(null, treeList);
+        String treeJsonStr = YvanUtil.toJson(menuTreeList);
+//        System.out.println("treeJson: " + treeJsonStr);
+        model.putResult(treeJsonStr);
+        return model;
+    }
+
+    @Override
+    public ResultModel treeRoleMeunsSelected(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+        String roleIds = (String)pageData.get("roleIds");
+        if (roleIds == null || roleIds.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("角色ID为空或空字符串！");
+            return model;
+        }
+
+        roleIds = StringUtil.stringTrimSpace(roleIds);
+        roleIds = "'" + roleIds.replace(",", "','") + "'";
+        String queryRoleIds = "b.role_id in (" +  roleIds + ")";
+
+        PageData findMap = new PageData();
+        findMap.put("queryStr", queryRoleIds);
+        findMap.put("menuIsdisable", "1");
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+
+        //1. 根据角色ID-获取当前角色ID绑定的菜单
+        List<Map<String, Object>> mapList = roleMenuService.findRoleMenuMapList(findMap);
+        List<Menu> menuList = roleMenuService.mapList2MenuList(mapList, new ArrayList<Menu>());
+        Integer maxLayer = menuService.findMaxLayerByMenuList(menuList);
+
+        //3. 生成菜单树
+        menuTreeService.initialization();
+        menuTreeService.findMenuTreeByList(menuList, maxLayer);
+        List<TreeEntity> treeList = menuTreeService.creatMenuTree(maxLayer, null, null);
+
+        String treeJsonStr = YvanUtil.toJson(treeList);
+//        System.out.println("treeJsonStr: " + treeJsonStr);
+        model.putResult(treeJsonStr);
+        return model;
+    }
+
+    @Override
+    public ResultModel listRoleMeunsButtonsAll(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+        String roleIds = (String)pageData.get("roleIds");
+        if (roleIds == null || roleIds.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("角色ID为空或空字符串！");
+            return model;
+        }
+
+        String menuId = (String)pageData.get("menuId");
+        if (menuId == null || menuId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("菜单ID为空或空字符串！");
+            return model;
+        }
+
+        roleIds = StringUtil.stringTrimSpace(roleIds);
+        roleIds = "'" + roleIds.replace(",", "','") + "'";
+        String queryRoleIds = "b.role_id in (" +  roleIds + ")";
+
+        PageData findMap = new PageData();
+        findMap.put("queryRoleIds", queryRoleIds);
+        findMap.put("menuId", menuId);
+
+        List<Map<String, Object>> mapList = roleButtonService.listMenuButtonMapByRole(findMap);
+        List<MenuButtonEntity> entityList = roleButtonService.roleButtonList2ButtonList(mapList, null);
+
+        String treeJsonStr = YvanUtil.toJson(entityList);
+//        System.out.println("treeJsonStr: " + treeJsonStr);
+
+        model.putResult(treeJsonStr);
+        return model;
+    }
+
+    @Override
+    public ResultModel saveRoleMeunsButtons(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+        //1. 非空判断
+        String roleID = (String)pageData.get("roleID");
+        if (roleID == null || roleID.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("角色id为空或空字符串！");
+            return model;
+        }
+
+        String menuId = (String)pageData.get("menuId");
+        if (menuId == null || menuId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("菜单id为空或空字符串！");
+            return model;
+        }
+
+        //获取(菜单id,角色id)所有按钮id字符串-查询(vmes_role_button,vmes_menu_button)-菜单按钮表
+        PageData findMap = new PageData();
+        findMap.put("menuId", menuId);
+        findMap.put("roleId", roleID);
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+        List<RoleButton> roleButtonList = roleButtonService.findRoleButtonList(findMap);
+        String roleButtonIds = roleButtonService.findButtonIdsByRoleButtonList(roleButtonList);
+
+        //3. 删除角色按钮(当前角色)
+        if (roleButtonIds != null && roleButtonIds.trim().length() > 0) {
+            findMap = new PageData();
+            findMap.put("roleId", roleID);
+
+            roleButtonIds = StringUtil.stringTrimSpace(roleButtonIds);
+            String[] idArry = roleButtonIds.split(",");
+            for (String buttonId : idArry) {
+                try {
+                    roleButtonService.deleteRoleButtonByButtonId(buttonId);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        //4. 添加角色按钮(当前角色)
+        String buttonIds = (String)pageData.get("buttonIds");
+        if (buttonIds != null && buttonIds.trim().length() > 0) {
+            roleButtonService.addRoleButtonByMeunIds(roleID, buttonIds);
+        }
+
+        return model;
+    }
+
+    @Override
+    public ResultModel listAllUsersByDeptId(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+        Map<String, Object> mapObj = new HashMap<String, Object>();
+
+        //1. 查询遍历List列表
+        List<Column> columnList = columnService.findColumnList("userRole");
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
+        }
+
+        List<LinkedHashMap> titlesList = new ArrayList<LinkedHashMap>();
+        List<String> titlesHideList = new ArrayList<String>();
+        Map<String, String> varModelMap = new HashMap<String, String>();
+        if(columnList!=null&&columnList.size()>0){
+            for (Column column : columnList) {
+                if(column!=null){
+                    if("0".equals(column.getIshide())){
+                        titlesHideList.add(column.getTitleKey());
+                    }
+                    LinkedHashMap titlesLinkedMap = new LinkedHashMap();
+                    titlesLinkedMap.put(column.getTitleKey(),column.getTitleName());
+                    varModelMap.put(column.getTitleKey(),"");
+                    titlesList.add(titlesLinkedMap);
+                }
+            }
+        }
+        mapObj.put("hideTitles", titlesHideList);
+        mapObj.put("titles", titlesList);
+
+        //2. 查询数据List
+        PageData findMap = new PageData();
+
+
+        String deptId = (String)pageData.get("deptId");
+        if (deptId != null && deptId.trim().length() > 0) {
+            String queryIdStr = departmentService.findDeptidById(deptId, null, "dept.");
+            findMap.put("queryStr", queryIdStr);
+        }
+
+        String roleId = (String)pageData.get("roleId");
+        if (roleId != null && roleId.trim().length() > 0) {
+            String userIds = userRoleService.findUserIdsByByRoleID(roleId);
+            if (userIds != null && userIds.trim().length() > 0) {
+                userIds = StringUtil.stringTrimSpace(userIds);
+                userIds = "'" + userIds.replace(",", "','") + "'";
+                findMap.put("queryUserIdStr", "user.id not in (" + userIds + ")");
+            }
+        }
+
+        findMap.put("userIsdisable", "1");
+        //查询用户未绑定角色
+        //findMap.put("queryIsBindRole", "userRole.role_id is null");
+        //普通用户-外部用户
+        String queryUserType = "user_type in ('69726efa45044117ac94a33ab2938ce4','028fb82cfbe341b1954834edfa2fc18d')";
+        findMap.put("queryUserType", queryUserType);
+
+        List<Map<String, String>> varMapList = new ArrayList<Map<String, String>>();
+        List<Map<String, Object>> varList = userRoleService.listUserByRole(findMap);
+        if(varList != null && varList.size() > 0) {
+            for (Map<String, Object> map : varList) {
+                Map<String, String> varMap = new HashMap<String, String>();
+                varMap.putAll(varModelMap);
+                for (Map.Entry<String, String> entry : varMap.entrySet()) {
+                    varMap.put(entry.getKey(), map.get(entry.getKey()) != null ? map.get(entry.getKey()).toString() : "");
+                }
+                varMapList.add(varMap);
+            }
+        }
+        mapObj.put("varList", varMapList);
+
+        model.putResult(mapObj);
+        return model;
+    }
+
+    @Override
+    public ResultModel listUsersByRole(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+        Map<String, Object> mapObj = new HashMap<String, Object>();
+
+        //1. 查询遍历List列表
+        List<Column> columnList = columnService.findColumnList("userRole");
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
+        }
+
+        List<LinkedHashMap> titlesList = new ArrayList<LinkedHashMap>();
+        List<String> titlesHideList = new ArrayList<String>();
+        Map<String, String> varModelMap = new HashMap<String, String>();
+        if(columnList!=null&&columnList.size()>0){
+            for (Column column : columnList) {
+                if(column!=null){
+                    if("0".equals(column.getIshide())){
+                        titlesHideList.add(column.getTitleKey());
+                    }
+                    LinkedHashMap titlesLinkedMap = new LinkedHashMap();
+                    titlesLinkedMap.put(column.getTitleKey(),column.getTitleName());
+                    varModelMap.put(column.getTitleKey(),"");
+                    titlesList.add(titlesLinkedMap);
+                }
+            }
+        }
+        mapObj.put("hideTitles", titlesHideList);
+        mapObj.put("titles", titlesList);
+
+        //2. 分页查询数据List
+
+
+        //角色id-已经绑定的用户ID
+        PageData findMap = new PageData();
+        String roleId = (String)pageData.get("roleId");
+        findMap.put("roleId", roleId);
+
+        //普通用户-外部用户
+        String queryUserType = "user_type in ('69726efa45044117ac94a33ab2938ce4','028fb82cfbe341b1954834edfa2fc18d')";
+        findMap.put("queryUserType", queryUserType);
+
+        List<Map<String, String>> varMapList = new ArrayList<Map<String, String>>();
+        List<Map<String, Object>> varList = userRoleService.listUserByRole(findMap);
+        if(varList != null && varList.size() > 0) {
+            for (Map<String, Object> map : varList) {
+                Map<String, String> varMap = new HashMap<String, String>();
+                varMap.putAll(varModelMap);
+                for (Map.Entry<String, String> entry : varMap.entrySet()) {
+                    varMap.put(entry.getKey(), map.get(entry.getKey()) != null ? map.get(entry.getKey()).toString() : "");
+                }
+                varMapList.add(varMap);
+            }
+        }
+        mapObj.put("varList", varMapList);
+
+        model.putResult(mapObj);
+        return model;
+    }
+
+    @Override
+    public ResultModel findListUserByRole(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+
+        List<Map<String, Object>> mapList = userRoleService.listUserByRole(pageData);
+
+        List<Map<String, String>> userMapList = new ArrayList<Map<String, String>>();
+        if (mapList != null && mapList.size() > 0) {
+            for (Map<String, Object> mapObj : mapList) {
+                String id = (String)mapObj.get("id");
+                String userName = (String)mapObj.get("userName");
+                if (id != null && id.trim().length() > 0 && userName != null && userName.trim().length() > 0) {
+                    Map<String, String> userMap = new HashMap<String, String>();
+                    userMap.put("id", id);
+                    userMap.put("userName", userName);
+                    userMapList.add(userMap);
+                }
+            }
+        }
+
+        Map result = new HashMap();
+        result.put("options", userMapList);
+        model.putResult(result);
+        return model;
+    }
+
+    @Override
+    public ResultModel getRoles(PageData pd) throws Exception {
+
+        ResultModel model = new ResultModel();
+        List<Map> roleList = this.findDataList(pd);
+
+        List<Map> options = new ArrayList<Map>();
+        if(roleList!=null&&roleList.size()>0){
+            for(int i=0;i<roleList.size();i++){
+                Map role = roleList.get(i);
+                if(role!=null){
+                    Map option = new HashMap();
+                    option.put("label",role.get("name"));
+                    option.put("value",role.get("id"));
+                    option.put("remark",role.get("remark"));
+                    options.add(option);
+                }
+
+            }
+        }
+        Map result = new HashMap();
+        result.put("options", options);
+        model.putResult(result);
+        return model;
+    }
+
+    @Override
+    public ResultModel addRoleByName(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+        String userType = pageData.getString("userType");
+        //userType: 744f2d88c9f647d0a4d967a714193850 //用户类型-超级管理员(userType_admin)
+        if (Common.DICTIONARY_MAP.get("userType_admin").equals(userType)) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("超级管理员不可操作！");
+            return model;
+        }
+
+        String roleName = pageData.getString("roleName");
+        if (roleName == null || roleName.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("角色名称为空或空字符串，角色名称不可为空！");
+            return model;
+        }
+
+        String companyId = pageData.getString("currentCompanyId");
+        if (companyId == null || companyId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("企业id为空或空字符串！");
+            return model;
+        }
+
+        //1. (企业id,角色名称) 查询(vmes_role)
+        PageData findMap = new PageData();
+        findMap.put("currentCompanyId", companyId);
+        findMap.put("name", roleName);
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+        List<Role> roleList = this.findRoleList(findMap);
+
+        //Map<"roleId", String>
+        //   <"roleName", String>
+        //   <"type", old new>
+
+        Map<String, String> roleMap = new HashMap<String, String>();
+        if (roleList == null || roleList.size() == 0) {
+            //获取角色编码
+            String code = coderuleService.createCoder(companyId, "vmes_role", "R");
+
+            //创建角色
+            Role role = new Role();
+            role.setCuser(pageData.getString("cuser"));
+            role.setCompanyId(companyId);
+            role.setName(roleName);
+            role.setCode(code);
+            this.save(role);
+
+            roleMap.put("roleId", role.getId());
+            roleMap.put("roleName", role.getName());
+            roleMap.put("type", "new");
+        } else if (roleList != null && roleList.size() > 0) {
+            Role role = roleList.get(0);
+            roleMap.put("roleId", role.getId());
+            roleMap.put("roleName", role.getName());
+            roleMap.put("type", "old");
+        }
+
+        model.putResult(roleMap);
+        return model;
     }
 }
 

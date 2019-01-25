@@ -3,6 +3,7 @@ package com.xy.vmes.service;
 import com.xy.vmes.entity.Menu;
 import com.xy.vmes.entity.TreeEntity;
 import com.yvan.platform.RestException;
+import com.yvan.springmvc.ResultModel;
 
 import java.util.List;
 import java.util.Map;
@@ -93,4 +94,6 @@ public interface MenuTreeService {
      * @return
      */
     List<TreeEntity> menuList2TreeList(List<Menu> menuList, List<TreeEntity> treeList);
+
+    ResultModel menuTreeLoad() throws Exception;
 }

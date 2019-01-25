@@ -1,5 +1,6 @@
 package com.xy.vmes.deecoop.system.service;
 
+import com.xy.vmes.common.util.TreeUtil;
 import com.xy.vmes.entity.Menu;
 import com.xy.vmes.entity.TreeEntity;
 import com.xy.vmes.service.MenuTreeService;
@@ -7,7 +8,9 @@ import com.xy.vmes.service.MenuService;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.xy.vmes.common.util.StringUtil;
+import com.yvan.YvanUtil;
 import com.yvan.platform.RestException;
+import com.yvan.springmvc.ResultModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -472,5 +475,23 @@ public class MenuTreeServiceImp implements MenuTreeService {
         }
 
         return new ArrayList<Menu>();
+    }
+
+    @Override
+    public ResultModel menuTreeLoad() throws Exception {
+        ResultModel model = new ResultModel();
+
+        PageData findMap = new PageData();
+        findMap.put("isQueryAll", "true");
+
+        List<Menu> objectList = menuService.findMenuList(findMap);
+        for (Menu menu : objectList) {
+            TreeEntity tree = this.menu2Tree(menu, null);
+        }
+        List<TreeEntity> treeList = this.menuList2TreeList(objectList,null);
+
+        TreeEntity treeObject = TreeUtil.switchTree(null, treeList);
+//        System.out.println("treeJson: " + YvanUtil.toJson(treeObject));
+        return model;
     }
 }

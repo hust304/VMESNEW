@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.entity.Employee;
 import com.xy.vmes.entity.User;
 import com.yvan.PageData;
+import com.yvan.springmvc.ResultModel;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -161,7 +162,23 @@ public interface UserService {
      * 创建人：刘威
      * 创建时间：2018-08-03
      */
-    List<Map> selectCountUserNum(PageData pd) throws Exception;
+    ResultModel selectCountUserNum(PageData pd) throws Exception;
+
+    ResultModel addUser(PageData pd) throws Exception;
+
+    ResultModel updateUser(PageData pd) throws Exception;
+
+    ResultModel updatePasswords(PageData pd) throws Exception;
+
+    ResultModel updateEmployeeUserUnbind(PageData pd) throws Exception;
+
+    ResultModel updateEmployeeUserBind(PageData pd) throws Exception;
+
+    ResultModel deleteUsers(PageData pd) throws Exception;
+
+    ResultModel listPageUsers(PageData pd,Pagination pg) throws Exception;
+
+    void exportExcelUsers(PageData pd,Pagination pg) throws Exception;
 }
 
 

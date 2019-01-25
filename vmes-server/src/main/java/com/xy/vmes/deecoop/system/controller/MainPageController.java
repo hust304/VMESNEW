@@ -4,10 +4,7 @@ import com.xy.vmes.common.util.Common;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.common.util.TreeUtil;
 import com.xy.vmes.entity.*;
-import com.xy.vmes.service.ColumnService;
-import com.xy.vmes.service.RoleMenuService;
-import com.xy.vmes.service.UserDefinedMenuService;
-import com.xy.vmes.service.UserService;
+import com.xy.vmes.service.*;
 import com.yvan.HttpUtils;
 import com.yvan.MD5Utils;
 import com.yvan.PageData;
@@ -35,13 +32,8 @@ import java.util.*;
 public class MainPageController {
 
     @Autowired
-    private UserService userService;
-    @Autowired
-    private UserDefinedMenuService userDefinedMenuService;
-    @Autowired
-    private ColumnService columnService;
-    @Autowired
-    private RoleMenuService roleMenuService;
+    private MainPageService mainPageService;
+
 
     private Logger logger = LoggerFactory.getLogger(MainPageController.class);
 
@@ -56,13 +48,8 @@ public class MainPageController {
 
         logger.info("################mainPage/changePassWord 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
-        ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
-        //修改用户信息
-        User user = (User)HttpUtils.pageData2Entity(pd, new User());
-        user.setPassword(MD5Utils.MD5(user.getPassword()));
-        userService.update(user);
+        ResultModel model = mainPageService.changePassWord(pd);
         Long endTime = System.currentTimeMillis();
         logger.info("################mainPage/changePassWord 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
@@ -79,12 +66,8 @@ public class MainPageController {
 
         logger.info("################mainPage/changePageStyle 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
-        ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
-        //修改用户信息
-        User user = (User)HttpUtils.pageData2Entity(pd, new User());
-        userService.update(user);
+        ResultModel model = mainPageService.changePageStyle(pd);
         Long endTime = System.currentTimeMillis();
         logger.info("################mainPage/changePageStyle 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
@@ -101,50 +84,8 @@ public class MainPageController {
 
         logger.info("################mainPage/saveUserDefinedMenu 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
-        ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
-//        String userDefinedMenus = pd.getString("userDefinedMenus");
-        ArrayList userDefinedMenusList = (ArrayList)pd.get("userDefinedMenus");
-//        userDefinedMenus ="{\"userDefinedMenus\":[{\"userId\":\"3\",\"menuId\":\"1\",\"serialNumber\":\"1\"}," +
-//                "{\"userId\":\"3\",\"menuId\":1532599975000,\"serialNumber\":\"2\"}," +
-//                "{\"userId\":\"3\",\"menuId\":1532601003000,\"serialNumber\":\"3\"}," +
-//                "{\"userId\":\"3\",\"menuId\":1532600923000,\"serialNumber\":\"4\"}," +
-//                "{\"userId\":\"3\",\"menuId\":1532600802000,\"serialNumber\":\"5\"}," +
-//                "{\"userId\":\"3\",\"menuId\":1532601034000,\"serialNumber\":\"6\"}]}";
-//        userDefinedMenus ="[{\"userId\":\"3\",\"menuId\":\"1\",\"serialNumber\":\"1\"}," +
-//                "{\"userId\":\"3\",\"menuId\":1532599975000,\"serialNumber\":\"2\"}," +
-//                "{\"userId\":\"3\",\"menuId\":1532601003000,\"serialNumber\":\"3\"}," +
-//                "{\"userId\":\"3\",\"menuId\":1532600923000,\"serialNumber\":\"4\"}," +
-//                "{\"userId\":\"3\",\"menuId\":1532600802000,\"serialNumber\":\"5\"}," +
-//                "{\"userId\":\"3\",\"menuId\":1532601034000,\"serialNumber\":\"6\"}]";
-
-//        userDefinedMenus = userDefinedMenus.replace(", {}","");
-//        List userDefinedMenusList = YvanUtil.jsonToList(userDefinedMenus);
-
-        if(userDefinedMenusList!=null&&userDefinedMenusList.size()>0){
-            for(int i=0;i<userDefinedMenusList.size();i++){
-//                String josnObj = YvanUtil.toJson(userDefinedMenusList.get(i));
-//                UserDefinedMenu userDefinedMenu = YvanUtil.jsonToObj(josnObj, UserDefinedMenu.class);
-                Map userDefinedMenusMap = (Map) userDefinedMenusList.get(i);
-                if(userDefinedMenusMap!=null){
-                    UserDefinedMenu userDefinedMenu = new UserDefinedMenu();
-
-                    userDefinedMenu.setMenuId(userDefinedMenusMap.get("id").toString());
-                    userDefinedMenu.setSerialNumber(Integer.parseInt(userDefinedMenusMap.get("serialNumber").toString()));
-                    userDefinedMenu.setUserId(userDefinedMenusMap.get("userId").toString());
-
-                    if(i==0){
-                        Map columnMap = new HashMap();
-                        columnMap.put("user_id",userDefinedMenu.getUserId());
-                        userDefinedMenuService.deleteByColumnMap(columnMap);
-                    }
-
-                    userDefinedMenuService.save(userDefinedMenu);
-                }
-
-            }
-        }
+        ResultModel model = mainPageService.saveUserDefinedMenu(pd);
         Long endTime = System.currentTimeMillis();
         logger.info("################mainPage/saveUserDefinedMenu 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
@@ -161,55 +102,8 @@ public class MainPageController {
 
         logger.info("################mainPage/listUserDefinedMenu 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
-        ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
-
-        Map result = new HashMap();
-        List<Column> columnList = columnService.findColumnList("mainPage");
-        if (columnList == null || columnList.size() == 0) {
-            model.putCode("1");
-            model.putMsg("数据库没有生成TabCol，请联系管理员！");
-            return model;
-        }
-
-        List<LinkedHashMap> titlesList = new ArrayList<LinkedHashMap>();
-        List<String> titlesHideList = new ArrayList<String>();
-        Map<String, String> varModelMap = new HashMap<String, String>();
-        if(columnList!=null&&columnList.size()>0){
-            for (Column column : columnList) {
-                if(column!=null){
-                    if("0".equals(column.getIshide())){
-                        titlesHideList.add(column.getTitleKey());
-                    }
-                    LinkedHashMap titlesLinkedMap = new LinkedHashMap();
-                    titlesLinkedMap.put(column.getTitleKey(),column.getTitleName());
-                    varModelMap.put(column.getTitleKey(),"");
-                    titlesList.add(titlesLinkedMap);
-                }
-            }
-        }
-        result.put("hideTitles",titlesHideList);
-        result.put("titles",titlesList);
-
-
-        List<Map> varMapList = new ArrayList();
-        List<Map> varList = userDefinedMenuService.getDataList(pd);
-        if(varList!=null&&varList.size()>0){
-            for(int i=0;i<varList.size();i++){
-                Map map = varList.get(i);
-                Map<String, String> varMap = new HashMap<String, String>();
-                varMap.putAll(varModelMap);
-                for (Map.Entry<String, String> entry : varMap.entrySet()) {
-                    varMap.put(entry.getKey(),map.get(entry.getKey())!=null?map.get(entry.getKey()).toString():"");
-                }
-                varMapList.add(varMap);
-            }
-        }
-        result.put("varList",varMapList);
-
-        model.putResult(result);
-
+        ResultModel model = mainPageService.listUserDefinedMenu(pd);
         Long endTime = System.currentTimeMillis();
         logger.info("################mainPage/listUserDefinedMenu 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
@@ -234,71 +128,14 @@ public class MainPageController {
     public ResultModel listRoleMeunAll() throws Exception {
         logger.info("################mainPage/listRoleMeunAll 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-
-        ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
-        String userType = (String)pageData.get("userType");
-
-        //角色Id字符串-->转换成 sql查询字符串
-        String roleIds = (String)pageData.get("roleIds");
-        String queryIds = "";
-        if (roleIds != null && roleIds.trim().length() > 0) {
-            roleIds = StringUtil.stringTrimSpace(roleIds);
-            roleIds = "'" + roleIds.replace(",", "','") + "'";
-            queryIds = "b.role_id in (" + roleIds + ")";
-        }
-
-        PageData findMap = new PageData();
-        //超级管理员:  全部菜单表数据
-        //非超级管理员 当前登录用户角色已经绑定的菜单
-        //userType_admin:超级管理员 userType_company:企业管理员 userType_employee:普通用户 userType_outer:外部用户)
-        if (userType != null
-            && !Common.DICTIONARY_MAP.get("userType_admin").equals(userType)
-            && queryIds.trim().length() > 0
-        ) {
-            findMap.put("queryStr", queryIds);
-        }
-        findMap.put("menuIsdisable", "1");
-        findMap.put("rootStr", "pid = 'root'");
-        findMap.put("mapSize", Integer.valueOf(findMap.size()));
-        List<Map<String, Object>> mapList = roleMenuService.findRoleMenuMapList(findMap);
-
-        List<TreeEntity> entityList = roleMenuService.roleMenuList2TreeList(mapList, null);
-        List<TreeEntity> treeList = TreeUtil.listSwitchTree(null, entityList);
-        List<TreeEntity> nodeList = TreeUtil.findNodeListByTreeList("leaf", treeList, null);
-
-        List<MenuEntity> menuLiset = roleMenuService.treeList2MenuEntityList(nodeList, null);
-        roleMenuService.orderAcsByLayer(menuLiset);
-        model.putResult(menuLiset);
-
+        ResultModel model = mainPageService.listRoleMeunAll(pageData);
         Long endTime = System.currentTimeMillis();
         logger.info("################mainPage/listRoleMeunAll 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
-    public static void main(String[] args) throws Exception {
-//        String mobile = "12345123456";
-//        String password = mobile.substring(mobile.length()-6,mobile.length());
-//        System.out.println(password);
-//        String userDefinedMenus ="{\"userDefinedMenus\":[{\"userId\":\"1\",\"menuId\":\"1\",\"serialNumber\":\"1\"}," +
-//                "{\"userId\":\"1\",\"menuId\":1532599975000,\"serialNumber\":\"2\"}," +
-//                "{\"userId\":\"1\",\"menuId\":1532601003000,\"serialNumber\":\"3\"}," +
-//                "{\"userId\":\"1\",\"menuId\":1532600923000,\"serialNumber\":\"4\"}," +
-//                "{\"userId\":\"1\",\"menuId\":1532600802000,\"serialNumber\":\"5\"}," +
-//                "{\"userId\":\"1\",\"menuId\":1532601034000,\"serialNumber\":\"6\"}]}";
-//        JsonWapper jsonWapper = new JsonWapper(userDefinedMenus);
-//        List<Map> userDefinedMenusList = (List<Map>)jsonWapper.get("userDefinedMenus");
-//
-//        String josn = YvanUtil.toJson(userDefinedMenusList.get(0));
-//        System.out.println(josn);
-//        UserDefinedMenu userDefinedMenu = YvanUtil.jsonToObj(josn, UserDefinedMenu.class);
-//        System.out.println(userDefinedMenu.getUserId());
 
-//        String userDefinedMenus = "[{'isdisable':'1','employId':'1','id':'1','userCode':'abcde'},{'companyId':'1','cdate':1532599975000,'companyName':'公司1','mobile':'18627065815','isdisable':'1','deptId':'1','id':'29f07030446642ff841fd91b379023ff','userName':'test11','userCode':'ali000011','email':'lw@163.com'}]";
-//        String userDefinedMenus = "{'varList':[{'isdisable':'1','employId':'1','id':'1','userCode':'abcde'},{'companyId':'1','cdate':1532599975000,'companyName':'公司1','mobile':'18627065815','isdisable':'1','deptId':'1','id':'29f07030446642ff841fd91b379023ff','userName':'test11','userCode':'ali000011','email':'lw@163.com'}]}";
-//        String userDefinedMenus ="{\"varList\":[{\"isdisable\":\"1\",\"employId\":\"1\",\"id\":\"1\",\"userCode\":\"abcde\"},{\"companyId\":\"1\",\"cdate\":1532599975000,\"companyName\":\"公司1\",\"mobile\":\"18627065815\",\"isdisable\":\"1\",\"deptId\":\"1\",\"id\":\"29f07030446642ff841fd91b379023ff\",\"userName\":\"test11\",\"userCode\":\"ali000011\",\"email\":\"lw@163.com\"},{\"companyId\":\"1\",\"cdate\":1532601003000,\"companyName\":\"公司1\",\"mobile\":\"18627065818\",\"isdisable\":\"0\",\"deptId\":\"1\",\"id\":\"6d9f0ad0931745b9b4417d03aefac270\",\"userName\":\"test666\",\"userCode\":\"ali000032\",\"email\":\"lw666@163.com\"},{\"companyId\":\"1\",\"cdate\":1532600923000,\"companyName\":\"公司1\",\"mobile\":\"18627065817\",\"isdisable\":\"0\",\"deptId\":\"1\",\"id\":\"76126a4a96be4b48a891e42f7a225823\",\"userName\":\"test444\",\"userCode\":\"ali000031\",\"email\":\"lw444@163.com\"},{\"companyId\":\"1\",\"cdate\":1532600802000,\"companyName\":\"公司1\",\"mobile\":\"18627065816\",\"isdisable\":\"0\",\"deptId\":\"1\",\"id\":\"a33acd224e9a49f98a09f20698aac4db\",\"userName\":\"test333\",\"userCode\":\"ali000026\",\"email\":\"lw333@163.com\"},{\"companyId\":\"1\",\"cdate\":1532601034000,\"companyName\":\"公司1\",\"mobile\":\"18627065819\",\"isdisable\":\"0\",\"deptId\":\"1\",\"id\":\"ba34b9c524c94a3ba70a9ea7a4761aa8\",\"userName\":\"test777\",\"userCode\":\"ali000033\",\"email\":\"lw777@163.com\"}]}";
-
-    }
 
 
 }

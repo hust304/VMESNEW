@@ -1,15 +1,17 @@
 package com.xy.vmes.deecoop.system.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.Common;
+import com.xy.vmes.common.util.StringUtil;
+import com.xy.vmes.common.util.TreeUtil;
 import com.xy.vmes.deecoop.system.dao.PostMapper;
 import com.xy.vmes.entity.*;
-import com.xy.vmes.service.CoderuleService;
-import com.xy.vmes.service.EmployPostService;
-import com.xy.vmes.service.PostService;
-import com.yvan.HttpUtils;
-import com.yvan.PageData;
+import com.xy.vmes.service.*;
+import com.yvan.*;
 import com.yvan.platform.RestException;
+import com.yvan.springmvc.ResultModel;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.text.MessageFormat;
 import java.util.*;
 
-import com.yvan.Conv;
+import javax.servlet.http.HttpServletResponse;
 
 /**
 * 说明：vmes_post:岗位管理 实现类
@@ -32,9 +34,13 @@ public class PostServiceImp implements PostService {
     @Autowired
     private PostMapper postMapper;
     @Autowired
-    EmployPostService employPostService;
+    private EmployPostService employPostService;
+    @Autowired
+    private DepartmentService departmentService;
     @Autowired
     private CoderuleService coderuleService;
+    @Autowired
+    private ColumnService columnService;
 
     /**
     * 创建人：刘威 自动创建，禁止修改
@@ -350,6 +356,302 @@ public class PostServiceImp implements PostService {
         }
 
         return  msgBuf.toString();
+    }
+
+    @Override
+    public ResultModel addPost(PageData pd) throws Exception {
+        ResultModel model = new ResultModel();
+        Post post = (Post)HttpUtils.pageData2Entity(pd, new Post());
+        String sessionID = pd.getString("sessionID");
+
+        String deptId = pd.getString("deptId");
+        if(StringUtils.isEmpty(deptId)){
+            model.putCode(1);
+            model.putMsg("所属部门不能为空！");
+            return model;
+        }
+        Department department = departmentService.selectById(deptId);
+
+        String companyId = department.getId1();
+        if(!StringUtils.isEmpty(companyId)){
+            post.setCompanyId(companyId);
+        }else{
+            //如果没有公司ID，那么就是创建根节点下
+            post.setCompanyId(department.getId0());
+        }
+        String code = coderuleService.createCoder(companyId,"vmes_post","P");
+        if(StringUtils.isEmpty(code)){
+            model.putCode(2);
+            model.putMsg("编码规则创建异常，请重新操作！");
+            return model;
+        }
+        post.setCode(code);
+        this.save(post);
+        return model;
+    }
+
+    @Override
+    public ResultModel updatePost(PageData pd) throws Exception {
+        ResultModel model = new ResultModel();
+        Post post = (Post)HttpUtils.pageData2Entity(pd, new Post());
+        this.update(post);
+        return model;
+    }
+
+    private boolean checkExsitOnlineEmployee(String postId,Set<String> postOnlineSet) throws Exception {
+        PageData pd = new PageData();
+        pd.putQueryStr(" isdisable = 1 ");
+        return checkExsitEmployee(postId,postOnlineSet,pd);
+    }
+
+    private boolean checkExsitDownlineEmployee(String postId,Set<String> postDownlineSet) throws Exception {
+        PageData pd = new PageData();
+        pd.putQueryStr(" isdisable = 0 ");
+        return checkExsitEmployee(postId,postDownlineSet,pd);
+    }
+
+    private boolean checkExsitEmployee(String postId,Set<String> postSet,PageData pd) throws Exception  {
+        if(pd==null){
+            pd = new PageData();
+        }
+        if(postSet==null){
+            postSet = new HashSet<String>();
+            List<Map> varList = employPostService.getDataList(pd);
+            if(varList!=null&&varList.size()>0){
+                for(int i=0;i<varList.size();i++){
+                    if(varList.get(i)!=null&&varList.get(i).get("postId")!=null){
+                        postSet.add(varList.get(i).get("postId").toString());
+                    }
+                }
+            }
+        }
+        if(postSet.contains(postId)){
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public ResultModel updateDisablePost(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+        String id = (String)pageData.get("id");
+        String isdisable = (String)pageData.get("isdisable");
+
+        String msgStr = new String();
+        if (id == null || id.trim().length() == 0) {
+            msgStr = msgStr + "id为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT;
+        }
+        if (isdisable == null || isdisable.trim().length() == 0) {
+            msgStr = msgStr + "isdisable为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT;
+        }
+        if (msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
+
+        //当前岗位ID-员工岗位表(vmes_employ_post)中是否存在
+        if ("0".equals(isdisable) && this.checkExsitOnlineEmployee(id, null)) {
+            model.putCode(1);
+            model.putMsg("该岗位下面存在绑定的员工不能禁用！");
+            return model;
+        }
+
+        Post postDB = this.findPostById(id);
+        postDB.setIsdisable(isdisable);
+        postDB.setUdate(new Date());
+        this.update(postDB);
+        return model;
+    }
+
+
+    @Override
+    public ResultModel deletePosts(PageData pd) throws Exception {
+        ResultModel model = new ResultModel();
+        String postIds = pd.getString("ids");
+        if (postIds == null || postIds.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("参数错误：请至少选择一行数据！");
+            return model;
+        }
+
+        postIds = StringUtil.stringTrimSpace(postIds);
+        String[] ids = postIds.split(",");
+        //当前岗位是否绑定有员工
+        String msgStr = this.checkDelPostByIds(postIds);
+        if (msgStr != null && msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
+        //删除(vmes_post)岗位表
+        this.deleteByIds(ids);
+        return model;
+    }
+
+    @Override
+    public ResultModel listPagePosts(PageData pd, Pagination pg) throws Exception {
+        ResultModel model = new ResultModel();
+        //1. 查询遍历List列表
+        List<Column> columnList = columnService.findColumnList("post");
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
+        }
+
+        List<LinkedHashMap> titlesList = new ArrayList<LinkedHashMap>();
+        List<String> titlesHideList = new ArrayList<String>();
+        Map<String, String> varModelMap = new HashMap<String, String>();
+        if(columnList!=null&&columnList.size()>0){
+            for (Column column : columnList) {
+                if(column!=null){
+                    if("0".equals(column.getIshide())){
+                        titlesHideList.add(column.getTitleKey());
+                    }
+                    LinkedHashMap titlesLinkedMap = new LinkedHashMap();
+                    titlesLinkedMap.put(column.getTitleKey(),column.getTitleName());
+                    varModelMap.put(column.getTitleKey(),"");
+                    titlesList.add(titlesLinkedMap);
+                }
+            }
+        }
+
+        Map result = new HashMap();
+        result.put("hideTitles",titlesHideList);
+        result.put("titles",titlesList);
+
+
+        if (pd.get("deptId") != null && pd.get("deptId").toString().trim().length() > 0) {
+            String deptId = ((String)pd.get("deptId")).trim();
+            String queryIdStr = departmentService.findDeptidById(deptId, null, "department.");
+            pd.put("queryStr", queryIdStr);
+        }
+
+
+        List<Map> varMapList = new ArrayList();
+        List<Map> varList = this.getDataListPage(pd, pg);
+        if(varList!=null&&varList.size()>0){
+            for(int i=0;i<varList.size();i++){
+                Map map = varList.get(i);
+                Map<String, String> varMap = new HashMap<String, String>();
+                varMap.putAll(varModelMap);
+                for (Map.Entry<String, String> entry : varMap.entrySet()) {
+                    varMap.put(entry.getKey(),map.get(entry.getKey())!=null?map.get(entry.getKey()).toString():"");
+                }
+                varMapList.add(varMap);
+            }
+        }
+        result.put("varList",varMapList);
+        result.put("pageData", pg);
+
+        model.putResult(result);
+        return model;
+    }
+
+    @Override
+    public void exportExcelPosts(PageData pd, Pagination pg) throws Exception {
+        List<Column> columnList = columnService.findColumnList("post");
+        if (columnList == null || columnList.size() == 0) {
+            throw new RestException("1","数据库没有生成TabCol，请联系管理员！");
+        }
+
+        //根据查询条件获取业务数据List
+
+        String ids = pd.getString("ids");
+        String queryStr = "";
+        if (ids != null && ids.trim().length() > 0) {
+            ids = StringUtil.stringTrimSpace(ids);
+            ids = "'" + ids.replace(",", "','") + "'";
+            queryStr = "id in (" + ids + ")";
+        }
+        pd.put("queryStr", queryStr);
+
+        pg.setSize(100000);
+        List<Map> dataList = this.getDataListPage(pd, pg);
+        //查询数据转换成Excel导出数据
+        List<LinkedHashMap<String, String>> dataMapList = ColumnUtil.modifyDataList(columnList, dataList);
+
+        HttpServletResponse response  = HttpUtils.currentResponse();
+        //查询数据-Excel文件导出
+        //String fileName = "Excel数据字典数据导出";
+        String fileName = "ExcelPost";
+        ExcelUtil.excelExportByDataList(response, fileName, dataMapList);
+    }
+
+    @Override
+    public ResultModel treeDeptPosts(PageData pd) throws Exception {
+        ResultModel model = new ResultModel();
+        //部门id 为空查询整棵部门树
+        //部门id 非空查询当前部门下所有子部门(包含当前部门节点)
+        String deptId = (String)pd.get("currentCompanyId");
+
+        PageData findMap = new PageData();
+        findMap.put("deptDisable", pd.getString("deptDisable"));
+        findMap.put("postDisable", pd.getString("postDisable"));
+        if (deptId != null && deptId.trim().length() > 0) {
+            String queryIdStr = departmentService.findDeptidById(deptId, null, null);
+            findMap.put("deptQuery", queryIdStr);
+
+            String queryIdStr_1 = departmentService.findDeptidById(deptId, null, "b.");
+            findMap.put("postQuery", queryIdStr_1);
+        }
+
+        //1. 查询(部门+岗位)表
+        List<Map<String, Object>> deptPostList = this.listDeptPost(findMap);
+        List<TreeEntity> treeList = this.deptPostList2TreeList(deptPostList, null);
+
+        //2. 获得部门岗位树形结构
+        TreeEntity treeObj = TreeUtil.switchTree(deptId, treeList);
+        String treeJsonStr = YvanUtil.toJson(treeObj);
+        System.out.println("treeJsonStr: " + treeJsonStr);
+
+        //3. 树形结构返回前端
+        Map result = new HashMap();
+        result.put("treeList", treeObj);
+        model.putResult(result);
+        return model;
+    }
+
+    @Override
+    public ResultModel treeDeptPostsNotMainPost(PageData pd) throws Exception {
+        ResultModel model = new ResultModel();
+        //部门id 为空查询整棵部门树
+        //部门id 非空查询当前部门下所有子部门(包含当前部门节点)
+        String deptId = pd.getString("currentCompanyId");
+
+        PageData findMap = new PageData();
+        findMap.put("deptDisable", pd.getString("deptDisable"));
+        findMap.put("postDisable", pd.getString("postDisable"));
+        if (deptId != null && deptId.trim().length() > 0) {
+            String queryIdStr = departmentService.findDeptidById(deptId, null, null);
+            findMap.put("deptQuery", queryIdStr);
+
+            String queryIdStr_1 = departmentService.findDeptidById(deptId, null, "b.");
+            findMap.put("postQuery", queryIdStr_1);
+        }
+
+        //获取员工id-获取员工主岗id
+        String employeeId = pd.getString("employeeId");
+        EmployPost employPost = employPostService.findMainEmployPost(employeeId);
+        if (employPost != null && employPost.getPostId() != null && employPost.getPostId().trim().length() > 0) {
+            findMap.put("mainPostQuery", "a.id not in ('"+ employPost.getPostId().trim() +"')");
+        }
+
+        //1. 查询(部门+岗位)表
+        List<Map<String, Object>> deptPostList = this.listDeptPost(findMap);
+        List<TreeEntity> treeList = this.deptPostList2TreeList(deptPostList, null);
+
+        //2. 获得部门岗位树形结构
+        TreeEntity treeObj = TreeUtil.switchTree(deptId, treeList);
+        String treeJsonStr = YvanUtil.toJson(treeObj);
+        System.out.println("treeJsonStr: " + treeJsonStr);
+
+        //3. 树形结构返回前端
+        Map result = new HashMap();
+        result.put("treeList", treeObj);
+        model.putResult(result);
+        return model;
     }
 }
 

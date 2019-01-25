@@ -1,26 +1,22 @@
 package com.xy.vmes.deecoop.system.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.common.util.ColumnUtil;
+import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.system.dao.UserMapper;
 import com.xy.vmes.entity.*;
-import com.xy.vmes.service.CoderuleService;
-import com.xy.vmes.service.EmployeeService;
-import com.xy.vmes.service.UserRoleService;
-import com.xy.vmes.service.UserService;
-import com.yvan.Conv;
+import com.xy.vmes.service.*;
+import com.yvan.*;
 import com.xy.vmes.common.util.Common;
-import com.yvan.MD5Utils;
-import com.yvan.PageData;
 import com.yvan.platform.RestException;
+import com.yvan.springmvc.ResultModel;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import javax.servlet.http.HttpServletResponse;
+import java.util.*;
 
 /**
  * 说明：vmes_user:系统用户表 实现类
@@ -37,9 +33,17 @@ public class UserServiceImp implements UserService {
     @Autowired
     private CoderuleService coderuleService;
     @Autowired
+    private DepartmentService departmentService;
+    @Autowired
     private EmployeeService employeeService;
     @Autowired
+    private UserEmployeeService userEmployeeService;
+    @Autowired
     private UserRoleService userRoleService;
+    @Autowired
+    private UserDefinedMenuService userDefinedMenuService;
+    @Autowired
+    private ColumnService columnService;
 
     /**
      * 创建人：刘威 自动创建，禁止修改
@@ -366,8 +370,469 @@ public class UserServiceImp implements UserService {
      * @param pd
      * @return
      */
-    public List<Map> selectCountUserNum(PageData pd) throws Exception{
-        return  userMapper.selectCountUserNum(pd);
+    public ResultModel selectCountUserNum(PageData pd) throws Exception{
+        ResultModel model = new ResultModel();
+        String deptId = pd.getString("deptId");
+        if(StringUtils.isEmpty(deptId)){
+            model.putCode(1);
+            model.putMsg("部门ID不能为空！");
+            return model;
+        }
+        List<Map>  countUserNum =  checkCompanyUserNum(deptId,null);
+        if(countUserNum!=null&&countUserNum.size()>0){
+            model.putResult(countUserNum.get(0));
+        }else{
+            model.putCode(2);
+            model.putMsg("公司当前用户数查询异常！");
+            return model;
+        }
+
+        return  model;
+    }
+
+    public List<Map> checkCompanyUserNum(String deptId,String queryStr)  throws Exception {
+        PageData pd = new PageData();
+        pd.put("deptId",deptId);
+        pd.putQueryStr(queryStr);
+        List<Map>  countUserNum =  userMapper.selectCountUserNum(pd);
+        return  countUserNum;
+    }
+
+
+
+    @Override
+    public ResultModel addUser(PageData pd) throws Exception {
+        ResultModel model = new ResultModel();
+        User user = (User) HttpUtils.pageData2Entity(pd, new User());
+
+        //A. 手机号验证
+        String mobile = user.getMobile();
+        if(mobile == null || mobile.trim().length() == 0){
+            model.putCode(1);
+            model.putMsg("该用户手机号不能为空！");
+            return model;
+        }
+        if (mobile.trim().length() != 11) {
+            model.putCode(1);
+            model.putMsg("手机号长度错误！");
+            return model;
+        }
+        if(isExistMobile(pd)){
+            model.putCode(1);
+            model.putMsg("该用户手机号已存在！");
+            return model;
+        }
+        user.setMobile(mobile.trim());
+
+        //B. 通过手机号-设置用户默认密码
+        //如果用户设置了密码那就用设置的密码加密，如果没有设置密码，那么就用手机号后六位进行加密作为默认密码
+        if(StringUtils.isEmpty(user.getPassword())){
+            if(mobile!=null&&mobile.trim().length()>6){
+                mobile = mobile.trim();
+                String password = mobile.substring(mobile.length()-6,mobile.length());
+                user.setPassword(MD5Utils.MD5(password));
+            }else{
+                model.putCode(2);
+                model.putMsg("输入手机号长度错误！");
+                return model;
+            }
+        }else{
+            user.setPassword(MD5Utils.MD5(user.getPassword()));
+        }
+
+        //C. 部门
+        String deptId = pd.getString("deptId");
+        if(StringUtils.isEmpty(deptId)){
+            model.putCode(3);
+            model.putMsg("所属部门不能为空！");
+            return model;
+        }
+        Department department = departmentService.selectById(deptId);
+        String companyId = department.getId1();
+        if(!StringUtils.isEmpty(companyId)){
+            user.setCompanyId(companyId);
+        }else{
+            companyId = department.getId0();
+            user.setCompanyId(companyId);
+        }
+
+        //设置用户编码
+        if(StringUtils.isEmpty(user.getUserCode())){
+            String code = coderuleService.createCoder(companyId,"vmes_user");
+            if(StringUtils.isEmpty(code)){
+                model.putCode(4);
+                model.putMsg("编码规则创建异常，请重新操作！");
+                return model;
+            }
+            user.setUserCode(code);
+        }
+
+        //D. 验证企业用户数
+        List<Map> countUserNum = checkCompanyUserNum(deptId,null);
+        if(countUserNum!=null&&countUserNum.size()>0){
+            Map userNumMap = countUserNum.get(0);
+            if(userNumMap.get("isFull")!=null){
+                String isFull = userNumMap.get("isFull").toString();
+                if(!StringUtils.isEmpty(isFull)&&"1".equals(isFull)){
+                    model.putCode(7);
+                    model.putMsg("当前公司用户数已满员，请联系平台相关人员购买用户数！");
+                    return model;
+                }
+            }
+        }else{
+            model.putCode(8);
+            model.putMsg("公司当前用户数查询异常！");
+            return model;
+        }
+
+        String employeeId = pd.getString("employeeId");
+        if (employeeId != null && employeeId.trim().length() > 0) {
+            user.setEmployId(employeeId);
+        }
+        this.save(user);
+
+        String roleId = pd.getString("roleId");
+        if (roleId != null && roleId.trim().length() > 0) {
+            UserRole userRole = new UserRole();
+            userRole.setRoleId(roleId);
+            userRole.setUserId(user.getId());
+            userRole.setCuser(pd.getString("cuser"));
+            userRole.setUuser(pd.getString("uuser"));
+            userRoleService.save(userRole);
+        }
+
+        if (employeeId != null && employeeId.trim().length() > 0) {
+            Employee employee = employeeService.findEmployeeById(employeeId);
+            //mobile:手机号码
+            employee.setMobile(user.getMobile());
+            //email:邮箱地址
+            employee.setEmail(user.getEmail());
+            //user_name:姓名->name:员工姓名
+            employee.setName(user.getUserName());
+            employee.setUserId(user.getId());
+            //是否开通用户(0:不开通 1:开通 is null 不开通)
+            employee.setIsOpenUser("1");
+            employeeService.update(employee);
+        }
+        return model;
+    }
+
+    @Override
+    public ResultModel updateUser(PageData pd) throws Exception {
+        ResultModel model = new ResultModel();
+        User user = this.findUserById(pd.getString("id"));
+
+        //A. 手机号验证
+        String mobile = pd.getString("mobile");
+        String email = pd.getString("email");
+        String userName = pd.getString("userName");
+        if(mobile == null || mobile.trim().length() == 0){
+            model.putCode(1);
+            model.putMsg("该用户手机号不能为空！");
+            return model;
+        }
+        if (mobile.trim().length() != 11) {
+            model.putCode(1);
+            model.putMsg("手机号长度错误！");
+            return model;
+        }
+        if(isExistMobile(pd)){
+            model.putCode(1);
+            model.putMsg("该用户手机号已存在！");
+            return model;
+        }
+        user.setMobile(mobile.trim());
+
+        //B. 通过手机号-设置用户默认密码
+        //如果用户设置了密码那就用设置的密码加密，如果没有设置密码，那么就用手机号后六位进行加密作为默认密码
+        if(StringUtils.isEmpty(pd.getString("password"))){
+            if(mobile!=null&&mobile.trim().length()>6){
+                mobile = mobile.trim();
+                String password = mobile.substring(mobile.length()-6,mobile.length());
+                user.setPassword(MD5Utils.MD5(password));
+            }else{
+                model.putCode(2);
+                model.putMsg("输入手机号长度错误！");
+                return model;
+            }
+        }else{
+            user.setPassword(MD5Utils.MD5(pd.getString("password")));
+        }
+
+        //删除用户角色信息
+        userRoleService.deleteUserRoleByUserId(user.getId());
+        //新增用户角色信息
+        if(!StringUtils.isEmpty(pd.getString("roleId"))){
+            UserRole userRole = new UserRole();
+            userRole.setRoleId(pd.getString("roleId"));
+            userRole.setUserId(user.getId());
+            userRole.setCuser(pd.getString("cuser"));
+            userRole.setUuser(pd.getString("uuser"));
+            userRoleService.save(userRole);
+        }
+
+        //原绑定员工
+        String old_employeeId = user.getEmployId();
+        if (old_employeeId != null && old_employeeId.trim().length() > 0) {
+            Employee employee = employeeService.findEmployeeById(old_employeeId);
+            if (employee != null) {
+                employee.setUserId(null);
+                //是否开通用户(0:不开通 1:开通 is null 不开通)
+                employee.setIsOpenUser("0");
+                employeeService.updateAll(employee);
+            }
+        }
+
+        //新绑定员工
+        String employeeId = pd.getString("employeeId");
+        if (employeeId != null && employeeId.trim().length() > 0) {
+            Employee employee = employeeService.findEmployeeById(employeeId);
+            if (employee != null) {
+                employee.setUserId(user.getId());
+                //是否开通用户(0:不开通 1:开通 is null 不开通)
+                employee.setIsOpenUser("1");
+                employee.setMobile(mobile);
+                employee.setEmail(email);
+//                employee.setName(userName);
+                employeeService.update(employee);
+            }
+
+            user.setEmployId(employeeId);
+            //mobile:手机号码
+            user.setMobile(mobile);
+            //email:邮箱地址
+            user.setEmail(email);
+            //user_name:姓名->name:员工姓名
+            user.setUserName(userName);
+        }
+        this.update(user);
+
+        return model;
+    }
+
+    @Override
+    public ResultModel updatePasswords(PageData pd) throws Exception {
+        ResultModel model = new ResultModel();
+        String userIds = pd.getString("ids");
+        String[] ids = userIds.split(",");
+
+        if(ids!=null&&ids.length>0){
+            for(int i=0;i<ids.length;i++){
+                String id =  ids[i];
+                User user = this.selectById(id);
+                if(StringUtils.isEmpty(user.getMobile())){
+                    user.setPassword(MD5Utils.MD5("123"));
+                }else{
+                    String mobile = user.getMobile();
+                    if(mobile!=null&&mobile.trim().length()>6){
+                        mobile = mobile.trim();
+                        String password = mobile.substring(mobile.length()-6,mobile.length());
+                        user.setPassword(MD5Utils.MD5(password));
+                    }else{
+                        model.putCode(1);
+                        model.putMsg("用户"+user.getUserName()+"的手机号长度错误！");
+                        return model;
+                    }
+
+                }
+                this.update(user);
+            }
+        }
+
+
+        return model;
+    }
+
+
+
+    @Override
+    public ResultModel updateEmployeeUserUnbind(PageData pd) throws Exception {
+        ResultModel model = new ResultModel();
+        String userId = pd.getString("id");
+        String employeeId = pd.getString("employeeId");
+
+        if(!StringUtils.isEmpty(userId)){
+            User user = this.selectById(userId);
+            user.setEmployId(null);
+            this.updateAll(user);
+        }
+
+        if(!StringUtils.isEmpty(employeeId)){
+            Employee employee = employeeService.selectById(employeeId);
+            employee.setUserId(null);
+            //是否开通用户(0:不开通 1:开通 is null 不开通)
+            employee.setIsOpenUser("0");
+            employeeService.updateAll(employee);
+        }
+        return model;
+    }
+
+    @Override
+    public ResultModel updateEmployeeUserBind(PageData pd) throws Exception {
+        ResultModel model = new ResultModel();
+        String userId = pd.getString("id");
+        if (userId == null || userId.trim().length() == 0) {
+            model.putCode(1);
+            model.putMsg("用户id为空或空字符串！");
+            return model;
+        }
+
+        User user = this.selectById(userId);
+
+        //原绑定员工
+        String old_employeeId = user.getEmployId();
+        if (old_employeeId != null && old_employeeId.trim().length() > 0) {
+            Employee employee = employeeService.findEmployeeById(old_employeeId);
+            if (employee != null) {
+                employee.setUserId(null);
+                //是否开通用户(0:不开通 1:开通 is null 不开通)
+                employee.setIsOpenUser("0");
+                employeeService.updateAll(employee);
+            }
+        }
+
+        //新绑定员工
+        String employeeId = pd.getString("employeeId");
+        if (employeeId != null && employeeId.trim().length() > 0) {
+            Employee employee = employeeService.findEmployeeById(employeeId);
+            if (employee != null) {
+                employee.setUserId(user.getId());
+                //是否开通用户(0:不开通 1:开通 is null 不开通)
+                employee.setIsOpenUser("1");
+                employeeService.update(employee);
+            }
+
+            user.setEmployId(employeeId);
+            //mobile:手机号码
+            user.setMobile(employee.getMobile());
+            //email:邮箱地址
+            user.setEmail(employee.getEmail());
+            //user_name:姓名->name:员工姓名
+            user.setUserName(employee.getName());
+        }
+
+        this.update(user);
+
+        return model;
+    }
+
+    @Override
+    public ResultModel deleteUsers(PageData pd) throws Exception {
+        ResultModel model = new ResultModel();
+        String userIds = pd.getString("ids");
+        String[] ids = userIds.split(",");
+
+        for (int i = 0; i < ids.length; i++) {
+            String userId = ids[i];
+            //1. 删除(vmes_user_role)用户角色表
+            userRoleService.deleteUserRoleByUserId(userId);
+            //2. 删除(vmes_user_defined_menu)用户主页表
+            userDefinedMenuService.deleteUserDefinedMenuByUserId(userId);
+
+            //3. 修改员工表(vmes_employee)-字段user_id 设置为 Null
+            //用户id查询(vmes_user)
+            Map<String, Object> mapObject = userEmployeeService.findViewUserEmployByUserId(userId);
+            if (mapObject != null) {
+                Employee employee = userEmployeeService.mapObject2Employee(mapObject, null);
+                employee.setUserId(null);
+                //是否开通用户(0:不开通 1:开通 is null 不开通)
+                employee.setIsOpenUser("0");
+                employeeService.updateAll(employee);
+            }
+        }
+
+        //3. 删除(vmes_user)用户表
+        this.deleteByIds(ids);
+
+        return model;
+    }
+
+    @Override
+    public ResultModel listPageUsers(PageData pd,Pagination pg) throws Exception {
+        ResultModel model = new ResultModel();
+        List<Column> columnList = columnService.findColumnList("user");
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
+        }
+
+        //获取指定栏位字符串-重新调整List<Column>
+
+        String fieldCode = pd.getString("fieldCode");
+        if (fieldCode != null && fieldCode.trim().length() > 0) {
+            columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
+        }
+
+        List<LinkedHashMap> titlesList = new ArrayList<LinkedHashMap>();
+        List<String> titlesHideList = new ArrayList<String>();
+        Map<String, String> varModelMap = new HashMap<String, String>();
+        if(columnList!=null&&columnList.size()>0){
+            for (Column column : columnList) {
+                if(column!=null){
+                    if("0".equals(column.getIshide())){
+                        titlesHideList.add(column.getTitleKey());
+                    }
+                    LinkedHashMap titlesLinkedMap = new LinkedHashMap();
+                    titlesLinkedMap.put(column.getTitleKey(),column.getTitleName());
+                    varModelMap.put(column.getTitleKey(),"");
+                    titlesList.add(titlesLinkedMap);
+                }
+            }
+        }
+        Map result = new HashMap();
+        result.put("hideTitles",titlesHideList);
+        result.put("titles",titlesList);
+
+        List<Map> varMapList = new ArrayList();
+        List<Map> varList = this.getDataListPage(pd, pg);
+        if(varList!=null&&varList.size()>0){
+            for(int i=0;i<varList.size();i++){
+                Map map = varList.get(i);
+                Map<String, String> varMap = new HashMap<String, String>();
+                varMap.putAll(varModelMap);
+                for (Map.Entry<String, String> entry : varMap.entrySet()) {
+                    varMap.put(entry.getKey(),map.get(entry.getKey())!=null?map.get(entry.getKey()).toString():"");
+                }
+                varMapList.add(varMap);
+            }
+        }
+        result.put("varList",varMapList);
+        result.put("pageData", pg);
+        model.putResult(result);
+        return model;
+    }
+
+    @Override
+    public void exportExcelUsers(PageData pd,Pagination pg) throws Exception {
+        List<Column> columnList = columnService.findColumnList("user");
+        if (columnList == null || columnList.size() == 0) {
+            throw new RestException("1","数据库没有生成TabCol，请联系管理员！");
+        }
+
+        //根据查询条件获取业务数据List
+
+        String ids = pd.getString("ids");
+        String queryStr = "";
+        if (ids != null && ids.trim().length() > 0) {
+            ids = StringUtil.stringTrimSpace(ids);
+            ids = "'" + ids.replace(",", "','") + "'";
+            queryStr = "id in (" + ids + ")";
+        }
+        pd.put("queryStr", queryStr);
+
+        pg.setSize(100000);
+        List<Map> dataList = this.getDataListPage(pd, pg);
+
+        //查询数据转换成Excel导出数据
+        List<LinkedHashMap<String, String>> dataMapList = ColumnUtil.modifyDataList(columnList, dataList);
+        HttpServletResponse response  = HttpUtils.currentResponse();
+
+
+        //查询数据-Excel文件导出
+        //String fileName = "Excel数据字典数据导出";
+        String fileName = "ExcelUser";
+        ExcelUtil.excelExportByDataList(response, fileName, dataMapList);
     }
 }
 

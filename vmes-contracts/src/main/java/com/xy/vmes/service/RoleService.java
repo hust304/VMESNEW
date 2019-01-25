@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.entity.Role;
 import com.xy.vmes.entity.UserRole;
 import com.yvan.PageData;
+import com.yvan.springmvc.ResultModel;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -129,6 +130,39 @@ public interface RoleService {
      */
     boolean isExistByName(String companyId, String id, String name);
 
+    ResultModel listPageRoles(PageData pd, Pagination pg) throws Exception;
+
+    void exportExcelRoles(PageData pd, Pagination pg) throws Exception;
+
+    ResultModel addRole(PageData pageData) throws Exception;
+
+    ResultModel updateRole(PageData pageData) throws Exception;
+
+    ResultModel updateDisableRole(PageData pageData) throws Exception;
+
+    ResultModel deleteRoles(PageData pageData) throws Exception;
+
+    ResultModel saveRoleUsers(PageData pageData) throws Exception;
+
+    ResultModel saveRoleMeuns(PageData pageData) throws Exception;
+
+    ResultModel treeRoleMeunsAll(PageData pageData)  throws Exception;
+
+    ResultModel treeRoleMeunsSelected(PageData pageData) throws Exception;
+
+    ResultModel listRoleMeunsButtonsAll(PageData pageData) throws Exception;
+
+    ResultModel saveRoleMeunsButtons(PageData pageData)  throws Exception;
+
+    ResultModel listAllUsersByDeptId(PageData pageData)  throws Exception;
+
+    ResultModel listUsersByRole(PageData pageData)  throws Exception;
+
+    ResultModel findListUserByRole(PageData pageData)  throws Exception;
+
+    ResultModel getRoles(PageData pd)  throws Exception;
+
+    ResultModel addRoleByName(PageData pageData)  throws Exception;
 }
 
 

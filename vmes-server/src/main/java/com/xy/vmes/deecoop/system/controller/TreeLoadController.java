@@ -28,8 +28,6 @@ public class TreeLoadController {
     private Logger logger = LoggerFactory.getLogger(TreeLoadController.class);
 
     @Autowired
-    private MenuService menuService;
-    @Autowired
     MenuTreeService menuTreeService;
     /**
      * 获得部门树形结构
@@ -39,21 +37,7 @@ public class TreeLoadController {
      * 创建时间：2018-07-20
      */
     @GetMapping("/system/treeLoad/menuTreeLoad")
-    public ResultModel menuTreeLoad() {
-        ResultModel model = new ResultModel();
-
-        PageData findMap = new PageData();
-        findMap.put("isQueryAll", "true");
-
-        List<Menu> objectList = menuService.findMenuList(findMap);
-        for (Menu menu : objectList) {
-            TreeEntity tree = menuTreeService.menu2Tree(menu, null);
-        }
-        List<TreeEntity> treeList = menuTreeService.menuList2TreeList(objectList,null);
-
-        TreeEntity treeObject = TreeUtil.switchTree(null, treeList);
-        System.out.println("treeJson: " + YvanUtil.toJson(treeObject));
-
-        return model;
+    public ResultModel menuTreeLoad() throws Exception{
+        return menuTreeService.menuTreeLoad();
     }
 }

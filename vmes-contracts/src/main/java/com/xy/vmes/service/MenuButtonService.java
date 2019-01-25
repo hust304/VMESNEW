@@ -3,6 +3,7 @@ package com.xy.vmes.service;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.entity.MenuButton;
 import com.yvan.PageData;
+import com.yvan.springmvc.ResultModel;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -200,6 +201,20 @@ public interface MenuButtonService {
      * @return
      */
     String findButtonIdsByMenuButtonList(List<MenuButton> objectList);
+
+    ResultModel addMeunButton(PageData pageData) throws Exception;
+
+    ResultModel updateMeunButton(PageData pageData) throws Exception;
+
+    ResultModel updateDisableMeunButton(PageData pageData) throws Exception;
+
+    ResultModel deleteMeunButtons(PageData pageData) throws Exception;
+
+    ResultModel listPageMenuButtons(PageData pd, Pagination pg) throws Exception;
+
+    void exportExcelMenuButtons(PageData pd, Pagination pg) throws Exception;
+
+    ResultModel initMenuButtons(PageData pageData) throws Exception;
 }
 
 

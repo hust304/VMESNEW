@@ -5,6 +5,7 @@ import com.xy.vmes.entity.DeptPostEntity;
 import com.xy.vmes.entity.Post;
 import com.xy.vmes.entity.TreeEntity;
 import com.yvan.PageData;
+import com.yvan.springmvc.ResultModel;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -145,6 +146,22 @@ public interface PostService {
     List<TreeEntity> deptPostList2TreeList(List<Map<String, Object>> mapList, List<TreeEntity> treeList);
 
     String checkDelPostByIds(String ids);
+
+    ResultModel addPost(PageData pd) throws Exception;
+
+    ResultModel updatePost(PageData pd)  throws Exception;
+
+    ResultModel updateDisablePost(PageData pageData) throws Exception;
+
+    ResultModel deletePosts(PageData pd) throws Exception;
+
+    ResultModel listPagePosts(PageData pd, Pagination pg)  throws Exception;
+
+    void exportExcelPosts(PageData pd, Pagination pg)  throws Exception;
+
+    ResultModel treeDeptPosts(PageData pd)  throws Exception;
+
+    ResultModel treeDeptPostsNotMainPost(PageData pd) throws Exception;
 }
 
 

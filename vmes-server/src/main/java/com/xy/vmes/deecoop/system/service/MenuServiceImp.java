@@ -1,25 +1,23 @@
 package com.xy.vmes.deecoop.system.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.Common;
+import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.system.dao.MenuMapper;
 import com.xy.vmes.entity.*;
-import com.xy.vmes.service.CoderuleService;
-import com.xy.vmes.service.MenuButtonService;
-import com.xy.vmes.service.MenuService;
-import com.xy.vmes.service.MenuTreeService;
-import com.yvan.HttpUtils;
-import com.yvan.PageData;
-import com.yvan.Tree;
+import com.xy.vmes.service.*;
+import com.yvan.*;
 import com.yvan.platform.RestException;
+import com.yvan.springmvc.ResultModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import java.text.MessageFormat;
 import java.util.*;
-
-import com.yvan.Conv;
 
 /**
 * 说明：vmes_menu:系统功能菜单 实现类
@@ -31,6 +29,12 @@ import com.yvan.Conv;
 public class MenuServiceImp implements MenuService {
     @Autowired
     private MenuMapper menuMapper;
+    @Autowired
+    private ColumnService columnService;
+    @Autowired
+    UserDefinedMenuService userDefinedMenuService;
+    @Autowired
+    private RoleMenuService roleMenuService;
     @Autowired
     private MenuButtonService menuButtonService;
 
@@ -592,6 +596,458 @@ public class MenuServiceImp implements MenuService {
         return  msgBuf.toString();
     }
 
+
+    @Override
+    public ResultModel listPageMenus(PageData pd,Pagination pg) throws Exception {
+        ResultModel model = new ResultModel();
+        Map<String, Object> mapObj = new HashMap<String, Object>();
+
+        //1. 查询遍历List列表
+        List<Column> columnList = columnService.findColumnList("menu");
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
+        }
+
+        List<LinkedHashMap> titlesList = new ArrayList<LinkedHashMap>();
+        List<String> titlesHideList = new ArrayList<String>();
+        Map<String, String> varModelMap = new HashMap<String, String>();
+        if(columnList!=null&&columnList.size()>0){
+            for (Column column : columnList) {
+                if(column!=null){
+                    if("0".equals(column.getIshide())){
+                        titlesHideList.add(column.getTitleKey());
+                    }
+                    LinkedHashMap titlesLinkedMap = new LinkedHashMap();
+                    titlesLinkedMap.put(column.getTitleKey(),column.getTitleName());
+                    varModelMap.put(column.getTitleKey(),"");
+                    titlesList.add(titlesLinkedMap);
+                }
+            }
+        }
+        mapObj.put("hideTitles", titlesHideList);
+        mapObj.put("titles", YvanUtil.toJson(titlesList));
+
+        //2. 分页查询数据List
+        List<Map<String, String>> varMapList = new ArrayList<Map<String, String>>();
+
+        List<Map> varList = this.getDataListPage(pd, pg);
+        if(varList != null && varList.size() > 0) {
+            for (Map<String, Object> map : varList) {
+                Map<String, String> varMap = new HashMap<String, String>();
+                varMap.putAll(varModelMap);
+                for (Map.Entry<String, String> entry : varMap.entrySet()) {
+                    varMap.put(entry.getKey(), map.get(entry.getKey()) != null ? map.get(entry.getKey()).toString() : "");
+                }
+                varMapList.add(varMap);
+            }
+        }
+        mapObj.put("varList", YvanUtil.toJson(varMapList));
+        mapObj.put("pageData", YvanUtil.toJson(pg));
+
+        model.putResult(mapObj);
+        return model;
+    }
+
+    @Override
+    public void exportExcelMenus(PageData pd,Pagination pg) throws Exception {
+        String ids = pd.getString("ids");
+        String queryColumn = pd.getString("queryColumn");
+        List<Column> columnList = columnService.findColumnList("menu");
+        if (columnList == null || columnList.size() == 0) {
+            throw new RestException("1","数据库没有生成TabCol，请联系管理员！");
+        }
+
+        //3. 根据查询条件获取业务数据List
+        String queryStr = "";
+        if (ids != null && ids.trim().length() > 0) {
+            ids = StringUtil.stringTrimSpace(ids);
+            ids = "'" + ids.replace(",", "','") + "'";
+            queryStr = "id in (" + ids + ")";
+        }
+        if (queryColumn != null && queryColumn.trim().length() > 0) {
+            queryStr = queryStr + queryColumn;
+        }
+
+        pd.put("queryStr", queryStr);
+
+        //分页参数默认设置100000
+        pg.setSize(100000);
+
+        List<Map> dataList = this.getDataListPage(pd,pg);
+
+        //查询数据转换成Excel导出数据
+        List<LinkedHashMap<String, String>> dataMapList = ColumnUtil.modifyDataList(columnList, dataList);
+        HttpServletResponse response  = HttpUtils.currentResponse();
+
+
+        //查询数据-Excel文件导出
+        //String fileName = "Excel数据字典数据导出";
+        String fileName = "ExcelMenu";
+        ExcelUtil.excelExportByDataList(response, fileName, dataMapList);
+    }
+
+    @Override
+    public ResultModel addMenu(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+        //1. 非空判断
+        if (pageData == null || pageData.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("参数错误：用户登录参数(pageData)为空！");
+            return model;
+        }
+
+        Menu menuObj = (Menu)HttpUtils.pageData2Entity(pageData, new Menu());
+        if (menuObj == null) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("参数错误：Map 转 菜单对象Menu 异常！");
+            return model;
+        }
+
+        String msgStr = this.checkColumnByAdd(menuObj);
+        if (msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
+
+        //pid 获取父节点对象<Menu>
+        String pid = "root";
+        if (menuObj.getPid() != null && menuObj.getPid().trim().length() > 0) {
+            pid = menuObj.getPid().trim();
+        }
+
+        Menu paterObj = null;
+        if ("root".equals(pid)) {
+            List<Menu> objList = this.findMenuListByPid(pid);
+            if (objList != null && objList.size() > 0) {paterObj = objList.get(0);}
+        } else {
+            paterObj = this.findMenuById(pid);
+        }
+
+        if (paterObj == null) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("(pid:"+ menuObj.getPid() + ")系统中无数据，请与管理员联系！");
+            return model;
+        }
+
+        //2. (菜单名称)在同一层名称不可重复
+        if (this.isExistByName(menuObj.getPid(), null, menuObj.getUrl())) {
+            String msgTemp = "上级菜单名称: {0}" + Common.SYS_ENDLINE_DEFAULT +
+                    "页面路径: {1}" + Common.SYS_ENDLINE_DEFAULT +
+                    "在系统中已经重复！" + Common.SYS_ENDLINE_DEFAULT;
+            String str_isnull = MessageFormat.format(msgTemp,
+                    paterObj.getName(),
+                    menuObj.getName());
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(str_isnull);
+            return model;
+        }
+
+        //3. 添加菜单
+        String id = Conv.createUuid();
+        menuObj.setId(id);
+        menuObj = this.id2MenuByLayer(id,
+                Integer.valueOf(paterObj.getLayer().intValue() + 1),
+                menuObj);
+        menuObj = this.paterObject2ObjectDB(paterObj, menuObj);
+
+        //获取菜单编码
+        //String code = menuService.createCoder("1");
+        //menuObj.setCode(code);
+
+        //设定上级节点ID
+        menuObj.setPid(paterObj.getId());
+
+        //设置菜单级别
+        menuObj.setLayer(Integer.valueOf(paterObj.getLayer().intValue() + 1));
+        //设置菜单默认显示顺序
+        if (menuObj.getSerialNumber() == null) {
+            Integer maxCount = this.findMaxSerialNumberByPid(menuObj.getPid());
+            menuObj.setSerialNumber(Integer.valueOf(maxCount.intValue() + 1));
+        }
+
+        this.save(menuObj);
+        return model;
+    }
+
+    @Override
+    public ResultModel updateMenu(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+        //1. 非空判断
+        if (pageData == null || pageData.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("参数错误：用户登录参数(pageData)为空！");
+
+            return model;
+        }
+
+        Menu menuObj = (Menu)HttpUtils.pageData2Entity(pageData, new Menu());
+        if (menuObj == null) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("参数错误：Map 转 菜单对象Menu 异常！");
+
+            return model;
+        }
+
+        String msgStr = this.checkColumnByEdit(menuObj);
+        if (msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
+
+        //pid 获取父节点对象<Menu>
+        String pid = "root";
+        if (menuObj.getPid() != null && menuObj.getPid().trim().length() > 0) {
+            pid = menuObj.getPid().trim();
+        }
+
+        Menu paterObj = null;
+        if ("root".equals(pid)) {
+            List<Menu> objList = this.findMenuListByPid(pid);
+            if (objList != null && objList.size() > 0) {paterObj = objList.get(0);}
+        } else {
+            paterObj = this.findMenuById(pid);
+        }
+        if (paterObj == null) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("(pid:"+ menuObj.getPid() + ")系统中无数据，请与管理员联系！");
+
+            return model;
+        }
+
+        //2. (菜单名称)在同一层名称不可重复
+        if (this.isExistByName(menuObj.getPid(), menuObj.getId(), menuObj.getUrl())) {
+            String msgTemp = "上级菜单名称: {0}" + Common.SYS_ENDLINE_DEFAULT +
+                    "页面路径: {1}" + Common.SYS_ENDLINE_DEFAULT +
+                    "在系统中已经重复！" + Common.SYS_ENDLINE_DEFAULT;
+            msgTemp = MessageFormat.format(msgTemp,
+                    paterObj.getName(),
+                    menuObj.getName());
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgTemp);
+            return model;
+        }
+
+        //3. 修改菜单属性值
+        Menu menuDB = this.findMenuById(menuObj.getId());
+        menuDB = this.object2objectDB(menuObj, menuDB);
+        menuDB = this.clearMenuByPath(menuDB);
+        menuDB = this.id2MenuByLayer(menuDB.getId(),
+                Integer.valueOf(paterObj.getLayer().intValue() + 1),
+                menuDB);
+        menuDB = this.paterObject2ObjectDB(paterObj, menuDB);
+
+        //设定上级节点ID
+        menuDB.setPid(paterObj.getId());
+        //设置菜单级别
+        menuDB.setLayer(Integer.valueOf(paterObj.getLayer().intValue() + 1));
+        //设置菜单默认显示顺序
+        if (menuObj.getSerialNumber() == null) {
+            Integer maxCount = this.findMaxSerialNumberByPid(menuObj.getPid());
+            menuObj.setSerialNumber(Integer.valueOf(maxCount.intValue() + 1));
+        }
+        this.update(menuDB);
+        return model;
+    }
+
+    @Override
+    public ResultModel updateDisableMenu(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+        //1. 非空判断
+        if (pageData == null || pageData.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("参数错误：用户登录参数(pageData)为空！");
+
+            return model;
+        }
+
+        String id = (String)pageData.get("id");
+        String isdisable = (String)pageData.get("isdisable");
+
+        String msgStr = new String();
+        if (id == null || id.trim().length() == 0) {
+            msgStr = msgStr + "id为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT;
+        }
+        if (isdisable == null || isdisable.trim().length() == 0) {
+            msgStr = msgStr + "isdisable为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT;
+        }
+        if (msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
+
+        //2. 当前菜单ID(菜单按钮)中是否使用中
+        msgStr = this.checkDeleteMenuByIds(id);
+        if (msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
+
+        //3. 修改菜单(禁用)状态
+        Menu objectDB = this.findMenuById(id);
+        objectDB.setIsdisable(isdisable);
+        objectDB.setUdate(new Date());
+        this.update(objectDB);
+        return model;
+    }
+
+    @Override
+    public ResultModel deleteMenus(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+        //1. 非空判断
+        if (pageData == null || pageData.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("参数错误：用户登录参数(pageData)为空！");
+
+            return model;
+        }
+
+        String ids = (String)pageData.get("ids");
+        if (ids == null || ids.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("参数错误：请至少选择一行数据！");
+
+            return model;
+        }
+
+        String id_str = StringUtil.stringTrimSpace(ids);
+        String[] id_arry = id_str.split(",");
+
+//        //2. 当前菜单ID(菜单按钮)中是否使用中
+//        String msgStr = menuService.checkDeleteMenuByIds(id_str);
+//        if (msgStr.trim().length() > 0) {
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg(msgStr);
+//            return model;
+//        }
+
+        for (int i = 0; i < id_arry.length; i++) {
+            String menuId = id_arry[i];
+            try {
+                //1. 删除(vmes_menu_button)菜单按钮表
+                menuButtonService.deleteMenuButtonByMenuId(menuId);
+
+                //2. 删除(vmes_role_menu)角色菜单表
+                roleMenuService.deleteRoleMenuByMenuId(menuId);
+
+                //3. 删除(vmes_user_defined_menu)用户主页表
+                userDefinedMenuService.deleteUserDefinedMenuByMenuId(menuId);
+            } catch (Exception e) {
+                throw new RestException("", e.getMessage());
+            }
+        }
+
+        //4. 删除(vmes_menu)菜单表
+        this.deleteByIds(id_arry);
+
+        return model;
+    }
+
+    @Override
+    public ResultModel importExcelMenus(MultipartFile file) throws Exception {
+        ResultModel model = new ResultModel();
+        try {
+            if (file == null) {
+                model.putCode(Integer.valueOf(1));
+                model.putMsg("请上传Excel文件！");
+                return model;
+            }
+
+            // 验证文件是否合法
+            // 获取上传的文件名(文件名.后缀)
+            String fileName = file.getOriginalFilename();
+            if (fileName == null
+                    || !(fileName.matches("^.+\\.(?i)(xlsx)$")
+                    || fileName.matches("^.+\\.(?i)(xls)$"))
+                    ) {
+                String failMesg = "不是excel格式文件,请重新选择！";
+                model.putCode(Integer.valueOf(1));
+                model.putMsg(failMesg);
+                return model;
+            }
+
+            // 判断文件的类型，是2003还是2007
+            boolean isExcel2003 = true;
+            if (fileName.matches("^.+\\.(?i)(xlsx)$")) {
+                isExcel2003 = false;
+            }
+
+            List<List<String>> dataLst = ExcelUtil.readExcel(file.getInputStream(), isExcel2003);
+            List<LinkedHashMap<String, String>> dataMapLst = ExcelUtil.reflectMapList(dataLst);
+
+            //1. Excel文件数据dataMapLst -->(转换) ExcelEntity (属性为导入模板字段)
+            //2. Excel导入字段(非空,数据有效性验证[数字类型,字典表(大小)类是否匹配])
+            //3. Excel导入字段-名称唯一性判断-在Excel文件中
+            //4. Excel导入字段-名称唯一性判断-在业务表中判断
+            //5. List<ExcelEntity> --> (转换) List<业务表DB>对象
+            //6. 遍历List<业务表DB> 对业务表添加或修改
+
+        } catch (Exception e) {
+            throw new RestException("", e.getMessage());
+        }
+        return model;
+    }
+
+    @Override
+    public ResultModel treeMeuns(PageData pageData) throws Exception {
+        //1. 获取当前登录用户所有角色ID
+        // 用户角色(当前用户)-(角色ID','分隔的字符串)
+        ResultModel model = new ResultModel();
+        String roleIds = (String)pageData.get("roleIds");
+
+        String userRole = "";
+        String userType = (String)pageData.get("userType");
+        //(userType_admin:超级管理员 userType_company:企业管理员 userType_employee:普通用户 userType_outer:外部用户)
+        if (!Common.DICTIONARY_MAP.get("userType_admin").equals(userType) && roleIds != null && roleIds.trim().length() > 0) {
+            userRole = roleIds;
+            userRole = StringUtil.stringTrimSpace(userRole);
+        }
+
+        //2. 获取当前用户角色所有菜单List
+        String queryStr = "";
+        if (userRole != null && userRole.trim().length() > 0) {
+            String strTemp = "'" + userRole.replace(",", "','" + ",") + "'";
+            queryStr = "b.role_id in (" + strTemp + ")";
+        }
+
+        PageData findMap = new PageData();
+        if (queryStr.trim().length() > 0) {
+            findMap.put("queryStr", queryStr);
+            findMap.put("isdisable", "1");
+        }
+        //vmes_role_menu ADD INDEX IDX_ROLE_MENU(索引)
+        findMap.put("menuIsdisable", "1");
+        //findMap.put("orderStr", "b.layer asc,b.serial_number asc");
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+
+        List<Map<String, Object>> mapList = roleMenuService.findRoleMenuMapList(findMap);
+        if (mapList == null || mapList.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("当前登录用户id:" + pageData.getString("cuser") + Common.SYS_ENDLINE_DEFAULT +
+                    "1.没有配置角色" + Common.SYS_ENDLINE_DEFAULT +
+                    "2.角色没有绑定菜单" + Common.SYS_ENDLINE_DEFAULT);
+            return model;
+        }
+
+        List<Menu> menuList = roleMenuService.mapList2MenuList(mapList, new ArrayList<Menu>());
+        //遍历菜单List<Menu>-获取菜单最大级别
+        Integer maxLayer = this.findMaxLayerByMenuList(menuList);
+
+        //3. 生成菜单树
+        menuTreeService.initialization();
+        menuTreeService.findMenuTreeByList(menuList, maxLayer);
+        List<TreeEntity> treeList = menuTreeService.creatMenuTree(maxLayer, null, null);
+
+        String treeJsonStr = YvanUtil.toJson(treeList);
+        //System.out.println("treeJsonStr: " + treeJsonStr);
+        model.putResult(treeJsonStr);
+        return model;
+    }
 }
 
 

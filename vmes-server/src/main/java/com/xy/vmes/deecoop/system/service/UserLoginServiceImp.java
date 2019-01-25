@@ -18,15 +18,22 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.font.FontRenderContext;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.text.MessageFormat;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.Iterator;
 
 @Service
 public class UserLoginServiceImp implements UserLoginService {
 
+    @Autowired
+    private UserService userService;
     @Autowired
     private UserEmployeeService userEmployService;
     @Autowired
@@ -37,6 +44,11 @@ public class UserLoginServiceImp implements UserLoginService {
     private DepartmentService departmentService;
     @Autowired
     RedisClient redisClient;
+
+
+
+
+
 
     public Map<String, Object> findRedisMap(String jsonString) {
         Map<String, Object> mapObj = new HashMap<String, Object>();
@@ -256,4 +268,226 @@ public class UserLoginServiceImp implements UserLoginService {
 
         return model;
     }
+
+    @Override
+    public ResultModel createSecurityCode(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+        String SecurityCode = this.drawImg(new ByteArrayOutputStream());
+
+        //Redis-验证码-缓存1分钟(60 * 1000)
+        String RedisCodeKey = Conv.createUuid() + ":" + Common.REDIS_SECURITY_CODE;
+        redisClient.setWithExpireTime(RedisCodeKey, SecurityCode, Common.REDIS_SECURITYCODE_LONG);
+
+        Map<String, Object> dataMap = new HashMap<String, Object>();
+        dataMap.put("securityCode", SecurityCode);
+        dataMap.put("securityCodeKey", RedisCodeKey);
+        model.putResult(dataMap);
+        return model;
+    }
+
+    private String drawImg(ByteArrayOutputStream output){
+        String code = "";
+        for(int i=0; i<4; i++){
+            code += randomChar();
+        }
+        int width = 70;
+        int height = 25;
+        BufferedImage bi = new BufferedImage(width,height,BufferedImage.TYPE_3BYTE_BGR);
+        Font font = new Font("Times New Roman",Font.PLAIN,20);
+        Graphics2D g = bi.createGraphics();
+        g.setFont(font);
+        Color color = new Color(66,2,82);
+        g.setColor(color);
+        g.setBackground(new Color(226,226,240));
+        g.clearRect(0, 0, width, height);
+        FontRenderContext context = g.getFontRenderContext();
+        Rectangle2D bounds = font.getStringBounds(code, context);
+        double x = (width - bounds.getWidth()) / 2;
+        double y = (height - bounds.getHeight()) / 2;
+        double ascent = bounds.getY();
+        double baseY = y - ascent;
+        g.drawString(code, (int)x, (int)baseY);
+        g.dispose();
+        try {
+            ImageIO.write(bi, "jpg", output);
+        } catch (IOException e) {
+            //e.printStackTrace();
+        }
+        return code;
+    }
+
+    private char randomChar(){
+        Random r = new Random();
+        String s = "ABCDEFGHJKLMNPRSTUVWXYZ0123456789";
+        return s.charAt(r.nextInt(s.length()));
+    }
+
+    @Override
+    public ResultModel changePassWord(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+        String userID = pageData.getString("userID");
+        String passwordOld = pageData.getString("passwordOld");
+        String passwordNew = pageData.getString("passwordNew");
+
+        //非空判断
+        StringBuffer msgBuf = new StringBuffer();
+        if (userID == null || userID.trim().length() == 0 ) {
+            msgBuf.append("参数错误：系统用户ID为空或空字符串！");
+            msgBuf.append(Common.SYS_ENDLINE_DEFAULT);
+        }
+        if (passwordOld == null || passwordOld.trim().length() == 0 ) {
+            msgBuf.append("参数错误：原密码输入为空或空字符串，原密码为必填项不可为空！");
+            msgBuf.append(Common.SYS_ENDLINE_DEFAULT);
+        }
+        if (passwordNew == null || passwordNew.trim().length() == 0 ) {
+            msgBuf.append("参数错误：新密码输入为空或空字符串，新密码为必填项不可为空！");
+            msgBuf.append(Common.SYS_ENDLINE_DEFAULT);
+        }
+        if (msgBuf.toString().trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgBuf.toString());
+            return model;
+        }
+
+        //1. 查询(用户id,原密码)-系统中是否存在
+        PageData findMap = new PageData();
+        findMap.put("userID", userID);
+        findMap.put("userPassword", MD5Utils.MD5(passwordOld));
+        //isdisable:是否禁用(0:已禁用 1:启用)
+        findMap.put("userIsdisable", "1");
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+
+        List<Map<String, Object>> objectList = userEmployService.findViewUserEmployList(findMap);
+        if (objectList == null || objectList.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("原密码输入错误，请核对后再次输入！");
+            return model;
+        }
+
+        //2. 修改用户新密码
+        Map<String, Object> userEmployMap = objectList.get(0);
+        User userDB = userEmployService.mapObject2User(userEmployMap, null);
+        userDB.setPassword(MD5Utils.MD5(passwordNew));
+        userService.update(userDB);
+
+        model.putMsg("密码修改成功！");
+
+        return model;
+    }
+
+    @Override
+    public ResultModel findPassWord(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+        if (pageData == null || pageData.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("参数错误：用户登录参数(pageData)为空！");
+            return model;
+        }
+
+        String type = (String)pageData.get("type");
+        String mobile = (String)pageData.get("mobile");
+        String email = (String)pageData.get("email");
+        String userCode = (String)pageData.get("userCode");
+
+        if (type == null || type.trim().length() == 0) {
+            //throw new RestException("", "参数错误：密码找回方式为空或空字符串，密码找回方式为必填项不可为空！");
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("参数错误：密码找回方式为空或空字符串！");
+            return model;
+        }
+        //type (mobile, email)取值范围
+        StringBuffer msgBuf = new StringBuffer();
+        if ("mobile".equals(type.toLowerCase())) {
+            if (mobile == null || mobile.trim().length() == 0) {
+                msgBuf.append("参数错误：手机号为空或空字符串，手机号为必填项不可为空！");
+            }
+        } else if ("email".equals(type.toLowerCase())) {
+            if (userCode == null || userCode.trim().length() == 0) {
+                msgBuf.append("参数错误：账号手机为空或空字符串，账号手机为必填项不可为空！");
+                msgBuf.append(Common.SYS_ENDLINE_DEFAULT);
+            }
+            if (email == null || email.trim().length() == 0) {
+                msgBuf.append("参数错误：邮箱地址为空或空字符串，邮箱地址为必填项不可为空！");
+                msgBuf.append(Common.SYS_ENDLINE_DEFAULT);
+            }
+        }
+        if (msgBuf.toString().trim().length() > 0) {
+            //throw new RestException("", msgBuf.toString());
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgBuf.toString());
+            return model;
+        }
+
+        //获取查询条件
+        msgBuf = new StringBuffer();
+        PageData findMap = new PageData();
+        //isdisable:是否禁用(1:已禁用 0:启用)
+        findMap.put("userIsdisable", "0");
+        if ("mobile".equals(type.toLowerCase())) {
+            findMap.put("userMobile", mobile);
+            msgBuf.append("手机号:" + mobile);
+            msgBuf.append(Common.SYS_ENDLINE_DEFAULT);
+        } else if ("email".equals(type.toLowerCase())) {
+            String queryStr = " (a.user_code = ''{0}'' or a.mobile = ''{0}'') ";
+            queryStr = MessageFormat.format(queryStr, userCode);
+            findMap.put("queryStr", queryStr);
+            findMap.put("userEmail", email);
+
+            msgBuf.append("账号手机:" + userCode);
+            msgBuf.append(Common.SYS_ENDLINE_DEFAULT);
+            msgBuf.append("邮箱地址:" + email);
+            msgBuf.append(Common.SYS_ENDLINE_DEFAULT);
+        }
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+        List<Map<String, Object>> objectList = userEmployService.findViewUserEmployList(findMap);
+        if (objectList == null || objectList.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgBuf.toString() + "系统中不存在，请与管理员联系！");
+            return model;
+        }
+        Map<String, Object> userEmployMap = objectList.get(0);
+        User userDB = userEmployService.mapObject2User(userEmployMap, new User());
+
+        //获取默认新密码:
+        String default_password = MD5Utils.MD5(Common.DEFAULT_PASSWORD);
+        userDB.setPassword(default_password);
+
+        if ("mobile".equals(type.toLowerCase())) {
+            //TODO 重置密码(新密码)-手机短信(mobile)
+
+        } else if ("email".equals(type.toLowerCase())) {
+            //TODO 重置密码(新密码)-邮件发给(email)
+        }
+
+        userService.update(userDB);
+
+        model.putCode(Integer.valueOf(0));
+        model.putMsg("密码重置成功！");
+        return model;
+    }
+
+    @Override
+    public ResultModel loginOut(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+        //1. 非空判断
+        if (pageData == null || pageData.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("参数错误：用户登录参数(pageData)为空！");
+            return model;
+        }
+
+        String sessionID = (String)pageData.get("sessionID");
+        if (sessionID == null || sessionID.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("sessionID为空或空字符串！");
+            return model;
+        }
+
+        String[] str_arry = sessionID.split(":");
+        String uuid = str_arry[0];
+        RedisUtils.removeByUuid(redisClient, uuid);
+        return model;
+    }
+
+
 }

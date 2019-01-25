@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.entity.Menu;
 import com.yvan.PageData;
 import com.yvan.Tree;
+import com.yvan.springmvc.ResultModel;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -216,6 +218,22 @@ public interface MenuService {
      * @return
      */
     String checkDeleteMenuByIds(String ids);
+
+    ResultModel listPageMenus(PageData pd,Pagination pg) throws Exception;
+
+    void exportExcelMenus(PageData pd,Pagination pg) throws Exception;
+
+    ResultModel addMenu(PageData pageData) throws Exception;
+
+    ResultModel updateMenu(PageData pageData) throws Exception;
+
+    ResultModel updateDisableMenu(PageData pageData) throws Exception;
+
+    ResultModel deleteMenus(PageData pageData) throws Exception;
+
+    ResultModel importExcelMenus(MultipartFile file) throws Exception;
+
+    ResultModel treeMeuns(PageData pageData) throws Exception;
 }
 
 
