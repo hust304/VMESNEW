@@ -5,7 +5,7 @@
 创建人：陈刚 自动创建
 创建时间：2019-01-11
  -->
-<mapper namespace="com.xy.vmes.deecoop.sale.dao.SaleDeliverByCollectMapper">
+<mapper namespace="com.xy.vmes.deecoop.sale.dao.SaleDeliverDetailByCollectMapper">
     <!--发货明细(按订单明细id)汇总-->
     <select id="findDeliverDetailByOrderDetai" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
@@ -29,8 +29,8 @@
     <select id="findDeliverDetailByOrderDetaiCount" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
         deliverDtl.order_detai_id orderDetailId,
-        round(ifnull(orderDtl.product_count, 0), 2) productCount,
-        deliverOrderDtl.count orderDtlDeliverCount
+        round(ifnull(orderDtl.order_count, 0), 2) orderCount,
+        deliverOrderDtl.orderCount orderDtlDeliverCount
         from (
             select order_detai_id
             from vmes_sale_deliver_detail
@@ -44,7 +44,7 @@
             left join (
                 select
                     order_detai_id,
-                    sum(count) count
+                    sum(order_count) orderCount
                 from vmes_sale_deliver_detail
                 <where>
                     <if test="orderDtlId != null and orderDtlId != ''" >

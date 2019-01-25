@@ -14,7 +14,7 @@ import java.util.Map;
  */
 @Mapper
 @Repository
-public interface SaleDeliverByCollectMapper {
+public interface SaleDeliverDetailByCollectMapper {
 
     /**
      * 关联查询(vmes_sale_deliver_detail,vmes_sale_order_detail,vmes_warehouse_out_detail)

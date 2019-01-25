@@ -32,6 +32,7 @@
     </sql>
 
     <!-- ***************************************************以上为自动生成代码禁止修改，请在下面添加业务代码************************************************* -->
+    <!-- 发货单明细(先计价) -->
     <insert id="insertColumn" >
         delete from vmes_column where model_code = 'saleDeliverDetail' ;
         insert into vmes_column (
@@ -39,41 +40,78 @@
         isdisable,ishide,isedit,ismust,cdate,
         cuser
         ) VALUES
-            (replace(uuid(), '-', ''),'saleDeliverDetail','parentId','发货单ID',1, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleDeliverDetail','orderId','订单ID',2, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleDeliverDetail','orderDetaiId','订单明细ID',3, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleDeliverDetail','outDetailId','出单明细id',4, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleDeliverDetail','state','发货状态(0:待发货 1:已发货 -1:已取消)',5, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleDeliverDetail','productPrice','货品单价',6, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleDeliverDetail','count','发货数量',7, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleDeliverDetail','lastNumber','结算数量(后计价)',8, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleDeliverDetail','sum','发货金额',9, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleDeliverDetail','date','发货日期',10, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleDeliverDetail','cuser','创建用户id',11, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleDeliverDetail','cdate','创建时间',12, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleDeliverDetail','uuser','修改用户id',13, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleDeliverDetail','udate','修改时间',14, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleDeliverDetail','remark','备注',15, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleDeliverDetail','isdisable','是否启用(0:已禁用 1:启用)',16, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleDeliverDetail','id','id',0, '1','1','1','0',now(), 'admin'),
-
-            (replace(uuid(), '-', ''),'saleDeliverDetail', 'sysOrderCode', '订单编号', 2, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
-            (replace(uuid(), '-', ''),'saleDeliverDetail', 'priceType', '计价类型(1:先计价 2:后计价)', 10, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
-            (replace(uuid(), '-', ''), 'saleDeliverDetail', 'priceUnit', '计价单位id', 8, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
-            (replace(uuid(), '-', ''), 'saleDeliverDetail', 'priceUnitName', '单位', 8, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
-
-            (replace(uuid(), '-', ''), 'saleDeliverDetail', 'productCode', '货品编码', 2, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
-            (replace(uuid(), '-', ''), 'saleDeliverDetail', 'productName', '货品名称', 3, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
-            (replace(uuid(), '-', ''), 'saleDeliverDetail', 'productSpec', '规格型号', 4, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
-            (replace(uuid(), '-', ''), 'saleDeliverDetail', 'productGenre', '货品属性id', 5, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
-            (replace(uuid(), '-', ''), 'saleDeliverDetail', 'productGenreName', '货品属性', 5, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
-            (replace(uuid(), '-', ''), 'saleDeliverDetail', 'productId', 'productId', 5, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
-
-            (replace(uuid(), '-', ''), 'saleDeliverDetail', 'lastUnitName', 'lastUnitName', 5, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
-            (replace(uuid(), '-', ''), 'saleDeliverDetail', 'orderUnitName', 'orderUnitName', 5, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin')
-
-
+            (replace(uuid(), '-', ''), 'saleDeliverDetail', 'id', 'id', 0, '1', '0', '1', '0', '2018-12-16 11:15:19', 'admin'),
+            (replace(uuid(), '-', ''), 'saleDeliverDetail', 'parentId', '发货单ID', 1, '1', '0', '1', '0', '2018-12-16 11:15:19', 'admin'),
+            (replace(uuid(), '-', ''), 'saleDeliverDetail', 'orderId', '订单id', 2, '1', '0', '1', '0', '2018-12-16 11:15:19', 'admin'),
+            (replace(uuid(), '-', ''), 'saleDeliverDetail', 'orderDetaiId', '订单明细ID', 3, '1', '0', '1', '0', '2018-12-16 11:15:19', 'admin'),
+            (replace(uuid(), '-', ''), 'saleDeliverDetail', 'sysOrderCode', '订单编号', 4, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
+            (replace(uuid(), '-', ''), 'saleDeliverDetail', 'priceCount', '结算数量', 5, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleDeliverDetail', 'productId', 'productId', 5, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleDeliverDetail', 'productCode', '货品编码', 6, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleDeliverDetail', 'productName', '货品名称', 7, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleDeliverDetail', 'productSpec', '规格型号', 8, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleDeliverDetail', 'productGenre', '货品属性id', 9, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleDeliverDetail', 'productGenreName', '货品属性', 10, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleDeliverDetail', 'orderUnitName', '单位', 11, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleDeliverDetail', 'orderUnit', '单位id', 11, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleDeliverDetail', 'priceUnit', '计价单位id', 12, '1', '0', '1', '0', '2018-12-16 11:15:19', 'admin'),
+            (replace(uuid(), '-', ''), 'saleDeliverDetail', 'priceUnitName', '计价单位', 12, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleDeliverDetail', 'orderCount', '发货数量', 13, '1', '1', '1', '0', '2018-12-16 11:15:19', 'admin'),
+            (replace(uuid(), '-', ''), 'saleDeliverDetail', 'productPrice', '货品单价', 14, '1', '1', '1', '0', '2018-12-16 11:15:19', 'admin'),
+            (replace(uuid(), '-', ''), 'saleDeliverDetail', 'sum', '发货金额', 15, '1', '1', '1', '0', '2018-12-16 11:15:19', 'admin'),
+            (replace(uuid(), '-', ''), 'saleDeliverDetail', 'deliverDate', '发货日期', 16, '1', '0', '1', '0', '2018-12-16 11:15:19', 'admin'),
+            (replace(uuid(), '-', ''), 'saleDeliverDetail', 'remark', '备注', 17, '1', '1', '1', '0', '2018-12-16 11:15:19', 'admin'),
+            (replace(uuid(), '-', ''), 'saleDeliverDetail', 'cuser', '创建用户id', 18, '1', '0', '1', '0', '2018-12-16 11:15:19', 'admin'),
+            (replace(uuid(), '-', ''), 'saleDeliverDetail', 'cdate', '创建时间', 19, '1', '0', '1', '0', '2018-12-16 11:15:19', 'admin'),
+            (replace(uuid(), '-', ''), 'saleDeliverDetail', 'uuser', '修改用户id', 20, '1', '0', '1', '0', '2018-12-16 11:15:19', 'admin'),
+            (replace(uuid(), '-', ''), 'saleDeliverDetail', 'udate', '修改时间', 21, '1', '0', '1', '0', '2018-12-16 11:15:19', 'admin'),
+            (replace(uuid(), '-', ''), 'saleDeliverDetail', 'state', '发货状态(0:待发货 1:已发货 -1:已取消)', 22, '1', '0', '1', '0', '2018-12-16 11:15:19', 'admin'),
+            (replace(uuid(), '-', ''), 'saleDeliverDetail', 'outDetailId', '出单明细id', 24, '1', '0', '1', '0', '2018-12-16 11:15:19', 'admin'),
+            (replace(uuid(), '-', ''), 'saleDeliverDetail', 'isdisable', '是否启用(0:已禁用 1:启用)', 25, '1', '0', '1', '0', '2018-12-16 11:15:19', 'admin'),
+            (replace(uuid(), '-', ''), 'saleDeliverDetail', 'priceType', '计价类型(1:先计价 2:后计价)', 26, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin')
     </insert>
+
+    <!-- 发货单明细(后计价) -->
+    <insert id="insertColumn" >
+        delete from vmes_column where model_code = 'saleDeliverDetailByPrice' ;
+        insert into vmes_column (
+        id,model_code,title_key,title_name,serial_number,
+        isdisable,ishide,isedit,ismust,cdate,
+        cuser
+        ) VALUES
+            (replace(uuid(), '-', ''), 'saleDeliverDetailByPrice', 'id', 'id', 0, '1', '0', '1', '0', '2018-12-16 11:15:19', 'admin'),
+            (replace(uuid(), '-', ''), 'saleDeliverDetailByPrice', 'parentId', '发货单ID', 1, '1', '0', '1', '0', '2018-12-16 11:15:19', 'admin'),
+            (replace(uuid(), '-', ''), 'saleDeliverDetailByPrice', 'orderId', '订单id', 2, '1', '0', '1', '0', '2018-12-16 11:15:19', 'admin'),
+            (replace(uuid(), '-', ''), 'saleDeliverDetailByPrice', 'orderDetaiId', '订单明细ID', 3, '1', '0', '1', '0', '2018-12-16 11:15:19', 'admin'),
+            (replace(uuid(), '-', ''), 'saleDeliverDetailByPrice', 'sysOrderCode', '订单编号', 4, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
+            (replace(uuid(), '-', ''), 'saleDeliverDetailByPrice', 'priceCount', '结算数量', 5, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleDeliverDetailByPrice', 'productId', 'productId', 5, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleDeliverDetailByPrice', 'productCode', '货品编码', 6, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleDeliverDetailByPrice', 'productName', '货品名称', 7, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleDeliverDetailByPrice', 'productSpec', '规格型号', 8, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleDeliverDetailByPrice', 'productGenre', '货品属性id', 9, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleDeliverDetailByPrice', 'productGenreName', '货品属性', 10, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleDeliverDetailByPrice', 'orderUnitName', '单位', 11, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleDeliverDetailByPrice', 'orderUnit', '单位id', 11, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleDeliverDetailByPrice', 'priceUnit', '计价单位id', 12, '1', '0', '1', '0', '2018-12-16 11:15:19', 'admin'),
+            (replace(uuid(), '-', ''), 'saleDeliverDetailByPrice', 'priceUnitName', '计价单位', 12, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleDeliverDetailByPrice', 'orderCount', '发货数量', 13, '1', '1', '1', '0', '2018-12-16 11:15:19', 'admin'),
+            (replace(uuid(), '-', ''), 'saleDeliverDetailByPrice', 'productPrice', '货品单价', 14, '1', '1', '1', '0', '2018-12-16 11:15:19', 'admin'),
+            (replace(uuid(), '-', ''), 'saleDeliverDetailByPrice', 'sum', '发货金额', 15, '1', '1', '1', '0', '2018-12-16 11:15:19', 'admin'),
+            (replace(uuid(), '-', ''), 'saleDeliverDetailByPrice', 'deliverDate', '发货日期', 16, '1', '0', '1', '0', '2018-12-16 11:15:19', 'admin'),
+            (replace(uuid(), '-', ''), 'saleDeliverDetailByPrice', 'remark', '备注', 17, '1', '1', '1', '0', '2018-12-16 11:15:19', 'admin'),
+            (replace(uuid(), '-', ''), 'saleDeliverDetailByPrice', 'cuser', '创建用户id', 18, '1', '0', '1', '0', '2018-12-16 11:15:19', 'admin'),
+            (replace(uuid(), '-', ''), 'saleDeliverDetailByPrice', 'cdate', '创建时间', 19, '1', '0', '1', '0', '2018-12-16 11:15:19', 'admin'),
+            (replace(uuid(), '-', ''), 'saleDeliverDetailByPrice', 'uuser', '修改用户id', 20, '1', '0', '1', '0', '2018-12-16 11:15:19', 'admin'),
+            (replace(uuid(), '-', ''), 'saleDeliverDetailByPrice', 'udate', '修改时间', 21, '1', '0', '1', '0', '2018-12-16 11:15:19', 'admin'),
+            (replace(uuid(), '-', ''), 'saleDeliverDetailByPrice', 'state', '发货状态(0:待发货 1:已发货 -1:已取消)', 22, '1', '0', '1', '0', '2018-12-16 11:15:19', 'admin'),
+            (replace(uuid(), '-', ''), 'saleDeliverDetailByPrice', 'outDetailId', '出单明细id', 24, '1', '0', '1', '0', '2018-12-16 11:15:19', 'admin'),
+            (replace(uuid(), '-', ''), 'saleDeliverDetailByPrice', 'isdisable', '是否启用(0:已禁用 1:启用)', 25, '1', '0', '1', '0', '2018-12-16 11:15:19', 'admin'),
+            (replace(uuid(), '-', ''), 'saleDeliverDetailByPrice', 'priceType', '计价类型(1:先计价 2:后计价)', 26, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin')
+    </insert>
+
+
+
 
     <update id="updateStateByDetail" parameterType="com.yvan.PageData" >
         update vmes_sale_deliver_detail set

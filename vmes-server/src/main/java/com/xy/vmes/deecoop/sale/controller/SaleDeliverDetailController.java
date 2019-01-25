@@ -117,16 +117,72 @@ public class SaleDeliverDetailController {
         return model;
     }
 
+    @PostMapping("/sale/saleDeliverDetail/listPageSaleDeliverDetailByPrice")
+    public ResultModel listPageSaleDeliverDetailByPrice()  throws Exception {
+        logger.info("################/sale/saleDeliverDetail/listPageSaleDeliverDetailByPrice 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        ResultModel model = new ResultModel();
 
+        List<Column> columnList = columnService.findColumnList("saleDeliverDetailByPrice");
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
+        }
 
+        //获取指定栏位字符串-重新调整List<Column>
+        PageData pd = HttpUtils.parsePageData();
+        String fieldCode = pd.getString("fieldCode");
+        if (fieldCode != null && fieldCode.trim().length() > 0) {
+            columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
+        }
 
+        List<LinkedHashMap> titlesList = new ArrayList<LinkedHashMap>();
+        List<String> titlesHideList = new ArrayList<String>();
+        Map<String, String> varModelMap = new HashMap<String, String>();
+        if(columnList!=null&&columnList.size()>0){
+            for (Column column : columnList) {
+                if(column!=null){
+                    if("0".equals(column.getIshide())){
+                        titlesHideList.add(column.getTitleKey());
+                    }
+                    LinkedHashMap titlesLinkedMap = new LinkedHashMap();
+                    titlesLinkedMap.put(column.getTitleKey(),column.getTitleName());
+                    varModelMap.put(column.getTitleKey(),"");
+                    titlesList.add(titlesLinkedMap);
+                }
+            }
+        }
+        Map result = new HashMap();
+        result.put("hideTitles",titlesHideList);
+        result.put("titles",titlesList);
 
+        Pagination pg = HttpUtils.parsePagination(pd);
+        List<Map> varMapList = new ArrayList();
+        List<Map> varList = saleDeliverDetailService.getDataListPage(pd,pg);
+        if(varList!=null&&varList.size()>0){
+            for(int i=0;i<varList.size();i++){
+                Map map = varList.get(i);
+                Map<String, String> varMap = new HashMap<String, String>();
+                varMap.putAll(varModelMap);
+                for (Map.Entry<String, String> entry : varMap.entrySet()) {
+                    varMap.put(entry.getKey(),map.get(entry.getKey())!=null?map.get(entry.getKey()).toString():"");
+                }
+                varMapList.add(varMap);
+            }
+        }
+        result.put("varList",varMapList);
+        result.put("pageData", pg);
 
-
+        model.putResult(result);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleDeliverDetail/listPageSaleDeliverDetailByPrice 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
 
     /**
      * 修改发货单(发货明细)
-     * 后计价修改货品单价
+     * 后计价修改(结算单位,结算数量,结算单价,结算金额)
      *
      * @author 陈刚
      * @date 2018-12-17
@@ -164,23 +220,22 @@ public class SaleDeliverDetailController {
         //1. 修改发货单明细价格
         List<SaleDeliverDetail> deliverDtlList = saleDeliverDetailService.mapList2DetailList(mapList, null);
         for (SaleDeliverDetail deliverDtl : deliverDtlList) {
-            //price_count:发货数量(计价数量)
-            BigDecimal count = BigDecimal.valueOf(0D);
+            //price_count:结算数量(计价数量)
+            BigDecimal priceCount = BigDecimal.valueOf(0D);
             if (deliverDtl.getPriceCount() != null) {
-                count = deliverDtl.getPriceCount();
+                priceCount = deliverDtl.getPriceCount();
             }
-            //productPrice 货品单价
+            //productPrice 结算单价
             BigDecimal productPrice = BigDecimal.valueOf(0D);
             if (deliverDtl.getProductPrice() != null) {
                 productPrice = deliverDtl.getProductPrice();
             }
 
-            //sum 发货金额
-            BigDecimal sum = BigDecimal.valueOf(count.doubleValue() * productPrice.doubleValue());
+            //sum 结算金额
+            BigDecimal sum = BigDecimal.valueOf(priceCount.doubleValue() * productPrice.doubleValue());
             //四舍五入到2位小数
             sum = sum.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
             deliverDtl.setSum(sum);
-
             saleDeliverDetailService.update(deliverDtl);
         }
 

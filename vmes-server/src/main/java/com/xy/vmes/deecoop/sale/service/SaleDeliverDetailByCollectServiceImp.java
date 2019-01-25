@@ -1,7 +1,7 @@
 package com.xy.vmes.deecoop.sale.service;
 
-import com.xy.vmes.deecoop.sale.dao.SaleDeliverByCollectMapper;
-import com.xy.vmes.service.SaleDeliverByCollectService;
+import com.xy.vmes.deecoop.sale.dao.SaleDeliverDetailByCollectMapper;
+import com.xy.vmes.service.SaleDeliverDetailByCollectService;
 import com.yvan.PageData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,9 +19,9 @@ import java.util.Map;
  */
 @Service
 @Transactional(readOnly = false)
-public class SaleDeliverByCollectServiceImp implements SaleDeliverByCollectService {
+public class SaleDeliverDetailByCollectServiceImp implements SaleDeliverDetailByCollectService {
     @Autowired
-    private SaleDeliverByCollectMapper saleDeliverByCollectMapper;
+    private SaleDeliverDetailByCollectMapper saleDeliverByCollectMapper;
 
     /**
      * 关联查询(vmes_sale_deliver_detail,vmes_sale_order_detail,vmes_warehouse_out_detail)

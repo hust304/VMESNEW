@@ -83,7 +83,8 @@
             (replace(uuid(), '-', ''),'saleDeliver','outMakeName','outMakeName',0, '1','1','1','0',now(), 'admin'),
 
             (replace(uuid(), '-', ''),'saleDeliver','outState','outState',0, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleDeliver','outStateName','outStateName',0, '1','1','1','0',now(), 'admin')
+            (replace(uuid(), '-', ''),'saleDeliver','outStateName','outStateName',0, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'saleDeliver','priceType','priceType',0, '1','1','1','0',now(), 'admin')
 
 
     </insert>
@@ -98,17 +99,18 @@
         state state,
 
         type type,
+        price_type priceType,
         make_id makeId,
         waybill_company waybillCompany,
         waybill_code waybillCode,
-        car_code carCode,
 
+        car_code carCode,
         custome_address_id customeAddressId,
         deliver_date deliverDate,
         total_sum totalSum,
         cuser cuser,
-        cdate cdate,
 
+        cdate cdate,
         uuser uuser,
         udate udate,
         remark remark,
@@ -164,17 +166,18 @@
             WHEN deliver.type = '3' THEN '客户自提'
         ELSE null
         END typeName,
+        deliver.price_type priceType,
         deliver.make_id makeId,
         deliver.waybill_company waybillCompany,
         deliver.waybill_code waybillCode,
-        deliver.car_code carCode,
 
+        deliver.car_code carCode,
         deliver.custome_address_id customeAddressId,
         DATE_FORMAT(deliver.deliver_date,'%Y-%m-%d') deliverDate,
         round(ifnull(deliver.total_sum, 0),2) totalSum,
         deliver.cuser cuser,
-        DATE_FORMAT(deliver.cdate,'%Y-%m-%d %T') cdate,
 
+        DATE_FORMAT(deliver.cdate,'%Y-%m-%d %T') cdate,
         deliver.uuser uuser,
         DATE_FORMAT(deliver.udate,'%Y-%m-%d %T') udate,
         deliver.remark remark,

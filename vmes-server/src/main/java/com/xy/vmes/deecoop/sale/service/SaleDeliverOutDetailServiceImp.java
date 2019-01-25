@@ -25,7 +25,7 @@ public class SaleDeliverOutDetailServiceImp implements SaleDeliverOutDetailServi
     @Autowired
     private SaleDeliverOutDetailMapper saleDeliverOutDetailMapper;
     @Autowired
-    private SaleDeliverByCollectService saleDeliverByCollectService;
+    private SaleDeliverDetailByCollectService saleDeliverByCollectService;
     @Autowired
     private ProductService productService;
 

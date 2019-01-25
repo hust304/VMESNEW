@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
@@ -41,7 +40,7 @@ public class SaleDeliverController {
     @Autowired
     private SaleDeliverDetailService saleDeliverDetailService;
     @Autowired
-    private SaleDeliverByCollectService saleDeliverByCollectService;
+    private SaleDeliverDetailByCollectService saleDeliverDetailByCollectService;
 
     @Autowired
     private SaleOrderService saleOrderService;
@@ -269,6 +268,7 @@ public class SaleDeliverController {
         ResultModel model = new ResultModel();
 
         PageData pageData = HttpUtils.parsePageData();
+        String priceType = pageData.getString("priceType");
         String deliverId = pageData.getString("deliverId");
         if (deliverId == null || deliverId.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
@@ -301,6 +301,87 @@ public class SaleDeliverController {
 
         //发货单id获取发货明细List
         List<SaleDeliverDetail> deliverDtlList = saleDeliverDetailService.findSaleDeliverDetailListByParentId(deliverId);
+
+        //price_type:计价类型(1:先计价 2:后计价)
+        //2:后计价 反写订单明细,反写订单总金额
+        if (priceType != null && "2".equals(priceType.trim())) {
+            //<订单id, 订单合计金额>Map
+            Map<String, BigDecimal> orderTotalsumMap = new HashMap<String, BigDecimal>();
+            //反写订单明细(priceUnit,priceCount,productPrice,productSum)
+            for (SaleDeliverDetail deliverDetail : deliverDtlList) {
+                SaleOrderDetail orderDetail = new SaleOrderDetail();
+
+                String orderDtlId = deliverDetail.getOrderDetaiId();
+                orderDetail.setId(orderDtlId);
+                //priceUnit 计价单位id
+                orderDetail.setPriceUnit(deliverDetail.getPriceUnit());
+
+                //priceCount 货品数量(计价数量)
+                BigDecimal priceCount = BigDecimal.valueOf(0D);
+                if (deliverDetail.getPriceCount() != null) {
+                    priceCount = deliverDetail.getPriceCount();
+                }
+                orderDetail.setPriceCount(priceCount);
+
+                //货品单价
+                BigDecimal productPrice = BigDecimal.valueOf(0D);
+                if (deliverDetail.getProductPrice() != null) {
+                    productPrice = deliverDetail.getProductPrice();
+                }
+                orderDetail.setProductPrice(productPrice);
+
+                //货品金额(货品数量 * 货品单价)
+                //四舍五入到2位小数
+                BigDecimal productSum = BigDecimal.valueOf(productPrice.doubleValue() * priceCount.doubleValue());
+                //设定订单总金额
+                String orderId = deliverDetail.getOrderId();
+                if (orderTotalsumMap.get(orderId) != null) {
+                    BigDecimal Totalsum = orderTotalsumMap.get(orderId);
+                    Totalsum = BigDecimal.valueOf(Totalsum.doubleValue() + productSum.doubleValue());
+                    orderTotalsumMap.put(orderId, Totalsum);
+                } else {
+                    orderTotalsumMap.put(orderId, productSum);
+                }
+
+                productSum = productSum.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                orderDetail.setProductSum(productSum);
+
+                saleOrderDetailService.update(orderDetail);
+            }
+
+            //反写订单总金额
+            if (orderTotalsumMap != null && orderTotalsumMap.size() > 0) {
+                for (Iterator iterator = orderTotalsumMap.keySet().iterator(); iterator.hasNext();) {
+                    String mapKey = (String) iterator.next();
+                    //合计金额
+                    BigDecimal totalSum = BigDecimal.valueOf(0D);
+                    if (orderTotalsumMap.get(mapKey) != null) {
+                        totalSum = orderTotalsumMap.get(mapKey);
+                    }
+
+                    SaleOrder orderDB = saleOrderService.findSaleOrderById(mapKey);
+                    //discountSum 折扣金额
+                    BigDecimal discountSum = BigDecimal.valueOf(0D);
+                    if (orderDB.getDiscountSum() != null) {
+                        discountSum = orderDB.getDiscountSum();
+                    }
+
+                    //orderSum 订单金额(合计金额 - 折扣金额)
+                    BigDecimal orderSum = BigDecimal.valueOf(totalSum.doubleValue() - discountSum.doubleValue());
+                    //四舍五入到2位小数
+                    orderSum = orderSum.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+
+                    //四舍五入到2位小数
+                    totalSum = totalSum.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+
+                    orderDB.setTotalSum(totalSum);
+                    orderDB.setOrderSum(orderSum);
+
+                    saleOrderService.update(orderDB);
+                }
+            }
+        }
+
         String orderDtlIds = saleDeliverDetailService.findOrderDtlIdsByDeliverDtlList(deliverDtlList);
         if (orderDtlIds != null && orderDtlIds.trim().length() > 0) {
             orderDtlIds = StringUtil.stringTrimSpace(orderDtlIds);
@@ -309,7 +390,7 @@ public class SaleDeliverController {
 
         //根据发货单id-获取(订单明细id,订购数量,发货数量)
         //发货明细状态(0:待发货 1:已发货 -1:已取消)
-        Map<String, Map<String, BigDecimal>> orderDtlMap = saleDeliverByCollectService.findMapOrderDetaiCountByDeliverId(
+        Map<String, Map<String, BigDecimal>> orderDtlMap = saleDeliverDetailByCollectService.findMapOrderDetaiCountByDeliverId(
                 deliverId,
                 "1",
                 orderDtlIds);
@@ -324,14 +405,14 @@ public class SaleDeliverController {
             String orderDetaiId = deliverDetail.getOrderDetaiId();
             Map<String, BigDecimal> valueMap = orderDtlMap.get(orderDetaiId);
             if (valueMap != null) {
-                //订单明细订购数量 productCount
-                BigDecimal productCount = valueMap.get("productCount");
+                //订单明细订购数量 orderCount
+                BigDecimal orderCount = valueMap.get("orderCount");
                 //订单明细发货数量 orderDtlDeliverCount
                 BigDecimal orderDtlDeliverCount = valueMap.get("orderDtlDeliverCount");
 
                 if (orderDtlDeliverCount != null
-                        && productCount != null
-                        && orderDtlDeliverCount.doubleValue() >= productCount.doubleValue()
+                        && orderCount != null
+                        && orderDtlDeliverCount.doubleValue() >= orderCount.doubleValue()
                         ) {
                     SaleOrderDetail orderDetail = new SaleOrderDetail();
                     orderDetail.setId(orderDetaiId);
