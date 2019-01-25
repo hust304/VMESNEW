@@ -6,10 +6,14 @@ import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
 import org.apache.xmlbeans.impl.xb.xsdschema.Public;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Created by 46368 on 2019/1/24.
  */
+@Service
+@Transactional(readOnly = false)
 public class MobileLoginServiceImp implements MobileLoginService {
 
     @Autowired
