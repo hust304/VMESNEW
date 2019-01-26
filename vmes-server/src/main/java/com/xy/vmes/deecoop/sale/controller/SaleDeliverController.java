@@ -22,8 +22,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
 import java.util.*;
 
-
-
 /**
 * 说明：vmes_sale_deliver:发货表Controller
 * @author 陈刚 自动生成
@@ -32,7 +30,6 @@ import java.util.*;
 @RestController
 @Slf4j
 public class SaleDeliverController {
-
     private Logger logger = LoggerFactory.getLogger(SaleDeliverController.class);
 
     @Autowired
@@ -301,94 +298,13 @@ public class SaleDeliverController {
 
         //发货单id获取发货明细List
         List<SaleDeliverDetail> deliverDtlList = saleDeliverDetailService.findSaleDeliverDetailListByParentId(deliverId);
-
-        //price_type:计价类型(1:先计价 2:后计价)
-        //2:后计价 反写订单明细,反写订单总金额
-        if (priceType != null && "2".equals(priceType.trim())) {
-            //<订单id, 订单合计金额>Map
-            Map<String, BigDecimal> orderTotalsumMap = new HashMap<String, BigDecimal>();
-            //反写订单明细(priceUnit,priceCount,productPrice,productSum)
-            for (SaleDeliverDetail deliverDetail : deliverDtlList) {
-                SaleOrderDetail orderDetail = new SaleOrderDetail();
-
-                String orderDtlId = deliverDetail.getOrderDetaiId();
-                orderDetail.setId(orderDtlId);
-                //priceUnit 计价单位id
-                orderDetail.setPriceUnit(deliverDetail.getPriceUnit());
-
-                //priceCount 货品数量(计价数量)
-                BigDecimal priceCount = BigDecimal.valueOf(0D);
-                if (deliverDetail.getPriceCount() != null) {
-                    priceCount = deliverDetail.getPriceCount();
-                }
-                orderDetail.setPriceCount(priceCount);
-
-                //货品单价
-                BigDecimal productPrice = BigDecimal.valueOf(0D);
-                if (deliverDetail.getProductPrice() != null) {
-                    productPrice = deliverDetail.getProductPrice();
-                }
-                orderDetail.setProductPrice(productPrice);
-
-                //货品金额(货品数量 * 货品单价)
-                //四舍五入到2位小数
-                BigDecimal productSum = BigDecimal.valueOf(productPrice.doubleValue() * priceCount.doubleValue());
-                //设定订单总金额
-                String orderId = deliverDetail.getOrderId();
-                if (orderTotalsumMap.get(orderId) != null) {
-                    BigDecimal Totalsum = orderTotalsumMap.get(orderId);
-                    Totalsum = BigDecimal.valueOf(Totalsum.doubleValue() + productSum.doubleValue());
-                    orderTotalsumMap.put(orderId, Totalsum);
-                } else {
-                    orderTotalsumMap.put(orderId, productSum);
-                }
-
-                productSum = productSum.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-                orderDetail.setProductSum(productSum);
-
-                saleOrderDetailService.update(orderDetail);
-            }
-
-            //反写订单总金额
-            if (orderTotalsumMap != null && orderTotalsumMap.size() > 0) {
-                for (Iterator iterator = orderTotalsumMap.keySet().iterator(); iterator.hasNext();) {
-                    String mapKey = (String) iterator.next();
-                    //合计金额
-                    BigDecimal totalSum = BigDecimal.valueOf(0D);
-                    if (orderTotalsumMap.get(mapKey) != null) {
-                        totalSum = orderTotalsumMap.get(mapKey);
-                    }
-
-                    SaleOrder orderDB = saleOrderService.findSaleOrderById(mapKey);
-                    //discountSum 折扣金额
-                    BigDecimal discountSum = BigDecimal.valueOf(0D);
-                    if (orderDB.getDiscountSum() != null) {
-                        discountSum = orderDB.getDiscountSum();
-                    }
-
-                    //orderSum 订单金额(合计金额 - 折扣金额)
-                    BigDecimal orderSum = BigDecimal.valueOf(totalSum.doubleValue() - discountSum.doubleValue());
-                    //四舍五入到2位小数
-                    orderSum = orderSum.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-
-                    //四舍五入到2位小数
-                    totalSum = totalSum.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-
-                    orderDB.setTotalSum(totalSum);
-                    orderDB.setOrderSum(orderSum);
-
-                    saleOrderService.update(orderDB);
-                }
-            }
-        }
-
         String orderDtlIds = saleDeliverDetailService.findOrderDtlIdsByDeliverDtlList(deliverDtlList);
         if (orderDtlIds != null && orderDtlIds.trim().length() > 0) {
             orderDtlIds = StringUtil.stringTrimSpace(orderDtlIds);
             orderDtlIds = "'" + orderDtlIds.replace(",", "','") + "'";
         }
 
-        //根据发货单id-获取(订单明细id,订购数量,发货数量)
+        //根据发货单id-获取(订单明细id,订购数量,发货数量,发货金额)
         //发货明细状态(0:待发货 1:已发货 -1:已取消)
         Map<String, Map<String, BigDecimal>> orderDtlMap = saleDeliverDetailByCollectService.findMapOrderDetaiCountByDeliverId(
                 deliverId,
@@ -402,7 +318,11 @@ public class SaleDeliverController {
             String orderId = deliverDetail.getOrderId();
             orderIdMap.put(orderId, orderId);
 
+            SaleOrderDetail orderDetail = new SaleOrderDetail();
             String orderDetaiId = deliverDetail.getOrderDetaiId();
+            orderDetail.setId(orderDetaiId);
+
+            //修改订单明细状态
             Map<String, BigDecimal> valueMap = orderDtlMap.get(orderDetaiId);
             if (valueMap != null) {
                 //订单明细订购数量 orderCount
@@ -414,22 +334,54 @@ public class SaleDeliverController {
                         && orderCount != null
                         && orderDtlDeliverCount.doubleValue() >= orderCount.doubleValue()
                         ) {
-                    SaleOrderDetail orderDetail = new SaleOrderDetail();
-                    orderDetail.setId(orderDetaiId);
                     //订单明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已发货 6:已完成 -1:已取消)
                     orderDetail.setState("5");
-                    saleOrderDetailService.update(orderDetail);
+
+                    //price_type:计价类型(1:先计价 2:后计价)
+                    //2:后计价 反写订单明细,反写订单总金额
+                    if (priceType != null && "2".equals(priceType.trim())) {
+                        orderDetail.setPriceUnit(deliverDetail.getPriceUnit());
+                        BigDecimal productSum = BigDecimal.valueOf(0D);
+                        if (valueMap.get("orderDtlDeliverSum") != null) {
+                            orderDetail.setProductSum(productSum);
+                        }
+                    }
                 }
             }
+
+            saleOrderDetailService.update(orderDetail);
         }
 
         //反写订单状态
         if (orderIdMap.size() > 0) {
             for (Iterator iterator = orderIdMap.keySet().iterator(); iterator.hasNext();) {
-                SaleOrder order = new SaleOrder();
                 String orderId = (String)iterator.next();
-                order.setId(orderId);
-                saleOrderDetailService.updateParentStateByDetailList(order, null);
+
+                List<SaleOrderDetail> detailList = saleOrderDetailService.findSaleOrderDetailListByParentId(orderId);
+                //totalSum 合计金额
+                BigDecimal totalSum = saleOrderDetailService.findTotalSumByPrice(detailList);
+
+                SaleOrder orderDB = saleOrderService.findSaleOrderById(orderId);
+                //discountSum 折扣金额
+                BigDecimal discountSum = BigDecimal.valueOf(0D);
+                if (orderDB.getDiscountSum() != null) {
+                    discountSum = orderDB.getDiscountSum();
+                }
+
+                //orderSum 订单金额(合计金额 - 折扣金额)
+                BigDecimal orderSum = BigDecimal.valueOf(totalSum.doubleValue() - discountSum.doubleValue());
+                //四舍五入到2位小数
+                orderSum = orderSum.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+
+                SaleOrder editOrder = new SaleOrder();
+                editOrder.setId(orderId);
+                //四舍五入到2位小数
+                totalSum = totalSum.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                editOrder.setTotalSum(totalSum);
+                editOrder.setOrderSum(orderSum);
+                saleOrderService.update(editOrder);
+
+                saleOrderDetailService.updateParentStateByDetailList(orderDB, detailList);
             }
         }
 

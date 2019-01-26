@@ -25,7 +25,7 @@ public class SaleDeliverOutDetailServiceImp implements SaleDeliverOutDetailServi
     @Autowired
     private SaleDeliverOutDetailMapper saleDeliverOutDetailMapper;
     @Autowired
-    private SaleDeliverDetailByCollectService saleDeliverByCollectService;
+    private SaleDeliverDetailByCollectService saleDeliverDetailByCollectService;
     @Autowired
     private ProductService productService;
 
@@ -86,7 +86,7 @@ public class SaleDeliverOutDetailServiceImp implements SaleDeliverOutDetailServi
                 //获取发货出库订单(订单明细id,订购数量,出库数量)
                 PageData findMap = new PageData();
                 findMap.put("orderDetailId", orderDtlId);
-                Map<String, Object> mapObj = saleDeliverByCollectService.findDeliverDetailOnWarehouseOutDetailByOrder(findMap);
+                Map<String, Object> mapObj = saleDeliverDetailByCollectService.findDeliverDetailOnWarehouseOutDetailByOrder(findMap);
 
                 SaleOrderDetail orderDetail = new SaleOrderDetail();
                 orderDetail.setId(orderDtlId);

@@ -21,7 +21,7 @@ import java.util.Map;
 @Transactional(readOnly = false)
 public class SaleDeliverDetailByCollectServiceImp implements SaleDeliverDetailByCollectService {
     @Autowired
-    private SaleDeliverDetailByCollectMapper saleDeliverByCollectMapper;
+    private SaleDeliverDetailByCollectMapper saleDeliverDetailByCollectMapper;
 
     /**
      * 关联查询(vmes_sale_deliver_detail,vmes_sale_order_detail,vmes_warehouse_out_detail)
@@ -34,7 +34,7 @@ public class SaleDeliverDetailByCollectServiceImp implements SaleDeliverDetailBy
      * @throws Exception
      */
     public Map<String, Object> findDeliverDetailOnWarehouseOutDetailByOrder(PageData pageData) throws Exception {
-        List<Map<String, Object>> mapList = saleDeliverByCollectMapper.findDeliverDetailOnWarehouseOutDetailByOrder(pageData);
+        List<Map<String, Object>> mapList = saleDeliverDetailByCollectMapper.findDeliverDetailOnWarehouseOutDetailByOrder(pageData);
         if (mapList != null && mapList.size() > 0) { return mapList.get(0);}
 
         return null;
@@ -48,7 +48,7 @@ public class SaleDeliverDetailByCollectServiceImp implements SaleDeliverDetailBy
      * 创建时间：2019-01-18
      */
     public List<Map<String, Object>> findDeliverDetailByOrderDetaiCount(PageData pageData) throws Exception {
-        return saleDeliverByCollectMapper.findDeliverDetailByOrderDetaiCount(pageData);
+        return saleDeliverDetailByCollectMapper.findDeliverDetailByOrderDetaiCount(pageData);
     }
 
     /**

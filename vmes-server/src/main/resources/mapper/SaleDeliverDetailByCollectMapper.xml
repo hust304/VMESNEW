@@ -30,7 +30,8 @@
         select
         deliverDtl.order_detai_id orderDetailId,
         round(ifnull(orderDtl.order_count, 0), 2) orderCount,
-        deliverOrderDtl.orderCount orderDtlDeliverCount
+        round(ifnull(deliverOrderDtl.orderCount, 0), 2) orderDtlDeliverCount,
+        round(ifnull(deliverOrderDtl.orderSum, 0), 2) orderDtlDeliverSum
         from (
             select order_detai_id
             from vmes_sale_deliver_detail
@@ -44,7 +45,8 @@
             left join (
                 select
                     order_detai_id,
-                    sum(order_count) orderCount
+                    sum(order_count) orderCount,
+                    sum(sum) orderSum
                 from vmes_sale_deliver_detail
                 <where>
                     <if test="orderDtlId != null and orderDtlId != ''" >

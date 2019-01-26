@@ -115,6 +115,8 @@ public interface SaleOrderDetailService {
     List<SaleInvoiceDetail> orderDtlList2InvoiceDtlList(List<SaleOrderDetail> orderDtlList, List<SaleInvoiceDetail> invoiceDtlList);
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     BigDecimal findTotalSumByDetailList(List<SaleOrderDetail> objectList);
+    BigDecimal findTotalSumByPrice(List<SaleOrderDetail> objectList);
+
     void addSaleOrderDetail(SaleOrder parentObj, List<SaleOrderDetail> objectList) throws Exception;
     void updateStateByDetail(PageData pd) throws Exception;
     void updateStateByDetail(String state, String parentIds) throws Exception;

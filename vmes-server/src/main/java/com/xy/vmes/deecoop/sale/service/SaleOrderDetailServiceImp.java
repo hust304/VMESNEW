@@ -390,6 +390,18 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
             detail.setParentId(parentObj.getId());
             detail.setCuser(parentObj.getCuser());
 
+            //计价类型(1:先计价 2:后计价)
+            if (parentObj.getPriceType() != null && "2".equals(parentObj.getPriceType().trim())) {
+                //计价单位id
+                detail.setPriceUnit(null);
+                //货品数量(计价数量)
+                detail.setPriceCount(BigDecimal.valueOf(0D));
+                //货品单价
+                detail.setProductPrice(BigDecimal.valueOf(0D));
+                //货品金额(订购数量 * 货品单价)
+                detail.setProductSum(BigDecimal.valueOf(0D));
+            }
+
             this.save(detail);
         }
     }
@@ -463,6 +475,25 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
             detail.setProductSum(productSum);
 
             totalSum_double = totalSum_double + (count_double * productPrice_double);
+        }
+
+        //四舍五入到2位小数
+        return BigDecimal.valueOf(totalSum_double).setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+    }
+
+    public BigDecimal findTotalSumByPrice(List<SaleOrderDetail> objectList) {
+        if (objectList == null || objectList.size() == 0) {return BigDecimal.valueOf(0D);}
+
+        double totalSum_double = 0D;
+        for (SaleOrderDetail detail : objectList) {
+
+            //productSum 货品金额(订购数量 * 货品单价)
+            double productSum_double = 0D;
+            if (detail.getProductSum() != null) {
+                productSum_double = detail.getProductSum().doubleValue();
+            }
+
+            totalSum_double = totalSum_double + productSum_double;
         }
 
         //四舍五入到2位小数
