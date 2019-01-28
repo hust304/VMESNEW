@@ -179,7 +179,8 @@
             warehouse.path_name warehouseName,
             a.product_id productId,
             a.code code,
-            ROUND(a.count, 2) count,
+            round(ifnull(a.count,0),2) count,
+
             a.state state,
             CASE
             WHEN a.state = '0' THEN '待派单'
@@ -211,7 +212,9 @@
             parent.code parentCode,
             parent.make_id makeId,
             <!--获取已执行数量-入库执行表-->
-            inDtlExecute.executeCount executeCount
+            round(ifnull(inDtlExecute.executeCount,0),2) executeCount,
+            <!--剩余数量-->
+            round((ifnull(a.count,0) - ifnull(inDtlExecute.executeCount,0)), 2) surplusCount
 
         from vmes_warehouse_in_detail a
             left join vmes_warehouse warehouse on a.warehouse_id = warehouse.id
@@ -224,7 +227,7 @@
             left join (
                 select detail_id, sum(count) executeCount
                 from vmes_warehouse_in_execute
-                group by detail_id,count
+                group by detail_id
             ) inDtlExecute on a.id = inDtlExecute.detail_id
 
         <where>
