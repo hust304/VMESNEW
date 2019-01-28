@@ -212,13 +212,13 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
         Map<String, String> customerMap = new HashMap<String, String>();
         for (int i = 0; i < mapList.size(); i++) {
             Map<String, String> detailMap = mapList.get(i);
-
             String customerId = detailMap.get("customerId");
-            if (customerMap.get(customerId) != null) {
+
+            if (customerMap.size() == 0) {
+                customerMap.put(customerId, customerId);
+            } else if (customerMap.size() > 0 && customerMap.get(customerId) == null) {
                 String msg_Str = MessageFormat.format(msgTemp, (i+1));
                 msgBuf.append(msg_Str);
-            } else {
-                customerMap.put(customerId, customerId);
             }
         }
 
@@ -244,13 +244,13 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
         Map<String, String> priceTypeMap = new HashMap<String, String>();
         for (int i = 0; i < mapList.size(); i++) {
             Map<String, String> detailMap = mapList.get(i);
-
             String priceType = detailMap.get("priceType");
-            if (priceTypeMap.get(priceType) != null) {
+
+            if (priceTypeMap.size() == 0) {
+                priceTypeMap.put(priceType, priceType);
+            } else if (priceTypeMap.size() > 0 && priceTypeMap.get(priceType) == null) {
                 String msg_Str = MessageFormat.format(msgTemp, (i+1));
                 msgBuf.append(msg_Str);
-            } else {
-                priceTypeMap.put(priceType, priceType);
             }
         }
 

@@ -15,7 +15,7 @@
             round(ifnull(custDetail.product_price, 0), 2) productPrice
         from (
             select
-                CONCAT_WS('-', parent.customer_id, detail.product_id, detail.price_unit, DATE_FORMAT(max(detail.cdate),'%Y-%m-%d-%T')) productKey,
+                CONCAT_WS('-', parent.customer_id, detail.product_id, detail.price_unit, DATE_FORMAT(detail.cdate,'%Y-%m-%d-%T')) productKey,
                 parent.customer_id,
                 detail.product_id,
                 detail.price_unit,

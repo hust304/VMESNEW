@@ -341,10 +341,12 @@ public class SaleDeliverController {
                     //2:后计价 反写订单明细,反写订单总金额
                     if (priceType != null && "2".equals(priceType.trim())) {
                         orderDetail.setPriceUnit(deliverDetail.getPriceUnit());
+
                         BigDecimal productSum = BigDecimal.valueOf(0D);
                         if (valueMap.get("orderDtlDeliverSum") != null) {
-                            orderDetail.setProductSum(productSum);
+                            productSum = valueMap.get("orderDtlDeliverSum");
                         }
+                        orderDetail.setProductSum(productSum);
                     }
                 }
             }
@@ -381,7 +383,9 @@ public class SaleDeliverController {
                 editOrder.setOrderSum(orderSum);
                 saleOrderService.update(editOrder);
 
-                saleOrderDetailService.updateParentStateByDetailList(orderDB, detailList);
+                SaleOrder parent = new SaleOrder();
+                parent.setId(orderId);
+                saleOrderDetailService.updateParentStateByDetailList(parent, detailList);
             }
         }
 
