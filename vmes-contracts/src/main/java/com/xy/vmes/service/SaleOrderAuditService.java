@@ -1,6 +1,8 @@
 package com.xy.vmes.service;
 
 import com.yvan.PageData;
+import com.yvan.springmvc.ResultModel;
+
 import java.util.List;
 import java.util.Map;
 
@@ -17,4 +19,16 @@ public interface SaleOrderAuditService {
     List<Map<String, Object>> checkProdStockCountByOrderId(String orderId);
 
     String findDetailIdsByMapList(List<Map<String, Object>> mapList);
+
+    ResultModel listPageSaleOrderDetailByLockStock(PageData pd) throws Exception;
+
+    ResultModel checkSaleOrderByAudit(PageData pageData) throws Exception;
+
+    ResultModel updateSaleOrderDetailByLockStock(PageData pageData) throws Exception;
+
+    ResultModel updateSaleOrderByAudit(PageData pageData) throws Exception;
+
+    ResultModel auditPassSaleOrder(PageData pageData) throws Exception;
+
+    ResultModel auditDisagreeSaleOrder(PageData pageData) throws Exception;
 }

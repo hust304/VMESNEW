@@ -3,6 +3,8 @@ package com.xy.vmes.service;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.entity.SaleUnitPrice;
 import com.yvan.PageData;
+import com.yvan.springmvc.ResultModel;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -138,6 +140,19 @@ public interface SaleUnitPriceService {
 
     List<Map> getCustomerUnitPriceHisListPage(PageData pd,Pagination pg) throws Exception;
 
+    ResultModel listPageCustomerUnitPricesHis(PageData pd, Pagination pg) throws Exception;
+
+    ResultModel listPageCustomerUnitPrices(PageData pd, Pagination pg) throws Exception;
+
+    ResultModel listPageSaleUnitPrices(PageData pd, Pagination pg) throws Exception;
+
+    ResultModel updateSaleUnitPriceByPrice(PageData pageData) throws Exception;
+
+    ResultModel findSaleUnitPriceNew(PageData pageData) throws Exception;
+
+    void exportExcelSaleUnitPrices(PageData pd, Pagination pg) throws Exception;
+
+    ResultModel importExcelSaleUnitPrices(MultipartFile file) throws Exception;
 }
 
 

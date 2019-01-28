@@ -38,13 +38,9 @@ import java.util.*;
 public class SaleOrderDetailController {
     private Logger logger = LoggerFactory.getLogger(SaleOrderDetailController.class);
 
-    @Autowired
-    private SaleOrderService saleOrderService;
-    @Autowired
-    private SaleOrderDetailService saleOrderDetailService;
 
     @Autowired
-    private ColumnService columnService;
+    private SaleOrderDetailService saleOrderDetailService;
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
     /**
@@ -55,111 +51,9 @@ public class SaleOrderDetailController {
     public ResultModel listPageSaleOrderDetail() throws Exception {
         logger.info("################/sale/saleOrderDetail/listPageSaleOrderDetail 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        ResultModel model = new ResultModel();
-
-        List<Column> columnList = columnService.findColumnList("saleOrderDetail");
-        if (columnList == null || columnList.size() == 0) {
-            model.putCode("1");
-            model.putMsg("数据库没有生成TabCol，请联系管理员！");
-            return model;
-        }
-
-        //获取指定栏位字符串-重新调整List<Column>
         PageData pd = HttpUtils.parsePageData();
-        String fieldCode = pd.getString("fieldCode");
-        if (fieldCode != null && fieldCode.trim().length() > 0) {
-            columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
-        }
-
-        List<LinkedHashMap> titlesList = new ArrayList<LinkedHashMap>();
-        List<String> titlesHideList = new ArrayList<String>();
-        Map<String, String> varModelMap = new HashMap<String, String>();
-        if(columnList!=null&&columnList.size()>0){
-            for (Column column : columnList) {
-                if(column!=null){
-                    if("0".equals(column.getIshide())){
-                        titlesHideList.add(column.getTitleKey());
-                    }
-                    LinkedHashMap titlesLinkedMap = new LinkedHashMap();
-                    titlesLinkedMap.put(column.getTitleKey(),column.getTitleName());
-                    varModelMap.put(column.getTitleKey(),"");
-                    titlesList.add(titlesLinkedMap);
-                }
-            }
-        }
-        Map result = new HashMap();
-        result.put("hideTitles",titlesHideList);
-        result.put("titles",titlesList);
-
-        //添加订单明细界面使用该参数
-        String type = pd.getString("type");
-        if ("add".equals(type)) {
-            pd.put("queryStr", "1=2");
-        }
-
-        //订单明细 ids
-        String ids = pd.getString("ids");
-        if (ids != null && ids.trim().length() > 0) {
-            ids = StringUtil.stringTrimSpace(ids);
-            ids = "'" + ids.replace(",", "','") + "'";
-            pd.put("ids", ids);
-        }
-
-        //设置查询排序
-        pd.put("orderStr", "detail.cdate asc");
-        String orderStr = pd.getString("orderStr");
-        if (orderStr != null && orderStr.trim().length() > 0) {
-            pd.put("orderStr", orderStr);
-        }
-
         Pagination pg = HttpUtils.parsePagination(pd);
-        List<Map> varMapList = new ArrayList();
-        List<Map> varList = saleOrderDetailService.getDataListPage(pd,pg);
-        if(varList!=null&&varList.size()>0){
-            for(int i=0;i<varList.size();i++){
-                Map map = varList.get(i);
-                Map<String, String> varMap = new HashMap<String, String>();
-                varMap.putAll(varModelMap);
-                for (Map.Entry<String, String> entry : varMap.entrySet()) {
-                    varMap.put(entry.getKey(),map.get(entry.getKey())!=null?map.get(entry.getKey()).toString():"");
-                }
-                varMapList.add(varMap);
-            }
-        }
-
-        //遍历结果集
-        //(计量单位)(库存数量,库存可用数量) 单位换算公式(n2pFormula) (计价单位)(库存数量,库存可用数量)
-        for (Map mapObject : varMapList) {
-            //n2pFormula (计量单位转换计价单位公式)
-            String n2pFormula = (String)mapObject.get("n2pFormula");
-
-            //stockCount (计量单位)库存数量
-            String stockCount_str = (String)mapObject.get("stockCount");
-            //stockCountByPrice        (计价单位)库存数量
-            if (n2pFormula != null && stockCount_str != null) {
-                Map<String, Object> formulaParmMap = new HashMap<String, Object>();
-                formulaParmMap.put("N", new BigDecimal(stockCount_str));
-
-                BigDecimal valueBig = EvaluateUtil.formulaReckon(formulaParmMap, n2pFormula);
-                mapObject.put("stockCountByPrice", valueBig);
-            }
-
-            //productStockCount (计量单位)库存可用数量
-            String productStockCount_str = (String)mapObject.get("productStockCount");
-            //productStockCountByPrice (计价单位)库存可用数量
-            if (n2pFormula != null && productStockCount_str != null) {
-                Map<String, Object> formulaParmMap = new HashMap<String, Object>();
-                formulaParmMap.put("N", new BigDecimal(productStockCount_str));
-
-                BigDecimal valueBig = EvaluateUtil.formulaReckon(formulaParmMap, n2pFormula);
-                mapObject.put("productStockCountByPrice", valueBig);
-            }
-        }
-
-        result.put("varList",varMapList);
-        result.put("pageData", pg);
-
-        model.putResult(result);
+        ResultModel model = saleOrderDetailService.listPageSaleOrderDetail(pd,pg);
         Long endTime = System.currentTimeMillis();
         logger.info("################/sale/saleOrderDetail/listPageSaleOrderDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
@@ -176,43 +70,8 @@ public class SaleOrderDetailController {
     public ResultModel cancelSaleOrderDetail() throws Exception {
         logger.info("################/sale/saleOrderDetail/cancelSaleOrderDetail 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        ResultModel model = new ResultModel();
-
         PageData pageData = HttpUtils.parsePageData();
-        String detailId = pageData.getString("id");
-        if (detailId == null || detailId.trim().length() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("订单明细id为空或空字符串！");
-            return model;
-        }
-
-        SaleOrderDetail detail = saleOrderDetailService.findSaleOrderDetailById(detailId);
-        //明细状态(0:待提交 1:待审核 2:待出库 3:待发货 4:已发货 5:已完成 -1:已取消)
-        if (detail.getState() != null && "1,2,3,4,5".indexOf(detail.getState().trim()) > -1) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("当前订单明细不可取消，该订单明细状态(1:待审核 2:待出库 3:待发货 4:已发货 5:已完成)！");
-            return model;
-        }
-
-        SaleOrder order = saleOrderService.findSaleOrderById(detail.getParentId());
-        //订单状态(0:待提交 1:待审核 2:待出库 3:待发货 4:已发货 5:已完成 -1:已取消)
-        if (order != null && order.getState() != null && "1,2,3,4,5".indexOf(detail.getState().trim()) > -1) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("当前入库明细不可取消，该订单已经(1:待审核 2:待出库 3:待发货 4:已发货 5:已完成)！");
-            return model;
-        }
-
-        //1. 修改明细状态
-        //明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已发货 6:已完成 -1:已取消)
-        detail.setState("-1");
-        saleOrderDetailService.update(detail);
-
-        //2.返写订单状态
-        //获取订单状态-根据订单明细状态 -- 忽视状态(-1:已取消)
-        if (order != null) {
-            saleOrderDetailService.updateParentStateByDetailList(order, null);
-        }
-
+        ResultModel model = saleOrderDetailService.cancelSaleOrderDetail(pageData);
         Long endTime = System.currentTimeMillis();
         logger.info("################/sale/saleOrderDetail/cancelSaleOrderDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
@@ -229,38 +88,8 @@ public class SaleOrderDetailController {
     public ResultModel deleteSaleOrderDetail() throws Exception {
         logger.info("################/sale/saleOrderDetail/deleteSaleOrderDetail 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        ResultModel model = new ResultModel();
-
         PageData pageData = HttpUtils.parsePageData();
-        String detailId = pageData.getString("id");
-        if (detailId == null || detailId.trim().length() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("订单明细id为空或空字符串！");
-            return model;
-        }
-
-        SaleOrderDetail detail = saleOrderDetailService.findSaleOrderDetailById(detailId);
-        String checkState = detail.getState();
-        if ("-1".equals(checkState)) {checkState = "c";}
-
-        //订单状态(0:待提交 1:待审核 2:待出库 3:待发货 4:已发货 5:已完成 -1:已取消)
-        if (checkState != null && "1,2,3,4,5".indexOf(checkState.trim()) != -1) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("当前入库明细不可删除，该订单明细状态(1:待审核 2:待出库 3:待发货 4:已发货 5:已完成)！");
-            return model;
-        }
-
-
-        //1. 删除入库明细
-        saleOrderDetailService.deleteById(detailId);
-
-        //2.返写订单状态
-        //获取订单状态-根据订单明细状态 -- 忽视状态(-1:已取消)
-        SaleOrder order = saleOrderService.findSaleOrderById(detail.getParentId());
-        if (order != null) {
-            saleOrderDetailService.updateParentStateByDetailList(order, null);
-        }
-
+        ResultModel model = saleOrderDetailService.deleteSaleOrderDetail(pageData);
         Long endTime = System.currentTimeMillis();
         logger.info("################/sale/saleOrderDetail/deleteSaleOrderDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
@@ -275,40 +104,9 @@ public class SaleOrderDetailController {
     public void exportExcelSaleOrderDetails() throws Exception {
         logger.info("################/sale/saleOrderDetail/exportExcelSaleOrderDetails 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-
-        List<Column> columnList = columnService.findColumnList("saleOrderDetail");
-        if (columnList == null || columnList.size() == 0) {
-            throw new RestException("1","数据库没有生成TabCol，请联系管理员！");
-        }
-
-        //根据查询条件获取业务数据List
         PageData pd = HttpUtils.parsePageData();
-        String ids = (String)pd.getString("ids");
-        String queryStr = "";
-        if (ids != null && ids.trim().length() > 0) {
-            ids = StringUtil.stringTrimSpace(ids);
-            ids = "'" + ids.replace(",", "','") + "'";
-            queryStr = "id in (" + ids + ")";
-        }
-        pd.put("queryStr", queryStr);
-
         Pagination pg = HttpUtils.parsePagination(pd);
-        pg.setSize(100000);
-        List<Map> dataList = saleOrderDetailService.getDataListPage(pd, pg);
-
-        //查询数据转换成Excel导出数据
-        List<LinkedHashMap<String, String>> dataMapList = ColumnUtil.modifyDataList(columnList, dataList);
-        HttpServletResponse response = HttpUtils.currentResponse();
-
-        //查询数据-Excel文件导出
-        String fileName = pd.getString("fileName");
-        if (fileName == null || fileName.trim().length() == 0) {
-            fileName = "ExcelSaleOrderDetail";
-        }
-
-        //导出文件名-中文转码
-        fileName = new String(fileName.getBytes("utf-8"),"ISO-8859-1");
-        ExcelUtil.excelExportByDataList(response, fileName, dataMapList);
+        saleOrderDetailService.exportExcelSaleOrderDetails(pd,pg);
         Long endTime = System.currentTimeMillis();
         logger.info("################/sale/saleOrderDetail/exportExcelSaleOrderDetails 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
     }
@@ -323,43 +121,7 @@ public class SaleOrderDetailController {
     public ResultModel importExcelSaleOrderDetails(@RequestParam(value="excelFile") MultipartFile file) throws Exception  {
         logger.info("################/sale/saleOrderDetail/importExcelSaleOrderDetails 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        ResultModel model = new ResultModel();
-        //HttpServletRequest Request = HttpUtils.currentRequest();
-
-        if (file == null) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("请上传Excel文件！");
-            return model;
-        }
-
-        // 验证文件是否合法
-        // 获取上传的文件名(文件名.后缀)
-        String fileName = file.getOriginalFilename();
-        if (fileName == null
-            || !(fileName.matches("^.+\\.(?i)(xlsx)$")
-            || fileName.matches("^.+\\.(?i)(xls)$"))
-        ) {
-            String failMesg = "不是excel格式文件,请重新选择！";
-            model.putCode(Integer.valueOf(1));
-            model.putMsg(failMesg);
-            return model;
-        }
-
-        // 判断文件的类型，是2003还是2007
-        boolean isExcel2003 = true;
-            if (fileName.matches("^.+\\.(?i)(xlsx)$")) {
-            isExcel2003 = false;
-        }
-
-        List<List<String>> dataLst = ExcelUtil.readExcel(file.getInputStream(), isExcel2003);
-        List<LinkedHashMap<String, String>> dataMapLst = ExcelUtil.reflectMapList(dataLst);
-
-        //1. Excel文件数据dataMapLst -->(转换) ExcelEntity (属性为导入模板字段)
-        //2. Excel导入字段(非空,数据有效性验证[数字类型,字典表(大小)类是否匹配])
-        //3. Excel导入字段-名称唯一性判断-在Excel文件中
-        //4. Excel导入字段-名称唯一性判断-在业务表中判断
-        //5. List<ExcelEntity> --> (转换) List<业务表DB>对象
-        //6. 遍历List<业务表DB> 对业务表添加或修改
+        ResultModel model = saleOrderDetailService.importExcelSaleOrderDetails(file);
         Long endTime = System.currentTimeMillis();
         logger.info("################/sale/saleOrderDetail/importExcelSaleOrderDetails 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;

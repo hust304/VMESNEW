@@ -3,6 +3,8 @@ package com.xy.vmes.service;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.entity.SaleOrder;
 import com.yvan.PageData;
+import com.yvan.springmvc.ResultModel;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -103,6 +105,21 @@ public interface SaleOrderService {
 
     List<SaleOrder> mapList2OrderList(List<Map<String, String>> mapList, List<SaleOrder> objectList);
 
+    ResultModel listPageSaleOrder(PageData pd, Pagination pg) throws Exception;
+
+    ResultModel addSaleOrder(PageData pageData) throws Exception;
+
+    ResultModel updateSaleOrder(PageData pageData) throws Exception;
+
+    ResultModel deleteSaleOrder(PageData pageData) throws Exception;
+
+    ResultModel cancelSaleOrder(PageData pageData) throws Exception;
+
+    ResultModel submitSaleOrder(PageData pageData) throws Exception;
+
+    void exportExcelSaleOrders(PageData pd, Pagination pg) throws Exception;
+
+    ResultModel importExcelSaleOrders(MultipartFile file) throws Exception;
 }
 
 

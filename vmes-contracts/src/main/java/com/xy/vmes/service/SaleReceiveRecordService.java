@@ -5,6 +5,8 @@ import com.xy.vmes.entity.Customer;
 import com.xy.vmes.entity.SaleReceiveRecord;
 import com.xy.vmes.exception.TableVersionException;
 import com.yvan.PageData;
+import com.yvan.springmvc.ResultModel;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.util.LinkedHashMap;
@@ -138,6 +140,11 @@ public interface SaleReceiveRecordService {
      */
     void editCustomerBalanceByOrder(String customerId, Customer customer, BigDecimal editBalance, String user) throws TableVersionException;
 
+    ResultModel listPageSaleReceiveRecords(PageData pd, Pagination pg) throws Exception;
+
+    void exportExcelSaleReceiveRecords(PageData pd, Pagination pg) throws Exception;
+
+    ResultModel importExcelSaleReceiveRecords(MultipartFile file) throws Exception;
 }
 
 

@@ -3,6 +3,8 @@ package com.xy.vmes.service;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.entity.SaleReceive;
 import com.yvan.PageData;
+import com.yvan.springmvc.ResultModel;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -126,6 +128,13 @@ public interface SaleReceiveService {
      */
     List<SaleReceive> findDataList(PageData pageData, Boolean isQueryAll) throws Exception;
 
+    ResultModel saveSaleReceiveAndDetail(PageData pd) throws Exception;
+
+    ResultModel listPageSaleReceives(PageData pd, Pagination pg) throws Exception;
+
+    void exportExcelSaleReceives(PageData pd, Pagination pg) throws Exception;
+
+    ResultModel importExcelSaleReceives(MultipartFile file) throws Exception;
 }
 
 

@@ -3,6 +3,8 @@ package com.xy.vmes.service;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.entity.*;
 import com.yvan.PageData;
+import com.yvan.springmvc.ResultModel;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -153,6 +155,16 @@ public interface SaleOrderDetailService {
      */
     String findParentStateByDetailList(List<SaleOrderDetail> dtlList);
     SaleOrder findParentStateByDetailList(SaleOrder parent, List<SaleOrderDetail> dtlList);
+
+    ResultModel listPageSaleOrderDetail(PageData pd, Pagination pg) throws Exception;
+
+    ResultModel cancelSaleOrderDetail(PageData pageData)  throws Exception;
+
+    ResultModel deleteSaleOrderDetail(PageData pageData) throws Exception;
+
+    void exportExcelSaleOrderDetails(PageData pd, Pagination pg) throws Exception;
+
+    ResultModel importExcelSaleOrderDetails(MultipartFile file) throws Exception;
 }
 
 
