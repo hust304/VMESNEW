@@ -655,9 +655,8 @@ public class WarehouseServiceImp implements WarehouseService {
     }
 
     @Override
-    public ResultModel listWarehouseNodeByPid(PageData pd) throws Exception {
+    public ResultModel listWarehouseNodeByPid(PageData pageData) throws Exception {
         ResultModel model = new ResultModel();
-        PageData pageData = HttpUtils.parsePageData();
         String companyId = pageData.getString("currentCompanyId");
         if (companyId == null || companyId.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
