@@ -459,6 +459,85 @@ public class SaleDeliverController {
     }
 
     /**
+     * 验证发货单id(发货明细)List-是否全部出库完成
+     * @author 陈刚
+     * @date 2018-12-10
+     * @throws Exception
+     */
+    @PostMapping("/sale/saleDeliver/checkIsAllOutByDeliverId")
+    public ResultModel checkIsAllOutByDeliverId() throws Exception {
+        logger.info("################/sale/saleDeliver/checkIsAllOutByDeliverId 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        ResultModel model = new ResultModel();
+
+        PageData pageData = HttpUtils.parsePageData();
+        String deliverId = pageData.getString("deliverId");
+        if (deliverId == null || deliverId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("发货单id为空或空字符串！");
+            return model;
+        }
+
+        try {
+            Boolean isAllOut = saleDeliverDetailService.checkIsAllOutByDeliverId(deliverId);
+            if (isAllOut != null && isAllOut.booleanValue()) {
+                model.set("isAllOut", "true");
+            } else {
+                model.set("isAllOut", "false");
+            }
+        } catch (ApplicationException e) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(e.getMessage());
+        }
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleDeliver/checkIsAllOutByDeliverId 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 验证发货单id(发货明细)List-(发货金额)是否为空
+     * @author 陈刚
+     * @date 2018-12-10
+     * @throws Exception
+     */
+    @PostMapping("/sale/saleDeliver/checkIsNullDeliverSumByDeliverId")
+    public ResultModel checkIsNullDeliverSumByDeliverId() throws Exception {
+        logger.info("################/sale/saleDeliver/checkIsNullDeliverSumByDeliverId 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        ResultModel model = new ResultModel();
+
+        PageData pageData = HttpUtils.parsePageData();
+        String deliverId = pageData.getString("deliverId");
+        if (deliverId == null || deliverId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("发货单id为空或空字符串！");
+            return model;
+        }
+
+        boolean isNull = false;
+        List<SaleDeliverDetail> deliverDtlList = saleDeliverDetailService.findSaleDeliverDetailListByParentId(deliverId);
+        if (deliverDtlList != null && deliverDtlList.size() > 0) {
+            for (SaleDeliverDetail deliverDetail : deliverDtlList) {
+                if (deliverDetail.getSum() == null || deliverDetail.getSum().doubleValue() == 0D) {
+                    isNull = true;
+                    break;
+                }
+            }
+        }
+
+        if (isNull) {
+            model.set("isNullDeliverSum", "true");
+        } else {
+            model.set("isNullDeliverSum", "false");
+        }
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleDeliver/checkIsNullDeliverSumByDeliverId 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
     * Excel导出
     * @author 陈刚 自动创建，可以修改
     * @date 2018-12-15
