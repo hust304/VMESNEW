@@ -1,6 +1,7 @@
 package com.xy.vmes.deecoop.warehouse.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.Common;
 import com.xy.vmes.deecoop.warehouse.dao.WarehouseInExecuteMapper;
 import com.xy.vmes.entity.*;
@@ -36,13 +37,16 @@ public class WarehouseInExecuteServiceImp implements WarehouseInExecuteService {
     @Autowired
     private WarehouseInExecutorService warehouseInExecutorService;
     @Autowired
+    private WarehouseInService warehouseInService;
+    @Autowired
     private WarehouseInDetailService warehouseInDetailService;
     @Autowired
     private WarehouseProductService warehouseProductService;
     @Autowired
     private ProductService productService;
+
     @Autowired
-    private WarehouseInService warehouseInService;
+    private ColumnService columnService;
 
 
     /**
@@ -767,6 +771,397 @@ public class WarehouseInExecuteServiceImp implements WarehouseInExecuteService {
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+
+    private List<Map> findSecondList(Map firstRowMap, Map<String, Object> secondTitleMap, String companyId) throws Exception {
+        String productId = (String)firstRowMap.get("productId");
+        String detailId = (String)firstRowMap.get("id");
+
+        PageData findMap = new PageData();
+        findMap.put("detailId", detailId);
+        findMap.put("productId", productId);
+        findMap.put("companyId", companyId);
+
+        List<Map> secondMapList = new ArrayList();
+        List<Map> varList = this.findListWarehouseInExecuteByEdit(findMap);
+        if(varList != null && varList.size() > 0) {
+            for(int i = 0; i < varList.size(); i++) {
+                Map map = varList.get(i);
+                Map<String, String> varMap = new HashMap<String, String>();
+                varMap.putAll((Map<String, String>)secondTitleMap.get("varModel"));
+                for (Map.Entry<String, String> entry : varMap.entrySet()) {
+                    varMap.put(entry.getKey(), map.get(entry.getKey()) != null ? map.get(entry.getKey()).toString() : "");
+                }
+                varMap.put("pid",firstRowMap.get("id").toString());
+                secondMapList.add(varMap);
+
+            }
+        }
+
+        return secondMapList;
+    }
+
+    @Override
+    public ResultModel findListWarehouseInExecuteByEdit(PageData pd, Pagination pg) throws Exception {
+        ResultModel model = new ResultModel();
+        Map result = new HashMap();
+
+        //A. 第一级: 获取入库单明细Title列表
+        List<Column> columnList = columnService.findColumnList("warehouseInDetail");
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
+        }
+
+        String firstFieldCode = pd.getString("firstFieldCode");
+        if (firstFieldCode != null && firstFieldCode.trim().length() > 0) {
+            columnList = columnService.modifyColumnByFieldCode(firstFieldCode, columnList);
+        }
+
+        Map<String, Object> firstTitleMap = ColumnUtil.findTitleMapByColumnList(columnList);
+        result.put("hideTitles",firstTitleMap.get("hideTitles"));
+        result.put("titles",firstTitleMap.get("titles"));
+
+        //B. 第二级: 获取入库单明细执行人Title列表
+        columnList = columnService.findColumnList("warehouseInExecuteByEdit");
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
+        }
+        String secondFieldCode = pd.getString("secondFieldCode");
+        if (secondFieldCode != null && secondFieldCode.trim().length() > 0) {
+            columnList = columnService.modifyColumnByFieldCode(secondFieldCode, columnList);
+        }
+
+        Map<String, Object> secondTitleMap = ColumnUtil.findTitleMapByColumnList(columnList);
+
+        //C. 查询第一层数据
+        String companyId = pd.getString("currentCompanyId");
+
+        List<Map> varMapList = new ArrayList();
+        List<Map> varList = warehouseInDetailService.getDataListPage(pd, pg);
+        if (varList != null && varList.size() > 0) {
+            for(int i = 0; i < varList.size(); i++) {
+                Map map = varList.get(i);
+                Map<String, Object> varMap = new HashMap<String, Object>();
+                varMap.putAll((Map<String, String>)firstTitleMap.get("varModel"));
+                for (Map.Entry<String, Object> entry : varMap.entrySet()) {
+                    varMap.put(entry.getKey(), map.get(entry.getKey()) != null ? map.get(entry.getKey()).toString() : "");
+                }
+                varMap.put("hideTitles", secondTitleMap.get("hideTitles"));
+                varMap.put("titles", secondTitleMap.get("titles"));
+                varMap.put("pid", null);
+                //查询第二层数据
+                varMap.put("children", this.findSecondList(map, secondTitleMap ,companyId));
+                varMapList.add(varMap);
+            }
+        }
+        result.put("varList",varMapList);
+        result.put("pageData", pg);
+
+        model.putResult(result);
+        return model;
+    }
+
+
+    @Override
+    public ResultModel updateWarehouseInExecute(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+        String cuser = pageData.getString("cuser");
+        String companyId = pageData.getString("currentCompanyId");
+
+        String id = pageData.getString("id");
+        String beforeCount = pageData.getString("beforeCount");
+        String afterCount = pageData.getString("afterCount");
+
+        if (beforeCount == null || beforeCount.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("调整前入库数量为空或空字符串");
+            return model;
+        }
+
+        if (afterCount == null || afterCount.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("调整后入库数量为空或空字符串");
+            return model;
+        } else {
+            try {
+                new BigDecimal(afterCount);
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+                model.putCode(Integer.valueOf(1));
+                model.putMsg("数据输入错误:调整后入库数量("+afterCount+") 请输入大于0的整数或(1,2)位小数！");
+                return model;
+            }
+        }
+
+        WarehouseInExecute execute = this.findWarehouseInExecuteById(id);
+        WarehouseInDetail detail = warehouseInDetailService.findWarehouseInDetailById(execute.getDetailId());
+
+        try {
+            //A. 修改库存数量
+            BigDecimal before = BigDecimal.valueOf(Double.parseDouble(beforeCount));
+            BigDecimal after = BigDecimal.valueOf(Double.parseDouble(afterCount));
+
+            WarehouseProduct warehouseProduct = new WarehouseProduct();
+            warehouseProduct.setProductId(detail.getProductId());
+            warehouseProduct.setCode(detail.getCode());
+            warehouseProduct.setWarehouseId(execute.getWarehouseId());
+
+            BigDecimal count = BigDecimal.valueOf(after.doubleValue() - before.doubleValue());
+
+            //库存变更日志
+            WarehouseLoginfo loginfo = new WarehouseLoginfo();
+            loginfo.setParentId(detail.getParentId());
+            loginfo.setDetailId(detail.getId());
+            loginfo.setExecuteId(execute.getId());
+
+            loginfo.setCompanyId(companyId);
+            loginfo.setCuser(cuser);
+            //operation 操作类型(add:添加 modify:修改 delete:删除 reback:退单)
+            loginfo.setOperation("modify");
+
+            //beforeCount 操作变更前数量(业务相关)
+            loginfo.setBeforeCount(before);
+            //afterCount 操作变更后数量(业务相关)
+            loginfo.setAfterCount(after);
+
+            String msgStr = warehouseProductService.inStockCount(warehouseProduct, count, loginfo);
+            if (msgStr != null && msgStr.trim().length() > 0) {
+                model.putCode(Integer.valueOf(1));
+                model.putMsg(msgStr);
+                return model;
+            }
+
+            //产品ID
+            String productId = detail.getProductId();
+            Product product = productService.findProductById(productId);
+
+            BigDecimal prodCount = BigDecimal.valueOf(0D);
+            if (product.getStockCount() != null) {
+                prodCount = product.getStockCount();
+            }
+
+            BigDecimal prodStockCount = BigDecimal.valueOf(prodCount.doubleValue() + count.doubleValue());
+            productService.updateStockCount(product, prodStockCount, cuser);
+
+            //B. 修改入库执行明细
+            execute.setCount(after);
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            if (execute.getRemark() == null) {
+                execute.setRemark("操作记录：修改前（"+beforeCount+"） 修改后 （"+afterCount+"） 操作时间："+ dateFormat.format(new Date()));
+            } else {
+                execute.setRemark(execute.getRemark()+"  操作记录：修改前（"+beforeCount+"） 修改后 （"+afterCount+"） 操作时间："+ dateFormat.format(new Date()));
+            }
+            this.update(execute);
+
+            //C. 修改修改当前入库单明细状态--同时反写入库单状态
+//            List<WarehouseInDetail> detailList = warehouseInDetailService.findWarehouseInDetailListByParentId(detail.getParentId());
+//            warehouseInDetailService.updateStateWarehouseInDetail(detailList);
+
+//            WarehouseInDetail detail = warehouseInDetailService.findWarehouseInDetailById(detailId);
+
+            Map columnMap = new HashMap();
+            columnMap.put("detail_id",detail.getId());
+            columnMap.put("isdisable","1");
+            BigDecimal totalCount = BigDecimal.ZERO;
+            List<WarehouseInExecute> warehouseInExecuteList = this.selectByColumnMap(columnMap);
+            if(warehouseInExecuteList!=null&&warehouseInExecuteList.size()>0){
+                for(int i=0;i<warehouseInExecuteList.size();i++){
+                    WarehouseInExecute warehouseInExecute = warehouseInExecuteList.get(i);
+                    if(warehouseInExecute!=null&&warehouseInExecute.getCount()!=null){
+                        totalCount = totalCount.add(warehouseInExecute.getCount());
+                    }
+                }
+            }
+            Map countResult = new HashMap();
+            //明细状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+            if(detail.getCount().compareTo(totalCount)>0){
+                detail.setState("1");
+                countResult.put("unCompleteCount",(detail.getCount().subtract(totalCount).setScale(2,BigDecimal.ROUND_HALF_UP)).doubleValue());
+            }else {
+                detail.setState("2");
+                countResult.put("unCompleteCount",0.00);
+            }
+            model.putResult(countResult);
+            warehouseInDetailService.update(detail);
+            warehouseInService.updateState(detail.getParentId());
+
+
+
+        } catch (TableVersionException tabExc) {
+            if (Common.SYS_STOCKCOUNT_ERRORCODE.equals(tabExc.getErrorCode())) {
+                model.putCode(Integer.valueOf(1));
+                model.putMsg(tabExc.getMessage());
+                return model;
+            }
+        }
+        return model;
+    }
+
+
+    @Override
+    public ResultModel deleteWarehouseInExecute(PageData pageData) throws Exception {
+
+        ResultModel model = new ResultModel();
+
+        String cuser = pageData.getString("cuser");
+        String companyId = pageData.getString("currentCompanyId");
+        String id = pageData.getString("id");
+
+        WarehouseInExecute execute = this.findWarehouseInExecuteById(id);
+        WarehouseInDetail detail = warehouseInDetailService.findWarehouseInDetailById(execute.getDetailId());
+
+        try {
+            //A. 修改库存数量
+            BigDecimal executeCountount = execute.getCount();
+
+            WarehouseProduct warehouseProduct = new WarehouseProduct();
+            warehouseProduct.setProductId(detail.getProductId());
+            warehouseProduct.setCode(detail.getCode());
+            warehouseProduct.setWarehouseId(execute.getWarehouseId());
+
+            BigDecimal count = BigDecimal.valueOf(-1 * executeCountount.doubleValue());
+
+            //库存变更日志
+            WarehouseLoginfo loginfo = new WarehouseLoginfo();
+            loginfo.setParentId(detail.getParentId());
+            loginfo.setDetailId(detail.getId());
+            loginfo.setExecuteId(execute.getId());
+
+            loginfo.setCompanyId(companyId);
+            loginfo.setCuser(cuser);
+            //operation 操作类型(add:添加 modify:修改 delete:删除 reback:退单)
+            loginfo.setOperation("delete");
+
+            //beforeCount 操作变更前数量(业务相关)
+            loginfo.setBeforeCount(executeCountount);
+            //afterCount 操作变更后数量(业务相关)
+            loginfo.setAfterCount(BigDecimal.valueOf(executeCountount.doubleValue() + count.doubleValue()));
+
+            String msgStr = warehouseProductService.inStockCount(warehouseProduct, count, loginfo);
+            if (msgStr != null && msgStr.trim().length() > 0) {
+                model.putCode(Integer.valueOf(1));
+                model.putMsg(msgStr);
+                return model;
+            }
+
+            //产品ID
+            String productId = detail.getProductId();
+            Product product = productService.findProductById(productId);
+
+            BigDecimal prodCount = BigDecimal.valueOf(0D);
+            if (product.getStockCount() != null) {
+                prodCount = product.getStockCount();
+            }
+
+            BigDecimal prodStockCount = BigDecimal.valueOf(prodCount.doubleValue() + count.doubleValue());
+            productService.updateStockCount(product, prodStockCount, cuser);
+
+            //B. 修改入库执行明细
+            //是否启用(0:已禁用 1:启用)
+            execute.setIsdisable("0");
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            if (execute.getRemark() == null) {
+                execute.setRemark("操作记录：删除  操作时间："+ dateFormat.format(new Date()));
+            } else {
+                execute.setRemark(execute.getRemark()+"  操作记录：删除  操作时间："+ dateFormat.format(new Date()));
+            }
+            this.update(execute);
+
+            //C. 修改修改当前入库单明细状态--同时反写入库单状态
+//            List<WarehouseInDetail> detailList = warehouseInDetailService.findWarehouseInDetailListByParentId(detail.getParentId());
+//            warehouseInDetailService.updateStateWarehouseInDetail(detailList);
+
+
+//            WarehouseInDetail detail = warehouseInDetailService.findWarehouseInDetailById(detailId);
+
+            Map columnMap = new HashMap();
+            columnMap.put("detail_id",detail.getId());
+            columnMap.put("isdisable","1");
+            BigDecimal totalCount = BigDecimal.ZERO;
+            List<WarehouseInExecute> warehouseInExecuteList = this.selectByColumnMap(columnMap);
+            if(warehouseInExecuteList!=null&&warehouseInExecuteList.size()>0){
+                for(int i=0;i<warehouseInExecuteList.size();i++){
+                    WarehouseInExecute warehouseInExecute = warehouseInExecuteList.get(i);
+                    if(warehouseInExecute!=null&&warehouseInExecute.getCount()!=null){
+                        totalCount = totalCount.add(warehouseInExecute.getCount());
+                    }
+                }
+            }
+            Map countResult = new HashMap();
+            //明细状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+            if(detail.getCount().compareTo(totalCount)>0){
+                detail.setState("1");
+                countResult.put("unCompleteCount",(detail.getCount().subtract(totalCount).setScale(2,BigDecimal.ROUND_HALF_UP)).doubleValue());
+            }else {
+                detail.setState("2");
+                countResult.put("unCompleteCount",0.00);
+            }
+            model.putResult(countResult);
+            warehouseInDetailService.update(detail);
+            warehouseInService.updateState(detail.getParentId());
+
+
+        } catch (TableVersionException tabExc) {
+            if (Common.SYS_STOCKCOUNT_ERRORCODE.equals(tabExc.getErrorCode())) {
+                model.putCode(Integer.valueOf(1));
+                model.putMsg(tabExc.getMessage());
+                return model;
+            }
+        }
+        return model;
+    }
+
+
+    @Override
+    public ResultModel updateCancelWarehouseInExecute(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+        String parentId = pageData.getString("parentId");
+        if (parentId == null || parentId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("入库单id为空或空字符串！");
+            return model;
+        }
+
+        String remark = pageData.getString("remark");
+        if (remark == null || remark.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("退单原因为空或空字符串，退单原因为必填不可为空！");
+            return model;
+        }
+
+        //根据当前入库单id-获取当前入库单明细id-入库执行数量汇总
+        Map<String, BigDecimal> mapExecute = this.findExecuteCountByParentId(parentId);
+        //判断当前入库单明细-货品是否部分入库
+        List<WarehouseInDetail> detailList = warehouseInDetailService.findWarehouseInDetailListByParentId(parentId);
+        if (detailList != null && detailList.size() > 0) {
+            for (WarehouseInDetail detail : detailList) {
+                String dtl_id = detail.getId();
+                if (mapExecute != null && mapExecute.get(dtl_id) != null && mapExecute.get(dtl_id).doubleValue() != 0D) {
+                    model.putCode(Integer.valueOf(1));
+                    model.putMsg("入库单明细货品已经部分入库，该入库单不可整单(退单)，请核对后再次操作！");
+                    return model;
+                }
+            }
+        }
+
+        //1. 修改入库单明细状态
+        PageData mapData = new PageData();
+        //状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+        mapData.put("state", "0");
+        mapData.put("parentId", parentId);
+        warehouseInDetailService.updateStateByDetail(mapData);
+
+        //2.修改入库单状态
+        WarehouseIn warehouseIn = new WarehouseIn();
+        //状态(0:未完成 1:已完成 -1:已取消)
+        warehouseIn.setState("0");
+        warehouseIn.setRemark(remark);
+        warehouseInService.update(warehouseIn);
+        return model;
+    }
 }
 
 

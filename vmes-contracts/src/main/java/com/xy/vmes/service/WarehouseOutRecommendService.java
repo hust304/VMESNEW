@@ -3,6 +3,8 @@ package com.xy.vmes.service;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.entity.WarehouseOutRecommend;
 import com.yvan.PageData;
+import com.yvan.springmvc.ResultModel;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -113,8 +115,14 @@ public interface WarehouseOutRecommendService {
     */
     void updateToDisableByIds(String[] ids)throws Exception;
 
+
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
+    ResultModel listPageWarehouseOutRecommends(PageData pd, Pagination pg) throws Exception;
+
+    void exportExcelWarehouseOutRecommends(PageData pd, Pagination pg) throws Exception;
+
+    ResultModel importExcelWarehouseOutRecommends(MultipartFile file) throws Exception;
 }
 
 

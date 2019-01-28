@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.entity.WarehouseMoveExecute;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.util.LinkedHashMap;
@@ -122,6 +123,16 @@ public interface WarehouseMoveExecuteService {
     ResultModel executeWarehouseMoveExecute(PageData pageData)throws Exception;
 
     ResultModel addWarehouseMoveExecute(String detailId, String newWarehouseId, String warehouseProductId, BigDecimal count, String currentUserId, String currentCompanyId)throws Exception;
+
+    ResultModel deleteWarehouseMoveExecute(PageData pageData) throws Exception;
+
+    ResultModel updateWarehouseMoveExecute(PageData pageData) throws Exception;
+
+    ResultModel listPageWarehouseMoveExecutes(PageData pd, Pagination pg) throws Exception;
+
+    void exportExcelWarehouseMoveExecutes(PageData pd, Pagination pg) throws Exception;
+
+    ResultModel importExcelWarehouseMoveExecutes(MultipartFile file) throws Exception;
 }
 
 

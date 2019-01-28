@@ -3,6 +3,8 @@ package com.xy.vmes.service;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.entity.WarehouseOutExecutor;
 import com.yvan.PageData;
+import com.yvan.springmvc.ResultModel;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -113,8 +115,16 @@ public interface WarehouseOutExecutorService {
     */
     void updateToDisableByIds(String[] ids)throws Exception;
 
+
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
+    ResultModel updateExecutor(PageData pd) throws Exception;
+
+    ResultModel listPageWarehouseOutExecutors(PageData pd, Pagination pg) throws Exception;
+
+    void exportExcelWarehouseOutExecutors(PageData pd, Pagination pg) throws Exception;
+
+    ResultModel importExcelWarehouseOutExecutors(MultipartFile file) throws Exception;
 }
 
 

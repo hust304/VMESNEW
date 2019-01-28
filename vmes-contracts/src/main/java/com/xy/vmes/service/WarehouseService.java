@@ -5,6 +5,7 @@ import com.xy.vmes.entity.TreeEntity;
 import com.xy.vmes.entity.Warehouse;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -122,6 +123,32 @@ public interface WarehouseService {
     List<TreeEntity> warehouseList2TreeList(List<Warehouse> warehouseList, List<TreeEntity> treeList);
 
     ResultModel listWarehouseNodeByPid(PageData pd) throws Exception;
+
+    ResultModel treeWarehouse(PageData pageData) throws Exception;
+
+    ResultModel listPageWarehouse(PageData pd, Pagination pg) throws Exception;
+
+    ResultModel findListWarehouseByWarehouseProduct(PageData pd) throws Exception;
+
+    ResultModel addWarehouseByEntity(PageData pageData) throws Exception;
+
+    ResultModel addWarehouseByVirtual(PageData pageData) throws Exception;
+
+    ResultModel addWarehousePosition(PageData pageData) throws Exception;
+
+    ResultModel addWarehousePositionByRange(PageData pageData) throws Exception;
+
+    ResultModel updateWarehouseByEntity(PageData pageData) throws Exception;
+
+    ResultModel updateWarehouseByVirtual(PageData pageData) throws Exception;
+
+    ResultModel updateWarehousePositionByName(PageData pageData) throws Exception;
+
+    ResultModel deleteWarehouse(PageData pageData) throws Exception;
+
+    void exportExcelWarehouse(PageData pd, Pagination pg) throws Exception;
+
+    ResultModel importExcelWarehouse(MultipartFile file) throws Exception;
 }
 
 

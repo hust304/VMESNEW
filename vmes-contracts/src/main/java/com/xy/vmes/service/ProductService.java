@@ -5,6 +5,8 @@ import com.xy.vmes.entity.Product;
 import com.xy.vmes.entity.ProductUnit;
 import com.xy.vmes.entity.ProductUnitPrice;
 import com.yvan.PageData;
+import com.yvan.springmvc.ResultModel;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.util.LinkedHashMap;
@@ -136,6 +138,21 @@ public interface ProductService {
     ProductUnit product2ProductUnit(Product product, ProductUnit productUnit,String unit);
     ProductUnitPrice product2ProductUnitPrice(Product product, ProductUnitPrice productUnitPrice,String unit);
 
+    ResultModel listPageProducts(PageData pd, Pagination pg) throws Exception;
+
+    ResultModel listPageProductPropertys(PageData pd, Pagination pg)  throws Exception;
+
+    ResultModel addProduct(PageData pageData) throws Exception;
+
+    ResultModel updateProduct(PageData pageData) throws Exception;
+
+    ResultModel updateDisableProduct(PageData pageData) throws Exception;
+
+    ResultModel deleteProduct(PageData pageData) throws Exception;
+
+    void exportExcelProducts(PageData pd, Pagination pg) throws Exception;
+
+    ResultModel importExcelProducts(MultipartFile file) throws Exception;
 }
 
 

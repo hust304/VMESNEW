@@ -6,6 +6,8 @@ import com.xy.vmes.exception.TableVersionException;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.entity.WarehouseProduct;
 import com.yvan.PageData;
+import com.yvan.springmvc.ResultModel;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -219,6 +221,21 @@ public interface WarehouseProductService {
     //手机端功能
     List<Map> findListPageWarehouseByProduct(PageData pd, Pagination pg) throws Exception;
 
+    ResultModel updateWarehouseProduct(PageData pd) throws Exception;
+
+    ResultModel listPageWarehouseProductView(PageData pd, Pagination pg) throws Exception;
+
+    ResultModel listPageWarehouseProductMove(PageData pd, Pagination pg) throws Exception;
+
+    ResultModel listPageWarehouseDetailView(PageData pd, Pagination pg) throws Exception;
+
+    ResultModel listPageWarehouseProductsDispatch(PageData pd, Pagination pg) throws Exception;
+
+    ResultModel listPageWarehouseProductsDispatchOption(PageData pd, Pagination pg) throws Exception;
+
+    void exportExcelWarehouseProducts(PageData pd, Pagination pg) throws Exception;
+
+    ResultModel importExcelWarehouseProducts(MultipartFile file) throws Exception;
 }
 
 

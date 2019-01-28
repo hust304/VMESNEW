@@ -111,6 +111,13 @@ public interface WarehouseInExecuteService {
 
     ///////////////////////////////////////////////////////////////////////////////
 
+    ResultModel findListWarehouseInExecuteByEdit(PageData pd, Pagination pg) throws Exception;
+
+    ResultModel updateWarehouseInExecute(PageData pageData) throws Exception;
+
+    ResultModel deleteWarehouseInExecute(PageData pageData) throws Exception;
+
+    ResultModel updateCancelWarehouseInExecute(PageData pageData) throws Exception;
 }
 
 

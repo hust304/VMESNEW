@@ -6,6 +6,7 @@ import com.xy.vmes.entity.WarehouseOutDetail;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -140,6 +141,26 @@ public interface WarehouseOutDetailService {
     ///////////////////////////////////////////////////////////////////////////////
 
     ResultModel rebackWarehouseOutDetail(PageData pageData) throws Exception;
+
+    ResultModel dispatchWarehouseOutDetail(PageData pageData) throws Exception;
+
+    ResultModel recoveryWarehouseOutDetail(PageData pageData) throws Exception;
+
+    ResultModel cancelWarehouseOutDetail(PageData pageData) throws Exception;
+
+    ResultModel deleteWarehouseOutDetail(PageData pageData) throws Exception;
+
+    ResultModel listPageWarehouseOutDetails(PageData pd, Pagination pg) throws Exception;
+
+    ResultModel listPageWarehouseOutDetailsOutRecords(PageData pd, Pagination pg) throws Exception;
+
+    ResultModel listPageWarehouseOutDetailsExecute(PageData pd, Pagination pg) throws Exception;
+
+    ResultModel listPageWarehouseOutDetailsDispatch(PageData pd, Pagination pg) throws Exception;
+
+    void exportExcelWarehouseOutDetails(PageData pd, Pagination pg) throws Exception;
+
+    ResultModel importExcelWarehouseOutDetails(MultipartFile file) throws Exception;
 }
 
 

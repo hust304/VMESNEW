@@ -3,6 +3,8 @@ package com.xy.vmes.service;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.entity.WarehouseMove;
 import com.yvan.PageData;
+import com.yvan.springmvc.ResultModel;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -117,6 +119,16 @@ public interface WarehouseMoveService {
     void deleteTableByWarehouseMove(String companyId) throws Exception;
 
     void updateState(String id) throws Exception;
+
+    ResultModel deleteWarehouseMove(PageData pageData) throws Exception;
+
+    ResultModel saveWarehouseMove(PageData pd) throws Exception;
+
+    ResultModel listPageWarehouseMoves(PageData pd, Pagination pg) throws Exception;
+
+    void exportExcelWarehouseMoves(PageData pd, Pagination pg) throws Exception;
+
+    ResultModel importExcelWarehouseMoves(MultipartFile file) throws Exception;
 }
 
 

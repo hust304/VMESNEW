@@ -6,6 +6,7 @@ import com.xy.vmes.entity.WarehouseMoveDetail;
 import com.xy.vmes.entity.WarehouseOutDetail;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -135,6 +136,22 @@ public interface WarehouseMoveDetailService {
 
 
     ResultModel rebackWarehouseMoveDetail(PageData pageData) throws Exception;
+
+    ResultModel deleteWarehouseMoveDetail(PageData pageData) throws Exception;
+
+    ResultModel cancelWarehouseMoveDetail(PageData pageData) throws Exception;
+
+    ResultModel recoveryWarehouseMoveDetail(PageData pageData) throws Exception;
+
+    ResultModel listPageWarehouseMoveDetailsExecute(PageData pd, Pagination pg) throws Exception;
+
+    ResultModel listPageWarehouseMoveDetailsRecords(PageData pd, Pagination pg) throws Exception;
+
+    ResultModel listPageWarehouseMoveDetails(PageData pd, Pagination pg) throws Exception;
+
+    void exportExcelWarehouseMoveDetails(PageData pd, Pagination pg) throws Exception;
+
+    ResultModel importExcelWarehouseMoveDetails(MultipartFile file) throws Exception;
 }
 
 

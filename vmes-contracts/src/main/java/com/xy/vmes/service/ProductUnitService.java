@@ -3,6 +3,8 @@ package com.xy.vmes.service;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.entity.ProductUnit;
 import com.yvan.PageData;
+import com.yvan.springmvc.ResultModel;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -133,6 +135,22 @@ public interface ProductUnitService {
     List<ProductUnit> findProductUnitList(PageData object) throws Exception;
 
     void updateToNotDefaultByPorId(String productId) throws Exception;
+
+    ResultModel updateIsDefaultProductUnit(PageData pd) throws Exception;
+
+    ResultModel listPageProductUnits(PageData pd, Pagination pg) throws Exception;
+
+    ResultModel updateProductUnitPrice(PageData pd) throws Exception;
+
+    ResultModel findListProductUnitByProduct(PageData pd) throws Exception;
+
+    ResultModel findListProductUnit(PageData pd) throws Exception;
+
+    ResultModel formulaReckonByProductCount(PageData pd) throws Exception;
+
+    void exportExcelProductUnits(PageData pd,Pagination pg) throws Exception;
+
+    ResultModel importExcelProductUnits(MultipartFile file)  throws Exception;
 }
 
 

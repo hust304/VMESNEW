@@ -3,6 +3,8 @@ package com.xy.vmes.service;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.entity.WarehouseOut;
 import com.yvan.PageData;
+import com.yvan.springmvc.ResultModel;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -125,6 +127,22 @@ public interface WarehouseOutService {
 
     ////////////////////////////////////////////////////////////////////////////////
     WarehouseOut createWarehouseOut(String customerId, String customerName, String cuser, String companyId, String outType);
+
+    ResultModel updateWarehouseOut(PageData pageData) throws Exception;
+
+    ResultModel addWarehouseOut(PageData pageData) throws Exception;
+
+    ResultModel recoveryWarehouseOut(PageData pageData) throws Exception;
+
+    ResultModel cancelWarehouseOut(PageData pageData) throws Exception;
+
+    ResultModel deleteWarehouseOut(PageData pageData) throws Exception;
+
+    ResultModel listPageWarehouseOuts(PageData pd, Pagination pg) throws Exception;
+
+    void exportExcelWarehouseOuts(PageData pd, Pagination pg) throws Exception;
+
+    ResultModel importExcelWarehouseOuts(MultipartFile file) throws Exception;
 }
 
 

@@ -3,6 +3,8 @@ package com.xy.vmes.service;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.entity.WarehouseCheck;
 import com.yvan.PageData;
+import com.yvan.springmvc.ResultModel;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -89,8 +91,21 @@ public interface WarehouseCheckService {
     List<WarehouseCheck> findWarehouseCheckList(PageData object) throws Exception;
 
 
+    ResultModel listPagewarehouseChecks(PageData pd, Pagination pg) throws Exception;
 
+    ResultModel addWarehouseCheck(PageData pageData) throws Exception;
 
+    ResultModel cancelWarehouseCheck(PageData pageData) throws Exception;
+
+    ResultModel rebackWarehouseCheck(PageData pageData) throws Exception;
+
+    ResultModel deleteWarehouseCheck(PageData pageData) throws Exception;
+
+    ResultModel checkUserRoleByWarehouseAudit(PageData pageData) throws Exception;
+
+    void exportExcelwarehouseChecks(PageData pd, Pagination pg) throws Exception;
+
+    ResultModel importExcelwarehouseChecks(MultipartFile file) throws Exception;
 }
 
 

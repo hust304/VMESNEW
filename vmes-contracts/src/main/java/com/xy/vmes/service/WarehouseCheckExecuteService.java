@@ -95,6 +95,14 @@ public interface WarehouseCheckExecuteService {
     ResultModel rebackWarehouseCheckByDetail(PageData pageData) throws Exception;
 
     void rebackWarehouseCheck(List<WarehouseCheckDetail> detailList, String rebackBillReason, String cuser) throws Exception;
+
+    ResultModel findListByWarehouseCheckExecute(PageData pd, Pagination pg)throws Exception;
+
+    ResultModel cancelAuditWarehouseCheckByExecute(PageData pageData) throws Exception;
+
+    ResultModel auditPassWarehouseCheckExecute(PageData pageData) throws Exception;
+
+    ResultModel auditDisagreeWarehouseCheckExecute(PageData pageData) throws Exception;
 }
 
 

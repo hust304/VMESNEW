@@ -3,6 +3,8 @@ package com.xy.vmes.service;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.entity.WarehouseIn;
 import com.yvan.PageData;
+import com.yvan.springmvc.ResultModel;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -86,6 +88,28 @@ public interface WarehouseInService {
     String checkColumn(WarehouseIn object);
 
     void updateState(String id) throws Exception;
+
+    ResultModel listPageWarehouseIn(PageData pd, Pagination pg) throws Exception;
+
+    ResultModel addWarehouseIn(PageData pageData) throws Exception;
+
+    ResultModel updateWarehouseIn(PageData pageData) throws Exception;
+
+    ResultModel cancelWarehouseIn(PageData pageData) throws Exception;
+
+    ResultModel recoveryWarehouseIn(PageData pageData) throws Exception;
+
+    ResultModel deleteWarehouseIn(PageData pageData) throws Exception;
+
+    void exportExcelWarehouseIn(PageData pd, Pagination pg) throws Exception;
+
+    ResultModel importExcelWarehouseIn(MultipartFile file) throws Exception;
+
+    ResultModel listPageWarehouseInDetail(PageData pd, Pagination pg) throws Exception;
+
+    ResultModel findWarehouseListByWarehouseIn(PageData pd, Pagination pg) throws Exception;
+
+    ResultModel updateWarehouseInDispatch(PageData pageData) throws Exception;
 }
 
 

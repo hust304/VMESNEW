@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.entity.WarehouseInDetail;
 import com.xy.vmes.entity.WarehouseInExecutor;
 import com.yvan.PageData;
+import com.yvan.springmvc.ResultModel;
 
 import java.util.List;
 import java.util.Map;
@@ -91,6 +92,12 @@ public interface WarehouseInExecutorService {
     List<WarehouseInExecutor> findWarehouseInExecutorListByDetailId(String detailId);
 
     void addWarehouseInExecutor(WarehouseInDetail detail, String userIds);
+
+    ResultModel listPageWarehouseInExecutor(PageData pd, Pagination pg) throws Exception;
+
+    ResultModel findListByWarehouseInExecutor(PageData pd, Pagination pg) throws Exception;
+
+    ResultModel updateExecutor(PageData pd) throws Exception;
 }
 
 

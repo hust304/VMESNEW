@@ -1,20 +1,24 @@
 package com.xy.vmes.deecoop.warehouse.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.Common;
 import com.xy.vmes.common.util.StringUtil;
+import com.xy.vmes.common.util.TreeUtil;
 import com.xy.vmes.deecoop.warehouse.dao.WarehouseMapper;
+import com.xy.vmes.entity.Column;
 import com.xy.vmes.entity.TreeEntity;
 import com.xy.vmes.entity.Warehouse;
-import com.xy.vmes.service.CoderuleService;
-import com.xy.vmes.service.FileService;
-import com.xy.vmes.service.WarehouseService;
+import com.xy.vmes.service.*;
 import com.yvan.*;
+import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import java.text.MessageFormat;
 import java.util.*;
 
@@ -33,6 +37,10 @@ public class WarehouseServiceImp implements WarehouseService {
     private CoderuleService coderuleService;
     @Autowired
     private FileService fileService;
+    @Autowired
+    private DictionaryService dictionaryService;
+    @Autowired
+    private ColumnService columnService;
 
     /**
      * 创建人：陈刚 自动创建，禁止修改
@@ -700,6 +708,702 @@ public class WarehouseServiceImp implements WarehouseService {
 
         model.putResult(nodeObject);
 
+        return model;
+    }
+
+    @Override
+    public ResultModel treeWarehouse(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+        PageData findMap = new PageData();
+
+        //树形结构-开始显示节点id
+        String treeNodeId = "";
+
+        //设定查询条件
+        String companyId = pageData.getString("currentCompanyId");
+        if (companyId != null && companyId.trim().length() > 0) {
+            findMap.put("companyId", companyId);
+        }
+
+        String id = pageData.getString("id");
+        if (id == null || id.trim().length() == 0) {
+            findMap.put("layerQueryStr", "layer in (0,1)");
+            treeNodeId = Common.DICTIONARY_MAP.get("warehouseRoot");
+        } else if (id != null && id.trim().length() > 0) {
+            treeNodeId = id.trim();
+        }
+        findMap.put("nodeId", treeNodeId);
+        //是否启用(0:已禁用 1:启用)
+        findMap.put("isdisable", "1");
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+        findMap.put("orderStr", "layer,serial_number asc");
+
+        List<Warehouse> objectList = this.findWarehouseList(findMap);
+        List<TreeEntity> treeList = this.warehouseList2TreeList(objectList, null);
+
+        TreeEntity treeObj = TreeUtil.switchTree(treeNodeId, treeList);
+        String treeJsonStr = YvanUtil.toJson(treeObj);
+        System.out.println("treeJsonStr: " + treeJsonStr);
+
+        Map result = new HashMap();
+        result.put("treeList", treeObj);
+        model.putResult(result);
+        return model;
+    }
+
+
+    @Override
+    public ResultModel listPageWarehouse(PageData pd, Pagination pg) throws Exception {
+        ResultModel model = new ResultModel();
+
+        List<Column> columnList = columnService.findColumnList("warehouse");
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
+        }
+
+        List<LinkedHashMap> titlesList = new ArrayList<LinkedHashMap>();
+        List<String> titlesHideList = new ArrayList<String>();
+        Map<String, String> varModelMap = new HashMap<String, String>();
+        if(columnList!=null&&columnList.size()>0){
+            for (Column column : columnList) {
+                if(column!=null){
+                    if("0".equals(column.getIshide())){
+                        titlesHideList.add(column.getTitleKey());
+                    }
+                    LinkedHashMap titlesLinkedMap = new LinkedHashMap();
+                    titlesLinkedMap.put(column.getTitleKey(),column.getTitleName());
+                    varModelMap.put(column.getTitleKey(),"");
+                    titlesList.add(titlesLinkedMap);
+                }
+            }
+        }
+        Map result = new HashMap();
+        result.put("hideTitles",titlesHideList);
+        result.put("titles",titlesList);
+
+        //是否启用(0:已禁用 1:启用)
+        pd.put("isdisable", "1");
+        pd.put("orderStr", "a.layer,a.serial_number asc");
+
+        List<Map> varMapList = new ArrayList();
+        List<Map> varList = this.getDataListPage(pd, pg);
+        if(varList!=null&&varList.size()>0){
+            for(int i=0;i<varList.size();i++){
+                Map map = varList.get(i);
+                Map<String, String> varMap = new HashMap<String, String>();
+                varMap.putAll(varModelMap);
+                for (Map.Entry<String, String> entry : varMap.entrySet()) {
+                    varMap.put(entry.getKey(),map.get(entry.getKey())!=null?map.get(entry.getKey()).toString():"");
+                }
+                varMapList.add(varMap);
+            }
+        }
+        result.put("varList",varMapList);
+        result.put("pageData", pg);
+
+        model.putResult(result);
+        return model;
+    }
+
+    @Override
+    public ResultModel findListWarehouseByWarehouseProduct(PageData pd) throws Exception {
+        ResultModel model = new ResultModel();
+
+        List<Column> columnList = columnService.findColumnList("warehouseByWarehouseProduct");
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
+        }
+
+        String fieldCode = pd.getString("fieldCode");
+        if (fieldCode != null && fieldCode.trim().length() > 0) {
+            columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
+        }
+
+        List<LinkedHashMap> titlesList = new ArrayList<LinkedHashMap>();
+        List<String> titlesHideList = new ArrayList<String>();
+        Map<String, String> varModelMap = new HashMap<String, String>();
+        if(columnList!=null&&columnList.size()>0){
+            for (Column column : columnList) {
+                if(column!=null){
+                    if("0".equals(column.getIshide())){
+                        titlesHideList.add(column.getTitleKey());
+                    }
+                    LinkedHashMap titlesLinkedMap = new LinkedHashMap();
+                    titlesLinkedMap.put(column.getTitleKey(),column.getTitleName());
+                    varModelMap.put(column.getTitleKey(),"");
+                    titlesList.add(titlesLinkedMap);
+                }
+            }
+        }
+        Map result = new HashMap();
+        result.put("hideTitles",titlesHideList);
+        result.put("titles",titlesList);
+
+        String companyId = pd.getString("currentCompanyId");
+        pd.put("companyId", companyId);
+
+        pd.put("orderStr", "warehouse.layer,warehouse.serial_number asc");
+        String orderStr = pd.getString("orderStr");
+        if (orderStr != null && orderStr.trim().length() > 0) {
+            pd.put("orderStr", orderStr);
+        }
+        Pagination pg = HttpUtils.parsePagination(pd);
+
+        List<Map> varMapList = new ArrayList();
+        List<Map> varList = this.findListWarehouseByWarehouseProduct(pd, pg);
+        if(varList!=null&&varList.size()>0){
+            for(int i=0;i<varList.size();i++){
+                Map map = varList.get(i);
+                Map<String, String> varMap = new HashMap<String, String>();
+                varMap.putAll(varModelMap);
+                for (Map.Entry<String, String> entry : varMap.entrySet()) {
+                    varMap.put(entry.getKey(),map.get(entry.getKey())!=null?map.get(entry.getKey()).toString():"");
+                }
+                varMapList.add(varMap);
+            }
+        }
+        result.put("varList",varMapList);
+        result.put("pageData", pg);
+
+        model.putResult(result);
+        return model;
+    }
+
+    @Override
+    public ResultModel addWarehouseByEntity(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+
+        Warehouse warehouse = (Warehouse)HttpUtils.pageData2Entity(pageData, new Warehouse());
+        if (warehouse == null) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("参数错误：Map 转 仓库对象Warehouse 异常！");
+            return model;
+        }
+
+        //非空判断
+        String msgStr = this.checkColumnByEntity(warehouse);
+        if (msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
+
+        //pid 获取父节点对象<Warehouse>
+        //warehouseEntity 实体库
+        String pid = Common.DICTIONARY_MAP.get("warehouseEntity");
+        Warehouse paterObj = this.findWarehouseById(pid);
+        if (paterObj == null) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("(实体库id:" + Common.DICTIONARY_MAP.get("warehouseEntity") + ")系统中无数据，请与管理员联系！");
+            return model;
+        }
+
+        //2. (仓库名称)在同一层名称不可重复
+        if (this.isExistByName(pid, null, warehouse.getName())) {
+            String msgTemp = "实体库-仓库名称: {0}在系统中已经重复！" + Common.SYS_ENDLINE_DEFAULT;
+            String str_isnull = MessageFormat.format(msgTemp, paterObj.getName());
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(str_isnull);
+            return model;
+        }
+
+        String id = Conv.createUuid();
+        warehouse.setId(id);
+        warehouse.setWarehouseId(id);
+
+        //获取仓库编码
+        String companyID = pageData.getString("currentCompanyId");
+        String code = coderuleService.createCoder(companyID, "vmes_warehouse","WE");
+        warehouse.setCompanyId(companyID);
+        warehouse.setCode(code);
+        //设置仓库路径名称
+        warehouse = this.paterObject2Warehouse(paterObj, warehouse);
+
+        //生成仓库(实体库)二维码
+        Warehouse QRCodeObj = this.warehouseObj2QRCodeObj(warehouse, null);
+        String qrcode = fileService.createQRCode("warehouseBase", YvanUtil.toJson(QRCodeObj));
+        if (qrcode != null && qrcode.trim().length() > 0) {
+            warehouse.setQrcode(qrcode);
+        }
+
+        //设置默认顺序
+        if (warehouse.getSerialNumber() == null) {
+            Integer maxCount = this.findMaxSerialNumber(pid);
+            warehouse.setSerialNumber(Integer.valueOf(maxCount.intValue() + 1));
+        }
+
+        this.save(warehouse);
+        return model;
+    }
+
+    @Override
+    public ResultModel addWarehouseByVirtual(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+        Warehouse warehouse = (Warehouse)HttpUtils.pageData2Entity(pageData, new Warehouse());
+        if (warehouse == null) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("参数错误：Map 转 仓库对象Warehouse 异常！");
+            return model;
+        }
+
+        //非空判断
+        String msgStr = this.checkColumnByVirtual(warehouse);
+        if (msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
+
+        //pid 获取父节点对象<Warehouse>
+        //warehouseVirtual 虚拟库
+        String pid = Common.DICTIONARY_MAP.get("warehouseVirtual");
+        Warehouse paterObj = this.findWarehouseById(pid);
+        if (paterObj == null) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("(虚拟库id:" + Common.DICTIONARY_MAP.get("warehouseEntity") + ")系统中无数据，请与管理员联系！");
+            return model;
+        }
+
+        //(仓库名称)在同一层名称不可重复
+        if (this.isExistByName(pid, null, warehouse.getName())) {
+            String msgTemp = "虚拟库-仓库名称: {0}在系统中已经重复！" + Common.SYS_ENDLINE_DEFAULT;
+            String str_isnull = MessageFormat.format(msgTemp, paterObj.getName());
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(str_isnull);
+            return model;
+        }
+
+        String id = Conv.createUuid();
+        warehouse.setId(id);
+        warehouse.setWarehouseId(id);
+
+        //获取仓库编码
+        String companyID = pageData.getString("currentCompanyId");
+        String code = coderuleService.createCoder(companyID, "vmes_warehouse","WV");
+        warehouse.setCompanyId(companyID);
+        warehouse.setCode(code);
+        //设置仓库路径名称
+        warehouse = this.paterObject2Warehouse(paterObj, warehouse);
+
+        //生成仓库(虚拟库)二维码
+        Warehouse QRCodeObj = this.warehouseObj2QRCodeObj(warehouse, null);
+        String qrcode = fileService.createQRCode("warehouseBase", YvanUtil.toJson(QRCodeObj));
+        if (qrcode != null && qrcode.trim().length() > 0) {
+            warehouse.setQrcode(qrcode);
+        }
+        //设置默认顺序
+        if (warehouse.getSerialNumber() == null) {
+            Integer maxCount = this.findMaxSerialNumber(pid);
+            warehouse.setSerialNumber(Integer.valueOf(maxCount.intValue() + 1));
+        }
+        this.save(warehouse);
+
+        //virtualGenre: 虚拟库属性(1:内部单位 2:外部单位)
+        //1:内部单位:默认创建(物料区,待检区,合格区,不合格区)-这4个货位
+        if ("1".equals(warehouse.getVirtualGenre())) {
+            //departmentPosition 部门货位名称(字典名称)
+            dictionaryService.implementBusinessMapByParentID(Common.DICTIONARY_MAP.get("departmentPosition"), null);
+            Map<String, String> keyNameMap = dictionaryService.getKeyNameMap();
+            this.createWarehouseByDeptPosition(warehouse, keyNameMap);
+        }
+        return model;
+    }
+
+    @Override
+    public ResultModel addWarehousePosition(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+        Warehouse warehouse = (Warehouse)HttpUtils.pageData2Entity(pageData, new Warehouse());
+        if (warehouse == null) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("参数错误：Map 转 仓库对象Warehouse 异常！");
+            return model;
+        }
+
+        //非空判断
+        if (warehouse.getPid() == null || warehouse.getPid().trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("上级id为空或空字符串！");
+            return model;
+        }
+        if (warehouse.getName() == null || warehouse.getName().trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("库位名称为空或空字符串！");
+            return model;
+        }
+
+        //pid 获取父节点对象<Warehouse>
+        String pid = warehouse.getPid().trim();
+        Warehouse paterObj = this.findWarehouseById(pid);
+        if (paterObj == null) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("(上级id:" + warehouse.getPid().trim() + ")系统中无数据，请与管理员联系！");
+            return model;
+        }
+
+        //(货位名称)在同一层名称不可重复
+        if (this.isExistByName(pid, null, warehouse.getName())) {
+            String msgTemp = "上级名称: {0}{2}货位名称: {1}{2}在系统中已经重复！{2}";
+            String str_isnull = MessageFormat.format(msgTemp,
+                    paterObj.getName(),
+                    warehouse.getName(),
+                    Common.SYS_ENDLINE_DEFAULT);
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(str_isnull);
+            return model;
+        }
+
+        String id = Conv.createUuid();
+        warehouse.setId(id);
+
+        //获取货位编码
+        String companyID = pageData.getString("currentCompanyId");
+        warehouse.setCompanyId(companyID);
+
+        String code = coderuleService.createCoder(companyID, "vmes_warehouse","WP");
+        warehouse.setCode(code);
+
+        //设置库位路径名称
+        warehouse = this.paterObject2Warehouse(paterObj, warehouse);
+
+        //生成货位二维码
+        Warehouse QRCodeObj = this.warehouseObj2QRCodeObj(warehouse, null);
+        String qrcode = fileService.createQRCode("warehouseBase", YvanUtil.toJson(QRCodeObj));
+        if (qrcode != null && qrcode.trim().length() > 0) {
+            warehouse.setQrcode(qrcode);
+        }
+        //设置默认顺序
+        if (warehouse.getSerialNumber() == null) {
+            Integer maxCount = this.findMaxSerialNumber(pid);
+            warehouse.setSerialNumber(Integer.valueOf(maxCount.intValue() + 1));
+        }
+        this.save(warehouse);
+
+        //是否叶子(0:非叶子 1:是叶子)
+        if ("1".equals(paterObj.getIsLeaf())) {
+            paterObj.setIsLeaf("0");
+            this.update(paterObj);
+        }
+        return model;
+    }
+
+    @Override
+    public ResultModel addWarehousePositionByRange(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+        //非空判断
+        //pid 上级id
+        String pid = pageData.getString("pid");
+        if (pid == null || pid.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("上级id为空或空字符串！");
+            return model;
+        }
+        //start 起始范围
+        String start = pageData.getString("start");
+        if (start == null || start.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("起始范围为空或空字符串！");
+            return model;
+        }
+        //end 结束范围
+        String end = pageData.getString("end");
+        if (end == null || end.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("结束范围为空或空字符串！");
+            return model;
+        }
+        //name 货位名称
+        String name = pageData.getString("name");
+        if (name == null || name.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("货位名称为空或空字符串！");
+            return model;
+        }
+
+        //pid 获取父节点对象<Warehouse>
+        Warehouse paterObj = this.findWarehouseById(pid);
+        if (paterObj == null) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("(上级id:" + pid + ")系统中无数据，请与管理员联系！");
+            return model;
+        }
+
+        //根据起止范围获取货位名称List
+        List<String> nameList = this.findNameList(start, end, name);
+        String nameString = this.nameList2NameString(nameList);
+        if (nameString == null || nameString.trim().length() == 0) {
+            return model;
+        }
+        if (this.isExistByName(pid, null, nameString)) {
+            String msgTemp = "当前起止范围{0}-{1}，库位名称:{2}，系统生成货位名称在仓库名称:{3}下重复，请核对后再次操作！";
+            String str_isnull = MessageFormat.format(msgTemp,
+                    start,
+                    end,
+                    name,
+                    paterObj.getName());
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(str_isnull);
+            return model;
+        }
+
+        //获取当前登录用户id
+        String cuser = pageData.getString("cuser");
+        paterObj.setCuser(cuser);
+
+        //添加货位-按起止范围
+        this.createWarehouseByPosition(paterObj, nameList);
+        return model;
+    }
+
+
+    @Override
+    public ResultModel updateWarehouseByEntity(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+        Warehouse warehouse = (Warehouse)HttpUtils.pageData2Entity(pageData, new Warehouse());
+        if (warehouse == null) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("参数错误：Map 转 仓库对象Warehouse 异常！");
+            return model;
+        }
+
+        //非空判断
+        String msgStr = this.checkColumnByEntity(warehouse);
+        if (msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
+
+        //pid 获取父节点对象<Warehouse>
+        //warehouseEntity 实体库
+        String pid = Common.DICTIONARY_MAP.get("warehouseEntity");
+        Warehouse paterObj = this.findWarehouseById(pid);
+        if (paterObj == null) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("(实体库id:" + Common.DICTIONARY_MAP.get("warehouseEntity") + ")系统中无数据，请与管理员联系！");
+            return model;
+        }
+
+        //(仓库名称)在同一层名称不可重复
+        if (this.isExistByName(pid, warehouse.getId(), warehouse.getName())) {
+            String msgTemp = "实体库-仓库名称: {0}在系统中已经重复！" + Common.SYS_ENDLINE_DEFAULT;
+            String str_isnull = MessageFormat.format(msgTemp, paterObj.getName());
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(str_isnull);
+            return model;
+        }
+
+        //设置仓库路径名称
+        warehouse = this.clearWarehouseByPath(warehouse);
+        warehouse = this.paterObject2Warehouse(paterObj, warehouse);
+        this.update(warehouse);
+        return model;
+    }
+
+    @Override
+    public ResultModel updateWarehouseByVirtual(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+        Warehouse warehouse = (Warehouse)HttpUtils.pageData2Entity(pageData, new Warehouse());
+        if (warehouse == null) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("参数错误：Map 转 仓库对象Warehouse 异常！");
+            return model;
+        }
+
+        //非空判断
+        String msgStr = this.checkColumnByVirtual(warehouse);
+        if (msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
+
+        //pid 获取父节点对象<Warehouse>
+        //warehouseVirtual 虚拟库
+        String pid = Common.DICTIONARY_MAP.get("warehouseVirtual");
+        Warehouse paterObj = this.findWarehouseById(pid);
+        if (paterObj == null) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("(虚拟库id:" + Common.DICTIONARY_MAP.get("warehouseEntity") + ")系统中无数据，请与管理员联系！");
+            return model;
+        }
+
+        //(仓库名称)在同一层名称不可重复
+        if (this.isExistByName(pid, warehouse.getId(), warehouse.getName())) {
+            String msgTemp = "虚拟库-仓库名称: {0}在系统中已经重复！" + Common.SYS_ENDLINE_DEFAULT;
+            String str_isnull = MessageFormat.format(msgTemp, paterObj.getName());
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(str_isnull);
+            return model;
+        }
+
+        //virtualGenre: 虚拟库属性(1:内部单位 2:外部单位)
+        //1:内部单位:默认创建(物料区,待检区,合格区,不合格区)-这4个货位
+        if ("1".equals(warehouse.getVirtualGenre())) {
+            //删除原来的货位
+            Map columnMap = new HashMap();
+            columnMap.put("pid", warehouse.getId());
+            columnMap.put("layer", Integer.valueOf(warehouse.getLayer() + 1) );
+            this.deleteByColumnMap(columnMap);
+
+            //departmentPosition 部门货位名称(字典名称)
+            dictionaryService.implementBusinessMapByParentID(Common.DICTIONARY_MAP.get("departmentPosition"), null);
+            Map<String, String> keyNameMap = dictionaryService.getKeyNameMap();
+            this.createWarehouseByDeptPosition(warehouse, keyNameMap);
+        }
+
+        //设置仓库路径名称
+        warehouse = this.clearWarehouseByPath(warehouse);
+        warehouse = this.paterObject2Warehouse(paterObj, warehouse);
+        this.update(warehouse);
+        return model;
+    }
+
+    @Override
+    public ResultModel updateWarehousePositionByName(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+        //非空判断
+        String id = pageData.getString("id");
+        if (id == null || id.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("货位id为空或空字符串！");
+            return model;
+        }
+        String pid = pageData.getString("pid");
+        if (pid == null || pid.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("上级id为空或空字符串！");
+            return model;
+        }
+        String name = pageData.getString("name");
+        if (name == null || name.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("货位名称为空或空字符串！");
+            return model;
+        }
+
+        Warehouse paterObj = this.findWarehouseById(pid);
+        if (paterObj == null) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("(上级id:" + pid + ")系统中无数据，请与管理员联系！");
+            return model;
+        }
+
+        //(货位名称)在同一层名称不可重复
+        if (this.isExistByName(pid, id, name)) {
+            String msgTemp = "货位名称:{0}，上级名称:{1}下重复，请核对后再次操作！";
+            String str_isnull = MessageFormat.format(msgTemp,
+                    name,
+                    paterObj.getName());
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(str_isnull);
+            return model;
+        }
+
+        Warehouse warehouse = this.findWarehouseById(id);
+        warehouse.setName(name);
+        //pathName 根节点到本节点路径名称
+        if (paterObj.getPathName() != null && paterObj.getPathName().trim().length() > 0) {
+            warehouse.setPathName(paterObj.getPathName().trim() + "-" + name);
+        }
+        this.update(warehouse);
+        return model;
+    }
+
+    @Override
+    public ResultModel deleteWarehouse(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+        String ids = (String)pageData.get("ids");
+        if (ids == null || ids.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("参数错误：请至少选择一行数据！");
+            return model;
+        }
+
+        String id_str = StringUtil.stringTrimSpace(ids);
+        String[] id_arry = id_str.split(",");
+        this.updateToDisableByIds(id_arry);
+        return model;
+    }
+
+    @Override
+    public void exportExcelWarehouse(PageData pd, Pagination pg) throws Exception {
+        List<Column> columnList = columnService.findColumnList("warehouse");
+        if (columnList == null || columnList.size() == 0) {
+            throw new RestException("1","数据库没有生成TabCol，请联系管理员！");
+        }
+
+        //根据查询条件获取业务数据List
+
+        String ids = (String)pd.getString("ids");
+        String queryStr = "";
+        if (ids != null && ids.trim().length() > 0) {
+            ids = StringUtil.stringTrimSpace(ids);
+            ids = "'" + ids.replace(",", "','") + "'";
+            queryStr = "id in (" + ids + ")";
+        }
+        pd.put("queryStr", queryStr);
+
+        pg.setSize(100000);
+        List<Map> dataList = this.getDataListPage(pd, pg);
+
+        //查询数据转换成Excel导出数据
+        List<LinkedHashMap<String, String>> dataMapList = ColumnUtil.modifyDataList(columnList, dataList);
+        HttpServletResponse response = HttpUtils.currentResponse();
+
+        //查询数据-Excel文件导出
+        String fileName = pd.getString("fileName");
+        if (fileName == null || fileName.trim().length() == 0) {
+            fileName = "ExcelWarehouse";
+        }
+
+        //导出文件名-中文转码
+        fileName = new String(fileName.getBytes("utf-8"),"ISO-8859-1");
+        ExcelUtil.excelExportByDataList(response, fileName, dataMapList);
+    }
+
+    @Override
+    public ResultModel importExcelWarehouse(MultipartFile file) throws Exception {
+        ResultModel model = new ResultModel();
+        //HttpServletRequest Request = HttpUtils.currentRequest();
+
+        if (file == null) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("请上传Excel文件！");
+            return model;
+        }
+
+        // 验证文件是否合法
+        // 获取上传的文件名(文件名.后缀)
+        String fileName = file.getOriginalFilename();
+        if (fileName == null
+                || !(fileName.matches("^.+\\.(?i)(xlsx)$")
+                || fileName.matches("^.+\\.(?i)(xls)$"))
+                ) {
+            String failMesg = "不是excel格式文件,请重新选择！";
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(failMesg);
+            return model;
+        }
+
+        // 判断文件的类型，是2003还是2007
+        boolean isExcel2003 = true;
+        if (fileName.matches("^.+\\.(?i)(xlsx)$")) {
+            isExcel2003 = false;
+        }
+
+        List<List<String>> dataLst = ExcelUtil.readExcel(file.getInputStream(), isExcel2003);
+        List<LinkedHashMap<String, String>> dataMapLst = ExcelUtil.reflectMapList(dataLst);
+
+        //1. Excel文件数据dataMapLst -->(转换) ExcelEntity (属性为导入模板字段)
+        //2. Excel导入字段(非空,数据有效性验证[数字类型,字典表(大小)类是否匹配])
+        //3. Excel导入字段-名称唯一性判断-在Excel文件中
+        //4. Excel导入字段-名称唯一性判断-在业务表中判断
+        //5. List<ExcelEntity> --> (转换) List<业务表DB>对象
+        //6. 遍历List<业务表DB> 对业务表添加或修改
         return model;
     }
 }

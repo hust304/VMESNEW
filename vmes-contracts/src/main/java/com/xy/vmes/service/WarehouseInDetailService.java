@@ -137,6 +137,15 @@ public interface WarehouseInDetailService {
      */
     String findParentStateByDetailList(String ignoreState, List<WarehouseInDetail> dtlList);
 
+    ResultModel listPageWarehouseInDetail(PageData pd, Pagination pg) throws Exception;
+
+    ResultModel listPageDetailProduct(PageData pd, Pagination pg) throws Exception;
+
+    ResultModel cancelWarehouseInDetail(PageData pageData) throws Exception;
+
+    ResultModel recoveryWarehouseInDetail(PageData pageData) throws Exception;
+
+    ResultModel deleteWarehouseInDetail(PageData pageData) throws Exception;
 }
 
 

@@ -37,16 +37,6 @@ public class WarehouseInController {
 
     @Autowired
     private WarehouseInService warehouseInService;
-    @Autowired
-    private WarehouseInDetailService warehouseInDetailService;
-
-    @Autowired
-    private CoderuleService coderuleService;
-    @Autowired
-    private FileService fileService;
-    @Autowired
-    private ColumnService columnService;
-
     /**
     * @author 陈刚 自动创建，禁止修改
     * @date 2018-10-16
@@ -166,56 +156,9 @@ public class WarehouseInController {
     public ResultModel listPageWarehouseIn() throws Exception {
         logger.info("################warehouseIn/listPageWarehouseIn 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        ResultModel model = new ResultModel();
-
-        List<Column> columnList = columnService.findColumnList("warehouseIn");
-        if (columnList == null || columnList.size() == 0) {
-            model.putCode("1");
-            model.putMsg("数据库没有生成TabCol，请联系管理员！");
-            return model;
-        }
-
-        List<LinkedHashMap> titlesList = new ArrayList<LinkedHashMap>();
-        List<String> titlesHideList = new ArrayList<String>();
-        Map<String, String> varModelMap = new HashMap<String, String>();
-        if(columnList!=null&&columnList.size()>0){
-            for (Column column : columnList) {
-                if(column!=null){
-                    if("0".equals(column.getIshide())){
-                        titlesHideList.add(column.getTitleKey());
-                    }
-                    LinkedHashMap titlesLinkedMap = new LinkedHashMap();
-                    titlesLinkedMap.put(column.getTitleKey(),column.getTitleName());
-                    varModelMap.put(column.getTitleKey(),"");
-                    titlesList.add(titlesLinkedMap);
-                }
-            }
-        }
-        Map result = new HashMap();
-        result.put("hideTitles",titlesHideList);
-        result.put("titles",titlesList);
-
         PageData pd = HttpUtils.parsePageData();
-        pd.put("orderStr", "a.cdate desc");
         Pagination pg = HttpUtils.parsePagination(pd);
-
-        List<Map> varMapList = new ArrayList();
-        List<Map> varList = warehouseInService.getDataListPage(pd, pg);
-        if(varList!=null&&varList.size()>0){
-            for(int i=0;i<varList.size();i++){
-                Map map = varList.get(i);
-                Map<String, String> varMap = new HashMap<String, String>();
-                varMap.putAll(varModelMap);
-                for (Map.Entry<String, String> entry : varMap.entrySet()) {
-                    varMap.put(entry.getKey(),map.get(entry.getKey())!=null?map.get(entry.getKey()).toString():"");
-                }
-                varMapList.add(varMap);
-            }
-        }
-        result.put("varList",varMapList);
-        result.put("pageData", pg);
-
-        model.putResult(result);
+        ResultModel model = warehouseInService.listPageWarehouseIn(pd,pg);
         Long endTime = System.currentTimeMillis();
         logger.info("################warehouseIn/listPageWarehouseIn 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
@@ -232,59 +175,8 @@ public class WarehouseInController {
     public ResultModel addWarehouseIn() throws Exception {
         logger.info("################/warehouseIn/addWarehouseIn 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-
-        ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
-
-        WarehouseIn warehouseIn = (WarehouseIn)HttpUtils.pageData2Entity(pageData, new WarehouseIn());
-        if (warehouseIn == null) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("参数错误：Map 转 仓库对象WarehouseIn 异常！");
-            return model;
-        }
-
-        //非空判断
-        String msgStr = warehouseInService.checkColumn(warehouseIn);
-        if (msgStr.trim().length() > 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg(msgStr);
-            return model;
-        }
-
-        String dtlJsonStr = pageData.getString("dtlJsonStr");
-        //测试代码-真实环境无此代码
-        //dtlJsonStr = "[{\"productId\":\"9c414aadb2874b969b11d49e141b2f57\",\"count\":\"23.56\"},{\"productId\":\"ade5be7286214bd482240c603ad331a2\",\"count\":\"54.32\"}]";
-
-        if (dtlJsonStr == null || dtlJsonStr.trim().length() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("请至少添加选择一条货品数据！");
-            return model;
-        }
-
-        List<Map<String, String>> mapList = (List<Map<String, String>>) YvanUtil.jsonToList(dtlJsonStr);
-        if (mapList == null || mapList.size() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("入库单明细Json字符串-转换成List错误！");
-            return model;
-        }
-
-        String companyID = pageData.getString("currentCompanyId");
-
-        //1. 添加入库单
-        String parentId = Conv.createUuid();
-        warehouseIn.setId(parentId);
-        //状态(0:未完成 1:已完成 -1:已取消)
-        warehouseIn.setState("0");
-        warehouseIn.setCompanyId(companyID);
-        //入库单编号
-        String code = coderuleService.createCoder(companyID, "vmes_warehouse_in", "I");
-        warehouseIn.setCode(code);
-        warehouseInService.save(warehouseIn);
-
-        //2.添加入库单明细
-        List<WarehouseInDetail> detailList = warehouseInDetailService.mapList2DetailList(mapList, null);
-        warehouseInDetailService.addWarehouseInDetail(warehouseIn, detailList);
-
+        ResultModel model = warehouseInService.addWarehouseIn(pageData);
         Long endTime = System.currentTimeMillis();
         logger.info("################/warehouseIn/addWarehouseIn 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
@@ -301,80 +193,8 @@ public class WarehouseInController {
     public ResultModel updateWarehouseIn() throws Exception {
         logger.info("################/warehouseIn/updateWarehouseIn 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-
-        ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
-
-        WarehouseIn warehouseIn = (WarehouseIn)HttpUtils.pageData2Entity(pageData, new WarehouseIn());
-        if (warehouseIn == null) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("参数错误：Map 转 WarehouseIn 异常！");
-            return model;
-        }
-
-        //非空判断
-        String msgStr = warehouseInService.checkColumn(warehouseIn);
-        if (msgStr.trim().length() > 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg(msgStr);
-            return model;
-        }
-
-        String dtlJsonStr = pageData.getString("dtlJsonStr");
-        if (dtlJsonStr == null || dtlJsonStr.trim().length() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("请至少添加选择一条货品数据！");
-            return model;
-        }
-        List<Map<String, String>> mapList = (List<Map<String, String>>) YvanUtil.jsonToList(dtlJsonStr);
-        if (mapList == null || mapList.size() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("入库单明细Json字符串-转换成List错误！");
-            return model;
-        }
-
-        //1.更新入库单明细
-        List<WarehouseInDetail> detailList = warehouseInDetailService.mapList2DetailList(mapList, null);
-        if (detailList != null && detailList.size() > 0) {
-            for (WarehouseInDetail detail : detailList) {
-                String detailId = detail.getId();
-                if (detailId == null || detailId.trim().length() == 0) {
-                    String id = Conv.createUuid();
-                    detail.setId(id);
-                    //状态(0:待派单 1:执行中 2:已完成 -1.已取消)
-                    detail.setState("0");
-                    detail.setParentId(warehouseIn.getId());
-                    detail.setCuser(warehouseIn.getCuser());
-                    //生成二维码
-                    WarehouseInDetail QRCodeObj = warehouseInDetailService.warehouseInDtl2QRCodeObj(detail, null);
-                    String qrcode = fileService.createQRCode("warehouseBase", YvanUtil.toJson(QRCodeObj));
-                    if (qrcode != null && qrcode.trim().length() > 0) {
-                        detail.setQrcode(qrcode);
-                    }
-                    warehouseInDetailService.save(detail);
-                } else {
-                    //生成二维码
-                    WarehouseInDetail QRCodeObj = warehouseInDetailService.warehouseInDtl2QRCodeObj(detail, null);
-                    String qrcode = fileService.createQRCode("warehouseBase", YvanUtil.toJson(QRCodeObj));
-                    if (qrcode != null && qrcode.trim().length() > 0) {
-                        detail.setQrcode(qrcode);
-                    }
-                    warehouseInDetailService.update(detail);
-                }
-            }
-        }
-
-        //2.更新入库单表头
-        warehouseInService.update(warehouseIn);
-
-        //3.删除入库单明细
-        String deleteIds = pageData.getString("deleteIds");
-        if (deleteIds != null && deleteIds.trim().length() > 0) {
-            deleteIds = StringUtil.stringTrimSpace(deleteIds);
-            String[] delete_Ids = deleteIds.split(",");
-            warehouseInDetailService.deleteByIds(delete_Ids);
-        }
-
+        ResultModel model = warehouseInService.updateWarehouseIn(pageData);
         Long endTime = System.currentTimeMillis();
         logger.info("################/warehouseIn/updateWarehouseIn 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
@@ -391,41 +211,8 @@ public class WarehouseInController {
     public ResultModel cancelWarehouseIn() throws Exception {
         logger.info("################/warehouseIn/cancelWarehouseIn 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        ResultModel model = new ResultModel();
-
         PageData pageData = HttpUtils.parsePageData();
-        String parentId = pageData.getString("id");
-        if (parentId == null || parentId.trim().length() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("入库单id为空或空字符串！");
-            return model;
-        }
-
-        //1. 根据(入库单id)-查询入库单明细(vmes_warehouse_in_detail)
-        List<WarehouseInDetail> detailList = warehouseInDetailService.findWarehouseInDetailListByParentId(parentId);
-        //明细状态:state:状态(0:待派单 1:执行中 2:已完成 -1.已取消)
-        //验证明细是否允许取消
-        //判断明细中是否全部(0:待派单)--忽视状态(-1.已取消)
-        if (!warehouseInDetailService.isAllExistStateByDetailList("0", "-1", detailList)) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("当前入库单不可取消，该入库单中含有(1:执行中 2:已完成)状态，请核对后再次操作！");
-            return model;
-        }
-
-        //2. 修改明细状态
-        PageData mapDetail = new PageData();
-        mapDetail.put("parentId", parentId);
-        //明细状态:state:状态(0:待派单 1:执行中 2:已完成 -1.已取消)
-        mapDetail.put("state", "-1");
-        warehouseInDetailService.updateStateByDetail(mapDetail);
-
-        //3. 修改抬头表状态
-        WarehouseIn warehouseIn = new WarehouseIn();
-        warehouseIn.setId(parentId);
-        //state:状态(0:未完成 1:已完成 -1:已取消)
-        warehouseIn.setState("-1");
-        warehouseInService.update(warehouseIn);
-
+        ResultModel model = warehouseInService.cancelWarehouseIn(pageData);
         Long endTime = System.currentTimeMillis();
         logger.info("################/warehouseIn/cancelWarehouseIn 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
@@ -442,37 +229,8 @@ public class WarehouseInController {
     public ResultModel recoveryWarehouseIn() throws Exception {
         logger.info("################/warehouseIn/recoveryWarehouseIn 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        ResultModel model = new ResultModel();
-
         PageData pageData = HttpUtils.parsePageData();
-        String parentId = pageData.getString("id");
-        if (parentId == null || parentId.trim().length() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("入库单id为空或空字符串！");
-            return model;
-        }
-
-        //入库单状态:state:状态(0:未完成 1:已完成 -1:已取消)
-        WarehouseIn warehouseIn = warehouseInService.findWarehouseInById(parentId);
-        //验证出库单是否允许取消
-        if (!"-1".equals(warehouseIn.getState())) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("当前入库单不是取消状态，不可恢复！");
-            return model;
-        }
-
-        //2. 修改明细状态
-        PageData mapDetail = new PageData();
-        mapDetail.put("parentId", parentId);
-        //明细状态:state:状态(0:待派单 1:执行中 2:已完成 -1.已取消)
-        mapDetail.put("state", "0");
-        warehouseInDetailService.updateStateByDetail(mapDetail);
-
-        //3. 修改抬头表状态
-        //state:状态(0:未完成 1:已完成 -1:已取消)
-        warehouseIn.setState("0");
-        warehouseInService.update(warehouseIn);
-
+        ResultModel model = warehouseInService.recoveryWarehouseIn(pageData);
         Long endTime = System.currentTimeMillis();
         logger.info("################/warehouseIn/recoveryWarehouseIn 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
@@ -489,35 +247,8 @@ public class WarehouseInController {
     public ResultModel deleteWarehouseIn() throws Exception {
         logger.info("################/warehouseIn/deleteWarehouseIn 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        ResultModel model = new ResultModel();
-
         PageData pageData = HttpUtils.parsePageData();
-        String parentId = pageData.getString("id");
-        if (parentId == null || parentId.trim().length() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("入库单id为空或空字符串！");
-            return model;
-        }
-
-        //1. 根据(入库单id)-查询入库单明细(vmes_warehouse_in_detail)
-        List<WarehouseInDetail> detailList = warehouseInDetailService.findWarehouseInDetailListByParentId(parentId);
-        //明细状态:state:状态(0:待派单 1:执行中 2:已完成 -1.已取消)
-        //验证明细是否允许删除
-        //判断明细中是否全部(0:待派单) 忽视状态:-1:已取消
-        if (!warehouseInDetailService.isAllExistStateByDetailList("0", "-1", detailList)) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("当前入库单不可删除，该入库单中含有(1:执行中 2:已完成)状态，请核对后再次操作！");
-            return model;
-        }
-
-        //2. 删除入库单明细
-        Map columnMap = new HashMap();
-        columnMap.put("parent_id", parentId);
-        warehouseInDetailService.deleteByColumnMap(columnMap);
-
-        //3. 删除入库单
-        warehouseInService.deleteById(parentId);
-
+        ResultModel model = warehouseInService.deleteWarehouseIn(pageData);
         Long endTime = System.currentTimeMillis();
         logger.info("################/warehouseIn/deleteWarehouseIn 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
@@ -533,40 +264,9 @@ public class WarehouseInController {
     public void exportExcelWarehouseIn() throws Exception {
         logger.info("################warehouseIn/exportExcelWarehouseIns 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-
-        List<Column> columnList = columnService.findColumnList("warehouseIn");
-        if (columnList == null || columnList.size() == 0) {
-            throw new RestException("1","数据库没有生成TabCol，请联系管理员！");
-        }
-
-        //根据查询条件获取业务数据List
         PageData pd = HttpUtils.parsePageData();
-        String ids = (String)pd.getString("ids");
-        String queryStr = "";
-        if (ids != null && ids.trim().length() > 0) {
-            ids = StringUtil.stringTrimSpace(ids);
-            ids = "'" + ids.replace(",", "','") + "'";
-            queryStr = "id in (" + ids + ")";
-        }
-        pd.put("queryStr", queryStr);
-
         Pagination pg = HttpUtils.parsePagination(pd);
-        pg.setSize(100000);
-        List<Map> dataList = warehouseInService.getDataListPage(pd, pg);
-
-        //查询数据转换成Excel导出数据
-        List<LinkedHashMap<String, String>> dataMapList = ColumnUtil.modifyDataList(columnList, dataList);
-        HttpServletResponse response = HttpUtils.currentResponse();
-
-        //查询数据-Excel文件导出
-        String fileName = pd.getString("fileName");
-        if (fileName == null || fileName.trim().length() == 0) {
-            fileName = "ExcelWarehouseIn";
-        }
-
-        //导出文件名-中文转码
-        fileName = new String(fileName.getBytes("utf-8"),"ISO-8859-1");
-        ExcelUtil.excelExportByDataList(response, fileName, dataMapList);
+        warehouseInService.exportExcelWarehouseIn(pd,pg);
         Long endTime = System.currentTimeMillis();
         logger.info("################warehouseIn/exportExcelWarehouseIns 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
     }
@@ -581,43 +281,7 @@ public class WarehouseInController {
     public ResultModel importExcelWarehouseIn(@RequestParam(value="excelFile") MultipartFile file) throws Exception  {
         logger.info("################warehouseIn/importExcelWarehouseIns 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        ResultModel model = new ResultModel();
-        //HttpServletRequest Request = HttpUtils.currentRequest();
-
-        if (file == null) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("请上传Excel文件！");
-            return model;
-        }
-
-        // 验证文件是否合法
-        // 获取上传的文件名(文件名.后缀)
-        String fileName = file.getOriginalFilename();
-        if (fileName == null
-            || !(fileName.matches("^.+\\.(?i)(xlsx)$")
-            || fileName.matches("^.+\\.(?i)(xls)$"))
-        ) {
-            String failMesg = "不是excel格式文件,请重新选择！";
-            model.putCode(Integer.valueOf(1));
-            model.putMsg(failMesg);
-            return model;
-        }
-
-        // 判断文件的类型，是2003还是2007
-        boolean isExcel2003 = true;
-            if (fileName.matches("^.+\\.(?i)(xlsx)$")) {
-            isExcel2003 = false;
-        }
-
-        List<List<String>> dataLst = ExcelUtil.readExcel(file.getInputStream(), isExcel2003);
-        List<LinkedHashMap<String, String>> dataMapLst = ExcelUtil.reflectMapList(dataLst);
-
-        //1. Excel文件数据dataMapLst -->(转换) ExcelEntity (属性为导入模板字段)
-        //2. Excel导入字段(非空,数据有效性验证[数字类型,字典表(大小)类是否匹配])
-        //3. Excel导入字段-名称唯一性判断-在Excel文件中
-        //4. Excel导入字段-名称唯一性判断-在业务表中判断
-        //5. List<ExcelEntity> --> (转换) List<业务表DB>对象
-        //6. 遍历List<业务表DB> 对业务表添加或修改
+        ResultModel model = warehouseInService.importExcelWarehouseIn(file);
         Long endTime = System.currentTimeMillis();
         logger.info("################warehouseIn/importExcelWarehouseIns 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;

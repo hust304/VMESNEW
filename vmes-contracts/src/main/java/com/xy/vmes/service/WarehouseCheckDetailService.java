@@ -5,6 +5,7 @@ import com.xy.vmes.entity.WarehouseCheck;
 import com.xy.vmes.entity.WarehouseCheckDetail;
 import com.xy.vmes.entity.WarehouseProduct;
 import com.yvan.PageData;
+import com.yvan.springmvc.ResultModel;
 
 import java.util.List;
 import java.util.Map;
@@ -150,11 +151,16 @@ public interface WarehouseCheckDetailService {
      * @return
      */
     String findParentStateByDetailList(String ignoreState, List<WarehouseCheckDetail> dtlList);
+
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     //boolean isAllAuditStateByDetailExecuteList(String state, List<Map<String, Object>> mapList);
 
+    ResultModel listPageWarehouseCheckDetails(PageData pd, Pagination pg) throws Exception;
 
+    ResultModel cancelWarehouseCheckDetail(PageData pageData) throws Exception;
 
+    ResultModel deleteWarehouseCheckDetail(PageData pageData) throws Exception;
 }
 
 
