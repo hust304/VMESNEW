@@ -179,7 +179,8 @@
             ELSE null
             END stateName,
             parent.cuser cuser,
-            DATE_FORMAT(parent.cdate,'%Y-%m-%d %T') cdate,
+            parent.cdate,
+            DATE_FORMAT(parent.cdate,'%Y-%m-%d %T') cdateStr,
             parent.uuser uuser,
             DATE_FORMAT(parent.udate,'%Y-%m-%d %T') udate,
 
