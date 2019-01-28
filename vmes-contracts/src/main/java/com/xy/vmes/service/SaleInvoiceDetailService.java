@@ -6,6 +6,8 @@ import com.xy.vmes.entity.SaleDeliverDetail;
 import com.xy.vmes.entity.SaleInvoice;
 import com.xy.vmes.entity.SaleInvoiceDetail;
 import com.yvan.PageData;
+import com.yvan.springmvc.ResultModel;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -104,8 +106,13 @@ public interface SaleInvoiceDetailService {
     List<SaleInvoiceDetail> findSaleInvoiceDetailList(PageData object) throws Exception;
     List<SaleInvoiceDetail> findSaleInvoiceDetailListByParentId(String parentId) throws Exception;
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     void addInvoiceDetail(SaleInvoice parentObj, List<SaleInvoiceDetail> detailList) throws Exception;
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ResultModel listPageSaleInvoiceDetail(PageData pd, Pagination pg) throws Exception;
+
+    void exportExcelSaleInvoiceDetails(PageData pd, Pagination pg) throws Exception;
+    ResultModel importExcelSaleInvoiceDetails(MultipartFile file) throws Exception;
 
 
 }

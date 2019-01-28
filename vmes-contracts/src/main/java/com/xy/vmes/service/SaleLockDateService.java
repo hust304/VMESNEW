@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.entity.SaleLockDate;
 import com.xy.vmes.exception.ApplicationException;
 import com.yvan.PageData;
+import com.yvan.springmvc.ResultModel;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -135,6 +137,14 @@ public interface SaleLockDateService {
 
     //////////////////////////////////////////////////////////////////////////
     Long findLockDateMillisecondByCompanyId(String companyId) throws ApplicationException;
+
+    ResultModel updateSaleLockDate(PageData pd) throws Exception;
+    ResultModel saveSaleLockDate(PageData pd) throws Exception;
+    ResultModel selectSaleLockDateByCompanyId(PageData pd) throws Exception;
+    ResultModel listPageSaleLockDates(PageData pd, Pagination pg) throws Exception;
+
+    void exportExcelSaleLockDates(PageData pd, Pagination pg) throws Exception;
+    ResultModel importExcelSaleLockDates(MultipartFile file) throws Exception;
 
 }
 

@@ -6,6 +6,8 @@ import com.xy.vmes.entity.SaleDeliverDetail;
 import com.xy.vmes.entity.SaleOrderDetailEntity;
 import com.xy.vmes.exception.ApplicationException;
 import com.yvan.PageData;
+import com.yvan.springmvc.ResultModel;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -172,6 +174,14 @@ public interface SaleDeliverDetailService {
     String findOutIdsByDeliverId(String deliverId);
 
     String findOrderDtlIdsByDeliverDtlList(List<SaleDeliverDetail> detailList);
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    ResultModel listPageSaleDeliverDetail(PageData pd, Pagination pg) throws Exception;
+    ResultModel listPageSaleDeliverDetailByPrice(PageData pd, Pagination pg) throws Exception;
+    ResultModel updateSaleDeliverDetailByPrice(PageData pd) throws Exception;
+
+    void exportExcelSaleDeliverDetails(PageData pd, Pagination pg) throws Exception;
+    ResultModel importExcelSaleDeliverDetails(MultipartFile file) throws Exception;
 
 }
 

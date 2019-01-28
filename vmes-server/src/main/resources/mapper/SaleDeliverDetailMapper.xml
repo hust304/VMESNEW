@@ -72,7 +72,7 @@
     </insert>
 
     <!-- 发货单明细(后计价) -->
-    <insert id="insertColumn" >
+    <insert id="insertColumnByPrice" >
         delete from vmes_column where model_code = 'saleDeliverDetailByPrice' ;
         insert into vmes_column (
         id,model_code,title_key,title_name,serial_number,

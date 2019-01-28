@@ -3,6 +3,8 @@ package com.xy.vmes.service;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.entity.SaleDeliver;
 import com.yvan.PageData;
+import com.yvan.springmvc.ResultModel;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -117,6 +119,17 @@ public interface SaleDeliverService {
      * @return
      */
     String checkPricetypeByOrderDetailList(List<Map<String, String>> mapList);
+
+    ///////////////////////////////////////////////////////////////////////////////////
+    ResultModel listPageSaleDeliver(PageData pd, Pagination pg) throws Exception;
+    ResultModel addSaleDeliver(PageData pd) throws Exception;
+    ResultModel updateSaleDeliverByDeliverType(PageData pd) throws Exception;
+    ResultModel cancelSaleDeliver(PageData pd) throws Exception;
+    ResultModel checkIsAllOutByDeliverId(PageData pd) throws Exception;
+    ResultModel checkIsNullDeliverSumByDeliverId(PageData pd) throws Exception;
+
+    void exportExcelSaleDelivers(PageData pd, Pagination pg) throws Exception;
+    ResultModel importExcelSaleDelivers(MultipartFile file) throws Exception;
 
 }
 
