@@ -71,19 +71,23 @@
 
 
     <select id="listWarehousePath" parameterType="com.yvan.PageData" resultType="java.util.Map">
-        select DISTINCT warehouse.path_name pathName,warehouse.id warehouseId,warehouseProduct.product_id productId
-        from vmes_warehouse_product warehouseProduct
-        left join vmes_warehouse warehouse on warehouse.id = warehouseProduct.warehouse_id
-        <where>
-            <if test="warehouseId != null and warehouseId != ''" >
-                and warehouseProduct.warehouse_id = #{warehouseId}
-            </if>
-            <if test="productId != null and productId != ''" >
-                and warehouseProduct.product_id = #{productId}
-            </if>
-            <![CDATA[ and warehouseProduct.stock_count > 0 ]]>
-        </where>
-        order by warehouseProduct.code asc
+        select DISTINCT t.pathName,t.warehouseId,t.productId
+        from (
+            select
+            warehouse.path_name pathName,warehouse.id warehouseId,warehouseProduct.product_id productId
+            from vmes_warehouse_product warehouseProduct
+            left join vmes_warehouse warehouse on warehouse.id = warehouseProduct.warehouse_id
+            <where>
+                <if test="warehouseId != null and warehouseId != ''" >
+                    and warehouseProduct.warehouse_id = #{warehouseId}
+                </if>
+                <if test="productId != null and productId != ''" >
+                    and warehouseProduct.product_id = #{productId}
+                </if>
+                <![CDATA[ and warehouseProduct.stock_count > 0 ]]>
+            </where>
+            order by warehouseProduct.code asc
+        ) t
     </select>
 
 
