@@ -315,6 +315,7 @@ public class WarehouseInExecuteServiceImp implements WarehouseInExecuteService {
                 String detailId = (String)warehouseInDetailMap.get("id");
                 //批次号
                 String code = (String)warehouseInDetailMap.get("code");
+                String qrcode = (String)warehouseInDetailMap.get("qrcode");
 
                 //入库执行明细 executeMap
                 // 界面上 model_code := 'warehouseInExecutorByAddExecute' 中获得
@@ -342,6 +343,7 @@ public class WarehouseInExecuteServiceImp implements WarehouseInExecuteService {
                     inObject.setProductId(productId);
                     //(实际)货位ID
                     inObject.setWarehouseId(warehouseId);
+                    inObject.setQrcode(qrcode);
 
                     //库存变更日志
                     String executeId = Conv.createUuid();

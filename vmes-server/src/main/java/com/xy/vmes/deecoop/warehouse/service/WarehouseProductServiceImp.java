@@ -851,6 +851,8 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
             addObj.setStockCount(BigDecimal.valueOf(tempCount));
             addObj.setCuser(object.getCuser());
             addObj.setCompanyId(object.getCompanyId());
+            addObj.setQrcode(object.getQrcode());
+
             this.save(addObj);
 
             loginfo.setTargetWpId(addObj.getId());

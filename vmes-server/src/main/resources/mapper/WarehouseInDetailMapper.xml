@@ -46,6 +46,8 @@
             ('67cf4139d5a511e884ad00163e105f05', 'warehouseInDetail', 'uuser', '修改用户id', 17, '1', '0', '1', '0', '2018-10-22 10:51:42', 'admin'),
             ('67cf4189d5a511e884ad00163e105f05', 'warehouseInDetail', 'udate', '修改时间', 18, '1', '0', '1', '0', '2018-10-22 10:51:42', 'admin'),
             ('67cf4233d5a511e884ad00163e105f05', 'warehouseInDetail', 'isdisable', '是否启用', 19, '1', '0', '1', '0', '2018-10-22 10:51:42', 'admin'),
+
+            (replace(uuid(), '-', ''), 'warehouseInDetail', 'qrcode', 'qrcode', 0, '1', '0', '1', '0', '2018-10-22 10:51:42', 'admin')
     </insert>
 
     <insert id="insertColumn1" >
