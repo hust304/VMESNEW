@@ -8,9 +8,7 @@ import com.xy.vmes.entity.*;
 import com.xy.vmes.exception.TableVersionException;
 import com.xy.vmes.deecoop.warehouse.dao.WarehouseProductMapper;
 import com.xy.vmes.service.*;
-import com.yvan.ExcelUtil;
-import com.yvan.HttpUtils;
-import com.yvan.PageData;
+import com.yvan.*;
 import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +19,6 @@ import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.*;
 
-import com.yvan.Conv;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
@@ -45,6 +42,8 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
     private ProductService productService;
     @Autowired
     private ColumnService columnService;
+    @Autowired
+    private FileService fileService;
 
     /**
     * 创建人：陈刚 自动创建，禁止修改
@@ -53,6 +52,13 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
     @Override
     public void save(WarehouseProduct warehouseProduct) throws Exception{
         warehouseProduct.setId(Conv.createUuid());
+        warehouseProduct.setCdate(new Date());
+        warehouseProduct.setUdate(new Date());
+        warehouseProductMapper.insert(warehouseProduct);
+    }
+
+    public void save(String id, WarehouseProduct warehouseProduct) throws Exception {
+        warehouseProduct.setId(id);
         warehouseProduct.setCdate(new Date());
         warehouseProduct.setUdate(new Date());
         warehouseProductMapper.insert(warehouseProduct);
@@ -226,6 +232,18 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
         }
 
         return strBuf.toString();
+    }
+
+    public WarehouseProduct warehouseProduct2QRCodeObj(WarehouseProduct warehouseProduct, WarehouseProduct QRCodeObj) {
+        if (QRCodeObj == null) {QRCodeObj = new WarehouseProduct();}
+        if (warehouseProduct == null) {return QRCodeObj;}
+
+        QRCodeObj.setId(warehouseProduct.getId());
+        QRCodeObj.setProductId(warehouseProduct.getProductId());
+        QRCodeObj.setWarehouseId(warehouseProduct.getWarehouseId());
+        QRCodeObj.setCode(warehouseProduct.getCode());
+
+        return QRCodeObj;
     }
     ///////////////////////////////////////////////////////////////////////////////////////////
 
@@ -755,13 +773,23 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
 
         if (objectDB == null) {
             WarehouseProduct addObj = new WarehouseProduct();
+            String id = Conv.createUuid();
+            addObj.setId(id);
             addObj.setCode(object.getCode());
             addObj.setProductId(object.getProductId());
             addObj.setWarehouseId(object.getWarehouseId());
             addObj.setStockCount(BigDecimal.valueOf(tempCount));
             addObj.setCuser(object.getCuser());
             addObj.setCompanyId(object.getCompanyId());
-            this.save(addObj);
+
+            //生成二维码
+            WarehouseProduct QRCodeObj = this.warehouseProduct2QRCodeObj(addObj, null);
+            String qrcode = fileService.createQRCode("warehouseProduct", YvanUtil.toJson(QRCodeObj));
+            if (qrcode != null && qrcode.trim().length() > 0) {
+                addObj.setQrcode(qrcode);
+            }
+
+            this.save(id, addObj);
 
             loginfo.setSourceWpId(addObj.getId());
             loginfo.setSourceBeforeStockcount(BigDecimal.valueOf(0D));

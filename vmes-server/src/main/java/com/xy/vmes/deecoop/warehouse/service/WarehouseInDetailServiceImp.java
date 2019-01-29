@@ -194,8 +194,6 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
         if (QRCodeObj == null) {QRCodeObj = new WarehouseInDetail();}
         if (warehouseInDtl == null) {return QRCodeObj;}
 
-        QRCodeObj.setId(warehouseInDtl.getId());
-        QRCodeObj.setParentId(warehouseInDtl.getParentId());
         QRCodeObj.setProductId(warehouseInDtl.getProductId());
         QRCodeObj.setWarehouseId(warehouseInDtl.getWarehouseId());
         QRCodeObj.setCode(warehouseInDtl.getCode());
@@ -239,12 +237,6 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
             detail.setCuser(parentObj.getCuser());
             detail.setCode(code);
 
-            //生成二维码
-            WarehouseInDetail QRCodeObj = this.warehouseInDtl2QRCodeObj(detail, null);
-            String qrcode = fileService.createQRCode("warehouseBase", YvanUtil.toJson(QRCodeObj));
-            if (qrcode != null && qrcode.trim().length() > 0) {
-                detail.setQrcode(qrcode);
-            }
             this.save(detail);
         }
     }

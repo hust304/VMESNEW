@@ -24,6 +24,7 @@ public interface WarehouseProductService {
      * 创建时间：2018-10-16
      */
     void save(WarehouseProduct object) throws Exception;
+    void save(String id,WarehouseProduct object) throws Exception;
 
     /**
      * 创建人：陈刚 自动创建，禁止修改
@@ -97,6 +98,8 @@ public interface WarehouseProductService {
 
     List<WarehouseProduct> findWarehouseProductList(PageData object);
     String findWarehouseIdsByWarehouseProductList(List<WarehouseProduct> objectList);
+
+    WarehouseProduct warehouseProduct2QRCodeObj(WarehouseProduct warehouseProduct, WarehouseProduct QRCodeObj);
     ///////////////////////////////////////////////////////////////////////////////////////////
 
     /**
