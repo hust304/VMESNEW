@@ -470,7 +470,10 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
         loginfo.setCount(count);
 
         //type:(in:入库 out:出库 move:移库, check:盘点)
-        this.modifyStockCount(null, object, "in", count, loginfo);
+        msgStr = this.modifyStockCount(null, object, "in", count, loginfo);
+        if (msgStr != null && msgStr.trim().length() > 0) {
+            msgBuf.append(msgStr);
+        }
 
         return msgBuf.toString();
     }
@@ -506,7 +509,10 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
         loginfo.setCount(count);
 
         //type:(in:入库 out:出库 move:移库, check:盘点)
-        this.modifyStockCount(object, null, "out", count, loginfo);
+        msgStr = this.modifyStockCount(object, null, "out", count, loginfo);
+        if (msgStr != null && msgStr.trim().length() > 0) {
+            msgBuf.append(msgStr);
+        }
 
         return msgBuf.toString();
     }
@@ -543,7 +549,10 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
         loginfo.setCount(count);
 
         //type:(in:入库 out:出库 move:移库, check:盘点)
-        this.modifyStockCount(null, object, "check", count, loginfo);
+        msgStr = this.modifyStockCount(null, object, "check", count, loginfo);
+        if (msgStr != null && msgStr.trim().length() > 0) {
+            msgBuf.append(msgStr);
+        }
 
         return msgBuf.toString();
     }
@@ -574,7 +583,10 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
         loginfo.setCount(count);
 
         //type:(in:入库 out:出库 move:移库, check:盘点)
-        this.modifyStockCount(null, object, "update", count, loginfo);
+        msgStr = this.modifyStockCount(null, object, "update", count, loginfo);
+        if (msgStr != null && msgStr.trim().length() > 0) {
+            msgBuf.append(msgStr);
+        }
 
         return msgBuf.toString();
     }
@@ -611,7 +623,10 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
         //count:业务数量
         loginfo.setCount(count);
 
-        this.modifyStockCount(source, target, "move", count, loginfo);
+        msgStr = this.modifyStockCount(source, target, "move", count, loginfo);
+        if (msgStr != null && msgStr.trim().length() > 0) {
+            msgBuf.append(msgStr);
+        }
 
         return msgBuf.toString();
     }
@@ -671,29 +686,23 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
         if (count == null) {
             msgBuf.append("变更数量(count)为空！" + Common.SYS_ENDLINE_DEFAULT);
         }
-//        if ("in".equals(type) && target == null) {
-//            msgBuf.append("入库操作:变更目标对象 target<WarehouseProduct>为空！" + Common.SYS_ENDLINE_DEFAULT);
-//        } else if ("out".equals(type) && source == null) {
-//            msgBuf.append("出库操作:变更源对象对象 source<WarehouseProduct>为空！" + Common.SYS_ENDLINE_DEFAULT);
-//        } else if ("move".equals(type) && (target == null || source == null) ) {
-//            msgBuf.append("移库操作:变更源或变更目标对象(source,target) <WarehouseProduct>为空！" + Common.SYS_ENDLINE_DEFAULT);
-//        }
-//        if (msgBuf.toString().trim().length() > 0) {
-//            return msgBuf.toString();
-//        }
 
-        if ("move".equals(type)) {
-            String strTemp = this.checkMoveWarehouseProduct(source, target);
-            if (strTemp.trim().length() > 0) {
-                msgBuf.append(strTemp);
-                return msgBuf.toString();
-            }
-        } else if ("in,out,check,update".indexOf(type) != -1) {
-            String strTemp = this.checkInWarehouseProduct(target);
-            if (strTemp.trim().length() > 0) {
-                msgBuf.append(strTemp);
-                return msgBuf.toString();
-            }
+        //"in,check,update" (目标)target 非空判断
+        //"out" (源)source 非空判断
+        //"move" (source,target) 非判断
+        if ("in".equals(type) && target == null) {
+            msgBuf.append("入库操作:变更目标对象 target<WarehouseProduct>为空！" + Common.SYS_ENDLINE_DEFAULT);
+        } else if ("check".equals(type) && target == null) {
+            msgBuf.append("盘点操作:变更目标对象 target<WarehouseProduct>为空！" + Common.SYS_ENDLINE_DEFAULT);
+        } else if ("update".equals(type) && target == null) {
+            msgBuf.append("修改库存操作:变更目标对象 target<WarehouseProduct>为空！" + Common.SYS_ENDLINE_DEFAULT);
+        } else if ("out".equals(type) && source == null) {
+            msgBuf.append("出库操作:变更源对象对象 source<WarehouseProduct>为空！" + Common.SYS_ENDLINE_DEFAULT);
+        } else if ("move".equals(type) && (target == null || source == null) ) {
+            msgBuf.append("移库操作:变更源或变更目标对象(source,target) <WarehouseProduct>为空！" + Common.SYS_ENDLINE_DEFAULT);
+        }
+        if (msgBuf.toString().trim().length() > 0) {
+            return msgBuf.toString();
         }
 
         //(源)source 变更库存数量
