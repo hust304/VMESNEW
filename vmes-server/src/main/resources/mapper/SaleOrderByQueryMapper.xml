@@ -39,7 +39,6 @@
         saleOrder.customer_id customerId,
         DATE_FORMAT(saleOrder.order_date,'%Y-%m-%d') orderDate,
 
-        DATE_FORMAT(saleOrder.expect_date,'%Y-%m-%d') expectDate,
         round(ifnull(saleOrder.total_sum, 0),2) totalSum,
         round(ifnull(saleOrder.discount_sum, 0),2) discountSum,
         round(ifnull(saleOrder.order_sum, 0),2) orderSum,
@@ -48,14 +47,16 @@
         saleOrder.cuser cuser,
         DATE_FORMAT(saleOrder.cdate,'%Y-%m-%d %T') cdate,
         saleOrder.uuser uuser,
-
         DATE_FORMAT(saleOrder.udate,'%Y-%m-%d %T') udate,
         saleOrder.remark remark,
+
         saleOrder.isdisable isdisable,
+        DATE_FORMAT(saleOrder.expect_date,'%Y-%m-%d') expectDate,
+        DATE_FORMAT(saleOrder.deliver_date,'%Y-%m-%d') deliverDate,
+        DATE_FORMAT(saleOrder.pay_date,'%Y-%m-%d') payDate,
 
         makeUser.user_name makeName,
         customer.name customerName,
-
         <!--订单付款进度 付款明细表汇总 view_sale_receive_detail-->
         round(ifnull(receive.amount, 0),2) receiveSum,
         round((ifnull(receive.amount, 0) / ifnull(saleOrder.order_sum, 0)), 0) receiveProgress,
