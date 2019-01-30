@@ -54,7 +54,7 @@ public class ComonFilter implements Filter {
         //请求地址中含有字符串“login”和“error”的不参与sessionId校验
         if(uri.indexOf("login".toLowerCase()) < 0 && uri.indexOf("error".toLowerCase()) < 0 && uri.indexOf("file".toLowerCase())<0 && uri.indexOf("importExcel".toLowerCase())<0
                 && uri.indexOf(".js".toLowerCase())<0 && uri.indexOf(".png".toLowerCase())<0 && uri.indexOf(".ttf".toLowerCase())<0 && uri.indexOf(".html".toLowerCase())<0
-                && uri.indexOf(".css".toLowerCase())<0 && uri.indexOf("test".toLowerCase())<0){
+                && uri.indexOf(".css".toLowerCase())<0 && uri.indexOf("test".toLowerCase())<0 && uri.indexOf("mobile".toLowerCase())<0){
                 if(uri.equals("/")){
                     httpResponse.sendRedirect("/index.html/");
                     return;

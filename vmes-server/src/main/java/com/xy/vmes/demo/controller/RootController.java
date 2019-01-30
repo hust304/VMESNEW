@@ -20,7 +20,7 @@ public class RootController {
     @Autowired
     private DepartmentService departmentService;
 
-    @GetMapping("/ok")
+    @GetMapping("/mobile/ok")
     public String ok() {
         return "OK";
     }
