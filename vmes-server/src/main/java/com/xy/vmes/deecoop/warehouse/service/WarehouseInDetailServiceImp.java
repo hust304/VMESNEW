@@ -5,6 +5,7 @@ import com.xy.vmes.deecoop.warehouse.dao.WarehouseInDetailMapper;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.entity.WarehouseIn;
 import com.xy.vmes.entity.WarehouseInDetail;
+import com.xy.vmes.entity.WarehouseInDetailEntity;
 import com.xy.vmes.service.*;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
@@ -190,6 +191,18 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
 
         return objectList;
     }
+
+    public List<WarehouseInDetailEntity> mapList2DetailEntityList(List<Map<String, String>> mapList, List<WarehouseInDetailEntity> objectList) {
+        if (objectList == null) {objectList = new ArrayList<WarehouseInDetailEntity>();}
+        if (mapList == null || mapList.size() == 0) {return objectList;}
+
+        for (Map<String, String> mapObject : mapList) {
+            WarehouseInDetailEntity detail = (WarehouseInDetailEntity)HttpUtils.pageData2Entity(mapObject, new WarehouseInDetailEntity());
+            objectList.add(detail);
+        }
+
+        return objectList;
+    }
     public WarehouseInDetail warehouseInDtl2QRCodeObj(WarehouseInDetail warehouseInDtl, WarehouseInDetail QRCodeObj) {
         if (QRCodeObj == null) {QRCodeObj = new WarehouseInDetail();}
         if (warehouseInDtl == null) {return QRCodeObj;}
@@ -201,14 +214,14 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
         return QRCodeObj;
     }
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    public String checkDispatcheDetailList(List<WarehouseInDetail> objectList) {
+    public String checkDispatcheDetailList(List<WarehouseInDetailEntity> objectList) {
         if (objectList == null || objectList.size() == 0) {
             return new String("请至少选择一条明细！");
         }
 
         StringBuffer msgBuf = new StringBuffer();
         for (int i = 0; i < objectList.size(); i++) {
-            WarehouseInDetail detail = objectList.get(i);
+            WarehouseInDetailEntity detail = objectList.get(i);
             if (detail.getWarehouseId() == null || detail.getWarehouseId().trim().length() == 0) {
                 msgBuf.append("第 " + (i+1) + " 行：推荐库位为空，推荐库位必填项(系统无推荐货位，请指定或添加新货位)");
             }

@@ -4,14 +4,8 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.warehouse.dao.WarehouseInExecutorMapper;
-import com.xy.vmes.entity.Column;
-import com.xy.vmes.entity.WarehouseInDetail;
-import com.xy.vmes.entity.WarehouseInExecute;
-import com.xy.vmes.entity.WarehouseInExecutor;
-import com.xy.vmes.service.ColumnService;
-import com.xy.vmes.service.WarehouseInDetailService;
-import com.xy.vmes.service.WarehouseInExecuteService;
-import com.xy.vmes.service.WarehouseInExecutorService;
+import com.xy.vmes.entity.*;
+import com.xy.vmes.service.*;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +34,9 @@ public class WarehouseInExecutorServiceImp implements WarehouseInExecutorService
     private ColumnService columnService;
     @Autowired
     private WarehouseInDetailService warehouseInDetailService;
+
+    @Autowired
+    private TaskService taskService;
 
     /**
      * 创建人：陈刚 自动创建，禁止修改
@@ -191,7 +188,7 @@ public class WarehouseInExecutorServiceImp implements WarehouseInExecutorService
         return this.findWarehouseInExecutorList(findMap);
     }
 
-    public void addWarehouseInExecutor(WarehouseInDetail detail, String userIds) {
+    public void addWarehouseInExecutor(WarehouseInDetailEntity detail, String userIds) {
         if (detail == null) {return;}
         if (detail.getId() == null || detail.getId().trim().length() == 0) {return;}
         if (userIds == null || userIds.trim().length() == 0) {return;}
@@ -204,11 +201,16 @@ public class WarehouseInExecutorServiceImp implements WarehouseInExecutorService
             object.setCuser(detail.getCuser());
             object.setDetailId(detail.getId());
             object.setExecutorId(userId);
+
+            Task task = taskService.warehouseInDtl2Task(detail, null);
+            task.setExecutorId(userId);
             try {
                 this.save(object);
+                taskService.save(task);
             } catch (Exception e) {
                 e.printStackTrace();
             }
+
         }
     }
 

@@ -1,7 +1,7 @@
 package com.xy.vmes.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
-import com.xy.vmes.entity.WarehouseInDetail;
+import com.xy.vmes.entity.WarehouseInDetailEntity;
 import com.xy.vmes.entity.WarehouseInExecutor;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
@@ -91,7 +91,7 @@ public interface WarehouseInExecutorService {
     List<WarehouseInExecutor> findWarehouseInExecutorList(PageData object);
     List<WarehouseInExecutor> findWarehouseInExecutorListByDetailId(String detailId);
 
-    void addWarehouseInExecutor(WarehouseInDetail detail, String userIds);
+    void addWarehouseInExecutor(WarehouseInDetailEntity detail, String userIds);
 
     ResultModel listPageWarehouseInExecutor(PageData pd, Pagination pg) throws Exception;
 

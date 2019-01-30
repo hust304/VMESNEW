@@ -3,6 +3,7 @@ package com.xy.vmes.service;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.entity.WarehouseIn;
 import com.xy.vmes.entity.WarehouseInDetail;
+import com.xy.vmes.entity.WarehouseInDetailEntity;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
 
@@ -83,10 +84,11 @@ public interface WarehouseInDetailService {
     List<WarehouseInDetail> findWarehouseInDetailListByParentId(String parentId);
 
     List<WarehouseInDetail> mapList2DetailList(List<Map<String, String>> mapList, List<WarehouseInDetail> objectList);
+    List<WarehouseInDetailEntity> mapList2DetailEntityList(List<Map<String, String>> mapList, List<WarehouseInDetailEntity> objectList);
     WarehouseInDetail warehouseInDtl2QRCodeObj(WarehouseInDetail warehouseInDtl, WarehouseInDetail QRCodeObj);
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    String checkDispatcheDetailList(List<WarehouseInDetail> objectList);
+    String checkDispatcheDetailList(List<WarehouseInDetailEntity> objectList);
 
     void addWarehouseInDetail(WarehouseIn parentObj, List<WarehouseInDetail> objectList) throws Exception;
 

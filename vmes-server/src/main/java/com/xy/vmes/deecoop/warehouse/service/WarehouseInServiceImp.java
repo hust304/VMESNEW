@@ -821,7 +821,7 @@ public class WarehouseInServiceImp implements WarehouseInService {
         }
 
         //1. 入库单明细派单
-        List<WarehouseInDetail> detailList = warehouseInDetailService.mapList2DetailList(mapList, null);
+        List<WarehouseInDetailEntity> detailList = warehouseInDetailService.mapList2DetailEntityList(mapList, null);
         String msgStr = warehouseInDetailService.checkDispatcheDetailList(detailList);
         if (msgStr != null && msgStr.trim().length() > 0) {
             model.putCode(Integer.valueOf(1));
@@ -830,16 +830,19 @@ public class WarehouseInServiceImp implements WarehouseInService {
         }
 
         String cuser = pageData.getString("cuser");
-        for (WarehouseInDetail detail : detailList) {
-            detail.setCuser(cuser);
+        for (WarehouseInDetailEntity entity : detailList) {
+            entity.setCuser(cuser);
 
             //入库明细分配执行人
-            warehouseInExecutorService.addWarehouseInExecutor(detail, executeId);
+            //添加设置任务待办表
+            warehouseInExecutorService.addWarehouseInExecutor(entity, executeId);
 
+            WarehouseInDetail inDetail = new WarehouseInDetail();
+            inDetail.setId(entity.getId());
             //状态(0:待派单 1:执行中 2:已完成 -1.已取消)
-            detail.setState("1");
+            inDetail.setState("1");
             //detail.setExecuteId(executeId);
-            warehouseInDetailService.update(detail);
+            warehouseInDetailService.update(inDetail);
         }
 
         return model;
