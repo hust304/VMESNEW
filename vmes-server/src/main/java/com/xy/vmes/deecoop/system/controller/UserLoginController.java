@@ -1,21 +1,13 @@
 package com.xy.vmes.deecoop.system.controller;
 
-import com.xy.vmes.common.util.Common;
-import com.xy.vmes.common.util.RedisUtils;
-import com.xy.vmes.entity.Department;
-import com.xy.vmes.entity.Employee;
-import com.xy.vmes.entity.User;
 import com.xy.vmes.service.*;
-import com.yvan.Conv;
 import com.yvan.HttpUtils;
-import com.yvan.MD5Utils;
 import com.yvan.PageData;
-import com.yvan.YvanUtil;
+import com.yvan.RedisUtils;
 import com.yvan.cache.RedisClient;
 import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,18 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import redis.clients.jedis.Jedis;
 
-import java.text.MessageFormat;
 import java.util.*;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.font.FontRenderContext;
-import java.awt.geom.Rectangle2D;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-
-import javax.imageio.ImageIO;
 
 
 /**

@@ -1,15 +1,11 @@
 package com.xy.vmes.deecoop.system.service;
 
 import com.xy.vmes.common.util.Common;
-import com.xy.vmes.common.util.RedisUtils;
 import com.xy.vmes.entity.Department;
 import com.xy.vmes.entity.Employee;
 import com.xy.vmes.entity.User;
 import com.xy.vmes.service.*;
-import com.yvan.Conv;
-import com.yvan.MD5Utils;
-import com.yvan.PageData;
-import com.yvan.YvanUtil;
+import com.yvan.*;
 import com.yvan.cache.RedisClient;
 import com.yvan.common.util.JsonUtil;
 import com.yvan.platform.RestException;
