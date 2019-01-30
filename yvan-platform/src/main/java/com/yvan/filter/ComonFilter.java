@@ -1,5 +1,6 @@
 package com.yvan.filter;
 
+import com.yvan.RedisUtils;
 import com.yvan.cache.RedisClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -97,15 +98,25 @@ public class ComonFilter implements Filter {
         redisClient.setWithExpireTime(sessionID, sessionValue, 30*60*1000);
     }
 
+    /**
+     * 根据userID-获取Redis缓存中的会话ID(Uuid)
+     * (手机端)Redis缓存Key:   (uuid:用户ID:企业ID:deecoop:userLoginMap:app)
+     * (web端)Redis缓存Key:   (uuid:用户ID:企业ID:deecoop:userLoginMap:web)
+     *
+     */
     public boolean checkSession(HttpServletRequest httpRequest) {
-        //System.out.println("*********************************** in checkSession()");
         //1. 客户端-获取历史sessionID
-        //sessionID: (uuid:用户ID:deecoop:userLoginMap)
+        String loginType = "";
         String sessionID = httpRequest.getHeader("sessionID");
         if (sessionID == null || sessionID.trim().length() == 0) {
             return false;
+        } else {
+            if (sessionID.lastIndexOf("app") != -1) {
+                loginType = "app";
+            } else if (sessionID.lastIndexOf("web") != -1) {
+                loginType = "web";
+            }
         }
-        //System.out.println("Client:sessionID: " + sessionID);
 
         String[] str_arry = sessionID.split(":");
         String uuid = str_arry[0];
@@ -113,7 +124,9 @@ public class ComonFilter implements Filter {
         //System.out.println("userID: " + userID);
 
         //2. 通过(userID)-Redis缓存中获取最新的会话id(uuid)
-        String uuid_new = this.findRedisUuidByUserID(userID);
+        //String uuid_new = this.findRedisUuidByUserID(userID);
+        String uuid_new = RedisUtils.findRedisUuidByUserID(redisClient, userID, loginType);
+
         if (uuid_new == null || uuid_new.trim().length() == 0) {
             return false;
         } else if (!uuid_new.toLowerCase().equals(uuid.toLowerCase())) {
@@ -157,31 +170,4 @@ public class ComonFilter implements Filter {
         return redisClient;
     }
 
-    private String findRedisUuidByUserID(String userID) {
-        if (userID == null || userID.trim().length() == 0) {return null;}
-
-
-        Jedis jedis = null;
-        try {
-            RedisClient redisClient = new RedisClient();
-            redisClient.setJedisPool(this.jedisPool());
-            jedis = redisClient.getJedisPool().getResource();
-
-            String strTemp = ":" + userID;
-            Set<String> keySet = jedis.keys("*" + strTemp + "*");
-            if (keySet != null && keySet.size() > 0) {
-                for (Iterator iterator = keySet.iterator(); iterator.hasNext();) {
-                    String key = (String) iterator.next();
-                    String[] strArry = key.split(":");
-                    if (strArry.length > 0) {return strArry[0];}
-                }
-            }
-        } catch (Exception e){
-            e.printStackTrace();
-        }finally {
-            if (jedis != null) jedis.close();
-        }
-
-        return null;
-    }
 }
