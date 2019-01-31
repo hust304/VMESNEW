@@ -54,6 +54,9 @@ public class WarehouseOutDetailServiceImp implements WarehouseOutDetailService {
 
     @Autowired
     private WarehouseOutExecuteService warehouseOutExecuteService;
+
+    @Autowired
+    private TaskService taskService;
     /**
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-10-23
@@ -460,17 +463,21 @@ public class WarehouseOutDetailServiceImp implements WarehouseOutDetailService {
     @Override
     public ResultModel dispatchWarehouseOutDetail(PageData pageData) throws Exception {
         ResultModel model = new ResultModel();
+        String cuser = pageData.getString("cuser");
+        String companyId = pageData.getString("currentCompanyId");
+
         String executorIdsStr = pageData.getString("executorIdsStr");
         String jsonDataStr = pageData.getString("jsonDataStr");
         List<Map<String, Object>> mapList = (List<Map<String, Object>>) YvanUtil.jsonToList(jsonDataStr);
-
-
 
         if(mapList!=null&&mapList.size()>0){
             for(int j=0;j<mapList.size();j++){
                 Map<String, Object> detailMap = mapList.get(j);
                 if(detailMap!=null&&detailMap.get("children")!=null){
                     String detailId = (String)detailMap.get("id");
+                    String warehouseOutCode = (String)detailMap.get("warehouseOutCode");
+                    String productName = (String)detailMap.get("productName");
+
                     if(!StringUtils.isEmpty(detailId)){
 
                         //新增出库执行人记录
@@ -483,6 +490,11 @@ public class WarehouseOutDetailServiceImp implements WarehouseOutDetailService {
                                     executor.setExecutorId(executorId);
                                     executor.setDetailId(detailId);
                                     warehouseOutExecutorService.save(executor);
+
+                                    Task task = taskService.createTaskByWarehouseOut(detailId, executorId, cuser);
+                                    task.setTaskName(warehouseOutCode + "_" + productName);
+                                    task.setCompanyId(companyId);
+                                    taskService.save(task);
                                 }
                             }
                         }

@@ -73,6 +73,8 @@ public interface TaskService {
     List<Task> selectByColumnMap(Map columnMap) throws Exception;
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+    void deleteTableByTask(String companyId) throws Exception;
+
     /**
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2019-01-30
@@ -101,7 +103,7 @@ public interface TaskService {
     List<Task> findTaskList(PageData object) throws Exception;
 
     Task warehouseInDtl2Task(WarehouseInDetailEntity detailObj, Task taskObj);
-
+    Task createTaskByWarehouseOut(String businessId, String executorId, String cuser);
 
     /////////////////////////////////////////////////////////////////////////////////////////////////
     /**

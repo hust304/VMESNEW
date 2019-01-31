@@ -126,6 +126,12 @@ public class TaskServiceImp implements TaskService {
     }
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+    public void deleteTableByTask(String companyId) throws Exception {
+        Map<String, String> columnMap = new HashMap<String, String>();
+        columnMap.put("company_id", companyId);
+        this.deleteByColumnMap(columnMap);
+    }
+
     /**
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2019-01-30
@@ -209,6 +215,20 @@ public class TaskServiceImp implements TaskService {
         //state:执行状态(0:待执行 1:已完成 -1:已取消)
         taskObj.setState("0");
         taskObj.setCuser(detailObj.getCuser());
+
+        return taskObj;
+    }
+
+    public Task createTaskByWarehouseOut(String businessId, String executorId, String cuser) {
+        Task taskObj = new Task();
+
+        taskObj.setBusinessId(businessId);
+        taskObj.setExecutorId(executorId);
+        taskObj.setCuser(cuser);
+        //type:类型(1:入库 2:出库 3:盘点 4:移库)
+        taskObj.setType("2");
+        //state:执行状态(0:待执行 1:已完成 -1:已取消)
+        taskObj.setState("0");
 
         return taskObj;
     }

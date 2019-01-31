@@ -59,8 +59,11 @@ public class WarehouseInitialServiceImp implements WarehouseInitialService {
     private WarehouseProductService warehouseProductService;
     @Autowired
     private WarehouseProductExcelService warehouseProductExcelService;
+
     @Autowired
     private ProductService productService;
+    @Autowired
+    private TaskService taskService;
 
     @Autowired
     private ColumnService columnService;
@@ -217,6 +220,8 @@ public class WarehouseInitialServiceImp implements WarehouseInitialService {
 
         //货品表(库存数量,锁定库存数量)初始化为零
         productService.initialProductByStockCount(companyId);
+
+        taskService.deleteTableByTask(companyId);
     }
 
 

@@ -55,6 +55,9 @@ public class WarehouseOutExecuteServiceImp implements WarehouseOutExecuteService
     @Autowired
     private ProductService productService;
 
+    @Autowired
+    private TaskService taskService;
+
     /**
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-11-01
@@ -277,6 +280,7 @@ public class WarehouseOutExecuteServiceImp implements WarehouseOutExecuteService
 
         //更新出库单及出库明细状态
         WarehouseOutDetail detail = warehouseOutDetailService.selectById(detailId);
+        Task task = taskService.findTaskByBusinessId(detailId);
 
         Map columnMap = new HashMap();
         columnMap.put("detail_id",detailId);
@@ -294,14 +298,19 @@ public class WarehouseOutExecuteServiceImp implements WarehouseOutExecuteService
         Map countResult = new HashMap();
         //明细状态(0:待派单 1:执行中 2:已完成 -1.已取消)
         if(detail.getCount().compareTo(totalCount)>0){
+            //执行状态(0:待执行 1:已完成 -1:已取消)
+            task.setState("0");
             detail.setState("1");
             countResult.put("unCompleteCount",(detail.getCount().subtract(totalCount).setScale(2,BigDecimal.ROUND_HALF_UP)).doubleValue());
         }else {
+            //执行状态(0:待执行 1:已完成 -1:已取消)
+            task.setState("1");
             detail.setState("2");
             countResult.put("unCompleteCount",0.00);
         }
         model.putResult(countResult);
         warehouseOutDetailService.update(detail);
+        taskService.update(task);
         warehouseOutService.updateState(detail.getParentId());
 
         if(saleDeliverOutDetailService!=null){
@@ -420,6 +429,7 @@ public class WarehouseOutExecuteServiceImp implements WarehouseOutExecuteService
 
             //更新出库单及出库明细状态
             WarehouseOutDetail detail = warehouseOutDetailService.selectById(execute.getDetailId());
+            Task task = taskService.findTaskByBusinessId(execute.getDetailId());
 
             Map columnMap = new HashMap();
             columnMap.put("detail_id",execute.getDetailId());
@@ -436,11 +446,16 @@ public class WarehouseOutExecuteServiceImp implements WarehouseOutExecuteService
             }
             //明细状态(0:待派单 1:执行中 2:已完成 -1.已取消)
             if(detail.getCount().compareTo(totalCount)>0){
+                //执行状态(0:待执行 1:已完成 -1:已取消)
+                task.setState("0");
                 detail.setState("1");
             }else {
+                //执行状态(0:待执行 1:已完成 -1:已取消)
+                task.setState("1");
                 detail.setState("2");
             }
 
+            taskService.update(task);
             warehouseOutDetailService.update(detail);
             warehouseOutService.updateState(detail.getParentId());
             //saleDeliverOutDetailService.finishOutDetailUnlock(detail.getId());
@@ -509,6 +524,7 @@ public class WarehouseOutExecuteServiceImp implements WarehouseOutExecuteService
 
         //更新出库单及出库明细状态
         WarehouseOutDetail detail = warehouseOutDetailService.selectById(execute.getDetailId());
+        Task task = taskService.findTaskByBusinessId(execute.getDetailId());
 
         Map columnMap = new HashMap();
         columnMap.put("detail_id",execute.getDetailId());
@@ -525,11 +541,16 @@ public class WarehouseOutExecuteServiceImp implements WarehouseOutExecuteService
         }
         //明细状态(0:待派单 1:执行中 2:已完成 -1.已取消)
         if(detail.getCount().compareTo(totalCount)>0){
+            //执行状态(0:待执行 1:已完成 -1:已取消)
+            task.setState("0");
             detail.setState("1");
         }else {
+            //执行状态(0:待执行 1:已完成 -1:已取消)
+            task.setState("1");
             detail.setState("2");
         }
 
+        taskService.update(task);
         warehouseOutDetailService.update(detail);
         warehouseOutService.updateState(detail.getParentId());
         //saleDeliverOutDetailService.finishOutDetailUnlock(detail.getId());
