@@ -3,6 +3,7 @@ package com.xy.vmes.service;
 
 import com.xy.vmes.entity.Task;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.entity.WarehouseCheckDetailEntity;
 import com.xy.vmes.entity.WarehouseInDetail;
 import com.xy.vmes.entity.WarehouseInDetailEntity;
 import com.yvan.PageData;
@@ -104,6 +105,7 @@ public interface TaskService {
 
     Task warehouseInDtl2Task(WarehouseInDetailEntity detailObj, Task taskObj);
     Task createTaskByWarehouseOut(String businessId, String executorId, String cuser);
+    Task warehouseCheckDtl2Task(WarehouseCheckDetailEntity detailObj, Task taskObj);
 
     /////////////////////////////////////////////////////////////////////////////////////////////////
     /**

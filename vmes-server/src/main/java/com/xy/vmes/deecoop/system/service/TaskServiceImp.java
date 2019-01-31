@@ -2,15 +2,12 @@ package com.xy.vmes.deecoop.system.service;
 
 
 import com.xy.vmes.deecoop.system.dao.TaskMapper;
-import com.xy.vmes.entity.Task;
-import com.xy.vmes.entity.WarehouseInDetail;
-import com.xy.vmes.entity.WarehouseInDetailEntity;
+import com.xy.vmes.entity.*;
 import com.xy.vmes.service.TaskService;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.StringUtil;
-import com.xy.vmes.entity.Column;
 import com.xy.vmes.service.ColumnService;
 import com.yvan.Conv;
 import com.yvan.ExcelUtil;
@@ -229,6 +226,23 @@ public class TaskServiceImp implements TaskService {
         taskObj.setType("2");
         //state:执行状态(0:待执行 1:已完成 -1:已取消)
         taskObj.setState("0");
+
+        return taskObj;
+    }
+
+    public Task warehouseCheckDtl2Task(WarehouseCheckDetailEntity detailObj, Task taskObj) {
+        if (taskObj == null) {taskObj = new Task();}
+        if (detailObj == null) {return taskObj;}
+
+        taskObj.setBusinessId(detailObj.getId());
+        taskObj.setExecutorId(detailObj.getCuser());
+        taskObj.setTaskName(detailObj.getTaskName());
+        taskObj.setCompanyId(detailObj.getCompanyId());
+        //type:类型(1:入库 2:出库 3:盘点 4:移库)
+        taskObj.setType("3");
+        //state:执行状态(0:待执行 1:已完成 -1:已取消)
+        taskObj.setState("0");
+        taskObj.setCuser(detailObj.getCuser());
 
         return taskObj;
     }

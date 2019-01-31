@@ -3,10 +3,9 @@ package com.xy.vmes.deecoop.warehouse.service;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.warehouse.dao.WarehouseCheckExecutorMapper;
-import com.xy.vmes.entity.Column;
-import com.xy.vmes.entity.WarehouseCheckDetail;
-import com.xy.vmes.entity.WarehouseCheckExecutor;
+import com.xy.vmes.entity.*;
 import com.xy.vmes.service.ColumnService;
+import com.xy.vmes.service.TaskService;
 import com.xy.vmes.service.WarehouseCheckDetailService;
 import com.xy.vmes.service.WarehouseCheckExecutorService;
 import com.yvan.PageData;
@@ -36,6 +35,9 @@ public class WarehouseCheckExecutorServiceImp implements WarehouseCheckExecutorS
     private WarehouseCheckDetailService warehouseCheckDetailService;
     @Autowired
     private ColumnService columnService;
+    @Autowired
+    private TaskService taskService;
+
     /**
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2018-11-13
@@ -208,7 +210,7 @@ public class WarehouseCheckExecutorServiceImp implements WarehouseCheckExecutorS
         return this.findWarehouseCheckExecutorList(findMap);
     }
 
-    public void addWarehouseCheckExecutor(WarehouseCheckDetail detail, String userIds) throws Exception {
+    public void addWarehouseCheckExecutor(WarehouseCheckDetailEntity detail, String userIds) throws Exception {
         if (detail == null) {return;}
         if (detail.getId() == null || detail.getId().trim().length() == 0) {return;}
         if (userIds == null || userIds.trim().length() == 0) {return;}
@@ -222,8 +224,13 @@ public class WarehouseCheckExecutorServiceImp implements WarehouseCheckExecutorS
             object.setDetailId(detail.getId());
             object.setCuser(detail.getCuser());
             object.setExecutorId(userId);
+
+            Task task = taskService.warehouseCheckDtl2Task(detail, null);
+            task.setExecutorId(userId);
+
             try {
                 this.save(object);
+                taskService.save(task);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -295,6 +302,8 @@ public class WarehouseCheckExecutorServiceImp implements WarehouseCheckExecutorS
     @Override
     public ResultModel addWarehouseCheckExecutor(PageData pageData) throws Exception {
         ResultModel model = new ResultModel();
+
+        String companyId = pageData.getString("currentCompanyId");
         String executeId = pageData.getString("executeId");
         if (executeId == null || executeId.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
@@ -319,15 +328,18 @@ public class WarehouseCheckExecutorServiceImp implements WarehouseCheckExecutorS
         }
 
         //1. 入库单明细派单
-        List<WarehouseCheckDetail> detailList = warehouseCheckDetailService.mapList2DetailList(mapList, null);
+        List<WarehouseCheckDetailEntity> detailList = warehouseCheckDetailService.mapList2DetailEntityList(mapList, null);
 
         String cuser = pageData.getString("cuser");
-        for (WarehouseCheckDetail detail : detailList) {
-            detail.setCuser(cuser);
+        for (WarehouseCheckDetailEntity dtlEntity : detailList) {
+            dtlEntity.setCuser(cuser);
+            dtlEntity.setCompanyId(companyId);
 
             //盘点明细分配执行人
-            this.addWarehouseCheckExecutor(detail, executeId);
+            this.addWarehouseCheckExecutor(dtlEntity, executeId);
 
+            WarehouseCheckDetail detail = new WarehouseCheckDetail();
+            detail.setId(dtlEntity.getId());
             //状态(0:待派单 1:执行中 2:审核中 3:已完成 -1:已取消)
             detail.setState("1");
             warehouseCheckDetailService.update(detail);

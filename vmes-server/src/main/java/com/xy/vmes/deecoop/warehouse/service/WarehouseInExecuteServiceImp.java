@@ -416,7 +416,7 @@ public class WarehouseInExecuteServiceImp implements WarehouseInExecuteService {
                     countResult.put("unCompleteCount",(detail.getCount().subtract(totalCount).setScale(2,BigDecimal.ROUND_HALF_UP)).doubleValue());
                 }else {
                     //执行状态(0:待执行 1:已完成 -1:已取消)
-                    task.setState("2");
+                    task.setState("1");
                     detail.setState("2");
                     countResult.put("unCompleteCount",0.00);
                 }

@@ -39,8 +39,12 @@ public class WarehouseCheckExecuteServiceImp implements WarehouseCheckExecuteSer
     private ProductService productService;
     @Autowired
     private WarehouseCheckDetailService warehouseCheckDetailService;
+
     @Autowired
     private ColumnService columnService;
+    @Autowired
+    private TaskService taskService;
+
 
     /**
      * 创建人：陈刚 自动创建，禁止修改
@@ -217,6 +221,12 @@ public class WarehouseCheckExecuteServiceImp implements WarehouseCheckExecuteSer
             WarehouseCheckDetail detail = warehouseCheckDetailService.findWarehouseCheckDetailById(execute.getDetailId());
             detail.setState("2");
             warehouseCheckDetailService.update(detail);
+
+            //执行状态(0:待执行 1:已完成 -1:已取消)
+            Task task = taskService.findTaskByBusinessId(execute.getDetailId());
+            task.setState("1");
+            taskService.update(task);
+
             parentMap.put(execute.getParentId(), execute.getParentId());
         }
 
@@ -690,6 +700,12 @@ public class WarehouseCheckExecuteServiceImp implements WarehouseCheckExecuteSer
             //状态(0:待派单 1:执行中 2:审核中 3:已完成 -1:已取消)
             detail.setState("1");
             warehouseCheckDetailService.update(detail);
+
+            Task task = taskService.findTaskByBusinessId(execute.getDetailId());
+            //执行状态(0:待执行 1:已完成 -1:已取消)
+            task.setState("0");
+            task.setRemark(remark);
+            taskService.update(task);
 
             parentMap.put(execute.getParentId(), execute.getParentId());
         }

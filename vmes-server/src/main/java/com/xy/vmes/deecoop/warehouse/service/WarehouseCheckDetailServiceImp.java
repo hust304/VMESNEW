@@ -3,10 +3,7 @@ package com.xy.vmes.deecoop.warehouse.service;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.Common;
 import com.xy.vmes.deecoop.warehouse.dao.WarehouseCheckDetailMapper;
-import com.xy.vmes.entity.Column;
-import com.xy.vmes.entity.WarehouseCheck;
-import com.xy.vmes.entity.WarehouseCheckDetail;
-import com.xy.vmes.entity.WarehouseProduct;
+import com.xy.vmes.entity.*;
 import com.xy.vmes.service.ColumnService;
 import com.xy.vmes.service.FileService;
 import com.xy.vmes.service.WarehouseCheckDetailService;
@@ -206,6 +203,18 @@ public class WarehouseCheckDetailServiceImp implements WarehouseCheckDetailServi
 
         for (Map<String, String> mapObject : mapList) {
             WarehouseCheckDetail detail = (WarehouseCheckDetail) HttpUtils.pageData2Entity(mapObject, new WarehouseCheckDetail());
+            objectList.add(detail);
+        }
+
+        return objectList;
+    }
+
+    public List<WarehouseCheckDetailEntity> mapList2DetailEntityList(List<Map<String, String>> mapList, List<WarehouseCheckDetailEntity> objectList) {
+        if (objectList == null) {objectList = new ArrayList<WarehouseCheckDetailEntity>();}
+        if (mapList == null || mapList.size() == 0) {return objectList;}
+
+        for (Map<String, String> mapObject : mapList) {
+            WarehouseCheckDetailEntity detail = (WarehouseCheckDetailEntity) HttpUtils.pageData2Entity(mapObject, new WarehouseCheckDetailEntity());
             objectList.add(detail);
         }
 
