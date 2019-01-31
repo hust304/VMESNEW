@@ -47,6 +47,8 @@ public class WarehouseInExecuteServiceImp implements WarehouseInExecuteService {
 
     @Autowired
     private ColumnService columnService;
+    @Autowired
+    private TaskService taskService;
 
 
     /**
@@ -390,6 +392,7 @@ public class WarehouseInExecuteServiceImp implements WarehouseInExecuteService {
 
 
                 WarehouseInDetail detail = warehouseInDetailService.findWarehouseInDetailById(detailId);
+                Task task = taskService.findTaskByBusinessId(detailId);
 
                 Map columnMap = new HashMap();
                 columnMap.put("detail_id",detailId);
@@ -407,14 +410,19 @@ public class WarehouseInExecuteServiceImp implements WarehouseInExecuteService {
                 Map countResult = new HashMap();
                 //明细状态(0:待派单 1:执行中 2:已完成 -1.已取消)
                 if(detail.getCount().compareTo(totalCount)>0){
+                    //执行状态(0:待执行 1:已完成 -1:已取消)
+                    task.setState("0");
                     detail.setState("1");
                     countResult.put("unCompleteCount",(detail.getCount().subtract(totalCount).setScale(2,BigDecimal.ROUND_HALF_UP)).doubleValue());
                 }else {
+                    //执行状态(0:待执行 1:已完成 -1:已取消)
+                    task.setState("2");
                     detail.setState("2");
                     countResult.put("unCompleteCount",0.00);
                 }
                 model.putResult(countResult);
                 warehouseInDetailService.update(detail);
+                taskService.update(task);
                 warehouseInService.updateState(detail.getParentId());
             }
 
@@ -622,6 +630,7 @@ public class WarehouseInExecuteServiceImp implements WarehouseInExecuteService {
         }
 
         WarehouseInDetail detail = warehouseInDetailService.findWarehouseInDetailById(detailId);
+        Task task = taskService.findTaskByBusinessId(detailId);
 
         //根据入库单明细id-获取该入库单明细中-所有入库执行List
         PageData findMap = new PageData();
@@ -751,6 +760,11 @@ public class WarehouseInExecuteServiceImp implements WarehouseInExecuteService {
                     detail.setRemark(detail.getRemark() + remarkStr);
                 }
                 warehouseInDetailService.update(detail);
+
+                //执行状态(0:待执行 1:已完成 -1:已取消)
+                task.setState("-1");
+                task.setRemark(remarkStr);
+                taskService.update(task);
 
                 //E. 修改修改当前入库单明细状态--同时反写入库单状态
                 WarehouseIn parent = new WarehouseIn();
@@ -898,6 +912,7 @@ public class WarehouseInExecuteServiceImp implements WarehouseInExecuteService {
 
         WarehouseInExecute execute = this.findWarehouseInExecuteById(id);
         WarehouseInDetail detail = warehouseInDetailService.findWarehouseInDetailById(execute.getDetailId());
+        Task task = taskService.findTaskByBusinessId(execute.getDetailId());
 
         try {
             //A. 修改库存数量
@@ -978,13 +993,18 @@ public class WarehouseInExecuteServiceImp implements WarehouseInExecuteService {
             Map countResult = new HashMap();
             //明细状态(0:待派单 1:执行中 2:已完成 -1.已取消)
             if(detail.getCount().compareTo(totalCount)>0){
+                //执行状态(0:待执行 1:已完成 -1:已取消)
+                task.setState("0");
                 detail.setState("1");
                 countResult.put("unCompleteCount",(detail.getCount().subtract(totalCount).setScale(2,BigDecimal.ROUND_HALF_UP)).doubleValue());
             }else {
+                //执行状态(0:待执行 1:已完成 -1:已取消)
+                task.setState("1");
                 detail.setState("2");
                 countResult.put("unCompleteCount",0.00);
             }
             model.putResult(countResult);
+            taskService.update(task);
             warehouseInDetailService.update(detail);
             warehouseInService.updateState(detail.getParentId());
 
