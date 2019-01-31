@@ -12,6 +12,7 @@ import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.service.ColumnService;
+import com.yvan.Conv;
 import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
@@ -43,6 +44,7 @@ public class TaskServiceImp implements TaskService {
      */
     @Override
     public void save(Task object) throws Exception{
+        object.setId(Conv.createUuid());
         object.setCdate(new Date());
         object.setUdate(new Date());
         taskMapper.insert(object);
@@ -201,6 +203,7 @@ public class TaskServiceImp implements TaskService {
         taskObj.setBusinessId(detailObj.getId());
         taskObj.setExecutorId(detailObj.getCuser());
         taskObj.setTaskName(detailObj.getTaskName());
+        taskObj.setCompanyId(detailObj.getCompanyId());
         //type:类型(1:入库 2:出库 3:盘点 4:移库)
         taskObj.setType("1");
         //state:执行状态(0:待执行 1:已完成 -1:已取消)

@@ -40,6 +40,8 @@ public class WarehouseInDetailEntity {
 
     //非实体属性
     private String taskName;
+    //企业ID-组织架构
+    private String companyId;
 
     public void setId(String id) {
         this.id = id;
@@ -142,5 +144,12 @@ public class WarehouseInDetailEntity {
     }
     public void setTaskName(String taskName) {
         this.taskName = taskName;
+    }
+    public String getCompanyId() {
+        return companyId;
+    }
+
+    public void setCompanyId(String companyId) {
+        this.companyId = companyId;
     }
 }

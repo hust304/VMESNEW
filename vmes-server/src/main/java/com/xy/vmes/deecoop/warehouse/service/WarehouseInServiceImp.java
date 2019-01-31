@@ -830,8 +830,12 @@ public class WarehouseInServiceImp implements WarehouseInService {
         }
 
         String cuser = pageData.getString("cuser");
+        String companyId = pageData.getString("currentCompanyId");
+
         for (WarehouseInDetailEntity entity : detailList) {
             entity.setCuser(cuser);
+            //企业id
+            entity.setCompanyId(companyId);
 
             //入库明细分配执行人
             //添加设置任务待办表
