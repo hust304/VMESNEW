@@ -99,12 +99,19 @@ public interface CustomerInvoiceService {
     CustomerInvoice findCustomerInvoiceById(String id) throws Exception;
 
     List<CustomerInvoice> findCustomerInvoiceList(PageData object) throws Exception;
+    List<CustomerInvoice> findCustomerInvoiceListByCustomerId(String customerId) throws Exception;
+
+    void updateDefaultByCustomerId(PageData pageData);
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    ResultModel listPageCustomerInvoices(PageData pd, Pagination pg)throws Exception;
+    ResultModel addCustomerInvoice(PageData pageData) throws Exception;
+    ResultModel updateCustomerInvoice(PageData pageData)throws Exception;
+    ResultModel updateDefaultCustomerInvoice(PageData pageData)throws Exception;
+    ResultModel deleteCustomerInvoice(PageData pageData)throws Exception;
 
     void exportExcelCustomerInvoices(PageData pd, Pagination pg) throws Exception;
-
     ResultModel importExcelCustomerInvoices(MultipartFile file)throws Exception;
-
-    ResultModel listPageCustomerInvoices(PageData pd, Pagination pg)throws Exception;
 }
 
 

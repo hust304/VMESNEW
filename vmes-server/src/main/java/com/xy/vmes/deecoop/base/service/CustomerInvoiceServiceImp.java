@@ -193,6 +193,21 @@ public class CustomerInvoiceServiceImp implements CustomerInvoiceService {
         return this.findDataList(object, null);
     }
 
+    public List<CustomerInvoice> findCustomerInvoiceListByCustomerId(String customerId) throws Exception {
+        List<CustomerInvoice> objectList = new ArrayList<CustomerInvoice>();
+        if (customerId == null || customerId.trim().length() == 0) {return objectList;}
+
+        PageData findMap = new PageData();
+        findMap.put("customerId", customerId);
+        objectList = this.findCustomerInvoiceList(findMap);
+
+        return objectList;
+    }
+
+    public void updateDefaultByCustomerId(PageData pageData) {
+        customerInvoiceMapper.updateDefaultByCustomerId(pageData);
+    }
+    ///////////////////////////////////////////////////////////////////////////////////////////////
     @Override
     public void exportExcelCustomerInvoices(PageData pd, Pagination pg) throws Exception {
         List<Column> columnList = columnService.findColumnList("customerInvoice");
@@ -324,6 +339,133 @@ public class CustomerInvoiceServiceImp implements CustomerInvoiceService {
         model.putResult(result);
         return model;
     }
+
+    public ResultModel addCustomerInvoice(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+
+        //1. 非空判断
+        String customerId = pageData.getString("customerId");
+        if (customerId == null || customerId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("客户id为空或空字符串！");
+            return model;
+        }
+
+        CustomerInvoice custInvoice = (CustomerInvoice)HttpUtils.pageData2Entity(pageData, new CustomerInvoice());
+        //是否默认(0:非默认 1:默认)
+        custInvoice.setIsdefault("0");
+
+        //2. 根据客户id查询(vmes_customer_address)
+        //是否默认(0:非默认 1:默认)
+        PageData findMap = new PageData();
+        findMap.put("customerId", customerId);
+        findMap.put("isdefault", "1");
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+        List<CustomerInvoice> objectList = customerInvoiceService.findCustomerInvoiceList(findMap);
+        if (objectList == null || objectList.size() == 0) {
+            custInvoice.setIsdefault("1");
+        }
+
+        customerInvoiceService.save(custInvoice);
+        return model;
+    }
+
+    public ResultModel updateCustomerInvoice(PageData pageData)throws Exception {
+        ResultModel model = new ResultModel();
+        CustomerInvoice custInvoiceDB = (CustomerInvoice)HttpUtils.pageData2Entity(pageData, new CustomerInvoice());
+        customerInvoiceService.update(custInvoiceDB);
+        return model;
+    }
+
+    public ResultModel updateDefaultCustomerInvoice(PageData pageData)throws Exception {
+        ResultModel model = new ResultModel();
+        //1. 非空判断
+        String customerId = pageData.getString("customerId");
+        if (customerId == null || customerId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("客户id为空或空字符串！");
+            return model;
+        }
+        String invoiceId = pageData.getString("invoiceId");
+        if (invoiceId == null || invoiceId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("开票信息id为空或空字符串！");
+            return model;
+        }
+
+        List<CustomerInvoice> invoiceList = customerInvoiceService.findCustomerInvoiceListByCustomerId(customerId);
+        if (invoiceList != null && invoiceList.size() == 1) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("当前客户地址只有一条，不可修改默认属性！");
+            return model;
+        }
+
+        String isdefault = pageData.getString("isdefault");
+        if ("1".equals(isdefault)) {
+            PageData mapObject = new PageData();
+            mapObject.put("customerId", customerId);
+            //是否默认(0:非默认 1:默认)
+            mapObject.put("isdefault", "0");
+            this.updateDefaultByCustomerId(mapObject);
+        }
+
+        CustomerInvoice invoiceDB = new CustomerInvoice();
+        invoiceDB.setId(invoiceId);
+        //是否默认(0:非默认 1:默认)
+        invoiceDB.setIsdefault(isdefault);
+        customerInvoiceService.update(invoiceDB);
+
+//        //有且只有一个开票信息
+//        PageData findMap = new PageData();
+//        findMap.put("customerId", customerId);
+//        findMap.put("isdefault", "1");
+//        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+//        List<CustomerInvoice> objectList = customerInvoiceService.findCustomerInvoiceList(findMap);
+//        if (objectList != null && objectList.size() == 0) {
+//            invoiceDB.setId(invoiceId);
+//            //是否默认(0:非默认 1:默认)
+//            invoiceDB.setIsdefault("1");
+//            customerInvoiceService.update(invoiceDB);
+//        }
+
+        return model;
+    }
+
+    public ResultModel deleteCustomerInvoice(PageData pageData)throws Exception {
+        ResultModel model = new ResultModel();
+
+        //1. 非空判断
+        String ids = pageData.getString("ids");
+        if (ids == null || ids.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("参数错误：请至少选择一行数据！");
+            return model;
+        }
+
+        ids = StringUtil.stringTrimSpace(ids);
+        String sql_ids = "'" + ids.replace(",", "','") + "'";
+
+        PageData findMap = new PageData();
+        findMap.put("ids", sql_ids);
+        List<CustomerInvoice> objectList = customerInvoiceService.findCustomerInvoiceList(findMap);
+        if (objectList != null && objectList.size() > 0) {
+            for(int i = 0; i < objectList.size(); i++) {
+                CustomerInvoice object = objectList.get(i);
+                //是否默认(0:非默认 1:默认)
+                if (object.getIsdefault() != null && "1".equals(object.getIsdefault().trim())) {
+                    model.putCode(Integer.valueOf(1));
+                    model.putMsg("第 " + (i+1) + " 行：客户开票信息是默认值不可删除！");
+                    return model;
+                }
+            }
+        }
+
+        customerInvoiceService.deleteByIds(ids.split(","));
+
+        return model;
+    }
+
+
 }
 
 

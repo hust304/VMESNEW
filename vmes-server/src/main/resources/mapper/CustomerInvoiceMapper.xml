@@ -26,6 +26,12 @@
         </foreach>
     </update>
 
+    <update id="updateDefaultByCustomerId" parameterType="com.yvan.PageData" >
+        update vmes_customer_invoice
+        set isdefault = #{isdefault}
+        where customer_id = #{customerId}
+    </update>
+
     <!-- ***************************************************以上为自动生成代码禁止修改，请在下面添加业务代码************************************************* -->
     <insert id="insertColumn" >
         delete from vmes_column where model_code = 'customerInvoice' ;
@@ -91,7 +97,15 @@
                     </otherwise>
                 </choose>
             </if>
-
+            <if test="ids != null and ids != ''" >
+                and id in (${ids})
+            </if>
+            <if test="customerId != null and customerId != ''" >
+                and customer_id = #{customerId}
+            </if>
+            <if test="isdefault != null and isdefault != ''" >
+                and isdefault = #{isdefault}
+            </if>
 
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >
@@ -104,7 +118,7 @@
     </select>
 
     <!-- 自动创建，可以修改 -->
-    <select id="getDataListPage"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
+    <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
         id id,
         customer_id customerId,
@@ -127,6 +141,9 @@
         isdisable isdisable
         from vmes_customer_invoice
         <where>
+            <if test="customerId != null and customerId != ''" >
+                and customer_id = #{customerId}
+            </if>
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >
                 and ${queryStr}

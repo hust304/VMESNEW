@@ -44,6 +44,8 @@ public interface CustomerInvoiceMapper extends BaseMapper<CustomerInvoice> {
      * 创建时间：2019-01-09
      */
     List<Map> getDataListPage(PageData pd, Pagination pg);
+
+    void updateDefaultByCustomerId (PageData pd);
 }
 
 

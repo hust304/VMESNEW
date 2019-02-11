@@ -1,16 +1,9 @@
 package com.xy.vmes.deecoop.base.controller;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
-import com.xy.vmes.common.util.ColumnUtil;
-import com.xy.vmes.common.util.StringUtil;
-import com.xy.vmes.entity.Column;
-import com.xy.vmes.entity.CustomerInvoice;
-import com.xy.vmes.service.ColumnService;
 import com.xy.vmes.service.CustomerInvoiceService;
-import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
-import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -19,11 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.apache.commons.lang.StringUtils;
-
-import javax.servlet.http.HttpServletResponse;
-import java.util.*;
-
 
 
 /**
@@ -40,26 +28,95 @@ public class CustomerInvoiceController {
     @Autowired
     private CustomerInvoiceService customerInvoiceService;
 
-    @Autowired
-    private ColumnService columnService;
-
     /**
     * @author 陈刚 自动创建，可以修改
     * @date 2019-01-09
     */
     @PostMapping("/base/customerInvoice/listPageCustomerInvoices")
-    public ResultModel listPageCustomerInvoices()  throws Exception {
-        logger.info("################customerInvoice/listPageCustomerInvoices 执行开始 ################# ");
+    public ResultModel listPageCustomerInvoices() throws Exception {
+        logger.info("################/base/customerInvoice/listPageCustomerInvoices 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         PageData pd = HttpUtils.parsePageData();
         Pagination pg = HttpUtils.parsePagination(pd);
         ResultModel model = customerInvoiceService.listPageCustomerInvoices(pd,pg);
         Long endTime = System.currentTimeMillis();
-        logger.info("################customerInvoice/listPageCustomerInvoices 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/base/customerInvoice/listPageCustomerInvoices 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
-/***************************************************/
+    /**
+     * 新增客户开票信息
+     *
+     * @author 陈刚
+     * @date 2019-01-09
+     */
+    @PostMapping("/base/customerInvoice/addCustomerInvoice")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel addCustomerInvoice() throws Exception {
+        logger.info("################/base/customerInvoice/addCustomerInvoice 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pageData = HttpUtils.parsePageData();
+        ResultModel model = customerInvoiceService.addCustomerInvoice(pageData);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/base/customerInvoice/addCustomerInvoice 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 修改客户开票信息
+     *
+     * @author 陈刚
+     * @date 2019-01-09
+     */
+    @PostMapping("/base/customerInvoice/updateCustomerInvoice")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel updateCustomerInvoice() throws Exception {
+        logger.info("################/base/customerInvoice/updateCustomerInvoice 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pageData = HttpUtils.parsePageData();
+        ResultModel model = customerInvoiceService.updateCustomerInvoice(pageData);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/base/customerInvoice/updateCustomerInvoice 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 修改默认客户开票信息
+     *
+     * @author 陈刚
+     * @date 2019-01-09
+     */
+    @PostMapping("/base/customerInvoice/updateDefaultCustomerInvoice")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel updateDefaultCustomerInvoice() throws Exception {
+        logger.info("################/base/customerInvoice/updateDefaultCustomerInvoice 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pageData = HttpUtils.parsePageData();
+        ResultModel model = customerInvoiceService.updateDefaultCustomerInvoice(pageData);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/base/customerInvoice/updateDefaultCustomerInvoice 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 删除客户开票信息
+     * 1. 支持批量删除
+     *
+     * @author 陈刚
+     * @date 2019-01-09
+     */
+    @PostMapping("/base/customerInvoice/deleteCustomerInvoice")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel deleteCustomerInvoice() throws Exception {
+        logger.info("################/base/customerInvoice/deleteCustomerInvoice 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pageData = HttpUtils.parsePageData();
+        ResultModel model = customerInvoiceService.deleteCustomerInvoice(pageData);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/base/customerInvoice/deleteCustomerInvoice 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
     /**
     * Excel导出
     * @author 陈刚 自动创建，可以修改

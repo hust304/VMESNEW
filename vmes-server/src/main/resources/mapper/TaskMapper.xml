@@ -87,7 +87,7 @@
                 </choose>
             </if>
             <if test="businessId != null and businessId != ''" >
-                and businessId = #{businessId}
+                and business_id = #{businessId}
             </if>
 
             <!--queryStr 自定义sql查询语句-->
