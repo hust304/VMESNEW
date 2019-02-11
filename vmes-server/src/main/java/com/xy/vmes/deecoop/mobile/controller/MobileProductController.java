@@ -2,12 +2,14 @@ package com.xy.vmes.deecoop.mobile.controller;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 
+import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.service.MobileProductService;
 import com.xy.vmes.service.ProductService;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,9 +35,11 @@ public class MobileProductController {
 
         PageData pd = HttpUtils.parsePageData();
         Pagination pg = HttpUtils.parsePagination(pd);
-        //List<Map> varMapList = new ArrayList();
-
-        //List<Map> varList = productService.getDataListPage(pd,pg);
+        List<String> productNameList = (ArrayList<String>)pd.get("genreList");
+        if(productNameList!=null&&productNameList.size()>0){
+            String[] genreList = productNameList.toArray(new String[productNameList.size()]);
+            pd.put("genreList",genreList);
+        }
         List<Map> varList = mobileProductService.findListPageProduct(pd,pg);
 
 

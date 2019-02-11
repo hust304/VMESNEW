@@ -598,7 +598,7 @@
         warehouse.path_name path
 
         from vmes_warehouse_product prod
-            LEFT JOIN vmes_warehouse warehouse ON prod.warehouse_id = warehouse.id
+        LEFT JOIN vmes_warehouse warehouse ON prod.warehouse_id = warehouse.id
         <where>
             <if test="companyId != null and companyId != ''" >
                 and prod.company_id=#{companyId}
@@ -607,9 +607,7 @@
                 and prod.product_id=#{productId}
             </if>
         </where>
-        <if test="orderStr != null and orderStr != ''" >
-            order by ${orderStr}
-        </if>
+        order by prod.stock_count desc
     </select>
 
 

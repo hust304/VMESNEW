@@ -34,7 +34,7 @@
 
         round(ifnull(prod.lock_count, 0), 2) lockCount,
         round(ifnull(prod.stock_count, 0), 2) stockCount,
-        round((ifnull(prod.stock_count, 0) - ifnull(prod.lock_count, 0)), 2) productStockCount
+        round((ifnull(prod.stock_count, 0) - ifnull(prod.lock_count, 0)), 2) unlockCount
 
         from vmes_product prod
         left join vmes_product_unit produnit on produnit.product_id = prod.id and produnit.type = 1
@@ -45,30 +45,43 @@
                 and prod.company_id=#{companyId}
             </if>
             <if test="code != null and code != ''" >
-                and prod.code=#{code}
+                and prod.code LIKE CONCAT(CONCAT('%', #{code}),'%')
             </if>
             <if test="name!= null and name != ''" >
-                and prod.name=#{name}
+                and prod.name LIKE CONCAT(CONCAT('%', #{name}),'%')
             </if>
             <if test="spec != null and spec != ''" >
-                and prod.spec=#{spec}
+                and prod.spec LIKE CONCAT(CONCAT('%', #{spec}),'%')
             </if>
             <if test="genre != null and genre != ''" >
-                and genre.name=#{genre}
+                and genre.name LIKE CONCAT(CONCAT('%', #{genre}),'%')
+            </if>
+
+            <if test="genreList != null and genreList != ''" >
+                and genre.name in
+                <foreach item="item" index="index" collection="genreList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
             </if>
 
             <if test="max != null and max != ''" >
-                <![CDATA[ and prod.spec <= #{max} ]]>
+                <![CDATA[ and round((ifnull(prod.stock_count, 0) - ifnull(prod.lock_count, 0)), 2) <= #{max} ]]>
+            </if>
+            <if test="min != null and min != ''" >
+                <![CDATA[ and round((ifnull(prod.stock_count, 0) - ifnull(prod.lock_count, 0)), 2) >= #{min} ]]>
             </if>
 
-            <if test="min != null and min != ''" >
-                <![CDATA[ and prod.spec >= #{min} ]]>
+            <if test="searchValue != null and searchValue != ''" >
+                and (
+                    genre.name LIKE CONCAT(CONCAT('%', #{searchValue}),'%')
+                    or prod.code LIKE CONCAT(CONCAT('%', #{searchValue}),'%')
+                    or prod.name LIKE CONCAT(CONCAT('%', #{searchValue}),'%')
+                    or prod.spec LIKE CONCAT(CONCAT('%', #{searchValue}),'%')
+                )
             </if>
 
         </where>
-        <if test="orderStr != null and orderStr != ''" >
-            order by ${orderStr}
-        </if>
+        order by prod.name,prod.code asc
     </select>
 
 
