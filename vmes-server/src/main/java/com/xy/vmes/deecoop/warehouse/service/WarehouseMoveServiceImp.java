@@ -4,10 +4,7 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.warehouse.dao.WarehouseMoveMapper;
-import com.xy.vmes.entity.Column;
-import com.xy.vmes.entity.WarehouseMove;
-import com.xy.vmes.entity.WarehouseMoveDetail;
-import com.xy.vmes.entity.WarehouseMoveExecutor;
+import com.xy.vmes.entity.*;
 import com.xy.vmes.service.*;
 import com.yvan.*;
 import com.yvan.platform.RestException;
@@ -46,6 +43,9 @@ public class WarehouseMoveServiceImp implements WarehouseMoveService {
 
     @Autowired
     private WarehouseMoveExecutorService warehouseMoveExecutorService;
+
+    @Autowired
+    private TaskService taskService;
 
     /**
     * 创建人：刘威 自动创建，禁止修改
@@ -325,6 +325,7 @@ public class WarehouseMoveServiceImp implements WarehouseMoveService {
     public ResultModel saveWarehouseMove(PageData pd) throws Exception {
         ResultModel model = new ResultModel();
 
+        String cuser = pd.getString("cuser");
         String dtlJsonStr = pd.getString("dtlJsonStr");
         String executorIdsStr = pd.getString("executorIdsStr");
 
@@ -364,9 +365,10 @@ public class WarehouseMoveServiceImp implements WarehouseMoveService {
         warehouseMoveDetailService.addWarehouseMoveDetail(warehouseMove, detailList);
 
         //3.移库单派工添加执行人信息
-        if(detailList!=null&&detailList.size()>0){
-            for(int i=0;i<detailList.size();i++){
-                WarehouseMoveDetail detail = detailList.get(i);
+        List<WarehouseMoveDetailEntity> detailEntityList = warehouseMoveDetailService.mapList2DetailEntityList(mapList, null);
+        if(detailEntityList!=null&&detailEntityList.size()>0){
+            for(int i=0;i<detailEntityList.size();i++){
+                WarehouseMoveDetailEntity detailEntity = detailEntityList.get(i);
                 //新增移库执行人记录
                 if(!StringUtils.isEmpty(executorIdsStr)){
                     String[] executorIds = executorIdsStr.split(",");
@@ -375,9 +377,14 @@ public class WarehouseMoveServiceImp implements WarehouseMoveService {
                             String executorId = executorIds[j];
                             WarehouseMoveExecutor executor = new WarehouseMoveExecutor();
                             executor.setExecutorId(executorId);
-                            executor.setDetailId(detail.getId());
+                            executor.setDetailId(detailEntity.getId());
                             executor.setCuser(currentUserId);
                             warehouseMoveExecutorService.save(executor);
+
+                            Task task = taskService.createTaskByWarehouseMove(detailEntity.getId(), executorId, cuser);
+                            task.setTaskName(code + "_" + detailEntity.getProductName());
+                            task.setCompanyId(companyID);
+                            taskService.save(task);
                         }
                     }
                 }

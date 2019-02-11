@@ -3,6 +3,7 @@ package com.xy.vmes.service;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.entity.WarehouseMove;
 import com.xy.vmes.entity.WarehouseMoveDetail;
+import com.xy.vmes.entity.WarehouseMoveDetailEntity;
 import com.xy.vmes.entity.WarehouseOutDetail;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
@@ -120,6 +121,7 @@ public interface WarehouseMoveDetailService {
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
     List<WarehouseMoveDetail> mapList2DetailList(List<Map<String, String>> mapList, List<WarehouseMoveDetail> objectList);
+    List<WarehouseMoveDetailEntity> mapList2DetailEntityList(List<Map<String, String>> mapList, List<WarehouseMoveDetailEntity> objectList);
 
     void addWarehouseMoveDetail(WarehouseMove parentObj, List<WarehouseMoveDetail> objectList) throws Exception;
 

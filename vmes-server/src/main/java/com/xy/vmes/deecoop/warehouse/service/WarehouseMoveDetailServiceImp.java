@@ -227,6 +227,20 @@ public class WarehouseMoveDetailServiceImp implements WarehouseMoveDetailService
         return objectList;
     }
 
+    public List<WarehouseMoveDetailEntity> mapList2DetailEntityList(List<Map<String, String>> mapList, List<WarehouseMoveDetailEntity> objectList) {
+        if (objectList == null) {objectList = new ArrayList<WarehouseMoveDetailEntity>();}
+        if (mapList == null || mapList.size() == 0) {return objectList;}
+        for (Map<String, String> mapObject : mapList) {
+            WarehouseMoveDetailEntity detail = (WarehouseMoveDetailEntity) HttpUtils.pageData2Entity(mapObject, new WarehouseMoveDetailEntity());
+            String id = Conv.createUuid();
+            detail.setId(id);
+            //状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+            detail.setState("1");
+            objectList.add(detail);
+        }
+        return objectList;
+    }
+
     @Override
     public void addWarehouseMoveDetail(WarehouseMove parentObj, List<WarehouseMoveDetail> objectList) throws Exception{
         if (parentObj == null) {return;}

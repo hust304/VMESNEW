@@ -230,6 +230,20 @@ public class TaskServiceImp implements TaskService {
         return taskObj;
     }
 
+    public Task createTaskByWarehouseMove(String businessId, String executorId, String cuser) {
+        Task taskObj = new Task();
+
+        taskObj.setBusinessId(businessId);
+        taskObj.setExecutorId(executorId);
+        taskObj.setCuser(cuser);
+        //type:类型(1:入库 2:出库 3:盘点 4:移库)
+        taskObj.setType("4");
+        //state:执行状态(0:待执行 1:已完成 -1:已取消)
+        taskObj.setState("0");
+
+        return taskObj;
+    }
+
     public Task warehouseCheckDtl2Task(WarehouseCheckDetailEntity detailObj, Task taskObj) {
         if (taskObj == null) {taskObj = new Task();}
         if (detailObj == null) {return taskObj;}

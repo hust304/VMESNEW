@@ -104,8 +104,10 @@ public interface TaskService {
     List<Task> findTaskList(PageData object) throws Exception;
 
     Task warehouseInDtl2Task(WarehouseInDetailEntity detailObj, Task taskObj);
-    Task createTaskByWarehouseOut(String businessId, String executorId, String cuser);
     Task warehouseCheckDtl2Task(WarehouseCheckDetailEntity detailObj, Task taskObj);
+
+    Task createTaskByWarehouseOut(String businessId, String executorId, String cuser);
+    Task createTaskByWarehouseMove(String businessId, String executorId, String cuser);
 
     /////////////////////////////////////////////////////////////////////////////////////////////////
     /**
