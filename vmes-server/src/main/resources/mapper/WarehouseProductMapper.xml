@@ -460,10 +460,14 @@
             <if test="currentCompanyId != null and currentCompanyId != ''">
                 and product.company_id = #{currentCompanyId}
             </if>
+            <if test="'true' == isNeedWarehouse and (parentWarehouseId != null and parentWarehouseId != '') ">
+                and (warehouse.layer > 2 and warehouse.path_id like ${parentWarehouseId})
+            </if>
+
             <![CDATA[ and product.stock_count > 0 ]]>
         </where>
         <if test="orderStr != null and orderStr != ''" >
-            order by product.code asc
+            order by ${orderStr}
         </if>
     </select>
 

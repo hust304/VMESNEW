@@ -717,7 +717,7 @@ public class WarehouseOutDetailServiceImp implements WarehouseOutDetailService {
 
 
 
-    public List<Map> getDispatchChildrenList(Map rootMap,Map childrenTitleMap)  throws Exception {
+    private List<Map> getDispatchChildrenList(Map rootMap,Map childrenTitleMap)  throws Exception {
         PageData pd = new PageData();
         Pagination pg = HttpUtils.parsePagination(pd);
         pd.put("productId",rootMap.get("productId"));
@@ -728,6 +728,15 @@ public class WarehouseOutDetailServiceImp implements WarehouseOutDetailService {
             count = ((BigDecimal) rootMap.get("count")).doubleValue();
         }
 
+        //查询仓库下所有子节点
+        pd.put("isNeedWarehouse", "true");
+        String parentWarehouseId = new String();
+        if (rootMap.get("parentWarehouseId") != null && rootMap.get("parentWarehouseId").toString().trim().length() > 0) {
+            parentWarehouseId = rootMap.get("parentWarehouseId").toString().trim();
+            parentWarehouseId = "'%" + parentWarehouseId +"%'";
+        }
+        pd.put("parentWarehouseId", parentWarehouseId);
+        pd.put("orderStr", "warehouse.layer asc");
 
         List<Map> childrenMapList = new ArrayList();
         List<Map> varList = warehouseProductService.getDataListPageDispatch(pd,pg);
@@ -948,7 +957,6 @@ public class WarehouseOutDetailServiceImp implements WarehouseOutDetailService {
         Map childrenTitleMap = getTitleList(columnList);
 
 
-
         List<Map> varMapList = new ArrayList();
         List<Map> varList = this.getDataListPage(pd,pg);
         if(varList!=null&&varList.size()>0){
@@ -962,7 +970,7 @@ public class WarehouseOutDetailServiceImp implements WarehouseOutDetailService {
                 varMap.put("hideTitles",childrenTitleMap.get("hideTitles"));
                 varMap.put("titles",childrenTitleMap.get("titles"));
                 varMap.put("pid",null);
-                varMap.put("children",getDispatchChildrenList(map,childrenTitleMap));
+                varMap.put("children",this.getDispatchChildrenList(map,childrenTitleMap));
                 varMapList.add(varMap);
             }
         }
