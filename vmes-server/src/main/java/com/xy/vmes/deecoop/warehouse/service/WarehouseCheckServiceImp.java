@@ -599,6 +599,54 @@ public class WarehouseCheckServiceImp implements WarehouseCheckService {
         //6. 遍历List<业务表DB> 对业务表添加或修改
         return model;
     }
+
+
+    @Override
+    public void updateState(String id) throws Exception {
+        WarehouseCheck warehouseCheck = this.findWarehouseCheckById(id);
+        int yqx = 0;//已取消
+        int dpd = 0;//待派单
+        int zxz = 0;//执行中
+        int shz = 0;//审核中
+        int ywc = 0;//已完成
+        if(warehouseCheck!=null){
+            List<WarehouseCheckDetail> detailList = warehouseCheckDetailService.findWarehouseCheckDetailListByParentId(id);
+            if(detailList!=null&&detailList.size()>0){
+                for(int i=0;i<detailList.size();i++){
+                    WarehouseCheckDetail warehouseCheckDetail = detailList.get(i);
+                    if("-1".equals(warehouseCheckDetail.getState())){
+                        yqx = yqx + 1;
+                    }else if("0".equals(warehouseCheckDetail.getState())){
+                        dpd = dpd + 1;
+                    }else if("1".equals(warehouseCheckDetail.getState())){
+                        zxz = zxz + 1;
+                    }else if("2".equals(warehouseCheckDetail.getState())){
+                        shz = shz + 1;
+                    }else if("3".equals(warehouseCheckDetail.getState())){
+                        ywc = ywc + 1;
+                    }
+                }
+            }else{
+                //如果当前出库单没有明细则自动删除当前出库单
+                this.deleteById(id);
+                return;
+            }
+            //该出库单明细状态全是已取消状态，则说明当前出库单状态为已取消
+            if(yqx>0&&dpd==0&&zxz==0&&ywc==0&&shz==0){
+                warehouseCheck.setState("-1");//已取消
+            }
+            //该出库单明细状态全是已完成和已取消状态，则说明当前出库单状态为已完成
+            else if(ywc>0&&yqx>=0&&zxz==0&&dpd==0&&shz==0){
+                warehouseCheck.setState("1");//已完成
+            }
+            //除了以上两种特殊情况，其他情况下的出库单状态均为未完成
+            else{
+                warehouseCheck.setState("0");//未完成
+            }
+            this.update(warehouseCheck);
+        }
+
+    }
 }
 
 
