@@ -103,6 +103,10 @@ public interface WarehouseCheckExecuteService {
     ResultModel auditPassWarehouseCheckExecute(PageData pageData) throws Exception;
 
     ResultModel auditDisagreeWarehouseCheckExecute(PageData pageData) throws Exception;
+
+    void auditPassWarehouseCheck(List<Map<String, Object>> mapList, String cuser, String companyId)   throws Exception;
+
+    void auditDisagreeWarehouseCheck(List<Map<String, Object>> mapList, String cuser, String remark)  throws Exception;
 }
 
 

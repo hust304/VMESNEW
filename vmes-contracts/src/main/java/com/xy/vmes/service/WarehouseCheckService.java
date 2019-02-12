@@ -106,6 +106,8 @@ public interface WarehouseCheckService {
     void exportExcelwarehouseChecks(PageData pd, Pagination pg) throws Exception;
 
     ResultModel importExcelwarehouseChecks(MultipartFile file) throws Exception;
+
+    void updateState(String id) throws Exception;
 }
 
 

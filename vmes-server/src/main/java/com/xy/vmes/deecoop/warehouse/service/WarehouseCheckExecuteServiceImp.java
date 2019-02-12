@@ -39,7 +39,8 @@ public class WarehouseCheckExecuteServiceImp implements WarehouseCheckExecuteSer
     private ProductService productService;
     @Autowired
     private WarehouseCheckDetailService warehouseCheckDetailService;
-
+    @Autowired
+    private WarehouseCheckService warehouseCheckService;
     @Autowired
     private ColumnService columnService;
     @Autowired
@@ -546,6 +547,86 @@ public class WarehouseCheckExecuteServiceImp implements WarehouseCheckExecuteSer
             return model;
         }
 
+        this.auditPassWarehouseCheck(mapList,cuser,companyId);
+
+        return model;
+    }
+
+
+    @Override
+    public ResultModel auditDisagreeWarehouseCheckExecute(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+        String cuser = pageData.getString("cuser");
+
+        String remark = pageData.getString("remark");
+        if (remark == null || remark.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("审核意见为空或空字符串，审核意见为必填不可为空！");
+            return model;
+        }
+
+        String auditExecuteJsonStr = pageData.getString("auditExecuteJsonStr");
+        if (auditExecuteJsonStr == null || auditExecuteJsonStr.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("请至少勾选一条盘点数据！");
+            return model;
+        }
+
+        List<Map<String, Object>> mapList = (List<Map<String, Object>>) YvanUtil.jsonToList(auditExecuteJsonStr);
+        if (mapList == null || mapList.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("盘点明细审核 Json字符串-转换成List错误！");
+            return model;
+        }
+        this.auditDisagreeWarehouseCheck(mapList,cuser,remark);
+        return model;
+    }
+
+    @Override
+    public void auditDisagreeWarehouseCheck(List<Map<String, Object>> mapList, String cuser, String remark)  throws Exception {
+        Map<String, String> parentMap = new HashMap<String, String>();
+        for (Map<String, Object> mapObject : mapList) {
+            WarehouseCheckExecute execute = (WarehouseCheckExecute) HttpUtils.pageData2Entity(mapObject, new WarehouseCheckExecute());
+            //状态(0:待审核 2:同意 3:不同意)
+            execute.setState("3");
+            execute.setAuditId(cuser);
+            execute.setRemark(remark);
+            //是否启用(0:已禁用 1:启用)
+            execute.setIsdisable("0");
+            this.update(execute);
+
+            //修改盘点明细状态
+            WarehouseCheckDetail detail = new WarehouseCheckDetail();
+            detail.setId(execute.getDetailId());
+            detail.setRemark(remark);
+            //状态(0:待派单 1:执行中 2:审核中 3:已完成 -1:已取消)
+            detail.setState("1");
+            warehouseCheckDetailService.update(detail);
+
+            Task task = taskService.findTaskByBusinessId(execute.getDetailId());
+            //执行状态(0:待执行 1:已完成 -1:已取消)
+            task.setState("0");
+            task.setRemark(remark);
+            taskService.update(task);
+
+            parentMap.put(execute.getParentId(), execute.getParentId());
+        }
+
+        //修改盘点单状态
+        if (parentMap.size() > 0) {
+            for (Iterator iterator = parentMap.keySet().iterator(); iterator.hasNext();) {
+                String parentId = (String) iterator.next();
+//                warehouseCheckService.updateState(parentId);
+                WarehouseCheck parent = new WarehouseCheck();
+                parent.setId(parentId);
+                //盘点明细状态(0:待派单 1:执行中 2:审核中 3:已完成 -1:已取消)--忽视状态(-1)
+                warehouseCheckDetailService.updateParentStateByDetailList(parent, null, "-1");
+            }
+        }
+    }
+
+    @Override
+    public void auditPassWarehouseCheck(List<Map<String, Object>> mapList, String cuser, String companyId)   throws Exception {
         Map<String, String> parentMap = new HashMap<String, String>();
         for (Map<String, Object> mapObject : mapList) {
             String executeId = (String)mapObject.get("id");
@@ -652,76 +733,6 @@ public class WarehouseCheckExecuteServiceImp implements WarehouseCheckExecuteSer
                 warehouseCheckDetailService.updateParentStateByDetailList(parent, null, "-1");
             }
         }
-        return model;
-    }
-
-
-    @Override
-    public ResultModel auditDisagreeWarehouseCheckExecute(PageData pageData) throws Exception {
-        ResultModel model = new ResultModel();
-        String cuser = pageData.getString("cuser");
-
-        String remark = pageData.getString("remark");
-        if (remark == null || remark.trim().length() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("审核意见为空或空字符串，审核意见为必填不可为空！");
-            return model;
-        }
-
-        String auditExecuteJsonStr = pageData.getString("auditExecuteJsonStr");
-        if (auditExecuteJsonStr == null || auditExecuteJsonStr.trim().length() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("请至少勾选一条盘点数据！");
-            return model;
-        }
-
-        List<Map<String, Object>> mapList = (List<Map<String, Object>>) YvanUtil.jsonToList(auditExecuteJsonStr);
-        if (mapList == null || mapList.size() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("盘点明细审核 Json字符串-转换成List错误！");
-            return model;
-        }
-
-        Map<String, String> parentMap = new HashMap<String, String>();
-        for (Map<String, Object> mapObject : mapList) {
-            WarehouseCheckExecute execute = (WarehouseCheckExecute) HttpUtils.pageData2Entity(mapObject, new WarehouseCheckExecute());
-            //状态(0:待审核 2:同意 3:不同意)
-            execute.setState("3");
-            execute.setAuditId(cuser);
-            execute.setRemark(remark);
-            //是否启用(0:已禁用 1:启用)
-            execute.setIsdisable("0");
-            this.update(execute);
-
-            //修改盘点明细状态
-            WarehouseCheckDetail detail = new WarehouseCheckDetail();
-            detail.setId(execute.getDetailId());
-            detail.setRemark(remark);
-            //状态(0:待派单 1:执行中 2:审核中 3:已完成 -1:已取消)
-            detail.setState("1");
-            warehouseCheckDetailService.update(detail);
-
-            Task task = taskService.findTaskByBusinessId(execute.getDetailId());
-            //执行状态(0:待执行 1:已完成 -1:已取消)
-            task.setState("0");
-            task.setRemark(remark);
-            taskService.update(task);
-
-            parentMap.put(execute.getParentId(), execute.getParentId());
-        }
-
-        //修改盘点单状态
-        if (parentMap.size() > 0) {
-            for (Iterator iterator = parentMap.keySet().iterator(); iterator.hasNext();) {
-                String parentId = (String) iterator.next();
-
-                WarehouseCheck parent = new WarehouseCheck();
-                parent.setId(parentId);
-                //盘点明细状态(0:待派单 1:执行中 2:审核中 3:已完成 -1:已取消)--忽视状态(-1)
-                warehouseCheckDetailService.updateParentStateByDetailList(parent, null, "-1");
-            }
-        }
-        return model;
     }
 }
 

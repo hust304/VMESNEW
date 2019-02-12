@@ -10,12 +10,14 @@ import com.xy.vmes.service.WarehouseCheckDetailService;
 import com.xy.vmes.service.WarehouseCheckExecuteService;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
+import com.yvan.YvanUtil;
 import com.yvan.springmvc.ResultModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -33,9 +35,38 @@ public class MobileWarehouseCheckServiceImp implements MobileWarehouseCheckServi
     @Autowired
     private WarehouseCheckDetailService warehouseCheckDetailService;
     ////获得盘点任务详细信息
+    @Override
     public ResultModel findWarehouseCheck(PageData pd) throws Exception {
         ResultModel model = new ResultModel();
         List<Map> varList =  mobileWarehouseCheckMapper.findWarehouseCheck(pd);
+        if(varList!=null&&varList.size()>0){
+            model.putResult(varList.get(0));
+        }else {
+            model.putCode("1");
+            model.putMsg("未查到任何数据！");
+        }
+
+        return model;
+    }
+
+    @Override
+    public ResultModel findWarehouseCheckByAduiting(PageData pd) throws Exception {
+        ResultModel model = new ResultModel();
+        List<Map> varList =  mobileWarehouseCheckMapper.findWarehouseCheckByAduiting(pd);
+        if(varList!=null&&varList.size()>0){
+            model.putResult(varList.get(0));
+        }else {
+            model.putCode("1");
+            model.putMsg("未查到任何数据！");
+        }
+
+        return model;
+    }
+
+    @Override
+    public ResultModel findWarehouseCheckByAduited(PageData pd) throws Exception {
+        ResultModel model = new ResultModel();
+        List<Map> varList =  mobileWarehouseCheckMapper.findWarehouseCheckByAduited(pd);
         if(varList!=null&&varList.size()>0){
             model.putResult(varList.get(0));
         }else {
@@ -73,6 +104,57 @@ public class MobileWarehouseCheckServiceImp implements MobileWarehouseCheckServi
             detailList.add(warehouseCheckDetail);
         }
         warehouseCheckExecuteService.rebackWarehouseCheck(detailList,rebackBillReason,cuser);
+        return model;
+    }
+
+    @Override
+    public ResultModel listWarehouseCheckByState(PageData pd, Pagination pg) throws Exception {
+        ResultModel model = new ResultModel();
+        List<Map> varList = mobileWarehouseCheckMapper.listWarehouseCheckByState(pd,pg);
+        Map result = new HashMap();
+        result.put("varList", varList);
+        result.put("pageData", pg);
+        model.putResult(result);
+        return model;
+    }
+
+    @Override
+    public ResultModel auditDisagreeWarehouseCheck(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+        String cuser = pageData.getString("cuser");
+        String remark = pageData.getString("remark");
+        if (remark == null || remark.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("审核意见为空或空字符串，审核意见为必填不可为空！");
+            return model;
+        }
+        List<Map<String, Object>> mapList = new ArrayList<>();
+        Map<String, Object> mapValue = new HashMap();
+        mapValue.put("id",pageData.getString("id"));
+        mapValue.put("parentId",pageData.getString("parentId"));
+        mapValue.put("detailId",pageData.getString("detailId"));
+        mapList.add(mapValue);
+        warehouseCheckExecuteService.auditDisagreeWarehouseCheck(mapList,cuser,remark);
+        return model;
+    }
+
+    @Override
+    public ResultModel auditPassWarehouseCheck(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+        String cuser = pageData.getString("cuser");
+        String companyId = pageData.getString("currentCompanyId");
+        List<Map<String, Object>> mapList =  new ArrayList<>();
+        Map<String, Object> mapValue = new HashMap();
+        mapValue.put("id",pageData.getString("id"));
+        mapValue.put("parentId",pageData.getString("parentId"));
+        mapValue.put("detailId",pageData.getString("detailId"));
+        mapValue.put("code",pageData.getString("code"));
+        mapValue.put("productId",pageData.getString("productId"));
+        mapValue.put("warehouseId",pageData.getString("warehouseId"));
+        mapValue.put("stockCount",pageData.getString("stockCount"));
+        mapValue.put("count",pageData.getString("checkCount"));
+        mapList.add(mapValue);
+        warehouseCheckExecuteService.auditPassWarehouseCheck(mapList,cuser,companyId);
         return model;
     }
 }
