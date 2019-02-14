@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+说明：订单详情(订单明细) vmes_sale_order_detail:订单明细汇总 CollectMapper.xml
+创建人：陈刚
+创建时间：2019-02-13
+ -->
+<mapper namespace="com.xy.vmes.deecoop.sale.dao.SaleOrderDetailCollectMapper">
+    <select id="findListPageOrderDetailCollectByInfo" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+            orderDtl.id id,
+            orderDtl.parent_id parentId,
+            orderDtl.state state,
+            CASE
+                WHEN orderDtl.state = '0' THEN '待提交'
+                WHEN orderDtl.state = '1' THEN '待审核'
+                WHEN orderDtl.state = '2' THEN '待生产'
+                WHEN orderDtl.state = '3' THEN '待出库'
+                WHEN orderDtl.state = '4' THEN '待发货'
+                WHEN orderDtl.state = '5' THEN '已发货'
+                WHEN orderDtl.state = '6' THEN '已完成'
+                WHEN orderDtl.state = '-1' THEN '已取消'
+            ELSE null
+            END stateName,
+            orderDtl.file_url fileUrl,
+            DATE_FORMAT(orderDtl.deliver_date,'%Y-%m-%d') deliverDate,
+
+            round(ifnull(orderDtl.order_count, 0),2) orderCount,
+            orderDtl.order_unit orderUnit,
+            round(ifnull(orderDtl.product_count, 0),2) productCount,
+            orderDtl.product_unit productUnit,
+            orderDtl.price_count priceCount,
+
+            orderDtl.price_unit priceUnit,
+            orderDtl.product_id productId,
+            round(ifnull(orderDtl.product_price, 0),2) productPrice,
+            round(ifnull(orderDtl.product_sum, 0),2) productSum,
+            orderDtl.is_lock_warehouse isLockWarehouse,
+
+            orderDtl.is_need_produce isNeedProduce,
+            orderDtl.lock_count lockCount,
+            orderDtl.lock_date lockDate,
+            orderDtl.plan_detail_id planDetailId,
+            orderDtl.cuser cuser,
+
+            orderDtl.cdate,
+            orderDtl.uuser uuser,
+            orderDtl.udate,
+            orderDtl.remark remark,
+            orderDtl.isdisable isdisable,
+
+            orderUnit.name orderUnitName,
+
+            <!--货品表-->
+            product.code productCode,
+            product.name productName,
+            product.spec productSpec,
+            product.genre productGenre,
+            genre.name productGenreName,
+
+            <!--发货明细汇总-->
+            deliver.deliverCount,
+            deliver.deliverSum,
+
+            <!--开票明细汇总-->
+            invoice.invoiceCount,
+            invoice.invoiceSum
+
+        from vmes_sale_order_detail orderDtl
+            left join vmes_product product on orderDtl.product_id = product.id
+            left join vmes_dictionary genre on product.genre = genre.id
+            left join vmes_dictionary orderUnit on orderDtl.order_unit = orderUnit.id
+
+            <!--发货明细汇总-->
+            left join (
+                select
+                    order_detai_id,
+                    round(ifnull(sum(order_count), 0), 2) deliverCount,
+                    round(ifnull(sum(sum), 0), 2) deliverSum
+                from vmes_sale_deliver_detail
+                where state = '1'
+                group by order_detai_id
+            ) deliver on orderDtl.id = deliver.order_detai_id
+
+            <!--开票明细汇总-->
+            left join (
+                select
+                    order_detail_id,
+                    round(ifnull(sum(count), 0), 2) invoiceCount,
+                    round(ifnull(sum(sum), 0), 2) invoiceSum
+                from vmes_sale_invoice_detail
+                where state = '1'
+                group by order_detail_id
+            ) invoice on orderDtl.id = invoice.order_detail_id
+        <where>
+            <if test="parentId != null and parentId != ''" >
+                and orderDtl.parent_id = #{parentId}
+            </if>
+
+        </where>
+        <if test="orderStr != null and orderStr != ''" >
+            order by ${orderStr}
+        </if>
+
+    </select>
+
+    <insert id="insertColumn" >
+        delete from vmes_column where model_code = 'saleOrderDetailCollectByInfo';
+        insert into vmes_column (
+        id,model_code,title_key,title_name,serial_number,
+        isdisable,ishide,isedit,ismust,cdate,
+        cuser
+        ) VALUES
+        (replace(uuid(), '-', ''), 'saleOrderDetailCollectByInfo', 'id', 'id', 0, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailCollectByInfo', 'parentId', '订单id', 1, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailCollectByInfo', 'state', '明细状态id', 2, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailCollectByInfo', 'stateName', '状态', 2, '1', '0', '1', '0', '2018-12-6 09:25:40', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailCollectByInfo', 'fileUrl', '附件地址', 3, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailCollectByInfo', 'deliverDate', '约定交期', 4, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+
+        (replace(uuid(), '-', ''), 'saleOrderDetailCollectByInfo', 'orderCount', '订购数量', 5, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailCollectByInfo', 'orderUnit', '单位id', 6, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailCollectByInfo', 'orderUnitName', '单位', 6, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailCollectByInfo', 'productCount', '货品数量(计量数量)', 7, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailCollectByInfo', 'productUnit', '计量单位id', 8, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailCollectByInfo', 'productUnitName', '计量单位', 8, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailCollectByInfo', 'priceCount', '货品数量(计价数量)', 9, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+
+        (replace(uuid(), '-', ''), 'saleOrderDetailCollectByInfo', 'priceUnit', '计价单位id', 10, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailCollectByInfo', 'priceUnitName', '计价单位', 10, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailCollectByInfo', 'productId', '货品id', 11, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailCollectByInfo', 'productPrice', '单价', 12, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailCollectByInfo', 'productSum', '金额', 13, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailCollectByInfo', 'isLockWarehouse', '是否锁定仓库(0:无锁定 1:锁定)', 14, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+
+        (replace(uuid(), '-', ''), 'saleOrderDetailCollectByInfo', 'isneedproduce', '是否需要生产(0:无需 1:需要 库存不够)', 15, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailCollectByInfo', 'lockCount', '锁定货品数量', 16, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailCollectByInfo', 'lockDate', '锁定开始时间', 17, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailCollectByInfo', 'planDetailId', '生产计划明细ID', 18, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailCollectByInfo', 'cuser', '创建用户id', 19, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+
+        (replace(uuid(), '-', ''), 'saleOrderDetailCollectByInfo', 'cdate', '创建时间', 20, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailCollectByInfo', 'uuser', '修改用户id', 21, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailCollectByInfo', 'udate', '修改时间', 22, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailCollectByInfo', 'remark', '备注', 23, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailCollectByInfo', 'isdisable', '是否启用(0:已禁用 1:启用)', 24, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+
+        (replace(uuid(), '-', ''), 'saleOrderDetailCollectByInfo', 'productCode', '货品编码', 25, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailCollectByInfo', 'productName', '货品名称', 26, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailCollectByInfo', 'productSpec', '规格型号', 27, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailCollectByInfo', 'productGenre', '货品属性id', 28, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailCollectByInfo', 'productGenreName', '货品属性', 28, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailCollectByInfo', 'productType', '货品类型id', 29, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+
+        (replace(uuid(), '-', ''), 'saleOrderDetailCollectByInfo', 'deliverCount', 'deliverCount', 30, '1', '1', '1', '0', '2018-12-6 09:16:39', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailCollectByInfo', 'deliverSum', 'deliverSum', 31, '1', '1', '1', '0', '2018-12-6 09:16:39', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailCollectByInfo', 'invoiceCount', 'invoiceCount', 32, '1', '1', '1', '0', '2018-12-6 09:16:39', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailCollectByInfo', 'invoiceSum', 'invoiceSum', 33, '1', '1', '1', '0', '2018-12-6 09:16:39', 'admin'),
+
+    </insert>
+
+</mapper>

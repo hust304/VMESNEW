@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+说明：订单详情 vmes_sale_order:订单表汇总 CollectMapper.xml
+创建人：陈刚
+创建时间：2019-02-13
+ -->
+<mapper namespace="com.xy.vmes.deecoop.sale.dao.SaleOrderCollectMapper">
+    <select id="findListPageOrderCollectByInfo" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+            saleOrder.id id,
+            saleOrder.id parentId,
+            saleOrder.company_id companyId,
+            saleOrder.order_number orderNumber,
+            saleOrder.sys_code sysCode,
+            saleOrder.receipt_type receiptType,
+            CASE
+                WHEN saleOrder.receipt_type = '1' THEN '不开票'
+                WHEN saleOrder.receipt_type = '2' THEN '增值税普通发票'
+                WHEN saleOrder.receipt_type = '3' THEN '增值税专用发票'
+            ELSE null
+            END receiptTypeName,
+
+            saleOrder.price_type priceType,
+            saleOrder.state state,
+            CASE
+                WHEN saleOrder.state = '0' THEN '待提交'
+                WHEN saleOrder.state = '1' THEN '待审核'
+                WHEN saleOrder.state = '2' THEN '待发货'
+                WHEN saleOrder.state = '3' THEN '已发货'
+                WHEN saleOrder.state = '4' THEN '已完成'
+                WHEN saleOrder.state = '-1' THEN '已取消'
+            ELSE null
+            END stateName,
+            saleOrder.make_id makeId,
+            saleOrder.audit_id auditId,
+            saleOrder.customer_id customerId,
+
+            DATE_FORMAT(saleOrder.order_date,'%Y-%m-%d') orderDate,
+            round(ifnull(saleOrder.total_sum, 0),2) totalSum,
+            round(ifnull(saleOrder.discount_sum, 0),2) discountSum,
+            round(ifnull(saleOrder.order_sum, 0),2) orderSum,
+            round(ifnull(saleOrder.advance_sum, 0),2) advanceSum,
+
+            round(ifnull(saleOrder.deliver_sum, 0),2) deliverSum,
+            <!--round(ifnull(saleOrder.receivables, 0),2) receivables,-->
+            saleOrder.cuser cuser,
+            DATE_FORMAT(saleOrder.cdate,'%Y-%m-%d %T') cdate,
+            saleOrder.uuser uuser,
+
+            DATE_FORMAT(saleOrder.udate,'%Y-%m-%d %T') udate,
+            saleOrder.remark remark,
+            saleOrder.isdisable isdisable,
+            DATE_FORMAT(saleOrder.expect_date,'%Y-%m-%d') expectDate,
+            DATE_FORMAT(saleOrder.deliver_date,'%Y-%m-%d') deliverDate,
+
+            DATE_FORMAT(saleOrder.pay_date,'%Y-%m-%d') payDate,
+            saleOrder.pay_state payState,
+
+            <!--制单人 审核人 客户名称-->
+            makeUser.user_name makeName,
+            auditUser.user_name auditName,
+            customer.name customerName,
+
+            DATE_FORMAT(viewSaleOrder.max_receive_date,'%Y-%m-%d') maxReceiveDate,
+            <!--账期剩余天数-->
+            viewSaleOrder.receive_DaysRemaining receiveDaysRemaining,
+            <!--(计算)逾期天数: (发货日期 + 记账天数) - 当前日期-->
+            <!--isPositiveNumber Y: 逾期天数 >= 0 N: 逾期天数 < 0-->
+            viewSaleOrder.isPositiveNumber,
+
+            <!--已收款-->
+            receive.receiveAmount,
+            <!--应收款 := (订单金额-已收款) -->
+            (saleOrder.order_sum - receive.receiveAmount) receivables
+
+        from vmes_sale_order saleOrder
+            left join vmes_user makeUser on saleOrder.make_id = makeUser.id
+            left join vmes_user auditUser on saleOrder.audit_id = auditUser.id
+            left join vmes_customer customer on saleOrder.customer_id = customer.id
+
+            left join view_sale_order_customer_max_receive_date viewSaleOrder on saleOrder.id = viewSaleOrder.order_id
+            <!--已收款-->
+            left join (
+                select order_id, round(ifnull(sum(receive_amount), 0), 2) receiveamount
+                from vmes_sale_receive_detail
+                where state = '1'
+                group by order_id
+            ) receive on saleOrder.id = receive.order_id
+        <where>
+            <if test="id != null and id != ''" >
+                and saleOrder.id = #{id}
+            </if>
+            <if test="currentCompanyId != null and currentCompanyId != ''" >
+                and saleOrder.company_id = #{currentCompanyId}
+            </if>
+        </where>
+        <if test="orderStr != null and orderStr != ''" >
+            order by ${orderStr}
+        </if>
+    </select>
+
+    <insert id="insertColumn" >
+        delete from vmes_column where model_code = 'saleOrderCollectByInfo' ;
+        insert into vmes_column (
+        id,model_code,title_key,title_name,serial_number,
+        isdisable,ishide,isedit,ismust,cdate,
+        cuser
+        ) VALUES
+        (replace(uuid(), '-', ''), 'saleOrderCollectByInfo', 'parentId', '订单id', 0, '1', '0', '1', '0', '2018-12-5 17:35:26', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderCollectByInfo', 'id', 'id', 0, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderCollectByInfo', 'companyId', '企业ID', 1, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderCollectByInfo', 'sysCode', '订单编号', 2, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderCollectByInfo', 'orderNumber', '订单编号', 3, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderCollectByInfo', 'receiptTypeName', '发票类型', 4, '1', '0', '1', '0', '2018-12-6 10:53:24', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderCollectByInfo', 'receiptType', '发票类型id', 4, '1', '0', '1', '0', '2018-12-6 10:53:24', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderCollectByInfo', 'priceType', '计价类型(1:先计价 2:后计价)', 5, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderCollectByInfo', 'stateName', '订单状态', 6, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderCollectByInfo', 'state', '订单状态id', 6, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderCollectByInfo', 'makeId', '制单人id', 7, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderCollectByInfo', 'makeName', '制单人', 7, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderCollectByInfo', 'auditId', '审核人id', 8, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderCollectByInfo', 'auditName', '审核人', 8, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderCollectByInfo', 'customerId', '客户id', 9, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderCollectByInfo', 'customerName', '客户名称', 9, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderCollectByInfo', 'orderDate', '下单日期', 10, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderCollectByInfo', 'totalSum', '合计金额', 11, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderCollectByInfo', 'discountSum', '折扣金额', 12, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderCollectByInfo', 'orderSum', '订单金额(合计金额 - 折扣金额)', 13, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderCollectByInfo', 'advanceSum', '预付款', 14, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderCollectByInfo', 'deliverSum', '发货金额', 15, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderCollectByInfo', 'cuser', '创建用户id', 16, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderCollectByInfo', 'cdate', '创建时间', 17, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderCollectByInfo', 'uuser', '修改用户id', 18, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderCollectByInfo', 'udate', '修改时间', 19, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderCollectByInfo', 'remark', '备注', 20, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderCollectByInfo', 'isdisable', '是否启用(0:已禁用 1:启用)', 21, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderCollectByInfo', 'expectDate', '约定交期', 22, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderCollectByInfo', 'deliverDate', '发货日期', 23, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderCollectByInfo', 'receivables', '应收款', 24, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderCollectByInfo', 'maxReceiveDate', '账期截止日', 25, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderCollectByInfo', 'receiveDaysRemaining', '账期剩余(天)', 26, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderCollectByInfo', 'receiveAmount', '已收款', 27, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderCollectByInfo', 'isPositiveNumber', '是否正数[(发货日期 + 记账天数) - 当前日期]', 28, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderCollectByInfo', 'payDate', '付款日期', 29, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin')
+
+    </insert>
+
+</mapper>

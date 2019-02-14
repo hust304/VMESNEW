@@ -38,6 +38,8 @@ public class SaleOrderController {
 
     @Autowired
     private SaleOrderService saleOrderService;
+    @Autowired
+    private SaleOrderCollectService saleOrderCollectService;
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
     /**
@@ -53,6 +55,21 @@ public class SaleOrderController {
         ResultModel model = saleOrderService.listPageSaleOrder(pd,pg);
         Long endTime = System.currentTimeMillis();
         logger.info("################/sale/saleOrder/listPageSaleOrder 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 订单详情: vmes_sale_order 订单汇总
+     * @date 2019-02-13
+     */
+    @PostMapping("/sale/saleOrder/listPageOrderCollectByInfo")
+    public ResultModel listPageOrderCollectByInfo() throws Exception {
+        logger.info("################/sale/saleOrder/listPageOrderCollectByInfo 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = saleOrderCollectService.listPageOrderCollectByInfo(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleOrder/listPageOrderCollectByInfo 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 

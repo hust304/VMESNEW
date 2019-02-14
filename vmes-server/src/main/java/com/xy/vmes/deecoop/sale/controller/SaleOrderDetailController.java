@@ -8,6 +8,7 @@ import com.xy.vmes.entity.Column;
 import com.xy.vmes.entity.SaleOrder;
 import com.xy.vmes.entity.SaleOrderDetail;
 import com.xy.vmes.service.ColumnService;
+import com.xy.vmes.service.SaleOrderDetailCollectService;
 import com.xy.vmes.service.SaleOrderDetailService;
 import com.xy.vmes.service.SaleOrderService;
 import com.yvan.ExcelUtil;
@@ -38,9 +39,10 @@ import java.util.*;
 public class SaleOrderDetailController {
     private Logger logger = LoggerFactory.getLogger(SaleOrderDetailController.class);
 
-
     @Autowired
     private SaleOrderDetailService saleOrderDetailService;
+    @Autowired
+    private SaleOrderDetailCollectService saleOrderDetailCollectService;
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
     /**
@@ -56,6 +58,22 @@ public class SaleOrderDetailController {
         ResultModel model = saleOrderDetailService.listPageSaleOrderDetail(pd,pg);
         Long endTime = System.currentTimeMillis();
         logger.info("################/sale/saleOrderDetail/listPageSaleOrderDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 订单详情(订单明细) vmes_sale_order_detail 订单明细汇总
+     * @author 陈刚
+     * @date 2019-02-14
+     */
+    @PostMapping("/sale/saleOrderDetail/listPageOrderDetailCollectByInfo")
+    public ResultModel listPageOrderDetailCollectByInfo() throws Exception {
+        logger.info("################/sale/saleOrderDetail/listPageOrderDetailCollectByInfo 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = saleOrderDetailCollectService.listPageOrderDetailCollectByInfo(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleOrderDetail/listPageOrderDetailCollectByInfo 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
