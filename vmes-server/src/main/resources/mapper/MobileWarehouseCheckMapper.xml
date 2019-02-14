@@ -35,7 +35,7 @@
         left join vmes_warehouse warehouse on warehouse.id = detail.warehouse_id
         <where>
             <if test="currentCompanyId != null and currentCompanyId != ''" >
-                and wcheck.company_id=#{currentCompanyId}
+                and wcheck.company_id = #{currentCompanyId}
             </if>
             and detail.state = '2'
             and checkexecute.state = '0'
@@ -72,7 +72,7 @@
         left join vmes_warehouse warehouse on warehouse.id = detail.warehouse_id
         <where>
             <if test="currentCompanyId != null and currentCompanyId != ''" >
-                and wcheck.company_id =# {currentCompanyId}
+                and wcheck.company_id = #{currentCompanyId}
             </if>
             <if test="currentUserId != null and currentUserId != ''" >
                 and checkexecute.audit_id = #{currentUserId}
