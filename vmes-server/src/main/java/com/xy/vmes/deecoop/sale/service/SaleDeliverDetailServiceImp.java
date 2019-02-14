@@ -530,6 +530,13 @@ public class SaleDeliverDetailServiceImp implements SaleDeliverDetailService {
         result.put("hideTitles",titlesHideList);
         result.put("titles",titlesList);
 
+        //设置查询排序
+        pd.put("orderStr", "detail.cdate asc");
+        String orderStr = pd.getString("orderStr");
+        if (orderStr != null && orderStr.trim().length() > 0) {
+            pd.put("orderStr", orderStr);
+        }
+
         List<Map> varMapList = new ArrayList();
         List<Map> varList = this.getDataListPage(pd,pg);
         if(varList!=null&&varList.size()>0){

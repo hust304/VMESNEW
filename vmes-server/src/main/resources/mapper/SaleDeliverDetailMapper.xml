@@ -239,6 +239,9 @@
             <if test="orderId != null and orderId != ''" >
                 and detail.order_id = #{orderId}
             </if>
+            <if test="state != null and state != ''" >
+                and detail.state = #{state}
+            </if>
 
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >

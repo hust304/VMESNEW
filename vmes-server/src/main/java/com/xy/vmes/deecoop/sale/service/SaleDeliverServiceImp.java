@@ -487,11 +487,15 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
         saleDeliver.setState("1");
         this.update(saleDeliver);
 
-        //状态(0:待发货 1:已发货 -1:已取消)
-        saleDeliverDetailService.updateStateByDetail("1", deliverId);
-
         //发货单id获取发货明细List
         List<SaleDeliverDetail> deliverDtlList = saleDeliverDetailService.findSaleDeliverDetailListByParentId(deliverId);
+        for (SaleDeliverDetail deliverDetail : deliverDtlList) {
+            //发货状态(0:待发货 1:已发货 -1:已取消)
+            deliverDetail.setState("1");
+            deliverDetail.setDeliverDate(new Date());
+            saleDeliverDetailService.update(deliverDetail);
+        }
+
         String orderDtlIds = saleDeliverDetailService.findOrderDtlIdsByDeliverDtlList(deliverDtlList);
         if (orderDtlIds != null && orderDtlIds.trim().length() > 0) {
             orderDtlIds = StringUtil.stringTrimSpace(orderDtlIds);
@@ -631,8 +635,14 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
         saleDeliver.setState("-1");
         this.update(saleDeliver);
 
-        //发货明细状态(0:待发货 1:已发货 -1:已取消)
-        saleDeliverDetailService.updateStateByDetail("-1", deliverId);
+        //发货单id获取发货明细List
+        List<SaleDeliverDetail> deliverDtlList = saleDeliverDetailService.findSaleDeliverDetailListByParentId(deliverId);
+        for (SaleDeliverDetail deliverDetail : deliverDtlList) {
+            //发货状态(0:待发货 1:已发货 -1:已取消)
+            deliverDetail.setState("-1");
+            deliverDetail.setDeliverDate(null);
+            saleDeliverDetailService.update(deliverDetail);
+        }
 
         return model;
     }
