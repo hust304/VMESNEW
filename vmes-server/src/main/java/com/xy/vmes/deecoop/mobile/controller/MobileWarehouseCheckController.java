@@ -31,20 +31,33 @@ public class MobileWarehouseCheckController {
 
 
     //获得盘点任务详细信息
-    @PostMapping("/mobile/mobileWarehouseCheck/listWarehouseCheckByState")
-    public ResultModel listWarehouseCheckByState()  throws Exception {
-        logger.info("################/mobile/mobileWarehouseCheck/listWarehouseCheckByState 执行开始 ################# ");
+    @PostMapping("/mobile/mobileWarehouseCheck/listWarehouseCheckByAduited")
+    public ResultModel listWarehouseCheckByAduited()  throws Exception {
+        logger.info("################/mobile/mobileWarehouseCheck/listWarehouseCheckByAduited 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         PageData pd = HttpUtils.parsePageData();
         Pagination pg = HttpUtils.parsePagination(pd);
-        ResultModel model = mobileWarehouseCheckService.listWarehouseCheckByState(pd,pg);
+        ResultModel model = mobileWarehouseCheckService.listWarehouseCheckByAduited(pd,pg);
         Long endTime = System.currentTimeMillis();
-        logger.info("################/mobile/mobileWarehouseCheck/listWarehouseCheckByState  执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/mobile/mobileWarehouseCheck/listWarehouseCheckByAduited  执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
     //获得盘点任务详细信息
-    @PostMapping("/mobile/mobileWarehouseCheck/findWarehouseCheckByDetailId")
+    @PostMapping("/mobile/mobileWarehouseCheck/listWarehouseCheckByAduiting")
+    public ResultModel listWarehouseCheckByAduiting()  throws Exception {
+        logger.info("################/mobile/mobileWarehouseCheck/listWarehouseCheckByAduiting 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        Pagination pg = HttpUtils.parsePagination(pd);
+        ResultModel model = mobileWarehouseCheckService.listWarehouseCheckByAduiting(pd,pg);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/mobile/mobileWarehouseCheck/listWarehouseCheckByAduiting  执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    //获得盘点任务详细信息
+    @PostMapping("/mobile/mobileWarehouseCheck/findWarehouseCheckById")
     //@GetMapping("/mobileWarehouseCheck/findWarehouseCheckByDetailId")
     public ResultModel findWarehouseCheckByDetailId()  throws Exception {
         logger.info("################/mobile/mobileWarehouseCheck/findWarehouseCheckByDetailId执行开始 ################# ");
@@ -56,27 +69,16 @@ public class MobileWarehouseCheckController {
         return model;
     }
 
-    //获得盘点任务详细信息
-    @PostMapping("/mobile/mobileWarehouseCheck/findWarehouseCheckByAduiting")
-    public ResultModel findWarehouseCheckByAduiting()  throws Exception {
-        logger.info("################/mobile/mobileWarehouseCheck/findWarehouseCheckByAduiting 执行开始 ################# ");
-        Long startTime = System.currentTimeMillis();
-        PageData pd = HttpUtils.parsePageData();
-        ResultModel model = mobileWarehouseCheckService.findWarehouseCheckByAduiting(pd);
-        Long endTime = System.currentTimeMillis();
-        logger.info("################/mobile/mobileWarehouseCheck/findWarehouseCheckByAduiting  执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
-        return model;
-    }
 
     //获得盘点任务详细信息
-    @PostMapping("/mobile/mobileWarehouseCheck/findWarehouseCheckByAduited")
-    public ResultModel findWarehouseCheckByAduited()  throws Exception {
-        logger.info("################/mobile/mobileWarehouseCheck/findWarehouseCheckByAduited 执行开始 ################# ");
+    @PostMapping("/mobile/mobileWarehouseCheck/findWarehouseCheckById")
+    public ResultModel findWarehouseCheckById()  throws Exception {
+        logger.info("################/mobile/mobileWarehouseCheck/findWarehouseCheckById 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         PageData pd = HttpUtils.parsePageData();
-        ResultModel model = mobileWarehouseCheckService.findWarehouseCheckByAduited(pd);
+        ResultModel model = mobileWarehouseCheckService.findWarehouseCheckById(pd);
         Long endTime = System.currentTimeMillis();
-        logger.info("################/mobile/mobileWarehouseCheck/findWarehouseCheckByAduited  执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/mobile/mobileWarehouseCheck/findWarehouseCheckById  执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 

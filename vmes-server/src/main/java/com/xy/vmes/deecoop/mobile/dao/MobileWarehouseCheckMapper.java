@@ -20,10 +20,10 @@ public interface MobileWarehouseCheckMapper {
     //手机端盘点详情
     List<Map> findWarehouseCheck(PageData pd);
 
-    List<Map> findWarehouseCheckByAduiting(PageData pd);
+    List<Map> listWarehouseCheckByAduiting(PageData pd, Pagination pg);
 
-    List<Map> findWarehouseCheckByAduited(PageData pd);
+    List<Map> findWarehouseCheckById(PageData pd);
 
-    List<Map> listWarehouseCheckByState(PageData pd, Pagination pg);
+    List<Map> listWarehouseCheckByAduited(PageData pd, Pagination pg);
 }
 

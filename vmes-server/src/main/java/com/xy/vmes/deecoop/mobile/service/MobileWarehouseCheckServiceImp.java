@@ -49,33 +49,6 @@ public class MobileWarehouseCheckServiceImp implements MobileWarehouseCheckServi
         return model;
     }
 
-    @Override
-    public ResultModel findWarehouseCheckByAduiting(PageData pd) throws Exception {
-        ResultModel model = new ResultModel();
-        List<Map> varList =  mobileWarehouseCheckMapper.findWarehouseCheckByAduiting(pd);
-        if(varList!=null&&varList.size()>0){
-            model.putResult(varList.get(0));
-        }else {
-            model.putCode("1");
-            model.putMsg("未查到任何数据！");
-        }
-
-        return model;
-    }
-
-    @Override
-    public ResultModel findWarehouseCheckByAduited(PageData pd) throws Exception {
-        ResultModel model = new ResultModel();
-        List<Map> varList =  mobileWarehouseCheckMapper.findWarehouseCheckByAduited(pd);
-        if(varList!=null&&varList.size()>0){
-            model.putResult(varList.get(0));
-        }else {
-            model.putCode("1");
-            model.putMsg("未查到任何数据！");
-        }
-
-        return model;
-    }
 
     @Override
     public ResultModel addWarehouseCheckExecute(PageData pageData) throws Exception {
@@ -107,16 +80,6 @@ public class MobileWarehouseCheckServiceImp implements MobileWarehouseCheckServi
         return model;
     }
 
-    @Override
-    public ResultModel listWarehouseCheckByState(PageData pd, Pagination pg) throws Exception {
-        ResultModel model = new ResultModel();
-        List<Map> varList = mobileWarehouseCheckMapper.listWarehouseCheckByState(pd,pg);
-        Map result = new HashMap();
-        result.put("varList", varList);
-        result.put("pageData", pg);
-        model.putResult(result);
-        return model;
-    }
 
     @Override
     public ResultModel auditDisagreeWarehouseCheck(PageData pageData) throws Exception {
@@ -155,6 +118,41 @@ public class MobileWarehouseCheckServiceImp implements MobileWarehouseCheckServi
         mapValue.put("count",pageData.getString("checkCount"));
         mapList.add(mapValue);
         warehouseCheckExecuteService.auditPassWarehouseCheck(mapList,cuser,companyId);
+        return model;
+    }
+
+    @Override
+    public ResultModel listWarehouseCheckByAduited(PageData pd, Pagination pg) throws Exception {
+        ResultModel model = new ResultModel();
+        List<Map> varList = mobileWarehouseCheckMapper.listWarehouseCheckByAduited(pd,pg);
+        Map result = new HashMap();
+        result.put("varList", varList);
+        result.put("pageData", pg);
+        model.putResult(result);
+        return model;
+    }
+
+    @Override
+    public ResultModel listWarehouseCheckByAduiting(PageData pd, Pagination pg) throws Exception {
+        ResultModel model = new ResultModel();
+        List<Map> varList = mobileWarehouseCheckMapper.listWarehouseCheckByAduiting(pd,pg);
+        Map result = new HashMap();
+        result.put("varList", varList);
+        result.put("pageData", pg);
+        model.putResult(result);
+        return model;
+    }
+
+    @Override
+    public ResultModel findWarehouseCheckById(PageData pd) throws Exception {
+        ResultModel model = new ResultModel();
+        List<Map> varList =  mobileWarehouseCheckMapper.findWarehouseCheckById(pd);
+        if(varList!=null&&varList.size()>0){
+            model.putResult(varList.get(0));
+        }else {
+            model.putCode("1");
+            model.putMsg("未查到任何数据！");
+        }
         return model;
     }
 }
