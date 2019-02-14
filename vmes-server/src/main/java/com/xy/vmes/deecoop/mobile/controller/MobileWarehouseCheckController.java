@@ -57,7 +57,7 @@ public class MobileWarehouseCheckController {
     }
 
     //获得盘点任务详细信息
-    @PostMapping("/mobile/mobileWarehouseCheck/findWarehouseCheckById")
+    @PostMapping("/mobile/mobileWarehouseCheck/findWarehouseCheckByDetailId")
     //@GetMapping("/mobileWarehouseCheck/findWarehouseCheckByDetailId")
     public ResultModel findWarehouseCheckByDetailId()  throws Exception {
         logger.info("################/mobile/mobileWarehouseCheck/findWarehouseCheckByDetailId执行开始 ################# ");
