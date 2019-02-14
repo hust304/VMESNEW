@@ -72,7 +72,10 @@
             <!--已收款-->
             receive.receiveAmount,
             <!--应收款 := (订单金额-已收款) -->
-            (saleOrder.order_sum - receive.receiveAmount) receivables
+            (saleOrder.order_sum - receive.receiveAmount) receivables,
+
+            <!-- 开票金额 -->
+            round(invoice.invoice_sum, 2) invoiceSum
 
         from vmes_sale_order saleOrder
             left join vmes_user makeUser on saleOrder.make_id = makeUser.id
@@ -80,13 +83,24 @@
             left join vmes_customer customer on saleOrder.customer_id = customer.id
 
             left join view_sale_order_customer_max_receive_date viewSaleOrder on saleOrder.id = viewSaleOrder.order_id
-            <!--已收款-->
+            <!--收款明细汇总-->
             left join (
                 select order_id, round(ifnull(sum(receive_amount), 0), 2) receiveamount
                 from vmes_sale_receive_detail
                 where state = '1'
                 group by order_id
             ) receive on saleOrder.id = receive.order_id
+
+            <!--开票明细汇总-->
+            left join (
+                select
+                    b.parent_id order_id,sum(a.sum) invoice_sum
+                from vmes_sale_invoice_detail a
+                left join vmes_sale_order_detail b on a.order_detail_id = b.id
+                where a.state = '1'
+                group by b.parent_id
+            ) invoice on saleOrder.id = invoice.order_id
+
         <where>
             <if test="id != null and id != ''" >
                 and saleOrder.id = #{id}
@@ -142,7 +156,8 @@
         (replace(uuid(), '-', ''), 'saleOrderCollectByInfo', 'receiveDaysRemaining', '账期剩余(天)', 26, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderCollectByInfo', 'receiveAmount', '已收款', 27, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderCollectByInfo', 'isPositiveNumber', '是否正数[(发货日期 + 记账天数) - 当前日期]', 28, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
-        (replace(uuid(), '-', ''), 'saleOrderCollectByInfo', 'payDate', '付款日期', 29, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin')
+        (replace(uuid(), '-', ''), 'saleOrderCollectByInfo', 'payDate', '付款日期', 29, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderCollectByInfo', 'invoiceSum', '开票金额', 30, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin')
 
     </insert>
 
