@@ -71,6 +71,8 @@ public interface SaleInvoiceService {
     List<SaleInvoice> selectByColumnMap(Map columnMap) throws Exception;
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+    void deleteTableByInvoice(String companyId) throws Exception;
+
     void updateStateByInvoice(String state, String ids) throws Exception;
 
     /**

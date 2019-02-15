@@ -39,6 +39,18 @@
         </where>
     </update>
 
+    <delete id="deleteTableByDetail" parameterType="com.yvan.PageData">
+        delete from vmes_sale_invoice_detail
+        where parent_id in (
+            select id from vmes_sale_invoice
+            <where>
+                <if test="companyId != null and companyId != ''" >
+                    and company_id = #{companyId}
+                </if>
+            </where>
+        )
+    </delete>
+
     <insert id="insertColumn" >
         delete from vmes_column where model_code = 'saleInvoice' ;
         insert into vmes_column (

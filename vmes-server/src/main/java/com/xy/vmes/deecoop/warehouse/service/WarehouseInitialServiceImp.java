@@ -54,6 +54,8 @@ public class WarehouseInitialServiceImp implements WarehouseInitialService {
     private SaleOrderService saleOrderService;
     @Autowired
     private SaleDeliverService saleDeliverService;
+    @Autowired
+    SaleInvoiceService saleInvoiceService;
 
     @Autowired
     private WarehouseProductService warehouseProductService;
@@ -206,11 +208,14 @@ public class WarehouseInitialServiceImp implements WarehouseInitialService {
         warehouseMoveService.deleteTableByWarehouseMove(companyId);
 
         //销售
-        if(saleOrderService!=null){
+        if(saleOrderService != null) {
             saleOrderService.deleteTableByOrder(companyId);
         }
-        if(saleDeliverService!=null){
+        if(saleDeliverService != null) {
             saleDeliverService.deleteTableByDeliver(companyId);
+        }
+        if (saleInvoiceService != null) {
+            saleInvoiceService.deleteTableByInvoice(companyId);
         }
 
         //删除仓库货品表(库存表)

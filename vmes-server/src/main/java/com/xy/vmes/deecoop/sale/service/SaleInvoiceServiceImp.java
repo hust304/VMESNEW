@@ -174,6 +174,17 @@ public class SaleInvoiceServiceImp implements SaleInvoiceService {
         return saleInvoiceMapper.getDataListPage(pd,pg);
     }
 
+    /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+    public void deleteTableByInvoice(String companyId) throws Exception {
+        PageData pageData = new PageData();
+        pageData.put("companyId", companyId);
+        saleInvoiceMapper.deleteTableByDetail(pageData);
+
+        Map<String, String> columnMap = new HashMap<String, String>();
+        columnMap.put("company_id", companyId);
+        this.deleteByColumnMap(columnMap);
+    }
+
     public void updateStateByInvoice(String state, String ids) throws Exception {
         if (state == null || state.trim().length() == 0) {return;}
         if (ids == null || ids.trim().length() == 0) {return;}
