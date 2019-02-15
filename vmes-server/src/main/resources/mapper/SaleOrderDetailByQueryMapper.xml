@@ -59,10 +59,14 @@
             orderDetaiQuery.notDeliverCount,
             orderDetaiQuery.notDeliverCount needDeliverCount,
 
-            <!--已发货百分比-->
             orderDetaiQuery.deliverCount,
             orderDetaiQuery.endDeliverCount,
-            round((orderDetaiQuery.endDeliverCount / orderDetaiQuery.deliverCount), 2) deliverProgress
+            <!--已发货百分比 (发货完成数 / 发货总数 * 100) %-->
+            CASE
+                WHEN orderDetaiQuery.endDeliverCount is not null and orderDetaiQuery.deliverCount is not null and orderDetaiQuery.deliverCount <![CDATA[ <> 0 ]]>
+                THEN round((orderDetaiQuery.endDeliverCount / orderDetaiQuery.deliverCount), 2) * 100
+            ELSE null
+            END deliverProgress
 
         from (
             select
