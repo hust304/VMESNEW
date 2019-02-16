@@ -119,7 +119,12 @@
         (replace(uuid(), '-', ''), 'saleOrderDetailByLockStock', 'lockDate', '锁定开始时间', 28, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderDetailByLockStock', 'isneedproduce', '是否需要生产(0:无需 1:需要 库存不够)', 29, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderDetailByLockStock', 'deliverDetailId', '发货明细ID', 30, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
-        (replace(uuid(), '-', ''), 'saleOrderDetailByLockStock', 'planDetailId', '生产计划明细ID', 31, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin')
+        (replace(uuid(), '-', ''), 'saleOrderDetailByLockStock', 'planDetailId', '生产计划明细ID', 31, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+
+        (replace(uuid(), '-', ''), 'saleOrderDetailByLockStock', 'prodUnitFormulaN2p', 'prodUnitFormulaN2p', 32, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailByLockStock', 'prodUnitFormulaP2N', 'prodUnitFormulaP2N', 33, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin')
+
+
     </insert>
 
     <select id="findPageListByLockStock" parameterType="com.yvan.PageData" resultType="java.util.Map">
@@ -153,6 +158,10 @@
             detail.remark remark,
             detail.isdisable isdisable,
 
+            <!--货品计价单位表 vmes_product_unit-->
+            productUnit.np_formula prodUnitFormulaN2p,
+            productUnit.pn_formula prodUnitFormulaP2N,
+
             <!--货品表 vmes_product-->
             product.code productCode,
             product.name productName,
@@ -163,14 +172,9 @@
             round(ifnull(product.stock_count, 0), 2) prodStockCount,
             round(ifnull(product.lock_count, 0), 2) prodLockCount,
             round((ifnull(product.stock_count, 0) - ifnull(product.lock_count, 0)), 2) allowStockCount,
-            <![CDATA[
-            CASE
-                WHEN detail.product_count < ((ifnull(product.stock_count, 0) - ifnull(product.lock_count, 0))) THEN round(ifnull(detail.product_count, 0), 2)
-                WHEN detail.product_count >= ((ifnull(product.stock_count, 0) - ifnull(product.lock_count, 0))) THEN round((ifnull(product.stock_count, 0) - ifnull(product.lock_count, 0)), 2)
-                ELSE null
-                END lockCount
-            ]]>
+            '' lockCount
         from vmes_sale_order_detail detail
+            left join vmes_product_unit productUnit on (detail.product_id = productUnit.product_id and detail.price_unit = productUnit.unit)
             left join vmes_product product on detail.product_id = product.id
             left join vmes_dictionary orderUnit on detail.order_unit = orderUnit.id
             left join vmes_dictionary genre on product.genre = genre.id

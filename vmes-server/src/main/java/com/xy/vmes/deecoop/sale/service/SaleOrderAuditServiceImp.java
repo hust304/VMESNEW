@@ -1,6 +1,7 @@
 package com.xy.vmes.deecoop.sale.service;
 
 import com.xy.vmes.common.util.Common;
+import com.xy.vmes.common.util.EvaluateUtil;
 import com.xy.vmes.common.util.Producer;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.sale.dao.SaleOrderAuditMapper;
@@ -168,6 +169,61 @@ public class SaleOrderAuditServiceImp implements SaleOrderAuditService {
                 }
                 varMapList.add(varMap);
             }
+        }
+
+        //遍历查询结果集-公式(prodUnitFormulaN2p) -- 计量单位--转换--> 计价单位数量
+        for (Map mapObject : varMapList) {
+            String prodUnitFormulaN2p = (String)mapObject.get("prodUnitFormulaN2p");
+
+            //库存数量 prodStockCount
+            BigDecimal prodStockCountBig = null;
+            String prodStockCount = (String)mapObject.get("prodStockCount");
+            if (prodStockCount != null && prodStockCount.trim().length() > 0) {
+                try {
+                    prodStockCountBig = new BigDecimal(prodStockCount);
+                } catch(NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+            BigDecimal tempBig = EvaluateUtil.countFormulaN2P(prodStockCountBig, prodUnitFormulaN2p);
+            if (tempBig != null) {
+                mapObject.put("prodStockCount", tempBig);
+            }
+
+            //库存可用数量 allowStockCount
+            BigDecimal allowStockCountBig = null;
+            String allowStockCount = (String)mapObject.get("allowStockCount");
+            if (allowStockCount != null && allowStockCount.trim().length() > 0) {
+                try {
+                    allowStockCountBig = new BigDecimal(allowStockCount);
+                } catch(NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+            tempBig = EvaluateUtil.countFormulaN2P(allowStockCountBig, prodUnitFormulaN2p);
+            if (tempBig != null) {
+                mapObject.put("allowStockCount", tempBig);
+                allowStockCountBig = tempBig;
+            }
+
+            //订购数量 orderCount
+            BigDecimal orderCountBig = null;
+            String orderCount = (String)mapObject.get("orderCount");
+            if (orderCount != null && orderCount.trim().length() > 0) {
+                try {
+                    orderCountBig = new BigDecimal(orderCount);
+                } catch(NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            //锁定货品数量 lockCount
+            if (orderCountBig != null && allowStockCountBig != null && (orderCountBig.doubleValue() < allowStockCountBig.doubleValue())) {
+                mapObject.put("lockCount", orderCountBig);
+            } else if (orderCountBig != null && allowStockCountBig != null && (orderCountBig.doubleValue() >= allowStockCountBig.doubleValue())) {
+                mapObject.put("lockCount", allowStockCountBig);
+            }
+
         }
         result.put("varList",varMapList);
 

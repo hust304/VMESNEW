@@ -67,19 +67,22 @@ public class SaleOrderDetail implements Serializable {
 	//是否需要生产(0:无需 1:需要 库存不够)
 	@TableField("is_need_produce")
 	private String isNeedProduce;
-	//锁定货品数量
+	//锁定货品数量(计量单位)
 	@TableField("lock_count")
 	private BigDecimal lockCount;
+	//可发货数量(计价单位)
+	@TableField("need_deliver_count")
+	private BigDecimal needDeliverCount;
 	//锁定开始时间
 	@TableField("lock_date")
 	private Date lockDate;
 	//生产计划明细ID
 	@TableField("plan_detail_id")
 	private String planDetailId;
+
 	//创建用户id
 	@TableField("cuser")
 	private String cuser;
-
 	//创建时间
 	@TableField("cdate")
 	private Date cdate;
@@ -92,6 +95,7 @@ public class SaleOrderDetail implements Serializable {
 	//备注
 	@TableField("remark")
 	private String remark;
+
 	//是否启用(0:已禁用 1:启用)
 	@TableField("isdisable")
 	private String isdisable;
@@ -247,8 +251,13 @@ public class SaleOrderDetail implements Serializable {
 	public String getIsdisable() {
 		return isdisable;
 	}
-
-	/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+	public BigDecimal getNeedDeliverCount() {
+		return needDeliverCount;
+	}
+	public void setNeedDeliverCount(BigDecimal needDeliverCount) {
+		this.needDeliverCount = needDeliverCount;
+	}
+/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 
 }
