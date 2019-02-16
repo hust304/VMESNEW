@@ -43,6 +43,38 @@ public class EvaluateUtil {
         return null;
     }
 
+    /**
+     * 计量单位数量-公式转换-计价单位数量
+     * @param count    数量(计量单位)
+     * @param formula  单位换算公式  P=8*N  N(计量单位数量) P(计价单位数量)
+     * @return
+     */
+    public static BigDecimal countFormulaN2P(BigDecimal count, String formula) {
+        if (count == null) {return null;}
+        if (formula == null || formula.trim().length() == 0) {return null;}
+
+        Map<String, Object> parmMap = new HashMap<String, Object>();
+        parmMap.put("N", count);
+
+        return EvaluateUtil.formulaReckon(parmMap, formula);
+    }
+
+    /**
+     * 计价单位数量-公式转换-计量单位数量
+     * @param count    数量(计价单位)
+     * @param formula  单位换算公式  N=8*P  N(计量单位数量) P(计价单位数量)
+     * @return
+     */
+    public static BigDecimal countFormulaP2N(BigDecimal count, String formula) {
+        if (count == null) {return null;}
+        if (formula == null || formula.trim().length() == 0) {return null;}
+
+        Map<String, Object> parmMap = new HashMap<String, Object>();
+        parmMap.put("P", count);
+
+        return EvaluateUtil.formulaReckon(parmMap, formula);
+    }
+
     public static void main(String args[]) {
 
 //        Binding binding = new Binding();
