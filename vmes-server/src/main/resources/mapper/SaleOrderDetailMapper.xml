@@ -97,6 +97,23 @@
         </where>
     </update>
 
+    <!--锁定库存数量-并发(version)控制-->
+    <update id="updateLockCount" parameterType="com.yvan.PageData">
+        update vmes_sale_order_detail
+        set
+        lockCount = ${lockCount},
+        need_deliver_count = ${needDeliverCount},
+        version = version + 1
+        <where>
+            <if test="id != null and id != ''" >
+                and id=#{id}
+            </if>
+            <if test="version != null and version != ''" >
+                and version=${version}
+            </if>
+        </where>
+    </update>
+
 
     <!-- 列表(全部) 自动创建，禁止修改-->
     <select id="dataList" parameterType="com.yvan.PageData" resultType="com.xy.vmes.entity.SaleOrderDetail">
@@ -131,7 +148,8 @@
         udate udate,
         remark remark,
 
-        isdisable isdisable
+        isdisable isdisable,
+        version_lock_count versionLockCount
 
         from vmes_sale_order_detail
         <where>

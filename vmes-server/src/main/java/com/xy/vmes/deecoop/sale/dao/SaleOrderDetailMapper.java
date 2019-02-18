@@ -38,6 +38,8 @@ public interface SaleOrderDetailMapper extends BaseMapper<SaleOrderDetail> {
      */
     void updateStateByDetail(PageData pd);
 
+    void updateLockCount(PageData pd);
+
     /**
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2018-12-05

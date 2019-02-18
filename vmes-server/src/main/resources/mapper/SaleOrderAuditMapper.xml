@@ -28,14 +28,16 @@
 
             detail.is_need_produce isNeedProduce,
             detail.lock_count lockCount,
+            detail.need_deliver_count needDeliverCount,
             detail.lock_date lockDate,
             detail.plan_detail_id planDetailId,
-            detail.cuser cuser,
 
+            detail.cuser cuser,
             detail.cdate cdate,
             detail.uuser uuser,
             detail.udate udate,
             detail.remark remark,
+
             detail.isdisable isdisable,
 
             customer.id customerIdByCuser,
@@ -115,7 +117,8 @@
         (replace(uuid(), '-', ''), 'saleOrderDetailByLockStock', 'udate', '修改时间', 24, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderDetailByLockStock', 'isdisable', '是否启用(0:已禁用 1:启用)', 25, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderDetailByLockStock', 'isLockWarehouse', '是否锁定仓库(0:无锁定 1:锁定)', 26, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
-        (replace(uuid(), '-', ''), 'saleOrderDetailByLockStock', 'lockCount', '锁定货品数量', 27, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailByLockStock', 'lockCount', '锁定货品数量(计量单位)', 27, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailByLockStock', 'needDeliverCount', '锁定货品数量', 27, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderDetailByLockStock', 'lockDate', '锁定开始时间', 28, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderDetailByLockStock', 'isneedproduce', '是否需要生产(0:无需 1:需要 库存不够)', 29, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderDetailByLockStock', 'deliverDetailId', '发货明细ID', 30, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
@@ -149,6 +152,7 @@
 
             detail.is_need_produce isNeedProduce,
             detail.lock_date lockDate,
+            detail.lock_count lockCount,
             detail.plan_detail_id planDetailId,
             detail.cuser cuser,
 
@@ -172,7 +176,7 @@
             round(ifnull(product.stock_count, 0), 2) prodStockCount,
             round(ifnull(product.lock_count, 0), 2) prodLockCount,
             round((ifnull(product.stock_count, 0) - ifnull(product.lock_count, 0)), 2) allowStockCount,
-            '' lockCount
+            '' needDeliverCount
         from vmes_sale_order_detail detail
             left join vmes_product_unit productUnit on (detail.product_id = productUnit.product_id and detail.price_unit = productUnit.unit)
             left join vmes_product product on detail.product_id = product.id

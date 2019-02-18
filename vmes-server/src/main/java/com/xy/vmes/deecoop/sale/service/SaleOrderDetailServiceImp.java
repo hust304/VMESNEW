@@ -434,6 +434,10 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
         saleOrderDetailMapper.updateStateByDetail(pageData);
     }
 
+    public void updateLockCount(PageData pd) throws Exception {
+        saleOrderDetailMapper.updateLockCount(pd);
+    }
+
     /**
      * 根据订单明细状态-反写订单状态
      * 订单状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)

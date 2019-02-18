@@ -122,6 +122,7 @@ public interface SaleOrderDetailService {
     void addSaleOrderDetail(SaleOrder parentObj, List<SaleOrderDetail> objectList) throws Exception;
     void updateStateByDetail(PageData pd) throws Exception;
     void updateStateByDetail(String state, String parentIds) throws Exception;
+    void updateLockCount(PageData pd) throws Exception;
 
     /**
      * 根据订单明细状态-反写订单状态

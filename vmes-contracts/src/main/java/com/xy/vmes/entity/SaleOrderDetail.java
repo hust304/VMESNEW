@@ -99,6 +99,9 @@ public class SaleOrderDetail implements Serializable {
 	//是否启用(0:已禁用 1:启用)
 	@TableField("isdisable")
 	private String isdisable;
+	//修改锁定库存版本号
+	@TableField("version_lock_count")
+	private Integer versionLockCount;
 
 
 	public void setId(String id) {
@@ -256,6 +259,12 @@ public class SaleOrderDetail implements Serializable {
 	}
 	public void setNeedDeliverCount(BigDecimal needDeliverCount) {
 		this.needDeliverCount = needDeliverCount;
+	}
+	public Integer getVersionLockCount() {
+		return versionLockCount;
+	}
+	public void setVersionLockCount(Integer versionLockCount) {
+		this.versionLockCount = versionLockCount;
 	}
 /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 

@@ -217,11 +217,11 @@ public class SaleOrderAuditServiceImp implements SaleOrderAuditService {
                 }
             }
 
-            //锁定货品数量 lockCount
+            //锁定货品数量 needDeliverCount
             if (orderCountBig != null && allowStockCountBig != null && (orderCountBig.doubleValue() < allowStockCountBig.doubleValue())) {
-                mapObject.put("lockCount", orderCountBig);
+                mapObject.put("needDeliverCount", orderCountBig);
             } else if (orderCountBig != null && allowStockCountBig != null && (orderCountBig.doubleValue() >= allowStockCountBig.doubleValue())) {
-                mapObject.put("lockCount", allowStockCountBig);
+                mapObject.put("needDeliverCount", allowStockCountBig);
             }
 
         }
@@ -283,7 +283,7 @@ public class SaleOrderAuditServiceImp implements SaleOrderAuditService {
     public ResultModel updateSaleOrderDetailByLockStock(PageData pageData) throws Exception {
         ResultModel model = new ResultModel();
         String dtlJsonStr = pageData.getString("dtlJsonStr");
-        List<Map<String, String>> mapList = (List<Map<String, String>>) YvanUtil.jsonToList(dtlJsonStr);
+        List<Map<String, Object>> mapList = (List<Map<String, Object>>) YvanUtil.jsonToList(dtlJsonStr);
         if (mapList == null || mapList.size() == 0) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("订单明细Json字符串-转换成List错误！");
@@ -315,12 +315,36 @@ public class SaleOrderAuditServiceImp implements SaleOrderAuditService {
         Long lockTime = saleLockDateService.findLockDateMillisecondByCompanyId(companyId);
 
         //获取订单明细
-        List<SaleOrderDetail> detailList = saleOrderDetailService.mapList2DetailList(mapList, null);
-        for (SaleOrderDetail detail : detailList) {
+        //List<SaleOrderDetail> detailList = saleOrderDetailService.mapList2DetailList(mapList, null);
+        for (Map<String, Object> mapObject : mapList) {
+            SaleOrderDetail detail = (SaleOrderDetail) HttpUtils.pageData2Entity(mapObject, new SaleOrderDetail());
             //锁定开始时间
             detail.setLockDate(new Date());
             //是否锁定仓库(0:无锁定 1:锁定)
             detail.setIsLockWarehouse("1");
+
+            //可发货数量(计价单位) needDeliverCount
+            detail.setNeedDeliverCount(BigDecimal.valueOf(0D));
+            String needDeliverCount_str = "";
+            if (mapObject.get("needDeliverCount") != null) {needDeliverCount_str = mapObject.get("needDeliverCount").toString().trim();}
+            if (needDeliverCount_str != null && needDeliverCount_str.trim().length() > 0) {
+                try{
+                    BigDecimal tempBig = new BigDecimal(needDeliverCount_str);
+                    //四舍五入到2位小数
+                    tempBig = tempBig.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                    detail.setNeedDeliverCount(tempBig);
+                }catch(NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            //prodUnitFormulaP2N 单位换算公式 计价单位转换计量单位
+            String prodUnitFormulaP2N = "";
+            if (mapObject.get("prodUnitFormulaP2N") != null) {prodUnitFormulaP2N = mapObject.get("prodUnitFormulaP2N").toString().trim();}
+
+            //锁定货品数量(计量单位) lockCount
+            BigDecimal lockCount = EvaluateUtil.countFormulaP2N(detail.getNeedDeliverCount(), prodUnitFormulaP2N);
+            detail.setLockCount(lockCount);
             saleOrderDetailService.update(detail);
 
             //修改货品表(锁定库存数量)
