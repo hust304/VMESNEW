@@ -8,6 +8,7 @@ import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.sale.dao.SaleOrderDetailMapper;
 import com.xy.vmes.entity.*;
 import com.xy.vmes.service.ColumnService;
+import com.xy.vmes.service.SaleDeliverDetailService;
 import com.xy.vmes.service.SaleOrderDetailService;
 import com.xy.vmes.service.SaleOrderService;
 import com.yvan.ExcelUtil;
@@ -40,6 +41,11 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
     private SaleOrderDetailMapper saleOrderDetailMapper;
     @Autowired
     private SaleOrderService saleOrderService;
+
+    @Autowired
+    private SaleDeliverDetailService saleDeliverDetailService;
+
+
     @Autowired
     private ColumnService columnService;
     /**
@@ -432,6 +438,74 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
         pageData.put("parentIds", "parent_id in (" + parentIds + ")");
 
         saleOrderDetailMapper.updateStateByDetail(pageData);
+    }
+
+    /**
+     * 修改订单明细状态
+     * 订单明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
+     *
+     * 1. 根据订单id-获取订单明细List-(vmes_sale_order_detail)
+     * 2. 根据订单id-获取发货明细(当前订单id)-(vmes_sale_deliver_detail)
+     * 3. 2:待生产: 可发货数量 is null or 可发货数量 == 0
+     * 4. 3:待出库: 可发货数量 > 0 and 无未完成的发货明细
+     * 5. 4:待发货: 可发货数量 > 0 and 存在未完成的发货明细
+     *
+     * @param orderId
+     * @throws Exception
+     */
+    public void updateDetailStateByOrderId(String orderId) throws Exception {
+        if (orderId == null || orderId.trim().length() == 0) {return;}
+
+        //根据订单id-获取订单明细List
+        List<SaleOrderDetail> orderDtlList = this.findSaleOrderDetailListByParentId(orderId);
+        if (orderDtlList == null || orderDtlList.size() == 0) {return;}
+
+        //根据订单id-获取发货明细(当前订单id)
+        PageData findMap = new PageData();
+        findMap.put("orderId", orderId);
+        //发货状态(0:待发货 1:已发货 -1:已取消)
+        findMap.put("queryStr", "state in ('0') ");
+        List<SaleDeliverDetail> deliverDtlList = saleDeliverDetailService.findSaleDeliverDetailList(findMap);
+
+        //遍历发货明细List
+        Map<String, String> orderDetailIdByDeliver_map = new HashMap<String, String>();
+        if (deliverDtlList != null && deliverDtlList.size() > 0) {
+            for (SaleDeliverDetail detail : deliverDtlList) {
+                String orderDetaiId = detail.getOrderDetaiId();
+                if (orderDetaiId != null && orderDetaiId.trim().length() > 0) {
+                    orderDetailIdByDeliver_map.put(orderDetaiId, orderDetaiId);
+                }
+            }
+        }
+
+        //遍历订单明细List
+        //订单明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
+        for (SaleOrderDetail detail : orderDtlList) {
+            String orderDtl_id = detail.getId();
+
+            SaleOrderDetail orderDtlDB = new SaleOrderDetail();
+            orderDtlDB.setId(orderDtl_id);
+
+            //needDeliverCount 可发货数量(计价单位)
+            BigDecimal needDeliverCount = detail.getNeedDeliverCount();
+
+            if (needDeliverCount == null || needDeliverCount.doubleValue() == 0) {
+                //2:待生产
+                orderDtlDB.setState("2");
+            } else if (needDeliverCount != null && needDeliverCount.doubleValue() > 0
+                && orderDetailIdByDeliver_map.get(orderDtl_id) == null
+            ) {
+                //3:待出库
+                orderDtlDB.setState("3");
+            } else if (needDeliverCount != null && needDeliverCount.doubleValue() > 0
+                && orderDetailIdByDeliver_map.get(orderDtl_id) != null
+            ) {
+                //4:待发货
+                orderDtlDB.setState("4");
+            }
+
+            this.update(orderDtlDB);
+        }
     }
 
     public void updateLockCount(PageData pd) throws Exception {

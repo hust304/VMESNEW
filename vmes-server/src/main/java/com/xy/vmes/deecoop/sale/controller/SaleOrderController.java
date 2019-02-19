@@ -154,12 +154,30 @@ public class SaleOrderController {
     @PostMapping("/sale/saleOrder/submitSaleOrder")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel submitSaleOrder() throws Exception {
-        logger.info("################/sale/saleOrder/cancelSaleOrder 执行开始 ################# ");
+        logger.info("################/sale/saleOrder/submitSaleOrder 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         PageData pageData = HttpUtils.parsePageData();
         ResultModel model = saleOrderService.submitSaleOrder(pageData);
         Long endTime = System.currentTimeMillis();
         logger.info("################/sale/saleOrder/submitSaleOrder 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 退回(提交)订单
+     * @author 陈刚
+     * @date 2018-12-11
+     * @throws Exception
+     */
+    @PostMapping("/sale/saleOrder/rebackBySubmitSaleOrder")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel rebackBySubmitSaleOrder() throws Exception {
+        logger.info("################/sale/saleOrder/rebackBySubmitSaleOrder 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pageData = HttpUtils.parsePageData();
+        ResultModel model = saleOrderService.rebackBySubmitSaleOrder(pageData);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleOrder/rebackBySubmitSaleOrder 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 

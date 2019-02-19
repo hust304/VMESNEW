@@ -122,6 +122,20 @@ public interface SaleOrderDetailService {
     void addSaleOrderDetail(SaleOrder parentObj, List<SaleOrderDetail> objectList) throws Exception;
     void updateStateByDetail(PageData pd) throws Exception;
     void updateStateByDetail(String state, String parentIds) throws Exception;
+    /**
+     * 修改订单明细状态
+     * 订单明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
+     *
+     * 1. 根据订单id-获取订单明细List-(vmes_sale_order_detail)
+     * 2. 根据订单id-获取发货明细(当前订单id)-(vmes_sale_deliver_detail)
+     * 3. 2:待生产: 可发货数量 is null or 可发货数量 == 0
+     * 4. 3:待出库: 可发货数量 > 0 and 无未完成的发货明细
+     * 5. 4:待发货: 可发货数量 > 0 and 存在未完成的发货明细
+     *
+     * @param orderId
+     * @throws Exception
+     */
+    void updateDetailStateByOrderId(String orderId) throws Exception;
     void updateLockCount(PageData pd) throws Exception;
 
     /**

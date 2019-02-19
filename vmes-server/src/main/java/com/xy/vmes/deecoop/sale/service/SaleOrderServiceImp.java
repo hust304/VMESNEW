@@ -561,6 +561,34 @@ public class SaleOrderServiceImp implements SaleOrderService {
         return model;
     }
 
+    public ResultModel rebackBySubmitSaleOrder(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+
+        String parentId = pageData.getString("id");
+        if (parentId == null || parentId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("订单id为空或空字符串！");
+            return model;
+        }
+
+        //2. 修改明细状态
+        PageData mapDetail = new PageData();
+        mapDetail.put("parentId", parentId);
+        //明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
+        mapDetail.put("state", "0");
+        saleOrderDetailService.updateStateByDetail(mapDetail);
+
+        //3. 修改抬头表状态
+        SaleOrder order = new SaleOrder();
+        order.setId(parentId);
+        //state:状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
+        order.setState("0");
+        this.update(order);
+
+
+        return model;
+    }
+
     @Override
     public void exportExcelSaleOrders(PageData pd, Pagination pg) throws Exception {
         List<Column> columnList = columnService.findColumnList("saleOrder");

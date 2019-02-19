@@ -219,7 +219,7 @@
 
             detail.is_need_produce isNeedProduce,
             detail.lock_count lockCount,
-            detail.need_deliver_count needDeliverCount,
+
             detail.lock_date lockDate,
             detail.plan_detail_id planDetailId,
 
@@ -243,10 +243,13 @@
 
             product.type productType,
             round(ifnull(product.stock_count, 0), 2) stockCount,
-            round(ifnull(product.stock_count, 0), 2) stockCountByPrice,
+            '' stockCountByPrice,
+
             round(ifnull(product.lock_count, 0), 2) productLockCount,
+            round(ifnull(detail.need_deliver_count, 0), 2) needDeliverCount,
+
             round((ifnull(product.stock_count, 0) - ifnull(product.lock_count, 0)), 2) productStockCount,
-            round((ifnull(product.stock_count, 0) - ifnull(product.lock_count, 0)), 2) productStockCountByPrice,
+            '' productStockCountByPrice,
 
             productUnit.name productUnitName,
             priceUnit.name priceUnitName,

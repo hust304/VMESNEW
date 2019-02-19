@@ -446,8 +446,8 @@ public class SaleOrderAuditServiceImp implements SaleOrderAuditService {
         order.setState("2");
         saleOrderService.update(order);
 
-        //2. 订单明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已发货 6:已完成 -1:已取消)
-        saleOrderDetailService.updateStateByDetail("3", orderId);
+        //2. 订单明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
+        saleOrderDetailService.updateDetailStateByOrderId(orderId);
 
         return model;
     }
