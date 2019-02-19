@@ -843,6 +843,8 @@ public class WarehouseInServiceImp implements WarehouseInService {
 
             WarehouseInDetail inDetail = new WarehouseInDetail();
             inDetail.setId(entity.getId());
+            //(推荐)货位ID
+            inDetail.setWarehouseId(entity.getWarehouseId());
             //状态(0:待派单 1:执行中 2:已完成 -1.已取消)
             inDetail.setState("1");
             //detail.setExecuteId(executeId);
