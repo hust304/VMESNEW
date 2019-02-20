@@ -177,6 +177,8 @@ public interface SaleOrderDetailService {
 
     ResultModel deleteSaleOrderDetail(PageData pageData) throws Exception;
 
+    ResultModel rebackSaleOrderDetailByLockCount(PageData pageData) throws Exception;
+
     void exportExcelSaleOrderDetails(PageData pd, Pagination pg) throws Exception;
 
     ResultModel importExcelSaleOrderDetails(MultipartFile file) throws Exception;

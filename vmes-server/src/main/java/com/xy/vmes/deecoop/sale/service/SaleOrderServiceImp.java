@@ -3,9 +3,11 @@ package com.xy.vmes.deecoop.sale.service;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.Common;
+import com.xy.vmes.common.util.EvaluateUtil;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.sale.dao.SaleOrderMapper;
 import com.xy.vmes.entity.Column;
+import com.xy.vmes.entity.Product;
 import com.xy.vmes.entity.SaleOrder;
 import com.xy.vmes.entity.SaleOrderDetail;
 import com.xy.vmes.service.*;
@@ -37,6 +39,9 @@ public class SaleOrderServiceImp implements SaleOrderService {
     private SaleOrderDetailService saleOrderDetailService;
     @Autowired
     private SaleReceiveRecordService saleReceiveRecordService;
+
+    @Autowired
+    private ProductService productService;
     @Autowired
     private CoderuleService coderuleService;
     @Autowired
@@ -585,6 +590,98 @@ public class SaleOrderServiceImp implements SaleOrderService {
         order.setState("0");
         this.update(order);
 
+
+        return model;
+    }
+
+    public ResultModel updateSaleOrderByLockCount(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+
+        String orderId = pageData.getString("orderId");
+        if (orderId == null || orderId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("订单id为空或空字符串！");
+            return model;
+        }
+
+        String dtlJsonStr = pageData.getString("dtlJsonStr");
+        if (dtlJsonStr == null || dtlJsonStr.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("订单明细为空！");
+            return model;
+        }
+
+        List<Map<String, String>> mapList = (List<Map<String, String>>) YvanUtil.jsonToList(dtlJsonStr);
+        if (mapList == null || mapList.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("订单明细Json字符串-转换成List错误！");
+            return model;
+        }
+
+        for (Map<String, String> mapObject : mapList) {
+            String detail_id = mapObject.get("id");
+            String productId = mapObject.get("productId");
+            String productLockCount_str = mapObject.get("productLockCount");
+            String lockCount_str = mapObject.get("lockCount");
+            String needDeliverCount_str = mapObject.get("needDeliverCount");
+            String p2nFormula = mapObject.get("p2nFormula");
+            //String n2pFormula = mapObject.get("n2pFormula");
+
+            //产品锁定库存数量
+            BigDecimal productLockCount = BigDecimal.valueOf(0D);
+            if (productLockCount_str != null && productLockCount_str.trim().length() > 0) {
+                try {
+                    productLockCount = new BigDecimal(productLockCount_str);
+                } catch(NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            BigDecimal lockCount = BigDecimal.valueOf(0D);
+            if (lockCount_str != null && lockCount_str.trim().length() > 0) {
+                try {
+                    lockCount = new BigDecimal(lockCount_str);
+                } catch(NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            BigDecimal needDeliverCount = BigDecimal.valueOf(0D);
+            if (needDeliverCount_str != null && needDeliverCount_str.trim().length() > 0) {
+                try {
+                    needDeliverCount = new BigDecimal(needDeliverCount_str);
+                } catch(NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            BigDecimal lockCount_new = BigDecimal.valueOf(0D);
+            BigDecimal bigDecimal = EvaluateUtil.countFormulaP2N(needDeliverCount, p2nFormula);
+            if (bigDecimal != null) {lockCount_new = bigDecimal;}
+
+            if (lockCount_new.doubleValue() != lockCount.doubleValue()) {
+                //1. 修改产品锁定库存数量
+                Product product = new Product();
+                product.setId(productId);
+
+                BigDecimal lockCount_product = BigDecimal.valueOf(productLockCount.doubleValue() + (lockCount_new.doubleValue() - lockCount.doubleValue()));
+                //四舍五入到2位小数
+                lockCount_product = lockCount_product.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                product.setLockCount(lockCount_product);
+
+                productService.update(product);
+
+                //2. 修改订单明细产品锁定库存数量
+                SaleOrderDetail orderDetail = new SaleOrderDetail();
+                orderDetail.setId(detail_id);
+                orderDetail.setNeedDeliverCount(needDeliverCount);
+                orderDetail.setLockCount(lockCount_new);
+                saleOrderDetailService.update(orderDetail);
+            }
+        }
+
+        //3. 订单明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
+        saleOrderDetailService.updateDetailStateByOrderId(orderId);
 
         return model;
     }

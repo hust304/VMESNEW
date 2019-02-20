@@ -119,6 +119,8 @@ public interface SaleOrderService {
 
     ResultModel rebackBySubmitSaleOrder(PageData pageData) throws Exception;
 
+    ResultModel updateSaleOrderByLockCount(PageData pageData) throws Exception;
+
     void exportExcelSaleOrders(PageData pd, Pagination pg) throws Exception;
 
     ResultModel importExcelSaleOrders(MultipartFile file) throws Exception;

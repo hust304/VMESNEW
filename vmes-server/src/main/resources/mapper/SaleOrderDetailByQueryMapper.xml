@@ -30,15 +30,20 @@
 
             orderDetaiQuery.isNeedProduce,
             orderDetaiQuery.lockCount,
+            orderDetaiQuery.needDeliverCount,
             orderDetaiQuery.lockDate,
             orderDetaiQuery.planDetailId,
-            orderDetaiQuery.cuser,
 
+            orderDetaiQuery.cuser,
             orderDetaiQuery.cdate,
             orderDetaiQuery.uuser,
             orderDetaiQuery.udate,
             orderDetaiQuery.remark,
-            orderDetaiQuery.isdisable,
+
+        orderDetaiQuery.isdisable,
+
+            orderDetaiQuery.n2pFormula,
+            orderDetaiQuery.p2nFormula,
 
             <!--货品表-->
             orderDetaiQuery.productCode,
@@ -79,8 +84,7 @@
                     WHEN orderDtl.state = '2' THEN '待生产'
                     WHEN orderDtl.state = '3' THEN '待出库'
                     WHEN orderDtl.state = '4' THEN '待发货'
-                    WHEN orderDtl.state = '5' THEN '已发货'
-                    WHEN orderDtl.state = '6' THEN '已完成'
+                    WHEN orderDtl.state = '5' THEN '已完成'
                     WHEN orderDtl.state = '-1' THEN '已取消'
                 ELSE null
                 END stateName,
@@ -100,19 +104,22 @@
                 orderDtl.is_lock_warehouse isLockWarehouse,
 
                 orderDtl.is_need_produce isNeedProduce,
-                orderDtl.lock_count lockCount,
+                round(ifnull(orderDtl.lock_count, 0), 2) lockCount,
+                round(ifnull(orderDtl.need_deliver_count, 0), 2) needDeliverCount,
                 orderDtl.lock_date lockDate,
                 orderDtl.plan_detail_id planDetailId,
-                orderDtl.cuser cuser,
 
+                orderDtl.cuser cuser,
                 DATE_FORMAT(orderDtl.cdate,'%Y-%m-%d %T') cdate,
                 orderDtl.uuser uuser,
                 DATE_FORMAT(orderDtl.udate,'%Y-%m-%d %T') udate,
                 orderDtl.remark remark,
+
                 orderDtl.isdisable isdisable,
 
-                unit.np_formula npFormula,
-                unit.pn_formula pnFormula,
+                <!--货品计量单位-->
+                prodUnitPrice.np_formula n2pFormula,
+                prodUnitPrice.pn_formula p2nFormula,
 
                 <!--货品表-->
                 product.code productCode,
@@ -139,7 +146,7 @@
                 left join vmes_dictionary productUnit on orderDtl.product_unit = productUnit.id
                 left join vmes_dictionary priceUnit on orderDtl.price_unit = priceUnit.id
                 left join vmes_dictionary genre on product.genre = genre.id
-                left join vmes_product_unit unit on orderDtl.price_unit = unit.id
+                left join vmes_product_unit prodUnitPrice on (orderDtl.product_id = prodUnitPrice.product_id and orderDtl.price_unit = prodUnitPrice.unit)
                 <!--根据订单明细id汇总查询(发货明细) 已生成发货单数量-->
                 left join (
                     select order_detai_id, sum(order_count) count
@@ -235,9 +242,12 @@
         (replace(uuid(), '-', ''), 'saleOrderDetailByQuery', 'notDeliverCount', 'notDeliverCount', 32, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderDetailByQuery', 'needDeliverCount', 'needDeliverCount', 33, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
 
-(replace(uuid(), '-', ''), 'saleOrderDetailByQuery', 'deliverCount', 'deliverCount', 34, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
-(replace(uuid(), '-', ''), 'saleOrderDetailByQuery', 'endDeliverCount', 'endDeliverCount', 35, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin')
-        (replace(uuid(), '-', ''), 'saleOrderDetailByQuery', 'deliverProgress', '发货进度', 36, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin')
+        (replace(uuid(), '-', ''), 'saleOrderDetailByQuery', 'deliverCount', 'deliverCount', 34, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailByQuery', 'endDeliverCount', 'endDeliverCount', 35, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailByQuery', 'deliverProgress', '发货进度', 36, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
+
+        (replace(uuid(), '-', ''), 'saleOrderDetailByQuery', 'p2nFormula', 'p2nFormula', 37, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailByQuery', 'n2pFormula', 'n2pFormula', 37, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
 
     </insert>
 

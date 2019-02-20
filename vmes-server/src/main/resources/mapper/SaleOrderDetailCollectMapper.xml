@@ -17,8 +17,7 @@
                 WHEN orderDtl.state = '2' THEN '待生产'
                 WHEN orderDtl.state = '3' THEN '待出库'
                 WHEN orderDtl.state = '4' THEN '待发货'
-                WHEN orderDtl.state = '5' THEN '已发货'
-                WHEN orderDtl.state = '6' THEN '已完成'
+                WHEN orderDtl.state = '5' THEN '已完成'
                 WHEN orderDtl.state = '-1' THEN '已取消'
             ELSE null
             END stateName,

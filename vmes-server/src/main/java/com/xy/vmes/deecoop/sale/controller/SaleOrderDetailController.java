@@ -1,20 +1,9 @@
 package com.xy.vmes.deecoop.sale.controller;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
-import com.xy.vmes.common.util.ColumnUtil;
-import com.xy.vmes.common.util.EvaluateUtil;
-import com.xy.vmes.common.util.StringUtil;
-import com.xy.vmes.entity.Column;
-import com.xy.vmes.entity.SaleOrder;
-import com.xy.vmes.entity.SaleOrderDetail;
-import com.xy.vmes.service.ColumnService;
-import com.xy.vmes.service.SaleOrderDetailCollectService;
-import com.xy.vmes.service.SaleOrderDetailService;
-import com.xy.vmes.service.SaleOrderService;
-import com.yvan.ExcelUtil;
+import com.xy.vmes.service.*;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
-import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -23,11 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import javax.servlet.http.HttpServletResponse;
-import java.math.BigDecimal;
-import java.util.*;
-
 
 /**
 * 说明：vmes_sale_order_detail:订单明细Controller
@@ -43,6 +27,8 @@ public class SaleOrderDetailController {
     private SaleOrderDetailService saleOrderDetailService;
     @Autowired
     private SaleOrderDetailCollectService saleOrderDetailCollectService;
+    @Autowired
+    private SaleOrderDetailByLockCountService saleOrderDetailByLockCountService;
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
     /**
@@ -74,6 +60,22 @@ public class SaleOrderDetailController {
         ResultModel model = saleOrderDetailCollectService.listPageOrderDetailCollectByInfo(pd);
         Long endTime = System.currentTimeMillis();
         logger.info("################/sale/saleOrderDetail/listPageOrderDetailCollectByInfo 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 订单明细(产品锁定库存) vmes_sale_order_detail
+     * @author 陈刚
+     * @date 2019-02-14
+     */
+    @PostMapping("/sale/saleOrderDetail/listPageOrderDetailByLockCount")
+    public ResultModel listPageOrderDetailByLockCount() throws Exception {
+        logger.info("################/sale/saleOrderDetail/listPageOrderDetailByLockCount 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = saleOrderDetailByLockCountService.listPageOrderDetailByLockCount(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleOrderDetail/listPageOrderDetailByLockCount 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -112,6 +114,25 @@ public class SaleOrderDetailController {
         logger.info("################/sale/saleOrderDetail/deleteSaleOrderDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
+
+    /**
+     * (解锁)订单明细产品锁定库存数量
+     * @author 陈刚
+     * @date 2018-12-10
+     * @throws Exception
+     */
+    @PostMapping("/sale/saleOrderDetail/rebackSaleOrderDetailByLockCount")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel rebackSaleOrderDetailByLockCount() throws Exception {
+        logger.info("################/sale/saleOrderDetail/rebackSaleOrderDetailByLockCount 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pageData = HttpUtils.parsePageData();
+        ResultModel model = saleOrderDetailService.rebackSaleOrderDetailByLockCount(pageData);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleOrderDetail/rebackSaleOrderDetailByLockCount 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
 
     /**
     * Excel导出

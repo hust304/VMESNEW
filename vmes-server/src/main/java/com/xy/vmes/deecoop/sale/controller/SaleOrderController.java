@@ -1,16 +1,8 @@
 package com.xy.vmes.deecoop.sale.controller;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
-import com.xy.vmes.common.util.ColumnUtil;
-import com.xy.vmes.common.util.Common;
-import com.xy.vmes.common.util.StringUtil;
-import com.xy.vmes.entity.Column;
-import com.xy.vmes.entity.Customer;
-import com.xy.vmes.entity.SaleOrder;
-import com.xy.vmes.entity.SaleOrderDetail;
 import com.xy.vmes.service.*;
 import com.yvan.*;
-import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -19,12 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import javax.servlet.http.HttpServletResponse;
-import java.math.BigDecimal;
-import java.text.MessageFormat;
-import java.util.*;
-
 
 /**
 * 说明：vmes_sale_order:订单表Controller
@@ -106,6 +92,24 @@ public class SaleOrderController {
         ResultModel model = saleOrderService.updateSaleOrder(pageData);
         Long endTime = System.currentTimeMillis();
         logger.info("################/sale/saleOrder/updateSaleOrder 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 修改订单-订单明细(产品锁定库存数量)
+     * @author 陈刚
+     * @date 2018-12-10
+     * @throws Exception
+     */
+    @PostMapping("/sale/saleOrder/updateSaleOrderByLockCount")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel updateSaleOrderByLockCount() throws Exception {
+        logger.info("################/sale/saleOrder/updateSaleOrderByLockCount 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pageData = HttpUtils.parsePageData();
+        ResultModel model = saleOrderService.updateSaleOrderByLockCount(pageData);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleOrder/updateSaleOrderByLockCount 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
