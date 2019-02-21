@@ -453,7 +453,7 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
      * @throws Exception
      */
     public void updateDetailStateByOrderId(String orderId) throws Exception {
-        if (orderId == null || orderId.trim().length() > 0) {return;}
+        if (orderId == null || orderId.trim().length() == 0) {return;}
 
         //根据订单id-获取订单明细List
         List<SaleOrderDetail> orderDtlList = this.findSaleOrderDetailListByParentId(orderId);
@@ -486,7 +486,7 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
             orderDtlDB.setId(orderDtl_id);
 
             //needDeliverCount 可发货数量(计价单位)
-            BigDecimal needDeliverCount = orderDtlDB.getNeedDeliverCount();
+            BigDecimal needDeliverCount = detail.getNeedDeliverCount();
 
             if (needDeliverCount == null || needDeliverCount.doubleValue() == 0) {
                 //2:待生产
@@ -927,6 +927,9 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
         orderDetail.setLockCount(BigDecimal.valueOf(0D));
         //是否锁定仓库(0:未锁定 1:已锁定)
         orderDetail.setIsLockWarehouse("0");
+        //明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
+        //'2':待生产: 可发货数量 is null or 可发货数量 == 0
+        orderDetail.setState("2");
         this.update(orderDetail);
 
         return model;

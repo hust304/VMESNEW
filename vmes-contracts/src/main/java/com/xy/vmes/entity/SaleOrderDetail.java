@@ -22,7 +22,7 @@ public class SaleOrderDetail implements Serializable {
 	//订单ID
 	@TableField("parent_id")
 	private String parentId;
-	//订单状态(0:待提交 1:待审核 2:待出库 3:待发货 4:已发货 5:已完成 -1:已取消)
+	//明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
 	@TableField("state")
 	private String state;
 	//附件地址
