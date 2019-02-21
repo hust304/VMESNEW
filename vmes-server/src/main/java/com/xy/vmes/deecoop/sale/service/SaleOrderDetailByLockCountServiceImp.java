@@ -67,6 +67,11 @@ public class SaleOrderDetailByLockCountServiceImp implements SaleOrderDetailByLo
         result.put("hideTitles",titlesHideList);
         result.put("titles",titlesList);
 
+        String queryStr = pd.getString("queryStr");
+        if (queryStr != null && queryStr.trim().length() > 0) {
+            pd.put("queryStr", queryStr.trim());
+        }
+
         //设置查询排序
         pd.put("orderStr", "detail.cdate asc");
         String orderStr = pd.getString("orderStr");
