@@ -60,7 +60,7 @@
             left join vmes_sale_order parent on detail.parent_id = parent.id
             left join vmes_customer customer on parent.cuser = customer.id
             left join vmes_product product on detail.product_id = product.id
-            left join vmes_product_unit productUnit on (detail.product_id = productUnit.product_id and detail.price_unit = productUnit.unit)
+            left join vmes_product_unit productUnit on (detail.product_id = productUnit.product_id and detail.order_unit = productUnit.unit)
 
         <where>
             <if test="parentId != null and parentId != ''" >
@@ -178,7 +178,7 @@
             round((ifnull(product.stock_count, 0) - ifnull(product.lock_count, 0)), 2) allowStockCount,
             '' needDeliverCount
         from vmes_sale_order_detail detail
-            left join vmes_product_unit productUnit on (detail.product_id = productUnit.product_id and detail.price_unit = productUnit.unit)
+            left join vmes_product_unit productUnit on (detail.product_id = productUnit.product_id and detail.order_unit = productUnit.unit)
             left join vmes_product product on detail.product_id = product.id
             left join vmes_dictionary orderUnit on detail.order_unit = orderUnit.id
             left join vmes_dictionary genre on product.genre = genre.id

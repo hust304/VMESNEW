@@ -266,7 +266,7 @@
             left join vmes_dictionary priceUnit on detail.price_unit = priceUnit.id
             left join vmes_dictionary orderUnit on detail.order_unit = orderUnit.id
             left join vmes_dictionary genre on product.genre = genre.id
-            left join vmes_product_unit prodUnitPrice on (detail.product_id = prodUnitPrice.product_id and detail.price_unit = prodUnitPrice.unit)
+            left join vmes_product_unit prodUnitPrice on (detail.product_id = prodUnitPrice.product_id and detail.order_unit = prodUnitPrice.unit)
         <where>
             <if test="ids != null and ids != ''" >
                 and detail.id in (${ids})

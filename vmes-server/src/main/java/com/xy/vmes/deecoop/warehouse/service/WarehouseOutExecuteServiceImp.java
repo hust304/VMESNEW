@@ -313,9 +313,9 @@ public class WarehouseOutExecuteServiceImp implements WarehouseOutExecuteService
         taskService.update(task);
         warehouseOutService.updateState(detail.getParentId());
 
-        if(saleDeliverOutDetailService!=null){
-            saleDeliverOutDetailService.finishOutDetailUnlock(detail.getId());
-        }
+//        if(saleDeliverOutDetailService!=null){
+//            saleDeliverOutDetailService.finishOutDetailUnlock(detail.getId());
+//        }
 
         return model;
     }

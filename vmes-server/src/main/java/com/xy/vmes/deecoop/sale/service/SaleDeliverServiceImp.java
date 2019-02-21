@@ -448,8 +448,8 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
             String orderDtl_id = orderDtl.getId();
             SaleOrderDetail orderDetail = new SaleOrderDetail();
             orderDetail.setId(orderDtl_id);
-            //明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已发货 6:已完成 -1:已取消)
-            orderDetail.setState("3");
+            //明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
+            orderDetail.setState("4");
             saleOrderDetailService.update(orderDetail);
         }
 

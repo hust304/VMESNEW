@@ -61,7 +61,7 @@ public class SaleOrderDetailEntity {
     private String isdisable;
 
     //(计价单位)本次发货数量
-    private BigDecimal needDeliverCount;
+    private BigDecimal orderDtlDeliverCount;
     //非实体类字段:界面传值用
     private String deliverDtlRemark;
 
@@ -222,10 +222,10 @@ public class SaleOrderDetailEntity {
     public void setDeliverDtlRemark(String deliverDtlRemark) {
         this.deliverDtlRemark = deliverDtlRemark;
     }
-    public BigDecimal getNeedDeliverCount() {
-        return needDeliverCount;
+    public BigDecimal getOrderDtlDeliverCount() {
+        return orderDtlDeliverCount;
     }
-    public void setNeedDeliverCount(BigDecimal needDeliverCount) {
-        this.needDeliverCount = needDeliverCount;
+    public void setOrderDtlDeliverCount(BigDecimal orderDtlDeliverCount) {
+        this.orderDtlDeliverCount = orderDtlDeliverCount;
     }
 }

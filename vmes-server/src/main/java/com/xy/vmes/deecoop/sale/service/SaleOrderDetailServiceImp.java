@@ -288,10 +288,10 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
         //orderUnit订单明细单位id
         deliverDetail.setOrderUnit(orderDetail.getOrderUnit());
 
-        //orderCount 发货数量(订单单位)
+        //orderCount 发货数量(订单单位) <-- orderDtlDeliverCount
         deliverDetail.setOrderCount(BigDecimal.valueOf(0D));
-        if (orderDetail.getNeedDeliverCount() != null) {
-            deliverDetail.setOrderCount(orderDetail.getNeedDeliverCount());
+        if (orderDetail.getOrderDtlDeliverCount() != null) {
+            deliverDetail.setOrderCount(orderDetail.getOrderDtlDeliverCount());
         }
 
         //priceUnit计价单位id

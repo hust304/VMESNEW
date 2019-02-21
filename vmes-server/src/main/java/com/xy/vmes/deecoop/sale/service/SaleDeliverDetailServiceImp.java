@@ -235,27 +235,23 @@ public class SaleDeliverDetailServiceImp implements SaleDeliverDetailService {
         for (Map<String, String> mapObject : mapList) {
             SaleOrderDetailEntity detail = (SaleOrderDetailEntity) HttpUtils.pageData2Entity(mapObject, new SaleOrderDetailEntity());
 
-            //needDeliverCount (计价单位)本次发货数量
-            BigDecimal needDeliverCount = BigDecimal.valueOf(0D);
-            if (detail.getNeedDeliverCount() != null ) {
-                needDeliverCount = detail.getNeedDeliverCount();
+            //orderDtlDeliverCount (计价单位)本次发货数量
+            BigDecimal orderDtlDeliverCount = BigDecimal.valueOf(0D);
+            if (detail.getOrderDtlDeliverCount() != null ) {
+                orderDtlDeliverCount = detail.getOrderDtlDeliverCount();
             }
-
-            //pnFormula 计价单位转换计量单位
-            String pnFormula = mapObject.get("pnFormula");
-            BigDecimal valueBig = BigDecimal.valueOf(0D);
-            //P(计价单位) --> N(计量单位)
-            if (pnFormula != null && pnFormula.trim().length() > 0) {
-                Map<String, Object> parmMap = new HashMap<String, Object>();
-                parmMap.put("P", needDeliverCount);
-                valueBig = EvaluateUtil.formulaReckon(parmMap, pnFormula);
-            }
-
             //priceCount 货品数量(计价数量) --> 本次发货数量(计价单位)
-            detail.setPriceCount(needDeliverCount);
+            detail.setPriceCount(orderDtlDeliverCount);
 
             //productCount:货品数量(计量数量) --> 本次发货数量(计量单位)
-            detail.setProductCount(valueBig);
+            detail.setProductCount(BigDecimal.valueOf(0D));
+            //pnFormula 计价单位转换计量单位
+            String pnFormula = mapObject.get("pnFormula");
+            //P(计价单位) --> N(计量单位)
+            BigDecimal valueBig = EvaluateUtil.countFormulaP2N(orderDtlDeliverCount, pnFormula);
+            if (valueBig != null) {
+                detail.setProductCount(valueBig);
+            }
 
             objectList.add(detail);
         }

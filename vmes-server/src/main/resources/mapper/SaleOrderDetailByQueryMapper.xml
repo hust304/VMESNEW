@@ -146,7 +146,7 @@
                 left join vmes_dictionary productUnit on orderDtl.product_unit = productUnit.id
                 left join vmes_dictionary priceUnit on orderDtl.price_unit = priceUnit.id
                 left join vmes_dictionary genre on product.genre = genre.id
-                left join vmes_product_unit prodUnitPrice on (orderDtl.product_id = prodUnitPrice.product_id and orderDtl.price_unit = prodUnitPrice.unit)
+                left join vmes_product_unit prodUnitPrice on (orderDtl.product_id = prodUnitPrice.product_id and orderDtl.order_unit = prodUnitPrice.unit)
                 <!--根据订单明细id汇总查询(发货明细) 已生成发货单数量-->
                 left join (
                     select order_detai_id, sum(order_count) count
