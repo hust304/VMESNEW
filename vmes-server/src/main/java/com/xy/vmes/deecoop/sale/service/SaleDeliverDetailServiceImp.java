@@ -609,10 +609,9 @@ public class SaleDeliverDetailServiceImp implements SaleDeliverDetailService {
         return model;
     }
 
-    public ResultModel updateSaleDeliverDetailByPrice(PageData pd) throws Exception {
+    public ResultModel updateSaleDeliverDetailByPrice(PageData pageData) throws Exception {
         ResultModel model = new ResultModel();
 
-        PageData pageData = HttpUtils.parsePageData();
         String deliverId = pageData.getString("deliverId");
         if (deliverId == null || deliverId.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
