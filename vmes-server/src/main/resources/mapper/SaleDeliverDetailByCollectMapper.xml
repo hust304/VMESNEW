@@ -30,6 +30,7 @@
         select
         deliverDtl.order_detai_id orderDetailId,
         round(ifnull(orderDtl.order_count, 0), 2) orderCount,
+        round(ifnull(orderDtl.need_deliver_count, 0), 2) needDeliverCount,
         round(ifnull(deliverOrderDtl.orderCount, 0), 2) orderDtlDeliverCount,
         round(ifnull(deliverOrderDtl.orderSum, 0), 2) orderDtlDeliverSum
         from (

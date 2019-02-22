@@ -52,6 +52,9 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
     private WarehouseService warehouseService;
 
     @Autowired
+    SaleReceiveDetailService saleReceiveDetailService;
+
+    @Autowired
     private ColumnService columnService;
     @Autowired
     private CoderuleService coderuleService;
@@ -456,6 +459,16 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
         return model;
     }
 
+    /**
+     * 修改发货单信息-发货单状态为已发货
+     * 1. 发货单id查询该发货单对应的出库单-出库状态是否全部已完成
+     * 2. 修改发货单信息(经办人,物流公司,车牌号)等字段
+     * 3. 修改(发货单,发货单明细)状态:已发货
+     *
+     * @param pageData
+     * @return
+     * @throws Exception
+     */
     public ResultModel updateSaleDeliverByDeliverType(PageData pageData) throws Exception {
         ResultModel model = new ResultModel();
 
@@ -512,9 +525,12 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
 
         //遍历发货单明细List-修改发货明细对应的订单明细状态
         Map<String, String> orderIdMap = new HashMap<String, String>();
+        StringBuffer orderIdsBuf = new StringBuffer();
+
         for (SaleDeliverDetail deliverDetail : deliverDtlList) {
             String orderId = deliverDetail.getOrderId();
             orderIdMap.put(orderId, orderId);
+            orderIdsBuf.append(orderId).append(",");
 
             SaleOrderDetail orderDetail = new SaleOrderDetail();
             String orderDetaiId = deliverDetail.getOrderDetaiId();
@@ -528,11 +544,8 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
                 //订单明细发货数量 orderDtlDeliverCount
                 BigDecimal orderDtlDeliverCount = valueMap.get("orderDtlDeliverCount");
 
-                if (orderDtlDeliverCount != null
-                        && orderCount != null
-                        && orderDtlDeliverCount.doubleValue() >= orderCount.doubleValue()
-                        ) {
-                    //订单明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已发货 6:已完成 -1:已取消)
+                if (orderDtlDeliverCount.doubleValue() >= orderCount.doubleValue()) {
+                    //明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
                     orderDetail.setState("5");
 
                     //price_type:计价类型(1:先计价 2:后计价)
@@ -552,34 +565,67 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
             saleOrderDetailService.update(orderDetail);
         }
 
+        //查询付款单明细 vmes_sale_receive_detail
+        //收款明细状态(0:待收款 1:已收款 -1:已取消)
+        Map<String, Map<String, BigDecimal>> orderReceiveMap = saleReceiveDetailService.findMapOrderReceiveByOrderId(orderIdsBuf.toString(), "1");
+
         //反写订单状态
         if (orderIdMap.size() > 0) {
             for (Iterator iterator = orderIdMap.keySet().iterator(); iterator.hasNext();) {
                 String orderId = (String)iterator.next();
 
                 List<SaleOrderDetail> detailList = saleOrderDetailService.findSaleOrderDetailListByParentId(orderId);
-                //totalSum 合计金额
-                BigDecimal totalSum = saleOrderDetailService.findTotalSumByPrice(detailList);
+                saleOrderDetailService.updateDetailStateByOrderId(orderId, detailList);
 
+                //price_type:计价类型(1:先计价 2:后计价)
                 SaleOrder orderDB = saleOrderService.findSaleOrderById(orderId);
-                //discountSum 折扣金额
-                BigDecimal discountSum = BigDecimal.valueOf(0D);
-                if (orderDB.getDiscountSum() != null) {
-                    discountSum = orderDB.getDiscountSum();
+                if ("2".equals(orderDB.getPriceType())) {
+                    //totalSum 合计金额
+                    BigDecimal totalSum = saleOrderDetailService.findTotalSumByPrice(detailList);
+
+                    //discountSum 折扣金额
+                    BigDecimal discountSum = BigDecimal.valueOf(0D);
+                    if (orderDB.getDiscountSum() != null) {
+                        discountSum = orderDB.getDiscountSum();
+                    }
+
+                    //orderSum 订单金额(合计金额 - 折扣金额)
+                    BigDecimal orderSum = BigDecimal.valueOf(totalSum.doubleValue() - discountSum.doubleValue());
+                    //四舍五入到2位小数
+                    orderSum = orderSum.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+
+                    SaleOrder editOrder = new SaleOrder();
+                    editOrder.setId(orderId);
+                    //四舍五入到2位小数
+                    totalSum = totalSum.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                    editOrder.setTotalSum(totalSum);
+                    editOrder.setOrderSum(orderSum);
+
+                    saleOrderService.update(editOrder);
                 }
 
                 //orderSum 订单金额(合计金额 - 折扣金额)
-                BigDecimal orderSum = BigDecimal.valueOf(totalSum.doubleValue() - discountSum.doubleValue());
-                //四舍五入到2位小数
-                orderSum = orderSum.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                BigDecimal orderSum = orderDB.getOrderSum();
+                //订单明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
+                if (saleOrderDetailService.isAllExistStateByDetailList("5", detailList)) {
+                    if (orderReceiveMap.get(orderId) != null) {
+                        Map<String, BigDecimal> receiveMap = orderReceiveMap.get(orderId);
 
-                SaleOrder editOrder = new SaleOrder();
-                editOrder.setId(orderId);
-                //四舍五入到2位小数
-                totalSum = totalSum.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-                editOrder.setTotalSum(totalSum);
-                editOrder.setOrderSum(orderSum);
-                saleOrderService.update(editOrder);
+                        //订单id-订单已完成付款金额
+                        BigDecimal receiveSum = BigDecimal.valueOf(0D);
+                        if (receiveMap.get("receiveSum") != null) {
+                            receiveSum = receiveMap.get("receiveSum");
+                        }
+
+                        if (receiveSum.doubleValue() >= orderSum.doubleValue()) {
+                            SaleOrder editOrder = new SaleOrder();
+                            editOrder.setId(orderId);
+                            //订单状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
+                            editOrder.setState("3");
+                            saleOrderService.update(editOrder);
+                        }
+                    }
+                }
 
                 SaleOrder parent = new SaleOrder();
                 parent.setId(orderId);

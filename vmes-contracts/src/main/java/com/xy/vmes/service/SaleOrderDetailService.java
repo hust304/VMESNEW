@@ -130,12 +130,13 @@ public interface SaleOrderDetailService {
      * 2. 根据订单id-获取发货明细(当前订单id)-(vmes_sale_deliver_detail)
      * 3. 2:待生产: 可发货数量 is null or 可发货数量 == 0
      * 4. 3:待出库: 可发货数量 > 0 and 无未完成的发货明细
-     * 5. 4:待发货: 可发货数量 > 0 and 存在未完成的发货明细
+     * 5. 4:待发货: 可发货数量 > 0 and 存在
      *
      * @param orderId
+     * @param orderDetailList
      * @throws Exception
      */
-    void updateDetailStateByOrderId(String orderId) throws Exception;
+    void updateDetailStateByOrderId(String orderId, List<SaleOrderDetail> orderDetailList) throws Exception;
     void updateLockCount(PageData pd) throws Exception;
 
     /**
@@ -154,7 +155,7 @@ public interface SaleOrderDetailService {
      *   true : 全部相同，在入库单明细List
      *   false: 一条或多条不同，在入库单明细List
      *
-     * @param state       明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已发货 6:已完成 -1:已取消)
+     * @param state       明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
      * @param objectList  订单明细List<SaleOrderDetail>
      * @return
      */

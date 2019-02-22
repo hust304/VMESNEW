@@ -450,14 +450,16 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
      * 5. 4:待发货: 可发货数量 > 0 and 存在
      *
      * @param orderId
+     * @param orderDetailList
      * @throws Exception
      */
-    public void updateDetailStateByOrderId(String orderId) throws Exception {
+    public void updateDetailStateByOrderId(String orderId, List<SaleOrderDetail> orderDetailList) throws Exception {
         if (orderId == null || orderId.trim().length() == 0) {return;}
-
-        //根据订单id-获取订单明细List
-        List<SaleOrderDetail> orderDtlList = this.findSaleOrderDetailListByParentId(orderId);
-        if (orderDtlList == null || orderDtlList.size() == 0) {return;}
+        if (orderDetailList == null) {
+            //根据订单id-获取订单明细List
+            orderDetailList = this.findSaleOrderDetailListByParentId(orderId);
+        }
+        if (orderDetailList == null || orderDetailList.size() == 0) {return;}
 
         //根据订单id-获取发货明细(当前订单id)
         PageData findMap = new PageData();
@@ -479,7 +481,8 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
 
         //遍历订单明细List
         //订单明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
-        for (SaleOrderDetail detail : orderDtlList) {
+        for (SaleOrderDetail detail : orderDetailList) {
+            if ("5".equals(detail.getState()) || "-1".equals(detail.getState())) {continue;}
             String orderDtl_id = detail.getId();
 
             SaleOrderDetail orderDtlDB = new SaleOrderDetail();
@@ -521,7 +524,7 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
     /**
      * 根据订单明细状态-反写订单状态
      * 订单状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
-     * 订单明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已发货 6:已完成 -1:已取消)
+     * 订单明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
      *
      * @param parent       订单对象
      * @param dtlList      订单明细List<SaleOrderDetail>
@@ -600,7 +603,7 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
      *   true : 全部相同，在订单明细List
      *   false: 一条或多条不同，在订单明细List
      *
-     * @param state       明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已发货 6:已完成 -1:已取消)
+     * @param state       订单明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
      * @param objectList  订单明细List<SaleOrderDetail>
      * @return
      */
@@ -622,7 +625,7 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
     /**
      * 获取订单状态-根据订单明细状态
      * 订单状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
-     * 订单明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已发货 6:已完成 -1:已取消)
+     * 订单明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
      *
      * @param dtlList      订单明细List<SaleOrderDetail>
      * @return
@@ -631,14 +634,14 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
         String parentState = new String("0");
         if (dtlList == null || dtlList.size() == 0) {return parentState;}
 
-        //1. 验证订单状态(4:已完成) --> 全部明细状态 (6:已完成) -- 忽视状态(-1:已取消)
-        String checkDtlState = "6";
-        if (this.isAllExistStateByDetailList(checkDtlState, dtlList)) {
-            return "4";
-        }
+//        //1. 验证订单状态(4:已完成) --> 全部明细状态 (6:已完成) -- 忽视状态(-1:已取消)
+//        String checkDtlState = "6";
+//        if (this.isAllExistStateByDetailList(checkDtlState, dtlList)) {
+//            return "4";
+//        }
 
-        //2. 验证订单状态(3:已发货) --> 全部明细状态 (5:已发货) -- 忽视状态(-1:已取消)
-        checkDtlState = "5";
+        //2. 验证订单状态(3:已发货) --> 全部明细状态 (5:已完成) -- 忽视状态(-1:已取消)
+        String checkDtlState = "5";
         if (this.isAllExistStateByDetailList(checkDtlState, dtlList)) {
             return "3";
         }
@@ -655,7 +658,7 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
     /**
      * 获取订单状态-根据订单明细状态
      * 订单状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
-     * 订单明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已发货 6:已完成 -1:已取消)
+     * 订单明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
      *
      * @param dtlList      订单明细List<SaleOrderDetail>
      * @return
@@ -664,15 +667,15 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
         if (parent == null) {return null;}
         if (dtlList == null || dtlList.size() == 0) {return null;}
 
-        //1. 验证订单状态(4:已完成) --> 全部明细状态 (6:已完成) -- 忽视状态(-1:已取消)
-        String checkDtlState = "6";
-        if (this.isAllExistStateByDetailList(checkDtlState, dtlList)) {
-            parent.setState("4");
-            return parent;
-        }
+//        //1. 验证订单状态(4:已完成) --> 全部明细状态 (6:已完成) -- 忽视状态(-1:已取消)
+//        String checkDtlState = "6";
+//        if (this.isAllExistStateByDetailList(checkDtlState, dtlList)) {
+//            parent.setState("4");
+//            return parent;
+//        }
 
-        //2. 验证订单状态(3:已发货) --> 全部明细状态 (5:已发货) -- 忽视状态(-1:已取消)
-        checkDtlState = "5";
+        //2. 验证订单状态(3:已发货) --> 全部明细状态 (5:已完成) -- 忽视状态(-1:已取消)
+        String checkDtlState = "5";
         if (this.isAllExistStateByDetailList(checkDtlState, dtlList)) {
             parent.setState("3");
             parent.setDeliverDate(new Date());
@@ -824,7 +827,7 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
         }
 
         //1. 修改明细状态
-        //明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已发货 6:已完成 -1:已取消)
+        //订单明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
         detail.setState("-1");
         this.update(detail);
 

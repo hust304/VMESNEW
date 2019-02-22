@@ -681,7 +681,7 @@ public class SaleOrderServiceImp implements SaleOrderService {
         }
 
         //3. 订单明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
-        saleOrderDetailService.updateDetailStateByOrderId(orderId);
+        saleOrderDetailService.updateDetailStateByOrderId(orderId, null);
 
         return model;
     }

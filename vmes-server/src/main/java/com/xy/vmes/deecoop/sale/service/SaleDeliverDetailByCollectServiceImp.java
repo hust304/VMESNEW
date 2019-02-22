@@ -78,9 +78,14 @@ public class SaleDeliverDetailByCollectServiceImp implements SaleDeliverDetailBy
             String orderDtlId = (String)mapObj.get("orderDetailId");
 
             Map<String, BigDecimal> mapValue = new HashMap<String, BigDecimal>();
+
             //订单明细订购数量 orderCount
             BigDecimal orderCount = (BigDecimal)mapObj.get("orderCount");
             mapValue.put("orderCount", orderCount);
+
+            //订单明细 可发货数量 needDeliverCount
+            BigDecimal needDeliverCount = (BigDecimal)mapObj.get("needDeliverCount");
+            mapValue.put("needDeliverCount", needDeliverCount);
 
             //订单明细发货数量 orderDtlDeliverCount
             BigDecimal orderDtlDeliverCount = (BigDecimal)mapObj.get("orderDtlDeliverCount");
