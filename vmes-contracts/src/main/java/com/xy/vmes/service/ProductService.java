@@ -123,7 +123,7 @@ public interface ProductService {
     String findIdsByProductList(List<Product> objectList);
     String findIdsByPageMapList(List<Map> mapList);
 
-    Product productObj2QRCodeObj(Product productObj, Product QRCodeObj);
+    Map<String, String> productObj2QRCodeObj(Product productObj, Map<String, String> QRCodeObj);
 
     void updateStockCount(Product product, BigDecimal count, String uuser) throws Exception;
 

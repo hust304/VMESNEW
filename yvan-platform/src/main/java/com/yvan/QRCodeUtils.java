@@ -44,7 +44,7 @@ public class QRCodeUtils {
         HashMap hints =  new HashMap();
         hints.put(EncodeHintType.CHARACTER_SET, "utf-8");//设置编码
         //设置容错等级，等级越高，容量越小
-        hints.put(EncodeHintType.ERROR_CORRECTION,ErrorCorrectionLevel.M);
+        hints.put(EncodeHintType.ERROR_CORRECTION,ErrorCorrectionLevel.H);
         hints.put(EncodeHintType.MARGIN,1);//设置边距
         //生成矩阵
         BitMatrix bitMatrix = null;

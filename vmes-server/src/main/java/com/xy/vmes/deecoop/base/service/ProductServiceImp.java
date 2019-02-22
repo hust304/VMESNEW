@@ -52,12 +52,10 @@ public class ProductServiceImp implements ProductService {
     */
     @Override
     public void save(Product product) throws Exception{
-        product.setId(Conv.createUuid());
         product.setCdate(new Date());
         product.setUdate(new Date());
         productMapper.insert(product);
     }
-
 
     /**
     * 创建人：陈刚 自动创建，禁止修改
@@ -269,13 +267,23 @@ public class ProductServiceImp implements ProductService {
         return strTemp;
     }
 
-    public Product productObj2QRCodeObj(Product productObj, Product QRCodeObj) {
-        if (QRCodeObj == null) {QRCodeObj = new Product();}
+    public Map<String, String> productObj2QRCodeObj(Product productObj, Map<String, String> QRCodeObj) {
+        if (QRCodeObj == null) {QRCodeObj = new LinkedHashMap<String, String>();}
         if (productObj == null) {return QRCodeObj;}
 
-        QRCodeObj.setId(productObj.getId());
-        //QRCodeObj.setName(productObj.getName());
-        //QRCodeObj.setSpec(productObj.getSpec());
+        QRCodeObj.put("id", productObj.getId());
+
+        String name = new String();
+        if (productObj.getName() != null && productObj.getName().trim().length() > 0) {
+            name = productObj.getName().trim();
+        }
+        QRCodeObj.put("name", name);
+
+        String spec = new String();
+        if (productObj.getSpec() != null && productObj.getSpec().trim().length() > 0) {
+            name = productObj.getSpec().trim();
+        }
+        QRCodeObj.put("spec", spec);
 
         return QRCodeObj;
     }
@@ -551,8 +559,8 @@ public class ProductServiceImp implements ProductService {
         product.setCode(code);
 
         //生成产品二维码
-        Product QRCodeObj = this.productObj2QRCodeObj(product, null);
-        String qrcode = fileService.createQRCode("product", YvanUtil.toJson(QRCodeObj));
+        product.setId(Conv.createUuid());
+        String qrcode = fileService.createQRCode("product", product.getId());
         if (qrcode != null && qrcode.trim().length() > 0) {
             product.setQrcode(qrcode);
         }
