@@ -269,6 +269,17 @@ public class ProductServiceImp implements ProductService {
         return strTemp;
     }
 
+    public Product productObj2QRCodeObj(Product productObj, Product QRCodeObj) {
+        if (QRCodeObj == null) {QRCodeObj = new Product();}
+        if (productObj == null) {return QRCodeObj;}
+
+        QRCodeObj.setId(productObj.getId());
+        //QRCodeObj.setName(productObj.getName());
+        //QRCodeObj.setSpec(productObj.getSpec());
+
+        return QRCodeObj;
+    }
+
     @Override
     public void updateStockCount(Product product, BigDecimal count,String uuser) throws Exception {
         PageData pd = new PageData();
@@ -540,7 +551,8 @@ public class ProductServiceImp implements ProductService {
         product.setCode(code);
 
         //生成产品二维码
-        String qrcode = fileService.createQRCode("product", YvanUtil.toJson(product));
+        Product QRCodeObj = this.productObj2QRCodeObj(product, null);
+        String qrcode = fileService.createQRCode("product", YvanUtil.toJson(QRCodeObj));
         if (qrcode != null && qrcode.trim().length() > 0) {
             product.setQrcode(qrcode);
         }
