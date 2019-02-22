@@ -18,6 +18,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 import com.yvan.Conv;
@@ -226,6 +227,41 @@ public class SaleReceiveDetailServiceImp implements SaleReceiveDetailService {
         return this.dataList(pageData);
     }
 
+    public List<Map<String, Object>> findReceiveDetailCollectByOrderId(PageData pageData) throws Exception {
+        return saleReceiveDetailMapper.findReceiveDetailCollectByOrderId(pageData);
+    }
+
+    public Map<String, Map<String, BigDecimal>> findMapOrderReceiveByOrderId(String orderIds, String state) throws Exception {
+        if (orderIds == null || orderIds.trim().length() == 0) {return null;}
+        Map<String, Map<String, BigDecimal>> orderReceiveMap = new HashMap<String, Map<String, BigDecimal>>();
+
+        orderIds = StringUtil.stringTrimSpace(orderIds);
+        orderIds = "'" + orderIds.replace(",", "','") + "'";
+
+        PageData findMap = new PageData();
+        findMap.put("orderIds", orderIds);
+        findMap.put("state", state);
+        List<Map<String, Object>> mapList = this.findReceiveDetailCollectByOrderId(findMap);
+        if (mapList == null || mapList.size() == 0) {return orderReceiveMap;}
+
+        for (Map<String, Object> objectMap : mapList) {
+            String orderId = (String)objectMap.get("orderId");
+
+            Map<String, BigDecimal> receiveMap = new HashMap<String, BigDecimal>();
+            BigDecimal receiveSum = BigDecimal.valueOf(0D);
+            if (objectMap.get("receiveSum") != null) {
+                receiveSum = (BigDecimal)objectMap.get("receiveSum");
+            }
+            receiveMap.put("receiveSum", receiveSum);
+
+            orderReceiveMap.put(orderId, receiveMap);
+        }
+
+        return orderReceiveMap;
+
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
     @Override
     public ResultModel listPageOrderReceiveDetail(PageData pd, Pagination pg) throws Exception {
         ResultModel model = new ResultModel();

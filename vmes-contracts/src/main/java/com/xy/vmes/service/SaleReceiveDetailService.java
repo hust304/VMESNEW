@@ -6,6 +6,7 @@ import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -116,6 +117,9 @@ public interface SaleReceiveDetailService {
     void updateToDisableByIds(String[] ids)throws Exception;
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+    List<Map<String, Object>> findReceiveDetailCollectByOrderId(PageData pageData) throws Exception;
+    Map<String, Map<String, BigDecimal>> findMapOrderReceiveByOrderId(String orderIds, String state) throws Exception;
+
     /**
      *
      * @param pageData    查询参数对象<HashMap>

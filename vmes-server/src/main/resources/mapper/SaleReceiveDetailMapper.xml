@@ -372,9 +372,36 @@
         </if>
     </select>
 
+    <!-- 收款单明细汇总: vmes_sale_receive_detail -->
+    <select id="findReceiveDetailCollectByOrderId" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+            receive.order_id orderId,
+            round(ifnull(receive.receive_amount, 0),2) receiveAmount,
+            round(ifnull(receive.discount_amount, 0),2) discountAmount,
+            round(ifnull((receive.receive_amount + receive.discount_amount), 0), 2) receiveSum,
 
-
-
-
+            round(ifnull(saleOrder.total_sum, 0), 2) orderTotalSum,
+            round(ifnull(saleOrder.order_sum, 0), 2) orderSum
+        from (
+            select
+                order_id,
+                sum(receive_amount) receive_amount,
+                sum(discount_amount) discount_amount
+            from vmes_sale_receive_detail
+            <where>
+                <if test="orderId != null and orderId != ''" >
+                    and order_id = #{orderId}
+                </if>
+                <if test="orderIds != null and orderIds != ''" >
+                    and order_id in (${orderIds})
+                </if>
+                <if test="state != null and state != ''" >
+                    and state = #{state}
+                </if>
+            </where>
+            group by order_id
+        ) receive
+            left join vmes_sale_order saleOrder on receive.order_id = saleOrder.id
+    </select>
 
 </mapper>
