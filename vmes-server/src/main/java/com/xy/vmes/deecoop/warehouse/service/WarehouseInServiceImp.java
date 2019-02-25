@@ -410,21 +410,22 @@ public class WarehouseInServiceImp implements WarehouseInService {
                     detail.setParentId(warehouseIn.getId());
                     detail.setCuser(warehouseIn.getCuser());
                     //生成二维码
-                    WarehouseInDetail QRCodeObj = warehouseInDetailService.warehouseInDtl2QRCodeObj(detail, null);
-                    String qrcode = fileService.createQRCode("warehouseBase", YvanUtil.toJson(QRCodeObj));
+                    //WarehouseInDetail QRCodeObj = warehouseInDetailService.warehouseInDtl2QRCodeObj(detail, null);
+                    String qrcode = fileService.createQRCode("warehouseBase", detail.getId());
                     if (qrcode != null && qrcode.trim().length() > 0) {
                         detail.setQrcode(qrcode);
                     }
                     warehouseInDetailService.save(detail);
-                } else {
-                    //生成二维码
-                    WarehouseInDetail QRCodeObj = warehouseInDetailService.warehouseInDtl2QRCodeObj(detail, null);
-                    String qrcode = fileService.createQRCode("warehouseBase", YvanUtil.toJson(QRCodeObj));
-                    if (qrcode != null && qrcode.trim().length() > 0) {
-                        detail.setQrcode(qrcode);
-                    }
-                    warehouseInDetailService.update(detail);
                 }
+//                else {
+//                    //生成二维码
+//                    WarehouseInDetail QRCodeObj = warehouseInDetailService.warehouseInDtl2QRCodeObj(detail, null);
+//                    String qrcode = fileService.createQRCode("warehouseBase", YvanUtil.toJson(QRCodeObj));
+//                    if (qrcode != null && qrcode.trim().length() > 0) {
+//                        detail.setQrcode(qrcode);
+//                    }
+//                    warehouseInDetailService.update(detail);
+//                }
             }
         }
 

@@ -287,8 +287,8 @@ public class WarehouseCheckDetailServiceImp implements WarehouseCheckDetailServi
             detail.setCuser(parentObj.getCuser());
 
             //获取二维码信息
-            WarehouseCheckDetail QRCodeObj = this.warehouseCheckDtl2QRCodeObj(detail, null);
-            String qrcode = fileService.createQRCode("warehouseCheck", YvanUtil.toJson(QRCodeObj));
+            //WarehouseCheckDetail QRCodeObj = this.warehouseCheckDtl2QRCodeObj(detail, null);
+            String qrcode = fileService.createQRCode("warehouseCheck", detail.getId());
             if (qrcode != null && qrcode.trim().length() > 0) {
                 detail.setQrcode(qrcode);
             }

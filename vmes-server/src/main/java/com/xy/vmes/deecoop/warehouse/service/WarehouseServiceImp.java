@@ -545,8 +545,8 @@ public class WarehouseServiceImp implements WarehouseService {
 
             try {
                 //生成货位二维码
-                Warehouse QRCodeObj = this.warehouseObj2QRCodeObj(warehouse, null);
-                String qrcode = fileService.createQRCode("warehouseBase", YvanUtil.toJson(QRCodeObj));
+                //Warehouse QRCodeObj = this.warehouseObj2QRCodeObj(warehouse, null);
+                String qrcode = fileService.createQRCode("warehouseBase", warehouse.getId());
                 if (qrcode != null && qrcode.trim().length() > 0) {
                     warehouse.setQrcode(qrcode);
                 }
@@ -594,8 +594,8 @@ public class WarehouseServiceImp implements WarehouseService {
 
             try {
                 //生成货位二维码
-                Warehouse QRCodeObj = this.warehouseObj2QRCodeObj(warehouse, null);
-                String qrcode = fileService.createQRCode("warehouseBase", YvanUtil.toJson(QRCodeObj));
+                //Warehouse QRCodeObj = this.warehouseObj2QRCodeObj(warehouse, null);
+                String qrcode = fileService.createQRCode("warehouseBase", warehouse.getId());
                 if (qrcode != null && qrcode.trim().length() > 0) {
                     warehouse.setQrcode(qrcode);
                 }
@@ -923,8 +923,8 @@ public class WarehouseServiceImp implements WarehouseService {
         warehouse = this.paterObject2Warehouse(paterObj, warehouse);
 
         //生成仓库(实体库)二维码
-        Warehouse QRCodeObj = this.warehouseObj2QRCodeObj(warehouse, null);
-        String qrcode = fileService.createQRCode("warehouseBase", YvanUtil.toJson(QRCodeObj));
+        //Warehouse QRCodeObj = this.warehouseObj2QRCodeObj(warehouse, null);
+        String qrcode = fileService.createQRCode("warehouseBase", warehouse.getId());
         if (qrcode != null && qrcode.trim().length() > 0) {
             warehouse.setQrcode(qrcode);
         }
@@ -989,8 +989,8 @@ public class WarehouseServiceImp implements WarehouseService {
         warehouse = this.paterObject2Warehouse(paterObj, warehouse);
 
         //生成仓库(虚拟库)二维码
-        Warehouse QRCodeObj = this.warehouseObj2QRCodeObj(warehouse, null);
-        String qrcode = fileService.createQRCode("warehouseBase", YvanUtil.toJson(QRCodeObj));
+        //Warehouse QRCodeObj = this.warehouseObj2QRCodeObj(warehouse, null);
+        String qrcode = fileService.createQRCode("warehouseBase", warehouse.getId());
         if (qrcode != null && qrcode.trim().length() > 0) {
             warehouse.setQrcode(qrcode);
         }
@@ -1069,8 +1069,8 @@ public class WarehouseServiceImp implements WarehouseService {
         warehouse = this.paterObject2Warehouse(paterObj, warehouse);
 
         //生成货位二维码
-        Warehouse QRCodeObj = this.warehouseObj2QRCodeObj(warehouse, null);
-        String qrcode = fileService.createQRCode("warehouseBase", YvanUtil.toJson(QRCodeObj));
+        //Warehouse QRCodeObj = this.warehouseObj2QRCodeObj(warehouse, null);
+        String qrcode = fileService.createQRCode("warehouseBase", warehouse.getId());
         if (qrcode != null && qrcode.trim().length() > 0) {
             warehouse.setQrcode(qrcode);
         }
