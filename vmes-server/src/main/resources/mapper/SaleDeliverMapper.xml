@@ -213,6 +213,7 @@
 
         from vmes_sale_deliver deliver
             left join vmes_sale_deliver_detail detail on deliver.id = detail.parent_id
+            left join vmes_sale_order saleOrder on detail.order_id = saleOrder.id
             left join vmes_user makeUser on deliver.make_id = makeUser.id
             left join vmes_customer customer on deliver.customer_id = customer.id
             left join vmes_customer_address address on deliver.custome_address_id = address.id
@@ -232,8 +233,14 @@
             </if>
 
         <where>
+            <if test="customerId != null and customerId != ''" >
+                and deliver.customer_id = #{customerId}
+            </if>
             <if test="currentCompanyId != null and currentCompanyId != ''" >
                 and deliver.company_id = #{currentCompanyId}
+            </if>
+            <if test="deliverCode != null and deliverCode != ''" >
+                and deliver.deliver_code = #{deliverCode}
             </if>
             <if test="state != null and state != ''" >
                 and deliver.state = #{state}
@@ -253,6 +260,14 @@
             </if>
             <if test="carCode != null and carCode != ''">
                 and deliver.car_code LIKE CONCAT(CONCAT('%', #{carCode}),'%')
+            </if>
+
+            <!--发货明细查询条件-->
+            <if test="orderCode != null and orderCode != ''">
+                and saleOrder.sys_code = #{orderCode}
+            </if>
+            <if test="detailState != null and detailState != ''">
+                and detail.state = #{detailState}
             </if>
 
             <!--模块查询条件-->

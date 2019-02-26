@@ -359,6 +359,12 @@ public class CustomerServiceImp implements CustomerService {
             return model;
         }
 
+        //获取指定栏位字符串-重新调整List<Column>
+        String fieldCode = pd.getString("fieldCode");
+        if (fieldCode != null && fieldCode.trim().length() > 0) {
+            columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
+        }
+
         List<LinkedHashMap> titlesList = new ArrayList<LinkedHashMap>();
         List<String> titlesHideList = new ArrayList<String>();
         Map<String, String> varModelMap = new HashMap<String, String>();
