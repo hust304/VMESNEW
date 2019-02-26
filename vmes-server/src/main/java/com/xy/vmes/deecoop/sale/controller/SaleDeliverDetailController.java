@@ -1,6 +1,7 @@
 package com.xy.vmes.deecoop.sale.controller;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.service.SaleDeliverDetailByRetreatService;
 import com.xy.vmes.service.SaleDeliverDetailService;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
@@ -22,18 +23,19 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @Slf4j
 public class SaleDeliverDetailController {
-
     private Logger logger = LoggerFactory.getLogger(SaleDeliverDetailController.class);
 
     @Autowired
     private SaleDeliverDetailService saleDeliverDetailService;
+    @Autowired
+    private SaleDeliverDetailByRetreatService saleDeliverDetailByRetreatService;
 
     /**
     * @author 陈刚 自动创建，可以修改
     * @date 2018-12-15
     */
     @PostMapping("/sale/saleDeliverDetail/listPageSaleDeliverDetail")
-    public ResultModel listPageSaleDeliverDetail()  throws Exception {
+    public ResultModel listPageSaleDeliverDetail() throws Exception {
         logger.info("################/sale/saleDeliverDetail/listPageSaleDeliverDetail 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
 
@@ -47,7 +49,7 @@ public class SaleDeliverDetailController {
     }
 
     @PostMapping("/sale/saleDeliverDetail/listPageSaleDeliverDetailByPrice")
-    public ResultModel listPageSaleDeliverDetailByPrice()  throws Exception {
+    public ResultModel listPageSaleDeliverDetailByPrice() throws Exception {
         logger.info("################/sale/saleDeliverDetail/listPageSaleDeliverDetailByPrice 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
 
@@ -59,6 +61,22 @@ public class SaleDeliverDetailController {
         logger.info("################/sale/saleDeliverDetail/listPageSaleDeliverDetailByPrice 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
+
+    @PostMapping("/sale/saleDeliverDetail/listPageDeliverDetailByRetreat")
+    public ResultModel listPageDeliverDetailByRetreat() throws Exception {
+        logger.info("################/sale/saleDeliverDetail/listPageDeliverDetailByRetreat 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        PageData pd = HttpUtils.parsePageData();
+        Pagination pg = HttpUtils.parsePagination(pd);
+        ResultModel model = saleDeliverDetailByRetreatService.listPageDeliverDetailByRetreat(pd);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleDeliverDetail/listPageDeliverDetailByRetreat 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
 
     /**
      * 修改发货单(发货明细)

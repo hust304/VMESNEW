@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xy.vmes.deecoop.sale.dao.SaleDeliverDetailByRetreatMapper">
+
+    <select id="findDeliverDetailByRetreat" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+        detail.id id,
+        detail.parent_id parentId,
+        detail.order_id orderId,
+        detail.order_detai_id orderDetaiId,
+        detail.out_detail_id outDetailId,
+
+        detail.product_id productId,
+        detail.state state,
+        detail.order_unit orderUnit,
+        orderUnit.name orderUnitName,
+        round(ifnull(detail.order_count, 0), 2) orderCount,
+        detail.price_unit priceUnit,
+
+        round(ifnull(detail.price_count, 0), 2) priceCount,
+        round(ifnull(detail.product_price, 0), 2) productPrice,
+        round(ifnull(detail.sum, 0), 2) sum,
+        detail.deliver_date deliverDate,
+        detail.cuser cuser,
+
+        detail.cdate,
+        detail.uuser uuser,
+        detail.udate,
+        detail.remark remark,
+        detail.isdisable isdisable,
+
+        <!--货品计量单位-->
+        prodUnitPrice.np_formula n2pFormula,
+        prodUnitPrice.pn_formula p2nFormula,
+
+        <!--货品表-->
+        product.code productCode,
+        product.name productName,
+        product.spec productSpec,
+        product.genre productGenre,
+        genre.name productGenreName,
+
+        saleOrder.sys_code sysOrderCode,
+        round(ifnull(receive.receive_amount, 0), 2) receiveamount
+
+        from vmes_sale_deliver_detail detail
+            left join vmes_sale_order saleOrder on detail.order_id = saleOrder.id
+            left join vmes_product_unit prodUnitPrice on (detail.product_id = prodUnitPrice.product_id and detail.order_unit = prodUnitPrice.unit)
+            left join vmes_product product on detail.product_id = product.id
+            left join vmes_dictionary genre on product.genre = genre.id
+            left join vmes_dictionary orderUnit on detail.order_unit = orderUnit.id
+
+        <!--收款明细汇总-->
+        left join (
+            select order_id, sum(receive_amount) receive_amount, sum(discount_amount) discount_amount
+            from vmes_sale_receive_detail
+            where state = '1'
+            group by order_id
+        ) receive on detail.order_id = receive.order_id
+
+        <where>
+            <if test="id != null and id != ''" >
+                and detail.id = #{id}
+            </if>
+            <if test="ids != null and ids != ''" >
+                and detail.id in (${ids})
+            </if>
+            <if test="state != null and state != ''" >
+                and detail.state = #{state}
+            </if>
+            <!--queryStr 自定义sql查询语句-->
+            <if test="queryStr != null and queryStr != ''" >
+                and ${queryStr}
+            </if>
+        </where>
+        <if test="orderStr != null and orderStr != ''" >
+            order by ${orderStr}
+        </if>
+    </select>
+
+    <insert id="insertColumn" >
+        delete from vmes_column where model_code = 'saleDeliverDetailByRetreat' ;
+        insert into vmes_column (
+        id,model_code,title_key,title_name,serial_number,
+        isdisable,ishide,isedit,ismust,cdate,
+        cuser
+        ) VALUES
+        (replace(uuid(), '-', ''), 'saleDeliverDetailByRetreat', 'id', 'id', 0, '1', '0', '1', '0', '2018-12-16 11:15:19', 'admin'),
+        (replace(uuid(), '-', ''), 'saleDeliverDetailByRetreat', 'parentId', '发货单ID', 1, '1', '0', '1', '0', '2018-12-16 11:15:19', 'admin'),
+        (replace(uuid(), '-', ''), 'saleDeliverDetailByRetreat', 'orderId', '订单id', 2, '1', '0', '1', '0', '2018-12-16 11:15:19', 'admin'),
+        (replace(uuid(), '-', ''), 'saleDeliverDetailByRetreat', 'orderDetaiId', '订单明细ID', 3, '1', '0', '1', '0', '2018-12-16 11:15:19', 'admin'),
+        (replace(uuid(), '-', ''), 'saleDeliverDetailByRetreat', 'outDetailId', '出单明细id', 4, '1', '0', '1', '0', '2018-12-16 11:15:19', 'admin'),
+
+        (replace(uuid(), '-', ''), 'saleDeliverDetailByRetreat', 'productId', 'productId', 5, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleDeliverDetailByRetreat', 'state', '发货状态(0:待发货 1:已发货 -1:已取消)', 6, '1', '0', '1', '0', '2018-12-16 11:15:19', 'admin'),
+        (replace(uuid(), '-', ''), 'saleDeliverDetailByRetreat', 'orderUnit', '单位id', 7, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleDeliverDetailByRetreat', 'orderUnitName', '单位', 7, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleDeliverDetailByRetreat', 'orderCount', '发货数量', 8, '1', '1', '1', '0', '2018-12-16 11:15:19', 'admin'),
+        (replace(uuid(), '-', ''), 'saleDeliverDetailByRetreat', 'priceUnit', '计价单位id', 9, '1', '0', '1', '0', '2018-12-16 11:15:19', 'admin'),
+
+        (replace(uuid(), '-', ''), 'saleDeliverDetailByRetreat', 'priceCount', '结算数量', 10, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleDeliverDetailByRetreat', 'productPrice', '货品单价', 11, '1', '1', '1', '0', '2018-12-16 11:15:19', 'admin'),
+        (replace(uuid(), '-', ''), 'saleDeliverDetailByRetreat', 'sum', '发货金额', 12, '1', '1', '1', '0', '2018-12-16 11:15:19', 'admin'),
+        (replace(uuid(), '-', ''), 'saleDeliverDetailByRetreat', 'deliverDate', '发货日期', 13, '1', '0', '1', '0', '2018-12-16 11:15:19', 'admin'),
+        (replace(uuid(), '-', ''), 'saleDeliverDetailByRetreat', 'cuser', '创建用户id', 14, '1', '0', '1', '0', '2018-12-16 11:15:19', 'admin'),
+
+        (replace(uuid(), '-', ''), 'saleDeliverDetailByRetreat', 'cdate', '创建时间', 15, '1', '0', '1', '0', '2018-12-16 11:15:19', 'admin'),
+        (replace(uuid(), '-', ''), 'saleDeliverDetailByRetreat', 'uuser', '修改用户id', 16, '1', '0', '1', '0', '2018-12-16 11:15:19', 'admin'),
+        (replace(uuid(), '-', ''), 'saleDeliverDetailByRetreat', 'udate', '修改时间', 17, '1', '0', '1', '0', '2018-12-16 11:15:19', 'admin'),
+        (replace(uuid(), '-', ''), 'saleDeliverDetailByRetreat', 'remark', '备注', 18, '1', '1', '1', '0', '2018-12-16 11:15:19', 'admin'),
+        (replace(uuid(), '-', ''), 'saleDeliverDetailByRetreat', 'isdisable', '是否启用(0:已禁用 1:启用)', 19, '1', '0', '1', '0', '2018-12-16 11:15:19', 'admin'),
+
+        (replace(uuid(), '-', ''), 'saleDeliverDetailByRetreat', 'productCode', '货品编码', 20, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleDeliverDetailByRetreat', 'productName', '货品名称', 21, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleDeliverDetailByRetreat', 'productSpec', '规格型号', 22, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleDeliverDetailByRetreat', 'productGenre', '货品属性id', 23, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleDeliverDetailByRetreat', 'productGenreName', '货品属性', 24, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+
+        (replace(uuid(), '-', ''), 'saleDeliverDetailByRetreat', 'sysOrderCode', '订单编号', 25, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
+        (replace(uuid(), '-', ''), 'saleDeliverDetailByRetreat', 'receiveamount', '实收金额', 26, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
+    </insert>
+
+</mapper>
+
