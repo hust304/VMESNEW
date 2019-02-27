@@ -116,6 +116,8 @@ public interface BomTreeService {
 
     List<TreeEntity> getBomTreeList(PageData pd)throws Exception;
 
+    List<TreeEntity> getBomTreeProductList(PageData pd) throws Exception;
+
     ResultModel listPageBomTrees(PageData pd, Pagination pg)throws Exception;
 
     void exportExcelBomTrees(PageData pd, Pagination pg)throws Exception;
@@ -129,6 +131,8 @@ public interface BomTreeService {
     ResultModel updateBomTree(PageData pd)throws Exception;
 
     ResultModel deleteBomTree(PageData pd)throws Exception;
+
+    ResultModel getBomTreeProduct(PageData pd)throws Exception;
 }
 
 

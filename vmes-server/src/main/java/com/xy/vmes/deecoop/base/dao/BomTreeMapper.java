@@ -81,6 +81,8 @@ public interface BomTreeMapper extends BaseMapper<BomTree> {
 
     List<TreeEntity> getBomTreeList(PageData pd);
 
+    List<TreeEntity> getBomTreeProductList(PageData pd);
+
 }
 
 

@@ -691,30 +691,6 @@ public class WarehouseOutDetailServiceImp implements WarehouseOutDetailService {
         return childrenMapList;
     }
 
-    public Map getTitleList(List<Column> columnList){
-        Map result = new HashMap();
-        List<LinkedHashMap> titlesList = new ArrayList<LinkedHashMap>();
-        List<String> titlesHideList = new ArrayList<String>();
-        Map<String, String> varModelMap = new HashMap<String, String>();
-        if(columnList!=null&&columnList.size()>0){
-            for (Column column : columnList) {
-                if(column!=null){
-                    if("0".equals(column.getIshide())){
-                        titlesHideList.add(column.getTitleKey());
-                    }
-                    LinkedHashMap titlesLinkedMap = new LinkedHashMap();
-                    titlesLinkedMap.put(column.getTitleKey(),column.getTitleName());
-                    varModelMap.put(column.getTitleKey(),"");
-                    titlesList.add(titlesLinkedMap);
-                }
-            }
-        }
-        result.put("hideTitles",titlesHideList);
-        result.put("titles",titlesList);
-        result.put("varModel",varModelMap);
-        return result;
-    }
-
 
 
     private List<Map> getDispatchChildrenList(Map rootMap,Map childrenTitleMap)  throws Exception {
@@ -784,7 +760,7 @@ public class WarehouseOutDetailServiceImp implements WarehouseOutDetailService {
             columnList = columnService.modifyColumnByFieldCode(firstFieldCode, columnList);
         }
         //获取根节点表头
-        Map rootTitleMap = getTitleList(columnList);
+        Map rootTitleMap = ColumnUtil.getTitleList(columnList);
 
         result.put("hideTitles",rootTitleMap.get("hideTitles"));
         result.put("titles",rootTitleMap.get("titles"));
@@ -800,7 +776,7 @@ public class WarehouseOutDetailServiceImp implements WarehouseOutDetailService {
             columnList = columnService.modifyColumnByFieldCode(secondFieldCode, columnList);
         }
         //获取子节点表头
-        Map childrenTitleMap = getTitleList(columnList);
+        Map childrenTitleMap = ColumnUtil.getTitleList(columnList);
 
 
         List<Map> varMapList = new ArrayList();
@@ -890,7 +866,7 @@ public class WarehouseOutDetailServiceImp implements WarehouseOutDetailService {
             return model;
         }
         //获取根节点表头
-        Map rootTitleMap = getTitleList(columnList);
+        Map rootTitleMap = ColumnUtil.getTitleList(columnList);
 
         result.put("hideTitles",rootTitleMap.get("hideTitles"));
         result.put("titles",rootTitleMap.get("titles"));
@@ -902,7 +878,7 @@ public class WarehouseOutDetailServiceImp implements WarehouseOutDetailService {
             return model;
         }
         //获取子节点表头
-        Map childrenTitleMap = getTitleList(columnList);
+        Map childrenTitleMap = ColumnUtil.getTitleList(columnList);
 
 
 
@@ -942,7 +918,7 @@ public class WarehouseOutDetailServiceImp implements WarehouseOutDetailService {
             return model;
         }
         //获取根节点表头
-        Map rootTitleMap = getTitleList(columnList);
+        Map rootTitleMap = ColumnUtil.getTitleList(columnList);
 
         result.put("hideTitles",rootTitleMap.get("hideTitles"));
         result.put("titles",rootTitleMap.get("titles"));
@@ -954,7 +930,7 @@ public class WarehouseOutDetailServiceImp implements WarehouseOutDetailService {
             return model;
         }
         //获取子节点表头
-        Map childrenTitleMap = getTitleList(columnList);
+        Map childrenTitleMap = ColumnUtil.getTitleList(columnList);
 
 
         List<Map> varMapList = new ArrayList();

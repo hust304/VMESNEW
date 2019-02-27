@@ -1,7 +1,9 @@
 package com.xy.vmes.entity;
 
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -44,6 +46,22 @@ public class TreeEntity implements Cloneable {
     private String bomId;
     private String bomTreeId;
     private String pathId;
+    private BigDecimal ratio;
+
+    //产品信息
+    private String code;
+    private String spec;
+    private String genre;
+    private String unit;
+    private BigDecimal totalCount;
+    private BigDecimal assembledCount;
+    private BigDecimal stockCount;
+    private BigDecimal maxCount;
+    private BigDecimal expectCount;
+    private BigDecimal lackCount;
+    //子集表头信息
+    private List<String> hideTitles;
+    private List<LinkedHashMap> titles;
 
     //仓库树
     //virtual_genre:虚拟库-属性
@@ -55,9 +73,121 @@ public class TreeEntity implements Cloneable {
     //当前节点-是否绑定角色(1:绑定 0:未绑定)
     private Boolean isBindRole;
 
+
     //(必须)当前节点子节点
     private List<TreeEntity> children = new ArrayList<TreeEntity>();
 
+    public Boolean getBindRole() {
+        return isBindRole;
+    }
+
+    public void setBindRole(Boolean bindRole) {
+        isBindRole = bindRole;
+    }
+
+    public List<String> getHideTitles() {
+        return hideTitles;
+    }
+
+    public void setHideTitles(List<String> hideTitles) {
+        this.hideTitles = hideTitles;
+    }
+
+    public List<LinkedHashMap> getTitles() {
+        return titles;
+    }
+
+    public void setTitles(List<LinkedHashMap> titles) {
+        this.titles = titles;
+    }
+
+    public BigDecimal getLackCount() {
+        return lackCount;
+    }
+
+    public void setLackCount(BigDecimal lackCount) {
+        this.lackCount = lackCount;
+    }
+
+    public BigDecimal getRatio() {
+        return ratio;
+    }
+
+    public void setRatio(BigDecimal ratio) {
+        this.ratio = ratio;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public String getSpec() {
+        return spec;
+    }
+
+    public void setSpec(String spec) {
+        this.spec = spec;
+    }
+
+    public String getGenre() {
+        return genre;
+    }
+
+    public void setGenre(String genre) {
+        this.genre = genre;
+    }
+
+    public String getUnit() {
+        return unit;
+    }
+
+    public void setUnit(String unit) {
+        this.unit = unit;
+    }
+
+    public BigDecimal getTotalCount() {
+        return totalCount;
+    }
+
+    public void setTotalCount(BigDecimal totalCount) {
+        this.totalCount = totalCount;
+    }
+
+    public BigDecimal getAssembledCount() {
+        return assembledCount;
+    }
+
+    public void setAssembledCount(BigDecimal assembledCount) {
+        this.assembledCount = assembledCount;
+    }
+
+    public BigDecimal getStockCount() {
+        return stockCount;
+    }
+
+    public void setStockCount(BigDecimal stockCount) {
+        this.stockCount = stockCount;
+    }
+
+    public BigDecimal getMaxCount() {
+        return maxCount;
+    }
+
+    public void setMaxCount(BigDecimal maxCount) {
+        this.maxCount = maxCount;
+    }
+
+    public BigDecimal getExpectCount() {
+        return expectCount;
+    }
+
+    public void setExpectCount(BigDecimal expectCount) {
+        this.expectCount = expectCount;
+    }
 
     public String getLabel() {
         return label;
