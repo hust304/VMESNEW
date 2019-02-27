@@ -1,8 +1,12 @@
 package com.xy.vmes.deecoop.sale.service;
 
 
+import com.xy.vmes.common.util.Common;
 import com.xy.vmes.deecoop.sale.dao.SaleRetreatMapper;
 import com.xy.vmes.entity.SaleRetreat;
+import com.xy.vmes.entity.SaleRetreatDetail;
+import com.xy.vmes.service.CoderuleService;
+import com.xy.vmes.service.SaleRetreatDetailService;
 import com.xy.vmes.service.SaleRetreatService;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
@@ -10,16 +14,17 @@ import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.service.ColumnService;
-import com.yvan.ExcelUtil;
-import com.yvan.HttpUtils;
-import com.yvan.PageData;
+import com.yvan.*;
 import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.text.MessageFormat;
 import java.util.*;
-import com.yvan.Conv;
+
 import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
 
@@ -33,7 +38,12 @@ import javax.servlet.http.HttpServletResponse;
 public class SaleRetreatServiceImp implements SaleRetreatService {
 
     @Autowired
-    private SaleRetreatMapper saleOrderReturnMapper;
+    private SaleRetreatMapper saleRetreatMapper;
+    @Autowired
+    private SaleRetreatDetailService saleRetreatDetailService;
+
+    @Autowired
+    private CoderuleService coderuleService;
     @Autowired
     private ColumnService columnService;
 
@@ -47,7 +57,7 @@ public class SaleRetreatServiceImp implements SaleRetreatService {
         saleOrderReturn.setId(Conv.createUuid());
         saleOrderReturn.setCdate(new Date());
         saleOrderReturn.setUdate(new Date());
-        saleOrderReturnMapper.insert(saleOrderReturn);
+        saleRetreatMapper.insert(saleOrderReturn);
     }
 
     /**
@@ -56,7 +66,7 @@ public class SaleRetreatServiceImp implements SaleRetreatService {
      */
     @Override
     public SaleRetreat selectById(String id) throws Exception{
-        return saleOrderReturnMapper.selectById(id);
+        return saleRetreatMapper.selectById(id);
     }
 
     /**
@@ -65,7 +75,7 @@ public class SaleRetreatServiceImp implements SaleRetreatService {
      */
     @Override
     public List<SaleRetreat> selectByColumnMap(Map columnMap) throws Exception{
-        List<SaleRetreat> warehouseCheckDetailList =  saleOrderReturnMapper.selectByMap(columnMap);
+        List<SaleRetreat> warehouseCheckDetailList =  saleRetreatMapper.selectByMap(columnMap);
         return warehouseCheckDetailList;
     }
 
@@ -76,7 +86,7 @@ public class SaleRetreatServiceImp implements SaleRetreatService {
     @Override
     public void update(SaleRetreat object) throws Exception{
         object.setUdate(new Date());
-        saleOrderReturnMapper.updateById(object);
+        saleRetreatMapper.updateById(object);
     }
 
     /**
@@ -86,7 +96,7 @@ public class SaleRetreatServiceImp implements SaleRetreatService {
     @Override
     public void updateAll(SaleRetreat object) throws Exception{
         object.setUdate(new Date());
-        saleOrderReturnMapper.updateAllColumnById(object);
+        saleRetreatMapper.updateAllColumnById(object);
     }
 
     /**
@@ -95,7 +105,7 @@ public class SaleRetreatServiceImp implements SaleRetreatService {
      */
     @Override
     public void deleteById(String id) throws Exception{
-        saleOrderReturnMapper.deleteById(id);
+        saleRetreatMapper.deleteById(id);
     }
 
     /**
@@ -104,7 +114,7 @@ public class SaleRetreatServiceImp implements SaleRetreatService {
      */
     @Override
     public void deleteByIds(String[] ids) throws Exception{
-        saleOrderReturnMapper.deleteByIds(ids);
+        saleRetreatMapper.deleteByIds(ids);
     }
 
     /**
@@ -113,7 +123,7 @@ public class SaleRetreatServiceImp implements SaleRetreatService {
      */
     @Override
     public void deleteByColumnMap(Map columnMap) throws Exception{
-        saleOrderReturnMapper.deleteByMap(columnMap);
+        saleRetreatMapper.deleteByMap(columnMap);
     }
 
     /**
@@ -122,7 +132,7 @@ public class SaleRetreatServiceImp implements SaleRetreatService {
      */
     @Override
     public void updateToDisableByIds(String[] ids)throws Exception{
-        saleOrderReturnMapper.updateToDisableByIds(ids);
+        saleRetreatMapper.updateToDisableByIds(ids);
     }
 
 
@@ -130,7 +140,7 @@ public class SaleRetreatServiceImp implements SaleRetreatService {
     public void deleteTableByOrderReturn(String companyId) throws Exception {
         PageData pageData = new PageData();
         pageData.put("companyId", companyId);
-        saleOrderReturnMapper.deleteTableByDetail(pageData);
+        saleRetreatMapper.deleteTableByDetail(pageData);
 
         Map<String, String> columnMap = new HashMap<String, String>();
         columnMap.put("company_id", companyId);
@@ -166,7 +176,7 @@ public class SaleRetreatServiceImp implements SaleRetreatService {
      */
     @Override
     public List<SaleRetreat> dataList(PageData pd) throws Exception{
-        return saleOrderReturnMapper.dataList(pd);
+        return saleRetreatMapper.dataList(pd);
     }
 
     /**
@@ -175,7 +185,7 @@ public class SaleRetreatServiceImp implements SaleRetreatService {
      */
     @Override
     public List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception{
-        return saleOrderReturnMapper.getDataListPage(pd, pg);
+        return saleRetreatMapper.getDataListPage(pd, pg);
     }
 
     public SaleRetreat findSaleOrderReturn(PageData object) throws Exception {
@@ -199,6 +209,171 @@ public class SaleRetreatServiceImp implements SaleRetreatService {
         return this.findDataList(object, null);
     }
 
+    /**
+     *
+     * 退货单明细表
+     * deliverDetailId: rowData.id,
+     * orderDetailId: rowData.orderDetaiId,
+     * productId: rowData.productId,
+     * orderSum: rowData.retreatOrderSum,
+     * orderUnit: rowData.orderUnit,
+     * orderCount: rowData.retreatOrderCount,
+     * productUnit: rowData.productUnit,
+     * remark: rowData.retreatRemark,
+     *
+     * orderId: rowData.orderId,
+     * receiveAmount: rowData.receiveAmount,
+     * n2pFormula: rowData.n2pFormula,
+     * p2nFormula: rowData.p2nFormula,
+     *
+     * @param mapList
+     * @return
+     */
+    public String checkColumnByEdit(List<Map<String, String>> mapList) {
+        if (mapList == null || mapList.size() == 0) {return new String();}
+
+        //字段非空验证
+        String msgStr = this.checkNullColumn(mapList);
+        if (msgStr != null && msgStr.trim().length() > 0) {
+            return msgStr;
+        }
+
+        //receiveAmount 订单实收金额
+        msgStr = this.checkColumnByReceiveAmount(mapList);
+        if (msgStr != null && msgStr.trim().length() > 0) {
+            return msgStr;
+        }
+
+        //订单实收金额 订单退货金额
+        msgStr = this.checkOrderReceiveAmount(mapList);
+        if (msgStr != null && msgStr.trim().length() > 0) {
+            return msgStr;
+        }
+
+        return new String();
+    }
+
+    public String checkNullColumn(List<Map<String, String>> mapList) {
+        if (mapList == null || mapList.size() == 0) {return new String();}
+
+        //字段非空验证
+        String nullMsgTemp = "第 {0} 行: ({1})为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT;
+        String numberMsgTemp = "第 {0} 行: {1}:{2} 输入错误，请输入正确的数字(大于零的整数，或大于零的(1,2)位小数)！" + Common.SYS_ENDLINE_DEFAULT;
+
+        StringBuffer msgBuf = new StringBuffer();
+        for (int i = 0; i < mapList.size(); i++) {
+            Map<String, String> mapObject = mapList.get(i);
+
+            //非空判断 deliverDetailId
+            String deliverDetailId = mapObject.get("deliverDetailId");
+            if (deliverDetailId == null || deliverDetailId.trim().length() == 0) {
+                String msg_Str = MessageFormat.format(nullMsgTemp,
+                        (i+1),
+                        "发货明细id");
+                msgBuf.append(msg_Str);
+            }
+
+            //orderCount 本次退货数量
+            String orderCount_str = mapObject.get("orderCount");
+            if (orderCount_str == null || orderCount_str.trim().length() == 0) {
+                String msg_Str = MessageFormat.format(nullMsgTemp,
+                        (i+1),
+                        "本次退货数量");
+                msgBuf.append(msg_Str);
+            } else {
+                try {
+                    BigDecimal bigTemp = new BigDecimal(orderCount_str.trim());
+                    if (bigTemp.doubleValue() <= 0D) {
+                        //numberMsgTemp = "第 {0} 行: {1}:{2} 输入错误，请输入正确的数字(大于零的整数，或大于零的(1,2)位小数)！"
+                        String msg_Str = MessageFormat.format(numberMsgTemp,
+                                (i+1),
+                                "本次退货数量",
+                                orderCount_str);
+                        msgBuf.append(msg_Str);
+                    }
+
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                    //numberMsgTemp = "第 {0} 行: {1}:{2} 输入错误，请输入正确的数字(大于零的整数，或大于零的(1,2)位小数)！"
+                    String msg_Str = MessageFormat.format(numberMsgTemp,
+                            (i+1),
+                            "本次退货数量",
+                            orderCount_str);
+                    msgBuf.append(msg_Str);
+                }
+            }
+        }
+
+        return msgBuf.toString();
+    }
+
+    public String checkColumnByReceiveAmount(List<Map<String, String>> mapList) {
+        if (mapList == null || mapList.size() == 0) {return new String();}
+        String sumMsgTemp = "第 {0} 行: ({1})为空或等于零！" + Common.SYS_ENDLINE_DEFAULT;
+
+        StringBuffer msgBuf = new StringBuffer();
+        for (int i = 0; i < mapList.size(); i++) {
+            Map<String, String> mapObject = mapList.get(i);
+
+            //receiveAmount 订单实收金额
+            BigDecimal receiveAmount = BigDecimal.valueOf(0D);
+            String receiveAmount_str = mapObject.get("receiveAmount");
+            if (receiveAmount_str != null && receiveAmount_str.trim().length() > 0) {
+                try {
+                    receiveAmount = new BigDecimal(receiveAmount_str.trim());
+                    //四舍五入到2位小数
+                    receiveAmount = receiveAmount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (receiveAmount.doubleValue() == 0D) {
+                //sumMsgTemp = "第 {0} 行: ({1})为空或等于零！"
+                String msg_Str = MessageFormat.format(sumMsgTemp,
+                        (i+1),
+                        "订单实收金额");
+                msgBuf.append(msg_Str);
+            }
+        }
+
+        if (msgBuf.toString().trim().length() > 0) {
+            msgBuf.append("备注:订单实收金额为零，表示该订单无收款记录，请在(销售-应收款管理)中对该订单执行收款！").append(Common.SYS_ENDLINE_DEFAULT);
+        }
+
+        return msgBuf.toString();
+    }
+
+    public String checkOrderReceiveAmount(List<Map<String, String>> mapList) {
+        if (mapList == null || mapList.size() == 0) {return new String();}
+        StringBuffer msgBuf = new StringBuffer();
+
+        //1. 获取 <订单编号, 订单编号>sysOrderCode
+        Map<String, String> orderCodeMap = this.findOrderCodeMap(mapList);
+        //2. 获取 <订单编号, 订单实收金额>
+        Map<String, BigDecimal> orderReceiveAmountMap = this.findOrderReceiveAmountMap(mapList);
+        //3. 获取 <订单编号, 退货金额>
+        Map<String, BigDecimal> orderRetreatSumMap = this.findOrderRetreatSumMap(mapList);
+
+        String msgTemp = "订单编号:{0} 订单实收金额:{1} 订单退货金额:{2} 订单退货金额不可大于订单实收金额！" + Common.SYS_ENDLINE_DEFAULT;
+        for (Iterator iterator = orderCodeMap.keySet().iterator(); iterator.hasNext();) {
+            String orderCode = (String) iterator.next();
+            //订单实收金额
+            BigDecimal receiveAmount = orderReceiveAmountMap.get(orderCode);
+            //退货金额 retreatSum
+            BigDecimal retreatSum = orderRetreatSumMap.get(orderCode);
+
+            if (retreatSum.doubleValue() > receiveAmount.doubleValue()) {
+                //msgTemp = "订单编号:{0} 订单实收金额:{1} 订单退货金额:{2} 订单退货金额不可大于订单实收金额！"
+                String msg_Str = MessageFormat.format(msgTemp,
+                        orderCode,
+                        receiveAmount.toString(),
+                        retreatSum.toString());
+                msgBuf.append(msg_Str);
+            }
+        }
+
+        return msgBuf.toString();
+    }
     ///////////////////////////////////////////////////////////////////////////////////////////
     /**
     *
@@ -207,7 +382,7 @@ public class SaleRetreatServiceImp implements SaleRetreatService {
     * @return      返回对象ResultModel
     * @throws Exception
     */
-    public ResultModel listPageSaleRetreat(PageData pd,Pagination pg) throws Exception{
+    public ResultModel listPageSaleRetreat(PageData pd,Pagination pg) throws Exception {
 
         ResultModel model = new ResultModel();
 
@@ -259,6 +434,98 @@ public class SaleRetreatServiceImp implements SaleRetreatService {
         result.put("varList",varMapList);
         result.put("pageData", pg);
         model.putResult(result);
+        return model;
+    }
+
+    public ResultModel checkRetreatEdit(PageData pageData) {
+        ResultModel model = new ResultModel();
+
+        String dtlJsonStr = pageData.getString("dtlJsonStr");
+        if (dtlJsonStr == null || dtlJsonStr.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("无退货列表数据！");
+            return model;
+        }
+
+        List<Map<String, String>> mapList = (List<Map<String, String>>) YvanUtil.jsonToList(dtlJsonStr);
+        if (mapList == null || mapList.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("退货明细Json字符串-转换成List错误！");
+            return model;
+        }
+
+        String msgStr = this.checkColumnByEdit(mapList);
+        if (msgStr != null && msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
+
+        return model;
+    }
+
+    public ResultModel addSaleRetreat(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+
+        //客户ID
+        String customerId = pageData.getString("customerId");
+        if (customerId == null || customerId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("客户id为空或空字符串！");
+            return model;
+        }
+
+        String dtlJsonStr = pageData.getString("dtlJsonStr");
+        if (dtlJsonStr == null || dtlJsonStr.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("无退货列表数据！");
+            return model;
+        }
+
+        List<Map<String, String>> mapList = (List<Map<String, String>>) YvanUtil.jsonToList(dtlJsonStr);
+        if (mapList == null || mapList.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("退货明细Json字符串-转换成List错误！");
+            return model;
+        }
+
+        String msgStr = this.checkColumnByEdit(mapList);
+        if (msgStr != null && msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
+
+        List<SaleRetreatDetail> retreatDtlList = saleRetreatDetailService.mapList2DetailList(mapList, null);
+        if (retreatDtlList == null || retreatDtlList.size() == 0) {return model;}
+
+        //1. 退货单
+        SaleRetreat retreat = new SaleRetreat();
+        retreat.setCustomerId(customerId);
+        //获取退货总金额
+        BigDecimal totalSum = saleRetreatDetailService.findTotalSumByDetailList(retreatDtlList);
+        retreat.setTotalSum(totalSum);
+
+        //状态状态(0:待提交 1:待审核 2:待退款 3:已完成 -1:已取消)
+        retreat.setState("0");
+        String companyID = pageData.getString("currentCompanyId");
+        retreat.setCompanyId(companyID);
+
+        String cuser = pageData.getString("cuser");
+        retreat.setCuser(cuser);
+
+        //退货单编号
+        //D+yyyyMMdd+00001 = 14位
+        String code = coderuleService.createCoderCdateByDate(companyID,
+                "vmes_sale_retreat",
+                "yyyyMMdd",
+                "T");
+        retreat.setSysCode(code);
+        this.save(retreat);
+
+        //2. 退货单明细
+        saleRetreatDetailService.addSaleRetreatDetail(retreat, retreatDtlList);
+
         return model;
     }
 
@@ -345,6 +612,111 @@ public class SaleRetreatServiceImp implements SaleRetreatService {
         //5. List<ExcelEntity> --> (转换) List<业务表DB>对象
         //6. 遍历List<业务表DB> 对业务表添加或修改
         return model;
+    }
+
+    ///////////////////////////////////////////////////////////////////
+
+    /**
+     *
+     * 退货单明细表
+     * deliverDetailId: rowData.id,
+     * orderDetailId: rowData.orderDetaiId,
+     * productId: rowData.productId,
+     * orderSum: rowData.retreatOrderSum,
+     * orderUnit: rowData.orderUnit,
+     * orderCount: rowData.retreatOrderCount,
+     * productUnit: rowData.productUnit,
+     * remark: rowData.retreatRemark,
+     *
+     * orderId: rowData.orderId,
+     * receiveAmount: rowData.receiveAmount,
+     * n2pFormula: rowData.n2pFormula,
+     * p2nFormula: rowData.p2nFormula,
+     *
+     * @param mapList
+     * @return
+     */
+    private Map<String, String> findOrderCodeMap(List<Map<String, String>> mapList) {
+        Map<String, String> orderMap = new HashMap<String, String>();
+        if (mapList == null || mapList.size() == 0) {return orderMap;}
+
+        for (Map<String, String> mapObject : mapList) {
+            String orderCode = mapObject.get("sysOrderCode");
+            if (orderCode != null && orderCode.trim().length() > 0) {
+                orderMap.put(orderCode, orderCode);
+            }
+        }
+
+        return orderMap;
+    }
+
+    private Map<String, BigDecimal> findOrderReceiveAmountMap(List<Map<String, String>> mapList) {
+        Map<String, BigDecimal> orderMap = new HashMap<String, BigDecimal>();
+        if (mapList == null || mapList.size() == 0) {return orderMap;}
+
+        for (Map<String, String> mapObject : mapList) {
+            String orderCode = mapObject.get("sysOrderCode");
+
+            BigDecimal receiveAmount = BigDecimal.valueOf(0D);
+            String receiveAmount_str = mapObject.get("receiveAmount");
+            if (receiveAmount_str != null && receiveAmount_str.trim().length() > 0) {
+                try {
+                    receiveAmount = new BigDecimal(receiveAmount_str.trim());
+                    //四舍五入到2位小数
+                    receiveAmount = receiveAmount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            if (orderCode != null && orderCode.trim().length() > 0) {
+                orderMap.put(orderCode, receiveAmount);
+            }
+        }
+
+        return orderMap;
+    }
+
+    private Map<String, BigDecimal> findOrderRetreatSumMap(List<Map<String, String>> mapList) {
+        Map<String, BigDecimal> orderMap = new HashMap<String, BigDecimal>();
+        if (mapList == null || mapList.size() == 0) {return orderMap;}
+
+        //按照订单id 汇总求和(退货金额)
+        Map<String, BigDecimal> mapTemp = new HashMap<String, BigDecimal>();
+        for (Map<String, String> mapObject : mapList) {
+            String orderCode = mapObject.get("sysOrderCode");
+            if (orderCode == null || orderCode.trim().length() == 0) {continue;}
+
+            BigDecimal orderSum = BigDecimal.valueOf(0D);
+            String orderSum_str = mapObject.get("orderSum");
+            if (orderSum_str != null && orderSum_str.trim().length() > 0) {
+                try {
+                    orderSum = new BigDecimal(orderSum_str.trim());
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            if (mapTemp.get(orderCode) == null) {
+                BigDecimal total = BigDecimal.valueOf(0D);
+                mapTemp.put(orderCode, total);
+            } else {
+                BigDecimal total = mapTemp.get(orderCode);
+                total = BigDecimal.valueOf(total.doubleValue() + orderSum.doubleValue());
+                mapTemp.put(orderCode, total);
+            }
+        }
+
+        for (Iterator iterator = mapTemp.keySet().iterator(); iterator.hasNext();) {
+            String mapKey = (String) iterator.next();
+            BigDecimal total = mapTemp.get(mapKey);
+            //四舍五入到2位小数
+            total = total.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+
+            orderMap.put(mapKey, total);
+        }
+
+        return orderMap;
     }
 
 

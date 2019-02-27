@@ -1,7 +1,10 @@
 package com.xy.vmes.deecoop.sale.service;
 
 
+import com.xy.vmes.common.util.Common;
+import com.xy.vmes.common.util.EvaluateUtil;
 import com.xy.vmes.deecoop.sale.dao.SaleRetreatDetailMapper;
+import com.xy.vmes.entity.SaleRetreat;
 import com.xy.vmes.entity.SaleRetreatDetail;
 import com.xy.vmes.service.SaleRetreatDetailService;
 
@@ -18,6 +21,8 @@ import com.yvan.springmvc.ResultModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
 import java.util.*;
 import com.yvan.Conv;
 import org.springframework.web.multipart.MultipartFile;
@@ -191,6 +196,66 @@ public class SaleRetreatDetailServiceImp implements SaleRetreatDetailService {
         findMap.put("parentId", parentId);
 
         return this.findSaleOrderReturnDetailList(findMap);
+    }
+
+    public List<SaleRetreatDetail> mapList2DetailList(List<Map<String, String>> mapList, List<SaleRetreatDetail> objectList) {
+        if (objectList == null) {objectList = new ArrayList<SaleRetreatDetail>();}
+        if (mapList == null || mapList.size() == 0) {return objectList;}
+
+        for (Map<String, String> mapObject : mapList) {
+            SaleRetreatDetail detail = (SaleRetreatDetail) HttpUtils.pageData2Entity(mapObject, new SaleRetreatDetail());
+
+            //orderCount 退货数量(订单单位)
+            BigDecimal orderCount = BigDecimal.valueOf(0D);
+            if (detail.getOrderCount() != null) {
+                orderCount = detail.getOrderCount();
+            }
+            detail.setOrderCount(orderCount);
+
+            //计价转换计量单位 数量转换公式 p2nFormula
+            String p2nFormula = mapObject.get("p2nFormula");
+            BigDecimal valueBig = BigDecimal.valueOf(0D);
+            //P(计价单位) --> N(计量单位)
+            if (p2nFormula != null && p2nFormula.trim().length() > 0) {
+                valueBig = EvaluateUtil.countFormulaP2N(orderCount, p2nFormula);
+            }
+            //productCount 退货数量(计量数量)
+            detail.setProductCount(valueBig);
+        }
+
+        return objectList;
+    }
+
+    public BigDecimal findTotalSumByDetailList(List<SaleRetreatDetail> objectList) {
+        double totalSum_double = 0D;
+        if (objectList == null || objectList.size() == 0) {return BigDecimal.valueOf(0D);}
+
+        for (SaleRetreatDetail detail : objectList) {
+            //orderSum 退货金额
+            double orderSum_double = 0D;
+            if (detail.getOrderSum() != null) {
+                orderSum_double = detail.getOrderSum().doubleValue();
+            }
+
+            totalSum_double = totalSum_double + orderSum_double;
+        }
+
+        //四舍五入到2位小数
+        return BigDecimal.valueOf(totalSum_double).setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////
+    public void addSaleRetreatDetail(SaleRetreat parentObj, List<SaleRetreatDetail> objectList) throws Exception {
+        if (parentObj == null) {return;}
+        if (objectList == null || objectList.size() == 0) {return;}
+
+        for (SaleRetreatDetail detail : objectList) {
+            //退货明细状态 (0:待提交 1:待审核 2:待退款 3:已完成 -1:已取消)
+            detail.setState("0");
+            detail.setParentId(parentObj.getId());
+            detail.setCuser(parentObj.getCuser());
+            this.save(detail);
+        }
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////

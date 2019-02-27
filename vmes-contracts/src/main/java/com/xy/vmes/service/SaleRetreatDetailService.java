@@ -1,12 +1,14 @@
 package com.xy.vmes.service;
 
 
+import com.xy.vmes.entity.SaleRetreat;
 import com.xy.vmes.entity.SaleRetreatDetail;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -100,6 +102,13 @@ public interface SaleRetreatDetailService {
 
     List<SaleRetreatDetail> findSaleOrderReturnDetailList(PageData object) throws Exception;
     List<SaleRetreatDetail> findSaleOrderReturnDetailListByParentId(String parentId) throws Exception;
+
+    List<SaleRetreatDetail> mapList2DetailList(List<Map<String, String>> mapList, List<SaleRetreatDetail> objectList);
+    BigDecimal findTotalSumByDetailList(List<SaleRetreatDetail> objectList);
+
+    ///////////////////////////////////////////////////////////////////////////////////////////
+    void addSaleRetreatDetail(SaleRetreat parentObj, List<SaleRetreatDetail> objectList) throws Exception;
+
 
     ///////////////////////////////////////////////////////////////////////////////////////////
     /**

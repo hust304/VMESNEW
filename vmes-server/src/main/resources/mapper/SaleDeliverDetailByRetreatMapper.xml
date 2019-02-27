@@ -19,7 +19,6 @@
         detail.price_unit priceUnit,
 
         round(ifnull(detail.price_count, 0), 2) priceCount,
-        round(ifnull(detail.product_price, 0), 2) productPrice,
         round(ifnull(detail.sum, 0), 2) sum,
         detail.deliver_date deliverDate,
         detail.cuser cuser,
@@ -33,6 +32,7 @@
         <!--货品计量单位-->
         prodUnitPrice.np_formula n2pFormula,
         prodUnitPrice.pn_formula p2nFormula,
+        round(ifnull(prodUnitPrice.product_price, 0), 2) productPrice,
 
         <!--货品表-->
         product.code productCode,
@@ -40,13 +40,22 @@
         product.spec productSpec,
         product.genre productGenre,
         genre.name productGenreName,
+        prodUnit.unit productUnit,
 
         saleOrder.sys_code sysOrderCode,
-        round(ifnull(receive.receive_amount, 0), 2) receiveamount
+        deliver.deliver_code deliverCode,
+        round(ifnull(receive.receive_amount, 0), 2) receiveAmount,
+
+        <!--退货明细表-->
+        '' retreatOrderCount,
+        '' retreatOrderSum,
+        '' retreatRemark
 
         from vmes_sale_deliver_detail detail
+            left join vmes_sale_deliver deliver on detail.parent_id = deliver.id
             left join vmes_sale_order saleOrder on detail.order_id = saleOrder.id
-            left join vmes_product_unit prodUnitPrice on (detail.product_id = prodUnitPrice.product_id and detail.order_unit = prodUnitPrice.unit)
+            left join vmes_product_unit prodUnitPrice on (detail.product_id = prodUnitPrice.product_id and detail.order_unit = prodUnitPrice.unit and prodUnitPrice.isdisable = '1')
+            left join vmes_product_unit prodUnit on (detail.product_id = prodUnit.product_id and prodUnit.type = '1' and prodUnit.isdisable = '1')
             left join vmes_product product on detail.product_id = product.id
             left join vmes_dictionary genre on product.genre = genre.id
             left join vmes_dictionary orderUnit on detail.order_unit = orderUnit.id
@@ -100,7 +109,7 @@
         (replace(uuid(), '-', ''), 'saleDeliverDetailByRetreat', 'priceUnit', '计价单位id', 9, '1', '0', '1', '0', '2018-12-16 11:15:19', 'admin'),
 
         (replace(uuid(), '-', ''), 'saleDeliverDetailByRetreat', 'priceCount', '结算数量', 10, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
-        (replace(uuid(), '-', ''), 'saleDeliverDetailByRetreat', 'productPrice', '货品单价', 11, '1', '1', '1', '0', '2018-12-16 11:15:19', 'admin'),
+        (replace(uuid(), '-', ''), 'saleDeliverDetailByRetreat', 'productPrice', '单价', 11, '1', '1', '1', '0', '2018-12-16 11:15:19', 'admin'),
         (replace(uuid(), '-', ''), 'saleDeliverDetailByRetreat', 'sum', '发货金额', 12, '1', '1', '1', '0', '2018-12-16 11:15:19', 'admin'),
         (replace(uuid(), '-', ''), 'saleDeliverDetailByRetreat', 'deliverDate', '发货日期', 13, '1', '0', '1', '0', '2018-12-16 11:15:19', 'admin'),
         (replace(uuid(), '-', ''), 'saleDeliverDetailByRetreat', 'cuser', '创建用户id', 14, '1', '0', '1', '0', '2018-12-16 11:15:19', 'admin'),
@@ -117,8 +126,20 @@
         (replace(uuid(), '-', ''), 'saleDeliverDetailByRetreat', 'productGenre', '货品属性id', 23, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
         (replace(uuid(), '-', ''), 'saleDeliverDetailByRetreat', 'productGenreName', '货品属性', 24, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
 
+
         (replace(uuid(), '-', ''), 'saleDeliverDetailByRetreat', 'sysOrderCode', '订单编号', 25, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
-        (replace(uuid(), '-', ''), 'saleDeliverDetailByRetreat', 'receiveamount', '实收金额', 26, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
+        (replace(uuid(), '-', ''), 'saleDeliverDetailByRetreat', 'receiveAmount', '实收金额', 26, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
+
+        (replace(uuid(), '-', ''), 'saleDeliverDetailByRetreat', 'n2pFormula', 'n2pFormula', 27, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
+        (replace(uuid(), '-', ''), 'saleDeliverDetailByRetreat', 'p2nFormula', 'p2nFormula', 27, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
+
+        (replace(uuid(), '-', ''), 'saleDeliverDetailByRetreat', 'retreatOrderCount', '本次退货数量', 28, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
+        (replace(uuid(), '-', ''), 'saleDeliverDetailByRetreat', 'retreatOrderSum', '金额', 29, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
+        (replace(uuid(), '-', ''), 'saleDeliverDetailByRetreat', 'retreatRemark', '退货原因', 30, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
+        (replace(uuid(), '-', ''), 'saleDeliverDetailByRetreat', 'deliverCode', '发货单编号', 31, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
+
+        (replace(uuid(), '-', ''), 'saleDeliverDetailByRetreat', 'productUnit', '货品单位(计量)', 32, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
+
     </insert>
 
 </mapper>

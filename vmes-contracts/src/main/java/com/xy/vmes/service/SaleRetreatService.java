@@ -101,6 +101,31 @@ public interface SaleRetreatService {
 
     List<SaleRetreat> findSaleOrderReturnList(PageData object) throws Exception;
 
+    /**
+     *
+     * 退货单明细表
+     * deliverDetailId: rowData.id,
+     * orderDetailId: rowData.orderDetaiId,
+     * productId: rowData.productId,
+     * orderSum: rowData.retreatOrderSum,
+     * orderUnit: rowData.orderUnit,
+     * orderCount: rowData.retreatOrderCount,
+     * productUnit: rowData.productUnit,
+     * remark: rowData.retreatRemark,
+     *
+     * orderId: rowData.orderId,
+     * receiveAmount: rowData.receiveAmount,
+     * n2pFormula: rowData.n2pFormula,
+     * p2nFormula: rowData.p2nFormula,
+     *
+     * @param mapList
+     * @return
+     */
+    String checkColumnByEdit(List<Map<String, String>> mapList);
+    String checkNullColumn(List<Map<String, String>> mapList);
+    String checkColumnByReceiveAmount(List<Map<String, String>> mapList);
+    String checkOrderReceiveAmount(List<Map<String, String>> mapList);
+
     ///////////////////////////////////////////////////////////////////////////////////////////
 
     /**
@@ -111,6 +136,8 @@ public interface SaleRetreatService {
     * @throws Exception
     */
     ResultModel listPageSaleRetreat(PageData pd,Pagination pg) throws Exception;
+    ResultModel addSaleRetreat(PageData pageData) throws Exception;
+    ResultModel checkRetreatEdit(PageData pageData);
 
     /**
     * 导出
@@ -126,6 +153,8 @@ public interface SaleRetreatService {
     * @throws Exception
     */
     ResultModel importExcelSaleRetreat(MultipartFile file) throws Exception;
+
+
 }
 
 

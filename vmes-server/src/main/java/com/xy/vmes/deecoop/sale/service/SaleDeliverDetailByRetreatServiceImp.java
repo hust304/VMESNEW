@@ -72,7 +72,7 @@ public class SaleDeliverDetailByRetreatServiceImp implements SaleDeliverDetailBy
         }
 
         //设置查询排序
-        pageData.put("orderStr", "detail.order_id asc,detail.cdate asc");
+        pageData.put("orderStr", "detail.order_id,detail.parent_id,detail.product_id");
         String orderStr = pageData.getString("orderStr");
         if (orderStr != null && orderStr.trim().length() > 0) {
             pageData.put("orderStr", orderStr);

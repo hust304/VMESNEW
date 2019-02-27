@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -33,7 +34,7 @@ public class SaleRetreatController {
     * @date 2019-02-25
     */
     @PostMapping("/sale/saleRetreat/listPageSaleRetreat")
-    public ResultModel listPageSaleRetreat()  throws Exception {
+    public ResultModel listPageSaleRetreat() throws Exception {
         logger.info("################/sale/saleRetreat/listPageSaleOrderReturn 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         PageData pd = HttpUtils.parsePageData();
@@ -41,6 +42,35 @@ public class SaleRetreatController {
         ResultModel model = saleRetreatService.listPageSaleRetreat(pd, pg);
         Long endTime = System.currentTimeMillis();
         logger.info("################/sale/saleRetreat/listPageSaleRetreat 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 新增退货单
+     * @author 陈刚
+     * @date 2018-12-10
+     * @throws Exception
+     */
+    @PostMapping("/sale/saleRetreat/addSaleRetreat")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel addSaleRetreat() throws Exception {
+        logger.info("################/sale/saleRetreat/addSaleRetreat 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pageData = HttpUtils.parsePageData();
+        ResultModel model = saleRetreatService.addSaleRetreat(pageData);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleRetreat/addSaleRetreat 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    @PostMapping("/sale/saleRetreat/checkRetreatEdit")
+    public ResultModel checkRetreatEdit() throws Exception {
+        logger.info("################/sale/saleRetreat/checkRetreatEdit 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pageData = HttpUtils.parsePageData();
+        ResultModel model = saleRetreatService.checkRetreatEdit(pageData);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleRetreat/checkRetreatEdit 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
