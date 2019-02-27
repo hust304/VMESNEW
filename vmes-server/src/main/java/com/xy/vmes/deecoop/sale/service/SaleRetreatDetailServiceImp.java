@@ -221,6 +221,8 @@ public class SaleRetreatDetailServiceImp implements SaleRetreatDetailService {
             }
             //productCount 退货数量(计量数量)
             detail.setProductCount(valueBig);
+
+            objectList.add(detail);
         }
 
         return objectList;
