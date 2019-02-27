@@ -19,6 +19,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 import org.springframework.web.multipart.MultipartFile;
@@ -199,6 +200,48 @@ public class BomTreeServiceImp implements BomTreeService {
     @Override
     public List<TreeEntity> getBomTreeList(PageData pd) throws Exception {
         return bomTreeMapper.getBomTreeList(pd);
+    }
+
+    @Override
+    public List<TreeEntity> getBomTreeProductList(PageData pd) throws Exception {
+        return bomTreeMapper.getBomTreeProductList(pd);
+    }
+
+    @Override
+    public ResultModel getBomTreeProduct(PageData pd)throws Exception{
+        ResultModel model = new ResultModel();
+        Map result = new HashMap();
+
+        List<Column> columnList = columnService.findColumnList("BomTreeProduct");
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
+        }
+        //获取根节点表头
+        Map rootTitleMap = ColumnUtil.getTitleList(columnList);
+
+        result.put("hideTitles",rootTitleMap.get("hideTitles"));
+        result.put("titles",rootTitleMap.get("titles"));
+
+        columnList = columnService.findColumnList("BomTreeProductChildren");
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
+        }
+        //获取子节点表头
+        Map childrenTitleMap = ColumnUtil.getTitleList(columnList);
+
+        List<TreeEntity> varMapList = new ArrayList();
+
+        List<TreeEntity> treeList = bomTreeService.getBomTreeProductList(pd);
+//        TreeEntity treeObj = TreeUtil.switchBomTree(pd.getString("productId"),treeList,BigDecimal.valueOf(Double.parseDouble(pd.getString("expectCount"))),childrenTitleMap);
+        TreeEntity treeObj = TreeUtil.switchBomTree("99767a4e1d7f4482bc90477096b62b4e",treeList,BigDecimal.TEN,childrenTitleMap);
+        varMapList.add(treeObj);
+        result.put("varList",varMapList);
+        model.putResult(result);
+        return model;
     }
 
     @Override

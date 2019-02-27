@@ -42,8 +42,6 @@ public class BomTreeController {
     @Autowired
     private BomTreeService bomTreeService;
 
-    @Autowired
-    private ColumnService columnService;
 
     /**
     * @author 刘威 自动创建，禁止修改
@@ -265,6 +263,23 @@ public class BomTreeController {
         return model;
     }
 
+
+    /**
+     * @author 刘威
+     * @date 2018-07-31
+     */
+//    @PostMapping("/base/bomTree/getBomTreeProduct")
+    @GetMapping("/test/getBomTreeProduct")
+    public ResultModel getBomTreeProduct()  throws Exception {
+        logger.info("################/base/bomTree/getBomTreeProduct 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+//        pd.getString("productId"),pd.getString("expectCount")
+        ResultModel model = bomTreeService.getBomTreeProduct(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/base/bomTree/getBomTreeProduct 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
 
 
     /**

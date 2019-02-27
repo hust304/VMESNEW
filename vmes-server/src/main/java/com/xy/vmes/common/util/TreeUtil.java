@@ -2,10 +2,8 @@ package com.xy.vmes.common.util;
 
 import com.xy.vmes.entity.TreeEntity;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.math.BigDecimal;
+import java.util.*;
 
 public class TreeUtil {
 
@@ -28,6 +26,30 @@ public class TreeUtil {
         return nodeObject;
     }
 
+    /**
+     * 指定节点ID-及该指定节点ID下所有节点和子节点-生成树形结构
+     * 当(指定节点ID)is null 或空字符串 -从根节点(root)开始生成树形结构
+     *
+     * @param nodeId     (允许为空)指定节点ID
+     * @param expectCount 当前产品的期望生产数量
+     * @param objectList (业务数据List-全部有效业务数据)-(菜单,组织架构,字典)
+     * @return
+     */
+    public static TreeEntity switchBomTree(String nodeId, List<TreeEntity> objectList ,BigDecimal expectCount, Map childrenTitleMap) {
+        if (objectList == null || objectList.size() == 0) {return new TreeEntity();}
+        if (nodeId == null || nodeId.trim().length() == 0) {nodeId = new String("root");}
+
+        //获得当前节点对象
+        TreeEntity nodeObject = findNodeById(nodeId, objectList);
+        //Bom齐套分析：期望生产数量
+        nodeObject.setExpectCount(expectCount);
+        //Bom齐套分析：下级物料列表的Title
+        nodeObject.setTitles((List<LinkedHashMap>)childrenTitleMap.get("titles"));
+        nodeObject.setHideTitles((List<String>)childrenTitleMap.get("hideTitles"));
+        createBomTree(nodeObject, objectList);
+        return nodeObject;
+    }
+
     public static List<TreeEntity> listSwitchTree(String nodeId, List<TreeEntity> objectList) {
         List<TreeEntity> treeList = new ArrayList<TreeEntity>();
         if (objectList == null || objectList.size() == 0) {return treeList;}
@@ -39,6 +61,66 @@ public class TreeUtil {
         }
 
         return treeList;
+    }
+
+    /**
+     * 本方法为递归调用:
+     * @param nodeObject
+     * @param objectList
+     * @return
+     */
+    private static void createBomTree(TreeEntity nodeObject, List<TreeEntity> objectList) {
+        //获得当前节点id下的所有孩子
+        List<TreeEntity> childList = findChildListById(nodeObject.getId(), objectList);
+        if(childList.size()>0){
+            List<TreeEntity> childListNew = new ArrayList<TreeEntity>();
+            //Bom齐套分析：上级可组装数量
+            BigDecimal pAssembledCount = null;
+            //Bom齐套分析：上级期望生产数量
+            BigDecimal pExpectCount = nodeObject.getExpectCount()==null?BigDecimal.ZERO:nodeObject.getExpectCount();
+            for(int i = 0; i < childList.size(); i++){
+                TreeEntity child = childList.get(i);
+                //Bom齐套分析：用料比例
+                BigDecimal ratio = child.getRatio()==null?BigDecimal.ZERO:child.getRatio();
+                //Bom齐套分析：实际库存数量
+                BigDecimal stockCount = child.getStockCount()==null?BigDecimal.ZERO:child.getStockCount();
+                //Bom齐套分析：可组装数量
+                BigDecimal assembledCount = child.getAssembledCount()==null?BigDecimal.ZERO:child.getAssembledCount();
+                if(ratio.compareTo(BigDecimal.ZERO)>0){
+                    if(pAssembledCount==null){
+                        //Bom齐套分析：上级可组装数量 = （实际库存数量 + 可组装数量）/ 用料比例
+                        pAssembledCount = stockCount.add(assembledCount).divide(ratio,2,BigDecimal.ROUND_HALF_UP);
+                    }else{
+                        //Bom齐套分析：取物料组成中可组装成品的最小值为上级可组装数量
+                        if(stockCount.add(assembledCount).divide(ratio,2,BigDecimal.ROUND_HALF_UP).compareTo(pAssembledCount)<0){
+                            pAssembledCount = stockCount.add(assembledCount).divide(ratio,2,BigDecimal.ROUND_HALF_UP);
+                        }
+                    }
+                    if(pExpectCount.compareTo(BigDecimal.ZERO)>0){
+                        //Bom齐套分析：期望生产数量 = 上级期望生产数量 * 用料比例
+                        BigDecimal expectCount = pExpectCount.multiply(ratio).setScale(2,BigDecimal.ROUND_HALF_UP);
+                        //Bom齐套分析：缺少物料数量 =  期望生产数量 - 实际库存数量 - 可组装数量
+                        BigDecimal lackCount = expectCount.subtract(stockCount).subtract(assembledCount).setScale(2,BigDecimal.ROUND_HALF_UP);
+                        child.setExpectCount(expectCount);
+                        child.setLackCount(lackCount);
+                    }
+                }
+                child.setHideTitles(nodeObject.getHideTitles());
+                child.setTitles(nodeObject.getTitles());
+                createBomTree(child, objectList);
+                childListNew.add(child);
+            }
+            if(pAssembledCount!=null){
+                //Bom齐套分析：期望生产数量
+                nodeObject.setAssembledCount(pAssembledCount);
+                //Bom齐套分析：期望生产数量
+                nodeObject.setMaxCount(pAssembledCount.add(nodeObject.getStockCount()).setScale(2,BigDecimal.ROUND_HALF_UP));
+            }
+            nodeObject.setChildren(childListNew);
+        }else{
+            //nodeObject.setChildren(null);
+            return;
+        }
     }
 
     /**

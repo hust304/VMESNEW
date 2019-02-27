@@ -156,25 +156,55 @@
 
 
 
+            delete from vmes_column where model_code = 'BomProduct' ;
+            insert into vmes_column (
+            id,model_code,title_key,title_name,serial_number,
+            isdisable,ishide,isedit,ismust,cdate,
+            cuser
+            ) VALUES
+                (replace(uuid(), '-', ''),'BomProduct','prodId','货品id',1, '1','0','1','0',now(), 'admin'),
+                (replace(uuid(), '-', ''),'BomProduct','prodCode','货品编码',2, '1','1','1','0',now(), 'admin'),
+                (replace(uuid(), '-', ''),'BomProduct','prodName','货品名称',3, '1','1','1','0',now(), 'admin'),
+                (replace(uuid(), '-', ''),'BomProduct','prodSpec','规格型号',4, '1','1','1','0',now(), 'admin'),
+                (replace(uuid(), '-', ''),'BomProduct','genreName','货品属性',5, '1','0','1','0',now(), 'admin'),
+                (replace(uuid(), '-', ''),'BomProduct','genreId','货品属性id',6, '1','0','1','0',now(), 'admin'),
+                (replace(uuid(), '-', ''),'BomProduct','unitName','计量单位',7, '1','1','1','0',now(), 'admin'),
+                (replace(uuid(), '-', ''),'BomProduct','unitId','计量单位id',8, '1','0','1','0',now(), 'admin'),
+                (replace(uuid(), '-', ''),'BomProduct','typeName','货品类型',9, '1','1','1','0',now(), 'admin'),
+                (replace(uuid(), '-', ''),'BomProduct','typeId','货品类型id',10, '1','0','1','0',now(), 'admin'),
 
-        delete from vmes_column where model_code = 'BomList' ;
-        insert into vmes_column (
-        id,model_code,title_key,title_name,serial_number,
-        isdisable,ishide,isedit,ismust,cdate,
-        cuser
-        ) VALUES
-            (replace(uuid(), '-', ''),'BomList','prodId','货品id',1, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'BomList','companyId','公司ID-组织架构',12, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'BomList','code','Bom编码',13, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'BomList','name','Bom名称',14, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'BomList','isdefault','是否默认',15, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'BomList','cuser','创建用户id',16, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'BomList','cdate','创建时间',17, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'BomList','uuser','修改用户id',18, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'BomList','udate','修改时间',19, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'BomList','isdisable','是否启用',20, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'BomList','remark','备注',21, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'BomList','id','id',0, '1','0','1','0',now(), 'admin')
+                (replace(uuid(), '-', ''),'BomProduct','companyId','公司ID-组织架构',12, '1','0','1','0',now(), 'admin'),
+                (replace(uuid(), '-', ''),'BomProduct','code','Bom编码',13, '1','1','1','0',now(), 'admin'),
+                (replace(uuid(), '-', ''),'BomProduct','name','Bom名称',14, '1','1','1','0',now(), 'admin'),
+                (replace(uuid(), '-', ''),'BomProduct','isdefault','是否默认',15, '1','0','1','0',now(), 'admin'),
+                (replace(uuid(), '-', ''),'BomProduct','cuser','创建用户id',16, '1','0','1','0',now(), 'admin'),
+                (replace(uuid(), '-', ''),'BomProduct','cdate','创建时间',17, '1','0','1','0',now(), 'admin'),
+                (replace(uuid(), '-', ''),'BomProduct','uuser','修改用户id',18, '1','0','1','0',now(), 'admin'),
+                (replace(uuid(), '-', ''),'BomProduct','udate','修改时间',19, '1','0','1','0',now(), 'admin'),
+                (replace(uuid(), '-', ''),'BomProduct','isdisable','是否启用',20, '1','0','1','0',now(), 'admin'),
+                (replace(uuid(), '-', ''),'BomProduct','remark','备注',21, '1','0','1','0',now(), 'admin'),
+                (replace(uuid(), '-', ''),'BomProduct','id','id',0, '1','0','1','0',now(), 'admin')
+
+
+
+            delete from vmes_column where model_code = 'BomList' ;
+            insert into vmes_column (
+            id,model_code,title_key,title_name,serial_number,
+            isdisable,ishide,isedit,ismust,cdate,
+            cuser
+            ) VALUES
+                (replace(uuid(), '-', ''),'BomList','prodId','货品id',1, '1','0','1','0',now(), 'admin'),
+                (replace(uuid(), '-', ''),'BomList','companyId','公司ID-组织架构',12, '1','0','1','0',now(), 'admin'),
+                (replace(uuid(), '-', ''),'BomList','code','Bom编码',13, '1','1','1','0',now(), 'admin'),
+                (replace(uuid(), '-', ''),'BomList','name','Bom名称',14, '1','1','1','0',now(), 'admin'),
+                (replace(uuid(), '-', ''),'BomList','isdefault','是否默认',15, '1','1','1','0',now(), 'admin'),
+                (replace(uuid(), '-', ''),'BomList','cuser','创建用户id',16, '1','0','1','0',now(), 'admin'),
+                (replace(uuid(), '-', ''),'BomList','cdate','创建时间',17, '1','0','1','0',now(), 'admin'),
+                (replace(uuid(), '-', ''),'BomList','uuser','修改用户id',18, '1','0','1','0',now(), 'admin'),
+                (replace(uuid(), '-', ''),'BomList','udate','修改时间',19, '1','0','1','0',now(), 'admin'),
+                (replace(uuid(), '-', ''),'BomList','isdisable','是否启用',20, '1','0','1','0',now(), 'admin'),
+                (replace(uuid(), '-', ''),'BomList','remark','备注',21, '1','1','1','0',now(), 'admin'),
+                (replace(uuid(), '-', ''),'BomList','id','id',0, '1','0','1','0',now(), 'admin')
     </insert>
 
 
@@ -290,9 +320,15 @@
         select
         <include refid="Field1"></include>
         from
-        vmes_bom bom
-        left join vmes_bom_tree bomtree on bom.id = bomtree.bom_id and bomtree.layer = 0
-        left join vmes_product prod on prod.id = bomtree.prod_id
+         vmes_product prod
+        left join (
+        select t1.*,t0.prod_id,t0.layer from vmes_bom_tree t0 left join vmes_bom t1 on  t1.id = t0.bom_id
+        <where>
+            <if test="isdefault != null and isdefault != ''">
+                and t1.isdefault = #{isdefault}
+            </if>
+        </where>
+        ) bom on prod.id = bom.prod_id and bom.layer = 0
         left join vmes_product_unit produnit on produnit.product_id = prod.id and produnit.type = 1
         left join vmes_dictionary genre on prod.genre = genre.id
         left join vmes_dictionary unit on produnit.unit = unit.id
@@ -311,17 +347,17 @@
             <if test="isdisable != null and isdisable != ''">
                 and bom.isdisable = #{isdisable}
             </if>
-            <if test="isdefault != null and isdefault != ''">
-                and bom.isdefault = #{isdefault}
-            </if>
             <if test="prodId != null and prodId != ''">
                 and prod.id  = #{prodId}
+            </if>
+            <if test="genreId != null and genreId != ''">
+                and genre.id  = #{genreId}
             </if>
             <if test="prodName != null and prodName != ''">
                 and prod.name LIKE CONCAT(CONCAT('%', #{prodName}),'%')
             </if>
             <if test="currentCompanyId != null and currentCompanyId != ''" >
-                and bom.company_id=#{currentCompanyId}
+                and prod.company_id=#{currentCompanyId}
             </if>
         </where>
         <if test="orderStr != null and orderStr != ''" >
@@ -334,9 +370,15 @@
         select
         <include refid="Field1"></include>
         from
-        vmes_bom bom
-        left join vmes_bom_tree bomtree on bom.id = bomtree.bom_id and bomtree.layer = 0
-        left join vmes_product prod on prod.id = bomtree.prod_id
+        vmes_product prod
+        left join (
+          select t1.*,t0.prod_id,t0.layer from vmes_bom_tree t0 left join vmes_bom t1 on  t1.id = t0.bom_id
+        <where>
+            <if test="isdefault != null and isdefault != ''">
+                and t1.isdefault = #{isdefault}
+            </if>
+        </where>
+        ) bom on prod.id = bom.prod_id and bom.layer = 0
         left join vmes_product_unit produnit on produnit.product_id = prod.id and produnit.type = 1
         left join vmes_dictionary genre on prod.genre = genre.id
         left join vmes_dictionary unit on produnit.unit = unit.id
@@ -355,17 +397,17 @@
             <if test="isdisable != null and isdisable != ''">
                 and bom.isdisable = #{isdisable}
             </if>
-            <if test="isdefault != null and isdefault != ''">
-                and bom.isdefault = #{isdefault}
-            </if>
             <if test="prodId != null and prodId != ''">
                 and prod.id  = #{prodId}
+            </if>
+            <if test="genreId != null and genreId != ''">
+                and genre.id  = #{genreId}
             </if>
             <if test="prodName != null and prodName != ''">
                 and prod.name LIKE CONCAT(CONCAT('%', #{prodName}),'%')
             </if>
             <if test="currentCompanyId != null and currentCompanyId != ''" >
-                and bom.company_id=#{currentCompanyId}
+                and prod.company_id=#{currentCompanyId}
             </if>
         </where>
         <if test="orderStr != null and orderStr != ''" >

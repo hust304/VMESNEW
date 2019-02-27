@@ -159,6 +159,69 @@
             (replace(uuid(), '-', ''),'BomTree','remark','备注',21, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'BomTree','pathId','路径',22, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'BomTree','id','id',0, '1','0','1','0',now(), 'admin')
+
+
+            delete from vmes_column where model_code = 'BomTreeProduct' ;
+            insert into vmes_column (
+            id,model_code,title_key,title_name,serial_number,
+            isdisable,ishide,isedit,ismust,cdate,
+            cuser
+            ) VALUES
+            (replace(uuid(), '-', ''),'BomTreeProduct','code','产品编码',1, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProduct','name','产品名称',2, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProduct','spec','规格型号',3, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProduct','genre','产品属性',4, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProduct','unit','计量单位',5, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProduct','ratio','物料用量',6, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProduct','stockCount','当前库存数量',7, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProduct','assembledCount','可组装数量',8, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProduct','maxCount','最大可生产数量',9, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProduct','expectCount','期望生产数量',10, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProduct','lackCount','缺少数量',11, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProduct','bomId','vmes_bom id',12, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProduct','bomTreeId','产品BomTreeId',13, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProduct','pid','上级产品id',14, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProduct','layer','级别',15, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProduct','cuser','创建用户id',16, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProduct','cdate','创建时间',17, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProduct','uuser','修改用户id',18, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProduct','udate','修改时间',19, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProduct','isdisable','是否启用',20, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProduct','remark','备注',21, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProduct','pathId','路径',22, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProduct','id','id',0, '1','0','1','0',now(), 'admin')
+
+
+            delete from vmes_column where model_code = 'BomTreeProductChildren' ;
+            insert into vmes_column (
+            id,model_code,title_key,title_name,serial_number,
+            isdisable,ishide,isedit,ismust,cdate,
+            cuser
+            ) VALUES
+            (replace(uuid(), '-', ''),'BomTreeProductChildren','code','物料编码',1, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProductChildren','name','物料名称',2, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProductChildren','spec','规格型号',3, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProductChildren','genre','产品属性',4, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProductChildren','unit','计量单位',5, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProductChildren','ratio','物料用量',6, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProductChildren','stockCount','当前库存数量',7, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProductChildren','assembledCount','可组装数量',8, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProductChildren','maxCount','总数量',9, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProductChildren','expectCount','需要数量',10, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProductChildren','lackCount','缺少数量',11, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProductChildren','bomId','vmes_bom id',12, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProductChildren','bomTreeId','产品BomTreeId',13, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProductChildren','pid','上级产品id',14, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProductChildren','layer','级别',15, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProductChildren','cuser','创建用户id',16, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProductChildren','cdate','创建时间',17, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProductChildren','uuser','修改用户id',18, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProductChildren','udate','修改时间',19, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProductChildren','isdisable','是否启用',20, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProductChildren','remark','备注',21, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProductChildren','pathId','路径',22, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProductChildren','id','id',0, '1','0','1','0',now(), 'admin')
+
     </insert>
 
     <!-- 列表(全部) 自动创建，禁止修改-->
@@ -389,5 +452,51 @@
         </where>
     </select>
 
+
+    <!-- 自动创建，可以修改 -->
+    <select id="getBomTreeProductList"  parameterType="com.yvan.PageData"  resultType="com.xy.vmes.entity.TreeEntity">
+        select
+        tree.id bomTreeId,
+        tree.path_id pathId,
+        tree.bom_id bomId,
+        tree.prod_id id,
+        tree.parent_prod_id pid,
+        tree.layer,
+        tree.ratio,
+        tree.isdisable,
+        product.name,
+        product.code,
+        product.spec,
+        product.genre,
+        product.stock_count stockCount,
+        produnit.name unit
+        from
+        vmes_bom_tree tree
+        left join vmes_product product on product.id = tree.prod_id
+        left join vmes_product_unit produnit on produnit.product_id = product.id and produnit.type = 1
+        <where>
+            <if test="name!= null and name != ''"><!-- 关键词检索 -->
+                and product.name LIKE CONCAT(CONCAT('%', #{name}),'%')
+            </if>
+            <if test="bomId!= null and bomId != ''"><!-- 关键词检索 -->
+                and tree.bom_id = #{bomId}
+            </if>
+            <if test="pid!= null and pid != ''"><!-- 关键词检索 -->
+                and tree.parent_prod_id = #{pid}
+            </if>
+            <if test="id!= null and id != ''"><!-- 关键词检索 -->
+                and tree.prod_id = #{pid}
+            </if>
+            <if test="isdisable!= null and isdisable != ''"><!-- 关键词检索 -->
+                and tree.isdisable = #{isdisable}
+            </if>
+            <if test="pathId != null and pathId != ''">
+                and tree.path_id LIKE CONCAT(#{pathId},'%')
+            </if>
+            <if test="queryStr != null and queryStr!=''" ><!-- 自定义查询 -->
+                and ${queryStr}
+            </if>
+        </where>
+    </select>
 
 </mapper>
