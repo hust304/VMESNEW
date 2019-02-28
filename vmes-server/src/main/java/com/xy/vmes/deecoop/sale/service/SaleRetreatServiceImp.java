@@ -238,17 +238,17 @@ public class SaleRetreatServiceImp implements SaleRetreatService {
             return msgStr;
         }
 
-        //receiveAmount 订单实收金额
-        msgStr = this.checkColumnByReceiveAmount(mapList);
-        if (msgStr != null && msgStr.trim().length() > 0) {
-            return msgStr;
-        }
+//        //receiveAmount 订单实收金额
+//        msgStr = this.checkColumnByReceiveAmount(mapList);
+//        if (msgStr != null && msgStr.trim().length() > 0) {
+//            return msgStr;
+//        }
 
-        //订单实收金额 订单退货金额
-        msgStr = this.checkOrderReceiveAmount(mapList);
-        if (msgStr != null && msgStr.trim().length() > 0) {
-            return msgStr;
-        }
+//        //订单实收金额 订单退货金额
+//        msgStr = this.checkOrderReceiveAmount(mapList);
+//        if (msgStr != null && msgStr.trim().length() > 0) {
+//            return msgStr;
+//        }
 
         return new String();
     }
@@ -524,6 +524,61 @@ public class SaleRetreatServiceImp implements SaleRetreatService {
         this.save(retreat);
 
         //2. 退货单明细
+        saleRetreatDetailService.addSaleRetreatDetail(retreat, retreatDtlList);
+
+        return model;
+    }
+
+    public ResultModel updateSaleRetreat(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+
+        //退货单id
+        String parentId = pageData.getString("parentId");
+        if (parentId == null || parentId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("退货单id为空或空字符串！");
+            return model;
+        }
+
+        String dtlJsonStr = pageData.getString("dtlJsonStr");
+        if (dtlJsonStr == null || dtlJsonStr.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("无退货列表数据！");
+            return model;
+        }
+
+        List<Map<String, String>> mapList = (List<Map<String, String>>) YvanUtil.jsonToList(dtlJsonStr);
+        if (mapList == null || mapList.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("退货明细Json字符串-转换成List错误！");
+            return model;
+        }
+
+        String msgStr = this.checkColumnByEdit(mapList);
+        if (msgStr != null && msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
+
+        List<SaleRetreatDetail> retreatDtlList = saleRetreatDetailService.mapList2DetailList(mapList, null);
+        if (retreatDtlList == null || retreatDtlList.size() == 0) {return model;}
+
+        //修改退货单(退货总金额)
+        SaleRetreat retreatEdit = new SaleRetreat();
+        retreatEdit.setId(parentId);
+        BigDecimal totalSum = saleRetreatDetailService.findTotalSumByDetailList(retreatDtlList);
+        retreatEdit.setTotalSum(totalSum);
+        this.update(retreatEdit);
+
+        Map<String, Object> columnMap = new HashMap<String, Object>();
+        columnMap.put("parent_id", parentId);
+        saleRetreatDetailService.deleteByColumnMap(columnMap);
+
+        SaleRetreat retreat = new SaleRetreat();
+        retreat.setId(parentId);
+        String cuser = pageData.getString("cuser");
+        retreat.setCuser(cuser);
         saleRetreatDetailService.addSaleRetreatDetail(retreat, retreatDtlList);
 
         return model;

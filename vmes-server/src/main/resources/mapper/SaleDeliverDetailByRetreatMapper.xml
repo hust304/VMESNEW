@@ -47,8 +47,11 @@
         round(ifnull(receive.receive_amount, 0), 2) receiveAmount,
 
         <!--退货明细表-->
-        '' retreatOrderCount,
-        '' retreatOrderSum,
+        round(ifnull(retreatDetail.order_count, 0), 2) endRetreatCount,
+        <!--发货明细id:(发货数量-退货数量:已生成退货单) -->
+        round((ifnull(detail.order_count, 0) - ifnull(retreatDetail.order_count, 0)), 2) notRetreatCount,
+        round((ifnull(detail.order_count, 0) - ifnull(retreatDetail.order_count, 0)), 2) retreatOrderCount,
+        round(((round((ifnull(detail.order_count, 0) - ifnull(retreatDetail.order_count, 0)), 2)) * ifnull(prodUnitPrice.product_price, 0)), 2) retreatOrderSum,
         '' retreatRemark
 
         from vmes_sale_deliver_detail detail
@@ -59,14 +62,21 @@
             left join vmes_product product on detail.product_id = product.id
             left join vmes_dictionary genre on product.genre = genre.id
             left join vmes_dictionary orderUnit on detail.order_unit = orderUnit.id
+            <!--退货明细汇总(已生成退货数量)-->
+            left join (
+                select deliver_detail_id, sum(order_count) order_count
+                from vmes_sale_retreat_detail
+                where <![CDATA[ state <> '-1' ]]>
+                group by deliver_detail_id
+            ) retreatDetail on detail.id = retreatDetail.deliver_detail_id
 
-        <!--收款明细汇总-->
-        left join (
-            select order_id, sum(receive_amount) receive_amount, sum(discount_amount) discount_amount
-            from vmes_sale_receive_detail
-            where state = '1'
-            group by order_id
-        ) receive on detail.order_id = receive.order_id
+            <!--收款明细汇总-->
+            left join (
+                select order_id, sum(receive_amount) receive_amount, sum(discount_amount) discount_amount
+                from vmes_sale_receive_detail
+                where state = '1'
+                group by order_id
+            ) receive on detail.order_id = receive.order_id
 
         <where>
             <if test="id != null and id != ''" >
@@ -139,6 +149,11 @@
         (replace(uuid(), '-', ''), 'saleDeliverDetailByRetreat', 'deliverCode', '发货单编号', 31, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
 
         (replace(uuid(), '-', ''), 'saleDeliverDetailByRetreat', 'productUnit', '货品单位(计量)', 32, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
+
+(replace(uuid(), '-', ''), 'saleDeliverDetailByRetreat', 'endRetreatCount', '退货数量(已生成退货单)', 33, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
+(replace(uuid(), '-', ''), 'saleDeliverDetailByRetreat', 'notRetreatCount', '可退货数量', 34, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
+
+
 
     </insert>
 

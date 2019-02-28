@@ -138,6 +138,7 @@ public interface SaleRetreatService {
     ResultModel listPageSaleRetreat(PageData pd,Pagination pg) throws Exception;
     ResultModel addSaleRetreat(PageData pageData) throws Exception;
     ResultModel checkRetreatEdit(PageData pageData);
+    ResultModel updateSaleRetreat(PageData pageData) throws Exception;
 
     /**
     * 导出
