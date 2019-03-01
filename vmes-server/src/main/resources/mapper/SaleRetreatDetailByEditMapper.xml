@@ -107,9 +107,18 @@
 
         <!--退货明细表-->
         round(ifnull(deliverDetail.order_count, 0), 2) deliverOrderCount,
-        round(ifnull(retreatDetail.order_count, 0), 2) endRetreatCount,
+
+    <if test="'true' == isRetreatByEdit" >
+        round(ifnull(retreatDetailByEdit.order_count, 0), 2) endRetreatCount,
         <!--发货明细id:(发货数量-退货数量:已生成退货单) -->
-        round((ifnull(deliverDetail.order_count, 0) - ifnull(retreatDetail.order_count, 0)), 2) notRetreatCount
+        round((ifnull(deliverDetail.order_count, 0) - ifnull(retreatDetailByEdit.order_count, 0)), 2) notRetreatCount
+    </if>
+
+    <if test="'true' == isRetreatByInfo" >
+        round(ifnull(retreatDetailByInfo.order_count, 0), 2) endRetreatCount,
+        <!--发货明细id:(发货数量-退货数量:已生成退货单) -->
+        round((ifnull(deliverDetail.order_count, 0) - ifnull(retreatDetailByInfo.order_count, 0)), 2) notRetreatCount
+    </if>
 
         from vmes_sale_retreat_detail detail
             left join vmes_sale_order_detail orderDetail on detail.order_detail_id = orderDetail.id
@@ -123,7 +132,8 @@
             left join vmes_dictionary genre on product.genre = genre.id
             left join vmes_product_unit prodUnitPrice on (detail.product_id = prodUnitPrice.product_id and detail.order_unit = prodUnitPrice.unit and prodUnitPrice.isdisable = '1')
 
-            <!--退货明细汇总(已生成退货数量)-->
+            <!--退货明细汇总(已生成退货数量)-(修改页面)-->
+        <if test="'true' == isRetreatByEdit" >
             left join (
                 select deliver_detail_id, sum(order_count) order_count
                 from vmes_sale_retreat_detail
@@ -136,7 +146,25 @@
                     </where>
                 ) and <![CDATA[ state <> '-1' ]]>
                 group by deliver_detail_id
-            ) retreatDetail on detail.deliver_detail_id = retreatDetail.deliver_detail_id
+            ) retreatDetailByEdit on detail.deliver_detail_id = retreatDetailByEdit.deliver_detail_id
+        </if>
+
+            <!--退货明细汇总(已生成退货数量)-(详情页面)-->
+        <if test="'true' == isRetreatByInfo" >
+            left join (
+                select deliver_detail_id, sum(order_count) order_count
+                from vmes_sale_retreat_detail
+                where parent_id in (
+                    select id from vmes_sale_retreat
+                    <where>
+                        <if test="currentCompanyId != null and currentCompanyId != ''" >
+                            and company_id = #{currentCompanyId}
+                        </if>
+                    </where>
+                ) and <![CDATA[ state <> '-1' ]]>
+                group by deliver_detail_id
+            ) retreatDetailByInfo on detail.deliver_detail_id = retreatDetailByInfo.deliver_detail_id
+        </if>
 
             <!--收款明细汇总-->
             left join (
