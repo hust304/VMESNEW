@@ -68,6 +68,17 @@
             (replace(uuid(), '-', ''),'saleRetreat','isdisable','是否启用(0:已禁用 1:启用)',11, '1','1','1','0',now(), 'admin')
     </insert>
 
+    <update id="updateStateByRetreat" parameterType="com.yvan.PageData" >
+        update vmes_sale_retreat set
+        state = #{state},
+        udate = now()
+        <where>
+            <if test="ids != null and ids != ''" >
+                and ${ids}
+            </if>
+        </where>
+    </update>
+
 
     <!-- 列表(全部) 自动创建，禁止修改-->
     <select id="dataList" parameterType="com.yvan.PageData" resultType="com.xy.vmes.entity.SaleRetreat">

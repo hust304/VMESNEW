@@ -64,8 +64,21 @@
             (replace(uuid(), '-', ''), 'saleRetreatDetail', 'productGenreName', '货品属性', 5, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
             (replace(uuid(), '-', ''), 'saleRetreatDetail', 'productType', '货品类型id', 6, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
 
-
     </insert>
+
+    <update id="updateStateByDetail" parameterType="com.yvan.PageData" >
+        update vmes_sale_retreat_detail set
+        state = #{state},
+        udate = now()
+        <where>
+            <if test="parentId != null and parentId != ''" >
+                and parent_id = #{parentId}
+            </if>
+            <if test="parentIds != null and parentIds != ''" >
+                and ${parentIds}
+            </if>
+        </where>
+    </update>
 
 
     <!-- 列表(全部) 自动创建，禁止修改-->

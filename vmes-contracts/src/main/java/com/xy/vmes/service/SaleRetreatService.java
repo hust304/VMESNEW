@@ -70,7 +70,8 @@ public interface SaleRetreatService {
     List<SaleRetreat> selectByColumnMap(Map columnMap) throws Exception;
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
-    void deleteTableByOrderReturn(String companyId) throws Exception;
+    void deleteTableBySaleRetreat(String companyId) throws Exception;
+    void updateStateByRetreat(String state, String ids) throws Exception;
 
     /**
      * 创建人：陈刚 自动创建，禁止修改
@@ -96,10 +97,12 @@ public interface SaleRetreatService {
      */
     List<SaleRetreat> findDataList(PageData pageData, Boolean isQueryAll) throws Exception;
 
-    SaleRetreat findSaleOrderReturn(PageData object) throws Exception;
-    SaleRetreat findSaleOrderReturnById(String id) throws Exception;
+    SaleRetreat findSaleRetreat(PageData object) throws Exception;
+    SaleRetreat findSaleRetreatById(String id) throws Exception;
 
-    List<SaleRetreat> findSaleOrderReturnList(PageData object) throws Exception;
+    List<SaleRetreat> findSaleRetreatList(PageData object) throws Exception;
+
+    List<SaleRetreat> mapList2RetreatList(List<Map<String, String>> mapList, List<SaleRetreat> objectList);
 
     /**
      *
@@ -139,6 +142,10 @@ public interface SaleRetreatService {
     ResultModel addSaleRetreat(PageData pageData) throws Exception;
     ResultModel checkRetreatEdit(PageData pageData);
     ResultModel updateSaleRetreat(PageData pageData) throws Exception;
+    ResultModel deleteSaleRetreat(PageData pageData) throws Exception;
+    ResultModel cancelSaleRetreat(PageData pageData) throws Exception;
+    ResultModel submitSaleRetreat(PageData pageData) throws Exception;
+    ResultModel rebackBySubmitSaleRetreat(PageData pageData) throws Exception;
 
     /**
     * 导出

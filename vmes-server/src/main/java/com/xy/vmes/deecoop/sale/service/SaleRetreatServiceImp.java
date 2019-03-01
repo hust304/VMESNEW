@@ -137,7 +137,7 @@ public class SaleRetreatServiceImp implements SaleRetreatService {
 
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
-    public void deleteTableByOrderReturn(String companyId) throws Exception {
+    public void deleteTableBySaleRetreat(String companyId) throws Exception {
         PageData pageData = new PageData();
         pageData.put("companyId", companyId);
         saleRetreatMapper.deleteTableByDetail(pageData);
@@ -145,6 +145,20 @@ public class SaleRetreatServiceImp implements SaleRetreatService {
         Map<String, String> columnMap = new HashMap<String, String>();
         columnMap.put("company_id", companyId);
         this.deleteByColumnMap(columnMap);
+    }
+
+    public void updateStateByRetreat(String state, String ids) throws Exception {
+        if (state == null || state.trim().length() == 0) {return;}
+        if (ids == null || ids.trim().length() == 0) {return;}
+
+        PageData pageData = new PageData();
+        pageData.put("state", state);
+
+        ids = StringUtil.stringTrimSpace(ids);
+        ids = "'" + ids.replace(",", "','") + "'";
+        pageData.put("ids", "id in (" + ids + ")");
+
+        saleRetreatMapper.updateStateByRetreat(pageData);
     }
 
     /**
@@ -188,25 +202,37 @@ public class SaleRetreatServiceImp implements SaleRetreatService {
         return saleRetreatMapper.getDataListPage(pd, pg);
     }
 
-    public SaleRetreat findSaleOrderReturn(PageData object) throws Exception {
-        List<SaleRetreat> objectList = this.findSaleOrderReturnList(object);
+    public SaleRetreat findSaleRetreat(PageData object) throws Exception {
+        List<SaleRetreat> objectList = this.findSaleRetreatList(object);
         if (objectList != null && objectList.size() > 0) {
             return objectList.get(0);
         }
 
         return null;
     }
-    public SaleRetreat findSaleOrderReturnById(String id) throws Exception {
+    public SaleRetreat findSaleRetreatById(String id) throws Exception {
         if (id == null || id.trim().length() == 0) {return null;}
 
         PageData findMap = new PageData();
         findMap.put("id", id);
 
-        return this.findSaleOrderReturn(findMap);
+        return this.findSaleRetreat(findMap);
     }
 
-    public List<SaleRetreat> findSaleOrderReturnList(PageData object) throws Exception {
+    public List<SaleRetreat> findSaleRetreatList(PageData object) throws Exception {
         return this.findDataList(object, null);
+    }
+
+    public List<SaleRetreat> mapList2RetreatList(List<Map<String, String>> mapList, List<SaleRetreat> objectList) {
+        if (objectList == null) {objectList = new ArrayList<SaleRetreat>();}
+        if (mapList == null || mapList.size() == 0) {return objectList;}
+
+        for (Map<String, String> mapObject : mapList) {
+            SaleRetreat retreat = (SaleRetreat) HttpUtils.pageData2Entity(mapObject, new SaleRetreat());
+            objectList.add(retreat);
+        }
+
+        return objectList;
     }
 
     /**
@@ -580,6 +606,120 @@ public class SaleRetreatServiceImp implements SaleRetreatService {
         String cuser = pageData.getString("cuser");
         retreat.setCuser(cuser);
         saleRetreatDetailService.addSaleRetreatDetail(retreat, retreatDtlList);
+
+        return model;
+    }
+
+    public ResultModel deleteSaleRetreat(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+
+        //退货单id
+        String parentId = pageData.getString("parentId");
+        if (parentId == null || parentId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("退货单id为空或空字符串！");
+            return model;
+        }
+
+        //2. 删除退货单明细
+        Map columnMap = new HashMap();
+        columnMap.put("parent_id", parentId);
+        saleRetreatDetailService.deleteByColumnMap(columnMap);
+
+        //3. 删除货单单
+        this.deleteById(parentId);
+
+
+        return model;
+    }
+    public ResultModel cancelSaleRetreat(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+
+        //退货单id
+        String parentId = pageData.getString("parentId");
+        if (parentId == null || parentId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("退货单id为空或空字符串！");
+            return model;
+        }
+
+        //2. 修改明细状态
+        PageData mapDetail = new PageData();
+        mapDetail.put("parentId", parentId);
+        //明细状态(0:待提交 1:待审核 2:待退款 3:已完成 -1:已取消)
+        mapDetail.put("state", "-1");
+        saleRetreatDetailService.updateStateByDetail(mapDetail);
+
+        //3. 修改抬头表状态
+        SaleRetreat retreat = new SaleRetreat();
+        retreat.setId(parentId);
+        //state:状态(0:待提交 1:待审核 2:待退款 3:已完成 -1:已取消)
+        retreat.setState("-1");
+        this.update(retreat);
+
+        return model;
+    }
+
+    public ResultModel submitSaleRetreat(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+
+        String retreatJsonStr = pageData.getString("retreatJsonStr");
+        if (retreatJsonStr == null || retreatJsonStr.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("请至少选择一行数据！");
+            return model;
+        }
+
+        List<Map<String, String>> mapList = (List<Map<String, String>>) YvanUtil.jsonToList(retreatJsonStr);
+        if (mapList == null || mapList.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("退货单Json字符串-转换成List错误！");
+            return model;
+        }
+
+        //获取订单
+        String ids = "";
+        List<SaleRetreat> orderList = this.mapList2RetreatList(mapList, null);
+        for (SaleRetreat order : orderList) {
+            if (order.getId() != null && order.getId().trim().length() > 0) {
+                ids = ids + order.getId().trim() + ",";
+            }
+        }
+        ids = StringUtil.stringTrimSpace(ids);
+
+        //1. 退货单状态(0:待提交 1:待审核 2:待退款 3:已完成 -1:已取消)
+        this.updateStateByRetreat("1", ids);
+
+        //2. 退货单明细状态(0:待提交 1:待审核 2:待退款 3:已完成 -1:已取消)
+        saleRetreatDetailService.updateStateByDetail("1", ids);
+
+        return model;
+    }
+
+    public ResultModel rebackBySubmitSaleRetreat(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+
+        //退货单id
+        String parentId = pageData.getString("parentId");
+        if (parentId == null || parentId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("退货单id为空或空字符串！");
+            return model;
+        }
+
+        //2. 修改明细状态
+        PageData mapDetail = new PageData();
+        mapDetail.put("parentId", parentId);
+        //明细状态(0:待提交 1:待审核 2:待退款 3:已完成 -1:已取消)
+        mapDetail.put("state", "0");
+        saleRetreatDetailService.updateStateByDetail(mapDetail);
+
+        //3. 修改抬头表状态
+        SaleRetreat retreat = new SaleRetreat();
+        retreat.setId(parentId);
+        //state:状态(0:待提交 1:待审核 2:待退款 3:已完成 -1:已取消)
+        retreat.setState("0");
+        this.update(retreat);
 
         return model;
     }

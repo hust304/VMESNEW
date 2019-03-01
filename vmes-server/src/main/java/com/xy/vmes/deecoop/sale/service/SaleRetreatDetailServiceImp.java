@@ -260,6 +260,24 @@ public class SaleRetreatDetailServiceImp implements SaleRetreatDetailService {
         }
     }
 
+    public void updateStateByDetail(PageData pd) throws Exception {
+        saleOrderReturnDetailMapper.updateStateByDetail(pd);
+    }
+
+    public void updateStateByDetail(String state, String parentIds) throws Exception {
+        if (state == null || state.trim().length() == 0) {return;}
+        if (parentIds == null || parentIds.trim().length() == 0) {return;}
+
+        PageData pageData = new PageData();
+        pageData.put("state", state);
+
+        parentIds = StringUtil.stringTrimSpace(parentIds);
+        parentIds = "'" + parentIds.replace(",", "','") + "'";
+        pageData.put("parentIds", "parent_id in (" + parentIds + ")");
+
+        saleOrderReturnDetailMapper.updateStateByDetail(pageData);
+    }
+
     ///////////////////////////////////////////////////////////////////////////////////////////
     /**
     *

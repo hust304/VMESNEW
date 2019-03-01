@@ -108,7 +108,8 @@ public interface SaleRetreatDetailService {
 
     ///////////////////////////////////////////////////////////////////////////////////////////
     void addSaleRetreatDetail(SaleRetreat parentObj, List<SaleRetreatDetail> objectList) throws Exception;
-
+    void updateStateByDetail(PageData pd) throws Exception;
+    void updateStateByDetail(String state, String parentIds) throws Exception;
 
     ///////////////////////////////////////////////////////////////////////////////////////////
     /**
