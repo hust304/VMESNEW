@@ -155,6 +155,15 @@
                         and warehouse_id = #{warehouseId}
                     </if>
 
+                    <!--isNeedRetreat-->
+                    <if test="'true' == isNeedRetreat" >
+                        and id in (
+                            select in_detail_id
+                            from vmes_sale_retreat_detail
+                            where parent_id = #{retreatId}
+                        )
+                    </if>
+
                     <!--queryStr 自定义sql查询语句-->
                     <if test="queryStr != null and queryStr != ''" >
                         and ${queryStr}

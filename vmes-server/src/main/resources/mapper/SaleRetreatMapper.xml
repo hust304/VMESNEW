@@ -91,10 +91,11 @@
 
         total_sum totalSum,
         retreat_date retreatDate,
+        audit_id auditId,
         cuser cuser,
         cdate cdate,
-        uuser uuser,
 
+        uuser uuser,
         udate udate,
         remark remark,
         isdisable isdisable

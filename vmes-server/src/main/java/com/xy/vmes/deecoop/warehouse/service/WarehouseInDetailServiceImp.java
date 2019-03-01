@@ -242,13 +242,18 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
                 "PC");
 
         for (WarehouseInDetail detail : objectList) {
-            String id = Conv.createUuid();
-            detail.setId(id);
+            detail.setId(Conv.createUuid());
             //状态(0:待派单 1:执行中 2:已完成 -1.已取消)
             detail.setState("0");
             detail.setParentId(parentObj.getId());
             detail.setCuser(parentObj.getCuser());
             detail.setCode(code);
+
+            //生成二维码
+            String qrcode = fileService.createQRCode("warehouseIn", detail.getId());
+            if (qrcode != null && qrcode.trim().length() > 0) {
+                detail.setQrcode(qrcode);
+            }
 
             this.save(detail);
         }

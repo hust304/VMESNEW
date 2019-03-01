@@ -56,6 +56,8 @@ public class WarehouseInitialServiceImp implements WarehouseInitialService {
     private SaleDeliverService saleDeliverService;
     @Autowired
     SaleInvoiceService saleInvoiceService;
+    @Autowired
+    SaleRetreatService saleRetreatService;
 
     @Autowired
     private WarehouseProductService warehouseProductService;
@@ -216,6 +218,9 @@ public class WarehouseInitialServiceImp implements WarehouseInitialService {
         }
         if (saleInvoiceService != null) {
             saleInvoiceService.deleteTableByInvoice(companyId);
+        }
+        if (saleRetreatService != null) {
+            saleRetreatService.deleteTableBySaleRetreat(companyId);
         }
 
         //删除仓库货品表(库存表)

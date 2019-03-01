@@ -84,6 +84,8 @@ public interface WarehouseInService {
 
     List<WarehouseIn> findWarehouseInList(PageData object);
 
+    WarehouseIn createWarehouseIn(String deptId, String deptName, String cuser, String companyId, String inType);
+
     ///////////////////////////////////////////////////////////////////////////////////////////////
     String checkColumn(WarehouseIn object);
 

@@ -28,10 +28,13 @@ public class SaleRetreatDetail implements Serializable {
 	//订单明细ID
 	@TableField("order_detail_id")
 	private String orderDetailId;
+	//入库明细ID
+	@TableField("in_detail_id")
+	private String inDetailId;
+
 	//货品ID
 	@TableField("product_id")
 	private String productId;
-
 	//退货金额
 	@TableField("order_sum")
 	private BigDecimal orderSum;
@@ -44,10 +47,10 @@ public class SaleRetreatDetail implements Serializable {
 	//计量单位ID
 	@TableField("product_unit")
 	private String productUnit;
+
 	//退货数量(计量数量)
 	@TableField("product_count")
 	private BigDecimal productCount;
-
 	//明细状态(0:待提交 1:待审核 2:待退款 3:已完成 -1:已取消)
 	@TableField("state")
 	private String state;
@@ -60,10 +63,10 @@ public class SaleRetreatDetail implements Serializable {
 	//修改用户id
 	@TableField("uuser")
 	private String uuser;
+
 	//修改时间
 	@TableField("udate")
 	private Date udate;
-
 	//备注
 	@TableField("remark")
 	private String remark;
@@ -174,7 +177,12 @@ public class SaleRetreatDetail implements Serializable {
 	public String getIsdisable() {
 		return isdisable;
 	}
-
+	public String getInDetailId() {
+		return inDetailId;
+	}
+	public void setInDetailId(String inDetailId) {
+		this.inDetailId = inDetailId;
+	}
 /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 

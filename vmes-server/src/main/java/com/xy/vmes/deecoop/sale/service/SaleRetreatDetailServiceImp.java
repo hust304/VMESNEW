@@ -6,6 +6,7 @@ import com.xy.vmes.common.util.EvaluateUtil;
 import com.xy.vmes.deecoop.sale.dao.SaleRetreatDetailMapper;
 import com.xy.vmes.entity.SaleRetreat;
 import com.xy.vmes.entity.SaleRetreatDetail;
+import com.xy.vmes.entity.WarehouseInDetail;
 import com.xy.vmes.service.SaleRetreatDetailService;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
@@ -13,6 +14,7 @@ import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.service.ColumnService;
+import com.xy.vmes.service.WarehouseInDetailService;
 import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
@@ -38,7 +40,10 @@ import javax.servlet.http.HttpServletResponse;
 public class SaleRetreatDetailServiceImp implements SaleRetreatDetailService {
 
     @Autowired
-    private SaleRetreatDetailMapper saleOrderReturnDetailMapper;
+    private SaleRetreatDetailMapper saleRetreatDetailMapper;
+
+    @Autowired
+    private WarehouseInDetailService warehouseInDetailService;
     @Autowired
     private ColumnService columnService;
 
@@ -51,7 +56,7 @@ public class SaleRetreatDetailServiceImp implements SaleRetreatDetailService {
         object.setId(Conv.createUuid());
         object.setCdate(new Date());
         object.setUdate(new Date());
-        saleOrderReturnDetailMapper.insert(object);
+        saleRetreatDetailMapper.insert(object);
     }
 
     /**
@@ -60,7 +65,7 @@ public class SaleRetreatDetailServiceImp implements SaleRetreatDetailService {
      */
     @Override
     public SaleRetreatDetail selectById(String id) throws Exception{
-        return saleOrderReturnDetailMapper.selectById(id);
+        return saleRetreatDetailMapper.selectById(id);
     }
 
     /**
@@ -69,7 +74,7 @@ public class SaleRetreatDetailServiceImp implements SaleRetreatDetailService {
      */
     @Override
     public List<SaleRetreatDetail> selectByColumnMap(Map columnMap) throws Exception{
-        List<SaleRetreatDetail> warehouseCheckDetailList =  saleOrderReturnDetailMapper.selectByMap(columnMap);
+        List<SaleRetreatDetail> warehouseCheckDetailList =  saleRetreatDetailMapper.selectByMap(columnMap);
         return warehouseCheckDetailList;
     }
 
@@ -80,7 +85,7 @@ public class SaleRetreatDetailServiceImp implements SaleRetreatDetailService {
     @Override
     public void update(SaleRetreatDetail object) throws Exception{
         object.setUdate(new Date());
-        saleOrderReturnDetailMapper.updateById(object);
+        saleRetreatDetailMapper.updateById(object);
     }
 
     /**
@@ -90,7 +95,7 @@ public class SaleRetreatDetailServiceImp implements SaleRetreatDetailService {
     @Override
     public void updateAll(SaleRetreatDetail object) throws Exception{
         object.setUdate(new Date());
-        saleOrderReturnDetailMapper.updateAllColumnById(object);
+        saleRetreatDetailMapper.updateAllColumnById(object);
     }
 
     /**
@@ -99,7 +104,7 @@ public class SaleRetreatDetailServiceImp implements SaleRetreatDetailService {
      */
     @Override
     public void deleteById(String id) throws Exception{
-        saleOrderReturnDetailMapper.deleteById(id);
+        saleRetreatDetailMapper.deleteById(id);
     }
 
     /**
@@ -108,7 +113,7 @@ public class SaleRetreatDetailServiceImp implements SaleRetreatDetailService {
      */
     @Override
     public void deleteByIds(String[] ids) throws Exception{
-        saleOrderReturnDetailMapper.deleteByIds(ids);
+        saleRetreatDetailMapper.deleteByIds(ids);
     }
 
     /**
@@ -117,7 +122,7 @@ public class SaleRetreatDetailServiceImp implements SaleRetreatDetailService {
      */
     @Override
     public void deleteByColumnMap(Map columnMap) throws Exception{
-        saleOrderReturnDetailMapper.deleteByMap(columnMap);
+        saleRetreatDetailMapper.deleteByMap(columnMap);
     }
 
     /**
@@ -126,7 +131,7 @@ public class SaleRetreatDetailServiceImp implements SaleRetreatDetailService {
      */
     @Override
     public void updateToDisableByIds(String[] ids)throws Exception{
-        saleOrderReturnDetailMapper.updateToDisableByIds(ids);
+        saleRetreatDetailMapper.updateToDisableByIds(ids);
     }
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
@@ -135,7 +140,7 @@ public class SaleRetreatDetailServiceImp implements SaleRetreatDetailService {
      * 创建时间：2019-02-25
      */
     public List<SaleRetreatDetail> dataList(PageData pd) throws Exception {
-        return saleOrderReturnDetailMapper.dataList(pd);
+        return saleRetreatDetailMapper.dataList(pd);
     }
 
     /**
@@ -143,7 +148,7 @@ public class SaleRetreatDetailServiceImp implements SaleRetreatDetailService {
      * 创建时间：2019-02-25
      */
     public List<Map> getDataListPage(PageData pd, Pagination pg) throws Exception {
-        return saleOrderReturnDetailMapper.getDataListPage(pd, pg);
+        return saleRetreatDetailMapper.getDataListPage(pd, pg);
     }
 
     /**
@@ -246,7 +251,57 @@ public class SaleRetreatDetailServiceImp implements SaleRetreatDetailService {
         return BigDecimal.valueOf(totalSum_double).setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
     }
 
+    public WarehouseInDetail retreatDetail2InDetail(SaleRetreatDetail retreatDetail, WarehouseInDetail inDetail) {
+        if (inDetail == null) {inDetail = new WarehouseInDetail();}
+        if (retreatDetail == null) {return inDetail;}
+
+        //productId 产品ID
+        inDetail.setProductId(retreatDetail.getProductId());
+        //count 入库数量 (订单明细 计量单位数量)
+        inDetail.setCount(retreatDetail.getProductCount());
+        //businessId 业务id(退货明细id)
+        inDetail.setBusinessId(retreatDetail.getId());
+
+        return inDetail;
+    }
+
+    public List<WarehouseInDetail> retreatDtlList2InDtlList(List<SaleRetreatDetail> retreatDtlList, List<WarehouseInDetail> inDtlList) {
+        if (inDtlList == null) {inDtlList = new ArrayList<WarehouseInDetail>();}
+        if (retreatDtlList == null || retreatDtlList.size() == 0) {return inDtlList;}
+
+        for (SaleRetreatDetail retreatDtl : retreatDtlList) {
+            WarehouseInDetail inDetail = this.retreatDetail2InDetail(retreatDtl, null);
+            inDtlList.add(inDetail);
+        }
+
+        return inDtlList;
+    }
+
     ///////////////////////////////////////////////////////////////////////////////////////////
+    /**
+     * 验证入库单明细状态 (0:待派单 1:执行中 2:已完成 -1.已取消)
+     *
+     * @param retreatId 退货单id
+     * @return
+     */
+    public String checkInDetailStateByRetreatId(String retreatId) throws Exception {
+        if (retreatId == null || retreatId.trim().length() == 0) {return new String();}
+
+        PageData findMap = new PageData();
+        findMap.put("isNeedRetreat", "true");
+        findMap.put("retreatId", retreatId);
+        //入库单明细状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+        findMap.put("queryStr", "state in ('1','2')");
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+
+        List<WarehouseInDetail> inDetailLiset = warehouseInDetailService.dataList(findMap);
+        if (inDetailLiset != null && inDetailLiset.size() > 0) {
+            return new String("当前退货单含有(执行中,已完成)入库单，不可取消退货单");
+        }
+
+        return new String();
+    }
+
     public void addSaleRetreatDetail(SaleRetreat parentObj, List<SaleRetreatDetail> objectList) throws Exception {
         if (parentObj == null) {return;}
         if (objectList == null || objectList.size() == 0) {return;}
@@ -261,7 +316,7 @@ public class SaleRetreatDetailServiceImp implements SaleRetreatDetailService {
     }
 
     public void updateStateByDetail(PageData pd) throws Exception {
-        saleOrderReturnDetailMapper.updateStateByDetail(pd);
+        saleRetreatDetailMapper.updateStateByDetail(pd);
     }
 
     public void updateStateByDetail(String state, String parentIds) throws Exception {
@@ -275,7 +330,7 @@ public class SaleRetreatDetailServiceImp implements SaleRetreatDetailService {
         parentIds = "'" + parentIds.replace(",", "','") + "'";
         pageData.put("parentIds", "parent_id in (" + parentIds + ")");
 
-        saleOrderReturnDetailMapper.updateStateByDetail(pageData);
+        saleRetreatDetailMapper.updateStateByDetail(pageData);
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////

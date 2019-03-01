@@ -88,20 +88,21 @@
         parent_id parentId,
         deliver_detail_id deliverDetailId,
         order_detail_id orderDetailId,
-        product_id productId,
+        in_detail_id inDetailId,
 
+        product_id productId,
         order_sum orderSum,
         order_unit orderUnit,
         order_count orderCount,
         product_unit productUnit,
-        product_count productCount,
 
+        product_count productCount,
         state state,
         cuser cuser,
         cdate cdate,
         uuser uuser,
-        udate udate,
 
+        udate udate,
         remark remark,
         isdisable isdisable
         from vmes_sale_retreat_detail detail

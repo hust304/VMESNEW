@@ -4,6 +4,7 @@ package com.xy.vmes.service;
 import com.xy.vmes.entity.SaleRetreat;
 import com.xy.vmes.entity.SaleRetreatDetail;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.entity.WarehouseInDetail;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
 import org.springframework.web.multipart.MultipartFile;
@@ -106,7 +107,18 @@ public interface SaleRetreatDetailService {
     List<SaleRetreatDetail> mapList2DetailList(List<Map<String, String>> mapList, List<SaleRetreatDetail> objectList);
     BigDecimal findTotalSumByDetailList(List<SaleRetreatDetail> objectList);
 
+    WarehouseInDetail retreatDetail2InDetail(SaleRetreatDetail retreatDetail, WarehouseInDetail inDetail);
+    List<WarehouseInDetail> retreatDtlList2InDtlList(List<SaleRetreatDetail> retreatDtlList, List<WarehouseInDetail> inDtlList);
+
     ///////////////////////////////////////////////////////////////////////////////////////////
+    /**
+     * 验证入库单明细状态 (0:待派单 1:执行中 2:已完成 -1.已取消)
+     *
+     * @param retreatId 退货单id
+     * @return
+     */
+    String checkInDetailStateByRetreatId(String retreatId) throws Exception;
+
     void addSaleRetreatDetail(SaleRetreat parentObj, List<SaleRetreatDetail> objectList) throws Exception;
     void updateStateByDetail(PageData pd) throws Exception;
     void updateStateByDetail(String state, String parentIds) throws Exception;

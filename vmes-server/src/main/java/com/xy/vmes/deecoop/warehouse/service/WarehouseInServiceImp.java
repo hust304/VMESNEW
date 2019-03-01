@@ -192,6 +192,26 @@ public class WarehouseInServiceImp implements WarehouseInService {
         return objectList;
     }
 
+    public WarehouseIn createWarehouseIn(String deptId, String deptName, String cuser, String companyId, String inType) {
+        WarehouseIn warehouseIn = new WarehouseIn();
+        warehouseIn.setId(Conv.createUuid());
+        //入库单编号
+        String code = coderuleService.createCoder(companyId, "vmes_warehouse_in", "I");
+        warehouseIn.setCode(code);
+
+        warehouseIn.setCompanyId(companyId);
+        //入库类型 销售退货入库
+        warehouseIn.setType(inType);
+        warehouseIn.setDeptId(deptId);
+        warehouseIn.setDeptName(deptName);
+        //状态(0:未完成 1:已完成 -1:已取消)
+        warehouseIn.setState("0");
+        warehouseIn.setMakeId(cuser);
+        warehouseIn.setCuser(cuser);
+
+        return warehouseIn;
+    }
+
     ///////////////////////////////////////////////////////////////////////////////////////////////
     public String checkColumn(WarehouseIn object) {
         if (object == null) {return new String();}
@@ -411,7 +431,7 @@ public class WarehouseInServiceImp implements WarehouseInService {
                     detail.setCuser(warehouseIn.getCuser());
                     //生成二维码
                     //WarehouseInDetail QRCodeObj = warehouseInDetailService.warehouseInDtl2QRCodeObj(detail, null);
-                    String qrcode = fileService.createQRCode("warehouseBase", detail.getId());
+                    String qrcode = fileService.createQRCode("warehouseIn", detail.getId());
                     if (qrcode != null && qrcode.trim().length() > 0) {
                         detail.setQrcode(qrcode);
                     }

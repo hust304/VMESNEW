@@ -37,16 +37,19 @@ public class SaleRetreat implements Serializable {
 	//退货完成日期
 	@TableField("retreat_date")
 	private Date retreatDate;
+	//审核人ID
+	@TableField("audit_id")
+	private String auditId;
 	//创建用户id
 	@TableField("cuser")
 	private String cuser;
 	//创建时间
 	@TableField("cdate")
 	private Date cdate;
+
 	//修改用户id
 	@TableField("uuser")
 	private String uuser;
-
 	//修改时间
 	@TableField("udate")
 	private Date udate;
@@ -136,7 +139,13 @@ public class SaleRetreat implements Serializable {
 	public void setRetreatDate(Date retreatDate) {
 		this.retreatDate = retreatDate;
 	}
-/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+	public String getAuditId() {
+		return auditId;
+	}
+	public void setAuditId(String auditId) {
+		this.auditId = auditId;
+	}
+	/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 
 }
