@@ -47,25 +47,23 @@
         isdisable,ishide,isedit,ismust,cdate,
         cuser
         ) VALUES
-            (replace(uuid(), '-', ''),'saleRetreat','id','id',0, '1','1','1','0',now(), 'admin')
-            (replace(uuid(), '-', ''),'saleRetreat','companyId','企业id',1, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleRetreat','customerId','客户id',2, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleRetreat','customerName','客户名称',2, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleRetreat','sysCode','退货编号',3, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleRetreat','state','状态id',4, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleRetreat','stateName','状态',4, '1','1','1','0',now(), 'admin'),
-
-            (replace(uuid(), '-', ''),'saleRetreat','totalSum','退货金额',5, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleRetreat','retreatDate','退货完成日期',6, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleRetreat','retreatDateStr','完成日期',6, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleRetreat','cuser','创建用户id',6, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleRetreat','cdate','创建时间',7, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleRetreat','cdateStr','制单日期',7, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleRetreat','uuser','修改用户id',8, '1','1','1','0',now(), 'admin'),
-
-            (replace(uuid(), '-', ''),'saleRetreat','udate','修改时间',9, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleRetreat','remark','备注',10, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleRetreat','isdisable','是否启用(0:已禁用 1:启用)',11, '1','1','1','0',now(), 'admin')
+            (replace(uuid(), '-', ''), 'saleRetreat', 'id', 'id', 0, '1', '0', '1', '0', '2019-2-25 18:00:27', 'admin'),
+            (replace(uuid(), '-', ''), 'saleRetreat', 'companyId', '企业id', 1, '1', '0', '1', '0', '2019-2-25 18:00:27', 'admin'),
+            (replace(uuid(), '-', ''), 'saleRetreat', 'sysCode', '退货编号', 2, '1', '1', '1', '0', '2019-2-25 18:00:27', 'admin'),
+            (replace(uuid(), '-', ''), 'saleRetreat', 'customerId', '客户id', 3, '1', '0', '1', '0', '2019-2-25 18:00:27', 'admin'),
+            (replace(uuid(), '-', ''), 'saleRetreat', 'customerName', '客户名称', 3, '1', '1', '1', '0', '2019-2-25 18:00:27', 'admin'),
+            (replace(uuid(), '-', ''), 'saleRetreat', 'cdateStr', '制单日期', 4, '1', '1', '1', '0', '2019-2-25 18:00:27', 'admin'),
+            (replace(uuid(), '-', ''), 'saleRetreat', 'cdate', '创建时间', 4, '1', '0', '1', '0', '2019-2-25 18:00:27', 'admin'),
+            (replace(uuid(), '-', ''), 'saleRetreat', 'retreatDate', '退货完成日期', 5, '1', '0', '1', '0', '2019-2-25 18:00:27', 'admin'),
+            (replace(uuid(), '-', ''), 'saleRetreat', 'retreatDateStr', '完成日期', 5, '1', '1', '1', '0', '2019-2-25 18:00:27', 'admin'),
+            (replace(uuid(), '-', ''), 'saleRetreat', 'remark', '备注', 6, '1', '1', '1', '0', '2019-2-25 18:00:27', 'admin'),
+            (replace(uuid(), '-', ''), 'saleRetreat', 'stateName', '状态', 7, '1', '1', '1', '0', '2019-2-25 18:00:27', 'admin'),
+            (replace(uuid(), '-', ''), 'saleRetreat', 'state', '状态id', 7, '1', '0', '1', '0', '2019-2-25 18:00:27', 'admin'),
+            (replace(uuid(), '-', ''), 'saleRetreat', 'totalSum', '退货金额', 8, '1', '0', '1', '0', '2019-2-25 18:00:27', 'admin'),
+            (replace(uuid(), '-', ''), 'saleRetreat', 'cuser', '创建用户id', 9, '1', '0', '1', '0', '2019-2-25 18:00:27', 'admin'),
+            (replace(uuid(), '-', ''), 'saleRetreat', 'uuser', '修改用户id', 10, '1', '0', '1', '0', '2019-2-25 18:00:27', 'admin'),
+            (replace(uuid(), '-', ''), 'saleRetreat', 'udate', '修改时间', 11, '1', '0', '1', '0', '2019-2-25 18:00:27', 'admin'),
+            (replace(uuid(), '-', ''), 'saleRetreat', 'isdisable', '是否启用(0:已禁用 1:启用)', 12, '1', '0', '1', '0', '2019-2-25 18:00:27', 'admin'),
     </insert>
 
     <update id="updateStateByRetreat" parameterType="com.yvan.PageData" >
