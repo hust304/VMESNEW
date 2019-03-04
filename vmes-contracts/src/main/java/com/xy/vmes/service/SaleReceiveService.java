@@ -116,6 +116,8 @@ public interface SaleReceiveService {
     void updateToDisableByIds(String[] ids)throws Exception;
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+    void deleteTableByReceive(String companyId) throws Exception;
+
     /**
      *
      * @param pageData    查询参数对象<HashMap>
@@ -135,6 +137,16 @@ public interface SaleReceiveService {
     void exportExcelSaleReceives(PageData pd, Pagination pg) throws Exception;
 
     ResultModel importExcelSaleReceives(MultipartFile file) throws Exception;
+
+    /**
+     *
+     * @param customerId  客户id
+     * @param cuser       创建人id
+     * @param companyID   企业id
+     * @param receiveType 收款单类型(0:预收款 1:普通收款 2:发货退款 3:订单退款)
+     * @return
+     */
+    SaleReceive createReceive(String customerId, String cuser, String companyID, String receiveType);
 }
 
 

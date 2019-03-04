@@ -22,7 +22,7 @@ public class SaleReceive implements Serializable {
 	//收款单编码
 	@TableField("code")
 	private String code;
-	//收款单类型（0：预收款 1：普通收款）
+	//收款单类型(0:预收款 1:普通收款 2:发货退款 3:订单退款)
 	@TableField("type")
 	private String type;
 	//客户ID

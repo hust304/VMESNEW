@@ -1,6 +1,7 @@
 package com.xy.vmes.service;
 
 
+import com.xy.vmes.entity.SaleReceiveDetail;
 import com.xy.vmes.entity.SaleRetreat;
 import com.xy.vmes.entity.SaleRetreatDetail;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
@@ -109,6 +110,8 @@ public interface SaleRetreatDetailService {
 
     WarehouseInDetail retreatDetail2InDetail(SaleRetreatDetail retreatDetail, WarehouseInDetail inDetail);
     List<WarehouseInDetail> retreatDtlList2InDtlList(List<SaleRetreatDetail> retreatDtlList, List<WarehouseInDetail> inDtlList);
+
+    List<SaleReceiveDetail> retreatMap2ReceiveDtlList(Map<String, BigDecimal> orderRetreatSumMap, List<SaleReceiveDetail> receiveDtlList);
 
     ///////////////////////////////////////////////////////////////////////////////////////////
     /**

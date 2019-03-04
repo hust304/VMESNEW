@@ -203,6 +203,16 @@ public class SaleReceiveServiceImp implements SaleReceiveService {
     }
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+    public void deleteTableByReceive(String companyId) throws Exception {
+        PageData pageData = new PageData();
+        pageData.put("companyId", companyId);
+        saleReceiveMapper.deleteTableByDetail(pageData);
+
+        Map<String, String> columnMap = new HashMap<String, String>();
+        columnMap.put("company_id", companyId);
+        this.deleteByColumnMap(columnMap);
+    }
+
     /**
     *
     * @param pageData    查询参数对象<HashMap>
@@ -438,7 +448,19 @@ public class SaleReceiveServiceImp implements SaleReceiveService {
         //6. 遍历List<业务表DB> 对业务表添加或修改
         return model;
     }
+
+    public SaleReceive createReceive(String customerId, String cuser, String companyID, String receiveType) {
+        SaleReceive receive = new SaleReceive();
+        //收款单编号
+        String code = coderuleService.createCoder(companyID, "vmes_sale_receive", "R");
+        receive.setCode(code);
+
+        receive.setCompanyId(companyID);
+        //收款单类型(0:预收款 1:普通收款 2:发货退款 3:订单退款)
+        receive.setType(receiveType);
+        receive.setCuser(cuser);
+
+        return receive;
+    }
 }
-
-
 

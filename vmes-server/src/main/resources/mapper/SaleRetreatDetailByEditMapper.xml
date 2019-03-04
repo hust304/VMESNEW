@@ -55,6 +55,10 @@
         (replace(uuid(), '-', ''), 'saleRetreatDetailByEdit', 'deliverOrderCount', '发货数量', 27, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin')
 
         (replace(uuid(), '-', ''), 'saleRetreatDetailByEdit', 'productPrice', '单价', 21, '1', '1', '1', '0', '2018-12-16 11:15:19', 'admin'),
+
+        (replace(uuid(), '-', ''), 'saleRetreatDetailByEdit', 'endRetreatSum', '退货金额(已生成退货单)', 30, '1', '1', '1', '0', '2018-12-16 11:15:19', 'admin'),
+        (replace(uuid(), '-', ''), 'saleRetreatDetailByEdit', 'notRetreatSum', '可退金额', 31, '1', '1', '1', '0', '2018-12-16 11:15:19', 'admin'),
+
     </insert>
 
     <select id="findRetreatDetailByEdit" parameterType="com.yvan.PageData" resultType="java.util.Map">
@@ -106,18 +110,24 @@
         round(ifnull(receive.receive_amount, 0), 2) receiveAmount,
 
         <!--退货明细表-->
-        round(ifnull(deliverDetail.order_count, 0), 2) deliverOrderCount,
+        round(ifnull(deliverDetail.order_count, 0), 2) deliverOrderCount
 
     <if test="'true' == isRetreatByEdit" >
-        round(ifnull(retreatDetailByEdit.order_count, 0), 2) endRetreatCount,
+        ,round(ifnull(retreatDetailByEdit.order_count, 0), 2) endRetreatCount
         <!--发货明细id:(发货数量-退货数量:已生成退货单) -->
-        round((ifnull(deliverDetail.order_count, 0) - ifnull(retreatDetailByEdit.order_count, 0)), 2) notRetreatCount
+        ,round((ifnull(deliverDetail.order_count, 0) - ifnull(retreatDetailByEdit.order_count, 0)), 2) notRetreatCount
+
+        ,round(ifnull(retreatSumByEdit.order_sum, 0), 2) endRetreatSum
+        ,round((ifnull(receive.receive_amount, 0) - ifnull(retreatSumByEdit.order_sum, 0)), 2) notRetreatSum
     </if>
 
     <if test="'true' == isRetreatByInfo" >
-        round(ifnull(retreatDetailByInfo.order_count, 0), 2) endRetreatCount,
+        ,round(ifnull(retreatDetailByInfo.order_count, 0), 2) endRetreatCount
         <!--发货明细id:(发货数量-退货数量:已生成退货单) -->
-        round((ifnull(deliverDetail.order_count, 0) - ifnull(retreatDetailByInfo.order_count, 0)), 2) notRetreatCount
+        ,round((ifnull(deliverDetail.order_count, 0) - ifnull(retreatDetailByInfo.order_count, 0)), 2) notRetreatCount
+
+        ,round(ifnull(retreatSumByInfo.order_sum, 0), 2) endRetreatSum
+        ,round((ifnull(receive.receive_amount, 0) - ifnull(retreatSumByInfo.order_sum, 0)), 2) notRetreatSum
     </if>
 
         from vmes_sale_retreat_detail detail
@@ -147,6 +157,22 @@
                 ) and <![CDATA[ state <> '-1' ]]>
                 group by deliver_detail_id
             ) retreatDetailByEdit on detail.deliver_detail_id = retreatDetailByEdit.deliver_detail_id
+
+            left join (
+                select c.id order_id,sum(a.order_sum) order_sum
+                from vmes_sale_retreat_detail a
+                    left join vmes_sale_order_detail b on a.order_detail_id = b.id
+                    left join vmes_sale_order c on b.parent_id = c.id
+                where a.id not in (
+                    select id from vmes_sale_retreat_detail
+                    <where>
+                        <if test="parentId != null and parentId != ''" >
+                            and parent_id = #{parentId}
+                        </if>
+                    </where>
+                ) and <![CDATA[ a.state <> '-1' ]]>
+                group by c.id
+            ) retreatSumByEdit on orderDetail.parent_id = retreatSumByEdit.order_id
         </if>
 
             <!--退货明细汇总(已生成退货数量)-(详情页面)-->
@@ -164,6 +190,22 @@
                 ) and <![CDATA[ state <> '-1' ]]>
                 group by deliver_detail_id
             ) retreatDetailByInfo on detail.deliver_detail_id = retreatDetailByInfo.deliver_detail_id
+
+            left join (
+                select c.id order_id,sum(a.order_sum) order_sum
+                from vmes_sale_retreat_detail a
+                    left join vmes_sale_order_detail b on a.order_detail_id = b.id
+                    left join vmes_sale_order c on b.parent_id = c.id
+                where a.parent_id in (
+                    select id from vmes_sale_retreat
+                    <where>
+                        <if test="currentCompanyId != null and currentCompanyId != ''" >
+                            and company_id = #{currentCompanyId}
+                        </if>
+                    </where>
+                ) and <![CDATA[ a.state <> '-1' ]]>
+                group by c.id
+            ) retreatSumByInfo on orderDetail.parent_id = retreatSumByInfo.order_id
         </if>
 
             <!--收款明细汇总-->

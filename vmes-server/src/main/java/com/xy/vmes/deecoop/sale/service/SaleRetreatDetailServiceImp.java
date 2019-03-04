@@ -4,15 +4,12 @@ package com.xy.vmes.deecoop.sale.service;
 import com.xy.vmes.common.util.Common;
 import com.xy.vmes.common.util.EvaluateUtil;
 import com.xy.vmes.deecoop.sale.dao.SaleRetreatDetailMapper;
-import com.xy.vmes.entity.SaleRetreat;
-import com.xy.vmes.entity.SaleRetreatDetail;
-import com.xy.vmes.entity.WarehouseInDetail;
+import com.xy.vmes.entity.*;
 import com.xy.vmes.service.SaleRetreatDetailService;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.StringUtil;
-import com.xy.vmes.entity.Column;
 import com.xy.vmes.service.ColumnService;
 import com.xy.vmes.service.WarehouseInDetailService;
 import com.yvan.ExcelUtil;
@@ -275,6 +272,34 @@ public class SaleRetreatDetailServiceImp implements SaleRetreatDetailService {
         }
 
         return inDtlList;
+    }
+
+    public List<SaleReceiveDetail> retreatMap2ReceiveDtlList(Map<String, BigDecimal> orderRetreatSumMap, List<SaleReceiveDetail> receiveDtlList) {
+        if (receiveDtlList == null) {receiveDtlList = new ArrayList<SaleReceiveDetail>();}
+        if (orderRetreatSumMap == null || orderRetreatSumMap.size() == 0) {return receiveDtlList;}
+
+        for (Iterator iterator = orderRetreatSumMap.keySet().iterator(); iterator.hasNext();) {
+            String mapKey = (String) iterator.next();
+
+            SaleReceiveDetail receiveDetail = new SaleReceiveDetail();
+            receiveDetail.setOrderId(mapKey);
+            //状态(0:待收款 1:已收款 -1:已取消)
+            receiveDetail.setState("1");
+
+            //receiveAmount 实收金额
+            BigDecimal receiveAmount = BigDecimal.valueOf(0D);
+            if (orderRetreatSumMap.get(mapKey) != null && orderRetreatSumMap.get(mapKey).doubleValue() != 0D) {
+                receiveAmount = BigDecimal.valueOf(orderRetreatSumMap.get(mapKey).doubleValue() * -1) ;
+
+                //四舍五入到2位小数
+                receiveAmount = receiveAmount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                receiveDetail.setReceiveAmount(receiveAmount);
+            }
+
+            receiveDtlList.add(receiveDetail);
+        }
+
+        return receiveDtlList;
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////

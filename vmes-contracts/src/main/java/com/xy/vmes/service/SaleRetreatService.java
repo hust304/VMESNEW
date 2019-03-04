@@ -116,6 +116,7 @@ public interface SaleRetreatService {
      * productUnit: rowData.productUnit,
      * remark: rowData.retreatRemark,
      *
+     * sysOrderCode: rowData.orderId,
      * orderId: rowData.orderId,
      * receiveAmount: rowData.receiveAmount,
      * n2pFormula: rowData.n2pFormula,
@@ -127,6 +128,23 @@ public interface SaleRetreatService {
     String checkColumnByEdit(List<Map<String, String>> mapList);
     String checkNullColumn(List<Map<String, String>> mapList);
     String checkColumnByReceiveAmount(List<Map<String, String>> mapList);
+
+    /**
+     *
+     * 退货单明细表
+     * id: rowData.id,
+     * orderSum: rowData.retreatOrderSum,
+     *
+     * sysOrderCode: rowData.orderId,
+     * orderId: rowData.orderId,
+     * receiveAmount: rowData.receiveAmount,
+     *
+     * @param mapList
+     * @return
+     */
+    String checkColumnByMoney(List<Map<String, String>> mapList);
+    String checkNullColumnByMoney(List<Map<String, String>> mapList);
+
     String checkOrderReceiveAmount(List<Map<String, String>> mapList);
 
     ///////////////////////////////////////////////////////////////////////////////////////////
@@ -146,6 +164,7 @@ public interface SaleRetreatService {
     ResultModel cancelSaleRetreat(PageData pageData) throws Exception;
     ResultModel submitSaleRetreat(PageData pageData) throws Exception;
     ResultModel rebackBySubmitSaleRetreat(PageData pageData) throws Exception;
+    ResultModel updateRetreatByMoney(PageData pageData) throws Exception;
 
     /**
     * 导出

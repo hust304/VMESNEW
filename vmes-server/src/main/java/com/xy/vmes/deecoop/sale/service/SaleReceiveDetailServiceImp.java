@@ -5,6 +5,7 @@ import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.sale.dao.SaleReceiveDetailMapper;
 import com.xy.vmes.entity.Column;
+import com.xy.vmes.entity.SaleReceive;
 import com.xy.vmes.entity.SaleReceiveDetail;
 import com.xy.vmes.service.ColumnService;
 import com.xy.vmes.service.SaleReceiveDetailService;
@@ -451,6 +452,17 @@ public class SaleReceiveDetailServiceImp implements SaleReceiveDetailService {
         //5. List<ExcelEntity> --> (转换) List<业务表DB>对象
         //6. 遍历List<业务表DB> 对业务表添加或修改
         return model;
+    }
+
+    public void addReceiveDetail(SaleReceive parentObj, List<SaleReceiveDetail> objectList) throws Exception {
+        if (parentObj == null) {return;}
+        if (objectList == null || objectList.size() == 0) {return;}
+
+        for (SaleReceiveDetail detail : objectList) {
+            detail.setParentId(parentObj.getId());
+            detail.setCuser(parentObj.getCuser());
+            this.save(detail);
+        }
     }
 }
 

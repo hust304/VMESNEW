@@ -165,6 +165,24 @@ public class SaleRetreatController {
     }
 
     /**
+     * (退款)退货单
+     * @author 陈刚
+     * @date 2019-03-01
+     * @throws Exception
+     */
+    @PostMapping("/sale/saleRetreat/updateRetreatByMoney")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel updateRetreatByMoney() throws Exception {
+        logger.info("################/sale/saleRetreat/updateRetreatByMoney 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pageData = HttpUtils.parsePageData();
+        ResultModel model = saleRetreatService.updateRetreatByMoney(pageData);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleRetreat/updateRetreatByMoney 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
     * Excel导出
     * @author 陈刚 自动创建，可以修改
     * @date 2019-02-25

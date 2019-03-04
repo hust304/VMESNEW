@@ -1,6 +1,7 @@
 package com.xy.vmes.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.entity.SaleReceive;
 import com.xy.vmes.entity.SaleReceiveDetail;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
@@ -141,6 +142,8 @@ public interface SaleReceiveDetailService {
     void exportExcelSaleReceiveDetails(PageData pd, Pagination pg) throws Exception;
 
     ResultModel importExcelSaleReceiveDetails(MultipartFile file) throws Exception;
+
+    void addReceiveDetail(SaleReceive parentObj, List<SaleReceiveDetail> objectList) throws Exception;
 }
 
 
