@@ -52,6 +52,10 @@
         round((ifnull(detail.order_count, 0) - ifnull(retreatDetail.order_count, 0)), 2) notRetreatCount,
         round((ifnull(detail.order_count, 0) - ifnull(retreatDetail.order_count, 0)), 2) retreatOrderCount,
         round(((round((ifnull(detail.order_count, 0) - ifnull(retreatDetail.order_count, 0)), 2)) * ifnull(prodUnitPrice.product_price, 0)), 2) retreatOrderSum,
+
+        round(ifnull(retreatSumByInfo.order_sum, 0), 2) endRetreatSum,
+        round((ifnull(receive.receive_amount, 0) - ifnull(retreatSumByInfo.order_sum, 0)), 2) notRetreatSum,
+
         '' retreatRemark
 
         from vmes_sale_deliver_detail detail
@@ -77,6 +81,22 @@
                 where state = '1'
                 group by order_id
             ) receive on detail.order_id = receive.order_id
+
+            left join (
+                select c.id order_id,sum(a.order_sum) order_sum
+                from vmes_sale_retreat_detail a
+                    left join vmes_sale_order_detail b on a.order_detail_id = b.id
+                    left join vmes_sale_order c on b.parent_id = c.id
+                where a.parent_id in (
+                    select id from vmes_sale_retreat
+                    <where>
+                        <if test="currentCompanyId != null and currentCompanyId != ''" >
+                            and company_id = #{currentCompanyId}
+                        </if>
+                    </where>
+                ) and <![CDATA[ a.state <> '-1' ]]>
+                group by c.id
+            ) retreatSumByInfo on detail.order_id = retreatSumByInfo.order_id
 
         <where>
             <if test="id != null and id != ''" >
@@ -152,6 +172,11 @@
 
 (replace(uuid(), '-', ''), 'saleDeliverDetailByRetreat', 'endRetreatCount', '退货数量(已生成退货单)', 33, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
 (replace(uuid(), '-', ''), 'saleDeliverDetailByRetreat', 'notRetreatCount', '可退货数量', 34, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
+
+
+        (replace(uuid(), '-', ''), 'saleDeliverDetailByRetreat', 'endRetreatSum', '退货金额(已生成退货单)', 34, '1', '1', '1', '0', '2018-12-16 11:15:19', 'admin'),
+        (replace(uuid(), '-', ''), 'saleDeliverDetailByRetreat', 'notRetreatSum', '可退金额', 35, '1', '1', '1', '0', '2018-12-16 11:15:19', 'admin'),
+
 
 
 

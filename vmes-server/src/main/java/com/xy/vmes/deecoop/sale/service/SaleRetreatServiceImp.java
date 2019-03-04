@@ -249,6 +249,7 @@ public class SaleRetreatServiceImp implements SaleRetreatService {
      *
      * orderId: rowData.orderId,
      * receiveAmount: rowData.receiveAmount,
+     * notRetreatSum: rowData.notRetreatSum,
      * n2pFormula: rowData.n2pFormula,
      * p2nFormula: rowData.p2nFormula,
      *
@@ -270,8 +271,8 @@ public class SaleRetreatServiceImp implements SaleRetreatService {
 //            return msgStr;
 //        }
 
-        //订单实收金额 订单退货金额
-        msgStr = this.checkOrderReceiveAmount(mapList);
+        //订单可退金额 订单退货金额
+        msgStr = this.checkOrderAllowReceiveSum(mapList);
         if (msgStr != null && msgStr.trim().length() > 0) {
             return msgStr;
         }
@@ -333,41 +334,41 @@ public class SaleRetreatServiceImp implements SaleRetreatService {
         return msgBuf.toString();
     }
 
-    public String checkColumnByReceiveAmount(List<Map<String, String>> mapList) {
-        if (mapList == null || mapList.size() == 0) {return new String();}
-        String sumMsgTemp = "第 {0} 行: ({1})为空或等于零！" + Common.SYS_ENDLINE_DEFAULT;
-
-        StringBuffer msgBuf = new StringBuffer();
-        for (int i = 0; i < mapList.size(); i++) {
-            Map<String, String> mapObject = mapList.get(i);
-
-            //receiveAmount 订单实收金额
-            BigDecimal receiveAmount = BigDecimal.valueOf(0D);
-            String receiveAmount_str = mapObject.get("receiveAmount");
-            if (receiveAmount_str != null && receiveAmount_str.trim().length() > 0) {
-                try {
-                    receiveAmount = new BigDecimal(receiveAmount_str.trim());
-                    //四舍五入到2位小数
-                    receiveAmount = receiveAmount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-                } catch (NumberFormatException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (receiveAmount.doubleValue() == 0D) {
-                //sumMsgTemp = "第 {0} 行: ({1})为空或等于零！"
-                String msg_Str = MessageFormat.format(sumMsgTemp,
-                        (i+1),
-                        "订单实收金额");
-                msgBuf.append(msg_Str);
-            }
-        }
-
-        if (msgBuf.toString().trim().length() > 0) {
-            msgBuf.append("备注:订单实收金额为零，表示该订单无收款记录，请在(销售-应收款管理)中对该订单执行收款！").append(Common.SYS_ENDLINE_DEFAULT);
-        }
-
-        return msgBuf.toString();
-    }
+//    public String checkColumnByReceiveAmount(List<Map<String, String>> mapList) {
+//        if (mapList == null || mapList.size() == 0) {return new String();}
+//        String sumMsgTemp = "第 {0} 行: ({1})为空或等于零！" + Common.SYS_ENDLINE_DEFAULT;
+//
+//        StringBuffer msgBuf = new StringBuffer();
+//        for (int i = 0; i < mapList.size(); i++) {
+//            Map<String, String> mapObject = mapList.get(i);
+//
+//            //receiveAmount 订单实收金额
+//            BigDecimal receiveAmount = BigDecimal.valueOf(0D);
+//            String receiveAmount_str = mapObject.get("receiveAmount");
+//            if (receiveAmount_str != null && receiveAmount_str.trim().length() > 0) {
+//                try {
+//                    receiveAmount = new BigDecimal(receiveAmount_str.trim());
+//                    //四舍五入到2位小数
+//                    receiveAmount = receiveAmount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+//                } catch (NumberFormatException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//            if (receiveAmount.doubleValue() == 0D) {
+//                //sumMsgTemp = "第 {0} 行: ({1})为空或等于零！"
+//                String msg_Str = MessageFormat.format(sumMsgTemp,
+//                        (i+1),
+//                        "订单实收金额");
+//                msgBuf.append(msg_Str);
+//            }
+//        }
+//
+//        if (msgBuf.toString().trim().length() > 0) {
+//            msgBuf.append("备注:订单实收金额为零，表示该订单无收款记录，请在(销售-应收款管理)中对该订单执行收款！").append(Common.SYS_ENDLINE_DEFAULT);
+//        }
+//
+//        return msgBuf.toString();
+//    }
 
     /**
      *
@@ -378,6 +379,7 @@ public class SaleRetreatServiceImp implements SaleRetreatService {
      * sysOrderCode: rowData.orderId,
      * orderId: rowData.orderId,
      * receiveAmount: rowData.receiveAmount,
+     * notRetreatSum: rowData.notRetreatSum
      *
      * @param mapList
      * @return
@@ -391,8 +393,8 @@ public class SaleRetreatServiceImp implements SaleRetreatService {
             return msgStr;
         }
 
-        //订单实收金额 订单退货金额
-        msgStr = this.checkOrderReceiveAmount(mapList);
+        //订单可退金额 订单退货金额
+        msgStr = this.checkOrderAllowReceiveSum(mapList);
         if (msgStr != null && msgStr.trim().length() > 0) {
             return msgStr;
         }
@@ -454,30 +456,30 @@ public class SaleRetreatServiceImp implements SaleRetreatService {
         return msgBuf.toString();
     }
 
-    public String checkOrderReceiveAmount(List<Map<String, String>> mapList) {
+    public String checkOrderAllowReceiveSum(List<Map<String, String>> mapList) {
         if (mapList == null || mapList.size() == 0) {return new String();}
         StringBuffer msgBuf = new StringBuffer();
 
         //1. 获取 <订单编号, 订单编号>sysOrderCode
         Map<String, String> orderCodeMap = this.findOrderCodeMap(mapList);
-        //2. 获取 <订单编号, 订单实收金额>
-        Map<String, BigDecimal> orderReceiveAmountMap = this.findOrderReceiveAmountMap(mapList);
+        //2. 获取 <订单编号, 可退金额>
+        Map<String, BigDecimal> orderAllowReceiveSumMap = this.findOrderAllowReceiveSumMap(mapList);
         //3. 获取 <订单编号, 退货金额>
         Map<String, BigDecimal> orderRetreatSumMap = this.findOrderRetreatSumMap(mapList);
 
         String msgTemp = "订单编号:{0} 订单实收金额:{1} 订单退货金额:{2} 订单退货金额不可大于订单实收金额！" + Common.SYS_ENDLINE_DEFAULT;
         for (Iterator iterator = orderCodeMap.keySet().iterator(); iterator.hasNext();) {
             String orderCode = (String) iterator.next();
-            //订单实收金额
-            BigDecimal receiveAmount = orderReceiveAmountMap.get(orderCode);
+            //订单可退金额
+            BigDecimal allowReceiveSum = orderAllowReceiveSumMap.get(orderCode);
             //退货金额 retreatSum
             BigDecimal retreatSum = orderRetreatSumMap.get(orderCode);
 
-            if (retreatSum.doubleValue() > receiveAmount.doubleValue()) {
-                //msgTemp = "订单编号:{0} 订单实收金额:{1} 订单退货金额:{2} 订单退货金额不可大于订单实收金额！"
+            if (retreatSum.doubleValue() > allowReceiveSum.doubleValue()) {
+                //msgTemp = "订单编号:{0} 订单可退金额:{1} 订单退货金额:{2} 订单退货金额不可大于订单可退金额！"
                 String msg_Str = MessageFormat.format(msgTemp,
                         orderCode,
-                        receiveAmount.toString(),
+                        allowReceiveSum.toString(),
                         retreatSum.toString());
                 msgBuf.append(msg_Str);
             }
@@ -1018,27 +1020,27 @@ public class SaleRetreatServiceImp implements SaleRetreatService {
         return orderMap;
     }
 
-    private Map<String, BigDecimal> findOrderReceiveAmountMap(List<Map<String, String>> mapList) {
+    private Map<String, BigDecimal> findOrderAllowReceiveSumMap(List<Map<String, String>> mapList) {
         Map<String, BigDecimal> orderMap = new HashMap<String, BigDecimal>();
         if (mapList == null || mapList.size() == 0) {return orderMap;}
 
         for (Map<String, String> mapObject : mapList) {
             String orderCode = mapObject.get("sysOrderCode");
 
-            BigDecimal receiveAmount = BigDecimal.valueOf(0D);
-            String receiveAmount_str = mapObject.get("receiveAmount");
-            if (receiveAmount_str != null && receiveAmount_str.trim().length() > 0) {
+            BigDecimal allowReceiveSum = BigDecimal.valueOf(0D);
+            String notRetreatSum_str = mapObject.get("notRetreatSum");
+            if (notRetreatSum_str != null && notRetreatSum_str.trim().length() > 0) {
                 try {
-                    receiveAmount = new BigDecimal(receiveAmount_str.trim());
+                    allowReceiveSum = new BigDecimal(notRetreatSum_str.trim());
                     //四舍五入到2位小数
-                    receiveAmount = receiveAmount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                    allowReceiveSum = allowReceiveSum.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
                 } catch (NumberFormatException e) {
                     e.printStackTrace();
                 }
             }
 
             if (orderCode != null && orderCode.trim().length() > 0) {
-                orderMap.put(orderCode, receiveAmount);
+                orderMap.put(orderCode, allowReceiveSum);
             }
         }
 

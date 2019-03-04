@@ -127,7 +127,7 @@ public interface SaleRetreatService {
      */
     String checkColumnByEdit(List<Map<String, String>> mapList);
     String checkNullColumn(List<Map<String, String>> mapList);
-    String checkColumnByReceiveAmount(List<Map<String, String>> mapList);
+    //String checkColumnByReceiveAmount(List<Map<String, String>> mapList);
 
     /**
      *
@@ -145,7 +145,7 @@ public interface SaleRetreatService {
     String checkColumnByMoney(List<Map<String, String>> mapList);
     String checkNullColumnByMoney(List<Map<String, String>> mapList);
 
-    String checkOrderReceiveAmount(List<Map<String, String>> mapList);
+    String checkOrderAllowReceiveSum(List<Map<String, String>> mapList);
 
     ///////////////////////////////////////////////////////////////////////////////////////////
 
