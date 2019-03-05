@@ -60,7 +60,7 @@
 
             <!--发货明细表汇总(1:已发货) vmes_sale_deliver_detail-->
             left join (
-                select order_detai_id,product_id,price_unit, sum(count) deliver_count
+                select order_detai_id,product_id,price_unit, sum(order_count) deliver_count
                 from vmes_sale_deliver_detail
                 where state = '1'
                 group by order_detai_id,product_id,price_unit
@@ -73,7 +73,7 @@
                 select order_detail_id,product_id,price_unit, sum(count) invoice_count
                 from vmes_sale_invoice_detail
                 where state in ('0','1')
-            group by order_detail_id,product_id,price_unit
+                group by order_detail_id,product_id,price_unit
             ) invoice on (orderDetail.id = invoice.order_detail_id)
                         and (orderDetail.product_id = invoice.product_id)
                         and (orderDetail.price_unit = invoice.price_unit)
