@@ -194,7 +194,7 @@
             (replace(uuid(), '-', ''),'product','isdisable','是否启用(0:已禁用 1:启用)',19, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'product','photo','产品图片',20, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'product','id','id',0, '1','1','1','0',now(), 'admin'),
-
+            (replace(uuid(), '-', ''),'product','safetyCount','安全库存',0, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'product','lockCount','lockCount',0, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'product','productStockCount','productStockCount',0, '1','1','1','0',now(), 'admin')
     </insert>
@@ -301,6 +301,7 @@
             prod.uuser uuser,
             DATE_FORMAT(prod.udate,'%Y-%m-%d %T') udate,
 
+            round(ifnull(prod.safety_count, 0), 2) safetyCount,
             round(ifnull(prod.stock_count, 0), 2) stockCount,
             round(ifnull(prod.lock_count, 0), 2) lockCount,
             round((ifnull(prod.stock_count, 0) - ifnull(prod.lock_count, 0)), 2) productStockCount,

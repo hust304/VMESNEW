@@ -227,6 +227,9 @@
             <if test="queryStr != null and queryStr != ''" >
                 and ${r"${"}queryStr${r"}"}
             </if>
+            <if test="currentCompanyId != null and currentCompanyId != ''">
+                and company_id LIKE CONCAT(CONCAT('%', ${r"#{"}currentCompanyId${r"}"}),'%')
+            </if>
             <if test="code != null and code != ''">
                 and code LIKE CONCAT(CONCAT('%', ${r"#{"}code${r"}"}),'%')
             </if>

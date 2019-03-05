@@ -239,6 +239,9 @@ public class Common {
 
         //a66d180a1a3346a1a3f4f224baf4ada8(字典id)  退单原因(字典名称)
         put("warehouseRebackBill", "a66d180a1a3346a1a3f4f224baf4ada8");
+
+        //ab57102457484aa88d70cb805c0a796c(字典id)  采购原因(字典名称)
+        put("purchaseReason", "ab57102457484aa88d70cb805c0a796c");
     }};
 
     ///////////////--菜单名称--///////////////////////////////////////////////////////////////////
