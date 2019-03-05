@@ -191,6 +191,14 @@ public class ${objectName}ServiceImp implements ${objectName}Service {
         ${objectNameLower}Mapper.updateToDisableByIds(ids);
     }
 
+    /**
+    * 创建人：${author} 自动创建，禁止修改
+    * 创建时间：${nowDate?string("yyyy-MM-dd")}
+    */
+    @Override
+    public void updateByDefined(PageData pd)throws Exception{
+        purchasePlanMapper.updateByDefined(pd);
+    }
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
     /**
     *

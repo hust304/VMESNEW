@@ -118,6 +118,14 @@
         </foreach>
     </update>
 
+    <!-- 自动创建，禁止修改-->
+    <update id="updateByDefined" parameterType="com.yvan.PageData" >
+        update
+        <include refid="tableName"></include>
+        set  ${r"${"}updateStr${r"}"} ,udate = now()
+        where
+        ${r"${"}queryStr${r"}"}
+    </update>
 
 
     <!-- ***************************************************以上为自动生成代码禁止修改，请在下面添加业务代码************************************************* -->
