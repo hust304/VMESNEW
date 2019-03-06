@@ -29,6 +29,8 @@ public class SaleOrderDetailController {
     private SaleOrderDetailCollectService saleOrderDetailCollectService;
     @Autowired
     private SaleOrderDetailByLockCountService saleOrderDetailByLockCountService;
+    @Autowired
+    private SaleOrderDetailByChangeService saleOrderDetailByChangeService;
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
     /**
@@ -76,6 +78,22 @@ public class SaleOrderDetailController {
         ResultModel model = saleOrderDetailByLockCountService.listPageOrderDetailByLockCount(pd);
         Long endTime = System.currentTimeMillis();
         logger.info("################/sale/saleOrderDetail/listPageOrderDetailByLockCount 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 订单明细(订单变更)
+     * @author 陈刚
+     * @date 2019-03-05
+     */
+    @PostMapping("/sale/saleOrderDetail/listPageOrderDetaiByChange")
+    public ResultModel listPageOrderDetaiByChange() throws Exception {
+        logger.info("################/sale/saleOrderDetail/listPageOrderDetaiByChange 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = saleOrderDetailByChangeService.listPageOrderDetaiByChange(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleOrderDetail/listPageOrderDetaiByChange 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 

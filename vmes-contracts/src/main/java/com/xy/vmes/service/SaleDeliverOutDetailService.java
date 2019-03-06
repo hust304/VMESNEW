@@ -1,5 +1,6 @@
 package com.xy.vmes.service;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -8,6 +9,8 @@ import java.util.Map;
  * 创建时间：2018-12-25
  */
 public interface SaleDeliverOutDetailService {
+    List<Map<String, Object>> findDeliverDetailListByOrderId(String orderId, String state);
+
     /**
      * 发货出库查询(出库明细,发货明细,订单明细)关联查询
      *

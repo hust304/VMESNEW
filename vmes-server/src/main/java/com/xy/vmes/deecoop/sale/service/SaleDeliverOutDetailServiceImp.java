@@ -32,6 +32,22 @@ public class SaleDeliverOutDetailServiceImp implements SaleDeliverOutDetailServi
     @Autowired
     private SaleOrderDetailService saleOrderDetailService;
 
+    public List<Map<String, Object>> findDeliverDetailListByOrderId(String orderId, String state) {
+        PageData findMap = new PageData();
+        findMap.put("orderId", orderId);
+        //发货明细状态(0:待发货 1:已发货 -1:已取消)
+        findMap.put("deliverDtlState", "0");
+
+        List<Map<String, Object>> list = null;
+        try{
+            list = saleDeliverOutDetailMapper.findOutDetailByOrderDetail(findMap);
+        }catch(Exception e) {
+            e.printStackTrace();
+        }
+
+        return list;
+    }
+
     /**
      * 发货出库查询(出库明细,发货明细,订单明细)关联查询
      *

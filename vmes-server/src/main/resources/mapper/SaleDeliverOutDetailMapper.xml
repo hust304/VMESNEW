@@ -25,6 +25,13 @@
             left join vmes_warehouse_out_detail outDetail on deliverDetail.out_detail_id = outDetail.id
             left join vmes_sale_order_detail orderDetail on deliverDetail.order_detai_id = orderDetail.id
         <where>
+            <if test="orderId != null and orderId != ''" >
+                and deliverDetail.order_id = #{orderId}
+            </if>
+            <if test="deliverDtlState != null and deliverDtlState != ''" >
+                and deliverDetail.state = #{deliverDtlState}
+            </if>
+
             <if test="outDtlId != null and outDtlId != ''" >
                 and outDetail.id = #{outDtlId}
             </if>

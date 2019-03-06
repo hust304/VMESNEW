@@ -9,7 +9,7 @@ public class SaleOrderDetailEntity {
     private String id;
     //订单ID
     private String parentId;
-    //订单状态(0:待提交 1:待审核 2:待出库 3:待发货 4:已发货 5:已完成 -1:已取消)
+    //明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
     private String state;
     //附件地址
     private String fileUrl;
@@ -40,15 +40,17 @@ public class SaleOrderDetailEntity {
 
     //是否需要生产(0:无需 1:需要 库存不够)
     private String isNeedProduce;
-    //锁定货品数量
+    //锁定货品数量(计量单位)
     private BigDecimal lockCount;
+    //可发货数量(计价单位)
+    private BigDecimal needDeliverCount;
     //锁定开始时间
     private Date lockDate;
     //生产计划明细ID
     private String planDetailId;
+
     //创建用户id
     private String cuser;
-
     //创建时间
     private Date cdate;
     //修改用户id
@@ -57,6 +59,7 @@ public class SaleOrderDetailEntity {
     private Date udate;
     //备注
     private String remark;
+
     //是否启用(0:已禁用 1:启用)
     private String isdisable;
 
@@ -65,6 +68,12 @@ public class SaleOrderDetailEntity {
     //非实体类字段:界面传值用
     private String deliverDtlRemark;
 
+    //变更前-锁定货品数量(计量单位)
+    private BigDecimal oldLockCount;
+    //变更后-锁定货品数量(计量单位)
+    private BigDecimal newLockCount;
+    //当前库存数量
+    private BigDecimal stockCount;
 
     public void setId(String id) {
         this.id = id;
@@ -227,5 +236,29 @@ public class SaleOrderDetailEntity {
     }
     public void setOrderDtlDeliverCount(BigDecimal orderDtlDeliverCount) {
         this.orderDtlDeliverCount = orderDtlDeliverCount;
+    }
+    public BigDecimal getNeedDeliverCount() {
+        return needDeliverCount;
+    }
+    public void setNeedDeliverCount(BigDecimal needDeliverCount) {
+        this.needDeliverCount = needDeliverCount;
+    }
+    public BigDecimal getOldLockCount() {
+        return oldLockCount;
+    }
+    public void setOldLockCount(BigDecimal oldLockCount) {
+        this.oldLockCount = oldLockCount;
+    }
+    public BigDecimal getNewLockCount() {
+        return newLockCount;
+    }
+    public void setNewLockCount(BigDecimal newLockCount) {
+        this.newLockCount = newLockCount;
+    }
+    public BigDecimal getStockCount() {
+        return stockCount;
+    }
+    public void setStockCount(BigDecimal stockCount) {
+        this.stockCount = stockCount;
     }
 }

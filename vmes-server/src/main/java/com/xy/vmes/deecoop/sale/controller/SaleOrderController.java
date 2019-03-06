@@ -26,6 +26,8 @@ public class SaleOrderController {
     private SaleOrderService saleOrderService;
     @Autowired
     private SaleOrderCollectService saleOrderCollectService;
+    @Autowired
+    private SaleOrderByChangeService saleOrderByChangeService;
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
     /**
@@ -182,6 +184,24 @@ public class SaleOrderController {
         ResultModel model = saleOrderService.rebackBySubmitSaleOrder(pageData);
         Long endTime = System.currentTimeMillis();
         logger.info("################/sale/saleOrder/rebackBySubmitSaleOrder 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 变更订单-变更订单明细(订购数量,锁定货品数量)
+     * @author 陈刚
+     * @date 2019-03-05
+     * @throws Exception
+     */
+    @PostMapping("/sale/saleOrder/updateSaleOrderByChange")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel updateSaleOrderByChange() throws Exception {
+        logger.info("################/sale/saleOrder/updateSaleOrderByChange 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pageData = HttpUtils.parsePageData();
+        ResultModel model = saleOrderByChangeService.updateSaleOrderByChange(pageData);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleOrder/updateSaleOrderByChange 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 

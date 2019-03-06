@@ -360,6 +360,7 @@ public class WarehouseOutDetailServiceImp implements WarehouseOutDetailService {
         ResultModel model = new ResultModel();
         String detailId = pageData.getString("id");
         String currentUserId = pageData.getString("currentUserId");
+        String cuser = pageData.getString("cuser");
         String currentCompanyId = pageData.getString("currentCompanyId");
         String rebackBillReason = pageData.getString("rebackBillReason");
 
@@ -404,7 +405,7 @@ public class WarehouseOutDetailServiceImp implements WarehouseOutDetailService {
                     //库存变更日志
                     WarehouseLoginfo loginfo = new WarehouseLoginfo();
                     loginfo.setCompanyId(currentCompanyId);
-                    loginfo.setCuser(currentUserId);
+                    loginfo.setCuser(cuser);
                     //operation 操作类型(add:添加 modify:修改 delete:删除 reback:退单)
                     loginfo.setOperation("reback");
 
