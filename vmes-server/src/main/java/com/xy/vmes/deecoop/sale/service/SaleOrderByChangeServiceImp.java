@@ -409,6 +409,7 @@ public class SaleOrderByChangeServiceImp implements SaleOrderByChangeService {
                 deliverDetail.setId(deliverDtlId);
                 //发货明细状态(0:待发货 1:已发货 -1:已取消)
                 deliverDetail.setState("-1");
+                deliverDetail.setRemark(remark);
                 saleDeliverDetailService.update(deliverDetail);
             }
 
@@ -416,6 +417,7 @@ public class SaleOrderByChangeServiceImp implements SaleOrderByChangeService {
             deliver.setId(deliverId);
             //发货状态(0:待发货 1:已发货 -1:已取消)
             deliver.setState("-1");
+            deliver.setRemark(remark);
             saleDeliverService.update(deliver);
         }
     }
