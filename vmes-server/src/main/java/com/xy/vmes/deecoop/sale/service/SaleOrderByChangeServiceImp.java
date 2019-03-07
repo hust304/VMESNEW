@@ -31,6 +31,11 @@ public class SaleOrderByChangeServiceImp implements SaleOrderByChangeService {
     private SaleDeliverOutDetailService saleDeliverOutDetailService;
 
     @Autowired
+    private SaleReceiveService saleReceiveService;
+    @Autowired
+    private SaleReceiveDetailService saleReceiveDetailService;
+
+    @Autowired
     private WarehouseOutService warehouseOutService;
     @Autowired
     private WarehouseOutDetailService warehouseOutDetailService;
@@ -46,11 +51,11 @@ public class SaleOrderByChangeServiceImp implements SaleOrderByChangeService {
      * id: rowData.id,
      * parentId: rowData.parentId,
      * productId: rowData.productId,
-     * productPrice: rowData.productPrice,
      * lockCount: rowData.lockCount,
      * state: rowData.state,
 
      * newOrderCount: rowData.newOrderCount,
+     * newProductSum: rowData.newProductSum,
      * newNeedDeliverCount: rowData.newNeedDeliverCount,
      * p2nFormula: rowData.p2nFormula,
      * n2pFormula: rowData.n2pFormula
@@ -64,6 +69,7 @@ public class SaleOrderByChangeServiceImp implements SaleOrderByChangeService {
         ResultModel model = new ResultModel();
         String cuser = pageData.getString("cuser");
         String companyId = pageData.getString("currentCompanyId");
+        String customerId = pageData.getString("customerId");
 
         String orderId = pageData.getString("orderId");
         if (orderId == null || orderId.trim().length() == 0) {
@@ -100,9 +106,49 @@ public class SaleOrderByChangeServiceImp implements SaleOrderByChangeService {
 
         SaleOrder order = new SaleOrder();
         order.setId(orderId);
+        //discountSum 折扣金额
+        order.setDiscountSum(BigDecimal.valueOf(0D));
         BigDecimal totalSum = saleOrderDetailService.findTotalSumByPrice(orderDtlList);
+        //totalSum 合计金额
         order.setTotalSum(totalSum);
+        //orderSum 订单金额
+        order.setOrderSum(totalSum);
         saleOrderService.update(order);
+
+        //获取(订单id)的收款金额-根据(订单id)查询收款明细表(vmes_sale_receive_detail)-
+        BigDecimal receiveSum = saleReceiveDetailService.findReceiveSumByOrderId(orderId);
+
+        //订单金额 - 订单收款金额
+        BigDecimal changeReceiveSum = BigDecimal.valueOf(totalSum.doubleValue() - receiveSum.doubleValue());
+        //四舍五入到2位小数
+        changeReceiveSum = changeReceiveSum.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+
+        if (receiveSum != null && receiveSum.doubleValue() > 0 && changeReceiveSum.doubleValue() < 0) {
+            //1. 创建收款单
+            //收款单类型(0:预收款 1:普通收款 2:发货退款 3:订单退款)
+            SaleReceive receive = saleReceiveService.createReceive(customerId,
+                    cuser,
+                    companyId,
+                    "2");
+            //订单金额 - 订单收款金额
+            receive.setReceiveSum(changeReceiveSum);
+            saleReceiveService.save(receive);
+
+            //2. 创建收款单明细
+            //获取 <订单id, 退货金额>
+            SaleReceiveDetail receiveDtl = new SaleReceiveDetail();
+            receiveDtl.setOrderId(orderId);
+            //收款单状态(0:待收款 1:已收款 -1:已取消)
+            receiveDtl.setState("1");
+            //receiveAmount 实收金额
+            receiveDtl.setReceiveAmount(changeReceiveSum);
+            //discountAmount 折扣金额
+            receiveDtl.setDiscountAmount(BigDecimal.valueOf(0D));
+
+            List<SaleReceiveDetail> receiveDtlList = new ArrayList<SaleReceiveDetail>();
+            receiveDtlList.add(receiveDtl);
+            saleReceiveDetailService.addReceiveDetail(receive, receiveDtlList);
+        }
 
         return model;
     }
@@ -129,21 +175,19 @@ public class SaleOrderByChangeServiceImp implements SaleOrderByChangeService {
             orderDtlEntity.setOrderCount(orderCount);
             orderDtlEntity.setPriceCount(orderCount);
 
-            //productPrice 单价
-            BigDecimal productPrice = BigDecimal.valueOf(0D);
-            String productPrice_Str = mapObject.get("productPrice");
-            if (productPrice_Str != null && productPrice_Str.trim().length() > 0) {
+            //newProductSum 修改货品金额
+            BigDecimal newProductSum = BigDecimal.valueOf(0D);
+            String newProductSum_Str = mapObject.get("newProductSum");
+            if (newProductSum_Str != null && newProductSum_Str.trim().length() > 0) {
                 try {
-                    productPrice = new BigDecimal(productPrice_Str.trim());
+                    newProductSum = new BigDecimal(newProductSum_Str.trim());
                 } catch (NumberFormatException e) {
                     e.printStackTrace();
                 }
             }
-            //productSum 金额
-            BigDecimal productSum = BigDecimal.valueOf(productPrice.doubleValue() * orderCount.doubleValue());
             //四舍五入到2位小数
-            productSum.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-            orderDtlEntity.setProductSum(productSum);
+            newProductSum.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+            orderDtlEntity.setProductSum(newProductSum);
 
             //p2nFormula 单位转换公式:计价单位转换计量单位
             String p2nFormula = mapObject.get("p2nFormula");
@@ -281,26 +325,30 @@ public class SaleOrderByChangeServiceImp implements SaleOrderByChangeService {
         for (SaleOrderDetailEntity orderDtlEntity : readyDeliverList) {
             SaleOrderDetail orderDtl = this.orderDtlEntity2OrderDtl(orderDtlEntity, null);
 
-            //newLockCount 变更后-锁定货品数量(计量单位)
-            BigDecimal newLockCount = orderDtlEntity.getNewLockCount();
-            //oldLockCount 变更前-锁定货品数量(计量单位)
-            BigDecimal oldLockCount = orderDtlEntity.getOldLockCount();
-            BigDecimal changeLockCount = BigDecimal.valueOf(newLockCount.doubleValue() - oldLockCount.doubleValue());
+            //newNeedDeliverCount 变更锁定货品数量
+            BigDecimal newNeedDeliverCount = orderDtlEntity.getNeedDeliverCount();
+            if (newNeedDeliverCount != null) {
+                //newLockCount 变更后-锁定货品数量(计量单位)
+                BigDecimal newLockCount = orderDtlEntity.getNewLockCount();
+                //oldLockCount 变更前-锁定货品数量(计量单位)
+                BigDecimal oldLockCount = orderDtlEntity.getOldLockCount();
+                BigDecimal changeLockCount = BigDecimal.valueOf(newLockCount.doubleValue() - oldLockCount.doubleValue());
 
-            //stockCount 当前库存数量
-            BigDecimal stockCount = orderDtlEntity.getStockCount();
-            //productId 货品ID
-            String productId = orderDtlEntity.getProductId();
+                //stockCount 当前库存数量
+                BigDecimal stockCount = orderDtlEntity.getStockCount();
+                //productId 货品ID
+                String productId = orderDtlEntity.getProductId();
 
-            //修改锁定库存数量
-            Product oldProduct = new Product();
-            oldProduct.setId(productId);
-            oldProduct.setLockCount(stockCount);
-            productService.updateLockCount(
-                    productId,
-                    oldProduct,
-                    changeLockCount,
-                    null);
+                //修改锁定库存数量
+                Product oldProduct = new Product();
+                oldProduct.setId(productId);
+                oldProduct.setLockCount(stockCount);
+                productService.updateLockCount(
+                        productId,
+                        oldProduct,
+                        changeLockCount,
+                        null);
+            }
 
             saleOrderDetailService.update(orderDtl);
         }

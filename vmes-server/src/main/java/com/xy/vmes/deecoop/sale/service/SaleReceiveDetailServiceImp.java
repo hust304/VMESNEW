@@ -2,6 +2,7 @@ package com.xy.vmes.deecoop.sale.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
+import com.xy.vmes.common.util.Common;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.sale.dao.SaleReceiveDetailMapper;
 import com.xy.vmes.entity.Column;
@@ -260,6 +261,33 @@ public class SaleReceiveDetailServiceImp implements SaleReceiveDetailService {
 
         return orderReceiveMap;
 
+    }
+
+    public BigDecimal findReceiveSumByOrderId(String orderId) {
+        if (orderId == null || orderId.trim().length() == 0) {return BigDecimal.valueOf(0D);}
+
+        PageData findMap = new PageData();
+        findMap.put("orderId", orderId);
+        //收款单状态(0:待收款 1:已收款 -1:已取消)
+        findMap.put("state", "1");
+        List<Map<String, Object>> mapList = null;
+        try {
+            mapList = this.findReceiveDetailCollectByOrderId(findMap);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (mapList == null || mapList.size() == 0) {return BigDecimal.valueOf(0D);}
+
+        double receiveSum = 0D;
+        for (Map<String, Object> objectMap : mapList) {
+            if (objectMap.get("receiveAmount") != null) {
+                BigDecimal receiveAmount = (BigDecimal)objectMap.get("receiveAmount");
+                receiveSum = receiveSum + receiveAmount.doubleValue();
+            }
+        }
+
+        //四舍五入到2位小数
+        return BigDecimal.valueOf(receiveSum).setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////

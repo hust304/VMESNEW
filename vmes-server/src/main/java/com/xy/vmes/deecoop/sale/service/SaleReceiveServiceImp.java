@@ -455,6 +455,7 @@ public class SaleReceiveServiceImp implements SaleReceiveService {
         String code = coderuleService.createCoder(companyID, "vmes_sale_receive", "R");
         receive.setCode(code);
 
+        receive.setCustomerId(customerId);
         receive.setCompanyId(companyID);
         //收款单类型(0:预收款 1:普通收款 2:发货退款 3:订单退款)
         receive.setType(receiveType);

@@ -17,11 +17,11 @@ public interface SaleOrderByChangeService {
      * id: rowData.id,
      * parentId: rowData.parentId,
      * productId: rowData.productId,
-     * productPrice: rowData.productPrice,
      * lockCount: rowData.lockCount,
      * state: rowData.state,
 
      * newOrderCount: rowData.newOrderCount,
+     * newProductSum: rowData.newProductSum,
      * newNeedDeliverCount: rowData.newNeedDeliverCount,
      * p2nFormula: rowData.p2nFormula,
      * n2pFormula: rowData.n2pFormula

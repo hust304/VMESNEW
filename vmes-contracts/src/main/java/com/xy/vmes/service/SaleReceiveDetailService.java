@@ -120,7 +120,7 @@ public interface SaleReceiveDetailService {
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
     List<Map<String, Object>> findReceiveDetailCollectByOrderId(PageData pageData) throws Exception;
     Map<String, Map<String, BigDecimal>> findMapOrderReceiveByOrderId(String orderIds, String state) throws Exception;
-
+    BigDecimal findReceiveSumByOrderId(String orderId) throws Exception;
     /**
      *
      * @param pageData    查询参数对象<HashMap>

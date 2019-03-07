@@ -859,7 +859,7 @@ public class SaleRetreatServiceImp implements SaleRetreatService {
         BigDecimal receiveSum = BigDecimal.valueOf(0D);
         BigDecimal totalSum = saleRetreatDetailService.findTotalSumByDetailList(retreatDtlList);
         if (totalSum != null && totalSum.doubleValue() != 0D) {
-            receiveSum = BigDecimal.valueOf(receiveSum.doubleValue() * -1);
+            receiveSum = BigDecimal.valueOf(totalSum.doubleValue() * -1);
 
             //1. 创建收款单
             //收款单类型(0:预收款 1:普通收款 2:发货退款 3:订单退款)
