@@ -5,10 +5,7 @@ import com.xy.vmes.common.util.EvaluateUtil;
 import com.xy.vmes.common.util.Producer;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.sale.dao.SaleOrderAuditMapper;
-import com.xy.vmes.entity.Column;
-import com.xy.vmes.entity.Product;
-import com.xy.vmes.entity.SaleOrder;
-import com.xy.vmes.entity.SaleOrderDetail;
+import com.xy.vmes.entity.*;
 import com.xy.vmes.service.*;
 import com.yvan.DateUtils;
 import com.yvan.HttpUtils;
@@ -34,6 +31,9 @@ public class SaleOrderAuditServiceImp implements SaleOrderAuditService {
     private SaleOrderDetailService saleOrderDetailService;
     @Autowired
     private SaleOrderDetailCustomerPriceService saleOrderDetailCustomerPriceService;
+    @Autowired
+    private SaleUnitPriceService saleUnitPriceService;
+
     @Autowired
     private ProductService productService;
     @Autowired
@@ -437,6 +437,7 @@ public class SaleOrderAuditServiceImp implements SaleOrderAuditService {
             model.putMsg("订单id为空或空字符串！");
             return model;
         }
+        SaleOrder orderDB = saleOrderService.findSaleOrderById(orderId);
 
         //1. 订单状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
         SaleOrder order = new SaleOrder();
@@ -448,6 +449,20 @@ public class SaleOrderAuditServiceImp implements SaleOrderAuditService {
 
         //2. 订单明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
         saleOrderDetailService.updateDetailStateByOrderId(orderId, null);
+
+        //3. 修改(货品id,单位id,客户id)单价
+        List<SaleOrderDetail> orderDtlList = saleOrderDetailService.findSaleOrderDetailListByParentId(orderId);
+        if (orderDtlList != null && orderDtlList.size() > 0) {
+            for (SaleOrderDetail orderDtl : orderDtlList) {
+                SaleUnitPrice customerUnitPrice = new SaleUnitPrice();
+                customerUnitPrice.setProductId(orderDtl.getProductId());
+                customerUnitPrice.setUnit(orderDtl.getOrderUnit());
+                customerUnitPrice.setCustomerId(orderDB.getCustomerId());
+                customerUnitPrice.setProductPrice(orderDtl.getProductPrice());
+                customerUnitPrice.setCuser(cuser);
+                saleUnitPriceService.modifySaleUnitPrice(customerUnitPrice);
+            }
+        }
 
         return model;
     }

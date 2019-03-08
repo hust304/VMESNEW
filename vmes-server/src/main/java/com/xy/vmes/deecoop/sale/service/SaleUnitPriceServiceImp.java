@@ -310,6 +310,9 @@ public class SaleUnitPriceServiceImp implements SaleUnitPriceService {
         if (object.getProductPrice() == null) {
             return;
         }
+        //四舍五入到2位小数
+        object.setProductPrice(object.getProductPrice().setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP));
+        object.setUuser(object.getCuser());
 
         PageData findMap = new PageData();
         findMap.put("productId", object.getProductId());
@@ -320,7 +323,9 @@ public class SaleUnitPriceServiceImp implements SaleUnitPriceService {
         if (objectDB == null) {
             this.save(object);
         } else {
-            this.update(object);
+            objectDB.setProductPrice(object.getProductPrice());
+            objectDB.setUuser(object.getCuser());
+            this.update(objectDB);
         }
     }
 

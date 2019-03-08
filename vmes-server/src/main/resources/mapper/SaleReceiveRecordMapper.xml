@@ -190,7 +190,15 @@
     <!-- 字段 自动创建，可以修改-->
     <sql id="Field1">
         record.customer_id customerId,<!-- 客户ID -->
-        case when record.type='0' then '变更' when record.type='1' then '录入收款' else '费用分摊' end  type,<!-- 操作类型(0:变更 1:录入收款 -1:费用分摊) -->
+        case
+            when record.type = '0' then '变更'
+            when record.type = '1' then '录入收款'
+            when record.type = '2' then '预付款'
+            when record.type = '3' then '退货退款'
+            when record.type = '4' then '订单变更退款'
+            when record.type = '-1' then '费用分摊'
+        else null
+        end type,
         round(record.amount,2) amount,<!-- 操作值 -->
         round(record.after_amount,2) afterAmount,<!-- 操作后余额 -->
         round(record.before_amount,2) beforeAmount,<!-- 操作前余额 -->
