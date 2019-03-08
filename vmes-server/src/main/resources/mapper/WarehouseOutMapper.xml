@@ -178,6 +178,21 @@
         )
     </delete>
 
+    <delete id="deleteTableByRecommend" parameterType="com.yvan.PageData">
+        delete from vmes_warehouse_out_recommend
+        where detail_id in (
+            select id from vmes_warehouse_out_detail
+            where parent_id in (
+                select id from vmes_warehouse_out
+                <where>
+                    <if test="companyId != null and companyId != ''" >
+                        and company_id = #{companyId}
+                    </if>
+                </where>
+            )
+        )
+    </delete>
+
     <update id="updateStateByOut" parameterType="com.yvan.PageData" >
         update vmes_warehouse_out set
         state = #{state},

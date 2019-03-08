@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
+import java.text.MessageFormat;
 import java.util.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -294,7 +295,12 @@ public class CustomerServiceImp implements CustomerService {
 
 
     @Override
-    public void updateCustomerBalance(Customer oldCustomer, BigDecimal balance, String uuser,String type) throws Exception {
+    public void updateCustomerBalance(
+            Customer oldCustomer,
+            BigDecimal balance,
+            String uuser,
+            String type,
+            String remark) throws Exception {
         PageData pd = new PageData();
         pd.put("id",oldCustomer.getId());
         pd.put("version",oldCustomer.getVersion());
@@ -307,18 +313,24 @@ public class CustomerServiceImp implements CustomerService {
         saleReceiveRecord.setAfterAmount(balance);
         saleReceiveRecord.setAmount(balance.subtract(oldCustomer.getBalance()));
         saleReceiveRecord.setCustomerId(oldCustomer.getId());
-        saleReceiveRecord.setType(type);//操作类型(0:变更 1:录入收款 -1:费用分摊)
-        if("1".equals(type)){
-            saleReceiveRecord.setRemark("录入收款："+ balance.subtract(oldCustomer.getBalance()).setScale(2, BigDecimal.ROUND_HALF_UP));
-        }else if("0".equals(type)){
-            saleReceiveRecord.setRemark("变更前："+oldCustomer.getBalance().setScale(2, BigDecimal.ROUND_HALF_UP)+"      变更后："+balance.setScale(2, BigDecimal.ROUND_HALF_UP));
-        }else if("-1".equals(type)){
-            saleReceiveRecord.setRemark("费用分摊："+oldCustomer.getBalance().subtract(balance).setScale(2, BigDecimal.ROUND_HALF_UP));
-        }
-
+        //操作类型 (0:变更 1:录入收款 2:预付款 -1:费用分摊)
+        saleReceiveRecord.setType(type);
+        saleReceiveRecord.setRemark(remark);
         saleReceiveRecord.setUuser(uuser);
         saleReceiveRecord.setCuser(uuser);
         saleReceiveRecordService.save(saleReceiveRecord);
+    }
+
+    public void updateCustomerBalance(
+            Customer customer,
+            BigDecimal balance,
+            String uuser) throws Exception {
+        PageData pd = new PageData();
+        pd.put("id",customer.getId());
+        pd.put("version",customer.getVersion());
+        pd.put("uuser",uuser);
+        pd.put("balance",balance);
+        customerMapper.updateCustomerBalance(pd);
     }
 
     @Override
@@ -336,7 +348,15 @@ public class CustomerServiceImp implements CustomerService {
         ResultModel model = new ResultModel();
         BigDecimal addBalance = BigDecimal.valueOf(Double.parseDouble(pd.getString("addBalance")));
         Customer Customer = customerService.selectById(pd.getString("id"));
-        customerService.updateCustomerBalance(Customer,Customer.getBalance().add(addBalance),pd.getString("uuser"),"1");//操作类型(0:变更 1:录入收款 -1:费用分摊)
+
+        String remark = "录入收款："+ Customer.getBalance().add(addBalance).subtract(Customer.getBalance()).setScale(2, BigDecimal.ROUND_HALF_UP);
+        customerService.updateCustomerBalance(
+                Customer,
+                Customer.getBalance().add(addBalance),
+                pd.getString("uuser"),
+                //操作类型 (0:变更 1:录入收款 2:预付款 -1:费用分摊)
+                "1",
+                remark);
         return model;
     }
 
@@ -345,7 +365,20 @@ public class CustomerServiceImp implements CustomerService {
         ResultModel model = new ResultModel();
         Customer newCustomer = (Customer) HttpUtils.pageData2Entity(pd, new Customer());
         Customer oldCustomer = customerService.selectById(newCustomer.getId());
-        customerService.updateCustomerBalance(oldCustomer,newCustomer.getBalance(),pd.getString("uuser"),"0");//操作类型(0:变更 1:录入收款 -1:费用分摊)
+
+        String remarkTemp = "变更前：{0} 变更后：{1}";
+        String remark = MessageFormat.format(remarkTemp,
+                oldCustomer.getBalance().setScale(2, BigDecimal.ROUND_HALF_UP),
+                newCustomer.getBalance().setScale(2, BigDecimal.ROUND_HALF_UP));
+
+        customerService.updateCustomerBalance(
+                oldCustomer,
+                newCustomer.getBalance(),
+                pd.getString("uuser"),
+                //操作类型 (0:变更 1:录入收款 2:预付款 -1:费用分摊)
+                "0",
+                remark
+        );
         return model;
     }
 

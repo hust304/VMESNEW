@@ -362,7 +362,19 @@ public class SaleOrderServiceImp implements SaleOrderService {
         //3.修改客户余额(vmes_customer.balance)
         //advance_sum:预付款(定金)
         if (order.getAdvanceSum() != null) {
-            saleReceiveRecordService.editCustomerBalanceByOrder(order.getCustomerId(), null, order.getAdvanceSum(), order.getCuser());
+            String remarkTemp = "订单编号:{0} 预付款:{1}";
+            String remark = MessageFormat.format(remarkTemp,
+                    order.getSysCode(),
+                    order.getAdvanceSum().setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP).toString());
+
+            saleReceiveRecordService.editCustomerBalanceByOrder(
+                    order.getCustomerId(),
+                    null,
+                    //操作类型 (0:变更 1:录入收款 2:预付款 3:退货退款 4:订单变更退款 -1:费用分摊)
+                    "2",
+                    order.getAdvanceSum(),
+                    order.getCuser(),
+                    remark);
         }
 
         return model;
@@ -456,8 +468,23 @@ public class SaleOrderServiceImp implements SaleOrderService {
             BigDecimal editBalance = BigDecimal.valueOf(new_advanceSum.doubleValue() - old_advanceSum.doubleValue());
             //四舍五入到2位小数
             editBalance = editBalance.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-            saleReceiveRecordService.editCustomerBalanceByOrder(order.getCustomerId(), null, editBalance, order.getCuser());
+
+            String remarkTemp = "订单编号:{0} (预付款)变更前:{1} (预付款)变更后";
+            String remark = MessageFormat.format(remarkTemp,
+                    order_old.getSysCode(),
+                    old_advanceSum.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP).toString(),
+                    new_advanceSum.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP).toString()
+            );
+            saleReceiveRecordService.editCustomerBalanceByOrder(
+                    order.getCustomerId(),
+                    null,
+                    //操作类型 (0:变更 1:录入收款 2:预付款 3:退货退款 4:订单变更退款 -1:费用分摊)
+                    "2",
+                    editBalance,
+                    order.getCuser(),
+                    remark);
         }
+
         return model;
     }
 

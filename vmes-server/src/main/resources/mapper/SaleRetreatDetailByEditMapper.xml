@@ -49,6 +49,7 @@
         (replace(uuid(), '-', ''), 'saleRetreatDetailByEdit', 'notRetreatCount', '可退货数量', 29, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
         (replace(uuid(), '-', ''), 'saleRetreatDetailByEdit', 'endRetreatSum', '退货金额(已生成退货单)', 30, '1', '0', '1', '0', '2018-12-16 11:15:19', 'admin'),
         (replace(uuid(), '-', ''), 'saleRetreatDetailByEdit', 'notRetreatSum', '可退金额', 31, '1', '0', '1', '0', '2018-12-16 11:15:19', 'admin'),
+        (replace(uuid(), '-', ''), 'saleRetreatDetailByEdit', 'orderId', '订单id', 32, '1', '0', '1', '0', '2018-12-16 11:15:19', 'admin'),
 
     </insert>
 
@@ -97,6 +98,7 @@
         genre.name productGenreName,
 
         saleOrder.sys_code sysOrderCode,
+        saleOrder.orderId,
         deliver.deliver_code deliverCode,
         round(ifnull(receive.receive_amount, 0), 2) receiveAmount,
 

@@ -3,6 +3,7 @@ package com.xy.vmes.service;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.entity.Customer;
 import com.xy.vmes.entity.SaleReceiveRecord;
+import com.xy.vmes.exception.ApplicationException;
 import com.xy.vmes.exception.TableVersionException;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
@@ -132,13 +133,24 @@ public interface SaleReceiveRecordService {
     List<SaleReceiveRecord> findDataList(PageData pageData, Boolean isQueryAll) throws Exception;
 
     /**
+     * 修改客户余额
+     * 1. 修改客户表(vmes_customer)
+     * 2. 添加历史表(vmes_sale_receive_record)
      *
      * @param customerId  客户id
      * @param customer    客户对象
-     * @param editBalance 修改客户余额
-     * @param user        用户id
+     * @param type        操作类型 (0:变更 1:录入收款 2:预付款 3:退货退款 4:订单变更退款 -1:费用分摊)
+     * @param editBalance 修改客户余额 (订单取消，订单删除 该参数为负数)
+     * @param user        操作用户id
+     * @param remark
      */
-    void editCustomerBalanceByOrder(String customerId, Customer customer, BigDecimal editBalance, String user) throws TableVersionException;
+    void editCustomerBalanceByOrder(
+            String customerId,
+            Customer customer,
+            String type,
+            BigDecimal editBalance,
+            String user,
+            String remark) throws TableVersionException, ApplicationException;
 
     ResultModel listPageSaleReceiveRecords(PageData pd, Pagination pg) throws Exception;
 

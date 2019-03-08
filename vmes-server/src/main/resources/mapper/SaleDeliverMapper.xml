@@ -231,6 +231,7 @@
                 left join vmes_warehouse warehouse on out_.warehouse_id = warehouse.id
                 left join vmes_user user on out_.make_id = user.id
             </if>
+            left join vmes_product product on detail.product_id = product.id
 
         <where>
             <if test="customerId != null and customerId != ''" >
@@ -269,10 +270,13 @@
             <if test="detailState != null and detailState != ''">
                 and detail.state = #{detailState}
             </if>
+            <if test="productName != null and productName != ''">
+                and product.name LIKE CONCAT(CONCAT(#{productName}),'%')
+            </if>
 
             <!--模块查询条件-->
             <if test="customerName != null and customerName != ''">
-                and customer.name LIKE CONCAT(CONCAT(#{customerName}),'%')
+
             </if>
             <if test="deliverDateBegin != null and deliverDateBegin != ''">
                 <![CDATA[ and deliver.deliver_date >= #{deliverDateBegin} ]]>

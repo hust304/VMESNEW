@@ -22,7 +22,7 @@ public class SaleReceiveRecord implements Serializable {
 	//客户ID
 	@TableField("customer_id")
 	private String customerId;
-	//操作类型（0：改 1：加  -1：减 ）
+	//操作类型 (0:变更 1:录入收款 2:预付款 3:退货退款 4:订单变更退款 -1:费用分摊)
 	@TableField("type")
 	private String type;
 	//操作值

@@ -337,7 +337,6 @@
             <if test="currentCompanyId != null and currentCompanyId != ''">
                 and wp.company_id = #{currentCompanyId}
             </if>
-            <![CDATA[ and (prod.stock_count > 0 or prod.stock_count < 0) ]]>
         </where>
 
         <if test="orderByStock == 0"><!-- 由多到少 -->

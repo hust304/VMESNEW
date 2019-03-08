@@ -275,7 +275,14 @@ public class SaleReceiveServiceImp implements SaleReceiveService {
 
 
         Customer oldCustomer = customerService.selectById(customerId);
-        customerService.updateCustomerBalance(oldCustomer,oldCustomer.getBalance().add(addBalance),pd.getString("uuser"),"1");//操作类型(0:变更 1:录入收款 -1:费用分摊)
+        String remark = "录入收款："+ oldCustomer.getBalance().add(addBalance).subtract(oldCustomer.getBalance()).setScale(2, BigDecimal.ROUND_HALF_UP);
+        //操作类型 (0:变更 1:录入收款 2:预付款 -1:费用分摊)
+        customerService.updateCustomerBalance(
+                oldCustomer,
+                oldCustomer.getBalance().add(addBalance),
+                pd.getString("uuser"),
+                "1",
+                remark);
 
 
         SaleReceive saleReceive = new SaleReceive();
@@ -311,7 +318,14 @@ public class SaleReceiveServiceImp implements SaleReceiveService {
         }
 
         oldCustomer = customerService.selectById(customerId);
-        customerService.updateCustomerBalance(oldCustomer,oldCustomer.getBalance().subtract(currentBalance),pd.getString("uuser"),"-1");//操作类型(0:变更 1:录入收款 -1:费用分摊)
+        //操作类型 (0:变更 1:录入收款 2:预付款 -1:费用分摊)
+        String remark_1 = "费用分摊：" + oldCustomer.getBalance().subtract(oldCustomer.getBalance().subtract(currentBalance)).setScale(2, BigDecimal.ROUND_HALF_UP);
+        customerService.updateCustomerBalance(
+                oldCustomer,
+                oldCustomer.getBalance().subtract(currentBalance),
+                pd.getString("uuser"),
+                "-1",
+                remark_1);
         return model;
     }
 

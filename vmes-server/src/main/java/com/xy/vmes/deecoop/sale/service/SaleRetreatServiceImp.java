@@ -41,6 +41,11 @@ public class SaleRetreatServiceImp implements SaleRetreatService {
     private SaleReceiveService saleReceiveService;
     @Autowired
     private SaleReceiveDetailService saleReceiveDetailService;
+    @Autowired
+    private SaleReceiveRecordService saleReceiveRecordService;
+
+    @Autowired
+    private SaleOrderService saleOrderService;
 
     @Autowired
     private CoderuleService coderuleService;
@@ -460,7 +465,7 @@ public class SaleRetreatServiceImp implements SaleRetreatService {
         if (mapList == null || mapList.size() == 0) {return new String();}
         StringBuffer msgBuf = new StringBuffer();
 
-        //1. 获取 <订单编号, 订单编号>sysOrderCode
+        //1. 获取 <订单编号, 订单id>sysOrderCode
         Map<String, String> orderCodeMap = this.findOrderCodeMap(mapList);
         //2. 获取 <订单编号, 可退金额>
         Map<String, BigDecimal> orderAllowReceiveSumMap = this.findOrderAllowReceiveSumMap(mapList);
@@ -857,9 +862,9 @@ public class SaleRetreatServiceImp implements SaleRetreatService {
 
         //获取退货单(退货总金额)
         BigDecimal receiveSum = BigDecimal.valueOf(0D);
-        BigDecimal totalSum = saleRetreatDetailService.findTotalSumByDetailList(retreatDtlList);
-        if (totalSum != null && totalSum.doubleValue() != 0D) {
-            receiveSum = BigDecimal.valueOf(totalSum.doubleValue() * -1);
+        BigDecimal retreatTotalSum = saleRetreatDetailService.findTotalSumByDetailList(retreatDtlList);
+        if (retreatTotalSum != null && retreatTotalSum.doubleValue() != 0D) {
+            receiveSum = BigDecimal.valueOf(retreatTotalSum.doubleValue() * -1);
 
             //1. 创建收款单
             //收款单类型(0:预收款 1:普通收款 2:发货退款 3:订单退款)
@@ -872,7 +877,7 @@ public class SaleRetreatServiceImp implements SaleRetreatService {
             saleReceiveService.save(receive);
 
             //2. 创建收款单明细
-            //获取 <订单id, 退货金额>
+            //获取 <订单编号, 退货金额>
             Map<String, BigDecimal> orderRetreatSumMap = this.findOrderRetreatSumMap(mapList);
             List<SaleReceiveDetail> receiveDtlList = saleRetreatDetailService.retreatMap2ReceiveDtlList(orderRetreatSumMap, null);
             saleReceiveDetailService.addReceiveDetail(receive, receiveDtlList);
@@ -881,7 +886,7 @@ public class SaleRetreatServiceImp implements SaleRetreatService {
         //3. 修改退货单
         SaleRetreat retreatEdit = new SaleRetreat();
         retreatEdit.setId(parentId);
-        retreatEdit.setTotalSum(totalSum);
+        retreatEdit.setTotalSum(retreatTotalSum);
         //状态(0:待提交 1:待审核 2:待退款 3:已完成 -1:已取消)
         retreatEdit.setState("3");
         this.update(retreatEdit);
@@ -894,6 +899,56 @@ public class SaleRetreatServiceImp implements SaleRetreatService {
             //退货单明细状态(0:待提交 1:待审核 2:待退款 3:已完成 -1:已取消)
             detailEdit.setState("3");
             saleRetreatDetailService.update(detailEdit);
+        }
+
+        // 获取Map<订单编号, 订单id>
+        Map<String, String> orderCodeMap = this.findOrderCodeMap(mapList);
+        //获取 <订单编号, 退货金额>
+        Map<String, BigDecimal> orderRetreatSumMap = this.findOrderRetreatSumMap(mapList);
+
+        if (orderCodeMap != null && orderCodeMap.size() > 0) {
+            for (Iterator iterator = orderCodeMap.keySet().iterator(); iterator.hasNext();) {
+                String orderCode = (String) iterator.next();
+                String orderId = orderCodeMap.get(orderCode);
+                //订单退款金额
+                BigDecimal orderRetreatSum = orderRetreatSumMap.get(orderCode);
+
+                //修改订单金额
+                if (orderId != null && orderId.trim().length() > 0 && orderRetreatSum != null && orderRetreatSum.doubleValue() != 0) {
+                    SaleOrder orderDB = saleOrderService.findSaleOrderById(orderId);
+                    //orderSum 订单金额
+                    if (orderDB != null && orderDB.getOrderSum() != null) {
+                        BigDecimal orderSum = orderDB.getOrderSum();
+                        BigDecimal newOrderSum = BigDecimal.valueOf(orderSum.doubleValue() - orderRetreatSum.doubleValue());
+                        //四舍五入到2位小数
+                        newOrderSum = newOrderSum.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+
+                        SaleOrder orderEdit = new SaleOrder();
+                        orderEdit.setId(orderId);
+                        orderEdit.setTotalSum(newOrderSum);
+                        orderEdit.setOrderSum(newOrderSum);
+                        orderEdit.setDiscountSum(BigDecimal.valueOf(0D));
+                        saleOrderService.update(orderEdit);
+                    }
+
+                    //增加客户余额
+                    if (orderDB != null && customerId != null) {
+                        String remarkTemp = "订单编号:{0} 退款金额:{1}";
+                        String remark = MessageFormat.format(remarkTemp,
+                                orderCode,
+                                orderRetreatSum.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP)
+                        );
+                        saleReceiveRecordService.editCustomerBalanceByOrder(
+                                customerId,
+                                null,
+                                //操作类型 (0:变更 1:录入收款 2:预付款 3:退货退款 4:订单变更退款 -1:费用分摊)
+                                "3",
+                                BigDecimal.valueOf(orderRetreatSum.doubleValue() * -1),
+                                cuser,
+                                remark);
+                    }
+                }
+            }
         }
 
         return model;
@@ -998,8 +1053,10 @@ public class SaleRetreatServiceImp implements SaleRetreatService {
      * productUnit: rowData.productUnit,
      * remark: rowData.retreatRemark,
      *
+     * sysOrderCode: rowData.sysOrderCode,
      * orderId: rowData.orderId,
      * receiveAmount: rowData.receiveAmount,
+     * notRetreatSum: rowData.notRetreatSum,
      * n2pFormula: rowData.n2pFormula,
      * p2nFormula: rowData.p2nFormula,
      *
@@ -1011,10 +1068,12 @@ public class SaleRetreatServiceImp implements SaleRetreatService {
         if (mapList == null || mapList.size() == 0) {return orderMap;}
 
         for (Map<String, String> mapObject : mapList) {
+            String orderId = mapObject.get("orderId");
             String orderCode = mapObject.get("sysOrderCode");
             if (orderCode != null && orderCode.trim().length() > 0) {
-                orderMap.put(orderCode, orderCode);
+                orderMap.put(orderCode, orderId);
             }
+
         }
 
         return orderMap;
@@ -1051,7 +1110,7 @@ public class SaleRetreatServiceImp implements SaleRetreatService {
         Map<String, BigDecimal> orderMap = new HashMap<String, BigDecimal>();
         if (mapList == null || mapList.size() == 0) {return orderMap;}
 
-        //按照订单id 汇总求和(退货金额)
+        //按照订单编号 汇总求和(退货金额)
         Map<String, BigDecimal> mapTemp = new HashMap<String, BigDecimal>();
         for (Map<String, String> mapObject : mapList) {
             String orderCode = mapObject.get("sysOrderCode");

@@ -84,6 +84,7 @@ public interface WarehouseOutMapper extends BaseMapper<WarehouseOut> {
     void deleteTableByDetail(PageData pageData);
     void deleteTableByExecute(PageData pageData);
     void deleteTableByExecutor(PageData pageData);
+    void deleteTableByRecommend(PageData pageData);
     void updateStateByOut(PageData pageData);
 }
 

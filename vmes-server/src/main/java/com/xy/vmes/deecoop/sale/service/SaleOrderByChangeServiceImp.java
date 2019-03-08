@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.text.MessageFormat;
 import java.util.*;
 
 @Service
@@ -34,6 +35,8 @@ public class SaleOrderByChangeServiceImp implements SaleOrderByChangeService {
     private SaleReceiveService saleReceiveService;
     @Autowired
     private SaleReceiveDetailService saleReceiveDetailService;
+    @Autowired
+    private SaleReceiveRecordService SaleReceiveRecordService;
 
     @Autowired
     private WarehouseOutService warehouseOutService;
@@ -124,12 +127,14 @@ public class SaleOrderByChangeServiceImp implements SaleOrderByChangeService {
         changeReceiveSum = changeReceiveSum.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
 
         if (receiveSum != null && receiveSum.doubleValue() > 0 && changeReceiveSum.doubleValue() < 0) {
+            SaleOrder orderDB = saleOrderService.findSaleOrderById(orderId);
+
             //1. 创建收款单
             //收款单类型(0:预收款 1:普通收款 2:发货退款 3:订单退款)
             SaleReceive receive = saleReceiveService.createReceive(customerId,
                     cuser,
                     companyId,
-                    "2");
+                    "3");
             //订单金额 - 订单收款金额
             receive.setReceiveSum(changeReceiveSum);
             saleReceiveService.save(receive);
@@ -148,6 +153,21 @@ public class SaleOrderByChangeServiceImp implements SaleOrderByChangeService {
             List<SaleReceiveDetail> receiveDtlList = new ArrayList<SaleReceiveDetail>();
             receiveDtlList.add(receiveDtl);
             saleReceiveDetailService.addReceiveDetail(receive, receiveDtlList);
+
+            //3. 修改客户余额
+            String remarkTemp = "订单编号:{0} 订单变更退款金额:{1}";
+            String remark = MessageFormat.format(remarkTemp,
+                    orderDB.getSysCode(),
+                    BigDecimal.valueOf(changeReceiveSum.doubleValue() * -1)
+            );
+            SaleReceiveRecordService.editCustomerBalanceByOrder(
+                    customerId,
+                    null,
+                    //操作类型 (0:变更 1:录入收款 2:预付款 3:退货退款 4:订单变更退款 -1:费用分摊)
+                    "4",
+                    changeReceiveSum,
+                    cuser,
+                    remark);
         }
 
         return model;

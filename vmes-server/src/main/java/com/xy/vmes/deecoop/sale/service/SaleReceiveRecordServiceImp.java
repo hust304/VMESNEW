@@ -16,6 +16,7 @@ import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.platform.RestException;
+import com.xy.vmes.exception.ApplicationException;
 import com.yvan.springmvc.ResultModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -230,12 +231,20 @@ public class SaleReceiveRecordServiceImp implements SaleReceiveRecordService {
      *
      * @param customerId  客户id
      * @param customer    客户对象
+     * @param type        操作类型 (0:变更 1:录入收款 2:预付款 3:退货退款 4:订单变更退款 -1:费用分摊)
      * @param editBalance 修改客户余额 (订单取消，订单删除 该参数为负数)
-     * @param user        用户id
+     * @param user        操作用户id
+     * @param remark
      */
-    public void editCustomerBalanceByOrder(String customerId, Customer customer, BigDecimal editBalance, String user) throws TableVersionException {
+    public void editCustomerBalanceByOrder(
+            String customerId,
+            Customer customer,
+            String type,
+            BigDecimal editBalance,
+            String user,
+            String remark) throws TableVersionException, ApplicationException {
         if (customerId == null || customerId.trim().length() == 0) {return;}
-        if (editBalance == null) {return;}
+        if (editBalance == null || editBalance.doubleValue() == 0) {return;}
         if (customer == null) {customer = customerService.findCustomerById(customerId);}
         if (customer == null) {return;}
 
@@ -253,29 +262,29 @@ public class SaleReceiveRecordServiceImp implements SaleReceiveRecordService {
         new_balanceBig = new_balanceBig.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
 
         try {
-            customerService.updateCustomerBalance(customer, new_balanceBig, user,"1");
+            customerService.updateCustomerBalance(customer, new_balanceBig, user);
         } catch (Exception e) {
             e.printStackTrace();
             throw new TableVersionException(Common.SYS_STOCKCOUNT_ERRORCODE, "当前系统繁忙，请稍后操作！");
         }
 
-//        //2. 添加历史表(vmes_sale_receive_record)
-//        SaleReceiveRecord saleReceiveRecord = new SaleReceiveRecord();
-//        saleReceiveRecord.setBeforeAmount(before_balance);
-//        saleReceiveRecord.setAfterAmount(new_balanceBig);
-//        saleReceiveRecord.setAmount(editBalance);
-//        saleReceiveRecord.setCustomerId(customerId);
-//        //(0:修改 1:添加 2:取消 -1:删除)
-//        saleReceiveRecord.setType("0");
-//        saleReceiveRecord.setRemark("录入收款："+ editBalance.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP));
-//        saleReceiveRecord.setUuser(user);
-//        saleReceiveRecord.setCuser(user);
-//        try {
-//            this.save(saleReceiveRecord);
-//        } catch (Exception e) {
-//            throw new ApplicationException(e.getMessage());
-//        }
+        //2. 添加历史表(vmes_sale_receive_record)
+        SaleReceiveRecord saleReceiveRecord = new SaleReceiveRecord();
+        saleReceiveRecord.setBeforeAmount(before_balance);
+        saleReceiveRecord.setAfterAmount(new_balanceBig);
+        saleReceiveRecord.setAmount(editBalance);
+        saleReceiveRecord.setCustomerId(customerId);
+        //操作类型 (0:变更 1:录入收款 2:预付款 3:退货退款 4:订单变更退款 -1:费用分摊)
+        saleReceiveRecord.setType(type);
+        saleReceiveRecord.setRemark(remark);
+        saleReceiveRecord.setUuser(user);
+        saleReceiveRecord.setCuser(user);
 
+        try {
+            this.save(saleReceiveRecord);
+        } catch (Exception e) {
+            throw new ApplicationException(e.getMessage());
+        }
     }
 
     @Override

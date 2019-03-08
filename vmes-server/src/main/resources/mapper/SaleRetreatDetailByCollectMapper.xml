@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+说明：退货明细汇总- Mapper.xml
+创建人：陈刚 自动创建
+创建时间：2019-03-07
+ -->
+<mapper namespace="com.xy.vmes.deecoop.sale.dao.SaleRetreatDetailByCollectMapper">
+    <!--退货明细(按订单明细id)汇总-->
+    <select id="findRetreatDetailCollectByOrderDtlId" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+            order_detai_id orderDetaiId,
+            round(ifnull(sum(order_count), 0), 2) retreatCount,
+            round(ifnull(sum(order_sum), 0), 2) retreatSum
+        from vmes_sale_retreat_detail
+        <where>
+            <if test="orderDetaiId != null and orderDetaiId != ''" >
+                and order_detai_id = #{orderDetaiId}
+            </if>
+            <if test="state != null and state != ''" >
+                and state = #{state}
+            </if>
+        </where>
+        group by order_detai_id
+    </select>
+
+    <!--退货明细(按订单id)汇总-->
+    <select id="findRetreatDetailCollectByOrderId" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+            saleOrder.id orderId,
+            round(ifnull(sum(retreatDtl.order_count), 0), 2) retreatCount,
+            round(ifnull(sum(retreatDtl.order_sum), 0), 2) retreatSum
+        from vmes_sale_retreat_detail retreatDtl
+            left join vmes_sale_order_detail orderDtl on retreatDtl.order_detail_id = orderDtl.id
+            left join vmes_sale_order saleOrder on orderDtl.parent_id = saleOrder.id
+        <where>
+            <if test="orderId != null and orderId != ''" >
+                and saleOrder.id = #{orderId}
+            </if>
+            <if test="retreatDtlState != null and retreatDtlState != ''" >
+                and retreatDtl.state = #{retreatDtlState}
+            </if>
+        </where>
+        group by saleOrder.id
+    </select>
+</mapper>

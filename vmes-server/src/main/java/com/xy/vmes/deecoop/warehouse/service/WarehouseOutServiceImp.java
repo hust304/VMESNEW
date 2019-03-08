@@ -207,6 +207,7 @@ public class WarehouseOutServiceImp implements WarehouseOutService {
         PageData pageData = new PageData();
         pageData.put("companyId", companyId);
 
+        warehouseOutMapper.deleteTableByRecommend(pageData);
         warehouseOutMapper.deleteTableByExecute(pageData);
         warehouseOutMapper.deleteTableByExecutor(pageData);
         warehouseOutMapper.deleteTableByDetail(pageData);
