@@ -131,19 +131,28 @@
         isdisable,ishide,isedit,ismust,cdate,
         cuser
         ) VALUES
-            (replace(uuid(), '-', ''),'SaleUnitPrice','code','货品编码',1, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleUnitPrice','name','货品名称',2, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleUnitPrice','spec','规格型号',3, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleUnitPrice','genre','属性ID',4, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleUnitPrice','genreName','属性',5, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleUnitPrice','punit','计量单位ID',6, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleUnitPrice','punitName','计量单位',7, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleUnitPrice','dunit','默认单位ID',8, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleUnitPrice','dunitName','计价单位（默认）',9, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleUnitPrice','productPrice','单价',10, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleUnitPrice','customerId','客户ID',11, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleUnitPrice','productId','产品ID',12, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleUnitPrice','id','id',0, '1','0','1','0',now(), 'admin')
+            (replace(uuid(), '-', ''),'SaleUnitPrice','id','id',0, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleUnitPrice','customerId','客户id',1, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleUnitPrice','customerName','客户名称',1, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleUnitPrice','productId','产品id',2, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleUnitPrice','code','货品编码',3, '1','1','1','0',now(), 'admin'),
+
+            (replace(uuid(), '-', ''),'SaleUnitPrice','name','货品名称',4, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleUnitPrice','spec','规格型号',5, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleUnitPrice','genre','属性id',6, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleUnitPrice','genreName','属性',6, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleUnitPrice','unit','单位id',7, '1','0','1','0',now(), 'admin'),
+
+            (replace(uuid(), '-', ''),'SaleUnitPrice','unitName','单位',7, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleUnitPrice','unitType','单位类型id',8, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleUnitPrice','unitTypeName','单位类型',8, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleUnitPrice','unitIsdefault','单位属性id',9, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleUnitPrice','unitIsdefaultName','单位属性',9, '1','0','1','0',now(), 'admin'),
+
+            (replace(uuid(), '-', ''),'SaleUnitPrice','productPrice','单价',10, '1','0','1','0',now(), 'admin')
+
+
+
     </insert>
 
     <insert id="insertColumn1" >
@@ -333,17 +342,43 @@
     <!-- 自动创建，可以修改 -->
     <select id="getDataListPage"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
         select
-        <include refid="Field1"></include>
+            sup.id id,
+            sup.product_id productId,
+            product.code code,
+            product.name name,
+            product.spec spec,
+            product.genre genre,
+            genre.name genreName,
+
+            sup.customer_id customerId,
+            customer.name customerName,
+
+            sup.unit unit,
+            unit.name unitName,
+            produnit.type unitType,
+            CASE
+                WHEN produnit.type = '0' THEN '计价单位'
+                WHEN produnit.type = '1' THEN '计量单位'
+            ELSE null
+            END unitTypeName,
+
+            produnit.isdefault unitIsdefault,
+            CASE
+            WHEN produnit.isdefault = '0' THEN '默认'
+            WHEN produnit.isdefault = '1' THEN '非默认'
+            ELSE null
+            END unitIsdefaultName,
+
+            round(ifnull(sup.product_price, 0), 2) productPrice
+
         from vmes_sale_unit_price sup
-        left join vmes_customer customer on sup.customer_id = customer.id
-        left join vmes_product product on product.id = sup.product_id
-        left join vmes_dictionary genre on genre.id = product.genre
-        left join vmes_product_unit produnit on produnit.product_id = sup.product_id and produnit.type = '1'
-        left join vmes_dictionary punit on punit.id = produnit.unit
-        left join vmes_product_unit defaultunit on defaultunit.product_id = sup.product_id and defaultunit.isdefault = '1'
-        left join vmes_dictionary dunit on dunit.id = defaultunit.unit
+            left join vmes_product product on sup.product_id = product.id
+            left join vmes_dictionary genre on product.genre = genre.id
+            left join vmes_product_unit produnit on sup.product_id = produnit.product_id and sup.unit = produnit.unit
+            left join vmes_dictionary unit on sup.unit = unit.id
+            left join vmes_customer customer on sup.customer_id = customer.id
+
         <where>
-            and sup.unit = defaultunit.unit
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >
                 and ${queryStr}

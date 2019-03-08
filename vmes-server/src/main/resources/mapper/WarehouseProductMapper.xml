@@ -460,7 +460,7 @@
                 and product.company_id = #{currentCompanyId}
             </if>
             <if test="'true' == isNeedWarehouse and (parentWarehouseId != null and parentWarehouseId != '') ">
-                and (warehouse.layer > 2 and warehouse.path_id like ${parentWarehouseId})
+                and (warehouse.layer > 1 and warehouse.path_id like ${parentWarehouseId})
             </if>
 
             <![CDATA[ and product.stock_count > 0 ]]>
