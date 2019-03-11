@@ -1315,62 +1315,14 @@ public class DepartmentServiceImp implements DepartmentService {
             return model;
         }
 
-        List<LinkedHashMap> titlesList = new ArrayList<LinkedHashMap>();
-        List<String> titlesHideList = new ArrayList<String>();
-        Map<String, String> varModelMap = new HashMap<String, String>();
-        if(columnList!=null&&columnList.size()>0){
-            for (Column column : columnList) {
-                if(column!=null){
-                    if("0".equals(column.getIshide())){
-                        titlesHideList.add(column.getTitleKey());
-                    }
-                    LinkedHashMap titlesLinkedMap = new LinkedHashMap();
-                    titlesLinkedMap.put(column.getTitleKey(),column.getTitleName());
-                    varModelMap.put(column.getTitleKey(),"");
-                    titlesList.add(titlesLinkedMap);
-                }
-            }
+        //获取指定栏位字符串-重新调整List<Column>
+        String fieldCode = pd.getString("fieldCode");
+        if (fieldCode != null && fieldCode.trim().length() > 0) {
+            columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
         }
-        result.put("hideTitles",titlesHideList);
-        result.put("titles",titlesList);
 
-//        //所属企业id
-//        String companyId = (String)pd.get("companyId");
-//        String queryIdStr_1 = "";
-//        if (companyId != null && companyId.trim().length() > 0) {
-//            queryIdStr_1 = departmentService.findDeptidById(companyId, null, "a.");
-//        }
-//
-//        //部门id
-//        String deptId = (String)pd.get("deptId");
-//        String queryIdStr_2 = "";
-//        if (deptId != null && deptId.trim().length() > 0) {
-//            queryIdStr_2 = departmentService.findDeptidById(deptId, null, "a.");
-//        }
-//
-//        List<String> sqlStrList = new ArrayList<String>();
-//        if (queryIdStr_1.trim().length() > 0) {sqlStrList.add(queryIdStr_1);}
-//        if (queryIdStr_2.trim().length() > 0) {sqlStrList.add(queryIdStr_2);}
-//
-//        String queryStr = "";
-//        for (String sqlStr : sqlStrList) {
-//            queryStr = queryStr + sqlStr.trim() + " and ";
-//        }
-//        //去掉最后一个"and"
-//        if (queryStr.lastIndexOf("and") != -1) {
-//            queryStr = queryStr.substring(0, queryStr.lastIndexOf("and"));
-//        }
-//
-//        if (queryStr.trim().length() > 0) {
-//            queryStr = "(" + queryStr + ")";
-//            pd.put("queryStr", queryStr);
-//        }
-//
-//        String userType = (String)pd.get("userType");
-//        //(userType_admin:超级管理员 userType_company:企业管理员 userType_employee:普通用户 userType_outer:外部用户)
-//        if (Common.DICTIONARY_MAP.get("userType_admin").equals(userType) && pd.get("cuser") != null && pd.get("cuser").toString().trim().length() > 0) {
-//            pd.put("cuser", pd.get("cuser").toString().trim());
-//        } else {pd.put("cuser", null);}
+        Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
+
 
         List<Map> varMapList = new ArrayList();
         List<Map> varList = this.getDataListPage(pd,pg);
@@ -1378,13 +1330,15 @@ public class DepartmentServiceImp implements DepartmentService {
             for(int i=0;i<varList.size();i++){
                 Map map = varList.get(i);
                 Map<String, String> varMap = new HashMap<String, String>();
-                varMap.putAll(varModelMap);
+                varMap.putAll((Map<String, String>)titleMap.get("varModel"));
                 for (Map.Entry<String, String> entry : varMap.entrySet()) {
                     varMap.put(entry.getKey(),map.get(entry.getKey())!=null?map.get(entry.getKey()).toString():"");
                 }
                 varMapList.add(varMap);
             }
         }
+        result.put("hideTitles",titleMap.get("hideTitles"));
+        result.put("titles",titleMap.get("titles"));
         result.put("varList",varMapList);
         result.put("pageData", pg);
         model.putResult(result);

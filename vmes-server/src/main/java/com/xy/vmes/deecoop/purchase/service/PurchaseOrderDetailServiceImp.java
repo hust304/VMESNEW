@@ -1,20 +1,22 @@
-package ${classPath};
+package com.xy.vmes.deecoop.purchase.service;
 
 
-import com.xy.vmes.${projectName}.dao.${objectName}Mapper;
-import com.xy.vmes.entity.${objectName};
-import com.xy.vmes.service.${objectName}Service;
+import com.xy.vmes.deecoop.purchase.dao.PurchaseOrderDetailMapper;
+import com.xy.vmes.entity.PurchaseOrderDetail;
+import com.xy.vmes.service.PurchaseOrderDetailService;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.service.ColumnService;
+import com.xy.vmes.service.PurchaseOrderService;
 import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,180 +26,182 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
 
 /**
-* 说明：${TITLE} 实现类
-* 创建人：${author} 自动创建
-* 创建时间：${nowDate?string("yyyy-MM-dd")}
+* 说明：vmes_purchase_order_detail:采购订单明细 实现类
+* 创建人：刘威 自动创建
+* 创建时间：2019-03-05
 */
 @Service
 @Transactional(readOnly = false)
-public class ${objectName}ServiceImp implements ${objectName}Service {
+public class PurchaseOrderDetailServiceImp implements PurchaseOrderDetailService {
 
 
     @Autowired
-    private ${objectName}Mapper ${objectNameLower}Mapper;
+    private PurchaseOrderDetailMapper purchaseOrderDetailMapper;
     @Autowired
     private ColumnService columnService;
+    @Autowired
+    private PurchaseOrderService purchaseOrderService;
     /**
-    * 创建人：${author} 自动创建，禁止修改
-    * 创建时间：${nowDate?string("yyyy-MM-dd")}
+    * 创建人：刘威 自动创建，禁止修改
+    * 创建时间：2019-03-05
     */
     @Override
-    public void save(${objectName} ${objectNameLower}) throws Exception{
-        ${objectNameLower}.setId(Conv.createUuid());
-        ${objectNameLower}.setCdate(new Date());
-        ${objectNameLower}.setUdate(new Date());
-        ${objectNameLower}Mapper.insert(${objectNameLower});
+    public void save(PurchaseOrderDetail purchaseOrderDetail) throws Exception{
+        purchaseOrderDetail.setId(Conv.createUuid());
+        purchaseOrderDetail.setCdate(new Date());
+        purchaseOrderDetail.setUdate(new Date());
+        purchaseOrderDetailMapper.insert(purchaseOrderDetail);
     }
 
 
     /**
-    * 创建人：${author} 自动创建，禁止修改
-    * 创建时间：${nowDate?string("yyyy-MM-dd")}
+    * 创建人：刘威 自动创建，禁止修改
+    * 创建时间：2019-03-05
     */
     @Override
-    public void update(${objectName} ${objectNameLower}) throws Exception{
-        ${objectNameLower}.setUdate(new Date());
-        ${objectNameLower}Mapper.updateById(${objectNameLower});
+    public void update(PurchaseOrderDetail purchaseOrderDetail) throws Exception{
+        purchaseOrderDetail.setUdate(new Date());
+        purchaseOrderDetailMapper.updateById(purchaseOrderDetail);
     }
 
     /**
-    * 创建人：${author} 自动创建，禁止修改
-    * 创建时间：${nowDate?string("yyyy-MM-dd")}
+    * 创建人：刘威 自动创建，禁止修改
+    * 创建时间：2019-03-05
     */
     @Override
-    public void updateAll(${objectName} ${objectNameLower}) throws Exception{
-        ${objectNameLower}.setUdate(new Date());
-        ${objectNameLower}Mapper.updateAllColumnById(${objectNameLower});
+    public void updateAll(PurchaseOrderDetail purchaseOrderDetail) throws Exception{
+        purchaseOrderDetail.setUdate(new Date());
+        purchaseOrderDetailMapper.updateAllColumnById(purchaseOrderDetail);
     }
 
     /**
-    * 创建人：${author} 自动创建，禁止修改
-    * 创建时间：${nowDate?string("yyyy-MM-dd")}
+    * 创建人：刘威 自动创建，禁止修改
+    * 创建时间：2019-03-05
     */
     @Override
-    //@Cacheable(cacheNames = "${objectNameLower}", key = "''+#id")
-    public ${objectName} selectById(String id) throws Exception{
-        return ${objectNameLower}Mapper.selectById(id);
+    //@Cacheable(cacheNames = "purchaseOrderDetail", key = "''+#id")
+    public PurchaseOrderDetail selectById(String id) throws Exception{
+        return purchaseOrderDetailMapper.selectById(id);
     }
 
     /**
-    * 创建人：${author} 自动创建，禁止修改
-    * 创建时间：${nowDate?string("yyyy-MM-dd")}
+    * 创建人：刘威 自动创建，禁止修改
+    * 创建时间：2019-03-05
     */
     @Override
     public void deleteById(String id) throws Exception{
-        ${objectNameLower}Mapper.deleteById(id);
+        purchaseOrderDetailMapper.deleteById(id);
     }
 
     /**
-    * 创建人：${author} 自动创建，禁止修改
-    * 创建时间：${nowDate?string("yyyy-MM-dd")}
+    * 创建人：刘威 自动创建，禁止修改
+    * 创建时间：2019-03-05
     */
     @Override
     public void deleteByIds(String[] ids) throws Exception{
-        ${objectNameLower}Mapper.deleteByIds(ids);
+        purchaseOrderDetailMapper.deleteByIds(ids);
     }
 
     /**
-    * 创建人：${author} 自动创建，禁止修改
-    * 创建时间：${nowDate?string("yyyy-MM-dd")}
+    * 创建人：刘威 自动创建，禁止修改
+    * 创建时间：2019-03-05
     */
     @Override
-    public List<${objectName}> dataListPage(PageData pd,Pagination pg) throws Exception{
-        return ${objectNameLower}Mapper.dataListPage(pd,pg);
+    public List<PurchaseOrderDetail> dataListPage(PageData pd,Pagination pg) throws Exception{
+        return purchaseOrderDetailMapper.dataListPage(pd,pg);
     }
 
     /**
-    * 创建人：${author} 自动创建，禁止修改
-    * 创建时间：${nowDate?string("yyyy-MM-dd")}
+    * 创建人：刘威 自动创建，禁止修改
+    * 创建时间：2019-03-05
     */
     @Override
-    public List<${objectName}> dataList(PageData pd) throws Exception{
-        return ${objectNameLower}Mapper.dataList(pd);
+    public List<PurchaseOrderDetail> dataList(PageData pd) throws Exception{
+        return purchaseOrderDetailMapper.dataList(pd);
     }
 
     /**
-    * 创建人：${author} 自动创建，禁止修改
-    * 创建时间：${nowDate?string("yyyy-MM-dd")}
+    * 创建人：刘威 自动创建，禁止修改
+    * 创建时间：2019-03-05
     */
     @Override
     public List<LinkedHashMap> findColumnList() throws Exception{
-        return ${objectNameLower}Mapper.findColumnList();
+        return purchaseOrderDetailMapper.findColumnList();
     }
 
     /**
-    * 创建人：${author} 自动创建，禁止修改
-    * 创建时间：${nowDate?string("yyyy-MM-dd")}
+    * 创建人：刘威 自动创建，禁止修改
+    * 创建时间：2019-03-05
     */
     @Override
     public List<Map> findDataList(PageData pd) throws Exception{
-        return ${objectNameLower}Mapper.findDataList(pd);
+        return purchaseOrderDetailMapper.findDataList(pd);
     }
 
 
     /**
-    * 创建人：${author} 自动创建，禁止修改
-    * 创建时间：${nowDate?string("yyyy-MM-dd")}
+    * 创建人：刘威 自动创建，禁止修改
+    * 创建时间：2019-03-05
     */
     @Override
     public void deleteByColumnMap(Map columnMap) throws Exception{
-        ${objectNameLower}Mapper.deleteByMap(columnMap);
+        purchaseOrderDetailMapper.deleteByMap(columnMap);
     }
 
     /**
-    * 创建人：${author} 自动创建，禁止修改
-    * 创建时间：${nowDate?string("yyyy-MM-dd")}
+    * 创建人：刘威 自动创建，禁止修改
+    * 创建时间：2019-03-05
     */
     @Override
-    public List<${objectName}> selectByColumnMap(Map columnMap) throws Exception{
-    List<${objectName}> ${objectNameLower}List =  ${objectNameLower}Mapper.selectByMap(columnMap);
-        return ${objectNameLower}List;
+    public List<PurchaseOrderDetail> selectByColumnMap(Map columnMap) throws Exception{
+    List<PurchaseOrderDetail> purchaseOrderDetailList =  purchaseOrderDetailMapper.selectByMap(columnMap);
+        return purchaseOrderDetailList;
     }
 
 
     /**
-    * 创建人：${author} 自动创建，禁止修改
-    * 创建时间：${nowDate?string("yyyy-MM-dd")}
+    * 创建人：刘威 自动创建，禁止修改
+    * 创建时间：2019-03-05
     */
     @Override
     public List<LinkedHashMap> getColumnList() throws Exception{
-        return ${objectNameLower}Mapper.getColumnList();
+        return purchaseOrderDetailMapper.getColumnList();
     }
 
     /**
-    * 创建人：${author} 自动创建，禁止修改
-    * 创建时间：${nowDate?string("yyyy-MM-dd")}
+    * 创建人：刘威 自动创建，禁止修改
+    * 创建时间：2019-03-05
     */
     @Override
     public List<Map> getDataList(PageData pd) throws Exception{
-        return ${objectNameLower}Mapper.getDataList(pd);
+        return purchaseOrderDetailMapper.getDataList(pd);
     }
 
     /**
-    * 创建人：${author} 自动创建，禁止修改
-    * 创建时间：${nowDate?string("yyyy-MM-dd")}
+    * 创建人：刘威 自动创建，禁止修改
+    * 创建时间：2019-03-05
     */
     @Override
     public List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception{
-        return ${objectNameLower}Mapper.getDataListPage(pd,pg);
+        return purchaseOrderDetailMapper.getDataListPage(pd,pg);
     }
 
     /**
-    * 创建人：${author} 自动创建，禁止修改
-    * 创建时间：${nowDate?string("yyyy-MM-dd")}
+    * 创建人：刘威 自动创建，禁止修改
+    * 创建时间：2019-03-05
     */
     @Override
     public void updateToDisableByIds(String[] ids)throws Exception{
-        ${objectNameLower}Mapper.updateToDisableByIds(ids);
+        purchaseOrderDetailMapper.updateToDisableByIds(ids);
     }
 
     /**
-    * 创建人：${author} 自动创建，禁止修改
-    * 创建时间：${nowDate?string("yyyy-MM-dd")}
+    * 创建人：刘威 自动创建，禁止修改
+    * 创建时间：2019-03-05
     */
     @Override
     public void updateByDefined(PageData pd)throws Exception{
-        ${objectNameLower}Mapper.updateByDefined(pd);
+        purchaseOrderDetailMapper.updateByDefined(pd);
     }
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
     /**
@@ -210,14 +214,14 @@ public class ${objectName}ServiceImp implements ${objectName}Service {
     * @return
     * @throws Exception
     */
-    public List<${objectName}> findDataList(PageData pageData, Boolean isQueryAll) throws Exception {
+    public List<PurchaseOrderDetail> findDataList(PageData pageData, Boolean isQueryAll) throws Exception {
         int pageDataSize = 0;
         if (pageData != null && pageData.size() > 0) {
             pageDataSize = pageData.size();
         }
 
         if ((isQueryAll == null || true != isQueryAll.booleanValue()) && pageDataSize == 0) {
-            return new ArrayList<${objectName}>();
+            return new ArrayList<PurchaseOrderDetail>();
         }
 
         return this.dataList(pageData);
@@ -230,11 +234,11 @@ public class ${objectName}ServiceImp implements ${objectName}Service {
     * @return      返回对象ResultModel
     * @throws Exception
     */
-    public ResultModel listPage${objectName}s(PageData pd,Pagination pg) throws Exception{
+    public ResultModel listPagePurchaseOrderDetails(PageData pd,Pagination pg) throws Exception{
 
         ResultModel model = new ResultModel();
         Map result = new HashMap();
-        List<Column> columnList = columnService.findColumnList("${modelCode}");
+        List<Column> columnList = columnService.findColumnList("PurchaseOrderDetail");
         if (columnList == null || columnList.size() == 0) {
             model.putCode("1");
             model.putMsg("数据库没有生成TabCol，请联系管理员！");
@@ -251,7 +255,6 @@ public class ${objectName}ServiceImp implements ${objectName}Service {
         List<Map> varList = this.getDataListPage(pd,pg);
         List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
 
-
         result.put("hideTitles",titleMap.get("hideTitles"));
         result.put("titles",titleMap.get("titles"));
         result.put("varList",varMapList);
@@ -266,9 +269,9 @@ public class ${objectName}ServiceImp implements ${objectName}Service {
     * @param pg    分页参数对象Pagination
     * @throws Exception
     */
-    public void exportExcel${objectName}s(PageData pd,Pagination pg) throws Exception{
+    public void exportExcelPurchaseOrderDetails(PageData pd,Pagination pg) throws Exception{
 
-        List<Column> columnList = columnService.findColumnList("${modelCode}");
+        List<Column> columnList = columnService.findColumnList("PurchaseOrderDetail");
         if (columnList == null || columnList.size() == 0) {
             throw new RestException("1","数据库没有生成TabCol，请联系管理员！");
         }
@@ -292,7 +295,7 @@ public class ${objectName}ServiceImp implements ${objectName}Service {
         //查询数据-Excel文件导出
         String fileName = pd.getString("fileName");
         if (fileName == null || fileName.trim().length() == 0) {
-            fileName = "Excel${objectName}";
+            fileName = "ExcelPurchaseOrderDetail";
         }
 
         //导出文件名-中文转码
@@ -306,7 +309,7 @@ public class ${objectName}ServiceImp implements ${objectName}Service {
     * @return      返回对象ResultModel
     * @throws Exception
     */
-    public ResultModel importExcel${objectName}s(MultipartFile file) throws Exception{
+    public ResultModel importExcelPurchaseOrderDetails(MultipartFile file) throws Exception{
         ResultModel model = new ResultModel();
         if (file == null) {
             model.putCode(Integer.valueOf(1));
@@ -346,6 +349,52 @@ public class ${objectName}ServiceImp implements ${objectName}Service {
     }
 
 
+    @Override
+    public ResultModel deletePurchaseOrderDetail(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+        String id = pageData.getString("id");
+        if (StringUtils.isEmpty(id)) {
+            model.putCode("1");
+            model.putMsg("主键ID为空，请求数据异常，请重新操作！");
+            return model;
+        }
+        PurchaseOrderDetail purchaseOrderDetail = this.selectById(id);
+        this.deleteById(id);
+        purchaseOrderService.updateState(purchaseOrderDetail.getParentId());
+        return model;
+    }
+
+    @Override
+    public ResultModel recoveryPurchaseOrderDetail(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+        String id = pageData.getString("id");
+        if (StringUtils.isEmpty(id)) {
+            model.putCode("1");
+            model.putMsg("主键ID为空，请求数据异常，请重新操作！");
+            return model;
+        }
+        PurchaseOrderDetail purchaseOrderDetail = this.selectById(id);
+        purchaseOrderDetail.setState("0");
+        this.update(purchaseOrderDetail);
+        purchaseOrderService.updateState(purchaseOrderDetail.getParentId());
+        return model;
+    }
+
+    @Override
+    public ResultModel cancelPurchaseOrderDetail(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+        String id = pageData.getString("id");
+        if (StringUtils.isEmpty(id)) {
+            model.putCode("1");
+            model.putMsg("主键ID为空，请求数据异常，请重新操作！");
+            return model;
+        }
+        PurchaseOrderDetail purchaseOrderDetail = this.selectById(id);
+        purchaseOrderDetail.setState("-1");
+        this.update(purchaseOrderDetail);
+        purchaseOrderService.updateState(purchaseOrderDetail.getParentId());
+        return model;
+    }
 }
 
 

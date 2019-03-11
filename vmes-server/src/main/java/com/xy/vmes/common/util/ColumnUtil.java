@@ -159,6 +159,27 @@ public class ColumnUtil {
         return mapObject;
     }
 
+
+    public static List<Map> getVarMapList(List<Map> varList,Map<String, Object> titleMap) {
+        List<Map> varMapList = new ArrayList();
+        if(varList!=null&&varList.size()>0){
+            for(int i=0;i<varList.size();i++){
+                Map map = varList.get(i);
+                Map<String, Object> varMap = new HashMap<String, Object>();
+                varMap.putAll((Map<String, String>)titleMap.get("varModel"));
+                for (Map.Entry<String, Object> entry : varMap.entrySet()) {
+                    varMap.put(entry.getKey(),map.get(entry.getKey())!=null?map.get(entry.getKey()).toString():"");
+                }
+                varMap.put("hideTitles", new ArrayList<String>());
+                varMap.put("titles", new ArrayList<LinkedHashMap>());
+                varMap.put("children",new ArrayList());
+                varMapList.add(varMap);
+            }
+        }
+
+        return varMapList;
+    }
+
     public static void orderAcsBySerialNumber(List<Column> objectList) {
         Collections.sort(objectList, new Comparator<Object>() {
             public int compare(Object arg0, Object arg1) {
