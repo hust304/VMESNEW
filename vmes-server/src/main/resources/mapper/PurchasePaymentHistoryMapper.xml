@@ -108,108 +108,137 @@
     </select>
 
     <select id="findListPurchasePaymentHistoryByPaymentPeriod" parameterType="com.yvan.PageData" resultType="java.util.Map">
-        <!--供应商付款汇总历史(当前付款期-以前)-->
         select
-        a.id id,
-        a.supplier_id supplierId,
-        b.code supplierCode,
-        b.name supplierName,
+            paymentHistory.id,
+            paymentHistory.supplierId,
+            paymentHistory.supplierCode,
+            paymentHistory.supplierName,
 
-        a.begin_plus beginPlus,
-        a.begin_minus beginMinus,
-        a.begin_value beginValue,
+            paymentHistory.beginPlus,
+            paymentHistory.beginMinus,
+            paymentHistory.beginValue,
 
-        a.now_order_sum nowOrderSum,
-        a.now_payment_sum nowPaymentSum,
+            paymentHistory.nowOrderSum,
+            paymentHistory.nowPaymentSum,
 
-        a.end_value endValue,
-        a.end_plus endPlus,
-        a.end_minus endMinus,
+            paymentHistory.endValue,
+            paymentHistory.endPlus,
+            paymentHistory.endMinus,
 
-        a.payment_period paymentPeriod
-        from vmes_purchase_payment_history a
-            left join vmes_customer b on a.supplier_id = b.id
-        <where>
-            <if test="currentCompanyId != null and currentCompanyId != ''" >
-                and b.company_id = #{currentCompanyId}
-            </if>
-            <if test="dateByNow != null and dateByNow != ''" >
-                <![CDATA[ and a.payment_period < #{dateByNow} ]]>
-            </if>
-        </where>
-        UNION ALL
-        select
-        replace(uuid(), '-', '') id,
-        supplier.id supplierId,
-        supplier.code supplierCode,
-        supplier.name supplierName,
-
-        round(ifnull(paymentHist.end_plus, 0),2) beginPlus,
-        round(ifnull(paymentHist.end_minus, 0),2) beginMinus,
-        round(ifnull(paymentHist.end_value, 0),2) beginValue,
-
-        round(ifnull(purchaseOrder.purchaseSum, 0),2) nowOrderSum,
-        round(ifnull(purchasePayment.paymentSum, 0),2) nowReceiveSum,
-
-        <!-- (本期)订单金额 - (本期)付款 + (初期)应付款-(初期)预付款 -->
-        round((ifnull(purchaseOrder.purchaseSum, 0) - ifnull(purchasePayment.paymentSum, 0) + ifnull(paymentHist.end_value, 0)), 2) endValue,
-        '' endPlus,
-        '' endMinus
-
-        <if test="dateByNow != null and dateByNow != ''">
-            ,#{dateByNow} paymentPeriod
-        </if>
-        <!--获取当前企业全部供应商 and 供应商付款初期设定-->
+            paymentHistory.paymentPeriod,
+            paymentHistory.periodType
         from (
-            select a.id,a.code,a.name
-            from vmes_customer a
+            <!--供应商付款转接历史(当前付款期-以前)-->
+            select
+                a.id id,
+                a.supplier_id supplierId,
+                b.code supplierCode,
+                b.name supplierName,
+
+                a.begin_plus beginPlus,
+                a.begin_minus beginMinus,
+                a.begin_value beginValue,
+
+                a.now_order_sum nowOrderSum,
+                a.now_payment_sum nowPaymentSum,
+
+                a.end_value endValue,
+                a.end_plus endPlus,
+                a.end_minus endMinus,
+
+                a.payment_period paymentPeriod,
+                'history' periodType
+            from vmes_purchase_payment_history a
+            left join vmes_customer b on a.supplier_id = b.id
+            <where>
+                <if test="currentCompanyId != null and currentCompanyId != ''" >
+                    and b.company_id = #{currentCompanyId}
+                </if>
+                <if test="dateByNow != null and dateByNow != ''" >
+                    <![CDATA[ and a.payment_period < #{dateByNow} ]]>
+                </if>
+            </where>
+            UNION ALL
+            select
+                replace(uuid(), '-', '') id,
+                supplier.id supplierId,
+                supplier.code supplierCode,
+                supplier.name supplierName,
+
+                round(ifnull(paymentHist.end_plus, 0),2) beginPlus,
+                round(ifnull(paymentHist.end_minus, 0),2) beginMinus,
+                round(ifnull(paymentHist.end_value, 0),2) beginValue,
+
+                round(ifnull(purchaseOrder.purchaseSum, 0),2) nowOrderSum,
+                round(ifnull(purchasePayment.paymentSum, 0),2) nowReceiveSum,
+
+                <!-- (本期)订单金额 - (本期)付款 + (初期)应付款-(初期)预付款 -->
+                round((ifnull(purchaseOrder.purchaseSum, 0) - ifnull(purchasePayment.paymentSum, 0) + ifnull(paymentHist.end_value, 0)), 2) endValue,
+                '' endPlus,
+                '' endMinus
+
+                <if test="dateByNow != null and dateByNow != ''">
+                    ,#{dateByNow} paymentPeriod
+                </if>
+                ,'paymentPeriod' periodType
+            from (
+                <!--获取当前企业全部供应商 and 供应商付款初期设定-->
+                select a.id,a.code,a.name
+                from vmes_customer a
                 left join vmes_purchase_payment_build b on a.id = b.supplier_id
-            <where>
-                <if test="currentCompanyId != null and currentCompanyId != ''" >
-                    and a.company_id = #{currentCompanyId} and a.genre = '49c0a7ebcb4c4175bd5195837a6a9a13'
-                </if>
-                <if test="dateByBefore != null and dateByBefore != ''" >
-                    <![CDATA[ and b.payment_period >= #{dateByBefore} ]]>
-                </if>
-            </where>
-        ) supplier
-        left join (
-            select supplier_id,payment_period,end_plus,end_minus,end_value
-            from vmes_purchase_payment_history
-            <where>
-                <if test="dateByBefore != null and dateByBefore != ''" >
-                    and payment_period = #{dateByBefore}
-                </if>
-            </where>
-        ) paymentHist on supplier.id = paymentHist.supplier_id
-        <!--采购订单表汇总-->
-        left join (
-            select supplier_id, sum(amount) purchaseSum
-            from vmes_purchase_order
-            <where>
-                <if test="currentCompanyId != null and currentCompanyId != ''" >
-                    and company_id = #{currentCompanyId}
-                </if>
-                <if test="dateByNow != null and dateByNow != ''">
-                    and date_format(cdate, '%Y%m') = #{dateByNow}
-                </if>
-            </where>
-            group by supplier_id
-        ) purchaseOrder on supplier.id = purchaseOrder.supplier_id
-        <!--采购付款表汇总-->
-        left join (
-            select supplier_id,sum(payment_sum) paymentSum
-            from vmes_purchase_payment_record
-            <where>
-                <if test="currentCompanyId != null and currentCompanyId != ''" >
-                    and company_id = #{currentCompanyId} and type = '1'
-                </if>
-                <if test="dateByNow != null and dateByNow != ''">
-                    and date_format(cdate, '%Y%m') = #{dateByNow}
-                </if>
-            </where>
-            group by supplier_id
-        ) purchasePayment on supplier.id = purchasePayment.supplier_id
+                <where>
+                    <if test="currentCompanyId != null and currentCompanyId != ''" >
+                        and a.company_id = #{currentCompanyId} and a.genre = '49c0a7ebcb4c4175bd5195837a6a9a13'
+                    </if>
+                    <if test="dateByBefore != null and dateByBefore != ''" >
+                        <![CDATA[ and b.payment_period >= #{dateByBefore} ]]>
+                    </if>
+                </where>
+            ) supplier
+            left join (
+                select supplier_id,payment_period,end_plus,end_minus,end_value
+                from vmes_purchase_payment_history
+                <where>
+                    <if test="dateByBefore != null and dateByBefore != ''" >
+                        and payment_period = #{dateByBefore}
+                    </if>
+                </where>
+            ) paymentHist on supplier.id = paymentHist.supplier_id
+            left join (
+                <!--采购订单表汇总-->
+                select supplier_id, sum(amount) purchaseSum
+                from vmes_purchase_order
+                <where>
+                    <if test="currentCompanyId != null and currentCompanyId != ''" >
+                        and company_id = #{currentCompanyId}
+                    </if>
+                    <if test="dateByNow != null and dateByNow != ''">
+                        and date_format(cdate, '%Y%m') = #{dateByNow}
+                    </if>
+                </where>
+                group by supplier_id
+            ) purchaseOrder on supplier.id = purchaseOrder.supplier_id
+            left join (
+                <!--采购付款表汇总-->
+                select supplier_id,sum(payment_sum) paymentSum
+                from vmes_purchase_payment_record
+                <where>
+                    <if test="currentCompanyId != null and currentCompanyId != ''" >
+                        and company_id = #{currentCompanyId} and type = '1'
+                    </if>
+                    <if test="dateByNow != null and dateByNow != ''">
+                        and date_format(cdate, '%Y%m') = #{dateByNow}
+                    </if>
+                </where>
+                group by supplier_id
+            ) purchasePayment on supplier.id = purchasePayment.supplier_id
+        ) paymentHistory
+        <where>
+            <if test="paymentPeriod != null and paymentPeriod != ''" >
+                and paymentHistory.paymentPeriod = #{paymentPeriod}
+            </if>
+
+        </where>
 
     </select>
 

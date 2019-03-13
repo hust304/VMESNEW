@@ -33,6 +33,8 @@ public interface PurchaseCompanyPeriodMapper extends BaseMapper<PurchaseCompanyP
 
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+    void updatePaymentPeriod(PageData pd);
+
     /**
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2019-03-11

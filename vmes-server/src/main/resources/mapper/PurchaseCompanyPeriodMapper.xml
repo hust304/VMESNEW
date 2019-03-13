@@ -66,6 +66,16 @@
             (replace(uuid(), '-', ''),'purchaseCompanyPeriod','id','id',0, '1','1','1','0',now(), 'admin')
     </insert>
 
+    <update id="updatePaymentPeriod" parameterType="com.yvan.PageData" >
+        update vmes_purchase_company_period set
+        payment_period = #{paymentPeriod},
+        udate = now()
+        <where>
+            <if test="companyId != null and companyId != ''" >
+                and company_id = #{companyId}
+            </if>
+        </where>
+    </update>
 
     <!-- 列表(全部) 自动创建，禁止修改-->
     <select id="dataList" parameterType="com.yvan.PageData" resultType="com.xy.vmes.entity.PurchaseCompanyPeriod">

@@ -34,7 +34,7 @@ import java.util.*;
 @RestController
 @Slf4j
 public class CompanyController {
-    private Logger logger = LoggerFactory.getLogger(DepartmentController.class);
+    private Logger logger = LoggerFactory.getLogger(CompanyController.class);
     @Autowired
     private CompanyService companyService;
 

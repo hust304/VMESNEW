@@ -12,14 +12,14 @@ import com.xy.vmes.entity.PurchasePaymentHistory;
 import com.xy.vmes.service.ColumnService;
 import com.xy.vmes.service.PurchaseCompanyPeriodService;
 import com.xy.vmes.service.PurchasePaymentHistoryService;
-import com.yvan.PageData;
-import com.yvan.YvanUtil;
+import com.yvan.*;
 import com.yvan.springmvc.ResultModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.text.MessageFormat;
 import java.util.*;
-import com.yvan.Conv;
 
 /**
  * 说明：vmes_purchase_payment_history:供应商账期汇总 实现类
@@ -45,7 +45,6 @@ public class PurchasePaymentHistoryImp implements PurchasePaymentHistoryService 
     public void save(PurchasePaymentHistory object) throws Exception{
         object.setId(Conv.createUuid());
         object.setCdate(new Date());
-        object.setUdate(new Date());
         purchasePaymentHistoryMapper.insert(object);
     }
 
@@ -166,6 +165,17 @@ public class PurchasePaymentHistoryImp implements PurchasePaymentHistoryService 
         return purchasePaymentHistoryMapper.findListPurchasePaymentHistoryByPaymentPeriod(pd, pg);
     }
 
+    public List<PurchasePaymentHistory> mapList2PaymentHistoryList(List<Map<String, String>> mapList, List<PurchasePaymentHistory> objectList) {
+        if (objectList == null) {objectList = new ArrayList<PurchasePaymentHistory>();}
+        if (mapList == null || mapList.size() == 0) {return objectList;}
+
+        for (Map<String, String> mapObject : mapList) {
+            PurchasePaymentHistory paymentHistory = (PurchasePaymentHistory) HttpUtils.pageData2Entity(mapObject, new PurchasePaymentHistory());
+            objectList.add(paymentHistory);
+        }
+
+        return objectList;
+    }
     ///////////////////////////////////////////////////////////////////////////////////////////
     /**
      *
@@ -212,6 +222,8 @@ public class PurchasePaymentHistoryImp implements PurchasePaymentHistoryService 
         String dateByBefore = DateFormat.getAddDay(paymentPeriod, DateFormat.DEFAULT_MONTH, -1, "yyyyMM");
         pd.put("dateByBefore", dateByBefore);
 
+        pd.put("paymentPeriod", paymentPeriod);
+
         Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
         List<Map> varList = this.findListPurchasePaymentHistoryByPaymentPeriod(pd, pg);
         List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
@@ -229,6 +241,7 @@ public class PurchasePaymentHistoryImp implements PurchasePaymentHistoryService 
     public ResultModel addPurchasePaymentHistory(PageData pageData) throws Exception {
         ResultModel model = new ResultModel();
 
+        String cuser = pageData.getString("cuser");
         //获取当前付款期间
         String companyId = pageData.getString("currentCompanyId");
         if (companyId == null || companyId.trim().length() == 0) {
@@ -248,19 +261,31 @@ public class PurchasePaymentHistoryImp implements PurchasePaymentHistoryService 
 
         String listJsonStr = pageData.getString("listJsonStr");
         if (listJsonStr == null || listJsonStr.trim().length() == 0) {
-            String msgTemp = "您所在的企业当前付款期间({0})无供应商！" + Common.SYS_ENDLINE_DEFAULT;
+            String remark = "备注：是否设定供应商付款初期值，如果未设定请与企业管理员联系！";
+            String msgTemp = "您所在的企业当前付款期间({0})无供应商！" + Common.SYS_ENDLINE_DEFAULT + remark + Common.SYS_ENDLINE_DEFAULT;
+
+            String msgStr = MessageFormat.format(msgTemp, paymentPeriod);
             model.putCode(Integer.valueOf(1));
-            model.putMsg("");
+            model.putMsg(msgStr);
             return model;
         }
 
         List<Map<String, String>> mapList = (List<Map<String, String>>) YvanUtil.jsonToList(listJsonStr);
         if (mapList == null || mapList.size() == 0) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("订单明细Json字符串-转换成List错误！");
+            model.putMsg("Json字符串-转换成List错误！");
             return model;
         }
 
+        List<PurchasePaymentHistory> paymentHistoryList = this.mapList2PaymentHistoryList(mapList, null);
+        for (PurchasePaymentHistory paymentHistory : paymentHistoryList) {
+            paymentHistory.setCuser(cuser);
+            this.save(paymentHistory);
+        }
+
+        //当前付款期间(后一个月)
+        String paymentPeriodAfter = DateFormat.getAddDay(paymentPeriod, DateFormat.DEFAULT_MONTH, 1, "yyyyMM");
+        purchaseCompanyPeriodService.updatePaymentPeriodByCompanyId(companyId, paymentPeriodAfter);
 
         return model;
     }

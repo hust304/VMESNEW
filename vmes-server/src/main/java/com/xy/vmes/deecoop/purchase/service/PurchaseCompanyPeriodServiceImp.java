@@ -185,6 +185,18 @@ public class PurchaseCompanyPeriodServiceImp implements PurchaseCompanyPeriodSer
 
         return this.findPurchaseCompanyPeriod(findMap);
     }
+
+    public void updatePaymentPeriodByCompanyId(String companyId, String paymentPeriod) throws Exception {
+        if (companyId == null || companyId.trim().length() == 0) {return;}
+        if (paymentPeriod == null || paymentPeriod.trim().length() == 0) {return;}
+
+        PageData pageData = new PageData();
+        pageData.put("paymentPeriod", paymentPeriod);
+        pageData.put("companyId", companyId);
+
+        purchaseCompanyPeriodMapper.updatePaymentPeriod(pageData);
+
+    }
     ///////////////////////////////////////////////////////////////////////////////////////////
     /**
     *

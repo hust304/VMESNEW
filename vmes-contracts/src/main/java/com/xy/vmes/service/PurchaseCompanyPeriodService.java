@@ -98,6 +98,7 @@ public interface PurchaseCompanyPeriodService {
     List<PurchaseCompanyPeriod> findPurchaseCompanyPeriodList(PageData object) throws Exception;
     PurchaseCompanyPeriod findPurchaseCompanyPeriodByCompanyId(String companyId) throws Exception;
 
+    void updatePaymentPeriodByCompanyId(String companyId, String paymentPeriod) throws Exception;
     ///////////////////////////////////////////////////////////////////////////////////////////
     /**
     * 分页查询
