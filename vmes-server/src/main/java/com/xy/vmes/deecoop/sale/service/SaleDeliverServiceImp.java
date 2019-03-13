@@ -405,15 +405,17 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
                 companyId,
                 Common.DICTIONARY_MAP.get("saleOut"));
 
-        //获取实体仓库id
-        PageData findMap = new PageData();
-        findMap.put("companyId", companyId);
-        findMap.put("layer", "2");
-        findMap.put("isEntity", "true");
-        findMap.put("isdisable", "1");
-        findMap.put("mapSize", Integer.valueOf(findMap.size()));
-        List<Warehouse> warehouseList = warehouseService.findWarehouseList(findMap);
-        warehouseOut.setWarehouseId(warehouseList.get(0).getId());
+//        //获取实体仓库id
+//        PageData findMap = new PageData();
+//        findMap.put("companyId", companyId);
+//        findMap.put("layer", "2");
+//        findMap.put("isEntity", "true");
+//        findMap.put("isdisable", "1");
+//        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+//        List<Warehouse> warehouseList = warehouseService.findWarehouseList(findMap);
+
+        //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
+        warehouseOut.setWarehouseId(Common.DICTIONARY_MAP.get("warehouseEntity"));
         warehouseOutService.save(warehouseOut);
 
         List<WarehouseOutDetail> outDtlList = saleOrderDetailService.orderDtlList2OutDtlList(orderDtlList, null);

@@ -370,7 +370,7 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
         if (orderDetail.getProductPrice() != null) {
             invoiceDetail.setProductPrice(orderDetail.getProductPrice());
         }
-        //count 开票数量
+        //count 开票数量 <-- orderCount
         invoiceDetail.setCount(BigDecimal.valueOf(0D));
         if (orderDetail.getOrderCount() != null) {
             invoiceDetail.setCount(orderDetail.getOrderCount());

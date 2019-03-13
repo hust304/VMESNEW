@@ -305,12 +305,11 @@ public class SaleInvoiceServiceImp implements SaleInvoiceService {
 
         //获取订单明细
         List<SaleOrderDetail> orderDtlList = saleOrderDetailService.mapList2OrderDetailListByEdit(mapList, null);
-        //total_sum:合计金额
-        BigDecimal totalSum = saleOrderDetailService.findTotalSumByDetailList(orderDtlList);
+        List<SaleInvoiceDetail> invoiceDtlList = saleOrderDetailService.orderDtlList2InvoiceDtlList(orderDtlList, null);
+        BigDecimal totalSum = saleInvoiceDetailService.findTotalSumBySum(invoiceDtlList);
 
         //1. 创建开票单
         SaleInvoice invoice = new SaleInvoice();
-
         //开票单编号
         //String code = coderuleService.createCoder(companyId, "vmes_sale_invoice", "FP");
         //invoice.setSysCode(code);
@@ -324,8 +323,6 @@ public class SaleInvoiceServiceImp implements SaleInvoiceService {
         invoice.setCuser(cuser);
         saleInvoiceService.save(invoice);
 
-        //2. 创建开票单明细
-        List<SaleInvoiceDetail> invoiceDtlList = saleOrderDetailService.orderDtlList2InvoiceDtlList(orderDtlList, null);
         saleInvoiceDetailService.addInvoiceDetail(invoice, invoiceDtlList);
 
         return model;

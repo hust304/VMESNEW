@@ -1,14 +1,13 @@
 package com.xy.vmes.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
-import com.xy.vmes.entity.SaleDeliver;
-import com.xy.vmes.entity.SaleDeliverDetail;
 import com.xy.vmes.entity.SaleInvoice;
 import com.xy.vmes.entity.SaleInvoiceDetail;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -105,6 +104,8 @@ public interface SaleInvoiceDetailService {
 
     List<SaleInvoiceDetail> findSaleInvoiceDetailList(PageData object) throws Exception;
     List<SaleInvoiceDetail> findSaleInvoiceDetailListByParentId(String parentId) throws Exception;
+
+    BigDecimal findTotalSumBySum(List<SaleInvoiceDetail> objectList);
 
     void addInvoiceDetail(SaleInvoice parentObj, List<SaleInvoiceDetail> detailList) throws Exception;
 

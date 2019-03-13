@@ -31,9 +31,7 @@
             orderDetail.file_url fileUrl,
             DATE_FORMAT(orderDetail.deliver_date,'%Y-%m-%d') deliverDate,
 
-            round(ifnull(orderDetail.count, 0),2) count,
-            '' nowInvoiceCount,
-            '' nowInvoiceSum,
+            round(ifnull(orderDetail.count, 0),2) orderCount,
             orderDetail.product_id productId,
             round(ifnull(orderDetail.product_price, 0),2) productPrice,
             round(ifnull(orderDetail.product_sum, 0),2) productSum,
@@ -51,7 +49,11 @@
             <!--发货完成数量-->
             round(ifnull(deliver.deliver_count, 0),2) deliverCount,
             <!--开票数量(已生成)-->
-            round(ifnull(invoice.invoice_count, 0),2) invoiceCount
+            round(ifnull(invoice.invoice_count, 0),2) invoiceCount,
+
+            round((ifnull(orderDetail.count, 0) - ifnull(invoice.invoice_count, 0)), 2) notInvoiceCount,
+            round((ifnull(orderDetail.count, 0) - ifnull(invoice.invoice_count, 0)), 2) count,
+            round((ifnull(orderDetail.count, 0) - ifnull(invoice.invoice_count, 0)) * ifnull(orderDetail.product_price, 0), 2) nowInvoiceSum
 
         from view_sale_order_detail_by_invoice orderDetail
             left join vmes_product product on orderDetail.product_id = product.id
@@ -113,7 +115,7 @@
             (replace(uuid(), '-', ''), 'saleOrderDetailByInvoice', 'productType', '货品类型id', 7, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
             (replace(uuid(), '-', ''), 'saleOrderDetailByInvoice', 'priceUnit', '计价单位id', 8, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
             (replace(uuid(), '-', ''), 'saleOrderDetailByInvoice', 'priceUnitName', '单位', 8, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
-            (replace(uuid(), '-', ''), 'saleOrderDetailByInvoice', 'count', '订购数量', 9, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByInvoice', 'orderCount', '订购数量', 9, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
             (replace(uuid(), '-', ''), 'saleOrderDetailByInvoice', 'productPrice', '单价', 10, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
             (replace(uuid(), '-', ''), 'saleOrderDetailByInvoice', 'productSum', '订购金额', 11, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
             (replace(uuid(), '-', ''), 'saleOrderDetailByInvoice', 'deliverCount', '已发货数量', 12, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
@@ -126,6 +128,8 @@
             (replace(uuid(), '-', ''), 'saleOrderDetailByInvoice', 'stateName', '状态', 21, '1', '0', '1', '0', '2018-12-6 09:25:40', 'admin'),
             (replace(uuid(), '-', ''), 'saleOrderDetailByInvoice', 'state', '明细状态id', 21, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
             (replace(uuid(), '-', ''), 'saleOrderDetailByInvoice', 'priceType', 'priceType', 33, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin')
+
+            (replace(uuid(), '-', ''), 'saleOrderDetailByInvoice', 'count', '开票数量', 34, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
 
     </insert>
 

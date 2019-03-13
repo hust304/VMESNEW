@@ -2,6 +2,7 @@ package com.xy.vmes.deecoop.sale.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
+import com.xy.vmes.common.util.Common;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.sale.dao.SaleInvoiceDetailMapper;
 import com.xy.vmes.entity.Column;
@@ -18,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 import com.yvan.Conv;
@@ -33,7 +35,6 @@ import javax.servlet.http.HttpServletResponse;
 @Service
 @Transactional(readOnly = false)
 public class SaleInvoiceDetailServiceImp implements SaleInvoiceDetailService {
-
 
     @Autowired
     private SaleInvoiceDetailMapper saleInvoiceDetailMapper;
@@ -204,6 +205,24 @@ public class SaleInvoiceDetailServiceImp implements SaleInvoiceDetailService {
         findMap.put("parentId", parentId);
 
         return this.findSaleInvoiceDetailList(findMap);
+    }
+
+    public BigDecimal findTotalSumBySum(List<SaleInvoiceDetail> objectList) {
+        if (objectList == null || objectList.size() == 0) {return BigDecimal.valueOf(0D);}
+
+        double totalSum_double = 0D;
+        for (SaleInvoiceDetail detail : objectList) {
+
+            double sum_double = 0D;
+            if (detail.getSum() != null) {
+                sum_double = detail.getSum().doubleValue();
+            }
+
+            totalSum_double = totalSum_double + sum_double;
+        }
+
+        //四舍五入到2位小数
+        return BigDecimal.valueOf(totalSum_double).setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
