@@ -2,7 +2,7 @@ package com.xy.vmes.deecoop.purchase.dao;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
-import com.xy.vmes.entity.PurchasePaymentHistory;
+import com.xy.vmes.entity.PurchaseCompanyPeriod;
 import com.yvan.PageData;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
@@ -11,13 +11,13 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 说明：vmes_purchase_payment_history:供应商账期汇总 Mapper.java
- * 创建人：陈刚 自动创建
- * 创建时间：2019-03-11
- */
+* 说明：vmes_purchase_company_period:采购企业付款期设定 Mapper.java
+* 创建人：陈刚 自动创建
+* 创建时间：2019-03-12
+*/
 @Mapper
 @Repository
-public interface PurchasePaymentHistoryMapper extends BaseMapper<PurchasePaymentHistory> {
+public interface PurchaseCompanyPeriodMapper extends BaseMapper<PurchaseCompanyPeriod> {
 
     /**
      * 创建人：陈刚 自动创建，禁止修改
@@ -37,13 +37,13 @@ public interface PurchasePaymentHistoryMapper extends BaseMapper<PurchasePayment
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2019-03-11
      */
-    List<PurchasePaymentHistory> dataList(PageData pd);
+    List<PurchaseCompanyPeriod> dataList(PageData pd);
 
     /**
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2019-03-11
      */
-    List<Map> findListPurchasePaymentHistoryByPaymentPeriod(PageData pd, Pagination pg);
+    List<Map> getDataListPage(PageData pd, Pagination pg);
 }
 
 

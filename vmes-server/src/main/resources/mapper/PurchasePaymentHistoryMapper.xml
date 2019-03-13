@@ -29,27 +29,30 @@
 
     <!-- ***************************************************以上为自动生成代码禁止修改，请在下面添加业务代码************************************************* -->
     <insert id="insertColumn" >
-        delete from vmes_column where model_code = 'purchaseReceiveCollect' ;
+        delete from vmes_column where model_code = 'purchasePaymentHistory' ;
         insert into vmes_column (
         id,model_code,title_key,title_name,serial_number,
         isdisable,ishide,isedit,ismust,cdate,
         cuser
         ) VALUES
-        (replace(uuid(), '-', ''),'purchaseReceiveCollect','supplierId','供应商ID',1, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'purchaseReceiveCollect','collectDate','汇总日期(yyyy-mm)',2, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'purchaseReceiveCollect','beginPlus','应付款(期初)',3, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'purchaseReceiveCollect','beginMinus','预付款(期初)',4, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'purchaseReceiveCollect','nowOrderSum','采购订单金额(本期)',5, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'purchaseReceiveCollect','nowReceiveSum','付款金额(本期)',6, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'purchaseReceiveCollect','endPlus','应付款(期末)',7, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'purchaseReceiveCollect','endMinus','预付款(期末)',8, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'purchaseReceiveCollect','cuser','创建用户id',9, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'purchaseReceiveCollect','cdate','创建时间',10, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'purchaseReceiveCollect','uuser','修改用户id',11, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'purchaseReceiveCollect','udate','修改时间',12, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'purchaseReceiveCollect','remark','备注',13, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'purchaseReceiveCollect','isdisable','是否启用(0:已禁用 1:启用)',14, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'purchaseReceiveCollect','id','id',0, '1','1','1','0',now(), 'admin')
+        (replace(uuid(), '-', ''),'purchasePaymentHistory','id','id',0, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'purchasePaymentHistory','supplierId','供应商ID',1, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'purchasePaymentHistory','supplierCode','供应商编号',2, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'purchasePaymentHistory','supplierName','供应商名称',3, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'purchasePaymentHistory','paymentPeriod','付款期间',4, '1','1','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'purchasePaymentHistory','beginPlus','应付款(期初)',5, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'purchasePaymentHistory','beginMinus','预付款(期初)',6, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'purchasePaymentHistory','beginValue','付款值(期初)',7, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'purchasePaymentHistory','nowOrderSum','采购订单金额(本期)',8, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'purchasePaymentHistory','nowPaymentSum','付款金额(本期)',9, '1','1','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'purchasePaymentHistory','endPlus','应付款(期末)',10, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'purchasePaymentHistory','endMinus','预付款(期末)',11, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'purchasePaymentHistory','endValue','付款值(期末)',12, '1','1','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'purchasePaymentHistory','isPaymentPeriod','是否当前付款期间',13, '1','1','1','0',now(), 'admin')
+
     </insert>
 
 
@@ -104,7 +107,7 @@
         </if>
     </select>
 
-    <select id="findListPageByPaymentPeriod" parameterType="com.yvan.PageData" resultType="java.util.Map">
+    <select id="findListPurchasePaymentHistoryByPaymentPeriod" parameterType="com.yvan.PageData" resultType="java.util.Map">
         <!--供应商付款汇总历史(当前付款期-以前)-->
         select
         a.id id,
@@ -112,7 +115,6 @@
         b.code supplierCode,
         b.name supplierName,
 
-        a.payment_period paymentPeriod,
         a.begin_plus beginPlus,
         a.begin_minus beginMinus,
         a.begin_value beginValue,
@@ -120,9 +122,11 @@
         a.now_order_sum nowOrderSum,
         a.now_payment_sum nowPaymentSum,
 
+        a.end_value endValue,
         a.end_plus endPlus,
         a.end_minus endMinus,
-        a.end_value endValue
+
+        a.payment_period paymentPeriod
         from vmes_purchase_payment_history a
             left join vmes_customer b on a.supplier_id = b.id
         <where>
@@ -165,7 +169,7 @@
                     and a.company_id = #{currentCompanyId} and a.genre = '49c0a7ebcb4c4175bd5195837a6a9a13'
                 </if>
                 <if test="dateByBefore != null and dateByBefore != ''" >
-                    <![CDATA[ and b.payment_period > #{dateByBefore} ]]>
+                    <![CDATA[ and b.payment_period >= #{dateByBefore} ]]>
                 </if>
             </where>
         ) supplier
@@ -174,7 +178,7 @@
             from vmes_purchase_payment_history
             <where>
                 <if test="dateByBefore != null and dateByBefore != ''" >
-                    and b.payment_period = #{dateByBefore}
+                    and payment_period = #{dateByBefore}
                 </if>
             </where>
         ) paymentHist on supplier.id = paymentHist.supplier_id
@@ -191,7 +195,7 @@
                 </if>
             </where>
             group by supplier_id
-        ) purchaseOrder on customer.id = purchaseOrder.supplier_id
+        ) purchaseOrder on supplier.id = purchaseOrder.supplier_id
         <!--采购付款表汇总-->
         left join (
             select supplier_id,sum(payment_sum) paymentSum
@@ -205,7 +209,7 @@
                 </if>
             </where>
             group by supplier_id
-        ) purchasePayment on customer.id = purchaseReceive.supplier_id
+        ) purchasePayment on supplier.id = purchasePayment.supplier_id
 
     </select>
 

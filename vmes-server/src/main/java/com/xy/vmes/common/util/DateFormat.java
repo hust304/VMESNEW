@@ -80,4 +80,13 @@ public class DateFormat {
         String day = dateFormat.format(rightNow.getTime());
         return day;
     }
+
+    public static void main(String args[]) throws ParseException {
+        //Date date = DateFormat.dateString2Date("201902", "yyyyMM");
+
+        String dateStr = DateFormat.getAddDay("201901", DateFormat.DEFAULT_MONTH, -1, "yyyyMM");
+
+        //String dateStr = date2String(date, "yyyy-MM-dd");
+        System.out.println("dateStr: " + dateStr);
+    }
 }

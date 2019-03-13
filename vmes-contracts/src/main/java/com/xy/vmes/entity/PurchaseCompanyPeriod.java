@@ -8,12 +8,12 @@ import java.util.*;
 import java.math.BigDecimal;
 
 /** 
- * 说明：vmes_purchase_payment_record:供应商付款记录表 实体类
+ * 说明：vmes_purchase_company_period:采购企业付款期设定 实体类
  * @author 陈刚 自动生成
- * @date 2019-03-11
+ * @date 2019-03-12
  */
-@TableName("vmes_purchase_payment_record")
-public class PurchasePaymentRecord implements Serializable {
+@TableName("vmes_purchase_company_period")
+public class PurchaseCompanyPeriod implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	//
@@ -22,19 +22,16 @@ public class PurchasePaymentRecord implements Serializable {
 	//企业ID
 	@TableField("company_id")
 	private String companyId;
-	//供应商ID
-	@TableField("supplier_id")
-	private String supplierId;
-	//付款类型(1:付款 2:退款)
-	@TableField("type")
-	private String type;
-	//付款金额
-	@TableField("payment_sum")
-	private BigDecimal paymentSum;
-
+	//初始付款期(yyyymm)
+	@TableField("initial_period")
+	private String initialPeriod;
+	//当前付款期(yyyymm)
+	@TableField("payment_period")
+	private String paymentPeriod;
 	//创建用户id
 	@TableField("cuser")
 	private String cuser;
+
 	//创建时间
 	@TableField("cdate")
 	private Date cdate;
@@ -47,7 +44,6 @@ public class PurchasePaymentRecord implements Serializable {
 	//备注
 	@TableField("remark")
 	private String remark;
-
 	//是否启用(0:已禁用 1:启用)
 	@TableField("isdisable")
 	private String isdisable;
@@ -65,23 +61,17 @@ public class PurchasePaymentRecord implements Serializable {
 	public String getCompanyId() {
 		return companyId;
 	}
-	public void setSupplierId(String supplierId) {
-		this.supplierId = supplierId;
+	public void setInitialPeriod(String initialPeriod) {
+		this.initialPeriod = initialPeriod;
 	}
-	public String getSupplierId() {
-		return supplierId;
+	public String getInitialPeriod() {
+		return initialPeriod;
 	}
-	public void setType(String type) {
-		this.type = type;
+	public void setPaymentPeriod(String paymentPeriod) {
+		this.paymentPeriod = paymentPeriod;
 	}
-	public String getType() {
-		return type;
-	}
-	public BigDecimal getPaymentSum() {
-		return paymentSum;
-	}
-	public void setPaymentSum(BigDecimal paymentSum) {
-		this.paymentSum = paymentSum;
+	public String getPaymentPeriod() {
+		return paymentPeriod;
 	}
 	public void setCuser(String cuser) {
 		this.cuser = cuser;

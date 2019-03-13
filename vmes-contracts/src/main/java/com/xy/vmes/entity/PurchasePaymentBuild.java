@@ -32,6 +32,9 @@ public class PurchasePaymentBuild implements Serializable {
 	@TableField("begin_minus")
 	private BigDecimal beginMinus;
 
+	//付款值(期初)
+	@TableField("begin_value")
+	private BigDecimal beginValue;
 	//创建用户id
 	@TableField("cuser")
 	private String cuser;
@@ -44,10 +47,10 @@ public class PurchasePaymentBuild implements Serializable {
 	//修改时间
 	@TableField("udate")
 	private Date udate;
+
 	//备注
 	@TableField("remark")
 	private String remark;
-
 	//是否启用(0:已禁用 1:启用)
 	@TableField("isdisable")
 	private String isdisable;
@@ -119,7 +122,12 @@ public class PurchasePaymentBuild implements Serializable {
 	public String getIsdisable() {
 		return isdisable;
 	}
-
+	public BigDecimal getBeginValue() {
+		return beginValue;
+	}
+	public void setBeginValue(BigDecimal beginValue) {
+		this.beginValue = beginValue;
+	}
 /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 

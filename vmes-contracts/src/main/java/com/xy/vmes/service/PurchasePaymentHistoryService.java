@@ -77,12 +77,6 @@ public interface PurchasePaymentHistoryService {
     List<PurchasePaymentHistory> dataList(PageData pd) throws Exception;
 
     /**
-     * 创建人：陈刚 自动创建，禁止修改
-     * 创建时间：2019-03-11
-     */
-    List<Map> getDataListPage(PageData pd, Pagination pg) throws Exception;
-
-    /**
      *
      * @param pageData    查询参数对象<HashMap>
      * @param isQueryAll  是否查询全部
@@ -94,7 +88,13 @@ public interface PurchasePaymentHistoryService {
      */
     List<PurchasePaymentHistory> findDataList(PageData pageData, Boolean isQueryAll) throws Exception;
 
+    /**
+     * 创建人：陈刚 自动创建，禁止修改
+     * 创建时间：2019-03-11
+     */
+    List<Map> findListPurchasePaymentHistoryByPaymentPeriod(PageData pd, Pagination pg) throws Exception;
     ///////////////////////////////////////////////////////////////////////////////////////////
+
     /**
      * 分页查询
      * @param pd    查询参数对象PageData
@@ -103,5 +103,6 @@ public interface PurchasePaymentHistoryService {
      * @throws Exception
      */
     ResultModel listPagePurchasePaymentHistory(PageData pd,Pagination pg) throws Exception;
+    ResultModel addPurchasePaymentHistory(PageData pageData) throws Exception;
 
 }

@@ -1,14 +1,19 @@
 package com.xy.vmes.deecoop.purchase.service;
 
+import com.xy.vmes.common.util.Common;
+import com.xy.vmes.common.util.DateFormat;
 import com.xy.vmes.deecoop.purchase.dao.PurchasePaymentHistoryMapper;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.entity.Column;
+import com.xy.vmes.entity.PurchaseCompanyPeriod;
 import com.xy.vmes.entity.PurchasePaymentHistory;
 import com.xy.vmes.service.ColumnService;
+import com.xy.vmes.service.PurchaseCompanyPeriodService;
 import com.xy.vmes.service.PurchasePaymentHistoryService;
 import com.yvan.PageData;
+import com.yvan.YvanUtil;
 import com.yvan.springmvc.ResultModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,10 +29,11 @@ import com.yvan.Conv;
 @Service
 @Transactional(readOnly = false)
 public class PurchasePaymentHistoryImp implements PurchasePaymentHistoryService {
-
-
     @Autowired
     private PurchasePaymentHistoryMapper purchasePaymentHistoryMapper;
+    @Autowired
+    private PurchaseCompanyPeriodService purchaseCompanyPeriodService;
+
     @Autowired
     private ColumnService columnService;
 
@@ -156,10 +162,9 @@ public class PurchasePaymentHistoryImp implements PurchasePaymentHistoryService 
      * 创建时间：2019-03-11
      */
     @Override
-    public List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception{
-        return purchasePaymentHistoryMapper.getDataListPage(pd, pg);
+    public List<Map> findListPurchasePaymentHistoryByPaymentPeriod(PageData pd,Pagination pg) throws Exception{
+        return purchasePaymentHistoryMapper.findListPurchasePaymentHistoryByPaymentPeriod(pd, pg);
     }
-
 
     ///////////////////////////////////////////////////////////////////////////////////////////
     /**
@@ -171,8 +176,8 @@ public class PurchasePaymentHistoryImp implements PurchasePaymentHistoryService 
      */
     public ResultModel listPagePurchasePaymentHistory(PageData pd,Pagination pg) throws Exception{
         ResultModel model = new ResultModel();
-        Map result = new HashMap();
-        List<Column> columnList = columnService.findColumnList("purchaseReceiveCollect");
+
+        List<Column> columnList = columnService.findColumnList("purchasePaymentHistory");
         if (columnList == null || columnList.size() == 0) {
             model.putCode("1");
             model.putMsg("数据库没有生成TabCol，请联系管理员！");
@@ -185,15 +190,78 @@ public class PurchasePaymentHistoryImp implements PurchasePaymentHistoryService 
             columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
         }
 
+        //获取当前付款期间
+        String companyId = pd.getString("currentCompanyId");
+        if (companyId == null || companyId.trim().length() == 0) {
+            model.putCode("1");
+            model.putMsg("企业id为空或空字符串！");
+            return model;
+        }
+
+        //paymentPeriod 当前付款期(yyyymm)
+        PurchaseCompanyPeriod companyPeriod = purchaseCompanyPeriodService.findPurchaseCompanyPeriodByCompanyId(companyId);
+        if (companyPeriod == null || companyPeriod.getPaymentPeriod() == null || companyPeriod.getPaymentPeriod().trim().length() == 0) {
+            model.putCode("1");
+            model.putMsg("您所在的企业无当前付款期间，请与管理员联系！");
+            return model;
+        }
+        String paymentPeriod = companyPeriod.getPaymentPeriod();
+        pd.put("dateByNow", paymentPeriod);
+
+        //当前付款期(前一个月)
+        String dateByBefore = DateFormat.getAddDay(paymentPeriod, DateFormat.DEFAULT_MONTH, -1, "yyyyMM");
+        pd.put("dateByBefore", dateByBefore);
+
         Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
-        List<Map> varList = this.getDataListPage(pd,pg);
+        List<Map> varList = this.findListPurchasePaymentHistoryByPaymentPeriod(pd, pg);
         List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
 
+        Map result = new HashMap();
         result.put("hideTitles",titleMap.get("hideTitles"));
         result.put("titles",titleMap.get("titles"));
         result.put("varList",varMapList);
         result.put("pageData", pg);
+
         model.putResult(result);
+        return model;
+    }
+
+    public ResultModel addPurchasePaymentHistory(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+
+        //获取当前付款期间
+        String companyId = pageData.getString("currentCompanyId");
+        if (companyId == null || companyId.trim().length() == 0) {
+            model.putCode("1");
+            model.putMsg("企业id为空或空字符串！");
+            return model;
+        }
+
+        //paymentPeriod 当前付款期(yyyymm)
+        PurchaseCompanyPeriod companyPeriod = purchaseCompanyPeriodService.findPurchaseCompanyPeriodByCompanyId(companyId);
+        if (companyPeriod == null || companyPeriod.getPaymentPeriod() == null || companyPeriod.getPaymentPeriod().trim().length() == 0) {
+            model.putCode("1");
+            model.putMsg("您所在的企业无当前付款期间，请与管理员联系！");
+            return model;
+        }
+        String paymentPeriod = companyPeriod.getPaymentPeriod();
+
+        String listJsonStr = pageData.getString("listJsonStr");
+        if (listJsonStr == null || listJsonStr.trim().length() == 0) {
+            String msgTemp = "您所在的企业当前付款期间({0})无供应商！" + Common.SYS_ENDLINE_DEFAULT;
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("");
+            return model;
+        }
+
+        List<Map<String, String>> mapList = (List<Map<String, String>>) YvanUtil.jsonToList(listJsonStr);
+        if (mapList == null || mapList.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("订单明细Json字符串-转换成List错误！");
+            return model;
+        }
+
+
         return model;
     }
 
