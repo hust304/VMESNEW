@@ -257,19 +257,8 @@ public class PurchasePlanServiceImp implements PurchasePlanService {
         Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
 
 
-        List<Map> varMapList = new ArrayList();
         List<Map> varList = this.getDataListPage(pd,pg);
-        if(varList!=null&&varList.size()>0){
-            for(int i=0;i<varList.size();i++){
-                Map map = varList.get(i);
-                Map<String, String> varMap = new HashMap<String, String>();
-                varMap.putAll((Map<String, String>)titleMap.get("varModel"));
-                for (Map.Entry<String, String> entry : varMap.entrySet()) {
-                    varMap.put(entry.getKey(),map.get(entry.getKey())!=null?map.get(entry.getKey()).toString():"");
-                }
-                varMapList.add(varMap);
-            }
-        }
+        List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
         result.put("hideTitles",titleMap.get("hideTitles"));
         result.put("titles",titleMap.get("titles"));
         result.put("varList",varMapList);

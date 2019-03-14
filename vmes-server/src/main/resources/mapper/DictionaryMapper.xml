@@ -219,6 +219,9 @@
             <if test="pid!= null and pid != ''"><!-- 关键词检索 -->
                 and a.pid = #{pid}
             </if>
+            <if test="id!= null and id != ''"><!-- 关键词检索 -->
+                and a.id = #{id}
+            </if>
             <if test="isdisable!= null and isdisable != ''"><!-- 关键词检索 -->
                 and a.isdisable = #{isdisable}
             </if>
@@ -247,6 +250,9 @@
             </if>
             <if test="pid!= null and pid != ''"><!-- 关键词检索 -->
                 and a.pid = #{pid}
+            </if>
+            <if test="id!= null and id != ''"><!-- 关键词检索 -->
+                and a.id = #{id}
             </if>
             <if test="currentCompanyId != null and currentCompanyId != ''">
                 and a.company_id = #{currentCompanyId}
@@ -294,6 +300,9 @@
             </if>
             <if test="pid != null and pid != ''">
                 and pid = #{pid}
+            </if>
+            <if test="id!= null and id != ''"><!-- 关键词检索 -->
+                and id = #{id}
             </if>
             <if test="isdisable!= null and isdisable != ''">
                 and isdisable = #{isdisable}
@@ -358,7 +367,6 @@
                     <if test="currentCompanyId != null and currentCompanyId != ''">
                         and company_id = #{currentCompanyId}
                     </if>
-
                     <if test="isdisable != null and isdisable!=''" >
                         and isdisable = #{isdisable}
                     </if>

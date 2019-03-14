@@ -175,6 +175,8 @@ public interface PurchaseOrderService {
     ResultModel editPurchaseOrder(PageData pd) throws Exception;
 
     void updateState(String id) throws Exception;
+
+    ResultModel signPurchaseOrder(PageData pd) throws Exception;
 }
 
 

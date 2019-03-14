@@ -1,18 +1,14 @@
 package com.xy.vmes.deecoop.purchase.service;
 
 
+import com.xy.vmes.common.util.Common;
 import com.xy.vmes.deecoop.purchase.dao.PurchaseOrderMapper;
-import com.xy.vmes.entity.PurchaseOrder;
-import com.xy.vmes.entity.PurchaseOrderDetail;
-import com.xy.vmes.service.CoderuleService;
-import com.xy.vmes.service.PurchaseOrderDetailService;
-import com.xy.vmes.service.PurchaseOrderService;
+import com.xy.vmes.entity.*;
+import com.xy.vmes.service.*;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.StringUtil;
-import com.xy.vmes.entity.Column;
-import com.xy.vmes.service.ColumnService;
 import com.yvan.*;
 import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
@@ -20,6 +16,9 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.text.MessageFormat;
 import java.util.*;
 
 import org.springframework.web.multipart.MultipartFile;
@@ -43,6 +42,16 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService {
     private CoderuleService coderuleService;
     @Autowired
     private PurchaseOrderDetailService purchaseOrderDetailService;
+    @Autowired
+    private WarehouseInService warehouseInService;
+    @Autowired
+    private WarehouseInDetailService warehouseInDetailService;
+    @Autowired
+    private PurchaseSignService purchaseSignService;
+    @Autowired
+    private PurchaseSignDetailService purchaseSignDetailService;
+    @Autowired
+    private FileService fileService;
     /**
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2019-03-05
@@ -461,6 +470,96 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService {
         return model;
     }
 
+
+    @Override
+    public ResultModel signPurchaseOrder(PageData pd) throws Exception {
+
+        ResultModel model = new ResultModel();
+        String dtlJsonStr = pd.getString("dtlJsonStr");
+
+        if (dtlJsonStr == null || dtlJsonStr.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("请至少添加选择一条货品数据！");
+            return model;
+        }
+
+        List<Map<String, String>> mapList = (List<Map<String, String>>) YvanUtil.jsonToList(dtlJsonStr);
+        if (mapList == null || mapList.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("采购签收单明细Json字符串-转换成List错误！");
+            return model;
+        }
+
+        String companyID = pd.getString("currentCompanyId");
+
+
+        WarehouseIn warehouseIn = (WarehouseIn) HttpUtils.pageData2Entity(pd, new WarehouseIn());
+        warehouseIn.setId(Conv.createUuid());
+        //状态(0:未完成 1:已完成 -1:已取消)
+        warehouseIn.setState("0");
+        warehouseIn.setCompanyId(companyID);
+        //入库单编号
+        String code = coderuleService.createCoder(companyID, "vmes_warehouse_in", "I");
+        warehouseIn.setCode(code);
+        warehouseInService.save(warehouseIn);
+
+        PurchaseSign purchaseSign =  new PurchaseSign();
+        purchaseSign.setSdate(new Date());
+        purchaseSign.setSignId(warehouseIn.getMakeId());
+        purchaseSign.setCompanyId(companyID);
+        purchaseSignService.save(purchaseSign);
+
+        String purchaseOrderId = null;
+        if(mapList!=null&&mapList.size()>0){
+            for(int i=0;i<mapList.size();i++){
+                Map<String, String> detailMap = mapList.get(i);
+                WarehouseInDetail warehouseInDetail = (WarehouseInDetail)HttpUtils.pageData2Entity(detailMap, new WarehouseInDetail());
+                warehouseInDetail.setId(Conv.createUuid());
+                warehouseInDetail.setState("0");
+                warehouseInDetail.setParentId(warehouseIn.getId());
+                warehouseInDetail.setCuser(warehouseIn.getCuser());
+                //获取批次号
+                //PC+yyyyMMdd+00001 = 15位
+                code = coderuleService.createCoderCdateByDate(warehouseIn.getCompanyId(),
+                        "vmes_warehouse_in_detail",
+                        "yyyyMMdd",
+                        "PC");
+                warehouseInDetail.setCode(code);
+                //生成二维码
+                String qrcode = fileService.createQRCode("warehouseIn", warehouseInDetail.getId());
+                warehouseInDetail.setQrcode(qrcode);
+                warehouseInDetailService.save(warehouseInDetail);
+
+                String orderDetailId = detailMap.get("orderDetailId");
+                PurchaseSignDetail purchaseSignDetail = new PurchaseSignDetail();
+                purchaseSignDetail.setInDetailId(warehouseInDetail.getId());
+                purchaseSignDetail.setOrderDetailId(orderDetailId);
+                purchaseSignDetail.setArriveCount(warehouseInDetail.getCount());
+                purchaseSignDetail.setProductId(warehouseInDetail.getProductId());
+                purchaseSignDetail.setParentId(purchaseSign.getId());
+                purchaseSignDetail.setCuser(purchaseSign.getCuser());
+                purchaseSignDetail.setUuser(purchaseSign.getUuser());
+                purchaseSignDetailService.save(purchaseSignDetail);
+                PurchaseOrderDetail purchaseOrderDetail = purchaseOrderDetailService.selectById(orderDetailId);
+                purchaseOrderId = purchaseOrderDetail.getParentId();
+                BigDecimal arriveCount = purchaseOrderDetail.getArriveCount().add(warehouseInDetail.getCount());
+                purchaseOrderDetail.setArriveCount(arriveCount);
+                if(arriveCount.compareTo(BigDecimal.ZERO)>=0){
+                    if(arriveCount.compareTo(purchaseOrderDetail.getCount())>=0){
+                        purchaseOrderDetail.setState("4");
+                    }else{
+                        purchaseOrderDetail.setState("3");
+                    }
+                }else{
+                    purchaseOrderDetail.setState("2");
+                }
+                purchaseOrderDetailService.update(purchaseOrderDetail);
+            }
+        }
+        this.updateState(purchaseOrderId);
+        return model;
+    }
+
     @Override
     public ResultModel addPurchaseOrder(PageData pd) throws Exception {
         ResultModel model = new ResultModel();
@@ -543,11 +642,13 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService {
     @Override
     public void updateState(String id) throws Exception {
         PurchaseOrder purchaseOrder = this.selectById(id);
-        //(0:待提交 1:待审核 2:采购中 3:已完成 -1:已取消)
+        //0:待提交 1:待审核 2:采购中 3:已完成 -1:已取消
+        //0:待提交 1:待审核 2:采购中 3:部分签收 4:已完成 -1:已取消
         int yqx = 0;//已取消
         int dtj = 0;//待提交
         int dsh = 0;//待审核
         int cgz = 0;//采购中
+        int bfqs = 0;//部分签收
         int ywc = 0;//已完成
         if(purchaseOrder!=null){
             Map columnMap = new HashMap();
@@ -565,6 +666,8 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService {
                     }else if("2".equals(purchaseOrderDetail.getState())){
                         cgz = cgz + 1;
                     }else if("3".equals(purchaseOrderDetail.getState())){
+                        bfqs = bfqs + 1;
+                    }else if("4".equals(purchaseOrderDetail.getState())){
                         ywc = ywc + 1;
                     }
                 }
@@ -574,29 +677,30 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService {
                 return;
             }
             //该单据明细状态全是已取消状态，则说明当前单据状态为已取消
-            if(yqx>0&&dtj==0&&dsh==0&&cgz==0&&ywc==0){
+            if(yqx>0&&dtj==0&&dsh==0&&cgz==0&&ywc==0&&bfqs==0){
                 purchaseOrder.setState("-1");//已取消
             }
             //该单据明细状态全是已完成和已取消状态，则说明当前单据状态为已完成
-            else if(ywc>0&&dtj==0&&dsh==0&&cgz==0){
+            else if(ywc>0&&dtj==0&&dsh==0&&cgz==0&&bfqs==0){
                 purchaseOrder.setState("3");//已完成
             }
             //该单据明细状态全是待提交和已取消状态，则说明当前单据状态为待提交
-            else if(dtj>0&&ywc==0&&dsh==0&&cgz==0){
+            else if(dtj>0&&ywc==0&&dsh==0&&cgz==0&&bfqs==0){
                 purchaseOrder.setState("0");//待提交
             }
             //该单据明细状态全是待审核和已取消状态，则说明当前单据状态为待审核
-            else if(dsh>0&&dtj==0&&ywc==0&&cgz==0){
+            else if(dsh>0&&dtj==0&&ywc==0&&cgz==0&&bfqs==0){
                 purchaseOrder.setState("1");//待审核
             }
             //该单据明细状态存在采购中，则说明当前单据状态为采购中
-            else if(cgz>0){
+            else if(cgz>0||bfqs>0){
                 purchaseOrder.setState("2");//采购中
             }
             this.update(purchaseOrder);
         }
 
     }
+
 
 }
 

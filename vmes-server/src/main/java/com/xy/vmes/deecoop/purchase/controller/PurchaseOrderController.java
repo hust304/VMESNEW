@@ -278,7 +278,7 @@ public class PurchaseOrderController {
         PageData pd = HttpUtils.parsePageData();
         ResultModel model = purchaseOrderService.addPurchaseOrder(pd);
         Long endTime = System.currentTimeMillis();
-        logger.info("################/purchase/purchasePlan/addPurchaseOrder 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/purchase/purchaseOrder/addPurchaseOrder 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
     /**
@@ -294,7 +294,24 @@ public class PurchaseOrderController {
         PageData pd = HttpUtils.parsePageData();
         ResultModel model = purchaseOrderService.editPurchaseOrder(pd);
         Long endTime = System.currentTimeMillis();
-        logger.info("################/purchase/purchasePlan/editPurchaseOrder 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/purchase/purchaseOrder/editPurchaseOrder 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * @author 刘威 自动创建，禁止修改
+     * @date 2019-02-28
+     */
+    @PostMapping("/purchase/purchaseOrder/signPurchaseOrder")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel signPurchaseOrder()  throws Exception {
+
+        logger.info("################/purchase/purchaseOrder/signPurchaseOrder 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = purchaseOrderService.signPurchaseOrder(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/purchase/purchaseOrder/signPurchaseOrder 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
