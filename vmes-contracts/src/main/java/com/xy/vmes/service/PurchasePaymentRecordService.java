@@ -109,7 +109,8 @@ public interface PurchasePaymentRecordService {
     * @throws Exception
     */
     ResultModel listPagePurchasePaymentRecord(PageData pd, Pagination pg) throws Exception;
-
+    ResultModel addPaymentRecord(PageData pageData) throws Exception;
+    ResultModel backPaymentRecord(PageData pageData) throws Exception;
     /**
     * 导出
     * @param pd    查询参数对象PageData

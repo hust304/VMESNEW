@@ -32,6 +32,9 @@ public class PurchasePaymentRecord implements Serializable {
 	@TableField("payment_sum")
 	private BigDecimal paymentSum;
 
+	//付款值(大于零:付款 小于零:退款)
+	@TableField("payment_value")
+	private BigDecimal paymentValue;
 	//创建用户id
 	@TableField("cuser")
 	private String cuser;
@@ -44,10 +47,10 @@ public class PurchasePaymentRecord implements Serializable {
 	//修改时间
 	@TableField("udate")
 	private Date udate;
+
 	//备注
 	@TableField("remark")
 	private String remark;
-
 	//是否启用(0:已禁用 1:启用)
 	@TableField("isdisable")
 	private String isdisable;
@@ -119,8 +122,13 @@ public class PurchasePaymentRecord implements Serializable {
 	public String getIsdisable() {
 		return isdisable;
 	}
-
-/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+	public BigDecimal getPaymentValue() {
+		return paymentValue;
+	}
+	public void setPaymentValue(BigDecimal paymentValue) {
+		this.paymentValue = paymentValue;
+	}
+	/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 
 }

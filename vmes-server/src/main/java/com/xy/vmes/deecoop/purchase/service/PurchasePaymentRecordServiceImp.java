@@ -18,6 +18,8 @@ import com.yvan.springmvc.ResultModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
 import java.util.*;
 import com.yvan.Conv;
 import org.springframework.web.multipart.MultipartFile;
@@ -45,7 +47,6 @@ public class PurchasePaymentRecordServiceImp implements PurchasePaymentRecordSer
     public void save(PurchasePaymentRecord object) throws Exception{
         object.setId(Conv.createUuid());
         object.setCdate(new Date());
-        object.setUdate(new Date());
         purchasePaymentRecordMapper.insert(object);
     }
 
@@ -221,6 +222,54 @@ public class PurchasePaymentRecordServiceImp implements PurchasePaymentRecordSer
         result.put("varList",varMapList);
         result.put("pageData", pg);
         model.putResult(result);
+        return model;
+    }
+
+    public ResultModel addPaymentRecord(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+        PurchasePaymentRecord paymentRecord = (PurchasePaymentRecord)HttpUtils.pageData2Entity(pageData, new PurchasePaymentRecord());
+
+        if (paymentRecord.getSupplierId() == null || paymentRecord.getSupplierId().trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("供应商id为空或空字符串！");
+            return model;
+        }
+
+        String companyID = pageData.getString("currentCompanyId");
+        paymentRecord.setCompanyId(companyID);
+        //type 付款类型(1:付款 2:退款)
+        paymentRecord.setType("1");
+
+        //付款金额 paymentSum
+        if (paymentRecord.getPaymentSum() != null && paymentRecord.getPaymentSum().doubleValue() > 0) {
+            paymentRecord.setPaymentValue(paymentRecord.getPaymentSum());
+        }
+
+        this.save(paymentRecord);
+        return model;
+    }
+
+    public ResultModel backPaymentRecord(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+        PurchasePaymentRecord paymentRecord = (PurchasePaymentRecord)HttpUtils.pageData2Entity(pageData, new PurchasePaymentRecord());
+
+        if (paymentRecord.getSupplierId() == null || paymentRecord.getSupplierId().trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("供应商id为空或空字符串！");
+            return model;
+        }
+
+        String companyID = pageData.getString("currentCompanyId");
+        paymentRecord.setCompanyId(companyID);
+        //type 付款类型(1:付款 2:退款)
+        paymentRecord.setType("2");
+
+        //(退款)付款金额 paymentSum
+        if (paymentRecord.getPaymentSum() != null && paymentRecord.getPaymentSum().doubleValue() > 0) {
+            paymentRecord.setPaymentValue(BigDecimal.valueOf(paymentRecord.getPaymentSum().doubleValue() * -1));
+        }
+
+        this.save(paymentRecord);
         return model;
     }
 

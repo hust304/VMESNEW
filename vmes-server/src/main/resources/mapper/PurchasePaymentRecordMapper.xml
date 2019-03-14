@@ -7,26 +7,6 @@
  -->
 <mapper namespace="com.xy.vmes.deecoop.purchase.dao.PurchasePaymentRecordMapper">
 
-    <!--表名 自动创建，禁止修改-->
-    <sql id="tableName">
-
-    </sql>
-
-    <!-- 字段 自动创建，禁止修改-->
-    <sql id="Field">
-		id id,
-		company_id companyId,
-		supplier_id supplierId,
-		type type,
-		payment_sum paymentSum,
-		cuser cuser,
-		cdate cdate,
-		uuser uuser,
-		udate udate,
-		remark remark,
-		isdisable isdisable
-    </sql>
-
     <!-- 批量删除 自动创建，禁止修改-->
     <delete id="deleteByIds" parameterType="java.lang.String">
         delete from vmes_purchase_payment_record
@@ -75,10 +55,13 @@
         supplier_id supplierId,
         type type,
         payment_sum paymentSum,
+
+        payment_value paymentValue
         cuser cuser,
         cdate cdate,
         uuser uuser,
         udate udate,
+
         remark remark,
         isdisable isdisable
         from vmes_purchase_payment_record
@@ -116,11 +99,14 @@
         company_id companyId,
         supplier_id supplierId,
         type type,
-        receive_sum receiveSum,
+        payment_sum paymentSum,
+
+        payment_value paymentValue
         cuser cuser,
         cdate cdate,
         uuser uuser,
         udate udate,
+
         remark remark,
         isdisable isdisable
         from vmes_purchase_payment_record
