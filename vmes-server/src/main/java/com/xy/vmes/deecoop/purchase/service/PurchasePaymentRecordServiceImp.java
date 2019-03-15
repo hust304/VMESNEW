@@ -200,7 +200,7 @@ public class PurchasePaymentRecordServiceImp implements PurchasePaymentRecordSer
     public ResultModel listPagePurchasePaymentRecord(PageData pd,Pagination pg) throws Exception{
         ResultModel model = new ResultModel();
         Map result = new HashMap();
-        List<Column> columnList = columnService.findColumnList("purchaseReceive");
+        List<Column> columnList = columnService.findColumnList("purchasePaymentRecord");
         if (columnList == null || columnList.size() == 0) {
             model.putCode("1");
             model.putMsg("数据库没有生成TabCol，请联系管理员！");

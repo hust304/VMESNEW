@@ -28,23 +28,31 @@
 
     <!-- ***************************************************以上为自动生成代码禁止修改，请在下面添加业务代码************************************************* -->
     <insert id="insertColumn" >
-        delete from vmes_column where model_code = 'purchaseReceive' ;
+        delete from vmes_column where model_code = 'purchasePaymentRecord' ;
         insert into vmes_column (
         id,model_code,title_key,title_name,serial_number,
         isdisable,ishide,isedit,ismust,cdate,
         cuser
         ) VALUES
-            (replace(uuid(), '-', ''),'purchaseReceive','companyId','企业ID',1, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'purchaseReceive','supplierId','供应商ID',2, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'purchaseReceive','type','付款类型(1:付款 2:退款)',3, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'purchaseReceive','receiveSum','付款金额',4, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'purchaseReceive','cuser','创建用户id',5, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'purchaseReceive','cdate','创建时间',6, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'purchaseReceive','uuser','修改用户id',7, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'purchaseReceive','udate','修改时间',8, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'purchaseReceive','remark','备注',9, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'purchaseReceive','isdisable','是否启用(0:已禁用 1:启用)',10, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'purchaseReceive','id','id',0, '1','1','1','0',now(), 'admin')
+            (replace(uuid(), '-', ''),'purchasePaymentRecord','id','id',0, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchasePaymentRecord','companyId','企业id',1, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchasePaymentRecord','supplierId','供应商id',2, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchasePaymentRecord','supplierCode','供应商编号',2, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchasePaymentRecord','supplierName','供应商名称',2, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchasePaymentRecord','type','付款类型id',3, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchasePaymentRecord','typeName','付款类型',3, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchasePaymentRecord','paymentSum','付款金额',4, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchasePaymentRecord','backSum','退款金额',4, '1','1','1','0',now(), 'admin'),
+
+            (replace(uuid(), '-', ''),'purchasePaymentRecord','paymentValue','付款值',5, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchasePaymentRecord','cuser','创建用户id',6, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchasePaymentRecord','cdate','创建时间',7, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchasePaymentRecord','cdateStr','付款日期',7, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchasePaymentRecord','uuser','修改用户id',8, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchasePaymentRecord','udate','修改时间',9, '1','1','1','0',now(), 'admin'),
+
+            (replace(uuid(), '-', ''),'purchasePaymentRecord','remark','备注',10, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchasePaymentRecord','isdisable','是否启用(0:已禁用 1:启用)',11, '1','1','1','0',now(), 'admin')
     </insert>
 
     <!-- 列表(全部) 自动创建，禁止修改-->
@@ -95,32 +103,66 @@
     <!-- 自动创建，可以修改 -->
     <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
-        id id,
-        company_id companyId,
-        supplier_id supplierId,
-        type type,
-        payment_sum paymentSum,
+        paymentRecord.id id,
+        paymentRecord.company_id companyId,
+        paymentRecord.supplier_id supplierId,
+        customer.code supplierCode,
+        customer.name supplierName,
+        <!--付款类型(1:付款 2:退款)-->
+        paymentRecord.type type,
+        CASE
+        WHEN paymentRecord.type = '1' THEN '付款'
+        WHEN paymentRecord.type = '2' THEN '退款'
+        ELSE null
+        END typeName,
+        <!--付款金额-->
+        CASE
+        WHEN paymentRecord.type = '1' THEN round(ifnull(paymentRecord.payment_sum, 0), 2)
+        WHEN paymentRecord.type = '2' THEN '0'
+        ELSE null
+        END paymentSum,
+        <!--退款金额-->
+        CASE
+        WHEN paymentRecord.type = '1' THEN '0'
+        WHEN paymentRecord.type = '2' THEN round(ifnull(paymentRecord.payment_sum, 0), 2)
+        ELSE null
+        END backSum,
 
-        payment_value paymentValue
-        cuser cuser,
-        cdate cdate,
-        uuser uuser,
-        udate udate,
+        round(ifnull(paymentRecord.payment_value, 0), 2) paymentValue,
+        paymentRecord.cuser cuser,
+        paymentRecord.cdate cdate,
+        DATE_FORMAT(paymentRecord.cdate,'%Y-%m-%d %T') cdateStr,
 
-        remark remark,
-        isdisable isdisable
-        from vmes_purchase_payment_record
+        paymentRecord.uuser uuser,
+        paymentRecord.udate udate,
+
+        paymentRecord.remark remark,
+        paymentRecord.isdisable isdisable
+
+        from vmes_purchase_payment_record paymentRecord
+            left join vmes_customer customer on paymentRecord.supplier_id = customer.id
         <where>
+            <if test="currentCompanyId != null and currentCompanyId != ''" >
+                and paymentRecord.company_id = #{currentCompanyId}
+            </if>
+            <if test="supplierCode != null and supplierCode != ''" >
+                and customer.code = #{supplierCode}
+            </if>
+            <if test="supplierName != null and supplierName != ''">
+                and customer.name LIKE CONCAT(CONCAT(#{supplierName}),'%')
+            </if>
+            <if test="beginDate != null and beginDate != ''">
+                <![CDATA[ and paymentRecord.cdate >= #{beginDate} ]]>
+            </if>
+            <if test="endDate != null and endDate != ''">
+                <![CDATA[ and paymentRecord.cdate <= #{endDate} ]]>
+            </if>
+
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >
                 and ${queryStr}
             </if>
-            <if test="code != null and code != ''">
-                and code LIKE CONCAT(CONCAT('%', #{code}),'%')
-            </if>
-            <if test="name != null and name != ''">
-                and name LIKE CONCAT(CONCAT('%', #{name}),'%')
-            </if>
+
         </where>
         <if test="orderStr != null and orderStr != ''" >
             order by ${orderStr}

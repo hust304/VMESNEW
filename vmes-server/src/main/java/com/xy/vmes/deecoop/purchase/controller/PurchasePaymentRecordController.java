@@ -28,7 +28,6 @@ public class PurchasePaymentRecordController {
     @Autowired
     private PurchasePaymentRecordService purchasePaymentRecordService;
 
-    /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
     /**
     * @author 陈刚 自动创建，可以修改
     * @date 2019-03-11

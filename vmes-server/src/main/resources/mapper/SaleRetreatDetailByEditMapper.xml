@@ -98,7 +98,7 @@
         genre.name productGenreName,
 
         saleOrder.sys_code sysOrderCode,
-        saleOrder.orderId,
+        saleOrder.id orderId,
         deliver.deliver_code deliverCode,
         round(ifnull(receive.receive_amount, 0), 2) receiveAmount,
 
