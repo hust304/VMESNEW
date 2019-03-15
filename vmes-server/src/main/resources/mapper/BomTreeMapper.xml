@@ -170,14 +170,14 @@
             (replace(uuid(), '-', ''),'BomTreeProduct','code','产品编码',1, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'BomTreeProduct','name','产品名称',2, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'BomTreeProduct','spec','规格型号',3, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'BomTreeProduct','genre','产品属性',4, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProduct','genre','产品属性',4, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'BomTreeProduct','unit','计量单位',5, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'BomTreeProduct','ratio','物料用量',6, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'BomTreeProduct','stockCount','当前库存数量',7, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'BomTreeProduct','assembledCount','可组装数量',8, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'BomTreeProduct','maxCount','最大可生产数量',9, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'BomTreeProduct','expectCount','期望生产数量',10, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'BomTreeProduct','lackCount','缺少数量',11, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProduct','lackCount','缺少数量',11, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'BomTreeProduct','bomId','vmes_bom id',12, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'BomTreeProduct','bomTreeId','产品BomTreeId',13, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'BomTreeProduct','pid','上级产品id',14, '1','0','1','0',now(), 'admin'),
@@ -201,7 +201,7 @@
             (replace(uuid(), '-', ''),'BomTreeProductChildren','code','物料编码',1, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'BomTreeProductChildren','name','物料名称',2, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'BomTreeProductChildren','spec','规格型号',3, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'BomTreeProductChildren','genre','产品属性',4, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProductChildren','genre','产品属性',4, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'BomTreeProductChildren','unit','计量单位',5, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'BomTreeProductChildren','ratio','物料用量',6, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'BomTreeProductChildren','stockCount','当前库存数量',7, '1','1','1','0',now(), 'admin'),
@@ -469,11 +469,12 @@
         product.spec,
         product.genre,
         product.stock_count stockCount,
-        produnit.name unit
+        unit.name unit
         from
         vmes_bom_tree tree
         left join vmes_product product on product.id = tree.prod_id
         left join vmes_product_unit produnit on produnit.product_id = product.id and produnit.type = 1
+        left join vmes_dictionary unit on produnit.unit = unit.id
         <where>
             <if test="name!= null and name != ''"><!-- 关键词检索 -->
                 and product.name LIKE CONCAT(CONCAT('%', #{name}),'%')

@@ -72,12 +72,12 @@ public class TreeUtil {
     private static void createBomTree(TreeEntity nodeObject, List<TreeEntity> objectList) {
         //获得当前节点id下的所有孩子
         List<TreeEntity> childList = findChildListById(nodeObject.getId(), objectList);
+        //Bom齐套分析：上级期望生产数量
+        BigDecimal pExpectCount = nodeObject.getExpectCount()==null?BigDecimal.ZERO:nodeObject.getExpectCount();
         if(childList.size()>0){
             List<TreeEntity> childListNew = new ArrayList<TreeEntity>();
             //Bom齐套分析：上级可组装数量
             BigDecimal pAssembledCount = null;
-            //Bom齐套分析：上级期望生产数量
-            BigDecimal pExpectCount = nodeObject.getExpectCount()==null?BigDecimal.ZERO:nodeObject.getExpectCount();
             for(int i = 0; i < childList.size(); i++){
                 TreeEntity child = childList.get(i);
                 //Bom齐套分析：用料比例
@@ -101,8 +101,15 @@ public class TreeUtil {
                         BigDecimal expectCount = pExpectCount.multiply(ratio).setScale(2,BigDecimal.ROUND_HALF_UP);
                         //Bom齐套分析：缺少物料数量 =  期望生产数量 - 实际库存数量 - 可组装数量
                         BigDecimal lackCount = expectCount.subtract(stockCount).subtract(assembledCount).setScale(2,BigDecimal.ROUND_HALF_UP);
-                        child.setExpectCount(expectCount);
-                        child.setLackCount(lackCount);
+                        lackCount = lackCount==null?BigDecimal.ZERO:lackCount;
+                        if(lackCount.compareTo(BigDecimal.ZERO)>0){
+                            child.setLackCount(lackCount);
+                        }else {
+                            child.setLackCount(BigDecimal.ZERO);
+                        }
+                        child.setExpectCount(expectCount==null?BigDecimal.ZERO:expectCount);
+                        child.setAssembledCount(assembledCount==null?BigDecimal.ZERO:assembledCount);
+                        child.setStockCount(stockCount==null?BigDecimal.ZERO:stockCount);
                     }
                 }
                 child.setHideTitles(nodeObject.getHideTitles());
@@ -111,14 +118,31 @@ public class TreeUtil {
                 childListNew.add(child);
             }
             if(pAssembledCount!=null){
-                //Bom齐套分析：期望生产数量
+                nodeObject.setExpectCount(pExpectCount);
+                //Bom齐套分析：可组装数量
                 nodeObject.setAssembledCount(pAssembledCount);
-                //Bom齐套分析：期望生产数量
+                //Bom齐套分析：最大可生产数量
                 nodeObject.setMaxCount(pAssembledCount.add(nodeObject.getStockCount()).setScale(2,BigDecimal.ROUND_HALF_UP));
+                //Bom齐套分析：缺少数量
+                if(pExpectCount.subtract(nodeObject.getMaxCount()).compareTo(BigDecimal.ZERO)<0){
+                    nodeObject.setLackCount(BigDecimal.ZERO);
+                }else{
+                    nodeObject.setLackCount(pExpectCount.subtract(nodeObject.getMaxCount()));
+                }
             }
             nodeObject.setChildren(childListNew);
         }else{
-            //nodeObject.setChildren(null);
+            nodeObject.setExpectCount(pExpectCount);
+            //Bom齐套分析：可组装数量
+            nodeObject.setAssembledCount(BigDecimal.ZERO);
+            //Bom齐套分析：最大可生产数量
+            nodeObject.setMaxCount(nodeObject.getStockCount().setScale(2,BigDecimal.ROUND_HALF_UP));
+            //Bom齐套分析：缺少数量
+            if(pExpectCount.subtract(nodeObject.getMaxCount()).compareTo(BigDecimal.ZERO)<0){
+                nodeObject.setLackCount(BigDecimal.ZERO);
+            }else{
+                nodeObject.setLackCount(pExpectCount.subtract(nodeObject.getMaxCount()));
+            }
             return;
         }
     }
