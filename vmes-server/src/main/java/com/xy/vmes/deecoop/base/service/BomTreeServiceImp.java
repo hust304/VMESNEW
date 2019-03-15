@@ -236,8 +236,9 @@ public class BomTreeServiceImp implements BomTreeService {
         List<TreeEntity> varMapList = new ArrayList();
 
         List<TreeEntity> treeList = bomTreeService.getBomTreeProductList(pd);
-//        TreeEntity treeObj = TreeUtil.switchBomTree(pd.getString("productId"),treeList,BigDecimal.valueOf(Double.parseDouble(pd.getString("expectCount"))),childrenTitleMap);
-        TreeEntity treeObj = TreeUtil.switchBomTree("99767a4e1d7f4482bc90477096b62b4e",treeList,BigDecimal.TEN,childrenTitleMap);
+        String expectCount = StringUtils.isEmpty(pd.getString("expectCount"))?"0":pd.getString("expectCount");
+        TreeEntity treeObj = TreeUtil.switchBomTree(pd.getString("productId"),treeList,BigDecimal.valueOf(Double.parseDouble(expectCount)),childrenTitleMap);
+//        TreeEntity treeObj = TreeUtil.switchBomTree("99767a4e1d7f4482bc90477096b62b4e",treeList,BigDecimal.TEN,childrenTitleMap);
         varMapList.add(treeObj);
         result.put("varList",varMapList);
         model.putResult(result);
