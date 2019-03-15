@@ -81,6 +81,7 @@ public interface PurchaseCompanyPeriodService {
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2019-03-11
      */
+    List<Map> getDataListPage(PageData pd) throws Exception;
     List<Map> getDataListPage(PageData pd, Pagination pg) throws Exception;
     /**
      *
@@ -103,10 +104,10 @@ public interface PurchaseCompanyPeriodService {
     /**
     * 分页查询
     * @param pd    查询参数对象PageData
-    * @param pg    分页参数对象Pagination
     * @return      返回对象ResultModel
     * @throws Exception
     */
+    ResultModel listPagePurchaseCompanyPeriod(PageData pd) throws Exception;
     ResultModel listPagePurchaseCompanyPeriod(PageData pd,Pagination pg) throws Exception;
     ResultModel findPaymentPeriodByCompanyId(PageData pageData) throws Exception;
 

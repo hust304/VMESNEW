@@ -45,6 +45,7 @@ public interface PurchaseCompanyPeriodMapper extends BaseMapper<PurchaseCompanyP
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2019-03-11
      */
+    List<Map> getDataListPage(PageData pd);
     List<Map> getDataListPage(PageData pd, Pagination pg);
 }
 

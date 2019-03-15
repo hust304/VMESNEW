@@ -407,15 +407,15 @@ public class SaleDeliverDetailServiceImp implements SaleDeliverDetailService {
      *
      * @param deliverId 发货单id
      */
-    public void updateOrderDetailByCancelDeliver(String deliverId) {
-        if (deliverId == null || deliverId.trim().length() == 0) {
-            return;
-        }
-
-        PageData pageData = new PageData();
-        pageData.put("deliverId", deliverId);
-        saleDeliverDetailMapper.updateOrderDetailByCancelDeliver(pageData);
-    }
+//    public void updateOrderDetailByCancelDeliver(String deliverId) {
+//        if (deliverId == null || deliverId.trim().length() == 0) {
+//            return;
+//        }
+//
+//        PageData pageData = new PageData();
+//        pageData.put("deliverId", deliverId);
+//        saleDeliverDetailMapper.updateOrderDetailByCancelDeliver(pageData);
+//    }
 
     /**
      * 验证出库单明细状态(0:待派单 1:执行中 2:已完成 -1.已取消)

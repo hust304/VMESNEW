@@ -25,13 +25,19 @@ public class PurchaseCompanyPeriod implements Serializable {
 	//初始付款期(yyyymm)
 	@TableField("initial_period")
 	private String initialPeriod;
+	//初始付款期
+	@TableField("initial_period_date")
+	private Date initialPeriodDate;
 	//当前付款期(yyyymm)
 	@TableField("payment_period")
 	private String paymentPeriod;
+
+	//当前付款期
+	@TableField("payment_period_date")
+	private Date paymentPeriodDate;
 	//创建用户id
 	@TableField("cuser")
 	private String cuser;
-
 	//创建时间
 	@TableField("cdate")
 	private Date cdate;
@@ -41,6 +47,7 @@ public class PurchaseCompanyPeriod implements Serializable {
 	//修改时间
 	@TableField("udate")
 	private Date udate;
+
 	//备注
 	@TableField("remark")
 	private String remark;
@@ -109,7 +116,18 @@ public class PurchaseCompanyPeriod implements Serializable {
 	public String getIsdisable() {
 		return isdisable;
 	}
-
+	public Date getInitialPeriodDate() {
+		return initialPeriodDate;
+	}
+	public void setInitialPeriodDate(Date initialPeriodDate) {
+		this.initialPeriodDate = initialPeriodDate;
+	}
+	public Date getPaymentPeriodDate() {
+		return paymentPeriodDate;
+	}
+	public void setPaymentPeriodDate(Date paymentPeriodDate) {
+		this.paymentPeriodDate = paymentPeriodDate;
+	}
 /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 

@@ -54,16 +54,28 @@
         isdisable,ishide,isedit,ismust,cdate,
         cuser
         ) VALUES
-            (replace(uuid(), '-', ''),'purchaseCompanyPeriod','companyId','企业ID',1, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'purchaseCompanyPeriod','initialPeriod','初始付款期(yyyymm)',2, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'purchaseCompanyPeriod','paymentPeriod','当前付款期(yyyymm)',3, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchaseCompanyPeriod','id','id',0, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchaseCompanyPeriod','companyId','企业id',1, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchaseCompanyPeriod','companyCode','企业编码',1, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchaseCompanyPeriod','companyName','企业名称',1, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchaseCompanyPeriod','companyShortname','企业简称',1, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchaseCompanyPeriod','initialPeriod','初始付款期间',2, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchaseCompanyPeriod','initialPeriodDate','initialPeriodDate',2, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchaseCompanyPeriod','paymentPeriod','当前付款期间',3, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchaseCompanyPeriod','paymentPeriodDate','paymentPeriodDate',2, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'purchaseCompanyPeriod','cuser','创建用户id',4, '1','1','1','0',now(), 'admin'),
+
             (replace(uuid(), '-', ''),'purchaseCompanyPeriod','cdate','创建时间',5, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchaseCompanyPeriod','cdateStr','创建时间',5, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'purchaseCompanyPeriod','uuser','修改用户id',6, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'purchaseCompanyPeriod','udate','修改时间',7, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'purchaseCompanyPeriod','remark','备注',8, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'purchaseCompanyPeriod','isdisable','是否启用(0:已禁用 1:启用)',9, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'purchaseCompanyPeriod','id','id',0, '1','1','1','0',now(), 'admin')
+
+            (replace(uuid(), '-', ''),'purchaseCompanyPeriod','isBuild','是否设定id',10, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchaseCompanyPeriod','isBuildName','是否设定',10, '1','1','1','0',now(), 'admin'),
+
+
     </insert>
 
     <update id="updatePaymentPeriod" parameterType="com.yvan.PageData" >
@@ -83,11 +95,15 @@
         id id,
         company_id companyId,
         initial_period initialPeriod,
+        initial_period_date initialPeriodDate,
         payment_period paymentPeriod,
+
+        payment_period_date paymentPeriodDate,
         cuser cuser,
         cdate cdate,
         uuser uuser,
         udate udate,
+
         remark remark,
         isdisable isdisable
         from vmes_purchase_company_period
@@ -123,23 +139,49 @@
     <!-- 自动创建，可以修改 -->
     <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
-        id id,
-        company_id companyId,
-        initial_period initialPeriod,
-        payment_period paymentPeriod,
-        cuser cuser,
-        cdate cdate,
-        uuser uuser,
-        udate udate,
-        remark remark,
-        isdisable isdisable
-        from vmes_purchase_company_period
+            companyPeriod.id id,
+            dept.id companyId,
+            dept.code companyCode,
+            dept.name companyName,
+            dept.company_shortname companyShortname,
+
+            companyPeriod.initial_period initialPeriod,
+            date_format(companyPeriod.initial_period_date, '%Y-%m-%d') initialPeriodDate,
+
+            companyPeriod.payment_period paymentPeriod,
+            date_format(companyPeriod.payment_period_date, '%Y-%m-%d') paymentPeriodDate,
+
+            companyPeriod.cuser cuser,
+            companyPeriod.cdate cdate,
+            DATE_FORMAT(companyPeriod.cdate,'%Y-%m-%d %T') cdateStr,
+            companyPeriod.uuser uuser,
+            companyPeriod.udate udate,
+            companyPeriod.remark remark,
+            companyPeriod.isdisable isdisable,
+
+            CASE
+            WHEN companyPeriod.company_id is not null THEN 'Y'
+            WHEN companyPeriod.company_id is null THEN 'N'
+            ELSE null
+            END isBuild,
+            CASE
+            WHEN companyPeriod.company_id is not null THEN '已设定'
+            WHEN companyPeriod.company_id is null THEN '未设定'
+            ELSE null
+            END isBuildName
+
+        from vmes_department dept
+            left join vmes_purchase_company_period companyPeriod on dept.id = companyPeriod.company_id
         <where>
+            <if test="currentCompanyId != null and currentCompanyId != ''" >
+                and dept.id = #{currentCompanyId} and dept.organize_type = '1'
+            </if>
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >
                 and ${queryStr}
             </if>
         </where>
+
         <if test="orderStr != null and orderStr != ''" >
             order by ${orderStr}
         </if>

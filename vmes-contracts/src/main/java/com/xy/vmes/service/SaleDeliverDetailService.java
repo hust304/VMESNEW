@@ -155,7 +155,7 @@ public interface SaleDeliverDetailService {
      *
      * @param deliverId 发货单id
      */
-    void updateOrderDetailByCancelDeliver(String deliverId);
+    //void updateOrderDetailByCancelDeliver(String deliverId);
 
     /**
      * 验证出库单明细状态(状态(0:待派单 1:执行中 2:已完成 -1.已取消)

@@ -676,7 +676,7 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
         }
 
         //2. 清除订单明细与发货明细的关联关系
-        saleDeliverDetailService.updateOrderDetailByCancelDeliver(deliverId);
+        //saleDeliverDetailService.updateOrderDetailByCancelDeliver(deliverId);
 
         //取消发货单
         //状态(0:待发货 1:已发货 -1:已取消)

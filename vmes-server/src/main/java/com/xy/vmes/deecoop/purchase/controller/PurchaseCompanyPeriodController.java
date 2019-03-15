@@ -31,6 +31,8 @@ public class PurchaseCompanyPeriodController {
     private PurchaseCompanyPeriodService purchaseCompanyPeriodService;
 
     /**
+     * //获取当前企业首次(采购)付款期间
+     *
     * @author 陈刚 自动创建，可以修改
     * @date 2019-03-12
     */
@@ -39,8 +41,7 @@ public class PurchaseCompanyPeriodController {
         logger.info("################/purchase/purchaseCompanyPeriod/listPagePurchaseCompanyPeriod 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         PageData pd = HttpUtils.parsePageData();
-        Pagination pg = HttpUtils.parsePagination(pd);
-        ResultModel model = purchaseCompanyPeriodService.listPagePurchaseCompanyPeriod(pd,pg);
+        ResultModel model = purchaseCompanyPeriodService.listPagePurchaseCompanyPeriod(pd);
         Long endTime = System.currentTimeMillis();
         logger.info("################/purchase/purchaseCompanyPeriod/listPagePurchaseCompanyPeriod 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
