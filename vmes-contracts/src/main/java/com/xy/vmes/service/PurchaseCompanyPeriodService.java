@@ -110,6 +110,9 @@ public interface PurchaseCompanyPeriodService {
     ResultModel listPagePurchaseCompanyPeriod(PageData pd) throws Exception;
     ResultModel listPagePurchaseCompanyPeriod(PageData pd,Pagination pg) throws Exception;
     ResultModel findPaymentPeriodByCompanyId(PageData pageData) throws Exception;
+    ResultModel addCompanyPeriod(PageData pageData) throws Exception;
+    ResultModel updateCompanyPeriod(PageData pageData) throws Exception;
+
 
     /**
     * 导出

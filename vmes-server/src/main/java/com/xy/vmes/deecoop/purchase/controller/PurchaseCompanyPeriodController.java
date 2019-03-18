@@ -64,6 +64,42 @@ public class PurchaseCompanyPeriodController {
     }
 
     /**
+     * 添加企业首次付款期间
+     * @author 陈刚
+     * @date 2019-03-11
+     * @throws Exception
+     */
+    @PostMapping("/purchase/purchaseCompanyPeriod/addCompanyPeriod")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel addCompanyPeriod() throws Exception {
+        logger.info("################/purchase/purchasePaymentRecord/addCompanyPeriod 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pageData = HttpUtils.parsePageData();
+        ResultModel model = purchaseCompanyPeriodService.addCompanyPeriod(pageData);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/purchase/purchaseCompanyPeriod/addCompanyPeriod 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 修改企业首次付款期间
+     * @author 陈刚
+     * @date 2019-03-11
+     * @throws Exception
+     */
+    @PostMapping("/purchase/purchaseCompanyPeriod/updateCompanyPeriod")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel updateCompanyPeriod() throws Exception {
+        logger.info("################/purchase/purchasePaymentRecord/updateCompanyPeriod 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pageData = HttpUtils.parsePageData();
+        ResultModel model = purchaseCompanyPeriodService.updateCompanyPeriod(pageData);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/purchase/purchaseCompanyPeriod/updateCompanyPeriod 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
     * Excel导出
     * @author 陈刚 自动创建，可以修改
     * @date 2019-03-12

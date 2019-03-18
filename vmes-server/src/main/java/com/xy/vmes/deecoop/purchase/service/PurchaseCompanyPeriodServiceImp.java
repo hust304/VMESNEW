@@ -1,6 +1,7 @@
 package com.xy.vmes.deecoop.purchase.service;
 
 
+import com.xy.vmes.common.util.DateFormat;
 import com.xy.vmes.deecoop.purchase.dao.PurchaseCompanyPeriodMapper;
 import com.xy.vmes.entity.PurchaseCompanyPeriod;
 import com.xy.vmes.service.PurchaseCompanyPeriodService;
@@ -45,7 +46,6 @@ public class PurchaseCompanyPeriodServiceImp implements PurchaseCompanyPeriodSer
     public void save(PurchaseCompanyPeriod object) throws Exception{
         object.setId(Conv.createUuid());
         object.setCdate(new Date());
-        object.setUdate(new Date());
         purchaseCompanyPeriodMapper.insert(object);
     }
 
@@ -284,6 +284,97 @@ public class PurchaseCompanyPeriodServiceImp implements PurchaseCompanyPeriodSer
         String paymentPeriod = companyPeriod.getPaymentPeriod().trim();
 
         model.set("paymentPeriod", paymentPeriod);
+        return model;
+    }
+
+    public ResultModel addCompanyPeriod(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+
+        PurchaseCompanyPeriod companyPeriod = (PurchaseCompanyPeriod)HttpUtils.pageData2Entity(pageData, new PurchaseCompanyPeriod());
+        if (companyPeriod.getCompanyId() == null || companyPeriod.getCompanyId().trim().length() == 0) {
+            model.putCode("1");
+            model.putMsg("企业id为空或空字符串！");
+            return model;
+        }
+        if (companyPeriod.getInitialPeriodDate() == null) {
+            model.putCode("1");
+            model.putMsg("初始付款期间为必填项不可为空！");
+            return model;
+        }
+
+        //初始付款期 initialPeriodDate(yyyy-MM-dd) 默认 初始付款期:=当前付款期
+        if (companyPeriod.getInitialPeriodDate() != null) {
+            String initialPeriodDate_str = DateFormat.date2String(companyPeriod.getInitialPeriodDate(), "yyyy-MM");
+            initialPeriodDate_str = initialPeriodDate_str + "-" + "01";
+            Date initialPeriodDate = DateFormat.dateString2Date(initialPeriodDate_str, DateFormat.DEFAULT_DATE_FORMAT);
+            companyPeriod.setInitialPeriodDate(initialPeriodDate);
+            companyPeriod.setPaymentPeriodDate(initialPeriodDate);
+
+            String initialPeriod = DateFormat.date2String(companyPeriod.getInitialPeriodDate(), "yyyyMM");
+            companyPeriod.setInitialPeriod(initialPeriod);
+            companyPeriod.setPaymentPeriod(initialPeriod);
+        }
+
+        //当前付款期 paymentPeriodDate(yyyy-MM-dd)
+        if (companyPeriod.getPaymentPeriodDate() != null) {
+            String paymentPeriodDate_str = DateFormat.date2String(companyPeriod.getPaymentPeriodDate(), "yyyy-MM");
+            paymentPeriodDate_str = paymentPeriodDate_str + "-" + "01";
+            Date paymentPeriodDate = DateFormat.dateString2Date(paymentPeriodDate_str, DateFormat.DEFAULT_DATE_FORMAT);
+            companyPeriod.setPaymentPeriodDate(paymentPeriodDate);
+
+            String paymentPeriod = DateFormat.date2String(companyPeriod.getPaymentPeriodDate(), "yyyyMM");
+            companyPeriod.setPaymentPeriod(paymentPeriod);
+        }
+
+        this.save(companyPeriod);
+        return model;
+    }
+
+    public ResultModel updateCompanyPeriod(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+
+        PurchaseCompanyPeriod companyPeriod = (PurchaseCompanyPeriod)HttpUtils.pageData2Entity(pageData, new PurchaseCompanyPeriod());
+        if (companyPeriod.getId() == null || companyPeriod.getId().trim().length() == 0) {
+            model.putCode("1");
+            model.putMsg("主键id为空或空字符串！");
+            return model;
+        }
+        if (companyPeriod.getCompanyId() == null || companyPeriod.getCompanyId().trim().length() == 0) {
+            model.putCode("1");
+            model.putMsg("企业id为空或空字符串！");
+            return model;
+        }
+        if (companyPeriod.getInitialPeriodDate() == null) {
+            model.putCode("1");
+            model.putMsg("初始付款期间为必填项不可为空！");
+            return model;
+        }
+
+        //初始付款期 initialPeriodDate(yyyy-MM-dd) 默认 初始付款期:=当前付款期
+        if (companyPeriod.getInitialPeriodDate() != null) {
+            String initialPeriodDate_str = DateFormat.date2String(companyPeriod.getInitialPeriodDate(), "yyyy-MM");
+            initialPeriodDate_str = initialPeriodDate_str + "-" + "01";
+            Date initialPeriodDate = DateFormat.dateString2Date(initialPeriodDate_str, DateFormat.DEFAULT_DATE_FORMAT);
+            companyPeriod.setInitialPeriodDate(initialPeriodDate);
+            companyPeriod.setPaymentPeriodDate(initialPeriodDate);
+
+            String initialPeriod = DateFormat.date2String(companyPeriod.getInitialPeriodDate(), "yyyyMM");
+            companyPeriod.setInitialPeriod(initialPeriod);
+            companyPeriod.setPaymentPeriod(initialPeriod);
+        }
+
+        //当前付款期 paymentPeriodDate(yyyy-MM-dd)
+        if (companyPeriod.getPaymentPeriodDate() != null) {
+            String paymentPeriodDate_str = DateFormat.date2String(companyPeriod.getPaymentPeriodDate(), "yyyy-MM");
+            paymentPeriodDate_str = paymentPeriodDate_str + "-" + "01";
+            Date paymentPeriodDate = DateFormat.dateString2Date(paymentPeriodDate_str, DateFormat.DEFAULT_DATE_FORMAT);
+            companyPeriod.setPaymentPeriodDate(paymentPeriodDate);
+
+            String paymentPeriod = DateFormat.date2String(companyPeriod.getPaymentPeriodDate(), "yyyyMM");
+            companyPeriod.setPaymentPeriod(paymentPeriod);
+        }
+
+        this.update(companyPeriod);
         return model;
     }
 
