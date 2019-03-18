@@ -34,17 +34,27 @@
         isdisable,ishide,isedit,ismust,cdate,
         cuser
         ) VALUES
-            (replace(uuid(), '-', ''),'purchasePaymentBuild','supplierId','供应商ID',1, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'purchasePaymentBuild','paymentPeriod','付款期(yyyymm)',2, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchasePaymentBuild','id','id',0, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchasePaymentBuild','supplierId','供应商id',1, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchasePaymentBuild','supplierCode','供应商编码',1, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchasePaymentBuild','supplierName','供应商名称',1, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchasePaymentBuild','paymentPeriod','付款期间',2, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchasePaymentBuild','paymentPeriodDate','付款期间',2, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'purchasePaymentBuild','beginPlus','应付款(期初)',3, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'purchasePaymentBuild','beginMinus','预付款(期初)',4, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'purchasePaymentBuild','cuser','创建用户id',5, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'purchasePaymentBuild','cdate','创建时间',6, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'purchasePaymentBuild','uuser','修改用户id',7, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'purchasePaymentBuild','udate','修改时间',8, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'purchasePaymentBuild','remark','备注',9, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'purchasePaymentBuild','isdisable','是否启用(0:已禁用 1:启用)',10, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'purchasePaymentBuild','id','id',0, '1','1','1','0',now(), 'admin')
+
+            (replace(uuid(), '-', ''),'purchasePaymentBuild','beginValue','付款值(期初)',5, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchasePaymentBuild','cuser','创建用户id',6, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchasePaymentBuild','cdate','创建时间',7, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchasePaymentBuild','cdateStr','创建时间',7, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchasePaymentBuild','uuser','修改用户id',8, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchasePaymentBuild','udate','修改时间',9, '1','1','1','0',now(), 'admin'),
+
+            (replace(uuid(), '-', ''),'purchasePaymentBuild','remark','备注',10, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchasePaymentBuild','isdisable','是否启用(0:已禁用 1:启用)',11, '1','1','1','0',now(), 'admin'),
+
+            (replace(uuid(), '-', ''),'purchasePaymentBuild','isBuild','状态id',12, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchasePaymentBuild','isBuildName','状态',12, '1','1','1','0',now(), 'admin')
     </insert>
 
 
@@ -54,15 +64,16 @@
         id id,
         supplier_id supplierId,
         payment_period paymentPeriod,
+        payment_period_date paymentPeriodDate,
         begin_plus beginPlus,
-        begin_minus beginMinus,
 
+        begin_minus beginMinus,
         begin_value beginValue,
         cuser cuser,
         cdate cdate,
         uuser uuser,
-        udate udate,
 
+        udate udate,
         remark remark,
         isdisable isdisable
         from vmes_purchase_payment_build
@@ -95,33 +106,48 @@
     <!-- 自动创建，可以修改 -->
     <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
-        id id,
-        supplier_id supplierId,
-        payment_period paymentPeriod,
-        begin_plus beginPlus,
-        begin_minus beginMinus,
+        build.id id,
+        customer.id supplierId,
+        customer.code supplierCode,
+        customer.name supplierName,
+        build.payment_period paymentPeriod,
+        date_format(build.payment_period_date, '%Y-%m-%d') paymentPeriodDate,
+        round(ifnull(build.begin_plus, 0), 2) beginPlus,
 
-        begin_value beginValue,
-        cuser cuser,
-        cdate cdate,
-        uuser uuser,
-        udate udate,
+        round(ifnull(build.begin_minus, 0), 2) beginMinus,
+        round(ifnull(build.begin_value, 0), 2) beginValue,
+        build.cuser cuser,
+        build.cdate cdate,
+        DATE_FORMAT(build.cdate,'%Y-%m-%d %T') cdateStr,
+        build.uuser uuser,
 
-        remark remark,
-        isdisable isdisable
-        from vmes_purchase_payment_build
+        build.udate udate,
+        build.remark remark,
+        build.isdisable isdisable,
+
+        CASE
+        WHEN build.supplier_id is not null THEN 'Y'
+        WHEN build.supplier_id is null THEN 'N'
+        ELSE null
+        END isBuild,
+        CASE
+        WHEN build.supplier_id is not null THEN '已设定'
+        WHEN build.supplier_id is null THEN '未设定'
+        ELSE null
+        END isBuildName
+
+        from vmes_customer customer
+            left join vmes_purchase_payment_build build on customer.id = build.supplier_id
         <where>
+            <if test="currentCompanyId != null and currentCompanyId != ''" >
+                and customer.company_id = #{currentCompanyId} and genre = '49c0a7ebcb4c4175bd5195837a6a9a13'
+            </if>
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >
                 and ${queryStr}
             </if>
-            <if test="code != null and code != ''">
-                and code LIKE CONCAT(CONCAT('%', #{code}),'%')
-            </if>
-            <if test="name != null and name != ''">
-                and name LIKE CONCAT(CONCAT('%', #{name}),'%')
-            </if>
         </where>
+
         <if test="orderStr != null and orderStr != ''" >
             order by ${orderStr}
         </if>

@@ -1,6 +1,8 @@
 package com.xy.vmes.deecoop.purchase.service;
 
 
+import com.xy.vmes.common.util.Common;
+import com.xy.vmes.common.util.DateFormat;
 import com.xy.vmes.deecoop.purchase.dao.PurchasePaymentBuildMapper;
 import com.xy.vmes.entity.PurchasePaymentBuild;
 import com.xy.vmes.service.PurchasePaymentBuildService;
@@ -18,6 +20,8 @@ import com.yvan.springmvc.ResultModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
 import java.util.*;
 import com.yvan.Conv;
 import org.springframework.web.multipart.MultipartFile;
@@ -45,7 +49,6 @@ public class PurchasePaymentBuildServiceImp implements PurchasePaymentBuildServi
     public void save(PurchasePaymentBuild object) throws Exception{
         object.setId(Conv.createUuid());
         object.setCdate(new Date());
-        object.setUdate(new Date());
         purchasePaymentBuildMapper.insert(object);
     }
 
@@ -198,6 +201,88 @@ public class PurchasePaymentBuildServiceImp implements PurchasePaymentBuildServi
         result.put("varList",varMapList);
         result.put("pageData", pg);
         model.putResult(result);
+        return model;
+    }
+
+    public ResultModel editPaymentBuild(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+
+        String supplierId = pageData.getString("supplierId");
+        if (supplierId == null || supplierId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("供应商id为空或空字符串！");
+            return model;
+        }
+
+        //付款期间 paymentPeriodDate
+        String paymentPeriodDate_str = pageData.getString("paymentPeriodDate");
+        if (paymentPeriodDate_str == null || paymentPeriodDate_str.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("付款期间为必填项不可为空！");
+            return model;
+        }
+
+        //付款类型 paymentType
+        String paymentType = pageData.getString("paymentType");
+        if (paymentType == null || paymentType.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("付款类型为必填项不可为空！");
+            return model;
+        }
+
+        //金额 paymentSum
+        String paymentSum_str = pageData.getString("paymentSum");
+        if (paymentSum_str == null || paymentSum_str.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("金额为必填项不可为空！");
+            return model;
+        }
+
+        PurchasePaymentBuild paymentBuild = new PurchasePaymentBuild();
+        //供应商ID supplierId
+        paymentBuild.setSupplierId(supplierId);
+
+        //付款期间 paymentPeriodDate(yyyy-MM-dd)
+        Date paymentPeriodDate = DateFormat.dateString2Date(paymentPeriodDate_str, DateFormat.DEFAULT_DATE_FORMAT);
+        paymentPeriodDate_str = DateFormat.date2String(paymentPeriodDate, "yyyy-MM");
+        paymentPeriodDate_str = paymentPeriodDate_str + "-" + "01";
+        paymentPeriodDate = DateFormat.dateString2Date(paymentPeriodDate_str, DateFormat.DEFAULT_DATE_FORMAT);
+        paymentBuild.setPaymentPeriodDate(paymentPeriodDate);
+
+        //付款期间(yyyymm)
+        String paymentPeriod = DateFormat.date2String(paymentBuild.getPaymentPeriodDate(), "yyyyMM");
+        paymentBuild.setPaymentPeriod(paymentPeriod);
+
+        BigDecimal paymentSum = BigDecimal.valueOf(0D);
+        try {
+            paymentSum = new BigDecimal(paymentSum_str);
+            //四舍五入到2位小数
+            paymentSum = paymentSum.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+            paymentBuild.setBeginValue(paymentSum);
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
+
+        //付款类型 paymentType(应付款: plus 预付款:minus)
+        paymentBuild.setBeginPlus(BigDecimal.valueOf(0D));
+        paymentBuild.setBeginMinus(BigDecimal.valueOf(0D));
+        if ("plus".equals(paymentType)) {
+            paymentBuild.setBeginPlus(paymentSum);
+        } else if ("minus".equals(paymentType)) {
+            paymentBuild.setBeginMinus(paymentSum);
+            paymentBuild.setBeginValue(BigDecimal.valueOf(paymentSum.doubleValue() * -1));
+        }
+
+        String id = pageData.getString("id");
+        if (id == null || id.trim().length() == 0) {
+            String cuser = pageData.getString("cuser");
+            paymentBuild.setCuser(cuser);
+            this.save(paymentBuild);
+        } else if (id != null && id.trim().length() > 0) {
+            paymentBuild.setId(id);
+            this.update(paymentBuild);
+        }
+
         return model;
     }
 

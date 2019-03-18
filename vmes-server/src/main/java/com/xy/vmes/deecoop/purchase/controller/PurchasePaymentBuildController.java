@@ -46,6 +46,24 @@ public class PurchasePaymentBuildController {
     }
 
     /**
+     * 设定(添加,修改) 供应商付款期间付款初期值
+     * @author 陈刚
+     * @date 2019-03-11
+     * @throws Exception
+     */
+    @PostMapping("/purchase/purchasePaymentBuild/editPaymentBuild")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel editPaymentBuild() throws Exception {
+        logger.info("################/purchase/purchasePaymentBuild/editPaymentBuild 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pageData = HttpUtils.parsePageData();
+        ResultModel model = purchasePaymentBuildService.editPaymentBuild(pageData);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/purchase/purchasePaymentBuild/editPaymentBuild 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
     * Excel导出
     * @author 陈刚 自动创建，可以修改
     * @date 2019-03-12

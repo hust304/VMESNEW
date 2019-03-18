@@ -25,13 +25,16 @@ public class PurchasePaymentBuild implements Serializable {
 	//付款期(yyyymm)
 	@TableField("payment_period")
 	private String paymentPeriod;
+	//当前付款期
+	@TableField("payment_period_date")
+	private Date paymentPeriodDate;
 	//应付款(期初)
 	@TableField("begin_plus")
 	private BigDecimal beginPlus;
+
 	//预付款(期初)
 	@TableField("begin_minus")
 	private BigDecimal beginMinus;
-
 	//付款值(期初)
 	@TableField("begin_value")
 	private BigDecimal beginValue;
@@ -44,10 +47,10 @@ public class PurchasePaymentBuild implements Serializable {
 	//修改用户id
 	@TableField("uuser")
 	private String uuser;
+
 	//修改时间
 	@TableField("udate")
 	private Date udate;
-
 	//备注
 	@TableField("remark")
 	private String remark;
@@ -128,7 +131,13 @@ public class PurchasePaymentBuild implements Serializable {
 	public void setBeginValue(BigDecimal beginValue) {
 		this.beginValue = beginValue;
 	}
-/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+	public Date getPaymentPeriodDate() {
+		return paymentPeriodDate;
+	}
+	public void setPaymentPeriodDate(Date paymentPeriodDate) {
+		this.paymentPeriodDate = paymentPeriodDate;
+	}
+	/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 
 }

@@ -104,6 +104,7 @@ public interface PurchasePaymentBuildService {
     * @throws Exception
     */
     ResultModel listPagePurchasePaymentBuild(PageData pd,Pagination pg) throws Exception;
+    ResultModel editPaymentBuild(PageData pageData) throws Exception;
 
     /**
     * 导出
