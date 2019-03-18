@@ -189,6 +189,7 @@
             (replace(uuid(), '-', ''),'BomTreeProduct','isdisable','是否启用',20, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'BomTreeProduct','remark','备注',21, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'BomTreeProduct','pathId','路径',22, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProduct','edate','期望到货日期',22, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'BomTreeProduct','id','id',0, '1','0','1','0',now(), 'admin')
 
 
@@ -220,6 +221,7 @@
             (replace(uuid(), '-', ''),'BomTreeProductChildren','isdisable','是否启用',20, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'BomTreeProductChildren','remark','备注',21, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'BomTreeProductChildren','pathId','路径',22, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProductChildren','edate','期望到货日期',22, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'BomTreeProductChildren','id','id',0, '1','0','1','0',now(), 'admin')
 
     </insert>
@@ -467,12 +469,13 @@
         product.name,
         product.code,
         product.spec,
-        product.genre,
+        genre.name genre,
         product.stock_count stockCount,
         unit.name unit
         from
         vmes_bom_tree tree
         left join vmes_product product on product.id = tree.prod_id
+        left join vmes_dictionary genre on product.genre = genre.id
         left join vmes_product_unit produnit on produnit.product_id = product.id and produnit.type = 1
         left join vmes_dictionary unit on produnit.unit = unit.id
         <where>

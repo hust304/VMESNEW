@@ -384,6 +384,10 @@ public class PurchasePlanServiceImp implements PurchasePlanService {
                 Map<String, String> detailMap = mapList.get(i);
                 PurchasePlanDetail purchasePlanDetail = (PurchasePlanDetail) HttpUtils.pageData2Entity(detailMap, new PurchasePlanDetail());
                 purchasePlanDetail.setParentId(purchasePlan.getId());
+                String reasonId = purchasePlanDetail.getReason();
+                if(StringUtils.isEmpty(reasonId)){
+                    purchasePlanDetail.setReason("350135d34d1b43aeb4e2977061632045");//齐套分析预采
+                }
                 //(0:待提交 1:待审核 2:待执行 3:执行中 4:已完成 -1:已取消)
                 purchasePlanDetail.setState("0");
                 purchasePlanDetail.setCuser(purchasePlan.getCuser());

@@ -2,10 +2,7 @@ package com.xy.vmes.entity;
 
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 说明：(组织架构,功能菜单,字典管理)-通用树形结构对象-与界面树形展示属性相关
@@ -53,6 +50,7 @@ public class TreeEntity implements Cloneable {
     private String spec;
     private String genre;
     private String unit;
+    private Date edate;
     private BigDecimal totalCount;
     private BigDecimal assembledCount;
     private BigDecimal stockCount;
@@ -62,6 +60,8 @@ public class TreeEntity implements Cloneable {
     //子集表头信息
     private List<String> hideTitles;
     private List<LinkedHashMap> titles;
+
+    private List<TreeEntity> lackList;
 
     //仓库树
     //virtual_genre:虚拟库-属性
@@ -76,6 +76,22 @@ public class TreeEntity implements Cloneable {
 
     //(必须)当前节点子节点
     private List<TreeEntity> children = new ArrayList<TreeEntity>();
+
+    public Date getEdate() {
+        return edate;
+    }
+
+    public void setEdate(Date edate) {
+        this.edate = edate;
+    }
+
+    public List<TreeEntity> getLackList() {
+        return lackList;
+    }
+
+    public void setLackList(List<TreeEntity> lackList) {
+        this.lackList = lackList;
+    }
 
     public Boolean getBindRole() {
         return isBindRole;
