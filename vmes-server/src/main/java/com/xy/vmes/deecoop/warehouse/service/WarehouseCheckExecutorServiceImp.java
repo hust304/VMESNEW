@@ -4,10 +4,7 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.warehouse.dao.WarehouseCheckExecutorMapper;
 import com.xy.vmes.entity.*;
-import com.xy.vmes.service.ColumnService;
-import com.xy.vmes.service.TaskService;
-import com.xy.vmes.service.WarehouseCheckDetailService;
-import com.xy.vmes.service.WarehouseCheckExecutorService;
+import com.xy.vmes.service.*;
 import com.yvan.PageData;
 import com.yvan.YvanUtil;
 import com.yvan.springmvc.ResultModel;
@@ -31,6 +28,8 @@ public class WarehouseCheckExecutorServiceImp implements WarehouseCheckExecutorS
 
     @Autowired
     private WarehouseCheckExecutorMapper warehouseCheckExecutorMapper;
+    @Autowired
+    private WarehouseCheckExecuteService warehouseCheckExecuteService;
     @Autowired
     private WarehouseCheckDetailService warehouseCheckDetailService;
     @Autowired
@@ -299,6 +298,68 @@ public class WarehouseCheckExecutorServiceImp implements WarehouseCheckExecutorS
         return model;
     }
 
+    public ResultModel listPageWarehouseCheckExecutor(PageData pd, Pagination pg) throws Exception {
+        ResultModel model = new ResultModel();
+
+        List<Column> columnList = columnService.findColumnList("warehouseCheckExecutor");
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
+        }
+
+        //获取指定栏位字符串-重新调整List<Column>
+        String fieldCode = pd.getString("fieldCode");
+        if (fieldCode != null && fieldCode.trim().length() > 0) {
+            columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
+        }
+
+        List<LinkedHashMap> titlesList = new ArrayList<LinkedHashMap>();
+        List<String> titlesHideList = new ArrayList<String>();
+        Map<String, String> varModelMap = new HashMap<String, String>();
+        if(columnList!=null&&columnList.size()>0){
+            for (Column column : columnList) {
+                if(column!=null){
+                    if("0".equals(column.getIshide())){
+                        titlesHideList.add(column.getTitleKey());
+                    }
+                    LinkedHashMap titlesLinkedMap = new LinkedHashMap();
+                    titlesLinkedMap.put(column.getTitleKey(),column.getTitleName());
+                    varModelMap.put(column.getTitleKey(),"");
+                    titlesList.add(titlesLinkedMap);
+                }
+            }
+        }
+        Map result = new HashMap();
+        result.put("hideTitles",titlesHideList);
+        result.put("titles",titlesList);
+
+        pd.put("orderStr", "executor.cdate asc");
+        String orderStr = pd.getString("orderStr");
+        if (orderStr != null && orderStr.trim().length() > 0) {
+            pd.put("orderStr", orderStr);
+        }
+
+        List<Map> varMapList = new ArrayList();
+        List<Map> varList = this.getDataListPage(pd, pg);
+        if(varList!=null&&varList.size()>0){
+            for(int i=0;i<varList.size();i++){
+                Map map = varList.get(i);
+                Map<String, String> varMap = new HashMap<String, String>();
+                varMap.putAll(varModelMap);
+                for (Map.Entry<String, String> entry : varMap.entrySet()) {
+                    varMap.put(entry.getKey(),map.get(entry.getKey())!=null?map.get(entry.getKey()).toString():"");
+                }
+                varMapList.add(varMap);
+            }
+        }
+        result.put("varList",varMapList);
+        result.put("pageData", pg);
+
+        model.putResult(result);
+        return model;
+    }
+
     @Override
     public ResultModel addWarehouseCheckExecutor(PageData pageData) throws Exception {
         ResultModel model = new ResultModel();
@@ -344,6 +405,54 @@ public class WarehouseCheckExecutorServiceImp implements WarehouseCheckExecutorS
             detail.setState("1");
             warehouseCheckDetailService.update(detail);
         }
+        return model;
+    }
+
+    public ResultModel updateExecutor(PageData pd) throws Exception {
+        ResultModel model = new ResultModel();
+        String cuser = pd.getString("cuser");
+        String detailId = pd.getString("detailId");
+        if (detailId == null || detailId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("入库单明细id为空或空字符串！");
+            return model;
+        }
+
+        String executorIds = pd.getString("executorIds");
+        if (executorIds == null || executorIds.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("执行人id为空或空字符串！");
+            return model;
+        }
+
+        PageData findMap = new PageData();
+        findMap.put("detailId", detailId);
+        //是否启用(0:已禁用 1:启用)
+        findMap.put("isdisable", "1");
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+        List<WarehouseCheckExecute> executeLiset = warehouseCheckExecuteService.findWarehouseCheckExecuteList(findMap);
+        if(executeLiset != null && executeLiset.size() > 0) {
+            model.putCode("1");
+            model.putMsg("该盘点单执行人已开始执行，不可修改执行人，请联系当前执行人与其沟通后撤回单据！");
+            return model;
+        }
+
+        List<WarehouseCheckExecutor> executorLiset = this.findWarehouseCheckExecutorList(findMap);
+        for (WarehouseCheckExecutor executor : executorLiset) {
+            executor.setIsdisable("0");
+            executor.setRemark("执行人变更");
+            this.update(executor);
+        }
+
+        String[] executorIdArr = executorIds.split(",");
+        for (String executorId : executorIdArr) {
+            WarehouseCheckExecutor executor = new WarehouseCheckExecutor();
+            executor.setCuser(cuser);
+            executor.setDetailId(detailId);
+            executor.setExecutorId(executorId);
+            this.save(executor);
+        }
+
         return model;
     }
 }

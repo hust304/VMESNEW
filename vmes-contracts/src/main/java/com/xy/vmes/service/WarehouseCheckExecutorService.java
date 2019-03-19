@@ -106,8 +106,10 @@ public interface WarehouseCheckExecutorService {
     void addWarehouseCheckExecutor(WarehouseCheckDetailEntity detail, String userIds) throws Exception;
 
     ResultModel findListByWarehouseCheckExecutor(PageData pd, Pagination pg) throws Exception;
+    ResultModel listPageWarehouseCheckExecutor(PageData pd, Pagination pg) throws Exception;
 
     ResultModel addWarehouseCheckExecutor(PageData pageData) throws Exception;
+    ResultModel updateExecutor(PageData pd) throws Exception;
 }
 
 

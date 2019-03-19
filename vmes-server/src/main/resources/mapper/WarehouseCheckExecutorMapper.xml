@@ -34,16 +34,17 @@
         isdisable,ishide,isedit,ismust,cdate,
         cuser
         ) VALUES
-            (replace(uuid(), '-', ''),'warehouseCheckExecutor','parentId','盘点单ID',1, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'warehouseCheckExecutor','detailId','明细ID',2, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'warehouseCheckExecutor','executorId','执行人ID',3, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'warehouseCheckExecutor','cuser','创建用户id',4, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'warehouseCheckExecutor','cdate','创建时间',5, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'warehouseCheckExecutor','uuser','修改用户id',6, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'warehouseCheckExecutor','udate','修改时间',7, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'warehouseCheckExecutor','remark','备注',8, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'warehouseCheckExecutor','isdisable','是否启用(0:已禁用 1:启用)',9, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'warehouseCheckExecutor','id','id',0, '1','1','1','0',now(), 'admin')
+            (replace(uuid(), '-', ''), 'warehouseCheckExecutor', 'detailId', '明细id', 0, '1', '0', '1', '0', '2018-11-5 16:48:36', 'admin'),
+            (replace(uuid(), '-', ''), 'warehouseCheckExecutor', 'id', 'id', 0, '1', '0', '1', '0', '2018-11-5 16:48:36', 'admin'),
+            (replace(uuid(), '-', ''), 'warehouseCheckExecutor', 'executorId', '执行人id', 1, '1', '0', '1', '0', '2018-11-5 16:48:36', 'admin'),
+            (replace(uuid(), '-', ''), 'warehouseCheckExecutor', 'executorCode', '账号', 2, '1', '1', '1', '0', '2018-11-15 14:42:47', 'admin'),
+            (replace(uuid(), '-', ''), 'warehouseCheckExecutor', 'executorName', '执行人', 3, '1', '1', '1', '0', '2018-11-5 16:48:36', 'admin'),
+            (replace(uuid(), '-', ''), 'warehouseCheckExecutor', 'cdate', '执行时间', 4, '1', '1', '1', '0', '2018-11-5 16:48:36', 'admin'),
+            (replace(uuid(), '-', ''), 'warehouseCheckExecutor', 'isdisable', '状态', 5, '1', '1', '1', '0', '2018-11-5 16:48:36', 'admin'),
+            (replace(uuid(), '-', ''), 'warehouseCheckExecutor', 'cuser', '创建用户id', 6, '1', '0', '1', '0', '2018-11-5 16:48:36', 'admin'),
+            (replace(uuid(), '-', ''), 'warehouseCheckExecutor', 'uuser', '修改用户id', 7, '1', '0', '1', '0', '2018-11-5 16:48:36', 'admin'),
+            (replace(uuid(), '-', ''), 'warehouseCheckExecutor', 'udate', '修改时间', 8, '1', '0', '1', '0', '2018-11-5 16:48:36', 'admin'),
+            (replace(uuid(), '-', ''), 'warehouseCheckExecutor', 'remark', '备注', 9, '1', '1', '1', '0', '2018-11-5 16:48:36', 'admin')
     </insert>
 
     <update id="updateIsdisableByExecutor" parameterType="com.yvan.PageData" >
@@ -120,21 +121,33 @@
     </select>
 
     <!-- 自动创建，可以修改 -->
-    <select id="getDataListPage"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
+    <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
-            id id,
-            parent_id parentId,
-            detail_id detailId,
-            executor_id executorId,
-            cuser cuser,
+        executor.id id,
+        executor.parent_id parentId,
+        executor.detail_id detailId,
+        executor.executor_id executorId,
+        executor.cuser cuser,
 
-            cdate cdate,
-            uuser uuser,
-            udate udate,
-            remark remark,
-            isdisable isdisable
-        from vmes_warehouse_check_executor
+        executor.cdate,
+        executor.uuser uuser,
+        executor.udate udate,
+        executor.remark remark,
+        executor.isdisable isdisable,
+
+        user.user_code executorCode,
+        user.user_name executorName
+
+        from vmes_warehouse_check_executor executor
+        left join vmes_user user on executor.executor_id = user.id
         <where>
+            <if test="detailId != null and detailId != ''">
+                and executor.detail_id = #{detailId}
+            </if>
+            <if test="executor != null and executor != ''">
+                and user.user_name LIKE CONCAT(CONCAT('%', #{executor}),'%')
+            </if>
+
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >
                 and ${queryStr}
