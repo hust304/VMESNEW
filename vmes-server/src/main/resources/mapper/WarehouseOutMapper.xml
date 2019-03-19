@@ -222,6 +222,7 @@
             (replace(uuid(), '-', ''),'WarehouseOut','makeName','制单人',7, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'WarehouseOut','makeId','制单人ID',7, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'WarehouseOut','state','状态',8, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'WarehouseOut','stateName','状态',8, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'WarehouseOut','cuser','创建用户id',9, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'WarehouseOut','cdate','制单时间',10, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'WarehouseOut','uuser','修改用户id',11, '1','0','1','0',now(), 'admin'),
@@ -306,7 +307,8 @@
         warehouseout.dept_name deptName,<!-- 单位名称(部门或客户) -->
         user.user_name makeName,
         warehouseout.make_id makeId,<!-- 制单人ID -->
-        case when warehouseout.state=-1 then '已取消' when warehouseout.state=0 then '未完成' when warehouseout.state=1 then '已完成' else null end state,<!-- 状态(0:未完成 1:已完成 -1:已取消) -->
+        warehouseout.state state,<!-- 状态(0:未完成 1:已完成 -1:已取消) -->
+        case when warehouseout.state=-1 then '已取消' when warehouseout.state=0 then '未完成' when warehouseout.state=1 then '已完成' else null end stateName,<!-- 状态(0:未完成 1:已完成 -1:已取消) -->
         warehouseout.cuser cuser,<!-- 创建用户id -->
         DATE_FORMAT(warehouseout.cdate,'%Y-%m-%d') cdate,
         warehouseout.uuser uuser,<!-- 修改用户id -->

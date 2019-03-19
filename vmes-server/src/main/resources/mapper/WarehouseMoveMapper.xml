@@ -189,6 +189,7 @@
             (replace(uuid(), '-', ''),'WarehouseMove','makeId','制单人ID',7, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'WarehouseMove','cdate','制单时间',8, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'WarehouseMove','state','状态',9, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'WarehouseMove','stateName','状态',9, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'WarehouseMove','cuser','创建用户id',10, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'WarehouseMove','uuser','修改用户id',11, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'WarehouseMove','udate','修改时间',12, '1','0','1','0',now(), 'admin'),
@@ -258,6 +259,7 @@
         warehousemove.warehouse_id warehouseId,<!-- 仓库ID(仓库表-layer:2的记录) -->
         user.user_name makeName,
         warehousemove.make_id makeId,<!-- 制单人ID -->
+        warehousemove.state,
         case when warehousemove.state=-1 then '已取消' when warehousemove.state=0 then '未完成' when warehousemove.state=1 then '已完成' else null end state,<!-- 状态(0:未完成 1:已完成 -1:已取消) -->
         warehousemove.cuser cuser,<!-- 创建用户id -->
         DATE_FORMAT(warehousemove.cdate,'%Y-%m-%d') cdate,

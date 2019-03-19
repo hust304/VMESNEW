@@ -277,8 +277,6 @@
     <select id="warehouseProductView"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
         select
         distinct
-        warehouse.path_id pathId,
-        warehouse.path_name pathName,
         prod.code,
         prod.name,
         prod.spec,

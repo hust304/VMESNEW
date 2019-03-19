@@ -153,6 +153,7 @@
         (replace(uuid(), '-', ''),'WarehouseMoveDetail','count','移库数量',15, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'WarehouseMoveDetail','executeCount','已完成数量',16, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'WarehouseMoveDetail','state','状态',17, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveDetail','stateName','状态',17, '1','0','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'WarehouseMoveDetail','cuser','创建用户id',18, '1','0','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'WarehouseMoveDetail','cdate','创建时间',19, '1','0','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'WarehouseMoveDetail','uuser','修改用户id',20, '1','0','1','0',now(), 'admin'),
@@ -192,6 +193,7 @@
         (replace(uuid(), '-', ''),'WarehouseMoveDetailExecute','executeCount','已完成数量',16, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'WarehouseMoveDetailExecute','suggestCount','待执行数量',17, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'WarehouseMoveDetailExecute','state','状态',17, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveDetailExecute','stateName','状态',17, '1','0','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'WarehouseMoveDetailExecute','cuser','创建用户id',18, '1','0','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'WarehouseMoveDetailExecute','cdate','创建时间',19, '1','0','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'WarehouseMoveDetailExecute','uuser','修改用户id',20, '1','0','1','0',now(), 'admin'),
@@ -230,6 +232,7 @@
         (replace(uuid(), '-', ''),'WarehouseMoveDetailRecords','count','移库数量',15, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'WarehouseMoveDetailRecords','executeCount','已完成数量',16, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'WarehouseMoveDetailRecords','state','状态',17, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveDetailRecords','stateName','状态',17, '1','0','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'WarehouseMoveDetailRecords','cuser','创建用户id',18, '1','0','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'WarehouseMoveDetailRecords','cdate','创建时间',19, '1','0','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'WarehouseMoveDetailRecords','uuser','修改用户id',20, '1','0','1','0',now(), 'admin'),
@@ -304,7 +307,8 @@
         whprod.code code,
         round(whprod.stock_count,2) stockCount,
         round(detail.count,2) count,
-        case when detail.state=-1 then '已取消' when detail.state=0 then '待派单' when detail.state=1 then '执行中' when detail.state=2 then '已完成' else null end state,
+        detail.state,
+        case when detail.state=-1 then '已取消' when detail.state=0 then '待派单' when detail.state=1 then '执行中' when detail.state=2 then '已完成' else null end stateName,
         detail.cuser cuser,
         DATE_FORMAT(detail.cdate,'%Y-%m-%d %T') cdate,
         detail.uuser uuser,
@@ -356,7 +360,7 @@
 
     <!-- 自动创建，可以修改 -->
     <select id="getDataList"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
-        select parentId,warehouseId,warehouseProductId,productId,code,count,state,cuser,cdate,udate,remark,isdisable,qrcode,stockCount,pathName,
+        select parentId,warehouseId,warehouseProductId,productId,code,count,state,stateName,cuser,cdate,udate,remark,isdisable,qrcode,stockCount,pathName,
         productCode,productName,productSpec,productGenre,productGenreName,productUnit,productUnitName,round(sum(ifnull(executeCount,0)),2) executeCount,warehouseMoveCode,id
 
         from (
@@ -412,7 +416,7 @@
 
     <!-- 自动创建，可以修改 -->
     <select id="getDataListPage"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
-        select parentId,warehouseId,warehouseProductId,productId,code,count,state,cuser,cdate,udate,remark,isdisable,qrcode,stockCount,pathName,
+        select parentId,warehouseId,warehouseProductId,productId,code,count,state,stateName,cuser,cdate,udate,remark,isdisable,qrcode,stockCount,pathName,
         productCode,productName,productSpec,productGenre,productGenreName,productUnit,productUnitName,round(sum(ifnull(executeCount,0)),2) executeCount,warehouseMoveCode,id
 
         from (
