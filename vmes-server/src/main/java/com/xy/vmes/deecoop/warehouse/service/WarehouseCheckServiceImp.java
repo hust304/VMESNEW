@@ -191,6 +191,7 @@ public class WarehouseCheckServiceImp implements WarehouseCheckService {
     @Override
     public ResultModel listPagewarehouseChecks(PageData pd, Pagination pg) throws Exception {
         ResultModel model = new ResultModel();
+        Map result = new HashMap();
         List<Column> columnList = columnService.findColumnList("warehouseCheck");
         if (columnList == null || columnList.size() == 0) {
             model.putCode("1");
@@ -203,27 +204,7 @@ public class WarehouseCheckServiceImp implements WarehouseCheckService {
         if (fieldCode != null && fieldCode.trim().length() > 0) {
             columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
         }
-
-        List<LinkedHashMap> titlesList = new ArrayList<LinkedHashMap>();
-        List<String> titlesHideList = new ArrayList<String>();
-        Map<String, String> varModelMap = new HashMap<String, String>();
-        if (columnList != null && columnList.size() > 0) {
-            for (Column column : columnList) {
-                if (column != null) {
-                    if ("0".equals(column.getIshide())) {
-                        titlesHideList.add(column.getTitleKey());
-                    }
-                    LinkedHashMap titlesLinkedMap = new LinkedHashMap();
-                    titlesLinkedMap.put(column.getTitleKey(),column.getTitleName());
-                    varModelMap.put(column.getTitleKey(),"");
-                    titlesList.add(titlesLinkedMap);
-                }
-            }
-        }
-        Map result = new HashMap();
-        result.put("hideTitles",titlesHideList);
-        result.put("titles",titlesList);
-
+        Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
         //设置查询排序
         pd.put("orderStr", "parent.cdate desc");
         String orderStr = pd.getString("orderStr");
@@ -231,22 +212,12 @@ public class WarehouseCheckServiceImp implements WarehouseCheckService {
             pd.put("orderStr", orderStr);
         }
 
-        List<Map> varMapList = new ArrayList();
-        List<Map> varList = this.getDataListPage(pd, pg);
-        if (varList != null && varList.size() > 0) {
-            for (int i = 0; i < varList.size(); i++) {
-                Map map = varList.get(i);
-                Map<String, String> varMap = new HashMap<String, String>();
-                varMap.putAll(varModelMap);
-                for (Map.Entry<String, String> entry : varMap.entrySet()) {
-                    varMap.put(entry.getKey(), map.get(entry.getKey()) != null ? map.get(entry.getKey()).toString() : "");
-                }
-                varMapList.add(varMap);
-            }
-        }
+        List<Map> varList = this.getDataListPage(pd,pg);
+        List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
+        result.put("hideTitles",titleMap.get("hideTitles"));
+        result.put("titles",titleMap.get("titles"));
         result.put("varList",varMapList);
         result.put("pageData", pg);
-
         model.putResult(result);
         return model;
     }
