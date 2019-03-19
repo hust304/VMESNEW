@@ -28,6 +28,21 @@
     </update>
 
     <!-- ***************************************************以上为自动生成代码禁止修改，请在下面添加业务代码************************************************* -->
+    <delete id="deleteTableByCompanyId" parameterType="com.yvan.PageData">
+        delete from vmes_purchase_payment_history
+        <where>
+            <if test="companyId != null and companyId != ''" >
+                and supplier_id in (
+                select id from vmes_customer
+                where company_id = #{companyId} and genre = '49c0a7ebcb4c4175bd5195837a6a9a13'
+                )
+            </if>
+            <if test="paymentPeriod != null and paymentPeriod != ''" >
+                and payment_period = #{paymentPeriod}
+            </if>
+        </where>
+    </delete>
+
     <insert id="insertColumn" >
         delete from vmes_column where model_code = 'purchasePaymentHistory' ;
         insert into vmes_column (
@@ -58,6 +73,8 @@
         (replace(uuid(), '-', ''),'purchasePaymentHistory','buildBeginValue','buildBeginValue',17, '1','1','1','0',now(), 'admin')
 
     </insert>
+
+
 
 
     <!-- 列表(全部) 自动创建，禁止修改-->
@@ -251,6 +268,12 @@
         <where>
             <if test="paymentPeriod != null and paymentPeriod != ''" >
                 and paymentHistory.paymentPeriod = #{paymentPeriod}
+            </if>
+            <if test="supplierCode != null and supplierCode != ''" >
+                and paymentHistory.supplierCode = #{supplierCode}
+            </if>
+            <if test="supplierName != null and supplierName != ''" >
+                and paymentHistory.supplierName = #{supplierName}
             </if>
         </where>
 

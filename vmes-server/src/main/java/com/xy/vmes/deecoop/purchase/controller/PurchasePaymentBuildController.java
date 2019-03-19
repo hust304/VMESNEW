@@ -64,6 +64,26 @@ public class PurchasePaymentBuildController {
     }
 
     /**
+     * 验证供应商(当前企业)是否设定付款期间期初值
+     *
+     * @author 陈刚 自动创建，可以修改
+     * @date 2018-12-11
+     */
+    @PostMapping("/purchase/purchasePaymentBuild/checkIsAllBuildSupplierPayment")
+    public ResultModel checkIsAllBuildSupplierPayment() throws Exception {
+        logger.info("################/purchase/purchasePaymentBuild/checkIsAllBuildSupplierPayment 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        PageData pageData = HttpUtils.parsePageData();
+        String companyId = pageData.getString("currentCompanyId");
+        ResultModel model = purchasePaymentBuildService.checkIsAllBuildSupplierPayment(companyId);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/purchase/purchasePaymentBuild/checkIsAllBuildSupplierPayment 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
     * Excel导出
     * @author 陈刚 自动创建，可以修改
     * @date 2019-03-12

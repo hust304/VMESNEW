@@ -177,6 +177,13 @@ public class PurchasePaymentHistoryImp implements PurchasePaymentHistoryService 
 
         return objectList;
     }
+
+    public void deletePurchasePaymentHistory(String companyId, String paymentPeriod) throws Exception {
+        PageData pageData = new PageData();
+        pageData.put("companyId", companyId);
+        pageData.put("paymentPeriod", paymentPeriod);
+        purchasePaymentHistoryMapper.deleteTableByCompanyId(pageData);
+    }
     ///////////////////////////////////////////////////////////////////////////////////////////
     /**
      *
@@ -211,11 +218,12 @@ public class PurchasePaymentHistoryImp implements PurchasePaymentHistoryService 
 
         //paymentPeriod 当前付款期(yyyymm)
         PurchaseCompanyPeriod companyPeriod = purchaseCompanyPeriodService.findPurchaseCompanyPeriodByCompanyId(companyId);
-        if (companyPeriod == null || companyPeriod.getPaymentPeriod() == null || companyPeriod.getPaymentPeriod().trim().length() == 0) {
+        if (companyPeriod == null || companyPeriod.getInitialPeriod() == null || companyPeriod.getInitialPeriod().trim().length() == 0) {
             model.putCode("1");
-            model.putMsg("您所在的企业无当前付款期间，请与管理员联系！");
+            model.putMsg("您所在的企业无初始付款期间，请在(采购-基础-设定首次付款期间)设定，与企业管理员联系！");
             return model;
         }
+
         String paymentPeriod = companyPeriod.getPaymentPeriod();
         pd.put("dateByNow", paymentPeriod);
 
@@ -345,21 +353,21 @@ public class PurchasePaymentHistoryImp implements PurchasePaymentHistoryService 
         PurchaseCompanyPeriod companyPeriod = purchaseCompanyPeriodService.findPurchaseCompanyPeriodByCompanyId(companyId);
         if (companyPeriod == null || companyPeriod.getPaymentPeriod() == null || companyPeriod.getPaymentPeriod().trim().length() == 0) {
             model.putCode("1");
-            model.putMsg("您所在的企业无当前付款期间，请与管理员联系！");
+            model.putMsg("您所在的企业无当前付款期间，请在(采购-基础-设定首次付款期间)设定，与企业管理员联系！");
             return model;
         }
         String paymentPeriod = companyPeriod.getPaymentPeriod();
 
         String listJsonStr = pageData.getString("listJsonStr");
-        if (listJsonStr == null || listJsonStr.trim().length() == 0) {
-            String remark = "备注：是否设定供应商付款初期值，如果未设定请与企业管理员联系！";
-            String msgTemp = "您所在的企业当前付款期间({0})无供应商！" + Common.SYS_ENDLINE_DEFAULT + remark + Common.SYS_ENDLINE_DEFAULT;
-
-            String msgStr = MessageFormat.format(msgTemp, paymentPeriod);
-            model.putCode(Integer.valueOf(1));
-            model.putMsg(msgStr);
-            return model;
-        }
+//        if (listJsonStr == null || listJsonStr.trim().length() == 0) {
+//            String remark = "备注：是否设定供应商付款初期值，如果未设定请与企业管理员联系！";
+//            String msgTemp = "您所在的企业当前付款期间({0})无供应商！" + Common.SYS_ENDLINE_DEFAULT + remark + Common.SYS_ENDLINE_DEFAULT;
+//
+//            String msgStr = MessageFormat.format(msgTemp, paymentPeriod);
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg(msgStr);
+//            return model;
+//        }
 
         List<Map<String, String>> mapList = (List<Map<String, String>>) YvanUtil.jsonToList(listJsonStr);
         if (mapList == null || mapList.size() == 0) {
@@ -377,6 +385,38 @@ public class PurchasePaymentHistoryImp implements PurchasePaymentHistoryService 
         //当前付款期间(后一个月)
         String paymentPeriodAfter = DateFormat.getAddDay(paymentPeriod, DateFormat.DEFAULT_MONTH, 1, "yyyyMM");
         purchaseCompanyPeriodService.updatePaymentPeriodByCompanyId(companyId, paymentPeriodAfter);
+
+        return model;
+    }
+
+    public ResultModel backPurchasePaymentHistory(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+
+        String cuser = pageData.getString("cuser");
+        //获取当前付款期间
+        String companyId = pageData.getString("currentCompanyId");
+        if (companyId == null || companyId.trim().length() == 0) {
+            model.putCode("1");
+            model.putMsg("企业id为空或空字符串！");
+            return model;
+        }
+
+        //paymentPeriod 当前付款期(yyyymm)
+        PurchaseCompanyPeriod companyPeriod = purchaseCompanyPeriodService.findPurchaseCompanyPeriodByCompanyId(companyId);
+        if (companyPeriod == null || companyPeriod.getPaymentPeriod() == null || companyPeriod.getPaymentPeriod().trim().length() == 0) {
+            model.putCode("1");
+            model.putMsg("您所在的企业无当前付款期间，请在(采购-基础-设定首次付款期间)设定，与企业管理员联系！");
+            return model;
+        }
+        String paymentPeriod = companyPeriod.getPaymentPeriod();
+
+        //当前付款期间(前一个月)
+        String paymentPeriodBefore = DateFormat.getAddDay(paymentPeriod, DateFormat.DEFAULT_MONTH, -1, "yyyyMM");
+
+        //删除结转历史数据-(企业id,当前付款期间)
+        this.deletePurchasePaymentHistory(companyId, paymentPeriodBefore);
+
+        purchaseCompanyPeriodService.updatePaymentPeriodByCompanyId(companyId, paymentPeriodBefore);
 
         return model;
     }

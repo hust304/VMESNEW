@@ -8,6 +8,7 @@
 <mapper namespace="com.xy.vmes.deecoop.mobile.dao.MobileWarehouseTaskMapper">
 
     <select id="findListPageWarehouseTaskList" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        <!--入库-->
         select
         '1' as taskType,
         'warehouseIn' taskTypeName,
@@ -36,10 +37,13 @@
             <if test="executorId != null and executorId != ''" >
                 and executor.executor_id=#{executorId}
             </if>
+            <if test="dtlState != null and dtlState != ''" >
+                and detail.state = #{dtlState}
+            </if>
         </where>
 
         union all
-
+        <!--出库-->
         select
         '2' as taskType,
         'warehouseOut' taskTypeName,
@@ -68,10 +72,13 @@
             <if test="executorId != null and executorId != ''" >
                 and executor.executor_id=#{executorId}
             </if>
+            <if test="dtlState != null and dtlState != ''" >
+                and detail.state = #{dtlState}
+            </if>
         </where>
 
         union all
-
+        <!--盘点-->
         select
         '3' as taskType,
         'warehouseCheck' taskTypeName,
@@ -99,6 +106,9 @@
             </if>
             <if test="executorId != null and executorId != ''" >
                 and executor.executor_id=#{executorId}
+            </if>
+            <if test="dtlState != null and dtlState != ''" >
+                and detail.state = #{dtlState}
             </if>
         </where>
 
@@ -132,6 +142,9 @@
             </if>
             <if test="executorId != null and executorId != ''" >
                 and executor.executor_id=#{executorId}
+            </if>
+            <if test="dtlState != null and dtlState != ''" >
+                and detail.state = #{dtlState}
             </if>
         </where>
 

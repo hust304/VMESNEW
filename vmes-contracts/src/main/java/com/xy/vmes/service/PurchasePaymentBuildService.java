@@ -83,6 +83,7 @@ public interface PurchasePaymentBuildService {
      * 创建时间：2019-03-11
      */
     List<Map> getDataListPage(PageData pd, Pagination pg) throws Exception;
+    List<Map> getDataListPage(PageData pd) throws Exception;
     /**
      *
      * @param pageData    查询参数对象<HashMap>
@@ -105,6 +106,7 @@ public interface PurchasePaymentBuildService {
     */
     ResultModel listPagePurchasePaymentBuild(PageData pd,Pagination pg) throws Exception;
     ResultModel editPaymentBuild(PageData pageData) throws Exception;
+    ResultModel checkIsAllBuildSupplierPayment(String companyId) throws Exception;
 
     /**
     * 导出

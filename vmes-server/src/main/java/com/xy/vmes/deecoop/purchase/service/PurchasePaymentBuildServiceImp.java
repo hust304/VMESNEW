@@ -167,6 +167,9 @@ public class PurchasePaymentBuildServiceImp implements PurchasePaymentBuildServi
     public List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception{
         return purchasePaymentBuildMapper.getDataListPage(pd, pg);
     }
+    public List<Map> getDataListPage(PageData pd) throws Exception{
+        return purchasePaymentBuildMapper.getDataListPage(pd);
+    }
 
     ///////////////////////////////////////////////////////////////////////////////////////////
     /**
@@ -286,6 +289,23 @@ public class PurchasePaymentBuildServiceImp implements PurchasePaymentBuildServi
         return model;
     }
 
+    public ResultModel checkIsAllBuildSupplierPayment(String companyId) throws Exception {
+        ResultModel model = new ResultModel();
+
+        PageData pageData = new PageData();
+        pageData.put("currentCompanyId", companyId);
+
+        List<Map> mapList = this.getDataListPage(pageData);
+        Boolean isBuild = this.isAllBuildByMapList(mapList);
+        if (isBuild == null || !isBuild.booleanValue()) {
+            model.set("isAllBuild", "false");
+        } else if (isBuild.booleanValue()) {
+            model.set("isAllBuild", "true");
+        }
+
+        return model;
+    }
+
     /**
     * 导出
     * @param pd    查询参数对象PageData
@@ -369,6 +389,21 @@ public class PurchasePaymentBuildServiceImp implements PurchasePaymentBuildServi
         //5. List<ExcelEntity> --> (转换) List<业务表DB>对象
         //6. 遍历List<业务表DB> 对业务表添加或修改
         return model;
+    }
+
+    private Boolean isAllBuildByMapList(List<Map> mapList) {
+        if (mapList == null || mapList.size() == 0) {return Boolean.FALSE;}
+
+        for (Map<String, Object> mapObject : mapList) {
+            //isBuild Y:已设定 N:未设定
+            String isBuild_str = (String)mapObject.get("isBuild");
+            if ("N".equals(isBuild_str)) {
+                return Boolean.FALSE;
+            }
+
+        }
+
+        return Boolean.TRUE;
     }
 
 

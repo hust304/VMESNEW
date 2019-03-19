@@ -142,6 +142,20 @@
             <if test="currentCompanyId != null and currentCompanyId != ''" >
                 and customer.company_id = #{currentCompanyId} and genre = '49c0a7ebcb4c4175bd5195837a6a9a13'
             </if>
+            <if test="supplierCode != null and supplierCode != ''" >
+                and customer.code = #{supplierCode}
+            </if>
+            <if test="supplierName != null and supplierName != ''" >
+                and customer.name = #{supplierName}
+            </if>
+
+            <if test="'true' == isNotBuild" >
+                and build.supplier_id is null
+            </if>
+            <if test="'true' == isBuild" >
+                and build.supplier_id is not null
+            </if>
+
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >
                 and ${queryStr}

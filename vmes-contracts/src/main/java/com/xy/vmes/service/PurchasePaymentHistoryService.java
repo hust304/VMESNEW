@@ -95,6 +95,8 @@ public interface PurchasePaymentHistoryService {
     List<Map> findListPurchasePaymentHistoryByPaymentPeriod(PageData pd, Pagination pg) throws Exception;
 
     List<PurchasePaymentHistory> mapList2PaymentHistoryList(List<Map<String, String>> mapList, List<PurchasePaymentHistory> objectList);
+
+    void deletePurchasePaymentHistory(String companyId, String paymentPeriod) throws Exception;
     ///////////////////////////////////////////////////////////////////////////////////////////
 
     /**
@@ -106,5 +108,6 @@ public interface PurchasePaymentHistoryService {
      */
     ResultModel listPagePurchasePaymentHistory(PageData pd,Pagination pg) throws Exception;
     ResultModel addPurchasePaymentHistory(PageData pageData) throws Exception;
+    ResultModel backPurchasePaymentHistory(PageData pageData) throws Exception;
 
 }

@@ -45,6 +45,7 @@ public interface PurchasePaymentBuildMapper extends BaseMapper<PurchasePaymentBu
      * 创建时间：2019-03-11
      */
     List<Map> getDataListPage(PageData pd, Pagination pg);
+    List<Map> getDataListPage(PageData pd);
 }
 
 

@@ -46,7 +46,7 @@ public class PurchasePaymentHistoryController {
     }
 
     /**
-     * 新增采购付款转接历史
+     * 结转:新增采购付款转接历史
      *
      * @author 陈刚
      * @date 2019-03-11
@@ -61,6 +61,25 @@ public class PurchasePaymentHistoryController {
         ResultModel model = purchasePaymentHistoryService.addPurchasePaymentHistory(pageData);
         Long endTime = System.currentTimeMillis();
         logger.info("################/purchase/purchasePaymentHistory/addPurchasePaymentHistory 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 反结转
+     *
+     * @author 陈刚
+     * @date 2019-03-11
+     * @throws Exception
+     */
+    @PostMapping("/purchase/purchasePaymentHistory/backPurchasePaymentHistory")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel backPurchasePaymentHistory() throws Exception {
+        logger.info("################/purchase/purchasePaymentHistory/backPurchasePaymentHistory 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pageData = HttpUtils.parsePageData();
+        ResultModel model = purchasePaymentHistoryService.backPurchasePaymentHistory(pageData);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/purchase/purchasePaymentHistory/backPurchasePaymentHistory 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 

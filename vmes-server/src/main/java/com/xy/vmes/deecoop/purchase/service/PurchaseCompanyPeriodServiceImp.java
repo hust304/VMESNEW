@@ -193,12 +193,18 @@ public class PurchaseCompanyPeriodServiceImp implements PurchaseCompanyPeriodSer
         if (companyId == null || companyId.trim().length() == 0) {return;}
         if (paymentPeriod == null || paymentPeriod.trim().length() == 0) {return;}
 
-        PageData pageData = new PageData();
-        pageData.put("paymentPeriod", paymentPeriod);
-        pageData.put("companyId", companyId);
+        PurchaseCompanyPeriod companyPeriodDB = this.findPurchaseCompanyPeriodByCompanyId(companyId);
+        if (companyPeriodDB == null) {return;}
 
-        purchaseCompanyPeriodMapper.updatePaymentPeriod(pageData);
+        PurchaseCompanyPeriod companyPeriod = new PurchaseCompanyPeriod();
+        companyPeriod.setId(companyPeriodDB.getId());
+        companyPeriod.setPaymentPeriod(paymentPeriod);
 
+        paymentPeriod = paymentPeriod + "01";
+        Date paymentPeriodDate = DateFormat.dateString2Date(paymentPeriod, "yyyyMMdd");
+        companyPeriod.setPaymentPeriodDate(paymentPeriodDate);
+
+        this.update(companyPeriod);
     }
     ///////////////////////////////////////////////////////////////////////////////////////////
     /**
@@ -274,15 +280,24 @@ public class PurchaseCompanyPeriodServiceImp implements PurchaseCompanyPeriodSer
             return model;
         }
 
-        //paymentPeriod 当前付款期(yyyymm)
+        //initialPeriod 初始付款期间(yyyymm)
         PurchaseCompanyPeriod companyPeriod = this.findPurchaseCompanyPeriodByCompanyId(companyId);
+        if (companyPeriod == null || companyPeriod.getInitialPeriod() == null || companyPeriod.getInitialPeriod().trim().length() == 0) {
+            model.putCode("1");
+            model.putMsg("您所在的企业无初始付款期间，请在(采购-基础-设定首次付款期间)设定，与企业管理员联系！");
+            return model;
+        }
+        String initialPeriod = companyPeriod.getInitialPeriod().trim();
+
+        //paymentPeriod 当前付款期间(yyyymm)
         if (companyPeriod == null || companyPeriod.getPaymentPeriod() == null || companyPeriod.getPaymentPeriod().trim().length() == 0) {
             model.putCode("1");
-            model.putMsg("您所在的企业无当前付款期间，请与管理员联系！");
+            model.putMsg("您所在的企业无当前付款期间，请在(采购-基础-设定首次付款期间)设定，与企业管理员联系！");
             return model;
         }
         String paymentPeriod = companyPeriod.getPaymentPeriod().trim();
 
+        model.set("initialPeriod", initialPeriod);
         model.set("paymentPeriod", paymentPeriod);
         return model;
     }
