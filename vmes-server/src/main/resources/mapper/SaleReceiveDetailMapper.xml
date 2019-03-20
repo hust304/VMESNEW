@@ -352,10 +352,6 @@
         left join vmes_customer customer on  saleOrder.customer_id = customer.id
         left join vmes_sale_receive_detail detail on  detail.order_id = saleOrder.id and detail.state = '1'
         <where>
-            <!--queryStr 自定义sql查询语句-->
-            <if test="queryStr != null and queryStr != ''" >
-                and ${queryStr}
-            </if>
             <if test="sysCode != null and sysCode != ''">
                 and saleOrder.sys_code LIKE CONCAT(CONCAT('%', #{sysCode}),'%')
             </if>
@@ -364,6 +360,17 @@
             </if>
             <if test="currentCompanyId != null and currentCompanyId != ''">
                 and saleOrder.company_id = #{currentCompanyId}
+            </if>
+            <if test="orderDateBegin != null and orderDateBegin != ''">
+                <![CDATA[ and saleOrder.order_date >= #{orderDateBegin} ]]>
+            </if>
+            <if test="orderDateEnd != null and orderDateEnd != ''">
+                <![CDATA[ and saleOrder.order_date <= #{orderDateEnd} ]]>
+            </if>
+
+            <!--queryStr 自定义sql查询语句-->
+            <if test="queryStr != null and queryStr != ''" >
+                and ${queryStr}
             </if>
         </where>
         group by saleOrder.id,saleOrder.customer_id,saleOrder.sys_code,saleOrder.order_date,saleOrder.order_sum,saleOrder.state
