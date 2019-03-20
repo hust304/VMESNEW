@@ -267,6 +267,10 @@ public class ProductServiceImp implements ProductService {
         return strTemp;
     }
 
+    public List<Map> getDataListPage(PageData pd) throws Exception {
+        return productMapper.getDataListPage(pd);
+    }
+
     public Map<String, String> productObj2QRCodeObj(Product productObj, Map<String, String> QRCodeObj) {
         if (QRCodeObj == null) {QRCodeObj = new LinkedHashMap<String, String>();}
         if (productObj == null) {return QRCodeObj;}

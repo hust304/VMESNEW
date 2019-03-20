@@ -122,6 +122,7 @@ public interface ProductService {
 
     String findIdsByProductList(List<Product> objectList);
     String findIdsByPageMapList(List<Map> mapList);
+    List<Map> getDataListPage(PageData pd) throws Exception;
 
     Map<String, String> productObj2QRCodeObj(Product productObj, Map<String, String> QRCodeObj);
 

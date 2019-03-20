@@ -290,7 +290,7 @@
 
             '' prodProperty,
 
-            ROUND(prod.price, 2) price,
+            round(ifnull(prod.price, 0), 2) price,
             prod.type type,
             type.name typeName,
             prod.validity_days validityDays,
@@ -330,6 +330,9 @@
                 )
             </if>
 
+            <if test="productId != null and productId != ''">
+                and prod.id = #{productId}
+            </if>
             <if test="code != null and code != ''">
                 and prod.code LIKE CONCAT(CONCAT(#{code}),'%')
             </if>
