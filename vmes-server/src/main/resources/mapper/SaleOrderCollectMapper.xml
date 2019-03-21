@@ -70,9 +70,11 @@
             viewSaleOrder.isPositiveNumber,
 
             <!--已收款-->
-            receive.receiveAmount,
+            round(ifnull(receive.receive_sum, 0), 2) receiveSum,
+            round(ifnull(receive.discount_sum, 0), 2) receiveDiscountSum,
+            round(ifnull(receive.amount, 0), 2) receiveAmountSum,
             <!--应收款 := (订单金额-已收款) -->
-            (saleOrder.order_sum - receive.receiveAmount) receivables,
+            round((ifnull(saleOrder.order_sum, 0) - ifnull(receive.amount, 0)), 2) receivables,
 
             <!-- 开票金额 -->
             round(invoice.invoice_sum, 2) invoiceSum
@@ -84,12 +86,7 @@
 
             left join view_sale_order_customer_max_receive_date viewSaleOrder on saleOrder.id = viewSaleOrder.order_id
             <!--收款明细汇总-->
-            left join (
-                select order_id, round(ifnull(sum(receive_amount), 0), 2) receiveamount
-                from vmes_sale_receive_detail
-                where state = '1'
-                group by order_id
-            ) receive on saleOrder.id = receive.order_id
+            left join view_sale_receive_detail receive on saleOrder.id = receive.order_id
 
             <!--开票明细汇总-->
             left join (
@@ -139,7 +136,7 @@
         (replace(uuid(), '-', ''), 'saleOrderCollectByInfo', 'customerName', '客户名称', 9, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderCollectByInfo', 'orderDate', '下单日期', 10, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderCollectByInfo', 'totalSum', '合计金额', 11, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
-        (replace(uuid(), '-', ''), 'saleOrderCollectByInfo', 'discountSum', '折扣金额', 12, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderCollectByInfo', 'receiveDiscountSum', '折扣金额', 12, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderCollectByInfo', 'orderSum', '订单金额(合计金额 - 折扣金额)', 13, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderCollectByInfo', 'advanceSum', '预付款', 14, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderCollectByInfo', 'deliverSum', '发货金额', 15, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
@@ -154,7 +151,7 @@
         (replace(uuid(), '-', ''), 'saleOrderCollectByInfo', 'receivables', '应收款', 24, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderCollectByInfo', 'maxReceiveDate', '账期截止日', 25, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderCollectByInfo', 'receiveDaysRemaining', '账期剩余(天)', 26, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
-        (replace(uuid(), '-', ''), 'saleOrderCollectByInfo', 'receiveAmount', '已收款', 27, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderCollectByInfo', 'receiveSum', '已收款', 27, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderCollectByInfo', 'isPositiveNumber', '是否正数[(发货日期 + 记账天数) - 当前日期]', 28, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderCollectByInfo', 'payDate', '付款日期', 29, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderCollectByInfo', 'invoiceSum', '开票金额', 30, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin')

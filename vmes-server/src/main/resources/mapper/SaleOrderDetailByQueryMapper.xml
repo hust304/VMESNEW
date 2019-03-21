@@ -54,6 +54,7 @@
 
             orderDetaiQuery.productUnitName,
             orderDetaiQuery.priceUnitName,
+            orderDetaiQuery.orderUnitName,
             orderDetaiQuery.productGenreName,
 
             orderDetaiQuery.stockCount,
@@ -130,6 +131,7 @@
 
                 productUnit.name productUnitName,
                 priceUnit.name priceUnitName,
+                orderUnit.name orderUnitName,
                 genre.name productGenreName,
 
                 round(ifnull(product.stock_count, 0), 2) stockCount,
@@ -145,6 +147,8 @@
                 left join vmes_product product on orderDtl.product_id = product.id
                 left join vmes_dictionary productUnit on orderDtl.product_unit = productUnit.id
                 left join vmes_dictionary priceUnit on orderDtl.price_unit = priceUnit.id
+                left join vmes_dictionary orderUnit on orderDtl.order_unit = orderUnit.id
+
                 left join vmes_dictionary genre on product.genre = genre.id
                 left join vmes_product_unit prodUnitPrice on (orderDtl.product_id = prodUnitPrice.product_id and orderDtl.order_unit = prodUnitPrice.unit)
                 <!--根据订单明细id汇总查询(发货明细) 已生成发货单数量-->
@@ -248,6 +252,9 @@
 
         (replace(uuid(), '-', ''), 'saleOrderDetailByQuery', 'p2nFormula', 'p2nFormula', 37, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderDetailByQuery', 'n2pFormula', 'n2pFormula', 37, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
+
+        (replace(uuid(), '-', ''), 'saleOrderDetailByQuery', 'orderUnit', '单位id', 8, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailByQuery', 'orderUnitName', '单位', 8, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin')
 
     </insert>
 
