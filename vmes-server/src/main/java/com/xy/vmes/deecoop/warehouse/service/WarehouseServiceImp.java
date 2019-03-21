@@ -233,13 +233,12 @@ public class WarehouseServiceImp implements WarehouseService {
         return objectList;
     }
 
-    public boolean isExistByName(String pid, String id, String companyID,String name) {
+    public boolean isExistByName(String pid, String id, String name) {
         if (pid == null || pid.trim().length() == 0) {return false;}
         if (name == null || name.trim().length() == 0) {return false;}
 
         PageData findMap = new PageData();
         findMap.put("pid", pid);
-        findMap.put("companyId", companyID);
         name = "'" + StringUtil.stringTrimSpace(name).replace(",", "','") + "'";
         findMap.put("queryStr", "name in (" + name + ")");
 
@@ -904,7 +903,7 @@ public class WarehouseServiceImp implements WarehouseService {
 
         String companyID = pageData.getString("currentCompanyId");
         //2. (仓库名称)在同一层名称不可重复
-        if (this.isExistByName(pid, null,companyID, warehouse.getName())) {
+        if (this.isExistByName(pid, null, warehouse.getName())) {
             String msgTemp = "实体库-仓库名称: {0}在系统中已经重复！" + Common.SYS_ENDLINE_DEFAULT;
             String str_isnull = MessageFormat.format(msgTemp, paterObj.getName());
             model.putCode(Integer.valueOf(1));
@@ -969,7 +968,7 @@ public class WarehouseServiceImp implements WarehouseService {
         }
         String companyID = pageData.getString("currentCompanyId");
         //(仓库名称)在同一层名称不可重复
-        if (this.isExistByName(pid, null,companyID, warehouse.getName())) {
+        if (this.isExistByName(pid, null, warehouse.getName())) {
             String msgTemp = "虚拟库-仓库名称: {0}在系统中已经重复！" + Common.SYS_ENDLINE_DEFAULT;
             String str_isnull = MessageFormat.format(msgTemp, paterObj.getName());
             model.putCode(Integer.valueOf(1));
@@ -1044,7 +1043,7 @@ public class WarehouseServiceImp implements WarehouseService {
         }
         String companyID = pageData.getString("currentCompanyId");
         //(货位名称)在同一层名称不可重复
-        if (this.isExistByName(pid, null,companyID, warehouse.getName())) {
+        if (this.isExistByName(pid, null, warehouse.getName())) {
             String msgTemp = "上级名称: {0}{2}货位名称: {1}{2}在系统中已经重复！{2}";
             String str_isnull = MessageFormat.format(msgTemp,
                     paterObj.getName(),
@@ -1135,7 +1134,7 @@ public class WarehouseServiceImp implements WarehouseService {
         if (nameString == null || nameString.trim().length() == 0) {
             return model;
         }
-        if (this.isExistByName(pid, null,paterObj.getCompanyId(), nameString)) {
+        if (this.isExistByName(pid, null, nameString)) {
             String msgTemp = "当前起止范围{0}-{1}，库位名称:{2}，系统生成货位名称在仓库名称:{3}下重复，请核对后再次操作！";
             String str_isnull = MessageFormat.format(msgTemp,
                     start,
@@ -1186,7 +1185,7 @@ public class WarehouseServiceImp implements WarehouseService {
         }
 
         //(仓库名称)在同一层名称不可重复
-        if (this.isExistByName(pid, warehouse.getId(),warehouse.getCompanyId(), warehouse.getName())) {
+        if (this.isExistByName(pid, warehouse.getId(), warehouse.getName())) {
             String msgTemp = "实体库-仓库名称: {0}在系统中已经重复！" + Common.SYS_ENDLINE_DEFAULT;
             String str_isnull = MessageFormat.format(msgTemp, paterObj.getName());
             model.putCode(Integer.valueOf(1));
@@ -1230,7 +1229,7 @@ public class WarehouseServiceImp implements WarehouseService {
         }
 
         //(仓库名称)在同一层名称不可重复
-        if (this.isExistByName(pid, warehouse.getId(),paterObj.getCompanyId(), warehouse.getName())) {
+        if (this.isExistByName(pid, warehouse.getId(), warehouse.getName())) {
             String msgTemp = "虚拟库-仓库名称: {0}在系统中已经重复！" + Common.SYS_ENDLINE_DEFAULT;
             String str_isnull = MessageFormat.format(msgTemp, paterObj.getName());
             model.putCode(Integer.valueOf(1));
@@ -1291,7 +1290,7 @@ public class WarehouseServiceImp implements WarehouseService {
         }
 
         //(货位名称)在同一层名称不可重复
-        if (this.isExistByName(pid, id,paterObj.getCompanyId(), name)) {
+        if (this.isExistByName(pid, id, name)) {
             String msgTemp = "货位名称:{0}，上级名称:{1}下重复，请核对后再次操作！";
             String str_isnull = MessageFormat.format(msgTemp,
                     name,
