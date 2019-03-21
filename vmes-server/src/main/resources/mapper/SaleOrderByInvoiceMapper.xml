@@ -91,7 +91,7 @@
         left join view_sale_receive_detail receive on saleOrder.id = receive.order_id
 
         <!--开票明细表汇总(1:已开票) view_sale_invoice_detail-->
-        left join view_sale_invoice_detail invoice on saleOrder.id = receive.order_id
+        left join view_sale_invoice_detail invoice on saleOrder.id = invoice.order_id
 
         <!--发货明细表汇总(1:已发货) vmes_sale_deliver_detail-->
         left join (
