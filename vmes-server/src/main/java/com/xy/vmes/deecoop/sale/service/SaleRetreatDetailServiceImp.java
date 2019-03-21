@@ -302,6 +302,28 @@ public class SaleRetreatDetailServiceImp implements SaleRetreatDetailService {
         return receiveDtlList;
     }
 
+    public Map<String, Map<String, BigDecimal>> findOrderDtlRetreatCountMap(List<SaleRetreatDetail> objectList) {
+        Map<String, Map<String, BigDecimal>> mapObject = new HashMap<String, Map<String, BigDecimal>>();
+        if (objectList == null || objectList.size() == 0) {return mapObject;}
+
+        for (SaleRetreatDetail object : objectList) {
+            String orderDtlId = object.getOrderDetailId();
+
+            Map<String, BigDecimal> retreatMap = new HashMap<String, BigDecimal>();
+            //orderCount 退货数量(订单单位)
+            BigDecimal orderCount = object.getOrderCount();
+            retreatMap.put("orderCount", orderCount);
+
+            //orderSum 退货金额
+            BigDecimal orderSum = object.getOrderSum();
+            retreatMap.put("orderSum", orderSum);
+
+            mapObject.put(orderDtlId, retreatMap);
+        }
+
+        return mapObject;
+    }
+
     ///////////////////////////////////////////////////////////////////////////////////////////
     /**
      * 验证入库单明细状态 (0:待派单 1:执行中 2:已完成 -1.已取消)
@@ -325,6 +347,27 @@ public class SaleRetreatDetailServiceImp implements SaleRetreatDetailService {
         }
 
         return new String();
+    }
+
+    public String findOrderDtlIdsByRetreatDtlList(List<SaleRetreatDetail> objectList) {
+        if (objectList == null || objectList.size() == 0) {return new String();}
+
+        StringBuffer strBuf = new StringBuffer();
+        for (SaleRetreatDetail object : objectList) {
+            String orderDtlId = object.getOrderDetailId();
+            if (orderDtlId != null && orderDtlId.trim().length() > 0)  {
+                strBuf.append(orderDtlId.trim());
+                strBuf.append(",");
+            }
+        }
+
+        String strTemp = strBuf.toString();
+        if (strTemp.trim().length() > 0 && strTemp.lastIndexOf(",") != -1) {
+            strTemp = strTemp.substring(0, strTemp.lastIndexOf(","));
+            return strTemp;
+        }
+
+        return strTemp;
     }
 
     public void addSaleRetreatDetail(SaleRetreat parentObj, List<SaleRetreatDetail> objectList) throws Exception {

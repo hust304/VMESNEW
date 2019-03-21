@@ -105,7 +105,9 @@ public interface SaleOrderDetailService {
 
     List<SaleOrderDetail> mapList2DetailList(List<Map<String, String>> mapList, List<SaleOrderDetail> objectList);
     List<SaleOrderDetail> mapList2OrderDetailListByEdit(List<Map<String, String>> mapList, List<SaleOrderDetail> objectList);
+
     String findProductIdsByDetailList(List<SaleOrderDetail> objectList);
+    String findDetailIdsByDetailList(List<SaleOrderDetail> objectList);
 
     SaleDeliverDetail orderDetail2DeliverDetail(SaleOrderDetailEntity orderDetail, SaleDeliverDetail deliverDetail);
     List<SaleDeliverDetail> orderDtlList2DeliverDtllList(List<SaleOrderDetailEntity> orderDtlList, List<SaleDeliverDetail> deliverDtlList);

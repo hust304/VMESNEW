@@ -113,6 +113,7 @@ public interface SaleRetreatDetailService {
 
     List<SaleReceiveDetail> retreatMap2ReceiveDtlList(Map<String, BigDecimal> orderRetreatSumMap, List<SaleReceiveDetail> receiveDtlList);
 
+    Map<String, Map<String, BigDecimal>> findOrderDtlRetreatCountMap(List<SaleRetreatDetail> objectList);
     ///////////////////////////////////////////////////////////////////////////////////////////
     /**
      * 验证入库单明细状态 (0:待派单 1:执行中 2:已完成 -1.已取消)
@@ -121,6 +122,7 @@ public interface SaleRetreatDetailService {
      * @return
      */
     String checkInDetailStateByRetreatId(String retreatId) throws Exception;
+    String findOrderDtlIdsByRetreatDtlList(List<SaleRetreatDetail> objectList);
 
     void addSaleRetreatDetail(SaleRetreat parentObj, List<SaleRetreatDetail> objectList) throws Exception;
     void updateStateByDetail(PageData pd) throws Exception;

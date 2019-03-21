@@ -275,6 +275,27 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
         return strTemp;
     }
 
+    public String findDetailIdsByDetailList(List<SaleOrderDetail> objectList) {
+        if (objectList == null || objectList.size() == 0) {return new String();}
+
+        StringBuffer strBuf = new StringBuffer();
+        for (SaleOrderDetail object : objectList) {
+            String detailId = object.getProductId();
+            if (detailId != null && detailId.trim().length() > 0)  {
+                strBuf.append(detailId.trim());
+                strBuf.append(",");
+            }
+        }
+
+        String strTemp = strBuf.toString();
+        if (strTemp.trim().length() > 0 && strTemp.lastIndexOf(",") != -1) {
+            strTemp = strTemp.substring(0, strTemp.lastIndexOf(","));
+            return strTemp;
+        }
+
+        return strTemp;
+    }
+
     public SaleDeliverDetail orderDetail2DeliverDetail(SaleOrderDetailEntity orderDetail, SaleDeliverDetail deliverDetail) {
         if (deliverDetail == null) {deliverDetail = new SaleDeliverDetail();}
         if (orderDetail == null) {return deliverDetail;}

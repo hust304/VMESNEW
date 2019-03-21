@@ -168,6 +168,9 @@
                 </choose>
             </if>
 
+            <if test="ids != null and ids != ''" >
+                and id in (${ids})
+            </if>
             <if test="parentId != null and parentId != ''" >
                 and parent_id = #{parentId}
             </if>
