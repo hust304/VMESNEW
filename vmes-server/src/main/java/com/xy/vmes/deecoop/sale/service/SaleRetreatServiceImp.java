@@ -877,8 +877,8 @@ public class SaleRetreatServiceImp implements SaleRetreatService {
             saleReceiveService.save(receive);
 
             //2. 创建收款单明细
-            //获取 <订单编号, 退货金额>
-            Map<String, BigDecimal> orderRetreatSumMap = this.findOrderRetreatSumMap(mapList);
+            //获取 <订单id, 退货金额>
+            Map<String, BigDecimal> orderRetreatSumMap = this.findOrderIdRetreatSumMap(mapList);
             List<SaleReceiveDetail> receiveDtlList = saleRetreatDetailService.retreatMap2ReceiveDtlList(orderRetreatSumMap, null);
             saleReceiveDetailService.addReceiveDetail(receive, receiveDtlList);
         }
@@ -1127,8 +1127,7 @@ public class SaleRetreatServiceImp implements SaleRetreatService {
             }
 
             if (mapTemp.get(orderCode) == null) {
-                BigDecimal total = BigDecimal.valueOf(0D);
-                mapTemp.put(orderCode, total);
+                mapTemp.put(orderCode, orderSum);
             } else {
                 BigDecimal total = mapTemp.get(orderCode);
                 total = BigDecimal.valueOf(total.doubleValue() + orderSum.doubleValue());
@@ -1169,8 +1168,7 @@ public class SaleRetreatServiceImp implements SaleRetreatService {
             }
 
             if (mapTemp.get(orderId) == null) {
-                BigDecimal total = BigDecimal.valueOf(0D);
-                mapTemp.put(orderId, total);
+                mapTemp.put(orderId, orderSum);
             } else {
                 BigDecimal total = mapTemp.get(orderId);
                 total = BigDecimal.valueOf(total.doubleValue() + orderSum.doubleValue());
