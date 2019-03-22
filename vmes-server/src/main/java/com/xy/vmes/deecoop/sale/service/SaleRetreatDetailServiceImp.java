@@ -1,17 +1,12 @@
 package com.xy.vmes.deecoop.sale.service;
 
 
-import com.xy.vmes.common.util.Common;
-import com.xy.vmes.common.util.EvaluateUtil;
+import com.xy.vmes.common.util.*;
 import com.xy.vmes.deecoop.sale.dao.SaleRetreatDetailMapper;
 import com.xy.vmes.entity.*;
-import com.xy.vmes.service.SaleRetreatDetailService;
+import com.xy.vmes.service.*;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
-import com.xy.vmes.common.util.ColumnUtil;
-import com.xy.vmes.common.util.StringUtil;
-import com.xy.vmes.service.ColumnService;
-import com.xy.vmes.service.WarehouseInDetailService;
 import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
@@ -22,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.text.MessageFormat;
 import java.util.*;
 import com.yvan.Conv;
 import org.springframework.web.multipart.MultipartFile;
@@ -38,6 +34,11 @@ public class SaleRetreatDetailServiceImp implements SaleRetreatDetailService {
 
     @Autowired
     private SaleRetreatDetailMapper saleRetreatDetailMapper;
+
+    @Autowired
+    private SaleOrderService saleOrderService;
+    @Autowired
+    private SaleOrderDetailService saleOrderDetailService;
 
     @Autowired
     private WarehouseInDetailService warehouseInDetailService;
@@ -399,6 +400,96 @@ public class SaleRetreatDetailServiceImp implements SaleRetreatDetailService {
         pageData.put("parentIds", "parent_id in (" + parentIds + ")");
 
         saleRetreatDetailMapper.updateStateByDetail(pageData);
+    }
+
+    public void updateOrderByRetreat(Map<String, Map<String, BigDecimal>> orderDtlRetreatMap, List<SaleOrderDetail> orderDtlList) throws Exception {
+        if (orderDtlRetreatMap == null || orderDtlRetreatMap.size() == 0) {return;}
+        if (orderDtlList == null || orderDtlList.size() == 0) {return;}
+
+        Map<String, String> orderMap = new HashMap<String, String>();
+        for (SaleOrderDetail orderDetail : orderDtlList) {
+            SaleOrderDetail orderDetailEdit = new SaleOrderDetail();
+
+            String orderId = orderDetail.getParentId();
+            orderMap.put(orderId, orderId);
+
+            String orderDtlId = orderDetail.getId();
+            orderDetailEdit.setId(orderDtlId);
+
+            //orderCount 订单订购数量
+            BigDecimal orderCount = BigDecimal.valueOf(0D);
+            if (orderDetail.getOrderCount() != null) {
+                orderCount = orderDetail.getOrderCount();
+            }
+
+            //productSum 货品金额(订购数量 * 货品单价)
+            BigDecimal productSum = BigDecimal.valueOf(0D);
+            if (orderDetail.getProductSum() != null) {
+                productSum = orderDetail.getProductSum();
+            }
+
+            //orderCount 退货数量(订单单位)
+            Map<String, BigDecimal> retreatMap = orderDtlRetreatMap.get(orderDtlId);
+            BigDecimal retreatOrderCount = BigDecimal.valueOf(0D);
+            if (retreatMap.get("orderCount") != null) {
+                retreatOrderCount = retreatMap.get("orderCount");
+            }
+
+            //orderSum 退货金额
+            BigDecimal retreatOrderSum = BigDecimal.valueOf(0D);
+            if (retreatMap.get("orderSum") != null) {
+                retreatOrderSum = retreatMap.get("orderSum");
+            }
+
+            orderCount = BigDecimal.valueOf(orderCount.doubleValue() - retreatOrderCount.doubleValue());
+            //四舍五入到2位小数
+            orderCount = orderCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+            orderDetailEdit.setOrderCount(orderCount);
+
+            productSum = BigDecimal.valueOf(productSum.doubleValue() - retreatOrderSum.doubleValue());
+            //四舍五入到2位小数
+            productSum = productSum.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+            orderDetailEdit.setProductSum(productSum);
+
+            saleOrderDetailService.update(orderDetailEdit);
+        }
+
+        //修改订单
+        for (Iterator iterator = orderMap.keySet().iterator(); iterator.hasNext();) {
+            SaleOrder orderEdit = new SaleOrder();
+
+            String orderId = (String) iterator.next();
+            orderEdit.setId(orderId);
+
+            List<SaleOrderDetail> orderDetailList = saleOrderDetailService.findSaleOrderDetailListByParentId(orderId);
+            if (orderDetailList == null || orderDetailList.size() == 0) {continue;}
+
+            //订单明细总金额
+            BigDecimal totalSum = saleOrderDetailService.findTotalSumByPrice(orderDetailList);
+
+            //discountSum折扣金额
+            orderEdit.setDiscountSum(BigDecimal.valueOf(0D));
+            //totalSum 合计金额
+            orderEdit.setTotalSum(totalSum);
+            //orderSum 订单金额
+            orderEdit.setOrderSum(totalSum);
+
+            String remark = "";
+            SaleOrder orderDB = saleOrderService.findSaleOrderById(orderId);
+            if (orderDB.getRemark() != null && orderDB.getRemark().trim().length() > 0) {
+                remark = orderDB.getRemark().trim();
+            }
+
+            String tempStr = "退货单审核通过：修改订单数量和订单金额{0}";
+            String msgStr = MessageFormat.format(
+                    tempStr,
+                    DateFormat.date2String(new Date(), DateFormat.DEFAULT_DATETIME_FORMAT)
+            );
+            remark = remark + msgStr;
+            orderEdit.setRemark(remark);
+
+            saleOrderService.update(orderEdit);
+        }
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////

@@ -1,11 +1,8 @@
 package com.xy.vmes.service;
 
 
-import com.xy.vmes.entity.SaleReceiveDetail;
-import com.xy.vmes.entity.SaleRetreat;
-import com.xy.vmes.entity.SaleRetreatDetail;
+import com.xy.vmes.entity.*;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
-import com.xy.vmes.entity.WarehouseInDetail;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
 import org.springframework.web.multipart.MultipartFile;
@@ -127,6 +124,7 @@ public interface SaleRetreatDetailService {
     void addSaleRetreatDetail(SaleRetreat parentObj, List<SaleRetreatDetail> objectList) throws Exception;
     void updateStateByDetail(PageData pd) throws Exception;
     void updateStateByDetail(String state, String parentIds) throws Exception;
+    void updateOrderByRetreat(Map<String, Map<String, BigDecimal>> orderDtlRetreatMap, List<SaleOrderDetail> orderDtlList) throws Exception;
 
     ///////////////////////////////////////////////////////////////////////////////////////////
     /**

@@ -23,8 +23,6 @@ public class SaleRetreatAuditServiceImp implements SaleRetreatAuditService {
     @Autowired
     private SaleRetreatDetailService saleRetreatDetailService;
     @Autowired
-    private SaleOrderService saleOrderService;
-    @Autowired
     private SaleOrderDetailService saleOrderDetailService;
 
     @Autowired
@@ -75,14 +73,17 @@ public class SaleRetreatAuditServiceImp implements SaleRetreatAuditService {
                 Common.DICTIONARY_MAP.get("saleRetreatIn"));
 
         //获取实体仓库id
-        PageData findMap = new PageData();
-        findMap.put("companyId", companyId);
-        findMap.put("layer", "2");
-        findMap.put("isEntity", "true");
-        findMap.put("isdisable", "1");
-        findMap.put("mapSize", Integer.valueOf(findMap.size()));
-        List<Warehouse> warehouseList = warehouseService.findWarehouseList(findMap);
-        warehouseIn.setWarehouseId(warehouseList.get(0).getId());
+//        PageData findMap = new PageData();
+//        findMap.put("companyId", companyId);
+//        findMap.put("layer", "2");
+//        findMap.put("isEntity", "true");
+//        findMap.put("isdisable", "1");
+//        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+//        List<Warehouse> warehouseList = warehouseService.findWarehouseList(findMap);
+//        warehouseIn.setWarehouseId(warehouseList.get(0).getId());
+
+        //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
+        warehouseIn.setWarehouseId(Common.DICTIONARY_MAP.get("warehouseEntity"));
         warehouseInService.save(warehouseIn);
 
         //2. 创建入库单明细
@@ -133,98 +134,15 @@ public class SaleRetreatAuditServiceImp implements SaleRetreatAuditService {
             return model;
         }
 
+        PageData findMap = new PageData();
         orderDtlIds = "'" + orderDtlIds.replace(",", "','") + "'";
-        findMap.clear();
         findMap.put("ids", orderDtlIds);
         List<SaleOrderDetail> orderDtlList = saleOrderDetailService.findSaleOrderDetailList(findMap);
         if (orderDtlList == null || orderDtlList.size() == 0) {
             return model;
         }
 
-        Map<String, String> orderMap = new HashMap<String, String>();
-        for (SaleOrderDetail orderDetail : orderDtlList) {
-            SaleOrderDetail orderDetailEdit = new SaleOrderDetail();
-
-            String orderId = orderDetail.getParentId();
-            orderMap.put(orderId, orderId);
-
-            String orderDtlId = orderDetail.getId();
-            orderDetailEdit.setId(orderDtlId);
-
-            //orderCount 订单订购数量
-            BigDecimal orderCount = BigDecimal.valueOf(0D);
-            if (orderDetail.getOrderCount() != null) {
-                orderCount = orderDetail.getOrderCount();
-            }
-
-            //productSum 货品金额(订购数量 * 货品单价)
-            BigDecimal productSum = BigDecimal.valueOf(0D);
-            if (orderDetail.getProductSum() != null) {
-                productSum = orderDetail.getProductSum();
-            }
-
-            //orderCount 退货数量(订单单位)
-            Map<String, BigDecimal> retreatMap = orderDtlRetreatMap.get(orderDtlId);
-            BigDecimal retreatOrderCount = BigDecimal.valueOf(0D);
-            if (retreatMap.get("orderCount") != null) {
-                retreatOrderCount = retreatMap.get("orderCount");
-            }
-
-            //orderSum 退货金额
-            BigDecimal retreatOrderSum = BigDecimal.valueOf(0D);
-            if (retreatMap.get("orderSum") != null) {
-                retreatOrderSum = retreatMap.get("orderSum");
-            }
-
-            orderCount = BigDecimal.valueOf(orderCount.doubleValue() - retreatOrderCount.doubleValue());
-            //四舍五入到2位小数
-            orderCount = orderCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-            orderDetailEdit.setOrderCount(orderCount);
-
-            productSum = BigDecimal.valueOf(productSum.doubleValue() - retreatOrderSum.doubleValue());
-            //四舍五入到2位小数
-            productSum = productSum.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-            orderDetailEdit.setProductSum(productSum);
-
-            saleOrderDetailService.update(orderDetailEdit);
-        }
-
-        //修改订单
-        for (Iterator iterator = orderMap.keySet().iterator(); iterator.hasNext();) {
-            SaleOrder orderEdit = new SaleOrder();
-
-            String orderId = (String) iterator.next();
-            orderEdit.setId(orderId);
-
-            List<SaleOrderDetail> orderDetailList = saleOrderDetailService.findSaleOrderDetailListByParentId(orderId);
-            if (orderDetailList == null || orderDetailList.size() == 0) {continue;}
-
-            //订单明细总金额
-            BigDecimal totalSum = saleOrderDetailService.findTotalSumByPrice(orderDetailList);
-
-            //discountSum折扣金额
-            orderEdit.setDiscountSum(BigDecimal.valueOf(0D));
-            //totalSum 合计金额
-            orderEdit.setTotalSum(totalSum);
-            //orderSum 订单金额
-            orderEdit.setOrderSum(totalSum);
-
-            String remark = "";
-            SaleOrder orderDB = saleOrderService.findSaleOrderById(orderId);
-            if (orderDB.getRemark() != null && orderDB.getRemark().trim().length() > 0) {
-                remark = orderDB.getRemark().trim();
-            }
-
-            String tempStr = "退货单审核通过：修改订单数量和订单金额{0}";
-            String msgStr = MessageFormat.format(
-                    tempStr,
-                    DateFormat.date2String(new Date(), DateFormat.DEFAULT_DATETIME_FORMAT)
-            );
-            remark = remark + msgStr;
-            orderEdit.setRemark(remark);
-
-            saleOrderService.update(orderEdit);
-        }
+        saleRetreatDetailService.updateOrderByRetreat(orderDtlRetreatMap, orderDtlList);
 
         return model;
     }
