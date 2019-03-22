@@ -59,7 +59,12 @@
         customer.name customerName,
         <!--订单付款进度 付款明细表汇总 view_sale_receive_detail-->
         round(ifnull(receive.amount, 0),2) receiveSum,
-        round((ifnull(receive.amount, 0) / ifnull(saleOrder.order_sum, 0)), 0) receiveProgress,
+        <!--付款进度百分比 (付款金额 / 订单金额 * 100) %-->
+        CASE
+          WHEN ifnull(saleOrder.order_sum, 0) = 0 THEN 0
+          WHEN ifnull(saleOrder.order_sum, 0) <![CDATA[<>]]> 0 THEN round((ifnull(receive.amount, 0) / ifnull(saleOrder.order_sum, 0)), 0) * 100
+        ELSE null
+        END receiveProgress,
 
         <!--发货金额-发货明细表汇总(1:已发货)-->
         round(ifnull(deliverDtl.deliverSum, 0), 2) deliverSum,
