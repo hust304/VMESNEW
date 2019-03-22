@@ -47,6 +47,11 @@ public class WarehouseMoveServiceImp implements WarehouseMoveService {
     @Autowired
     private TaskService taskService;
 
+    @Autowired
+    private WarehouseProductService warehouseProductService;
+
+    @Autowired
+    private ProductService productService;
     /**
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-11-16
@@ -361,14 +366,14 @@ public class WarehouseMoveServiceImp implements WarehouseMoveService {
         this.save(warehouseMove);
 
         //2.添加移库单明细
+
         List<WarehouseMoveDetail> detailList = warehouseMoveDetailService.mapList2DetailList(mapList, null);
         warehouseMoveDetailService.addWarehouseMoveDetail(warehouseMove, detailList);
 
         //3.移库单派工添加执行人信息
-        List<WarehouseMoveDetailEntity> detailEntityList = warehouseMoveDetailService.mapList2DetailEntityList(mapList, null);
-        if(detailEntityList!=null&&detailEntityList.size()>0){
-            for(int i=0;i<detailEntityList.size();i++){
-                WarehouseMoveDetailEntity detailEntity = detailEntityList.get(i);
+        if(detailList!=null&&detailList.size()>0){
+            for(int i=0;i<detailList.size();i++){
+                WarehouseMoveDetail detail = detailList.get(i);
                 //新增移库执行人记录
                 if(!StringUtils.isEmpty(executorIdsStr)){
                     String[] executorIds = executorIdsStr.split(",");
@@ -377,12 +382,20 @@ public class WarehouseMoveServiceImp implements WarehouseMoveService {
                             String executorId = executorIds[j];
                             WarehouseMoveExecutor executor = new WarehouseMoveExecutor();
                             executor.setExecutorId(executorId);
-                            executor.setDetailId(detailEntity.getId());
+                            executor.setDetailId(detail.getId());
                             executor.setCuser(currentUserId);
                             warehouseMoveExecutorService.save(executor);
+                            String ProductName = null;
+                            WarehouseProduct warehouseProduct = warehouseProductService.selectById(detail.getWarehouseProductId());
+                            if(warehouseProduct!=null){
+                                Product Product = productService.selectById(warehouseProduct.getProductId());
+                                if(Product!=null){
+                                    ProductName = Product.getName();
+                                }
+                            }
 
-                            Task task = taskService.createTaskByWarehouseMove(detailEntity.getId(), executorId, cuser);
-                            task.setTaskName(code + "_" + detailEntity.getProductName());
+                            Task task = taskService.createTaskByWarehouseMove(detail.getId(), executorId, cuser);
+                            task.setTaskName(code + "_" + ProductName);
                             task.setCompanyId(companyID);
                             taskService.save(task);
                         }
