@@ -336,6 +336,7 @@
 
 
     <!-- 自动创建，可以修改 -->
+    <!--
     <select id="getReceiveDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
             select
             id,code,name,type,typeName,province,provinceName,round(balance,2) balance,round(accountDays,2) accountDays,
@@ -418,6 +419,110 @@
             group by customer.id
         ) tab
         group by id,code,name,type,typeName,province,provinceName,balance,accountDays
+    </select>
+    -->
+
+    <select id="getReceiveDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+            customer.id,
+            customer.code,
+            customer.name,
+            customer.type,
+            type.name typeName,
+            customer.province province,
+            province.name provinceName,
+            round(ifnull(customer.balance,0), 2) balance,
+            customer.account_days accountDays,
+
+            <!-- 订单金额 -->
+            round(ifnull(orderCollect.order_sum,0), 2) orderAmount,
+            <!-- acceptAmount 已收款:= 实收金额receive_sum -->
+            round(ifnull(orderCollect.receive_sum,0), 2) acceptAmount,
+            <!-- receiveAmount 应收款 -->
+            round(ifnull(orderCollect.receivables,0), 2) receiveAmount,
+            <!-- delayAmount 逾期账款 -->
+            round(ifnull(orderCollect.delayReceive,0), 2) delayAmount
+
+        from vmes_customer customer
+            left join vmes_dictionary type on customer.type = type.id
+            left join vmes_dictionary province on customer.province = province.id
+            left join (
+                select
+                    orderTable.customer_id,
+                    sum(orderTable.order_sum) order_sum,
+                    sum(orderTable.receive_sum) receive_sum,
+                    sum(orderTable.receivables) receivables,
+                    sum(orderTable.delayReceive) delayReceive
+                from (
+                    select
+                        saleOrder.id,
+                        saleOrder.customer_id,
+                        saleOrder.deliver_date,
+                        saleOrder.account_days,
+                        saleOrder.maxDeliverDate,
+                        saleOrder.order_sum,
+
+                        saleOrder.receive_sum,
+                        saleOrder.discount_sum,
+                        saleOrder.amount,
+                        <!-- 应收款 -->
+                        CASE WHEN saleOrder.maxDeliverDate is null or (saleOrder.maxDeliverDate is not null and now() <![CDATA[ <= ]]> saleOrder.maxDeliverDate)
+                        THEN saleOrder.receivables
+                        ELSE 0.00
+                        END receivables,
+
+                        <!-- 逾期收款 -->
+                        CASE WHEN saleOrder.maxDeliverDate is not null and now() <![CDATA[ > ]]> saleOrder.maxDeliverDate
+                        THEN saleOrder.receivables
+                        ELSE 0.00
+                        END delayReceive
+                    from (
+                        select
+                            a.id,
+                            a.customer_id,
+                            a.deliver_date,
+                            c.account_days,
+                            date_add(a.deliver_date, interval c.account_days day) maxDeliverDate,
+                            a.order_sum,
+
+                            b.receive_sum,
+                            b.discount_sum,
+                            b.amount,
+                            (ifnull(a.order_sum,0) - ifnull(b.amount,0)) receivables
+                        from (
+                            select id,customer_id,deliver_date,order_sum
+                            from vmes_sale_order
+                            <where>
+                                <if test="currentCompanyId != null and currentCompanyId != ''">
+                                    and company_id = #{currentCompanyId} and <![CDATA[ state <> '-1' ]]>
+                                </if>
+                            </where>
+                        ) a
+                        left join view_sale_receive_detail b on a.id = b.order_id
+                        left join vmes_customer c on a.customer_id = c.id
+                    ) saleOrder
+                ) orderTable
+                group by orderTable.customer_id
+            ) orderCollect on customer.id = orderCollect.customer_id
+        <where>
+            <if test="currentCompanyId != null and currentCompanyId != ''">
+                and customer.company_id = #{currentCompanyId} and customer.genre = 'df7cb67fca4148bc9632c908e4a7fdea'
+            </if>
+            <if test="code != null and code != ''">
+                and customer.code LIKE CONCAT(CONCAT(#{code}),'%')
+            </if>
+            <if test="name != null and name != ''">
+                and customer.name LIKE CONCAT(CONCAT(#{name}),'%')
+            </if>
+
+            <!--queryStr 自定义sql查询语句-->
+            <if test="queryStr != null and queryStr != ''" >
+                and ${queryStr}
+            </if>
+        </where>
+        <if test="orderStr != null and orderStr != ''" >
+            order by ${orderStr}
+        </if>
     </select>
 
 
