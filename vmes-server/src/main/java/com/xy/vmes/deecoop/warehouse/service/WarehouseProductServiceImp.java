@@ -245,6 +245,11 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
 
         return QRCodeObj;
     }
+
+    public List<Map<String, Object>> findWarehouseProductByWarehouse(PageData pageData) {
+        return warehouseProductMapper.findWarehouseProductByWarehouse(pageData);
+    }
+
     ///////////////////////////////////////////////////////////////////////////////////////////
 
     /**

@@ -326,4 +326,16 @@
         </if>
     </select>
 
+    <delete id="deleteWarehouseByPath" parameterType="java.lang.String">
+        delete from vmes_warehouse
+        <where>
+            <if test="warehouseId != null and warehouseId != ''" >
+                and path_id LIKE CONCAT(CONCAT('%', #{warehouseId}),'%')
+            </if>
+            <if test="companyId != null and companyId != ''" >
+                and company_id=#{companyId}
+            </if>
+        </where>
+    </delete>
+
 </mapper>

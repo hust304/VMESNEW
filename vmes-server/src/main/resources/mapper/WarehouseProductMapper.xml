@@ -611,5 +611,34 @@
         order by prod.stock_count desc
     </select>
 
+    <!--(仓库id或仓库货位id)下面所有仓库或货位是否有货品-->
+    <select id="findWarehouseProductByWarehouse" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+            id id,
+            company_id companyId,
+            warehouse_id warehouseId,
+            product_id productId,
+            code code
+        from vmes_warehouse_product
+        <where>
+            <if test="warehouseId != null and warehouseId != ''" >
+                and warehouse_id in (
+                    select id
+                    from vmes_warehouse
+                    <where>
+                        <if test="warehouseId != null and warehouseId != ''" >
+                            and path_id LIKE CONCAT(CONCAT('%', #{warehouseId}),'%')
+                        </if>
+                        <if test="companyId != null and companyId != ''" >
+                            and company_id=#{companyId}
+                        </if>
+                    </where>
+                )
+            </if>
+            <if test="companyId != null and companyId != ''" >
+                and company_id=#{companyId}
+            </if>
+        </where>
+    </select>
 
 </mapper>

@@ -34,6 +34,8 @@ public class WarehouseServiceImp implements WarehouseService {
     @Autowired
     private WarehouseMapper warehouseMapper;
     @Autowired
+    private WarehouseProductService warehouseProductService;
+    @Autowired
     private CoderuleService coderuleService;
     @Autowired
     private FileService fileService;
@@ -127,6 +129,9 @@ public class WarehouseServiceImp implements WarehouseService {
     }
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+    public void deleteWarehouseByPath(PageData pd) throws Exception {
+        warehouseMapper.deleteWarehouseByPath(pd);
+    }
     /**
      * 获取全部仓库货位记录，同时带出该(货位,货品)库存数量
      *
@@ -241,6 +246,8 @@ public class WarehouseServiceImp implements WarehouseService {
         findMap.put("pid", pid);
         name = "'" + StringUtil.stringTrimSpace(name).replace(",", "','") + "'";
         findMap.put("queryStr", "name in (" + name + ")");
+        //是否启用(0:已禁用 1:启用)
+        findMap.put("isdisable", "1");
 
         if (id != null && id.trim().length() > 0) {
             findMap.put("id", id);
@@ -1313,6 +1320,8 @@ public class WarehouseServiceImp implements WarehouseService {
     @Override
     public ResultModel deleteWarehouse(PageData pageData) throws Exception {
         ResultModel model = new ResultModel();
+
+        String companyId = (String)pageData.get("currentCompanyId");
         String ids = (String)pageData.get("ids");
         if (ids == null || ids.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
@@ -1322,7 +1331,41 @@ public class WarehouseServiceImp implements WarehouseService {
 
         String id_str = StringUtil.stringTrimSpace(ids);
         String[] id_arry = id_str.split(",");
-        this.updateToDisableByIds(id_arry);
+        //this.updateToDisableByIds(id_arry);
+
+        //1. 验证当前仓库id或货位id下所有子仓库或子货位是否含有货品
+        StringBuffer msgBuf = new StringBuffer();
+        for (String warehouseId : id_arry) {
+            Warehouse warehouse = this.findWarehouseById(warehouseId);
+
+            PageData findMap = new PageData();
+            findMap.put("warehouseId", warehouseId);
+            findMap.put("companyId", companyId);
+            List<Map<String, Object>> mapList = warehouseProductService.findWarehouseProductByWarehouse(findMap);
+
+            if (mapList != null && mapList.size() > 0) {
+                String tempStr = "名称:{0} 名称路径:{1} 当前仓库或货位名称下所有子仓库或子货位含有货品，不可删除该仓库或货位" + Common.SYS_ENDLINE_DEFAULT;
+                String msgStr = MessageFormat.format(tempStr,
+                        warehouse.getName(),
+                        warehouse.getPathName()
+                );
+                msgBuf.append(msgStr);
+            }
+        }
+        if (msgBuf.toString().trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgBuf.toString());
+            return model;
+        }
+
+        //2. 删除当前仓库id或货位id并且删除所有子仓库或子货位
+        for (String warehouseId : id_arry) {
+            PageData findMap = new PageData();
+            findMap.put("warehouseId", warehouseId);
+            findMap.put("companyId", companyId);
+            this.deleteWarehouseByPath(findMap);
+        }
+
         return model;
     }
 

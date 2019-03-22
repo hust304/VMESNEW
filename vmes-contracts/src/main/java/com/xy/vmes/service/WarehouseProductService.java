@@ -100,6 +100,8 @@ public interface WarehouseProductService {
     String findWarehouseIdsByWarehouseProductList(List<WarehouseProduct> objectList);
 
     WarehouseProduct warehouseProduct2QRCodeObj(WarehouseProduct warehouseProduct, WarehouseProduct QRCodeObj);
+
+    List<Map<String, Object>> findWarehouseProductByWarehouse(PageData pageData);
     ///////////////////////////////////////////////////////////////////////////////////////////
 
     /**
