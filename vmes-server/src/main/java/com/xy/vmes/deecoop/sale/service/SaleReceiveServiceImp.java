@@ -275,14 +275,16 @@ public class SaleReceiveServiceImp implements SaleReceiveService {
 
 
         Customer oldCustomer = customerService.selectById(customerId);
-        String remark = "录入收款："+ oldCustomer.getBalance().add(addBalance).subtract(oldCustomer.getBalance()).setScale(2, BigDecimal.ROUND_HALF_UP);
-        //操作类型 (0:变更 1:录入收款 2:预付款 -1:费用分摊)
-        customerService.updateCustomerBalance(
-                oldCustomer,
-                oldCustomer.getBalance().add(addBalance),
-                pd.getString("uuser"),
-                "1",
-                remark);
+        if(addBalance.compareTo(BigDecimal.ZERO)>0){
+            String remark = "录入收款："+ oldCustomer.getBalance().add(addBalance).subtract(oldCustomer.getBalance()).setScale(2, BigDecimal.ROUND_HALF_UP);
+            //操作类型 (0:变更 1:录入收款 2:预付款 -1:费用分摊)
+            customerService.updateCustomerBalance(
+                    oldCustomer,
+                    oldCustomer.getBalance().add(addBalance),
+                    pd.getString("uuser"),
+                    "1",
+                    remark);
+        }
 
 
         SaleReceive saleReceive = new SaleReceive();
