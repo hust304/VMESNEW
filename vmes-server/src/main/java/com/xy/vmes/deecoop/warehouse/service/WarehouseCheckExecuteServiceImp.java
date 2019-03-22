@@ -397,7 +397,7 @@ public class WarehouseCheckExecuteServiceImp implements WarehouseCheckExecuteSer
             }
         }
         result.put("varList",varMapList);
-        result.put("pageData", pg);
+//        result.put("pageData", pg);
 
         model.putResult(result);
         return model;

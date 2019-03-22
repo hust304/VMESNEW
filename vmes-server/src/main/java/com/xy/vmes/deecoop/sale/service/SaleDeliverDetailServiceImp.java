@@ -519,7 +519,7 @@ public class SaleDeliverDetailServiceImp implements SaleDeliverDetailService {
         result.put("hideTitles",titleMap.get("hideTitles"));
         result.put("titles",titleMap.get("titles"));
         result.put("varList",varMapList);
-        result.put("pageData", pg);
+//        result.put("pageData", pg);
         model.putResult(result);
         return model;
     }

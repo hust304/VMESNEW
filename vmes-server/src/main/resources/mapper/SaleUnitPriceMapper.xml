@@ -395,6 +395,9 @@
             <if test="customerId != null and customerId != ''">
                 and customer.id = #{customerId}
             </if>
+            <if test="currentCompanyId != null and currentCompanyId != ''">
+                and customer.company_id = #{currentCompanyId}
+            </if>
         </where>
         <if test="orderStr != null and orderStr != ''" >
             order by ${orderStr}
