@@ -578,6 +578,10 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
                     saleOrderService.update(editOrder);
                 }
 
+                SaleOrder parent = new SaleOrder();
+                parent.setId(orderId);
+                saleOrderDetailService.updateParentStateByDetailList(parent, detailList);
+
                 //orderSum 订单金额(合计金额 - 折扣金额)
                 BigDecimal orderSum = orderDB.getOrderSum();
                 //订单明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
@@ -595,15 +599,11 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
                             SaleOrder editOrder = new SaleOrder();
                             editOrder.setId(orderId);
                             //订单状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
-                            editOrder.setState("3");
+                            editOrder.setState("4");
                             saleOrderService.update(editOrder);
                         }
                     }
                 }
-
-                SaleOrder parent = new SaleOrder();
-                parent.setId(orderId);
-                saleOrderDetailService.updateParentStateByDetailList(parent, detailList);
             }
         }
 
