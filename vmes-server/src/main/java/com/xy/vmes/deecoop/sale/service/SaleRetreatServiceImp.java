@@ -398,8 +398,8 @@ public class SaleRetreatServiceImp implements SaleRetreatService {
             return msgStr;
         }
 
-        //订单可退金额 订单退货金额
-        msgStr = this.checkOrderAllowReceiveSum(mapList);
+        //订单实收金额 订单退货金额
+        msgStr = this.checkOrderAllowReceiveSumByMoney(mapList);
         if (msgStr != null && msgStr.trim().length() > 0) {
             return msgStr;
         }
@@ -461,6 +461,40 @@ public class SaleRetreatServiceImp implements SaleRetreatService {
         return msgBuf.toString();
     }
 
+    public String checkOrderAllowReceiveSumByMoney(List<Map<String, String>> mapList) {
+        if (mapList == null || mapList.size() == 0) {return new String();}
+        StringBuffer msgBuf = new StringBuffer();
+
+        //1. 获取 <订单编号, 订单id>sysOrderCode
+        Map<String, String> orderCodeMap = this.findOrderCodeMap(mapList);
+        //2. 获取 <订单编号, 实收金额>
+        Map<String, BigDecimal> orderAllowReceiveAmountMap = this.findOrderAllowReceiveAmountMap(mapList);
+        //3. 获取 <订单编号, 退货金额>
+        Map<String, BigDecimal> orderRetreatSumMap = this.findOrderRetreatSumMap(mapList);
+
+        String msgTemp = "订单编号:{0} 订单实收金额:{1} 订单退货金额(退货金额汇总):{2} 订单退货金额不可大于订单实收金额！" + Common.SYS_ENDLINE_DEFAULT;
+        for (Iterator iterator = orderCodeMap.keySet().iterator(); iterator.hasNext();) {
+            String orderCode = (String) iterator.next();
+            //订单实收金额
+            BigDecimal receiveAmount = orderAllowReceiveAmountMap.get(orderCode);
+            //退货金额 retreatSum
+            BigDecimal retreatSum = orderRetreatSumMap.get(orderCode);
+
+            if (retreatSum.doubleValue() > receiveAmount.doubleValue()) {
+                //msgTemp = "订单编号:{0} 订单实收金额:{1} 订单退货金额:{2} 订单退货金额不可大于订单实收金额！"
+                String msg_Str = MessageFormat.format(msgTemp,
+                        orderCode,
+                        receiveAmount.toString(),
+                        retreatSum.toString());
+                msgBuf.append(msg_Str);
+            }
+        }
+
+        return msgBuf.toString();
+
+
+    }
+
     public String checkOrderAllowReceiveSum(List<Map<String, String>> mapList) {
         if (mapList == null || mapList.size() == 0) {return new String();}
         StringBuffer msgBuf = new StringBuffer();
@@ -472,7 +506,7 @@ public class SaleRetreatServiceImp implements SaleRetreatService {
         //3. 获取 <订单编号, 退货金额>
         Map<String, BigDecimal> orderRetreatSumMap = this.findOrderRetreatSumMap(mapList);
 
-        String msgTemp = "订单编号:{0} 订单实收金额:{1} 订单退货金额:{2} 订单退货金额不可大于订单实收金额！" + Common.SYS_ENDLINE_DEFAULT;
+        String msgTemp = "订单编号:{0} 订单可退金额:{1} 订单退货金额(退货金额汇总):{2} 订单退货金额不可大于订单可退金额！" + Common.SYS_ENDLINE_DEFAULT;
         for (Iterator iterator = orderCodeMap.keySet().iterator(); iterator.hasNext();) {
             String orderCode = (String) iterator.next();
             //订单可退金额
@@ -1100,6 +1134,33 @@ public class SaleRetreatServiceImp implements SaleRetreatService {
 
             if (orderCode != null && orderCode.trim().length() > 0) {
                 orderMap.put(orderCode, allowReceiveSum);
+            }
+        }
+
+        return orderMap;
+    }
+
+    private Map<String, BigDecimal> findOrderAllowReceiveAmountMap(List<Map<String, String>> mapList) {
+        Map<String, BigDecimal> orderMap = new HashMap<String, BigDecimal>();
+        if (mapList == null || mapList.size() == 0) {return orderMap;}
+
+        for (Map<String, String> mapObject : mapList) {
+            String orderCode = mapObject.get("sysOrderCode");
+
+            BigDecimal receiveAmount = BigDecimal.valueOf(0D);
+            String receiveAmount_str = mapObject.get("receiveAmount");
+            if (receiveAmount_str != null && receiveAmount_str.trim().length() > 0) {
+                try {
+                    receiveAmount = new BigDecimal(receiveAmount_str.trim());
+                    //四舍五入到2位小数
+                    receiveAmount = receiveAmount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            if (orderCode != null && orderCode.trim().length() > 0) {
+                orderMap.put(orderCode, receiveAmount);
             }
         }
 

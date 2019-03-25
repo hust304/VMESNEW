@@ -144,6 +144,7 @@ public interface SaleRetreatService {
      */
     String checkColumnByMoney(List<Map<String, String>> mapList);
     String checkNullColumnByMoney(List<Map<String, String>> mapList);
+    String checkOrderAllowReceiveSumByMoney(List<Map<String, String>> mapList);
 
     String checkOrderAllowReceiveSum(List<Map<String, String>> mapList);
 
