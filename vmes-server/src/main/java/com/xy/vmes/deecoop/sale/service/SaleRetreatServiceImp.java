@@ -491,8 +491,6 @@ public class SaleRetreatServiceImp implements SaleRetreatService {
         }
 
         return msgBuf.toString();
-
-
     }
 
     public String checkOrderAllowReceiveSum(List<Map<String, String>> mapList) {
