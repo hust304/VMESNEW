@@ -76,7 +76,7 @@ public class SaleOrderAuditServiceImp implements SaleOrderAuditService {
 
             if (allowStockCount != null && productCount != null
                 && productCount.doubleValue() > 0
-                && allowStockCount.doubleValue() > 0
+                && allowStockCount.doubleValue() >= 0
             ) {
                 needLockStockList.add(mapObject);
             }
