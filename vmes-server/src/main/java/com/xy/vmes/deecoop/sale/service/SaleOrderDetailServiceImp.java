@@ -299,9 +299,15 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
     public String findOrderIdsByDetailList(List<SaleOrderDetail> objectList) {
         if (objectList == null || objectList.size() == 0) {return new String();}
 
-        StringBuffer strBuf = new StringBuffer();
+        Map<String, String> orderIdMap = new HashMap<String, String>();
         for (SaleOrderDetail object : objectList) {
             String orderId = object.getParentId();
+            orderIdMap.put(orderId, orderId);
+        }
+
+        StringBuffer strBuf = new StringBuffer();
+        for (Iterator iterator = orderIdMap.keySet().iterator(); iterator.hasNext();) {
+            String orderId = (String) iterator.next();
             if (orderId != null && orderId.trim().length() > 0)  {
                 strBuf.append(orderId.trim());
                 strBuf.append(",");
@@ -670,7 +676,7 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
                 orderDtlDeliverCount = (BigDecimal)orderDtlValueMap.get("orderDtlDeliverCount");
             }
 
-            if (orderDtlCount.doubleValue() >= orderDtlDeliverCount.doubleValue()) {
+            if (orderDtlCount.doubleValue() <= orderDtlDeliverCount.doubleValue()) {
                 //明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
                 orderDetail.setState("5");
             }
