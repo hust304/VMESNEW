@@ -254,35 +254,56 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
         return objectList;
     }
 
-    public String findProductIdsByDetailList(List<SaleOrderDetail> objectList) {
+//    public String findProductIdsByDetailList(List<SaleOrderDetail> objectList) {
+//        if (objectList == null || objectList.size() == 0) {return new String();}
+//
+//        StringBuffer strBuf = new StringBuffer();
+//        for (SaleOrderDetail object : objectList) {
+//            String productId = object.getProductId();
+//            if (productId != null && productId.trim().length() > 0)  {
+//                strBuf.append(productId.trim());
+//                strBuf.append(",");
+//            }
+//        }
+//
+//        String strTemp = strBuf.toString();
+//        if (strTemp.trim().length() > 0 && strTemp.lastIndexOf(",") != -1) {
+//            strTemp = strTemp.substring(0, strTemp.lastIndexOf(","));
+//            return strTemp;
+//        }
+//
+//        return strTemp;
+//    }
+
+//    public String findDetailIdsByDetailList(List<SaleOrderDetail> objectList) {
+//        if (objectList == null || objectList.size() == 0) {return new String();}
+//
+//        StringBuffer strBuf = new StringBuffer();
+//        for (SaleOrderDetail object : objectList) {
+//            String detailId = object.getProductId();
+//            if (detailId != null && detailId.trim().length() > 0)  {
+//                strBuf.append(detailId.trim());
+//                strBuf.append(",");
+//            }
+//        }
+//
+//        String strTemp = strBuf.toString();
+//        if (strTemp.trim().length() > 0 && strTemp.lastIndexOf(",") != -1) {
+//            strTemp = strTemp.substring(0, strTemp.lastIndexOf(","));
+//            return strTemp;
+//        }
+//
+//        return strTemp;
+//    }
+
+    public String findOrderIdsByDetailList(List<SaleOrderDetail> objectList) {
         if (objectList == null || objectList.size() == 0) {return new String();}
 
         StringBuffer strBuf = new StringBuffer();
         for (SaleOrderDetail object : objectList) {
-            String productId = object.getProductId();
-            if (productId != null && productId.trim().length() > 0)  {
-                strBuf.append(productId.trim());
-                strBuf.append(",");
-            }
-        }
-
-        String strTemp = strBuf.toString();
-        if (strTemp.trim().length() > 0 && strTemp.lastIndexOf(",") != -1) {
-            strTemp = strTemp.substring(0, strTemp.lastIndexOf(","));
-            return strTemp;
-        }
-
-        return strTemp;
-    }
-
-    public String findDetailIdsByDetailList(List<SaleOrderDetail> objectList) {
-        if (objectList == null || objectList.size() == 0) {return new String();}
-
-        StringBuffer strBuf = new StringBuffer();
-        for (SaleOrderDetail object : objectList) {
-            String detailId = object.getProductId();
-            if (detailId != null && detailId.trim().length() > 0)  {
-                strBuf.append(detailId.trim());
+            String orderId = object.getParentId();
+            if (orderId != null && orderId.trim().length() > 0)  {
+                strBuf.append(orderId.trim());
                 strBuf.append(",");
             }
         }
@@ -616,6 +637,82 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
 
         //四舍五入到2位小数
         return BigDecimal.valueOf(totalSum_double).setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //退货单修改(订单明细,订单) 状态
+    public void updateOrderState(Map<String, Map<String, Object>> orderDtlMap,
+                          Map<String, Map<String, BigDecimal>> orderReceiveMap) throws Exception {
+        if (orderDtlMap == null || orderDtlMap.size() == 0) {return;}
+
+        Map<String, String> orderIdMap = new HashMap<String, String>();
+        for (Iterator iterator = orderDtlMap.keySet().iterator(); iterator.hasNext();) {
+            SaleOrderDetail orderDetail = new SaleOrderDetail();
+
+            String orderDtlId = (String) iterator.next();
+            orderDetail.setId(orderDtlId);
+
+            Map<String, Object> orderDtlValueMap = orderDtlMap.get(orderDtlId);
+
+            //orderId 订单id
+            String orderId = (String)orderDtlValueMap.get("orderId");
+            orderIdMap.put(orderId, orderId);
+
+            //订单明细订购数量 orderDtlCount
+            BigDecimal orderDtlCount = BigDecimal.valueOf(0D);
+            if (orderDtlValueMap.get("orderDtlCount") != null) {
+                orderDtlCount = (BigDecimal)orderDtlValueMap.get("orderDtlCount");
+            }
+
+            //订单明细发货数量 orderDtlDeliverCount
+            BigDecimal orderDtlDeliverCount = BigDecimal.valueOf(0D);
+            if (orderDtlValueMap.get("orderDtlDeliverCount") != null) {
+                orderDtlDeliverCount = (BigDecimal)orderDtlValueMap.get("orderDtlDeliverCount");
+            }
+
+            if (orderDtlCount.doubleValue() >= orderDtlDeliverCount.doubleValue()) {
+                //明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
+                orderDetail.setState("5");
+            }
+
+            this.update(orderDetail);
+        }
+
+        //反写订单状态
+        if (orderIdMap.size() > 0) {
+            for (Iterator iterator = orderIdMap.keySet().iterator(); iterator.hasNext();) {
+                String orderId = (String)iterator.next();
+                List<SaleOrderDetail> detailList = this.findSaleOrderDetailListByParentId(orderId);
+
+                SaleOrder parent = new SaleOrder();
+                parent.setId(orderId);
+                this.updateParentStateByDetailList(parent, detailList);
+
+                SaleOrder orderDB = saleOrderService.findSaleOrderById(orderId);
+                //orderSum 订单金额(合计金额 - 折扣金额)
+                BigDecimal orderSum = orderDB.getOrderSum();
+                //订单明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
+                if (this.isAllExistStateByDetailList("5", detailList)) {
+                    if (orderReceiveMap.get(orderId) != null) {
+                        Map<String, BigDecimal> receiveMap = orderReceiveMap.get(orderId);
+
+                        //订单id-订单已完成付款金额
+                        BigDecimal receiveSum = BigDecimal.valueOf(0D);
+                        if (receiveMap.get("receiveSum") != null) {
+                            receiveSum = receiveMap.get("receiveSum");
+                        }
+
+                        if (receiveSum.doubleValue() >= orderSum.doubleValue()) {
+                            SaleOrder editOrder = new SaleOrder();
+                            editOrder.setId(orderId);
+                            //订单状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
+                            editOrder.setState("4");
+                            saleOrderService.update(editOrder);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////

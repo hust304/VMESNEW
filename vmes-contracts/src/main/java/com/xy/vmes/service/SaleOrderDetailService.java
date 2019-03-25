@@ -106,8 +106,9 @@ public interface SaleOrderDetailService {
     List<SaleOrderDetail> mapList2DetailList(List<Map<String, String>> mapList, List<SaleOrderDetail> objectList);
     List<SaleOrderDetail> mapList2OrderDetailListByEdit(List<Map<String, String>> mapList, List<SaleOrderDetail> objectList);
 
-    String findProductIdsByDetailList(List<SaleOrderDetail> objectList);
-    String findDetailIdsByDetailList(List<SaleOrderDetail> objectList);
+    //String findProductIdsByDetailList(List<SaleOrderDetail> objectList);
+    //String findDetailIdsByDetailList(List<SaleOrderDetail> objectList);
+    String findOrderIdsByDetailList(List<SaleOrderDetail> objectList);
 
     SaleDeliverDetail orderDetail2DeliverDetail(SaleOrderDetailEntity orderDetail, SaleDeliverDetail deliverDetail);
     List<SaleDeliverDetail> orderDtlList2DeliverDtllList(List<SaleOrderDetailEntity> orderDtlList, List<SaleDeliverDetail> deliverDtlList);
@@ -150,6 +151,10 @@ public interface SaleOrderDetailService {
      * @param dtllList     订单明细List<SaleOrderDetail>
      */
     void updateParentStateByDetailList(SaleOrder parent, List<SaleOrderDetail> dtllList) throws Exception;
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //退货单修改(订单明细,订单) 状态
+    void updateOrderState(Map<String, Map<String, Object>> orderDtlMap,
+                          Map<String, Map<String, BigDecimal>> orderReceiveMap) throws Exception;
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**

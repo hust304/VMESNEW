@@ -33,4 +33,5 @@ public interface SaleDeliverDetailByCollectMapper {
      * 创建时间：2019-01-18
      */
     List<Map<String, Object>> findDeliverDetailByOrderDetaiCount(PageData pageData);
+    List<Map<String, Object>> findDeliverDetailByOrderDetai(PageData pageData);
 }

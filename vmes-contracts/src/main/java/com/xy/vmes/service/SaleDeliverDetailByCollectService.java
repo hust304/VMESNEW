@@ -43,4 +43,24 @@ public interface SaleDeliverDetailByCollectService {
      * @return
      */
     Map<String, Map<String, BigDecimal>> findMapOrderDetaiCountByDeliverId(String deliverId, String deliveDtlState, String orderDtlIds) throws Exception;
+
+    ///////////////////////////////////////////////////////////////////////////////////////////
+    /**
+     * 关联查询(vmes_sale_deliver_detail,vmes_sale_order_detail)
+     * 获取发货出库订单(订单明细id,订购数量,发货数量)
+     *
+     * 创建人：陈刚
+     * 创建时间：2019-01-18
+     */
+    List<Map<String, Object>> findDeliverDetailCollectByOrderDetaiCount(PageData pageData) throws Exception;
+
+    /**
+     * 根据发货单id-获取(订单明细id,订购数量,发货数量)
+     *
+     * @param orderIds  订单单id
+     * @return
+     */
+    Map<String, Map<String, Object>> findMapOrderDetaiCountByOrderId(String orderIds) throws Exception;
+
+
 }

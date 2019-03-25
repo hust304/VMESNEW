@@ -1,5 +1,6 @@
 package com.xy.vmes.deecoop.sale.service;
 
+import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.sale.dao.SaleDeliverDetailByCollectMapper;
 import com.xy.vmes.service.SaleDeliverDetailByCollectService;
 import com.yvan.PageData;
@@ -92,6 +93,68 @@ public class SaleDeliverDetailByCollectServiceImp implements SaleDeliverDetailBy
             mapValue.put("orderDtlDeliverCount", orderDtlDeliverCount);
 
             //订单明细发货金额
+            BigDecimal orderDtlDeliverSum = (BigDecimal)mapObj.get("orderDtlDeliverSum");
+            mapValue.put("orderDtlDeliverSum", orderDtlDeliverSum);
+
+            mapObject.put(orderDtlId, mapValue);
+        }
+
+        return mapObject;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////
+    /**
+     * 关联查询(vmes_sale_deliver_detail,vmes_sale_order_detail)
+     * 获取发货出库订单(订单明细id,订购数量,发货数量)
+     *
+     * 创建人：陈刚
+     * 创建时间：2019-01-18
+     */
+    public List<Map<String, Object>> findDeliverDetailCollectByOrderDetaiCount(PageData pageData) throws Exception {
+        return saleDeliverDetailByCollectMapper.findDeliverDetailByOrderDetai(pageData);
+    }
+
+
+    /**
+     * 根据发货单id-获取(订单明细id,订购数量,发货数量)
+     *
+     * @param orderIds  订单单id
+     * @return
+     */
+    public Map<String, Map<String, Object>> findMapOrderDetaiCountByOrderId(String orderIds) throws Exception {
+        Map<String, Map<String, Object>> mapObject = new HashMap<String, Map<String, Object>>();
+        if (orderIds == null || orderIds.trim().length() == 0) {return mapObject;}
+
+        PageData findMap = new PageData();
+        orderIds = StringUtil.stringTrimSpace(orderIds);
+        orderIds = "'" + orderIds.replace(",", "','") + "'";
+        findMap.put("orderIds", orderIds);
+
+        List<Map<String, Object>> mapList = this.findDeliverDetailCollectByOrderDetaiCount(findMap);
+        if (mapList == null || mapList.size() == 0) {return mapObject;}
+
+        for (Map<String, Object> mapObj : mapList) {
+            Map<String, Object> mapValue = new HashMap<String, Object>();
+
+            //订单明细id orderDtlId
+            String orderDtlId = (String)mapObj.get("orderDtlId");
+            //订单id orderId
+            String orderId = (String)mapObj.get("orderId");
+            mapValue.put("orderId", orderId);
+
+            //订单明细订购数量 orderDtlCount
+            BigDecimal orderDtlCount = (BigDecimal)mapObj.get("orderDtlCount");
+            mapValue.put("orderDtlCount", orderDtlCount);
+
+            //货品金额 orderDtlSum
+            BigDecimal orderDtlSum = (BigDecimal)mapObj.get("orderDtlSum");
+            mapValue.put("orderDtlSum", orderDtlSum);
+
+            //订单明细发货数量 orderDtlDeliverCount
+            BigDecimal orderDtlDeliverCount = (BigDecimal)mapObj.get("orderDtlDeliverCount");
+            mapValue.put("orderDtlDeliverCount", orderDtlDeliverCount);
+
+            //订单明细发货金额 orderDtlDeliverSum
             BigDecimal orderDtlDeliverSum = (BigDecimal)mapObj.get("orderDtlDeliverSum");
             mapValue.put("orderDtlDeliverSum", orderDtlDeliverSum);
 

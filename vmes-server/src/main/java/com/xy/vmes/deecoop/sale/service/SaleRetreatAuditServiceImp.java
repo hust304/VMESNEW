@@ -22,8 +22,13 @@ public class SaleRetreatAuditServiceImp implements SaleRetreatAuditService {
     private SaleRetreatService saleRetreatService;
     @Autowired
     private SaleRetreatDetailService saleRetreatDetailService;
+
     @Autowired
     private SaleOrderDetailService saleOrderDetailService;
+    @Autowired
+    private SaleDeliverDetailByCollectService saleDeliverDetailByCollectService;
+    @Autowired
+    SaleReceiveDetailService saleReceiveDetailService;
 
     @Autowired
     private WarehouseInService warehouseInService;
@@ -143,6 +148,12 @@ public class SaleRetreatAuditServiceImp implements SaleRetreatAuditService {
         }
 
         saleRetreatDetailService.updateOrderByRetreat(orderDtlRetreatMap, orderDtlList);
+
+        //4. 修改订单和订单明细状态
+        String orderIds = saleOrderDetailService.findOrderIdsByDetailList(orderDtlList);
+        Map<String, Map<String, Object>> orderDtlMap = saleDeliverDetailByCollectService.findMapOrderDetaiCountByOrderId(orderIds);
+        Map<String, Map<String, BigDecimal>> orderReceiveMap = saleReceiveDetailService.findMapOrderReceiveByOrderId(orderIds, "1");
+        saleOrderDetailService.updateOrderState(orderDtlMap, orderReceiveMap);
 
         return model;
     }

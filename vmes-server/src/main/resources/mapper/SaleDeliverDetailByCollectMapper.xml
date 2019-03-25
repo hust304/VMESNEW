@@ -9,19 +9,33 @@
     <!--发货明细(按订单明细id)汇总-->
     <select id="findDeliverDetailByOrderDetai" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
-        order_detai_id orderDetaiId,
-        sum(count) orderDetaiDeliverCount,
-        sum(sum) orderDetaiDeliverSum
-        from vmes_sale_deliver_detail
+            orderDetail.id orderDtlId,
+            orderDetail.parent_id orderId,
+
+            round(ifnull(orderDetail.order_count, 0), 2) orderDtlCount,
+            round(ifnull(orderDetail.product_sum, 0), 2) orderDtlSum,
+
+            round(ifnull(orderDtlDeliver.orderDtlDeliverCount, 0), 2) orderDtlDeliverCount,
+            round(ifnull(orderDtlDeliver.orderDtlDeliverSum, 0), 2) orderDtlDeliverSum
+
+        from vmes_sale_order_detail orderDetail
+            left join (
+                select
+                    order_detai_id orderDtlId,
+                    sum(order_count) orderDtlDeliverCount,
+                    sum(sum) orderDtlDeliverSum
+                from vmes_sale_deliver_detail
+                where state = '1'
+                group by order_detai_id
+            ) orderDtlDeliver on orderDetail.id = orderDtlDeliver.orderDtlId
         <where>
-            <if test="orderDetaiId != null and orderDetaiId != ''" >
-                and order_detai_id = #{orderDetaiId}
+            <if test="orderId != null and orderId != ''" >
+                and orderDetail.parent_id = #{orderId}
             </if>
-            <if test="state != null and state != ''" >
-                and state = #{state}
+            <if test="orderIds != null and orderIds != ''" >
+                and orderDetail.parent_id in (${orderIds})
             </if>
         </where>
-        group by order_detai_id
     </select>
 
     <!--发货明细(按订单明细id)汇总(已发货数量)-->

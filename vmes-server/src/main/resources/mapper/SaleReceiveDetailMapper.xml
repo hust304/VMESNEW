@@ -385,7 +385,7 @@
             receive.order_id orderId,
             round(ifnull(receive.receive_amount, 0),2) receiveAmount,
             round(ifnull(receive.discount_amount, 0),2) discountAmount,
-            round(ifnull((receive.receive_amount + receive.discount_amount), 0), 2) receiveSum,
+            round((ifnull(receive.receive_amount, 0) + ifnull(receive.discount_amount, 0)), 2) receiveSum,
 
             round(ifnull(saleOrder.total_sum, 0), 2) orderTotalSum,
             round(ifnull(saleOrder.order_sum, 0), 2) orderSum
