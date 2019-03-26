@@ -4,6 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Common {
+    //linux系统:文件系统根路径
+    public final static String SYS_LINUX_FILE_ROOT = "/home/vmes/htdocs/vmes.deecoop.cn/";
+
     //系统应用自定义异常-错误码(ErrorCode)
     //系统通用编码规则 version 锁
     public final static String SYS_CODERULE_ERRORCODE = "0001";

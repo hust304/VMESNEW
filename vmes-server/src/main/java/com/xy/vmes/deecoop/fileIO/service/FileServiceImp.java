@@ -1,5 +1,6 @@
 package com.xy.vmes.deecoop.fileIO.service;
 
+import com.xy.vmes.common.util.Common;
 import com.xy.vmes.service.FileService;
 import com.yvan.FileUploadUtils;
 import com.yvan.QRCodeUtils;
@@ -19,15 +20,23 @@ public class FileServiceImp implements FileService {
 
     @Override
     public String uploadPhoto(String photoDir,MultipartFile file) throws Exception {
+        //上传文件的绝对路径
+        String absolutePath = "";
 
-        String path = (String.valueOf(Thread.currentThread().getContextClassLoader().getResource(""))+"../../../../").replaceAll("file:/", "").replaceAll("%20", " ").trim();
-        if(path.indexOf(":") != 1){
-            path = File.separator + path;
+        String os = System.getProperty("os.name");
+        if(os != null && os.indexOf("Windows") >= 0) {
+            String path = (String.valueOf(Thread.currentThread().getContextClassLoader().getResource(""))+"../../../../").replaceAll("file:/", "").replaceAll("%20", " ").trim();
+            if(path.indexOf(":") != 1){
+                path = File.separator + path;
+            }
+            //本地window环境:文件根路径
+            absolutePath = path+"vmes-file/";
+        } else {
+            //真实linux环境:文件根路径
+            absolutePath = Common.SYS_LINUX_FILE_ROOT;
         }
 
-        String absolutePath = path+"vmes-file/";//上传文件的绝对路径
         String relativePath = "fileUpload/Photo/"+photoDir;//上传文件的相对路径
-
         String[] includesuffixs = new String[3];//上传的文件类型，包括jpg、png、jpeg
         includesuffixs[0]="jpg";
         includesuffixs[1]="png";
@@ -39,16 +48,20 @@ public class FileServiceImp implements FileService {
 
     @Override
     public String createQRCode(String qrCodeDir, String content) throws Exception {
-        String absolutePath = "";//上传文件的绝对路径
+        //上传文件的绝对路径
+        String absolutePath = "";
+
         String os = System.getProperty("os.name");
-        if(os!=null&&os.indexOf("Windows")>=0){
+        if(os != null && os.indexOf("Windows") >= 0) {
             String path = (String.valueOf(Thread.currentThread().getContextClassLoader().getResource(""))+"../../../../").replaceAll("file:/", "").replaceAll("%20", " ").trim();
             if(path.indexOf(":") != 1){
                 path = File.separator + path;
             }
+            //本地window环境:文件根路径
             absolutePath = path+"vmes-file/";
-        }else {
-            absolutePath = "/home/vmes/htdocs/vmes.deecoop.cn/";
+        } else {
+            //真实linux环境:文件根路径
+            absolutePath = Common.SYS_LINUX_FILE_ROOT;
         }
 
         String relativePath = "fileUpload/QRCode/"+qrCodeDir+"/";//上传文件的相对路径

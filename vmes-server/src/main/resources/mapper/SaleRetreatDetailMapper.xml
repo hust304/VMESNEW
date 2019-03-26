@@ -196,4 +196,27 @@
         </if>
     </select>
 
+    <!--退货单明细与入库单明细 关联查询-->
+    <select id="findRetreatDetailByInDetail" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+        retreatDtl.parent_id retreatId,
+        retreatDtl.id retreatDtlId,
+        retreatDtl.in_detail_id inDtlId,
+
+        inDtl.parent_id inParentId,
+        inDtl.state inDtlState
+        from vmes_sale_retreat_detail retreatDtl
+        left join vmes_warehouse_in_detail inDtl on retreatDtl.in_detail_id = inDtl.id
+        <where>
+            <if test="retreatId != null and retreatId != ''" >
+                and retreatDtl.parent_id = #{retreatId}
+            </if>
+
+            <!--queryStr 自定义sql查询语句-->
+            <if test="queryStr != null and queryStr != ''" >
+                and ${queryStr}
+            </if>
+        </where>
+    </select>
+
 </mapper>
