@@ -24,6 +24,7 @@
         unit.name unitName,
         detail.code code,
         checkexecute.state,
+        checkexecute.count checkCount,
         round(ifnull(detail.stock_count, 0), 2) stockCount
 
         from vmes_warehouse_check_execute checkexecute
@@ -62,6 +63,7 @@
         unit.name unitName,
         detail.code code,
         checkexecute.state,
+        checkexecute.count checkCount,
         round(ifnull(detail.stock_count, 0), 2) stockCount
 
         from vmes_warehouse_check_execute checkexecute
