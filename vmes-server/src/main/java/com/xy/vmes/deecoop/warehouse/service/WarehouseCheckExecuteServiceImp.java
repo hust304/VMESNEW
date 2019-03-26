@@ -207,6 +207,12 @@ public class WarehouseCheckExecuteServiceImp implements WarehouseCheckExecuteSer
             return model;
         }
 
+        addWarehouseCheck(mapList,cuser);
+        return model;
+    }
+
+    @Override
+    public void addWarehouseCheck(List<Map<String, Object>> mapList,String cuser) throws Exception {
         Map<String, String> parentMap = new HashMap<String, String>();
         for (Map<String, Object> mapObject : mapList) {
             WarehouseCheckExecute execute = (WarehouseCheckExecute) HttpUtils.pageData2Entity(mapObject, new WarehouseCheckExecute());
@@ -242,8 +248,8 @@ public class WarehouseCheckExecuteServiceImp implements WarehouseCheckExecuteSer
                 warehouseCheckDetailService.updateParentStateByDetailList(parent, null, "-1");
             }
         }
-        return model;
     }
+
 
     @Override
     public ResultModel rebackWarehouseCheckByDetail(PageData pageData) throws Exception {

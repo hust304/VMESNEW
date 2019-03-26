@@ -52,7 +52,16 @@ public class MobileWarehouseCheckServiceImp implements MobileWarehouseCheckServi
 
     @Override
     public ResultModel addWarehouseCheckExecute(PageData pageData) throws Exception {
-        return warehouseCheckExecuteService.addWarehouseCheckExecute(pageData);
+        ResultModel model = new ResultModel();
+        List<Map<String, Object>> mapList = new ArrayList();
+        Map<String, Object> dataMap = new HashMap();
+        String cuser = pageData.getString("cuser");
+        dataMap.put("count",pageData.getString("count"));
+        dataMap.put("detailId",pageData.getString("detailId"));
+        dataMap.put("parentId",pageData.getString("parentId"));
+        mapList.add(dataMap);
+        warehouseCheckExecuteService.addWarehouseCheck(mapList,cuser);
+        return model;
     }
 
     @Override
