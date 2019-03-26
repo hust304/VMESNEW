@@ -107,6 +107,8 @@ public interface WarehouseCheckExecuteService {
     void auditPassWarehouseCheck(List<Map<String, Object>> mapList, String cuser, String companyId)   throws Exception;
 
     void auditDisagreeWarehouseCheck(List<Map<String, Object>> mapList, String cuser, String remark)  throws Exception;
+
+    void addWarehouseCheck(List<Map<String, Object>> mapList,String cuser) throws Exception;
 }
 
 
