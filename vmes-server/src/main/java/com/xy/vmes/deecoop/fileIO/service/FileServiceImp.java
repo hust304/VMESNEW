@@ -39,13 +39,18 @@ public class FileServiceImp implements FileService {
 
     @Override
     public String createQRCode(String qrCodeDir, String content) throws Exception {
-
-        String path = (String.valueOf(Thread.currentThread().getContextClassLoader().getResource(""))+"../../../../").replaceAll("file:/", "").replaceAll("%20", " ").trim();
-        if(path.indexOf(":") != 1){
-            path = File.separator + path;
+        String absolutePath = "";//上传文件的绝对路径
+        String os = System.getProperty("os.name");
+        if(os!=null&&os.indexOf("Windows")>=0){
+            String path = (String.valueOf(Thread.currentThread().getContextClassLoader().getResource(""))+"../../../../").replaceAll("file:/", "").replaceAll("%20", " ").trim();
+            if(path.indexOf(":") != 1){
+                path = File.separator + path;
+            }
+            absolutePath = path+"vmes-file/";
+        }else {
+            absolutePath = "/home/vmes/htdocs/vmes.deecoop.cn/";
         }
 
-        String absolutePath = path+"vmes-file/";//上传文件的绝对路径
         String relativePath = "fileUpload/QRCode/"+qrCodeDir+"/";//上传文件的相对路径
         String fileName = new Long(System.currentTimeMillis()).toString() + UUID.randomUUID().toString().substring(0, 3)+"."+QRCodeUtils.CODE_FORMAT;
         File QRCode = new File(absolutePath+relativePath+fileName);
@@ -54,6 +59,11 @@ public class FileServiceImp implements FileService {
         }
         QRCodeUtils.create(new FileOutputStream(QRCode),content);
         return relativePath+fileName;
+    }
+
+
+    public static void main(String[] args) throws Exception {
+
     }
 
 //    public static void main(String[] args) throws Exception {
