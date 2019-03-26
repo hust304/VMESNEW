@@ -131,8 +131,9 @@
 
         from vmes_warehouse_move_executor executor
         left join vmes_warehouse_move_detail detail on executor.detail_id = detail.id
+        left join vmes_warehouse_product wp on wp.id = detail.warehouse_product_id
         left join vmes_warehouse_move wmove on wmove.id = detail.parent_id
-        left join vmes_product product on detail.warehouse_product_id = product .id
+        left join vmes_product product on wp.product_id = product .id
         left join vmes_product_unit produnit on produnit.product_id = product .id and produnit.type = 1
         left join vmes_dictionary unit on produnit.unit = unit.id
         left join vmes_dictionary genre on product.genre = genre.id

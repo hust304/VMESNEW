@@ -40,6 +40,8 @@ public class MobileProductController {
         if(productNameList!=null&&productNameList.size()>0){
             String[] genreList = productNameList.toArray(new String[productNameList.size()]);
             pd.put("genreList",genreList);
+        }else{
+            pd.remove("genreList");
         }
         List<Map> varList = mobileProductService.findListPageProduct(pd,pg);
 

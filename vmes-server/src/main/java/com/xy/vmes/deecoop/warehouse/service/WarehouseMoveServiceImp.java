@@ -361,7 +361,7 @@ public class WarehouseMoveServiceImp implements WarehouseMoveService {
         warehouseMove.setCuser(currentUserId);
         warehouseMove.setWarehouseId(warehouseId);
         //出库单编号
-        String code = coderuleService.createCoder(companyID, "vmes_warehouse_move", "O");
+        String code = coderuleService.createCoder(companyID, "vmes_warehouse_move", "M");
         warehouseMove.setCode(code);
         this.save(warehouseMove);
 
