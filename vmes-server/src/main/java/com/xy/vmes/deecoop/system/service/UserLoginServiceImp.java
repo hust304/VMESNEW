@@ -40,7 +40,8 @@ public class UserLoginServiceImp implements UserLoginService {
     private DepartmentService departmentService;
     @Autowired
     RedisClient redisClient;
-
+    @Autowired
+    RoleMenuService roleMenuService;
 
 
 
@@ -207,7 +208,7 @@ public class UserLoginServiceImp implements UserLoginService {
         }
 
 
-        Map<String, String> dataMap = new HashMap<String, String>();
+        Map<String, Object> dataMap = new HashMap<String, Object>();
         Map<String, String> RedisMap = new HashMap<String, String>();
 
         //user:用户信息()
@@ -241,6 +242,13 @@ public class UserLoginServiceImp implements UserLoginService {
         String roleIds = userRoleService.findRoleIdsByByUserID(user.getId());
         dataMap.put("roleIds", roleIds);
         RedisMap.put("userRole", roleIds);
+
+        //appMenu移动端菜单权限
+        List menuList = new ArrayList();
+        PageData pd = new PageData();
+        pd.put("roleId",roleIds);
+        menuList = roleMenuService.listMenuKeyByApp(pd);
+        dataMap.put("menuList", menuList);
 
         //userMenu菜单权限()
         //userButton按钮权限()

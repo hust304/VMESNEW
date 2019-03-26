@@ -137,6 +137,8 @@ public interface RoleMenuService {
     void orderAcsByLayer(List<MenuEntity> entityList);
 
     String findMenuidByRoleIds(String roleIds);
+
+    List<String> listMenuKeyByApp(PageData pd) throws Exception;
 }
 
 

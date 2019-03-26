@@ -72,6 +72,8 @@ public interface RoleMenuMapper extends BaseMapper<RoleMenu> {
 	 * 创建时间：2018-08-23
 	 */
 	List<Map<String, Object>> listMenuMapByRole(PageData pd);
+
+	List<String> listMenuKeyByApp(PageData pd);
 }
 
 

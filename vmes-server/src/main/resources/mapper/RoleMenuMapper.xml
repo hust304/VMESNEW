@@ -242,6 +242,30 @@
         </if>
     </select>
 
+
+
+    <!--获取全部菜单表-根据角色ID-->
+    <select id="listMenuKeyByApp" parameterType="com.yvan.PageData" resultType="java.lang.String">
+        select
+        DISTINCT
+        m.url menuKey
+        from vmes_role_menu t
+        left join vmes_menu m on m.id = t.menu_id
+        <where>
+            <!--queryStr 自定义sql查询语句 b.role_id in ()-->
+            <if test="queryStr != null and queryStr!=''" >
+                and ${queryStr}
+            </if>
+            <if test="roleId != null and roleId != ''" >
+                and t.role_id = #{roleId}
+            </if>
+            and m.isdisable = '1'
+            and m.id_1 = 'ab8a6ef2480f4fa0a6445524a33a8181' <!--APP ID-->
+            and m.id_2 is not null
+        </where>
+    </select>
+
+
     <!--获取全部菜单表-根据角色ID-->
     <select id="listMenuMapByRole" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
