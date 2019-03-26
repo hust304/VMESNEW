@@ -355,6 +355,7 @@ public class RoleMenuServiceImp implements RoleMenuService {
         return roleMenuMapper.listMenuMapByRole(pd);
     }
 
+
     /**
      * 角色菜单ListList<Map<String, Object>>转换成-树结构体List<TreeEntity>
      * @param mapList  角色菜单List<Map<String, Object>>
@@ -469,6 +470,10 @@ public class RoleMenuServiceImp implements RoleMenuService {
                 return object_0.getLayer().compareTo(object_1.getLayer());
             }
         });
+    }
+
+    public List<String> listMenuKeyByApp(PageData pd) throws Exception{
+        return roleMenuMapper.listMenuKeyByApp(pd);
     }
 }
 
