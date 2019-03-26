@@ -62,9 +62,9 @@ public class FileServiceImp implements FileService {
     }
 
 
-    public static void main(String[] args) throws Exception {
-
-    }
+//    public static void main(String[] args) throws Exception {
+//
+//    }
 
 //    public static void main(String[] args) throws Exception {
 ////        File destFile = new File("D://test111/test222/test333/test.txt");
