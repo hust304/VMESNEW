@@ -1256,13 +1256,13 @@ public class DepartmentServiceImp implements DepartmentService {
             return model;
         }
 
-        //2. 当前组织节点下是否含有(子节点-岗位)
-        msgStr = this.checkDeleteDeptByIds(id);
-        if (msgStr != null && msgStr.trim().length() > 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg(msgStr);
-            return model;
-        }
+//        //2. 当前组织节点下是否含有(子节点-岗位)
+//        msgStr = this.checkDeleteDeptByIds(id);
+//        if (msgStr != null && msgStr.trim().length() > 0) {
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg(msgStr);
+//            return model;
+//        }
 
         //3. 修改组织架构(禁用)状态
         Department objectDB = this.findDepartmentById(id);
@@ -1292,13 +1292,13 @@ public class DepartmentServiceImp implements DepartmentService {
         String id_str = StringUtil.stringTrimSpace(ids);
         String[] id_arry = id_str.split(",");
 
-        //2. 当前组织节点下是否含有(子节点-岗位)
-        String msgStr = this.checkDeleteDeptByIds(id_str);
-        if (msgStr != null && msgStr.trim().length() > 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg(msgStr);
-            return model;
-        }
+//        //2. 当前组织节点下是否含有(子节点-岗位)
+//        String msgStr = this.checkDeleteDeptByIds(id_str);
+//        if (msgStr != null && msgStr.trim().length() > 0) {
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg(msgStr);
+//            return model;
+//        }
 
         this.updateDisableByIds(id_arry);
         return model;

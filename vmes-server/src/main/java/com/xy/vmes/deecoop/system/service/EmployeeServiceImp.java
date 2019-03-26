@@ -443,7 +443,7 @@ public class EmployeeServiceImp implements EmployeeService {
         String employeeId = (String)pageData.get("employeeId");
         String isdisable = (String)pageData.get("isdisable");
         String id = (String)pageData.get("id");
-        String userId = (String)pageData.get("userId");
+        //String userId = (String)pageData.get("userId");
 
 
         String msgStr = new String();
@@ -459,22 +459,52 @@ public class EmployeeServiceImp implements EmployeeService {
             return model;
         }
 
-        EmployPost employPost = employPostService.selectById(id);
-        employPost.setIsdisable(isdisable);
-        employPost.setUuser(pageData.getString("uuser"));
-        employPostService.update(employPost);
+//        //员工离职
+//        if("0".equals(isdisable)) {
+//            //获取员工下全部岗位
+//            PageData fineMap = new PageData();
+//            fineMap.put("employId", employeeId);
+//            fineMap.put("mapSize", Integer.valueOf(fineMap.size()));
+//            List<EmployPost> postList = employPostService.findEmployPostList(fineMap);
+//            for (EmployPost post : postList) {
+//                EmployPost postEdit = new EmployPost();
+//                postEdit.setId(post.getId());
+//                postEdit.setIsdisable(isdisable);
+//                employPostService.update(postEdit);
+//            }
+//        } else if ("1".equals(isdisable)) {
+//            //获取员工下全部岗位
+//            PageData fineMap = new PageData();
+//            fineMap.put("employId", employeeId);
+//            //是否兼岗(1:兼岗0:主岗)
+//            fineMap.put("isplurality", "1");
+//            fineMap.put("mapSize", Integer.valueOf(fineMap.size()));
+//            EmployPost post = employPostService.findEmployPost(fineMap);
+//            if (post != null) {
+//                EmployPost postEdit = new EmployPost();
+//                postEdit.setId(post.getId());
+//                postEdit.setIsdisable(isdisable);
+//                employPostService.update(postEdit);
+//            }
+//        }
 
-        if("0".equals(employPost.getIsplurality())){
-            Employee employDB = employeeService.findEmployeeById(employeeId);
-            employDB.setIsdisable(isdisable);
-            employDB.setUuser(pageData.getString("uuser"));
-            employeeService.update(employDB);
+        Employee employDB = employeeService.findEmployeeById(employeeId);
+        Employee employeeEdit = new Employee();
+        employeeEdit.setId(employDB.getId());
+        employeeEdit.setIsdisable(isdisable);
+        employeeEdit.setUuser(pageData.getString("uuser"));
+        employeeService.update(employeeEdit);
 
-            User user = userService.selectById(userId);
-            user.setIsdisable(isdisable);
-            user.setUuser(pageData.getString("uuser"));
-            userService.update(user);
+        if (employDB != null && employDB.getUserId() != null && employDB.getUserId().trim().length() > 0) {
+            String userId = employDB.getUserId().trim();
+
+            User userEdit = new User();
+            userEdit.setId(userId);
+            userEdit.setIsdisable(isdisable);
+            userEdit.setUuser(pageData.getString("uuser"));
+            userService.update(userEdit);
         }
+
         return model;
     }
 
@@ -847,7 +877,6 @@ public class EmployeeServiceImp implements EmployeeService {
             }
         } else if ("post".equals(type)) {
             pd.put("postId", id);
-
         }
 
         List<Map> varMapList = new ArrayList();

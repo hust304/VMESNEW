@@ -220,7 +220,7 @@
         employee.cdate,
         employee.remark,
         employee.isOpenUser,
-        employpost.isdisable,
+        employee.isdisable,
 
         <!-- 隐藏字段 -->
         employpost.id,
@@ -492,9 +492,70 @@
 
     <select id="getDataListPage"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
         select
-        <include refid="Field1"/>
+        employee.code code,
+        employee.name name,
+        CASE
+        WHEN employee.sex = '0' THEN '女'
+        WHEN employee.sex = '1' THEN '男'
+        ELSE null
+        END sexName,
+        employee.sex sex,
+        dept.name deptName,
+        post.name postName,
+
+        CASE
+        WHEN employpost.isplurality = '0' THEN '是'
+        WHEN employpost.isplurality = '1' THEN '否'
+        ELSE '无'
+        END isplurality,
+        role.name roleName,
+        employee.mobile mobile,
+        employee.email email,
+        employee.birthday birthday,
+
+        employee.entry_date entryDate,
+        employee.native_place nativePlace,
+        dictionary.name politicalName,
+        employee.political,
+        employee.identity_number identityNumber,
+        CASE
+        WHEN employee.marital = '0' THEN '未婚'
+        WHEN employee.marital = '1' THEN '已婚'
+        ELSE null
+        END maritalName,
+        employee.marital,
+
+        employee.cdate,
+        employee.remark,
+        employee.isOpenUser,
+        employee.isdisable,
+
+        <!-- 隐藏字段 -->
+        employpost.id,
+        employee.id employeeId,
+        employpost.id employPostId,
+        <!-- 员工岗位id -->
+        post.id postId,
+        dept.id deptId,
+        role.id roleId,
+
+        employee.user_id userId,
+        employee.cuser,
+        employee.company_id companyId,
+        employee.icon,
+        employee.photo,
+        <!-- 获取主岗id-是否兼岗(1:兼岗0:主岗)-->
+        CASE
+        WHEN employpost.isplurality = '0' THEN employpost.post_id
+        ELSE null
+        END mainPostId,
+        <!-- 获取兼岗id-是否兼岗(1:兼岗0:主岗)-->
+        CASE
+        WHEN employpost.isplurality = '1' THEN employpost.post_id
+        ELSE null
+        END otherPostId
         from vmes_employee employee
-        left join vmes_employ_post employpost on employpost.employ_id = employee.id
+        left join vmes_employ_post employpost on employpost.employ_id = employee.id and employpost.isdisable = '1'
         left join vmes_post post on post.id = employpost.post_id
         left join vmes_department dept on dept.id = post.dept_id
         left join vmes_user vmesuser on vmesuser.id = employee.user_id
