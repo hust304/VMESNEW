@@ -67,10 +67,10 @@
 
             orderDetaiQuery.deliverCount,
             orderDetaiQuery.endDeliverCount,
-            <!--已发货百分比 (发货完成数 / 发货总数 * 100) %-->
+            <!--已发货百分比 (发货完成数 / 订单明细订购数量 * 100) %-->
             CASE
-                WHEN orderDetaiQuery.endDeliverCount is not null and orderDetaiQuery.deliverCount is not null and orderDetaiQuery.deliverCount <![CDATA[ <> 0 ]]>
-                THEN round((orderDetaiQuery.endDeliverCount / orderDetaiQuery.deliverCount), 2) * 100
+            WHEN orderDetaiQuery.orderCount = 0 THEN 0
+            WHEN orderDetaiQuery.orderCount <![CDATA[<>]]> 0 THEN round((orderDetaiQuery.endDeliverCount / orderDetaiQuery.orderCount), 0) * 100
             ELSE null
             END deliverProgress
 
