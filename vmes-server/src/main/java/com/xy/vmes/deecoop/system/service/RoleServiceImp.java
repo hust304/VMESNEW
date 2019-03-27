@@ -549,6 +549,35 @@ public class RoleServiceImp implements RoleService {
 
         ids = StringUtil.stringTrimSpace(ids);
         String[] id_arry = ids.split(",");
+
+        //验证删除角色是否关联有用户
+        StringBuffer msgBuf = new StringBuffer();
+        String msgTemp = "第 {0} 行: 角色名称({1}) 关联有用户，禁止删除！" + Common.SYS_ENDLINE_DEFAULT;
+        for (int i = 0; i < id_arry.length; i++) {
+            String roleId = id_arry[i];
+            Role role = this.findRoleById(roleId);
+
+            PageData findMap = new PageData();
+            findMap.put("roleId", roleId);
+            //是否禁用(0:已禁用 1:启用)
+            findMap.put("isdisable", "1");
+            findMap.put("mapSize", findMap.size());
+
+            List<UserRole> userRoleList = userRoleService.findUserRoleList(findMap);
+
+            if (userRoleList != null && userRoleList.size() > 0) {
+                String msgStr = MessageFormat.format(msgTemp,
+                        (i+1),
+                        role.getName());
+                msgBuf.append(msgStr);
+            }
+        }
+        if (msgBuf.toString().trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgBuf.toString());
+            return model;
+        }
+
         for (int i = 0; i < id_arry.length; i++) {
             String roleID = id_arry[i];
             try {
