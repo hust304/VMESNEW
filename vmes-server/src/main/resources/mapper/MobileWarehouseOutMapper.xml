@@ -10,7 +10,7 @@
     <!-- 手机端获得出库产品详细信息 -->
     <select id="findWarehouseOutByDetailId" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select tab1.productId,tab1.detailId,tab1.parentId,tab1.typeName,tab1.deptName,tab1.productName,tab1.productCode,tab1.spec,
-        tab1.genreName,tab1.unitName,tab1.taskCount,tab1.completeCount,tab1.unCompleteCount,
+        tab1.genreName,tab1.unitName,tab1.taskCount,tab1.completeCount,tab1.unCompleteCount,startDate,endDate,
         tab2.stockCount,tab2.warehouseCode,tab2.pathName,tab2.warehouseId,tab2.warehouseProductId,
         <![CDATA[ case when tab1.unCompleteCount>tab2.stockCount then tab2.stockCount else tab1.unCompleteCount end suggestCount ]]>
 
@@ -28,7 +28,9 @@
         unit.name unitName,
         round(detail.count,2) taskCount,
         round(sum(ifnull(outexecute.count,0)),2) completeCount,
-        round(detail.count-sum(ifnull(outexecute.count,0)),2) unCompleteCount
+        round(detail.count-sum(ifnull(outexecute.count,0)),2) unCompleteCount,
+        DATE_FORMAT(min(executor.cdate),'%Y-%m-%d %T') startDate,
+        DATE_FORMAT(max(outexecute.cdate),'%Y-%m-%d %T') endDate
 
         from vmes_warehouse_out_detail detail
         left join vmes_warehouse_out wout on wout.id = detail.parent_id
@@ -38,6 +40,7 @@
         left join vmes_dictionary unit on produnit.unit = unit.id
         left join vmes_dictionary genre on product.genre = genre.id
         left join vmes_warehouse_out_execute outexecute on outexecute.detail_id = detail.id and outexecute.isdisable = 1
+        left join vmes_warehouse_out_executor executor on outexecute.detail_id = executor.detail_id and outexecute.executor_id = executor.executor_id and executor.isdisable = '1'
         <where>
             <if test="detailId != null and detailId != ''" >
                 and detail.id = #{detailId}
@@ -48,25 +51,39 @@
         ) tab1
         left join
         (
-        select
-        recommend.detail_id detailId,
-        warehouseProduct.code warehouseCode,
-        warehouse.id warehouseId,
-        warehouseProduct.id warehouseProductId,
-        warehouse.path_name pathName,
-        round(sum(ifnull(warehouseProduct.stock_count,0)),2) stockCount
-        from vmes_warehouse_out_recommend recommend
-        left join vmes_warehouse_product warehouseProduct on warehouseProduct.id = recommend.warehouse_product_id and warehouseProduct.stock_count>0
-        left join vmes_warehouse warehouse on warehouse.id = warehouseProduct.warehouse_id
-        <where>
-            <if test="detailId != null and detailId != ''" >
-                and recommend.detail_id = #{detailId}
-            </if>
-        </where>
-        group by recommend.detail_id,warehouseProduct.code,warehouse.path_name,warehouse.id,warehouseProduct.id
-        order by warehouseProduct.code asc   limit 1
+            select * from (
+            select
+            recommend.detail_id detailId,
+            warehouseProduct.code warehouseCode,
+            warehouse.id warehouseId,
+            warehouseProduct.id warehouseProductId,
+            warehouse.path_name pathName,
+            round(sum(ifnull(warehouseProduct.stock_count,0)),2) stockCount
+            from vmes_warehouse_out_recommend recommend
+            left join vmes_warehouse_product warehouseProduct on warehouseProduct.id = recommend.warehouse_product_id and warehouseProduct.stock_count>0
+            left join vmes_warehouse warehouse on warehouse.id = warehouseProduct.warehouse_id
+            <where>
+                <if test="detailId != null and detailId != ''" >
+                    and recommend.detail_id = #{detailId}
+                </if>
+            </where>
+            group by recommend.detail_id,warehouseProduct.code,warehouse.path_name,warehouse.id,warehouseProduct.id
+            ) tab
+            where tab.stockCount > 0
+            order by tab.warehouseCode asc   limit 1
         )tab2 on tab1.detailId = tab2.detailId
 
+    </select>
+
+    <select id="listWarehouseOutExecuteCount" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select  outExecute.count executeCount,warehouse.path_name pathName
+        from vmes_warehouse_out_execute outExecute
+        left join vmes_warehouse warehouse on warehouse.id = outExecute.warehouse_id
+        <where>
+            <if test="detailId != null and detailId != ''" >
+                and outExecute.detail_id = #{detailId}
+            </if>
+        </where>
     </select>
 
 

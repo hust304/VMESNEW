@@ -102,7 +102,10 @@
         genre.name genreName,
         unit.name unitName,
         detail.code code,
-        round(ifnull(detail.stock_count, 0), 2) stockCount
+        round(ifnull(detail.stock_count, 0), 2) stockCount,
+        checkDtlExecute.endDate,
+        checkDtlExecute.startDate,
+        checkDtlExecute.executeCount
 
         from vmes_warehouse_check_detail detail
         left join vmes_warehouse_check wcheck on wcheck.id = detail.parent_id
@@ -111,6 +114,13 @@
         left join vmes_dictionary unit on produnit.unit = unit.id
         left join vmes_dictionary genre on product.genre = genre.id
         left join vmes_warehouse warehouse on warehouse.id = detail.warehouse_id
+
+        left join (
+        select checkExecute.detail_id, round(sum(ifnull(checkExecute.count,0)),2) executeCount,DATE_FORMAT(min(executor.cdate),'%Y-%m-%d %T') startDate,DATE_FORMAT(max(checkExecute.cdate),'%Y-%m-%d %T') endDate
+        from vmes_warehouse_check_execute checkExecute
+        left join vmes_warehouse_check_executor executor on checkExecute.detail_id = executor.detail_id and checkExecute.executor_id = executor.executor_id and executor.isdisable = '1'
+        group by detail_id
+        ) checkDtlExecute on detail.id = checkDtlExecute.detail_id
         <where>
             <if test="detailId != null and detailId != ''" >
                 and detail.id = #{detailId}

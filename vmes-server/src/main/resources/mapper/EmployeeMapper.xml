@@ -315,6 +315,9 @@
             <if test="isdisable!= null and isdisable != ''"><!-- 默认值是0 -->
                 and employee.isdisable = #{isdisable}
             </if>
+            <if test="userId!= null and userId != ''"><!-- 默认值是0 -->
+                and employee.user_id = #{userId}
+            </if>
             <if test="isplurality!= null and isplurality != ''"><!-- 默认值是0 -->
                 and employee.isplurality = #{isplurality}
             </if>

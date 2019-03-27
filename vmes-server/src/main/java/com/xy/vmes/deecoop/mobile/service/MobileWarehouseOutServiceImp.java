@@ -34,8 +34,10 @@ public class MobileWarehouseOutServiceImp implements MobileWarehouseOutService {
     public ResultModel findWarehouseOutByDetailId(PageData pd) throws Exception {
         ResultModel model = new ResultModel();
         List<Map> varList = mobileWarehouseOutMapper.findWarehouseOutByDetailId(pd);
+        List<Map> executeCountList = mobileWarehouseOutMapper.listWarehouseOutExecuteCount(pd);
         if(varList!=null&&varList.size()>0){
             model.putResult(varList.get(0));
+            model.put("executeCountList",executeCountList);
         }else {
             model.putCode("1");
             model.putMsg("未查到任何数据！");

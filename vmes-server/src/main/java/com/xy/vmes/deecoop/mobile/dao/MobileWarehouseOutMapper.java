@@ -19,4 +19,5 @@ public interface  MobileWarehouseOutMapper {
 
     List<Map> listWarehouseCode(PageData pd);
 
+    List<Map> listWarehouseOutExecuteCount(PageData pd);
 }

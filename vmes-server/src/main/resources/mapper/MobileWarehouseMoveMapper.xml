@@ -25,7 +25,8 @@
         newwarehouse.id targetWarehouseId,
         newwarehouse.path_name targetPath,
         detail.warehouse_product_id warehouseProductId,
-
+        moveDtlExecute.endDate,
+        moveDtlExecute.startDate,
         round(ifnull(moveDtlExecute.executeCount,0),2) completeCount,
         round((ifnull(detail.count,0) - ifnull(moveDtlExecute.executeCount,0)), 2) unCompleteCount
 
@@ -40,8 +41,9 @@
             left join vmes_dictionary genre on product.genre = genre.id
             <!--移库执行表汇总-->
             left join (
-                select detail_id, sum(count) executeCount
-                from vmes_warehouse_move_execute
+                select moveExecute.detail_id,sum(ifnull(moveExecute.count,0)) executeCount,DATE_FORMAT(min(executor.cdate),'%Y-%m-%d %T') startDate,DATE_FORMAT(max(moveExecute.cdate),'%Y-%m-%d %T') endDate
+                from vmes_warehouse_move_execute moveExecute
+                left join vmes_warehouse_move_executor executor on moveExecute.detail_id = executor.detail_id and moveExecute.executor_id = executor.executor_id and executor.isdisable = '1'
                 group by detail_id
             ) moveDtlExecute on detail.id = moveDtlExecute.detail_id
 

@@ -1,7 +1,9 @@
 package com.xy.vmes.deecoop.mobile.controller;
 
+import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.entity.TreeEntity;
 import com.xy.vmes.entity.Warehouse;
+import com.xy.vmes.service.MobileWarehouseService;
 import com.xy.vmes.service.WarehouseService;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
@@ -24,5 +26,19 @@ import java.util.List;
 public class MobileWarehouseController {
     private Logger logger = LoggerFactory.getLogger(MobileWarehouseController.class);
 
+    @Autowired
+    private MobileWarehouseService mobileWarehouseService;
+
+    @PostMapping("/mobile/mobileWarehouse/findEmployeeInfo")
+    public ResultModel findEmployeeInfo()  throws Exception {
+        logger.info("################/mobile/mobileWarehouseService/findEmployeeInfo 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = mobileWarehouseService.findEmployeeInfo(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/mobile/mobileWarehouseService/findEmployeeInfo 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+
+    }
 
 }
