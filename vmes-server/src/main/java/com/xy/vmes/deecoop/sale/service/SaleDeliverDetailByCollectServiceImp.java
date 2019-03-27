@@ -160,13 +160,21 @@ public class SaleDeliverDetailByCollectServiceImp implements SaleDeliverDetailBy
             BigDecimal orderDtlSum = (BigDecimal)mapObj.get("orderDtlSum");
             mapValue.put("orderDtlSum", orderDtlSum);
 
-            //订单明细发货数量 orderDtlDeliverCount
-            BigDecimal orderDtlDeliverCount = (BigDecimal)mapObj.get("orderDtlDeliverCount");
-            mapValue.put("orderDtlDeliverCount", orderDtlDeliverCount);
+//            //订单明细发货数量 orderDtlDeliverCount
+//            BigDecimal orderDtlDeliverCount = (BigDecimal)mapObj.get("orderDtlDeliverCount");
+//            mapValue.put("orderDtlDeliverCount", orderDtlDeliverCount);
+//
+//            //订单明细发货金额 orderDtlDeliverSum
+//            BigDecimal orderDtlDeliverSum = (BigDecimal)mapObj.get("orderDtlDeliverSum");
+//            mapValue.put("orderDtlDeliverSum", orderDtlDeliverSum);
 
-            //订单明细发货金额 orderDtlDeliverSum
-            BigDecimal orderDtlDeliverSum = (BigDecimal)mapObj.get("orderDtlDeliverSum");
-            mapValue.put("orderDtlDeliverSum", orderDtlDeliverSum);
+            //checkCount 验证数量(发货数量-退货数量)
+            BigDecimal checkCount = (BigDecimal)mapObj.get("checkCount");
+            mapValue.put("checkCount", checkCount);
+
+            //checkSum 验证金额(发货金额-退货金额)
+            BigDecimal checkSum = (BigDecimal)mapObj.get("checkSum");
+            mapValue.put("checkSum", checkSum);
 
             mapObject.put(orderDtlId, mapValue);
         }

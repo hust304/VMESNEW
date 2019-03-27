@@ -670,13 +670,19 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
                 orderDtlCount = (BigDecimal)orderDtlValueMap.get("orderDtlCount");
             }
 
-            //订单明细发货数量 orderDtlDeliverCount
-            BigDecimal orderDtlDeliverCount = BigDecimal.valueOf(0D);
-            if (orderDtlValueMap.get("orderDtlDeliverCount") != null) {
-                orderDtlDeliverCount = (BigDecimal)orderDtlValueMap.get("orderDtlDeliverCount");
+//            //订单明细发货数量 orderDtlDeliverCount
+//            BigDecimal orderDtlDeliverCount = BigDecimal.valueOf(0D);
+//            if (orderDtlValueMap.get("orderDtlDeliverCount") != null) {
+//                orderDtlDeliverCount = (BigDecimal)orderDtlValueMap.get("orderDtlDeliverCount");
+//            }
+
+            //checkCount 验证数量(发货数量-退货数量)
+            BigDecimal checkCount = BigDecimal.valueOf(0D);
+            if (orderDtlValueMap.get("checkCount") != null) {
+                checkCount = (BigDecimal)orderDtlValueMap.get("checkCount");
             }
 
-            if (orderDtlCount.doubleValue() <= orderDtlDeliverCount.doubleValue()) {
+            if (orderDtlCount.doubleValue() <= checkCount.doubleValue()) {
                 //明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
                 orderDetail.setState("5");
             }

@@ -15,19 +15,36 @@
             round(ifnull(orderDetail.order_count, 0), 2) orderDtlCount,
             round(ifnull(orderDetail.product_sum, 0), 2) orderDtlSum,
 
-            round(ifnull(orderDtlDeliver.orderDtlDeliverCount, 0), 2) orderDtlDeliverCount,
-            round(ifnull(orderDtlDeliver.orderDtlDeliverSum, 0), 2) orderDtlDeliverSum
+            round(ifnull(deliverOrderDtl.orderCount, 0), 2) orderDtlDeliverCount,
+            round(ifnull(deliverOrderDtl.orderSum, 0), 2) orderDtlDeliverSum,
+
+            round(ifnull(retreatOrderDtl.orderCount, 0), 2) orderDtlRetreatCount,
+            round(ifnull(retreatOrderDtl.orderSum, 0), 2) orderDtlRetreatSum,
+
+            round((ifnull(deliverOrderDtl.orderCount, 0) - ifnull(retreatOrderDtl.orderCount, 0)), 2) checkCount,
+            round((ifnull(deliverOrderDtl.orderSum, 0) - ifnull(retreatOrderDtl.orderSum, 0)), 2) checkSum
 
         from vmes_sale_order_detail orderDetail
             left join (
+                <!--(订单明细id)发货明细汇总-->
                 select
                     order_detai_id orderDtlId,
-                    sum(order_count) orderDtlDeliverCount,
-                    sum(sum) orderDtlDeliverSum
+                    sum(order_count) orderCount,
+                    sum(sum) orderSum
                 from vmes_sale_deliver_detail
                 where state = '1'
                 group by order_detai_id
-            ) orderDtlDeliver on orderDetail.id = orderDtlDeliver.orderDtlId
+            ) deliverOrderDtl on orderDetail.id = deliverOrderDtl.orderDtlId
+            left join (
+                <!--(订单明细id)退货明细汇总-->
+                select
+                    order_detail_id,
+                    sum(order_count) orderCount,
+                    sum(order_sum) orderSum
+                from vmes_sale_retreat_detail
+                where state = '3'
+                group by order_detail_id
+            ) retreatOrderDtl on orderDetail.id = retreatOrderDtl.order_detail_id
         <where>
             <if test="orderId != null and orderId != ''" >
                 and orderDetail.parent_id = #{orderId}
