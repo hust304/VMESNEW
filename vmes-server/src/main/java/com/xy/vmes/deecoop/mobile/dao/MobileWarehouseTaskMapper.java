@@ -19,4 +19,6 @@ public interface MobileWarehouseTaskMapper {
 
     List<Map> findListPageWarehouseTaskList(PageData pd, Pagination pg);
 
+    List<Map> getTaskNum(PageData pd);
+
 }

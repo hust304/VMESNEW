@@ -7,6 +7,63 @@
  -->
 <mapper namespace="com.xy.vmes.deecoop.mobile.dao.MobileWarehouseTaskMapper">
 
+
+
+    <select id="getTaskNum" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select count(id) num
+        from (
+        select detail.id
+        from vmes_warehouse_check_detail detail
+        left join vmes_warehouse_check warehouse on warehouse.id = detail.parent_id
+        <where>
+            <if test="currentCompanyId != null and currentCompanyId != ''" >
+                and warehouse.company_id=#{currentCompanyId}
+            </if>
+            <if test="dtlState != null and dtlState != ''" >
+                and detail.state = #{dtlState}
+            </if>
+        </where>
+        union all
+        select detail.id
+        from vmes_warehouse_out_detail detail
+        left join vmes_warehouse_out warehouse on warehouse.id = detail.parent_id
+        <where>
+            <if test="currentCompanyId != null and currentCompanyId != ''" >
+                and warehouse.company_id=#{currentCompanyId}
+            </if>
+            <if test="dtlState != null and dtlState != ''" >
+                and detail.state = #{dtlState}
+            </if>
+        </where>
+        union all
+        select detail.id
+        from vmes_warehouse_in_detail detail
+        left join vmes_warehouse_in warehouse on warehouse.id = detail.parent_id
+        <where>
+            <if test="currentCompanyId != null and currentCompanyId != ''" >
+                and warehouse.company_id=#{currentCompanyId}
+            </if>
+            <if test="dtlState != null and dtlState != ''" >
+                and detail.state = #{dtlState}
+            </if>
+        </where>
+        union all
+        select detail.id
+        from vmes_warehouse_move_detail detail
+        left join vmes_warehouse_move warehouse on warehouse.id = detail.parent_id
+        <where>
+            <if test="currentCompanyId != null and currentCompanyId != ''" >
+                and warehouse.company_id=#{currentCompanyId}
+            </if>
+            <if test="dtlState != null and dtlState != ''" >
+                and detail.state = #{dtlState}
+            </if>
+        </where>
+        ) tab
+    </select>
+
+
+
     <select id="findListPageWarehouseTaskList" parameterType="com.yvan.PageData" resultType="java.util.Map">
         <!--入库-->
         select

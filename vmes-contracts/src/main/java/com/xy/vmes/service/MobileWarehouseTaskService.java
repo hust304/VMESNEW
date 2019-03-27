@@ -13,4 +13,6 @@ import java.util.Map;
 public interface MobileWarehouseTaskService {
 
     ResultModel findListPageWarehouseTaskList(PageData pd, Pagination pg) throws Exception;
+
+    ResultModel getTaskNum(PageData pd) throws Exception;
 }

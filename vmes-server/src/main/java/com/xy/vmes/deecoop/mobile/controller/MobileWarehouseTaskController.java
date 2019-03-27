@@ -38,5 +38,17 @@ public class MobileWarehouseTaskController {
         return model;
 
     }
+
+    @PostMapping("/mobile/mobileWarehouseTask/getTaskNum")
+    public ResultModel getTaskNum()  throws Exception {
+        logger.info("################/mobile/mobileWarehouseTask/getTaskNum 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = mobileWarehouseTaskService.getTaskNum(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/mobile/mobileWarehouseTask/getTaskNum 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+
+    }
 }
 

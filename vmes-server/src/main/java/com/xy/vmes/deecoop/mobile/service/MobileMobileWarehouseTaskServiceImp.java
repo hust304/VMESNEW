@@ -32,4 +32,18 @@ public class MobileMobileWarehouseTaskServiceImp implements MobileWarehouseTaskS
         model.putResult(result);
         return model;
     }
+
+    public ResultModel getTaskNum(PageData pd) throws Exception {
+        ResultModel model = new ResultModel();
+        List<Map> varList = mobileWarehouseTaskMapper.getTaskNum(pd);
+        if(varList!=null&&varList.size()>0){
+            model.putResult(varList.get(0));
+        }else{
+            Map result = new HashMap();
+            result.put("num",0);
+            model.putResult(result);
+        }
+        return model;
+    }
+
 }
