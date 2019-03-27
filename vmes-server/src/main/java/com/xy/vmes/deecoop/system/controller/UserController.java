@@ -220,6 +220,22 @@ public class UserController {
         return model;
     }
 
+    /**
+     * 修改用户密码
+     * @date 2018-07-26
+     */
+    @PostMapping("/system/user/updateUserByPassword")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel updateUserByPassword() throws Exception {
+        logger.info("################/system/user/updateUserByPassword 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = userService.updateUserByPassword(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/system/user/updateUserByPassword 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
 
     /**
      * @author 刘威 批量重置密码

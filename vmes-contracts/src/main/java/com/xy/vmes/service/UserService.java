@@ -167,6 +167,7 @@ public interface UserService {
     ResultModel addUser(PageData pd) throws Exception;
 
     ResultModel updateUser(PageData pd) throws Exception;
+    ResultModel updateUserByPassword(PageData pd) throws Exception;
 
     ResultModel updatePasswords(PageData pd) throws Exception;
 

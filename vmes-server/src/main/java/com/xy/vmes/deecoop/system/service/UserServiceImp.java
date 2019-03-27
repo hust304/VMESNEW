@@ -610,6 +610,47 @@ public class UserServiceImp implements UserService {
         return model;
     }
 
+    public ResultModel updateUserByPassword(PageData pd) throws Exception {
+        ResultModel model = new ResultModel();
+
+        String userID = pd.getString("id");
+        if (userID == null || userID.trim().length() == 0) {
+            model.putCode(1);
+            model.putMsg("用户id为空或空字符串！");
+            return model;
+        }
+
+        //新密码 firstPassword
+        String firstPassword = pd.getString("firstPassword");
+        if (firstPassword == null || firstPassword.trim().length() == 0) {
+            model.putCode(1);
+            model.putMsg("新密码为空或空字符串！");
+            return model;
+        }
+
+        //确认密码 confirmPassword
+        String confirmPassword = pd.getString("confirmPassword");
+        if (confirmPassword == null || firstPassword.trim().length() == 0) {
+            model.putCode(1);
+            model.putMsg("确认密码为空或空字符串！");
+            return model;
+        }
+
+        if (firstPassword.equals(confirmPassword)) {
+            model.putCode(1);
+            model.putMsg("新密码与确认密码不一致，请重新输入！");
+            return model;
+        }
+
+        //2. 修改用户新密码
+        User userEdit = new User();
+        userEdit.setId(userID);
+        userEdit.setPassword(MD5Utils.MD5(firstPassword));
+        this.update(userEdit);
+
+        return model;
+    }
+
     @Override
     public ResultModel updatePasswords(PageData pd) throws Exception {
         ResultModel model = new ResultModel();
