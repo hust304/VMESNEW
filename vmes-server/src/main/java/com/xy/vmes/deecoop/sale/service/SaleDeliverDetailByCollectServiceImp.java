@@ -57,16 +57,18 @@ public class SaleDeliverDetailByCollectServiceImp implements SaleDeliverDetailBy
      *
      * @param deliverId       发货单id
      * @param deliveDtlState  发货单明细状态
+     * @param retreatDtlState 退货单明细状态
      * @param orderDtlIds     订单明细id
      * @return
      */
-    public Map<String, Map<String, BigDecimal>> findMapOrderDetaiCountByDeliverId(String deliverId, String deliveDtlState, String orderDtlIds) throws Exception {
+    public Map<String, Map<String, BigDecimal>> findMapOrderDetaiCountByDeliverId(String deliverId, String deliveDtlState, String retreatDtlState, String orderDtlIds) throws Exception {
         Map<String, Map<String, BigDecimal>> mapObject = new HashMap<String, Map<String, BigDecimal>>();
         if (deliverId == null || deliverId.trim().length() == 0) {return mapObject;}
 
         PageData findMap = new PageData();
         findMap.put("deliverId", deliverId);
         findMap.put("deliveDtlState", deliveDtlState);
+        findMap.put("retreatDtlState", retreatDtlState);
         if (orderDtlIds != null && orderDtlIds.trim().length() > 0) {
             findMap.put("orderDtlIds", orderDtlIds);
         }
@@ -84,17 +86,25 @@ public class SaleDeliverDetailByCollectServiceImp implements SaleDeliverDetailBy
             BigDecimal orderCount = (BigDecimal)mapObj.get("orderCount");
             mapValue.put("orderCount", orderCount);
 
-            //订单明细 可发货数量 needDeliverCount
-            BigDecimal needDeliverCount = (BigDecimal)mapObj.get("needDeliverCount");
-            mapValue.put("needDeliverCount", needDeliverCount);
+//            //订单明细 可发货数量 needDeliverCount
+//            BigDecimal needDeliverCount = (BigDecimal)mapObj.get("needDeliverCount");
+//            mapValue.put("needDeliverCount", needDeliverCount);
+//
+//            //订单明细发货数量 orderDtlDeliverCount
+//            BigDecimal orderDtlDeliverCount = (BigDecimal)mapObj.get("orderDtlDeliverCount");
+//            mapValue.put("orderDtlDeliverCount", orderDtlDeliverCount);
+//
+//            //订单明细发货金额
+//            BigDecimal orderDtlDeliverSum = (BigDecimal)mapObj.get("orderDtlDeliverSum");
+//            mapValue.put("orderDtlDeliverSum", orderDtlDeliverSum);
 
-            //订单明细发货数量 orderDtlDeliverCount
-            BigDecimal orderDtlDeliverCount = (BigDecimal)mapObj.get("orderDtlDeliverCount");
-            mapValue.put("orderDtlDeliverCount", orderDtlDeliverCount);
+            //checkCount 验证数量(发货数量-退货数量)
+            BigDecimal checkCount = (BigDecimal)mapObj.get("checkCount");
+            mapValue.put("checkCount", checkCount);
 
-            //订单明细发货金额
-            BigDecimal orderDtlDeliverSum = (BigDecimal)mapObj.get("orderDtlDeliverSum");
-            mapValue.put("orderDtlDeliverSum", orderDtlDeliverSum);
+            //checkSum 验证金额(发货金额-退货金额)
+            BigDecimal checkSum = (BigDecimal)mapObj.get("checkSum");
+            mapValue.put("checkSum", checkSum);
 
             mapObject.put(orderDtlId, mapValue);
         }

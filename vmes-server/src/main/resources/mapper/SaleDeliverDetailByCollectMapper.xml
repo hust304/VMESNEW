@@ -42,11 +42,19 @@
     <!--用于:发货已完成后,变更(订单,订单明细)状态-->
     <select id="findDeliverDetailByOrderDetaiCount" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
-        deliverDtl.order_detai_id orderDetailId,
-        round(ifnull(orderDtl.order_count, 0), 2) orderCount,
-        round(ifnull(orderDtl.need_deliver_count, 0), 2) needDeliverCount,
-        round(ifnull(deliverOrderDtl.orderCount, 0), 2) orderDtlDeliverCount,
-        round(ifnull(deliverOrderDtl.orderSum, 0), 2) orderDtlDeliverSum
+            deliverDtl.order_detai_id orderDetailId,
+
+            round(ifnull(orderDtl.order_count, 0), 2) orderCount,
+            round(ifnull(orderDtl.need_deliver_count, 0), 2) needDeliverCount,
+
+            round(ifnull(deliverOrderDtl.orderCount, 0), 2) orderDtlDeliverCount,
+            round(ifnull(deliverOrderDtl.orderSum, 0), 2) orderDtlDeliverSum,
+
+            round(ifnull(retreatOrderDtl.orderCount, 0), 2) orderDtlRetreatCount,
+            round(ifnull(retreatOrderDtl.orderSum, 0), 2) orderDtlRetreatSum,
+
+            round((ifnull(deliverOrderDtl.orderCount, 0) - ifnull(retreatOrderDtl.orderCount, 0)), 2) checkCount,
+            round((ifnull(deliverOrderDtl.orderSum, 0) - ifnull(retreatOrderDtl.orderSum, 0)), 2) checkSum
         from (
             select order_detai_id
             from vmes_sale_deliver_detail
@@ -58,6 +66,7 @@
             group by order_detai_id
         ) deliverDtl
             left join (
+                <!--(订单明细id)发货明细汇总-->
                 select
                     order_detai_id,
                     sum(order_count) orderCount,
@@ -76,6 +85,27 @@
                 </where>
                 group by order_detai_id
             ) deliverOrderDtl on deliverDtl.order_detai_id = deliverOrderDtl.order_detai_id
+            left join (
+                <!--(订单明细id)退货明细汇总-->
+                select
+                    order_detail_id,
+                    sum(order_count) orderCount,
+                    sum(order_sum) orderSum
+                from vmes_sale_retreat_detail
+                <where>
+                    <if test="orderDtlId != null and orderDtlId != ''" >
+                        and order_detail_id = #{orderDtlId}
+                    </if>
+                    <if test="orderDtlIds != null and orderDtlIds != ''" >
+                        and order_detail_id in (${orderDtlIds})
+                    </if>
+                    <if test="retreatDtlState != null and retreatDtlState != ''" >
+                        and state = #{retreatDtlState}
+                    </if>
+                </where>
+                group by order_detail_id
+            ) retreatOrderDtl on deliverDtl.order_detai_id = retreatOrderDtl.order_detail_id
+
             left join vmes_sale_order_detail orderDtl on deliverDtl.order_detai_id = orderDtl.id
     </select>
 

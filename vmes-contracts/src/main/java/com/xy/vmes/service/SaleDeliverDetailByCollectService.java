@@ -39,10 +39,11 @@ public interface SaleDeliverDetailByCollectService {
      *
      * @param deliverId       发货单id
      * @param deliveDtlState  发货单明细状态
+     * @param retreatDtlState 退货单明细状态
      * @param orderDtlIds     订单明细id
      * @return
      */
-    Map<String, Map<String, BigDecimal>> findMapOrderDetaiCountByDeliverId(String deliverId, String deliveDtlState, String orderDtlIds) throws Exception;
+    Map<String, Map<String, BigDecimal>> findMapOrderDetaiCountByDeliverId(String deliverId, String deliveDtlState, String retreatDtlState, String orderDtlIds) throws Exception;
 
     ///////////////////////////////////////////////////////////////////////////////////////////
     /**

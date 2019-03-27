@@ -494,6 +494,7 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
         Map<String, Map<String, BigDecimal>> orderDtlMap = saleDeliverDetailByCollectService.findMapOrderDetaiCountByDeliverId(
                 deliverId,
                 "1",
+                "3",
                 orderDtlIds);
 
 
@@ -516,9 +517,12 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
                 //订单明细订购数量 orderCount
                 BigDecimal orderCount = valueMap.get("orderCount");
                 //订单明细发货数量 orderDtlDeliverCount
-                BigDecimal orderDtlDeliverCount = valueMap.get("orderDtlDeliverCount");
+                //BigDecimal orderDtlDeliverCount = valueMap.get("orderDtlDeliverCount");
 
-                if (orderDtlDeliverCount.doubleValue() >= orderCount.doubleValue()) {
+                //checkCount 验证数量(发货数量-退货数量)
+                BigDecimal checkCount = valueMap.get("checkCount");
+
+                if (checkCount.doubleValue() >= orderCount.doubleValue()) {
                     //明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
                     orderDetail.setState("5");
 
