@@ -62,7 +62,7 @@
         <!--付款进度百分比 (付款金额 / 订单金额 * 100) %-->
         CASE
           WHEN ifnull(saleOrder.order_sum, 0) = 0 THEN 0
-          WHEN ifnull(saleOrder.order_sum, 0) <![CDATA[<>]]> 0 THEN round((ifnull(receive.amount, 0) / ifnull(saleOrder.order_sum, 0)), 0) * 100
+          WHEN ifnull(saleOrder.order_sum, 0) <![CDATA[<>]]> 0 THEN round((ifnull(receive.amount, 0) / ifnull(saleOrder.order_sum, 0)) * 100, 0)
         ELSE null
         END receiveProgress,
 
