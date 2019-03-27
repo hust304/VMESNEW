@@ -6,6 +6,7 @@ import com.xy.vmes.common.util.Common;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.system.dao.MenuMapper;
 import com.xy.vmes.entity.*;
+import com.xy.vmes.exception.ApplicationException;
 import com.xy.vmes.service.*;
 import com.yvan.*;
 import com.yvan.platform.RestException;
@@ -29,14 +30,21 @@ import java.util.*;
 public class MenuServiceImp implements MenuService {
     @Autowired
     private MenuMapper menuMapper;
+
     @Autowired
-    private ColumnService columnService;
+    private UserService userService;
+    @Autowired
+    private RoleService roleService;
+
     @Autowired
     UserDefinedMenuService userDefinedMenuService;
     @Autowired
     private RoleMenuService roleMenuService;
     @Autowired
     private MenuButtonService menuButtonService;
+
+    @Autowired
+    private ColumnService columnService;
 
     /**
     * 创建人：陈刚 自动创建，禁止修改
@@ -993,6 +1001,67 @@ public class MenuServiceImp implements MenuService {
         return model;
     }
 
+    /**
+     * 验证当前用户(用户id,角色id) 是否配置有角色，角色菜单
+     * 1. 验证当前用户，角色id是否为空
+     * 2. 验证当前用户角色id，是否关联有菜单
+     *
+     * @param userId  当前用户id
+     * @param roleId  当前用户角色id
+     * @throws ApplicationException
+     */
+    public void checkMeunByUserRole(String userId, String roleId) throws ApplicationException {
+        if (userId == null || userId.trim().length() == 0) {
+            throw new ApplicationException("用户id为空或空字符串");
+        }
+        User user = userService.findUserById(userId);
+
+        //(userType_admin:超级管理员 userType_company:企业管理员 userType_employee:普通用户 userType_outer:外部用户)
+        String userType = user.getUserType();
+
+        //非超级管理员账号-验证角色是否为空
+        if (!Common.DICTIONARY_MAP.get("userType_admin").equals(userType)) {
+            //1. 验证角色是否为空
+            String msgTemp_1 = "用户姓名({0}) 用户账号({1}) 没有配置角色，请于管理员联系！" + Common.SYS_ENDLINE_DEFAULT;
+            if (roleId == null || roleId.trim().length() == 0) {
+                String msgStr = MessageFormat.format(msgTemp_1,
+                        user.getUserName(),
+                        user.getUserCode());
+                throw new ApplicationException(msgStr);
+            }
+        }
+
+        //2.验证(用户,角色)系统菜单
+        Role role = roleService.findRoleById(roleId);
+        String queryStr = "";
+
+        //(userType_admin:超级管理员 userType_company:企业管理员 userType_employee:普通用户 userType_outer:外部用户)
+        if (!Common.DICTIONARY_MAP.get("userType_admin").equals(userType) && roleId != null && roleId.trim().length() > 0) {
+            roleId = StringUtil.stringTrimSpace(roleId);
+
+            String strTemp = "'" + roleId.replace(",", "','" + ",") + "'";
+            queryStr = "b.role_id in (" + strTemp + ")";
+        }
+
+        PageData findMap = new PageData();
+        if (queryStr.trim().length() > 0) {
+            findMap.put("queryStr", queryStr);
+            findMap.put("isdisable", "1");
+        }
+        findMap.put("menuIsdisable", "1");
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+
+        String msgTemp_2 = "用户姓名({0}) 用户账号({1}) 绑定的角色名称({2}) 该角色没有绑定菜单，请于管理员联系！" + Common.SYS_ENDLINE_DEFAULT;
+        List<Map<String, Object>> mapList = roleMenuService.findRoleMenuMapList(findMap);
+        if (mapList == null || mapList.size() == 0) {
+            String msgStr = MessageFormat.format(msgTemp_2,
+                    user.getUserName(),
+                    user.getUserCode(),
+                    role.getName());
+            throw new ApplicationException(msgStr);
+        }
+    }
+
     @Override
     public ResultModel treeMeuns(PageData pageData) throws Exception {
         //1. 获取当前登录用户所有角色ID
@@ -1048,6 +1117,8 @@ public class MenuServiceImp implements MenuService {
         model.putResult(treeJsonStr);
         return model;
     }
+
+
 }
 
 

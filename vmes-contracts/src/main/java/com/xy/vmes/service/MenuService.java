@@ -2,6 +2,7 @@ package com.xy.vmes.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.entity.Menu;
+import com.xy.vmes.exception.ApplicationException;
 import com.yvan.PageData;
 import com.yvan.Tree;
 import com.yvan.springmvc.ResultModel;
@@ -233,6 +234,18 @@ public interface MenuService {
 
     ResultModel importExcelMenus(MultipartFile file) throws Exception;
 
+    ////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * 验证当前用户(用户id,角色id) 是否配置有角色，角色菜单
+     * 1. 验证当前用户，角色id是否为空
+     * 2. 验证当前用户角色id，是否关联有菜单
+     *
+     * @param userId  当前用户id
+     * @param roleId  当前用户角色id
+     * @throws ApplicationException
+     */
+    void checkMeunByUserRole(String userId, String roleId) throws ApplicationException;
     ResultModel treeMeuns(PageData pageData) throws Exception;
 }
 

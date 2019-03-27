@@ -4,6 +4,7 @@ import com.xy.vmes.common.util.Common;
 import com.xy.vmes.entity.Department;
 import com.xy.vmes.entity.Employee;
 import com.xy.vmes.entity.User;
+import com.xy.vmes.exception.ApplicationException;
 import com.xy.vmes.service.*;
 import com.yvan.*;
 import com.yvan.cache.RedisClient;
@@ -40,12 +41,11 @@ public class UserLoginServiceImp implements UserLoginService {
     private DepartmentService departmentService;
     @Autowired
     RedisClient redisClient;
+
+    @Autowired
+    private MenuService menuService;
     @Autowired
     RoleMenuService roleMenuService;
-
-
-
-
 
     public Map<String, Object> findRedisMap(String jsonString) {
         Map<String, Object> mapObj = new HashMap<String, Object>();
@@ -251,6 +251,15 @@ public class UserLoginServiceImp implements UserLoginService {
         dataMap.put("menuList", menuList);
 
         //userMenu菜单权限()
+        //当前登录用户id, 当前用户角色id
+        try{
+            menuService.checkMeunByUserRole(user.getId(), roleIds);
+        } catch (ApplicationException appExc) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(appExc.getMessage());
+            return model;
+        }
+
         //userButton按钮权限()
 
         //缓存业务数据
