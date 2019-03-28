@@ -467,12 +467,12 @@ public class SaleRetreatDetailServiceImp implements SaleRetreatDetailService {
             //订单明细总金额
             BigDecimal totalSum = saleOrderDetailService.findTotalSumByPrice(orderDetailList);
 
-            //discountSum折扣金额
-            orderEdit.setDiscountSum(BigDecimal.valueOf(0D));
-            //totalSum 合计金额
-            orderEdit.setTotalSum(totalSum);
-            //orderSum 订单金额
-            orderEdit.setOrderSum(totalSum);
+//            //discountSum折扣金额
+//            orderEdit.setDiscountSum(BigDecimal.valueOf(0D));
+//            //totalSum 合计金额
+//            orderEdit.setTotalSum(totalSum);
+//            //orderSum 订单金额
+//            orderEdit.setOrderSum(totalSum);
 
             String remark = "";
             SaleOrder orderDB = saleOrderService.findSaleOrderById(orderId);

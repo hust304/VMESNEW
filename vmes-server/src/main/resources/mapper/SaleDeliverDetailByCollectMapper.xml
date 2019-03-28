@@ -42,7 +42,7 @@
                     sum(order_count) orderCount,
                     sum(order_sum) orderSum
                 from vmes_sale_retreat_detail
-                where state = '3'
+                where state <![CDATA[<> '-1']]>
                 group by order_detail_id
             ) retreatOrderDtl on orderDetail.id = retreatOrderDtl.order_detail_id
         <where>

@@ -67,10 +67,11 @@
 
             orderDetaiQuery.deliverCount,
             orderDetaiQuery.endDeliverCount,
-            <!--已发货百分比 (发货完成数 / 订单明细订购数量 * 100) %-->
+            orderDetaiQuery.endRetreatCount,
+            <!--已发货百分比 (发货完成数-退货完成数) / 订单明细订购数量 * 100) %-->
             CASE
             WHEN orderDetaiQuery.orderCount = 0 THEN 0
-            WHEN orderDetaiQuery.orderCount <![CDATA[<>]]> 0 THEN round((orderDetaiQuery.endDeliverCount / orderDetaiQuery.orderCount) * 100, 0)
+            WHEN orderDetaiQuery.orderCount <![CDATA[<>]]> 0 THEN round(((orderDetaiQuery.endDeliverCount - orderDetaiQuery.endRetreatCount) / orderDetaiQuery.orderCount) * 100, 0)
             ELSE null
             END deliverProgress
 
@@ -141,7 +142,9 @@
                 round(ifnull(deliverDtl_1.count, 0), 2) deliverCount,
                 round((ifnull(orderDtl.order_count, 0) - ifnull(deliverDtl_1.count, 0)), 2) notDeliverCount,
                 <!--已发货数量-->
-                round(ifnull(deliverDtl_2.count, 0), 2) endDeliverCount
+                round(ifnull(deliverDtl_2.count, 0), 2) endDeliverCount,
+                <!--已退货数量-->
+                round(ifnull(retreatDtl.count, 0), 2) endRetreatCount
 
             from vmes_sale_order_detail orderDtl
                 left join vmes_product product on orderDtl.product_id = product.id
@@ -166,6 +169,14 @@
                 where state = '1'
                 group by order_detai_id
                 ) deliverDtl_2 on orderDtl.id = deliverDtl_2.order_detai_id
+                <!--根据订单明细id汇总查询(退货明细) 已完成退货数量-->
+                left join (
+                    select order_detail_id, sum(order_count) count
+                    from vmes_sale_retreat_detail
+                    where state = '3'
+                    group by order_detail_id
+                ) retreatDtl on orderDtl.id = retreatDtl.order_detail_id
+
             <where>
                 <if test="orderDtlIds != null and orderDtlIds != ''" >
                     and orderDtl.id in (${orderDtlIds})
