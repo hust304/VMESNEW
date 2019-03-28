@@ -9,4 +9,6 @@ import com.yvan.springmvc.ResultModel;
 public interface MobileLoginService {
 
     ResultModel loginIn(PageData pageData) throws Exception;
+
+    ResultModel loginOut(PageData pageData) throws Exception;
 }

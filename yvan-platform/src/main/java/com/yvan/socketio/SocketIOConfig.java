@@ -12,7 +12,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by 46368 on 2018/12/4.
@@ -28,7 +30,7 @@ public class SocketIOConfig {
         String os = System.getProperty("os.name");
         if(os.toLowerCase().startsWith("win")){   //在本地window环境测试时用localhost
             System.out.println("this is  windows");
-            config.setHostname("192.168.0.112");
+            config.setHostname("192.168.0.108");
         } else {
             config.setHostname("116.196.105.79");   //部署到你的远程服务器正式发布环境时用服务器公网ip
         }
@@ -55,6 +57,7 @@ public class SocketIOConfig {
 
 
         final SocketIOServer server = new SocketIOServer(config);
+
 
 
 

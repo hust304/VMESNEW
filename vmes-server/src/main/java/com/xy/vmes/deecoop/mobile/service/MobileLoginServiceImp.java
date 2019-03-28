@@ -22,4 +22,9 @@ public class MobileLoginServiceImp implements MobileLoginService {
     public ResultModel loginIn(PageData pageData) throws Exception {
         return userLoginService.loginIn(pageData);
     }
+
+    @Override
+    public ResultModel loginOut(PageData pageData) throws Exception {
+        return userLoginService.loginOut(pageData);
+    }
 }

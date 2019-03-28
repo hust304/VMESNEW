@@ -33,5 +33,17 @@ public class MobileLoginController {
         return model;
 
     }
+
+    @PostMapping("/mobile/mobileLogin/loginOut")
+    public ResultModel loginOut()  throws Exception {
+        logger.info("################/mobile/mobileLogin/loginOut 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pageData = HttpUtils.parsePageData();
+        ResultModel model = mobileLoginService.loginOut(pageData);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/mobile/mobileLogin/loginOut 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+
+    }
 }
 
