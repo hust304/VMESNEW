@@ -50,7 +50,6 @@ public class EquipmentServiceImp implements EquipmentService {
     */
     @Override
     public void save(Equipment equipment) throws Exception{
-        equipment.setId(Conv.createUuid());
         equipment.setCdate(new Date());
         equipment.setUdate(new Date());
         equipmentMapper.insert(equipment);
@@ -189,6 +188,10 @@ public class EquipmentServiceImp implements EquipmentService {
     }
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+    public List<Map> getDataListPage(PageData pd) throws Exception {
+        return equipmentMapper.getDataListPage(pd);
+    }
+
     @Override
     public ResultModel listPageEquipments(PageData pd, Pagination pg) throws Exception {
         ResultModel model = new ResultModel();
@@ -319,18 +322,24 @@ public class EquipmentServiceImp implements EquipmentService {
     @Override
     public ResultModel addEquipment(PageData pd) throws Exception {
         ResultModel model = new ResultModel();
+
         Equipment equipment = (Equipment)HttpUtils.pageData2Entity(pd, new Equipment());
-        String url = fileService.createQRCode("equipment", YvanUtil.toJson(equipment));
+        equipment.setId(Conv.createUuid());
+
+        //获取二维码(设备主键id)
+        String url = fileService.createQRCode("equipment", equipment.getId());
+        equipment.setQrcode(url);
+
         if(StringUtils.isEmpty(pd.getString("currentCompanyId"))){
             model.putCode(Integer.valueOf(1));
-            model.putMsg("当前用户公司ID为空！");
+            model.putMsg("当前用户企业id为空！");
             return model;
         }
         equipment.setCompanyId(pd.getString("currentCompanyId"));
         String code = coderuleService.createCoder(pd.getString("currentCompanyId"),"vmes_equipment","E");
         equipment.setCode(code);
-        equipment.setQrcode(url);
         this.save(equipment);
+
         return model;
     }
 }

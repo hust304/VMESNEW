@@ -337,6 +337,9 @@
             <if test="queryStr != null and queryStr != ''" >
                 and ${queryStr}
             </if>
+            <if test="equipmentId != null and equipmentId != ''">
+                and equipment.id = #{equipmentId}
+            </if>
             <if test="code != null and code != ''">
                 and equipment.code LIKE CONCAT(CONCAT('%', #{code}),'%')
             </if>

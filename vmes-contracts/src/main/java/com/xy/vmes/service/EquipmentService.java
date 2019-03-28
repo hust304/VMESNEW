@@ -110,6 +110,8 @@ public interface EquipmentService {
 
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+    List<Map> getDataListPage(PageData pd) throws Exception;
+
     ResultModel listPageEquipments(PageData pd, Pagination pg) throws Exception;
 
     void exportExcelEquipments(PageData pd, Pagination pg) throws Exception;
