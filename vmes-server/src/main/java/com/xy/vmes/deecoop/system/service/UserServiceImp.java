@@ -543,21 +543,21 @@ public class UserServiceImp implements UserService {
         }
         user.setMobile(mobile.trim());
 
-        //B. 通过手机号-设置用户默认密码
-        //如果用户设置了密码那就用设置的密码加密，如果没有设置密码，那么就用手机号后六位进行加密作为默认密码
-        if(StringUtils.isEmpty(pd.getString("password"))){
-            if(mobile!=null&&mobile.trim().length()>6){
-                mobile = mobile.trim();
-                String password = mobile.substring(mobile.length()-6,mobile.length());
-                user.setPassword(MD5Utils.MD5(password));
-            }else{
-                model.putCode(2);
-                model.putMsg("输入手机号长度错误！");
-                return model;
-            }
-        }else{
-            user.setPassword(MD5Utils.MD5(pd.getString("password")));
-        }
+//        //B. 通过手机号-设置用户默认密码
+//        //如果用户设置了密码那就用设置的密码加密，如果没有设置密码，那么就用手机号后六位进行加密作为默认密码
+//        if(StringUtils.isEmpty(pd.getString("password"))){
+//            if(mobile!=null&&mobile.trim().length()>6){
+//                mobile = mobile.trim();
+//                String password = mobile.substring(mobile.length()-6,mobile.length());
+//                user.setPassword(MD5Utils.MD5(password));
+//            }else{
+//                model.putCode(2);
+//                model.putMsg("输入手机号长度错误！");
+//                return model;
+//            }
+//        }else{
+//            user.setPassword(MD5Utils.MD5(pd.getString("password")));
+//        }
 
         //删除用户角色信息
         userRoleService.deleteUserRoleByUserId(user.getId());
@@ -636,7 +636,7 @@ public class UserServiceImp implements UserService {
             return model;
         }
 
-        if (firstPassword.equals(confirmPassword)) {
+        if (!firstPassword.equals(confirmPassword)) {
             model.putCode(1);
             model.putMsg("新密码与确认密码不一致，请重新输入！");
             return model;
