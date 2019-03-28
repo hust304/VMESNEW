@@ -72,6 +72,8 @@ public interface WarehouseService {
     void updateToDisableByIds(String[] ids)throws Exception;
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+    List<Map> getDataListPage(PageData pd) throws Exception;
+
     void deleteWarehouseByPath(PageData pd) throws Exception;
     /**
      * 获取全部仓库货位记录，同时带出该(货位,货品)库存数量

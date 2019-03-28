@@ -129,6 +129,10 @@ public class WarehouseServiceImp implements WarehouseService {
     }
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+    public List<Map> getDataListPage(PageData pd) throws Exception {
+        return warehouseMapper.getDataListPage(pd);
+    }
+
     public void deleteWarehouseByPath(PageData pd) throws Exception {
         warehouseMapper.deleteWarehouseByPath(pd);
     }

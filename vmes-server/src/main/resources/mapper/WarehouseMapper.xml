@@ -240,6 +240,9 @@
             left join vmes_warehouse b on a.warehouse_id = b.id
             left join vmes_dictionary c on b.entity_type = c.id
         <where>
+            <if test="warehouseId != null and warehouseId != ''" >
+                and a.id=#{warehouseId}
+            </if>
             <if test="code != null and code != ''">
                 and a.code LIKE CONCAT(CONCAT(#{code}),'%')
             </if>

@@ -44,7 +44,7 @@ public interface WarehouseMapper extends BaseMapper<Warehouse> {
      * 创建时间：2018-10-09
      */
     List<Map> getDataListPage(PageData pd, Pagination pg);
-
+    List<Map> getDataListPage(PageData pd);
     /**
      * 获取全部仓库货位记录，同时带出该(货位,货品)库存数量
      *

@@ -78,6 +78,7 @@ public class MobileProductController {
         if (mapList != null && mapList.size() > 0) {
             Map objectMap = mapList.get(0);
 
+            productMap.put("id", qrcode);
             String code = new String();
             if (objectMap.get("code") != null && objectMap.get("code").toString().trim().length() > 0) {
                 code = objectMap.get("code").toString().trim();
