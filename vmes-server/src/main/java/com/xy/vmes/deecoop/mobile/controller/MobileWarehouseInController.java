@@ -7,6 +7,7 @@ import com.xy.vmes.service.*;
 import com.yvan.Conv;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
+import com.yvan.YvanUtil;
 import com.yvan.springmvc.ResultModel;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -21,6 +22,7 @@ import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,6 +33,8 @@ public class MobileWarehouseInController {
     private Logger logger = LoggerFactory.getLogger(MobileWarehouseInController.class);
     @Autowired
     private MobileWarehouseInService mobileWarehouseInService;
+    @Autowired
+    private WarehouseInDetailService warehouseInDetailService;
 
     //获得入库任务详细信息
     @PostMapping("/mobile/mobileWarehouseIn/findWarehouseInByDetailId")
@@ -98,6 +102,48 @@ public class MobileWarehouseInController {
         ResultModel model = mobileWarehouseInService.listWarehouseNodeByPid(pd);
         Long endTime = System.currentTimeMillis();
         logger.info("################/mobile/mobileWarehouseIn/listWarehouseNodeByPid  执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    @PostMapping("/mobile/mobileWarehouseIn/findWarehouseInDetailByQrcode")
+    public ResultModel findWarehouseInDetailByQrcode() throws Exception {
+        logger.info("################/mobile/mobileWarehouseIn/findWarehouseInDetailByQrcode 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        ResultModel model = new ResultModel();
+
+        PageData pageData = HttpUtils.parsePageData();
+        //货品货位二维码:= 入库明细id
+        String qrcode = pageData.getString("qrcode");
+        if (qrcode == null || qrcode.trim().length() == 0) {
+            model.putCode("1");
+            model.putMsg("货品货位二维码(入库明细id)为空或空字符串！");
+            return model;
+        }
+
+        Map<String, String> warehouseInDtlMap = new HashMap<String, String>();
+        WarehouseInDetail inDetail = warehouseInDetailService.findWarehouseInDetailById(qrcode);
+        if (inDetail != null) {
+            if (inDetail.getWarehouseId() != null && inDetail.getWarehouseId().trim().length() > 0) {
+                warehouseInDtlMap.put("warehouseId", inDetail.getWarehouseId().trim());
+            }
+
+            if (inDetail.getParentId() != null && inDetail.getParentId().trim().length() > 0) {
+                warehouseInDtlMap.put("productId", inDetail.getParentId().trim());
+            }
+
+            if (inDetail.getCode() != null && inDetail.getCode().trim().length() > 0) {
+                warehouseInDtlMap.put("code", inDetail.getCode().trim());
+            }
+        }
+
+        String jsonStr = new String();
+        if (warehouseInDtlMap.size() > 0) {
+            jsonStr = YvanUtil.toJson(warehouseInDtlMap);
+        }
+        model.set("jsonStr", jsonStr);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/mobile/mobileWarehouseIn/findWarehouseInDetailByQrcode 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
