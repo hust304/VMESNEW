@@ -476,6 +476,7 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService {
 
         ResultModel model = new ResultModel();
         String dtlJsonStr = pd.getString("dtlJsonStr");
+        String orderId = pd.getString("orderId");
 
         if (dtlJsonStr == null || dtlJsonStr.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
@@ -507,6 +508,8 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService {
         purchaseSign.setSdate(new Date());
         purchaseSign.setSignId(warehouseIn.getMakeId());
         purchaseSign.setCompanyId(companyID);
+        purchaseSign.setInId(warehouseIn.getId());
+        purchaseSign.setOrderId(orderId);
         purchaseSignService.save(purchaseSign);
 
         String purchaseOrderId = null;
@@ -540,6 +543,8 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService {
                 purchaseSignDetail.setCuser(purchaseSign.getCuser());
                 purchaseSignDetail.setUuser(purchaseSign.getUuser());
                 purchaseSignDetailService.save(purchaseSignDetail);
+
+
                 PurchaseOrderDetail purchaseOrderDetail = purchaseOrderDetailService.selectById(orderDetailId);
                 purchaseOrderId = purchaseOrderDetail.getParentId();
                 BigDecimal arriveCount = purchaseOrderDetail.getArriveCount().add(warehouseInDetail.getCount());

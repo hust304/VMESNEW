@@ -16,6 +16,8 @@
     <sql id="Field">
 		company_id companyId,<!-- 企业ID-组织架构 -->
 		sign_id signId,<!-- 签收人 -->
+        order_id orderId,
+        in_id inId,
 		sdate sdate,<!-- 签收时间 -->
 		cuser cuser,<!-- 创建用户id -->
 		cdate cdate,<!-- 创建时间 -->
@@ -30,6 +32,8 @@
     <sql id="FieldValue">
 		#{companyId},<!-- 企业ID-组织架构 -->
 		#{signId},<!-- 签收人 -->
+        #{orderId},
+        #{inId},
 		#{sdate},<!-- 签收时间 -->
 		#{cuser},<!-- 创建用户id -->
 		#{cdate},<!-- 创建时间 -->
@@ -45,6 +49,8 @@
     <sql id="Column">
         '企业ID-组织架构'  companyId,
         '签收人'  signId,
+        '采购订单ID' orderId,
+        '入库单ID' inId,
         '签收时间'  sdate,
         '创建用户id'  cuser,
         '创建时间'  cdate,
@@ -136,16 +142,18 @@
         isdisable,ishide,isedit,ismust,cdate,
         cuser
         ) VALUES
-            (replace(uuid(), '-', ''),'PurchaseSign','companyId','企业ID-组织架构',1, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'PurchaseSign','signId','签收人',2, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'PurchaseSign','sdate','签收时间',3, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'PurchaseSign','cuser','创建用户id',4, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'PurchaseSign','cdate','创建时间',5, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'PurchaseSign','uuser','修改用户id',6, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'PurchaseSign','udate','修改时间',7, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'PurchaseSign','remark','备注',8, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'PurchaseSign','isdisable','是否启用(0:已禁用 1:启用)',9, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'PurchaseSign','id','id',0, '1','1','1','0',now(), 'admin')
+            (replace(uuid(), '-', ''),'PurchaseSign','companyId','企业ID-组织架构',1, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'PurchaseSign','signId','签收人ID',2, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'PurchaseSign','signName','签收人',3, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'PurchaseSign','sdate','签收时间',4, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'PurchaseSign','warehouseInCode','入库单号',5, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'PurchaseSign','cuser','创建用户id',6, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'PurchaseSign','cdate','创建时间',7, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'PurchaseSign','uuser','修改用户id',8, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'PurchaseSign','udate','修改时间',9, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'PurchaseSign','remark','备注',10, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'PurchaseSign','isdisable','是否启用(0:已禁用 1:启用)',11, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'PurchaseSign','id','id',0, '1','0','1','0',now(), 'admin')
     </insert>
 
 
@@ -187,16 +195,20 @@
 
     <!-- 字段 自动创建，可以修改-->
     <sql id="Field1">
-        company_id companyId,<!-- 企业ID-组织架构 -->
-        sign_id signId,<!-- 签收人 -->
-        sdate sdate,<!-- 签收时间 -->
-        cuser cuser,<!-- 创建用户id -->
-        cdate cdate,<!-- 创建时间 -->
-        uuser uuser,<!-- 修改用户id -->
-        udate udate,<!-- 修改时间 -->
-        remark remark,<!-- 备注 -->
-        isdisable isdisable,<!-- 是否启用(0:已禁用 1:启用) -->
-        id id <!-- id -->
+        sign.company_id companyId,<!-- 企业ID-组织架构 -->
+        sign.sign_id signId,<!-- 签收人 -->
+        sign.order_id orderId,
+        sign.in_id inId,
+        DATE_FORMAT(sign.sdate,'%Y-%m-%d %T') sdate,<!-- 签收时间 -->
+        sign.cuser cuser,<!-- 创建用户id -->
+        sign.cdate cdate,<!-- 创建时间 -->
+        sign.uuser uuser,<!-- 修改用户id -->
+        sign.udate udate,<!-- 修改时间 -->
+        sign.remark remark,<!-- 备注 -->
+        sign.isdisable isdisable,<!-- 是否启用(0:已禁用 1:启用) -->
+        vmesuser.user_name signName,
+        warehouseIn.code warehouseInCode,
+        sign.id id <!-- id -->
     </sql>
 
     <!-- 字段值 自动创建，可以修改-->
@@ -228,21 +240,16 @@
     <select id="getDataList"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
         select
         <include refid="Field1"></include>
-        from
-        <include refid="tableName"></include>
+        from vmes_purchase_sign sign
+        left join vmes_warehouse_in warehouseIn on warehouseIn.id = sign.in_id
+        left join vmes_user vmesuser on vmesuser.id = sign.sign_id
         <where>
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >
                 and ${queryStr}
             </if>
-            <if test="currentCompanyId != null and currentCompanyId != ''">
-                and company_id LIKE CONCAT(CONCAT('%', #{currentCompanyId}),'%')
-            </if>
-            <if test="code != null and code != ''">
-                and code LIKE CONCAT(CONCAT('%', #{code}),'%')
-            </if>
-            <if test="name != null and name != ''">
-                and name LIKE CONCAT(CONCAT('%', #{name}),'%')
+            <if test="orderId != null and orderId != ''">
+                and sign.order_id = #{orderId}
             </if>
         </where>
         <if test="orderStr != null and orderStr != ''" >
@@ -254,18 +261,16 @@
     <select id="getDataListPage"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
         select
         <include refid="Field1"></include>
-        from
-        <include refid="tableName"></include>
+        from vmes_purchase_sign sign
+        left join vmes_warehouse_in warehouseIn on warehouseIn.id = sign.in_id
+        left join vmes_user vmesuser on vmesuser.id = sign.sign_id
         <where>
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >
                 and ${queryStr}
             </if>
-            <if test="code != null and code != ''">
-                and code LIKE CONCAT(CONCAT('%', #{code}),'%')
-            </if>
-            <if test="name != null and name != ''">
-                and name LIKE CONCAT(CONCAT('%', #{name}),'%')
+            <if test="orderId != null and orderId != ''">
+                and sign.order_id = #{orderId}
             </if>
         </where>
         <if test="orderStr != null and orderStr != ''" >
