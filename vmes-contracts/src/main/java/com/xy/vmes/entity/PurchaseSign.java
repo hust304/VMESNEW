@@ -46,8 +46,28 @@ public class PurchaseSign implements Serializable {
 	//是否启用(0:已禁用 1:启用)
 	@TableField("isdisable")
 	private String isdisable;
+	//签收人
+	@TableField("order_id")
+	private String orderId;
+	//签收人
+	@TableField("in_id")
+	private String inId;
 
+	public String getOrderId() {
+		return orderId;
+	}
 
+	public void setOrderId(String orderId) {
+		this.orderId = orderId;
+	}
+
+	public String getInId() {
+		return inId;
+	}
+
+	public void setInId(String inId) {
+		this.inId = inId;
+	}
 
 	public void setId(String id) {
 		this.id = id;
