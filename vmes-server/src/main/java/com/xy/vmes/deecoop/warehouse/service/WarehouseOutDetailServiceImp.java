@@ -351,6 +351,9 @@ public class WarehouseOutDetailServiceImp implements WarehouseOutDetailService {
         return null;
     }
 
+    public List<Map<String, Object>> findMapListWarehouseOutDetail(PageData pd) throws Exception {
+        return warehouseOutDetailMapper.findWarehouseOutDetailList(pd);
+    }
 
     ///////////////////////////////////////////////////////////////////////////////
 

@@ -5,6 +5,7 @@ import com.xy.vmes.service.MobileWarehouseOutService;
 import com.xy.vmes.service.WarehouseOutDetailService;
 import com.xy.vmes.service.WarehouseOutExecuteService;
 import com.yvan.PageData;
+import com.yvan.YvanUtil;
 import com.yvan.springmvc.ResultModel;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,20 +32,34 @@ public class MobileWarehouseOutServiceImp implements MobileWarehouseOutService {
     @Autowired
     private WarehouseOutDetailService warehouseOutDetailService;
     @Override
-    public ResultModel findWarehouseOutByDetailId(PageData pd) throws Exception {
+    public ResultModel findWarehouseOutByDetailId(PageData pageData) throws Exception {
         ResultModel model = new ResultModel();
-        List<Map> varList = mobileWarehouseOutMapper.findWarehouseOutByDetailId(pd);
-        List<Map> executeCountList = mobileWarehouseOutMapper.listWarehouseOutExecuteCount(pd);
-        if(varList!=null&&varList.size()>0){
-            model.putResult(varList.get(0));
-            model.put("executeCountList",executeCountList);
-        }else {
+
+        //货品二维码:= 货品id
+        String detailId = pageData.getString("detailId");
+        if (detailId == null || detailId.trim().length() == 0) {
             model.putCode("1");
-            model.putMsg("未查到任何数据！");
+            model.putMsg("出库明细id为空或空字符串！");
+            return model;
         }
+
+        Map<String, Object> outDelMap = new HashMap<String, Object>();
+
+        PageData findMap = new PageData();
+        findMap.put("outDetailId", detailId);
+        List<Map<String, Object>> mapList = warehouseOutDetailService.findMapListWarehouseOutDetail(findMap);
+        if (mapList != null && mapList.size() > 0) {
+            outDelMap = mapList.get(0);
+        }
+
+        String jsonStr = new String();
+        if (outDelMap.size() > 0) {
+            jsonStr = YvanUtil.toJson(outDelMap);
+        }
+        model.set("jsonStr", jsonStr);
+
         return model;
     }
-
 
     @Override
     public List<Map> listWarehousePath(PageData pd) throws Exception {

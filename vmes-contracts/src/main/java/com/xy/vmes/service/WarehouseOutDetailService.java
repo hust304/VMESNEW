@@ -137,6 +137,7 @@ public interface WarehouseOutDetailService {
     WarehouseOutDetail findWarehouseOutDetailById(String detailId);
 
 
+    List<Map<String, Object>> findMapListWarehouseOutDetail(PageData pd) throws Exception;
 
     ///////////////////////////////////////////////////////////////////////////////
 

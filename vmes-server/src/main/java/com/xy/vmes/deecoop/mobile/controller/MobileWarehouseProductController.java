@@ -1,6 +1,7 @@
 package com.xy.vmes.deecoop.mobile.controller;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.common.util.Common;
 import com.xy.vmes.entity.WarehouseProduct;
 import com.xy.vmes.service.WarehouseProductService;
 import com.yvan.HttpUtils;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -86,4 +88,68 @@ public class MobileWarehouseProductController {
         logger.info("################/mobile/mobileWarehouseProduct/findWarehouseProductByQrcode 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
+
+    @PostMapping("/mobile/mobileWarehouseProduct/findWarehouseProductByCount")
+    public ResultModel findWarehouseProductByCount () throws Exception {
+        logger.info("################/mobile/mobileWarehouseProduct/findWarehouseProductByCount 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        ResultModel model = new ResultModel();
+
+        PageData pageData = HttpUtils.parsePageData();
+        //仓库货位ID warehouseId
+        String warehouseId = pageData.getString("warehouseId");
+        if (warehouseId == null || warehouseId.trim().length() == 0) {
+            model.putCode("1");
+            model.putMsg("仓库货位id为空或空字符串！");
+            return model;
+        }
+
+        //产品ID productId
+        String productId = pageData.getString("productId");
+        if (productId == null || productId.trim().length() == 0) {
+            model.putCode("1");
+            model.putMsg("货品id为空或空字符串！");
+            return model;
+        }
+
+        //货位批次号 code
+        String code = pageData.getString("code");
+        if (code == null || code.trim().length() == 0) {
+            model.putCode("1");
+            model.putMsg("批次号为空或空字符串！");
+            return model;
+        }
+
+        PageData findMap = new PageData();
+        findMap.put("warehouseId", warehouseId);
+        findMap.put("productId", productId);
+        findMap.put("code", code);
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+        WarehouseProduct warehouseProduct = warehouseProductService.findWarehouseProduct(findMap);
+
+        Map<String, String> objectMap = new HashMap<String, String>();
+        if (warehouseProduct != null) {
+            //库存数量 stockCount
+            BigDecimal stockCount = BigDecimal.valueOf(0D);
+
+            if (warehouseProduct.getStockCount() != null) {
+                stockCount = warehouseProduct.getStockCount();
+                //四舍五入到2位小数
+                stockCount = stockCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+            }
+
+            objectMap.put("stockCount", stockCount.toString());
+        }
+
+        String jsonStr = new String();
+        if (objectMap.size() > 0) {
+            jsonStr = YvanUtil.toJson(objectMap);
+        }
+        model.set("jsonStr", jsonStr);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/mobile/mobileWarehouseProduct/findWarehouseProductByCount 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
 }
