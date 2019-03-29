@@ -581,9 +581,8 @@
                 from (
                     <!--获取最小批次 (出库明细id,货位id,货品id,批次号) 汇总-->
                     select
-                        a.detail_id,
-                        concat(b.warehouse_id,'-',b.product_id,'-',min(b.code)) keyStr,
-                        b.warehouse_id, b.product_id, min(b.code) code
+                        a.detail_id,b.warehouse_id, b.product_id, min(b.code) code,
+                        concat(b.warehouse_id,'-',b.product_id,'-',min(b.code)) keyStr
                     from vmes_warehouse_out_recommend a
                     left join vmes_warehouse_product b on a.warehouse_product_id = b.id
                     <where>
