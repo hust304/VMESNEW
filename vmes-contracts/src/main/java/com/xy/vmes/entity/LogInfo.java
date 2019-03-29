@@ -58,8 +58,17 @@ public class LogInfo implements Serializable {
     //请求URL
     @TableField("operate_url")
     private String operateUrl;
+    //企业ID
+    @TableField("company_id")
+    private String companyId;
 
+    public String getCompanyId() {
+        return companyId;
+    }
 
+    public void setCompanyId(String companyId) {
+        this.companyId = companyId;
+    }
 
     public void setId(String id) {
         this.id = id;

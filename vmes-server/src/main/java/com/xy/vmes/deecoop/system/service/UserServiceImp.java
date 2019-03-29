@@ -195,9 +195,21 @@ public class UserServiceImp implements UserService {
      */
     @Override
     public boolean isExistMobile(PageData pd) throws Exception{
-        List<User> userList = userMapper.isExistMobile(pd);
-        if(userList!=null&&userList.size()>0){
-            return true;
+        User user = this.selectById(pd.getString("id"));
+        if(user!=null){
+            if("2fb9bbee46ca4ce1913f3a673a7dd68f".equals(user.getUserType())||"6839818aecfc41be8f367e62502dfde4".equals(user.getUserType())){
+                return false;
+            }else{
+                List<User> userList = userMapper.isExistMobile(pd);
+                if(userList!=null&&userList.size()>0){
+                    return true;
+                }
+            }
+        }else {
+            List<User> userList = userMapper.isExistMobile(pd);
+            if(userList!=null&&userList.size()>0){
+                return true;
+            }
         }
         return false;
     }

@@ -65,7 +65,7 @@ public class OperationlogInterceptor implements HandlerInterceptor {
         //获取调用参数
         PageData pageData = new PageData(request);
         String cuserId = (String)pageData.get("cuser");
-
+        String companyId = pageData.getString("currentCompanyId");
         LogInfo loginfoDB = logInfoService.createLoginfo(null);
         String id = (String)pageData.get("id");
         if (id != null && id.trim().length() > 0) {
@@ -82,7 +82,7 @@ public class OperationlogInterceptor implements HandlerInterceptor {
         loginfoDB.setModelName(tableName);
         loginfoDB.setOperate(prefix);
         loginfoDB.setCuser(cuserId);
-
+        loginfoDB.setCompanyId(companyId);
         logInfoService.save(loginfoDB);
         logger.info("操作日志拦截器-OperationlogInterceptor.afterCompletion()-执行结束");
 

@@ -389,6 +389,7 @@
         name,
         pid,
         serial_number serialNumber,
+        dept_type type,
         layer,
         isdisable
         from <include refid="tableName"/>

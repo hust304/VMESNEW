@@ -153,7 +153,7 @@ public class ErrorController {
 
     @RequestMapping("/error/401")
     public ModelAndView error401() {
-        return new ModelAndView(new JsonView(new ResultModel().set("code","401").success(false).putMsg("无权限，SessionID过期或不存在！")));
+        return new ModelAndView(new JsonView(new ResultModel().set("code","401").success(false).putMsg("凭证已过期，请重新登录！")));
     }
 
     @RequestMapping("/error/404")

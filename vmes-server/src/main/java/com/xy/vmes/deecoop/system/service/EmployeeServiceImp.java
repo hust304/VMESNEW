@@ -252,6 +252,26 @@ public class EmployeeServiceImp implements EmployeeService {
         return null;
     }
 
+    public boolean isExistByCode(String id, String code,String companyId) {
+        if (id == null || id.trim().length() == 0) {return false;}
+        if (code == null || code.trim().length() == 0) {return false;}
+
+        PageData findMap = new PageData();
+        findMap.put("id", id);
+        findMap.put("code", code);
+        findMap.put("currentCompanyId",companyId);
+        if (id != null && id.trim().length() > 0) {
+            findMap.put("id", id);
+            findMap.put("isSelfExist", "true");
+        }
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+
+        List<Employee> objectList = this.findEmployeeList(findMap);
+        if (objectList != null && objectList.size() > 0) {return true;}
+
+        return false;
+    }
+
     public boolean isExistByMobile(String id, String mobile) {
         if (id == null || id.trim().length() == 0) {return false;}
         if (mobile == null || mobile.trim().length() == 0) {return false;}
@@ -357,7 +377,8 @@ public class EmployeeServiceImp implements EmployeeService {
         ResultModel model = new ResultModel();
         String employeeId = (String)pd.get("employeeId");
         String mobile = pd.getString("mobile");
-
+        String code = pd.getString("code");
+        String companyId = pd.getString("companyId");
         if(StringUtils.isEmpty(mobile)){
             model.putCode(1);
             model.putMsg("手机号不能为空！");
@@ -368,8 +389,16 @@ public class EmployeeServiceImp implements EmployeeService {
             model.putMsg("手机号长度错误！");
             return model;
         }
+
+
         //手机号唯一性判断(vmes_employee:员工表)
-        if (employeeService.isExistByMobile(employeeId, mobile)) {
+        if (this.isExistByCode(employeeId, code,companyId)) {
+            model.putCode(2);
+            model.putMsg("员工号:" + code + "在系统中已经存在，请核对后再次输入！");
+            return model;
+        }
+        //手机号唯一性判断(vmes_employee:员工表)
+        if (this.isExistByMobile(employeeId, mobile)) {
             model.putCode(1);
             model.putMsg("手机号:" + mobile + "在系统中已经存在，请核对后再次输入！");
             return model;

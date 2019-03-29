@@ -77,6 +77,7 @@ public class LogInfoController {
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         LogInfo logInfo = (LogInfo)HttpUtils.pageData2Entity(pd, new LogInfo());
+        logInfo.setCompanyId(pd.getString("currentCompanyId"));
         logInfoService.save(logInfo);
         Long endTime = System.currentTimeMillis();
         logger.info("################logInfo/save 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");

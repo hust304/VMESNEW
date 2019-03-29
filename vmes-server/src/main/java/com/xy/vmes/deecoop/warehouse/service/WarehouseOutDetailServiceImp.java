@@ -692,7 +692,7 @@ public class WarehouseOutDetailServiceImp implements WarehouseOutDetailService {
             parentWarehouseId = "'%" + parentWarehouseId +"%'";
         }
         pd.put("parentWarehouseId", parentWarehouseId);
-        pd.put("orderStr", "warehouse.layer asc");
+        pd.put("orderStr", "product.code asc");
 
         List<Map> childrenMapList = new ArrayList();
         List<Map> varList = warehouseProductService.getDataListPageDispatch(pd,pg);
