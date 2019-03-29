@@ -12,6 +12,7 @@
         select
             '日志类型 operate:操作日志 state:状态日志'  type,
             '业务单ID'  businessId,
+            '公司ID' companyId,
             '业务类别(1:生产计划 2:产品 3:部门 4:部门子计划 5:派工单 6:子派工单)'  businessType,
             '操作来源(app:终端操作 web:web端操作 sys:系统产生)'  source,
             '模块名称'  modelName,
@@ -32,6 +33,7 @@
         select
             type type,<!-- 日志类型 operate:操作日志 state:状态日志 -->
             business_id businessId,<!-- 业务单ID -->
+            company_id companyId,
             business_type businessType,<!-- 业务类别(1:生产计划 2:产品 3:部门 4:部门子计划 5:派工单 6:子派工单) -->
             source  source,<!-- 操作来源(app:终端操作 web:web端操作 sys:系统产生) -->
             model_name modelName,<!-- 模块名称 -->
@@ -62,6 +64,7 @@
         select
             type type,<!-- 日志类型 operate:操作日志 state:状态日志 -->
             business_id businessId,<!-- 业务单ID -->
+            company_id companyId,
             business_type businessType,<!-- 业务类别(1:生产计划 2:产品 3:部门 4:部门子计划 5:派工单 6:子派工单) -->
             source  source,<!-- 操作来源(app:终端操作 web:web端操作 sys:系统产生) -->
             model_name modelName,<!-- 模块名称 -->
@@ -146,6 +149,7 @@
         select
             type type,<!-- 日志类型 operate:操作日志 state:状态日志 -->
             business_id businessId,<!-- 业务单ID -->
+            company_id companyId,
             business_type businessType,<!-- 业务类别(1:生产计划 2:产品 3:部门 4:部门子计划 5:派工单 6:子派工单) -->
             source  source,<!-- 操作来源(app:终端操作 web:web端操作 sys:系统产生) -->
             model_name modelName,<!-- 模块名称 -->
@@ -262,6 +266,9 @@
             <if test="userName != null and userName != ''">
                 and u.user_name LIKE CONCAT(CONCAT('%', #{userName}),'%')
             </if>
+            <if test="currentCompanyId != null and currentCompanyId != ''">
+                and t.company_id = #{currentCompanyId}
+            </if>
             <if test="cdate!= null and cdate != ''"><!-- 关键词检索 -->
                 <![CDATA[ and a.cdate >= #{startDate} and a.cdate <=  #{endDate}]]>
             </if>
@@ -302,9 +309,9 @@
             <if test="userName != null and userName != ''">
                 and u.user_name LIKE CONCAT(CONCAT('%', #{userName}),'%')
             </if>
-            <!--<if test="currentCompanyId != null and currentCompanyId != ''">-->
-                <!--and u.company_id = #{currentCompanyId}-->
-            <!--</if>-->
+            <if test="currentCompanyId != null and currentCompanyId != ''">
+                and t.company_id = #{currentCompanyId}
+            </if>
             <if test="cdate!= null and cdate != ''"><!-- 关键词检索 -->
                 <![CDATA[ and t.cdate >= #{startDate} and t.cdate <=  #{endDate}]]>
             </if>
