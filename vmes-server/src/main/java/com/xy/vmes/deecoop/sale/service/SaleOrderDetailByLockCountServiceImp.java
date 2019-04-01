@@ -3,10 +3,14 @@ package com.xy.vmes.deecoop.sale.service;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.Common;
 import com.xy.vmes.common.util.EvaluateUtil;
+import com.xy.vmes.common.util.Producer;
 import com.xy.vmes.deecoop.sale.dao.SaleOrderDetailByLockCountMapper;
 import com.xy.vmes.entity.Column;
+import com.xy.vmes.entity.SaleOrderDetail;
 import com.xy.vmes.service.ColumnService;
+import com.xy.vmes.service.SaleLockDateService;
 import com.xy.vmes.service.SaleOrderDetailByLockCountService;
+import com.xy.vmes.service.SaleOrderDetailService;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.text.MessageFormat;
 import java.util.*;
 
 @Service
@@ -22,7 +27,15 @@ public class SaleOrderDetailByLockCountServiceImp implements SaleOrderDetailByLo
     @Autowired
     private SaleOrderDetailByLockCountMapper saleOrderDetailByLockCountMapper;
     @Autowired
+    private SaleOrderDetailService saleOrderDetailService;
+    @Autowired
+    private SaleLockDateService saleLockDateService;
+    @Autowired
     private ColumnService columnService;
+
+    //消息队列
+    @Autowired
+    private Producer producer;
 
     public List<Map> findListOrderDetailByLockCount(PageData pd) throws Exception {
         return saleOrderDetailByLockCountMapper.findListOrderDetailByLockCount(pd);
@@ -154,5 +167,54 @@ public class SaleOrderDetailByLockCountServiceImp implements SaleOrderDetailByLo
 
         model.putResult(result);
         return model;
+    }
+
+    /**
+     * 更新锁定库存版本号
+     * 1. 根据(企业id)获取订单明细表(vmes_sale_order_detail)
+     * 2. 字段 version_lock_count 加一
+     *
+     * @param companyId  企业id
+     */
+    public void updateVersionLockCount(String companyId) throws Exception {
+        if (companyId == null || companyId.trim().length() == 0) {return;}
+
+        //获取企业id对应的锁定库存时长(毫秒)
+        Long lockTime = saleLockDateService.findLockDateMillisecondByCompanyId(companyId);
+
+        PageData findMap = new PageData();
+        findMap.put("companyId", companyId);
+        findMap.put("queryStr", "lock_count <> 0 ");
+
+        List<SaleOrderDetail> orderDtlList = saleOrderDetailService.findSaleOrderDetailList(findMap);
+        if (orderDtlList == null || orderDtlList.size() == 0) {return;}
+
+        for (SaleOrderDetail orderDtl : orderDtlList) {
+            SaleOrderDetail orderDtlEdit = new SaleOrderDetail();
+            orderDtlEdit.setId(orderDtl.getId());
+
+            Integer versionLockCount = Integer.valueOf(0);
+            if (orderDtl.getVersionLockCount() != null) {
+                versionLockCount = Integer.valueOf(orderDtl.getVersionLockCount().intValue() + 1);
+            }
+            orderDtlEdit.setVersionLockCount(versionLockCount);
+
+            //将订单明细id作为消息体放入消息队列中，消息时长(毫秒)-根据企业id查询(vmes_sale_lock_date)
+            //信息队列信息:(订单明细id,锁定库存版本号,,)
+            String orderDtl_activeMQ_temp = "{0},{1}";
+            String orderDtl_activeMQ_msg = MessageFormat.format(orderDtl_activeMQ_temp,
+                    orderDtlEdit.getId(),
+                    orderDtlEdit.getVersionLockCount());
+
+            if (lockTime != null && lockTime.longValue() > 0) {
+                try {
+                    producer.sendMsg(orderDtl_activeMQ_msg, lockTime.longValue());
+                    saleOrderDetailService.update(orderDtlEdit);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
     }
 }

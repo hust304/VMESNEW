@@ -9,6 +9,7 @@ import com.xy.vmes.entity.SaleLockDate;
 import com.xy.vmes.exception.ApplicationException;
 import com.xy.vmes.service.ColumnService;
 import com.xy.vmes.service.SaleLockDateService;
+import com.xy.vmes.service.SaleOrderDetailByLockCountService;
 import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
@@ -34,9 +35,10 @@ import javax.servlet.http.HttpServletResponse;
 @Transactional(readOnly = false)
 public class SaleLockDateServiceImp implements SaleLockDateService {
 
-
     @Autowired
     private SaleLockDateMapper saleLockDateMapper;
+    @Autowired
+    private SaleOrderDetailByLockCountService saleOrderDetailByLockCountService;
 
     @Autowired
     private ColumnService columnService;
@@ -314,6 +316,12 @@ public class SaleLockDateServiceImp implements SaleLockDateService {
         saleLockDate.setSecond(day*24*60*60+hour*60*60+minute*60);
         this.update(saleLockDate);
 
+        //重新设定信息队列信息:(订单明细id,锁定库存版本号)
+        String companyId = pd.getString("currentCompanyId");
+        //1. 根据(企业id)获取订单明细表(vmes_sale_order_detail)
+        //2. 字段 version_lock_count 加一
+        saleOrderDetailByLockCountService.updateVersionLockCount(companyId);
+
         return model;
     }
 
@@ -335,6 +343,9 @@ public class SaleLockDateServiceImp implements SaleLockDateService {
         int minute = saleLockDate.getMinute()==null?0:saleLockDate.getMinute();
         saleLockDate.setSecond(day*24*60*60+hour*60*60+minute*60);
         this.save(saleLockDate);
+
+
+
 
         return model;
     }
