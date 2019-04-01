@@ -177,6 +177,9 @@
             <if test="state != null and state != ''" >
                 and state = #{state}
             </if>
+            <if test="versionLockCount != null and versionLockCount != ''" >
+                and version_lock_count = ${versionLockCount}
+            </if>
 
             <if test="companyId != null and companyId != ''" >
                 and parent_id in (
