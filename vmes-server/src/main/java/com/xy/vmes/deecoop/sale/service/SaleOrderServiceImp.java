@@ -1,10 +1,7 @@
 package com.xy.vmes.deecoop.sale.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
-import com.xy.vmes.common.util.ColumnUtil;
-import com.xy.vmes.common.util.Common;
-import com.xy.vmes.common.util.EvaluateUtil;
-import com.xy.vmes.common.util.StringUtil;
+import com.xy.vmes.common.util.*;
 import com.xy.vmes.deecoop.sale.dao.SaleOrderMapper;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.entity.Product;
@@ -39,6 +36,8 @@ public class SaleOrderServiceImp implements SaleOrderService {
     private SaleOrderDetailService saleOrderDetailService;
     @Autowired
     private SaleReceiveRecordService saleReceiveRecordService;
+    @Autowired
+    private SaleLockDateService saleLockDateService;
 
     @Autowired
     private ProductService productService;
@@ -46,6 +45,10 @@ public class SaleOrderServiceImp implements SaleOrderService {
     private CoderuleService coderuleService;
     @Autowired
     private ColumnService columnService;
+
+    //消息队列
+    @Autowired
+    private Producer producer;
 
     /**
     * 创建人：陈刚 自动创建，禁止修改
@@ -601,6 +604,13 @@ public class SaleOrderServiceImp implements SaleOrderService {
             return model;
         }
 
+        String companyId = pageData.getString("currentCompanyId");
+        if (orderId == null || orderId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("企业id为空或空字符串！");
+            return model;
+        }
+
         String dtlJsonStr = pageData.getString("dtlJsonStr");
         if (dtlJsonStr == null || dtlJsonStr.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
@@ -614,6 +624,9 @@ public class SaleOrderServiceImp implements SaleOrderService {
             model.putMsg("订单明细Json字符串-转换成List错误！");
             return model;
         }
+
+        //获取企业id对应的锁定库存时长(毫秒)
+        Long lockTime = saleLockDateService.findLockDateMillisecondByCompanyId(companyId);
 
         for (Map<String, String> mapObject : mapList) {
             String detail_id = mapObject.get("id");
@@ -673,6 +686,34 @@ public class SaleOrderServiceImp implements SaleOrderService {
                 orderDetail.setId(detail_id);
                 orderDetail.setNeedDeliverCount(needDeliverCount);
                 orderDetail.setLockCount(lockCount_new);
+
+                //versionLockCount
+                Integer versionLockCount = null;
+                String versionLockCount_str = mapObject.get("versionLockCount");
+                if (versionLockCount_str != null && versionLockCount_str.trim().length() > 0) {
+                    try {
+                        versionLockCount = new Integer(versionLockCount_str.trim());
+                    } catch(NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                if (versionLockCount != null) {
+                    versionLockCount = Integer.valueOf(versionLockCount.intValue() + 1);
+                    orderDetail.setVersionLockCount(versionLockCount);
+
+                    //信息队列信息:(订单明细id,锁定库存版本号,,)
+                    String orderDtl_activeMQ_temp = "{0},{1}";
+                    String orderDtl_activeMQ_msg = MessageFormat.format(orderDtl_activeMQ_temp,
+                            orderDetail.getId(),
+                            orderDetail.getVersionLockCount());
+
+                    //发送消息队列信息
+                    if (lockTime != null && lockTime.longValue() > 0) {
+                        producer.sendMsg(orderDtl_activeMQ_msg, lockTime.longValue());
+                    }
+                }
+
                 saleOrderDetailService.update(orderDetail);
             }
         }
