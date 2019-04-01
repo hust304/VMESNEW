@@ -344,8 +344,11 @@ public class SaleLockDateServiceImp implements SaleLockDateService {
         saleLockDate.setSecond(day*24*60*60+hour*60*60+minute*60);
         this.save(saleLockDate);
 
-
-
+        //重新设定信息队列信息:(订单明细id,锁定库存版本号)
+        String companyId = pd.getString("currentCompanyId");
+        //1. 根据(企业id)获取订单明细表(vmes_sale_order_detail)
+        //2. 字段 version_lock_count 加一
+        saleOrderDetailByLockCountService.updateVersionLockCount(companyId);
 
         return model;
     }
