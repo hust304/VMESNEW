@@ -294,12 +294,12 @@ public class SaleLockDateServiceImp implements SaleLockDateService {
         }
         lockTimeMillisecond = lockTimeMillisecond + (minute * 60 * 1000);
 
-        //秒
-        long second = 0L;
-        if (object.getSecond() != null) {
-            second = object.getSecond().longValue();
-        }
-        lockTimeMillisecond = lockTimeMillisecond + (second * 1000);
+//        //秒
+//        long second = 0L;
+//        if (object.getSecond() != null) {
+//            second = object.getSecond().longValue();
+//        }
+//        lockTimeMillisecond = lockTimeMillisecond + (second * 1000);
 
         return Long.valueOf(lockTimeMillisecond);
     }

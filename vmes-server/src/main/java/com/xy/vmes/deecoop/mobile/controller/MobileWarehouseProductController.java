@@ -128,6 +128,8 @@ public class MobileWarehouseProductController {
         WarehouseProduct warehouseProduct = warehouseProductService.findWarehouseProduct(findMap);
 
         Map<String, String> objectMap = new HashMap<String, String>();
+        objectMap.put("stockCount", new String("0.00"));
+
         if (warehouseProduct != null) {
             //库存数量 stockCount
             BigDecimal stockCount = BigDecimal.valueOf(0D);

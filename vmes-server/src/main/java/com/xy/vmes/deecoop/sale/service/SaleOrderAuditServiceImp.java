@@ -310,10 +310,6 @@ public class SaleOrderAuditServiceImp implements SaleOrderAuditService {
             }
         }
 
-        //获取企业id对应的锁定库存时长(毫秒)
-        String companyId = pageData.getString("currentCompanyId");
-        Long lockTime = saleLockDateService.findLockDateMillisecondByCompanyId(companyId);
-
         //获取订单明细
         //List<SaleOrderDetail> detailList = saleOrderDetailService.mapList2DetailList(mapList, null);
         for (Map<String, Object> mapObject : mapList) {
@@ -363,6 +359,11 @@ public class SaleOrderAuditServiceImp implements SaleOrderAuditService {
                 product.setLockCount(new_lockCount);
                 productService.update(product);
             }
+
+
+            //获取企业id对应的锁定库存时长(毫秒)
+            String companyId = pageData.getString("currentCompanyId");
+            Long lockTime = saleLockDateService.findLockDateMillisecondByCompanyId(companyId);
 
             //将订单明细id作为消息体放入消息队列中，消息时长(毫秒)-根据企业id查询(vmes_sale_lock_date)
             if (lockTime != null && lockTime.longValue() > 0) {
