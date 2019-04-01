@@ -31,8 +31,15 @@ public class Consumer {
      * @param activeMQ_msg  信息队列信息:(订单明细id,锁定库存版本号)
      *
      */
+    //@JmsListener(destination = "sale.orderDetail.ProductLockcount.queue_test")
     @JmsListener(destination = "sale.orderDetail.ProductLockcount.queue")
     public void receiveProductLockcount (String activeMQ_msg) throws Exception {
+        if (activeMQ_msg == null || activeMQ_msg.trim().length() == 0) {
+            System.out.println("activeMQ消息队列-收到报文(activeMQ_msg) 为空或空字符串");
+        } else {
+            System.out.println("activeMQ消息队列-收到报文(activeMQ_msg):" + activeMQ_msg);
+        }
+
         if (activeMQ_msg == null || activeMQ_msg.trim().length() == 0) {return;}
         String[] strArray = activeMQ_msg.split(",");
 
@@ -47,7 +54,7 @@ public class Consumer {
         }
 
         PageData findMap = new PageData();
-        findMap.put("orderDtlId", orderDtlId);
+        findMap.put("id", orderDtlId);
         findMap.put("versionLockCount", versionLockCount);
 
         SaleOrderDetail orderDetail = saleOrderDetailService.findSaleOrderDetail(findMap);
@@ -67,9 +74,13 @@ public class Consumer {
             }
 
             //isLockWarehouse 是否锁定仓库(0:未锁定 1:已锁定
-            orderDetail.setIsLockWarehouse("0");
-            orderDetail.setLockCount(BigDecimal.valueOf(0D));
-            saleOrderDetailService.update(orderDetail);
+            SaleOrderDetail orderDtlEdit = new SaleOrderDetail();
+            orderDtlEdit.setId(orderDetail.getId());
+            //是否锁定仓库(0:未锁定 1:已锁定)
+            orderDtlEdit.setIsLockWarehouse("0");
+            orderDtlEdit.setLockCount(BigDecimal.valueOf(0D));
+            saleOrderDetailService.update(orderDtlEdit);
+
         }
     }
 

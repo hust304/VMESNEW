@@ -20,7 +20,11 @@ public class ActiveMQConfig {
      */
     @Bean
     public Queue orderDetailByProductLockcountQueue() {
+        //消息队列-真实环境
         return new ActiveMQQueue("sale.orderDetail.ProductLockcount.queue");
+
+        //本地消息队列测试
+        //return new ActiveMQQueue("sale.orderDetail.ProductLockcount.queue_test");
     }
 
 

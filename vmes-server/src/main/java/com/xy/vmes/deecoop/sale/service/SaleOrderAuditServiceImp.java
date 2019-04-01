@@ -319,6 +319,12 @@ public class SaleOrderAuditServiceImp implements SaleOrderAuditService {
             //是否锁定仓库(0:无锁定 1:锁定)
             detail.setIsLockWarehouse("1");
 
+            Integer versionLockCount = Integer.valueOf(0);
+            if (detail.getVersionLockCount() != null) {
+                versionLockCount = Integer.valueOf(detail.getVersionLockCount().intValue() + 1);
+            }
+            detail.setVersionLockCount(versionLockCount);
+
             //可发货数量(计价单位) needDeliverCount
             detail.setNeedDeliverCount(BigDecimal.valueOf(0D));
             String needDeliverCount_str = "";
@@ -365,9 +371,15 @@ public class SaleOrderAuditServiceImp implements SaleOrderAuditService {
             String companyId = pageData.getString("currentCompanyId");
             Long lockTime = saleLockDateService.findLockDateMillisecondByCompanyId(companyId);
 
+            //信息队列信息:(订单明细id,锁定库存版本号)
+            String orderDtl_activeMQ_temp = "{0},{1}";
+            String orderDtl_activeMQ_msg = MessageFormat.format(orderDtl_activeMQ_temp,
+                    detail.getId(),
+                    detail.getVersionLockCount());
+
             //将订单明细id作为消息体放入消息队列中，消息时长(毫秒)-根据企业id查询(vmes_sale_lock_date)
             if (lockTime != null && lockTime.longValue() > 0) {
-                producer.sendMsg(detail.getId(), lockTime.longValue());
+                producer.sendMsg(orderDtl_activeMQ_msg, lockTime.longValue());
             }
         }
         return model;

@@ -80,7 +80,8 @@
             (replace(uuid(), '-', ''), 'saleOrderDetail', 'customerId', 'customerId', 33, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
             (replace(uuid(), '-', ''), 'saleOrderDetail', 'customerName', 'customerName', 34, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
             (replace(uuid(), '-', ''), 'saleOrderDetail', 'p2nFormula', 'p2nFormula', 35, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
-            (replace(uuid(), '-', ''), 'saleOrderDetail', 'n2pFormula', 'n2pFormula', 36, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin')
+            (replace(uuid(), '-', ''), 'saleOrderDetail', 'n2pFormula', 'n2pFormula', 36, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetail', 'versionLockCount', 'versionLockCount', 36, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
     </insert>
 
     <update id="updateStateByDetail" parameterType="com.yvan.PageData" >
@@ -183,7 +184,8 @@
 
             <if test="companyId != null and companyId != ''" >
                 and parent_id in (
-                    select id vmes_sale_order
+                    select id
+                    from vmes_sale_order
                     where company_id = #{companyId}
                 )
             </if>
@@ -242,6 +244,7 @@
             detail.remark remark,
 
             detail.isdisable isdisable,
+            detail.version_lock_count versionLockCount,
 
             saleOrder.price_type priceType,
             saleOrder.customer_id customerId,

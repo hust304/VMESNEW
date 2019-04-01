@@ -126,7 +126,7 @@
 
         (replace(uuid(), '-', ''), 'saleOrderDetailByLockStock', 'prodUnitFormulaN2p', 'prodUnitFormulaN2p', 32, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderDetailByLockStock', 'prodUnitFormulaP2N', 'prodUnitFormulaP2N', 33, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin')
-
+        (replace(uuid(), '-', ''), 'saleOrderDetailByLockStock', 'versionLockCount', 'versionLockCount', 34, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin')
 
     </insert>
 
@@ -161,6 +161,7 @@
             detail.udate udate,
             detail.remark remark,
             detail.isdisable isdisable,
+            detail.version_lock_count versionLockCount,
 
             <!--货品计价单位表 vmes_product_unit-->
             productUnit.np_formula prodUnitFormulaN2p,
