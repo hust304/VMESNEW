@@ -129,6 +129,8 @@ public interface WarehouseMoveService {
     void exportExcelWarehouseMoves(PageData pd, Pagination pg) throws Exception;
 
     ResultModel importExcelWarehouseMoves(MultipartFile file) throws Exception;
+
+    ResultModel saveWarehouseMoveDispatch(PageData pd) throws Exception;
 }
 
 

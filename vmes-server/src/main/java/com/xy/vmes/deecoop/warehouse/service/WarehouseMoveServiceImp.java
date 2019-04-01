@@ -408,6 +408,56 @@ public class WarehouseMoveServiceImp implements WarehouseMoveService {
     }
 
     @Override
+    public ResultModel saveWarehouseMoveDispatch(PageData pd) throws Exception {
+        ResultModel model = new ResultModel();
+
+        String dtlJsonStr = pd.getString("dtlJsonStr");
+        String executorIdsStr = pd.getString("executorIdsStr");
+
+        if (dtlJsonStr == null || dtlJsonStr.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("请至少添加选择一条数据！");
+            return model;
+        }
+
+        List<Map<String, String>> mapList = (List<Map<String, String>>) YvanUtil.jsonToList(dtlJsonStr);
+        if (mapList == null || mapList.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("移库单明细Json字符串-转换成List错误！");
+            return model;
+        }
+        String currentUserId = pd.getString("currentUserId");
+        if (mapList != null && mapList.size() > 0) {
+            for (int i = 0; i < mapList.size(); i++) {
+                Map<String, String> mapObject = mapList.get(i);
+                WarehouseMoveDetail detail = (WarehouseMoveDetail) HttpUtils.pageData2Entity(mapObject, new WarehouseMoveDetail());
+                //新增移库执行人记录
+                if (!StringUtils.isEmpty(executorIdsStr)) {
+                    String[] executorIds = executorIdsStr.split(",");
+                    if (executorIds != null && executorIds.length > 0) {
+                        for (int j = 0; j < executorIds.length; j++) {
+                            String executorId = executorIds[j];
+                            WarehouseMoveExecutor executor = new WarehouseMoveExecutor();
+                            executor.setExecutorId(executorId);
+                            executor.setDetailId(detail.getId());
+                            executor.setCuser(currentUserId);
+                            warehouseMoveExecutorService.save(executor);
+
+                            //更新出库单及出库明细状态
+//                            WarehouseOutDetail detail = this.selectById(detailId);
+                            //明细状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+                            detail.setState("1");
+                            warehouseMoveDetailService.update(detail);
+                            this.updateState(detail.getParentId());
+                        }
+                    }
+                }
+            }
+        }
+        return model;
+    }
+
+    @Override
     public ResultModel listPageWarehouseMoves(PageData pd, Pagination pg) throws Exception {
         ResultModel model = new ResultModel();
 

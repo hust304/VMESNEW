@@ -234,6 +234,23 @@ public class WarehouseMoveController {
 
 
     /**
+     * @author 刘威 自动创建，禁止修改
+     * @date 2018-11-16
+     */
+    @PostMapping("/warehouse/warehouseMove/saveWarehouseMoveDispatch")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel saveWarehouseMoveDispatch()  throws Exception {
+
+        logger.info("################/warehouse/warehouseMove/saveWarehouseMoveDispatch 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = warehouseMoveService.saveWarehouseMoveDispatch(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/warehouse/warehouseMove/saveWarehouseMoveDispatch 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
     * @author 刘威 自动创建，可以修改
     * @date 2018-11-16
     */

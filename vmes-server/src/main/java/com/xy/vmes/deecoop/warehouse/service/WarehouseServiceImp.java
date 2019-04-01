@@ -242,7 +242,7 @@ public class WarehouseServiceImp implements WarehouseService {
         return objectList;
     }
 
-    public boolean isExistByName(String pid, String id, String name) {
+    public boolean isExistByName(String pid, String id, String name, String companyId) {
         if (pid == null || pid.trim().length() == 0) {return false;}
         if (name == null || name.trim().length() == 0) {return false;}
 
@@ -252,6 +252,7 @@ public class WarehouseServiceImp implements WarehouseService {
         findMap.put("queryStr", "name in (" + name + ")");
         //是否启用(0:已禁用 1:启用)
         findMap.put("isdisable", "1");
+        findMap.put("companyId", companyId);
 
         if (id != null && id.trim().length() > 0) {
             findMap.put("id", id);
@@ -914,7 +915,7 @@ public class WarehouseServiceImp implements WarehouseService {
 
         String companyID = pageData.getString("currentCompanyId");
         //2. (仓库名称)在同一层名称不可重复
-        if (this.isExistByName(pid, null, warehouse.getName())) {
+        if (this.isExistByName(pid, null, warehouse.getName(),companyID)) {
             String msgTemp = "实体库-仓库名称: {0}在系统中已经重复！" + Common.SYS_ENDLINE_DEFAULT;
             String str_isnull = MessageFormat.format(msgTemp, paterObj.getName());
             model.putCode(Integer.valueOf(1));
@@ -979,7 +980,7 @@ public class WarehouseServiceImp implements WarehouseService {
         }
         String companyID = pageData.getString("currentCompanyId");
         //(仓库名称)在同一层名称不可重复
-        if (this.isExistByName(pid, null, warehouse.getName())) {
+        if (this.isExistByName(pid, null, warehouse.getName(),companyID)) {
             String msgTemp = "虚拟库-仓库名称: {0}在系统中已经重复！" + Common.SYS_ENDLINE_DEFAULT;
             String str_isnull = MessageFormat.format(msgTemp, paterObj.getName());
             model.putCode(Integer.valueOf(1));
@@ -1054,7 +1055,7 @@ public class WarehouseServiceImp implements WarehouseService {
         }
         String companyID = pageData.getString("currentCompanyId");
         //(货位名称)在同一层名称不可重复
-        if (this.isExistByName(pid, null, warehouse.getName())) {
+        if (this.isExistByName(pid, null, warehouse.getName(),companyID)) {
             String msgTemp = "上级名称: {0}{2}货位名称: {1}{2}在系统中已经重复！{2}";
             String str_isnull = MessageFormat.format(msgTemp,
                     paterObj.getName(),
@@ -1130,7 +1131,7 @@ public class WarehouseServiceImp implements WarehouseService {
             model.putMsg("货位名称为空或空字符串！");
             return model;
         }
-
+        String companyID = pageData.getString("currentCompanyId");
         //pid 获取父节点对象<Warehouse>
         Warehouse paterObj = this.findWarehouseById(pid);
         if (paterObj == null) {
@@ -1145,7 +1146,7 @@ public class WarehouseServiceImp implements WarehouseService {
         if (nameString == null || nameString.trim().length() == 0) {
             return model;
         }
-        if (this.isExistByName(pid, null, nameString)) {
+        if (this.isExistByName(pid, null, nameString,companyID)) {
             String msgTemp = "当前起止范围{0}-{1}，库位名称:{2}，系统生成货位名称在仓库名称:{3}下重复，请核对后再次操作！";
             String str_isnull = MessageFormat.format(msgTemp,
                     start,
@@ -1194,9 +1195,9 @@ public class WarehouseServiceImp implements WarehouseService {
             model.putMsg("(实体库id:" + Common.DICTIONARY_MAP.get("warehouseEntity") + ")系统中无数据，请与管理员联系！");
             return model;
         }
-
+        String companyID = pageData.getString("currentCompanyId");
         //(仓库名称)在同一层名称不可重复
-        if (this.isExistByName(pid, warehouse.getId(), warehouse.getName())) {
+        if (this.isExistByName(pid, warehouse.getId(), warehouse.getName(),companyID)) {
             String msgTemp = "实体库-仓库名称: {0}在系统中已经重复！" + Common.SYS_ENDLINE_DEFAULT;
             String str_isnull = MessageFormat.format(msgTemp, paterObj.getName());
             model.putCode(Integer.valueOf(1));
@@ -1238,9 +1239,9 @@ public class WarehouseServiceImp implements WarehouseService {
             model.putMsg("(虚拟库id:" + Common.DICTIONARY_MAP.get("warehouseEntity") + ")系统中无数据，请与管理员联系！");
             return model;
         }
-
+        String companyID = pageData.getString("currentCompanyId");
         //(仓库名称)在同一层名称不可重复
-        if (this.isExistByName(pid, warehouse.getId(), warehouse.getName())) {
+        if (this.isExistByName(pid, warehouse.getId(), warehouse.getName(),companyID)) {
             String msgTemp = "虚拟库-仓库名称: {0}在系统中已经重复！" + Common.SYS_ENDLINE_DEFAULT;
             String str_isnull = MessageFormat.format(msgTemp, paterObj.getName());
             model.putCode(Integer.valueOf(1));
@@ -1292,6 +1293,7 @@ public class WarehouseServiceImp implements WarehouseService {
             model.putMsg("货位名称为空或空字符串！");
             return model;
         }
+        String companyId = pageData.getString("currentCompanyId");
 
         Warehouse paterObj = this.findWarehouseById(pid);
         if (paterObj == null) {
@@ -1301,7 +1303,7 @@ public class WarehouseServiceImp implements WarehouseService {
         }
 
         //(货位名称)在同一层名称不可重复
-        if (this.isExistByName(pid, id, name)) {
+        if (this.isExistByName(pid, id, name,companyId)) {
             String msgTemp = "货位名称:{0}，上级名称:{1}下重复，请核对后再次操作！";
             String str_isnull = MessageFormat.format(msgTemp,
                     name,

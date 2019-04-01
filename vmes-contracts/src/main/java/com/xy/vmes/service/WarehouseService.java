@@ -96,7 +96,7 @@ public interface WarehouseService {
     List<Warehouse> findWarehouseList(PageData object);
     List<Warehouse> findWarehouseListByPid(String pid);
 
-    boolean isExistByName(String pid, String id, String name);
+    boolean isExistByName(String pid, String id, String name, String companyId);
 
     List<String> findNameListByNumber(int start, int end);
     List<String> findNameListByChar(String start, String end);
