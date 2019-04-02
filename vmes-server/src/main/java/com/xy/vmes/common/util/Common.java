@@ -135,6 +135,28 @@ public class Common {
         put("UserController", "用户管理");
         put("MainPageController", "主页及菜单自定义");
         put("UserLoginController", "用户登录");
+
+        //仓库
+        put("WarehouseController", "仓库配置");
+        put("WarehouseInitialController", "仓库初始化");
+        put("WarehouseCheckController", "盘点单");
+        put("WarehouseMoveController", "移库管理");
+        put("WarehouseInController", "入库管理");
+        put("WarehouseOutController", "出库管理");
+
+        //销售
+        put("SaleOrderController", "订单提交");
+        put("SaleReceiveController", "应收款管理");
+        put("SaleDeliverController", "发货管理");
+        put("SaleRetreatController", "退货管理");
+        put("SaleInvoiceController", "开票管理");
+
+        //采购
+        put("BomController", "齐套分析");
+        put("PurchasePlanController", "采购计划管理");
+        put("PurchaseOrderController", "采购订单管理");
+        put("PurchasePaymentRecordController", "采购应付款");
+
     }};
 
     //Controller操作方法前缀

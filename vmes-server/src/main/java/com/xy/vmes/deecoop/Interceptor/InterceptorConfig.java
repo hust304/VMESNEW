@@ -20,9 +20,9 @@ public class InterceptorConfig extends WebMvcConfigurerAdapter {
 
         //配置系统操作日志-拦截器
         registry.addInterceptor(operationlog).addPathPatterns(
-            "/*/add*",
-            "/*/update*",
-            "/*/delete*"
+            "/*/*/add*",
+            "/*/*/update*",
+            "/*/*/delete*"
         ).excludePathPatterns("/*/updateDisable*");
 
         //配置状态变更日志-拦截器
