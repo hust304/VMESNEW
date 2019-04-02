@@ -356,6 +356,15 @@
             <if test="prodName != null and prodName != ''">
                 and prod.name LIKE CONCAT(CONCAT('%', #{prodName}),'%')
             </if>
+            <if test="prodCode != null and prodCode != ''">
+                and prod.code LIKE CONCAT(CONCAT('%', #{prodCode}),'%')
+            </if>
+            <if test="prodSpec != null and prodSpec != ''">
+                and prod.spec LIKE CONCAT(CONCAT('%', #{prodSpec}),'%')
+            </if>
+            <if test="unitName != null and unitName != ''">
+                and unit.name LIKE CONCAT(CONCAT('%', #{unitName}),'%')
+            </if>
             <if test="currentCompanyId != null and currentCompanyId != ''" >
                 and prod.company_id=#{currentCompanyId}
             </if>
@@ -405,6 +414,15 @@
             </if>
             <if test="prodName != null and prodName != ''">
                 and prod.name LIKE CONCAT(CONCAT('%', #{prodName}),'%')
+            </if>
+            <if test="prodCode != null and prodCode != ''">
+                and prod.code LIKE CONCAT(CONCAT('%', #{prodCode}),'%')
+            </if>
+            <if test="prodSpec != null and prodSpec != ''">
+                and prod.spec LIKE CONCAT(CONCAT('%', #{prodSpec}),'%')
+            </if>
+            <if test="unitName != null and unitName != ''">
+                and unit.name LIKE CONCAT(CONCAT('%', #{unitName}),'%')
             </if>
             <if test="currentCompanyId != null and currentCompanyId != ''" >
                 and prod.company_id=#{currentCompanyId}
