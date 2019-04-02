@@ -293,17 +293,17 @@
         left join (
             select product_id,company_id,warehouse_id,round(sum(ifnull(stock_count,0)), 2) stock_count
             from vmes_warehouse_product
-            <where>
-                <if test="productId != null and productId != ''">
-                    and product_id = #{productId}
-                </if>
-                <if test="companyId != null and companyId != ''">
-                    and company_id = #{companyId}
-                </if>
-                <if test="warehouseId != null and warehouseId != ''">
-                    and warehouse_id = #{warehouseId}
-                </if>
-            </where>
+            <!--<where>-->
+                <!--<if test="productId != null and productId != ''">-->
+                    <!--and product_id = #{productId}-->
+                <!--</if>-->
+                <!--<if test="companyId != null and companyId != ''">-->
+                    <!--and company_id = #{companyId}-->
+                <!--</if>-->
+                <!--<if test="warehouseId != null and warehouseId != ''">-->
+                    <!--and warehouse_id = #{warehouseId}-->
+                <!--</if>-->
+            <!--</where>-->
             group by product_id,company_id,warehouse_id
         ) warehouseProduct on warehouse.id = warehouseProduct.warehouse_id
             left join vmes_product product on warehouseProduct.product_id = product.id

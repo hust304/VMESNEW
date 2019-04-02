@@ -562,6 +562,10 @@ public class WarehouseMoveDetailServiceImp implements WarehouseMoveDetailService
             model.putMsg("数据库没有生成TabCol，请联系管理员！");
             return model;
         }
+        String fieldCode = pd.getString("fieldCode");
+        if (fieldCode != null && fieldCode.trim().length() > 0) {
+            columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
+        }
         //获取根节点表头
         Map rootTitleMap = ColumnUtil.getTitleList(columnList);
 
@@ -642,6 +646,10 @@ public class WarehouseMoveDetailServiceImp implements WarehouseMoveDetailService
             model.putCode("1");
             model.putMsg("数据库没有生成TabCol，请联系管理员！");
             return model;
+        }
+        String fieldCode = pd.getString("fieldCode");
+        if (fieldCode != null && fieldCode.trim().length() > 0) {
+            columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
         }
         //获取根节点表头
         Map rootTitleMap = ColumnUtil.getTitleList(columnList);

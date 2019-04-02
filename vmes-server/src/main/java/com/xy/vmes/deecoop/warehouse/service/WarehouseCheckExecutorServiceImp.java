@@ -403,6 +403,7 @@ public class WarehouseCheckExecutorServiceImp implements WarehouseCheckExecutorS
             detail.setId(dtlEntity.getId());
             //状态(0:待派单 1:执行中 2:审核中 3:已完成 -1:已取消)
             detail.setState("1");
+            detail.setRemark(null);
             warehouseCheckDetailService.update(detail);
         }
         return model;

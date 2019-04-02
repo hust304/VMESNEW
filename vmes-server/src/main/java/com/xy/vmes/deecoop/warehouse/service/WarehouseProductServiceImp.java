@@ -1217,7 +1217,7 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
             }
         }
         result.put("varList",varMapList);
-        result.put("pageData", pg);
+//        result.put("pageData", pg);
 
         model.putResult(result);
         return model;
