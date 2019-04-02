@@ -109,8 +109,10 @@
             <if test="queryStr != null and queryStr!=''" >
                 and ${queryStr}
             </if>
-
         </where>
+        <if test="orderStr != null and orderStr != ''" >
+            order by ${orderStr}
+        </if>
     </select>
 
     <insert id="insertColumn" >

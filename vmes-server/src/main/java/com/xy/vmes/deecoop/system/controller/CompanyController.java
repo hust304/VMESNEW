@@ -145,8 +145,14 @@ public class CompanyController {
 
         PageData pd = HttpUtils.parsePageData();
         pd.put("layer", "1");
-        Pagination pg = HttpUtils.parsePagination(pd);
 
+        pd.put("orderStr", "a.cdate desc");
+        String orderStr = pd.getString("orderStr");
+        if (orderStr != null && orderStr.trim().length() > 0) {
+            pd.put("orderStr", orderStr);
+        }
+
+        Pagination pg = HttpUtils.parsePagination(pd);
         List<Map> varMapList = new ArrayList();
         List<Map> varList = companyService.getDataListPage(pd, pg);
         if(varList!=null&&varList.size()>0){

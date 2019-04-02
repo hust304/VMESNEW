@@ -295,8 +295,15 @@ public class WarehouseInServiceImp implements WarehouseInService {
         if (fieldCode != null && fieldCode.trim().length() > 0) {
             columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
         }
-        Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
+
+        pd.put("orderStr", "a.cdate desc");
+        String orderStr = pd.getString("orderStr");
+        if (orderStr != null && orderStr.trim().length() > 0) {
+            pd.put("orderStr", orderStr);
+        }
+
         List<Map> varList = this.getDataListPage(pd,pg);
+        Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
         List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
         result.put("hideTitles",titleMap.get("hideTitles"));
         result.put("titles",titleMap.get("titles"));
