@@ -2,6 +2,7 @@ package com.xy.vmes.deecoop.sale.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
+import com.xy.vmes.common.util.EvaluateUtil;
 import com.xy.vmes.deecoop.sale.dao.SaleOrderByQueryMapper;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.service.ColumnService;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -114,6 +116,33 @@ public class SaleOrderByQueryServiceImp implements SaleOrderByQueryService {
                 secondMapList.add(varMap);
 
             }
+        }
+
+        for (Map<String, String> mapObject : secondMapList) {
+            //计量转换计价单位 数量转换公式 n2pFormula
+            String n2pFormula = "";
+            if (mapObject.get("n2pFormula") != null && mapObject.get("n2pFormula").toString().trim().length() > 0) {
+                n2pFormula = mapObject.get("n2pFormula").toString().trim();
+            }
+
+            //锁定货品数量 lockCount
+            BigDecimal lockCount = BigDecimal.valueOf(0D);
+            String lockCount_str = (String)mapObject.get("lockCount");
+            if (lockCount_str != null && lockCount_str.trim().length() > 0) {
+                try {
+                    lockCount = new BigDecimal(lockCount_str);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            BigDecimal lockCount_out = EvaluateUtil.countFormulaN2P(lockCount, n2pFormula);
+            if (lockCount_out == null) {
+                mapObject.put("lockCount", "0.00");
+            } else {
+                mapObject.put("lockCount", lockCount_out.toString());
+            }
+
         }
 
         return secondMapList;
