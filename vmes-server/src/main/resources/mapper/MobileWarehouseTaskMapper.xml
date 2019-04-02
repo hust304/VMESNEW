@@ -92,7 +92,7 @@
                 and win.company_id=#{currentCompanyId}
             </if>
             <if test="executorId != null and executorId != ''" >
-                and executor.executor_id=#{executorId}
+                and executor.executor_id=#{executorId} and executor.isdisable = '1'
             </if>
             <if test="dtlState != null and dtlState != ''" >
                 and detail.state = #{dtlState}
@@ -127,7 +127,7 @@
                 and wout.company_id=#{currentCompanyId}
             </if>
             <if test="executorId != null and executorId != ''" >
-                and executor.executor_id=#{executorId}
+                and executor.executor_id=#{executorId} and executor.isdisable = '1'
             </if>
             <if test="dtlState != null and dtlState != ''" >
                 and detail.state = #{dtlState}
@@ -162,7 +162,7 @@
                 and wcheck.company_id=#{currentCompanyId}
             </if>
             <if test="executorId != null and executorId != ''" >
-                and executor.executor_id=#{executorId}
+                and executor.executor_id=#{executorId} and executor.isdisable = '1'
             </if>
             <if test="dtlState != null and dtlState != ''" >
                 and detail.state = #{dtlState}
@@ -199,7 +199,7 @@
                 and wmove.company_id=#{currentCompanyId}
             </if>
             <if test="executorId != null and executorId != ''" >
-                and executor.executor_id=#{executorId}
+                and executor.executor_id=#{executorId} and executor.isdisable = '1'
             </if>
             <if test="dtlState != null and dtlState != ''" >
                 and detail.state = #{dtlState}
