@@ -14,7 +14,7 @@ import java.util.Map;
 @Repository
 public interface  MobileWarehouseOutMapper {
     //List<Map> findWarehouseOutByDetailId(PageData pd);
-    //List<Map> listWarehouseOutExecuteCount(PageData pd);
+    List<Map> listWarehouseOutExecuteCount(PageData pd);
 
     List<Map> listWarehouseCode(PageData pd);
     List<Map> listWarehousePath(PageData pd);

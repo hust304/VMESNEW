@@ -546,6 +546,11 @@
             genre.name productGenreName,
             prod.type productType,
 
+            <!--出库任务开始时间 (出库明细id)出库执行分配表汇总-->
+            DATE_FORMAT(min(executor.cdate),'%Y-%m-%d %T') startDate,
+            <!--出库任务结束时间 (出库明细id)出库执行表汇总-->
+            DATE_FORMAT(max(outExecute.cdate),'%Y-%m-%d %T') endDate,
+
             <!--出库单表-->
             parent.code parentCode,
             outType.name typeName,
@@ -567,6 +572,20 @@
         from vmes_warehouse_out_detail a
             left join vmes_warehouse_out parent on a.parent_id = parent.id
             left join vmes_dictionary outType on parent.type = outType.id
+
+            left join (
+                <!--出库任务开始时间 (出库明细id)出库执行分配表汇总-->
+                select detail_id,min(cdate) cdate
+                from vmes_warehouse_out_executor
+                group by detail_id
+            ) executor on a.id = executor.detail_id
+
+            left join (
+                <!--出库任务结束时间 (出库明细id)出库执行表汇总-->
+                select detail_id,max(cdate) cdate
+                from vmes_warehouse_out_execute
+                group by detail_id
+            ) outExecute on a.id = outExecute.detail_id
 
             <!--出库执行表汇总-->
             left join (

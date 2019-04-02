@@ -58,6 +58,12 @@ public class MobileWarehouseOutServiceImp implements MobileWarehouseOutService {
         }
         model.set("jsonStr", jsonStr);
 
+        //出库明细id-获取出库执行列表
+        findMap = new PageData();
+        findMap.put("detailId", detailId);
+        List<Map> executeCountList = mobileWarehouseOutMapper.listWarehouseOutExecuteCount(findMap);
+        model.put("executeCountList",executeCountList);
+
         return model;
     }
 
