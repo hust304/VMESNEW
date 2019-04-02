@@ -332,9 +332,13 @@ public class RoleServiceImp implements RoleService {
         mapObj.put("hideTitles", titlesHideList);
         mapObj.put("titles", YvanUtil.toJson(titlesList));
 
-        //2. 分页查询数据List
-
+        //设置查询排序
         pd.put("cuser", null);
+        pd.put("orderStr", "a.company_id asc, a.cdate desc");
+        String orderStr = pd.getString("orderStr");
+        if (orderStr != null && orderStr.trim().length() > 0) {
+            pd.put("orderStr", orderStr);
+        }
 
         List<Map> varList = this.getDataListPage(pd, pg);
         List<Map<String, String>> varMapList = new ArrayList<Map<String, String>>();
