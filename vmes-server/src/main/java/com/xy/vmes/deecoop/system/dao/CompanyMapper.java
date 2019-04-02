@@ -3,7 +3,6 @@ package com.xy.vmes.deecoop.system.dao;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.yvan.PageData;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
 import org.springframework.stereotype.Repository;
 
 import java.util.LinkedHashMap;
@@ -24,4 +23,6 @@ public interface CompanyMapper  {
      * 创建时间：2018-08-08
      */
     List<Map> getDataListPage(PageData pd, Pagination pg);
+
+    List<Map> findListCompany(PageData pd);
 }

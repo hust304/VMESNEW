@@ -20,10 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletResponse;
 import java.text.MessageFormat;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @Transactional(readOnly = false)
@@ -623,6 +620,38 @@ public class CompanyServiceImp implements CompanyService {
         return model;
     }
 
+    public ResultModel updateCompanyByCompanyUser(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+
+        String id = (String)pageData.get("id");
+        if (id == null || id.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("企业id为空或空字符串！");
+            return model;
+        }
+
+        String name = (String)pageData.get("name");
+        if (name == null || name.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("企业名称为空或空字符串！");
+            return model;
+        }
+
+
+        Department companyEdit = new Department();
+        companyEdit.setId(id);
+        companyEdit.setName(name);
+
+        String companyShortname = (String)pageData.get("companyShortname");
+        if (companyShortname != null && companyShortname.trim().length() > 0) {
+            companyEdit.setCompanyShortname(companyShortname.trim());
+        }
+
+        departmentService.update(companyEdit);
+
+        return model;
+    }
+
     @Override
     public ResultModel deleteCompanyAdmins(PageData pageData) throws Exception {
         ResultModel model = new ResultModel();
@@ -677,6 +706,35 @@ public class CompanyServiceImp implements CompanyService {
 
         //删除企业
         departmentService.deleteByIds(companyId_arry);
+        return model;
+    }
+
+    public ResultModel findListCompany(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+
+        List<Column> columnList = columnService.findColumnList("setCompany");
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
+        }
+
+        //获取指定栏位字符串-重新调整List<Column>
+        String fieldCode = pageData.getString("fieldCode");
+        if (fieldCode != null && fieldCode.trim().length() > 0) {
+            columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
+        }
+
+        Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
+        List<Map> varList = companyMapper.findListCompany(pageData);
+        List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
+
+        Map result = new HashMap();
+        result.put("hideTitles",titleMap.get("hideTitles"));
+        result.put("titles",titleMap.get("titles"));
+        result.put("varList",varMapList);
+
+        model.putResult(result);
         return model;
     }
 }

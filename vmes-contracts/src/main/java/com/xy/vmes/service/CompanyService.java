@@ -91,6 +91,9 @@ public interface CompanyService {
     ResultModel addCompanyAdmin(PageData pageData) throws Exception;
 
     ResultModel updateCompany(PageData pageData) throws Exception;
+    ResultModel updateCompanyByCompanyUser(PageData pageData) throws Exception;
 
     ResultModel deleteCompanyAdmins(PageData pageData) throws Exception;
+
+    ResultModel findListCompany(PageData pageData) throws Exception;
 }

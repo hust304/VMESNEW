@@ -115,6 +115,38 @@
         </if>
     </select>
 
+    <select id="findListCompany" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+            id id,
+            pid pid,
+            code code,
+            name name,
+            name_en nameEn,
+            company_shortname companyShortname
+        from vmes_department
+        <where>
+            <if test="currentCompanyId != null and currentCompanyId != ''" >
+                and id = #{currentCompanyId}
+            </if>
+        </where>
+        <if test="orderStr != null and orderStr != ''" >
+            order by ${orderStr}
+        </if>
+    </select>
+
+    <insert id="insertColumnByCompany" >
+        insert into vmes_column (
+        id,model_code,title_key,title_name,serial_number,
+        isdisable,ishide,isedit,ismust,cdate,
+        cuser
+        ) VALUES
+        (replace(uuid(), '-', ''), 'setCompany', 'id', 'id', 30, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+        (replace(uuid(), '-', ''), 'setCompany', 'pid', '上级id', 30, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+        (replace(uuid(), '-', ''), 'setCompany', 'code', '企业编码', 30, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+        (replace(uuid(), '-', ''), 'setCompany', 'name', '企业名称', 30, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+        (replace(uuid(), '-', ''), 'setCompany', 'companyShortname', '企业简称', 30, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin')
+    </insert>
+
     <insert id="insertColumn" >
         insert into vmes_column (
         id,model_code,title_key,title_name,serial_number,

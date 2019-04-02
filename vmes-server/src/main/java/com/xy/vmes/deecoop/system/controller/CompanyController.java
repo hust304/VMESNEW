@@ -175,7 +175,16 @@ public class CompanyController {
         return model;
     }
 
-
+    @PostMapping("/system/company/findListCompany")
+    public ResultModel findListCompany() throws Exception {
+        logger.info("################/system/company/findListCompany 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = companyService.findListCompany(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/system/company/findListCompany 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
 
 
     /**
@@ -237,6 +246,20 @@ public class CompanyController {
 
         Long endTime = System.currentTimeMillis();
         logger.info("################company/updateCompany 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    @PostMapping("/system/company/updateCompanyByCompanyUser")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel updateCompanyByCompanyUser() throws Exception {
+        logger.info("################/system/company/updateCompanyByCompanyUser 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pageData = HttpUtils.parsePageData();
+
+        ResultModel model = companyService.updateCompanyByCompanyUser(pageData);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/system/company/updateCompanyByCompanyUser 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
