@@ -196,6 +196,7 @@
             ) inExecute on executor.detail_id = inExecute.detail_id
 
         <where>
+            and executor.isdisable = '1'
             <if test="detailId != null and detailId != ''">
                 and executor.detail_id = #{detailId}
             </if>

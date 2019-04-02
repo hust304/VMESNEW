@@ -447,6 +447,7 @@ public class WarehouseMoveServiceImp implements WarehouseMoveService {
 //                            WarehouseOutDetail detail = this.selectById(detailId);
                             //明细状态(0:待派单 1:执行中 2:已完成 -1.已取消)
                             detail.setState("1");
+                            detail.setRemark(null);
                             warehouseMoveDetailService.update(detail);
                             this.updateState(detail.getParentId());
                         }
