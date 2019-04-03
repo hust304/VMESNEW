@@ -1,8 +1,10 @@
 package com.xy.vmes.deecoop.system.service;
 
 import com.xy.vmes.common.util.Common;
+import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.Department;
 import com.xy.vmes.entity.Employee;
+import com.xy.vmes.entity.Role;
 import com.xy.vmes.entity.User;
 import com.xy.vmes.exception.ApplicationException;
 import com.xy.vmes.service.*;
@@ -42,6 +44,8 @@ public class UserLoginServiceImp implements UserLoginService {
     @Autowired
     RedisClient redisClient;
 
+    @Autowired
+    private RoleService roleService;
     @Autowired
     private MenuService menuService;
     @Autowired
@@ -243,13 +247,6 @@ public class UserLoginServiceImp implements UserLoginService {
         dataMap.put("roleIds", roleIds);
         RedisMap.put("userRole", roleIds);
 
-        //appMenu移动端菜单权限
-        List menuList = new ArrayList();
-        PageData pd = new PageData();
-        pd.put("roleId",roleIds);
-        menuList = roleMenuService.listMenuKeyByApp(pd);
-        dataMap.put("menuList", menuList);
-
         //userMenu菜单权限()
         //当前登录用户id, 当前用户角色id
         try{
@@ -258,6 +255,52 @@ public class UserLoginServiceImp implements UserLoginService {
             model.putCode(Integer.valueOf(1));
             model.putMsg(appExc.getMessage());
             return model;
+        }
+
+        //登录类型(loginType):(app,web)
+        //appMenu移动端菜单权限
+        if (loginType != null && "app".equals(loginType.trim())) {
+            Role role = roleService.findRoleById(roleIds);
+
+            roleIds = StringUtil.stringTrimSpace(roleIds);
+            roleIds = "'" + roleIds.replace(",", "','") + "'";
+
+            List<Map<String, Object>> menuMapList = menuService.listMenuKeyByApp(roleIds, Common.SYS_MENU_MAP.get("app"));
+            if (menuMapList == null || menuMapList.size() == 0) {
+                String msgTemp_2 = "用户姓名({0}) 用户账号({1}) 绑定的角色名称({2}) 该角色没有绑定APP菜单，请于管理员联系！" + Common.SYS_ENDLINE_DEFAULT;
+                String msgStr = MessageFormat.format(msgTemp_2,
+                        user.getUserName(),
+                        user.getUserCode(),
+                        role.getName());
+                model.putCode(Integer.valueOf(1));
+                model.putMsg(msgStr);
+                return model;
+            }
+
+            List<Map<String, String>> roleMenuList = new ArrayList<Map<String, String>>();
+            for (Map<String, Object> mapObject : menuMapList) {
+                Map<String, String> menuMap = new HashMap<String, String>();
+
+                String name = new String();
+                if (mapObject.get("name") != null && mapObject.get("name").toString().trim().length() > 0) {
+                    name = mapObject.get("name").toString().trim();
+                }
+                menuMap.put("name", name);
+
+                String url = new String();
+                if (mapObject.get("url") != null && mapObject.get("url").toString().trim().length() > 0) {
+                    url = mapObject.get("url").toString().trim();
+                }
+                menuMap.put("url", url);
+
+                roleMenuList.add(menuMap);
+            }
+
+            String appMenuJson = new String();
+            if (roleMenuList.size() > 0) {
+                appMenuJson = YvanUtil.toJson(roleMenuList);
+            }
+            model.put("appMenuJson", appMenuJson);
         }
 
         //userButton按钮权限()

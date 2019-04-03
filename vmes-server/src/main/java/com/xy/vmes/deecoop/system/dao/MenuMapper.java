@@ -73,6 +73,8 @@ public interface MenuMapper extends BaseMapper<Menu> {
 	 * 创建时间：2018-07-30
 	 */
 	List<Map> getDataListPage(PageData pd, Pagination pg);
+
+	List<Map<String, Object>> listMenuKeyByApp(PageData pd);
 }
 
 

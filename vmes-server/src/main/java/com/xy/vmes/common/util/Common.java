@@ -349,5 +349,7 @@ public class Common {
             //customer: 客户供应商,
             put("customer", "66628bbd6bdd4f47a903feaec2feab59");
 
+        //******App 手机主页面菜单******
+        put("app", "ab8a6ef2480f4fa0a6445524a33a8181");
     }};
 }

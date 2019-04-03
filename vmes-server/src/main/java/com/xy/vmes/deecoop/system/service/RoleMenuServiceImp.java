@@ -471,10 +471,6 @@ public class RoleMenuServiceImp implements RoleMenuService {
             }
         });
     }
-
-    public List<String> listMenuKeyByApp(PageData pd) throws Exception{
-        return roleMenuMapper.listMenuKeyByApp(pd);
-    }
 }
 
 

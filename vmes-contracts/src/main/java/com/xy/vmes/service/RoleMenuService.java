@@ -138,7 +138,6 @@ public interface RoleMenuService {
 
     String findMenuidByRoleIds(String roleIds);
 
-    List<String> listMenuKeyByApp(PageData pd) throws Exception;
 }
 
 

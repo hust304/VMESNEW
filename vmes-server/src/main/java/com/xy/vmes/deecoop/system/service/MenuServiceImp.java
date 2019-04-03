@@ -1118,7 +1118,13 @@ public class MenuServiceImp implements MenuService {
         return model;
     }
 
+    public List<Map<String, Object>> listMenuKeyByApp(String roleId, String appMenuId) throws Exception{
+        PageData findMap = new PageData();
+        findMap.put("roleId", roleId);
+        findMap.put("appMenuId", appMenuId);
 
+        return menuMapper.listMenuKeyByApp(findMap);
+    }
 }
 
 

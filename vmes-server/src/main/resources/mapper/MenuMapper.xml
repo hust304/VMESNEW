@@ -363,4 +363,22 @@
         </if>
     </select>
 
+    <!--获取全部菜单表-根据角色ID-->
+    <select id="listMenuKeyByApp" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select name,url
+        from vmes_menu
+        <where>
+            <if test="roleId != null and roleId != ''" >
+                and id in (
+                    select menu_id from vmes_role_menu
+                    where role_id in (${roleId})
+                )
+            </if>
+            <if test="appMenuId != null and appMenuId != ''" >
+                and pid = #{appMenuId}
+            </if>
+            and isdisable = '1'
+        </where>
+    </select>
+
 </mapper>

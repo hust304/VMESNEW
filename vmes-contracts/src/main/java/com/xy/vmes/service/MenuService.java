@@ -247,6 +247,8 @@ public interface MenuService {
      */
     void checkMeunByUserRole(String userId, String roleId) throws ApplicationException;
     ResultModel treeMeuns(PageData pageData) throws Exception;
+
+    List<Map<String, Object>> listMenuKeyByApp(String roleId, String appMenuId) throws Exception;
 }
 
 
