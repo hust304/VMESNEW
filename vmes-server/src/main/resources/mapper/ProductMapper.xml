@@ -290,7 +290,7 @@
 
             '' prodProperty,
 
-            round(ifnull(prod.price, 0), 2) price,
+            round(ifnull(produnit.product_price, 0), 2) price,
             prod.type type,
             type.name typeName,
             prod.validity_days validityDays,
