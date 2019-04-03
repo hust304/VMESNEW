@@ -286,6 +286,9 @@
             <if test="parentId != null and parentId != ''">
                 and detail.parent_id =  #{parentId}
             </if>
+            <if test="code != null and code != ''">
+                and plan.code LIKE CONCAT(CONCAT('%', #{code}),'%')
+            </if>
             <if test="productCode != null and productCode != ''">
                 and product.code LIKE CONCAT(CONCAT('%', #{productCode}),'%')
             </if>
@@ -334,6 +337,9 @@
             </if>
             <if test="parentId != null and parentId != ''">
                 and detail.parent_id =  #{parentId}
+            </if>
+            <if test="code != null and code != ''">
+                and plan.code LIKE CONCAT(CONCAT('%', #{code}),'%')
             </if>
             <if test="productCode != null and productCode != ''">
                 and product.code LIKE CONCAT(CONCAT('%', #{productCode}),'%')

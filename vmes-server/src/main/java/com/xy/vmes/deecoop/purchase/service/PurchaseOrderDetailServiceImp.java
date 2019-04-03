@@ -3,14 +3,13 @@ package com.xy.vmes.deecoop.purchase.service;
 
 import com.xy.vmes.deecoop.purchase.dao.PurchaseOrderDetailMapper;
 import com.xy.vmes.entity.PurchaseOrderDetail;
-import com.xy.vmes.service.PurchaseOrderDetailService;
+import com.xy.vmes.entity.PurchasePlanDetail;
+import com.xy.vmes.service.*;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.Column;
-import com.xy.vmes.service.ColumnService;
-import com.xy.vmes.service.PurchaseOrderService;
 import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
@@ -41,6 +40,10 @@ public class PurchaseOrderDetailServiceImp implements PurchaseOrderDetailService
     private ColumnService columnService;
     @Autowired
     private PurchaseOrderService purchaseOrderService;
+    @Autowired
+    private PurchasePlanDetailService purchasePlanDetailService;
+    @Autowired
+    private PurchasePlanService purchasePlanService;
     /**
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2019-03-05
@@ -359,8 +362,27 @@ public class PurchaseOrderDetailServiceImp implements PurchaseOrderDetailService
             return model;
         }
         PurchaseOrderDetail purchaseOrderDetail = this.selectById(id);
-        this.deleteById(id);
-        purchaseOrderService.updateState(purchaseOrderDetail.getParentId());
+        if(purchaseOrderDetail!=null){
+            if("0".equals(purchaseOrderDetail.getState())){
+                String planDetailId = purchaseOrderDetail.getPlanId();
+                if(!StringUtils.isEmpty(planDetailId)){
+                    PurchasePlanDetail purchasePlanDetail = purchasePlanDetailService.selectById(planDetailId);
+                    //(0:待提交 1:待审核 2:待执行 3:执行中 4:已完成 -1:已取消)
+                    if(purchasePlanDetail!=null&&"3".equals(purchasePlanDetail.getState())){
+                        purchasePlanDetail.setState("2");
+                        purchasePlanDetailService.update(purchasePlanDetail);
+                        purchasePlanService.updateState(purchasePlanDetail.getParentId());
+                    }
+                }
+                this.deleteById(id);
+                purchaseOrderService.updateState(purchaseOrderDetail.getParentId());
+            }
+            if("-1".equals(purchaseOrderDetail.getState())){
+                this.deleteById(id);
+                purchaseOrderService.updateState(purchaseOrderDetail.getParentId());
+            }
+        }
+
         return model;
     }
 
@@ -374,9 +396,48 @@ public class PurchaseOrderDetailServiceImp implements PurchaseOrderDetailService
             return model;
         }
         PurchaseOrderDetail purchaseOrderDetail = this.selectById(id);
-        purchaseOrderDetail.setState("0");
-        this.update(purchaseOrderDetail);
-        purchaseOrderService.updateState(purchaseOrderDetail.getParentId());
+        if(purchaseOrderDetail!=null&&"-1".equals(purchaseOrderDetail.getState())){
+
+            String planDetailId = purchaseOrderDetail.getPlanId();
+            if(!StringUtils.isEmpty(planDetailId)){
+                PurchasePlanDetail purchasePlanDetail = purchasePlanDetailService.selectById(planDetailId);
+                if(purchasePlanDetail!=null){
+                    if("2".equals(purchasePlanDetail.getState())){
+                        purchaseOrderDetail.setState("0");
+                        this.update(purchaseOrderDetail);
+                        purchaseOrderService.updateState(purchaseOrderDetail.getParentId());
+                        //(0:待提交 1:待审核 2:待执行 3:执行中 4:已完成 -1:已取消)
+                        purchasePlanDetail.setState("3");
+                        purchasePlanDetailService.update(purchasePlanDetail);
+                        purchasePlanService.updateState(purchasePlanDetail.getParentId());
+                    }else if("4".equals(purchasePlanDetail.getState())){
+                        model.putCode("2");
+                        model.putMsg("当前采购订单明细关联的计划明细已完成，不能恢复！");
+                        return model;
+                    }else if("3".equals(purchasePlanDetail.getState())){
+                        model.putCode("3");
+                        model.putMsg("当前采购订单明细关联的计划明细正在执行中，不能恢复！");
+                        return model;
+                    }else if("1".equals(purchasePlanDetail.getState())){
+                        model.putCode("4");
+                        model.putMsg("当前采购订单明细关联的计划明细未审核，不能恢复！");
+                        return model;
+                    }else if("0".equals(purchasePlanDetail.getState())){
+                        model.putCode("5");
+                        model.putMsg("当前采购订单明细关联的计划明细未提交，不能恢复！");
+                        return model;
+                    }else if("-1".equals(purchasePlanDetail.getState())){
+                        model.putCode("6");
+                        model.putMsg("当前采购订单明细关联的计划明细已取消，不能恢复！");
+                        return model;
+                    }
+
+                }
+
+            }
+
+        }
+
         return model;
     }
 
@@ -390,9 +451,20 @@ public class PurchaseOrderDetailServiceImp implements PurchaseOrderDetailService
             return model;
         }
         PurchaseOrderDetail purchaseOrderDetail = this.selectById(id);
-        purchaseOrderDetail.setState("-1");
-        this.update(purchaseOrderDetail);
-        purchaseOrderService.updateState(purchaseOrderDetail.getParentId());
+        if(purchaseOrderDetail!=null&&"0".equals(purchaseOrderDetail.getState())){
+            purchaseOrderDetail.setState("-1");
+            this.update(purchaseOrderDetail);
+            purchaseOrderService.updateState(purchaseOrderDetail.getParentId());
+
+            String planDetailId = purchaseOrderDetail.getPlanId();
+            if(!StringUtils.isEmpty(planDetailId)){
+                PurchasePlanDetail purchasePlanDetail = purchasePlanDetailService.selectById(planDetailId);
+                //(0:待提交 1:待审核 2:待执行 3:执行中 4:已完成 -1:已取消)
+                purchasePlanDetail.setState("2");
+                purchasePlanDetailService.update(purchasePlanDetail);
+                purchasePlanService.updateState(purchasePlanDetail.getParentId());
+            }
+        }
         return model;
     }
 }

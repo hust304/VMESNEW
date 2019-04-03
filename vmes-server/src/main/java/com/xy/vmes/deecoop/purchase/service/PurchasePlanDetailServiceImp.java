@@ -374,9 +374,11 @@ public class PurchasePlanDetailServiceImp implements PurchasePlanDetailService {
             return model;
         }
         PurchasePlanDetail purchasePlanDetail = this.selectById(id);
-        purchasePlanDetail.setState("0");
-        this.update(purchasePlanDetail);
-        purchasePlanService.updateState(purchasePlanDetail.getParentId());
+        if(purchasePlanDetail!=null&&"-1".equals(purchasePlanDetail.getState())){
+            purchasePlanDetail.setState("0");
+            this.update(purchasePlanDetail);
+            purchasePlanService.updateState(purchasePlanDetail.getParentId());
+        }
         return model;
     }
 
@@ -390,9 +392,11 @@ public class PurchasePlanDetailServiceImp implements PurchasePlanDetailService {
             return model;
         }
         PurchasePlanDetail purchasePlanDetail = this.selectById(id);
-        purchasePlanDetail.setState("-1");
-        this.update(purchasePlanDetail);
-        purchasePlanService.updateState(purchasePlanDetail.getParentId());
+        if(purchasePlanDetail!=null&&"0".equals(purchasePlanDetail.getState())){
+            purchasePlanDetail.setState("-1");
+            this.update(purchasePlanDetail);
+            purchasePlanService.updateState(purchasePlanDetail.getParentId());
+        }
         return model;
     }
 }

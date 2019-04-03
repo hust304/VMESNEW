@@ -447,9 +447,10 @@ public class PurchasePlanServiceImp implements PurchasePlanService {
         pageData.put("updateStr"," state = '-1' ");
         purchasePlanDetailService.updateByDefined(pageData);
 
-        PurchasePlan purchasePlan = this.selectById(id);
-        purchasePlan.setState("-1");
-        this.update(purchasePlan);
+//        PurchasePlan purchasePlan = this.selectById(id);
+//        purchasePlan.setState("-1");
+//        this.update(purchasePlan);
+        this.updateState(id);
         return model;
     }
 
@@ -462,13 +463,14 @@ public class PurchasePlanServiceImp implements PurchasePlanService {
             model.putMsg("主键ID为空，请求数据异常，请重新操作！");
             return model;
         }
-        pageData.put("queryStr"," parent_id = '"+id+"' ");
+        pageData.put("queryStr"," parent_id = '"+id+"'  and state = '-1'  ");
         pageData.put("updateStr"," state = '0' ");
         purchasePlanDetailService.updateByDefined(pageData);
 
-        PurchasePlan purchasePlan = this.selectById(id);
-        purchasePlan.setState("0");
-        this.update(purchasePlan);
+//        PurchasePlan purchasePlan = this.selectById(id);
+//        purchasePlan.setState("0");
+//        this.update(purchasePlan);
+        this.updateState(id);
         return model;
     }
 
@@ -497,13 +499,14 @@ public class PurchasePlanServiceImp implements PurchasePlanService {
             model.putMsg("主键ID为空，请求数据异常，请重新操作！");
             return model;
         }
-        pageData.put("queryStr"," parent_id = '"+id+"' ");
+        pageData.put("queryStr"," parent_id = '"+id+"' and state in ('1','2')  ");
         pageData.put("updateStr"," state = '0' ");
         purchasePlanDetailService.updateByDefined(pageData);
 
-        PurchasePlan purchasePlan = this.selectById(id);
-        purchasePlan.setState("0");
-        this.update(purchasePlan);
+//        PurchasePlan purchasePlan = this.selectById(id);
+//        purchasePlan.setState("0");
+//        this.update(purchasePlan);
+        this.updateState(id);
         return model;
     }
 
@@ -517,10 +520,10 @@ public class PurchasePlanServiceImp implements PurchasePlanService {
             return model;
         }
 
-        pageData.put("queryStr"," id in ('"+ids+"') ");
+        pageData.put("queryStr"," id in ('"+ids+"')  and state = '0' ");
         pageData.put("updateStr"," state = '1' ");
         this.updateByDefined(pageData);
-        pageData.put("queryStr"," parent_id in ('"+ids+"') ");
+        pageData.put("queryStr"," parent_id in ('"+ids+"')  and state = '0' ");
         pageData.put("updateStr"," state = '1' ");
         purchasePlanDetailService.updateByDefined(pageData);
         return model;
@@ -536,10 +539,10 @@ public class PurchasePlanServiceImp implements PurchasePlanService {
             return model;
         }
 
-        pageData.put("queryStr"," id in ('"+ids+"') ");
+        pageData.put("queryStr"," id in ('"+ids+"')  and state = '1' ");
         pageData.put("updateStr"," state = '2' ");
         this.updateByDefined(pageData);
-        pageData.put("queryStr"," parent_id in ('"+ids+"') ");
+        pageData.put("queryStr"," parent_id in ('"+ids+"') and state = '1'  ");
         pageData.put("updateStr"," state = '2' ");
         purchasePlanDetailService.updateByDefined(pageData);
         return model;

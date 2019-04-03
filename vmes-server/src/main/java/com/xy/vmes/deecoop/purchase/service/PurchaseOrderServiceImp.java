@@ -52,6 +52,10 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService {
     private PurchaseSignDetailService purchaseSignDetailService;
     @Autowired
     private FileService fileService;
+    @Autowired
+    private PurchasePlanDetailService purchasePlanDetailService;
+    @Autowired
+    private PurchasePlanService purchasePlanService;
     /**
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2019-03-05
@@ -368,9 +372,35 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService {
             model.putMsg("主键ID为空，请求数据异常，请重新操作！");
             return model;
         }
-        Map columnMap = new HashMap();
-        columnMap.put("parent_id",id);
-        purchaseOrderDetailService.deleteByColumnMap(columnMap);
+
+        PageData pd = new PageData();
+        pd.put("queryStr"," parent_id = '"+id+"' ");
+        List<PurchaseOrderDetail> purchaseOrderDetailList = purchaseOrderDetailService.dataList(pd);
+        if(purchaseOrderDetailList!=null&&purchaseOrderDetailList.size()>0) {
+            for (int i = 0; i < purchaseOrderDetailList.size(); i++) {
+                PurchaseOrderDetail purchaseOrderDetail = purchaseOrderDetailList.get(i);
+                if("0".equals(purchaseOrderDetail.getState())){
+                    String planDetailId = purchaseOrderDetail.getPlanId();
+                    if(!StringUtils.isEmpty(planDetailId)){
+                        PurchasePlanDetail purchasePlanDetail = purchasePlanDetailService.selectById(planDetailId);
+                        //(0:待提交 1:待审核 2:待执行 3:执行中 4:已完成 -1:已取消)
+                        if(purchasePlanDetail!=null&&"3".equals(purchasePlanDetail.getState())){
+                            purchasePlanDetail.setState("2");
+                            purchasePlanDetailService.update(purchasePlanDetail);
+                            purchasePlanService.updateState(purchasePlanDetail.getParentId());
+                        }
+                    }
+                    purchaseOrderDetailService.deleteById(id);
+                }
+                if("-1".equals(purchaseOrderDetail.getState())){
+                    purchaseOrderDetailService.deleteById(id);
+                }
+            }
+        }
+
+//        Map columnMap = new HashMap();
+//        columnMap.put("parent_id",id);
+//        purchaseOrderDetailService.deleteByColumnMap(columnMap);
         this.deleteById(id);
         return model;
     }
@@ -384,13 +414,42 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService {
             model.putMsg("主键ID为空，请求数据异常，请重新操作！");
             return model;
         }
-        pageData.put("queryStr"," parent_id = '"+id+"' ");
-        pageData.put("updateStr"," state = '0' ");
-        purchaseOrderDetailService.updateByDefined(pageData);
 
-        PurchaseOrder purchaseOrder = this.selectById(id);
-        purchaseOrder.setState("0");
-        this.update(purchaseOrder);
+
+
+        PageData pd = new PageData();
+        pd.put("queryStr"," parent_id = '"+id+"' ");
+        List<PurchaseOrderDetail> purchaseOrderDetailList = purchaseOrderDetailService.dataList(pd);
+        if(purchaseOrderDetailList!=null&&purchaseOrderDetailList.size()>0){
+            for(int i=0;i<purchaseOrderDetailList.size();i++){
+                PurchaseOrderDetail purchaseOrderDetail = purchaseOrderDetailList.get(i);
+                if(purchaseOrderDetail!=null){
+                    String planDetailId = purchaseOrderDetail.getPlanId();
+                    if(!StringUtils.isEmpty(planDetailId)){
+                        PurchasePlanDetail purchasePlanDetail = purchasePlanDetailService.selectById(planDetailId);
+                        if(purchasePlanDetail!=null&&"2".equals(purchasePlanDetail.getState())){
+                            //(0:待提交 1:待审核 2:采购中 3:部分签收 4:已完成 -1:已取消)
+                            purchaseOrderDetail.setState("0");
+                            purchaseOrderDetailService.update(purchaseOrderDetail);
+                            //(0:待提交 1:待审核 2:待执行 3:执行中 4:已完成 -1:已取消)
+                            purchasePlanDetail.setState("3");
+                            purchasePlanDetailService.update(purchasePlanDetail);
+                            purchasePlanService.updateState(purchasePlanDetail.getParentId());
+                        }
+                    }
+                }
+            }
+        }
+
+//        pageData.put("queryStr"," parent_id = '"+id+"' ");
+//        pageData.put("updateStr"," state = '0' ");
+//        purchaseOrderDetailService.updateByDefined(pageData);
+
+//        PurchaseOrder purchaseOrder = this.selectById(id);
+//        purchaseOrder.setState("0");
+//        this.update(purchaseOrder);
+        this.updateState(id);
+
         return model;
     }
 
@@ -403,13 +462,36 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService {
             model.putMsg("主键ID为空，请求数据异常，请重新操作！");
             return model;
         }
-        pageData.put("queryStr"," parent_id = '"+id+"' ");
+        pageData.put("queryStr"," parent_id = '"+id+"'  and state = '0'  ");
         pageData.put("updateStr"," state = '-1' ");
         purchaseOrderDetailService.updateByDefined(pageData);
 
-        PurchaseOrder purchaseOrder = this.selectById(id);
-        purchaseOrder.setState("-1");
-        this.update(purchaseOrder);
+//        PurchaseOrder purchaseOrder = this.selectById(id);
+//        purchaseOrder.setState("-1");
+//        this.update(purchaseOrder);
+        this.updateState(id);
+
+        PageData pd = new PageData();
+        pd.put("queryStr"," parent_id = '"+id+"' ");
+        List<PurchaseOrderDetail> purchaseOrderDetailList = purchaseOrderDetailService.dataList(pd);
+        if(purchaseOrderDetailList!=null&&purchaseOrderDetailList.size()>0){
+            for(int i=0;i<purchaseOrderDetailList.size();i++){
+                PurchaseOrderDetail purchaseOrderDetail = purchaseOrderDetailList.get(i);
+                if(purchaseOrderDetail!=null){
+                    String planDetailId = purchaseOrderDetail.getPlanId();
+                    if(!StringUtils.isEmpty(planDetailId)){
+                        PurchasePlanDetail purchasePlanDetail = purchasePlanDetailService.selectById(planDetailId);
+                        //(0:待提交 1:待审核 2:待执行 3:执行中 4:已完成 -1:已取消)
+                        purchasePlanDetail.setState("2");
+                        purchasePlanDetailService.update(purchasePlanDetail);
+                        purchasePlanService.updateState(purchasePlanDetail.getParentId());
+                    }
+                }
+            }
+        }
+
+
+
         return model;
     }
 
@@ -423,10 +505,10 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService {
             return model;
         }
 
-        pageData.put("queryStr"," id in ('"+ids+"') ");
+        pageData.put("queryStr"," id in ('"+ids+"') and state = '0' ");
         pageData.put("updateStr"," state = '1' ");
         this.updateByDefined(pageData);
-        pageData.put("queryStr"," parent_id in ('"+ids+"') ");
+        pageData.put("queryStr"," parent_id in ('"+ids+"') and state = '0' ");
         pageData.put("updateStr"," state = '1' ");
         purchaseOrderDetailService.updateByDefined(pageData);
         return model;
@@ -442,10 +524,10 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService {
             return model;
         }
 
-        pageData.put("queryStr"," id in ('"+ids+"') ");
+        pageData.put("queryStr"," id in ('"+ids+"')  and state = '1' ");
         pageData.put("updateStr"," state = '2' ");
         this.updateByDefined(pageData);
-        pageData.put("queryStr"," parent_id in ('"+ids+"') ");
+        pageData.put("queryStr"," parent_id in ('"+ids+"')  and state = '1' ");
         pageData.put("updateStr"," state = '2' ");
         purchaseOrderDetailService.updateByDefined(pageData);
         return model;
@@ -460,13 +542,14 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService {
             model.putMsg("主键ID为空，请求数据异常，请重新操作！");
             return model;
         }
-        pageData.put("queryStr"," parent_id = '"+id+"' ");
+        pageData.put("queryStr"," parent_id = '"+id+"' and state in ('1','2') ");
         pageData.put("updateStr"," state = '0' ");
         purchaseOrderDetailService.updateByDefined(pageData);
 
-        PurchaseOrder purchaseOrder = this.selectById(id);
-        purchaseOrder.setState("0");
-        this.update(purchaseOrder);
+//        PurchaseOrder purchaseOrder = this.selectById(id);
+//        purchaseOrder.setState("0");
+//        this.update(purchaseOrder);
+        this.updateState(id);
         return model;
     }
 
@@ -547,11 +630,16 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService {
 
                 PurchaseOrderDetail purchaseOrderDetail = purchaseOrderDetailService.selectById(orderDetailId);
                 purchaseOrderId = purchaseOrderDetail.getParentId();
+                String planDetailId = purchaseOrderDetail.getPlanId();
+                PurchasePlanDetail purchasePlanDetail = purchasePlanDetailService.selectById(planDetailId);
                 BigDecimal arriveCount = purchaseOrderDetail.getArriveCount().add(warehouseInDetail.getCount());
                 purchaseOrderDetail.setArriveCount(arriveCount);
                 if(arriveCount.compareTo(BigDecimal.ZERO)>=0){
                     if(arriveCount.compareTo(purchaseOrderDetail.getCount())>=0){
                         purchaseOrderDetail.setState("4");
+                        if(purchasePlanDetail!=null){
+                            purchasePlanDetail.setState("4");
+                        }
                     }else{
                         purchaseOrderDetail.setState("3");
                     }
@@ -559,6 +647,11 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService {
                     purchaseOrderDetail.setState("2");
                 }
                 purchaseOrderDetailService.update(purchaseOrderDetail);
+                if(purchasePlanDetail!=null){
+                    purchasePlanDetailService.update(purchasePlanDetail);
+                    purchasePlanService.updateState(purchasePlanDetail.getParentId());
+                }
+
             }
         }
         this.updateState(purchaseOrderId);
@@ -597,11 +690,20 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService {
                 Map<String, String> detailMap = mapList.get(i);
                 PurchaseOrderDetail purchaseOrderDetail = (PurchaseOrderDetail) HttpUtils.pageData2Entity(detailMap, new PurchaseOrderDetail());
                 purchaseOrderDetail.setParentId(purchaseOrder.getId());
-                //(0:待提交 1:待审核 2:采购中 3:已完成 -1:已取消)
+                //(0:待提交 1:待审核 2:采购中 3:部分签收 4:已完成 -1:已取消)
                 purchaseOrderDetail.setState("0");
                 purchaseOrderDetail.setCuser(purchaseOrder.getCuser());
                 purchaseOrderDetail.setUuser(purchaseOrder.getUuser());
                 purchaseOrderDetailService.save(purchaseOrderDetail);
+                String planDetailId = purchaseOrderDetail.getPlanId();
+                if(!StringUtils.isEmpty(planDetailId)){
+                    PurchasePlanDetail purchasePlanDetail = purchasePlanDetailService.selectById(planDetailId);
+                    //(0:待提交 1:待审核 2:待执行 3:执行中 4:已完成 -1:已取消)
+                    purchasePlanDetail.setState("3");
+                    purchasePlanDetailService.update(purchasePlanDetail);
+                    purchasePlanService.updateState(purchasePlanDetail.getParentId());
+                }
+
             }
         }
         return model;
