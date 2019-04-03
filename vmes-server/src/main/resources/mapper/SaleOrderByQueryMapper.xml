@@ -68,7 +68,10 @@
 
         <!--发货金额-发货明细表汇总(1:已发货)-->
         round(ifnull(deliverDtl.deliverSum, 0), 2) deliverSum,
-        round((ifnull(deliverDtl.deliverSum, 0) - ifnull(saleOrder.advance_sum, 0)), 2) receivables
+        round((ifnull(deliverDtl.deliverSum, 0) - ifnull(saleOrder.advance_sum, 0)), 2) receivables,
+
+        <!--开票状态(未开票,开票中,开票完成)-->
+        invoiceOrderTable.isInvoice
 
         from vmes_sale_order saleOrder
         left join vmes_customer customer on saleOrder.customer_id = customer.id
@@ -85,6 +88,59 @@
             where state = '1'
             group by order_id
         ) deliverDtl on saleOrder.id = deliverDtl.order_id
+
+        <!--(订单id)汇总开票数量 模块查询条件-->
+        left join (
+            select
+                orderCount.orderId,
+                <!--汇总订购数量-->
+                round(ifnull(orderCount.order_count, 0),2) orderCount,
+                <!--汇总开票数量-->
+                round(ifnull(invoiceOrder.order_count, 0),2) invoiceCount,
+                CASE
+                  <!--未开票: 开票数量 = 0 -->
+                  WHEN ifnull(invoiceOrder.order_count, 0) = 0 THEN '未开票'
+                  <!--开票中: 开票数量 > 0 and (开票数量 < 订购数量)-->
+                  WHEN ifnull(invoiceOrder.order_count, 0) <![CDATA[>]]> 0 and (ifnull(invoiceOrder.order_count, 0) <![CDATA[<]]> ifnull(orderCount.order_count, 0)) THEN '开票中'
+                  <!--开票完成: (开票数量 >= 订购数量)-->
+                  WHEN ifnull(invoiceOrder.order_count, 0) <![CDATA[>=]]> ifnull(orderCount.order_count, 0) THEN '开票完成'
+                ELSE null
+                END isInvoice
+            from (
+                <!--(订单id)汇总订购数量-->
+                select parent_id orderId, sum(order_count) order_count
+                from vmes_sale_order_detail
+                where parent_id in (
+                    select id
+                    from vmes_sale_order
+                    <where>
+                        <if test="currentCompanyId != null and currentCompanyId != ''">
+                            and company_id = #{currentCompanyId}
+                        </if>
+                        and state <![CDATA[<>]]> '-1'
+                    </where>
+                )
+                group by parent_id
+            ) orderCount
+                left join (
+                    <!--(订单id)汇总开票数量-->
+                    select orderDtl.parent_id orderId, sum(invoice.count) order_count
+                    from (
+                        select order_detail_id,count
+                        from vmes_sale_invoice_detail
+                        where parent_id in (
+                            select id
+                            from vmes_sale_invoice
+                            <where>
+                                <if test="currentCompanyId != null and currentCompanyId != ''" >
+                                    and company_id = #{currentCompanyId}
+                                </if>
+                            </where>
+                        ) and state <![CDATA[<>]]> '-1'
+                    ) invoice left join vmes_sale_order_detail orderDtl on invoice.order_detail_id = orderDtl.id
+                    group by orderDtl.parent_id
+                ) invoiceOrder on orderCount.orderId = invoiceOrder.orderId
+        ) invoiceOrderTable on saleOrder.id = invoiceOrderTable.orderId
 
         <where>
             <if test="currentCompanyId != null and currentCompanyId != ''" >
