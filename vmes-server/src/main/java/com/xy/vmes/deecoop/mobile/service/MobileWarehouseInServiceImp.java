@@ -33,13 +33,31 @@ public class MobileWarehouseInServiceImp implements MobileWarehouseInService {
     ///////////////////////////////////////////////////////////////////////////////
     public ResultModel findWarehouseIn(PageData pd) throws Exception {
         ResultModel model = new ResultModel();
-        List<Map> varList = mobileWarehouseInMapper.findWarehouseIn(pd);
-        if(varList!=null&&varList.size()>0){
-            model.putResult(varList.get(0));
-        }else {
+
+        String inDtlId = pd.getString("detailId");
+        if (inDtlId == null || inDtlId.trim().length() == 0) {
+            model.putCode("1");
+            model.putMsg("入库明细id为空或空字符串！");
+            return model;
+        }
+
+        //入库明细id-获取该入库明细id详情
+        PageData findMap = new PageData();
+        findMap.put("detailId", inDtlId);
+        List<Map> varList = mobileWarehouseInMapper.findWarehouseIn(findMap);
+        if (varList == null || varList.size() == 0) {
             model.putCode("1");
             model.putMsg("未查到任何数据！");
+            return model;
         }
+        model.putResult(varList.get(0));
+
+        //入库明细id-获取该入库执行列表
+        findMap = new PageData();
+        findMap.put("detailId", inDtlId);
+        List<Map> executeCountList = mobileWarehouseInMapper.listWarehouseInExecuteCount(findMap);
+        model.put("executeCountList",executeCountList);
+
         return model;
     }
 

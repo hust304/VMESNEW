@@ -18,6 +18,7 @@ public interface MobileWarehouseInMapper {
 
     //获得入库任务详细信息
     List<Map> findWarehouseIn(PageData pd);
+    List<Map> listWarehouseInExecuteCount(PageData pd);
 
 }
 

@@ -140,8 +140,14 @@ public class Common {
         put("WarehouseController", "仓库配置");
         put("WarehouseInitialController", "仓库初始化");
         put("WarehouseCheckController", "盘点单");
-        put("WarehouseMoveController", "移库管理");
+        put("WarehouseCheckExecutorController", "盘点单-派单");
+        put("WarehouseCheckExecuteController", "盘点单执行");
+
         put("WarehouseInController", "入库管理");
+        put("WarehouseInExecutorController", "入库派单");
+        put("WarehouseInExecuteController", "入库执行");
+
+        put("WarehouseMoveController", "移库管理");
         put("WarehouseOutController", "出库管理");
 
         //销售

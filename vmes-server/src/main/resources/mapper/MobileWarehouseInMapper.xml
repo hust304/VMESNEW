@@ -51,5 +51,18 @@
         </where>
     </select>
 
+    <select id="listWarehouseInExecuteCount" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+            round(ifnull(inExecute.count,0),2) executeCount,
+            warehouse.path_name pathName
+        from vmes_warehouse_in_execute inExecute
+            left join vmes_warehouse warehouse on inExecute.warehouse_id = warehouse.id
+        <where>
+            <if test="detailId != null and detailId != ''" >
+                and inExecute.detail_id = #{detailId}
+            </if>
+        </where>
+    </select>
+
 
 </mapper>
