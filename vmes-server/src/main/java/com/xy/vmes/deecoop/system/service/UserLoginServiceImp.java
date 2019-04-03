@@ -278,22 +278,24 @@ public class UserLoginServiceImp implements UserLoginService {
             }
 
             List<Map<String, String>> roleMenuList = new ArrayList<Map<String, String>>();
-            for (Map<String, Object> mapObject : menuMapList) {
-                Map<String, String> menuMap = new HashMap<String, String>();
+            if (menuMapList != null && menuMapList.size() > 0) {
+                for (Map<String, Object> mapObject : menuMapList) {
+                    Map<String, String> menuMap = new HashMap<String, String>();
 
-                String name = new String();
-                if (mapObject.get("name") != null && mapObject.get("name").toString().trim().length() > 0) {
-                    name = mapObject.get("name").toString().trim();
+                    String name = new String();
+                    if (mapObject.get("name") != null && mapObject.get("name").toString().trim().length() > 0) {
+                        name = mapObject.get("name").toString().trim();
+                    }
+                    menuMap.put("name", name);
+
+                    String url = new String();
+                    if (mapObject.get("url") != null && mapObject.get("url").toString().trim().length() > 0) {
+                        url = mapObject.get("url").toString().trim();
+                    }
+                    menuMap.put("url", url);
+
+                    roleMenuList.add(menuMap);
                 }
-                menuMap.put("name", name);
-
-                String url = new String();
-                if (mapObject.get("url") != null && mapObject.get("url").toString().trim().length() > 0) {
-                    url = mapObject.get("url").toString().trim();
-                }
-                menuMap.put("url", url);
-
-                roleMenuList.add(menuMap);
             }
 
             String appMenuJson = new String();
