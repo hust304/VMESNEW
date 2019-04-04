@@ -212,7 +212,7 @@
         cuser
         ) VALUES
             (replace(uuid(), '-', ''),'WarehouseOut','companyId','企业ID-组织架构',1, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseOut','code','出库单编码',2, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'WarehouseOut','code','出库单号',2, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'WarehouseOut','type','出库类型ID',3, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'WarehouseOut','typeName','出库类型',3, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'WarehouseOut','warehouseName','仓库',4, '1','1','1','0',now(), 'admin'),
@@ -221,10 +221,10 @@
             (replace(uuid(), '-', ''),'WarehouseOut','deptName','接收单位',6, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'WarehouseOut','makeName','制单人',7, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'WarehouseOut','makeId','制单人ID',7, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseOut','state','状态',8, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseOut','stateName','状态',8, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseOut','cuser','创建用户id',9, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseOut','cdate','制单时间',10, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'WarehouseOut','cdate','制单时间',8, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'WarehouseOut','cuser','创建用户id',8, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'WarehouseOut','state','状态',9, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'WarehouseOut','stateName','状态',9, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'WarehouseOut','uuser','修改用户id',11, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'WarehouseOut','udate','修改时间',12, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'WarehouseOut','remark','备注',13, '1','0','1','0',now(), 'admin'),

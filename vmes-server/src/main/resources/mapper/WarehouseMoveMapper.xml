@@ -180,7 +180,7 @@
         cuser
         ) VALUES
             (replace(uuid(), '-', ''),'WarehouseMove','companyId','企业ID-组织架构',1, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseMove','code','移库单编码',2, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'WarehouseMove','code','移库单号',2, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'WarehouseMove','type','操作类型ID',3, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'WarehouseMove','typeName','操作类型',3, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'WarehouseMove','warehouseName','目标库位',4, '1','1','1','0',now(), 'admin'),
