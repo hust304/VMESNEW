@@ -139,6 +139,7 @@ public interface UserService {
 
     User findUser(PageData object);
     User findUserById(String id);
+    Boolean isExistUserByUserCode(String id, String userCode);
 
     List<User> findUserList(PageData object);
 

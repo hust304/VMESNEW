@@ -333,6 +333,24 @@ public class UserServiceImp implements UserService {
         return this.findUser(findMap);
     }
 
+    public Boolean isExistUserByUserCode(String id, String userCode) {
+        if (userCode == null || userCode.trim().length() == 0) {return Boolean.FALSE;}
+
+        PageData findMap = new PageData();
+        if (id != null && id.trim().length() > 0) {
+            findMap.put("id", id);
+        }
+        findMap.put("userCode", userCode);
+        findMap.put("isSelfExist", "true");
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+        List<User> userList = this.findUserList(findMap);
+        if (userList != null && userList.size() > 0) {
+            return Boolean.TRUE;
+        }
+
+        return Boolean.FALSE;
+    }
+
     public List<User> findUserList(PageData object) {
         if (object == null) {return null;}
 
@@ -469,7 +487,8 @@ public class UserServiceImp implements UserService {
         }
 
         //设置用户编码
-        if(StringUtils.isEmpty(user.getUserCode())){
+        String userCode = user.getUserCode();
+        if(userCode == null || userCode.trim().length() == 0){
             String code = coderuleService.createCoder(companyId,"vmes_user");
             if(StringUtils.isEmpty(code)){
                 model.putCode(4);
@@ -477,6 +496,13 @@ public class UserServiceImp implements UserService {
                 return model;
             }
             user.setUserCode(code);
+        } else if (userCode != null && userCode.trim().length() > 0) {
+            //验证账号系统中是否唯一
+            if (this.isExistUserByUserCode(null, userCode.trim())) {
+                model.putCode(1);
+                model.putMsg("账号(" +userCode.trim()+ ")在系统中已经存在，账号运用于系统登录必须唯一，请重新设置账号！");
+                return model;
+            }
         }
 
         //D. 验证企业用户数
@@ -526,6 +552,7 @@ public class UserServiceImp implements UserService {
             employee.setIsOpenUser("1");
             employeeService.update(employee);
         }
+
         return model;
     }
 
