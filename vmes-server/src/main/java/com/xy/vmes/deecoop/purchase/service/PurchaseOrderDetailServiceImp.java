@@ -451,7 +451,7 @@ public class PurchaseOrderDetailServiceImp implements PurchaseOrderDetailService
             return model;
         }
         PurchaseOrderDetail purchaseOrderDetail = this.selectById(id);
-        if(purchaseOrderDetail!=null&&"0".equals(purchaseOrderDetail.getState())){
+        if(purchaseOrderDetail!=null&&("0".equals(purchaseOrderDetail.getState())||"2".equals(purchaseOrderDetail.getState()))){
             purchaseOrderDetail.setState("-1");
             this.update(purchaseOrderDetail);
             purchaseOrderService.updateState(purchaseOrderDetail.getParentId());

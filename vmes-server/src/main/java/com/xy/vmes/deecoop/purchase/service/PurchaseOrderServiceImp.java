@@ -462,7 +462,7 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService {
             model.putMsg("主键ID为空，请求数据异常，请重新操作！");
             return model;
         }
-        pageData.put("queryStr"," parent_id = '"+id+"'  and state = '0'  ");
+        pageData.put("queryStr"," parent_id = '"+id+"'  and state in ('0','2')  ");
         pageData.put("updateStr"," state = '-1' ");
         purchaseOrderDetailService.updateByDefined(pageData);
 
@@ -542,7 +542,7 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService {
             model.putMsg("主键ID为空，请求数据异常，请重新操作！");
             return model;
         }
-        pageData.put("queryStr"," parent_id = '"+id+"' and state in ('1','2') ");
+        pageData.put("queryStr"," parent_id = '"+id+"' and state = '1' ");
         pageData.put("updateStr"," state = '0' ");
         purchaseOrderDetailService.updateByDefined(pageData);
 
