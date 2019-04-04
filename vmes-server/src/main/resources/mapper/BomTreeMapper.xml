@@ -357,6 +357,9 @@
             <if test="layer != null and layer != ''">
                 and tree.layer = #{layer}
             </if>
+            <if test="prodId != null and prodId != ''">
+                and tree.parent_prod_id = #{prodId}
+            </if>
             <if test="parentProdId != null and parentProdId != ''">
                 and tree.parent_prod_id = #{parentProdId}
             </if>
@@ -391,7 +394,7 @@
                 and product.name LIKE CONCAT(CONCAT('%', #{name}),'%')
             </if>
             <if test="prodId != null and prodId != ''">
-                and (tree.prod_id = #{prodId}  or tree.parent_prod_id = #{prodId})
+                and tree.parent_prod_id = #{prodId}
             </if>
             <if test="bomId != null and bomId != ''">
                 and tree.bom_id = #{bomId}

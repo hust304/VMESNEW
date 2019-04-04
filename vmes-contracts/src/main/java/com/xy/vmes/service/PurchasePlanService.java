@@ -176,6 +176,8 @@ public interface PurchasePlanService {
     ResultModel auditPurchasePlan(PageData pageData) throws Exception;
 
     ResultModel rebackPurchasePlan(PageData pageData) throws Exception;
+
+    ResultModel checkPurchasePlan(PageData pageData) throws Exception;
 }
 
 

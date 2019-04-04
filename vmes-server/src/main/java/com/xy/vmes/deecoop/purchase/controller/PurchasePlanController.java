@@ -297,6 +297,25 @@ public class PurchasePlanController {
         logger.info("################/purchase/purchasePlan/rebackPurchasePlan 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
+
+    /**
+     * 新增采购计划校验
+     * @author 刘威
+     * @date 2018-10-16
+     * @throws Exception
+     */
+    @PostMapping("/purchase/purchasePlan/checkPurchasePlan")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel checkPurchasePlan() throws Exception {
+        logger.info("################/purchase/purchasePlan/checkPurchasePlan 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pageData = HttpUtils.parsePageData();
+        ResultModel model = purchasePlanService.checkPurchasePlan(pageData);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/purchase/purchasePlan/checkPurchasePlan 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
 }
 
 

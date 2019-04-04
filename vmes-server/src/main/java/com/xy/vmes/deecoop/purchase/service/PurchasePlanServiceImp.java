@@ -353,6 +353,37 @@ public class PurchasePlanServiceImp implements PurchasePlanService {
     }
 
     @Override
+    public ResultModel checkPurchasePlan(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+        String prodIds = pageData.getString("prodIds");
+        pageData.put("queryStr"," detail.product_id in ("+prodIds+") and detail.state in ('0','1','2','3') ");
+        List<Map> purchasePlanDetailList = purchasePlanDetailService.getDataList(pageData);
+        String productNames = "";
+        if(purchasePlanDetailList!=null&&purchasePlanDetailList.size()>0){
+            for(int i=0;i<purchasePlanDetailList.size();i++){
+                Map purchasePlanDetail = purchasePlanDetailList.get(i);
+                if(purchasePlanDetail!=null&&purchasePlanDetail.get("productName")!=null){
+                   String productName = (String)purchasePlanDetail.get("productName");
+                   if(!StringUtils.isEmpty(productName)){
+                       if(StringUtils.isEmpty(productNames)){
+                           productNames = productName;
+                       }else {
+                           if(productNames.indexOf(productName)<0){
+                               productNames = productNames +","+ productName;
+                           }
+                       }
+                   }
+                }
+            }
+        }
+
+        if(!StringUtils.isEmpty(productNames)){
+            model.putMsg("货品（"+productNames+"）已在采购计划中，是否继续？");
+        }
+        return model;
+    }
+
+    @Override
     public ResultModel addPurchasePlan(PageData pd) throws Exception {
         ResultModel model = new ResultModel();
         PurchasePlan purchasePlan = (PurchasePlan)HttpUtils.pageData2Entity(pd, new PurchasePlan());
@@ -388,6 +419,7 @@ public class PurchasePlanServiceImp implements PurchasePlanService {
                 if(StringUtils.isEmpty(reasonId)){
                     purchasePlanDetail.setReason("350135d34d1b43aeb4e2977061632045");//齐套分析预采
                 }
+                purchasePlanDetail.getProductId();
                 //(0:待提交 1:待审核 2:待执行 3:执行中 4:已完成 -1:已取消)
                 purchasePlanDetail.setState("0");
                 purchasePlanDetail.setCuser(purchasePlan.getCuser());
