@@ -1225,8 +1225,13 @@ public class DepartmentServiceImp implements DepartmentService {
             deptDB.setSerialNumber(Integer.valueOf(maxCount.intValue() + 1));
         }
 
-        deptDB.setRemark(deptObj.getRemark());
+        deptDB.setRemark("");
+        if (deptObj.getRemark() != null && deptObj.getRemark().trim().length() > 0) {
+            deptDB.setRemark(deptObj.getRemark().trim());
+        }
+
         this.update(deptDB);
+
         return model;
     }
 

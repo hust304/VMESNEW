@@ -416,6 +416,11 @@ public class EmployeeServiceImp implements EmployeeService {
         employee.setId(employeeId);
         mobile = mobile.trim();
         employee.setMobile(mobile);
+
+        if (employee.getRemark() == null || employee.getRemark().trim().length() == 0) {
+            employee.setRemark("");
+        }
+
         employeeService.update(employee);
 
         //获取员工主岗信息，找到当前员工所在部门

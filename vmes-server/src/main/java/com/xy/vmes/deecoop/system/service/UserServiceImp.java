@@ -644,6 +644,11 @@ public class UserServiceImp implements UserService {
             //user_name:姓名->name:员工姓名
             user.setUserName(userName);
         }
+
+        if (user.getRemark() == null || user.getRemark().trim().length() == 0) {
+            user.setRemark("");
+        }
+
         this.update(user);
 
         return model;
@@ -842,6 +847,13 @@ public class UserServiceImp implements UserService {
         String fieldCode = pd.getString("fieldCode");
         if (fieldCode != null && fieldCode.trim().length() > 0) {
             columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
+        }
+
+        //默认isdisable:=1
+        pd.put("isdisable", Common.SYS_DEFAULT_ISDISABLE_1);
+        String isdisableByQuery = pd.getString("isdisableByQuery");
+        if (isdisableByQuery != null && isdisableByQuery.trim().length() > 0) {
+            pd.put("isdisable", isdisableByQuery);
         }
 
         List<LinkedHashMap> titlesList = new ArrayList<LinkedHashMap>();
