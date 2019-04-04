@@ -443,7 +443,7 @@ public class PurchasePlanServiceImp implements PurchasePlanService {
             model.putMsg("主键ID为空，请求数据异常，请重新操作！");
             return model;
         }
-        pageData.put("queryStr"," parent_id = '"+id+"' ");
+        pageData.put("queryStr"," parent_id = '"+id+"'  and state in ('0','2')  ");
         pageData.put("updateStr"," state = '-1' ");
         purchasePlanDetailService.updateByDefined(pageData);
 
@@ -499,7 +499,7 @@ public class PurchasePlanServiceImp implements PurchasePlanService {
             model.putMsg("主键ID为空，请求数据异常，请重新操作！");
             return model;
         }
-        pageData.put("queryStr"," parent_id = '"+id+"' and state in ('1','2')  ");
+        pageData.put("queryStr"," parent_id = '"+id+"' and state = '1'  ");
         pageData.put("updateStr"," state = '0' ");
         purchasePlanDetailService.updateByDefined(pageData);
 

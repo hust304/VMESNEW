@@ -392,7 +392,7 @@ public class PurchasePlanDetailServiceImp implements PurchasePlanDetailService {
             return model;
         }
         PurchasePlanDetail purchasePlanDetail = this.selectById(id);
-        if(purchasePlanDetail!=null&&"0".equals(purchasePlanDetail.getState())){
+        if(purchasePlanDetail!=null&&("0".equals(purchasePlanDetail.getState())||"2".equals(purchasePlanDetail.getState()))){
             purchasePlanDetail.setState("-1");
             this.update(purchasePlanDetail);
             purchasePlanService.updateState(purchasePlanDetail.getParentId());
