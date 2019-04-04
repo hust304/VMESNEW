@@ -143,8 +143,8 @@
             (replace(uuid(), '-', ''),'Bom','typeId','货品类型id',10, '1','0','1','0',now(), 'admin'),
 
             (replace(uuid(), '-', ''),'Bom','companyId','公司ID-组织架构',12, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'Bom','code','Bom编码',13, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'Bom','name','Bom名称',14, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'Bom','code','BOM编码',13, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'Bom','name','BOM名称',14, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'Bom','isdefault','是否默认',15, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'Bom','cuser','创建用户id',16, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'Bom','cdate','创建时间',17, '1','0','1','0',now(), 'admin'),
@@ -174,8 +174,8 @@
                 (replace(uuid(), '-', ''),'BomProduct','typeId','货品类型id',10, '1','0','1','0',now(), 'admin'),
 
                 (replace(uuid(), '-', ''),'BomProduct','companyId','公司ID-组织架构',12, '1','0','1','0',now(), 'admin'),
-                (replace(uuid(), '-', ''),'BomProduct','code','Bom编码',13, '1','1','1','0',now(), 'admin'),
-                (replace(uuid(), '-', ''),'BomProduct','name','Bom名称',14, '1','1','1','0',now(), 'admin'),
+                (replace(uuid(), '-', ''),'BomProduct','code','BOM编码',13, '1','1','1','0',now(), 'admin'),
+                (replace(uuid(), '-', ''),'BomProduct','name','BOM名称',14, '1','1','1','0',now(), 'admin'),
                 (replace(uuid(), '-', ''),'BomProduct','isdefault','是否默认',15, '1','0','1','0',now(), 'admin'),
                 (replace(uuid(), '-', ''),'BomProduct','cuser','创建用户id',16, '1','0','1','0',now(), 'admin'),
                 (replace(uuid(), '-', ''),'BomProduct','cdate','创建时间',17, '1','0','1','0',now(), 'admin'),
@@ -195,8 +195,8 @@
             ) VALUES
                 (replace(uuid(), '-', ''),'BomList','prodId','货品id',1, '1','0','1','0',now(), 'admin'),
                 (replace(uuid(), '-', ''),'BomList','companyId','公司ID-组织架构',12, '1','0','1','0',now(), 'admin'),
-                (replace(uuid(), '-', ''),'BomList','code','Bom编码',13, '1','1','1','0',now(), 'admin'),
-                (replace(uuid(), '-', ''),'BomList','name','Bom名称',14, '1','1','1','0',now(), 'admin'),
+                (replace(uuid(), '-', ''),'BomList','code','BOM编码',13, '1','1','1','0',now(), 'admin'),
+                (replace(uuid(), '-', ''),'BomList','name','BOM名称',14, '1','1','1','0',now(), 'admin'),
                 (replace(uuid(), '-', ''),'BomList','isdefault','是否默认',15, '1','1','1','0',now(), 'admin'),
                 (replace(uuid(), '-', ''),'BomList','cuser','创建用户id',16, '1','0','1','0',now(), 'admin'),
                 (replace(uuid(), '-', ''),'BomList','cdate','创建时间',17, '1','0','1','0',now(), 'admin'),
