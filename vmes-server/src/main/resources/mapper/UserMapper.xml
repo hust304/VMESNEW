@@ -448,11 +448,18 @@
         left join vmes_post post on post.id = employeepost.post_id
         left join vmes_department edepartment on edepartment.id = post.dept_id
         <where>
-            <if test="roleId!= null and roleId != ''"><!-- 关键词检索 -->
+            <if test="roleId!= null and roleId != ''">
                 and role.id = #{roleId}
             </if>
+            <if test="roleName!= null and roleName != ''">
+                and role.name = #{roleName}
+            </if>
+
             <if test="userType!= null and userType != ''"><!-- 关键词检索 -->
                 and vmesuser.user_type = #{userType}
+            </if>
+            <if test="userTypeName!= null and userTypeName != ''">
+                and usertype.name = #{userTypeName}
             </if>
 
             <if test="userCode!= null and userCode != ''"><!-- 关键词检索 -->
