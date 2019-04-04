@@ -610,7 +610,7 @@
                         <if test="outDetailId != null and outDetailId != ''" >
                             and a.detail_id = #{outDetailId}
                         </if>
-                        and b.stock_count > 0
+                        <!-- and b.stock_count > 0 -->
                     </where>
                     group by a.detail_id,b.warehouse_id,b.product_id
                 ) table_1
@@ -623,7 +623,7 @@
                         <if test="outDetailId != null and outDetailId != ''" >
                             and a.detail_id = #{outDetailId}
                         </if>
-                        and b.stock_count > 0
+                        <!-- and b.stock_count > 0 -->
                     </where>
                 ) table_2 on table_1.keyStr = table_2.keyStr
             ) warehouseProduct on a.id = warehouseProduct.detail_id

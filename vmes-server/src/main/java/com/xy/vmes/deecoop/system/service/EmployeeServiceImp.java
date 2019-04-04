@@ -908,6 +908,13 @@ public class EmployeeServiceImp implements EmployeeService {
             pd.put("postId", id);
         }
 
+        //默认isdisable:=1
+        pd.put("isdisable", Common.SYS_DEFAULT_ISDISABLE_1);
+        String isdisableByQuery = pd.getString("isdisableByQuery");
+        if (isdisableByQuery != null && isdisableByQuery.trim().length() > 0) {
+            pd.put("isdisable", isdisableByQuery);
+        }
+
         List<Map> varMapList = new ArrayList();
         List<Map> varList = employeeService.getDataListPage(pd, pg);
         if(varList!=null&&varList.size()>0){

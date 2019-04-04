@@ -1321,9 +1321,14 @@ public class DepartmentServiceImp implements DepartmentService {
             columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
         }
 
+        //默认isdisable:=1
+        pd.put("isdisable", Common.SYS_DEFAULT_ISDISABLE_1);
+        String isdisableByQuery = pd.getString("isdisableByQuery");
+        if (isdisableByQuery != null && isdisableByQuery.trim().length() > 0) {
+            pd.put("isdisable", isdisableByQuery);
+        }
+
         Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
-
-
         List<Map> varMapList = new ArrayList();
         List<Map> varList = this.getDataListPage(pd,pg);
         if(varList!=null&&varList.size()>0){

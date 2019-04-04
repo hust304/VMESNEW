@@ -894,6 +894,23 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
                 BigDecimal valueBig = EvaluateUtil.formulaReckon(formulaParmMap, n2pFormula);
                 mapObject.put("productStockCountByPrice", valueBig);
             }
+
+            //lockCount:锁定货品数量(计量单位)
+            BigDecimal lockCount = BigDecimal.valueOf(0D);
+            String lockCount_str = (String)mapObject.get("lockCount");
+            if (lockCount_str != null && lockCount_str.trim().length() > 0) {
+                try {
+                    lockCount = new BigDecimal(lockCount_str);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            mapObject.put("lockCountN2P", "0.00");
+            if (n2pFormula != null && lockCount != null) {
+                BigDecimal valueBig = EvaluateUtil.countFormulaN2P(lockCount, n2pFormula);
+                mapObject.put("lockCountN2P", valueBig.toString());
+            }
         }
 
         result.put("hideTitles",titleMap.get("hideTitles"));

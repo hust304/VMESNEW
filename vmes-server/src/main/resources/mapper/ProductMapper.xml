@@ -196,7 +196,10 @@
             (replace(uuid(), '-', ''),'product','id','id',0, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'product','safetyCount','安全库存',0, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'product','lockCount','lockCount',0, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'product','productStockCount','productStockCount',0, '1','1','1','0',now(), 'admin')
+            (replace(uuid(), '-', ''),'product','productStockCount','productStockCount',0, '1','1','1','0',now(), 'admin'),
+
+            (replace(uuid(), '-', ''),'product','n2pFormula','n2pFormula',0, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'product','p2nFormula','p2nFormula',0, '1','1','1','0',now(), 'admin')
     </insert>
 
 
@@ -307,7 +310,11 @@
             round((ifnull(prod.stock_count, 0) - ifnull(prod.lock_count, 0)), 2) productStockCount,
 
             prod.version version,
-            prod.isdisable isdisable
+            prod.isdisable isdisable,
+
+            <!--货品计量单位-->
+            produnit.np_formula n2pFormula,
+            produnit.pn_formula p2nFormula
 
         from vmes_product prod
             left join vmes_product_unit produnit on produnit.product_id = prod.id and produnit.type = 1

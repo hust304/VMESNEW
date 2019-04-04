@@ -13,6 +13,10 @@ public class Common {
     //库存变更 version 锁
     public final static String SYS_STOCKCOUNT_ERRORCODE = "0002";
 
+    //系统表默认 isdisable 值
+    public final static String SYS_DEFAULT_ISDISABLE_1 = "1";
+    public final static String SYS_DEFAULT_ISDISABLE_0 = "0";
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     public final static String REDIS_SECURITY_CODE = "securityCode";
     public final static String DEPARTMENT_ROOT_ID = "b6ff76cb95f711e884ad00163e105f05";
