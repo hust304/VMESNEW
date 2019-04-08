@@ -273,7 +273,6 @@ public class EmployeeServiceImp implements EmployeeService {
     }
 
     public boolean isExistByMobile(String id, String mobile) {
-        if (id == null || id.trim().length() == 0) {return false;}
         if (mobile == null || mobile.trim().length() == 0) {return false;}
 
         PageData findMap = new PageData();

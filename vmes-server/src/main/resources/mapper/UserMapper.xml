@@ -352,8 +352,17 @@
         employee.birthday employeeBirthday,
         employee.entry_date employeeEntryDate,
         employee.native_place employeeNativePlace,
-        case when employee.marital=0 then '未婚' else '已婚' end  employeeMarital,
-        case when employee.sex=0 then '女' else '男' end  employeeSex,
+        case
+          when employee.marital='0' then '未婚'
+          when employee.marital='1' then '已婚'
+        else null
+        end  employeeMarital,
+
+        case
+        when employee.sex='1' then '男'
+        when employee.sex='0' then '女'
+        else null
+        end  employeeSex,
         employee.identity_number employeeIdentityNumber,
         employee.cdate employeeCdate,
         employee.cuser employeeCuser,
