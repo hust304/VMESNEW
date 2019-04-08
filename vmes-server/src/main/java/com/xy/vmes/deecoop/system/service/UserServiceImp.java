@@ -645,8 +645,10 @@ public class UserServiceImp implements UserService {
             user.setUserName(userName);
         }
 
-        if (user.getRemark() == null || user.getRemark().trim().length() == 0) {
-            user.setRemark("");
+        user.setRemark("");
+        String remark = pd.getString("remark");
+        if (remark != null && remark.trim().length() > 0) {
+            user.setRemark(remark);
         }
 
         this.update(user);
