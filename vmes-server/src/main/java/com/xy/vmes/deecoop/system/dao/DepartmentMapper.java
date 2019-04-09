@@ -84,6 +84,8 @@ public interface DepartmentMapper extends BaseMapper<Department> {
 	 */
 	List<TreeEntity> getTreeList(PageData pd);
 
+	List<Map<String, Object>> findDepartmentListByPathName(PageData pd);
+
 }
 
 

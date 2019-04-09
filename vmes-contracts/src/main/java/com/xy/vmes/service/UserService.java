@@ -5,6 +5,7 @@ import com.xy.vmes.entity.Employee;
 import com.xy.vmes.entity.User;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -182,6 +183,7 @@ public interface UserService {
     ResultModel listPageUsers(PageData pd,Pagination pg) throws Exception;
 
     void exportExcelUsers(PageData pd,Pagination pg) throws Exception;
+    ResultModel importExcelUser(MultipartFile file) throws Exception;
 }
 
 

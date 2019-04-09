@@ -161,6 +161,22 @@ public class DepartmentServiceImp implements DepartmentService {
         }
     }
 
+    public void implementDeptMapByCompanyId(String companyId) {
+        this.createDeptMap();
+        if (companyId == null || companyId.trim().length() == 0) {return;}
+
+        List<Map<String, Object>> mapList = this.findDepartmentListByDeptPathName(companyId);
+        if (mapList == null || mapList.size() == 0) {return;}
+        for (Map<String, Object> mapObject : mapList) {
+            String deptId = (String)mapObject.get("id");
+            String pathName = (String)mapObject.get("pathName");
+            if (pathName != null && pathName.trim().length() > 0) {
+                this.deptKeyNameMap.put(deptId, pathName);
+                this.deptNameKeyMap.put(pathName, deptId);
+            }
+        }
+    }
+
     /**
      * 创建人：刘威
      * 创建时间：2018-08-01
@@ -1489,6 +1505,94 @@ public class DepartmentServiceImp implements DepartmentService {
         //"Excel数据导入成功，共成功导入({0})条！"
         model.putMsg(MessageFormat.format("Excel数据导入成功，共成功导入({0})条！", excelList.size()));
         return model;
+    }
+
+    public List<Map<String, Object>> findDepartmentListByDeptPathName(String companyId) {
+        if (companyId == null || companyId.trim().length() == 0) {return null;}
+
+        PageData findMap = new PageData();
+        findMap.put("companyId", companyId);
+
+        List<Map<String, Object>> mapList = null;
+        try {
+            mapList = departmentMapper.findDepartmentListByPathName(findMap);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (mapList == null || mapList.size() == 0) {return null;}
+
+        for (Map<String, Object> mapObject : mapList) {
+            String pathId = new String();
+            String pathName = new String();
+
+            String did0 = (String)mapObject.get("did0");
+            if (did0 != null && did0.trim().length() > 0) {
+                pathId = pathId + did0 + "-";
+            }
+            String dname0 = (String)mapObject.get("dname0");
+            if (dname0 != null && dname0.trim().length() > 0) {
+                pathName = pathName + dname0 + "-";
+            }
+
+            String did1 = (String)mapObject.get("did1");
+            if (did1 != null && did1.trim().length() > 0) {
+                pathId = pathId + did1 + "-";
+            }
+            String dname1 = (String)mapObject.get("dname1");
+            if (dname1 != null && dname1.trim().length() > 0) {
+                pathName = pathName + dname1 + "-";
+            }
+
+            String did2 = (String)mapObject.get("did2");
+            if (did2 != null && did2.trim().length() > 0) {
+                pathId = pathId + did2 + "-";
+            }
+            String dname2 = (String)mapObject.get("dname2");
+            if (dname2 != null && dname2.trim().length() > 0) {
+                pathName = pathName + dname2 + "-";
+            }
+
+            String did3 = (String)mapObject.get("did3");
+            if (did3 != null && did3.trim().length() > 0) {
+                pathId = pathId + did3 + "-";
+            }
+            String dname3 = (String)mapObject.get("dname3");
+            if (dname3 != null && dname3.trim().length() > 0) {
+                pathName = pathName + dname3 + "-";
+            }
+
+            String did4 = (String)mapObject.get("did4");
+            if (did4 != null && did4.trim().length() > 0) {
+                pathId = pathId + did4 + "-";
+            }
+            String dname4 = (String)mapObject.get("dname4");
+            if (dname4 != null && dname4.trim().length() > 0) {
+                pathName = pathName + dname4 + "-";
+            }
+
+            String did5 = (String)mapObject.get("did5");
+            if (did5 != null && did5.trim().length() > 0) {
+                pathId = pathId + did5 + "-";
+            }
+            String dname5 = (String)mapObject.get("dname5");
+            if (dname5 != null && dname5.trim().length() > 0) {
+                pathName = pathName + dname5 + "-";
+            }
+
+            //去掉最后一个'-'
+            if (pathId.lastIndexOf("-") != -1) {
+                pathId = pathId.substring(0, pathId.lastIndexOf("-"));
+            }
+            mapObject.put("pathId", pathId);
+
+            //去掉最后一个'-'
+            if (pathName.lastIndexOf("-") != -1) {
+                pathName = pathName.substring(0, pathName.lastIndexOf("-"));
+            }
+            mapObject.put("pathName", pathName);
+        }
+
+        return mapList;
     }
 }
 

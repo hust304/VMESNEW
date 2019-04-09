@@ -19,10 +19,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -372,6 +370,21 @@ public class UserController {
 
     }
 
+    /**
+     * Excel导入
+     *
+     * @author 陈刚 自动创建，可以修改
+     * @date 2018-11-20
+     */
+    @PostMapping("/warehouse/user/importExcelUser")
+    public ResultModel importExcelUser(@RequestParam(value="excelFile") MultipartFile file) throws Exception  {
+        logger.info("################system/user/importExcelUser 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        ResultModel model = userService.importExcelUser(file);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################system/user/importExcelUser 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
 
 }
 

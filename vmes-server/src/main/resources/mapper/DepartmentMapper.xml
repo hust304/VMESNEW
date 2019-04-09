@@ -443,4 +443,37 @@
         ('2836e09da8cc11e884ad00163e105f05', 'department', 'longName', '组织长名称', 19, '1', '0', '1', '0', '2018-8-26 09:05:43', 'admin')
     </insert>
 
+    <select id="findDepartmentListByPathName" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+            dept.id,dept.name,
+            dept.id_0 did0,dept0.name dname0,
+            dept.id_1 did1,dept1.name dname1,
+            dept.id_2 did2,dept2.name dname2,
+            dept.id_3 did3,dept3.name dname3,
+            dept.id_4 did4,dept4.name dname4,
+            dept.id_5 did5,dept5.name dname5,
+            '' pathId,
+            '' pathName
+        from vmes_department dept
+            left join vmes_department dept0 on dept.id_0 = dept0.id
+            left join vmes_department dept1 on dept.id_1 = dept1.id
+            left join vmes_department dept2 on dept.id_2 = dept2.id
+            left join vmes_department dept3 on dept.id_3 = dept3.id
+            left join vmes_department dept4 on dept.id_4 = dept4.id
+            left join vmes_department dept5 on dept.id_5 = dept5.id
+        <where>
+            <if test="companyId != null and companyId != ''" >
+                and dept.id_1 = #{companyId}
+            </if>
+            <if test="queryStr != null and queryStr!=''" ><!-- 自定义查询 -->
+                and ${queryStr}
+            </if>
+        </where>
+        <if test="orderStr != null and orderStr != ''" >
+            order by ${orderStr}
+        </if>
+    </select>
+
+
+
 </mapper>

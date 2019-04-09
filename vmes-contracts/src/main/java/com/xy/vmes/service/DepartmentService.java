@@ -81,6 +81,7 @@ public interface DepartmentService {
     Map<String, String> getDeptNameKeyMap();
     void createDeptMap();
     void implementDeptMapByParentID(String parentId);
+    void implementDeptMapByCompanyId(String companyId);
 
     /**
      * 创建人：陈刚 自动创建，禁止修改
@@ -312,6 +313,8 @@ public interface DepartmentService {
     void exportExcelDepartments(PageData pd, Pagination pg)throws Exception;
 
     ResultModel importExcelDepartments(MultipartFile file)throws Exception;
+
+    List<Map<String, Object>> findDepartmentListByDeptPathName(String companyId);
 }
 
 
