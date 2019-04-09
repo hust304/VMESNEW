@@ -1,6 +1,7 @@
 package com.yvan.filter;
 
 import com.yvan.RedisUtils;
+import com.yvan.YvanUtil;
 import com.yvan.cache.RedisClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +48,7 @@ public class ComonFilter implements Filter {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
 
-
+        logger.info("************httpRequest:"+ YvanUtil.toJson(httpRequest));
         String uri = httpRequest.getRequestURI();
         uri = uri.toLowerCase();
         ModifyParametersWrapper mParametersWrapper = new ModifyParametersWrapper(httpRequest);
