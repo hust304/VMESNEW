@@ -2,6 +2,7 @@ package com.xy.vmes.deecoop.system.service;
 
 import com.xy.vmes.common.util.Common;
 import com.xy.vmes.service.UserExcelService;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -10,6 +11,7 @@ import java.text.ParseException;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+@Service
 public class UserExcelServiceImp implements UserExcelService {
     public String checkColumnImportExcel(List<LinkedHashMap<String, String>> objectList,
                                   String companyId,
