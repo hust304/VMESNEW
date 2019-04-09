@@ -57,7 +57,7 @@ public class ComonFilter implements Filter {
                 && uri.indexOf(".js".toLowerCase())<0 && uri.indexOf(".png".toLowerCase())<0 && uri.indexOf(".ttf".toLowerCase())<0 && uri.indexOf(".html".toLowerCase())<0
                 && uri.indexOf(".css".toLowerCase())<0 && uri.indexOf("test".toLowerCase())<0 && uri.indexOf("mobile".toLowerCase())<0){
                 if(uri.equals("/")){
-                    httpResponse.sendRedirect("/index.html/");
+                    httpResponse.sendRedirect(httpRequest.getHeader("referer") +"/index.html/");
                     return;
                 }else {
                     if (!this.checkSession(httpRequest)) {
