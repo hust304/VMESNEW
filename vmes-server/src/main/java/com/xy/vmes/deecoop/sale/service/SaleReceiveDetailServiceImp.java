@@ -328,6 +328,8 @@ public class SaleReceiveDetailServiceImp implements SaleReceiveDetailService {
         result.put("hideTitles",titlesHideList);
         result.put("titles",titlesList);
 
+        //订单状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
+        pd.put("orderStateNotin", "'-1','4'");
         List<Map> varMapList = new ArrayList();
         List<Map> varList = this.getOrderReceiveDetailDataListPage(pd,pg);
         if(varList!=null&&varList.size()>0){

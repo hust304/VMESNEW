@@ -166,7 +166,8 @@
         (replace(uuid(), '-', ''),'OrderReceiveDetail','state','订单状态',8, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'OrderReceiveDetail','discountAmount','本次折扣金额',9, '1','0','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'OrderReceiveDetail','receiveAmount','本次收款',10, '1','0','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'OrderReceiveDetail','id','id',0, '1','0','1','0',now(), 'admin')
+        (replace(uuid(), '-', ''),'OrderReceiveDetail','id','id',0, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'OrderReceiveDetail','orderState','orderState',11, '1','0','1','0',now(), 'admin'),
     </insert>
 
 
@@ -361,6 +362,13 @@
             <if test="currentCompanyId != null and currentCompanyId != ''">
                 and saleOrder.company_id = #{currentCompanyId}
             </if>
+            <if test="orderStateNotin != null and orderStateNotin != ''" >
+                and saleOrder.state not in (${orderStateNotin})
+            </if>
+            <if test="orderState != null and orderState != ''" >
+                and saleOrder.state in (${orderState})
+            </if>
+
             <if test="orderDateBegin != null and orderDateBegin != ''">
                 <![CDATA[ and saleOrder.order_date >= #{orderDateBegin} ]]>
             </if>

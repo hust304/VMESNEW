@@ -514,6 +514,17 @@
             <if test="name != null and name != ''">
                 and customer.name LIKE CONCAT(CONCAT(#{name}),'%')
             </if>
+            <if test="'true' == isNeedOrderState">
+                and customer.id in (
+                    select customer_id
+                    from vmes_sale_order
+                    <where>
+                        <if test="currentCompanyId != null and currentCompanyId != ''">
+                            and company_id = #{currentCompanyId} and state not in ('-1','4')
+                        </if>
+                    </where>
+                )
+            </if>
 
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >
