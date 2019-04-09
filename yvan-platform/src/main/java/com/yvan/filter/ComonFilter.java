@@ -1,6 +1,7 @@
 package com.yvan.filter;
 
 import com.yvan.RedisUtils;
+import com.yvan.YvanUtil;
 import com.yvan.cache.RedisClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +48,8 @@ public class ComonFilter implements Filter {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
 
-
+        logger.info("************getRequestURI:"+ httpRequest.getRequestURI());
+        logger.info("************getHeader:"+ httpRequest.getHeader("referer"));
         String uri = httpRequest.getRequestURI();
         uri = uri.toLowerCase();
         ModifyParametersWrapper mParametersWrapper = new ModifyParametersWrapper(httpRequest);
@@ -57,7 +59,7 @@ public class ComonFilter implements Filter {
                 && uri.indexOf(".js".toLowerCase())<0 && uri.indexOf(".png".toLowerCase())<0 && uri.indexOf(".ttf".toLowerCase())<0 && uri.indexOf(".html".toLowerCase())<0
                 && uri.indexOf(".css".toLowerCase())<0 && uri.indexOf("test".toLowerCase())<0 && uri.indexOf("mobile".toLowerCase())<0){
                 if(uri.equals("/")){
-                    httpResponse.sendRedirect(httpRequest.getHeader("referer") +"/index.html/");
+                    httpResponse.sendRedirect("/index.html/");
                     return;
                 }else {
                     if (!this.checkSession(httpRequest)) {
