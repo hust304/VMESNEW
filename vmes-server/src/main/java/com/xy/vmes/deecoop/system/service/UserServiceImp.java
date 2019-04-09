@@ -341,6 +341,8 @@ public class UserServiceImp implements UserService {
             findMap.put("id", id);
         }
         findMap.put("userCode", userCode);
+        //是否禁用(0:已禁用 1:启用)
+        findMap.put("isdisable", "1");
         findMap.put("isSelfExist", "true");
         findMap.put("mapSize", Integer.valueOf(findMap.size()));
         List<User> userList = this.findUserList(findMap);
@@ -349,6 +351,26 @@ public class UserServiceImp implements UserService {
         }
 
         return Boolean.FALSE;
+    }
+
+    public boolean isExistByMobile(String id, String mobile) {
+        if (mobile == null || mobile.trim().length() == 0) {return false;}
+
+        PageData findMap = new PageData();
+        if (id != null && id.trim().length() > 0) {
+            findMap.put("id", id);
+        }
+        findMap.put("mobile", mobile);
+        //是否禁用(0:已禁用 1:启用)
+        findMap.put("isdisable", "1");
+        findMap.put("isSelfExist", "true");
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+        List<User> userList = this.findUserList(findMap);
+        if (userList != null && userList.size() > 0) {
+            return true;
+        }
+
+        return false;
     }
 
     public List<User> findUserList(PageData object) {

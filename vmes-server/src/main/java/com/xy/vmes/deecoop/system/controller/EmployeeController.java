@@ -271,6 +271,24 @@ public class EmployeeController {
     }
 
     /**
+     * 删除按钮-删除员工岗位
+     *
+     * @return
+     * @throws Exception
+     */
+    @PostMapping("/system/employee/deleteEmployeeByPost")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel deleteEmployeeByPost() throws Exception {
+        logger.info("################employee/deleteEmployeeByPost 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = employeeService.deleteEmployeeByPost(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################employee/deleteEmployeeByPost 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
      * @author 刘威  单独启用禁用员工信息包含主岗兼岗，同时禁用员工账号
      * @date 2018-08-02
      */
