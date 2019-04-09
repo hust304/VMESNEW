@@ -550,6 +550,12 @@ public class DictionaryServiceImp implements DictionaryService {
         ResultModel model = new ResultModel();
         Dictionary dictionary = (Dictionary)HttpUtils.pageData2Entity(pd, new Dictionary());
 
+        dictionary.setRemark("");
+        String remark = pd.getString("remark");
+        if (remark != null && remark.trim().length() > 0) {
+            dictionary.setRemark(remark);
+        }
+
         //pid 获取父节点对象<Department>
         Dictionary paterObj = dictionaryService.findDictionaryById(dictionary.getPid());
         if (paterObj == null) {

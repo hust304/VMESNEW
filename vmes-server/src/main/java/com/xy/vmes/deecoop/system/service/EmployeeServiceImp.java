@@ -273,12 +273,13 @@ public class EmployeeServiceImp implements EmployeeService {
     }
 
     public boolean isExistByMobile(String id, String mobile) {
-        if (id == null || id.trim().length() == 0) {return false;}
         if (mobile == null || mobile.trim().length() == 0) {return false;}
 
         PageData findMap = new PageData();
         findMap.put("id", id);
         findMap.put("mobile", mobile);
+        //是否禁用(0:已禁用 1:启用)
+        findMap.put("isdisable", "1");
         if (id != null && id.trim().length() > 0) {
             findMap.put("id", id);
             findMap.put("isSelfExist", "true");
@@ -316,7 +317,12 @@ public class EmployeeServiceImp implements EmployeeService {
         //手机号唯一性判断(vmes_employee:员工表)
         if (employeeService.isExistByMobile(null, mobile)) {
             model.putCode(1);
-            model.putMsg("手机号:" + mobile + "在系统中已经存在，请核对后再次输入！");
+            model.putMsg("手机号:" + mobile + "在员工管理中已经存在，请核对后再次输入！");
+            return model;
+        }
+        if (userService.isExistByMobile(null, mobile)) {
+            model.putCode(1);
+            model.putMsg("手机号:" + mobile + "在用户管理中已经存在，请核对后再次输入！");
             return model;
         }
 
@@ -400,7 +406,12 @@ public class EmployeeServiceImp implements EmployeeService {
         //手机号唯一性判断(vmes_employee:员工表)
         if (this.isExistByMobile(employeeId, mobile)) {
             model.putCode(1);
-            model.putMsg("手机号:" + mobile + "在系统中已经存在，请核对后再次输入！");
+            model.putMsg("手机号:" + mobile + "在员工管理中已经存在，请核对后再次输入！");
+            return model;
+        }
+        if (userService.isExistByMobile(null, mobile)) {
+            model.putCode(1);
+            model.putMsg("手机号:" + mobile + "在用户管理中已经存在，请核对后再次输入！");
             return model;
         }
 
@@ -596,6 +607,25 @@ public class EmployeeServiceImp implements EmployeeService {
 
         //4. 删除(vmes_employee)员工表
         employeeService.deleteByIds(idNewArry);
+        return model;
+    }
+
+    public ResultModel deleteEmployeeByPost(PageData pd)throws Exception {
+        ResultModel model = new ResultModel();
+        String employeePostIds = pd.getString("employeePostIds");
+        if (employeePostIds == null || employeePostIds.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("参数错误：请至少选择一行数据！");
+            return model;
+        }
+
+        employeePostIds = StringUtil.stringTrimSpace(employeePostIds);
+        String[] idArray = employeePostIds.split(",");
+        for (int i = 0; i < idArray.length; i++) {
+            String employeePostId = idArray[i];
+            employPostService.deleteById(employeePostId);
+        }
+
         return model;
     }
 

@@ -150,8 +150,17 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
      * 创建时间：2018-12-05
      */
     @Override
-    public List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception{
-        return saleOrderDetailMapper.getDataListPage(pd,pg);
+    public List<Map> getDataListPage(PageData pd, Pagination pg) throws Exception{
+        List<Map> mapList = new ArrayList<Map>();
+        if (pd == null) {return mapList;}
+
+        if (pg == null) {
+            return saleOrderDetailMapper.getDataListPage(pd);
+        } else if (pg != null) {
+            return saleOrderDetailMapper.getDataListPage(pd,pg);
+        }
+
+        return mapList;
     }
 
     /**
@@ -864,6 +873,14 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
             pd.put("orderStr", orderStr);
         }
 
+        //是否需要分页 true:需要分页 false:不需要分页
+        String isNeedPage = pd.getString("isNeedPage");
+        if ("false".equals(isNeedPage)) {
+            pg = null;
+        } else {
+            result.put("pageData", pg);
+        }
+
         List<Map> varList = this.getDataListPage(pd,pg);
         List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
 
@@ -916,7 +933,6 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
         result.put("hideTitles",titleMap.get("hideTitles"));
         result.put("titles",titleMap.get("titles"));
         result.put("varList",varMapList);
-        result.put("pageData", pg);
 
         model.putResult(result);
         return model;

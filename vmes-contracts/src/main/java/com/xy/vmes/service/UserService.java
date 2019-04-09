@@ -140,6 +140,7 @@ public interface UserService {
     User findUser(PageData object);
     User findUserById(String id);
     Boolean isExistUserByUserCode(String id, String userCode);
+    boolean isExistByMobile(String id, String mobile);
 
     List<User> findUserList(PageData object);
 

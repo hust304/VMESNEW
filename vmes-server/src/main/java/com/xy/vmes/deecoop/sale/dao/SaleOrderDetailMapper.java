@@ -51,6 +51,7 @@ public interface SaleOrderDetailMapper extends BaseMapper<SaleOrderDetail> {
      * 创建时间：2018-12-05
      */
     List<Map> getDataListPage(PageData pd, Pagination pg);
+    List<Map> getDataListPage(PageData pd);
 }
 
 

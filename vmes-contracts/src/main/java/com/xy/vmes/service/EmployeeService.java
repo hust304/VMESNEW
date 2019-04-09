@@ -135,6 +135,7 @@ public interface EmployeeService {
     ResultModel updateDisableEmployee(PageData pageData) throws Exception;
 
     ResultModel deleteEmployees(PageData pd)throws Exception;
+    ResultModel deleteEmployeeByPost(PageData pd)throws Exception;
 
     ResultModel updateEmployeePostState(PageData pd)throws Exception;
 

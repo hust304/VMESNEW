@@ -264,7 +264,7 @@ public class DepartmentServiceImp implements DepartmentService {
             msgBuf.append(Common.SYS_ENDLINE_DEFAULT);
         }
         if (object.getName() == null || object.getName().trim().length() == 0) {
-            String str_isnull = MessageFormat.format(column_isnull, "部门名称");
+            String str_isnull = MessageFormat.format(column_isnull, "组织名称");
             msgBuf.append(str_isnull);
         }
 //        if (object.getSerialNumber() == null) {
@@ -272,7 +272,7 @@ public class DepartmentServiceImp implements DepartmentService {
 //            msgBuf.append(str_isnull);
 //        }
         if (object.getDeptType() == null || object.getDeptType().trim().length() == 0) {
-            String str_isnull = MessageFormat.format(column_isnull, "部门类型");
+            String str_isnull = MessageFormat.format(column_isnull, "组织类型");
             msgBuf.append(str_isnull);
         }
 
