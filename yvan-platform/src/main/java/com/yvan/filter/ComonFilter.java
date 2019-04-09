@@ -59,12 +59,14 @@ public class ComonFilter implements Filter {
                 && uri.indexOf(".js".toLowerCase())<0 && uri.indexOf(".png".toLowerCase())<0 && uri.indexOf(".ttf".toLowerCase())<0 && uri.indexOf(".html".toLowerCase())<0
                 && uri.indexOf(".css".toLowerCase())<0 && uri.indexOf("test".toLowerCase())<0 && uri.indexOf("mobile".toLowerCase())<0){
                 if(uri.equals("/")){
-                    httpResponse.sendRedirect("/index.html/");
+//                    httpResponse.sendRedirect("/index.html/");
+                    request.getRequestDispatcher("/index.html/").forward(request,response);
                     return;
                 }else {
                     if (!this.checkSession(httpRequest)) {
-                        httpResponse.sendRedirect(httpRequest.getHeader("referer") + "api/error/401");
+//                        httpResponse.sendRedirect(httpRequest.getHeader("referer") + "api/error/401");
 //                        httpResponse.sendRedirect( "/error/401");
+                        request.getRequestDispatcher("/error/401").forward(request,response);
                         return;
                     }
 
@@ -84,11 +86,13 @@ public class ComonFilter implements Filter {
      * @param httpResponse
      * @throws IOException
      */
-    public void extendSessionTime(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException {
+    public void extendSessionTime(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException, ServletException {
         //sessionID: (uuid:用户ID:deecoop:userLoginMap)
         String sessionID = httpRequest.getHeader("sessionID");
         if (sessionID == null || sessionID.trim().length() == 0) {
-            httpResponse.sendRedirect(httpRequest.getHeader("referer") + "api/error/401");
+//            httpResponse.sendRedirect(httpRequest.getHeader("referer") + "api/error/401");
+//            httpResponse.sendRedirect( "/error/401");
+            httpRequest.getRequestDispatcher("/error/401").forward(httpRequest,httpResponse);
             return;
         }
 
