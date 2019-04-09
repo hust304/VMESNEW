@@ -79,7 +79,7 @@ public class DepartmentServiceImp implements DepartmentService {
     * 创建时间：2018-07-23
     */
     @Override
-    @Cacheable(cacheNames = "department", key = "''+#id")
+//    @Cacheable(cacheNames = "department", key = "''+#id")
     public Department selectById(String id) throws Exception{
         return departmentMapper.selectById(id);
     }
