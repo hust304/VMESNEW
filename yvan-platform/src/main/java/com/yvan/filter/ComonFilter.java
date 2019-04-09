@@ -48,7 +48,8 @@ public class ComonFilter implements Filter {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
 
-        logger.info("************httpRequest:"+ YvanUtil.toJson(httpRequest));
+        logger.info("************getRequestURI:"+ httpRequest.getRequestURI());
+        logger.info("************getHeader:"+ httpRequest.getHeader("referer"));
         String uri = httpRequest.getRequestURI();
         uri = uri.toLowerCase();
         ModifyParametersWrapper mParametersWrapper = new ModifyParametersWrapper(httpRequest);
