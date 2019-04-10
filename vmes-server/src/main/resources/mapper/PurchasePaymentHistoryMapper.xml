@@ -247,6 +247,7 @@
                     <if test="dateByNow != null and dateByNow != ''">
                         and date_format(cdate, '%Y%m') = #{dateByNow}
                     </if>
+                    and state <![CDATA[<>]]> '-1'
                 </where>
                 group by supplier_id
             ) purchaseOrder on supplier.id = purchaseOrder.supplier_id
