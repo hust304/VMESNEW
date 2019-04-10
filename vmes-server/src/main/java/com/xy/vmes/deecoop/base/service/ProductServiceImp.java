@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.math.BigDecimal;
 import java.util.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
@@ -46,6 +47,9 @@ public class ProductServiceImp implements ProductService {
     private FileService fileService;
     @Autowired
     private ColumnService columnService;
+    @Autowired
+    private ProductExcelService productExcelService;
+
     /**
     * 创建人：陈刚 自动创建，禁止修改
     * 创建时间：2018-09-21
@@ -731,7 +735,7 @@ public class ProductServiceImp implements ProductService {
     }
 
     @Override
-    public ResultModel importExcelProducts(MultipartFile file) throws Exception {
+    public ResultModel importExcelProduct(MultipartFile file) throws Exception {
         ResultModel model = new ResultModel();
         if (file == null) {
             model.putCode(Integer.valueOf(1));
@@ -761,13 +765,44 @@ public class ProductServiceImp implements ProductService {
         List<List<String>> dataLst = ExcelUtil.readExcel(file.getInputStream(), isExcel2003);
         List<LinkedHashMap<String, String>> dataMapLst = ExcelUtil.reflectMapList(dataLst);
 
-        //1. Excel文件数据dataMapLst -->(转换) ExcelEntity (属性为导入模板字段)
-        //2. Excel导入字段(非空,数据有效性验证[数字类型,字典表(大小)类是否匹配])
-        //3. Excel导入字段-名称唯一性判断-在Excel文件中
-        //4. Excel导入字段-名称唯一性判断-在业务表中判断
-        //5. List<ExcelEntity> --> (转换) List<业务表DB>对象
-        //6. 遍历List<业务表DB> 对业务表添加或修改
+        HttpServletRequest httpRequest = HttpUtils.currentRequest();
+        String companyId = (String)httpRequest.getParameter("companyId");
+        String userId = (String)httpRequest.getParameter("userId");
+
+        if (dataMapLst == null || dataMapLst.size() == 1) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("导入文件数据为空，请至少填写一行导入数据！");
+            return model;
+        }
+        //去掉列表名称行
+        dataMapLst.remove(0);
+
+        //1. Excel导入字段(非空,数据有效性验证[数字类型,字典表(大小)类是否匹配])
+        String msgStr = productExcelService.checkColumnImportExcel(dataMapLst,
+                companyId,
+                userId,
+                Integer.valueOf(3),
+                Common.SYS_IMPORTEXCEL_MESSAGE_MAXROW);
+        if (msgStr != null && msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(this.exportExcelError(msgStr).toString());
+            return model;
+        }
+
+        //2. Excel导入字段-名称唯一性判断-在Excel文件中
+        //3. Excel导入字段-名称唯一性判断-在业务表中判断
+
+
         return model;
+    }
+
+    private StringBuffer exportExcelError(String msgStr) {
+        StringBuffer msgBuf = new StringBuffer();
+        msgBuf.append("Excel导入失败！" + Common.SYS_ENDLINE_DEFAULT);
+        msgBuf.append(msgStr.trim());
+        msgBuf.append("请核对后再次导入" + Common.SYS_ENDLINE_DEFAULT);
+
+        return msgBuf;
     }
 }
 

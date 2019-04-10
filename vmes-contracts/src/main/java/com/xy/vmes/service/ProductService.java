@@ -155,7 +155,7 @@ public interface ProductService {
 
     void exportExcelProducts(PageData pd, Pagination pg) throws Exception;
 
-    ResultModel importExcelProducts(MultipartFile file) throws Exception;
+    ResultModel importExcelProduct(MultipartFile file) throws Exception;
 }
 
 

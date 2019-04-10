@@ -309,13 +309,13 @@ public class ProductController {
     * @author 陈刚 自动创建，可以修改
     * @date 2018-09-21
     */
-    @PostMapping("/base/product/importExcelProducts")
+    @PostMapping("/base/product/importExcelProduct")
     public ResultModel importExcelProducts(@RequestParam(value="excelFile") MultipartFile file) throws Exception  {
-        logger.info("################product/importExcelProducts 执行开始 ################# ");
+        logger.info("################/base/product/importExcelProduct 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        ResultModel model = productService.importExcelProducts(file);
+        ResultModel model = productService.importExcelProduct(file);
         Long endTime = System.currentTimeMillis();
-        logger.info("################product/importExcelProducts 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/base/product/importExcelProduct 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
