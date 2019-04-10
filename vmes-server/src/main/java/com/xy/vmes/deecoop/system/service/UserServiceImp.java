@@ -583,31 +583,31 @@ public class UserServiceImp implements UserService {
         if (employeeId != null && employeeId.trim().length() > 0) {
             user.setEmployId(employeeId);
         }
-//        this.save(user);
-//
-//        String roleId = pd.getString("roleId");
-//        if (roleId != null && roleId.trim().length() > 0) {
-//            UserRole userRole = new UserRole();
-//            userRole.setRoleId(roleId);
-//            userRole.setUserId(user.getId());
-//            userRole.setCuser(pd.getString("cuser"));
-//            userRole.setUuser(pd.getString("uuser"));
-//            userRoleService.save(userRole);
-//        }
-//
-//        if (employeeId != null && employeeId.trim().length() > 0) {
-//            Employee employee = employeeService.findEmployeeById(employeeId);
-//            //mobile:手机号码
-//            employee.setMobile(user.getMobile());
-//            //email:邮箱地址
-//            employee.setEmail(user.getEmail());
-//            //user_name:姓名->name:员工姓名
-//            employee.setName(user.getUserName());
-//            employee.setUserId(user.getId());
-//            //是否开通用户(0:不开通 1:开通 is null 不开通)
-//            employee.setIsOpenUser("1");
-//            employeeService.update(employee);
-//        }
+        this.save(user);
+
+        String roleId = pd.getString("roleId");
+        if (roleId != null && roleId.trim().length() > 0) {
+            UserRole userRole = new UserRole();
+            userRole.setRoleId(roleId);
+            userRole.setUserId(user.getId());
+            userRole.setCuser(pd.getString("cuser"));
+            userRole.setUuser(pd.getString("uuser"));
+            userRoleService.save(userRole);
+        }
+
+        if (employeeId != null && employeeId.trim().length() > 0) {
+            Employee employee = employeeService.findEmployeeById(employeeId);
+            //mobile:手机号码
+            employee.setMobile(user.getMobile());
+            //email:邮箱地址
+            employee.setEmail(user.getEmail());
+            //user_name:姓名->name:员工姓名
+            employee.setName(user.getUserName());
+            employee.setUserId(user.getId());
+            //是否开通用户(0:不开通 1:开通 is null 不开通)
+            employee.setIsOpenUser("1");
+            employeeService.update(employee);
+        }
 
         return model;
     }
