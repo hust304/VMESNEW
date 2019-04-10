@@ -41,6 +41,7 @@
 		id_4 id4,<!-- 四级节点ID -->
 		id_5 id5,<!-- 五级节点ID -->
         remark remark,
+        area area,
         id id <!-- id -->
     </sql>
 
@@ -73,6 +74,7 @@
 		#{id4},<!-- 四级节点ID -->
 		#{id5},<!-- 五级节点ID -->
         #{remark},
+        #{area},
 		#{id} <!-- id -->
     </sql>
 
@@ -106,6 +108,7 @@
         '四级节点ID'  id4,
         '五级节点ID'  id5,
         '备注' remark,
+        '地区' area,
         'id' id
     </sql>
 

@@ -100,8 +100,18 @@ public class Department implements Serializable {
 	//备注
 	@TableField("remark")
 	private String remark;
+	//地区
+	@TableField("area")
+	private String area;
 
 
+	public String getArea() {
+		return area;
+	}
+
+	public void setArea(String area) {
+		this.area = area;
+	}
 
 	public void setId(String id) {
 		this.id = id;
