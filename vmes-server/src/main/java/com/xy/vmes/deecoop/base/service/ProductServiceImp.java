@@ -616,6 +616,9 @@ public class ProductServiceImp implements ProductService {
         Product productDB = (Product)HttpUtils.pageData2Entity(pageData, new Product());
 
         //2. 修改产品属性表(vmes_product_property)
+        //按照产品id-删除产品属性表(vmes_product_property)
+        productPropertyService.deleteProdPropertyByProdId(productDB.getId());
+
         String dataListJsonStr = pageData.getString("prodProperty");
         if (dataListJsonStr != null && dataListJsonStr.trim().length() > 0) {
             //JsonString 转换成List<Map<String, Object>>
@@ -625,9 +628,6 @@ public class ProductServiceImp implements ProductService {
                 model.putMsg("自定义产品属性Json字符串-转换成List错误！");
                 return model;
             }
-
-            //按照产品id-删除产品属性表(vmes_product_property)
-            productPropertyService.deleteProdPropertyByProdId(productDB.getId());
 
             //添加产品属性表(vmes_product_property)-按照json字符串数据(dataListJsonStr)
             List<ProductProperty> propertyList = productPropertyService.mapList2ProductPropertyList(dataList, null);
