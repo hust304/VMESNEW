@@ -63,12 +63,12 @@ public class ComonFilter implements Filter {
                     request.getRequestDispatcher("/index.html/").forward(request,response);
                     return;
                 }else {
-                    if (!this.checkSession(httpRequest)) {
-//                        httpResponse.sendRedirect(httpRequest.getHeader("referer") + "api/error/401");
-//                        httpResponse.sendRedirect( "/error/401");
-                        request.getRequestDispatcher("/error/401").forward(request,response);
-                        return;
-                    }
+//                    if (!this.checkSession(httpRequest)) {
+////                        httpResponse.sendRedirect(httpRequest.getHeader("referer") + "api/error/401");
+////                        httpResponse.sendRedirect( "/error/401");
+//                        request.getRequestDispatcher("/error/401").forward(request,response);
+//                        return;
+//                    }
 
                 //延长 Session 时间
                 this.extendSessionTime(httpRequest, httpResponse);

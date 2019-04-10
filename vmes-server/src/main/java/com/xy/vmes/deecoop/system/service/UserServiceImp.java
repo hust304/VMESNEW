@@ -535,52 +535,79 @@ public class UserServiceImp implements UserService {
         }
 
         //D. 验证企业用户数
-        List<Map> countUserNum = checkCompanyUserNum(deptId,null);
-        if(countUserNum!=null&&countUserNum.size()>0){
-            Map userNumMap = countUserNum.get(0);
-            if(userNumMap.get("isFull")!=null){
-                String isFull = userNumMap.get("isFull").toString();
-                if(!StringUtils.isEmpty(isFull)&&"1".equals(isFull)){
-                    model.putCode(7);
-                    model.putMsg("当前公司用户数已满员，请联系平台相关人员购买用户数！");
-                    return model;
-                }
-            }
-        }else{
-            model.putCode(8);
-            model.putMsg("公司当前用户数查询异常！");
+        //获取当前企业最大用户数
+        String msg_company_error_1 = "企业编码:{0} 企业名称:{1} 没有设定系统用户数，请于管理员联系！" + Common.SYS_ENDLINE_DEFAULT;
+        Department company = departmentService.findDepartmentById(companyId);
+        if (company.getCompanyUserCount() == null) {
+            String msgStr = MessageFormat.format(msg_company_error_1,
+                    company.getCode(),
+                    company.getName());
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
             return model;
         }
+        Integer maxUserCount = company.getCompanyUserCount();
+
+        //当前企业有效用户数
+        Integer userCount = this.findUserCountByCompanyId(companyId);
+        String msg_company_error_2 = "企业编码:{0} 企业名称:{1} 最大系统用户数:{2} 有效用户数:{3} 当前公司用户数已满员，请联系平台相关人员购买用户数！" + Common.SYS_ENDLINE_DEFAULT;
+        if ((userCount.intValue() + 1) > maxUserCount.intValue()) {
+            String msgStr = MessageFormat.format(msg_company_error_2,
+                    company.getCode(),
+                    company.getName(),
+                    maxUserCount.toString(),
+                    userCount.toString());
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
+
+//        List<Map> countUserNum = checkCompanyUserNum(deptId,null);
+//        if(countUserNum!=null&&countUserNum.size()>0){
+//            Map userNumMap = countUserNum.get(0);
+//            if(userNumMap.get("isFull")!=null){
+//                String isFull = userNumMap.get("isFull").toString();
+//                if(!StringUtils.isEmpty(isFull)&&"1".equals(isFull)){
+//                    model.putCode(7);
+//                    model.putMsg("当前公司用户数已满员，请联系平台相关人员购买用户数！");
+//                    return model;
+//                }
+//            }
+//        }else{
+//            model.putCode(8);
+//            model.putMsg("公司当前用户数查询异常！");
+//            return model;
+//        }
 
         String employeeId = pd.getString("employeeId");
         if (employeeId != null && employeeId.trim().length() > 0) {
             user.setEmployId(employeeId);
         }
-        this.save(user);
-
-        String roleId = pd.getString("roleId");
-        if (roleId != null && roleId.trim().length() > 0) {
-            UserRole userRole = new UserRole();
-            userRole.setRoleId(roleId);
-            userRole.setUserId(user.getId());
-            userRole.setCuser(pd.getString("cuser"));
-            userRole.setUuser(pd.getString("uuser"));
-            userRoleService.save(userRole);
-        }
-
-        if (employeeId != null && employeeId.trim().length() > 0) {
-            Employee employee = employeeService.findEmployeeById(employeeId);
-            //mobile:手机号码
-            employee.setMobile(user.getMobile());
-            //email:邮箱地址
-            employee.setEmail(user.getEmail());
-            //user_name:姓名->name:员工姓名
-            employee.setName(user.getUserName());
-            employee.setUserId(user.getId());
-            //是否开通用户(0:不开通 1:开通 is null 不开通)
-            employee.setIsOpenUser("1");
-            employeeService.update(employee);
-        }
+//        this.save(user);
+//
+//        String roleId = pd.getString("roleId");
+//        if (roleId != null && roleId.trim().length() > 0) {
+//            UserRole userRole = new UserRole();
+//            userRole.setRoleId(roleId);
+//            userRole.setUserId(user.getId());
+//            userRole.setCuser(pd.getString("cuser"));
+//            userRole.setUuser(pd.getString("uuser"));
+//            userRoleService.save(userRole);
+//        }
+//
+//        if (employeeId != null && employeeId.trim().length() > 0) {
+//            Employee employee = employeeService.findEmployeeById(employeeId);
+//            //mobile:手机号码
+//            employee.setMobile(user.getMobile());
+//            //email:邮箱地址
+//            employee.setEmail(user.getEmail());
+//            //user_name:姓名->name:员工姓名
+//            employee.setName(user.getUserName());
+//            employee.setUserId(user.getId());
+//            //是否开通用户(0:不开通 1:开通 is null 不开通)
+//            employee.setIsOpenUser("1");
+//            employeeService.update(employee);
+//        }
 
         return model;
     }
@@ -968,8 +995,8 @@ public class UserServiceImp implements UserService {
 
         List<Map> mapList = userMapper.findUserCountByCompanyId(findMap);
         if (mapList != null && mapList.size() > 0 && mapList.get(0).get("userCount") != null) {
-            BigDecimal bigDecimal = (BigDecimal)mapList.get(0).get("userCount");
-            return Integer.valueOf(bigDecimal.intValue());
+            Long userCount = (Long)mapList.get(0).get("userCount");
+            return Integer.valueOf(userCount.intValue());
         }
 
         return Integer.valueOf(0);
@@ -1015,6 +1042,7 @@ public class UserServiceImp implements UserService {
             model.putMsg("导入文件数据为空，请至少填写一行导入数据！");
             return model;
         }
+        //去掉列表名称行
         dataMapLst.remove(0);
 
         //获取当前企业最大用户数
@@ -1030,16 +1058,17 @@ public class UserServiceImp implements UserService {
         }
         Integer maxUserCount = company.getCompanyUserCount();
         Integer userCount = this.findUserCountByCompanyId(companyId);
-        Integer excelUserCount =  Integer.valueOf(dataMapLst.size() - 1);
+        Integer excelUserCount =  Integer.valueOf(dataMapLst.size());
 
         String msg_company_error_2 = "企业编码:{0} 企业名称:{1} 最大系统用户数:{2} 有效用户数:{3} 当前导入用户数:{4} Excel导入后用户数已经超过系统用户数！" + Common.SYS_ENDLINE_DEFAULT;
         if (maxUserCount.intValue() < (userCount.intValue() + excelUserCount.intValue())) {
-            String msgStr = MessageFormat.format(msg_company_error_1,
+            String msgStr = MessageFormat.format(msg_company_error_2,
                     company.getCode(),
                     company.getName(),
                     maxUserCount.toString(),
                     userCount.toString(),
                     excelUserCount.toString());
+            model.putCode(Integer.valueOf(1));
             model.putMsg(msgStr);
             return model;
         }
