@@ -436,6 +436,10 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService {
                             purchasePlanDetailService.update(purchasePlanDetail);
                             purchasePlanService.updateState(purchasePlanDetail.getParentId());
                         }
+                    }else{
+                        //(0:待提交 1:待审核 2:采购中 3:部分签收 4:已完成 -1:已取消)
+                        purchaseOrderDetail.setState("0");
+                        purchaseOrderDetailService.update(purchaseOrderDetail);
                     }
                 }
             }

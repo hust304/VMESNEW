@@ -796,11 +796,17 @@ public class DictionaryServiceImp implements DictionaryService {
         //获取指定节点及该节点下子节点-字典树-查询条件
         String pid = null;
         String dictionaryKey = pd.getString("dictionaryKey");
+        String cascade = pd.getString("cascade");
         if (dictionaryKey != null && dictionaryKey.trim().length() > 0 && Common.DICTIONARY_MAP.get(dictionaryKey) != null) {
             pid = Common.DICTIONARY_MAP.get(dictionaryKey).trim();
-            pd.put("pid", pid);
-            pd.put("selfQueryStr", "id = '" + pid + "'");
-            pd.put("queryStr", null);
+            if("true".equals(cascade)){
+                pd.put("id1", pid);
+                pd.put("queryStr", null);
+            }else {
+                pd.put("pid", pid);
+                pd.put("selfQueryStr", "id = '" + pid + "'");
+                pd.put("queryStr", null);
+            }
         }
 
         List<TreeEntity> treeList = dictionaryService.getTreeList(pd);
@@ -810,6 +816,7 @@ public class DictionaryServiceImp implements DictionaryService {
 
         Map result = new HashMap();
         result.put("treeList", treeObj);
+        result.put("options", treeObj.getChildren());
         model.putResult(result);
         return model;
     }

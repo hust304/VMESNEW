@@ -434,6 +434,10 @@ public class PurchaseOrderDetailServiceImp implements PurchaseOrderDetailService
 
                 }
 
+            }else {
+                purchaseOrderDetail.setState("0");
+                this.update(purchaseOrderDetail);
+                purchaseOrderService.updateState(purchaseOrderDetail.getParentId());
             }
 
         }
