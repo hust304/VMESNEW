@@ -58,17 +58,17 @@ public class ComonFilter implements Filter {
         if(uri.indexOf("login".toLowerCase()) < 0 && uri.indexOf("error".toLowerCase()) < 0 && uri.indexOf("file".toLowerCase())<0 && uri.indexOf("importExcel".toLowerCase())<0
                 && uri.indexOf(".js".toLowerCase())<0 && uri.indexOf(".png".toLowerCase())<0 && uri.indexOf(".ttf".toLowerCase())<0 && uri.indexOf(".html".toLowerCase())<0
                 && uri.indexOf(".css".toLowerCase())<0 && uri.indexOf("test".toLowerCase())<0 && uri.indexOf("mobile".toLowerCase())<0){
-                if(uri.equals("/")){
+            if(uri.equals("/")){
 //                    httpResponse.sendRedirect("/index.html/");
-                    request.getRequestDispatcher("/index.html/").forward(request,response);
+                request.getRequestDispatcher("/index.html/").forward(request,response);
+                return;
+            }else {
+                if (!this.checkSession(httpRequest)) {
+//                        httpResponse.sendRedirect(httpRequest.getHeader("referer") + "api/error/401");
+//                        httpResponse.sendRedirect( "/error/401");
+                    request.getRequestDispatcher("/error/401").forward(request,response);
                     return;
-                }else {
-//                    if (!this.checkSession(httpRequest)) {
-////                        httpResponse.sendRedirect(httpRequest.getHeader("referer") + "api/error/401");
-////                        httpResponse.sendRedirect( "/error/401");
-//                        request.getRequestDispatcher("/error/401").forward(request,response);
-//                        return;
-//                    }
+                }
 
                 //延长 Session 时间
                 this.extendSessionTime(httpRequest, httpResponse);
