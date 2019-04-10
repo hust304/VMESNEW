@@ -46,6 +46,12 @@
         a.name name,
         a.area area,
         area.name areaName,
+        area.id_1 id1,
+        area.id_2 id2,
+        area.id_3 id3,
+        area.id_4 id4,
+        area.id_5 id5,
+        area.id_6 id6,
         a.company_shortname companyShortname,
         a.serial_number serialNumber,
         c.name companyTypeName,
@@ -184,8 +190,13 @@
         ('7ccd161ca8c711e884ad00163e105f05', 'company', 'cdate', '创建时间', 24, '1', '0', '1', '0', '2018-8-26 08:32:18', 'admin'),
         ('7ccd168ca8c711e884ad00163e105f05', 'company', 'cuser', '创建人id', 25, '1', '0', '1', '0', '2018-8-26 08:32:18', 'admin'),
         ('7ccd16f2a8c711e884ad00163e105f05', 'company', 'udate', '修改时间', 26, '1', '0', '1', '0', '2018-8-26 08:32:18', 'admin'),
-        ('7ccd175ca8c711e884ad00163e105f05', 'company', 'uuser', '修改人id', 27, '1', '0', '1', '0', '2018-8-26 08:32:18', 'admin')
+        ('7ccd175ca8c711e884ad00163e105f05', 'company', 'uuser', '修改人id', 27, '1', '0', '1', '0', '2018-8-26 08:32:18', 'admin'),
+        ('7ccd175ca8c711e884ad00163e105f05', 'company', 'id1', 'id1', 28, '1', '0', '1', '0', '2018-8-26 08:32:18', 'admin'),
+        ('7ccd175ca8c711e884ad00163e105f05', 'company', 'id2', 'id2', 29, '1', '0', '1', '0', '2018-8-26 08:32:18', 'admin'),
+        ('7ccd175ca8c711e884ad00163e105f05', 'company', 'id3', 'id3', 30, '1', '0', '1', '0', '2018-8-26 08:32:18', 'admin'),
+        ('7ccd175ca8c711e884ad00163e105f05', 'company', 'id4', 'id4', 31, '1', '0', '1', '0', '2018-8-26 08:32:18', 'admin'),
+        ('7ccd175ca8c711e884ad00163e105f05', 'company', 'id5', 'id5', 32, '1', '0', '1', '0', '2018-8-26 08:32:18', 'admin'),
+        ('7ccd175ca8c711e884ad00163e105f05', 'company', 'id6', 'id6', 33, '1', '0', '1', '0', '2018-8-26 08:32:18', 'admin'),
     </insert>
-
 
 </mapper>

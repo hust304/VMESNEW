@@ -200,6 +200,8 @@ public class CompanyServiceImp implements CompanyService {
         objectDB.setCompanyValidityDate(object.getCompanyValidityDate());
         //companyUserCount企业用户数
         objectDB.setCompanyUserCount(object.getCompanyUserCount());
+        //area地区
+        objectDB.setArea(object.getArea());
 
         //isdisable是否禁用(1:已禁用 0:启用)
         if (object.getIsdisable() != null && object.getIsdisable().trim().length() > 0) {
