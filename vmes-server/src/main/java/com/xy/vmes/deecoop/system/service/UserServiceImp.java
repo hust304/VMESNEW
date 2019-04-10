@@ -18,7 +18,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.*;
 
@@ -1104,7 +1103,8 @@ public class UserServiceImp implements UserService {
             return model;
         }
 
-
+        //4.Excel数据添加到用户表
+        userExcelService.addImportExcelByList(dataMapLst, companyId, userId);
 
         return model;
     }

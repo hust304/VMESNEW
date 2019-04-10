@@ -7,11 +7,10 @@ import com.xy.vmes.entity.UserRole;
 import com.xy.vmes.service.*;
 import com.yvan.MD5Utils;
 import com.yvan.PageData;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigInteger;
+import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.*;
 
@@ -187,8 +186,8 @@ public class UserExcelServiceImp implements UserExcelService {
                 if (maxShowRow_int <= maxRow) {return strBuf.toString();}
             } else if (mobile != null && mobile.trim().length() > 0) {
                 try {
-                    new BigInteger(mobile);
-                    if (mobile.trim().length() != 11) {
+                    BigDecimal mobile_big = new BigDecimal(mobile);
+                    if (mobile_big.toBigInteger().toString().length() != 11) {
                         //String msg_column_mobile_error = "第 {0} 行: {1}:{2} 输入错误，请输入11位手机号码！"
                         String str_error = MessageFormat.format(msg_column_mobile_error,
                                 (i+index_int),
@@ -198,6 +197,8 @@ public class UserExcelServiceImp implements UserExcelService {
 
                         maxRow = maxRow + 1;
                         if (maxShowRow_int <= maxRow) {return strBuf.toString();}
+                    } else if (mobile_big.toBigInteger().toString().length() == 11) {
+                        mapObject.put("mobile", mobile_big.toBigInteger().toString());
                     }
                 } catch (NumberFormatException e) {
                     //e.printStackTrace();
@@ -213,31 +214,6 @@ public class UserExcelServiceImp implements UserExcelService {
                 }
             }
 
-            //employeeCode 员工编号
-            String employeeCode = mapObject.get("employeeCode");
-            if (employeeCode != null && employeeCode.trim().length() > 0) {
-                PageData findMap = new PageData();
-                findMap.put("code", employeeCode);
-                //是否启用(0:已禁用 1:启用)
-                findMap.put("isdisable", "1");
-                findMap.put("mapSize", Integer.valueOf(findMap.size()));
-                Employee employee = employeeService.findEmployee(findMap);
-                if (employee == null) {
-                    //String msg_column_error = "第 {0} 行: {1}:{2} 输入错误，在系统中不存在！" + Common.SYS_ENDLINE_DEFAULT;
-                    String str_error = MessageFormat.format(msg_column_error,
-                            (i+index_int),
-                            "员工编号",
-                            employeeCode);
-                    strBuf.append(str_error);
-
-
-                    maxRow = maxRow + 1;
-                    if (maxShowRow_int <= maxRow) {return strBuf.toString();}
-                } else if (employee != null) {
-                    //employId 员工id
-                    mapObject.put("employId", employee.getUserId());
-                }
-            }
         }
 
         return strBuf.toString();
@@ -262,6 +238,7 @@ public class UserExcelServiceImp implements UserExcelService {
         String msg_column_exist_1 = "第 {0} 行: ({1}:{2})输入重复，与(第 {3} 行)重复！" + Common.SYS_ENDLINE_DEFAULT;
         Map<String, Integer> userCodeMap = new HashMap<String, Integer>();
         Map<String, Integer> userMobileMap = new HashMap<String, Integer>();
+        Map<String, Integer> empCodeMap = new HashMap<String, Integer>();
 
         StringBuffer strBuf = new StringBuffer();
         for (int i = 0; i < objectList.size(); i++) {
@@ -304,6 +281,25 @@ public class UserExcelServiceImp implements UserExcelService {
                     userMobileMap.put(mobile, Integer.valueOf(i + index_int));
                 }
             }
+
+            //employeeCode 员工编号
+            String employeeCode = mapObject.get("employeeCode");
+            if (employeeCode != null && employeeCode.trim().length() > 0) {
+                if (empCodeMap.get(employeeCode) != null) {
+                    //String msg_column_exist_1 = "第 {0} 行: ({1}:{2})输入重复，与(第 {3} 行)重复！"
+                    String str_error = MessageFormat.format(msg_column_exist_1,
+                            (i+index_int),
+                            "员工编号",
+                            employeeCode,
+                            empCodeMap.get(employeeCode).toString());
+                    strBuf.append(str_error);
+
+                    maxRow = maxRow + 1;
+                    if (maxShowRow_int <= maxRow) {return strBuf.toString();}
+                } else {
+                    empCodeMap.put(employeeCode, Integer.valueOf(i + index_int));
+                }
+            }
         }
 
         return strBuf.toString();
@@ -328,6 +324,7 @@ public class UserExcelServiceImp implements UserExcelService {
         String msg_column_exist_userCode = "第 {0} 行: ({1}:{2})在用户管理中已存在！" + Common.SYS_ENDLINE_DEFAULT;
         String msg_column_exist_mobile_user = "第 {0} 行: ({1}:{2})在用户管理中已存在！" + Common.SYS_ENDLINE_DEFAULT;
         String msg_column_exist_mobile_employee = "第 {0} 行: ({1}:{2})在员工管理中已存在！" + Common.SYS_ENDLINE_DEFAULT;
+        String msg_column_error = "第 {0} 行: {1}:{2} 输入错误，在系统中不存在！" + Common.SYS_ENDLINE_DEFAULT;
 
         StringBuffer strBuf = new StringBuffer();
         for (int i = 0; i < objectList.size(); i++) {
@@ -378,6 +375,31 @@ public class UserExcelServiceImp implements UserExcelService {
                     if (maxShowRow_int <= maxRow) {return strBuf.toString();}
                 }
             }
+
+            //employeeCode 员工编号
+            String employeeCode = mapObject.get("employeeCode");
+            if (employeeCode != null && employeeCode.trim().length() > 0) {
+                PageData findMap = new PageData();
+                findMap.put("code", employeeCode);
+                //是否启用(0:已禁用 1:启用)
+                findMap.put("isdisable", "1");
+                findMap.put("mapSize", Integer.valueOf(findMap.size()));
+                Employee employee = employeeService.findEmployee(findMap);
+                if (employee == null) {
+                    //String msg_column_error = "第 {0} 行: {1}:{2} 输入错误，在系统中不存在！" + Common.SYS_ENDLINE_DEFAULT;
+                    String str_error = MessageFormat.format(msg_column_error,
+                            (i+index_int),
+                            "员工编号",
+                            employeeCode);
+                    strBuf.append(str_error);
+
+                    maxRow = maxRow + 1;
+                    if (maxShowRow_int <= maxRow) {return strBuf.toString();}
+                } else if (employee != null) {
+                    //employId 员工id
+                    mapObject.put("employId", employee.getUserId());
+                }
+            }
         }
 
         return strBuf.toString();
@@ -425,8 +447,13 @@ public class UserExcelServiceImp implements UserExcelService {
             String remark = mapObject.get("remark");
             user.setRemark(remark);
 
-            //employeeCode 员工编号
-
+            //employeeCode 员工编号 employId 员工id
+            Employee employee = null;
+            String employId = mapObject.get("employId");
+            if (employId != null && employId.trim().length() > 0) {
+                user.setEmployId(employId);
+                employee = employeeService.findEmployeeById(employId);
+            }
 
             //password 用户登录密码 手机号后六位进行加密作为默认密码
             String password = mobile.substring(mobile.length()-6, mobile.length());
@@ -446,7 +473,19 @@ public class UserExcelServiceImp implements UserExcelService {
                     userRole.setUuser(userId);
                     userRoleService.save(userRole);
                 }
-
+                //修改 员工表
+                if (employee != null) {
+                    //mobile:手机号码
+                    employee.setMobile(user.getMobile());
+                    //email:邮箱地址
+                    employee.setEmail(user.getEmail());
+                    //user_name:姓名->name:员工姓名
+                    employee.setName(user.getUserName());
+                    employee.setUserId(user.getId());
+                    //是否开通用户(0:不开通 1:开通 is null 不开通)
+                    employee.setIsOpenUser("1");
+                    employeeService.update(employee);
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
