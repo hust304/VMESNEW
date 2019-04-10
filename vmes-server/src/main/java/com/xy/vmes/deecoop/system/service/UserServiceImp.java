@@ -1104,7 +1104,7 @@ public class UserServiceImp implements UserService {
         }
 
         //4.Excel数据添加到用户表
-        userExcelService.addImportExcelByList(dataMapLst, companyId, userId);
+        userExcelService.addImportExcelByList(dataMapLst, userId);
 
         return model;
     }

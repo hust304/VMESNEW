@@ -75,6 +75,8 @@ public class UserExcelServiceImp implements UserExcelService {
         int maxRow = 0;
         for (int i = 0; i < objectList.size(); i++) {
             LinkedHashMap<String, String> mapObject = objectList.get(i);
+            //companyId 企业ID
+            mapObject.put("companyId", companyId);
 
             //姓名 userName
             String userName = mapObject.get("userName");
@@ -213,7 +215,6 @@ public class UserExcelServiceImp implements UserExcelService {
                     if (maxShowRow_int <= maxRow) {return strBuf.toString();}
                 }
             }
-
         }
 
         return strBuf.toString();
@@ -362,31 +363,34 @@ public class UserExcelServiceImp implements UserExcelService {
                     maxRow = maxRow + 1;
                     if (maxShowRow_int <= maxRow) {return strBuf.toString();}
                 }
-                //员工表
-                if (employeeService.isExistByMobile(null, mobile)) {
-                    //String msg_column_exist_mobile_user = "第 {0} 行: ({1}:{2})在用户管理中已存在！"
-                    String str_error = MessageFormat.format(msg_column_exist_mobile_employee,
-                            (i+index_int),
-                            "手机号",
-                            mobile);
-                    strBuf.append(str_error);
-
-                    maxRow = maxRow + 1;
-                    if (maxShowRow_int <= maxRow) {return strBuf.toString();}
-                }
+//                //员工表
+//                if (employeeService.isExistByMobile(null, mobile)) {
+//                    //String msg_column_exist_mobile_user = "第 {0} 行: ({1}:{2})在用户管理中已存在！"
+//                    String str_error = MessageFormat.format(msg_column_exist_mobile_employee,
+//                            (i+index_int),
+//                            "手机号",
+//                            mobile);
+//                    strBuf.append(str_error);
+//
+//                    maxRow = maxRow + 1;
+//                    if (maxShowRow_int <= maxRow) {return strBuf.toString();}
+//                }
             }
 
+            //companyId 企业ID
+            String companyId = mapObject.get("companyId");
             //employeeCode 员工编号
             String employeeCode = mapObject.get("employeeCode");
             if (employeeCode != null && employeeCode.trim().length() > 0) {
                 PageData findMap = new PageData();
+                findMap.put("currentCompanyId", companyId);
                 findMap.put("code", employeeCode);
                 //是否启用(0:已禁用 1:启用)
                 findMap.put("isdisable", "1");
                 findMap.put("mapSize", Integer.valueOf(findMap.size()));
                 Employee employee = employeeService.findEmployee(findMap);
                 if (employee == null) {
-                    //String msg_column_error = "第 {0} 行: {1}:{2} 输入错误，在系统中不存在！" + Common.SYS_ENDLINE_DEFAULT;
+                    //String msg_column_error = "第 {0} 行: {1}:{2} 输入错误，在系统中不存在或已经离职！" + Common.SYS_ENDLINE_DEFAULT;
                     String str_error = MessageFormat.format(msg_column_error,
                             (i+index_int),
                             "员工编号",
@@ -397,7 +401,7 @@ public class UserExcelServiceImp implements UserExcelService {
                     if (maxShowRow_int <= maxRow) {return strBuf.toString();}
                 } else if (employee != null) {
                     //employId 员工id
-                    mapObject.put("employId", employee.getUserId());
+                    mapObject.put("employId", employee.getId());
                 }
             }
         }
@@ -405,12 +409,13 @@ public class UserExcelServiceImp implements UserExcelService {
         return strBuf.toString();
     }
 
-    public void addImportExcelByList(List<LinkedHashMap<String, String>> objectList, String companyId, String userId) {
+    public void addImportExcelByList(List<LinkedHashMap<String, String>> objectList, String userId) {
         for (int i = 0; i < objectList.size(); i++) {
             User user = new User();
             LinkedHashMap<String, String> mapObject = objectList.get(i);
 
             //企业ID
+            String companyId = mapObject.get("companyId");
             user.setCompanyId(companyId);
             user.setCuser(userId);
 
@@ -475,16 +480,19 @@ public class UserExcelServiceImp implements UserExcelService {
                 }
                 //修改 员工表
                 if (employee != null) {
+                    Employee employeeEdit = new Employee();
+
+                    employeeEdit.setId(employee.getId());
                     //mobile:手机号码
-                    employee.setMobile(user.getMobile());
+                    employeeEdit.setMobile(user.getMobile());
                     //email:邮箱地址
-                    employee.setEmail(user.getEmail());
+                    employeeEdit.setEmail(user.getEmail());
                     //user_name:姓名->name:员工姓名
-                    employee.setName(user.getUserName());
-                    employee.setUserId(user.getId());
+                    employeeEdit.setName(user.getUserName());
+                    employeeEdit.setUserId(user.getId());
                     //是否开通用户(0:不开通 1:开通 is null 不开通)
-                    employee.setIsOpenUser("1");
-                    employeeService.update(employee);
+                    employeeEdit.setIsOpenUser("1");
+                    employeeService.update(employeeEdit);
                 }
             } catch (Exception e) {
                 e.printStackTrace();

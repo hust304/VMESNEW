@@ -19,5 +19,5 @@ public interface UserExcelService {
                                        Integer index,
                                        Integer maxShowRow);
 
-    void addImportExcelByList(List<LinkedHashMap<String, String>> objectList, String companyId, String userId);
+    void addImportExcelByList(List<LinkedHashMap<String, String>> objectList, String userId);
 }
