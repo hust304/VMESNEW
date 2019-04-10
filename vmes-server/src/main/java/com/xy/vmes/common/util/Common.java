@@ -269,14 +269,17 @@ public class Common {
             //609fa44c031847569a1d9e2516be4b41 组装出库
             put("assembleOut", "609fa44c031847569a1d9e2516be4b41");
 
-        //95c01e57c01e4b869a1940b8ded3c315(字典id)  移库类型(字典名称)
+        //95c01e57c01e4b869a1940b8ded3c315(移库类型id)  移库类型(字典名称)
         put("warehouseMoveType", "95c01e57c01e4b869a1940b8ded3c315");
 
-        //a66d180a1a3346a1a3f4f224baf4ada8(字典id)  退单原因(字典名称)
+        //a66d180a1a3346a1a3f4f224baf4ada8(退单原因id)  退单原因(字典名称)
         put("warehouseRebackBill", "a66d180a1a3346a1a3f4f224baf4ada8");
 
-        //ab57102457484aa88d70cb805c0a796c(字典id)  采购原因(字典名称)
+        //ab57102457484aa88d70cb805c0a796c(采购原因id)  采购原因(字典名称)
         put("purchaseReason", "ab57102457484aa88d70cb805c0a796c");
+
+        //e8d9461fbe704fdcbe2ee88efb310f2c(地区id)  地区(字典名称)
+        put("area", "e8d9461fbe704fdcbe2ee88efb310f2c");
     }};
 
     ///////////////--菜单名称--///////////////////////////////////////////////////////////////////

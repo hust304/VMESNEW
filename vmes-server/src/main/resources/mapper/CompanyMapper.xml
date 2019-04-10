@@ -20,6 +20,8 @@
         '套餐' roleName,
         '用户类型' userType,
         '备注' remark,
+        '地区' areaName,
+        '地区' area,
 
         <!--查询隐藏字段-->
         'id' id_hide,
@@ -42,6 +44,8 @@
         <!--查询显示字段-->
         a.code code,
         a.name name,
+        a.area area,
+        area.name areaName,
         a.company_shortname companyShortname,
         a.serial_number serialNumber,
         c.name companyTypeName,
@@ -76,6 +80,7 @@
             left join vmes_user_role d on b.id = d.user_id
             left join vmes_role f on d.role_id = f.id
             left join vmes_dictionary c on a.company_type = c.id
+            left join vmes_dictionary area on a.area = area.id
         <where>
             <if test="id != null and id != ''" >
                 and a.id = #{id}
