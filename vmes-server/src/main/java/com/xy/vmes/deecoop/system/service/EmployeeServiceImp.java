@@ -382,6 +382,7 @@ public class EmployeeServiceImp implements EmployeeService {
     public ResultModel updateEmployeeAndUser(PageData pd) throws Exception {
         ResultModel model = new ResultModel();
         String employeeId = (String)pd.get("employeeId");
+        String userId = (String)pd.get("userId");
         String mobile = pd.getString("mobile");
         String code = pd.getString("code");
         String companyId = pd.getString("companyId");
@@ -409,11 +410,14 @@ public class EmployeeServiceImp implements EmployeeService {
             model.putMsg("手机号:" + mobile + "在员工管理中已经存在，请核对后再次输入！");
             return model;
         }
-        if (userService.isExistByMobile(null, mobile)) {
-            model.putCode(1);
-            model.putMsg("手机号:" + mobile + "在用户管理中已经存在，请核对后再次输入！");
-            return model;
+        if(!StringUtils.isEmpty(userId)){
+            if (userService.isExistByMobile(userId, mobile)) {
+                model.putCode(1);
+                model.putMsg("手机号:" + mobile + "在用户管理中已经存在，请核对后再次输入！");
+                return model;
+            }
         }
+
 
         String roleId = pd.getString("roleId");
         Employee employee = (Employee)HttpUtils.pageData2Entity(pd, new Employee());
@@ -439,7 +443,7 @@ public class EmployeeServiceImp implements EmployeeService {
         //employee = employeeService.selectById(employId);
 
         //判断是否拥有用户信息，如果没有则新增，如果有则修改
-        String userId = employee.getUserId();
+        userId = employee.getUserId();
         if(StringUtils.isEmpty(userId)){
             //新增用户信息
             EmployPost employPost = getMainEmployPost(employeeId);
