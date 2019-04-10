@@ -376,7 +376,7 @@ public class UserController {
      * @author 陈刚 自动创建，可以修改
      * @date 2018-11-20
      */
-    @PostMapping("/warehouse/user/importExcelUser")
+    @PostMapping("/system/user/importExcelUser")
     public ResultModel importExcelUser(@RequestParam(value="excelFile") MultipartFile file) throws Exception  {
         logger.info("################system/user/importExcelUser 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();

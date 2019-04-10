@@ -121,6 +121,7 @@ public interface DictionaryService {
     Map<String, String> getNameKeyMap();
     void createBusinessMap();
     void implementBusinessMapByParentID(String parentId, String companyId);
+    void implementBusinessMapByParentID(String parentId, String companyId, String idNotin);
 
     /**
      * 创建人：刘威

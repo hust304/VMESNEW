@@ -163,6 +163,12 @@ public interface RoleService {
     ResultModel getRoles(PageData pd)  throws Exception;
 
     ResultModel addRoleByName(PageData pageData)  throws Exception;
+
+    /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+    Map<String, String> getKeyNameMap();
+    Map<String, String> getNameKeyMap();
+    void createBusinessMap();
+    void implementBusinessMapByCompanyId(String companyId);
 }
 
 

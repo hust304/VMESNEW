@@ -1512,6 +1512,9 @@ public class DepartmentServiceImp implements DepartmentService {
 
         PageData findMap = new PageData();
         findMap.put("companyId", companyId);
+        //组织类型(1:公司 2:部门)
+        findMap.put("organizeType", "2");
+        findMap.put("orderStr", "dept.layer asc");
 
         List<Map<String, Object>> mapList = null;
         try {
@@ -1525,23 +1528,25 @@ public class DepartmentServiceImp implements DepartmentService {
             String pathId = new String();
             String pathName = new String();
 
-            String did0 = (String)mapObject.get("did0");
-            if (did0 != null && did0.trim().length() > 0) {
-                pathId = pathId + did0 + "-";
-            }
-            String dname0 = (String)mapObject.get("dname0");
-            if (dname0 != null && dname0.trim().length() > 0) {
-                pathName = pathName + dname0 + "-";
-            }
-
-            String did1 = (String)mapObject.get("did1");
-            if (did1 != null && did1.trim().length() > 0) {
-                pathId = pathId + did1 + "-";
-            }
-            String dname1 = (String)mapObject.get("dname1");
-            if (dname1 != null && dname1.trim().length() > 0) {
-                pathName = pathName + dname1 + "-";
-            }
+//            //默认-智能云管家
+//            String did0 = (String)mapObject.get("did0");
+//            if (did0 != null && did0.trim().length() > 0) {
+//                pathId = pathId + did0 + "-";
+//            }
+//            String dname0 = (String)mapObject.get("dname0");
+//            if (dname0 != null && dname0.trim().length() > 0) {
+//                pathName = pathName + dname0 + "-";
+//            }
+//
+//            //企业名称
+//            String did1 = (String)mapObject.get("did1");
+//            if (did1 != null && did1.trim().length() > 0) {
+//                pathId = pathId + did1 + "-";
+//            }
+//            String dname1 = (String)mapObject.get("dname1");
+//            if (dname1 != null && dname1.trim().length() > 0) {
+//                pathName = pathName + dname1 + "-";
+//            }
 
             String did2 = (String)mapObject.get("did2");
             if (did2 != null && did2.trim().length() > 0) {

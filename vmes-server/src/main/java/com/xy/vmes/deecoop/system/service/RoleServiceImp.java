@@ -1088,6 +1088,45 @@ public class RoleServiceImp implements RoleService {
         model.putResult(roleMap);
         return model;
     }
+
+    /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+    private Map<String, String> keyNameMap;
+    private Map<String, String> nameKeyMap;
+
+    public Map<String, String> getKeyNameMap() {
+        return keyNameMap;
+    }
+    public Map<String, String> getNameKeyMap() {
+        return nameKeyMap;
+    }
+
+    public void createBusinessMap() {
+        this.keyNameMap = new HashMap<String, String>();
+        this.nameKeyMap = new HashMap<String, String>();
+    }
+    public void implementBusinessMapByCompanyId(String companyId) {
+        this.createBusinessMap();
+
+        PageData findMap = new PageData();
+        if (companyId != null && companyId.trim().length() > 0) {
+            findMap.put("currentCompanyId", companyId.trim());
+        }
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+
+        List<Role> objectList = this.findRoleList(findMap);
+        if (objectList == null || objectList.size() == 0) {return;}
+
+        for (Role object : objectList) {
+            String mapKey = object.getId();
+            String mapName = object.getName();
+            if (mapName != null && mapName.trim().length() > 0) {
+                this.keyNameMap.put(mapKey, mapName);
+                this.nameKeyMap.put(mapName, mapKey);
+            }
+        }
+    }
+
+
 }
 
 

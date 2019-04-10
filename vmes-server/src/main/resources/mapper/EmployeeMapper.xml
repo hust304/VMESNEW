@@ -660,17 +660,20 @@
                             </otherwise>
                         </choose>
                     </if>
+                    <if test="currentCompanyId != null and currentCompanyId != ''">
+                        and company_id = #{currentCompanyId}
+                    </if>
+                    <if test="userId != null and userId != ''" >
+                        and user_id = #{userId}
+                    </if>
                     <if test="code != null and code != ''" >
                         and code = #{code}
                     </if>
                     <if test="name != null and name != ''" >
                         and name = #{name}
                     </if>
-                    <if test="userId != null and userId != ''" >
-                        and user_id = #{userId}
-                    </if>
-                    <if test="currentCompanyId != null and currentCompanyId != ''">
-                        and company_id = #{currentCompanyId}
+                    <if test="isdisable != null and isdisable!=''" >
+                        and isdisable = #{isdisable}
                     </if>
                     <if test="mobile != null and mobile != ''" >
                         and mobile = #{mobile}

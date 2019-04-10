@@ -355,17 +355,20 @@
                             </otherwise>
                         </choose>
                     </if>
+                    <if test="pid != null and pid!=''" >
+                        and pid = #{pid}
+                    </if>
+                    <if test="idNotin != null and idNotin!=''" >
+                        and id not in (${idNotin})
+                    </if>
+                    <if test="currentCompanyId != null and currentCompanyId != ''">
+                        and company_id = #{currentCompanyId}
+                    </if>
                     <if test="code != null and code!=''" >
                         and code = #{code}
                     </if>
                     <if test="name != null and name!=''" >
                         and name = #{name}
-                    </if>
-                    <if test="pid != null and pid!=''" >
-                        and pid = #{pid}
-                    </if>
-                    <if test="currentCompanyId != null and currentCompanyId != ''">
-                        and company_id = #{currentCompanyId}
                     </if>
                     <if test="isdisable != null and isdisable!=''" >
                         and isdisable = #{isdisable}

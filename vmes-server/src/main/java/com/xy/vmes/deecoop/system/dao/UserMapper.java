@@ -114,6 +114,8 @@ public interface UserMapper extends BaseMapper<User> {
 	 */
 	List<Map> selectCountUserNum(PageData pd);
 
+	List<Map> findUserCountByCompanyId(PageData pd);
+
 }
 
 

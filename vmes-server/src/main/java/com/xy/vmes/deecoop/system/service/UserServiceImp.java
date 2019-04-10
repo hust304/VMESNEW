@@ -18,6 +18,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.math.BigDecimal;
+import java.text.MessageFormat;
 import java.util.*;
 
 /**
@@ -956,6 +958,23 @@ public class UserServiceImp implements UserService {
         ExcelUtil.excelExportByDataList(response, fileName, dataMapList);
     }
 
+    public Integer findUserCountByCompanyId(String companyId) {
+        if (companyId == null || companyId.trim().length() == 0) {return Integer.valueOf(0);}
+
+        PageData findMap = new PageData();
+        findMap.put("companyId", companyId);
+        //是否禁用(0:已禁用 1:启用)
+        findMap.put("isdisable", "1");
+
+        List<Map> mapList = userMapper.findUserCountByCompanyId(findMap);
+        if (mapList != null && mapList.size() > 0 && mapList.get(0).get("userCount") != null) {
+            BigDecimal bigDecimal = (BigDecimal)mapList.get(0).get("userCount");
+            return Integer.valueOf(bigDecimal.intValue());
+        }
+
+        return Integer.valueOf(0);
+    }
+
     public ResultModel importExcelUser(MultipartFile file) throws Exception {
         ResultModel model = new ResultModel();
 
@@ -998,18 +1017,78 @@ public class UserServiceImp implements UserService {
         }
         dataMapLst.remove(0);
 
-        StringBuffer checkColumnMsgStr = new StringBuffer();
+        //获取当前企业最大用户数
+        String msg_company_error_1 = "企业编码:{0} 企业名称:{1} 没有设定系统用户数，请于管理员联系！" + Common.SYS_ENDLINE_DEFAULT;
+        Department company = departmentService.findDepartmentById(companyId);
+        if (company.getCompanyUserCount() == null) {
+            String msgStr = MessageFormat.format(msg_company_error_1,
+                    company.getCode(),
+                    company.getName());
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
+        Integer maxUserCount = company.getCompanyUserCount();
+        Integer userCount = this.findUserCountByCompanyId(companyId);
+        Integer excelUserCount =  Integer.valueOf(dataMapLst.size() - 1);
+
+        String msg_company_error_2 = "企业编码:{0} 企业名称:{1} 最大系统用户数:{2} 有效用户数:{3} 当前导入用户数:{4} Excel导入后用户数已经超过系统用户数！" + Common.SYS_ENDLINE_DEFAULT;
+        if (maxUserCount.intValue() < (userCount.intValue() + excelUserCount.intValue())) {
+            String msgStr = MessageFormat.format(msg_company_error_1,
+                    company.getCode(),
+                    company.getName(),
+                    maxUserCount.toString(),
+                    userCount.toString(),
+                    excelUserCount.toString());
+            model.putMsg(msgStr);
+            return model;
+        }
+
         //1. Excel导入字段(非空,数据有效性验证[数字类型,字典表(大小)类是否匹配])
         String msgStr = userExcelService.checkColumnImportExcel(dataMapLst,
                 companyId,
                 Integer.valueOf(3),
                 Common.SYS_IMPORTEXCEL_MESSAGE_MAXROW);
         if (msgStr != null && msgStr.trim().length() > 0) {
-            checkColumnMsgStr.append(msgStr);
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(this.exportExcelError(msgStr).toString());
+            return model;
         }
+
+        //2. Excel导入字段唯一性判断-在Excel文件中
+        msgStr = userExcelService.checkExistImportExcelBySelf(dataMapLst,
+                Integer.valueOf(3),
+                Common.SYS_IMPORTEXCEL_MESSAGE_MAXROW);
+        if (msgStr != null && msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(this.exportExcelError(msgStr).toString());
+            return model;
+        }
+
+        //3. Excel导入字段唯一性判断-在业务表中判断
+        msgStr = userExcelService.checkExistImportExcelByDatabase(dataMapLst,
+                Integer.valueOf(3),
+                Common.SYS_IMPORTEXCEL_MESSAGE_MAXROW);
+        if (msgStr != null && msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(this.exportExcelError(msgStr).toString());
+            return model;
+        }
+
+
 
         return model;
     }
+
+    private StringBuffer exportExcelError(String msgStr) {
+        StringBuffer msgBuf = new StringBuffer();
+        msgBuf.append("Excel导入失败！" + Common.SYS_ENDLINE_DEFAULT);
+        msgBuf.append(msgStr.trim());
+        msgBuf.append("请核对后再次导入" + Common.SYS_ENDLINE_DEFAULT);
+
+        return msgBuf;
+    }
+
 }
 
 

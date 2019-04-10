@@ -184,6 +184,8 @@ public interface UserService {
 
     void exportExcelUsers(PageData pd,Pagination pg) throws Exception;
     ResultModel importExcelUser(MultipartFile file) throws Exception;
+
+    Integer findUserCountByCompanyId(String companyId);
 }
 
 

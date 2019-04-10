@@ -246,6 +246,10 @@
             <if test="receiptType != null and receiptType != ''" >
                 and saleOrder.receipt_type = #{receiptType}
             </if>
+            <if test="expectDate != null and expectDate != ''" >
+                and saleOrder.expect_date = #{expectDate}
+            </if>
+
             <if test="orderDateBegin != null and orderDateBegin != ''">
                 <![CDATA[ and saleOrder.order_date >= #{orderDateBegin} ]]>
             </if>

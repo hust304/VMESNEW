@@ -465,6 +465,9 @@
             <if test="companyId != null and companyId != ''" >
                 and dept.id_1 = #{companyId}
             </if>
+            <if test="organizeType != null and organizeType!=''" >
+                and dept.organize_type = #{organizeType}
+            </if>
             <if test="queryStr != null and queryStr!=''" ><!-- 自定义查询 -->
                 and ${queryStr}
             </if>

@@ -242,6 +242,37 @@ public class DictionaryServiceImp implements DictionaryService {
         }
     }
 
+    public void implementBusinessMapByParentID(String parentId, String companyId, String idNotin) {
+        this.createBusinessMap();
+
+        PageData findMap = new PageData();
+        if (parentId != null && parentId.trim().length() > 0) {
+            findMap.put("pid", parentId.trim());
+        }
+        if (companyId != null && companyId.trim().length() > 0) {
+            findMap.put("currentCompanyId", companyId.trim());
+        }
+        if (idNotin != null && idNotin.trim().length() > 0) {
+            findMap.put("idNotin", idNotin.trim());
+        }
+
+        //是否启用(0:已禁用 1:启用)
+        //findMap.put("isdisable", "1");
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+
+        List<Dictionary> objectList = this.findDictionaryList(findMap);
+        if (objectList == null || objectList.size() == 0) {return;}
+
+        for (Dictionary object : objectList) {
+            String mapKey = object.getId();
+            String mapName = object.getName();
+            if (mapName != null && mapName.trim().length() > 0) {
+                this.keyNameMap.put(mapKey, mapName);
+                this.nameKeyMap.put(mapName, mapKey);
+            }
+        }
+    }
+
     /**
      * 创建人：刘威
      * 创建时间：2018-08-01
