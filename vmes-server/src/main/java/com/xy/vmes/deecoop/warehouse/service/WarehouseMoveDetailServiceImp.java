@@ -384,6 +384,11 @@ public class WarehouseMoveDetailServiceImp implements WarehouseMoveDetailService
                     loginfo.setBeforeCount(warehouseMoveExecute.getCount());
                     //afterCount 操作变更后数量(业务相关)
                     loginfo.setAfterCount(BigDecimal.ZERO);
+                    if(inObject.getStockCount().compareTo(warehouseMoveExecute.getCount())<0){
+                        model.putCode(Integer.valueOf(1));
+                        model.putMsg("库存数量不足，不能退回！");
+                        return model;
+                    }
 
                     String msgStr = warehouseProductService.moveStockCount(outObject,inObject,warehouseMoveExecute.getCount().negate(), loginfo);
                     if (msgStr != null && msgStr.trim().length() > 0) {

@@ -298,7 +298,11 @@ public class WarehouseMoveExecuteServiceImp implements WarehouseMoveExecuteServi
             loginfo.setBeforeCount(BigDecimal.ZERO);
             //afterCount 操作变更后数量(业务相关)
             loginfo.setAfterCount(execute.getCount());
-
+            if(outObject.getStockCount().compareTo(count)<0){
+                model.putCode(Integer.valueOf(1));
+                model.putMsg("库存数量不足，不能执行！");
+                return model;
+            }
 
             String msgStr = warehouseProductService.moveStockCount(outObject,inObject, count, loginfo);
             if (msgStr != null && msgStr.trim().length() > 0) {
