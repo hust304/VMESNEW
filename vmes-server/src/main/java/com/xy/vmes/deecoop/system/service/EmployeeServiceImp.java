@@ -464,7 +464,7 @@ public class EmployeeServiceImp implements EmployeeService {
             user.setEmployId(employee.getId());
             user.setMobile(employee.getMobile());
             user.setUuser(pd.getString("uuser"));
-
+            userService.update(user);
             //String roleId = (String)pd.get("roleId");
             if (roleId != null && roleId.trim().length() > 0) {
                 //删除(用户id, 角色id)-(vmes_user_role:用户角色)
