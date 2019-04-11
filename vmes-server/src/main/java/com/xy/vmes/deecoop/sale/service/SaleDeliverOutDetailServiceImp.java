@@ -1,5 +1,6 @@
 package com.xy.vmes.deecoop.sale.service;
 
+import com.xy.vmes.common.util.Common;
 import com.xy.vmes.deecoop.sale.dao.SaleDeliverOutDetailMapper;
 import com.xy.vmes.entity.SaleOrderDetail;
 import com.xy.vmes.service.*;
@@ -86,8 +87,8 @@ public class SaleDeliverOutDetailServiceImp implements SaleDeliverOutDetailServi
         if (mapObject != null && mapObject.size() > 0) {
             //货品id：修改该货品的库存锁定数量
             String productId = (String)mapObject.get("productId");
+            BigDecimal outDetailCount = BigDecimal.valueOf(0D);
             if (productId != null && productId.trim().length() > 0) {
-                BigDecimal outDetailCount = BigDecimal.valueOf(0D);
                 if (mapObject.get("outDetailCount") != null) {
                     outDetailCount = (BigDecimal)mapObject.get("outDetailCount");
                     outDetailCount = BigDecimal.valueOf(outDetailCount.doubleValue() * -1);
@@ -95,15 +96,34 @@ public class SaleDeliverOutDetailServiceImp implements SaleDeliverOutDetailServi
                 productService.updateLockCount(productId, null, outDetailCount, null);
             }
 
+            //锁定库存数量 lockCount 订单明细
+            BigDecimal lockCount = null;
+            if (mapObject.get("lockCount") != null) {
+                lockCount = (BigDecimal)mapObject.get("lockCount");
+            }
+
             //订单明细id：修改订单明细(库存锁定数量)
             String orderDtlId = (String)mapObject.get("orderDtlId");
             if (orderDtlId != null && orderDtlId.trim().length() > 0) {
                 SaleOrderDetail orderDetail = new SaleOrderDetail();
                 orderDetail.setId(orderDtlId);
-                //isLockWarehouse 是否锁定仓库(0:未锁定 1:已锁定
-                orderDetail.setIsLockWarehouse("0");
-                orderDetail.setLockCount(BigDecimal.valueOf(0D));
-                orderDetail.setNeedDeliverCount(BigDecimal.valueOf(0D));
+
+                if (lockCount != null) {
+                    BigDecimal changeLockCount = BigDecimal.valueOf(lockCount.doubleValue() + outDetailCount.doubleValue());
+                    if (changeLockCount.doubleValue() <= 0 ) {
+                        //isLockWarehouse 是否锁定仓库(0:未锁定 1:已锁定
+                        orderDetail.setIsLockWarehouse("0");
+                        orderDetail.setLockCount(BigDecimal.valueOf(0D));
+                        orderDetail.setNeedDeliverCount(BigDecimal.valueOf(0D));
+                    } else {
+                        //isLockWarehouse 是否锁定仓库(0:未锁定 1:已锁定
+                        orderDetail.setIsLockWarehouse("1");
+                        //四舍五入到2位小数
+                        changeLockCount = changeLockCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                        orderDetail.setLockCount(changeLockCount);
+                        orderDetail.setNeedDeliverCount(changeLockCount);
+                    }
+                }
 
 //                //获取发货出库订单(订单明细id,订购数量,出库数量)
 //                PageData findMap = new PageData();
