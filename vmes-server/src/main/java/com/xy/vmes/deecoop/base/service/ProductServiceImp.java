@@ -791,7 +791,8 @@ public class ProductServiceImp implements ProductService {
 
         //2. Excel导入字段-名称唯一性判断-在Excel文件中
         //3. Excel导入字段-名称唯一性判断-在业务表中判断
-
+        //4. Excel数据添加到货品表
+        productExcelService.addImportExcelByList(dataMapLst);
 
         return model;
     }
