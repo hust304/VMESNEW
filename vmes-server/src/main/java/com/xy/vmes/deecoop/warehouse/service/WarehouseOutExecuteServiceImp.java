@@ -250,7 +250,11 @@ public class WarehouseOutExecuteServiceImp implements WarehouseOutExecuteService
 
             loginfo.setExecuteId(execute.getId());
             loginfo.setDetailId(execute.getDetailId());
-
+            if(outObject.getStockCount().compareTo(count)<0){
+                model.putCode(Integer.valueOf(1));
+                model.putMsg("库存数量不足，不能执行！");
+                return model;
+            }
             String msgStr = warehouseProductService.outStockCount(outObject, count, loginfo);
 
             Product product = productService.selectById(outObject.getProductId());
