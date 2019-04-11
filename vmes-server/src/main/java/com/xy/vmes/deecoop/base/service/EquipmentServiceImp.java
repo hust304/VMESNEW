@@ -2,14 +2,12 @@ package com.xy.vmes.deecoop.base.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
+import com.xy.vmes.common.util.Common;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.base.dao.EquipmentMapper;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.entity.Equipment;
-import com.xy.vmes.service.CoderuleService;
-import com.xy.vmes.service.ColumnService;
-import com.xy.vmes.service.EquipmentService;
-import com.xy.vmes.service.FileService;
+import com.xy.vmes.service.*;
 import com.yvan.*;
 import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
@@ -23,6 +21,7 @@ import java.util.*;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
@@ -38,10 +37,11 @@ public class EquipmentServiceImp implements EquipmentService {
     private EquipmentMapper equipmentMapper;
     @Autowired
     private ColumnService columnService;
+    @Autowired
+    private EquipmentExcelService equipmentExcelService;
 
     @Autowired
     private FileService fileService;
-
     @Autowired
     private CoderuleService coderuleService;
     /**
@@ -310,12 +310,35 @@ public class EquipmentServiceImp implements EquipmentService {
         List<List<String>> dataLst = ExcelUtil.readExcel(file.getInputStream(), isExcel2003);
         List<LinkedHashMap<String, String>> dataMapLst = ExcelUtil.reflectMapList(dataLst);
 
-        //1. Excel文件数据dataMapLst -->(转换) ExcelEntity (属性为导入模板字段)
-        //2. Excel导入字段(非空,数据有效性验证[数字类型,字典表(大小)类是否匹配])
-        //3. Excel导入字段-名称唯一性判断-在Excel文件中
-        //4. Excel导入字段-名称唯一性判断-在业务表中判断
-        //5. List<ExcelEntity> --> (转换) List<业务表DB>对象
-        //6. 遍历List<业务表DB> 对业务表添加或修改
+        HttpServletRequest httpRequest = HttpUtils.currentRequest();
+        String companyId = (String)httpRequest.getParameter("companyId");
+        String userId = (String)httpRequest.getParameter("userId");
+
+        if (dataMapLst == null || dataMapLst.size() == 1) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("导入文件数据为空，请至少填写一行导入数据！");
+            return model;
+        }
+        //去掉列表名称行
+        dataMapLst.remove(0);
+
+        //1. Excel导入字段(非空,数据有效性验证[数字类型,字典表(大小)类是否匹配])
+        //1. Excel导入字段(非空,数据有效性验证[数字类型,字典表(大小)类是否匹配])
+        String msgStr = equipmentExcelService.checkColumnImportExcel(dataMapLst,
+                companyId,
+                userId,
+                Integer.valueOf(3),
+                Common.SYS_IMPORTEXCEL_MESSAGE_MAXROW);
+        if (msgStr != null && msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(this.exportExcelError(msgStr).toString());
+            return model;
+        }
+        //2. Excel导入字段-名称唯一性判断-在Excel文件中
+        //3. Excel导入字段-名称唯一性判断-在业务表中判断
+        //4. Excel数据添加到货品表
+        equipmentExcelService.addImportExcelByList(dataMapLst);
+
         return model;
     }
 
@@ -341,6 +364,15 @@ public class EquipmentServiceImp implements EquipmentService {
         this.save(equipment);
 
         return model;
+    }
+
+    private StringBuffer exportExcelError(String msgStr) {
+        StringBuffer msgBuf = new StringBuffer();
+        msgBuf.append("Excel导入失败！" + Common.SYS_ENDLINE_DEFAULT);
+        msgBuf.append(msgStr.trim());
+        msgBuf.append("请核对后再次导入" + Common.SYS_ENDLINE_DEFAULT);
+
+        return msgBuf;
     }
 }
 
