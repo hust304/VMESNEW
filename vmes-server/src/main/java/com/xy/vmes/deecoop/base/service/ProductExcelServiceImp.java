@@ -172,53 +172,53 @@ public class ProductExcelServiceImp implements ProductExcelService {
                 }
             }
 
-//            //validityDays 保质期(天) 零的正整数
-//            String validityDays = mapObject.get("validityDays");
-//            if (validityDays != null && validityDays.trim().length() > 0) {
-//                try {
-//                    BigDecimal validityDays_big = new BigDecimal(validityDays);
-//                    if (validityDays_big.toString().indexOf(".") != -1) {
-//                        //String msg_column_validityDays_error = "第 {0} 行: {1}:{2} 输入错误，请输大于零的正整数！"
-//                        String str_error = MessageFormat.format(msg_column_validityDays_error,
-//                                (i + index_int),
-//                                "保质期",
-//                                validityDays);
-//                        strBuf.append(str_error);
-//
-//                        maxRow = maxRow + 1;
-//                        if (maxShowRow_int <= maxRow) {
-//                            return strBuf.toString();
-//                        }
-//                    } else if (validityDays_big.doubleValue() <= 0D) {
-//                        //String msg_column_validityDays_error = "第 {0} 行: {1}:{2} 输入错误，请输大于零的正整数！"
-//                        String str_error = MessageFormat.format(msg_column_validityDays_error,
-//                                (i + index_int),
-//                                "保质期",
-//                                validityDays);
-//                        strBuf.append(str_error);
-//
-//                        maxRow = maxRow + 1;
-//                        if (maxShowRow_int <= maxRow) {
-//                            return strBuf.toString();
-//                        }
-//                    } else {
-//                        //validityDays 保质期(天)
-//                        mapObject.put("validityDays", validityDays_big.toBigInteger().toString());
-//                    }
-//                } catch (NumberFormatException e) {
-//                    //String msg_column_validityDays_error = "第 {0} 行: {1}:{2} 输入错误，请输大于零的正整数！"
-//                    String str_error = MessageFormat.format(msg_column_validityDays_error,
-//                            (i + index_int),
-//                            "保质期",
-//                            validityDays);
-//                    strBuf.append(str_error);
-//
-//                    maxRow = maxRow + 1;
-//                    if (maxShowRow_int <= maxRow) {
-//                        return strBuf.toString();
-//                    }
-//                }
-//            }
+            //validityDays 保质期(天) 零的正整数
+            String validityDays = mapObject.get("validityDays");
+            if (validityDays != null && validityDays.trim().length() > 0) {
+                try {
+                    BigDecimal validityDays_big = new BigDecimal(validityDays);
+                    if (validityDays_big.toString().indexOf(".") != -1) {
+                        //String msg_column_validityDays_error = "第 {0} 行: {1}:{2} 输入错误，请输大于零的正整数！"
+                        String str_error = MessageFormat.format(msg_column_validityDays_error,
+                                (i + index_int),
+                                "保质期",
+                                validityDays);
+                        strBuf.append(str_error);
+
+                        maxRow = maxRow + 1;
+                        if (maxShowRow_int <= maxRow) {
+                            return strBuf.toString();
+                        }
+                    } else if (validityDays_big.doubleValue() <= 0D) {
+                        //String msg_column_validityDays_error = "第 {0} 行: {1}:{2} 输入错误，请输大于零的正整数！"
+                        String str_error = MessageFormat.format(msg_column_validityDays_error,
+                                (i + index_int),
+                                "保质期",
+                                validityDays);
+                        strBuf.append(str_error);
+
+                        maxRow = maxRow + 1;
+                        if (maxShowRow_int <= maxRow) {
+                            return strBuf.toString();
+                        }
+                    } else {
+                        //validityDays 保质期(天)
+                        mapObject.put("validityDays", validityDays_big.toBigInteger().toString());
+                    }
+                } catch (NumberFormatException e) {
+                    //String msg_column_validityDays_error = "第 {0} 行: {1}:{2} 输入错误，请输大于零的正整数！"
+                    String str_error = MessageFormat.format(msg_column_validityDays_error,
+                            (i + index_int),
+                            "保质期",
+                            validityDays);
+                    strBuf.append(str_error);
+
+                    maxRow = maxRow + 1;
+                    if (maxShowRow_int <= maxRow) {
+                        return strBuf.toString();
+                    }
+                }
+            }
 
             //price 单价
             String price = mapObject.get("price");
