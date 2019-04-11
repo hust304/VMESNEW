@@ -90,6 +90,8 @@ public interface DictionaryMapper extends BaseMapper<Dictionary> {
      * 创建时间：2018-08-01
      */
     List<TreeEntity> getTreeList(PageData pd);
+
+    List<Map<String, Object>> findDictionaryListByPathName(PageData pd);
 }
 
 

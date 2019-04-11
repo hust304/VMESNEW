@@ -122,6 +122,8 @@ public interface DictionaryService {
     void createBusinessMap();
     void implementBusinessMapByParentID(String parentId, String companyId);
     void implementBusinessMapByParentID(String parentId, String companyId, String idNotin);
+    //获取区域<id, 区域名称路径>-字典表
+    void implementBusinessMapByAreaPath();
 
     /**
      * 创建人：刘威
@@ -184,6 +186,9 @@ public interface DictionaryService {
     ResultModel getDictionarys(PageData pd)throws Exception;
 
     ResultModel dataListDictionarys(PageData pd) throws Exception;
+
+
+    List<Map<String, Object>> findDictionaryListByPathName(String companyId, String isNeedCompany, String id, Integer id_layer, Integer quert_layer);
 }
 
 

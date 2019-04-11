@@ -3,10 +3,8 @@ package com.xy.vmes.deecoop.system.service;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.*;
 import com.xy.vmes.deecoop.system.dao.DictionaryMapper;
-import com.xy.vmes.entity.Column;
+import com.xy.vmes.entity.*;
 import com.xy.vmes.entity.Dictionary;
-import com.xy.vmes.entity.TreeEntity;
-import com.xy.vmes.entity.User;
 import com.xy.vmes.service.ColumnService;
 import com.xy.vmes.service.DictionaryService;
 import com.xy.vmes.service.UserService;
@@ -269,6 +267,28 @@ public class DictionaryServiceImp implements DictionaryService {
             if (mapName != null && mapName.trim().length() > 0) {
                 this.keyNameMap.put(mapKey, mapName);
                 this.nameKeyMap.put(mapName, mapKey);
+            }
+        }
+    }
+
+    public void implementBusinessMapByAreaPath() {
+        this.createBusinessMap();
+
+        Dictionary dictionary = this.findDictionaryById(Common.DICTIONARY_MAP.get("area"));
+
+        List<Map<String, Object>> mapList = this.findDictionaryListByPathName(null,
+                "true",
+                dictionary.getId(),
+                dictionary.getLayer(),
+                Integer.valueOf(dictionary.getLayer().intValue() + 1));
+
+        if (mapList == null || mapList.size() == 0) {return;}
+        for (Map<String, Object> mapObject : mapList) {
+            String id = (String)mapObject.get("id");
+            String pathName = (String)mapObject.get("pathName");
+            if (pathName != null && pathName.trim().length() > 0) {
+                this.keyNameMap.put(id, pathName);
+                this.nameKeyMap.put(pathName, id);
             }
         }
     }
@@ -868,6 +888,218 @@ public class DictionaryServiceImp implements DictionaryService {
         List<Map> dictionaryList = dictionaryService.findDataList(pd);
         model.putResult(dictionaryList);
         return model;
+    }
+
+    public List<Map<String, Object>> findDictionaryListByPathName(String companyId, String isNeedCompany, String id, Integer id_layer, Integer quert_layer) {
+        PageData findMap = this.idAndLayer2QueryId(id, id_layer, null);
+
+        if (companyId != null && companyId.trim().length() > 0) {
+            findMap.put("companyId", companyId);
+        }
+
+        if ("true".equals(isNeedCompany)) {
+            if (companyId == null || companyId.trim().length() == 0) {
+                findMap.put("companyId", Common.DEPARTMENT_ROOT_ID);
+            }
+        }
+
+        if (quert_layer != null) {
+            findMap.put("layer", quert_layer.toString());
+        }
+        findMap.put("orderStr", "dic.layer asc");
+
+        List<Map<String, Object>> mapList = null;
+        try {
+            mapList = dictionaryMapper.findDictionaryListByPathName(findMap);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (mapList == null || mapList.size() == 0) {return null;}
+
+        for (Map<String, Object> mapObject : mapList) {
+            String pathId = new String();
+            String pathName = new String();
+
+            if (quert_layer == null) {
+                String id0 = (String)mapObject.get("id0");
+                if (id0 != null && id0.trim().length() > 0) {
+                    pathId = pathId + id0 + "-";
+                }
+                String dname0 = (String)mapObject.get("dname0");
+                if (dname0 != null && dname0.trim().length() > 0) {
+                    pathName = pathName + dname0 + "-";
+                }
+
+                String id1 = (String)mapObject.get("id1");
+                if (id1 != null && id1.trim().length() > 0) {
+                    pathId = pathId + id1 + "-";
+                }
+                String dname1 = (String)mapObject.get("dname1");
+                if (dname1 != null && dname1.trim().length() > 0) {
+                    pathName = pathName + dname1 + "-";
+                }
+
+                String id2 = (String)mapObject.get("id2");
+                if (id2 != null && id2.trim().length() > 0) {
+                    pathId = pathId + id2 + "-";
+                }
+                String dname2 = (String)mapObject.get("dname2");
+                if (dname2 != null && dname2.trim().length() > 0) {
+                    pathName = pathName + dname2 + "-";
+                }
+
+                String id3 = (String)mapObject.get("id3");
+                if (id3 != null && id3.trim().length() > 0) {
+                    pathId = pathId + id3 + "-";
+                }
+                String dname3 = (String)mapObject.get("dname3");
+                if (dname3 != null && dname3.trim().length() > 0) {
+                    pathName = pathName + dname3 + "-";
+                }
+
+                String id4 = (String)mapObject.get("id4");
+                if (id4 != null && id4.trim().length() > 0) {
+                    pathId = pathId + id4 + "-";
+                }
+                String dname4 = (String)mapObject.get("dname4");
+                if (dname4 != null && dname4.trim().length() > 0) {
+                    pathName = pathName + dname4 + "-";
+                }
+
+                String id5 = (String)mapObject.get("id5");
+                if (id5 != null && id5.trim().length() > 0) {
+                    pathId = pathId + id5 + "-";
+                }
+                String dname5 = (String)mapObject.get("dname5");
+                if (dname5 != null && dname5.trim().length() > 0) {
+                    pathName = pathName + dname5 + "-";
+                }
+
+                String id6 = (String)mapObject.get("id6");
+                if (id6 != null && id6.trim().length() > 0) {
+                    pathId = pathId + id6 + "-";
+                }
+                String dname6 = (String)mapObject.get("dname6");
+                if (dname6 != null && dname6.trim().length() > 0) {
+                    pathName = pathName + dname6 + "-";
+                }
+            } else if (quert_layer != null) {
+                if (0 <= quert_layer.intValue()) {
+                    String id0 = (String)mapObject.get("id0");
+                    if (id0 != null && id0.trim().length() > 0) {
+                        pathId = pathId + id0 + "-";
+                    }
+                    String dname0 = (String)mapObject.get("dname0");
+                    if (dname0 != null && dname0.trim().length() > 0) {
+                        pathName = pathName + dname0 + "-";
+                    }
+                }
+
+                if (1 <= quert_layer.intValue()) {
+                    String id1 = (String)mapObject.get("id1");
+                    if (id1 != null && id1.trim().length() > 0) {
+                        pathId = pathId + id1 + "-";
+                    }
+                    String dname1 = (String)mapObject.get("dname1");
+                    if (dname1 != null && dname1.trim().length() > 0) {
+                        pathName = pathName + dname1 + "-";
+                    }
+                }
+
+                if (2 <= quert_layer.intValue()) {
+                    String id2 = (String)mapObject.get("id2");
+                    if (id2 != null && id2.trim().length() > 0) {
+                        pathId = pathId + id2 + "-";
+                    }
+                    String dname2 = (String)mapObject.get("dname2");
+                    if (dname2 != null && dname2.trim().length() > 0) {
+                        pathName = pathName + dname2 + "-";
+                    }
+                }
+
+                if (3 <= quert_layer.intValue()) {
+                    String id3 = (String)mapObject.get("id3");
+                    if (id3 != null && id3.trim().length() > 0) {
+                        pathId = pathId + id3 + "-";
+                    }
+                    String dname3 = (String)mapObject.get("dname3");
+                    if (dname3 != null && dname3.trim().length() > 0) {
+                        pathName = pathName + dname3 + "-";
+                    }
+                }
+
+                if (4 <= quert_layer.intValue()) {
+                    String id4 = (String)mapObject.get("id4");
+                    if (id4 != null && id4.trim().length() > 0) {
+                        pathId = pathId + id4 + "-";
+                    }
+                    String dname4 = (String)mapObject.get("dname4");
+                    if (dname4 != null && dname4.trim().length() > 0) {
+                        pathName = pathName + dname4 + "-";
+                    }
+                }
+
+                if (5 <= quert_layer.intValue()) {
+                    String id5 = (String)mapObject.get("id5");
+                    if (id5 != null && id5.trim().length() > 0) {
+                        pathId = pathId + id5 + "-";
+                    }
+                    String dname5 = (String)mapObject.get("dname5");
+                    if (dname5 != null && dname5.trim().length() > 0) {
+                        pathName = pathName + dname5 + "-";
+                    }
+                }
+
+                if (6 <= quert_layer.intValue()) {
+                    String id6 = (String)mapObject.get("id6");
+                    if (id6 != null && id6.trim().length() > 0) {
+                        pathId = pathId + id6 + "-";
+                    }
+                    String dname6 = (String)mapObject.get("dname6");
+                    if (dname6 != null && dname6.trim().length() > 0) {
+                        pathName = pathName + dname6 + "-";
+                    }
+                }
+            }
+
+            //去掉最后一个'-'
+            if (pathId.lastIndexOf("-") != -1) {
+                pathId = pathId.substring(0, pathId.lastIndexOf("-"));
+            }
+            mapObject.put("pathId", pathId);
+
+            //去掉最后一个'-'
+            if (pathName.lastIndexOf("-") != -1) {
+                pathName = pathName.substring(0, pathName.lastIndexOf("-"));
+            }
+            mapObject.put("pathName", pathName);
+        }
+
+        return mapList;
+    }
+
+    private PageData idAndLayer2QueryId(String id, Integer layer, PageData mapObject) {
+        if (mapObject == null) {mapObject = new PageData();}
+        if (id == null || id.trim().length() == 0) {return mapObject;}
+        if (layer == null) {return mapObject;}
+
+        if (0 == layer.intValue()) {
+            mapObject.put("id0", id);
+        } else if (1 == layer.intValue()) {
+            mapObject.put("id1", id);
+        } else if (2 == layer.intValue()) {
+            mapObject.put("id2", id);
+        } else if (3 == layer.intValue()) {
+            mapObject.put("id3", id);
+        } else if (4 == layer.intValue()) {
+            mapObject.put("id4", id);
+        } else if (5 == layer.intValue()) {
+            mapObject.put("id5", id);
+        } else if (6 == layer.intValue()) {
+            mapObject.put("id6", id);
+        }
+
+        return mapObject;
     }
 }
 
