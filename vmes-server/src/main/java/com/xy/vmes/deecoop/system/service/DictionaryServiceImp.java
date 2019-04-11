@@ -904,7 +904,7 @@ public class DictionaryServiceImp implements DictionaryService {
         }
 
         if (quert_layer != null) {
-            findMap.put("layer", quert_layer.toString());
+            findMap.put("pathLayer", quert_layer.toString());
         }
         findMap.put("orderStr", "dic.layer asc");
 
@@ -984,7 +984,7 @@ public class DictionaryServiceImp implements DictionaryService {
                     pathName = pathName + dname6 + "-";
                 }
             } else if (quert_layer != null) {
-                if (0 <= quert_layer.intValue()) {
+                if (0 >= quert_layer.intValue()) {
                     String id0 = (String)mapObject.get("id0");
                     if (id0 != null && id0.trim().length() > 0) {
                         pathId = pathId + id0 + "-";
@@ -995,7 +995,7 @@ public class DictionaryServiceImp implements DictionaryService {
                     }
                 }
 
-                if (1 <= quert_layer.intValue()) {
+                if (1 >= quert_layer.intValue()) {
                     String id1 = (String)mapObject.get("id1");
                     if (id1 != null && id1.trim().length() > 0) {
                         pathId = pathId + id1 + "-";
@@ -1006,7 +1006,7 @@ public class DictionaryServiceImp implements DictionaryService {
                     }
                 }
 
-                if (2 <= quert_layer.intValue()) {
+                if (2 >= quert_layer.intValue()) {
                     String id2 = (String)mapObject.get("id2");
                     if (id2 != null && id2.trim().length() > 0) {
                         pathId = pathId + id2 + "-";
@@ -1017,7 +1017,7 @@ public class DictionaryServiceImp implements DictionaryService {
                     }
                 }
 
-                if (3 <= quert_layer.intValue()) {
+                if (3 >= quert_layer.intValue()) {
                     String id3 = (String)mapObject.get("id3");
                     if (id3 != null && id3.trim().length() > 0) {
                         pathId = pathId + id3 + "-";
@@ -1028,7 +1028,7 @@ public class DictionaryServiceImp implements DictionaryService {
                     }
                 }
 
-                if (4 <= quert_layer.intValue()) {
+                if (4 >= quert_layer.intValue()) {
                     String id4 = (String)mapObject.get("id4");
                     if (id4 != null && id4.trim().length() > 0) {
                         pathId = pathId + id4 + "-";
@@ -1039,7 +1039,7 @@ public class DictionaryServiceImp implements DictionaryService {
                     }
                 }
 
-                if (5 <= quert_layer.intValue()) {
+                if (5 >= quert_layer.intValue()) {
                     String id5 = (String)mapObject.get("id5");
                     if (id5 != null && id5.trim().length() > 0) {
                         pathId = pathId + id5 + "-";
@@ -1050,7 +1050,7 @@ public class DictionaryServiceImp implements DictionaryService {
                     }
                 }
 
-                if (6 <= quert_layer.intValue()) {
+                if (6 >= quert_layer.intValue()) {
                     String id6 = (String)mapObject.get("id6");
                     if (id6 != null && id6.trim().length() > 0) {
                         pathId = pathId + id6 + "-";

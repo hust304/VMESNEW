@@ -425,7 +425,7 @@
             left join vmes_dictionary dic6 on dic.id_6 = dic6.id
         <where>
             <if test="companyId != null and companyId != ''" >
-                and company_id = #{companyId}
+                and dic.company_id = #{companyId}
             </if>
             <if test="id0= null and id0 != ''">
                 and dic.id_0 = #{id0}
@@ -451,6 +451,10 @@
             <if test="layer != null" >
                 and dic.layer = ${layer}
             </if>
+            <if test="pathLayer != null" >
+                and dic.layer >= ${pathLayer}
+            </if>
+
             <if test="queryStr != null and queryStr!=''" >
                 and ${queryStr}
             </if>

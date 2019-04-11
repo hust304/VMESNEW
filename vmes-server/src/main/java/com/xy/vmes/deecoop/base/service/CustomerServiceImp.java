@@ -53,6 +53,9 @@ public class CustomerServiceImp implements CustomerService {
 
     @Autowired
     private SaleReceiveRecordService saleReceiveRecordService;
+    @Autowired
+    private CustomerExcelService customerExcelService;
+
 
     /**
      * 创建人：陈刚 自动创建，禁止修改
@@ -60,7 +63,6 @@ public class CustomerServiceImp implements CustomerService {
      */
     @Override
     public void save(Customer customer) throws Exception{
-        customer.setId(Conv.createUuid());
         customer.setCdate(new Date());
         customer.setUdate(new Date());
         customerMapper.insert(customer);
@@ -604,11 +606,12 @@ public class CustomerServiceImp implements CustomerService {
         }
 
         Customer object = (Customer)HttpUtils.pageData2Entity(pageData, new Customer());
+        object.setId(Conv.createUuid());
         object.setCuser(pageData.getString("cuser"));
         object.setCompanyId(companyId);
         object.setCode(code);
         //生成客户供应商二维码
-        String qrcode = fileService.createQRCode("customer", YvanUtil.toJson(object));
+        String qrcode = fileService.createQRCode("customer", object.getId());
         if (qrcode != null && qrcode.trim().length() > 0) {
             object.setQrcode(qrcode);
         }
@@ -770,11 +773,24 @@ public class CustomerServiceImp implements CustomerService {
         //去掉列表名称行
         dataMapLst.remove(0);
 
-        //2. Excel导入字段(非空,数据有效性验证[数字类型,字典表(大小)类是否匹配])
-        //3. Excel导入字段-名称唯一性判断-在Excel文件中
-        //4. Excel导入字段-名称唯一性判断-在业务表中判断
-        //5. List<ExcelEntity> --> (转换) List<业务表DB>对象
-        //6. 遍历List<业务表DB> 对业务表添加或修改
+        //1. Excel导入字段(非空,数据有效性验证[数字类型,字典表(大小)类是否匹配])
+        String msgStr = customerExcelService.checkColumnImportExcel(dataMapLst,
+                companyId,
+                userId,
+                Integer.valueOf(3),
+                Common.SYS_IMPORTEXCEL_MESSAGE_MAXROW);
+        if (msgStr != null && msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(this.exportExcelError(msgStr).toString());
+            return model;
+        }
+
+        //2. Excel导入字段-名称唯一性判断-在Excel文件中
+        //3. Excel导入字段-名称唯一性判断-在业务表中判断
+        //4. Excel数据添加到货品表
+        customerExcelService.addImportExcelByList(dataMapLst);
+
+
         return model;
     }
 
@@ -798,5 +814,14 @@ public class CustomerServiceImp implements CustomerService {
         result.put("treeList", treeObj);
         model.putResult(result);
         return model;
+    }
+
+    private StringBuffer exportExcelError(String msgStr) {
+        StringBuffer msgBuf = new StringBuffer();
+        msgBuf.append("Excel导入失败！" + Common.SYS_ENDLINE_DEFAULT);
+        msgBuf.append(msgStr.trim());
+        msgBuf.append("请核对后再次导入" + Common.SYS_ENDLINE_DEFAULT);
+
+        return msgBuf;
     }
 }

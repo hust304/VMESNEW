@@ -70,6 +70,7 @@ public class ProductExcelServiceImp implements ProductExcelService {
 
             //companyId 企业ID
             mapObject.put("companyId", companyId);
+            mapObject.put("userId", userId);
 
             //name 货品名称
             String name = mapObject.get("name");
