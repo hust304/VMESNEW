@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.entity.Employee;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -153,6 +154,8 @@ public interface EmployeeService {
     void exportExcelEmployees(PageData pd, Pagination pg)throws Exception;
 
     ResultModel selectEmployeeAndUserById(String employPostId) throws Exception;
+
+    ResultModel importExcelEmployee(MultipartFile file) throws Exception;
 }
 
 
