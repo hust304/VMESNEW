@@ -427,6 +427,10 @@ public class ProductServiceImp implements ProductService {
             pd.put("genre", genreId);
         }
 
+        //isNeedCustomerPrice 是否需要客户货品单价 (true:需要客户单价 false:无需客户单价 is null 无需客户单价)
+        String isNeedCustomerPrice = pd.getString("isNeedCustomerPrice");
+        String customerId = pd.getString("customerId");
+
         List<Map> varMapList = new ArrayList();
         List<Map> varList = this.getDataListPage(pd, pg);
 
@@ -452,6 +456,15 @@ public class ProductServiceImp implements ProductService {
         if(varList!=null&&varList.size()>0){
             for(int i=0;i<varList.size();i++){
                 Map map = varList.get(i);
+                //price 货品价格
+                //BigDecimal price = (BigDecimal)map.get("price");
+
+                //customerPrice 货品客户价格
+                BigDecimal customerPrice = (BigDecimal)map.get("customerPrice");
+                if ("true".equals(isNeedCustomerPrice) && customerPrice != null && customerPrice.doubleValue() > 0) {
+                    map.put("price", customerPrice);
+                }
+
                 Map<String, String> varMap = new HashMap<String, String>();
                 varMap.putAll(varModelMap);
                 for (Map.Entry<String, String> entry : varMap.entrySet()) {
