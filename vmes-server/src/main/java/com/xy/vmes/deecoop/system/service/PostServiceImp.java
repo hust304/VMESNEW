@@ -198,6 +198,31 @@ public class PostServiceImp implements PostService {
     }
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+    private Map<String, String> keyNameMap;
+    private Map<String, String> nameKeyMap;
+
+    public Map<String, String> getKeyNameMap() {return keyNameMap;}
+    public Map<String, String> getNameKeyMap() {
+        return nameKeyMap;
+    }
+    public void createBusinessMap() {
+        this.keyNameMap = new HashMap<String, String>();
+        this.nameKeyMap = new HashMap<String, String>();
+    }
+    public void implementBusinessMapByDeptId(String deptId) {
+        this.createBusinessMap();
+
+        List<Post> postList = this.findPostListByDeptId(deptId);
+        if (postList == null || postList.size() == 0) {return;}
+        for (Post object : postList) {
+            String mapKey = object.getId();
+            String mapName = object.getName();
+            if (mapName != null && mapName.trim().length() > 0) {
+                this.keyNameMap.put(mapKey, mapName);
+                this.nameKeyMap.put(mapName, mapKey);
+            }
+        }
+    }
 
 //    /**
 //     * 生成岗位编码

@@ -118,6 +118,10 @@ public interface PostService {
 
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+    Map<String, String> getKeyNameMap();
+    Map<String, String> getNameKeyMap();
+    void createBusinessMap();
+    void implementBusinessMapByDeptId(String deptId);
 
 //    /**
 //     * 生成岗位编码
