@@ -257,13 +257,14 @@ public class EmployeeServiceImp implements EmployeeService {
     }
 
     public boolean isExistByCode(String id, String code,String companyId) {
-        if (id == null || id.trim().length() == 0) {return false;}
         if (code == null || code.trim().length() == 0) {return false;}
 
         PageData findMap = new PageData();
         findMap.put("id", id);
         findMap.put("code", code);
         findMap.put("currentCompanyId",companyId);
+        //是否禁用(0:已禁用 1:启用)
+        findMap.put("isdisable", "1");
         if (id != null && id.trim().length() > 0) {
             findMap.put("id", id);
             findMap.put("isSelfExist", "true");

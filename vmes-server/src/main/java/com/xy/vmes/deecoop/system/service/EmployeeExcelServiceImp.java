@@ -365,7 +365,7 @@ public class EmployeeExcelServiceImp implements EmployeeExcelService {
             maxShowRow_int = maxShowRow.intValue();
         }
 
-        String msg_column_exist_1 = "第 {0} 行: ({1}:{2})输入重复，与(第 {3} 行)重复！" + Common.SYS_ENDLINE_DEFAULT;
+        String msg_column_exist_1 = "第 {0} 行: {1}:{2}输入重复，与第 {3} 行重复！" + Common.SYS_ENDLINE_DEFAULT;
         Map<String, Integer> empMobileMap = new HashMap<String, Integer>();
         Map<String, Integer> empCodeMap = new HashMap<String, Integer>();
 
@@ -431,7 +431,7 @@ public class EmployeeExcelServiceImp implements EmployeeExcelService {
             maxShowRow_int = maxShowRow.intValue();
         }
 
-        String msg_column_exist_employee = "第 {0} 行: ({1}:{2})在员工管理中已存在！" + Common.SYS_ENDLINE_DEFAULT;
+        String msg_column_exist_employee = "第 {0} 行: {1}:{2}在员工管理中已存在！" + Common.SYS_ENDLINE_DEFAULT;
 
         StringBuffer strBuf = new StringBuffer();
         for (int i = 0; i < objectList.size(); i++) {
