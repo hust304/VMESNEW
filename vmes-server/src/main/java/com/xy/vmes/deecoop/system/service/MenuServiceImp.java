@@ -1072,12 +1072,13 @@ public class MenuServiceImp implements MenuService {
         // 用户角色(当前用户)-(角色ID','分隔的字符串)
         ResultModel model = new ResultModel();
         String roleIds = (String)pageData.get("roleIds");
+        Role role = roleService.findRoleById(roleIds);
 
         String userRole = "";
         String userType = (String)pageData.get("userType");
 
         List<Menu> menuList = new ArrayList<>();
-        Integer maxLayer = 3;
+        Integer maxLayer = Integer.valueOf(0);
 
         //(userType_admin:超级管理员 userType_company:企业管理员 userType_employee:普通用户 userType_outer:外部用户)
         if (!Common.DICTIONARY_MAP.get("userType_admin").equals(userType) && roleIds != null && roleIds.trim().length() > 0) {
@@ -1111,23 +1112,39 @@ public class MenuServiceImp implements MenuService {
             }
 
             menuList = roleMenuService.mapList2MenuList(mapList, new ArrayList<Menu>());
-            //遍历菜单List<Menu>-获取菜单最大级别
-            maxLayer = this.findMaxLayerByMenuList(menuList);
-        }else {
+        } else {
             PageData pd = new PageData();
             pd.put("isQueryAll","true");
             menuList = this.dataList(pd);
         }
 
+        //遍历菜单List<Menu>-获取菜单最大级别
+        if (menuList != null && menuList.size() > 0) {
+            maxLayer = this.findMaxLayerByMenuList(menuList);
+        }
 
         //3. 生成菜单树
         menuTreeService.initialization();
         menuTreeService.findMenuTreeByList(menuList, maxLayer);
         List<TreeEntity> treeList = menuTreeService.creatMenuTree(maxLayer, null, null);
+        if (treeList == null || treeList.size() == 0) {
+            String msgStr = "登录用户角色没有绑定菜单或绑定菜单异常，请于管理员联系！" + Common.SYS_ENDLINE_DEFAULT;
+            if (role != null) {
+                String msgTemp_2 = "角色编码({0})角色名称({1}) 该角色没有绑定菜单或绑定菜单异常，请于管理员联系！" + Common.SYS_ENDLINE_DEFAULT;
+                msgStr = MessageFormat.format(msgTemp_2,
+                        role.getCode(),
+                        role.getName());
+
+                model.putCode(Integer.valueOf(1));
+                model.putMsg(msgStr);
+                return model;
+            }
+        }
 
         String treeJsonStr = YvanUtil.toJson(treeList);
         //System.out.println("treeJsonStr: " + treeJsonStr);
         model.putResult(treeJsonStr);
+
         return model;
     }
 

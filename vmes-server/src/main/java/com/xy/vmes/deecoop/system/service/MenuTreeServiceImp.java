@@ -274,11 +274,10 @@ public class MenuTreeServiceImp implements MenuTreeService {
                 //生成新的childMap
                 if (childMap != null && childMap.size() > 0) {childMap.clear();}
                 childMap = this.treeList2Map(nodeList, childMap);
-
-                treeList = nodeList;
             }
 
             //递归调用: creatMenuTree()
+            treeList = nodeList;
             return this.creatMenuTree(Integer.valueOf(layer.intValue()-1), childMap, treeList);
         }
     }
