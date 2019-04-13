@@ -308,7 +308,7 @@ public class UserExcelServiceImp implements UserExcelService {
 
     public String checkExistImportExcelByDatabase(List<LinkedHashMap<String, String>> objectList,
                                            Integer index,
-                                           Integer maxShowRow) {
+                                           Integer maxShowRow) throws Exception {
         if (objectList == null || objectList.size() == 0) {return new String();}
 
         int maxRow = 0;
@@ -352,7 +352,9 @@ public class UserExcelServiceImp implements UserExcelService {
             String mobile = mapObject.get("mobile");
             if (mobile != null && mobile.trim().length() > 0) {
                 //用户表
-                if (userService.isExistByMobile(null, mobile)) {
+                PageData pageData = new PageData();
+                pageData.put("mobile",mobile);
+                if (userService.isExistMobile(pageData)) {
                     //String msg_column_exist_mobile_user = "第 {0} 行: ({1}:{2})在用户管理中已存在！"
                     String str_error = MessageFormat.format(msg_column_exist_mobile_user,
                             (i+index_int),

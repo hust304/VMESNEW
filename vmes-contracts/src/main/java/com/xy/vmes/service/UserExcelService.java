@@ -17,7 +17,7 @@ public interface UserExcelService {
 
     String checkExistImportExcelByDatabase(List<LinkedHashMap<String, String>> objectList,
                                        Integer index,
-                                       Integer maxShowRow);
+                                       Integer maxShowRow) throws Exception;
 
     void addImportExcelByList(List<LinkedHashMap<String, String>> objectList, String userId);
 }

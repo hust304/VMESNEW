@@ -325,7 +325,9 @@ public class EmployeeServiceImp implements EmployeeService {
             model.putMsg("手机号:" + mobile + "在员工管理中已经存在，请核对后再次输入！");
             return model;
         }
-        if (userService.isExistByMobile(null, mobile)) {
+        PageData pageData = new PageData();
+        pageData.put("mobile","mobile");
+        if (userService.isExistMobile(pageData)) {
             model.putCode(1);
             model.putMsg("手机号:" + mobile + "在用户管理中已经存在，请核对后再次输入！");
             return model;
@@ -420,7 +422,10 @@ public class EmployeeServiceImp implements EmployeeService {
             return model;
         }
         if(!StringUtils.isEmpty(userId)){
-            if (userService.isExistByMobile(userId, mobile)) {
+            PageData pageData = new PageData();
+            pageData.put("id",userId);
+            pageData.put("mobile",mobile);
+            if (userService.isExistMobile(pageData)) {
                 model.putCode(1);
                 model.putMsg("手机号:" + mobile + "在用户管理中已经存在，请核对后再次输入！");
                 return model;
