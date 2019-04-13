@@ -50,7 +50,6 @@ public class BomTreeServiceImp implements BomTreeService {
     */
     @Override
     public void save(BomTree bomTree) throws Exception{
-        bomTree.setId(Conv.createUuid());
         bomTree.setCdate(new Date());
         bomTree.setUdate(new Date());
         bomTreeMapper.insert(bomTree);
