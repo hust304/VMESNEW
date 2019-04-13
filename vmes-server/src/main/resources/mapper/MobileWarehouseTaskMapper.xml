@@ -15,9 +15,13 @@
         select detail.id
         from vmes_warehouse_check_detail detail
         left join vmes_warehouse_check warehouse on warehouse.id = detail.parent_id
+        left join vmes_warehouse_check_executor executor on executor.detail_id = detail.id and executor.isdisable = '1'
         <where>
             <if test="currentCompanyId != null and currentCompanyId != ''" >
                 and warehouse.company_id=#{currentCompanyId}
+            </if>
+            <if test="currentUserId != null and currentUserId != ''" >
+                and executor.executor_id = #{currentUserId}
             </if>
             <if test="dtlState != null and dtlState != ''" >
                 and detail.state = #{dtlState}
@@ -27,9 +31,13 @@
         select detail.id
         from vmes_warehouse_out_detail detail
         left join vmes_warehouse_out warehouse on warehouse.id = detail.parent_id
+        left join vmes_warehouse_out_executor executor on executor.detail_id = detail.id and executor.isdisable = '1'
         <where>
             <if test="currentCompanyId != null and currentCompanyId != ''" >
                 and warehouse.company_id=#{currentCompanyId}
+            </if>
+            <if test="currentUserId != null and currentUserId != ''" >
+                and executor.executor_id = #{currentUserId}
             </if>
             <if test="dtlState != null and dtlState != ''" >
                 and detail.state = #{dtlState}
@@ -39,9 +47,13 @@
         select detail.id
         from vmes_warehouse_in_detail detail
         left join vmes_warehouse_in warehouse on warehouse.id = detail.parent_id
+        left join vmes_warehouse_in_executor executor on executor.detail_id = detail.id and executor.isdisable = '1'
         <where>
             <if test="currentCompanyId != null and currentCompanyId != ''" >
                 and warehouse.company_id=#{currentCompanyId}
+            </if>
+            <if test="currentUserId != null and currentUserId != ''" >
+                and executor.executor_id = #{currentUserId}
             </if>
             <if test="dtlState != null and dtlState != ''" >
                 and detail.state = #{dtlState}
@@ -51,9 +63,13 @@
         select detail.id
         from vmes_warehouse_move_detail detail
         left join vmes_warehouse_move warehouse on warehouse.id = detail.parent_id
+        left join vmes_warehouse_move_executor executor on executor.detail_id = detail.id and executor.isdisable = '1'
         <where>
             <if test="currentCompanyId != null and currentCompanyId != ''" >
                 and warehouse.company_id=#{currentCompanyId}
+            </if>
+            <if test="currentUserId != null and currentUserId != ''" >
+                and executor.executor_id = #{currentUserId}
             </if>
             <if test="dtlState != null and dtlState != ''" >
                 and detail.state = #{dtlState}

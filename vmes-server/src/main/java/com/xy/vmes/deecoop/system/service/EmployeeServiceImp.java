@@ -473,6 +473,7 @@ public class EmployeeServiceImp implements EmployeeService {
         }else {
             //修改用户信息
             User user = userService.selectById(userId);
+            user.setUserName(employee.getName());
             user.setEmail(employee.getEmail());
             user.setEmployId(employee.getId());
             user.setMobile(employee.getMobile());

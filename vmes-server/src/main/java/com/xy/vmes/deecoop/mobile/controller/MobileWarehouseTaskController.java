@@ -44,6 +44,7 @@ public class MobileWarehouseTaskController {
         logger.info("################/mobile/mobileWarehouseTask/getTaskNum 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         PageData pd = HttpUtils.parsePageData();
+        pd.put("dtlState","1");
         ResultModel model = mobileWarehouseTaskService.getTaskNum(pd);
         Long endTime = System.currentTimeMillis();
         logger.info("################/mobile/mobileWarehouseTask/getTaskNum 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
