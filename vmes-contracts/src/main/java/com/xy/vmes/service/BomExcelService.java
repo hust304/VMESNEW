@@ -2,6 +2,7 @@ package com.xy.vmes.service;
 
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public interface BomExcelService {
     String checkColumnImportExcel(List<LinkedHashMap<String, String>> objectList,
@@ -18,5 +19,16 @@ public interface BomExcelService {
                                            Integer index,
                                            Integer maxShowRow);
 
-    void addImportExcelByList(List<LinkedHashMap<String, String>> objectList);
+    /**
+     * 获取添加BOM及BOMTree数据Map结构体- Excel导入数据
+     * Map<(货品编码,BOM名称), Excel导入数据>
+     *
+     * @return
+     */
+    Map<String, List<Map<String, String>>> findBomMapByImportDataList(List<LinkedHashMap<String, String>> objectList);
+
+    void addImportExcelByMap(Map<String, List<Map<String, String>>> bomMap);
+
+
+
 }

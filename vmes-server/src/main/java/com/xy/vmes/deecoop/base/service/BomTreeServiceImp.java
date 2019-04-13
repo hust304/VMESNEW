@@ -448,6 +448,19 @@ public class BomTreeServiceImp implements BomTreeService {
         }
         return model;
     }
+
+    /**
+     * 添加(BOMTree) vmes_bom_tree - Excel导入时调用
+     *
+     * @param bomid     bomID
+     * @param prodList  货品id_List
+     * @param dataMap   Excel导入行数据
+     * @param count     递归执行次数
+     */
+    public String addBomTreeByProdList(String bomid, Map<String, String> dataMap, List<String> prodList, int count) {
+
+        return null;
+    }
 }
 
 
