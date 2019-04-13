@@ -546,7 +546,10 @@ public class PostServiceImp implements PostService {
         result.put("hideTitles",titlesHideList);
         result.put("titles",titlesList);
 
-
+        String isdisable = pd.getString("isdisable");
+        if(StringUtils.isEmpty(isdisable)){
+            pd.put("isdisable","1");
+        }
         if (pd.get("deptId") != null && pd.get("deptId").toString().trim().length() > 0) {
             String deptId = ((String)pd.get("deptId")).trim();
             String queryIdStr = departmentService.findDeptidById(deptId, null, "department.");

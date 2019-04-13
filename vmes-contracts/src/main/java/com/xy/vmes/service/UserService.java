@@ -136,7 +136,7 @@ public interface UserService {
      * 创建人：刘威
      * 创建时间：2018-08-03
      */
-    void createUserAndRole(PageData pd, Employee employee ) throws Exception;
+    ResultModel createUserAndRole(PageData pd, Employee employee ) throws Exception;
 
     User findUser(PageData object);
     User findUserById(String id);

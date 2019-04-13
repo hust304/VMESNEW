@@ -373,11 +373,15 @@ public class EmployeeServiceImp implements EmployeeService {
         //新增用户信息
         String deptId = post.getDeptId();
         pd.put("deptId",deptId);
-        try {
-            userService.createUserAndRole(pd,employee);
-        }catch (RestException e){
-            model.putCode(e.getCode());
-            model.putMsg(e.getMessage());
+//        try {
+//            userService.createUserAndRole(pd,employee);
+//        }catch (RestException e){
+//            model.putCode(e.getCode());
+//            model.putMsg(e.getMessage());
+//            return model;
+//        }
+        model = userService.createUserAndRole(pd,employee);
+        if(((Integer)model.get("code")).intValue()!=0){
             return model;
         }
         return model;
@@ -455,11 +459,15 @@ public class EmployeeServiceImp implements EmployeeService {
             Post post = postService.selectById(employPost.getPostId());
             String deptId = post.getDeptId();
             pd.put("deptId",deptId);
-            try {
-                userService.createUserAndRole(pd,employee);
-            }catch (RestException e){
-                model.putCode(e.getCode());
-                model.putMsg(e.getMessage());
+//            try {
+//                userService.createUserAndRole(pd,employee);
+//            }catch (RestException e){
+//                model.putCode(e.getCode());
+//                model.putMsg(e.getMessage());
+//                return model;
+//            }
+            model = userService.createUserAndRole(pd,employee);
+            if(((Integer)model.get("code")).intValue()!=0){
                 return model;
             }
         }else {
@@ -781,14 +789,14 @@ public class EmployeeServiceImp implements EmployeeService {
                         String deptId = post.getDeptId();
                         pd.put("deptId",deptId);
                         pd.put("roleId",employRolesMap.get("roleId").toString());
-                        try {
                             //新增用户信息
-                            userService.createUserAndRole(pd,employee);
+                        model = userService.createUserAndRole(pd,employee);
+                        if(((Integer)model.get("code")).intValue()!=0){
+                            msg.append(msgHeader+"创建账号失败，失败原因如下："+model.get("msg"));
+                            error = error + 1;
+                        }else{
                             msg.append(msgHeader+"创建账号成功！");
                             success = success + 1;
-                        }catch (RestException e){
-                            msg.append(msgHeader+"创建账号失败，失败原因如下："+e.getMessage());
-                            error = error + 1;
                         }
                     }else {
                         msg.append(msgHeader+"创建账号失败，失败原因如下：当前员工账号已存在");

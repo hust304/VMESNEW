@@ -274,17 +274,29 @@ public class UserServiceImp implements UserService {
      * 创建时间：2018-08-03
      */
     @Override
-    public void createUserAndRole(PageData pd, Employee employee ) throws Exception {
+    public ResultModel createUserAndRole(PageData pd, Employee employee ) throws Exception {
+        ResultModel model = new ResultModel();
         String roleId = pd.getString("roleId");
         if(!StringUtils.isEmpty(roleId)){
             User user = new User();
             if(isExistMobile(pd)){
-                throw  new RestException("10","用户中该手机号已存在，请修改手机号！");
+//                throw  new RestException("10","用户中该手机号已存在，请修改手机号！");
+                model.putCode("10");
+                model.putMsg("用户中该手机号已存在，请修改手机号！");
+                return model;
             }
             String code = coderuleService.createCoder(employee.getCompanyId(),"vmes_user");
             if(StringUtils.isEmpty(code)){
-                throw  new RestException("11","编码规则创建异常，请重新操作！");
+//                throw  new RestException("11","编码规则创建异常，请重新操作！");
+                model.putCode("11");
+                model.putMsg("编码规则创建异常，请重新操作！");
+                return model;
             }
+            model = checkUserNum(employee.getCompanyId());
+            if(((Integer)model.get("code")).intValue()!=0){
+                return model;
+            }
+
             user.setUserCode(code);
             user.setUserName(employee.getName());
             user.setCompanyId(employee.getCompanyId());
@@ -316,6 +328,7 @@ public class UserServiceImp implements UserService {
             userRole.setUuser(pd.getString("uuser"));
             userRoleService.save(userRole);
         }
+        return model;
     }
 
     public User findUser(PageData object) {
@@ -533,31 +546,10 @@ public class UserServiceImp implements UserService {
             }
         }
 
-        //D. 验证企业用户数
-        //获取当前企业最大用户数
-        String msg_company_error_1 = "企业编码:{0} 企业名称:{1} 没有设定系统用户数，请于管理员联系！" + Common.SYS_ENDLINE_DEFAULT;
-        Department company = departmentService.findDepartmentById(companyId);
-        if (company.getCompanyUserCount() == null) {
-            String msgStr = MessageFormat.format(msg_company_error_1,
-                    company.getCode(),
-                    company.getName());
-            model.putCode(Integer.valueOf(1));
-            model.putMsg(msgStr);
-            return model;
-        }
-        Integer maxUserCount = company.getCompanyUserCount();
 
-        //当前企业有效用户数
-        Integer userCount = this.findUserCountByCompanyId(companyId);
-        String msg_company_error_2 = "企业编码:{0} 企业名称:{1} 最大系统用户数:{2} 有效用户数:{3} 当前公司用户数已满员，请联系平台相关人员购买用户数！" + Common.SYS_ENDLINE_DEFAULT;
-        if ((userCount.intValue() + 1) > maxUserCount.intValue()) {
-            String msgStr = MessageFormat.format(msg_company_error_2,
-                    company.getCode(),
-                    company.getName(),
-                    maxUserCount.toString(),
-                    userCount.toString());
-            model.putCode(Integer.valueOf(1));
-            model.putMsg(msgStr);
+        model = checkUserNum(companyId);
+
+        if(((Integer)model.get("code")).intValue()!=0){
             return model;
         }
 
@@ -611,6 +603,38 @@ public class UserServiceImp implements UserService {
         return model;
     }
 
+    private ResultModel checkUserNum(String companyId) {
+        ResultModel model = new ResultModel();
+        //D. 验证企业用户数
+        //获取当前企业最大用户数
+        String msg_company_error_1 = "企业编码:{0} 企业名称:{1} 没有设定系统用户数，请于管理员联系！" + Common.SYS_ENDLINE_DEFAULT;
+        Department company = departmentService.findDepartmentById(companyId);
+        if (company.getCompanyUserCount() == null) {
+            String msgStr = MessageFormat.format(msg_company_error_1,
+                    company.getCode(),
+                    company.getName());
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
+        Integer maxUserCount = company.getCompanyUserCount();
+
+        //当前企业有效用户数
+        Integer userCount = this.findUserCountByCompanyId(companyId);
+        String msg_company_error_2 = "企业编码:{0} 企业名称:{1} 最大系统用户数:{2} 有效用户数:{3} 当前公司用户数已满员，请联系平台相关人员购买用户数！" + Common.SYS_ENDLINE_DEFAULT;
+        if ((userCount.intValue() + 1) > maxUserCount.intValue()) {
+            String msgStr = MessageFormat.format(msg_company_error_2,
+                    company.getCode(),
+                    company.getName(),
+                    maxUserCount.toString(),
+                    userCount.toString());
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
+        return  model;
+    }
+
     @Override
     public ResultModel updateUser(PageData pd) throws Exception {
         ResultModel model = new ResultModel();
@@ -620,6 +644,7 @@ public class UserServiceImp implements UserService {
         String mobile = pd.getString("mobile");
         String email = pd.getString("email");
         String userName = pd.getString("userName");
+        String deptId = pd.getString("deptId");
         if(mobile == null || mobile.trim().length() == 0){
             model.putCode(1);
             model.putMsg("该用户手机号不能为空！");
@@ -636,6 +661,7 @@ public class UserServiceImp implements UserService {
             return model;
         }
         user.setMobile(mobile.trim());
+        user.setDeptId(deptId);
 
 //        //B. 通过手机号-设置用户默认密码
 //        //如果用户设置了密码那就用设置的密码加密，如果没有设置密码，那么就用手机号后六位进行加密作为默认密码

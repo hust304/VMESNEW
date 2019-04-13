@@ -42,6 +42,8 @@ public class DepartmentServiceImp implements DepartmentService {
     private ColumnService columnService;
     @Autowired
     private DepartmentExcelService departmentExcelService;
+    @Autowired
+    private EmployPostService employPostService;
 
     /**
     * 创建人：陈刚 自动创建，禁止修改
@@ -1285,11 +1287,48 @@ public class DepartmentServiceImp implements DepartmentService {
 //            return model;
 //        }
 
-        //3. 修改组织架构(禁用)状态
         Department objectDB = this.findDepartmentById(id);
+        PageData pd = new PageData();
+        pd.put("pid",objectDB.getId());
+        pd.put("isdisable","1");
+        pd.put("isQueryAll","true");
+        List<Department> deptList = this.dataList(pd);
+        pd.put("deptId",objectDB.getId());
+        List<Post> postList = postService.dataList(pd);
+
+        if("0".equals(isdisable)){
+            if(deptList!=null&&deptList.size()>0){
+                model.putCode(Integer.valueOf(1));
+                model.putMsg("当前部门下有未封存部门，请封存下级部门后再封存当前部门！");
+                return model;
+            }
+            if(postList!=null&&postList.size()>0){
+                for(int i=0;i<postList.size();i++){
+                    Post post = postList.get(i);
+                    pd.put("postId",post.getId());
+                    List<EmployPost> employPostList = employPostService.dataList(pd);
+                    if(employPostList!=null&&employPostList.size()>0){
+                        model.putCode(Integer.valueOf(1));
+                        model.putMsg("当前部门下有在职员工，不能封存当前部门！");
+                        return model;
+                    }
+                }
+            }
+        }
+
+
+        //3. 修改组织架构(禁用)状态
         objectDB.setIsdisable(isdisable);
         objectDB.setUdate(new Date());
         this.update(objectDB);
+
+        if(postList!=null&&postList.size()>0){
+            for(int i=0;i<postList.size();i++) {
+                Post post = postList.get(i);
+                post.setIsdisable(isdisable);
+                postService.update(post);
+            }
+        }
         return model;
     }
 
@@ -1320,8 +1359,46 @@ public class DepartmentServiceImp implements DepartmentService {
 //            model.putMsg(msgStr);
 //            return model;
 //        }
+        ArrayList postIdList = new ArrayList();
+        if(id_arry!=null&&id_arry.length>0){
+            for(int i=0;i<id_arry.length;i++){
+                String id = id_arry[i];
+                Department objectDB = this.findDepartmentById(id);
+                PageData pd = new PageData();
+                pd.put("pid",objectDB.getId());
+                pd.put("isdisable","1");
+                pd.put("isQueryAll","true");
+                List<Department> deptList = this.dataList(pd);
+                pd.put("deptId",objectDB.getId());
+                List<Post> postList = postService.dataList(pd);
+                if(deptList!=null&&deptList.size()>0){
+                    model.putCode(Integer.valueOf(1));
+                    model.putMsg("选择的部门下有未封存部门，请封存下级部门后再封存当前部门！");
+                    return model;
+                }
+                if(postList!=null&&postList.size()>0){
+                    for(int j=0;j<postList.size();j++){
+                        Post post = postList.get(j);
+                        postIdList.add(post.getId());
+                        pd.put("postId",post.getId());
+                        List<EmployPost> employPostList = employPostService.dataList(pd);
+                        if(employPostList!=null&&employPostList.size()>0){
+                            model.putCode(Integer.valueOf(1));
+                            model.putMsg("选择的部门下有在职员工，不能封存当前部门！");
+                            return model;
+                        }
+                    }
+                }
+            }
+        }
 
         this.updateDisableByIds(id_arry);
+        if(postIdList!=null&&postIdList.size()>0){
+            String[] postId_array = (String[])postIdList.toArray(new String[postIdList.size()]);
+            if(postId_array!=null&&postId_array.length>0){
+                postService.updateToDisableByIds(postId_array);
+            }
+        }
         return model;
     }
 
