@@ -135,14 +135,22 @@ public interface BomTreeService {
     ResultModel getBomTreeProduct(PageData pd)throws Exception;
 
     /**
-     * 递归调用-添加(BOMTree) vmes_bom_tree - Excel导入时调用
+     * 添加(BOMTree) vmes_bom_tree - Excel导入时调用
+     * 按货品编码顺序导入(根货品编码,第一级根货品编码,第二级根货品编码,第三级根货品编码)
      *
      * @param bomid     bomID
-     * @param prodList  货品id_List
+     * @param parentId  bom_tree 父节点id
+     * @param pathId    bom_tree(pathId)
      * @param dataMap   Excel导入行数据
+     * @param prodList  货品id_List
      * @param count     递归执行次数
      */
-    String addBomTreeByProdList(String bomid, Map<String, String> dataMap, List<String> prodList, int count);
+    void addBomTreeByProdList(String bomid,
+                              String parentId,
+                              String pathId,
+                              Map<String, String> dataMap,
+                              List<String> prodList,
+                              int count);
 }
 
 

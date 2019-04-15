@@ -2,6 +2,7 @@ package com.xy.vmes.deecoop.base.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
+import com.xy.vmes.common.util.Common;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.common.util.TreeUtil;
 import com.xy.vmes.deecoop.base.dao.BomTreeMapper;
@@ -451,15 +452,88 @@ public class BomTreeServiceImp implements BomTreeService {
 
     /**
      * 添加(BOMTree) vmes_bom_tree - Excel导入时调用
+     * 按货品编码顺序导入(根货品编码,第一级根货品编码,第二级根货品编码,第三级根货品编码)
      *
      * @param bomid     bomID
-     * @param prodList  货品id_List
+     * @param parentId  bom_tree 父节点id
+     * @param pathId    bom_tree(pathId)
      * @param dataMap   Excel导入行数据
+     * @param prodList  货品id_List
      * @param count     递归执行次数
      */
-    public String addBomTreeByProdList(String bomid, Map<String, String> dataMap, List<String> prodList, int count) {
+    public void addBomTreeByProdList(String bomid,
+                                     String parentId,
+                                     String pathId,
+                                     Map<String, String> dataMap,
+                                     List<String> prodList,
+                                     int count) {
+        //1. 货品编码-bom-Tree(根节点)
+        String prodId = prodList.get(prodList.size() - count);
+        if (prodId == null || prodId.trim().length() == 0) {return;}
 
-        return null;
+        try {
+            BomTree bomTree = new BomTree();
+            bomTree.setId(Conv.createUuid());
+            bomTree.setProdId(prodId);
+            bomTree.setBomId(bomid);
+
+            String userId = dataMap.get("userId");
+            bomTree.setCuser(userId);
+
+            if (parentId == null || parentId.trim().length() == 0) {
+                bomTree.setPathId(bomTree.getId());
+                if (pathId == null) {pathId = bomTree.getId();}
+
+                bomTree.setLayer(0);
+                bomTree.setParentProdId("root");
+                bomTree.setRatio(BigDecimal.ONE);
+            } else if (parentId != null && parentId.trim().length() > 0) {
+                //上级产品id parentProdId
+                String parentProdId = prodList.get(prodList.size() - count - 1);
+                bomTree.setParentProdId(parentProdId);
+
+                pathId = pathId + "_" + bomTree.getId();
+                bomTree.setPathId(pathId);
+
+                String ratio_str = new String();
+                if (1 == (prodList.size() - count)) {
+                    ratio_str = dataMap.get("ratio_1");
+                } else if (2 == (prodList.size() - count)) {
+                    ratio_str = dataMap.get("ratio_2");
+
+                } else if (3 == (prodList.size() - count)) {
+                    ratio_str = dataMap.get("ratio_3");
+                }
+
+                BigDecimal ratio = BigDecimal.valueOf(0D);
+                if (ratio_str != null && ratio_str.trim().length() > 0) {
+                    try {
+                        ratio = new BigDecimal(ratio_str);
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                //四舍五入到2位小数
+                ratio = ratio.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                bomTree.setRatio(ratio);
+            }
+            bomTreeService.save(bomTree);
+
+            if (0 == (count - 1)) {
+                return;
+            } else {
+                count = count - 1;
+                addBomTreeByProdList(bomid,
+                        bomTree.getId(),
+                        pathId,
+                        dataMap,
+                        prodList,
+                        count);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
 

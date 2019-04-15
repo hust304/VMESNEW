@@ -21,7 +21,7 @@ public interface BomExcelService {
 
     /**
      * 获取添加BOM及BOMTree数据Map结构体- Excel导入数据
-     * Map<(货品编码,BOM名称), Excel导入数据>
+     * Map<(货品id,BOM名称), Excel导入数据>
      *
      * @return
      */
