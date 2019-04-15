@@ -242,36 +242,36 @@ public class SaleOrderAuditServiceImp implements SaleOrderAuditService {
         }
 
         //订单客户id
-        String customerId = pageData.getString("customerId");
-
-        //1. 根据订单id获取订单明细
-        List<SaleOrderDetail> detailList = saleOrderDetailService.findSaleOrderDetailListByParentId(orderId);
-        Map<String, Map<String, Object>> productPriceMap = saleOrderDetailCustomerPriceService.findProductPriceByOrderDetai(customerId, orderId);
-        if (detailList != null && detailList.size() > 0 && productPriceMap != null && productPriceMap.size() > 0) {
-            for (SaleOrderDetail orderDetail : detailList) {
-                String productId = orderDetail.getProductId();
-                //计价单位id
-                String priceUnit = orderDetail.getPriceUnit();
-                //货品单价
-                BigDecimal productPrice = orderDetail.getProductPrice();
-
-                //当前货品客户价格
-                String productKey = productId + "-" + priceUnit;
-                Map<String, Object> priceMap = productPriceMap.get(productKey);
-                if (priceMap != null && priceMap.get("productPrice") != null) {
-                    BigDecimal productPriceByHistory = (BigDecimal)priceMap.get("productPrice");
-                    if ((productPrice.doubleValue() - productPriceByHistory.doubleValue()) != 0) {
-                        model.set("isShowProductPrice", "Y");
-                        break;
-                    }
-                }
-            }
-        }
+//        String customerId = pageData.getString("customerId");
+//
+//        //1. 根据订单id获取订单明细
+//        List<SaleOrderDetail> detailList = saleOrderDetailService.findSaleOrderDetailListByParentId(orderId);
+//        Map<String, Map<String, Object>> productPriceMap = saleOrderDetailCustomerPriceService.findProductPriceByOrderDetai(customerId, orderId);
+//        if (detailList != null && detailList.size() > 0 && productPriceMap != null && productPriceMap.size() > 0) {
+//            for (SaleOrderDetail orderDetail : detailList) {
+//                String productId = orderDetail.getProductId();
+//                //计价单位id
+//                String priceUnit = orderDetail.getPriceUnit();
+//                //货品单价
+//                BigDecimal productPrice = orderDetail.getProductPrice();
+//
+//                //当前货品客户价格
+//                String productKey = productId + "-" + priceUnit;
+//                Map<String, Object> priceMap = productPriceMap.get(productKey);
+//                if (priceMap != null && priceMap.get("productPrice") != null) {
+//                    BigDecimal productPriceByHistory = (BigDecimal)priceMap.get("productPrice");
+//                    if ((productPrice.doubleValue() - productPriceByHistory.doubleValue()) != 0) {
+//                        model.set("isShowProductPrice", "Y");
+//                        break;
+//                    }
+//                }
+//            }
+//        }
 
         //根据订单id:获取需要货品锁定库存数量MapList
         List<Map<String, Object>> needLockStockList = this.checkProdStockCountByOrderId(orderId);
         if (needLockStockList != null && needLockStockList.size() > 0) {
-            model.set("isNeedLockStock", "Y");
+//            model.set("isNeedLockStock", "Y");
             String detailIds = this.findDetailIdsByMapList(needLockStockList);
             model.set("needLockStockOrderDtlIds", detailIds);
         }
@@ -442,7 +442,7 @@ public class SaleOrderAuditServiceImp implements SaleOrderAuditService {
         ResultModel model = new ResultModel();
         String cuser = pageData.getString("cuser");
         //是否更新客户货品价格(Y:需要更新 (N or is null)无需更新)
-        String isCustomerPrice = pageData.getString("isCustomerPrice");
+//        String isCustomerPrice = pageData.getString("isCustomerPrice");
 
         String orderId = pageData.getString("orderId");
         if (orderId == null || orderId.trim().length() == 0) {

@@ -545,31 +545,33 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
             SaleOrderDetail orderDtlDB = new SaleOrderDetail();
             orderDtlDB.setId(orderDtl_id);
 
-            //needDeliverCount 可发货数量(计价单位)
-            BigDecimal needDeliverCount = detail.getNeedDeliverCount();
+//            //needDeliverCount 可发货数量(计价单位)
+//            BigDecimal needDeliverCount = detail.getNeedDeliverCount();
+//
+//            if (needDeliverCount == null || needDeliverCount.doubleValue() == 0) {
+//                //2:待生产
+//                orderDtlDB.setState("2");
+//            } else if (needDeliverCount != null && needDeliverCount.doubleValue() > 0
+//                && orderDetailIdByDeliver_map.get(orderDtl_id) == null
+//            ) {
+//                //3:待出库
+//                orderDtlDB.setState("3");
+//            } else if (needDeliverCount != null && needDeliverCount.doubleValue() > 0
+//                && orderDetailIdByDeliver_map.get(orderDtl_id) != null
+//            ) {
+//                //4:待发货
+//                orderDtlDB.setState("4");
+//            }
+//
+//            //是否锁定仓库(0:未锁定 1:已锁定)
+//            if (detail.getNeedDeliverCount() == null || detail.getNeedDeliverCount().doubleValue() == 0) {
+//                orderDtlDB.setIsLockWarehouse("0");
+//            } else if (detail.getNeedDeliverCount() != null && detail.getNeedDeliverCount().doubleValue() > 0) {
+//                orderDtlDB.setIsLockWarehouse("1");
+//            }
 
-            if (needDeliverCount == null || needDeliverCount.doubleValue() == 0) {
-                //2:待生产
-                orderDtlDB.setState("2");
-            } else if (needDeliverCount != null && needDeliverCount.doubleValue() > 0
-                && orderDetailIdByDeliver_map.get(orderDtl_id) == null
-            ) {
-                //3:待出库
-                orderDtlDB.setState("3");
-            } else if (needDeliverCount != null && needDeliverCount.doubleValue() > 0
-                && orderDetailIdByDeliver_map.get(orderDtl_id) != null
-            ) {
-                //4:待发货
-                orderDtlDB.setState("4");
-            }
-
-            //是否锁定仓库(0:未锁定 1:已锁定)
-            if (detail.getNeedDeliverCount() == null || detail.getNeedDeliverCount().doubleValue() == 0) {
-                orderDtlDB.setIsLockWarehouse("0");
-            } else if (detail.getNeedDeliverCount() != null && detail.getNeedDeliverCount().doubleValue() > 0) {
-                orderDtlDB.setIsLockWarehouse("1");
-            }
-
+            orderDtlDB.setState("3");
+            orderDtlDB.setIsLockWarehouse("0");
             this.update(orderDtlDB);
         }
     }
@@ -1070,7 +1072,7 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
         orderDetail.setIsLockWarehouse("0");
         //明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
         //'2':待生产: 可发货数量 is null or 可发货数量 == 0
-        orderDetail.setState("2");
+//        orderDetail.setState("2");
         this.update(orderDetail);
 
         return model;

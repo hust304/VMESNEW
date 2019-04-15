@@ -550,7 +550,7 @@ public class SaleRetreatDetailServiceImp implements SaleRetreatDetailService {
             }
         }
         result.put("varList",varMapList);
-        result.put("pageData", pg);
+//        result.put("pageData", pg);
         model.putResult(result);
         return model;
     }
