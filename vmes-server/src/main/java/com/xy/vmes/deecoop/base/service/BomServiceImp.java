@@ -356,7 +356,7 @@ public class BomServiceImp implements BomService {
         //3. Excel导入字段-名称唯一性判断-在业务表中判断
         //4. Excel数据添加到货品表
         Map<String, List<Map<String, String>>> bomMap = bomExcelService.findBomMapByImportDataList(dataMapLst);
-        //bomExcelService.addImportExcelByMap(bomMap);
+        bomExcelService.addImportExcelByMap(bomMap);
 
         return model;
     }
