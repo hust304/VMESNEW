@@ -15,13 +15,14 @@ import java.util.Set;
 public class RedisClient {
     private JedisPool jedisPool;
 
-    public void set(String key, String value) {
+    public void set(String key, String value) throws Exception {
         Jedis jedis = null;
         try {
             jedis = jedisPool.getResource();
             jedis.set(key, value);
         }catch (Exception e){
             e.printStackTrace();
+            throw new Exception(e);
         }finally {
             jedis.close();
         }
@@ -34,7 +35,7 @@ public class RedisClient {
      * @param exptime
      * @throws Exception
      */
-    public void setWithExpireTime(String key, String value, int exptime) {
+    public void setWithExpireTime(String key, String value, int exptime) throws Exception {
         Jedis jedis = null;
         try {
             jedis = jedisPool.getResource();
@@ -43,23 +44,24 @@ public class RedisClient {
             jedis.pexpire(key, exptime);
         } catch (Exception e){
             e.printStackTrace();
+            throw new Exception(e);
         }finally {
             jedis.close();
         }
     }
 
-    public String get(String key) {
+    public String get(String key) throws Exception {
         Jedis jedis = null;
         try {
             jedis = jedisPool.getResource();
             return jedis.get(key);
         } catch (Exception e){
             e.printStackTrace();
+            throw new Exception(e);
         }finally {
             if (jedis != null)
                 jedis.close();
         }
-        return null;
     }
 
 
