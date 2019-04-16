@@ -420,10 +420,11 @@ public class SaleDeliverDetailServiceImp implements SaleDeliverDetailService {
     /**
      * 验证出库单明细状态(0:待派单 1:执行中 2:已完成 -1.已取消)
      *
-     * @param deliverId 发货单id
+     * @param pageData 发货单id
      * @return
      */
-    public String checkOutDetailStateByCancelDeliver(String deliverId) throws Exception {
+    public String checkOutDetailStateByCancelDeliver(PageData pageData) throws Exception {
+        String deliverId = pageData.getString("id");
         if (deliverId == null || deliverId.trim().length() == 0) {return new String();}
 
         PageData findMap = new PageData();
@@ -435,7 +436,15 @@ public class SaleDeliverDetailServiceImp implements SaleDeliverDetailService {
 
         List<WarehouseOutDetail> outDetailLiset = warehouseOutDetailService.dataList(findMap);
         if (outDetailLiset != null && outDetailLiset.size() > 0) {
-            return new String("当前发货单含有出库(执行中,已完成)，不可取消发货单");
+            for(int i=0;i<outDetailLiset.size();i++){
+                WarehouseOutDetail warehouseOutDetail = outDetailLiset.get(i);
+                PageData pd = new PageData();
+                pd.put("id", warehouseOutDetail.getId());
+                pd.put("cuser", pageData.getString("currentUserId"));
+                pd.put("currentCompanyId", pageData.getString("currentCompanyId"));
+                pd.put("rebackBillReason", "销售出库退单");
+                warehouseOutDetailService.rebackWarehouseOutDetail(pd);
+            }
         }
 
         return new String();

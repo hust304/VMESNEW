@@ -614,6 +614,32 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
         return model;
     }
 
+
+    @Override
+    public ResultModel deleteSaleDeliver(PageData pd) throws Exception {
+        ResultModel model = new ResultModel();
+        String deliverId = pd.getString("id");
+        if (deliverId == null || deliverId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("发货单id为空或空字符串！");
+            return model;
+        }
+        //状态(0:待发货 1:已发货 -1:已取消)
+        SaleDeliver saleDeliver = this.findSaleDeliverById(deliverId);
+        if (!"-1".equals(saleDeliver.getState())) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("只有已取消状态的发货单才能删除！");
+            return model;
+        }
+
+        List<SaleDeliverDetail> deliverDtlList = saleDeliverDetailService.findSaleDeliverDetailListByParentId(deliverId);
+        for (SaleDeliverDetail deliverDetail : deliverDtlList) {
+            saleDeliverDetailService.deleteById(deliverDetail.getId());
+        }
+        this.deleteById(deliverId);
+        return model;
+    }
+
     public ResultModel cancelSaleDeliver(PageData pageData) throws Exception {
         ResultModel model = new ResultModel();
 
@@ -634,17 +660,18 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
 
         //验证发货单是否允许取消
         //出库单明细状态(状态(0:待派单 1:执行中 2:已完成 -1.已取消)
-        String msgStr = saleDeliverDetailService.checkOutDetailStateByCancelDeliver(deliverId);
-        if (msgStr != null && msgStr.trim().length() > 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg(msgStr);
-            return model;
-        }
+        String msgStr = saleDeliverDetailService.checkOutDetailStateByCancelDeliver(pageData);
+//        if (msgStr != null && msgStr.trim().length() > 0) {
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg(msgStr);
+//            return model;
+//        }
 
         //1. 取消出库单
         String outParentIds = saleDeliverDetailService.findOutIdsByDeliverId(deliverId);
         if (outParentIds != null && outParentIds.trim().length() > 0) {
             //取消出库单状态(0:未完成 1:已完成 -1:已取消)
+
             warehouseOutService.updateStateByOut("-1", outParentIds);
 
             //取消出库单明细状态(0:待派单 1:执行中 2:已完成 -1.已取消)
@@ -666,6 +693,10 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
             deliverDetail.setState("-1");
             deliverDetail.setDeliverDate(null);
             saleDeliverDetailService.update(deliverDetail);
+            String orderDetaiId = deliverDetail.getOrderDetaiId();
+            SaleOrderDetail saleOrderDetail = saleOrderDetailService.selectById(orderDetaiId);
+            saleOrderDetail.setState("3");
+            saleOrderDetailService.update(saleOrderDetail);
         }
 
         return model;

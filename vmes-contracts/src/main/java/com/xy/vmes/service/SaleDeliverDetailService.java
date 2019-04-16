@@ -163,7 +163,7 @@ public interface SaleDeliverDetailService {
      * @param deliverId 发货单id
      * @return
      */
-    String checkOutDetailStateByCancelDeliver(String deliverId) throws Exception;
+    String checkOutDetailStateByCancelDeliver(PageData pageData) throws Exception;
 
     /**
      * 获取出库单id字符串(','逗号分隔的字符串)，根据发货单id(发货明细表,出库明细表)关联查询

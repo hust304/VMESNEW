@@ -105,6 +105,21 @@ public class SaleDeliverController {
         return model;
     }
 
+    @PostMapping("/sale/saleDeliver/deleteSaleDeliver")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel deleteSaleDeliver() throws Exception {
+        logger.info("################/sale/saleDeliver/deleteSaleDeliver 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = saleDeliverService.deleteSaleDeliver(pd);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleDeliver/deleteSaleDeliver 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
     /**
      * 验证发货单id(发货明细)List-是否全部出库完成
      * @author 陈刚
