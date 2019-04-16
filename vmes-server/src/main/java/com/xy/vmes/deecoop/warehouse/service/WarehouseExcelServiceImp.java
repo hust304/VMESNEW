@@ -1,9 +1,9 @@
 package com.xy.vmes.deecoop.warehouse.service;
 
 import com.xy.vmes.common.util.Common;
-import com.xy.vmes.service.DictionaryService;
-import com.xy.vmes.service.WarehouseExcelService;
-import com.xy.vmes.service.WarehouseService;
+import com.xy.vmes.entity.Warehouse;
+import com.xy.vmes.service.*;
+import com.yvan.Conv;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +16,11 @@ public class WarehouseExcelServiceImp implements WarehouseExcelService {
     private DictionaryService dictionaryService;
     @Autowired
     private WarehouseService warehouseService;
+
+    @Autowired
+    private CoderuleService coderuleService;
+    @Autowired
+    private FileService fileService;
 
     private String separator = ",";
     public static final Map<String, String> columnname_index_map = new HashMap<String, String>() {{
@@ -169,14 +174,12 @@ public class WarehouseExcelServiceImp implements WarehouseExcelService {
 
         for (Iterator iterator = warehouseMap.keySet().iterator(); iterator.hasNext();) {
             Map<String, String> add_dataMap = new HashMap<String, String>();
-            List<String> add_nameList = new ArrayList<String>();
 
             //mapKey: 仓库名称,userId,companyId
             String mapKey = (String) iterator.next();
             String[] strArry = mapKey.split(this.separator);
             String name_0 = strArry[0];
             add_dataMap.put("name_0", name_0);
-            add_nameList.add(name_0);
 
             String userId = strArry[1];
             add_dataMap.put("userId", userId);
@@ -187,9 +190,12 @@ public class WarehouseExcelServiceImp implements WarehouseExcelService {
             List<Map<String, String>> valueList = warehouseMap.get(mapKey);
             //仓库类型id,name_1,name_2,name_3,name_4,name_5,name_6
             Map<String, String> valueMap = this.findWarehouseValueMap(valueList);
+
             for (Iterator iterator_1 = valueMap.keySet().iterator(); iterator_1.hasNext();) {
                 String valueKey = (String) iterator_1.next();
                 String[] valueArry = valueKey.split(this.separator);
+
+                List<String> add_nameList = new ArrayList<String>();
                 for (int i = 0; i < valueArry.length; i++) {
                     if (0 == i) {
                         //entityType 仓库类型id
@@ -201,18 +207,74 @@ public class WarehouseExcelServiceImp implements WarehouseExcelService {
                         }
                     }
                 }
+
+                warehouseService.implementBusinessMapByParentID(Common.DICTIONARY_MAP.get("warehouseEntity"), companyId);
+                Map<String, String> nameKeyMap = warehouseService.getNameKeyMap();
+
+                try {
+                    Warehouse warehouse = new Warehouse();
+
+                    if (nameKeyMap.get(name_0) == null) {
+                        //1. 创建仓库
+                        warehouse.setId(Conv.createUuid());
+                        warehouse.setName(name_0);
+                        //是否叶子(0:非叶子 1:是叶子)
+                        warehouse.setIsLeaf("1");
+
+                        //生成货位二维码
+                        String qrcode = "";
+                        try {
+                            qrcode = fileService.createQRCode("warehouseBase", warehouse.getId());
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        if (qrcode != null && qrcode.trim().length() > 0) {
+                            warehouse.setQrcode(qrcode);
+                        }
+
+                        //仓库id
+                        warehouse.setWarehouseId(warehouse.getId());
+                        warehouse.setCuser(userId);
+                        warehouse.setCompanyId(companyId);
+
+                        //entityType 仓库类型id
+                        String entityType = add_dataMap.get("entityType");
+                        warehouse.setEntityType(entityType);
+
+                        //仓库编码
+                        String code = coderuleService.createCoder(warehouse.getCompanyId(), "vmes_warehouse","WE");
+                        warehouse.setCode(code);
+
+                        //设置默认顺序
+                        if (warehouse.getSerialNumber() == null) {
+                            Integer maxCount = warehouseService.findMaxSerialNumber(Common.DICTIONARY_MAP.get("warehouseEntity"));
+                            warehouse.setSerialNumber(Integer.valueOf(maxCount.intValue() + 1));
+                        }
+                        //实体库 parent
+                        Warehouse parent = warehouseService.findWarehouseById(Common.DICTIONARY_MAP.get("warehouseEntity"));
+
+                        warehouse = warehouseService.paterObject2Warehouse(parent, warehouse);
+                        warehouseService.save(warehouse);
+                    } else if (nameKeyMap.get(name_0) != null) {
+                        String id = nameKeyMap.get(name_0.trim()).trim();
+                        warehouse = warehouseService.findWarehouseById(id);
+                    }
+
+                    //2. 仓库货位 vmes_warehouse
+                    warehouseService.addWarehouseByNameList(warehouse,
+                            companyId,
+                            add_nameList,
+                            add_nameList.size());
+
+                    //System.out.println("");
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
             }
 
-            try {
-                //插入 仓库表 vmes_warehouse
-                warehouseService.addWarehouseByNameList(null,
-                        add_dataMap,
-                        add_nameList,
-                        add_nameList.size());
 
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
         }
     }
 

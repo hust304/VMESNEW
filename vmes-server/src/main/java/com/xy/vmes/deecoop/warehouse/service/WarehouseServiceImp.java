@@ -189,11 +189,11 @@ public class WarehouseServiceImp implements WarehouseService {
         }
     }
 
-    public void implementBusinessMapByParentID(String parentId) {
+    public void implementBusinessMapByParentID(String parentId, String companyId) {
         this.createBusinessMap();
         if (parentId == null || parentId.trim().length() == 0) {return;}
 
-        List<Warehouse> deptList = this.findWarehouseListByPid(parentId);
+        List<Warehouse> deptList = this.findWarehouseListByPid(parentId, companyId);
         if (deptList == null || deptList.size() == 0) {return;}
         for (Warehouse object : deptList) {
             String id = object.getId();
@@ -253,6 +253,21 @@ public class WarehouseServiceImp implements WarehouseService {
 
         PageData findMap = new PageData();
         findMap.put("pid", pid);
+        //是否禁用(0:已禁用 1:启用)
+        findMap.put("isdisable", "1");
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+
+        objectList = this.findWarehouseList(findMap);
+        return objectList;
+    }
+
+    public List<Warehouse> findWarehouseListByPid(String pid, String companyId) {
+        List<Warehouse> objectList = new ArrayList<Warehouse>();
+        if (pid == null || pid.trim().length() == 0) {return objectList;}
+
+        PageData findMap = new PageData();
+        findMap.put("pid", pid);
+        findMap.put("companyId", companyId);
         //是否禁用(0:已禁用 1:启用)
         findMap.put("isdisable", "1");
         findMap.put("mapSize", Integer.valueOf(findMap.size()));
@@ -1501,29 +1516,21 @@ public class WarehouseServiceImp implements WarehouseService {
      * 按仓库名称导入(仓库名称,一级名称,二级名称,三级名称,四级名称,五级名称,六级名称)
      *
      * @param parent    父节点对象
-     * @param dataMap   Excel导入行数据
+     * @param companyId 企业id
      * @param nameList  仓库名称List
      * @param count     递归执行次数
      */
     public void addWarehouseByNameList(Warehouse parent,
-                                Map<String, String> dataMap,
-                                List<String> nameList,
-                                int count) {
+                                       String companyId,
+                                       List<String> nameList,
+                                       int count) {
         if (nameList == null || nameList.size() == 0) {return;}
 
         //1. 仓库名称
         String name = nameList.get(nameList.size() - count);
         if (name == null || name.trim().length() == 0) {return;}
 
-        //2. 根据(pid:父节点ID)获取当前层所有节点
-        String pid = "";
-        if (parent == null) {
-            pid = Common.DICTIONARY_MAP.get("warehouseEntity");
-        } else if (parent != null) {
-            pid = parent.getId();
-        }
-
-        this.implementBusinessMapByParentID(pid);
+        this.implementBusinessMapByParentID(parent.getId(), companyId);
         Map<String, String> nameKeyMap = this.getNameKeyMap();
 
         //获取当前节点<Warehouse>对象
@@ -1546,48 +1553,19 @@ public class WarehouseServiceImp implements WarehouseService {
                 warehouse.setQrcode(qrcode);
             }
 
-            if (parent == null) {
-                //仓库id
-                warehouse.setWarehouseId(warehouse.getId());
-                String userId = dataMap.get("userId");
-                warehouse.setCuser(userId);
+            warehouse.setCuser(parent.getCuser());
+            warehouse.setCompanyId(parent.getCompanyId());
 
-                String companyId = dataMap.get("companyId");
-                warehouse.setCompanyId(companyId);
+            //货位编码
+            String code = coderuleService.createCoder(warehouse.getCompanyId(), "vmes_warehouse","WP");
+            warehouse.setCode(code);
 
-                //entityType 仓库类型id
-                String entityType = dataMap.get("entityType");
-                warehouse.setEntityType(entityType);
-
-                //仓库编码
-                String code = coderuleService.createCoder(warehouse.getCompanyId(), "vmes_warehouse","WE");
-                warehouse.setCode(code);
-
-                //实体库 warehouseEntity
-                Warehouse warehouseEntity = this.findWarehouseById(Common.DICTIONARY_MAP.get("warehouseEntity"));
-
-                //设置默认顺序
-                if (warehouse.getSerialNumber() == null) {
-                    Integer maxCount = this.findMaxSerialNumber(Common.DICTIONARY_MAP.get("warehouseEntity"));
-                    warehouse.setSerialNumber(Integer.valueOf(maxCount.intValue() + 1));
-                }
-                warehouse = this.paterObject2Warehouse(warehouseEntity, warehouse);
-
-            } else if (parent != null) {
-                warehouse.setCuser(parent.getCuser());
-                warehouse.setCompanyId(parent.getCompanyId());
-
-                //货位编码
-                String code = coderuleService.createCoder(warehouse.getCompanyId(), "vmes_warehouse","WP");
-                warehouse.setCode(code);
-
-                //设置默认顺序
-                if (warehouse.getSerialNumber() == null) {
-                    Integer maxCount = this.findMaxSerialNumber(parent.getPid());
-                    warehouse.setSerialNumber(Integer.valueOf(maxCount.intValue() + 1));
-                }
-                warehouse = this.paterObject2Warehouse(parent, warehouse);
+            //设置默认顺序
+            if (warehouse.getSerialNumber() == null) {
+                Integer maxCount = this.findMaxSerialNumber(parent.getPid());
+                warehouse.setSerialNumber(Integer.valueOf(maxCount.intValue() + 1));
             }
+            warehouse = this.paterObject2Warehouse(parent, warehouse);
 
             try {
                 this.save(warehouse);
@@ -1613,7 +1591,7 @@ public class WarehouseServiceImp implements WarehouseService {
         } else {
             count = count - 1;
             addWarehouseByNameList(warehouse,
-                    dataMap,
+                    companyId,
                     nameList,
                     count);
         }

@@ -88,7 +88,8 @@ public interface WarehouseService {
     Map<String, String> getNameKeyMap();
     void createBusinessMap();
     void implementBusinessMapByCompanyId(String companyId);
-    void implementBusinessMapByParentID(String parentId);
+    //void implementBusinessMapByParentID(String parentId);
+    void implementBusinessMapByParentID(String parentId, String companyId);
 
     ////////////////////////////////////////////////////////////////////////////////////
     Warehouse findWarehouse(PageData object);
@@ -97,6 +98,7 @@ public interface WarehouseService {
 
     List<Warehouse> findWarehouseList(PageData object);
     List<Warehouse> findWarehouseListByPid(String pid);
+    List<Warehouse> findWarehouseListByPid(String pid, String companyId);
 
     boolean isExistByName(String pid, String id, String name, String companyId);
 
@@ -160,14 +162,14 @@ public interface WarehouseService {
      * 按仓库名称导入(仓库名称,一级名称,二级名称,三级名称,四级名称,五级名称,六级名称)
      *
      * @param parent    父节点对象
-     * @param dataMap   Excel导入行数据
+     * @param companyId 企业id
      * @param nameList  仓库名称List
      * @param count     递归执行次数
      */
     void addWarehouseByNameList(Warehouse parent,
-                              Map<String, String> dataMap,
-                              List<String> nameList,
-                              int count);
+                                String companyId,
+                                List<String> nameList,
+                                int count);
 }
 
 
