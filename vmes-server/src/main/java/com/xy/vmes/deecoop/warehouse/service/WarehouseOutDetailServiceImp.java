@@ -369,7 +369,9 @@ public class WarehouseOutDetailServiceImp implements WarehouseOutDetailService {
 
         Map columnMap = new HashMap();
         columnMap.put("detail_id",detailId);
-        columnMap.put("executor_id",currentUserId);
+        if(!StringUtils.isEmpty(currentUserId)){
+            columnMap.put("executor_id",currentUserId);
+        }
         columnMap.put("isdisable","1");
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
