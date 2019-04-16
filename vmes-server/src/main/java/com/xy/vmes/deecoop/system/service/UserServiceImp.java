@@ -607,7 +607,7 @@ public class UserServiceImp implements UserService {
         ResultModel model = new ResultModel();
         //D. 验证企业用户数
         //获取当前企业最大用户数
-        String msg_company_error_1 = "企业编码:{0} 企业名称:{1} 没有设定系统用户数，请于管理员联系！" + Common.SYS_ENDLINE_DEFAULT;
+        String msg_company_error_1 = "企业编码:{0} 企业名称:{1} 没有设定系统用户数，请与管理员联系！" + Common.SYS_ENDLINE_DEFAULT;
         Department company = departmentService.findDepartmentById(companyId);
         if (company.getCompanyUserCount() == null) {
             String msgStr = MessageFormat.format(msg_company_error_1,
@@ -1071,7 +1071,7 @@ public class UserServiceImp implements UserService {
         dataMapLst.remove(0);
 
         //获取当前企业最大用户数
-        String msg_company_error_1 = "企业编码:{0} 企业名称:{1} 没有设定系统用户数，请于管理员联系！" + Common.SYS_ENDLINE_DEFAULT;
+        String msg_company_error_1 = "企业编码:{0} 企业名称:{1} 没有设定系统用户数，请与管理员联系！" + Common.SYS_ENDLINE_DEFAULT;
         Department company = departmentService.findDepartmentById(companyId);
         if (company.getCompanyUserCount() == null) {
             String msgStr = MessageFormat.format(msg_company_error_1,

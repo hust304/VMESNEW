@@ -88,6 +88,8 @@ public interface WarehouseService {
     Map<String, String> getNameKeyMap();
     void createBusinessMap();
     void implementBusinessMapByCompanyId(String companyId);
+    void implementBusinessMapByParentID(String parentId);
+
     ////////////////////////////////////////////////////////////////////////////////////
     Warehouse findWarehouse(PageData object);
     Warehouse findWarehouseById(String id);
@@ -152,6 +154,20 @@ public interface WarehouseService {
     void exportExcelWarehouse(PageData pd, Pagination pg) throws Exception;
 
     ResultModel importExcelWarehouse(MultipartFile file) throws Exception;
+
+    /**
+     * 添加(仓库) vmes_warehouse - Excel导入时调用
+     * 按仓库名称导入(仓库名称,一级名称,二级名称,三级名称,四级名称,五级名称,六级名称)
+     *
+     * @param parent    父节点对象
+     * @param dataMap   Excel导入行数据
+     * @param nameList  仓库名称List
+     * @param count     递归执行次数
+     */
+    void addWarehouseByNameList(Warehouse parent,
+                              Map<String, String> dataMap,
+                              List<String> nameList,
+                              int count);
 }
 
 

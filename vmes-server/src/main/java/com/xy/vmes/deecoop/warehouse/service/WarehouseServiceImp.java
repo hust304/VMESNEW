@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.text.MessageFormat;
 import java.util.*;
@@ -43,6 +44,8 @@ public class WarehouseServiceImp implements WarehouseService {
     private DictionaryService dictionaryService;
     @Autowired
     private ColumnService columnService;
+    @Autowired
+    private WarehouseExcelService warehouseExcelService;
 
     /**
      * 创建人：陈刚 自动创建，禁止修改
@@ -182,6 +185,22 @@ public class WarehouseServiceImp implements WarehouseService {
             if (mapName != null && mapName.trim().length() > 0) {
                 this.keyNameMap.put(mapKey, mapName);
                 this.nameKeyMap.put(mapName, mapKey);
+            }
+        }
+    }
+
+    public void implementBusinessMapByParentID(String parentId) {
+        this.createBusinessMap();
+        if (parentId == null || parentId.trim().length() == 0) {return;}
+
+        List<Warehouse> deptList = this.findWarehouseListByPid(parentId);
+        if (deptList == null || deptList.size() == 0) {return;}
+        for (Warehouse object : deptList) {
+            String id = object.getId();
+            String name = object.getName();
+            if (name != null && name.trim().length() > 0) {
+                this.keyNameMap.put(id, name);
+                this.nameKeyMap.put(name, id);
             }
         }
     }
@@ -1444,13 +1463,169 @@ public class WarehouseServiceImp implements WarehouseService {
         List<List<String>> dataLst = ExcelUtil.readExcel(file.getInputStream(), isExcel2003);
         List<LinkedHashMap<String, String>> dataMapLst = ExcelUtil.reflectMapList(dataLst);
 
-        //1. Excel文件数据dataMapLst -->(转换) ExcelEntity (属性为导入模板字段)
-        //2. Excel导入字段(非空,数据有效性验证[数字类型,字典表(大小)类是否匹配])
-        //3. Excel导入字段-名称唯一性判断-在Excel文件中
-        //4. Excel导入字段-名称唯一性判断-在业务表中判断
-        //5. List<ExcelEntity> --> (转换) List<业务表DB>对象
-        //6. 遍历List<业务表DB> 对业务表添加或修改
+        HttpServletRequest httpRequest = HttpUtils.currentRequest();
+        String companyId = (String)httpRequest.getParameter("companyId");
+        String userId = (String)httpRequest.getParameter("userId");
+
+        if (dataMapLst == null || dataMapLst.size() == 1) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("导入文件数据为空，请至少填写一行导入数据！");
+            return model;
+        }
+        //去掉列表名称行
+        dataMapLst.remove(0);
+
+        //1. Excel导入字段(非空,数据有效性验证[数字类型,字典表(大小)类是否匹配])
+        String msgStr = warehouseExcelService.checkColumnImportExcel(dataMapLst,
+                companyId,
+                userId,
+                Integer.valueOf(3),
+                Common.SYS_IMPORTEXCEL_MESSAGE_MAXROW);
+        if (msgStr != null && msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(this.exportExcelError(msgStr).toString());
+            return model;
+        }
+
+        //2. Excel导入字段-名称唯一性判断-在Excel文件中
+        //3. Excel导入字段-名称唯一性判断-在业务表中判断
+        //4. Excel数据添加到货品表
+        Map<String, List<Map<String, String>>> warehouseMap = warehouseExcelService.findWarehouseMapByImportDataList(dataMapLst);
+        warehouseExcelService.addImportExcelByMap(warehouseMap);
+
         return model;
+    }
+
+    /**
+     * 添加(仓库) vmes_warehouse - Excel导入时调用
+     * 按仓库名称导入(仓库名称,一级名称,二级名称,三级名称,四级名称,五级名称,六级名称)
+     *
+     * @param parent    父节点对象
+     * @param dataMap   Excel导入行数据
+     * @param nameList  仓库名称List
+     * @param count     递归执行次数
+     */
+    public void addWarehouseByNameList(Warehouse parent,
+                                Map<String, String> dataMap,
+                                List<String> nameList,
+                                int count) {
+        if (nameList == null || nameList.size() == 0) {return;}
+
+        //1. 仓库名称
+        String name = nameList.get(nameList.size() - count);
+        if (name == null || name.trim().length() == 0) {return;}
+
+        //2. 根据(pid:父节点ID)获取当前层所有节点
+        String pid = "";
+        if (parent == null) {
+            pid = Common.DICTIONARY_MAP.get("warehouseEntity");
+        } else if (parent != null) {
+            pid = parent.getId();
+        }
+
+        this.implementBusinessMapByParentID(pid);
+        Map<String, String> nameKeyMap = this.getNameKeyMap();
+
+        //获取当前节点<Warehouse>对象
+        Warehouse warehouse = new Warehouse();
+        if (nameKeyMap.get(name.trim()) == null) {
+            //添加操作
+            warehouse.setId(Conv.createUuid());
+            warehouse.setName(name);
+            //是否叶子(0:非叶子 1:是叶子)
+            warehouse.setIsLeaf("1");
+
+            //生成货位二维码
+            String qrcode = "";
+            try {
+                qrcode = fileService.createQRCode("warehouseBase", warehouse.getId());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            if (qrcode != null && qrcode.trim().length() > 0) {
+                warehouse.setQrcode(qrcode);
+            }
+
+            if (parent == null) {
+                //仓库id
+                warehouse.setWarehouseId(warehouse.getId());
+                String userId = dataMap.get("userId");
+                warehouse.setCuser(userId);
+
+                String companyId = dataMap.get("companyId");
+                warehouse.setCompanyId(companyId);
+
+                //entityType 仓库类型id
+                String entityType = dataMap.get("entityType");
+                warehouse.setEntityType(entityType);
+
+                //仓库编码
+                String code = coderuleService.createCoder(warehouse.getCompanyId(), "vmes_warehouse","WE");
+                warehouse.setCode(code);
+
+                //实体库 warehouseEntity
+                Warehouse warehouseEntity = this.findWarehouseById(Common.DICTIONARY_MAP.get("warehouseEntity"));
+
+                //设置默认顺序
+                if (warehouse.getSerialNumber() == null) {
+                    Integer maxCount = this.findMaxSerialNumber(Common.DICTIONARY_MAP.get("warehouseEntity"));
+                    warehouse.setSerialNumber(Integer.valueOf(maxCount.intValue() + 1));
+                }
+                warehouse = this.paterObject2Warehouse(warehouseEntity, warehouse);
+
+            } else if (parent != null) {
+                warehouse.setCuser(parent.getCuser());
+                warehouse.setCompanyId(parent.getCompanyId());
+
+                //货位编码
+                String code = coderuleService.createCoder(warehouse.getCompanyId(), "vmes_warehouse","WP");
+                warehouse.setCode(code);
+
+                //设置默认顺序
+                if (warehouse.getSerialNumber() == null) {
+                    Integer maxCount = this.findMaxSerialNumber(parent.getPid());
+                    warehouse.setSerialNumber(Integer.valueOf(maxCount.intValue() + 1));
+                }
+                warehouse = this.paterObject2Warehouse(parent, warehouse);
+            }
+
+            try {
+                this.save(warehouse);
+
+                if (parent != null && "1".equals(parent.getIsLeaf())) {
+                    //是否叶子(0:非叶子 1:是叶子)
+                    Warehouse parentEdit = new Warehouse();
+                    parentEdit.setId(parent.getId());
+                    parentEdit.setIsLeaf("0");
+                    this.update(parentEdit);
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            String id = nameKeyMap.get(name.trim()).trim();
+            warehouse = this.findWarehouseById(id);
+        }
+
+        if (0 == (count - 1)) {
+            return;
+        } else {
+            count = count - 1;
+            addWarehouseByNameList(warehouse,
+                    dataMap,
+                    nameList,
+                    count);
+        }
+    }
+
+    private StringBuffer exportExcelError(String msgStr) {
+        StringBuffer msgBuf = new StringBuffer();
+        msgBuf.append("Excel导入失败！" + Common.SYS_ENDLINE_DEFAULT);
+        msgBuf.append(msgStr.trim());
+        msgBuf.append("请核对后再次导入" + Common.SYS_ENDLINE_DEFAULT);
+
+        return msgBuf;
     }
 }
 

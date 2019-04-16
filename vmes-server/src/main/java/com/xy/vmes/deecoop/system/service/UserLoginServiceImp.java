@@ -267,7 +267,7 @@ public class UserLoginServiceImp implements UserLoginService {
 
             List<Map<String, Object>> menuMapList = menuService.listMenuKeyByApp(roleIds, Common.SYS_MENU_MAP.get("app"));
             if (menuMapList == null || menuMapList.size() == 0) {
-                String msgTemp_2 = "用户姓名({0}) 用户账号({1}) 绑定的角色名称({2}) 该角色没有绑定APP菜单，请于管理员联系！" + Common.SYS_ENDLINE_DEFAULT;
+                String msgTemp_2 = "用户姓名({0}) 用户账号({1}) 绑定的角色名称({2}) 该角色没有绑定APP菜单，请与管理员联系！" + Common.SYS_ENDLINE_DEFAULT;
                 String msgStr = MessageFormat.format(msgTemp_2,
                         user.getUserName(),
                         user.getUserCode(),

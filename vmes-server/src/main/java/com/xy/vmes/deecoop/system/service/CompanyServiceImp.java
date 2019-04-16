@@ -331,7 +331,7 @@ public class CompanyServiceImp implements CompanyService {
         //系统当前时间 > 企业有效期
         if (sysDate.getTime() > company.getCompanyValidityDate().getTime()) {
             msgStr.append("企业有效期: " + validityDateStr);
-            msgStr.append("您所在的企业(有效期)已经到期，请于管理员联系！");
+            msgStr.append("您所在的企业(有效期)已经到期，请与管理员联系！");
             return msgStr.toString();
         }
 

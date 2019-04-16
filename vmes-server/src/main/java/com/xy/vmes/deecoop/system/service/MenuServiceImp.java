@@ -1022,7 +1022,7 @@ public class MenuServiceImp implements MenuService {
         //非超级管理员账号-验证角色是否为空
         if (!Common.DICTIONARY_MAP.get("userType_admin").equals(userType)) {
             //1. 验证角色是否为空
-            String msgTemp_1 = "用户姓名({0}) 用户账号({1}) 没有配置角色，请于管理员联系！" + Common.SYS_ENDLINE_DEFAULT;
+            String msgTemp_1 = "用户姓名({0}) 用户账号({1}) 没有配置角色，请与管理员联系！" + Common.SYS_ENDLINE_DEFAULT;
             if (roleId == null || roleId.trim().length() == 0) {
                 String msgStr = MessageFormat.format(msgTemp_1,
                         user.getUserName(),
@@ -1051,7 +1051,7 @@ public class MenuServiceImp implements MenuService {
         findMap.put("menuIsdisable", "1");
         findMap.put("mapSize", Integer.valueOf(findMap.size()));
 
-        String msgTemp_2 = "用户姓名({0}) 用户账号({1}) 绑定的角色名称({2}) 该角色没有绑定菜单，请于管理员联系！" + Common.SYS_ENDLINE_DEFAULT;
+        String msgTemp_2 = "用户姓名({0}) 用户账号({1}) 绑定的角色名称({2}) 该角色没有绑定菜单，请与管理员联系！" + Common.SYS_ENDLINE_DEFAULT;
 
         if (!Common.DICTIONARY_MAP.get("userType_admin").equals(userType) && roleId != null && roleId.trim().length() > 0) {
             List<Map<String, Object>> mapList = roleMenuService.findRoleMenuMapList(findMap);
@@ -1128,9 +1128,9 @@ public class MenuServiceImp implements MenuService {
         menuTreeService.findMenuTreeByList(menuList, maxLayer);
         List<TreeEntity> treeList = menuTreeService.creatMenuTree(maxLayer, null, null);
         if (treeList == null || treeList.size() == 0) {
-            String msgStr = "登录用户角色没有绑定菜单或绑定菜单异常，请于管理员联系！" + Common.SYS_ENDLINE_DEFAULT;
+            String msgStr = "登录用户角色没有绑定菜单或绑定菜单异常，请与管理员联系！" + Common.SYS_ENDLINE_DEFAULT;
             if (role != null) {
-                String msgTemp_2 = "角色编码({0})角色名称({1}) 该角色没有绑定菜单或绑定菜单异常，请于管理员联系！" + Common.SYS_ENDLINE_DEFAULT;
+                String msgTemp_2 = "角色编码({0})角色名称({1}) 该角色没有绑定菜单或绑定菜单异常，请与管理员联系！" + Common.SYS_ENDLINE_DEFAULT;
                 msgStr = MessageFormat.format(msgTemp_2,
                         role.getCode(),
                         role.getName());
