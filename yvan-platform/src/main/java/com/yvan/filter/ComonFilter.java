@@ -87,21 +87,26 @@ public class ComonFilter implements Filter {
      * @throws IOException
      */
     public void extendSessionTime(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException, ServletException {
-        //sessionID: (uuid:用户ID:deecoop:userLoginMap)
-        String sessionID = httpRequest.getHeader("sessionID");
-        if (sessionID == null || sessionID.trim().length() == 0) {
+        try{
+            //sessionID: (uuid:用户ID:deecoop:userLoginMap)
+            String sessionID = httpRequest.getHeader("sessionID");
+            if (sessionID == null || sessionID.trim().length() == 0) {
 //            httpResponse.sendRedirect(httpRequest.getHeader("referer") + "api/error/401");
 //            httpResponse.sendRedirect( "/error/401");
-            httpRequest.getRequestDispatcher("/error/401").forward(httpRequest,httpResponse);
-            return;
+                httpRequest.getRequestDispatcher("/error/401").forward(httpRequest,httpResponse);
+                return;
+            }
+
+            //获取(sessionID)值: Redis缓存Key: (uuid:用户ID:deecoop:userLoginMap)
+            String sessionValue = "";
+            if (redisClient.get(sessionID) != null && redisClient.get(sessionID).trim().length() > 0) {
+                sessionValue = redisClient.get(sessionID).trim();
+            }
+            redisClient.setWithExpireTime(sessionID, sessionValue, 30*60*1000);
+        }catch (Exception e){
+           throw new  ServletException(e);
         }
 
-        //获取(sessionID)值: Redis缓存Key: (uuid:用户ID:deecoop:userLoginMap)
-        String sessionValue = "";
-        if (redisClient.get(sessionID) != null && redisClient.get(sessionID).trim().length() > 0) {
-            sessionValue = redisClient.get(sessionID).trim();
-        }
-        redisClient.setWithExpireTime(sessionID, sessionValue, 30*60*1000);
     }
 
     /**
