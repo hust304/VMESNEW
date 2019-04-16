@@ -392,6 +392,9 @@
             <if test="spec != null and spec != ''">
                 and product.spec LIKE CONCAT(CONCAT('%', #{spec}),'%')
             </if>
+            <if test="genreName != null and genreName != ''">
+                and genre.name LIKE CONCAT(CONCAT(#{genreName}),'%')
+            </if>
             <if test="customerId != null and customerId != ''">
                 and customer.id = #{customerId}
             </if>
