@@ -552,11 +552,16 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
             for (Iterator iterator = orderIdMap.keySet().iterator(); iterator.hasNext();) {
                 String orderId = (String)iterator.next();
 
+
+
                 List<SaleOrderDetail> detailList = saleOrderDetailService.findSaleOrderDetailListByParentId(orderId);
                 saleOrderDetailService.updateDetailStateByOrderId(orderId, detailList);
 
                 //price_type:计价类型(1:先计价 2:后计价)
                 SaleOrder orderDB = saleOrderService.findSaleOrderById(orderId);
+                orderDB.setCurrentDeliverDate(new Date());
+                saleOrderService.update(orderDB);
+
                 if ("2".equals(orderDB.getPriceType())) {
                     //totalSum 合计金额
                     BigDecimal totalSum = saleOrderDetailService.findTotalSumByPrice(detailList);
@@ -598,12 +603,14 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
                         if (receiveMap.get("receiveSum") != null) {
                             receiveSum = receiveMap.get("receiveSum");
                         }
-
+                        SaleOrder editOrder = new SaleOrder();
+                        editOrder.setId(orderId);
                         if (receiveSum.doubleValue() >= orderSum.doubleValue()) {
-                            SaleOrder editOrder = new SaleOrder();
-                            editOrder.setId(orderId);
                             //订单状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
                             editOrder.setState("4");
+                            saleOrderService.update(editOrder);
+                        }else{
+                            editOrder.setState("3");
                             saleOrderService.update(editOrder);
                         }
                     }

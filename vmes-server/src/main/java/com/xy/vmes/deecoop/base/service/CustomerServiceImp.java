@@ -347,6 +347,11 @@ public class CustomerServiceImp implements CustomerService {
     }
 
     @Override
+    public Map<String, Object> getReceiveAmount(PageData pd) throws Exception {
+        return  customerMapper.getReceiveAmount(pd);
+    }
+
+    @Override
     public ResultModel addCustomerBalance(PageData pd) throws Exception {
         ResultModel model = new ResultModel();
         BigDecimal addBalance = BigDecimal.valueOf(Double.parseDouble(pd.getString("addBalance")));
@@ -509,14 +514,10 @@ public class CustomerServiceImp implements CustomerService {
         result.put("varList",varMapList);
         result.put("pageData", pg);
 
-        List<Map> preReceive = customerService.getPreReceiveAmount(pd);
-        if(preReceive!=null&&preReceive.size()>0){
-            result.put("preReceiveAmount", preReceive.get(0).get("preReceiveAmount"));
-        }
-
-        List<Map> nowReceive = customerService.getNowReceiveAmount(pd);
-        if(nowReceive!=null&&nowReceive.size()>0){
-            result.put("nowReceiveAmount", nowReceive.get(0).get("nowReceiveAmount"));
+        Map<String,Object> receiveMap = customerService.getReceiveAmount(pd);
+        if(receiveMap!=null){
+            result.put("preReceiveAmount", receiveMap.get("preReceiveAmount"));
+            result.put("nowReceiveAmount", receiveMap.get("nowReceiveAmount"));
         }
 
         model.putResult(result);
