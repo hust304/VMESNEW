@@ -95,7 +95,9 @@ public class SaleOrder implements Serializable {
 	//发货完成日期
 	@TableField("deliver_date")
 	private Date deliverDate;
-
+	//最近一次发货的发货日期
+	@TableField("current_deliver_date")
+	private Date currentDeliverDate;
 	//付款完成日期
 	@TableField("pay_date")
 	private Date payDate;
@@ -103,7 +105,12 @@ public class SaleOrder implements Serializable {
 	@TableField("pay_state")
 	private String payState;
 
-
+	public Date getCurrentDeliverDate() {
+		return currentDeliverDate;
+	}
+	public void setCurrentDeliverDate(Date currentDeliverDate) {
+		this.currentDeliverDate = currentDeliverDate;
+	}
 	public void setId(String id) {
 		this.id = id;
 	}

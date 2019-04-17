@@ -149,6 +149,7 @@ public interface CustomerService {
 
     List<Map> getNowReceiveAmount(PageData pd) throws Exception;
 
+    Map<String,Object> getReceiveAmount(PageData pd) throws Exception;
 
     ResultModel addCustomerBalance(PageData pd)throws Exception;
 
@@ -173,6 +174,8 @@ public interface CustomerService {
     ResultModel importExcelCustomers(MultipartFile file)throws Exception;
 
     ResultModel listTreeCustomer(PageData pd)throws Exception;
+
+
 }
 
 

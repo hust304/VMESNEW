@@ -80,5 +80,7 @@ public interface CustomerMapper extends BaseMapper<Customer> {
     List<Map> getPreReceiveAmount(PageData pd);
 
     List<Map> getNowReceiveAmount(PageData pd);
+
+    Map<String,Object> getReceiveAmount(PageData pd);
 }
 
