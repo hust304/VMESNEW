@@ -631,6 +631,9 @@ public class CustomerServiceImp implements CustomerService {
         }
 
         Customer objectDB = (Customer)HttpUtils.pageData2Entity(pageData, new Customer());
+        String remark = pageData.getString("remark");
+        if (remark == null) {remark = "";}
+        objectDB.setRemark(remark);
         objectDB.setUuser(pageData.getString("cuser"));
         customerService.update(objectDB);
         return model;
