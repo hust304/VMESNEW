@@ -295,6 +295,9 @@
             isdisable
         from <include refid="tableName"/>
         <where>
+            <if test="companyId!= null and companyId != ''">
+                and company_id = #{companyId}
+            </if>
             <if test="code!= null and code != ''">
                 and code LIKE CONCAT(CONCAT(#{code}),'%')
             </if>
@@ -312,6 +315,9 @@
             </if>
             <if test="name!= null and name != ''">
                 and name LIKE CONCAT(CONCAT('%', #{name}),'%')
+            </if>
+            <if test="isglobal != null and isglobal != ''">
+                and isglobal = #{isglobal}
             </if>
 
             <if test="queryStr != null and queryStr!=''" >

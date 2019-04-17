@@ -845,17 +845,38 @@ public class DictionaryServiceImp implements DictionaryService {
     public ResultModel getDictionarys(PageData pd) throws Exception {
         ResultModel model = new ResultModel();
         String dictionaryKey = pd.getString("dictionaryKey");
+        String id = Common.DICTIONARY_MAP.get(dictionaryKey);
         String isglobal = pd.getString("isglobal");
         String queryStr = pd.getString("queryStr");
-        String id = Common.DICTIONARY_MAP.get(dictionaryKey);
+        String companyId = pd.getString("currentCompanyId");
+        pd.put("companyId", companyId);
         pd.put("isdisable", "1");
 
-        if(StringUtils.isEmpty(isglobal)||"0".equals(isglobal)){
-            pd.put("queryStr", "  and company_id = '"+pd.get("currentCompanyId")+"'  and ( id = '"+id+"' or id_1 = '"+id+"'  )  " + queryStr);
-        }else if("1".equals(isglobal)){
-            pd.put("queryStr", "  and isglobal = '"+pd.get("isglobal")+"'  and ( id = '"+id+"' or id_1 = '"+id+"'  ) " + queryStr);
+        //是否只显示当前层
+        String isNeetOneLayer = null;
+        if (pd.getString("isNeetOneLayer") != null && pd.getString("isNeetOneLayer").trim().length() > 0) {
+            isNeetOneLayer = pd.getString("isNeetOneLayer").trim();
         }
-        pd.put("selfQueryStr", "id = '" + id + "'");
+
+        if ("true".equals(isNeetOneLayer)) {
+            pd.put("selfQueryStr", "id = '" + id + "'");
+            pd.put("pid", id);
+            if(StringUtils.isEmpty(isglobal) || "0".equals(isglobal)){
+                //pd.put("queryStr", "  and company_id = '"+pd.get("currentCompanyId")+"'  and ( id = '"+id+"' or id_1 = '"+id+"'  )  " + queryStr);
+                pd.put("isglobal", null);
+            }else if("1".equals(isglobal)){
+                //pd.put("queryStr", " and isglobal = '"+pd.get("isglobal")+"'  and ( id = '"+id+"' or id_1 = '"+id+"'  ) " + queryStr);
+                pd.put("companyId", null);
+            }
+
+        } else if (!"true".equals(isNeetOneLayer)) {
+            if(StringUtils.isEmpty(isglobal)||"0".equals(isglobal)){
+                pd.put("queryStr", "  and company_id = '"+pd.get("currentCompanyId")+"'  and ( id = '"+id+"' or id_1 = '"+id+"'  )  " + queryStr);
+            }else if("1".equals(isglobal)){
+                pd.put("queryStr", "  and isglobal = '"+pd.get("isglobal")+"'  and ( id = '"+id+"' or id_1 = '"+id+"'  ) " + queryStr);
+            }
+            pd.put("selfQueryStr", "id = '" + id + "'");
+        }
 
         List<TreeEntity> treeList = dictionaryService.getTreeList(pd);
         TreeEntity treeObj = TreeUtil.switchTree(id, treeList);
