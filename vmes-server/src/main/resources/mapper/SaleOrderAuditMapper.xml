@@ -77,7 +77,7 @@
 
     <!-- ***************************************************以上为自动生成代码禁止修改，请在下面添加业务代码************************************************* -->
     <insert id="insertColumn" >
-        delete from vmes_column where model_code = 'saleOrderDetail' ;
+        delete from vmes_column where model_code = 'saleOrderDetailByLockStock' ;
         insert into vmes_column (
             id,model_code,title_key,title_name,serial_number,
             isdisable,ishide,isedit,ismust,cdate,
@@ -104,7 +104,7 @@
         (replace(uuid(), '-', ''), 'saleOrderDetailByLockStock', 'productPrice', '单价', 11, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderDetailByLockStock', 'productSum', '金额', 12, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderDetailByLockStock', 'prodStockCount', '库存数量', 14, '1', '1', '1', '0', '2018-12-6 09:16:39', 'admin'),
-        (replace(uuid(), '-', ''), 'saleOrderDetailByLockStock', 'allowStockCount', '库存可用数量', 15, '1', '1', '1', '0', '2018-12-6 09:16:39', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailByLockStock', 'allowStockCount', '可锁库数量', 15, '1', '1', '1', '0', '2018-12-6 09:16:39', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderDetailByLockStock', 'prodLockCount', '库存锁定数量', 16, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderDetailByLockStock', 'deliverDate', '约定交期', 17, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderDetailByLockStock', 'fileUrl', '附件地址', 18, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
@@ -118,7 +118,7 @@
         (replace(uuid(), '-', ''), 'saleOrderDetailByLockStock', 'isdisable', '是否启用(0:已禁用 1:启用)', 25, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderDetailByLockStock', 'isLockWarehouse', '是否锁定仓库(0:无锁定 1:锁定)', 26, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderDetailByLockStock', 'lockCount', '锁定货品数量(计量单位)', 27, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
-        (replace(uuid(), '-', ''), 'saleOrderDetailByLockStock', 'needDeliverCount', '锁定货品数量', 27, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailByLockStock', 'needDeliverCount', '本次锁库数量', 27, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderDetailByLockStock', 'lockDate', '锁定开始时间', 28, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderDetailByLockStock', 'isneedproduce', '是否需要生产(0:无需 1:需要 库存不够)', 29, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderDetailByLockStock', 'deliverDetailId', '发货明细ID', 30, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),

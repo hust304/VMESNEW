@@ -161,6 +161,24 @@
         </if>
     </select>
 
+
+    <!-- 自动创建，可以修改 -->
+    <select id="checkIsDeliver" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select count(deliverDetail.id) num
+        from vmes_sale_order saleOrder
+        left join vmes_sale_order_detail orderDetail on orderDetail.parent_id = saleOrder.id
+        left join vmes_sale_deliver_detail deliverDetail on deliverDetail.order_detai_id = orderDetail.id
+        <where>
+            <if test="orderId != null and orderId != ''" >
+                and saleOrder.id = #{orderId}
+            </if>
+            <!--queryStr 自定义sql查询语句-->
+            <if test="queryStr != null and queryStr != ''" >
+                and ${queryStr}
+            </if>
+        </where>
+    </select>
+
     <!-- 自动创建，可以修改 -->
     <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select

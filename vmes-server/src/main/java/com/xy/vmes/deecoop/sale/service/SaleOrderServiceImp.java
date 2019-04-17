@@ -493,6 +493,44 @@ public class SaleOrderServiceImp implements SaleOrderService {
     }
 
     @Override
+    public ResultModel recoverySaleOrder(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+        String parentId = pageData.getString("id");
+        if (parentId == null || parentId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("订单id为空或空字符串！");
+            return model;
+        }
+
+        //1. 订单状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
+        SaleOrder order_old = this.findSaleOrderById(parentId);
+        if (!"-1".equals(order_old.getState())) {
+            String msgTemp = "订单状态({0})不可恢复！";
+            String msgStr = MessageFormat.format(msgTemp, Common.SYS_SALE_ORDER_STATE.get(order_old.getState()));
+
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
+
+        //2. 修改明细状态
+        PageData mapDetail = new PageData();
+        mapDetail.put("parentId", parentId);
+        //明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已发货 6:已完成 -1:已取消)
+        mapDetail.put("state", "0");
+        saleOrderDetailService.updateStateByDetail(mapDetail);
+
+        //3. 修改抬头表状态
+        SaleOrder order = new SaleOrder();
+        order.setId(parentId);
+        //state:状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
+        order.setState("0");
+        this.update(order);
+
+        return model;
+    }
+
+    @Override
     public ResultModel cancelSaleOrder(PageData pageData) throws Exception {
         ResultModel model = new ResultModel();
         String parentId = pageData.getString("id");
@@ -566,26 +604,39 @@ public class SaleOrderServiceImp implements SaleOrderService {
         return model;
     }
 
-    public ResultModel rebackBySubmitSaleOrder(PageData pageData) throws Exception {
+    public ResultModel rebackSaleOrder(PageData pageData) throws Exception {
         ResultModel model = new ResultModel();
 
-        String parentId = pageData.getString("id");
-        if (parentId == null || parentId.trim().length() == 0) {
+        String orderId = pageData.getString("id");
+        if (orderId == null || orderId.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("订单id为空或空字符串！");
             return model;
         }
+        PageData pd = new PageData();
+        pd.put("queryStr","deliverDetail.state in ('0','1')");
+        pd.put("orderId",orderId);
+
+        Map<String,Object> checkResult = saleOrderMapper.checkIsDeliver(pd);
+        if(checkResult!=null){
+            Long num = (Long)checkResult.get("num");
+            if(num>0){
+                model.putCode(Integer.valueOf(1));
+                model.putMsg("当前订单已有发货记录，不能退回！");
+                return model;
+            }
+        }
 
         //2. 修改明细状态
         PageData mapDetail = new PageData();
-        mapDetail.put("parentId", parentId);
+        mapDetail.put("parentId", orderId);
         //明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
         mapDetail.put("state", "0");
         saleOrderDetailService.updateStateByDetail(mapDetail);
 
         //3. 修改抬头表状态
         SaleOrder order = new SaleOrder();
-        order.setId(parentId);
+        order.setId(orderId);
         //state:状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
         order.setState("0");
         this.update(order);
