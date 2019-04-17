@@ -212,16 +212,13 @@
         (replace(uuid(), '-', ''),'customerReceive','name','客户名称',2, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'customerReceive','type','客户类型ID',3, '1','0','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'customerReceive','typeName','客户类型',4, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'customerReceive','accountDays','账期（天）',6, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'customerReceive','balance','客户余额',5, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'customerReceive','acceptAmount','已收款',7, '1','0','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'customerReceive','orderAmount','订单金额',8, '1','0','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'customerReceive','delayAcceptAmount','逾期收款',9, '1','0','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'customerReceive','delayOrderAmount','逾期订单金额',10, '1','0','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'customerReceive','receiveAmount','应收款',11, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'customerReceive','delayAmount','逾期账款',12, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'customerReceive','province','地域ID',13, '1','0','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'customerReceive','provinceName','地域',14, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'customerReceive','accountDays','账期（天）',6, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'customerReceive','preReceiveAmount','预收款',7, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'customerReceive','nowReceiveAmount','应收款',8, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'customerReceive','delayReceiveAmount','逾期收款',9, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'customerReceive','province','地域ID',10, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'customerReceive','provinceName','地域',11, '1','0','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'customerReceive','id','id',0, '1','0','1','0',now(), 'admin')
     </insert>
 
@@ -440,10 +437,10 @@
         customer.province province,
         province.name provinceName,
         round(ifnull(customer.balance,0), 2) balance,
-        customer.account_days accountDays,
-        sum(ifnull(case when tab.currentDeliverDate is not null and now() > date_add(tab.currentDeliverDate, interval customer.account_days day) then tab.nowReceiveAmount else 0.0000 end,0)) delayReceiveAmount,
-        sum(ifnull(tab.nowReceiveAmount,0)) nowReceiveAmount,
-        sum(ifnull(tab.preReceiveAmount,0)) preReceiveAmount
+        round(customer.account_days,2) accountDays,
+        round(sum(ifnull(case when tab.currentDeliverDate is not null and now() > date_add(tab.currentDeliverDate, interval customer.account_days day) then tab.nowReceiveAmount else 0.0000 end,0)),2) delayReceiveAmount,
+        round(sum(ifnull(tab.nowReceiveAmount,0)),2) nowReceiveAmount,
+        round(sum(ifnull(tab.preReceiveAmount,0)),2) preReceiveAmount
         from vmes_customer customer
         left join vmes_dictionary type on customer.type = type.id
         left join vmes_dictionary province on customer.province = province.id
@@ -517,9 +514,9 @@
     <!-- 自动创建，可以修改  获取预收款和应收款 -->
     <select id="getReceiveAmount"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
         select orderId,orderCode,customerId,companyId,currentDeliverDate,
-        sum(ifnull(deliverAmount,0)) deliverAmount,sum(ifnull(receiveAmount,0)) receiveAmount,
-        case when sum(ifnull(deliverAmount,0)) <![CDATA[ > ]]> sum(ifnull(receiveAmount,0)) then sum(ifnull(deliverAmount,0)) - sum(ifnull(receiveAmount,0)) else 0.0000 end nowReceiveAmount,
-        case when sum(ifnull(deliverAmount,0)) <![CDATA[ < ]]>  sum(ifnull(receiveAmount,0)) then sum(ifnull(receiveAmount,0)) - sum(ifnull(deliverAmount,0)) else 0.0000 end preReceiveAmount
+        round(sum(ifnull(deliverAmount,0)),2) deliverAmount,round(sum(ifnull(receiveAmount,0)),2) receiveAmount,
+        case when sum(ifnull(deliverAmount,0)) <![CDATA[ > ]]> sum(ifnull(receiveAmount,0)) then round(sum(ifnull(deliverAmount,0)) - sum(ifnull(receiveAmount,0)),2) else 0.00 end nowReceiveAmount,
+        case when sum(ifnull(deliverAmount,0)) <![CDATA[ < ]]>  sum(ifnull(receiveAmount,0)) then round(sum(ifnull(receiveAmount,0)) - sum(ifnull(deliverAmount,0)),2) else 0.00 end preReceiveAmount
         from (
             select saleOrder.id orderId,saleOrder.sys_code orderCode,saleOrder.customer_id customerId,saleOrder.current_deliver_date currentDeliverDate,saleOrder.company_id companyId,
             deliverDetail.sum deliverAmount,null receiveAmount
