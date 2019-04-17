@@ -113,17 +113,21 @@ public interface SaleOrderService {
 
     ResultModel deleteSaleOrder(PageData pageData) throws Exception;
 
+    ResultModel recoverySaleOrder(PageData pageData) throws Exception;
+
     ResultModel cancelSaleOrder(PageData pageData) throws Exception;
 
     ResultModel submitSaleOrder(PageData pageData) throws Exception;
 
-    ResultModel rebackBySubmitSaleOrder(PageData pageData) throws Exception;
+    ResultModel rebackSaleOrder(PageData pageData) throws Exception;
 
     ResultModel updateSaleOrderByLockCount(PageData pageData) throws Exception;
 
     void exportExcelSaleOrders(PageData pd, Pagination pg) throws Exception;
 
     ResultModel importExcelSaleOrders(MultipartFile file) throws Exception;
+
+
 }
 
 

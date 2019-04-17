@@ -151,6 +151,20 @@ public class SaleOrderController {
         return model;
     }
 
+
+    @PostMapping("/sale/saleOrder/recoverySaleOrder")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel recoverySaleOrder() throws Exception {
+        logger.info("################/sale/saleOrder/recoverySaleOrder 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pageData = HttpUtils.parsePageData();
+        ResultModel model = saleOrderService.recoverySaleOrder(pageData);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleOrder/recoverySaleOrder 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
     /**
      * 提交订单
      * @author 陈刚
@@ -170,20 +184,20 @@ public class SaleOrderController {
     }
 
     /**
-     * 退回(提交)订单
+     * 退回订单
      * @author 陈刚
      * @date 2018-12-11
      * @throws Exception
      */
-    @PostMapping("/sale/saleOrder/rebackBySubmitSaleOrder")
+    @PostMapping("/sale/saleOrder/rebackSaleOrder")
     @Transactional(rollbackFor=Exception.class)
-    public ResultModel rebackBySubmitSaleOrder() throws Exception {
-        logger.info("################/sale/saleOrder/rebackBySubmitSaleOrder 执行开始 ################# ");
+    public ResultModel rebackSaleOrder() throws Exception {
+        logger.info("################/sale/saleOrder/rebackSaleOrder 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         PageData pageData = HttpUtils.parsePageData();
-        ResultModel model = saleOrderService.rebackBySubmitSaleOrder(pageData);
+        ResultModel model = saleOrderService.rebackSaleOrder(pageData);
         Long endTime = System.currentTimeMillis();
-        logger.info("################/sale/saleOrder/rebackBySubmitSaleOrder 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleOrder/rebackSaleOrder 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 

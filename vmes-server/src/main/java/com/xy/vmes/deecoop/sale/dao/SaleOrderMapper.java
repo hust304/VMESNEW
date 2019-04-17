@@ -46,6 +46,8 @@ public interface SaleOrderMapper extends BaseMapper<SaleOrder> {
     List<Map> getDataListPage(PageData pd, Pagination pg);
 
     void updateStateByOrder(PageData pd);
+
+    Map<String,Object> checkIsDeliver(PageData pd);
 }
 
 

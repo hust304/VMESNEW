@@ -65,7 +65,7 @@
         orderDetaiQuery.productLockCount,
         orderDetaiQuery.endDeliverCount,
 
-        round((orderDetaiQuery.stockCount - orderDetaiQuery.productLockCount), 2) productStockCount,
+        round((orderDetaiQuery.stockCount - orderDetaiQuery.productLockCount+orderDetaiQuery.lockCount), 2) productStockCount,
         <!--未发货数量-->
         orderDetaiQuery.notDeliverCount,
         <!--本次发货数量-->
@@ -143,6 +143,7 @@
         <!--本次发货数量-->
         <!--本次发货数量:= 未发货数量 (可发货数量 >= 未发货数量) -->
         <!--本次发货数量:= 可发货数量 (可发货数量 < 未发货数量) -->
+        <!--
         CASE
           WHEN ifnull(orderDtl.need_deliver_count, 0) <![CDATA[>=]]> (ifnull(orderDtl.order_count, 0) - ifnull(deliverDtl.count, 0))
           THEN (ifnull(orderDtl.order_count, 0) - ifnull(deliverDtl.count, 0))
@@ -151,7 +152,8 @@
           THEN ifnull(orderDtl.need_deliver_count, 0)
         ELSE 0.00
         END orderDtlDeliverCount
-
+        -->
+        round((ifnull(orderDtl.order_count, 0) - ifnull(deliverDtl.count, 0)), 2) orderDtlDeliverCount
         from vmes_sale_order_detail orderDtl
         left join vmes_sale_order saleOrder on orderDtl.parent_id = saleOrder.id
         left join vmes_customer customer on saleOrder.customer_id = customer.id
@@ -224,7 +226,7 @@
         (replace(uuid(), '-', ''), 'saleOrderDetailQueryByDeliver', 'priceUnit', '计价单位id', 10, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderDetailQueryByDeliver', 'priceUnitName', '计价单位', 10, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderDetailQueryByDeliver', 'stockCount', '库存数量', 12, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
-        (replace(uuid(), '-', ''), 'saleOrderDetailQueryByDeliver', 'productStockCount', '库存可用数量', 13, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailQueryByDeliver', 'productStockCount', '可发货数量', 13, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderDetailQueryByDeliver', 'productLockCount', '库存锁定数量', 14, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderDetailQueryByDeliver', 'endDeliverCount', '生成发货单数量', 15, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderDetailQueryByDeliver', 'notDeliverCount', '未发货数量', 16, '1', '1', '1', '0', '2018-12-6 09:16:39', 'admin'),
