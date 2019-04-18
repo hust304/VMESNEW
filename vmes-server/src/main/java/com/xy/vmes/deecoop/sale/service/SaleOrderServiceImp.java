@@ -473,7 +473,7 @@ public class SaleOrderServiceImp implements SaleOrderService {
 
         //1. 订单状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
         SaleOrder order_old = this.findSaleOrderById(parentId);
-        if (!"0".equals(order_old.getState())) {
+        if (!"0".equals(order_old.getState()) && !"-1".equals(order_old.getState())) {
             String msgTemp = "订单状态({0})不可删除！";
             String msgStr = MessageFormat.format(msgTemp, Common.SYS_SALE_ORDER_STATE.get(order_old.getState()));
 
