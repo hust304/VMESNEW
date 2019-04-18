@@ -79,7 +79,7 @@ public interface WarehouseProductMapper extends BaseMapper<WarehouseProduct> {
     List<Map> findListPageWarehouseByProduct(PageData pd, Pagination pg);
 
 
-
+    void updateSynStockCount(PageData pd);
 }
 
 
