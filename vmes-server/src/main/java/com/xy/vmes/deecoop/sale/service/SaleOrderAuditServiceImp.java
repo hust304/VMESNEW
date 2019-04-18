@@ -7,10 +7,7 @@ import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.sale.dao.SaleOrderAuditMapper;
 import com.xy.vmes.entity.*;
 import com.xy.vmes.service.*;
-import com.yvan.DateUtils;
-import com.yvan.HttpUtils;
-import com.yvan.PageData;
-import com.yvan.YvanUtil;
+import com.yvan.*;
 import com.yvan.springmvc.ResultModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -40,6 +37,16 @@ public class SaleOrderAuditServiceImp implements SaleOrderAuditService {
     private ColumnService columnService;
     @Autowired
     private SaleLockDateService saleLockDateService;
+    @Autowired
+    private SaleReceiveRecordService saleReceiveRecordService;
+    @Autowired
+    private CoderuleService coderuleService;
+    @Autowired
+    private SaleReceiveService saleReceiveService;
+    @Autowired
+    private SaleReceiveDetailService saleReceiveDetailService;
+    @Autowired
+    private CustomerService customerService;
     //消息队列
     @Autowired
     private Producer producer;
@@ -453,13 +460,16 @@ public class SaleOrderAuditServiceImp implements SaleOrderAuditService {
         SaleOrder orderDB = saleOrderService.findSaleOrderById(orderId);
 
         //1. 订单状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
-        SaleOrder order = new SaleOrder();
-        order.setId(orderId);
-        //审核人ID
-        order.setAuditId(cuser);
-        order.setState("2");
-        saleOrderService.update(order);
-
+//        SaleOrder order = new SaleOrder();
+//        order.setId(orderId);
+//        //审核人ID
+//        order.setAuditId(cuser);
+//        order.setState("2");
+        if(orderDB!=null){
+            orderDB.setAuditId(cuser);
+            orderDB.setState("2");
+            saleOrderService.update(orderDB);
+        }
         //2. 订单明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
         saleOrderDetailService.updateDetailStateByOrderId(orderId, null);
 
@@ -476,6 +486,67 @@ public class SaleOrderAuditServiceImp implements SaleOrderAuditService {
                 saleUnitPriceService.modifySaleUnitPrice(customerUnitPrice);
             }
         }
+
+
+        //advance_sum:预付款(定金)
+        if (orderDB.getAdvanceSum() != null) {
+
+
+            //4.修改客户余额(vmes_customer.balance)
+            String remarkTemp = "订单编号:{0} 预付款:{1}";
+            String remark = MessageFormat.format(remarkTemp,
+                    orderDB.getSysCode(),
+                    orderDB.getAdvanceSum().setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP).toString());
+
+            saleReceiveRecordService.editCustomerBalanceByOrder(
+                    orderDB.getCustomerId(),
+                    null,
+                    //操作类型 (0:变更 1:录入收款 2:预付款 3:退货退款 4:订单变更退款 5:预付款退款 -1:费用分摊)
+                    "2",
+                    orderDB.getAdvanceSum(),
+                    orderDB.getCuser(),
+                    remark);
+
+
+            //5.分摊预付款
+            SaleReceive saleReceive = new SaleReceive();
+            String id = Conv.createUuid();
+            String companyID = pageData.getString("currentCompanyId");
+            String code = coderuleService.createCoder(companyID, "vmes_sale_receive", "R");
+            saleReceive.setId(id);
+            saleReceive.setCode(code);
+            saleReceive.setType("0");//收款类型(0:预收款 1:普通收款 2:发货退款 3:订单退款 4:预收款退款)
+            saleReceive.setCustomerId(orderDB.getCustomerId());
+            saleReceive.setReceiveSum(orderDB.getAdvanceSum());
+            saleReceive.setCompanyId(companyID);
+            saleReceive.setUuser(pageData.getString("cuser"));
+            saleReceive.setCuser(pageData.getString("cuser"));
+            saleReceiveService.save(saleReceive);
+
+            SaleReceiveDetail detail = new SaleReceiveDetail();
+            detail.setParentId(saleReceive.getId());
+            detail.setOrderId(orderDB.getId());
+            detail.setDiscountAmount(BigDecimal.ZERO);
+            detail.setReceiveAmount(orderDB.getAdvanceSum());
+            detail.setState("1");//收款单状态(0:待收款 1:已收款 -1:已取消)
+            detail.setUuser(pageData.getString("cuser"));
+            detail.setCuser(pageData.getString("cuser"));
+            saleReceiveDetailService.save(detail);
+
+
+            Customer customer = customerService.selectById(orderDB.getCustomerId());
+            //操作类型 (0:变更 1:录入收款 2:预付款 -1:费用分摊)
+            String remark_1 = "费用分摊：" + customer.getBalance().subtract(customer.getBalance().subtract(orderDB.getAdvanceSum())).setScale(2, BigDecimal.ROUND_HALF_UP);
+            customerService.updateCustomerBalance(
+                    customer,
+                    customer.getBalance().subtract(orderDB.getAdvanceSum()),
+                    pageData.getString("uuser"),
+                    "-1",
+                    remark_1);
+
+            }
+
+
 
         return model;
     }

@@ -196,6 +196,7 @@
             when record.type = '2' then '预付款'
             when record.type = '3' then '退货退款'
             when record.type = '4' then '订单变更退款'
+            when record.type = '5' then '预付款退款'
             when record.type = '-1' then '费用分摊'
         else null
         end type,
