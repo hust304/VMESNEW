@@ -70,7 +70,8 @@
             (replace(uuid(), '-', ''), 'saleDeliverDetail', 'isdisable', '是否启用(0:已禁用 1:启用)', 25, '1', '0', '1', '0', '2018-12-16 11:15:19', 'admin'),
             (replace(uuid(), '-', ''), 'saleDeliverDetail', 'priceType', '计价类型(1:先计价 2:后计价)', 26, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
             (replace(uuid(), '-', ''), 'saleDeliverDetail', 'stateName', '发货状态', 26, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
-            (replace(uuid(), '-', ''), 'saleDeliverDetail', 'deliverCode', '发货单号', 26, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin')
+            (replace(uuid(), '-', ''), 'saleDeliverDetail', 'deliverCode', '发货单号', 26, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+            (replace(uuid(), '-', ''), 'saleDeliverDetail', 'orderDetailCount', '订购数量', 26, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin')
 
     </insert>
 
@@ -112,7 +113,9 @@
             (replace(uuid(), '-', ''), 'saleDeliverDetailByPrice', 'isdisable', '是否启用(0:已禁用 1:启用)', 25, '1', '0', '1', '0', '2018-12-16 11:15:19', 'admin'),
             (replace(uuid(), '-', ''), 'saleDeliverDetailByPrice', 'priceType', '计价类型(1:先计价 2:后计价)', 26, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
             (replace(uuid(), '-', ''), 'saleDeliverDetailByPrice', 'stateName', '发货状态', 26, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
-            (replace(uuid(), '-', ''), 'saleDeliverDetailByPrice', 'deliverCode', '发货单号', 26, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin')
+            (replace(uuid(), '-', ''), 'saleDeliverDetailByPrice', 'deliverCode', '发货单号', 26, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+            (replace(uuid(), '-', ''), 'saleDeliverDetailByPrice', 'orderDetailCount', '订购数量', 26, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin')
+
     </insert>
 
 
@@ -226,6 +229,7 @@
             detail.isdisable isdisable,
 
             deliver.deliver_code deliverCode,
+            orderDetail.order_count orderDetailCount,
 
             saleOrder.sys_code sysOrderCode,
             saleOrder.price_type priceType,
@@ -240,6 +244,7 @@
             genre.name productGenreName
 
         from vmes_sale_deliver_detail detail
+            left join vmes_sale_order_detail orderDetail on orderDetail.id = detail.order_detai_id
             left join vmes_sale_deliver deliver on deliver.id = detail.parent_id
             left join vmes_sale_order saleOrder on detail.order_id = saleOrder.id
             left join vmes_product product on detail.product_id = product.id
