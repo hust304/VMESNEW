@@ -559,6 +559,26 @@
         </where>
     </select>
 
+
+    <!--库存数量-并发(version)控制-->
+    <update id="updateSynStockCount" parameterType="com.yvan.PageData">
+        update vmes_product t set t.stock_count = ifnull((select
+        round(sum(ifnull(wp.stock_count,0)),2) stockCount
+        from vmes_warehouse_product wp
+        WHERE
+        wp.product_id = t.id
+        ),0)
+        <where>
+            <if test="id != null and id != ''" >
+                and t.id=#{id}
+            </if>
+
+            <if test="currentCompanyId != null and currentCompanyId != ''">
+                and t.company_id = #{currentCompanyId}
+            </if>
+        </where>
+    </update>
+
     <!--库存数量-并发(version)控制-->
     <update id="updateStockCount" parameterType="com.yvan.PageData">
         update vmes_warehouse_product

@@ -404,6 +404,10 @@
             </if>
         </where>
         group by t.id
+        <!--havingStr 自定义sql查询语句-->
+        <if test="havingStr != null and havingStr != ''" >
+            having ${havingStr}
+        </if>
         <if test="orderStr != null and orderStr != ''" >
             order by ${orderStr}
         </if>

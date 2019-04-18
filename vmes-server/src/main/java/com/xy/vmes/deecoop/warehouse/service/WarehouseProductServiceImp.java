@@ -1416,6 +1416,14 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
         //6. 遍历List<业务表DB> 对业务表添加或修改
         return model;
     }
+
+
+    @Override
+    public ResultModel updateSynStockCount(PageData pd) throws Exception {
+        ResultModel model = new ResultModel();
+        warehouseProductMapper.updateSynStockCount(pd);
+        return model;
+    }
 }
 
 

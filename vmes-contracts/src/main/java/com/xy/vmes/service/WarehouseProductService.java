@@ -241,6 +241,8 @@ public interface WarehouseProductService {
     void exportExcelWarehouseProducts(PageData pd, Pagination pg) throws Exception;
 
     ResultModel importExcelWarehouseProducts(MultipartFile file) throws Exception;
+
+    ResultModel updateSynStockCount(PageData pd) throws Exception;
 }
 
 

@@ -158,7 +158,21 @@ public class WarehouseProductController {
 
 
 
-
+    /**
+     * @author 刘威
+     * @date 2018-10-31
+     */
+    @PostMapping("/warehouse/warehouseProduct/updateSynStockCount")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel updateSynStockCount()  throws Exception {
+        logger.info("################warehouseProduct/updateSynStockCount 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = warehouseProductService.updateSynStockCount(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################warehouseProduct/updateSynStockCount 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
 
     /**
      * @author 刘威

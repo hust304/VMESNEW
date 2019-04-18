@@ -249,7 +249,12 @@
         customer.id customerId,
         customer.name,
         round(ifnull(receive.receive_sum, 0),2) receiveSum,
-        case when receive.type='1' then '普通收款' when receive.type='0' then '预收款' else null end type,
+        case when receive.type='0' then '预收款'
+        when receive.type='1' then '普通收款'
+        when receive.type='2' then '发货退款'
+        when receive.type='3' then '订单退款'
+        when receive.type='4' then '预收款退款'
+        else null end type,
         DATE_FORMAT(receive.cdate,'%Y-%m-%d') cdate
         from vmes_sale_receive receive
         left join vmes_customer customer on customer.id = receive.customer_id
@@ -281,7 +286,12 @@
         customer.id customerId,
         customer.name,
         round(ifnull(receive.receive_sum, 0),2) receiveSum,
-        case when receive.type='1' then '普通收款' when receive.type='0' then '预收款' else null end type,
+        case when receive.type='0' then '预收款'
+        when receive.type='1' then '普通收款'
+        when receive.type='2' then '发货退款'
+        when receive.type='3' then '订单退款'
+        when receive.type='4' then '预收款退款'
+        else null end type,
         DATE_FORMAT(receive.cdate,'%Y-%m-%d') cdate
         from vmes_sale_receive receive
         left join vmes_customer customer on customer.id = receive.customer_id

@@ -3,10 +3,7 @@ package com.xy.vmes.deecoop.sale.service;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.*;
 import com.xy.vmes.deecoop.sale.dao.SaleOrderMapper;
-import com.xy.vmes.entity.Column;
-import com.xy.vmes.entity.Product;
-import com.xy.vmes.entity.SaleOrder;
-import com.xy.vmes.entity.SaleOrderDetail;
+import com.xy.vmes.entity.*;
 import com.xy.vmes.service.*;
 import com.yvan.*;
 import com.yvan.platform.RestException;
@@ -22,10 +19,10 @@ import java.text.MessageFormat;
 import java.util.*;
 
 /**
-* 说明：vmes_sale_order:订单表 实现类
-* 创建人：陈刚 自动创建
-* 创建时间：2018-12-05
-*/
+ * 说明：vmes_sale_order:订单表 实现类
+ * 创建人：陈刚 自动创建
+ * 创建时间：2018-12-05
+ */
 @Service
 @Transactional(readOnly = false)
 public class SaleOrderServiceImp implements SaleOrderService {
@@ -45,15 +42,20 @@ public class SaleOrderServiceImp implements SaleOrderService {
     private CoderuleService coderuleService;
     @Autowired
     private ColumnService columnService;
-
+    @Autowired
+    SaleReceiveService saleReceiveService;
+    @Autowired
+    SaleReceiveDetailService saleReceiveDetailService;
+    @Autowired
+    CustomerService customerService;
     //消息队列
     @Autowired
     private Producer producer;
 
     /**
-    * 创建人：陈刚 自动创建，禁止修改
-    * 创建时间：2018-12-05
-    */
+     * 创建人：陈刚 自动创建，禁止修改
+     * 创建时间：2018-12-05
+     */
     @Override
     public void save(SaleOrder saleOrder) throws Exception{
         saleOrder.setCdate(new Date());
@@ -179,15 +181,15 @@ public class SaleOrderServiceImp implements SaleOrderService {
     }
 
     /**
-    *
-    * @param pageData    查询参数对象<HashMap>
-    * @param isQueryAll  是否查询全部
-    *   true: 无查询条件返回表全部结果集
-    *   false: (false or is null)无查询条件-查询结果集返回空或
-    *
-    * @return
-    * @throws Exception
-    */
+     *
+     * @param pageData    查询参数对象<HashMap>
+     * @param isQueryAll  是否查询全部
+     *   true: 无查询条件返回表全部结果集
+     *   false: (false or is null)无查询条件-查询结果集返回空或
+     *
+     * @return
+     * @throws Exception
+     */
     public List<SaleOrder> findDataList(PageData pageData, Boolean isQueryAll) throws Exception {
         int pageDataSize = 0;
         if (pageData != null && pageData.size() > 0) {
@@ -334,21 +336,23 @@ public class SaleOrderServiceImp implements SaleOrderService {
 
         //3.修改客户余额(vmes_customer.balance)
         //advance_sum:预付款(定金)
-        if (order.getAdvanceSum() != null) {
-            String remarkTemp = "订单编号:{0} 预付款:{1}";
-            String remark = MessageFormat.format(remarkTemp,
-                    order.getSysCode(),
-                    order.getAdvanceSum().setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP).toString());
+//        if (order.getAdvanceSum() != null) {
+//            String remarkTemp = "订单编号:{0} 预付款:{1}";
+//            String remark = MessageFormat.format(remarkTemp,
+//                    order.getSysCode(),
+//                    order.getAdvanceSum().setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP).toString());
+//
+//            saleReceiveRecordService.editCustomerBalanceByOrder(
+//                    order.getCustomerId(),
+//                    null,
+//                    //操作类型 (0:变更 1:录入收款 2:预付款 3:退货退款 4:订单变更退款 5:预付款退款 -1:费用分摊)
+//                    "2",
+//                    order.getAdvanceSum(),
+//                    order.getCuser(),
+//                    remark);
+//        }
 
-            saleReceiveRecordService.editCustomerBalanceByOrder(
-                    order.getCustomerId(),
-                    null,
-                    //操作类型 (0:变更 1:录入收款 2:预付款 3:退货退款 4:订单变更退款 -1:费用分摊)
-                    "2",
-                    order.getAdvanceSum(),
-                    order.getCuser(),
-                    remark);
-        }
+
 
         return model;
     }
@@ -425,38 +429,38 @@ public class SaleOrderServiceImp implements SaleOrderService {
         }
         this.update(order);
 
-        //3.修改客户余额(vmes_customer.balance)
-        //advance_sum:预付款(定金)
-        BigDecimal new_advanceSum = BigDecimal.valueOf(0D);
-        if (order.getAdvanceSum() != null) {
-            new_advanceSum = order.getAdvanceSum();
-        }
-
-        BigDecimal old_advanceSum = BigDecimal.valueOf(0D);
-        if (order_old.getAdvanceSum() != null) {
-            old_advanceSum = order_old.getAdvanceSum();
-        }
-
-        if ((new_advanceSum.doubleValue() - old_advanceSum.doubleValue()) != 0D) {
-            BigDecimal editBalance = BigDecimal.valueOf(new_advanceSum.doubleValue() - old_advanceSum.doubleValue());
-            //四舍五入到2位小数
-            editBalance = editBalance.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-
-            String remarkTemp = "订单编号:{0} (预付款)变更前:{1} (预付款)变更后";
-            String remark = MessageFormat.format(remarkTemp,
-                    order_old.getSysCode(),
-                    old_advanceSum.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP).toString(),
-                    new_advanceSum.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP).toString()
-            );
-            saleReceiveRecordService.editCustomerBalanceByOrder(
-                    order.getCustomerId(),
-                    null,
-                    //操作类型 (0:变更 1:录入收款 2:预付款 3:退货退款 4:订单变更退款 -1:费用分摊)
-                    "2",
-                    editBalance,
-                    order.getCuser(),
-                    remark);
-        }
+//        //3.修改客户余额(vmes_customer.balance)
+//        //advance_sum:预付款(定金)
+//        BigDecimal new_advanceSum = BigDecimal.valueOf(0D);
+//        if (order.getAdvanceSum() != null) {
+//            new_advanceSum = order.getAdvanceSum();
+//        }
+//
+//        BigDecimal old_advanceSum = BigDecimal.valueOf(0D);
+//        if (order_old.getAdvanceSum() != null) {
+//            old_advanceSum = order_old.getAdvanceSum();
+//        }
+//
+//        if ((new_advanceSum.doubleValue() - old_advanceSum.doubleValue()) != 0D) {
+//            BigDecimal editBalance = BigDecimal.valueOf(new_advanceSum.doubleValue() - old_advanceSum.doubleValue());
+//            //四舍五入到2位小数
+//            editBalance = editBalance.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+//
+//            String remarkTemp = "订单编号:{0} (预付款)变更前:{1} (预付款)变更后{2}";
+//            String remark = MessageFormat.format(remarkTemp,
+//                    order_old.getSysCode(),
+//                    old_advanceSum.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP).toString(),
+//                    new_advanceSum.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP).toString()
+//            );
+//            saleReceiveRecordService.editCustomerBalanceByOrder(
+//                    order.getCustomerId(),
+//                    null,
+//                    //操作类型 (0:变更 1:录入收款 2:预付款 3:退货退款 4:订单变更退款 5:预付款退款 -1:费用分摊)
+//                    "2",
+//                    editBalance,
+//                    order.getCuser(),
+//                    remark);
+//        }
 
         return model;
     }
@@ -473,7 +477,7 @@ public class SaleOrderServiceImp implements SaleOrderService {
 
         //1. 订单状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
         SaleOrder order_old = this.findSaleOrderById(parentId);
-        if (!"0".equals(order_old.getState()) && !"-1".equals(order_old.getState())) {
+        if ((!"0".equals(order_old.getState()))&&(!"-1".equals(order_old.getState()))) {
             String msgTemp = "订单状态({0})不可删除！";
             String msgStr = MessageFormat.format(msgTemp, Common.SYS_SALE_ORDER_STATE.get(order_old.getState()));
 
@@ -635,11 +639,69 @@ public class SaleOrderServiceImp implements SaleOrderService {
         saleOrderDetailService.updateStateByDetail(mapDetail);
 
         //3. 修改抬头表状态
-        SaleOrder order = new SaleOrder();
-        order.setId(orderId);
+        SaleOrder order = this.selectById(orderId);
         //state:状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
         order.setState("0");
         this.update(order);
+
+
+        //advance_sum:预付款(定金)
+        if (order.getAdvanceSum() != null) {
+
+
+            //4.修改客户余额(vmes_customer.balance)
+            String remarkTemp = "订单编号:{0} 预付款退款:{1}";
+            String remark = MessageFormat.format(remarkTemp,
+                    order.getSysCode(),
+                    order.getAdvanceSum().setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP).toString());
+
+            saleReceiveRecordService.editCustomerBalanceByOrder(
+                    order.getCustomerId(),
+                    null,
+                    //操作类型 (0:变更 1:录入收款 2:预付款 3:退货退款 4:订单变更退款 5:预付款退款 -1:费用分摊)
+                    "5",
+                    order.getAdvanceSum().negate(),
+                    order.getCuser(),
+                    remark);
+
+
+            //5.分摊预付款
+            SaleReceive saleReceive = new SaleReceive();
+            String id = Conv.createUuid();
+            String companyID = pageData.getString("currentCompanyId");
+            String code = coderuleService.createCoder(companyID, "vmes_sale_receive", "R");
+            saleReceive.setId(id);
+            saleReceive.setCode(code);
+            saleReceive.setType("4");//收款类型(0:预收款 1:普通收款 2:发货退款 3:订单退款 4:预收款退款)
+            saleReceive.setCustomerId(order.getCustomerId());
+            saleReceive.setReceiveSum(order.getAdvanceSum().negate());
+            saleReceive.setCompanyId(companyID);
+            saleReceive.setUuser(pageData.getString("cuser"));
+            saleReceive.setCuser(pageData.getString("cuser"));
+            saleReceiveService.save(saleReceive);
+
+            SaleReceiveDetail detail = new SaleReceiveDetail();
+            detail.setParentId(saleReceive.getId());
+            detail.setOrderId(order.getId());
+            detail.setDiscountAmount(BigDecimal.ZERO);
+            detail.setReceiveAmount(order.getAdvanceSum().negate());
+            detail.setState("1");//收款单状态(0:待收款 1:已收款 -1:已取消)
+            detail.setUuser(pageData.getString("cuser"));
+            detail.setCuser(pageData.getString("cuser"));
+            saleReceiveDetailService.save(detail);
+
+
+            Customer customer = customerService.selectById(order.getCustomerId());
+            //操作类型 (0:变更 1:录入收款 2:预付款 -1:费用分摊)
+            String remark_1 = "费用分摊：" + customer.getBalance().subtract(customer.getBalance().subtract(order.getAdvanceSum().negate())).setScale(2, BigDecimal.ROUND_HALF_UP);
+            customerService.updateCustomerBalance(
+                    customer,
+                    customer.getBalance().subtract(order.getAdvanceSum().negate()),
+                    pageData.getString("uuser"),
+                    "-1",
+                    remark_1);
+
+        }
 
 
         return model;
