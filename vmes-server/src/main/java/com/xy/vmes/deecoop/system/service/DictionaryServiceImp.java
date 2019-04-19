@@ -846,12 +846,11 @@ public class DictionaryServiceImp implements DictionaryService {
         ResultModel model = new ResultModel();
         String dictionaryKey = pd.getString("dictionaryKey");
         String id = Common.DICTIONARY_MAP.get(dictionaryKey);
+
         String isglobal = pd.getString("isglobal");
         String queryStr = pd.getString("queryStr");
-        String companyId = pd.getString("currentCompanyId");
-        pd.put("companyId", companyId);
-        pd.put("isdisable", "1");
 
+        pd.put("isdisable", "1");
         //是否只显示当前层
         String isNeetOneLayer = null;
         if (pd.getString("isNeetOneLayer") != null && pd.getString("isNeetOneLayer").trim().length() > 0) {
@@ -859,6 +858,8 @@ public class DictionaryServiceImp implements DictionaryService {
         }
 
         if ("true".equals(isNeetOneLayer)) {
+            String companyId = pd.getString("currentCompanyId");
+            pd.put("companyId", companyId);
             pd.put("selfQueryStr", "id = '" + id + "'");
             pd.put("pid", id);
             if(StringUtils.isEmpty(isglobal) || "0".equals(isglobal)){
