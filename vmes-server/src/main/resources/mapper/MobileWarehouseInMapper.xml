@@ -40,7 +40,10 @@
             left join (
                 select inExecute.detail_id, sum(ifnull(inExecute.count,0)) executeCount,DATE_FORMAT(min(executor.cdate),'%Y-%m-%d %T') startDate,DATE_FORMAT(max(inExecute.cdate),'%Y-%m-%d %T') endDate
                 from vmes_warehouse_in_execute inExecute
-                left join vmes_warehouse_in_executor executor on inExecute.detail_id = executor.detail_id and inExecute.executor_id = executor.executor_id and executor.isdisable = '1'
+                    left join vmes_warehouse_in_executor executor on inExecute.detail_id = executor.detail_id
+                        and inExecute.executor_id = executor.executor_id
+                        and executor.isdisable = '1'
+                where inExecute.isdisable = '1'
                 group by detail_id
             ) inDtlExecute on detail.id = inDtlExecute.detail_id
 

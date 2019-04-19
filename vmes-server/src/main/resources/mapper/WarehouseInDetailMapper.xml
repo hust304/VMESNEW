@@ -238,6 +238,7 @@
             left join (
                 select detail_id, sum(count) executeCount
                 from vmes_warehouse_in_execute
+                where isdisable = '1'
                 group by detail_id
             ) inDtlExecute on a.id = inDtlExecute.detail_id
 
