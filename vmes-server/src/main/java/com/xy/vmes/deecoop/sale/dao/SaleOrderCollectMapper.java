@@ -18,4 +18,6 @@ import java.util.Map;
 public interface SaleOrderCollectMapper {
     List<Map> findListPageOrderCollectByInfo(PageData pd);
     List<Map> findListPageOrderCollectByInfo(PageData pd, Pagination pg);
+    List<Map> getSaleOrderCollect(PageData pd, Pagination pg);
+    List<Map> getSaleOrderCollect(PageData pd);
 }

@@ -62,6 +62,23 @@ public class SaleOrderController {
     }
 
     /**
+     * 订单详情: vmes_sale_order 订单汇总
+     * @date 2019-02-13
+     */
+    @PostMapping("/sale/saleOrder/getSaleOrderCollectByOrderId")
+    public ResultModel getSaleOrderCollectByOrderId() throws Exception {
+        logger.info("################/sale/saleOrder/getSaleOrderCollectByOrderId 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        Pagination pg = HttpUtils.parsePagination(pd);
+        ResultModel model = saleOrderCollectService.getSaleOrderCollectByOrderId(pd,pg);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleOrder/getSaleOrderCollectByOrderId 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+    /**
      * 新增订单
      * @author 陈刚
      * @date 2018-12-10

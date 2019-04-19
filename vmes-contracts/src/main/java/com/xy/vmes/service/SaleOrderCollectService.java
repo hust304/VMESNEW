@@ -12,4 +12,6 @@ public interface SaleOrderCollectService {
     List<Map> findListPageOrderCollectByInfo(PageData pd, Pagination pg) throws Exception;
 
     ResultModel listPageOrderCollectByInfo(PageData pd) throws Exception;
+
+    ResultModel getSaleOrderCollectByOrderId(PageData pd, Pagination pg) throws Exception;
 }

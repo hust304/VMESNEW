@@ -344,7 +344,7 @@
         END  orderState,
         round(sum(ifnull(deliverAmount,0)),2) deliverAmount,round(sum(ifnull(receiveAmount,0)),2) receivedAmount,round(sum(ifnull(discountAmount,0)),2) discountedAmount,
         case when sum(ifnull(deliverAmount,0)) <![CDATA[ > ]]> (sum(ifnull(receiveAmount,0))+sum(ifnull(discountAmount,0))) then round(sum(ifnull(deliverAmount,0)) - sum(ifnull(receiveAmount,0)) - sum(ifnull(discountAmount,0)),2) else 0.00 end nowReceiveAmount,
-        case when sum(ifnull(deliverAmount,0)) <![CDATA[ < ]]> (sum(ifnull(receiveAmount,0))+sum(ifnull(discountAmount,0))) then round(sum(ifnull(receiveAmount,0)) - sum(ifnull(deliverAmount,0)) - sum(ifnull(discountAmount,0)),2) else 0.00 end preReceiveAmount
+        case when sum(ifnull(deliverAmount,0)) <![CDATA[ < ]]> (sum(ifnull(receiveAmount,0))+sum(ifnull(discountAmount,0))) then round(sum(ifnull(receiveAmount,0)) - sum(ifnull(deliverAmount,0)) + sum(ifnull(discountAmount,0)),2) else 0.00 end preReceiveAmount
         from (
             select saleOrder.id id,saleOrder.sys_code sysCode,saleOrder.customer_id customerId,saleOrder.current_deliver_date currentDeliverDate,saleOrder.company_id companyId,saleOrder.order_sum orderAmount,saleOrder.state state,DATE_FORMAT(saleOrder.order_date,'%Y-%m-%d') orderDate,
             deliverDetail.sum deliverAmount,null receiveAmount,null discountAmount
