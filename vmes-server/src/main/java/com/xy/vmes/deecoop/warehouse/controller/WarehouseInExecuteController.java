@@ -1,28 +1,21 @@
 package com.xy.vmes.deecoop.warehouse.controller;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
-import com.xy.vmes.common.util.ColumnUtil;
-import com.xy.vmes.common.util.Common;
 import com.xy.vmes.entity.*;
-import com.xy.vmes.exception.TableVersionException;
 import com.xy.vmes.service.*;
-import com.yvan.Conv;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
-import com.yvan.YvanUtil;
 import com.yvan.springmvc.ResultModel;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
-import java.text.MessageFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
 
 /**
  * 说明：入库派单明细执行
@@ -36,6 +29,8 @@ public class WarehouseInExecuteController {
 
     @Autowired
     private WarehouseInExecuteService warehouseInExecuteService;
+    @Autowired
+    private ProductService productService;
 
     /**
      * (入库管理-任务列表)获取入库单执行列表
@@ -146,6 +141,38 @@ public class WarehouseInExecuteController {
         ResultModel model = warehouseInExecuteService.updateCancelWarehouseInExecute(pageData);
         Long endTime = System.currentTimeMillis();
         logger.info("################/warehouseInExecute/updateCancelWarehouseInExecute 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    @GetMapping("/warehouseInExecute/updateProductStockCountTest_1")
+    public ResultModel updateProductStockCountTest_1() {
+        ResultModel model = new ResultModel();
+
+        Product product = productService.findProductById("04ea720992d24d61b894cb91357e9c94");
+        BigDecimal prodStockCount = BigDecimal.valueOf(55D);
+        try {
+            System.out.println("in updateProductStockCountTest_1");
+            productService.updateStockCount(product, prodStockCount, "a18260b902434bdcbe4d9bdef9288bb1");
+            System.out.println("end updateProductStockCountTest_1");
+        } catch (Exception e) {
+            System.out.println("*********************");
+        }
+        return model;
+    }
+
+    @GetMapping("/warehouseInExecute/updateProductStockCountTest_2")
+    public ResultModel updateProductStockCountTest_2() {
+        ResultModel model = new ResultModel();
+
+        Product product = productService.findProductById("04ea720992d24d61b894cb91357e9c94");
+        BigDecimal prodStockCount = BigDecimal.valueOf(55D);
+        try {
+            System.out.println("in updateProductStockCountTest_2");
+            productService.updateStockCount(product, prodStockCount, "a18260b902434bdcbe4d9bdef9288bb1");
+            System.out.println("end updateProductStockCountTest_2");
+        } catch (Exception e) {
+            System.out.println("*********************");
+        }
         return model;
     }
 

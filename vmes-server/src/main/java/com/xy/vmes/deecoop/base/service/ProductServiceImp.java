@@ -6,6 +6,7 @@ import com.xy.vmes.common.util.Common;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.base.dao.ProductMapper;
 import com.xy.vmes.entity.*;
+import com.xy.vmes.exception.TableVersionException;
 import com.xy.vmes.service.*;
 import com.yvan.*;
 import com.yvan.platform.RestException;
@@ -303,7 +304,15 @@ public class ProductServiceImp implements ProductService {
         pd.put("version",product.getVersion());
         pd.put("uuser",uuser);
         pd.put("stockCount",count);
-        productMapper.updateStockCount(pd);
+
+        Integer updateValue = null;
+        try {
+            updateValue = productMapper.updateStockCount(pd);
+        } catch (Exception e) {}
+
+        if (updateValue == null || 0 == updateValue.intValue()) {
+            throw new Exception("当前系统繁忙，请稍后操作！");
+        }
     }
 
     public void updateLockCount(String productId, Product oldProduct, BigDecimal lockCount, String uuser) throws Exception {

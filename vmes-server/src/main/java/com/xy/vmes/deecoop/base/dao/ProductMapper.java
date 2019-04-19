@@ -76,7 +76,7 @@ public interface ProductMapper extends BaseMapper<Product> {
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
     void updateProductInitialByStockCount(PageData pageData);
 
-    void updateStockCount(PageData pd);
+    Integer updateStockCount(PageData pd);
 
 //    //////////////////////////////////////////////////////////////////////////////////
 //    //手机端功能
