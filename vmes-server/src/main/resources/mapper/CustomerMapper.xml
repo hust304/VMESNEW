@@ -214,7 +214,7 @@
         (replace(uuid(), '-', ''),'customerReceive','typeName','客户类型',4, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'customerReceive','balance','客户余额',5, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'customerReceive','accountDays','账期（天）',6, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'customerReceive','preReceiveAmount','预收款',7, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'customerReceive','preReceiveAmount','预付款',7, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'customerReceive','nowReceiveAmount','应收款',8, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'customerReceive','delayReceiveAmount','逾期收款',9, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'customerReceive','province','地域ID',10, '1','0','1','0',now(), 'admin'),
@@ -473,7 +473,7 @@
                     </if>
                 </where>
             )t
-            group by t.orderId
+            group by t.customerId
         )tab on tab.customerId = customer.id
         <where>
             and customer.genre = 'df7cb67fca4148bc9632c908e4a7fdea'
