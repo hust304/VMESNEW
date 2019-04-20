@@ -231,9 +231,8 @@ public class ${objectName}ServiceImp implements ${objectName}Service {
     * @throws Exception
     */
     public ResultModel listPage${objectName}s(PageData pd,Pagination pg) throws Exception{
-
         ResultModel model = new ResultModel();
-        Map result = new HashMap();
+
         List<Column> columnList = columnService.findColumnList("${modelCode}");
         if (columnList == null || columnList.size() == 0) {
             model.putCode("1");
@@ -246,16 +245,30 @@ public class ${objectName}ServiceImp implements ${objectName}Service {
         if (fieldCode != null && fieldCode.trim().length() > 0) {
             columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
         }
-
         Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
+
+        //设置查询排序方式
+        //pd.put("orderStr", "a.cdate asc");
+        String orderStr = pd.getString("orderStr");
+        if (orderStr != null && orderStr.trim().length() > 0) {
+            pd.put("orderStr", orderStr);
+        }
+
+        //是否需要分页 true:需要分页 false:不需要分页
+        Map result = new HashMap();
+        String isNeedPage = pd.getString("isNeedPage");
+        if ("false".equals(isNeedPage)) {
+            pg = null;
+        } else {
+            result.put("pageData", pg);
+        }
+
         List<Map> varList = this.getDataListPage(pd,pg);
         List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
-
 
         result.put("hideTitles",titleMap.get("hideTitles"));
         result.put("titles",titleMap.get("titles"));
         result.put("varList",varMapList);
-        result.put("pageData", pg);
         model.putResult(result);
         return model;
     }
