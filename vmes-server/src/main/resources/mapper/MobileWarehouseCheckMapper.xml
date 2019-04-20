@@ -102,7 +102,7 @@
         genre.name genreName,
         unit.name unitName,
         detail.code code,
-        round(ifnull(detail.stock_count, 0), 2) stockCount,
+        round(ifnull(detail.stock_count, 0), 2) taskCount,
         checkDtlExecute.endDate,
         checkDtlExecute.startDate,
         checkDtlExecute.executeCount
