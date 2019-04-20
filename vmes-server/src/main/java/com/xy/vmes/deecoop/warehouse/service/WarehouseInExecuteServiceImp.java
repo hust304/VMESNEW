@@ -344,7 +344,7 @@ public class WarehouseInExecuteServiceImp implements WarehouseInExecuteService {
                 }
 
                 String msgTemp = "货品编码({0})货品名称({1}) 入库执行冲突，入库数量({2}) 已执行({3}) 当前需要执行({4})" + Common.SYS_ENDLINE_DEFAULT;
-                if (count_big.doubleValue() <= (executeCount.doubleValue() + now_count_big.doubleValue())) {
+                if (count_big.doubleValue() < (executeCount.doubleValue() + now_count_big.doubleValue())) {
                     String msgStr = MessageFormat.format(msgTemp,
                             productCode,
                             productName,
@@ -601,7 +601,7 @@ public class WarehouseInExecuteServiceImp implements WarehouseInExecuteService {
             }
 
             String msgTemp = "货品编码({0})货品名称({1}) 入库执行冲突，入库数量({2}) 已执行({3}) 当前需要执行({4})" + Common.SYS_ENDLINE_DEFAULT;
-            if (dtl_count.doubleValue() <= (executeCount.doubleValue() + countBig.doubleValue())) {
+            if (dtl_count.doubleValue() < (executeCount.doubleValue() + countBig.doubleValue())) {
                 String msgStr = MessageFormat.format(msgTemp,
                         productCode,
                         productName,
