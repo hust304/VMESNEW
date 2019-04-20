@@ -4,10 +4,7 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.sale.dao.SaleReceiveMapper;
-import com.xy.vmes.entity.Column;
-import com.xy.vmes.entity.Customer;
-import com.xy.vmes.entity.SaleReceive;
-import com.xy.vmes.entity.SaleReceiveDetail;
+import com.xy.vmes.entity.*;
 import com.xy.vmes.service.*;
 import com.yvan.*;
 import com.yvan.platform.RestException;
@@ -48,6 +45,8 @@ public class SaleReceiveServiceImp implements SaleReceiveService {
     @Autowired
     private CustomerService customerService;
 
+    @Autowired
+    private SaleOrderService saleOrderService;
     /**
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2019-01-10
@@ -302,20 +301,23 @@ public class SaleReceiveServiceImp implements SaleReceiveService {
         saleReceive.setCuser(pd.getString("cuser"));
         this.save(saleReceive);
 
-
+        StringBuffer orderIdsBuf = new StringBuffer();
+        Map<String, String> orderIdMap = new HashMap<String, String>();
         if(mapList!=null&&mapList.size()>0){
             for(int i=0;i<mapList.size();i++){
                 Map<String, String> detailMap = mapList.get(i);
                 SaleReceiveDetail detail = new SaleReceiveDetail();
                 detail.setParentId(saleReceive.getId());
-                detail.setOrderId(detailMap.get("id"));
+                String orderId = detailMap.get("id");
+                detail.setOrderId(orderId);
+                orderIdsBuf.append(orderId).append(",");
+                orderIdMap.put(orderId, orderId);
                 detail.setDiscountAmount(BigDecimal.valueOf(Double.parseDouble(detailMap.get("discountAmount"))));
                 detail.setReceiveAmount(BigDecimal.valueOf(Double.parseDouble(detailMap.get("receiveAmount"))));
                 detail.setState("1");//收款单状态(0:待收款 1:已收款 -1:已取消)
                 detail.setUuser(pd.getString("cuser"));
                 detail.setCuser(pd.getString("cuser"));
                 saleReceiveDetailService.save(detail);
-
             }
         }
 
@@ -328,6 +330,36 @@ public class SaleReceiveServiceImp implements SaleReceiveService {
                 pd.getString("uuser"),
                 "-1",
                 remark_1);
+
+
+        //查询付款单明细 vmes_sale_receive_detail
+        //收款明细状态(0:待收款 1:已收款 -1:已取消)
+        Map<String, Map<String, BigDecimal>> orderReceiveMap = saleReceiveDetailService.findMapOrderReceiveByOrderId(orderIdsBuf.toString(), "1");
+
+        //反写订单状态
+        if (orderIdMap.size() > 0) {
+            for (Iterator iterator = orderIdMap.keySet().iterator(); iterator.hasNext(); ) {
+                String orderId = (String) iterator.next();
+                if (orderReceiveMap.get(orderId) != null) {
+                    Map<String, BigDecimal> receiveMap = orderReceiveMap.get(orderId);
+                    SaleOrder saleOrder = saleOrderService.findSaleOrderById(orderId);
+                    //订单id-订单已完成付款金额
+                    BigDecimal receiveSum = BigDecimal.valueOf(0D);
+                    if (receiveMap.get("receiveSum") != null) {
+                        receiveSum = receiveMap.get("receiveSum");
+                    }
+                    BigDecimal orderSum = saleOrder.getOrderSum();
+                    if (receiveSum.doubleValue() >= orderSum.doubleValue()) {
+                        //订单状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
+                        if("3".equals(saleOrder.getState())){
+                            saleOrder.setState("4");
+                            saleOrderService.update(saleOrder);
+                        }
+                    }
+                }
+            }
+        }
+
         return model;
     }
 

@@ -837,6 +837,18 @@ public class SaleOrderServiceImp implements SaleOrderService {
         return model;
     }
 
+
+    @Override
+    public void updateOrderStateCompelete(String id) throws Exception {
+        SaleOrder saleOrder = this.selectById(id);
+        if(saleOrder!=null){
+            //订单状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
+            if("3".equals(saleOrder.getState())){
+
+            }
+        }
+    }
+
     @Override
     public void exportExcelSaleOrders(PageData pd, Pagination pg) throws Exception {
         List<Column> columnList = columnService.findColumnList("saleOrder");
