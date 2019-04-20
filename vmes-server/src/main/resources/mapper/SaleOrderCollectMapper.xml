@@ -139,6 +139,7 @@
         saleOrder.audit_id auditId,
         saleOrder.customer_id customerId,
         saleOrder.remark remark,
+        round(ifnull(saleOrder.advance_sum, 0),2) advanceAmount,
         round(ifnull(saleOrder.order_sum, 0),2) orderAmount,
         DATE_FORMAT(saleOrder.order_date,'%Y-%m-%d') orderDate,
         DATE_FORMAT(saleOrder.expect_date,'%Y-%m-%d') expectDate,
@@ -146,6 +147,7 @@
         DATE_FORMAT(saleOrder.pay_date,'%Y-%m-%d') payDate,
         DATE_FORMAT(saleOrder.current_deliver_date,'%Y-%m-%d') currentDeliverDate,
         DATE_FORMAT(date_add(saleOrder.current_deliver_date, interval customer.account_days day),'%Y-%m-%d') deadlineDate,
+        DATEDIFF(DATE_FORMAT(date_add(saleOrder.current_deliver_date, interval customer.account_days day),'%Y-%m-%d'),DATE_FORMAT(now(),'%Y-%m-%d'))  daysRemaining,
         makeUser.user_name makeName,
         auditUser.user_name auditName,
         customer.name customerName,
@@ -301,10 +303,12 @@
             (replace(uuid(), '-', ''),'saleOrderCollect','discountedAmount','折扣金额',5, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'saleOrderCollect','invoiceAmount','开票金额',5, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'saleOrderCollect','nowReceiveAmount','应收金额',5, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleOrderCollect','preReceiveAmount','预付金额',5, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'saleOrderCollect','preReceiveAmount','预收金额',5, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'saleOrderCollect','priceType','计价类型',6, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'saleOrderCollect','receiptType','发票类型',7, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'saleOrderCollect','companyId','公司ID',8, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'saleOrderCollect','daysRemaining','账期剩余(天)',8, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'saleOrderCollect','advanceAmount','预付款',8, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'saleOrderCollect','id','id',0, '1','1','1','0',now(), 'admin')
     </insert>
 

@@ -128,6 +128,7 @@ public interface SaleOrderService {
     ResultModel importExcelSaleOrders(MultipartFile file) throws Exception;
 
 
+    void updateOrderStateCompelete(String id) throws Exception;
 }
 
 
