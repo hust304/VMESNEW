@@ -243,6 +243,9 @@
             ) inDtlExecute on a.id = inDtlExecute.detail_id
 
         <where>
+            <if test="detailId != null and detailId != ''" >
+                and a.id = #{detailId}
+            </if>
             <if test="parentId != null and parentId != ''" >
                 and a.parent_id = #{parentId}
             </if>

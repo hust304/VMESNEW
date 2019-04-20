@@ -565,6 +565,55 @@ public class WarehouseInExecuteServiceImp implements WarehouseInExecuteService {
             }
         }
 
+        //当前入库单明细 信息
+        PageData findMap = new PageData();
+        findMap.put("detailId", detailId);
+
+        Map inDtlMap = null;
+        List<Map> inDtlList = warehouseInDetailService.getDataListPage(findMap, null);
+        if (inDtlList != null && inDtlList.size() > 0) {
+            inDtlMap = inDtlList.get(0);
+        }
+
+        //入库执行验证 入库单明细数量 (入库单明已执行数量 + 当前执行数量) --(web端,app端)同时执行情况
+        if (inDtlMap != null) {
+            //productCode 货品编码
+            String productCode = new String();
+            if (inDtlMap.get("productCode") != null) {
+                productCode = inDtlMap.get("productCode").toString().trim();
+            }
+
+            //productName 货品名称
+            String productName = new String();
+            if (inDtlMap.get("productName") != null) {
+                productName = inDtlMap.get("productName").toString().trim();
+            }
+
+            //count 入库数量
+            BigDecimal dtl_count = BigDecimal.valueOf(0D);
+            if (inDtlMap.get("count") != null) {
+                dtl_count = (BigDecimal)inDtlMap.get("count");
+            }
+            //executeCount 已完成数量
+            BigDecimal executeCount = BigDecimal.valueOf(0D);
+            if (inDtlMap.get("executeCount") != null) {
+                executeCount = (BigDecimal)inDtlMap.get("executeCount");
+            }
+
+            String msgTemp = "货品编码({0})货品名称({1}) 入库执行冲突，入库数量({2}) 已执行({3}) 当前需要执行({4})" + Common.SYS_ENDLINE_DEFAULT;
+            if (dtl_count.doubleValue() <= (executeCount.doubleValue() + countBig.doubleValue())) {
+                String msgStr = MessageFormat.format(msgTemp,
+                        productCode,
+                        productName,
+                        dtl_count.toString(),
+                        executeCount.toString(),
+                        countBig.toString());
+
+                model.putCode(Integer.valueOf(1));
+                model.putMsg(msgStr);
+                return model;
+            }
+        }
 
         StringBuffer msgBuf = new StringBuffer();
         try {
