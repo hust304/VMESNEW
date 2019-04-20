@@ -103,6 +103,7 @@
         unit.name unitName,
         detail.code code,
         round(ifnull(detail.stock_count, 0), 2) taskCount,
+        round(ifnull(detail.stock_count, 0), 2) stockCount,
         checkDtlExecute.endDate,
         checkDtlExecute.startDate,
         checkDtlExecute.executeCount
