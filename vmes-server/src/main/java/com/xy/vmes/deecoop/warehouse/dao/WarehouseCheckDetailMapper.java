@@ -49,7 +49,7 @@ public interface WarehouseCheckDetailMapper extends BaseMapper<WarehouseCheckDet
      * 创建时间：2018-11-13
      */
     List<Map> getDataListPage(PageData pd, Pagination pg);
-
+    List<Map> getDataListPage(PageData pd);
 
 
 

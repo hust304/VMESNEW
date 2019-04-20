@@ -44,6 +44,7 @@ public interface WarehouseCheckExecuteMapper extends BaseMapper<WarehouseCheckEx
      * 创建人：陈刚
      * 创建时间：2018-11-15
      */
+    List<Map> getDataListPage(PageData pd);
     List<Map> getDataListPage(PageData pd, Pagination pg);
     List<Map> findListWarehouseCheckExecuteByAudit(PageData pd, Pagination pg);
 

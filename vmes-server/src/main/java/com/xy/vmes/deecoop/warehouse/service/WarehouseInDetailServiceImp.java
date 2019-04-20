@@ -125,8 +125,17 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
     * 创建时间：2018-10-16
     */
     @Override
-    public List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception{
-        return warehouseInDetailMapper.getDataListPage(pd, pg);
+    public List<Map> getDataListPage(PageData pd, Pagination pg) throws Exception{
+        List<Map> mapList = new ArrayList<Map>();
+        if (pd == null) {return mapList;}
+
+        if (pg == null) {
+            return warehouseInDetailMapper.getDataListPage(pd);
+        } else if (pg != null) {
+            return warehouseInDetailMapper.getDataListPage(pd,pg);
+        }
+
+        return mapList;
     }
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
@@ -402,7 +411,6 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
             return model;
         }
 
-        Map result = new HashMap();
         //获取指定栏位字符串-重新调整List<Column>
         String fieldCode = pd.getString("fieldCode");
         if (fieldCode != null && fieldCode.trim().length() > 0) {
@@ -414,12 +422,21 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
         if (orderStr != null && orderStr.trim().length() > 0) {
             pd.put("orderStr", orderStr);
         }
-        List<Map> varList = this.getDataListPage(pd,pg);
+
+        //是否需要分页 true:需要分页 false:不需要分页
+        Map result = new HashMap();
+        String isNeedPage = pd.getString("isNeedPage");
+        if ("false".equals(isNeedPage)) {
+            pg = null;
+        } else {
+            result.put("pageData", pg);
+        }
+
+        List<Map> varList = this.getDataListPage(pd, pg);
         List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
         result.put("hideTitles",titleMap.get("hideTitles"));
         result.put("titles",titleMap.get("titles"));
         result.put("varList",varMapList);
-//        result.put("pageData", pg);
         model.putResult(result);
         return model;
     }

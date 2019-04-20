@@ -159,7 +159,17 @@ public class WarehouseCheckDetailServiceImp implements WarehouseCheckDetailServi
      */
     @Override
     public List<Map> getDataListPage(PageData pd, Pagination pg) throws Exception{
-        return warehouseCheckDetailMapper.getDataListPage(pd, pg);
+        //return warehouseCheckDetailMapper.getDataListPage(pd, pg);
+        List<Map> mapList = new ArrayList<Map>();
+        if (pd == null) {return mapList;}
+
+        if (pg == null) {
+            return warehouseCheckDetailMapper.getDataListPage(pd);
+        } else if (pg != null) {
+            return warehouseCheckDetailMapper.getDataListPage(pd,pg);
+        }
+
+        return mapList;
     }
 
     public WarehouseCheckDetail findWarehouseCheckDetail(PageData object) throws Exception {
@@ -441,6 +451,7 @@ public class WarehouseCheckDetailServiceImp implements WarehouseCheckDetailServi
     @Override
     public ResultModel listPageWarehouseCheckDetails(PageData pd, Pagination pg) throws Exception {
         ResultModel model = new ResultModel();
+
         List<Column> columnList = columnService.findColumnList("warehouseCheckDetail");
         if (columnList == null || columnList.size() == 0) {
             model.putCode("1");
@@ -449,14 +460,11 @@ public class WarehouseCheckDetailServiceImp implements WarehouseCheckDetailServi
         }
 
         //获取指定栏位字符串-重新调整List<Column>
-
         String fieldCode = pd.getString("fieldCode");
         if (fieldCode != null && fieldCode.trim().length() > 0) {
             columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
         }
-
         Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
-        Map result = new HashMap();
 
         //设置查询排序
         pd.put("orderStr", "detail.cdate asc");
@@ -465,12 +473,20 @@ public class WarehouseCheckDetailServiceImp implements WarehouseCheckDetailServi
             pd.put("orderStr", orderStr);
         }
 
+        //是否需要分页 true:需要分页 false:不需要分页
+        Map result = new HashMap();
+        String isNeedPage = pd.getString("isNeedPage");
+        if ("false".equals(isNeedPage)) {
+            pg = null;
+        } else {
+            result.put("pageData", pg);
+        }
+
         List<Map> varList = this.getDataListPage(pd,pg);
         List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
         result.put("hideTitles",titleMap.get("hideTitles"));
         result.put("titles",titleMap.get("titles"));
         result.put("varList",varMapList);
-//        result.put("pageData", pg);
         model.putResult(result);
         return model;
     }

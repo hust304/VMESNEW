@@ -199,7 +199,16 @@ public class WarehouseOutDetailServiceImp implements WarehouseOutDetailService {
     */
     @Override
     public List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception{
-        return warehouseOutDetailMapper.getDataListPage(pd,pg);
+        List<Map> mapList = new ArrayList<Map>();
+        if (pd == null) {return mapList;}
+
+        if (pg == null) {
+            return warehouseOutDetailMapper.getDataListPage(pd);
+        } else if (pg != null) {
+            return warehouseOutDetailMapper.getDataListPage(pd,pg);
+        }
+
+        return mapList;
     }
 
     /**
@@ -623,7 +632,6 @@ public class WarehouseOutDetailServiceImp implements WarehouseOutDetailService {
     @Override
     public ResultModel listPageWarehouseOutDetails(PageData pd, Pagination pg) throws Exception {
         ResultModel model = new ResultModel();
-        Map result = new HashMap();
 
         List<Column> columnList = columnService.findColumnList("WarehouseOutDetail");
         if (columnList == null || columnList.size() == 0) {
@@ -637,12 +645,21 @@ public class WarehouseOutDetailServiceImp implements WarehouseOutDetailService {
             columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
         }
         Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
+
+        //是否需要分页 true:需要分页 false:不需要分页
+        Map result = new HashMap();
+        String isNeedPage = pd.getString("isNeedPage");
+        if ("false".equals(isNeedPage)) {
+            pg = null;
+        } else {
+            result.put("pageData", pg);
+        }
+
         List<Map> varList = this.getDataListPage(pd,pg);
         List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
         result.put("hideTitles",titleMap.get("hideTitles"));
         result.put("titles",titleMap.get("titles"));
         result.put("varList",varMapList);
-//        result.put("pageData", pg);
         model.putResult(result);
         return model;
     }

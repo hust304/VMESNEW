@@ -151,7 +151,17 @@ public class WarehouseCheckExecuteServiceImp implements WarehouseCheckExecuteSer
         return warehouseCheckExecuteMapper.getDataListPage(pd, pg);
     }
     public List<Map> findListWarehouseCheckExecuteByAudit(PageData pd, Pagination pg) throws Exception {
-        return warehouseCheckExecuteMapper.findListWarehouseCheckExecuteByAudit(pd, pg);
+        //return warehouseCheckExecuteMapper.findListWarehouseCheckExecuteByAudit(pd, pg);
+        List<Map> mapList = new ArrayList<Map>();
+        if (pd == null) {return mapList;}
+
+        if (pg == null) {
+            return warehouseCheckExecuteMapper.getDataListPage(pd);
+        } else if (pg != null) {
+            return warehouseCheckExecuteMapper.getDataListPage(pd,pg);
+        }
+
+        return mapList;
     }
 
     public WarehouseCheckExecute findWarehouseCheckExecute(PageData object) throws Exception {
@@ -389,6 +399,15 @@ public class WarehouseCheckExecuteServiceImp implements WarehouseCheckExecuteSer
         if (orderStr != null && orderStr.trim().length() > 0) {
             pd.put("orderStr", orderStr);
         }
+
+        //是否需要分页 true:需要分页 false:不需要分页
+        String isNeedPage = pd.getString("isNeedPage");
+        if ("false".equals(isNeedPage)) {
+            pg = null;
+        } else {
+            result.put("pageData", pg);
+        }
+
         List<Map> varMapList = new ArrayList();
         List<Map> varList = this.findListWarehouseCheckExecuteByAudit(pd, pg);
         if (varList != null && varList.size() > 0) {
@@ -403,7 +422,6 @@ public class WarehouseCheckExecuteServiceImp implements WarehouseCheckExecuteSer
             }
         }
         result.put("varList",varMapList);
-//        result.put("pageData", pg);
 
         model.putResult(result);
         return model;
