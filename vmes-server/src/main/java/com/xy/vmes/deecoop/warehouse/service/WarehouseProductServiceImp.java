@@ -170,7 +170,14 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
      * 创建时间：2018-07-26
      */
     public void updateStockCount(PageData pd) throws Exception {
-        warehouseProductMapper.updateStockCount(pd);
+        Integer updateValue = null;
+        try {
+            updateValue = warehouseProductMapper.updateStockCount(pd);
+        } catch (Exception e) {}
+
+        if (updateValue == null || 0 == updateValue.intValue()) {
+            throw new Exception("当前系统繁忙，请稍后操作！");
+        }
     }
 
     /**

@@ -54,7 +54,7 @@ public interface WarehouseProductMapper extends BaseMapper<WarehouseProduct> {
      * 创建人：陈刚
      * 创建时间：2018-10-16
      */
-    void updateStockCount(PageData pd);
+    Integer updateStockCount(PageData pd);
 
 
     List<Map> getDataListPageDispatch(PageData pd, Pagination pg);
