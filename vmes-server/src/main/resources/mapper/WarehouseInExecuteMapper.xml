@@ -61,7 +61,7 @@
         select
             b.parent_id,
             a.detail_id detailId,
-            sum(a.count) executeCount
+            round(sum(a.count), 2) executeCount
         from vmes_warehouse_in_execute a
           left join vmes_warehouse_in_detail b on a.detail_id = b.id
         <where>
