@@ -784,6 +784,33 @@ public class SaleRetreatServiceImp implements SaleRetreatService {
         return model;
     }
 
+    public ResultModel recoverySaleRetreat(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+
+        String parentId = pageData.getString("id");
+        if (parentId == null || parentId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("退货单id为空或空字符串！");
+            return model;
+        }
+
+        //2. 修改明细状态
+        PageData mapDetail = new PageData();
+        mapDetail.put("parentId", parentId);
+        //明细状态:state:状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+        mapDetail.put("state", "0");
+        saleRetreatDetailService.updateStateByDetail(mapDetail);
+
+        //3. 修改抬头表状态
+        SaleRetreat retreatEdit = new SaleRetreat();
+        retreatEdit.setId(parentId);
+        //state:状态(0:待提交 1:待审核 2:待退款 3:已完成 -1:已取消)
+        retreatEdit.setState("0");
+        this.update(retreatEdit);
+
+        return model;
+    }
+
     public ResultModel submitSaleRetreat(PageData pageData) throws Exception {
         ResultModel model = new ResultModel();
 

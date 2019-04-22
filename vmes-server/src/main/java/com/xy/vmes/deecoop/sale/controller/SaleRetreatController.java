@@ -129,6 +129,24 @@ public class SaleRetreatController {
     }
 
     /**
+     * 恢复入库单(恢复整个入库单-入库单明细)
+     * @author 陈刚
+     * @date 2018-10-16
+     * @throws Exception
+     */
+    @PostMapping("/sale/saleRetreat/recoverySaleRetreat")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel recoverySaleRetreat() throws Exception {
+        logger.info("################/sale/saleRetreat/recoverySaleRetreat 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pageData = HttpUtils.parsePageData();
+        ResultModel model = saleRetreatService.recoverySaleRetreat(pageData);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleRetreat/recoverySaleRetreat 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
      * 提交退货单
      * @author 陈刚
      * @date 2019-03-01

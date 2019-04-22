@@ -163,6 +163,7 @@ public interface SaleRetreatService {
     ResultModel updateSaleRetreat(PageData pageData) throws Exception;
     ResultModel deleteSaleRetreat(PageData pageData) throws Exception;
     ResultModel cancelSaleRetreat(PageData pageData) throws Exception;
+    ResultModel recoverySaleRetreat(PageData pageData) throws Exception;
     ResultModel submitSaleRetreat(PageData pageData) throws Exception;
     ResultModel rebackBySubmitSaleRetreat(PageData pageData) throws Exception;
     ResultModel updateRetreatByMoney(PageData pageData) throws Exception;
