@@ -325,6 +325,7 @@ public class ProductUnitServiceImp implements ProductUnitService {
         ResultModel model = new ResultModel();
         String id = pd.getString("id");
         String productId = pd.getString("productId");
+        String remark = pd.getString("remark");
 
         //punit 计价单位Id
         String punit = pd.getString("punit");
@@ -365,14 +366,20 @@ public class ProductUnitServiceImp implements ProductUnitService {
             productUnitPrice.setProductId(productId);
             productUnitPrice.setPriceUnit(punit);
             productUnitPrice.setProductPrice(productPrice_big);
+//            productUnitPrice.setRemark(remark);
             productUnitPriceService.save(productUnitPrice);
 
             //修改 vmes_product_unit
-            ProductUnit productUnit_update = new ProductUnit();
-            productUnit_update.setId(id);
-            productUnit_update.setProductPrice(productPrice_big);
-            this.update(productUnit_update);
+//            ProductUnit productUnit_update = new ProductUnit();
+//            productUnit_update.setId(id);
+//            productUnit_update.setProductPrice(productPrice_big);
+//            productUnit_update.setRemark(remark);
+//            this.update(productUnit_update);
         }
+        ProductUnit productUnit_update = this.selectById(id);
+        productUnit_update.setProductPrice(productPrice_big);
+        productUnit_update.setRemark(remark);
+        this.update(productUnit_update);
         return model;
     }
 
