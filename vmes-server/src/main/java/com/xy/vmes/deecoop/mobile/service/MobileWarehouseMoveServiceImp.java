@@ -1,5 +1,6 @@
 package com.xy.vmes.deecoop.mobile.service;
 
+import com.xy.vmes.common.util.Common;
 import com.xy.vmes.deecoop.mobile.dao.MobileWarehouseInMapper;
 import com.xy.vmes.deecoop.mobile.dao.MobileWarehouseMoveMapper;
 import com.xy.vmes.service.MobileWarehouseInService;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
 
@@ -47,6 +49,8 @@ public class MobileWarehouseMoveServiceImp implements MobileWarehouseMoveService
 
     @Override
     public ResultModel addWarehouseMoveExecute(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+
         String detailId = pageData.getString("detailId");
         String targetWarehouseId = pageData.getString("targetWarehouseId");
         String warehouseProductId = pageData.getString("warehouseProductId");
@@ -54,7 +58,57 @@ public class MobileWarehouseMoveServiceImp implements MobileWarehouseMoveService
         BigDecimal count = StringUtils.isEmpty(countStr)? BigDecimal.ZERO:BigDecimal.valueOf(Double.parseDouble(countStr));
         String currentUserId = pageData.getString("currentUserId");
         String currentCompanyId = pageData.getString("currentCompanyId");
-        ResultModel model = warehouseMoveExecuteService.addWarehouseMoveExecute(detailId,targetWarehouseId,warehouseProductId,count,currentUserId,currentCompanyId);
+
+        PageData findMap = new PageData();
+        findMap.put("detailId", detailId);
+        List<Map> moveMapList = warehouseMoveDetailService.getDataListPage(findMap,null);
+
+        Map moveMap = null;
+        if (moveMapList != null && moveMapList.size() > 0) {
+            moveMap = moveMapList.get(0);
+        }
+
+        //移库执行验证 移库单明细数量 (移库单明已执行数量 + 当前执行数量) --(web端,app端)同时执行情况
+        if (moveMap != null) {
+            //productCode 货品编码
+            String productCode = new String();
+            if (moveMap.get("productCode") != null) {
+                productCode = moveMap.get("productCode").toString().trim();
+            }
+
+            //productName 货品名称
+            String productName = new String();
+            if (moveMap.get("productName") != null) {
+                productName = moveMap.get("productName").toString().trim();
+            }
+
+            //executeCount 已完成数量
+            BigDecimal executeCount = BigDecimal.valueOf(0D);
+            if (moveMap.get("executeCount") != null) {
+                executeCount = (BigDecimal)moveMap.get("executeCount");
+            }
+
+            //移库明细:移库数量
+            BigDecimal dtl_count = BigDecimal.valueOf(0D);
+            if (moveMap.get("count") != null) {
+                dtl_count = (BigDecimal)moveMap.get("count");
+            }
+
+            String msgTemp = "货品编码({0})货品名称({1}) 移库执行冲突，移库数量({2}) 已执行({3}) 不可大于移库数量！" + Common.SYS_ENDLINE_DEFAULT;
+            if (dtl_count.doubleValue() < (executeCount.doubleValue() + count.doubleValue())) {
+                String msgStr = MessageFormat.format(msgTemp,
+                        productCode,
+                        productName,
+                        dtl_count.toString(),
+                        executeCount.toString());
+
+                model.putCode(Integer.valueOf(1));
+                model.putMsg(msgStr);
+                return model;
+            }
+        }
+
+        model = warehouseMoveExecuteService.addWarehouseMoveExecute(detailId,targetWarehouseId,warehouseProductId,count,currentUserId,currentCompanyId);
         return model;
     }
 

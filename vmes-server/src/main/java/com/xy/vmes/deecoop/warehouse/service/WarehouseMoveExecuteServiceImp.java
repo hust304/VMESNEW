@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
+import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -215,7 +216,86 @@ public class WarehouseMoveExecuteServiceImp implements WarehouseMoveExecuteServi
         String currentCompanyId = pageData.getString("currentCompanyId");
         List<Map<String, Object>> mapList = (List<Map<String, Object>>) YvanUtil.jsonToList(jsonDataStr);
 
+        //1. 移库执行验证 移库单明细数量 (移库单明已执行数量 + 当前执行数量) --(web端,app端)同时执行情况
+        StringBuffer msgBuf = new StringBuffer();
+        for (Map<String, Object> moveDetailMap : mapList) {
+            //新增推荐库位记录
+            Object executeObj = moveDetailMap.get("children");
+            if (executeObj == null) {continue;}
+            List executeList = (List)executeObj;
+            if (executeList == null || executeList.size() == 0) {continue;}
 
+            for (int i = 0; i < executeList.size(); i++) {
+                Map<String, Object> executeMap = (Map<String, Object>)executeList.get(i);
+                String detailId = (String)executeMap.get("id");
+
+                //suggestCount 待执行数量
+                BigDecimal suggestCount_big = BigDecimal.valueOf(0D);
+                String suggestCount = (String)executeMap.get("suggestCount");
+                if (suggestCount != null && suggestCount.trim().length() > 0) {
+                    try {
+                        suggestCount_big = new BigDecimal(suggestCount);
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                PageData findMap = new PageData();
+                findMap.put("detailId", detailId);
+                List<Map> moveMapList = warehouseMoveDetailService.getDataListPage(findMap,null);
+
+                Map moveMap = null;
+                if (moveMapList != null && moveMapList.size() > 0) {
+                    moveMap = moveMapList.get(0);
+                }
+
+                //移库执行验证 移库单明细数量 (移库单明已执行数量 + 当前执行数量) --(web端,app端)同时执行情况
+                if (moveMap != null) {
+                    //productCode 货品编码
+                    String productCode = new String();
+                    if (moveMap.get("productCode") != null) {
+                        productCode = moveMap.get("productCode").toString().trim();
+                    }
+
+                    //productName 货品名称
+                    String productName = new String();
+                    if (moveMap.get("productName") != null) {
+                        productName = moveMap.get("productName").toString().trim();
+                    }
+
+                    //executeCount 已完成数量
+                    BigDecimal executeCount = BigDecimal.valueOf(0D);
+                    if (moveMap.get("executeCount") != null) {
+                        executeCount = (BigDecimal)moveMap.get("executeCount");
+                    }
+
+                    //移库明细:移库数量
+                    BigDecimal dtl_count = BigDecimal.valueOf(0D);
+                    if (moveMap.get("count") != null) {
+                        dtl_count = (BigDecimal)moveMap.get("count");
+                    }
+
+
+                    String msgTemp = "货品编码({0})货品名称({1}) 移库执行冲突，移库数量({2}) 已执行({3}) 不可大于移库数量！" + Common.SYS_ENDLINE_DEFAULT;
+                    if (dtl_count.doubleValue() < (executeCount.doubleValue() + suggestCount_big.doubleValue())) {
+                        String msgStr = MessageFormat.format(msgTemp,
+                                productCode,
+                                productName,
+                                dtl_count.toString(),
+                                executeCount.toString());
+
+                        model.putCode(Integer.valueOf(1));
+                        model.putMsg(msgStr);
+                        return model;
+                    }
+                }
+            }
+        }
+        if (msgBuf.toString().trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgBuf.toString());
+            return model;
+        }
 
         if(mapList!=null&&mapList.size()>0){
             for(int j=0;j<mapList.size();j++){
