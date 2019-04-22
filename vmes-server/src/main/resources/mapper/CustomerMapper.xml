@@ -515,9 +515,13 @@
     <select id="getReceiveAmount"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
         select orderId,orderCode,customerId,companyId,currentDeliverDate,
         round(sum(ifnull(deliverAmount,0)),2) deliverAmount,round(sum(ifnull(receiveAmount,0)),2) receiveAmount,
-        case when sum(ifnull(deliverAmount,0)) <![CDATA[ > ]]> sum(ifnull(receiveAmount,0)) then round(sum(ifnull(deliverAmount,0)) - sum(ifnull(receiveAmount,0)),2) else 0.00 end nowReceiveAmount,
-        case when sum(ifnull(deliverAmount,0)) <![CDATA[ < ]]>  sum(ifnull(receiveAmount,0)) then round(sum(ifnull(receiveAmount,0)) - sum(ifnull(deliverAmount,0)),2) else 0.00 end preReceiveAmount
+        round(sum(ifnull(nowReceiveAmount,0)),2) nowReceiveAmount,round(sum(ifnull(preReceiveAmount,0)),2) preReceiveAmount
         from (
+            select orderId,orderCode,customerId,companyId,currentDeliverDate,
+            round(sum(ifnull(deliverAmount,0)),2) deliverAmount,round(sum(ifnull(receiveAmount,0)),2) receiveAmount,
+            case when sum(ifnull(deliverAmount,0)) <![CDATA[ > ]]> sum(ifnull(receiveAmount,0)) then round(sum(ifnull(deliverAmount,0)) - sum(ifnull(receiveAmount,0)),2) else 0.00 end nowReceiveAmount,
+            case when sum(ifnull(deliverAmount,0)) <![CDATA[ < ]]>  sum(ifnull(receiveAmount,0)) then round(sum(ifnull(receiveAmount,0)) - sum(ifnull(deliverAmount,0)),2) else 0.00 end preReceiveAmount
+            from (
             select saleOrder.id orderId,saleOrder.sys_code orderCode,saleOrder.customer_id customerId,saleOrder.current_deliver_date currentDeliverDate,saleOrder.company_id companyId,
             deliverDetail.sum deliverAmount,null receiveAmount
             from vmes_sale_order saleOrder
@@ -529,22 +533,24 @@
             from vmes_sale_order saleOrder
             left join vmes_sale_receive_detail receiveDetail on receiveDetail.order_id = saleOrder.id
             where receiveDetail.state = '1'
-        )tab
-        <where>
+            )tab
+            <where>
+                <if test="currentCompanyId != null and currentCompanyId != ''">
+                    and tab.companyId = #{currentCompanyId}
+                </if>
+                <if test="customerId != null and customerId != ''">
+                    and tab.customerId = #{customerId}
+                </if>
+                <if test="orderId != null and orderId != ''">
+                    and tab.orderId = #{orderId}
+                </if>
+                <if test="queryStr != null and queryStr!=''" >
+                    and ${queryStr}
+                </if>
+            </where>
+            group by tab.customerId
+        ) t group by  t.companyId
 
-            <if test="currentCompanyId != null and currentCompanyId != ''">
-                and tab.companyId = #{currentCompanyId}
-            </if>
-            <if test="customerId != null and customerId != ''">
-                and tab.customerId = #{customerId}
-            </if>
-            <if test="orderId != null and orderId != ''">
-                and tab.orderId = #{orderId}
-            </if>
-            <if test="queryStr != null and queryStr!=''" >
-                and ${queryStr}
-            </if>
-        </where>
     </select>
 
     <!-- 自动创建，可以修改 -->

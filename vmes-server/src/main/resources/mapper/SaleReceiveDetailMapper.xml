@@ -342,7 +342,7 @@
         WHEN state = '-1' THEN '已取消'
         ELSE null
         END  orderState,
-        round(sum(ifnull(deliverAmount,0)),2) deliverAmount,round(sum(ifnull(receiveAmount,0)),2) receivedAmount,round(sum(ifnull(discountAmount,0)),2) discountedAmount,
+        round(sum(ifnull(deliverAmount,0)),2) deliverAmount,round(sum(ifnull(receiveAmount,0)),2) receivedAmount,round(sum(ifnull(discountAmount,0)),2) discountedAmount,'0.00' discountAmount,
         case when sum(ifnull(deliverAmount,0)) <![CDATA[ > ]]> (sum(ifnull(receiveAmount,0))+sum(ifnull(discountAmount,0))) then round(sum(ifnull(deliverAmount,0)) - sum(ifnull(receiveAmount,0)) - sum(ifnull(discountAmount,0)),2) else 0.00 end nowReceiveAmount,
         case when sum(ifnull(deliverAmount,0)) <![CDATA[ < ]]> (sum(ifnull(receiveAmount,0))+sum(ifnull(discountAmount,0))) then round(sum(ifnull(receiveAmount,0)) - sum(ifnull(deliverAmount,0)) + sum(ifnull(discountAmount,0)),2) else 0.00 end preReceiveAmount
         from (

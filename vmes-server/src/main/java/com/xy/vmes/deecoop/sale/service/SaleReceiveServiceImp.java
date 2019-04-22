@@ -254,7 +254,7 @@ public class SaleReceiveServiceImp implements SaleReceiveService {
             return model;
         }
         String customerId = pd.getString("id");
-        BigDecimal addBalance = BigDecimal.valueOf(Double.parseDouble(pd.getString("addBalance")));
+//        BigDecimal addBalance = BigDecimal.valueOf(Double.parseDouble(pd.getString("addBalance")));
         BigDecimal currentBalance = BigDecimal.valueOf(Double.parseDouble(pd.getString("currentBalance")));
         BigDecimal detailBalance = BigDecimal.ZERO;
 
@@ -265,25 +265,24 @@ public class SaleReceiveServiceImp implements SaleReceiveService {
             }
         }
 
-        if(detailBalance.compareTo(currentBalance)!=0){
-//            throw new Exception("分摊明细总额必须与本次分摊总额一致！");
+        if(detailBalance.compareTo(currentBalance)>0){
             model.putCode("1");
-            model.putMsg("分摊明细总额必须与本次分摊总额一致！");
+            model.putMsg("分摊明细总额必须小于等于可分摊总额！");
             return model;
         }
 
 
-        Customer oldCustomer = customerService.selectById(customerId);
-        if(addBalance.compareTo(BigDecimal.ZERO)>0){
-            String remark = "录入收款："+ oldCustomer.getBalance().add(addBalance).subtract(oldCustomer.getBalance()).setScale(2, BigDecimal.ROUND_HALF_UP);
-            //操作类型 (0:变更 1:录入收款 2:预付款 -1:费用分摊)
-            customerService.updateCustomerBalance(
-                    oldCustomer,
-                    oldCustomer.getBalance().add(addBalance),
-                    pd.getString("uuser"),
-                    "1",
-                    remark);
-        }
+//        Customer oldCustomer = customerService.selectById(customerId);
+//        if(addBalance.compareTo(BigDecimal.ZERO)>0){
+//            String remark = "录入收款："+ oldCustomer.getBalance().add(addBalance).subtract(oldCustomer.getBalance()).setScale(2, BigDecimal.ROUND_HALF_UP);
+//            //操作类型 (0:变更 1:录入收款 2:预付款 -1:费用分摊)
+//            customerService.updateCustomerBalance(
+//                    oldCustomer,
+//                    oldCustomer.getBalance().add(addBalance),
+//                    pd.getString("uuser"),
+//                    "1",
+//                    remark);
+//        }
 
 
         SaleReceive saleReceive = new SaleReceive();
@@ -295,7 +294,7 @@ public class SaleReceiveServiceImp implements SaleReceiveService {
         saleReceive.setCode(code);
         saleReceive.setType("1");//收款类型(0:预收款 1:普通收款 2:发货退款 3:订单退款)
         saleReceive.setCustomerId(customerId);
-        saleReceive.setReceiveSum(currentBalance);
+        saleReceive.setReceiveSum(detailBalance);
         saleReceive.setCompanyId(companyID);
         saleReceive.setUuser(pd.getString("cuser"));
         saleReceive.setCuser(pd.getString("cuser"));
@@ -321,12 +320,12 @@ public class SaleReceiveServiceImp implements SaleReceiveService {
             }
         }
 
-        oldCustomer = customerService.selectById(customerId);
+        Customer oldCustomer = customerService.selectById(customerId);
         //操作类型 (0:变更 1:录入收款 2:预付款 -1:费用分摊)
-        String remark_1 = "费用分摊：" + oldCustomer.getBalance().subtract(oldCustomer.getBalance().subtract(currentBalance)).setScale(2, BigDecimal.ROUND_HALF_UP);
+        String remark_1 = "费用分摊：" + oldCustomer.getBalance().subtract(detailBalance).setScale(2, BigDecimal.ROUND_HALF_UP);
         customerService.updateCustomerBalance(
                 oldCustomer,
-                oldCustomer.getBalance().subtract(currentBalance),
+                oldCustomer.getBalance().subtract(detailBalance),
                 pd.getString("uuser"),
                 "-1",
                 remark_1);
