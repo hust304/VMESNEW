@@ -156,9 +156,9 @@ public class WarehouseCheckExecuteServiceImp implements WarehouseCheckExecuteSer
         if (pd == null) {return mapList;}
 
         if (pg == null) {
-            return warehouseCheckExecuteMapper.getDataListPage(pd);
+            return warehouseCheckExecuteMapper.findListWarehouseCheckExecuteByAudit(pd);
         } else if (pg != null) {
-            return warehouseCheckExecuteMapper.getDataListPage(pd,pg);
+            return warehouseCheckExecuteMapper.findListWarehouseCheckExecuteByAudit(pd,pg);
         }
 
         return mapList;
@@ -214,6 +214,70 @@ public class WarehouseCheckExecuteServiceImp implements WarehouseCheckExecuteSer
         if (mapList == null || mapList.size() == 0) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("盘点明细执行 Json字符串-转换成List错误！");
+            return model;
+        }
+
+        //1. 盘点执行验证 盘点单明细数量 (出库单明已执行数量 + 当前执行数量) --(web端,app端)同时执行情况
+        StringBuffer msgBuf = new StringBuffer();
+        for (Map<String, Object> mapObject : mapList) {
+            WarehouseCheckExecute execute = (WarehouseCheckExecute) HttpUtils.pageData2Entity(mapObject, new WarehouseCheckExecute());
+            String detailId = execute.getDetailId();
+
+            //盘点数量
+            BigDecimal count = BigDecimal.valueOf(0D);
+            if (execute.getCount() != null) {
+                count = execute.getCount();
+            }
+
+            PageData findMap = new PageData();
+            findMap.put("detailId", detailId);
+            //state: 状态(0:待派单 1:执行中 2:审核中 3:已完成 -1:已取消)
+            findMap.put("detailState", '2');
+            List<Map> checkMapList = warehouseCheckExecutorService.findListWarehouseCheckExecutorByAddExecute(findMap);
+
+            Map checkMap = null;
+            if (checkMapList != null && checkMapList.size() > 0) {
+                checkMap = checkMapList.get(0);
+            }
+
+            //出库执行验证 出库单明细数量 (出库单明已执行数量 + 当前执行数量) --(web端,app端)同时执行情况
+            if (checkMap != null) {
+                //productCode 货品编码
+                String productCode = new String();
+                if (checkMap.get("productCode") != null) {
+                    productCode = checkMap.get("productCode").toString().trim();
+                }
+
+                //productName 货品名称
+                String productName = new String();
+                if (checkMap.get("productName") != null) {
+                    productName = checkMap.get("productName").toString().trim();
+                }
+                //pathName 货位名称
+                String pathName = new String();
+                if (checkMap.get("pathName") != null) {
+                    pathName = checkMap.get("pathName").toString().trim();
+                }
+
+                //code 批次号
+                String code = new String();
+                if (checkMap.get("code") != null) {
+                    code = checkMap.get("code").toString().trim();
+                }
+
+                String msgTemp = "货品编码({0})货品名称({1}) 货位名称({2}) 批次号({3}) 已经被执行！ 当前盘点数量({4})无需执行！" + Common.SYS_ENDLINE_DEFAULT;
+                String msgStr = MessageFormat.format(msgTemp,
+                        productCode,
+                        productName,
+                        pathName,
+                        code,
+                        count);
+                msgBuf.append(msgStr);
+            }
+        }
+        if (msgBuf.toString().trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgBuf.toString());
             return model;
         }
 
@@ -394,7 +458,7 @@ public class WarehouseCheckExecuteServiceImp implements WarehouseCheckExecuteSer
         result.put("hideTitles",titlesHideList);
         result.put("titles",titlesList);
 
-        pd.put("orderStr", "checkExecute.cdate asc");
+        pd.put("orderStr", "cdate asc");
         String orderStr = pd.getString("orderStr");
         if (orderStr != null && orderStr.trim().length() > 0) {
             pd.put("orderStr", orderStr);

@@ -462,6 +462,10 @@
                 <if test="parentId != null and parentId != ''">
                     and detail.parent_id =  #{parentId}
                 </if>
+                <if test="detailId != null and detailId != ''">
+                    and detail.id =  #{detailId}
+                </if>
+
                 <if test="productCode != null and productCode != ''">
                     and prod.code LIKE CONCAT(CONCAT('%', #{productCode}),'%')
                 </if>

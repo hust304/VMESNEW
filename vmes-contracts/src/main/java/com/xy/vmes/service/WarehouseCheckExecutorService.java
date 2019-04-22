@@ -96,6 +96,7 @@ public interface WarehouseCheckExecutorService {
      * @throws Exception
      */
     List<Map> findListWarehouseCheckExecutorByAddExecute(PageData pd, Pagination pg) throws Exception;
+    List<Map> findListWarehouseCheckExecutorByAddExecute(PageData pd) throws Exception;
 
     WarehouseCheckExecutor findWarehouseCheckExecutor(PageData object) throws Exception;
     WarehouseCheckExecutor findWarehouseCheckExecutorById(String id) throws Exception;

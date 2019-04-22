@@ -1,5 +1,6 @@
 package com.xy.vmes.deecoop.mobile.service;
 
+import com.xy.vmes.common.util.Common;
 import com.xy.vmes.deecoop.mobile.dao.MobileWarehouseOutMapper;
 import com.xy.vmes.service.MobileWarehouseOutService;
 import com.xy.vmes.service.WarehouseOutDetailService;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -79,7 +81,6 @@ public class MobileWarehouseOutServiceImp implements MobileWarehouseOutService {
 
     @Override
     public ResultModel addWarehouseOutExecute(PageData pageData) throws Exception {
-
         String detailId = pageData.getString("detailId");
         String warehouseId = pageData.getString("warehouseId");
         String warehouseProductId = pageData.getString("warehouseProductId");
@@ -87,7 +88,58 @@ public class MobileWarehouseOutServiceImp implements MobileWarehouseOutService {
         String currentUserId = pageData.getString("currentUserId");
         String currentCompanyId = pageData.getString("currentCompanyId");
         BigDecimal count = StringUtils.isEmpty(countStr)?BigDecimal.ZERO:BigDecimal.valueOf(Double.parseDouble(countStr));
-        ResultModel model = warehouseOutExecuteService.addWarehouseOutExecute(detailId,warehouseId,warehouseProductId,currentUserId,currentCompanyId,count);
+
+        PageData findMap = new PageData();
+        findMap.put("detailId", detailId);
+        List<Map> outMapList = warehouseOutDetailService.getDataListPage(findMap, null);
+
+        Map outDtlMap = null;
+        if (outMapList != null && outMapList.size() > 0) {
+            outDtlMap = outMapList.get(0);
+        }
+
+        //出库执行验证 出库单明细数量 (出库单明已执行数量 + 当前执行数量) --(web端,app端)同时执行情况
+        ResultModel model = new ResultModel();
+        if (outDtlMap != null) {
+            //productCode 货品编码
+            String productCode = new String();
+            if (outDtlMap.get("productCode") != null) {
+                productCode = outDtlMap.get("productCode").toString().trim();
+            }
+
+            //productName 货品名称
+            String productName = new String();
+            if (outDtlMap.get("productName") != null) {
+                productName = outDtlMap.get("productName").toString().trim();
+            }
+
+            //executeCount 已完成数量
+            BigDecimal executeCount = BigDecimal.valueOf(0D);
+            if (outDtlMap.get("executeCount") != null) {
+                executeCount = (BigDecimal)outDtlMap.get("executeCount");
+            }
+
+            //订单明细:出库数量
+            BigDecimal dtl_count = BigDecimal.valueOf(0D);
+            if (outDtlMap.get("count") != null) {
+                dtl_count = (BigDecimal)outDtlMap.get("count");
+            }
+
+            String msgTemp = "货品编码({0})货品名称({1}) 出库执行冲突，出库数量({2}) 已执行({3}) 不可大于剩余数量！" + Common.SYS_ENDLINE_DEFAULT;
+            if (dtl_count.doubleValue() < (executeCount.doubleValue() + count.doubleValue())) {
+                String msgStr = MessageFormat.format(msgTemp,
+                        productCode,
+                        productName,
+                        dtl_count.toString(),
+                        executeCount.toString());
+
+                model.putCode(Integer.valueOf(1));
+                model.putMsg(msgStr);
+                return model;
+            }
+        }
+
+        model = warehouseOutExecuteService.addWarehouseOutExecute(detailId,warehouseId,warehouseProductId,currentUserId,currentCompanyId,count);
         if(model.get("code") != null && !"0".equals(model.get("code").toString().trim())){
             return model;
         }

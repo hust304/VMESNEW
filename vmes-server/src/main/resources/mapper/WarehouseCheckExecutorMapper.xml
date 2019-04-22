@@ -208,6 +208,9 @@
             <if test="parentId != null and parentId != ''" >
                 and executor.parent_id = #{parentId}
             </if>
+            <if test="detailId != null and detailId != ''" >
+                and executor.detail_id = #{detailId}
+            </if>
             <if test="detailState != null and detailState != ''" >
                 and detail.state = #{detailState}
             </if>

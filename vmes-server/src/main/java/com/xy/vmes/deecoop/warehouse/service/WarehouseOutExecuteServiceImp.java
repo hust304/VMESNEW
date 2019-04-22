@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
+import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -48,7 +49,6 @@ public class WarehouseOutExecuteServiceImp implements WarehouseOutExecuteService
 
     @Autowired
     private WarehouseOutDetailService warehouseOutDetailService;
-
     @Autowired
     private WarehouseOutService warehouseOutService;
 
@@ -332,6 +332,88 @@ public class WarehouseOutExecuteServiceImp implements WarehouseOutExecuteService
         String currentCompanyId = pageData.getString("currentCompanyId");
         List<Map<String, Object>> mapList = (List<Map<String, Object>>) YvanUtil.jsonToList(jsonDataStr);
 
+        //1. 出库执行验证 出库单明细数量 (出库单明已执行数量 + 当前执行数量) --(web端,app端)同时执行情况
+        StringBuffer msgBuf = new StringBuffer();
+        for (Map<String, Object> outDetailMap : mapList) {
+            String detailId = (String)outDetailMap.get("id");
+
+            PageData findMap = new PageData();
+            findMap.put("detailId", detailId);
+            List<Map> outMapList = warehouseOutDetailService.getDataListPage(findMap, null);
+
+            Map outDtlMap = null;
+            if (outMapList != null && outMapList.size() > 0) {
+                outDtlMap = outMapList.get(0);
+            }
+
+            //新增推荐库位记录
+            Object executeObj = outDetailMap.get("children");
+            if (executeObj == null) {continue;}
+            List executeList = (List)executeObj;
+            if (executeList == null || executeList.size() == 0) {continue;}
+
+            for (int i = 0; i < executeList.size(); i++) {
+                Map<String, Object> executeMap = (Map<String, Object>)executeList.get(i);
+
+                //建议取货数量 suggestCount
+                BigDecimal suggestCount_big = BigDecimal.valueOf(0D);
+                String suggestCount = (String)executeMap.get("suggestCount");
+                if (suggestCount != null && suggestCount.trim().length() > 0) {
+                    try {
+                        suggestCount_big = new BigDecimal(suggestCount);
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                //出库执行验证 出库单明细数量 (出库单明已执行数量 + 当前执行数量) --(web端,app端)同时执行情况
+                if (outDtlMap != null) {
+                    //productCode 货品编码
+                    String productCode = new String();
+                    if (outDtlMap.get("productCode") != null) {
+                        productCode = outDtlMap.get("productCode").toString().trim();
+                    }
+
+                    //productName 货品名称
+                    String productName = new String();
+                    if (outDtlMap.get("productName") != null) {
+                        productName = outDtlMap.get("productName").toString().trim();
+                    }
+
+                    //executeCount 已完成数量
+                    BigDecimal executeCount = BigDecimal.valueOf(0D);
+                    if (outDtlMap.get("executeCount") != null) {
+                        executeCount = (BigDecimal)outDtlMap.get("executeCount");
+                    }
+
+                    //订单明细:出库数量
+                    BigDecimal dtl_count = BigDecimal.valueOf(0D);
+                    if (outDtlMap.get("count") != null) {
+                        dtl_count = (BigDecimal)outDtlMap.get("count");
+                    }
+
+                    String msgTemp = "货品编码({0})货品名称({1}) 出库执行冲突，出库数量({2}) 已执行({3}) 不可大于剩余数量！" + Common.SYS_ENDLINE_DEFAULT;
+                    if (dtl_count.doubleValue() < (executeCount.doubleValue() + suggestCount_big.doubleValue())) {
+                        String msgStr = MessageFormat.format(msgTemp,
+                                productCode,
+                                productName,
+                                dtl_count.toString(),
+                                executeCount.toString());
+
+                        model.putCode(Integer.valueOf(1));
+                        model.putMsg(msgStr);
+                        return model;
+                    }
+                }
+            }
+        }
+        if (msgBuf.toString().trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgBuf.toString());
+            return model;
+        }
+
+        //2. 出库执行
         if(mapList!=null&&mapList.size()>0){
             for(int j=0;j<mapList.size();j++){
                 Map<String, Object> detailMap = mapList.get(j);

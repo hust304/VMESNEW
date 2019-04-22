@@ -172,6 +172,9 @@ public class WarehouseCheckExecutorServiceImp implements WarehouseCheckExecutorS
     public List<Map> findListWarehouseCheckExecutorByAddExecute(PageData pd, Pagination pg) throws Exception {
         return warehouseCheckExecutorMapper.findListWarehouseCheckExecutorByAddExecute(pd, pg);
     }
+    public List<Map> findListWarehouseCheckExecutorByAddExecute(PageData pd) throws Exception {
+        return warehouseCheckExecutorMapper.findListWarehouseCheckExecutorByAddExecute(pd);
+    }
 
     public WarehouseCheckExecutor findWarehouseCheckExecutor(PageData object) throws Exception {
         if (object == null) {return null;}
