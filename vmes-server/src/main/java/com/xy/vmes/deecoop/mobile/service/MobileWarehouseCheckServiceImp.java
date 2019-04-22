@@ -1,13 +1,11 @@
 package com.xy.vmes.deecoop.mobile.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.common.util.Common;
 import com.xy.vmes.deecoop.mobile.dao.MobileProductMapper;
 import com.xy.vmes.deecoop.mobile.dao.MobileWarehouseCheckMapper;
 import com.xy.vmes.entity.WarehouseCheckDetail;
-import com.xy.vmes.service.MobileProductService;
-import com.xy.vmes.service.MobileWarehouseCheckService;
-import com.xy.vmes.service.WarehouseCheckDetailService;
-import com.xy.vmes.service.WarehouseCheckExecuteService;
+import com.xy.vmes.service.*;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.YvanUtil;
@@ -16,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,6 +31,8 @@ public class MobileWarehouseCheckServiceImp implements MobileWarehouseCheckServi
     private MobileWarehouseCheckMapper mobileWarehouseCheckMapper;
     @Autowired
     private WarehouseCheckExecuteService warehouseCheckExecuteService;
+    @Autowired
+    private WarehouseCheckExecutorService warehouseCheckExecutorService;
     @Autowired
     private WarehouseCheckDetailService warehouseCheckDetailService;
     ////获得盘点任务详细信息
@@ -53,6 +54,58 @@ public class MobileWarehouseCheckServiceImp implements MobileWarehouseCheckServi
     @Override
     public ResultModel addWarehouseCheckExecute(PageData pageData) throws Exception {
         ResultModel model = new ResultModel();
+
+        String count = pageData.getString("count");
+        String detailId = pageData.getString("detailId");
+
+        PageData findMap = new PageData();
+        findMap.put("detailId", detailId);
+        //state: 状态(0:待派单 1:执行中 2:审核中 3:已完成 -1:已取消)
+        findMap.put("detailState", '2');
+        List<Map> checkMapList = warehouseCheckExecutorService.findListWarehouseCheckExecutorByAddExecute(findMap);
+
+        Map checkMap = null;
+        if (checkMapList != null && checkMapList.size() > 0) {
+            checkMap = checkMapList.get(0);
+        }
+
+        //出库执行验证 出库单明细数量 (出库单明已执行数量 + 当前执行数量) --(web端,app端)同时执行情况
+        if (checkMap != null) {
+            //productCode 货品编码
+            String productCode = new String();
+            if (checkMap.get("productCode") != null) {
+                productCode = checkMap.get("productCode").toString().trim();
+            }
+
+            //productName 货品名称
+            String productName = new String();
+            if (checkMap.get("productName") != null) {
+                productName = checkMap.get("productName").toString().trim();
+            }
+            //pathName 货位名称
+            String pathName = new String();
+            if (checkMap.get("pathName") != null) {
+                pathName = checkMap.get("pathName").toString().trim();
+            }
+
+            //code 批次号
+            String code = new String();
+            if (checkMap.get("code") != null) {
+                code = checkMap.get("code").toString().trim();
+            }
+
+            String msgTemp = "货品编码({0})货品名称({1}) 货位名称({2}) 批次号({3}) 已经被执行！ 当前盘点数量({4})无需执行！" + Common.SYS_ENDLINE_DEFAULT;
+            String msgStr = MessageFormat.format(msgTemp,
+                    productCode,
+                    productName,
+                    pathName,
+                    code,
+                    count);
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
+
         List<Map<String, Object>> mapList = new ArrayList();
         Map<String, Object> dataMap = new HashMap();
         String cuser = pageData.getString("cuser");
