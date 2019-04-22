@@ -640,13 +640,14 @@ public class SaleOrderServiceImp implements SaleOrderService {
 
         //3. 修改抬头表状态
         SaleOrder order = this.selectById(orderId);
+        String orderState = order.getState();
         //state:状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
         order.setState("0");
         this.update(order);
 
 
         //advance_sum:预付款(定金)
-        if (order.getAdvanceSum() != null) {
+        if (order.getAdvanceSum() != null&&"2".equals(orderState)) {
 
 
             //4.修改客户余额(vmes_customer.balance)
