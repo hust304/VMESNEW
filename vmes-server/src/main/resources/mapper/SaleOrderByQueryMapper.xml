@@ -23,6 +23,12 @@
         END receiptTypeName,
 
         saleOrder.price_type priceType,
+        CASE
+        WHEN saleOrder.price_type = '1' THEN '先计价'
+        WHEN saleOrder.price_type = '2' THEN '后计价'
+        ELSE null
+        END priceTypeName,
+
         saleOrder.state state,
         saleOrder.state orderStateByQuery,
         CASE

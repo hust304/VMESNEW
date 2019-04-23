@@ -58,8 +58,8 @@
             genre.name productGenreName,
 
             <!--发货明细汇总-->
-            deliver.deliverCount,
-            deliver.deliverSum,
+            deliver.deliverCount-retreat.retreatCount  deliverCount,
+            deliver.deliverSum-retreat.retreatSum  deliverSum,
 
             <!--开票明细汇总-->
             invoice.invoiceCount,
@@ -80,7 +80,16 @@
                 where state = '1'
                 group by order_detai_id
             ) deliver on orderDtl.id = deliver.order_detai_id
-
+            <!--退货明细汇总-->
+            left join (
+            select
+            order_detail_id,
+            round(ifnull(sum(order_count), 0), 2) retreatCount,
+            round(ifnull(sum(order_sum), 0), 2) retreatSum
+            from vmes_sale_retreat_detail
+            where state = '3'
+            group by order_detail_id
+            ) retreat on orderDtl.id = retreat.order_detail_id
             <!--开票明细汇总-->
             left join (
                 select
