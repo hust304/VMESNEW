@@ -309,19 +309,15 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
         Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
 
         //结算状态 1:已结算 0:未结算
-        String queryStr = new String();
+        String sumStateQueryStr = new String();
         String sumState = pd.getString("sumState");
         if ("1".equals(sumState)) {
-            queryStr = queryStr + "detail.sum > 0 ";
+            sumStateQueryStr = sumStateQueryStr + "detail.sum > 0 ";
 
         } else if ("0".equals(sumState)) {
-            queryStr = queryStr + "detail.sum = 0";
+            sumStateQueryStr = sumStateQueryStr + "detail.sum = 0";
         }
-
-        if (pd.getString("queryStr") != null && pd.getString("queryStr").trim().length() > 0) {
-            queryStr = queryStr + " and " + pd.getString("queryStr").trim();
-        }
-        pd.put("queryStr", queryStr);
+        pd.put("sumStateQueryStr", sumStateQueryStr);
 
         List<Map> varList = this.getDataListPage(pd,pg);
         List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
