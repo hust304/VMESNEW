@@ -301,57 +301,41 @@ public class WarehouseInExecuteServiceImp implements WarehouseInExecuteService {
             return model;
         }
 
-        //1. 入库执行验证 入库单明细数量 (入库单明已执行数量 + 当前执行数量) --(web端,app端)同时执行情况
+        //1. 入库执行验证 入库单明细状态 --(web端,app端)同时执行情况
         StringBuffer msgBuf = new StringBuffer();
         for (Map<String, Object> warehouseInDetailMap : mapList) {
-            String parentId = (String)warehouseInDetailMap.get("parentId");
-            String productCode = (String)warehouseInDetailMap.get("productCode");
-            String productName = (String)warehouseInDetailMap.get("productName");
-
             String detailId = (String)warehouseInDetailMap.get("id");
-            BigDecimal count_big = BigDecimal.valueOf(0D);
-            String count = (String)warehouseInDetailMap.get("count");
-            if (count != null && count.trim().length() > 0) {
-                try {
-                    count_big = new BigDecimal(count);
-                } catch (NumberFormatException e) {
-                    e.printStackTrace();
-                }
+
+            PageData findMap = new PageData();
+            findMap.put("detailId", detailId);
+            //入库明细状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+            findMap.put("state", "2");
+            List<Map> inDtlList = warehouseInDetailService.getDataListPage(findMap, null);
+
+            Map inDtlMap = null;
+            if (inDtlList != null && inDtlList.size() > 0) {
+                inDtlMap = inDtlList.get(0);
             }
 
-            Map<String, BigDecimal> inDtlCountMap = this.findExecuteCountByParentId(parentId);
-            BigDecimal executeCount = BigDecimal.valueOf(0D);
-            if (inDtlCountMap.get(detailId) != null) {
-                executeCount = inDtlCountMap.get(detailId);
-            }
-            Object executeObj = warehouseInDetailMap.get("children");
-            if (executeObj == null) {continue;}
-
-            List executeList = (List)executeObj;
-            if (executeList == null || executeList.size() == 0) {continue;}
-
-            for (int i = 0; i < executeList.size(); i++) {
-                Map<String, Object> executeMap = (Map<String, Object>)executeList.get(i);
-                //入库数量 count
-                BigDecimal now_count_big = BigDecimal.valueOf(0D);
-                String now_count = (String)executeMap.get("count");
-                if (now_count != null && now_count.trim().length() > 0) {
-                    try {
-                        now_count_big = new BigDecimal(now_count);
-                    } catch (NumberFormatException e) {
-                        e.printStackTrace();
-                    }
+            //入库执行验证 入库单明细状态  --(web端,app端)同时执行情况
+            if (inDtlMap != null) {
+                //productCode 货品编码
+                String productCode = new String();
+                if (inDtlMap.get("productCode") != null) {
+                    productCode = inDtlMap.get("productCode").toString().trim();
                 }
 
-                String msgTemp = "货品编码({0})货品名称({1}) 入库执行冲突，入库数量({2}) 已执行({3}) 不可大于剩余数量！" + Common.SYS_ENDLINE_DEFAULT;
-                if (count_big.doubleValue() < (executeCount.doubleValue() + now_count_big.doubleValue())) {
-                    String msgStr = MessageFormat.format(msgTemp,
-                            productCode,
-                            productName,
-                            count.toString(),
-                            executeCount.toString());
-                    msgBuf.append(msgStr);
+                //productName 货品名称
+                String productName = new String();
+                if (inDtlMap.get("productName") != null) {
+                    productName = inDtlMap.get("productName").toString().trim();
                 }
+
+                String msgTemp = "货品编码({0})货品名称({1}) 已经执行完成！ 无需执行！" + Common.SYS_ENDLINE_DEFAULT;
+                String msgStr = MessageFormat.format(msgTemp,
+                        productCode,
+                        productName);
+                msgBuf.append(msgStr);
             }
         }
         if (msgBuf.toString().trim().length() > 0) {
@@ -566,6 +550,8 @@ public class WarehouseInExecuteServiceImp implements WarehouseInExecuteService {
 
         //当前入库单明细 信息
         PageData findMap = new PageData();
+        //入库明细状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+        findMap.put("state", "2");
         findMap.put("detailId", detailId);
 
         Map inDtlMap = null;
@@ -588,29 +574,13 @@ public class WarehouseInExecuteServiceImp implements WarehouseInExecuteService {
                 productName = inDtlMap.get("productName").toString().trim();
             }
 
-            //count 入库数量
-            BigDecimal dtl_count = BigDecimal.valueOf(0D);
-            if (inDtlMap.get("count") != null) {
-                dtl_count = (BigDecimal)inDtlMap.get("count");
-            }
-            //executeCount 已完成数量
-            BigDecimal executeCount = BigDecimal.valueOf(0D);
-            if (inDtlMap.get("executeCount") != null) {
-                executeCount = (BigDecimal)inDtlMap.get("executeCount");
-            }
-
-            String msgTemp = "货品编码({0})货品名称({1}) 入库执行冲突，入库数量({2}) 已执行({3}) 不可大于剩余数量！" + Common.SYS_ENDLINE_DEFAULT;
-            if (dtl_count.doubleValue() < (executeCount.doubleValue() + countBig.doubleValue())) {
-                String msgStr = MessageFormat.format(msgTemp,
-                        productCode,
-                        productName,
-                        dtl_count.toString(),
-                        executeCount.toString());
-
-                model.putCode(Integer.valueOf(1));
-                model.putMsg(msgStr);
-                return model;
-            }
+            String msgTemp = "货品编码({0})货品名称({1}) 已经执行完成！ 无需执行！" + Common.SYS_ENDLINE_DEFAULT;
+            String msgStr = MessageFormat.format(msgTemp,
+                    productCode,
+                    productName);
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
         }
 
         StringBuffer msgBuf = new StringBuffer();
