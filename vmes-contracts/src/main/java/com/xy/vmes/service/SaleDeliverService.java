@@ -127,7 +127,9 @@ public interface SaleDeliverService {
     ResultModel deleteSaleDeliver(PageData pd) throws Exception;
     ResultModel cancelSaleDeliver(PageData pd) throws Exception;
     ResultModel checkIsAllOutByDeliverId(PageData pd) throws Exception;
+
     ResultModel checkIsNullDeliverSumByDeliverId(PageData pd) throws Exception;
+    ResultModel checkIsAllNotNullDeliverSumByDeliverId(PageData pd) throws Exception;
 
     void exportExcelSaleDelivers(PageData pd, Pagination pg) throws Exception;
     ResultModel importExcelSaleDelivers(MultipartFile file) throws Exception;

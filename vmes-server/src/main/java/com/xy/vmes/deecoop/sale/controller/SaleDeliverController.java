@@ -158,6 +158,19 @@ public class SaleDeliverController {
         return model;
     }
 
+    @PostMapping("/sale/saleDeliver/checkIsAllNotNullDeliverSumByDeliverId")
+    public ResultModel checkIsAllNotNullDeliverSumByDeliverId() throws Exception {
+        logger.info("################/sale/saleDeliver/checkIsAllNotNullDeliverSumByDeliverId 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = saleDeliverService.checkIsAllNotNullDeliverSumByDeliverId(pd);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleDeliver/checkIsAllNotNullDeliverSumByDeliverId 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
     /**
     * Excel导出
     * @author 陈刚 自动创建，可以修改

@@ -516,11 +516,11 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
             if (valueMap != null) {
                 //订单明细订购数量 orderCount
                 BigDecimal orderCount = valueMap.get("orderCount");
-                //订单明细发货数量 orderDtlDeliverCount
-                //BigDecimal orderDtlDeliverCount = valueMap.get("orderDtlDeliverCount");
 
                 //checkCount 验证数量(发货数量-退货数量)
                 BigDecimal checkCount = valueMap.get("checkCount");
+                //checkSum:=(发货金额-退货金额)
+                BigDecimal checkSum = valueMap.get("checkSum");
 
                 if (checkCount.doubleValue() >= orderCount.doubleValue()) {
                     //明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
@@ -531,9 +531,10 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
                     if (priceType != null && "2".equals(priceType.trim())) {
                         orderDetail.setPriceUnit(deliverDetail.getPriceUnit());
 
+                        //订单明细货品金额:=(发货金额-退货金额)
                         BigDecimal productSum = BigDecimal.valueOf(0D);
-                        if (valueMap.get("orderDtlDeliverSum") != null) {
-                            productSum = valueMap.get("orderDtlDeliverSum");
+                        if (checkSum != null) {
+                            productSum = checkSum;
                         }
                         orderDetail.setProductSum(productSum);
                     }
@@ -552,16 +553,16 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
             for (Iterator iterator = orderIdMap.keySet().iterator(); iterator.hasNext();) {
                 String orderId = (String)iterator.next();
 
-
-
+                //修改订单明细状态
                 List<SaleOrderDetail> detailList = saleOrderDetailService.findSaleOrderDetailListByParentId(orderId);
                 saleOrderDetailService.updateDetailStateByOrderId(orderId, detailList);
 
-                //price_type:计价类型(1:先计价 2:后计价)
                 SaleOrder orderDB = saleOrderService.findSaleOrderById(orderId);
+                //设定发货完成时间
                 orderDB.setCurrentDeliverDate(new Date());
                 saleOrderService.update(orderDB);
 
+                //price_type:计价类型(1:先计价 2:后计价)
                 if ("2".equals(orderDB.getPriceType())) {
                     //totalSum 合计金额
                     BigDecimal totalSum = saleOrderDetailService.findTotalSumByPrice(detailList);
@@ -756,6 +757,36 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
             model.set("isNullDeliverSum", "true");
         } else {
             model.set("isNullDeliverSum", "false");
+        }
+
+        return model;
+    }
+
+    public ResultModel checkIsAllNotNullDeliverSumByDeliverId(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+
+        String deliverId = pageData.getString("deliverId");
+        if (deliverId == null || deliverId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("发货单id为空或空字符串！");
+            return model;
+        }
+
+        boolean isAllNotNull = true;
+        List<SaleDeliverDetail> deliverDtlList = saleDeliverDetailService.findSaleDeliverDetailListByParentId(deliverId);
+        if (deliverDtlList != null && deliverDtlList.size() > 0) {
+            for (SaleDeliverDetail deliverDetail : deliverDtlList) {
+                if (deliverDetail.getSum() == null || deliverDetail.getSum().doubleValue() == 0D) {
+                    isAllNotNull = false;
+                    break;
+                }
+            }
+        }
+
+        if (isAllNotNull) {
+            model.set("isAllNotNullDeliverSum", "true");
+        } else {
+            model.set("isAllNotNullDeliverSum", "false");
         }
 
         return model;

@@ -518,23 +518,23 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
         }
         if (orderDetailList == null || orderDetailList.size() == 0) {return;}
 
-        //根据订单id-获取发货明细(当前订单id)
-        PageData findMap = new PageData();
-        findMap.put("orderId", orderId);
-        //发货状态(0:待发货 1:已发货 -1:已取消)
-        findMap.put("queryStr", "state in ('0') ");
-        List<SaleDeliverDetail> deliverDtlList = saleDeliverDetailService.findSaleDeliverDetailList(findMap);
-
-        //遍历发货明细List
-        Map<String, String> orderDetailIdByDeliver_map = new HashMap<String, String>();
-        if (deliverDtlList != null && deliverDtlList.size() > 0) {
-            for (SaleDeliverDetail detail : deliverDtlList) {
-                String orderDetaiId = detail.getOrderDetaiId();
-                if (orderDetaiId != null && orderDetaiId.trim().length() > 0) {
-                    orderDetailIdByDeliver_map.put(orderDetaiId, orderDetaiId);
-                }
-            }
-        }
+//        //根据订单id-获取发货明细(当前订单id)
+//        PageData findMap = new PageData();
+//        findMap.put("orderId", orderId);
+//        //发货状态(0:待发货 1:已发货 -1:已取消)
+//        findMap.put("queryStr", "state in ('0') ");
+//        List<SaleDeliverDetail> deliverDtlList = saleDeliverDetailService.findSaleDeliverDetailList(findMap);
+//
+//        //遍历发货明细List
+//        Map<String, String> orderDetailIdByDeliver_map = new HashMap<String, String>();
+//        if (deliverDtlList != null && deliverDtlList.size() > 0) {
+//            for (SaleDeliverDetail detail : deliverDtlList) {
+//                String orderDetaiId = detail.getOrderDetaiId();
+//                if (orderDetaiId != null && orderDetaiId.trim().length() > 0) {
+//                    orderDetailIdByDeliver_map.put(orderDetaiId, orderDetaiId);
+//                }
+//            }
+//        }
 
         //遍历订单明细List
         //订单明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)

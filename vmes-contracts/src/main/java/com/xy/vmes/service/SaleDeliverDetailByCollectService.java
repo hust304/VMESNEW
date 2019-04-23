@@ -38,8 +38,8 @@ public interface SaleDeliverDetailByCollectService {
      * 根据发货单id-获取(订单明细id,订购数量,发货数量)
      *
      * @param deliverId       发货单id
-     * @param deliveDtlState  发货单明细状态
-     * @param retreatDtlState 退货单明细状态
+     * @param deliveDtlState  发货单明细状态 (0:待发货 1:已发货 -1:已取消)
+     * @param retreatDtlState 退货单明细状态 (0:待提交 1:待审核 2:待退款 3:已完成 -1:已取消)
      * @param orderDtlIds     订单明细id
      * @return
      */

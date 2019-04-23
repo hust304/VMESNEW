@@ -70,7 +70,9 @@
             round(ifnull(retreatOrderDtl.orderCount, 0), 2) orderDtlRetreatCount,
             round(ifnull(retreatOrderDtl.orderSum, 0), 2) orderDtlRetreatSum,
 
+            <!--checkCount:=(发货数量-退货数量)-->
             round((ifnull(deliverOrderDtl.orderCount, 0) - ifnull(retreatOrderDtl.orderCount, 0)), 2) checkCount,
+            <!--checkSum:=(发货金额-退货金额)-->
             round((ifnull(deliverOrderDtl.orderSum, 0) - ifnull(retreatOrderDtl.orderSum, 0)), 2) checkSum
         from (
             select order_detai_id

@@ -218,6 +218,8 @@
             left join vmes_customer customer on deliver.customer_id = customer.id
             left join vmes_customer_address address on deliver.custome_address_id = address.id
             left join vmes_dictionary custType on customer.type = custType.id
+        <!--获取出库单id-->
+
             <!--获取出库单id-->
             <if test="'true' == isNeedOutId" >
                 left join (
