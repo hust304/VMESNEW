@@ -228,6 +228,12 @@
             detail.remark remark,
             detail.isdisable isdisable,
 
+            CASE
+                WHEN detail.sum = 0 THEN '未结算'
+                WHEN detail.sum > 0 THEN '已结算'
+            ELSE null
+            END sumStateName,
+
             deliver.deliver_code deliverCode,
             orderDetail.order_count orderDetailCount,
 
