@@ -58,12 +58,12 @@
             genre.name productGenreName,
 
             <!--发货明细汇总-->
-            deliver.deliverCount-retreat.retreatCount  deliverCount,
-            deliver.deliverSum-retreat.retreatSum  deliverSum,
+            round(ifnull(deliver.deliverCount, 0)-ifnull(retreat.retreatCount, 0),2)  deliverCount,
+            round(ifnull(deliver.deliverSum, 0)-ifnull(retreat.retreatSum, 0),2)  deliverSum,
 
             <!--开票明细汇总-->
-            invoice.invoiceCount,
-            invoice.invoiceSum
+            round(ifnull(invoice.invoiceCount, 0),2) invoiceCount,
+            round(ifnull(invoice.invoiceSum, 0),2) invoiceSum
 
         from vmes_sale_order_detail orderDtl
             left join vmes_product product on orderDtl.product_id = product.id
