@@ -168,8 +168,8 @@
             (replace(uuid(), '-', ''),'PurchaseOrderDetail','spec','规格/型号',3, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'PurchaseOrderDetail','genre','属性',4, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'PurchaseOrderDetail','genreId','属性ID',5, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'PurchaseOrderDetail','unit','计量单位',6, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'PurchaseOrderDetail','unitId','计量单位ID',7, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'PurchaseOrderDetail','unit','采购单位',6, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'PurchaseOrderDetail','unitId','采购单位ID',7, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'PurchaseOrderDetail','count','采购数量',8, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'PurchaseOrderDetail','price','单价',9, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'PurchaseOrderDetail','amount','采购金额',10, '1','1','1','0',now(), 'admin'),
@@ -304,9 +304,8 @@
         from
         vmes_purchase_order_detail detail
         left join vmes_product product on product.id = detail.product_id
-        left join vmes_product_unit produnit on produnit.product_id = product.id and produnit.type = 1
         left join vmes_dictionary genre on product.genre = genre.id
-        left join vmes_dictionary unit on produnit.unit = unit.id
+        left join vmes_dictionary unit on detail.unit = unit.id
         left join vmes_dictionary type on product.type = type.id
         left join vmes_dictionary reason on detail.reason = reason.id
         <where>
@@ -348,9 +347,8 @@
         from
         vmes_purchase_order_detail detail
         left join vmes_product product on product.id = detail.product_id
-        left join vmes_product_unit produnit on produnit.product_id = product.id and produnit.type = 1
         left join vmes_dictionary genre on product.genre = genre.id
-        left join vmes_dictionary unit on produnit.unit = unit.id
+        left join vmes_dictionary unit on detail.unit = unit.id
         left join vmes_dictionary type on product.type = type.id
         left join vmes_dictionary reason on detail.reason = reason.id
         <where>
