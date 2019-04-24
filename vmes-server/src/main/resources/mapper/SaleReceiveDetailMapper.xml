@@ -144,6 +144,7 @@
             (replace(uuid(), '-', ''),'SaleReceiveDetail','remark','备注',8, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'SaleReceiveDetail','state','收款单状态',9, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'SaleReceiveDetail','isdisable','是否启用',10, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceiveDetail','code','收款单号',11, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'SaleReceiveDetail','id','id',0, '1','0','1','0',now(), 'admin')
     </insert>
 
@@ -297,11 +298,13 @@
         detail.parent_id parentId,
         case when detail.state='0' then '待收款' when detail.state='1' then '已收款' else '已取消' end state,
         saleorder.sys_code sysCode,
+        receive.code code,
         round(ifnull(saleorder.order_sum,0),2) orderSum,
         round(ifnull(detail.discount_amount,0),2) discountAmount,
         round(ifnull(detail.receive_amount,0),2) receiveAmount,
         group_concat(product.name  order by product.name asc) productName
         from vmes_sale_receive_detail detail
+        left join vmes_sale_receive receive on receive.id =  detail.parent_id
         left join vmes_sale_order saleorder on saleorder.id =  detail.order_id
         left join vmes_sale_order_detail orderdetail on orderdetail.parent_id = saleorder.id
         left join vmes_product product on product.id = orderdetail.product_id
@@ -318,6 +321,9 @@
             </if>
             <if test="parentId != null and parentId != ''">
                 and detail.parent_id = #{parentId}
+            </if>
+            <if test="orderId != null and orderId != ''">
+                and detail.order_id = #{orderId}
             </if>
         </where>
         group by detail.id,detail.parent_id,saleorder.sys_code,saleorder.order_sum,detail.discount_amount,detail.receive_amount
