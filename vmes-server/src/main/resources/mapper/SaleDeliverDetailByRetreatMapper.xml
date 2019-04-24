@@ -44,8 +44,6 @@
 
         saleOrder.sys_code sysOrderCode,
         deliver.deliver_code deliverCode,
-        round(ifnull(receive.receive_amount, 0), 2) receiveAmount,
-        round(ifnull(receive.receive_amount, 0), 2) notRetreatSum,
 
         <!--退货明细表-->
         round(ifnull(retreatDetail.order_count, 0), 2) endRetreatCount,
@@ -55,7 +53,6 @@
         round(((round((ifnull(detail.order_count, 0) - ifnull(retreatDetail.order_count, 0)), 2)) * ifnull(detail.product_price, 0)), 2) retreatOrderSum,
 
         '' retreatRemark
-
         from vmes_sale_deliver_detail detail
             left join vmes_sale_deliver deliver on detail.parent_id = deliver.id
             left join vmes_sale_order saleOrder on detail.order_id = saleOrder.id
@@ -71,14 +68,6 @@
                 where <![CDATA[ state <> '-1' ]]>
                 group by deliver_detail_id
             ) retreatDetail on detail.id = retreatDetail.deliver_detail_id
-
-            <!--收款明细汇总-->
-            left join (
-                select order_id, sum(receive_amount) receive_amount, sum(discount_amount) discount_amount
-                from vmes_sale_receive_detail
-                where state = '1'
-                group by order_id
-            ) receive on detail.order_id = receive.order_id
 
         <where>
             <if test="id != null and id != ''" >
@@ -136,18 +125,13 @@
         (replace(uuid(), '-', ''), 'saleDeliverDetailByRetreat', 'productUnit', '货品单位(计量)', 25, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
         (replace(uuid(), '-', ''), 'saleDeliverDetailByRetreat', 'sysOrderCode', '订单编号', 26, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
         (replace(uuid(), '-', ''), 'saleDeliverDetailByRetreat', 'deliverCode', '发货单编号', 27, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
-        (replace(uuid(), '-', ''), 'saleDeliverDetailByRetreat', 'receiveAmount', '订单实收金额', 28, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
         (replace(uuid(), '-', ''), 'saleDeliverDetailByRetreat', 'n2pFormula', 'n2pFormula', 29, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
         (replace(uuid(), '-', ''), 'saleDeliverDetailByRetreat', 'p2nFormula', 'p2nFormula', 29, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
         (replace(uuid(), '-', ''), 'saleDeliverDetailByRetreat', 'endRetreatCount', '退货数量(已生成退货单)', 30, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
         (replace(uuid(), '-', ''), 'saleDeliverDetailByRetreat', 'notRetreatCount', '可退货数量', 31, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
         (replace(uuid(), '-', ''), 'saleDeliverDetailByRetreat', 'retreatOrderCount', '本次退货数量', 32, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
         (replace(uuid(), '-', ''), 'saleDeliverDetailByRetreat', 'retreatOrderSum', '退货金额', 33, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
-        (replace(uuid(), '-', ''), 'saleDeliverDetailByRetreat', 'notRetreatSum', '可退金额', 34, '1', '0', '1', '0', '2018-12-16 11:15:19', 'admin'),
         (replace(uuid(), '-', ''), 'saleDeliverDetailByRetreat', 'retreatRemark', '退货原因', 35, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
-
-
-
 
     </insert>
 
