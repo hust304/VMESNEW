@@ -34,6 +34,9 @@ public class PurchaseOrderDetail implements Serializable {
 	//到货数量
 	@TableField("arrive_count")
 	private BigDecimal arriveCount;
+	//单位
+	@TableField("unit")
+	private String unit;
 	//单价
 	@TableField("price")
 	private BigDecimal price;
@@ -75,6 +78,13 @@ public class PurchaseOrderDetail implements Serializable {
 	@TableField("plan_id")
 	private String planId;
 
+
+	public String getUnit() {
+		return unit;
+	}
+	public void setUnit(String unit) {
+		this.unit = unit;
+	}
 	public String getPlanId() {
 		return planId;
 	}

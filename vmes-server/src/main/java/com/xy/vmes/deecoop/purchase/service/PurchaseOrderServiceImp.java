@@ -541,6 +541,7 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService {
     public ResultModel rebackPurchaseOrder(PageData pageData) throws Exception {
         ResultModel model = new ResultModel();
         String id = pageData.getString("id");
+        String remark = pageData.getString("remark");
         if (StringUtils.isEmpty(id)) {
             model.putCode("1");
             model.putMsg("主键ID为空，请求数据异常，请重新操作！");
@@ -553,7 +554,7 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService {
 //        PurchaseOrder purchaseOrder = this.selectById(id);
 //        purchaseOrder.setState("0");
 //        this.update(purchaseOrder);
-        this.updateState(id);
+        this.updateState(id,remark);
         return model;
     }
 
@@ -749,6 +750,68 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService {
         return model;
     }
 
+    @Override
+    public void updateState(String id,String remark) throws Exception {
+        PurchaseOrder purchaseOrder = this.selectById(id);
+        purchaseOrder.setRemark(remark);
+        //0:待提交 1:待审核 2:采购中 3:已完成 -1:已取消
+        //0:待提交 1:待审核 2:采购中 3:部分签收 4:已完成 -1:已取消
+        int yqx = 0;//已取消
+        int dtj = 0;//待提交
+        int dsh = 0;//待审核
+        int cgz = 0;//采购中
+        int bfqs = 0;//部分签收
+        int ywc = 0;//已完成
+        if(purchaseOrder!=null){
+            Map columnMap = new HashMap();
+            columnMap.put("parent_id",id);
+            List<PurchaseOrderDetail> detailList = purchaseOrderDetailService.selectByColumnMap(columnMap);
+            if(detailList!=null&&detailList.size()>0){
+                for(int i=0;i<detailList.size();i++){
+                    PurchaseOrderDetail purchaseOrderDetail = detailList.get(i);
+                    if("-1".equals(purchaseOrderDetail.getState())){
+                        yqx = yqx + 1;
+                    }else if("0".equals(purchaseOrderDetail.getState())){
+                        dtj = dtj + 1;
+                    }else if("1".equals(purchaseOrderDetail.getState())){
+                        dsh = dsh + 1;
+                    }else if("2".equals(purchaseOrderDetail.getState())){
+                        cgz = cgz + 1;
+                    }else if("3".equals(purchaseOrderDetail.getState())){
+                        bfqs = bfqs + 1;
+                    }else if("4".equals(purchaseOrderDetail.getState())){
+                        ywc = ywc + 1;
+                    }
+                }
+            }else{
+                //如果当前单据没有明细则自动删除当前单据
+                this.deleteById(id);
+                return;
+            }
+            //该单据明细状态全是已取消状态，则说明当前单据状态为已取消
+            if(yqx>0&&dtj==0&&dsh==0&&cgz==0&&ywc==0&&bfqs==0){
+                purchaseOrder.setState("-1");//已取消
+            }
+            //该单据明细状态全是已完成和已取消状态，则说明当前单据状态为已完成
+            else if(ywc>0&&dtj==0&&dsh==0&&cgz==0&&bfqs==0){
+                purchaseOrder.setState("3");//已完成
+            }
+            //该单据明细状态全是待提交和已取消状态，则说明当前单据状态为待提交
+            else if(dtj>0&&ywc==0&&dsh==0&&cgz==0&&bfqs==0){
+                purchaseOrder.setState("0");//待提交
+            }
+            //该单据明细状态全是待审核和已取消状态，则说明当前单据状态为待审核
+            else if(dsh>0&&dtj==0&&ywc==0&&cgz==0&&bfqs==0){
+                purchaseOrder.setState("1");//待审核
+            }
+            //该单据明细状态存在采购中，则说明当前单据状态为采购中
+            else if(cgz>0||bfqs>0){
+                purchaseOrder.setState("2");//采购中
+            }
+            this.update(purchaseOrder);
+        }
+
+    }
 
     @Override
     public void updateState(String id) throws Exception {

@@ -171,6 +171,8 @@ public interface PurchasePlanService {
 
     void updateState(String id) throws Exception;
 
+    void updateState(String id,String remark) throws Exception;
+
     ResultModel submitPurchasePlan(PageData pageData) throws Exception;
 
     ResultModel auditPurchasePlan(PageData pageData) throws Exception;

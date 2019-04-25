@@ -526,6 +526,7 @@ public class PurchasePlanServiceImp implements PurchasePlanService {
     public ResultModel rebackPurchasePlan(PageData pageData) throws Exception {
         ResultModel model = new ResultModel();
         String id = pageData.getString("id");
+        String remark = pageData.getString("remark");
         if (StringUtils.isEmpty(id)) {
             model.putCode("1");
             model.putMsg("主键ID为空，请求数据异常，请重新操作！");
@@ -538,7 +539,7 @@ public class PurchasePlanServiceImp implements PurchasePlanService {
 //        PurchasePlan purchasePlan = this.selectById(id);
 //        purchasePlan.setState("0");
 //        this.update(purchasePlan);
-        this.updateState(id);
+        this.updateState(id,remark);
         return model;
     }
 
@@ -578,6 +579,72 @@ public class PurchasePlanServiceImp implements PurchasePlanService {
         pageData.put("updateStr"," state = '2' ");
         purchasePlanDetailService.updateByDefined(pageData);
         return model;
+    }
+
+    @Override
+    public void updateState(String id,String remark) throws Exception {
+        PurchasePlan purchasePlan = this.selectById(id);
+        purchasePlan.setRemark(remark);
+        //(0:待提交 1:待审核 2:待执行 3:执行中 4:已完成 -1:已取消)
+        int yqx = 0;//已取消
+        int dtj = 0;//待提交
+        int dsh = 0;//待审核
+        int dzx = 0;//待执行
+        int zxz = 0;//执行中
+        int ywc = 0;//已完成
+        if(purchasePlan!=null){
+            Map columnMap = new HashMap();
+            columnMap.put("parent_id",id);
+            List<PurchasePlanDetail> detailList = purchasePlanDetailService.selectByColumnMap(columnMap);
+            if(detailList!=null&&detailList.size()>0){
+                for(int i=0;i<detailList.size();i++){
+                    PurchasePlanDetail purchasePlanDetail = detailList.get(i);
+                    if("-1".equals(purchasePlanDetail.getState())){
+                        yqx = yqx + 1;
+                    }else if("0".equals(purchasePlanDetail.getState())){
+                        dtj = dtj + 1;
+                    }else if("1".equals(purchasePlanDetail.getState())){
+                        dsh = dsh + 1;
+                    }else if("2".equals(purchasePlanDetail.getState())){
+                        dzx = dzx + 1;
+                    }else if("3".equals(purchasePlanDetail.getState())){
+                        zxz = zxz + 1;
+                    }else if("4".equals(purchasePlanDetail.getState())){
+                        ywc = ywc + 1;
+                    }
+                }
+            }else{
+                //如果当前单据没有明细则自动删除当前单据
+                this.deleteById(id);
+                return;
+            }
+            //该单据明细状态全是已取消状态，则说明当前单据状态为已取消
+            if(yqx>0&&dtj==0&&dsh==0&&dzx==0&&zxz==0&&ywc==0){
+                purchasePlan.setState("-1");//已取消
+            }
+            //该单据明细状态全是已完成和已取消状态，则说明当前单据状态为已完成
+            else if(ywc>0&&dtj==0&&dsh==0&&dzx==0&&zxz==0){
+                purchasePlan.setState("4");//已完成
+            }
+            //该单据明细状态全是待提交和已取消状态，则说明当前单据状态为待提交
+            else if(dtj>0&&ywc==0&&dsh==0&&dzx==0&&zxz==0){
+                purchasePlan.setState("0");//待提交
+            }
+            //该单据明细状态全是待审核和已取消状态，则说明当前单据状态为待审核
+            else if(dsh>0&&dtj==0&&ywc==0&&dzx==0&&zxz==0){
+                purchasePlan.setState("1");//待审核
+            }
+            //该单据明细状态存在待执行且不存在执行中，则说明当前单据状态为待执行
+            else if(dzx>0&&zxz==0){
+                purchasePlan.setState("2");//待执行
+            }
+            //该单据明细状态存在执行中，则说明当前单据状态为执行中
+            else if(zxz>0){
+                purchasePlan.setState("3");//执行中
+            }
+            this.update(purchasePlan);
+        }
+
     }
 
     @Override
