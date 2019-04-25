@@ -403,6 +403,7 @@ public class BomServiceImp implements BomService {
         bomTree.setRatio(BigDecimal.ONE);
         bomTree.setBomId(bom.getId());
         bomTreeService.save(bomTree);
+        model.put("id",bom.getId());
         return model;
     }
 
