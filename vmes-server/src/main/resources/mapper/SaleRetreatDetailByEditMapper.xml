@@ -110,6 +110,10 @@
             deliver.deliver_code deliverCode,
             round(ifnull(deliverDetail.order_count, 0), 2) deliverOrderCount
 
+        <if test="'true' == isRetreatByEdit" >
+            ,round((ifnull(deliverDetail.order_count, 0) - ifnull(retreatDetailByEdit.order_count, 0)), 2) notRetreatCount
+        </if>
+
         from vmes_sale_retreat_detail detail
             left join vmes_sale_order_detail orderDetail on detail.order_detail_id = orderDetail.id
             left join vmes_sale_order saleOrder on orderDetail.parent_id = saleOrder.id
@@ -121,6 +125,24 @@
             left join vmes_product product on detail.product_id = product.id
             left join vmes_dictionary genre on product.genre = genre.id
             left join vmes_product_unit prodUnitPrice on (detail.product_id = prodUnitPrice.product_id and detail.order_unit = prodUnitPrice.unit and prodUnitPrice.isdisable = '1')
+
+
+        <!--退货明细汇总(已生成退货数量)-(修改页面)-->
+        <if test="'true' == isRetreatByEdit" >
+            left join (
+                select deliver_detail_id, sum(order_count) order_count
+                from vmes_sale_retreat_detail
+                where id not in (
+                    select id from vmes_sale_retreat_detail
+                    <where>
+                        <if test="parentId != null and parentId != ''" >
+                            and parent_id = #{parentId}
+                        </if>
+                    </where>
+                ) and <![CDATA[ state <> '-1' ]]>
+                group by deliver_detail_id
+            ) retreatDetailByEdit on detail.deliver_detail_id = retreatDetailByEdit.deliver_detail_id
+        </if>
 
             <!--收款明细汇总-->
             left join (

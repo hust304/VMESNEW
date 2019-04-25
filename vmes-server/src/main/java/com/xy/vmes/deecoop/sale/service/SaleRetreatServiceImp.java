@@ -704,12 +704,12 @@ public class SaleRetreatServiceImp implements SaleRetreatService {
             return model;
         }
 
-        String msgStr = this.checkColumnByEdit(mapList);
-        if (msgStr != null && msgStr.trim().length() > 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg(msgStr);
-            return model;
-        }
+//        String msgStr = this.checkColumnByEdit(mapList);
+//        if (msgStr != null && msgStr.trim().length() > 0) {
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg(msgStr);
+//            return model;
+//        }
 
         List<SaleRetreatDetail> retreatDtlList = saleRetreatDetailService.mapList2DetailList(mapList, null);
         if (retreatDtlList == null || retreatDtlList.size() == 0) {return model;}
