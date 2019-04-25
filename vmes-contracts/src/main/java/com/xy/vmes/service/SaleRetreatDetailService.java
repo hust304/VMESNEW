@@ -110,6 +110,14 @@ public interface SaleRetreatDetailService {
 
     List<SaleReceiveDetail> retreatMap2ReceiveDtlList(Map<String, BigDecimal> orderRetreatSumMap, List<SaleReceiveDetail> receiveDtlList);
 
+    /**
+     * 获取 <订单明细id,<订单明细退货信息Map>
+     *     订单明细退货信息Map
+     *         orderCount:退货数量
+     *         orderSum:退货金额(订单明细-退货金额)
+     * @param objectList
+     * @return
+     */
     Map<String, Map<String, BigDecimal>> findOrderDtlRetreatCountMap(List<SaleRetreatDetail> objectList);
     ///////////////////////////////////////////////////////////////////////////////////////////
     /**

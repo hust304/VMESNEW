@@ -303,6 +303,14 @@ public class SaleRetreatDetailServiceImp implements SaleRetreatDetailService {
         return receiveDtlList;
     }
 
+    /**
+     * 获取 <订单明细id,<订单明细退货信息Map>
+     *     订单明细退货信息Map
+     *         orderCount:退货数量
+     *         orderSum:退货金额(订单明细-退货金额)
+     * @param objectList
+     * @return
+     */
     public Map<String, Map<String, BigDecimal>> findOrderDtlRetreatCountMap(List<SaleRetreatDetail> objectList) {
         Map<String, Map<String, BigDecimal>> mapObject = new HashMap<String, Map<String, BigDecimal>>();
         if (objectList == null || objectList.size() == 0) {return mapObject;}

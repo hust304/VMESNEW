@@ -17,6 +17,7 @@ public interface SaleRetreatAuditService {
      * @throws Exception
      */
     ResultModel auditPassSaleRetreat(PageData pageData) throws Exception;
-
     ResultModel auditDisagreeSaleRetreat(PageData pageData) throws Exception;
+    ResultModel checkRetreatEdit(PageData pageData);
+
 }

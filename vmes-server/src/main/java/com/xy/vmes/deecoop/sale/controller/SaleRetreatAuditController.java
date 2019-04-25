@@ -56,4 +56,15 @@ public class SaleRetreatAuditController {
         logger.info("################/sale/saleRetreatAudit/auditDisagreeSaleRetreat 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
+
+    @PostMapping("/sale/saleRetreatAudit/checkRetreatEdit")
+    public ResultModel checkRetreatEdit() throws Exception {
+        logger.info("################/sale/saleRetreatAudit/checkRetreatEdit 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pageData = HttpUtils.parsePageData();
+        ResultModel model = saleRetreatAuditService.checkRetreatEdit(pageData);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleRetreatAudit/checkRetreatEdit 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
 }
