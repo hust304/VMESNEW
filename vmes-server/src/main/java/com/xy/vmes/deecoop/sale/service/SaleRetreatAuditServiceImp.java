@@ -205,7 +205,36 @@ public class SaleRetreatAuditServiceImp implements SaleRetreatAuditService {
                     orderRetreatSumByorderDtl.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP)
             );
             orderEdit.setRemark(remark);
+            //修改订单信息(备注，订单金额)
             saleOrderService.update(orderEdit);
+
+            //修改订单状态
+            SaleOrder parent = new SaleOrder();
+            parent.setId(orderId);
+            saleOrderDetailService.updateParentStateByDetailList(parent, orderDetailList);
+
+            //orderTotalSum 订单金额
+            //获取订单付款信息<订单id, 订单付款信息Map> - (receiveSum: 付款金额)
+            Map<String, Map<String, BigDecimal>> orderReceiveMap = saleReceiveDetailService.findMapOrderReceiveByOrderId(orderId, "1");
+            //订单明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
+            if (saleOrderDetailService.isAllExistStateByDetailList("5", orderDetailList)) {
+                if (orderId != null) {
+                    Map<String, BigDecimal> receiveMap = orderReceiveMap.get(orderId);
+
+                    //订单id-订单已完成付款金额
+                    BigDecimal receiveSum = BigDecimal.valueOf(0D);
+                    if (receiveMap.get("receiveSum") != null) {
+                        receiveSum = receiveMap.get("receiveSum");
+                    }
+                    SaleOrder editOrder = new SaleOrder();
+                    editOrder.setId(orderId);
+                    if (receiveSum.doubleValue() >= orderTotalSum.doubleValue()) {
+                        //订单状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
+                        editOrder.setState("4");
+                        saleOrderService.update(editOrder);
+                    }
+                }
+            }
 
             //订单id-订单退货金额(页面输入框)
             List<SaleRetreatDetail> retreatDtlListByOrderRetreatSum = orderRetreatSumMap.get(orderId);

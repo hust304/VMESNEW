@@ -233,6 +233,16 @@ public class SaleReceiveDetailServiceImp implements SaleReceiveDetailService {
         return saleReceiveDetailMapper.findReceiveDetailCollectByOrderId(pageData);
     }
 
+    /**
+     * 获取订单付款信息<订单id, 订单付款信息Map>
+     *     订单付款信息Map
+     *         receiveSum: 付款金额
+     *
+     * @param orderIds
+     * @param state
+     * @return
+     * @throws Exception
+     */
     public Map<String, Map<String, BigDecimal>> findMapOrderReceiveByOrderId(String orderIds, String state) throws Exception {
         if (orderIds == null || orderIds.trim().length() == 0) {return null;}
         Map<String, Map<String, BigDecimal>> orderReceiveMap = new HashMap<String, Map<String, BigDecimal>>();

@@ -557,6 +557,7 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
 
         //查询付款单明细 vmes_sale_receive_detail
         //收款明细状态(0:待收款 1:已收款 -1:已取消)
+        //获取订单付款信息<订单id, 订单付款信息Map> - (receiveSum: 付款金额)
         Map<String, Map<String, BigDecimal>> orderReceiveMap = saleReceiveDetailService.findMapOrderReceiveByOrderId(orderIdsBuf.toString(), "1");
 
         //反写订单状态
