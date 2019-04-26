@@ -21,7 +21,9 @@
             round(ifnull(retreatOrderDtl.orderCount, 0), 2) orderDtlRetreatCount,
             round(ifnull(retreatOrderDtl.orderSum, 0), 2) orderDtlRetreatSum,
 
+            <!--checkCount:=(发货数量-退货数量)-->
             round((ifnull(deliverOrderDtl.orderCount, 0) - ifnull(retreatOrderDtl.orderCount, 0)), 2) checkCount,
+            <!--checkSum:=(发货金额-退货金额)-->
             round((ifnull(deliverOrderDtl.orderSum, 0) - ifnull(retreatOrderDtl.orderSum, 0)), 2) checkSum
 
         from vmes_sale_order_detail orderDetail
@@ -36,13 +38,13 @@
                 group by order_detai_id
             ) deliverOrderDtl on orderDetail.id = deliverOrderDtl.orderDtlId
             left join (
-                <!--(订单明细id)退货明细汇总-->
+                <!--(订单明细id)-退货完成数量-退货明细汇总-->
                 select
                     order_detail_id,
                     sum(order_count) orderCount,
                     sum(order_sum) orderSum
                 from vmes_sale_retreat_detail
-                where state <![CDATA[<> '-1']]>
+                where state = '3'
                 group by order_detail_id
             ) retreatOrderDtl on orderDetail.id = retreatOrderDtl.order_detail_id
         <where>

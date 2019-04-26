@@ -34,12 +34,12 @@ public class SaleDeliverDetailByCollectServiceImp implements SaleDeliverDetailBy
      * @return
      * @throws Exception
      */
-    public Map<String, Object> findDeliverDetailOnWarehouseOutDetailByOrder(PageData pageData) throws Exception {
-        List<Map<String, Object>> mapList = saleDeliverDetailByCollectMapper.findDeliverDetailOnWarehouseOutDetailByOrder(pageData);
-        if (mapList != null && mapList.size() > 0) { return mapList.get(0);}
-
-        return null;
-    }
+//    public Map<String, Object> findDeliverDetailOnWarehouseOutDetailByOrder(PageData pageData) throws Exception {
+//        List<Map<String, Object>> mapList = saleDeliverDetailByCollectMapper.findDeliverDetailOnWarehouseOutDetailByOrder(pageData);
+//        if (mapList != null && mapList.size() > 0) { return mapList.get(0);}
+//
+//        return null;
+//    }
 
     /**
      * 关联查询(vmes_sale_deliver_detail,vmes_sale_order_detail)
@@ -53,6 +53,13 @@ public class SaleDeliverDetailByCollectServiceImp implements SaleDeliverDetailBy
     }
 
     /**
+     * 按发货单id-获取订单明细发货信息
+     * <订单明细id, 发货信息Map>
+     *     发货信息Map
+     *     orderCount: 订单明细订购数量
+     *     checkCount: (发货数量-退货数量)
+     *     checkSum: (发货金额-退货金额)
+     *
      * 根据发货单id-获取(订单明细id,订购数量,发货数量)
      *
      * @param deliverId       发货单id
@@ -126,9 +133,18 @@ public class SaleDeliverDetailByCollectServiceImp implements SaleDeliverDetailBy
 
 
     /**
+     * 按订单id-获取订单明细发货信息
+     * <订单明细id, 发货信息Map>
+     *     发货信息Map
+     *         orderId: 订单明细id
+     *         orderDtlCount:订单明细订购数量
+     *         orderDtlSum: 订单明细货品金额
+     *         checkCount: 验证数量(发货数量-退货数量)
+     *         checkSum: (发货金额-退货金额)
+     *
      * 根据发货单id-获取(订单明细id,订购数量,发货数量)
      *
-     * @param orderIds  订单单id
+     * @param orderIds  订单id
      * @return
      */
     public Map<String, Map<String, Object>> findMapOrderDetaiCountByOrderId(String orderIds) throws Exception {

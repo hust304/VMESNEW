@@ -307,7 +307,7 @@ public class SaleRetreatDetailServiceImp implements SaleRetreatDetailService {
      * 获取 <订单明细id,<订单明细退货信息Map>
      *     订单明细退货信息Map
      *         orderCount:退货数量
-     *         orderSum:退货金额(订单明细-退货金额)
+     *         orderSum:退货金额(订单明细)
      * @param objectList
      * @return
      */
