@@ -41,12 +41,19 @@ public class TreeUtil {
 
         //获得当前节点对象
         TreeEntity nodeObject = findNodeById(nodeId, objectList);
-        //Bom齐套分析：期望生产数量
-        nodeObject.setExpectCount(expectCount);
+        nodeObject.setExpectCount(BigDecimal.ZERO);
+
         //Bom齐套分析：下级物料列表的Title
         nodeObject.setTitles((List<LinkedHashMap>)childrenTitleMap.get("titles"));
         nodeObject.setHideTitles((List<String>)childrenTitleMap.get("hideTitles"));
         createBomTree(nodeObject, objectList);
+
+        //Bom齐套分析：期望生产数量
+//        if(nodeObject.getMaxCount().compareTo(expectCount)<0){
+//            nodeObject.setExpectCount(expectCount.subtract(nodeObject.getMaxCount()));
+//            createBomTree(nodeObject, objectList);
+//        }
+
         return nodeObject;
     }
 

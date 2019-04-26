@@ -377,7 +377,7 @@ public class BomTreeServiceImp implements BomTreeService {
         List<TreeEntity> treeList = bomTreeService.getBomTreeList(pd);
         TreeEntity treeObj = TreeUtil.switchTree(pd.getString("prodId"), treeList);
         String treeJsonStr = YvanUtil.toJson(treeObj);
-        System.out.println("treeJsonStr: " + treeJsonStr);
+//        System.out.println("treeJsonStr: " + treeJsonStr);
 
         Map result = new HashMap();
         result.put("treeList", treeObj);

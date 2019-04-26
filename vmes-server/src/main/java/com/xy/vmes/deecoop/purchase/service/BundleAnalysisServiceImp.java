@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -72,10 +73,13 @@ public class BundleAnalysisServiceImp implements BundleAnalysisService {
 
         List<TreeEntity> varMapList = new ArrayList();
 
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        String edate = format.format(new Date());
         if(mapList!=null&&mapList.size()>0){
             for(int i=0;i<mapList.size();i++){
                 Map<String, String> detailMap = mapList.get(i);
                 TreeEntity treeEntity = (TreeEntity) HttpUtils.pageData2Entity(detailMap, new TreeEntity());
+                treeEntity.setEdate(edate);
                 varMapList.add(treeEntity);
             }
         }
