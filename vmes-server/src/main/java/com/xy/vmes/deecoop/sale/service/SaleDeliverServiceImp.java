@@ -569,7 +569,10 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
                 List<SaleOrderDetail> detailList = saleOrderDetailService.findSaleOrderDetailListByParentId(orderId);
                 saleOrderDetailService.updateDetailStateByOrderId(orderId, detailList);
 
+                //orderTotalSum 订单金额
                 SaleOrder orderDB = saleOrderService.findSaleOrderById(orderId);
+                BigDecimal orderTotalSum = orderDB.getOrderSum();
+
                 //设定发货完成时间
                 orderDB.setCurrentDeliverDate(new Date());
                 saleOrderService.update(orderDB);
@@ -579,24 +582,15 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
                     //totalSum 合计金额
                     BigDecimal totalSum = saleOrderDetailService.findTotalSumByPrice(detailList);
 
-                    //discountSum 折扣金额
-                    BigDecimal discountSum = BigDecimal.valueOf(0D);
-                    if (orderDB.getDiscountSum() != null) {
-                        discountSum = orderDB.getDiscountSum();
-                    }
-
-                    //orderSum 订单金额(合计金额 - 折扣金额)
-                    BigDecimal orderSum = BigDecimal.valueOf(totalSum.doubleValue() - discountSum.doubleValue());
-                    //四舍五入到2位小数
-                    orderSum = orderSum.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-
                     SaleOrder editOrder = new SaleOrder();
                     editOrder.setId(orderId);
                     //四舍五入到2位小数
                     totalSum = totalSum.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
                     editOrder.setTotalSum(totalSum);
-                    editOrder.setOrderSum(orderSum);
-
+                    editOrder.setOrderSum(totalSum);
+                    //discountSum 折扣金额
+                    editOrder.setDiscountSum(BigDecimal.valueOf(0D));
+                    orderTotalSum = totalSum;
                     saleOrderService.update(editOrder);
                 }
 
@@ -604,8 +598,6 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
                 parent.setId(orderId);
                 saleOrderDetailService.updateParentStateByDetailList(parent, detailList);
 
-                //orderSum 订单金额(合计金额 - 折扣金额)
-                BigDecimal orderSum = orderDB.getOrderSum();
                 //订单明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
                 if (saleOrderDetailService.isAllExistStateByDetailList("5", detailList)) {
                     if (orderReceiveMap.get(orderId) != null) {
@@ -618,7 +610,7 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
                         }
                         SaleOrder editOrder = new SaleOrder();
                         editOrder.setId(orderId);
-                        if (receiveSum.doubleValue() >= orderSum.doubleValue()) {
+                        if (receiveSum.doubleValue() >= orderTotalSum.doubleValue()) {
                             //订单状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
                             editOrder.setState("4");
                             saleOrderService.update(editOrder);
