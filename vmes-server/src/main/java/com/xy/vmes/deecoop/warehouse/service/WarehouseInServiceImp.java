@@ -851,7 +851,6 @@ public class WarehouseInServiceImp implements WarehouseInService {
             //状态(0:待派单 1:执行中 2:已完成 -1.已取消)
             inDetail.setState("1");
             //detail.setExecuteId(executeId);
-            inDetail.setRemark(" ");
             warehouseInDetailService.update(inDetail);
         }
 
