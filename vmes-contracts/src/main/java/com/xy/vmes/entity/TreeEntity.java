@@ -50,7 +50,7 @@ public class TreeEntity implements Cloneable {
     private String spec;
     private String genre;
     private String unit;
-    private Date edate;
+    private String edate;
     private BigDecimal totalCount;
     private BigDecimal assembledCount;
     private BigDecimal stockCount;
@@ -77,11 +77,11 @@ public class TreeEntity implements Cloneable {
     //(必须)当前节点子节点
     private List<TreeEntity> children = new ArrayList<TreeEntity>();
 
-    public Date getEdate() {
+    public String getEdate() {
         return edate;
     }
 
-    public void setEdate(Date edate) {
+    public void setEdate(String edate) {
         this.edate = edate;
     }
 
