@@ -258,7 +258,7 @@ public class SaleRetreatAuditServiceImp implements SaleRetreatAuditService {
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         String orderIds = orderIdBuf.toString();
-        //获取<订单明细id, 发货信息Map> - (orderDtlCount:订单明细订购数量, checkCount: 验证数量(发货数量-退货数量))
+        //按订单id-获取<订单明细id, 发货信息Map> - (orderDtlCount:订单明细订购数量, checkCount: 验证数量(发货数量-退货数量))
         Map<String, Map<String, Object>> orderDtlMap = saleDeliverDetailByCollectService.findMapOrderDetaiCountByOrderId(orderIds);
         for (SaleOrderDetail orderDtl : orderDtlList) {
             SaleOrderDetail orderDetailEdit = new SaleOrderDetail();
@@ -317,8 +317,6 @@ public class SaleRetreatAuditServiceImp implements SaleRetreatAuditService {
                 }
             }
         }
-
-
 
         return model;
     }
