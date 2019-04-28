@@ -479,6 +479,32 @@ public class WarehouseInExecuteServiceImp implements WarehouseInExecuteService {
             }
         }
 
+        //将入库单明细(二维码) 保存到 货品库存表中(vmes_warehouse_product).qrcode(二维码)
+        for (Map<String, Object> warehouseInDetailMap : mapList) {
+            String detailId = (String)warehouseInDetailMap.get("id");
+            WarehouseInDetail detail = warehouseInDetailService.findWarehouseInDetailById(detailId);
+
+            if (detail.getCode() != null && detail.getCode().trim().length() > 0
+                && detail.getProductId() != null && detail.getProductId().trim().length() > 0
+                && detail.getWarehouseId() != null && detail.getWarehouseId().trim().length() > 0
+            ) {
+                //入库单明细二维码
+                PageData findMap = new PageData();
+                findMap.put("code", detail.getCode());
+                findMap.put("productId", detail.getProductId());
+                findMap.put("warehouseId", detail.getWarehouseId());
+                findMap.put("mapSize", Integer.valueOf(findMap.size()));
+                WarehouseProduct warehouseProduct = warehouseProductService.findWarehouseProduct(findMap);
+                if (detail.getQrcode() != null && detail.getQrcode().trim().length() > 0
+                    && warehouseProduct != null
+                    && (warehouseProduct.getQrcode() == null || warehouseProduct.getQrcode().trim().length() == 0)
+                ) {
+                    warehouseProduct.setQrcode(detail.getQrcode());
+                    warehouseProductService.update(warehouseProduct);
+                }
+            }
+        }
+
         if (msgBuf.toString().trim().length() > 0) {
             model.putCode(Integer.valueOf(1));
             model.putMsg(msgBuf.toString());
@@ -664,7 +690,20 @@ public class WarehouseInExecuteServiceImp implements WarehouseInExecuteService {
                 warehouseInService.updateState(detail.getParentId());
 
 
-
+                //入库单明细二维码 保存到 货品库存表中(vmes_warehouse_product).qrcode(二维码)
+                findMap = new PageData();
+                findMap.put("code", detail.getCode());
+                findMap.put("productId", detail.getProductId());
+                findMap.put("warehouseId", detail.getWarehouseId());
+                findMap.put("mapSize", Integer.valueOf(findMap.size()));
+                WarehouseProduct warehouseProduct = warehouseProductService.findWarehouseProduct(findMap);
+                if (detail.getQrcode() != null && detail.getQrcode().trim().length() > 0
+                        && warehouseProduct != null
+                        && (warehouseProduct.getQrcode() == null || warehouseProduct.getQrcode().trim().length() == 0)
+                        ) {
+                    warehouseProduct.setQrcode(detail.getQrcode());
+                    warehouseProductService.update(warehouseProduct);
+                }
 
 //                List<WarehouseInDetail> detailList = warehouseInDetailService.findWarehouseInDetailListByParentId(parentId);
 //                warehouseInDetailService.updateStateWarehouseInDetail(detailList);
