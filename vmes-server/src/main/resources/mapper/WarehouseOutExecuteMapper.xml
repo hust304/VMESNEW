@@ -273,13 +273,36 @@
     <!-- 自动创建，可以修改 -->
     <select id="getDataListPage"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
         select
-        <include refid="Field1"></include>
+            execut.id id,
+            execut.isdisable isdisable,
+            execut.warehouse_product_id warehouseProductId,
+            execut.remark remark,
+            round(execut.count,2) actualCount,
+            execut.cdate endDate,
+
+            product.company_id companyId,
+            product.warehouse_id warehouseId,
+            product.product_id productId,
+            product.code code,
+            round(product.stock_count,2) stockCount,
+
+            prod.name productName,
+            product.code code,
+            product.qrcode qrcode,
+
+            executor.cdate startDate,
+            vmesuser.user_name executorName,
+            warehouse.path_name name
+
         from
         vmes_warehouse_out_execute execut
         left join vmes_warehouse_product product on execut.warehouse_product_id = product.id
+        left join vmes_product prod on product.product_id = prod.id
+
         left join vmes_warehouse warehouse on warehouse.id = product.warehouse_id
         left join vmes_user vmesuser on vmesuser.id = execut.executor_id
         left join vmes_warehouse_out_executor executor on executor.detail_id = execut.detail_id and executor.executor_id = execut.executor_id and executor.isdisable = '1'
+
         <where>
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >

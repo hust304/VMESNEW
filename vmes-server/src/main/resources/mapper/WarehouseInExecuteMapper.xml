@@ -190,12 +190,19 @@
             DATE_FORMAT(execute.cdate,'%Y-%m-%d %T') endDate,
 
             <!-- 仓库货位表 -->
-            warehouse.path_name pathName
-            <!--ifnull(warehouseProduct.stock_count, 0) stockCount-->
+            warehouse.path_name pathName,
+
+            prod.name productName,
+            inDetail.code code,
+            inDetail.qrcode
+        <!--ifnull(warehouseProduct.stock_count, 0) stockCount-->
         from vmes_warehouse_in_execute execute
             left join vmes_user user on execute.executor_id = user.id
             left join vmes_warehouse warehouse on execute.warehouse_id = warehouse.id
             left join vmes_warehouse_in_executor executor on execute.detail_id = executor.detail_id and execute.executor_id = executor.executor_id and executor.isdisable = '1'
+
+        left join vmes_warehouse_in_detail inDetail on execute.detail_id = inDetail.id
+        left join vmes_product prod on inDetail.product_id = prod.id
         <!--
             left join (
                 select product_id,company_id,warehouse_id,round(sum(ifnull(stock_count,0)), 2) stock_count
