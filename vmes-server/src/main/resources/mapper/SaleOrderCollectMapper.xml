@@ -162,18 +162,19 @@
         round(ifnull(tab.receivedAmount, 0),2) receivedAmount,
         round(ifnull(tab.discountedAmount, 0),2) discountedAmount,
         round(ifnull(tab.invoiceAmount, 0),2) invoiceAmount,
+        round(ifnull(tab.retreatAmount, 0),2) retreatAmount,
         round(ifnull(tab.nowReceiveAmount, 0),2) nowReceiveAmount,
         round(ifnull(tab.preReceiveAmount, 0),2) preReceiveAmount
         from vmes_sale_order saleOrder
         left join (
         select id,
-        round(sum(ifnull(deliverAmount,0)),2) deliverAmount,round(sum(ifnull(receiveAmount,0)),2) receivedAmount,round(sum(ifnull(discountAmount,0)),2) discountedAmount,round(sum(ifnull(invoiceAmount,0)),2) invoiceAmount,
-        case when sum(ifnull(deliverAmount,0)) <![CDATA[ > ]]> (sum(ifnull(receiveAmount,0))+sum(ifnull(discountAmount,0))) then round(sum(ifnull(deliverAmount,0)) - sum(ifnull(receiveAmount,0)) - sum(ifnull(discountAmount,0)),2) else 0.00 end nowReceiveAmount,
-        case when sum(ifnull(deliverAmount,0)) <![CDATA[ < ]]> (sum(ifnull(receiveAmount,0))+sum(ifnull(discountAmount,0))) then round(sum(ifnull(receiveAmount,0)) - sum(ifnull(deliverAmount,0)) + sum(ifnull(discountAmount,0)),2) else 0.00 end preReceiveAmount
+        round(sum(ifnull(deliverAmount,0)),2) deliverAmount,round(sum(ifnull(receiveAmount,0)),2) receivedAmount,round(sum(ifnull(discountAmount,0)),2) discountedAmount,round(sum(ifnull(invoiceAmount,0)),2) invoiceAmount,round(sum(ifnull(retreatAmount,0)),2) retreatAmount,
+        case when sum(ifnull(deliverAmount,0))-sum(ifnull(retreatAmount,0)) <![CDATA[ > ]]> (sum(ifnull(receiveAmount,0))+sum(ifnull(discountAmount,0))) then round(sum(ifnull(deliverAmount,0)) - sum(ifnull(retreatAmount,0)) - sum(ifnull(receiveAmount,0)) - sum(ifnull(discountAmount,0)),2) else 0.00 end nowReceiveAmount,
+        case when sum(ifnull(deliverAmount,0))-sum(ifnull(retreatAmount,0)) <![CDATA[ < ]]> (sum(ifnull(receiveAmount,0))+sum(ifnull(discountAmount,0))) then round(sum(ifnull(receiveAmount,0)) + sum(ifnull(discountAmount,0)) - sum(ifnull(deliverAmount,0)) + sum(ifnull(retreatAmount,0)),2) else 0.00 end preReceiveAmount
         from
         (
         select sOrder.id id,
-        deliverDetail.sum deliverAmount,null receiveAmount,null discountAmount,null invoiceAmount
+        deliverDetail.sum deliverAmount,null receiveAmount,null discountAmount,null invoiceAmount,null retreatAmount
         from vmes_sale_order sOrder
         left join vmes_sale_deliver_detail deliverDetail on deliverDetail.order_id = sOrder.id
         <where>
@@ -186,7 +187,7 @@
         union all
 
         select sOrder.id id,
-        null deliverAmount,receiveDetail.receive_amount receiveAmount,receiveDetail.discount_amount discountAmount,null invoiceAmount
+        null deliverAmount,receiveDetail.receive_amount receiveAmount,receiveDetail.discount_amount discountAmount,null invoiceAmount,null retreatAmount
         from vmes_sale_order sOrder
         left join vmes_sale_receive_detail receiveDetail on receiveDetail.order_id = sOrder.id
         <where>
@@ -199,7 +200,22 @@
         union all
 
         select sOrder.id id,
-        null deliverAmount,null receiveAmount,null discountAmount,invoiceDetail.sum invoiceAmount
+        null deliverAmount,null receiveAmount,null discountAmount,null invoiceAmount,retreatDetail.order_sum retreatAmount
+        from vmes_sale_order sOrder
+        left join vmes_sale_order_detail orderDtail on sOrder.id = orderDtail.parent_id
+        left join vmes_sale_retreat_detail retreatDetail on orderDtail.id = retreatDetail.order_detail_id
+        <where>
+            <if test="id != null and id != ''" >
+                and sOrder.id = #{id}
+            </if>
+            and retreatDetail.state = '3'
+        </where>
+
+
+        union all
+
+        select sOrder.id id,
+        null deliverAmount,null receiveAmount,null discountAmount,invoiceDetail.sum invoiceAmount,null retreatAmount
         from vmes_sale_order sOrder
         left join vmes_sale_order_detail orderDetail on orderDetail.parent_id = sOrder.id
         left join vmes_sale_invoice_detail invoiceDetail on invoiceDetail.order_detail_id = orderDetail.id
@@ -315,6 +331,7 @@
             (replace(uuid(), '-', ''),'saleOrderCollect','companyId','公司ID',8, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'saleOrderCollect','daysRemaining','账期剩余(天)',8, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'saleOrderCollect','advanceAmount','预付款',8, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'saleOrderCollect','retreatAmount','退货金额',9, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'saleOrderCollect','id','id',0, '1','1','1','0',now(), 'admin')
     </insert>
 

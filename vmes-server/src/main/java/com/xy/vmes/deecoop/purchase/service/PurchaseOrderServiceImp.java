@@ -642,6 +642,7 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService {
                 if(arriveCount.compareTo(BigDecimal.ZERO)>=0){
                     if(arriveCount.compareTo(purchaseOrderDetail.getCount())>=0){
                         purchaseOrderDetail.setState("4");
+                        purchaseOrderDetail.setAdate(new Date());
                         if(purchasePlanDetail!=null){
                             purchasePlanDetail.setState("4");
                         }
