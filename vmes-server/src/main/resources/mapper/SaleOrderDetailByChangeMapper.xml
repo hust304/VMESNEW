@@ -25,7 +25,7 @@
             orderDtl.file_url fileUrl,
             orderDtl.deliver_date deliverDate,
 
-            orderDtl.order_count orderCount,
+            round(ifnull(orderDtl.order_count, 0),2) orderCount,
             orderDtl.order_unit orderUnit,
             orderDtl.product_count productCount,
             orderDtl.product_unit productUnit,
@@ -33,13 +33,14 @@
 
             orderDtl.price_unit priceUnit,
             orderDtl.product_id productId,
-            orderDtl.product_price productPrice,
+            round(ifnull(orderDtl.product_price, 0), 2) productPrice,
             orderDtl.product_sum productSum,
             orderDtl.is_lock_warehouse isLockWarehouse,
 
             orderDtl.is_need_produce isNeedProduce,
             orderDtl.lock_count lockCount,
-            orderDtl.need_deliver_count needDeliverCount,
+            round(ifnull(orderDtl.need_deliver_count, 0), 2) needDeliverCount,
+
             orderDtl.lock_date lockDate,
             orderDtl.plan_detail_id planDetailId,
 
