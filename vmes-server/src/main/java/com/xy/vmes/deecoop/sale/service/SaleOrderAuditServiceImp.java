@@ -509,30 +509,32 @@ public class SaleOrderAuditServiceImp implements SaleOrderAuditService {
 
 
             //5.分摊预付款
-            SaleReceive saleReceive = new SaleReceive();
-            String id = Conv.createUuid();
-            String companyID = pageData.getString("currentCompanyId");
-            String code = coderuleService.createCoder(companyID, "vmes_sale_receive", "R");
-            saleReceive.setId(id);
-            saleReceive.setCode(code);
-            saleReceive.setType("0");//收款类型(0:预收款 1:普通收款 2:发货退款 3:订单退款 4:预收款退款)
-            saleReceive.setCustomerId(orderDB.getCustomerId());
-            saleReceive.setReceiveSum(orderDB.getAdvanceSum());
-            saleReceive.setCompanyId(companyID);
-            saleReceive.setUuser(pageData.getString("cuser"));
-            saleReceive.setCuser(pageData.getString("cuser"));
-            saleReceiveService.save(saleReceive);
+            //订单预付款(定金) advanceSum
+            if (orderDB.getAdvanceSum() != null && orderDB.getAdvanceSum().doubleValue() > 0) {
+                SaleReceive saleReceive = new SaleReceive();
+                String id = Conv.createUuid();
+                String companyID = pageData.getString("currentCompanyId");
+                String code = coderuleService.createCoder(companyID, "vmes_sale_receive", "R");
+                saleReceive.setId(id);
+                saleReceive.setCode(code);
+                saleReceive.setType("0");//收款类型(0:预收款 1:普通收款 2:发货退款 3:订单退款 4:预收款退款)
+                saleReceive.setCustomerId(orderDB.getCustomerId());
+                saleReceive.setReceiveSum(orderDB.getAdvanceSum());
+                saleReceive.setCompanyId(companyID);
+                saleReceive.setUuser(pageData.getString("cuser"));
+                saleReceive.setCuser(pageData.getString("cuser"));
+                saleReceiveService.save(saleReceive);
 
-            SaleReceiveDetail detail = new SaleReceiveDetail();
-            detail.setParentId(saleReceive.getId());
-            detail.setOrderId(orderDB.getId());
-            detail.setDiscountAmount(BigDecimal.ZERO);
-            detail.setReceiveAmount(orderDB.getAdvanceSum());
-            detail.setState("1");//收款单状态(0:待收款 1:已收款 -1:已取消)
-            detail.setUuser(pageData.getString("cuser"));
-            detail.setCuser(pageData.getString("cuser"));
-            saleReceiveDetailService.save(detail);
-
+                SaleReceiveDetail detail = new SaleReceiveDetail();
+                detail.setParentId(saleReceive.getId());
+                detail.setOrderId(orderDB.getId());
+                detail.setDiscountAmount(BigDecimal.ZERO);
+                detail.setReceiveAmount(orderDB.getAdvanceSum());
+                detail.setState("1");//收款单状态(0:待收款 1:已收款 -1:已取消)
+                detail.setUuser(pageData.getString("cuser"));
+                detail.setCuser(pageData.getString("cuser"));
+                saleReceiveDetailService.save(detail);
+            }
 
             Customer customer = customerService.selectById(orderDB.getCustomerId());
             //操作类型 (0:变更 1:录入收款 2:预付款 -1:费用分摊)
