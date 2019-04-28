@@ -228,9 +228,9 @@
         purchaseOrder.supplier_id supplierId,<!-- 供应商 -->
         supplier.name supplierName,
         purchaseOrder.code code,<!-- 采购订单编码 -->
-        purchaseOrder.total total,<!-- 合计金额 -->
-        purchaseOrder.discount discount,<!-- 折扣金额 -->
-        purchaseOrder.amount amount,<!-- 采购金额 -->
+        round(ifnull(purchaseOrder.total, 0),2) total,<!-- 合计金额 -->
+        round(ifnull(purchaseOrder.discount, 0),2) discount,<!-- 折扣金额 -->
+        round(ifnull(purchaseOrder.amount, 0),2) amount,<!-- 采购金额 -->
         purchaseOrder.type type,<!-- 采购订单类型-(字典表-vmes_dictionary.id) -->
         purchaseOrder.state state,<!-- 状态(0:待提交 1:待审核 2:采购中 3:已完成 -1:已取消) -->
         purchaseOrder.cuser cuser,<!-- 创建用户id -->
