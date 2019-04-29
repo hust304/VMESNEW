@@ -37,6 +37,8 @@ public class SaleOrderByChangeServiceImp implements SaleOrderByChangeService {
     private SaleReceiveService saleReceiveService;
     @Autowired
     private SaleReceiveDetailService saleReceiveDetailService;
+    @Autowired
+    private SaleReceiveRecordService saleReceiveRecordService;
 
     @Autowired
     private WarehouseOutService warehouseOutService;
@@ -184,6 +186,15 @@ public class SaleOrderByChangeServiceImp implements SaleOrderByChangeService {
         if (ReceiveSum.doubleValue() != 0) {
             //四舍五入到2位小数
             ReceiveSum = ReceiveSum.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+
+            saleReceiveRecordService.editCustomerBalanceByOrder(
+                    customerId,
+                    null,
+                    //操作类型 (0:变更 1:录入收款 2:预付款 3:退货退款 4:订单变更退款 -1:费用分摊)
+                    "4",
+                    BigDecimal.valueOf(ReceiveSum.doubleValue()),
+                    cuser,
+                    remark);
 
             //收款单类型(0:预收款 1:普通收款 2:发货退款 3:订单退款)
             SaleReceive receive = saleReceiveService.createReceive(customerId,
