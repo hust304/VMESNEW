@@ -172,7 +172,7 @@ public class SaleOrderByChangeServiceImp implements SaleOrderByChangeService {
         Map<String, BigDecimal> receiveMap = orderReceiveMap.get(orderId);
         //订单id-订单已完成付款金额
         BigDecimal receiveSum = BigDecimal.valueOf(0D);
-        if (receiveSum != null && receiveMap.get("receiveSum") != null) {
+        if (receiveMap != null && receiveMap.get("receiveSum") != null) {
             receiveSum = receiveMap.get("receiveSum");
         }
 
@@ -232,13 +232,12 @@ public class SaleOrderByChangeServiceImp implements SaleOrderByChangeService {
         //订单明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
         if (saleOrderDetailService.isAllExistStateByDetailList("5", orderDtlList)) {
             if (orderId != null) {
-                receiveMap.clear();
-                receiveMap = orderReceiveMap.get(orderId);
+                Map<String, BigDecimal> receiveMap_1 = orderReceiveMap.get(orderId);
 
                 //订单id-订单已完成付款金额
                 receiveSum = BigDecimal.valueOf(0D);
-                if (receiveMap.get("receiveSum") != null) {
-                    receiveSum = receiveMap.get("receiveSum");
+                if (receiveMap_1 != null && receiveMap_1.get("receiveSum") != null) {
+                    receiveSum = receiveMap_1.get("receiveSum");
                 }
                 SaleOrder editOrder = new SaleOrder();
                 editOrder.setId(orderId);
