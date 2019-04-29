@@ -164,8 +164,8 @@ public class SaleOrderByChangeServiceImp implements SaleOrderByChangeService {
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //生成负数的付款单
-        //1. (负数)付款金额:=0           变更后订单金额 >= 订单已付金额
-        //2. (负数)付款金额:=订单变更金额  变更后订单金额 <  订单已付金额
+        //1. (负数)付款金额:=0                            变更后订单金额 >= 订单已付金额
+        //2. (负数)付款金额:= (变更后订单金额-订单已付金额)   变更后订单金额 <  订单已付金额
 
         //获取订单付款信息<订单id, 订单付款信息Map> - (receiveSum: 付款金额)
         Map<String, Map<String, BigDecimal>> orderReceiveMap = saleReceiveDetailService.findMapOrderReceiveByOrderId(orderId, "1");
@@ -178,9 +178,9 @@ public class SaleOrderByChangeServiceImp implements SaleOrderByChangeService {
 
         //(负数)付款金额
         BigDecimal ReceiveSum = BigDecimal.valueOf(0D);
-        //(负数)付款金额:=订单已付金额  变更后订单金额 <  订单已付金额
+        //(负数)付款金额:= (变更后订单金额-订单已付金额)   变更后订单金额 <  订单已付金额
         if (orderSum_new.doubleValue() < receiveSum.doubleValue()) {
-            ReceiveSum = orderSum_change;
+            ReceiveSum = BigDecimal.valueOf(orderSum_new.doubleValue() - receiveSum.doubleValue());;
         }
 
         if (ReceiveSum.doubleValue() != 0) {
