@@ -200,7 +200,7 @@
         union all
 
         select sOrder.id id,
-        null deliverAmount,null receiveAmount,null discountAmount,null invoiceAmount,retreatDetail.order_sum retreatAmount
+        null deliverAmount,null receiveAmount,null discountAmount,null invoiceAmount,ifnull(retreatDetail.order_count,0)*ifnull(orderDtail.product_price,0) retreatAmount
         from vmes_sale_order sOrder
         left join vmes_sale_order_detail orderDtail on sOrder.id = orderDtail.parent_id
         left join vmes_sale_retreat_detail retreatDetail on orderDtail.id = retreatDetail.order_detail_id
