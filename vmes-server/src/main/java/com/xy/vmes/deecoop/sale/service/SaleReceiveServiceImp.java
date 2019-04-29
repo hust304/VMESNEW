@@ -352,6 +352,7 @@ public class SaleReceiveServiceImp implements SaleReceiveService {
                         //订单状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
                         if("3".equals(saleOrder.getState())){
                             saleOrder.setState("4");
+                            saleOrder.setPayDate(new Date());
                             saleOrderService.update(saleOrder);
                         }
                     }
