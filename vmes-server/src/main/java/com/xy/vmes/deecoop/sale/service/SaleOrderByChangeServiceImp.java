@@ -172,7 +172,7 @@ public class SaleOrderByChangeServiceImp implements SaleOrderByChangeService {
         Map<String, BigDecimal> receiveMap = orderReceiveMap.get(orderId);
         //订单id-订单已完成付款金额
         BigDecimal receiveSum = BigDecimal.valueOf(0D);
-        if (receiveMap.get("receiveSum") != null) {
+        if (receiveSum != null && receiveMap.get("receiveSum") != null) {
             receiveSum = receiveMap.get("receiveSum");
         }
 
