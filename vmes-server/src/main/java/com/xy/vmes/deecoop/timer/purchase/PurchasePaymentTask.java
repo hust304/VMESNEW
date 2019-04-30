@@ -295,8 +295,9 @@ public class PurchasePaymentTask {
                 }
 
                 try {
-                    String logger_msg_temp = "付款期({0}) 企业id({1}) 供应商id({2}) 采购付款结转完成";
+                    String logger_msg_temp = "{{0}}:付款期({1}) 企业id({2}) 供应商id({3}) 采购付款结转完成";
                     String logger_msg = MessageFormat.format(logger_msg_temp,
+                            "PurchasePaymentTask.initTimer",
                             paymentPeriod,
                             companyId,
                             supplierId);
