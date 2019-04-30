@@ -3,7 +3,6 @@ package com.xy.vmes.deecoop.timer.purchase;
 import com.xy.vmes.common.util.Common;
 import com.xy.vmes.common.util.DateFormat;
 import com.xy.vmes.common.util.StringUtil;
-import com.xy.vmes.deecoop.sale.controller.SaleOrderController;
 import com.xy.vmes.entity.PurchaseCompanyPeriod;
 import com.xy.vmes.entity.PurchasePaymentBuild;
 import com.xy.vmes.entity.PurchasePaymentHistory;
@@ -119,6 +118,7 @@ public class PurchasePaymentTask {
                 }
             }
         }
+        //System.out.println("companyMap.size():" + companyMap.size());
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //2. 查询系统所有企业-该企业下所有供应商-是否设定供应商付款初期值-未设定系统设定默认值
@@ -132,6 +132,7 @@ public class PurchasePaymentTask {
             e.printStackTrace();
         }
 
+        Map<String, String> companyMapByPurchaseOrder = new HashMap<String, String>();
         for (Iterator iterator = companyMap.keySet().iterator(); iterator.hasNext();) {
             String companyId = (String) iterator.next();
 
@@ -140,7 +141,10 @@ public class PurchasePaymentTask {
             findMap.put("companyId", companyId);
             findMap.put("dateByNow", beforeMonth);
             List<Map<String, Object>> mapObjectList = purchaseOrderService.findPurchaseOrderBySupplier(findMap);
+            //查询系统所有企业-该企业下所有供应商-(当前系统日期前一个月)无采购订单--无需设置供应商付款初期值
+            if (mapObjectList == null || mapObjectList.size() == 0) {continue;}
 
+            companyMapByPurchaseOrder.put(companyId, companyId);
             Map<String, String> supplierMap = new HashMap<String, String>();
             for (Map<String, Object> mapObj : mapObjectList) {
                 String supplierId = (String)mapObj.get("supplierId");
@@ -200,7 +204,8 @@ public class PurchasePaymentTask {
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //3. 系统所有企业-该企业下所有供应商-汇总查询(当前系统日期前一个月)-保存添加供应商付款汇总(vmes_purchase_payment_history)
-        for (Iterator iterator = companyMap.keySet().iterator(); iterator.hasNext();) {
+        //System.out.println("companyMapByPurchaseOrder.size():" + companyMapByPurchaseOrder.size());
+        for (Iterator iterator = companyMapByPurchaseOrder.keySet().iterator(); iterator.hasNext();) {
             String companyId = (String) iterator.next();
 
             List<Map> paymentHistoryList = new ArrayList<Map>();
@@ -290,6 +295,12 @@ public class PurchasePaymentTask {
                 }
 
                 try {
+                    String logger_msg_temp = "付款期({0}) 企业id({1}) 供应商id({2}) 采购付款结转完成";
+                    String logger_msg = MessageFormat.format(logger_msg_temp,
+                            paymentPeriod,
+                            companyId,
+                            supplierId);
+                    logger.info(logger_msg);
                     purchasePaymentHistoryService.save(paymentHistory);
                 } catch (Exception e) {
                     e.printStackTrace();

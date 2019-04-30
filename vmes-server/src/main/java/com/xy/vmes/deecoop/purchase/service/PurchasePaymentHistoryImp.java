@@ -324,6 +324,8 @@ public class PurchasePaymentHistoryImp implements PurchasePaymentHistoryService 
                     mapObject.put("endPlus", endValue_Big.toString());
                 } else if (endValue_Big.doubleValue() < 0) {
                     endValue_Big = BigDecimal.valueOf(endValue_Big.doubleValue() * -1);
+                    //四舍五入到2位小数
+                    endValue_Big = endValue_Big.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
                     //endMinus 预付款(期末)
                     mapObject.put("endMinus", endValue_Big.toString());
                 }
