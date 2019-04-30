@@ -337,7 +337,6 @@
     <!-- 自动创建，可以修改 -->
     <select id="getOrderReceiveDetailDataListPage"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
 
-
         select id,sysCode,customerId,companyId,currentDeliverDate,orderAmount,orderDate,state,
         CASE
         WHEN state = '0' THEN '待提交'
@@ -349,11 +348,11 @@
         ELSE null
         END  orderState,
         round(sum(ifnull(deliverAmount,0)),2) deliverAmount,round(sum(ifnull(receiveAmount,0)),2) receivedAmount,round(sum(ifnull(discountAmount,0)),2) discountedAmount,'0.00' discountAmount,
-        case when sum(ifnull(deliverAmount,0)) <![CDATA[ > ]]> (sum(ifnull(receiveAmount,0))+sum(ifnull(discountAmount,0))) then round(sum(ifnull(deliverAmount,0)) - sum(ifnull(receiveAmount,0)) - sum(ifnull(discountAmount,0)),2) else 0.00 end nowReceiveAmount,
-        case when sum(ifnull(deliverAmount,0)) <![CDATA[ < ]]> (sum(ifnull(receiveAmount,0))+sum(ifnull(discountAmount,0))) then round(sum(ifnull(receiveAmount,0)) - sum(ifnull(deliverAmount,0)) + sum(ifnull(discountAmount,0)),2) else 0.00 end preReceiveAmount
+        case when sum(ifnull(deliverAmount,0)) - sum(ifnull(retreatAmount,0)) <![CDATA[ >= ]]> (sum(ifnull(receiveAmount,0))+sum(ifnull(discountAmount,0))) then round(sum(ifnull(deliverAmount,0)) - sum(ifnull(retreatAmount,0)) - sum(ifnull(receiveAmount,0)) - sum(ifnull(discountAmount,0)),2) else 0.00 end nowReceiveAmount,
+        case when sum(ifnull(deliverAmount,0)) - sum(ifnull(retreatAmount,0)) <![CDATA[ < ]]> (sum(ifnull(receiveAmount,0))+sum(ifnull(discountAmount,0))) then round(sum(ifnull(receiveAmount,0)) + sum(ifnull(retreatAmount,0)) - sum(ifnull(deliverAmount,0)) + sum(ifnull(discountAmount,0)),2) else 0.00 end preReceiveAmount
         from (
             select saleOrder.id id,saleOrder.sys_code sysCode,saleOrder.customer_id customerId,saleOrder.current_deliver_date currentDeliverDate,saleOrder.company_id companyId,saleOrder.order_sum orderAmount,saleOrder.state state,DATE_FORMAT(saleOrder.order_date,'%Y-%m-%d') orderDate,
-            deliverDetail.sum deliverAmount,null receiveAmount,null discountAmount
+            deliverDetail.sum deliverAmount,null receiveAmount,null discountAmount,null retreatAmount
             from vmes_sale_order saleOrder
             left join vmes_sale_deliver_detail deliverDetail on deliverDetail.order_id = saleOrder.id
             <where>
@@ -367,11 +366,26 @@
             </where>
             union all
             select saleOrder.id id,saleOrder.sys_code sysCode,saleOrder.customer_id customerId,saleOrder.current_deliver_date currentDeliverDate,saleOrder.company_id companyId,saleOrder.order_sum orderAmount,saleOrder.state state,DATE_FORMAT(saleOrder.order_date,'%Y-%m-%d') orderDate,
-            null deliverAmount,receiveDetail.receive_amount receiveAmount,receiveDetail.discount_amount discountAmount
+            null deliverAmount,receiveDetail.receive_amount receiveAmount,receiveDetail.discount_amount discountAmount,null retreatAmount
             from vmes_sale_order saleOrder
             left join vmes_sale_receive_detail receiveDetail on receiveDetail.order_id = saleOrder.id
             <where>
                 and receiveDetail.state = '1'
+                <if test="currentCompanyId != null and currentCompanyId != ''">
+                    and saleOrder.company_id = #{currentCompanyId}
+                </if>
+                <if test="customerId != null and customerId != ''">
+                    and saleOrder.customer_id = #{customerId}
+                </if>
+            </where>
+            union all
+            select saleOrder.id  orderId,saleOrder.sys_code orderCode,saleOrder.customer_id customerId,saleOrder.current_deliver_date currentDeliverDate,saleOrder.company_id companyId,
+            null deliverAmount,null receiveAmount,null discountAmount,ifnull(retreatDetail.order_count,0)*ifnull(orderDtail.product_price,0) retreatAmount
+            from vmes_sale_order saleOrder
+            left join vmes_sale_order_detail orderDtail on saleOrder.id = orderDtail.parent_id
+            left join vmes_sale_retreat_detail retreatDetail on orderDtail.id = retreatDetail.order_detail_id
+            <where>
+                and retreatDetail.state = '3'
                 <if test="currentCompanyId != null and currentCompanyId != ''">
                     and saleOrder.company_id = #{currentCompanyId}
                 </if>
