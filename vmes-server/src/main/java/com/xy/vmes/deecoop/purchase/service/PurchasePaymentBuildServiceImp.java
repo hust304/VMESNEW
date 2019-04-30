@@ -276,6 +276,12 @@ public class PurchasePaymentBuildServiceImp implements PurchasePaymentBuildServi
             paymentBuild.setBeginValue(BigDecimal.valueOf(paymentSum.doubleValue() * -1));
         }
 
+        paymentBuild.setRemark("");
+        String remark = pageData.getString("remark");
+        if (remark != null && remark.trim().length() > 0) {
+            paymentBuild.setRemark(remark.trim());
+        }
+
         String id = pageData.getString("id");
         if (id == null || id.trim().length() == 0) {
             String cuser = pageData.getString("cuser");
