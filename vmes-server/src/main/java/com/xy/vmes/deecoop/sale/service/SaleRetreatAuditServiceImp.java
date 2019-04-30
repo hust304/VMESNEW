@@ -221,12 +221,13 @@ public class SaleRetreatAuditServiceImp implements SaleRetreatAuditService {
             List<SaleRetreatDetail> retreatDtlListByOrderRetreatSum = orderRetreatSumMap.get(orderId);
             BigDecimal orderRetreatSum = saleRetreatDetailService.findTotalSumByDetailList(retreatDtlListByOrderRetreatSum);
             if (orderRetreatSum != null) {
+                //退钱给客户
                 saleReceiveRecordService.editCustomerBalanceByOrder(
                         customerId,
                         null,
                         //操作类型 (0:变更 1:录入收款 2:预付款 3:退货退款 4:订单变更退款 -1:费用分摊)
                         "3",
-                        BigDecimal.valueOf(orderRetreatSum.doubleValue() * -1),
+                        BigDecimal.valueOf(orderRetreatSum.doubleValue()),
                         cuser,
                         remark);
 
