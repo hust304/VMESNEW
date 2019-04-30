@@ -706,6 +706,7 @@ public class MenuButtonServiceImp implements MenuButtonService {
         if (orderStr != null && orderStr.trim().length() > 0) {
             pd.put("orderStr", orderStr);
         }
+        pg.setSize(100);
         List<Map<String, String>> varMapList = new ArrayList<Map<String, String>>();
         List<Map> varList = this.getDataListPage(pd, pg);
         if(varList != null && varList.size() > 0) {
