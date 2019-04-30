@@ -30,7 +30,6 @@ import java.util.*;
  * Seconds Minutes Hours DayofMonth Month DayofWeek
  *
  * 每天12点30分执行        (0 30 12 * * ?)
- * 每天12点30分执行        (0 30 12 * * ?)
  * 每月1号凌晨1点执行       (0 0 1 1 * ?)
  *
  */
