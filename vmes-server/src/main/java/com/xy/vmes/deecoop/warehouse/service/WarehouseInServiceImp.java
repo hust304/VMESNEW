@@ -10,6 +10,7 @@ import com.xy.vmes.service.*;
 import com.yvan.*;
 import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -419,15 +420,18 @@ public class WarehouseInServiceImp implements WarehouseInService {
                     }
                     warehouseInDetailService.save(detail);
                 }
-//                else {
-//                    //生成二维码
+                else {
+                    //生成二维码
 //                    WarehouseInDetail QRCodeObj = warehouseInDetailService.warehouseInDtl2QRCodeObj(detail, null);
 //                    String qrcode = fileService.createQRCode("warehouseBase", YvanUtil.toJson(QRCodeObj));
 //                    if (qrcode != null && qrcode.trim().length() > 0) {
 //                        detail.setQrcode(qrcode);
 //                    }
-//                    warehouseInDetailService.update(detail);
-//                }
+                    if(StringUtils.isEmpty(detail.getRemark())){
+                        detail.setRemark(" ");
+                    }
+                    warehouseInDetailService.update(detail);
+                }
             }
         }
 
