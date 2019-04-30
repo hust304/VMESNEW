@@ -379,7 +379,7 @@
                 </if>
             </where>
             union all
-            select saleOrder.id  orderId,saleOrder.sys_code orderCode,saleOrder.customer_id customerId,saleOrder.current_deliver_date currentDeliverDate,saleOrder.company_id companyId,
+            select saleOrder.id id,saleOrder.sys_code sysCode,saleOrder.customer_id customerId,saleOrder.current_deliver_date currentDeliverDate,saleOrder.company_id companyId,saleOrder.order_sum orderAmount,saleOrder.state state,DATE_FORMAT(saleOrder.order_date,'%Y-%m-%d') orderDate,
             null deliverAmount,null receiveAmount,null discountAmount,ifnull(retreatDetail.order_count,0)*ifnull(orderDtail.product_price,0) retreatAmount
             from vmes_sale_order saleOrder
             left join vmes_sale_order_detail orderDtail on saleOrder.id = orderDtail.parent_id
