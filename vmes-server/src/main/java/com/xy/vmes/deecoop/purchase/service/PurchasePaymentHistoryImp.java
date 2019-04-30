@@ -165,6 +165,9 @@ public class PurchasePaymentHistoryImp implements PurchasePaymentHistoryService 
     public List<Map> findListPurchasePaymentHistoryByPaymentPeriod(PageData pd,Pagination pg) throws Exception{
         return purchasePaymentHistoryMapper.findListPurchasePaymentHistoryByPaymentPeriod(pd, pg);
     }
+    public List<Map> findListPurchasePaymentHistoryByPaymentPeriod(PageData pd) throws Exception {
+        return purchasePaymentHistoryMapper.findListPurchasePaymentHistoryByPaymentPeriod(pd);
+    }
 
     public List<PurchasePaymentHistory> mapList2PaymentHistoryList(List<Map<String, String>> mapList, List<PurchasePaymentHistory> objectList) {
         if (objectList == null) {objectList = new ArrayList<PurchasePaymentHistory>();}

@@ -179,6 +179,10 @@ public interface PurchaseOrderService {
     void updateState(String id) throws Exception;
 
     ResultModel signPurchaseOrder(PageData pd) throws Exception;
+
+    //////////////////////////////////////////////////////////////////////////////////
+    //按(企业id,供应商id)汇总
+    List<Map<String, Object>> findPurchaseOrderBySupplier(PageData pd);
 }
 
 

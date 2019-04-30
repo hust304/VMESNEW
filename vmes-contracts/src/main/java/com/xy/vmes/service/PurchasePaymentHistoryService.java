@@ -93,6 +93,7 @@ public interface PurchasePaymentHistoryService {
      * 创建时间：2019-03-11
      */
     List<Map> findListPurchasePaymentHistoryByPaymentPeriod(PageData pd, Pagination pg) throws Exception;
+    List<Map> findListPurchasePaymentHistoryByPaymentPeriod(PageData pd) throws Exception;
 
     List<PurchasePaymentHistory> mapList2PaymentHistoryList(List<Map<String, String>> mapList, List<PurchasePaymentHistory> objectList);
 

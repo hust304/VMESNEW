@@ -140,8 +140,18 @@
             left join vmes_purchase_payment_build build on customer.id = build.supplier_id
         <where>
             <if test="currentCompanyId != null and currentCompanyId != ''" >
-                and customer.company_id = #{currentCompanyId} and genre = '49c0a7ebcb4c4175bd5195837a6a9a13'
+                and customer.company_id = #{currentCompanyId} and customer.genre = '49c0a7ebcb4c4175bd5195837a6a9a13' and customer.isdisable = '1'
             </if>
+            <if test="supplierId != null and supplierId != ''" >
+                and customer.id = #{supplierId}
+            </if>
+            <if test="supplierIds != null and supplierIds != ''" >
+                and customer.id in (${supplierIds})
+            </if>
+            <if test="supplierIdsByNotIn != null and supplierIdsByNotIn != ''" >
+                and customer.id not in (${supplierIdsByNotIn})
+            </if>
+
             <if test="supplierCode != null and supplierCode != ''" >
                 and customer.code = #{supplierCode}
             </if>

@@ -354,7 +354,26 @@
         </if>
     </select>
 
-
-
+    <!--按(企业id,供应商id)汇总 vmes_purchase_order-->
+    <select id="findPurchaseOrderBySupplier" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+            company_id companyId,
+            supplier_id supplierId,
+            sum(amount) amount
+        from vmes_purchase_order
+        <where>
+            <if test="companyId != null and companyId != ''">
+                and company_id = #{companyId}
+            </if>
+            <if test="supplierId != null and supplierId != ''">
+                and supplier_id = #{supplierId}
+            </if>
+            <if test="dateByNow != null and dateByNow != ''">
+                and date_format(cdate, '%Y%m') = #{dateByNow}
+            </if>
+            and company_id is not null and supplier_id is not null and isdisable = '1'
+        </where>
+        group by company_id,supplier_id
+    </select>
 
 </mapper>

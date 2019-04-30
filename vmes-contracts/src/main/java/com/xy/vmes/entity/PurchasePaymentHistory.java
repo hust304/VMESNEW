@@ -39,8 +39,8 @@ public class PurchasePaymentHistory implements Serializable {
 	@TableField("now_order_sum")
 	private BigDecimal nowOrderSum;
 	//付款金额(本期)
-	@TableField("now_receive_sum")
-	private BigDecimal nowReceiveSum;
+	@TableField("now_payment_sum")
+	private BigDecimal nowPaymentSum;
 	//应付款(期末)
 	@TableField("end_plus")
 	private BigDecimal endPlus;
@@ -115,11 +115,11 @@ public class PurchasePaymentHistory implements Serializable {
 	public BigDecimal getNowOrderSum() {
 		return nowOrderSum;
 	}
-	public void setNowReceiveSum(BigDecimal nowReceiveSum) {
-		this.nowReceiveSum = nowReceiveSum;
+	public BigDecimal getNowPaymentSum() {
+		return nowPaymentSum;
 	}
-	public BigDecimal getNowReceiveSum() {
-		return nowReceiveSum;
+	public void setNowPaymentSum(BigDecimal nowPaymentSum) {
+		this.nowPaymentSum = nowPaymentSum;
 	}
 	public void setEndPlus(BigDecimal endPlus) {
 		this.endPlus = endPlus;

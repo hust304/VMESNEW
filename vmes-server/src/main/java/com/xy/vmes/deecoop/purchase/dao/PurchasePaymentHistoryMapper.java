@@ -46,6 +46,7 @@ public interface PurchasePaymentHistoryMapper extends BaseMapper<PurchasePayment
      * 创建时间：2019-03-11
      */
     List<Map> findListPurchasePaymentHistoryByPaymentPeriod(PageData pd, Pagination pg);
+    List<Map> findListPurchasePaymentHistoryByPaymentPeriod(PageData pd);
 }
 
 

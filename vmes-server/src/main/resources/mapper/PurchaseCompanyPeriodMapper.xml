@@ -174,12 +174,16 @@
             left join vmes_purchase_company_period companyPeriod on dept.id = companyPeriod.company_id
         <where>
             <if test="currentCompanyId != null and currentCompanyId != ''" >
-                and dept.id = #{currentCompanyId} and dept.organize_type = '1'
+                and dept.id = #{currentCompanyId}
             </if>
+
+
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >
                 and ${queryStr}
             </if>
+            and dept.organize_type = '1'
+            and dept.isdisable = '1'
         </where>
 
         <if test="orderStr != null and orderStr != ''" >

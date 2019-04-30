@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import org.springframework.web.multipart.MultipartFile;
@@ -874,6 +875,20 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService {
             this.update(purchaseOrder);
         }
 
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    //按(企业id,供应商id)汇总
+    public List<Map<String, Object>> findPurchaseOrderBySupplier(PageData pd) {
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+
+        try {
+            list = purchaseOrderMapper.findPurchaseOrderBySupplier(pd);;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return list;
     }
 
 
