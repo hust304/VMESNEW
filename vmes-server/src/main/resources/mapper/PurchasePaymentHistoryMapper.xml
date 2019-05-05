@@ -276,6 +276,16 @@
             <if test="supplierName != null and supplierName != ''" >
                 and paymentHistory.supplierName = #{supplierName}
             </if>
+
+            <if test="periodType != null and periodType != ''" >
+                and paymentHistory.periodType = #{periodType}
+            </if>
+            <if test="beginDate != null and beginDate != ''">
+                <![CDATA[ and paymentHistory.paymentPeriod >= #{beginDate} ]]>
+            </if>
+            <if test="endDate != null and endDate != ''">
+                <![CDATA[ and paymentHistory.paymentPeriod <= #{endDate} ]]>
+            </if>
         </where>
 
     </select>

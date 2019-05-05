@@ -235,6 +235,33 @@ public class PurchasePaymentHistoryImp implements PurchasePaymentHistoryService 
         pd.put("dateByBefore", dateByBefore);
         pd.put("paymentPeriod", paymentPeriod);
 
+        String periodType_str = pd.getString("periodType");
+        if ("history".equals(periodType_str)) {
+            pd.put("paymentPeriod", null);
+
+            String beginDate = "";
+            if (pd.getString("beginDate") != null && pd.getString("beginDate").trim().length() > 0) {
+                beginDate = pd.getString("beginDate").trim();
+                Date beginDate_date = DateFormat.dateString2Date(beginDate + "-01", DateFormat.DEFAULT_DATE_FORMAT);
+                String beginDate_str = DateFormat.date2String(beginDate_date, "yyyyMM");
+                if (beginDate_str != null && beginDate_str.trim().length() > 0) {
+                    beginDate = beginDate_str;
+                }
+            }
+            pd.put("beginDate", beginDate);
+
+            String endDate = "";
+            if (pd.getString("endDate") != null && pd.getString("endDate").trim().length() > 0) {
+                endDate = pd.getString("endDate").trim();
+                Date endDate_date = DateFormat.dateString2Date(endDate + "-01", DateFormat.DEFAULT_DATE_FORMAT);
+                String endDate_str = DateFormat.date2String(endDate_date, "yyyyMM");
+                if (endDate_str != null && endDate_str.trim().length() > 0) {
+                    endDate = endDate_str;
+                }
+            }
+            pd.put("endDate", endDate);
+        }
+
         Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
         List<Map> varList = this.findListPurchasePaymentHistoryByPaymentPeriod(pd, pg);
         List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
