@@ -1,5 +1,6 @@
 package com.xy.vmes.deecoop.sale.service;
 
+import com.xy.vmes.common.util.Common;
 import com.xy.vmes.deecoop.sale.dao.SaleOrderDetailByChangeMapper;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.service.ColumnService;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 @Service
@@ -78,6 +80,25 @@ public class SaleOrderDetailByChangeServiceImp implements SaleOrderDetailByChang
                     varMap.put(entry.getKey(),map.get(entry.getKey())!=null?map.get(entry.getKey()).toString():"");
                 }
                 varMapList.add(varMap);
+            }
+        }
+
+        for (Map<String, String> mapObject : varMapList) {
+            //计价类型(1:先计价 2:后计价)
+            String priceType = mapObject.get("priceType");
+            if ("2".equals(priceType)) {
+                BigDecimal prod_productPrice = BigDecimal.valueOf(0D);
+                String prod_productPrice_str = mapObject.get("prod_productPrice");
+                if (prod_productPrice_str != null && prod_productPrice_str.trim().length() > 0) {
+                    try {
+                        prod_productPrice = new BigDecimal(prod_productPrice_str);
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                }
+                //四舍五入到2位小数
+                prod_productPrice = prod_productPrice.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                mapObject.put("productPrice", prod_productPrice.toString());
             }
         }
 

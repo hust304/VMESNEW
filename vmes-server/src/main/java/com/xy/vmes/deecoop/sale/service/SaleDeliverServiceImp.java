@@ -533,22 +533,29 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
                 //checkSum:=(发货金额-退货金额)
                 BigDecimal checkSum = valueMap.get("checkSum");
 
+                //price_type:计价类型(1:先计价 2:后计价)
+                //2:后计价 反写订单明细,反写订单总金额
+                if (priceType != null && "2".equals(priceType.trim())) {
+                    orderDetail.setPriceUnit(deliverDetail.getPriceUnit());
+
+                    //订单明细货品金额:=(发货金额-退货金额)
+                    BigDecimal productSum = BigDecimal.valueOf(0D);
+                    if (checkSum != null) {
+                        productSum = checkSum;
+                    }
+                    orderDetail.setProductSum(productSum);
+
+                    //货品单价 productPrice
+                    BigDecimal productPrice = BigDecimal.valueOf(0D);
+                    if (deliverDetail.getProductPrice() != null) {
+                        productPrice = deliverDetail.getProductPrice();
+                    }
+                    orderDetail.setProductPrice(productPrice);
+                }
+
                 if (checkCount.doubleValue() >= orderCount.doubleValue()) {
                     //明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
                     orderDetail.setState("5");
-
-                    //price_type:计价类型(1:先计价 2:后计价)
-                    //2:后计价 反写订单明细,反写订单总金额
-                    if (priceType != null && "2".equals(priceType.trim())) {
-                        orderDetail.setPriceUnit(deliverDetail.getPriceUnit());
-
-                        //订单明细货品金额:=(发货金额-退货金额)
-                        BigDecimal productSum = BigDecimal.valueOf(0D);
-                        if (checkSum != null) {
-                            productSum = checkSum;
-                        }
-                        orderDetail.setProductSum(productSum);
-                    }
                 }
             }
 

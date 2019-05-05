@@ -53,6 +53,7 @@
             orderDtl.isdisable isdisable,
             orderDtl.version_lock_count versionLockCount,
 
+            saleOrder.price_type priceType,
             <!--货品表-->
             product.code productCode,
             product.name productName,
@@ -62,6 +63,7 @@
             round(ifnull(product.stock_count, 0), 2) stockCount,
             orderUnit.name orderUnitName,
             genre.name productGenreName,
+            round(ifnull(prodUnitPrice.product_price, 0), 2) prod_productPrice,
             prodUnitPrice.np_formula n2pFormula,
             prodUnitPrice.pn_formula p2nFormula,
 
@@ -76,6 +78,7 @@
             '' newProductSum
 
         from vmes_sale_order_detail orderDtl
+            left join vmes_sale_order saleOrder on orderDtl.parent_id = saleOrder.id
             left join vmes_product product on orderDtl.product_id = product.id
             left join vmes_dictionary orderUnit on orderDtl.order_unit = orderUnit.id
             left join vmes_dictionary genre on product.genre = genre.id
@@ -156,7 +159,9 @@
         (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'p2nFormula', 'p2nFormula', 34, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'n2pFormula', 'n2pFormula', 35, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'stockCount', '库存数量', 36, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
-        (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'newProductSum', '金额', 37, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin')
+        (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'newProductSum', '金额', 37, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
+
+        (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'prod_productPrice', 'prod_productPrice', 38, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin')
     </insert>
 
 
