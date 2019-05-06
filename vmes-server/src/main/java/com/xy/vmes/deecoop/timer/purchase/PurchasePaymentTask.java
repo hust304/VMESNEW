@@ -115,6 +115,17 @@ public class PurchasePaymentTask {
                 } catch (Exception e){
                     e.printStackTrace();
                 }
+            } else if ("Y".equals(isBuild)) {
+                try {
+                    String id = (String)mapObj.get("id");
+                    PurchaseCompanyPeriod editObject = new PurchaseCompanyPeriod();
+                    editObject.setId(id);
+                    editObject.setPaymentPeriod(initialPeriodDate_str);
+                    editObject.setPaymentPeriodDate(initialPeriodDate);
+                    purchaseCompanyPeriodService.update(editObject);
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
             }
         }
         //System.out.println("companyMap.size():" + companyMap.size());
