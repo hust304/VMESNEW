@@ -928,7 +928,7 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
             mapObject.put("lockCountN2P", "0.00");
             if (n2pFormula != null && lockCount != null) {
                 BigDecimal valueBig = EvaluateUtil.countFormulaN2P(lockCount, n2pFormula);
-                mapObject.put("lockCountN2P", valueBig.toString());
+                mapObject.put("lockCountN2P", valueBig);
             }
         }
 
