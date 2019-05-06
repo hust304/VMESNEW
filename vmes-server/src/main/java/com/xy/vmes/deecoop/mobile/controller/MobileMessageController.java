@@ -141,7 +141,9 @@ public class MobileMessageController {
             if (cdate_str != null && cdate_str.trim().length() > 0) {
                 messageMap.put("cdate", cdate_str);
             }
+        }
 
+        if (message != null && message.getContent() != null && message.getContent().trim().length() > 0) {
             messageMap.put("content", message.getContent());
         }
 
