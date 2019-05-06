@@ -241,16 +241,46 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
         return strBuf.toString();
     }
 
-    public WarehouseProduct warehouseProduct2QRCodeObj(WarehouseProduct warehouseProduct, WarehouseProduct QRCodeObj) {
-        if (QRCodeObj == null) {QRCodeObj = new WarehouseProduct();}
-        if (warehouseProduct == null) {return QRCodeObj;}
+//    public WarehouseProduct warehouseProduct2QRCodeObj(WarehouseProduct warehouseProduct, WarehouseProduct QRCodeObj) {
+//        if (QRCodeObj == null) {QRCodeObj = new WarehouseProduct();}
+//        if (warehouseProduct == null) {return QRCodeObj;}
+//
+//        QRCodeObj.setId(warehouseProduct.getId());
+//        QRCodeObj.setProductId(warehouseProduct.getProductId());
+//        QRCodeObj.setWarehouseId(warehouseProduct.getWarehouseId());
+//        QRCodeObj.setCode(warehouseProduct.getCode());
+//
+//        return QRCodeObj;
+//    }
 
-        QRCodeObj.setId(warehouseProduct.getId());
-        QRCodeObj.setProductId(warehouseProduct.getProductId());
-        QRCodeObj.setWarehouseId(warehouseProduct.getWarehouseId());
-        QRCodeObj.setCode(warehouseProduct.getCode());
+    public String warehouseProduct2QRCode(WarehouseProduct warehouseProduct) {
+        if (warehouseProduct == null) {return new String();}
+        Map<String, String> QRCodeMap = new HashMap<String, String>();
 
-        return QRCodeObj;
+        QRCodeMap.put("code", "");
+        if (warehouseProduct.getCode() != null && warehouseProduct.getCode().trim().length() > 0) {
+            QRCodeMap.put("code", warehouseProduct.getCode().trim());
+        }
+
+        //QRCodeMap.put("productId", "");
+        if (warehouseProduct.getProductId() != null && warehouseProduct.getProductId().trim().length() > 0) {
+            String productId = warehouseProduct.getProductId().trim();
+            //QRCodeMap.put("productId", productId);
+
+            QRCodeMap.put("productName", "");
+            Product prod = productService.findProductById(productId);
+            if (prod != null && prod.getName() != null && prod.getName().trim().length() > 0) {
+                QRCodeMap.put("productName", prod.getName().trim());
+            }
+        }
+
+        String QRCodeJson = new String();
+        if (QRCodeMap.size() > 0) {
+            QRCodeJson = YvanUtil.toJson(QRCodeMap);
+        }
+        //System.out.println("QRCodeJson:" + QRCodeJson);
+
+        return QRCodeJson;
     }
 
     public List<Map<String, Object>> findWarehouseProductByWarehouse(PageData pageData) {

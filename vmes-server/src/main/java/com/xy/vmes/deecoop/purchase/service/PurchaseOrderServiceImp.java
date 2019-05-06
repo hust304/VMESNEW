@@ -618,7 +618,8 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService {
                         "PC");
                 warehouseInDetail.setCode(code);
                 //生成二维码
-                String qrcode = fileService.createQRCode("warehouseIn", warehouseInDetail.getId());
+                String QRCodeJson = warehouseInDetailService.warehouseInDtl2QRCode(warehouseInDetail);
+                String qrcode = fileService.createQRCode("warehouseIn", QRCodeJson);
                 warehouseInDetail.setQrcode(qrcode);
                 warehouseInDetailService.save(warehouseInDetail);
 

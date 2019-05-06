@@ -23,8 +23,11 @@ public class WarehouseProductExcelServiceImp implements WarehouseProductExcelSer
     private WarehouseProductService warehouseProductService;
     @Autowired
     private DictionaryService dictionaryService;
+
     @Autowired
     private CoderuleService coderuleService;
+    @Autowired
+    private FileService fileService;
 
     private Map<String, Map<String, String>> dictionaryMap = new HashMap<String, Map<String, String>>();
 
@@ -259,6 +262,13 @@ public class WarehouseProductExcelServiceImp implements WarehouseProductExcelSer
             warehouseProduct.setCode(code);
             warehouseProduct.setCuser(userId);
             warehouseProduct.setCompanyId(companyId);
+
+            //生成二维码
+            String QRCodeJson = warehouseProductService.warehouseProduct2QRCode(warehouseProduct);
+            String qrcode = fileService.createQRCode("warehouseProduct", QRCodeJson);
+            if (qrcode != null && qrcode.trim().length() > 0) {
+                warehouseProduct.setQrcode(qrcode);
+            }
             warehouseProductService.save(warehouseProduct);
 
             String productId = warehouseProduct.getProductId();

@@ -412,9 +412,10 @@ public class WarehouseInServiceImp implements WarehouseInService {
                     detail.setState("0");
                     detail.setParentId(warehouseIn.getId());
                     detail.setCuser(warehouseIn.getCuser());
+
                     //生成二维码
-                    //WarehouseInDetail QRCodeObj = warehouseInDetailService.warehouseInDtl2QRCodeObj(detail, null);
-                    String qrcode = fileService.createQRCode("warehouseIn", detail.getId());
+                    String QRCodeJson = warehouseInDetailService.warehouseInDtl2QRCode(detail);
+                    String qrcode = fileService.createQRCode("warehouseIn", QRCodeJson);
                     if (qrcode != null && qrcode.trim().length() > 0) {
                         detail.setQrcode(qrcode);
                     }

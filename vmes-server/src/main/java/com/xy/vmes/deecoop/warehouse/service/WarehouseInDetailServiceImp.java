@@ -3,10 +3,7 @@ package com.xy.vmes.deecoop.warehouse.service;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.deecoop.warehouse.dao.WarehouseInDetailMapper;
-import com.xy.vmes.entity.Column;
-import com.xy.vmes.entity.WarehouseIn;
-import com.xy.vmes.entity.WarehouseInDetail;
-import com.xy.vmes.entity.WarehouseInDetailEntity;
+import com.xy.vmes.entity.*;
 import com.xy.vmes.service.*;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
@@ -35,6 +32,8 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
     private WarehouseInService warehouseInService;
     @Autowired
     private WarehouseInExecuteService warehouseInExecuteService;
+    @Autowired
+    private ProductService productService;
     @Autowired
     private CoderuleService coderuleService;
     @Autowired
@@ -213,16 +212,53 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
 
         return objectList;
     }
-    public WarehouseInDetail warehouseInDtl2QRCodeObj(WarehouseInDetail warehouseInDtl, WarehouseInDetail QRCodeObj) {
-        if (QRCodeObj == null) {QRCodeObj = new WarehouseInDetail();}
-        if (warehouseInDtl == null) {return QRCodeObj;}
+//    public WarehouseInDetail warehouseInDtl2QRCodeObj(WarehouseInDetail warehouseInDtl, WarehouseInDetail QRCodeObj) {
+//        if (QRCodeObj == null) {QRCodeObj = new WarehouseInDetail();}
+//        if (warehouseInDtl == null) {return QRCodeObj;}
+//
+//        QRCodeObj.setProductId(warehouseInDtl.getProductId());
+//        QRCodeObj.setWarehouseId(warehouseInDtl.getWarehouseId());
+//        QRCodeObj.setCode(warehouseInDtl.getCode());
+//
+//        return QRCodeObj;
+//    }
 
-        QRCodeObj.setProductId(warehouseInDtl.getProductId());
-        QRCodeObj.setWarehouseId(warehouseInDtl.getWarehouseId());
-        QRCodeObj.setCode(warehouseInDtl.getCode());
+    /**
+     * 获取入库货品批次二维码 {code:货位批次号,productId:货品id,productName:货品名称}
+     *
+     * @param warehouseInDtl 入库明细对象
+     * @return
+     */
+    public String warehouseInDtl2QRCode(WarehouseInDetail warehouseInDtl) {
+        if (warehouseInDtl == null) {return new String();}
+        Map<String, String> QRCodeMap = new HashMap<String, String>();
 
-        return QRCodeObj;
+        QRCodeMap.put("code", "");
+        if (warehouseInDtl.getCode() != null && warehouseInDtl.getCode().trim().length() > 0) {
+            QRCodeMap.put("code", warehouseInDtl.getCode().trim());
+        }
+
+        //QRCodeMap.put("productId", "");
+        if (warehouseInDtl.getProductId() != null && warehouseInDtl.getProductId().trim().length() > 0) {
+            String productId = warehouseInDtl.getProductId().trim();
+            //QRCodeMap.put("productId", productId);
+
+            QRCodeMap.put("productName", "");
+            Product prod = productService.findProductById(productId);
+            if (prod != null && prod.getName() != null && prod.getName().trim().length() > 0) {
+                QRCodeMap.put("productName", prod.getName().trim());
+            }
+        }
+
+        String QRCodeJson = new String();
+        if (QRCodeMap.size() > 0) {
+            QRCodeJson = YvanUtil.toJson(QRCodeMap);
+        }
+        //System.out.println("QRCodeJson:" + QRCodeJson);
+
+        return QRCodeJson;
     }
+
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public String checkDispatcheDetailList(List<WarehouseInDetailEntity> objectList) {
         if (objectList == null || objectList.size() == 0) {
@@ -261,7 +297,8 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
             detail.setCode(code);
 
             //生成二维码
-            String qrcode = fileService.createQRCode("warehouseIn", detail.getId());
+            String QRCodeJson = this.warehouseInDtl2QRCode(detail);
+            String qrcode = fileService.createQRCode("warehouseIn", QRCodeJson);
             if (qrcode != null && qrcode.trim().length() > 0) {
                 detail.setQrcode(qrcode);
             }

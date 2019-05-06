@@ -85,7 +85,8 @@ public interface WarehouseInDetailService {
 
     List<WarehouseInDetail> mapList2DetailList(List<Map<String, String>> mapList, List<WarehouseInDetail> objectList);
     List<WarehouseInDetailEntity> mapList2DetailEntityList(List<Map<String, String>> mapList, List<WarehouseInDetailEntity> objectList);
-    WarehouseInDetail warehouseInDtl2QRCodeObj(WarehouseInDetail warehouseInDtl, WarehouseInDetail QRCodeObj);
+    //WarehouseInDetail warehouseInDtl2QRCodeObj(WarehouseInDetail warehouseInDtl, WarehouseInDetail QRCodeObj);
+    String warehouseInDtl2QRCode(WarehouseInDetail warehouseInDtl);
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     String checkDispatcheDetailList(List<WarehouseInDetailEntity> objectList);
