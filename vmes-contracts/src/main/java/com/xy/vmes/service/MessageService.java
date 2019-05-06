@@ -80,6 +80,8 @@ public interface MessageService {
      * 创建时间：2019-04-18
      */
     List<Map> getDataListPage(PageData pd, Pagination pg) throws Exception;
+    List<Map> getDataListPage(PageData pd) throws Exception;
+    List<Map> findListMessage(PageData pd) throws Exception;
 
     /**
      *

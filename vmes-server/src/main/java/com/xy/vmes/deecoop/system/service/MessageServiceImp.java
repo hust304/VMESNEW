@@ -140,6 +140,13 @@ public class MessageServiceImp implements MessageService {
     public List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception{
         return messageMapper.getDataListPage(pd,pg);
     }
+    public List<Map> getDataListPage(PageData pd) throws Exception {
+        return messageMapper.getDataListPage(pd);
+    }
+
+    public List<Map> findListMessage(PageData pd) throws Exception {
+        return messageMapper.findListMessage(pd);
+    }
 
     /**
     *
@@ -188,14 +195,15 @@ public class MessageServiceImp implements MessageService {
             columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
         }
 
-        String userType = pd.getString("userType");
-        if (Common.DICTIONARY_MAP.get("userType_admin").equals(userType)) {
-            //用户类型-超级管理员 必须是本人创建纪录
-            pd.put("currentCompanyId", null);
-        } else {
-            //企业用户
-            pd.put("cuser", null);
-        }
+//        String userType = pd.getString("userType");
+//        if (Common.DICTIONARY_MAP.get("userType_admin").equals(userType)) {
+//            //用户类型-超级管理员 必须是本人创建纪录
+//            pd.put("currentCompanyId", null);
+//        } else {
+//            //企业用户
+//            pd.put("cuser", null);
+//        }
+        pd.put("cuser", null);
 
         Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
         List<Map> varList = this.getDataListPage(pd,pg);

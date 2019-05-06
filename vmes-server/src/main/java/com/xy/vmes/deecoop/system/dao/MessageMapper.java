@@ -42,6 +42,8 @@ public interface MessageMapper extends BaseMapper<Message> {
      * 创建时间：2019-04-18
      */
     List<Map> getDataListPage(PageData pd, Pagination pg);
+    List<Map> getDataListPage(PageData pd);
+    List<Map> findListMessage(PageData pd);
 }
 
 

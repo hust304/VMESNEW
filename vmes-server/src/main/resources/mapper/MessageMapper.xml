@@ -146,12 +146,17 @@
             <if test="currentCompanyId != null and currentCompanyId != ''" >
                 and message.company_id = #{currentCompanyId}
             </if>
-            <if test="cuser != null and cuser != ''" >
-                and message.cuser = #{cuser}
-            </if>
             <if test="companyId != null and companyId != ''" >
                 and message.company_id = #{companyId}
             </if>
+            <if test="companyIds != null and companyIds != ''" >
+                and message.company_id in (${companyIds})
+            </if>
+
+            <if test="cuser != null and cuser != ''" >
+                and message.cuser = #{cuser}
+            </if>
+
 
             <if test="title != null and title != ''">
                 and message.title LIKE CONCAT(CONCAT('%', #{title}),'%')
@@ -165,6 +170,9 @@
             <if test="isShow != null and isShow != ''" >
                 and message.is_show = #{isShow}
             </if>
+            <if test="isdisable != null and isdisable != ''" >
+                and message.isdisable = #{isdisable}
+            </if>
 
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >
@@ -174,6 +182,44 @@
         <if test="orderStr != null and orderStr != ''" >
             order by ${orderStr}
         </if>
+    </select>
+
+    <select id="findListMessage" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+            message.id id,
+            message.company_id companyId,
+            message.title title,
+            message.content content,
+            message.cdate cdate
+        from (
+            select
+                id,
+                company_id,
+                title,
+                content,
+                cdate,
+                CASE
+                    WHEN company_id = 'b6ff76cb95f711e884ad00163e105f05' THEN 0
+                    WHEN company_id is not null THEN 1
+                ELSE null
+                END messageType
+            from vmes_message
+            <where>
+                <if test="companyId != null and companyId != ''" >
+                    and company_id = #{companyId}
+                </if>
+                <if test="companyIds != null and companyIds != ''" >
+                    and company_id in (${companyIds})
+                </if>
+                <if test="isShow != null and isShow != ''" >
+                    and is_show = #{isShow}
+                </if>
+                <if test="isdisable != null and isdisable != ''" >
+                    and isdisable = #{isdisable}
+                </if>
+            </where>
+        ) message
+        order by message.messageType,message.cdate
     </select>
 
 
