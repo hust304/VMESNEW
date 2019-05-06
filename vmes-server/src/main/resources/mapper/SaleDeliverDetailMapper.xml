@@ -71,7 +71,10 @@
             (replace(uuid(), '-', ''), 'saleDeliverDetail', 'priceType', '计价类型(1:先计价 2:后计价)', 26, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
             (replace(uuid(), '-', ''), 'saleDeliverDetail', 'stateName', '发货状态', 26, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
             (replace(uuid(), '-', ''), 'saleDeliverDetail', 'deliverCode', '发货单号', 26, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
-            (replace(uuid(), '-', ''), 'saleDeliverDetail', 'orderDetailCount', '订购数量', 26, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin')
+            (replace(uuid(), '-', ''), 'saleDeliverDetail', 'orderDetailCount', '订购数量', 26, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+
+            (replace(uuid(), '-', ''), 'saleDeliverDetail', 'nowDeliverCount', '发货数量', 27, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+            (replace(uuid(), '-', ''), 'saleDeliverDetail', 'nowDeliverSum', '发货金额', 28, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin')
 
     </insert>
 
@@ -249,6 +252,11 @@
             product.genre productGenre,
             genre.name productGenreName
 
+        <if test="'true' == isNeedRetreat">
+            ,round((ifnull(detail.order_count, 0) - ifnull(retreatDtl.orderCount, 0)), 2) nowDeliverCount
+            ,round((ifnull(detail.sum, 0) - ifnull(retreatDtl.orderSum, 0)), 2) nowDeliverSum
+        </if>
+
         from vmes_sale_deliver_detail detail
             left join vmes_sale_order_detail orderDetail on orderDetail.id = detail.order_detai_id
             left join vmes_sale_deliver deliver on deliver.id = detail.parent_id
@@ -257,6 +265,19 @@
             left join vmes_dictionary genre on product.genre = genre.id
             left join vmes_dictionary orderUnit on detail.order_unit = orderUnit.id
             left join vmes_dictionary priceUnit on detail.price_unit = priceUnit.id
+            <if test="'true' == isNeedRetreat">
+                <!--(订单明细id)-退货完成数量-退货明细汇总-->
+                left join (
+                    select
+                        order_detail_id,
+                        sum(order_count) orderCount,
+                        sum(order_sum) orderSum
+                    from vmes_sale_retreat_detail
+                    where <![CDATA[ state <> '-1' ]]>
+                    group by order_detail_id
+                ) retreatDtl on detail.order_detai_id = retreatDtl.order_detail_id
+
+            </if>
         <where>
             <if test="parentId != null and parentId != ''" >
                 and detail.parent_id = #{parentId}
