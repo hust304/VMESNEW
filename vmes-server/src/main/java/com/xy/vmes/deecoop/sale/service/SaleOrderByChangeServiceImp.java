@@ -155,10 +155,10 @@ public class SaleOrderByChangeServiceImp implements SaleOrderByChangeService {
         //四舍五入到2位小数
         orderSum_change = orderSum_change.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
 
-        String remarkTemp = "订单编号:{0} 订单变更退款金额:{1}";
+        String remarkTemp = "订单编号:{0} 变更订单金额:{1}";
         String remark = MessageFormat.format(remarkTemp,
                 order_old.getSysCode(),
-                BigDecimal.valueOf(orderSum_change.doubleValue() * -1).toString());
+                BigDecimal.valueOf(orderSum_change.doubleValue()).toString());
         orderEdit.setRemark(remark);
         saleOrderService.update(orderEdit);
 
