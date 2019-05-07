@@ -154,7 +154,8 @@
         (replace(uuid(), '-', ''),'WarehouseMoveExecute','remark','备注',12, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'WarehouseMoveExecute','companyId','公司ID',13, '1','0','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'WarehouseMoveExecute','qrcode','二维码',14, '1','0','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'WarehouseMoveExecute','id','id',0, '1','0','1','0',now(), 'admin')
+        (replace(uuid(), '-', ''),'WarehouseMoveExecute','id','id',0, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseMoveExecute','productName','productName',15, '1','0','1','0',now(), 'admin')
     </insert>
 
 
@@ -284,11 +285,30 @@
     <!-- 自动创建，可以修改 -->
     <select id="getDataListPage"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
         select
-        <include refid="Field1"></include>
+            execut.id id,
+            product.company_id companyId,
+            product.warehouse_id warehouseId,
+            product.product_id productId,
+            product.code code,
+            round(product.stock_count,2) stockCount,
+            execut.isdisable isdisable,
+            product.qrcode qrcode,
+            round(execut.count,2) actualCount,
+            execut.warehouse_product_id warehouseProductId,
+            execut.new_warehouse_product_id newWarehouseProductId,
+            execut.remark remark,
+            executor.cdate startDate,
+            execut.cdate endDate,
+            vmesuser.user_name executorName,
+            warehouse.path_name name,
+            newwarehouse.path_name newname,
+            prod.name productName
         from
         vmes_warehouse_move_execute execut
         left join vmes_warehouse_product product on execut.warehouse_product_id = product.id
         left join vmes_warehouse_product newproduct on execut.new_warehouse_product_id = newproduct.id
+        left join vmes_product prod on product.product_id = prod.id
+
         left join vmes_warehouse warehouse on warehouse.id = product.warehouse_id
         left join vmes_warehouse newwarehouse on newwarehouse.id = newproduct.warehouse_id
         left join vmes_user vmesuser on vmesuser.id = execut.executor_id
