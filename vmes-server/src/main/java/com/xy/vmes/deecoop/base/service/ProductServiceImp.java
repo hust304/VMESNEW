@@ -436,6 +436,27 @@ public class ProductServiceImp implements ProductService {
             pd.put("genre", genreId);
         }
 
+        String pathId = pd.getString("pathId");
+        if(!StringUtils.isEmpty(pathId)){
+            String[] ids = pathId.split("_");
+            String idStr = "";
+            if(ids!=null&&ids.length>0){
+                for(int i=0;i<ids.length;i++){
+                    if(StringUtils.isEmpty(idStr)){
+                        idStr = "'"+ids[i]+"'";
+                    }else{
+                        idStr = idStr + " , '"+ids[i]+"'";
+                    }
+                }
+
+            }
+            if(!StringUtils.isEmpty(idStr)){
+                String queryStr = " prod.id not in (select prod_id from vmes_bom_tree where id in ("+idStr+") ) ";
+                pd.put("queryStr", queryStr);
+            }
+        }
+
+
         //isNeedCustomerPrice 是否需要客户货品单价 (true:需要客户单价 false:无需客户单价 is null 无需客户单价)
         String isNeedCustomerPrice = pd.getString("isNeedCustomerPrice");
         String customerId = pd.getString("customerId");

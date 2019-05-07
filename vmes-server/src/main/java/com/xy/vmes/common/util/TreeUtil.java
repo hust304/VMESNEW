@@ -7,6 +7,7 @@ import java.util.*;
 
 public class TreeUtil {
 
+    public static Map<String,BigDecimal> productStockCountMap = new HashMap<String,BigDecimal>();
     /**
      * 指定节点ID-及该指定节点ID下所有节点和子节点-生成树形结构
      * 当(指定节点ID)is null 或空字符串 -从根节点(root)开始生成树形结构
@@ -38,7 +39,7 @@ public class TreeUtil {
     public static TreeEntity switchBomTree(String nodeId, List<TreeEntity> objectList ,BigDecimal expectCount, Map childrenTitleMap) {
         if (objectList == null || objectList.size() == 0) {return new TreeEntity();}
         if (nodeId == null || nodeId.trim().length() == 0) {nodeId = new String("root");}
-
+        productStockCountMap = new HashMap<String,BigDecimal>();
         //获得当前节点对象
         TreeEntity nodeObject = findNodeById(nodeId, objectList);
 //        nodeObject.setExpectCount(BigDecimal.ZERO);
@@ -81,6 +82,7 @@ public class TreeUtil {
         List<TreeEntity> childList = findChildListById(nodeObject.getId(), objectList);
         //Bom齐套分析：上级期望生产数量
         BigDecimal pExpectCount = nodeObject.getExpectCount()==null?BigDecimal.ZERO:nodeObject.getExpectCount();
+        BigDecimal pStockCount = nodeObject.getStockCount()==null?BigDecimal.ZERO:nodeObject.getStockCount();
         if(childList.size()>0){
             List<TreeEntity> childListNew = new ArrayList<TreeEntity>();
             //Bom齐套分析：上级可组装数量
@@ -91,6 +93,16 @@ public class TreeUtil {
                 BigDecimal ratio = child.getRatio()==null?BigDecimal.ZERO:child.getRatio();
                 //Bom齐套分析：实际库存数量
                 BigDecimal stockCount = child.getStockCount()==null?BigDecimal.ZERO:child.getStockCount();
+
+//                BigDecimal stockCount = BigDecimal.ZERO;
+//                BigDecimal productStockCount = productStockCountMap.get(child.getId());
+//                if(productStockCount==null){
+//                    stockCount = child.getStockCount()==null?BigDecimal.ZERO:child.getStockCount();
+//                }else{
+//                    stockCount = productStockCount;
+//                }
+
+
                 //Bom齐套分析：可组装数量
                 BigDecimal assembledCount = child.getAssembledCount()==null?BigDecimal.ZERO:child.getAssembledCount();
                 if(ratio.compareTo(BigDecimal.ZERO)>0){
@@ -106,6 +118,14 @@ public class TreeUtil {
                     if(pExpectCount.compareTo(BigDecimal.ZERO)>0){
                         //Bom齐套分析：期望生产数量 = 上级期望生产数量 * 用料比例
                         BigDecimal expectCount = pExpectCount.multiply(ratio).setScale(2,BigDecimal.ROUND_HALF_UP);
+
+
+//                        if(expectCount.compareTo(stockCount)>=0){
+//                            productStockCountMap.put(child.getId(),BigDecimal.ZERO);
+//                        }else {
+//                            productStockCountMap.put(child.getId(),stockCount.subtract(expectCount));
+//                        }
+
                         //Bom齐套分析：缺少物料数量 =  期望生产数量 - 实际库存数量 - 可组装数量
                         BigDecimal lackCount = expectCount.subtract(stockCount).subtract(assembledCount).setScale(2,BigDecimal.ROUND_HALF_UP);
                         lackCount = lackCount==null?BigDecimal.ZERO:lackCount;
@@ -188,7 +208,8 @@ public class TreeUtil {
 
         for (TreeEntity nodeObj : objectList) {
             if (id.equals(nodeObj.getPid())) {
-                childList.add(nodeObj);
+                TreeEntity newNodeObj = nodeObj.clone();
+                childList.add(newNodeObj);
             }
         }
 
