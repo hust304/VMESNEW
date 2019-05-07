@@ -299,7 +299,7 @@
         distinct
         warehouseout.company_id companyId,<!-- 企业ID-组织架构 -->
         warehouseout.code code,<!-- 出库单编码 -->
-        type.id type,<!-- 出库类型-(字典表-vmes_dictionary.id) -->
+        warehouseout.type,<!-- 出库类型-(字典表-vmes_dictionary.id) -->
         type.name typeName,
         warehouse.name warehouseName,
         warehouseout.warehouse_id warehouseId,<!-- 仓库ID(仓库表-layer:2的记录) -->
