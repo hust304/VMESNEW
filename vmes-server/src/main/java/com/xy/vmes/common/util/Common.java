@@ -252,6 +252,7 @@ public class Common {
         put("warehouseInType", "550e0457a3d34149ba3199d90b0ae198");
             //生产入库 2c4a104aedc046848455f5fa6e3da87c
             //采购入库 d78ceba5beef41f5be16f0ceee775399
+            put("purchaseIn", "d78ceba5beef41f5be16f0ceee775399");
             //外协入库 064dda15d44d4f8fa6330c5c7e46300e
             //销售退货入库 81907167d5c8498692e6c4f3694c5cfa
             put("saleRetreatIn", "81907167d5c8498692e6c4f3694c5cfa");
@@ -311,6 +312,10 @@ public class Common {
         //table: '报表',
         put("table", "156b96f3245d4a5ba45ca3c2e67fd803");
 
+        //******采购******
+        //purchase: 采购
+        put("purchase", "3f5e1bcd2d3745998773413ccbded554");
+
         //******人事******
         //emp: '人事',
         put("emp", "a962ac5d572d46c38d75d644974abc80");
@@ -358,5 +363,17 @@ public class Common {
 
         //******App 手机主页面菜单******
         put("app", "ab8a6ef2480f4fa0a6445524a33a8181");
+    }};
+
+    //收费菜单项目
+    public static final Map<String, String> SYS_MENU_PAYMENT_MAP = new HashMap<String, String>() {{
+        //sale: '销售',
+        put("sale", "94caec1bca7e4131b16bfcee9b1351e2");
+        //product: '生产',
+        put("product", "73883f69b4034b7f89e9d59bc4919a6a");
+        //warehouse: '仓库',
+        put("warehouse", "15a6c4ca92fe42a0a82320287538b727");
+        //purchase: 采购
+        put("purchase", "3f5e1bcd2d3745998773413ccbded554");
     }};
 }
