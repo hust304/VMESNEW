@@ -102,30 +102,12 @@ public class TreeUtil {
 //                    stockCount = productStockCount;
 //                }
 
-
                 //Bom齐套分析：可组装数量
                 BigDecimal assembledCount = child.getAssembledCount()==null?BigDecimal.ZERO:child.getAssembledCount();
                 if(ratio.compareTo(BigDecimal.ZERO)>0){
-                    if(pAssembledCount==null){
-                        //Bom齐套分析：上级可组装数量 = （实际库存数量 + 可组装数量）/ 用料比例
-                        pAssembledCount = stockCount.add(assembledCount).divide(ratio,2,BigDecimal.ROUND_HALF_UP);
-                    }else{
-                        //Bom齐套分析：取物料组成中可组装成品的最小值为上级可组装数量
-                        if(stockCount.add(assembledCount).divide(ratio,2,BigDecimal.ROUND_HALF_UP).compareTo(pAssembledCount)<0){
-                            pAssembledCount = stockCount.add(assembledCount).divide(ratio,2,BigDecimal.ROUND_HALF_UP);
-                        }
-                    }
                     if(pExpectCount.compareTo(BigDecimal.ZERO)>0){
                         //Bom齐套分析：期望生产数量 = 上级期望生产数量 * 用料比例
                         BigDecimal expectCount = pExpectCount.multiply(ratio).setScale(2,BigDecimal.ROUND_HALF_UP);
-
-
-//                        if(expectCount.compareTo(stockCount)>=0){
-//                            productStockCountMap.put(child.getId(),BigDecimal.ZERO);
-//                        }else {
-//                            productStockCountMap.put(child.getId(),stockCount.subtract(expectCount));
-//                        }
-
                         //Bom齐套分析：缺少物料数量 =  期望生产数量 - 实际库存数量 - 可组装数量
                         BigDecimal lackCount = expectCount.subtract(stockCount).subtract(assembledCount).setScale(2,BigDecimal.ROUND_HALF_UP);
                         lackCount = lackCount==null?BigDecimal.ZERO:lackCount;
@@ -139,9 +121,25 @@ public class TreeUtil {
                         child.setStockCount(stockCount==null?BigDecimal.ZERO:stockCount);
                     }
                 }
+
+
                 child.setHideTitles(nodeObject.getHideTitles());
                 child.setTitles(nodeObject.getTitles());
                 createBomTree(child, objectList);
+
+                assembledCount = child.getAssembledCount()==null?BigDecimal.ZERO:child.getAssembledCount();
+                if(ratio.compareTo(BigDecimal.ZERO)>0){
+                    if(pAssembledCount==null){
+                        //Bom齐套分析：上级可组装数量 = （实际库存数量 + 可组装数量）/ 用料比例
+                        pAssembledCount = stockCount.add(assembledCount).divide(ratio,2,BigDecimal.ROUND_HALF_UP);
+                    }else{
+                        //Bom齐套分析：取物料组成中可组装成品的最小值为上级可组装数量
+                        if(stockCount.add(assembledCount).divide(ratio,2,BigDecimal.ROUND_HALF_UP).compareTo(pAssembledCount)<0){
+                            pAssembledCount = stockCount.add(assembledCount).divide(ratio,2,BigDecimal.ROUND_HALF_UP);
+                        }
+                    }
+                }
+
                 childListNew.add(child);
             }
             if(pAssembledCount!=null){

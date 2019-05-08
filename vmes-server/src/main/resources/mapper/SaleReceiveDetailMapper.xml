@@ -169,6 +169,7 @@
         (replace(uuid(), '-', ''),'OrderReceiveDetail','state','订单状态',10, '1','0','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'OrderReceiveDetail','discountAmount','本次折扣金额',11, '1','0','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'OrderReceiveDetail','receiveAmount','本次收款',12, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'OrderReceiveDetail','haveReceivedAmount','已收金额',13, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'OrderReceiveDetail','id','id',0, '1','0','1','0',now(), 'admin')
     </insert>
 
@@ -337,20 +338,22 @@
     <!-- 自动创建，可以修改 -->
     <select id="getOrderReceiveDetailDataListPage"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
 
-        select id,sysCode,customerId,companyId,currentDeliverDate,orderAmount,orderDate,state,
+        select sOrder.id id,sOrder.sys_code sysCode,sOrder.customer_id customerId,sOrder.current_deliver_date currentDeliverDate,sOrder.company_id companyId,sOrder.order_sum orderAmount,sOrder.state state,DATE_FORMAT(sOrder.order_date,'%Y-%m-%d') orderDate,
         CASE
-        WHEN state = '0' THEN '待提交'
-        WHEN state = '1' THEN '待审核'
-        WHEN state = '2' THEN '待发货'
-        WHEN state = '3' THEN '已发货'
-        WHEN state = '4' THEN '已完成'
-        WHEN state = '-1' THEN '已取消'
+        WHEN sOrder.state = '0' THEN '待提交'
+        WHEN sOrder.state = '1' THEN '待审核'
+        WHEN sOrder.state = '2' THEN '待发货'
+        WHEN sOrder.state = '3' THEN '已发货'
+        WHEN sOrder.state = '4' THEN '已完成'
+        WHEN sOrder.state = '-1' THEN '已取消'
         ELSE null
         END  orderState,
-        round(sum(ifnull(deliverAmount,0)),2) deliverAmount,round(sum(ifnull(receiveAmount,0)),2) receivedAmount,round(sum(ifnull(discountAmount,0)),2) discountedAmount,'0.00' discountAmount,
+        round(sum(ifnull(deliverAmount,0)),2) deliverAmount,round(sum(ifnull(receiveAmount,0)),2) receivedAmount,round(sum(ifnull(discountAmount,0)),2) discountedAmount,'0.00' discountAmount,round(sum(ifnull(receiveAmount,0))+sum(ifnull(discountAmount,0)),2) haveReceivedAmount,
         case when sum(ifnull(deliverAmount,0)) - sum(ifnull(retreatAmount,0)) <![CDATA[ >= ]]> (sum(ifnull(receiveAmount,0))+sum(ifnull(discountAmount,0))) then round(sum(ifnull(deliverAmount,0)) - sum(ifnull(retreatAmount,0)) - sum(ifnull(receiveAmount,0)) - sum(ifnull(discountAmount,0)),2) else 0.00 end nowReceiveAmount,
         case when sum(ifnull(deliverAmount,0)) - sum(ifnull(retreatAmount,0)) <![CDATA[ < ]]> (sum(ifnull(receiveAmount,0))+sum(ifnull(discountAmount,0))) then round(sum(ifnull(receiveAmount,0)) + sum(ifnull(retreatAmount,0)) - sum(ifnull(deliverAmount,0)) + sum(ifnull(discountAmount,0)),2) else 0.00 end preReceiveAmount
-        from (
+        from
+        vmes_sale_order sOrder
+        left join(
             select saleOrder.id id,saleOrder.sys_code sysCode,saleOrder.customer_id customerId,saleOrder.current_deliver_date currentDeliverDate,saleOrder.company_id companyId,saleOrder.order_sum orderAmount,saleOrder.state state,DATE_FORMAT(saleOrder.order_date,'%Y-%m-%d') orderDate,
             deliverDetail.sum deliverAmount,null receiveAmount,null discountAmount,null retreatAmount
             from vmes_sale_order saleOrder
@@ -393,29 +396,29 @@
                     and saleOrder.customer_id = #{customerId}
                 </if>
             </where>
-        )t
+        )t on t.id = sOrder.id
         <where>
             <if test="orderCode != null and orderCode != ''">
-                and t.orderCode LIKE CONCAT(CONCAT('%', #{orderCode}),'%')
+                and sOrder.sys_code LIKE CONCAT(CONCAT('%', #{orderCode}),'%')
             </if>
             <if test="customerId != null and customerId != ''">
-                and t.customerId = #{customerId}
+                and sOrder.customer_id = #{customerId}
             </if>
             <if test="currentCompanyId != null and currentCompanyId != ''">
-                and t.companyId = #{currentCompanyId}
+                and sOrder.company_id = #{currentCompanyId}
             </if>
             <if test="orderStateNotin != null and orderStateNotin != ''" >
-                and t.state not in (${orderStateNotin})
+                and sOrder.state not in (${orderStateNotin})
             </if>
             <if test="orderState != null and orderState != ''" >
-                and t.state in (${orderState})
+                and sOrder.state in (${orderState})
             </if>
 
             <if test="orderDateBegin != null and orderDateBegin != ''">
-                <![CDATA[ and t.orderDate >= #{orderDateBegin} ]]>
+                <![CDATA[ and sOrder.order_date >= #{orderDateBegin} ]]>
             </if>
             <if test="orderDateEnd != null and orderDateEnd != ''">
-                <![CDATA[ and t.orderDate <= #{orderDateEnd} ]]>
+                <![CDATA[ and sOrder.order_date <= #{orderDateEnd} ]]>
             </if>
 
             <!--queryStr 自定义sql查询语句-->
@@ -423,7 +426,7 @@
                 and ${queryStr}
             </if>
         </where>
-        group by t.id
+        group by sOrder.id
         <!--havingStr 自定义sql查询语句-->
         <if test="havingStr != null and havingStr != ''" >
             having ${havingStr}
