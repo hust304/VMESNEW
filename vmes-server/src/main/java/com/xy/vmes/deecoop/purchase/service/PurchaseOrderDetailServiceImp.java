@@ -186,7 +186,16 @@ public class PurchaseOrderDetailServiceImp implements PurchaseOrderDetailService
     */
     @Override
     public List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception{
-        return purchaseOrderDetailMapper.getDataListPage(pd,pg);
+        List<Map> mapList = new ArrayList<Map>();
+        if (pd == null) {return mapList;}
+
+        if (pg == null) {
+            return purchaseOrderDetailMapper.getDataListPage(pd);
+        } else if (pg != null) {
+            return purchaseOrderDetailMapper.getDataListPage(pd,pg);
+        }
+
+        return mapList;
     }
 
     /**
@@ -254,14 +263,21 @@ public class PurchaseOrderDetailServiceImp implements PurchaseOrderDetailService
             columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
         }
 
-        Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
+        //是否需要分页 true:需要分页 false:不需要分页
+        String isNeedPage = pd.getString("isNeedPage");
+        if ("false".equals(isNeedPage)) {
+            pg = null;
+        } else {
+            result.put("pageData", pg);
+        }
         List<Map> varList = this.getDataListPage(pd,pg);
+
+        Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
         List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
 
         result.put("hideTitles",titleMap.get("hideTitles"));
         result.put("titles",titleMap.get("titles"));
         result.put("varList",varMapList);
-//        result.put("pageData", pg);
         model.putResult(result);
         return model;
     }
