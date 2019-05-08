@@ -184,7 +184,7 @@ public interface DictionaryService {
     ResultModel treeDictionarys(PageData pd)throws Exception;
 
     ResultModel getDictionarys(PageData pd)throws Exception;
-
+    void dealWithTreeEntityChildren(TreeEntity treeObj);
     ResultModel dataListDictionarys(PageData pd) throws Exception;
 
 

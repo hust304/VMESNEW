@@ -527,6 +527,8 @@ public class DictionaryServiceImp implements DictionaryService {
             queryStr = prefix + "id_4 = '" + id + "'";
         } else if (5 == layer.intValue()) {
             queryStr = prefix + "id_5 = '" + id + "'";
+        } else if (6 == layer.intValue()) {
+            queryStr = prefix + "id_6 = '" + id + "'";
         }
 
         return queryStr;
@@ -895,7 +897,7 @@ public class DictionaryServiceImp implements DictionaryService {
             for(int i=0;i<treeObj.getChildren().size();i++){
                 dealWithTreeEntityChildren(treeObj.getChildren().get(i));
             }
-        }else {
+        } else {
             treeObj.setChildren(null);
         }
     }

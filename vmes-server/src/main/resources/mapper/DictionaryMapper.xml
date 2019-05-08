@@ -323,10 +323,16 @@
             <if test="queryStr != null and queryStr!=''" >
                 ${queryStr}
             </if>
+            <if test="queryId != null and queryId!=''" >
+                and ${queryId}
+            </if>
             <if test="selfQueryStr != null and selfQueryStr != ''" >
                 or ${selfQueryStr}
             </if>
         </where>
+        <if test="orderStr != null and orderStr != ''" >
+            order by ${orderStr}
+        </if>
     </select>
 
 

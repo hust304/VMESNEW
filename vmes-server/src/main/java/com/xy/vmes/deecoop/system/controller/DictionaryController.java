@@ -4,16 +4,11 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.*;
 import com.xy.vmes.entity.*;
 import com.xy.vmes.entity.Dictionary;
-import com.xy.vmes.service.ColumnService;
-import com.xy.vmes.service.DictionaryService;
-import com.xy.vmes.service.UserService;
+import com.xy.vmes.service.*;
 import com.yvan.*;
-import com.yvan.cache.RedisClient;
-import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
 import com.yvan.template.ExcelAjaxTemplate;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.text.MessageFormat;
 import java.util.*;
 
 
@@ -38,18 +32,16 @@ import java.util.*;
 @RestController
 @Slf4j
 public class DictionaryController {
-
     private Logger logger = LoggerFactory.getLogger(DictionaryController.class);
 
     @Autowired
     private DictionaryService dictionaryService;
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private RedisClient redisClient;
 
     @Autowired
-    private ColumnService columnService;
+    private UserRoleService userRoleService;
+    @Autowired
+    RoleMenuService roleMenuService;
+
     /**
     * @author 刘威 自动创建，禁止修改
     * @date 2018-07-31
@@ -381,6 +373,143 @@ public class DictionaryController {
         ResultModel model = dictionaryService.dataListDictionarys(pd);
         Long endTime = System.currentTimeMillis();
         logger.info("################dictionary/dataListDictionarys 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 根据当前登录用户角色获取字典列表
+     *
+     * @return
+     * @throws Exception
+     */
+    @PostMapping("/system/dictionary/findListDictionaryByRoleMenu")
+    public ResultModel findListDictionaryByRoleMenu() throws Exception {
+        logger.info("################/system/dictionary/findListDictionaryByRoleMenu 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = new ResultModel();
+
+        PageData findMap = new PageData();
+        findMap.put("orderStr", "serial_number asc");
+        String companyId = pd.getString("currentCompanyId");
+        findMap.put("companyId", companyId);
+
+        String isglobal = pd.getString("isglobal");
+        findMap.put("isglobal", isglobal);
+        if ("1".equals(isglobal)) {
+            findMap.put("companyId", null);
+        } else {
+            findMap.put("isglobal", null);
+        }
+
+        //是否只显示当前层
+        String isNeetOneLayer = pd.getString("isNeetOneLayer");
+        String dictionaryKey = pd.getString("dictionaryKey");
+        String id = Common.DICTIONARY_MAP.get(dictionaryKey);
+        findMap.put("selfQueryStr", "id = '" + id + "'");
+
+        if ("true".equals(isNeetOneLayer)) {
+            findMap.put("pid", id);
+        } else if (!"true".equals(isNeetOneLayer)) {
+            Dictionary dictionary = dictionaryService.findDictionaryById(id);
+            String queryIdStr = dictionaryService.findDictionaryIdById(id,
+                    dictionary.getLayer(),
+                    "");
+            if (queryIdStr != null && queryIdStr.trim().length() > 0) {
+                findMap.put("queryId", queryIdStr);
+            }
+        }
+        List<TreeEntity> treeList = dictionaryService.getTreeList(findMap);
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        String cuser = pd.getString("cuser");
+        String roleIds = userRoleService.findRoleIdsByByUserID(cuser);
+
+        findMap = new PageData();
+        findMap.put("roleId", roleIds);
+        //是否禁用(0:已禁用 1:启用)
+        findMap.put("isdisable", "1");
+        findMap.put("mapSize", Integer.valueOf(findMap.size()).toString());
+        List<RoleMenu> roleMenuList = roleMenuService.findRoleMenuList(findMap);
+
+        //获取当前用户角色全部菜单idMap
+        Map<String, String> userRoleMenuMap = new HashMap<String, String>();
+        for (RoleMenu roleMenu : roleMenuList) {
+            String menuId = roleMenu.getMenuId();
+            if (menuId != null && menuId.trim().length() > 0) {
+                userRoleMenuMap.put(menuId, menuId);
+            }
+        }
+
+//        //获取收费菜单idMap
+//        Map<String, String> paymentMenuMap = new HashMap<String, String>();
+//        for (Iterator iterator = Common.SYS_MENU_PAYMENT_MAP.keySet().iterator(); iterator.hasNext();) {
+//            String mapKey = (String) iterator.next();
+//            String menuId = Common.SYS_MENU_PAYMENT_MAP.get(mapKey);
+//            paymentMenuMap.put(menuId, menuId);
+//        }
+//
+//        Map<String, String> notPaymentMenuMap = new HashMap<String, String>();
+//        for (Iterator iterator = userRoleMenuMap.keySet().iterator(); iterator.hasNext();) {
+//            String menuId = (String) iterator.next();
+//
+//            if (paymentMenuMap.get(menuId) == null) {
+//                notPaymentMenuMap.put(menuId, menuId);
+//            }
+//        }
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+        List<TreeEntity> newTreeList = new ArrayList<TreeEntity>();
+        if (treeList != null && treeList.size() > 0) {
+            for (TreeEntity tree : treeList) {
+                String treeId = tree.getId();
+
+                //sale 销售 94caec1bca7e4131b16bfcee9b1351e2 --> (saleRetreatIn 81907167d5c8498692e6c4f3694c5cfa 销售退货入库)
+                if (userRoleMenuMap.get(Common.SYS_MENU_MAP.get("sale")) == null
+                    && Common.DICTIONARY_MAP.get("saleRetreatIn").equals(treeId)
+                ) {
+                    continue;
+                } else if (userRoleMenuMap.get(Common.SYS_MENU_MAP.get("purchase")) == null
+                    && Common.DICTIONARY_MAP.get("purchaseIn").equals(treeId)
+                        ) {
+                    //purchase 采购 3f5e1bcd2d3745998773413ccbded554 --> (purchaseIn d78ceba5beef41f5be16f0ceee775399 采购入库)
+                    continue;
+                }
+                newTreeList.add(tree);
+
+//                boolean isDisabled = false;
+//                for (Iterator iterator = notPaymentMenuMap.keySet().iterator(); iterator.hasNext();) {
+//                    String menuId = (String) iterator.next();
+//
+//                    //sale 销售 94caec1bca7e4131b16bfcee9b1351e2 --> (saleRetreatIn 81907167d5c8498692e6c4f3694c5cfa 销售退货入库)
+//                    if (Common.SYS_MENU_MAP.get("sale").equals(menuId)
+//                            && Common.DICTIONARY_MAP.get("saleRetreatIn").equals(treeId)
+//                            ) {
+//                        isDisabled = true;
+//                        break;
+//                    } else if (Common.SYS_MENU_MAP.get("purchase").equals(menuId)
+//                            && Common.DICTIONARY_MAP.get("purchaseIn").equals(treeId)
+//                            ) {
+//                        //purchase 采购 3f5e1bcd2d3745998773413ccbded554 --> (purchaseIn d78ceba5beef41f5be16f0ceee775399 采购入库)
+//                        isDisabled = true;
+//                        break;
+//                    }
+//                }
+//
+//                if (!isDisabled) {
+//                    newTreeList.add(tree);
+//                }
+            }
+        }
+
+        TreeEntity treeObj = TreeUtil.switchTree(id, newTreeList);
+        dictionaryService.dealWithTreeEntityChildren(treeObj);
+
+        Map result = new HashMap();
+        result.put("options", treeObj.getChildren());
+        model.putResult(result);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/system/dictionary/findListDictionaryByRoleMenu 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
