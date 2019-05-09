@@ -402,23 +402,11 @@ public class DictionaryController {
             findMap.put("isglobal", null);
         }
 
-        //是否只显示当前层
-        String isNeetOneLayer = pd.getString("isNeetOneLayer");
         String dictionaryKey = pd.getString("dictionaryKey");
         String id = Common.DICTIONARY_MAP.get(dictionaryKey);
+        findMap.put("pid", id);
         findMap.put("selfQueryStr", "id = '" + id + "'");
 
-        if ("true".equals(isNeetOneLayer)) {
-            findMap.put("pid", id);
-        } else if (!"true".equals(isNeetOneLayer)) {
-            Dictionary dictionary = dictionaryService.findDictionaryById(id);
-            String queryIdStr = dictionaryService.findDictionaryIdById(id,
-                    dictionary.getLayer(),
-                    "");
-            if (queryIdStr != null && queryIdStr.trim().length() > 0) {
-                findMap.put("queryId", queryIdStr);
-            }
-        }
         List<TreeEntity> treeList = dictionaryService.getTreeList(findMap);
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         String cuser = pd.getString("cuser");
@@ -463,17 +451,32 @@ public class DictionaryController {
             for (TreeEntity tree : treeList) {
                 String treeId = tree.getId();
 
+                //入库类型
                 //sale 销售 94caec1bca7e4131b16bfcee9b1351e2 --> (saleRetreatIn 81907167d5c8498692e6c4f3694c5cfa 销售退货入库)
-                if (userRoleMenuMap.get(Common.SYS_MENU_MAP.get("sale")) == null
+                if (userRoleMenuMap.get(Common.SYS_MENU_MAP.get("sale")) != null
                     && Common.DICTIONARY_MAP.get("saleRetreatIn").equals(treeId)
                 ) {
                     continue;
-                } else if (userRoleMenuMap.get(Common.SYS_MENU_MAP.get("purchase")) == null
+                } else if (userRoleMenuMap.get(Common.SYS_MENU_MAP.get("purchase")) != null
                     && Common.DICTIONARY_MAP.get("purchaseIn").equals(treeId)
                         ) {
                     //purchase 采购 3f5e1bcd2d3745998773413ccbded554 --> (purchaseIn d78ceba5beef41f5be16f0ceee775399 采购入库)
                     continue;
                 }
+
+                //出库类型
+                //sale 销售 94caec1bca7e4131b16bfcee9b1351e2 --> (saleOut 9459be975cd94ada8443cdf32f52c2be 销售发货出库)
+                if (userRoleMenuMap.get(Common.SYS_MENU_MAP.get("sale")) != null
+                        && Common.DICTIONARY_MAP.get("saleOut").equals(treeId)
+                        ) {
+                    continue;
+                } else if (userRoleMenuMap.get(Common.SYS_MENU_MAP.get("purchase")) != null
+                        && Common.DICTIONARY_MAP.get("purchaseOut").equals(treeId)
+                        ) {
+                    //purchase 采购 3f5e1bcd2d3745998773413ccbded554 --> (purchaseOut 4cba5d3815644b26920777512a20474b 采购退货出库)
+                    continue;
+                }
+
                 newTreeList.add(tree);
 
 //                boolean isDisabled = false;

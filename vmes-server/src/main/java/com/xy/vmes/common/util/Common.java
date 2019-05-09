@@ -266,7 +266,7 @@ public class Common {
             //cb0a55d81e754cd3b59715d225dab087 生产领料出库
             put("produceOut", "cb0a55d81e754cd3b59715d225dab087");
             //4cba5d3815644b26920777512a20474b 采购退货出库
-            put("rebackOut", "4cba5d3815644b26920777512a20474b");
+            put("purchaseOut", "4cba5d3815644b26920777512a20474b");
             //609fa44c031847569a1d9e2516be4b41 组装出库
             put("assembleOut", "609fa44c031847569a1d9e2516be4b41");
 
