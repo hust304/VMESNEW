@@ -43,6 +43,9 @@ public class PurchaseOrder implements Serializable {
 	//采购金额
 	@TableField("amount")
 	private BigDecimal amount;
+	//收票金额
+	@TableField("receipt_amount")
+	private BigDecimal receiptAmount;
 	//采购订单类型-(字典表-vmes_dictionary.id)
 	@TableField("type")
 	private String type;
@@ -68,6 +71,13 @@ public class PurchaseOrder implements Serializable {
 	@TableField("isdisable")
 	private String isdisable;
 
+
+	public BigDecimal getReceiptAmount() {
+		return receiptAmount;
+	}
+	public void setReceiptAmount(BigDecimal receiptAmount) {
+		this.receiptAmount = receiptAmount;
+	}
 	public void setId(String id) {
 		this.id = id;
 	}

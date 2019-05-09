@@ -22,6 +22,7 @@
 		total total,<!-- 合计金额 -->
 		discount discount,<!-- 折扣金额 -->
 		amount amount,<!-- 采购金额 -->
+        receipt_amount receiptAmount,<!-- 开票金额 -->
 		type type,<!-- 采购订单类型-(字典表-vmes_dictionary.id) -->
 		state state,<!-- 状态(0:待提交 1:待审核 2:采购中 3:已完成 -1:已取消) -->
 		cuser cuser,<!-- 创建用户id -->
@@ -172,11 +173,13 @@
             (replace(uuid(), '-', ''),'PurchaseOrder','total','合计金额',13, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'PurchaseOrder','discount','折扣金额',14, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'PurchaseOrder','amount','采购金额',15, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'PurchaseOrder','type','采购订单类型',16, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'PurchaseOrder','cuser','创建用户id',17, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'PurchaseOrder','uuser','修改用户id',18, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'PurchaseOrder','udate','修改时间',19, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'PurchaseOrder','isdisable','是否启用',20, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'PurchaseOrder','receiptAmount','收票金额',16, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'PurchaseOrder','type','采购订单类型',17, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'PurchaseOrder','cuser','创建用户id',18, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'PurchaseOrder','uuser','修改用户id',19, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'PurchaseOrder','udate','修改时间',20, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'PurchaseOrder','isdisable','是否启用',21, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'PurchaseOrder','receiptState','收票状态',22, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'PurchaseOrder','id','id',0, '1','0','1','0',now(), 'admin')
     </insert>
 
@@ -231,6 +234,11 @@
         round(ifnull(purchaseOrder.total, 0),2) total,<!-- 合计金额 -->
         round(ifnull(purchaseOrder.discount, 0),2) discount,<!-- 折扣金额 -->
         round(ifnull(purchaseOrder.amount, 0),2) amount,<!-- 采购金额 -->
+        round(ifnull(purchaseOrder.receipt_amount, 0),2) receiptAmount,<!-- 收票金额 -->
+        case when ifnull(purchaseOrder.receipt_amount, 0)=0 then '0'<!-- 收票状态：未收票 -->
+        <![CDATA[when ifnull(purchaseOrder.receipt_amount, 0)>0 and ifnull(purchaseOrder.receipt_amount, 0)<ifnull(purchaseOrder.amount, 0) then '1']]><!-- 收票状态：部分收票 -->
+        <![CDATA[when ifnull(purchaseOrder.receipt_amount, 0)>=ifnull(purchaseOrder.amount, 0) then '2']]><!-- 收票状态：已收票 -->
+        else null end receiptState,
         purchaseOrder.type type,<!-- 采购订单类型-(字典表-vmes_dictionary.id) -->
         purchaseOrder.state state,<!-- 状态(0:待提交 1:待审核 2:采购中 3:已完成 -1:已取消) -->
         purchaseOrder.cuser cuser,<!-- 创建用户id -->

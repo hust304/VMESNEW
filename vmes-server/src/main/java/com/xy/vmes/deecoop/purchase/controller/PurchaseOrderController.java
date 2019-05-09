@@ -281,6 +281,24 @@ public class PurchaseOrderController {
         logger.info("################/purchase/purchaseOrder/addPurchaseOrder 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
+
+    /**
+     * @author 刘威 自动创建，禁止修改
+     * @date 2019-02-28
+     */
+    @PostMapping("/purchase/purchaseOrder/addReceipt")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel addReceipt()  throws Exception {
+
+        logger.info("################/purchase/purchaseOrder/addReceipt 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = purchaseOrderService.addReceipt(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/purchase/purchaseOrder/addReceipt 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
     /**
      * @author 刘威 自动创建，禁止修改
      * @date 2019-02-28

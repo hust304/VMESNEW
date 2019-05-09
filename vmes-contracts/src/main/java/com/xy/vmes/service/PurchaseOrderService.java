@@ -183,6 +183,8 @@ public interface PurchaseOrderService {
     //////////////////////////////////////////////////////////////////////////////////
     //按(企业id,供应商id)汇总
     List<Map<String, Object>> findPurchaseOrderBySupplier(PageData pd);
+
+    ResultModel addReceipt(PageData pd) throws Exception;
 }
 
 

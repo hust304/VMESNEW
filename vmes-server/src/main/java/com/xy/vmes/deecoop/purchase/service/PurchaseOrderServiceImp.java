@@ -892,7 +892,23 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService {
         return list;
     }
 
-
+    @Override
+    public ResultModel addReceipt(PageData pd) throws Exception {
+        ResultModel model = new ResultModel();
+        PurchaseOrder newPurchaseOrder = (PurchaseOrder) HttpUtils.pageData2Entity(pd, new PurchaseOrder());
+        PurchaseOrder oldpurchaseOrder = this.selectById(newPurchaseOrder.getId());
+        BigDecimal receiptAmount = BigDecimal.ZERO;
+        if(oldpurchaseOrder.getReceiptAmount()!=null&&newPurchaseOrder.getReceiptAmount()!=null){
+            receiptAmount = oldpurchaseOrder.getReceiptAmount().add(newPurchaseOrder.getReceiptAmount());
+        }else if(oldpurchaseOrder.getReceiptAmount()==null&&newPurchaseOrder.getReceiptAmount()!=null){
+            receiptAmount = newPurchaseOrder.getReceiptAmount();
+        }else{
+            receiptAmount = BigDecimal.ZERO;
+        }
+        newPurchaseOrder.setReceiptAmount(receiptAmount);
+        this.update(newPurchaseOrder);
+        return model;
+    }
 }
 
 
