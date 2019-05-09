@@ -298,25 +298,31 @@ public class SaleRetreatAuditServiceImp implements SaleRetreatAuditService {
 
             //获取订单付款信息<订单id, 订单付款信息Map> - (receiveSum: 付款金额)
             Map<String, Map<String, BigDecimal>> orderReceiveMap = saleReceiveDetailService.findMapOrderReceiveByOrderId(orderId, "1");
+            Map<String, BigDecimal> receiveMap = orderReceiveMap.get(orderId);
+            //订单id-订单已完成付款金额
+            BigDecimal receiveSum = BigDecimal.valueOf(0D);
+            if (receiveMap.get("receiveSum") != null) {
+                receiveSum = receiveMap.get("receiveSum");
+            }
+
+            SaleOrder editOrderByPayState = new SaleOrder();
+            editOrderByPayState.setId(orderId);
+            if (receiveSum.doubleValue() >= orderTotalSum.doubleValue()) {
+                //付款完成日期 payDate
+                editOrderByPayState.setPayDate(new Date());
+                //付款状态(0:未付款 1:付款中 2:已付款) pay_state
+                editOrderByPayState.setPayState("2");
+                saleOrderService.update(editOrderByPayState);
+            }
+
             //订单明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
             if (saleOrderDetailService.isAllExistStateByDetailList("5", orderDetailList)) {
                 if (orderId != null) {
-                    Map<String, BigDecimal> receiveMap = orderReceiveMap.get(orderId);
-
-                    //订单id-订单已完成付款金额
-                    BigDecimal receiveSum = BigDecimal.valueOf(0D);
-                    if (receiveMap.get("receiveSum") != null) {
-                        receiveSum = receiveMap.get("receiveSum");
-                    }
                     SaleOrder editOrder = new SaleOrder();
                     editOrder.setId(orderId);
                     if (receiveSum.doubleValue() >= orderTotalSum.doubleValue()) {
                         //订单状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
                         editOrder.setState("4");
-                        //付款完成日期 payDate
-                        editOrder.setPayDate(new Date());
-                        //付款状态(0:未付款 1:付款中 2:已付款) pay_state
-                        editOrder.setPayState("2");
                         saleOrderService.update(editOrder);
                     }
                 }
