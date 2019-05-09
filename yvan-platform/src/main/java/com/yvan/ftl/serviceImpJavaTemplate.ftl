@@ -179,7 +179,16 @@ public class ${objectName}ServiceImp implements ${objectName}Service {
     */
     @Override
     public List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception{
-        return ${objectNameLower}Mapper.getDataListPage(pd,pg);
+        List<Map> mapList = new ArrayList<Map>();
+        if (pd == null) {return mapList;}
+
+        if (pg == null) {
+            return ${objectNameLower}Mapper.getDataListPage(pd);
+        } else if (pg != null) {
+            return ${objectNameLower}Mapper.getDataListPage(pd,pg);
+        }
+
+        return mapList;
     }
 
     /**
