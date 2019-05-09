@@ -800,6 +800,11 @@ public class SaleOrderServiceImp implements SaleOrderService {
                 orderDetail.setId(detail_id);
                 orderDetail.setNeedDeliverCount(needDeliverCount);
                 orderDetail.setLockCount(lockCount_new);
+                //是否锁定仓库(0:未锁定 1:已锁定) isLockWarehouse is_lock_warehouse
+                orderDetail.setIsLockWarehouse("0");
+                if (lockCount_new.doubleValue() > 0) {
+                    orderDetail.setIsLockWarehouse("1");
+                }
 
                 //versionLockCount
                 Integer versionLockCount = null;
