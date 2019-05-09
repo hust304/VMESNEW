@@ -547,10 +547,17 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
 
                     //货品单价 productPrice
                     BigDecimal productPrice = BigDecimal.valueOf(0D);
-                    if (deliverDetail.getProductPrice() != null) {
-                        productPrice = deliverDetail.getProductPrice();
+                    if (checkCount != null && checkCount.doubleValue() != 0 && checkSum != null) {
+                        productPrice = BigDecimal.valueOf(checkSum.doubleValue() / checkCount.doubleValue());
+                        //四舍五入到2位小数
+                        productPrice = productPrice.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                        orderDetail.setProductPrice(productPrice);
                     }
-                    orderDetail.setProductPrice(productPrice);
+
+//                    if (deliverDetail.getProductPrice() != null) {
+//                        productPrice = deliverDetail.getProductPrice();
+//                    }
+//                    orderDetail.setProductPrice(productPrice);
                 }
 
                 if (checkCount.doubleValue() >= orderCount.doubleValue()) {
