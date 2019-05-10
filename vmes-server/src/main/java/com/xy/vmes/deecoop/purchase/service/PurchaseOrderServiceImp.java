@@ -639,8 +639,19 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService {
                 purchaseOrderId = purchaseOrderDetail.getParentId();
                 String planDetailId = purchaseOrderDetail.getPlanId();
                 PurchasePlanDetail purchasePlanDetail = purchasePlanDetailService.selectById(planDetailId);
-                BigDecimal arriveCount = purchaseOrderDetail.getArriveCount().add(warehouseInDetail.getCount());
-                purchaseOrderDetail.setArriveCount(arriveCount);
+                BigDecimal arriveCount = BigDecimal.ZERO;
+                PageData pageData = new PageData();
+                pageData.put("orderDetailId",orderDetailId);
+                pageData.put("isdisable","1");
+                List<PurchaseSignDetail> purchaseSignDetailList =purchaseSignDetailService.selectByColumnMap(pageData);
+                if(purchaseSignDetailList!=null&&purchaseSignDetailList.size()>0){
+                    for(int k=0;k<purchaseSignDetailList.size();k++){
+                        PurchaseSignDetail detail = purchaseSignDetailList.get(k);
+                        arriveCount = arriveCount.add(detail.getArriveCount());
+                    }
+                }
+//                BigDecimal arriveCount = purchaseOrderDetail.getArriveCount().add(warehouseInDetail.getCount());
+//                purchaseOrderDetail.setArriveCount(arriveCount);
                 if(arriveCount.compareTo(BigDecimal.ZERO)>=0){
                     if(arriveCount.compareTo(purchaseOrderDetail.getCount())>=0){
                         purchaseOrderDetail.setState("4");
