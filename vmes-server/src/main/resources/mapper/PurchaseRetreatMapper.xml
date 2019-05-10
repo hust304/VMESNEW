@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+说明：vmes_purchase_retreat:退货单 Mapper.xml
+创建人：陈刚 自动创建
+创建时间：2019-05-09
+ -->
+<mapper namespace="com.xy.vmes.deecoop.purchase.dao.PurchaseRetreatMapper">
+
+    <!-- 批量删除 自动创建，禁止修改-->
+    <delete id="deleteByIds" parameterType="java.lang.String">
+        delete from vmes_purchase_retreat
+        where id in
+        <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+		#{item}
+        </foreach>
+    </delete>
+
+    <!-- 自动创建，禁止修改-->
+    <update id="updateToDisableByIds" parameterType="java.lang.String" >
+        update vmes_purchase_retreat
+        set isdisable = '0' ,udate = now()
+        where id in
+        <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+        #{item}
+        </foreach>
+    </update>
+
+    <!-- ***************************************************以上为自动生成代码禁止修改，请在下面添加业务代码************************************************* -->
+    <insert id="insertColumn" >
+        delete from vmes_column where model_code = 'purchaseRetreat' ;
+        insert into vmes_column (
+        id,model_code,title_key,title_name,serial_number,
+        isdisable,ishide,isedit,ismust,cdate,
+        cuser
+        ) VALUES
+            (replace(uuid(), '-', ''),'purchaseRetreat','id','id',0, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchaseRetreat','companyId','企业ID',1, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchaseRetreat','supplierId','供应商ID',2, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchaseRetreat','supplierName','供应商名称',2, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchaseRetreat','orderId','采购订单id',3, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchaseRetreat','sysCode','退货编号(系统生成)',4, '1','1','1','0',now(), 'admin'),
+
+            (replace(uuid(), '-', ''),'purchaseRetreat','state','状态',5, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchaseRetreat','totalSum','退货金额',6, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchaseRetreat','retreatDate','退货日期',7, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchaseRetreat','auditId','审核人ID',8, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchaseRetreat','cuser','创建用户id',9, '1','1','1','0',now(), 'admin'),
+
+            (replace(uuid(), '-', ''),'purchaseRetreat','cdate','制单日期',10, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchaseRetreat','uuser','修改用户id',11, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchaseRetreat','udate','修改时间',12, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchaseRetreat','remark','备注',13, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchaseRetreat','isdisable','是否启用(0:已禁用 1:启用)',14, '1','1','1','0',now(), 'admin'),
+
+            (replace(uuid(), '-', ''),'purchaseRetreat','orderCode','orderCode',15, '1','1','1','0',now(), 'admin'),
+    </insert>
+
+    <update id="updateStateByRetreat" parameterType="com.yvan.PageData" >
+        update vmes_purchase_retreat set
+        state = #{state},
+        udate = now()
+        <where>
+            <if test="ids != null and ids != ''" >
+                and ${ids}
+            </if>
+        </where>
+    </update>
+
+
+    <!-- 列表(全部) 自动创建，禁止修改-->
+    <select id="dataList" parameterType="com.yvan.PageData" resultType="com.xy.vmes.entity.PurchaseRetreat">
+        select
+        id id,
+        company_id companyId,
+        supplier_id supplierId,
+        order_id orderId,
+        sys_code sysCode,
+
+        state state,
+        total_sum totalSum,
+        retreat_date retreatDate,
+        audit_id auditId,
+        cuser cuser,
+
+        cdate cdate,
+        uuser uuser,
+        udate udate,
+        remark remark,
+        isdisable isdisable
+        from vmes_purchase_retreat
+        <where>
+            <!--isSelfExist 是否考虑自己在业务表中是否存在
+                false: (false or is null) 无需考虑自己在业务表中是否存在
+                true : 需要考虑自己在业务表中是否存在
+            -->
+            <if test="id != null and id != ''" >
+                <choose>
+                    <when test="'true' == isSelfExist">
+                        <![CDATA[ and id <> #{id} ]]>
+                    </when>
+                    <otherwise>
+                        and id = #{id}
+                    </otherwise>
+                </choose>
+            </if>
+
+            <!--queryStr 自定义sql查询语句-->
+            <if test="queryStr != null and queryStr != ''" >
+                and ${queryStr}
+            </if>
+        </where>
+        <if test="orderStr != null and orderStr != ''" >
+            order by ${orderStr}
+        </if>
+    </select>
+
+    <!-- 自动创建，可以修改 -->
+    <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+        retreat.id id,
+        retreat.company_id companyId,
+        retreat.supplier_id supplierId,
+        supplier.name supplierName,
+        retreat.order_id orderId,
+        retreat.sys_code sysCode,
+
+        retreat.state state,
+        retreat.total_sum totalSum,
+        DATE_FORMAT(retreat.retreat_date,'%Y-%m-%d') retreatDate,
+        retreat.audit_id auditId,
+        retreat.cuser cuser,
+
+        DATE_FORMAT(retreat.cdate,'%Y-%m-%d') cdate,
+        retreat.uuser uuser,
+        retreat.udate udate,
+        retreat.remark remark,
+        retreat.isdisable isdisable,
+
+        purchaseOrder.code orderCode
+        from vmes_purchase_retreat retreat
+        left join vmes_purchase_order purchaseOrder on retreat.order_id = purchaseOrder.id
+        left join vmes_customer supplier on retreat.supplier_id = supplier.id
+        <where>
+            <if test="currentCompanyId != null and currentCompanyId != ''" >
+                and retreat.company_id = #{currentCompanyId}
+            </if>
+
+            <if test="code != null and code != ''">
+                and code LIKE CONCAT(CONCAT('%', #{code}),'%')
+            </if>
+            <if test="name != null and name != ''">
+                and name LIKE CONCAT(CONCAT('%', #{name}),'%')
+            </if>
+            <!--queryStr 自定义sql查询语句-->
+            <if test="queryStr != null and queryStr != ''" >
+                and ${queryStr}
+            </if>
+        </where>
+        <if test="orderStr != null and orderStr != ''" >
+            order by ${orderStr}
+        </if>
+    </select>
+
+
+
+
+</mapper>

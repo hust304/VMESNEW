@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xy.vmes.deecoop.purchase.dao.PurchaseOrderDetailByRetreatMapper">
+
+    <select id="findOrderDetailByRetreat" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+        detail.id id,
+        detail.parent_id parentId,
+        detail.plan_id planId,
+        detail.product_id productId,
+        detail.reason reason,
+        reason.name reasonName,
+
+        detail.unit,
+        orderUnit.name unitName,
+        detail.count count,
+        round(ifnull(signDetail.arrive_count, 0), 2) arriveCount,
+        detail.price price,
+        detail.amount amount,
+
+        detail.edate edate,
+        detail.adate adate,
+        detail.state state,
+        detail.cuser cuser,
+        detail.cdate cdate,
+
+        detail.uuser uuser,
+        detail.udate udate,
+        detail.attachment attachment,
+        detail.remark remark,
+        detail.isdisable isdisable,
+
+        <!--货品表-->
+        product.code productCode,
+        product.name productName,
+        product.spec productSpec,
+        product.genre productGenre,
+        genre.name productGenreName,
+
+        <!--可退货数量:= 采购数量(订单明细) - 签收数量(到货数量) - 生成退货数量 -->
+        round((ifnull(detail.count, 0) - ifnull(signDetail.arrive_count, 0) - ifnull(retreatDetail.retreat_count, 0)), 2) maxRetreatCount,
+
+        CASE
+        WHEN signDetail.cdate is not null THEN DATE_FORMAT(signDetail.cdate,'%Y-%m-%d')
+        ELSE null
+        END signDate
+
+        from vmes_purchase_order_detail detail
+            left join vmes_product product on detail.product_id = product.id
+            left join vmes_dictionary genre on product.genre = genre.id
+            left join vmes_dictionary orderUnit on detail.unit = orderUnit.id
+            left join vmes_dictionary reason on detail.reason = reason.id
+
+            <!--获取到货日期 按(订单明细id)汇总 vmes_purchase_sign_detail-->
+            left join (
+                select order_detail_id, max(cdate) cdate, sum(arrive_count) arrive_count
+                from vmes_purchase_sign_detail
+                where isdisable = '1'
+                group by order_detail_id
+            ) signDetail on detail.id = signDetail.order_detail_id
+
+            <!--获取已生成退货数量 按(订单明细id) vmes_purchase_retreat_detail-->
+            left join (
+                select order_detail_id, sum(count) retreat_count
+                from vmes_purchase_retreat_detail
+                where <![CDATA[ state <> '-1' ]]>
+                group by order_detail_id
+            ) retreatDetail on detail.id = retreatDetail.order_detail_id
+    </select>
+
+
+    <insert id="insertColumn" >
+        delete from vmes_column where model_code = 'PurchaseOrderDetailByRetreat' ;
+        insert into vmes_column (
+        id,model_code,title_key,title_name,serial_number,
+        isdisable,ishide,isedit,ismust,cdate,
+        cuser
+        ) VALUES
+        (replace(uuid(), '-', ''),'PurchaseOrderDetailByRetreat','id','id',0, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'PurchaseOrderDetailByRetreat','parentId','采购订单ID',19, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'PurchaseOrderDetailByRetreat','planId','采购计划明细ID',19, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'PurchaseOrderDetailByRetreat','productId','产品ID',20, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'PurchaseOrderDetailByRetreat','reasonName','采购原因',14, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'PurchaseOrderDetailByRetreat','reason','采购原因ID',15, '1','0','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'PurchaseOrderDetailByRetreat','unit','采购单位ID',7, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'PurchaseOrderDetailByRetreat','unitName','采购单位',6, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'PurchaseOrderDetailByRetreat','count','采购数量',8, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'PurchaseOrderDetailByRetreat','arriveCount','到货数量',12, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'PurchaseOrderDetailByRetreat','price','单价',9, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'PurchaseOrderDetailByRetreat','amount','采购金额',10, '1','1','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'PurchaseOrderDetailByRetreat','edate','期望到货时间',11, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'PurchaseOrderDetailByRetreat','adate','实际到货时间',13, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'PurchaseOrderDetailByRetreat','state','明细状态',18, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'PurchaseOrderDetailByRetreat','cuser','创建用户id',21, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'PurchaseOrderDetailByRetreat','cdate','创建时间',22, '1','0','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'PurchaseOrderDetailByRetreat','uuser','修改用户id',23, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'PurchaseOrderDetailByRetreat','udate','修改时间',24, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'PurchaseOrderDetailByRetreat','attachment','附件',17, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'PurchaseOrderDetailByRetreat','remark','采购补充说明',16, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'PurchaseOrderDetailByRetreat','isdisable','是否启用',25, '1','0','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'PurchaseOrderDetailByRetreat','productCode','货品编码',1, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'PurchaseOrderDetailByRetreat','productName','货品名称',2, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'PurchaseOrderDetailByRetreat','spec','规格/型号',3, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'PurchaseOrderDetailByRetreat','genre','属性',4, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'PurchaseOrderDetailByRetreat','genreId','属性ID',5, '1','0','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'PurchaseOrderDetailByRetreat','signDate','到货日期',27, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'PurchaseOrderDetailByRetreat','maxRetreatCount','maxRetreatCount',27, '1','0','1','0',now(), 'admin')
+    </insert>
+</mapper>
