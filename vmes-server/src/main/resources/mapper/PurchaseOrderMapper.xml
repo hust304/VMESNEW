@@ -338,6 +338,9 @@
             <if test="queryStr != null and queryStr != ''" >
                 and ${queryStr}
             </if>
+            <if test="id != null and id != ''">
+                and purchaseOrder.id = #{id}
+            </if>
             <if test="currentCompanyId != null and currentCompanyId != ''">
                 and purchaseOrder.company_id = #{currentCompanyId}
             </if>

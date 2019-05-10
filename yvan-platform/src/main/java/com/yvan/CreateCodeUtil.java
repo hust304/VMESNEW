@@ -14,10 +14,10 @@ public class CreateCodeUtil {
 
         PageData pd = new PageData();
         //模块编码
-        String modelCode = "purchaseCompanyPeriod";
-        String objectName = "PurchaseCompanyPeriod";//类名
-        String tableName = "vmes_purchase_company_period";//表名
-        String title = "vmes_purchase_company_period:采购企业付款期设定";
+        String modelCode = "purchaseRetreatDetail";
+        String objectName = "PurchaseRetreatDetail";//类名
+        String tableName = "vmes_purchase_retreat_detail";//表名
+        String title = "vmes_purchase_retreat_detail:退货明细";
         String author = "陈刚";
         String rootName = "deecoop";
         String moduleName = "purchase";
