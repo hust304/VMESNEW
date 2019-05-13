@@ -1,9 +1,12 @@
 package com.xy.vmes.service;
 
+import com.xy.vmes.entity.PurchaseRetreat;
 import com.xy.vmes.entity.PurchaseRetreatDetail;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
+
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -98,9 +101,11 @@ public interface PurchaseRetreatDetailService {
     List<PurchaseRetreatDetail> findPurchaseRetreatDetailList(PageData object) throws Exception;
     List<PurchaseRetreatDetail> findPurchaseRetreatDetailListByParentId(String parentId) throws Exception;
 
+    List<PurchaseRetreatDetail> mapList2DetailList(List<Map<String, String>> mapList, List<PurchaseRetreatDetail> objectList);
+    BigDecimal findTotalSumByDetailList(List<PurchaseRetreatDetail> objectList);
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
     void updateStateByDetail(String state, String parentIds) throws Exception;
-
+    void addPurchaseRetreatDetail(PurchaseRetreat parentObj, List<PurchaseRetreatDetail> objectList) throws Exception;
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**
     * 分页查询

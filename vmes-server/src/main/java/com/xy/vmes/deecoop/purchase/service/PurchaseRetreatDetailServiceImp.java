@@ -1,6 +1,8 @@
 package com.xy.vmes.deecoop.purchase.service;
 
+import com.xy.vmes.common.util.Common;
 import com.xy.vmes.deecoop.purchase.dao.PurchaseRetreatDetailMapper;
+import com.xy.vmes.entity.PurchaseRetreat;
 import com.xy.vmes.entity.PurchaseRetreatDetail;
 import com.xy.vmes.service.PurchaseRetreatDetailService;
 
@@ -9,18 +11,16 @@ import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.service.ColumnService;
-import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
-import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
 import java.util.*;
 import com.yvan.Conv;
-import org.springframework.web.multipart.MultipartFile;
-import javax.servlet.http.HttpServletResponse;
 
 /**
 * 说明：vmes_purchase_retreat_detail:退货明细 实现类
@@ -205,6 +205,54 @@ public class PurchaseRetreatDetailServiceImp implements PurchaseRetreatDetailSer
         return this.findPurchaseRetreatDetailList(findMap);
     }
 
+    public List<PurchaseRetreatDetail> mapList2DetailList(List<Map<String, String>> mapList, List<PurchaseRetreatDetail> objectList) {
+        if (objectList == null) {objectList = new ArrayList<PurchaseRetreatDetail>();}
+        if (mapList == null || mapList.size() == 0) {return objectList;}
+
+        for (Map<String, String> mapObject : mapList) {
+            PurchaseRetreatDetail detail = (PurchaseRetreatDetail) HttpUtils.pageData2Entity(mapObject, new PurchaseRetreatDetail());
+
+            //单价 price
+            String price_str = mapObject.get("price");
+            BigDecimal price = BigDecimal.valueOf(0D);
+            if (price_str != null && price_str.trim().length() > 0) {
+                try {
+                    price = new BigDecimal(price_str);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            //退货金额 := 退货数量(count) * 单价(price)
+            BigDecimal amount = BigDecimal.valueOf(detail.getCount().doubleValue() * price.doubleValue());
+            //四舍五入到2位小数
+            amount = amount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+            detail.setAmount(amount);
+
+            objectList.add(detail);
+        }
+
+        return objectList;
+    }
+
+    public BigDecimal findTotalSumByDetailList(List<PurchaseRetreatDetail> objectList) {
+        double totalSum_double = 0D;
+        if (objectList == null || objectList.size() == 0) {return BigDecimal.valueOf(0D);}
+
+        for (PurchaseRetreatDetail detail : objectList) {
+            //amount 退货金额
+            double amount_double = 0D;
+            if (detail.getAmount() != null) {
+                amount_double = detail.getAmount().doubleValue();
+            }
+
+            totalSum_double = totalSum_double + amount_double;
+        }
+
+        //四舍五入到2位小数
+        return BigDecimal.valueOf(totalSum_double).setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+    }
+
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public void updateStateByDetail(String state, String parentIds) throws Exception {
         if (state == null || state.trim().length() == 0) {return;}
@@ -218,6 +266,19 @@ public class PurchaseRetreatDetailServiceImp implements PurchaseRetreatDetailSer
         pageData.put("parentIds", "parent_id in (" + parentIds + ")");
 
         purchaseRetreatDetailMapper.updateStateByDetail(pageData);
+    }
+
+    public void addPurchaseRetreatDetail(PurchaseRetreat parentObj, List<PurchaseRetreatDetail> objectList) throws Exception {
+        if (parentObj == null) {return;}
+        if (objectList == null || objectList.size() == 0) {return;}
+
+        for (PurchaseRetreatDetail detail : objectList) {
+            //退货明细状态 明细状态(1:待审核 2:待退货 3:已完成 -1:已取消)
+            detail.setState("1");
+            detail.setParentId(parentObj.getId());
+            detail.setCuser(parentObj.getCuser());
+            this.save(detail);
+        }
     }
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**

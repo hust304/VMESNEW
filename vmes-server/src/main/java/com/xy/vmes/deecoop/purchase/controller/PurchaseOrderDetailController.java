@@ -1,5 +1,6 @@
 package com.xy.vmes.deecoop.purchase.controller;
 
+import com.xy.vmes.service.PurchaseOrderDetailByRetreatService;
 import com.xy.vmes.service.PurchaseOrderDetailService;
 import com.xy.vmes.entity.PurchaseOrderDetail;
 
@@ -29,6 +30,9 @@ public class PurchaseOrderDetailController {
 
     @Autowired
     private PurchaseOrderDetailService purchaseOrderDetailService;
+
+    @Autowired
+    private PurchaseOrderDetailByRetreatService purchaseOrderDetailByRetreatService;
 
     /**
     * @author 刘威 自动创建，禁止修改
@@ -121,6 +125,17 @@ public class PurchaseOrderDetailController {
         ResultModel model = purchaseOrderDetailService.listPagePurchaseOrderDetails(pd,pg);
         Long endTime = System.currentTimeMillis();
         logger.info("################/purchase/purchaseOrderDetail/listPagePurchaseOrderDetails 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    @PostMapping("/purchase/purchaseOrderDetail/listPageOrderDetailByRetreat")
+    public ResultModel listPageOrderDetailByRetreat()  throws Exception {
+        logger.info("################/purchase/purchaseOrderDetail/listPageOrderDetailByRetreat 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = purchaseOrderDetailByRetreatService.listPageOrderDetailByRetreat(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/purchase/purchaseOrderDetail/listPageOrderDetailByRetreat 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 

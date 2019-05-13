@@ -107,6 +107,7 @@ public interface PurchaseRetreatService {
     * @throws Exception
     */
     ResultModel listPageRetreat(PageData pd,Pagination pg) throws Exception;
+    ResultModel addPurchaseRetreat(PageData pageData) throws Exception;
 
 }
 

@@ -3,6 +3,9 @@ package com.xy.vmes.deecoop.purchase.service;
 
 import com.xy.vmes.deecoop.purchase.dao.PurchaseRetreatMapper;
 import com.xy.vmes.entity.PurchaseRetreat;
+import com.xy.vmes.entity.PurchaseRetreatDetail;
+import com.xy.vmes.service.CoderuleService;
+import com.xy.vmes.service.PurchaseRetreatDetailService;
 import com.xy.vmes.service.PurchaseRetreatService;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
@@ -11,10 +14,13 @@ import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.service.ColumnService;
 import com.yvan.PageData;
+import com.yvan.YvanUtil;
 import com.yvan.springmvc.ResultModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
 import java.util.*;
 import com.yvan.Conv;
 
@@ -29,6 +35,12 @@ public class PurchaseRetreatServiceImp implements PurchaseRetreatService {
 
     @Autowired
     private PurchaseRetreatMapper purchaseRetreatMapper;
+
+    @Autowired
+    private PurchaseRetreatDetailService purchaseRetreatDetailService;
+
+    @Autowired
+    private CoderuleService coderuleService;
     @Autowired
     private ColumnService columnService;
     /**
@@ -250,6 +262,73 @@ public class PurchaseRetreatServiceImp implements PurchaseRetreatService {
         result.put("titles",titleMap.get("titles"));
         result.put("varList",varMapList);
         model.putResult(result);
+        return model;
+    }
+
+    public ResultModel addPurchaseRetreat(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+
+        //采购订单id
+        String orderId = pageData.getString("orderId");
+        if (orderId == null || orderId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("采购订单id为空或空字符串！");
+            return model;
+        }
+
+        //供应商ID
+        String supplierId = pageData.getString("supplierId");
+        if (supplierId == null || supplierId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("供应商id为空或空字符串！");
+            return model;
+        }
+
+        String dtlJsonStr = pageData.getString("dtlJsonStr");
+        if (dtlJsonStr == null || dtlJsonStr.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("无退货列表数据！");
+            return model;
+        }
+
+        List<Map<String, String>> mapList = (List<Map<String, String>>) YvanUtil.jsonToList(dtlJsonStr);
+        if (mapList == null || mapList.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("退货明细Json字符串-转换成List错误！");
+            return model;
+        }
+
+        List<PurchaseRetreatDetail> retreatDtlList = purchaseRetreatDetailService.mapList2DetailList(mapList, null);
+        if (retreatDtlList == null || retreatDtlList.size() == 0) {return model;}
+
+        //1. 退货单
+        PurchaseRetreat retreat = new PurchaseRetreat();
+        retreat.setSupplierId(supplierId);
+        retreat.setOrderId(orderId);
+        //获取退货总金额
+        BigDecimal totalSum = purchaseRetreatDetailService.findTotalSumByDetailList(retreatDtlList);
+        retreat.setTotalSum(totalSum);
+
+        //状态(1:待审核 2:待退货 3:已完成 -1:已取消)
+        retreat.setState("1");
+        String companyID = pageData.getString("currentCompanyId");
+        retreat.setCompanyId(companyID);
+
+        String cuser = pageData.getString("cuser");
+        retreat.setCuser(cuser);
+
+        //退货单编号
+        //D+yyyyMMdd+00001 = 14位
+        String code = coderuleService.createCoderCdateByDate(companyID,
+                "vmes_purchase_retreat",
+                "yyyyMMdd",
+                "PT");
+        retreat.setSysCode(code);
+        this.save(retreat);
+
+        //2. 退货单明细
+        purchaseRetreatDetailService.addPurchaseRetreatDetail(retreat, retreatDtlList);
+
         return model;
     }
 
