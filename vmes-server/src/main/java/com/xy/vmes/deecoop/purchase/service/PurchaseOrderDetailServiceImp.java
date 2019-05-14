@@ -1,6 +1,7 @@
 package com.xy.vmes.deecoop.purchase.service;
 
 
+import com.xy.vmes.common.util.Common;
 import com.xy.vmes.deecoop.purchase.dao.PurchaseOrderDetailMapper;
 import com.xy.vmes.entity.PurchaseOrderDetail;
 import com.xy.vmes.entity.PurchasePlanDetail;
@@ -19,6 +20,8 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
 import java.util.*;
 import com.yvan.Conv;
 import org.springframework.web.multipart.MultipartFile;
@@ -486,6 +489,55 @@ public class PurchaseOrderDetailServiceImp implements PurchaseOrderDetailService
             }
         }
         return model;
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    public PurchaseOrderDetail findPurchaseOrderDetail(PageData object) throws Exception {
+        List<PurchaseOrderDetail> objectList = this.findPurchaseOrderDetailList(object);
+        if (objectList != null && objectList.size() > 0) {
+            return objectList.get(0);
+        }
+
+        return null;
+    }
+    public PurchaseOrderDetail findPurchaseOrderDetailById(String id) throws Exception {
+        if (id == null || id.trim().length() == 0) {return null;}
+
+        PageData findMap = new PageData();
+        findMap.put("id", id);
+
+        return this.findPurchaseOrderDetail(findMap);
+    }
+
+    public List<PurchaseOrderDetail> findPurchaseOrderDetailList(PageData object) throws Exception {
+        return this.findDataList(object, null);
+    }
+    public List<PurchaseOrderDetail> findPurchaseOrderDetailListByParentId(String parentId) throws Exception {
+        if (parentId == null || parentId.trim().length() == 0) {return null;}
+
+        PageData findMap = new PageData();
+        findMap.put("parentId", parentId);
+
+        return this.findPurchaseOrderDetailList(findMap);
+    }
+
+    public BigDecimal findTotalSumByDetailList(List<PurchaseOrderDetail> objectList) {
+        if (objectList == null || objectList.size() == 0) {return BigDecimal.valueOf(0D);}
+
+        double totalSum_double = 0D;
+        for (PurchaseOrderDetail detail : objectList) {
+
+            //amount 采购金额
+            double amount_double = 0D;
+            if (detail.getAmount() != null) {
+                amount_double = detail.getAmount().doubleValue();
+            }
+
+            totalSum_double = totalSum_double + amount_double;
+        }
+
+        //四舍五入到2位小数
+        return BigDecimal.valueOf(totalSum_double).setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
     }
 }
 

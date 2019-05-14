@@ -455,8 +455,69 @@ public class PurchaseRetreatServiceImp implements PurchaseRetreatService {
         retreatEdit.setState("3");
         this.update(retreatEdit);
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //3. 修改订单明细和订单
+        //获取 <采购订单明细id, <采购订单明细退货信息Map(count:退货数量,amount:退货金额)>
+        Map<String, Map<String, BigDecimal>> orderDtlRetreatMap = purchaseRetreatDetailService.findOrderDtlRetreatCountMap(retreatDtlList);
+        if (orderDtlRetreatMap == null || orderDtlRetreatMap.size() == 0) {
+            return model;
+        }
+
+        //获取采购订单明细id字符串-(','逗号分隔字符串)
+        String orderDtlIds = purchaseRetreatDetailService.findOrderDtlIdsByRetreatDtlList(retreatDtlList);
+        if (orderDtlIds == null || orderDtlIds.trim().length() == 0) {
+            return model;
+        }
+
+        PageData findMap = new PageData();
+        orderDtlIds = "'" + orderDtlIds.replace(",", "','") + "'";
+        findMap.put("ids", orderDtlIds);
+        List<PurchaseOrderDetail> orderDtlList = purchaseOrderDetailService.findPurchaseOrderDetailList(findMap);
+        if (orderDtlList == null || orderDtlList.size() == 0) {
+            return model;
+        }
+
+        //修改采购订单明细-变更订单明细(订购数量,货品金额)
+        purchaseRetreatDetailService.updateOrderDetailByRetreat(orderDtlRetreatMap, orderDtlList);
+
+        //修改采购订单
 
 
+
+//        for (Iterator iterator = orderMap.keySet().iterator(); iterator.hasNext();) {
+//            SaleOrder orderEdit = new SaleOrder();
+//
+//            String orderId = (String) iterator.next();
+//            orderEdit.setId(orderId);
+//
+//            List<PurchaseOrderDetail> orderDetailList = purchaseOrderDetailService.findPurchaseOrderDetailListByParentId(orderId);
+//            if (orderDetailList == null || orderDetailList.size() == 0) {continue;}
+//
+//            //采购订单明细总金额
+//            BigDecimal totalSum = purchaseOrderDetailService.findTotalSumByDetailList(orderDetailList);
+//
+//            //discount 折扣金额
+//            //orderEdit.setDiscountSum(BigDecimal.valueOf(0D));
+//            //total 合计金额 (采购订单明细总金额)
+//            //orderEdit.setTotalSum(totalSum);
+//            //amount 采购金额 (合计金额 - 折扣金额)
+//            orderEdit.setOrderSum(totalSum);
+//
+//            String remark = "";
+//            SaleOrder orderDB = saleOrderService.findSaleOrderById(orderId);
+//            if (orderDB.getRemark() != null && orderDB.getRemark().trim().length() > 0) {
+//                remark = orderDB.getRemark().trim();
+//            }
+//
+//            String tempStr = "退货单审核通过：修改订单数量和订单金额{0}";
+//            String msgStr = MessageFormat.format(
+//                    tempStr,
+//                    DateFormat.date2String(new Date(), DateFormat.DEFAULT_DATETIME_FORMAT)
+//            );
+//            remark = remark + msgStr;
+//            orderEdit.setRemark(remark);
+//
+//            saleOrderService.update(orderEdit);
+//        }
 
         return model;
     }

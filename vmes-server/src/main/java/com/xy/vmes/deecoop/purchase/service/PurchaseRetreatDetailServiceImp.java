@@ -2,15 +2,14 @@ package com.xy.vmes.deecoop.purchase.service;
 
 import com.xy.vmes.common.util.Common;
 import com.xy.vmes.deecoop.purchase.dao.PurchaseRetreatDetailMapper;
-import com.xy.vmes.entity.PurchaseRetreat;
-import com.xy.vmes.entity.PurchaseRetreatDetail;
-import com.xy.vmes.entity.WarehouseOutDetail;
+import com.xy.vmes.entity.*;
+import com.xy.vmes.service.PurchaseOrderDetailService;
+import com.xy.vmes.service.PurchaseOrderService;
 import com.xy.vmes.service.PurchaseRetreatDetailService;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.StringUtil;
-import com.xy.vmes.entity.Column;
 import com.xy.vmes.service.ColumnService;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
@@ -32,9 +31,15 @@ import com.yvan.Conv;
 @Transactional(readOnly = false)
 public class PurchaseRetreatDetailServiceImp implements PurchaseRetreatDetailService {
 
-
     @Autowired
     private PurchaseRetreatDetailMapper purchaseRetreatDetailMapper;
+
+    @Autowired
+    private PurchaseOrderService purchaseOrderService;
+    @Autowired
+    private PurchaseOrderDetailService purchaseOrderDetailService;
+
+
     @Autowired
     private ColumnService columnService;
     /**
@@ -279,6 +284,57 @@ public class PurchaseRetreatDetailServiceImp implements PurchaseRetreatDetailSer
         return outDtlList;
     }
 
+    public String findOrderDtlIdsByRetreatDtlList(List<PurchaseRetreatDetail> objectList) {
+        if (objectList == null || objectList.size() == 0) {return new String();}
+
+        StringBuffer strBuf = new StringBuffer();
+        for (PurchaseRetreatDetail object : objectList) {
+            String orderDtlId = object.getOrderDetailId();
+            if (orderDtlId != null && orderDtlId.trim().length() > 0)  {
+                strBuf.append(orderDtlId.trim());
+                strBuf.append(",");
+            }
+        }
+
+        String strTemp = strBuf.toString();
+        if (strTemp.trim().length() > 0 && strTemp.lastIndexOf(",") != -1) {
+            strTemp = strTemp.substring(0, strTemp.lastIndexOf(","));
+            return strTemp;
+        }
+
+        return strTemp;
+    }
+
+    /**
+     * 获取 <采购订单明细id,<订单明细退货信息Map>
+     *     订单明细退货信息Map
+     *         count:退货数量
+     *         amount:退货金额(订单明细-退货金额)
+     * @param objectList
+     * @return
+     */
+    public Map<String, Map<String, BigDecimal>> findOrderDtlRetreatCountMap(List<PurchaseRetreatDetail> objectList) {
+        Map<String, Map<String, BigDecimal>> mapObject = new HashMap<String, Map<String, BigDecimal>>();
+        if (objectList == null || objectList.size() == 0) {return mapObject;}
+
+        for (PurchaseRetreatDetail object : objectList) {
+            String orderDtlId = object.getOrderDetailId();
+
+            Map<String, BigDecimal> retreatMap = new HashMap<String, BigDecimal>();
+            //count 退货数量
+            BigDecimal count = object.getCount();
+            retreatMap.put("count", count);
+
+            //amount 退货金额
+            BigDecimal amount = object.getAmount();
+            retreatMap.put("amount", amount);
+
+            mapObject.put(orderDtlId, retreatMap);
+        }
+
+        return mapObject;
+    }
+
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public void updateStateByDetail(String state, String parentIds) throws Exception {
         if (state == null || state.trim().length() == 0) {return;}
@@ -304,6 +360,57 @@ public class PurchaseRetreatDetailServiceImp implements PurchaseRetreatDetailSer
             detail.setParentId(parentObj.getId());
             detail.setCuser(parentObj.getCuser());
             this.save(detail);
+        }
+    }
+
+    public void updateOrderDetailByRetreat(Map<String, Map<String, BigDecimal>> orderDtlRetreatMap, List<PurchaseOrderDetail> orderDtlList) throws Exception {
+        if (orderDtlRetreatMap == null || orderDtlRetreatMap.size() == 0) {return;}
+        if (orderDtlList == null || orderDtlList.size() == 0) {return;}
+
+        for (PurchaseOrderDetail orderDetail : orderDtlList) {
+            PurchaseOrderDetail orderDetailEdit = new PurchaseOrderDetail();
+
+            String orderId = orderDetail.getParentId();
+
+            String orderDtlId = orderDetail.getId();
+            orderDetailEdit.setId(orderDtlId);
+
+            //count 采购数量
+            BigDecimal count = BigDecimal.valueOf(0D);
+            if (orderDetail.getCount() != null) {
+                count = orderDetail.getCount();
+            }
+
+            //amount 采购金额
+            BigDecimal amount = BigDecimal.valueOf(0D);
+            if (orderDetail.getAmount() != null) {
+                amount = orderDetail.getAmount();
+            }
+
+            //count 退货数量
+            Map<String, BigDecimal> retreatMap = orderDtlRetreatMap.get(orderDtlId);
+            BigDecimal retreatCount = BigDecimal.valueOf(0D);
+            if (retreatMap.get("count") != null) {
+                retreatCount = retreatMap.get("count");
+            }
+
+            //amount 退货金额
+            BigDecimal retreatAmount = BigDecimal.valueOf(0D);
+            if (retreatMap.get("amount") != null) {
+                retreatAmount = retreatMap.get("amount");
+            }
+
+            count = BigDecimal.valueOf(count.doubleValue() - retreatCount.doubleValue());
+            //四舍五入到2位小数
+            count = count.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+            orderDetailEdit.setCount(count);
+
+            amount = BigDecimal.valueOf(amount.doubleValue() - retreatAmount.doubleValue());
+            //四舍五入到2位小数
+            amount = amount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+            orderDetailEdit.setAmount(amount);
+
+            purchaseOrderDetailService.update(orderDetailEdit);
         }
     }
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////

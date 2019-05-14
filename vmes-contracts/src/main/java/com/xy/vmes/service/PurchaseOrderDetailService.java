@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.math.BigDecimal;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -163,6 +165,17 @@ public interface PurchaseOrderDetailService {
     ResultModel recoveryPurchaseOrderDetail(PageData pageData) throws Exception;
 
     ResultModel cancelPurchaseOrderDetail(PageData pageData) throws Exception;
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    PurchaseOrderDetail findPurchaseOrderDetail(PageData object) throws Exception;
+    PurchaseOrderDetail findPurchaseOrderDetailById(String id) throws Exception;
+
+    List<PurchaseOrderDetail> findPurchaseOrderDetailList(PageData object) throws Exception;
+    List<PurchaseOrderDetail> findPurchaseOrderDetailListByParentId(String parentId) throws Exception;
+
+    BigDecimal findTotalSumByDetailList(List<PurchaseOrderDetail> objectList);
+
+
 }
 
 

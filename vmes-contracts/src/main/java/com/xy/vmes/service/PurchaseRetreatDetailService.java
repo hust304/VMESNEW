@@ -1,5 +1,6 @@
 package com.xy.vmes.service;
 
+import com.xy.vmes.entity.PurchaseOrderDetail;
 import com.xy.vmes.entity.PurchaseRetreat;
 import com.xy.vmes.entity.PurchaseRetreatDetail;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
@@ -107,9 +108,22 @@ public interface PurchaseRetreatDetailService {
 
     WarehouseOutDetail retreatDetail2OutDetail(PurchaseRetreatDetail retreatDetail, WarehouseOutDetail outDetail);
     List<WarehouseOutDetail> retreatDtlList2OutDtlList(List<PurchaseRetreatDetail> retreatDtlList, List<WarehouseOutDetail> outDtlList);
+
+    String findOrderDtlIdsByRetreatDtlList(List<PurchaseRetreatDetail> objectList);
+    /**
+     * 获取 <采购订单明细id,<订单明细退货信息Map>
+     *     订单明细退货信息Map
+     *         count:退货数量
+     *         amount:退货金额(订单明细-退货金额)
+     * @param objectList
+     * @return
+     */
+    Map<String, Map<String, BigDecimal>> findOrderDtlRetreatCountMap(List<PurchaseRetreatDetail> objectList);
+
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
     void updateStateByDetail(String state, String parentIds) throws Exception;
     void addPurchaseRetreatDetail(PurchaseRetreat parentObj, List<PurchaseRetreatDetail> objectList) throws Exception;
+    void updateOrderDetailByRetreat(Map<String, Map<String, BigDecimal>> orderDtlRetreatMap, List<PurchaseOrderDetail> orderDtlList) throws Exception;
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**
     * 分页查询

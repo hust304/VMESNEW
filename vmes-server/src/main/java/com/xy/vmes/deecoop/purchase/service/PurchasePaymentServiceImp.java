@@ -2,6 +2,7 @@ package com.xy.vmes.deecoop.purchase.service;
 
 import com.xy.vmes.deecoop.purchase.dao.PurchasePaymentMapper;
 import com.xy.vmes.entity.PurchasePayment;
+import com.xy.vmes.service.CoderuleService;
 import com.xy.vmes.service.PurchasePaymentService;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
@@ -28,6 +29,8 @@ public class PurchasePaymentServiceImp implements PurchasePaymentService {
     private PurchasePaymentMapper purchasePaymentMapper;
     @Autowired
     private ColumnService columnService;
+    @Autowired
+    private CoderuleService coderuleService;
 
     /**
     * 创建人：陈刚 自动创建，禁止修改
@@ -188,6 +191,28 @@ public class PurchasePaymentServiceImp implements PurchasePaymentService {
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /**
+     *
+     * @param supplierId  供应商id
+     * @param cuser       创建人id
+     * @param companyId   企业id
+     * @param type        付款单类型(1:订单付款 2:订单退款)
+     * @return
+     */
+    public PurchasePayment createPayment(String supplierId, String cuser, String companyId, String type) {
+        PurchasePayment payment = new PurchasePayment();
+        //付款单编码
+        String sysCode = coderuleService.createCoder(companyId, "vmes_purchase_payment", "P");
+        payment.setSysCode(sysCode);
+
+        payment.setSupplierId(supplierId);
+        payment.setCompanyId(companyId);
+        //付款单类型(1:订单付款 2:订单退款)
+        payment.setType(type);
+        payment.setCuser(cuser);
+
+        return payment;
+    }
     /**
     *
     * @param pd    查询参数对象PageData
