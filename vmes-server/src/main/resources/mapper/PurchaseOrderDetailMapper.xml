@@ -427,6 +427,37 @@
         </if>
     </select>
 
+    <select id="findOrderDetaiByCollect" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+            orderDetail.id orderDtlId,
+            orderDetail.parent_id orderId,
+            round(ifnull(orderDetail.count, 0), 2) orderDtlCount,
+            round(ifnull(orderDetail.amount, 0), 2) orderDtlAmount,
+
+            <!--checkCount:=(签收数量-退货数量)-->
+            round((ifnull(signDetail.arrive_count, 0) - ifnull(retreatDetail.count, 0)), 2) checkCount
+
+        from vmes_purchase_order_detail orderDetail
+            left join (
+                <!--(采购订单明细id)采购签收明细汇总-->
+                select
+                    order_detail_id,
+                    sum(arrive_count) arrive_count
+                from vmes_purchase_sign_detail
+                group by order_detail_id
+            ) signDetail on orderDetail.id = signDetail.order_detail_id
+            left join (
+                <!--(采购订单明细id)-退货完成数量-退货明细汇总-->
+                select
+                    order_detail_id,
+                    sum(count) count,
+                    sum(amount) amount
+                from vmes_purchase_retreat_detail
+                where state = '3'
+                group by order_detail_id
+            ) retreatDetail on orderDetail.id = retreatDetail.order_detail_id
+    </select>
+
 
 
 

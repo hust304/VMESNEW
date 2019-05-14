@@ -1,18 +1,14 @@
 package com.xy.vmes.deecoop.purchase.service;
 
 
+import com.xy.vmes.common.util.Common;
 import com.xy.vmes.deecoop.purchase.dao.PurchaseRetreatMapper;
-import com.xy.vmes.entity.PurchaseRetreat;
-import com.xy.vmes.entity.PurchaseRetreatDetail;
-import com.xy.vmes.service.CoderuleService;
-import com.xy.vmes.service.PurchaseRetreatDetailService;
-import com.xy.vmes.service.PurchaseRetreatService;
+import com.xy.vmes.entity.*;
+import com.xy.vmes.service.*;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.StringUtil;
-import com.xy.vmes.entity.Column;
-import com.xy.vmes.service.ColumnService;
 import com.yvan.PageData;
 import com.yvan.YvanUtil;
 import com.yvan.springmvc.ResultModel;
@@ -38,6 +34,16 @@ public class PurchaseRetreatServiceImp implements PurchaseRetreatService {
 
     @Autowired
     private PurchaseRetreatDetailService purchaseRetreatDetailService;
+
+    @Autowired
+    private WarehouseOutService warehouseOutService;
+    @Autowired
+    private WarehouseOutDetailService warehouseOutDetailService;
+
+    @Autowired
+    private PurchaseOrderService purchaseOrderService;
+    @Autowired
+    private PurchaseOrderDetailService purchaseOrderDetailService;
 
     @Autowired
     private CoderuleService coderuleService;
@@ -328,6 +334,129 @@ public class PurchaseRetreatServiceImp implements PurchaseRetreatService {
 
         //2. 退货单明细
         purchaseRetreatDetailService.addPurchaseRetreatDetail(retreat, retreatDtlList);
+
+        return model;
+    }
+
+    public ResultModel auditPassPurchaseRetreat(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+
+        String companyId = pageData.getString("currentCompanyId");
+        String supplierId = pageData.getString("supplierId");
+        String supplierName = pageData.getString("supplierName");
+        String cuser = pageData.getString("cuser");
+
+        //退货单id retreatId
+        String retreatId = pageData.getString("retreatId");
+        if (retreatId == null || retreatId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("退货单id为空或空字符串！");
+            return model;
+        }
+
+        String dtlJsonStr = pageData.getString("dtlJsonStr");
+        if (dtlJsonStr == null || dtlJsonStr.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("无列表数据！");
+            return model;
+        }
+
+        List<Map<String, String>> retreatDtlMapList = (List<Map<String, String>>) YvanUtil.jsonToList(dtlJsonStr);
+        if (retreatDtlMapList == null || retreatDtlMapList.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("Json字符串-转换成List错误！");
+            return model;
+        }
+
+        //根据(退货单id)-获取退货单明细List
+        List<PurchaseRetreatDetail> retreatDtlList = purchaseRetreatDetailService.findPurchaseRetreatDetailListByParentId(retreatId);
+        if (retreatDtlList == null || retreatDtlList.size() == 0) {return model;}
+
+        //创建出库单
+        WarehouseOut warehouseOut = warehouseOutService.createWarehouseOut(supplierId,
+                supplierName,
+                cuser,
+                companyId,
+                Common.DICTIONARY_MAP.get("purchaseOut"));
+        //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
+        warehouseOut.setWarehouseId(Common.DICTIONARY_MAP.get("warehouseEntity"));
+        warehouseOutService.save(warehouseOut);
+
+        //创建出库单明细
+        List<WarehouseOutDetail> outDtlList = purchaseRetreatDetailService.retreatDtlList2OutDtlList(retreatDtlList, null);
+        warehouseOutDetailService.addWarehouseOutDetail(warehouseOut, outDtlList);
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //<退货单明细id, 出库明细id>Map
+        Map<String, String> retreatDtl2OutDtlMap = new HashMap<String, String>();
+        for (WarehouseOutDetail outDtl : outDtlList) {
+            retreatDtl2OutDtlMap.put(outDtl.getBusinessId(), outDtl.getId());
+        }
+
+        //修改退货单明细(退货单明细(关联)入库单明细)
+        for (Map<String, String> mapObject : retreatDtlMapList) {
+            PurchaseRetreatDetail detailEdit = new PurchaseRetreatDetail();
+
+            //id: 退货单明细id,
+            String retreatDtl_id = mapObject.get("id");
+            detailEdit.setId(retreatDtl_id);
+
+            //count: 退货数量
+            BigDecimal count = BigDecimal.valueOf(0D);
+            String count_str = mapObject.get("count");
+            if (count_str != null && count_str.trim().length() > 0) {
+                try {
+                    count = new BigDecimal(count_str.trim());
+                    //四舍五入到2位小数
+                    count = count.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+            detailEdit.setCount(count);
+
+            //price: 货品单价
+            BigDecimal price = BigDecimal.valueOf(0D);
+            String price_str = mapObject.get("price");
+            if (price_str != null && price_str.trim().length() > 0) {
+                try {
+                    price = new BigDecimal(price_str.trim());
+                    //四舍五入到2位小数
+                    price = price.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            //amount: 退货金额
+            BigDecimal amount = BigDecimal.valueOf(count.doubleValue() * price.doubleValue());
+            //四舍五入到2位小数
+            amount = amount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+            detailEdit.setAmount(amount);
+
+            if (retreatDtl2OutDtlMap != null
+                    && retreatDtl2OutDtlMap.get(retreatDtl_id) != null
+                    && retreatDtl2OutDtlMap.get(retreatDtl_id).trim().length() > 0
+                    ) {
+                detailEdit.setOutDetailId(retreatDtl2OutDtlMap.get(retreatDtl_id).trim());
+            }
+
+            //退货单明细状态(1:待审核 2:待退货 3:已完成 -1:已取消)
+            detailEdit.setState("3");
+
+            purchaseRetreatDetailService.update(detailEdit);
+        }
+
+        PurchaseRetreat retreatEdit = new PurchaseRetreat();
+        retreatEdit.setId(retreatId);
+        //审核人ID
+        retreatEdit.setAuditId(cuser);
+        //状态(1:待审核 2:待退货 3:已完成 -1:已取消)
+        retreatEdit.setState("3");
+        this.update(retreatEdit);
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 
         return model;
     }

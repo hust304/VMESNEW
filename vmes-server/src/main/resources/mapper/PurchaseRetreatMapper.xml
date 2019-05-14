@@ -146,12 +146,23 @@
                 and retreat.company_id = #{currentCompanyId}
             </if>
 
-            <if test="code != null and code != ''">
-                and code LIKE CONCAT(CONCAT('%', #{code}),'%')
+            <if test="sysCode != null and sysCode != ''" >
+                and retreat.sys_code = #{sysCode}
             </if>
-            <if test="name != null and name != ''">
-                and name LIKE CONCAT(CONCAT('%', #{name}),'%')
+            <if test="state != null and state != ''" >
+                and retreat.state = #{state}
             </if>
+
+            <if test="supplierName != null and supplierName != ''">
+                and supplier.name LIKE CONCAT(CONCAT(#{supplierName}),'%')
+            </if>
+            <if test="cdateBegin != null and cdateBegin != ''">
+                <![CDATA[ and retreat.cdate >= #{cdateBegin} ]]>
+            </if>
+            <if test="cdateEnd != null and cdateEnd != ''">
+                <![CDATA[ and retreat.cdate <= #{cdateEnd} ]]>
+            </if>
+
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >
                 and ${queryStr}

@@ -4,6 +4,7 @@ import com.xy.vmes.common.util.Common;
 import com.xy.vmes.deecoop.purchase.dao.PurchaseRetreatDetailMapper;
 import com.xy.vmes.entity.PurchaseRetreat;
 import com.xy.vmes.entity.PurchaseRetreatDetail;
+import com.xy.vmes.entity.WarehouseOutDetail;
 import com.xy.vmes.service.PurchaseRetreatDetailService;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
@@ -251,6 +252,31 @@ public class PurchaseRetreatDetailServiceImp implements PurchaseRetreatDetailSer
 
         //四舍五入到2位小数
         return BigDecimal.valueOf(totalSum_double).setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+    }
+
+    public WarehouseOutDetail retreatDetail2OutDetail(PurchaseRetreatDetail retreatDetail, WarehouseOutDetail outDetail) {
+        if (outDetail == null) {outDetail = new WarehouseOutDetail();}
+        if (retreatDetail == null) {return outDetail;}
+
+        //productId 产品ID
+        outDetail.setProductId(retreatDetail.getProductId());
+        //count 入库数量 退货数量:count
+        outDetail.setCount(retreatDetail.getCount());
+        //businessId 业务id(退货明细id)
+        outDetail.setBusinessId(retreatDetail.getId());
+
+        return outDetail;
+    }
+    public List<WarehouseOutDetail> retreatDtlList2OutDtlList(List<PurchaseRetreatDetail> retreatDtlList, List<WarehouseOutDetail> outDtlList) {
+        if (outDtlList == null) {outDtlList = new ArrayList<WarehouseOutDetail>();}
+        if (retreatDtlList == null || retreatDtlList.size() == 0) {return outDtlList;}
+
+        for (PurchaseRetreatDetail retreatDtl : retreatDtlList) {
+            WarehouseOutDetail outDetail = this.retreatDetail2OutDetail(retreatDtl, null);
+            outDtlList.add(outDetail);
+        }
+
+        return outDtlList;
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////

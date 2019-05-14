@@ -62,6 +62,25 @@ public class PurchaseRetreatController {
         return model;
     }
 
+    /**
+     * 审核通过(退货单)
+     *
+     * @author 陈刚
+     * @date 2018-12-10
+     * @throws Exception
+     */
+    @PostMapping("/sale/saleRetreatAudit/auditPassPurchaseRetreat")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel auditPassPurchaseRetreat() throws Exception {
+        logger.info("################/purchase/purchaseRetreat/auditPassPurchaseRetreat 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pageData = HttpUtils.parsePageData();
+        ResultModel model = purchaseRetreatService.auditPassPurchaseRetreat(pageData);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/purchase/purchaseRetreat/auditPassPurchaseRetreat 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
 
 }
 

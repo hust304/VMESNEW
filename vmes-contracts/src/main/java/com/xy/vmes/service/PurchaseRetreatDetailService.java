@@ -3,6 +3,7 @@ package com.xy.vmes.service;
 import com.xy.vmes.entity.PurchaseRetreat;
 import com.xy.vmes.entity.PurchaseRetreatDetail;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.entity.WarehouseOutDetail;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
 
@@ -103,6 +104,9 @@ public interface PurchaseRetreatDetailService {
 
     List<PurchaseRetreatDetail> mapList2DetailList(List<Map<String, String>> mapList, List<PurchaseRetreatDetail> objectList);
     BigDecimal findTotalSumByDetailList(List<PurchaseRetreatDetail> objectList);
+
+    WarehouseOutDetail retreatDetail2OutDetail(PurchaseRetreatDetail retreatDetail, WarehouseOutDetail outDetail);
+    List<WarehouseOutDetail> retreatDtlList2OutDtlList(List<PurchaseRetreatDetail> retreatDtlList, List<WarehouseOutDetail> outDtlList);
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
     void updateStateByDetail(String state, String parentIds) throws Exception;
     void addPurchaseRetreatDetail(PurchaseRetreat parentObj, List<PurchaseRetreatDetail> objectList) throws Exception;
