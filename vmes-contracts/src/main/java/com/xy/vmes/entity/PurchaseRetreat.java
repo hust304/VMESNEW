@@ -16,7 +16,6 @@ import java.math.BigDecimal;
 public class PurchaseRetreat implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	//
 	@TableField("id")
 	private String id;
 	//企业ID
@@ -38,16 +37,19 @@ public class PurchaseRetreat implements Serializable {
 	//退货金额
 	@TableField("total_sum")
 	private BigDecimal totalSum;
+	//实际退货金额
+	@TableField("reality_total")
+	private BigDecimal realityTotal;
 	//退货完成日期
 	@TableField("retreat_date")
 	private Date retreatDate;
 	//审核人ID
 	@TableField("audit_id")
 	private String auditId;
+
 	//创建用户id
 	@TableField("cuser")
 	private String cuser;
-
 	//创建时间
 	@TableField("cdate")
 	private Date cdate;
@@ -60,94 +62,28 @@ public class PurchaseRetreat implements Serializable {
 	//备注
 	@TableField("remark")
 	private String remark;
+
 	//是否启用(0:已禁用 1:启用)
 	@TableField("isdisable")
 	private String isdisable;
 
-
-	public void setId(String id) {
-		this.id = id;
-	}
 	public String getId() {
 		return id;
 	}
-	public void setCompanyId(String companyId) {
-		this.companyId = companyId;
+	public void setId(String id) {
+		this.id = id;
 	}
 	public String getCompanyId() {
 		return companyId;
 	}
-	public void setSupplierId(String supplierId) {
-		this.supplierId = supplierId;
+	public void setCompanyId(String companyId) {
+		this.companyId = companyId;
 	}
 	public String getSupplierId() {
 		return supplierId;
 	}
-	public void setSysCode(String sysCode) {
-		this.sysCode = sysCode;
-	}
-	public String getSysCode() {
-		return sysCode;
-	}
-	public void setState(String state) {
-		this.state = state;
-	}
-	public String getState() {
-		return state;
-	}
-	public void setTotalSum(BigDecimal totalSum) {
-		this.totalSum = totalSum;
-	}
-	public BigDecimal getTotalSum() {
-		return totalSum;
-	}
-	public void setRetreatDate(Date retreatDate) {
-		this.retreatDate = retreatDate;
-	}
-	public Date getRetreatDate() {
-		return retreatDate;
-	}
-	public void setAuditId(String auditId) {
-		this.auditId = auditId;
-	}
-	public String getAuditId() {
-		return auditId;
-	}
-	public void setCuser(String cuser) {
-		this.cuser = cuser;
-	}
-	public String getCuser() {
-		return cuser;
-	}
-	public void setCdate(Date cdate) {
-		this.cdate = cdate;
-	}
-	public Date getCdate() {
-		return cdate;
-	}
-	public void setUuser(String uuser) {
-		this.uuser = uuser;
-	}
-	public String getUuser() {
-		return uuser;
-	}
-	public void setUdate(Date udate) {
-		this.udate = udate;
-	}
-	public Date getUdate() {
-		return udate;
-	}
-	public void setRemark(String remark) {
-		this.remark = remark;
-	}
-	public String getRemark() {
-		return remark;
-	}
-	public void setIsdisable(String isdisable) {
-		this.isdisable = isdisable;
-	}
-	public String getIsdisable() {
-		return isdisable;
+	public void setSupplierId(String supplierId) {
+		this.supplierId = supplierId;
 	}
 	public String getOrderId() {
 		return orderId;
@@ -155,6 +91,79 @@ public class PurchaseRetreat implements Serializable {
 	public void setOrderId(String orderId) {
 		this.orderId = orderId;
 	}
+	public String getSysCode() {
+		return sysCode;
+	}
+	public void setSysCode(String sysCode) {
+		this.sysCode = sysCode;
+	}
+	public String getState() {
+		return state;
+	}
+	public void setState(String state) {
+		this.state = state;
+	}
+	public BigDecimal getTotalSum() {
+		return totalSum;
+	}
+	public void setTotalSum(BigDecimal totalSum) {
+		this.totalSum = totalSum;
+	}
+	public BigDecimal getRealityTotal() {
+		return realityTotal;
+	}
+	public void setRealityTotal(BigDecimal realityTotal) {
+		this.realityTotal = realityTotal;
+	}
+	public Date getRetreatDate() {
+		return retreatDate;
+	}
+	public void setRetreatDate(Date retreatDate) {
+		this.retreatDate = retreatDate;
+	}
+	public String getAuditId() {
+		return auditId;
+	}
+	public void setAuditId(String auditId) {
+		this.auditId = auditId;
+	}
+	public String getCuser() {
+		return cuser;
+	}
+	public void setCuser(String cuser) {
+		this.cuser = cuser;
+	}
+	public Date getCdate() {
+		return cdate;
+	}
+	public void setCdate(Date cdate) {
+		this.cdate = cdate;
+	}
+	public String getUuser() {
+		return uuser;
+	}
+	public void setUuser(String uuser) {
+		this.uuser = uuser;
+	}
+	public Date getUdate() {
+		return udate;
+	}
+	public void setUdate(Date udate) {
+		this.udate = udate;
+	}
+	public String getRemark() {
+		return remark;
+	}
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
+	public String getIsdisable() {
+		return isdisable;
+	}
+	public void setIsdisable(String isdisable) {
+		this.isdisable = isdisable;
+	}
+
 /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 

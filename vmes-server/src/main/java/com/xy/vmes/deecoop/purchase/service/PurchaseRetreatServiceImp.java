@@ -314,6 +314,8 @@ public class PurchaseRetreatServiceImp implements PurchaseRetreatService {
         //获取退货总金额
         BigDecimal totalSum = purchaseRetreatDetailService.findTotalSumByDetailList(retreatDtlList);
         retreat.setTotalSum(totalSum);
+        //realityTotal 实际退货金额
+        retreat.setRealityTotal(totalSum);
 
         //状态(1:待审核 2:待退货 3:已完成 -1:已取消)
         retreat.setState("1");

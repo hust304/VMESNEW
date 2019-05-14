@@ -79,14 +79,16 @@
 
         state state,
         total_sum totalSum,
+        reality_total realityTotal,
         retreat_date retreatDate,
         audit_id auditId,
-        cuser cuser,
 
+        cuser cuser,
         cdate cdate,
         uuser uuser,
         udate udate,
         remark remark,
+
         isdisable isdisable
         from vmes_purchase_retreat
         <where>
@@ -127,6 +129,7 @@
 
         retreat.state state,
         retreat.total_sum totalSum,
+        retreat.reality_total realityTotal,
         DATE_FORMAT(retreat.retreat_date,'%Y-%m-%d') retreatDate,
         retreat.audit_id auditId,
         retreat.cuser cuser,
