@@ -131,7 +131,7 @@
         detail.out_detail_id outDetailId,
         detail.product_id productId,
 
-        detail.amount amount,
+        round(ifnull(detail.amount, 0), 2) amount,
         detail.unit unit,
         orderUnit.name unitName,
         round(ifnull(detail.count, 0), 2) count,
