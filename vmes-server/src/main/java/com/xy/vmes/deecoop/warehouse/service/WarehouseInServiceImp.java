@@ -701,11 +701,13 @@ public class WarehouseInServiceImp implements WarehouseInService {
                         String warehouseId_sys = warehouseProductService.findDefaultWarehousePosition(companyId, product);
                         String warehouseName = new String();
                         if (warehouseId_sys == null || warehouseId_sys.trim().length() == 0) {
-                            warehouseName = "无推荐货位，系统历史中无存放当前货品记录，系统中没有空货位！";
+//                            warehouseName = "无推荐货位，系统历史中无存放当前货品记录，系统中没有空货位！";
+                            warehouseName = "无推荐货位！";
                         } else {
                             warehouseName = keyNameMap.get(warehouseId_sys);
                             if (warehouseName == null || warehouseName.trim().length() == 0) {
-                                warehouseName = "推荐货位id:" + warehouseId_sys + " 该货位以取消或系统中不存在！";
+//                                warehouseName = "推荐货位id:" + warehouseId_sys + " 该货位以取消或系统中不存在！";
+                                warehouseName = "无推荐货位！";
                             } else {
                                 warehouseId = warehouseId_sys;
                             }

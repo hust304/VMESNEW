@@ -174,6 +174,7 @@ public class WarehouseServiceImp implements WarehouseService {
         if (companyId != null && companyId.trim().length() > 0) {
             findMap.put("companyId", companyId.trim());
         }
+        findMap.put("isdisable","1");
         findMap.put("mapSize", Integer.valueOf(findMap.size()));
 
         List<Warehouse> objectList = this.findWarehouseList(findMap);

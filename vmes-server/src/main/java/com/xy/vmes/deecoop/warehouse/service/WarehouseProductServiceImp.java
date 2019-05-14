@@ -360,7 +360,7 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
             findMap.put("companyId", companyId);
         }
         findMap.put("productId", product.getId());
-
+        findMap.put("queryStr", "  stock_count > 0 and isdisable = '1' ");
         if (findMap.size() > 0) {
             findMap.put("mapSize", Integer.valueOf(findMap.size()));
             findMap.put("orderStr", "stock_count,cdate asc");
@@ -391,7 +391,7 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
         //查询 vmes_warehouse_product 获取已放货品的货位id Map<货位id,货位id>
         PageData findMap = new PageData();
         findMap.put("companyId", companyId);
-        findMap.put("queryStr", "warehouse_id is not null and product_id is not null");
+        findMap.put("queryStr", "  stock_count > 0 and isdisable = '1' and  warehouse_id is not null and product_id is not null");
         if (findMap.size() > 0) {
             findMap.put("mapSize", Integer.valueOf(findMap.size()));
         }

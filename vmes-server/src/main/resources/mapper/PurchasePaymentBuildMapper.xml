@@ -110,8 +110,8 @@
         customer.id supplierId,
         customer.code supplierCode,
         customer.name supplierName,
-        build.payment_period paymentPeriod,
-        date_format(build.payment_period_date, '%Y-%m-%d') paymentPeriodDate,
+        period.payment_period paymentPeriod,
+        date_format(period.payment_period_date, '%Y-%m-%d') paymentPeriodDate,
         round(ifnull(build.begin_plus, 0), 2) beginPlus,
 
         round(ifnull(build.begin_minus, 0), 2) beginMinus,
@@ -137,7 +137,8 @@
         END isBuildName
 
         from vmes_customer customer
-            left join vmes_purchase_payment_build build on customer.id = build.supplier_id
+        left join vmes_purchase_payment_build build on customer.id = build.supplier_id
+        left join vmes_purchase_company_period period on customer.company_id = period.company_id
         <where>
             <if test="currentCompanyId != null and currentCompanyId != ''" >
                 and customer.company_id = #{currentCompanyId} and customer.genre = '49c0a7ebcb4c4175bd5195837a6a9a13' and customer.isdisable = '1'
