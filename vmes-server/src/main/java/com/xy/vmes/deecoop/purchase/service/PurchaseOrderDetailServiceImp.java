@@ -539,6 +539,85 @@ public class PurchaseOrderDetailServiceImp implements PurchaseOrderDetailService
         //四舍五入到2位小数
         return BigDecimal.valueOf(totalSum_double).setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
     }
+
+    public List<Map<String, Object>> findOrderDetaiByCollect(PageData pageData) throws Exception {
+        return purchaseOrderDetailMapper.findOrderDetaiByCollect(pageData);
+    }
+    /**
+     * 按采购订单id-获取采购订单明细信息
+     * <采购订单明细id, 采购订单明细信息Map>
+     *     发货信息Map
+     *         orderDtlCount:采购订单明细采购数量
+     *         orderDtlAmount: 采购订单明细采购金额
+     *         checkCount: 验证数量(签收数量-退货数量)
+     *
+     * 根据采购订单id-获取(采购订单明细id,采购数量,签收数量)
+     *
+     * @param orderIds  采购订单id
+     * @return
+     */
+    public Map<String, Map<String, Object>> findMapOrderDetaiCountByOrderId(String orderIds) throws Exception {
+        Map<String, Map<String, Object>> mapObject = new HashMap<String, Map<String, Object>>();
+        if (orderIds == null || orderIds.trim().length() == 0) {return mapObject;}
+
+        PageData findMap = new PageData();
+        orderIds = StringUtil.stringTrimSpace(orderIds);
+        orderIds = "'" + orderIds.replace(",", "','") + "'";
+        findMap.put("orderIds", orderIds);
+
+        List<Map<String, Object>> mapList = this.findOrderDetaiByCollect(findMap);
+        if (mapList == null || mapList.size() == 0) {return mapObject;}
+
+        for (Map<String, Object> mapObj : mapList) {
+            Map<String, Object> mapValue = new HashMap<String, Object>();
+
+            //采购订单明细id orderDtlId
+            String orderDtlId = (String)mapObj.get("orderDtlId");
+            //采购订单id orderId
+            String orderId = (String)mapObj.get("orderId");
+            mapValue.put("orderId", orderId);
+
+            //采购订单明细采购数量 orderDtlCount
+            BigDecimal orderDtlCount = (BigDecimal)mapObj.get("orderDtlCount");
+            mapValue.put("orderDtlCount", orderDtlCount);
+
+            //采购订单明细采购金额 orderDtlAmount
+            BigDecimal orderDtlAmount = (BigDecimal)mapObj.get("orderDtlAmount");
+            mapValue.put("orderDtlAmount", orderDtlAmount);
+
+            //checkCount 验证数量(签收数量-退货数量)
+            BigDecimal checkCount = (BigDecimal)mapObj.get("checkCount");
+            mapValue.put("checkCount", checkCount);
+
+            mapObject.put(orderDtlId, mapValue);
+        }
+
+        return mapObject;
+    }
+
+    /**
+     * 采购订单明细状态，在采购订单明细List<PurchaseOrderDetail>中是否全部相同
+     *   true : 全部相同，在入库单明细List
+     *   false: 一条或多条不同，在入库单明细List
+     *
+     * @param state       明细状态(0:待提交 1:待审核 2:采购中 3:部分签收 4:已完成 -1:已取消)
+     * @param objectList  订单明细List<SaleOrderDetail>
+     * @return
+     */
+    public boolean isAllExistStateByDetailList(String state, List<PurchaseOrderDetail> objectList) {
+        if (state == null || state.trim().length() == 0) {return false;}
+        if (objectList == null || objectList.size() == 0) {return false;}
+
+        for (PurchaseOrderDetail detail : objectList) {
+            String dtl_state = detail.getState();
+            if (dtl_state == null || dtl_state.trim().length() == 0) {return false;}
+            if (!state.trim().equals(dtl_state.trim())) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }
 
 

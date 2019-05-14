@@ -24,7 +24,7 @@ public class PurchasePaymentDetail implements Serializable {
 	//采购订单ID
 	@TableField("order_id")
 	private String orderId;
-	//状态(0:待收款 1:已付款 -1:已取消)
+	//状态(0:待付款 1:已付款 -1:已取消)
 	@TableField("state")
 	private String state;
 	//实付金额

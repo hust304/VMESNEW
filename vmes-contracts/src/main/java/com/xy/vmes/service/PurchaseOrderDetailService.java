@@ -175,6 +175,34 @@ public interface PurchaseOrderDetailService {
 
     BigDecimal findTotalSumByDetailList(List<PurchaseOrderDetail> objectList);
 
+    List<Map<String, Object>> findOrderDetaiByCollect(PageData pageData) throws Exception;
+    /**
+     * 按采购订单id-获取采购订单明细信息
+     * <采购订单明细id, 采购订单明细信息Map>
+     *     发货信息Map
+     *         orderId
+     *         orderDtlCount:采购订单明细采购数量
+     *         orderDtlAmount: 采购订单明细采购金额
+     *         checkCount: 验证数量(签收数量-退货数量)
+     *
+     * 根据采购订单id-获取(采购订单明细id,采购数量,签收数量)
+     *
+     * @param orderIds  采购订单id
+     * @return
+     */
+    Map<String, Map<String, Object>> findMapOrderDetaiCountByOrderId(String orderIds) throws Exception;
+
+    /**
+     * 采购订单明细状态，在采购订单明细List<PurchaseOrderDetail>中是否全部相同
+     *   true : 全部相同，在入库单明细List
+     *   false: 一条或多条不同，在入库单明细List
+     *
+     * @param state       明细状态(0:待提交 1:待审核 2:采购中 3:部分签收 4:已完成 -1:已取消)
+     * @param objectList  订单明细List<SaleOrderDetail>
+     * @return
+     */
+    boolean isAllExistStateByDetailList(String state, List<PurchaseOrderDetail> objectList);
+
 
 }
 

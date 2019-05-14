@@ -2,6 +2,7 @@ package com.xy.vmes.deecoop.purchase.service;
 
 
 import com.xy.vmes.common.util.Common;
+import com.xy.vmes.common.util.DateFormat;
 import com.xy.vmes.deecoop.purchase.dao.PurchaseRetreatMapper;
 import com.xy.vmes.entity.*;
 import com.xy.vmes.service.*;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.text.MessageFormat;
 import java.util.*;
 import com.yvan.Conv;
 
@@ -44,6 +46,11 @@ public class PurchaseRetreatServiceImp implements PurchaseRetreatService {
     private PurchaseOrderService purchaseOrderService;
     @Autowired
     private PurchaseOrderDetailService purchaseOrderDetailService;
+
+    @Autowired
+    private PurchasePaymentService purchasePaymentService;
+    @Autowired
+    private PurchasePaymentDetailService purchasePaymentDetailService;
 
     @Autowired
     private CoderuleService coderuleService;
@@ -455,6 +462,23 @@ public class PurchaseRetreatServiceImp implements PurchaseRetreatService {
         retreatEdit.setAuditId(cuser);
         //状态(1:待审核 2:待退货 3:已完成 -1:已取消)
         retreatEdit.setState("3");
+
+        //实际退货金额 审核界面获得
+        BigDecimal realityTotal_big = BigDecimal.valueOf(0D);
+        String realityTotal = pageData.getString("realityTotal");
+        if (realityTotal != null && realityTotal.trim().length() > 0) {
+            try {
+                realityTotal_big = new BigDecimal(realityTotal);
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+        }
+        if (realityTotal_big.doubleValue() != 0) {
+            //四舍五入到2位小数
+            realityTotal_big = realityTotal_big.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+            retreatEdit.setRealityTotal(realityTotal_big);
+        }
+
         this.update(retreatEdit);
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //3. 修改订单明细和订单
@@ -482,44 +506,129 @@ public class PurchaseRetreatServiceImp implements PurchaseRetreatService {
         purchaseRetreatDetailService.updateOrderDetailByRetreat(orderDtlRetreatMap, orderDtlList);
 
         //修改采购订单
+        //退货单id(retreatId) 获取退货单对象
+        PurchaseRetreat retreat = this.findPurchaseRetreatById(retreatId);
+        PurchaseOrder orderDB = purchaseOrderService.selectById(retreat.getOrderId());
+        if (orderDB == null) {return model;}
 
+        List<PurchaseOrderDetail> orderDetailList = purchaseOrderDetailService.findPurchaseOrderDetailListByParentId(retreat.getOrderId());
+        if (orderDetailList != null && orderDetailList.size() > 0) {
+            PurchaseOrder orderEdit = new PurchaseOrder();
+            orderEdit.setId(retreat.getOrderId());
 
+            //采购订单明细总金额
+            BigDecimal totalSum = purchaseOrderDetailService.findTotalSumByDetailList(orderDetailList);
+            //total 合计金额 (采购订单明细总金额)
+            orderEdit.setTotal(totalSum);
 
-//        for (Iterator iterator = orderMap.keySet().iterator(); iterator.hasNext();) {
-//            SaleOrder orderEdit = new SaleOrder();
-//
-//            String orderId = (String) iterator.next();
-//            orderEdit.setId(orderId);
-//
-//            List<PurchaseOrderDetail> orderDetailList = purchaseOrderDetailService.findPurchaseOrderDetailListByParentId(orderId);
-//            if (orderDetailList == null || orderDetailList.size() == 0) {continue;}
-//
-//            //采购订单明细总金额
-//            BigDecimal totalSum = purchaseOrderDetailService.findTotalSumByDetailList(orderDetailList);
-//
-//            //discount 折扣金额
-//            //orderEdit.setDiscountSum(BigDecimal.valueOf(0D));
-//            //total 合计金额 (采购订单明细总金额)
-//            //orderEdit.setTotalSum(totalSum);
-//            //amount 采购金额 (合计金额 - 折扣金额)
-//            orderEdit.setOrderSum(totalSum);
-//
-//            String remark = "";
-//            SaleOrder orderDB = saleOrderService.findSaleOrderById(orderId);
-//            if (orderDB.getRemark() != null && orderDB.getRemark().trim().length() > 0) {
-//                remark = orderDB.getRemark().trim();
-//            }
-//
-//            String tempStr = "退货单审核通过：修改订单数量和订单金额{0}";
-//            String msgStr = MessageFormat.format(
-//                    tempStr,
-//                    DateFormat.date2String(new Date(), DateFormat.DEFAULT_DATETIME_FORMAT)
-//            );
-//            remark = remark + msgStr;
-//            orderEdit.setRemark(remark);
-//
-//            saleOrderService.update(orderEdit);
-//        }
+            //amount_old (变更前)采购金额(合计金额 - 折扣金额)
+            BigDecimal amount_old = BigDecimal.valueOf(0D);
+            if (orderDB.getAmount() != null) {
+                amount_old = orderDB.getAmount();
+            }
+
+            //变更后 采购金额((变更前)采购金额 - realityTotal_big实际退货金额)
+            //realityTotal_big 实际退货金额 审核界面获得
+            BigDecimal amount_new = BigDecimal.valueOf(amount_old.doubleValue() - realityTotal_big.doubleValue());
+            //四舍五入到2位小数
+            amount_new = amount_new.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+            orderEdit.setAmount(amount_new);
+
+            //discount 折扣金额 (合计金额 - 采购金额)
+            BigDecimal discount = BigDecimal.valueOf(totalSum.doubleValue() - amount_new.doubleValue());
+            //四舍五入到2位小数
+            discount = discount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+            orderEdit.setDiscount(discount);
+
+            String remarkTemp = "采购订单编号:{0} 于({1})发生退货";
+            String remark = MessageFormat.format(remarkTemp,
+                    orderDB.getCode(),
+                    DateFormat.date2String(new Date(), DateFormat.DEFAULT_DATE_FORMAT)
+            );
+            orderEdit.setRemark(remark);
+
+            purchaseOrderService.update(orderEdit);
+        }
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        String orderId = retreat.getOrderId();
+        //按采购订单id-获取<采购订单明细id, 采购订单明细信息Map> - (orderDtlCount:采购订单明细采购数量, checkCount: 验证数量(签收数量-退货数量))
+        Map<String, Map<String, Object>> orderDtlMap = purchaseOrderDetailService.findMapOrderDetaiCountByOrderId(orderId);
+        for (PurchaseOrderDetail orderDtl : orderDtlList) {
+            PurchaseOrderDetail orderDetailEdit = new PurchaseOrderDetail();
+
+            String orderDtl_id = orderDtl.getId();
+            orderDetailEdit.setId(orderDtl_id);
+
+            Map<String, Object> valueMap = orderDtlMap.get(orderDtl_id);
+            //orderDtlCount:采购订单明细采购数量,
+            BigDecimal orderDtlCount = (BigDecimal)valueMap.get("orderDtlCount");
+            //checkCount: 验证数量(签收数量-退货数量)
+            BigDecimal checkCount = (BigDecimal)valueMap.get("checkCount");
+
+            if (checkCount.doubleValue() >= orderDtlCount.doubleValue()) {
+                //明细状态(0:待提交 1:待审核 2:采购中 3:部分签收 4:已完成 -1:已取消)
+                orderDetailEdit.setState("4");
+            }
+            purchaseOrderDetailService.update(orderDetailEdit);
+        }
+
+        //修改采购订单状态
+        purchaseOrderService.updateState(orderId);
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //创建付款单 负值的付款
+        //付款单类型(1:订单付款 2:订单退款)
+        PurchasePayment payment_1 = purchasePaymentService.createPayment(retreat.getSupplierId(),
+                cuser,
+                companyId,
+                "2");
+        //付款金额 paymentSum := realityTotal_big
+        payment_1.setPaymentSum(BigDecimal.valueOf(realityTotal_big.doubleValue() * -1));
+        purchasePaymentService.save(payment_1);
+
+        //2. 创建收款单明细
+        //获取 <订单id, 退货金额>
+        PurchasePaymentDetail paymentDtl_1 = new PurchasePaymentDetail();
+        paymentDtl_1.setOrderId(orderId);
+        //状态(0:待付款 1:已付款 -1:已取消)
+        paymentDtl_1.setState("1");
+        //paymentSum 实付金额
+        paymentDtl_1.setPaymentSum(BigDecimal.valueOf(realityTotal_big.doubleValue() * -1));
+        //discountAmount 折扣金额
+        paymentDtl_1.setDiscountAmount(BigDecimal.valueOf(0D));
+
+        List<PurchasePaymentDetail> paymentDtlList_1 = new ArrayList<PurchasePaymentDetail>();
+        paymentDtlList_1.add(paymentDtl_1);
+        purchasePaymentDetailService.addPaymentDetail(payment_1, paymentDtlList_1);
+
+        //状态(0:待提交 1:待审核 2:采购中 3:已完成 -1:已取消)
+        orderDB = purchaseOrderService.selectById(retreat.getOrderId());
+        String orderState = orderDB.getState();
+        if ("3".equals(orderState)) {
+            //付款单类型(1:订单付款 2:订单退款)
+            PurchasePayment payment = purchasePaymentService.createPayment(retreat.getSupplierId(),
+                    cuser,
+                    companyId,
+                    "1");
+            //付款金额 paymentSum := amount 采购订单.采购金额(合计金额 - 折扣金额)
+            payment.setPaymentSum(orderDB.getAmount());
+            purchasePaymentService.save(payment);
+
+            //2. 创建收款单明细
+            //获取 <订单id, 退货金额>
+            PurchasePaymentDetail paymentDtl = new PurchasePaymentDetail();
+            paymentDtl.setOrderId(orderId);
+            //状态(0:待付款 1:已付款 -1:已取消)
+            paymentDtl.setState("1");
+            //paymentSum 实付金额
+            paymentDtl.setPaymentSum(orderDB.getAmount());
+            //discountAmount 折扣金额 := discount 采购订单.折扣金额
+            paymentDtl.setDiscountAmount(orderDB.getDiscount());
+
+            List<PurchasePaymentDetail> paymentDtlList = new ArrayList<PurchasePaymentDetail>();
+            paymentDtlList.add(paymentDtl);
+            purchasePaymentDetailService.addPaymentDetail(payment, paymentDtlList);
+        }
 
         return model;
     }

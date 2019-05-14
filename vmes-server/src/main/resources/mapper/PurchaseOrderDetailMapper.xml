@@ -465,6 +465,14 @@
                 where state = '3'
                 group by order_detail_id
             ) retreatDetail on orderDetail.id = retreatDetail.order_detail_id
+        <where>
+            <if test="orderId != null and orderId != ''" >
+                and orderDetail.parent_id = #{orderId}
+            </if>
+            <if test="orderIds != null and orderIds != ''" >
+                and orderDetail.parent_id in (${orderIds})
+            </if>
+        </where>
     </select>
 
 
