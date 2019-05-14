@@ -338,7 +338,7 @@
     <!-- 自动创建，可以修改 -->
     <select id="getOrderReceiveDetailDataListPage"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
 
-        select sOrder.id id,sOrder.sys_code sysCode,sOrder.customer_id customerId,sOrder.current_deliver_date currentDeliverDate,sOrder.company_id companyId,sOrder.order_sum orderAmount,sOrder.state state,DATE_FORMAT(sOrder.order_date,'%Y-%m-%d') orderDate,
+        select sOrder.id id,sOrder.sys_code sysCode,sOrder.customer_id customerId,sOrder.current_deliver_date currentDeliverDate,sOrder.company_id companyId,round(sum(ifnull(sOrder.order_sum,0)),2) orderAmount,sOrder.state state,DATE_FORMAT(sOrder.order_date,'%Y-%m-%d') orderDate,
         CASE
         WHEN sOrder.state = '0' THEN '待提交'
         WHEN sOrder.state = '1' THEN '待审核'
