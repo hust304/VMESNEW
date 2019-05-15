@@ -622,8 +622,8 @@ public class PurchaseRetreatServiceImp implements PurchaseRetreatService {
             paymentDtl.setState("1");
             //paymentSum 实付金额
             paymentDtl.setPaymentSum(orderDB.getAmount());
-            //discountAmount 折扣金额 := discount 采购订单.折扣金额
-            paymentDtl.setDiscountAmount(orderDB.getDiscount());
+            //discountAmount 折扣金额
+            paymentDtl.setDiscountAmount(BigDecimal.valueOf(0D));
 
             List<PurchasePaymentDetail> paymentDtlList = new ArrayList<PurchasePaymentDetail>();
             paymentDtlList.add(paymentDtl);

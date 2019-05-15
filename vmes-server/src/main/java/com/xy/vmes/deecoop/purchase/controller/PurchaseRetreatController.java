@@ -69,7 +69,7 @@ public class PurchaseRetreatController {
      * @date 2018-12-10
      * @throws Exception
      */
-    @PostMapping("/sale/saleRetreatAudit/auditPassPurchaseRetreat")
+    @PostMapping("/purchase/purchaseRetreat/auditPassPurchaseRetreat")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel auditPassPurchaseRetreat() throws Exception {
         logger.info("################/purchase/purchaseRetreat/auditPassPurchaseRetreat 执行开始 ################# ");
