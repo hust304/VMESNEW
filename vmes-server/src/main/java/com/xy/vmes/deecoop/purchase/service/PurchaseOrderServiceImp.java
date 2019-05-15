@@ -641,7 +641,7 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService {
                 PurchasePlanDetail purchasePlanDetail = purchasePlanDetailService.selectById(planDetailId);
                 BigDecimal arriveCount = BigDecimal.ZERO;
                 PageData pageData = new PageData();
-                pageData.put("orderDetailId",orderDetailId);
+                pageData.put("order_detail_id",orderDetailId);
                 pageData.put("isdisable","1");
                 List<PurchaseSignDetail> purchaseSignDetailList =purchaseSignDetailService.selectByColumnMap(pageData);
                 if(purchaseSignDetailList!=null&&purchaseSignDetailList.size()>0){
