@@ -363,6 +363,14 @@ public class PurchaseRetreatServiceImp implements PurchaseRetreatService {
             return model;
         }
 
+        //退货总额:实际退货金额
+        String realityTotal = pageData.getString("realityTotal");
+        if (realityTotal == null || realityTotal.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("退货总额为空或空字符串！");
+            return model;
+        }
+
         String dtlJsonStr = pageData.getString("dtlJsonStr");
         if (dtlJsonStr == null || dtlJsonStr.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
@@ -465,7 +473,6 @@ public class PurchaseRetreatServiceImp implements PurchaseRetreatService {
 
         //实际退货金额 审核界面获得
         BigDecimal realityTotal_big = BigDecimal.valueOf(0D);
-        String realityTotal = pageData.getString("realityTotal");
         if (realityTotal != null && realityTotal.trim().length() > 0) {
             try {
                 realityTotal_big = new BigDecimal(realityTotal);

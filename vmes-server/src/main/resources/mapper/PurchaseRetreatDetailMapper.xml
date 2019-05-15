@@ -56,6 +56,7 @@
             (replace(uuid(), '-', ''), 'purchaseRetreatDetail', 'productSpec', '规格型号', 17, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
             (replace(uuid(), '-', ''), 'purchaseRetreatDetail', 'productGenre', '货品属性id', 18, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
             (replace(uuid(), '-', ''), 'purchaseRetreatDetail', 'productGenreName', '货品属性', 19, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''),'purchaseRetreatDetail','price','单价',20, '1','1','1','0',now(), 'admin'),
 
     </insert>
 
@@ -123,7 +124,7 @@
     </select>
 
     <!-- 自动创建，可以修改 -->
-    <select id="getDataListPage"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
+    <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
         detail.id id,
         detail.parent_id parentId,
@@ -131,6 +132,7 @@
         detail.out_detail_id outDetailId,
         detail.product_id productId,
 
+        round(ifnull(orderDetail.price, 0), 2) price,
         round(ifnull(detail.amount, 0), 2) amount,
         detail.unit unit,
         orderUnit.name unitName,
@@ -151,6 +153,7 @@
         genre.name productGenreName
 
         from vmes_purchase_retreat_detail detail
+        left join vmes_purchase_order_detail orderDetail on detail.order_detail_id = orderDetail.id
         left join vmes_product product on detail.product_id = product.id
         left join vmes_dictionary orderUnit on detail.unit = orderUnit.id
         left join vmes_dictionary genre on product.genre = genre.id
