@@ -10,6 +10,7 @@ import com.xy.vmes.service.*;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.StringUtil;
+import com.yvan.DateUtils;
 import com.yvan.PageData;
 import com.yvan.YvanUtil;
 import com.yvan.springmvc.ResultModel;
@@ -636,6 +637,52 @@ public class PurchaseRetreatServiceImp implements PurchaseRetreatService {
             paymentDtlList.add(paymentDtl);
             purchasePaymentDetailService.addPaymentDetail(payment, paymentDtlList);
         }
+
+        return model;
+    }
+
+    public ResultModel auditDisagreePurchaseRetreat(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+        String cuser = pageData.getString("cuser");
+
+        //退货单id retreatId
+        String retreatId = pageData.getString("retreatId");
+        if (retreatId == null || retreatId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("退货单id为空或空字符串！");
+            return model;
+        }
+
+        String remark = pageData.getString("remark");
+        if (remark == null || remark.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("退回原因为空或空字符串，退回原因为必填不可为空！");
+            return model;
+        }
+
+        //当前登录用户姓名
+        String userName = "";
+        if (pageData.getString("userName") != null && pageData.getString("userName").trim().length() > 0) {
+            userName = pageData.getString("userName").trim();
+        }
+
+        PurchaseRetreat retreatEdit = new PurchaseRetreat();
+        retreatEdit.setId(retreatId);
+        String msgTemp = "审核退回:{0}{3}审核人:{1}{3}审核时间:{2}";
+        String remarkStr = MessageFormat.format(msgTemp,
+                remark,
+                userName,
+                DateUtils.toDateStr(new Date()),
+                Common.SYS_ENDLINE_DEFAULT);
+        retreatEdit.setRemark(remarkStr);
+        //退货单状态(1:待审核 2:待退货 3:已完成 -1:已取消)
+        retreatEdit.setState("-1");
+        //审核人ID
+        retreatEdit.setAuditId(cuser);
+        this.update(retreatEdit);
+
+        //退货单明细状态(1:待审核 2:待退货 3:已完成 -1:已取消)
+        purchaseRetreatDetailService.updateStateByDetail("-1", retreatId);
 
         return model;
     }

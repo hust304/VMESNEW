@@ -81,7 +81,24 @@ public class PurchaseRetreatController {
         return model;
     }
 
-
+    /**
+     * (退回)退货审核-审核不通过
+     *
+     * @author 陈刚
+     * @date 2018-12-10
+     * @throws Exception
+     */
+    @PostMapping("/purchase/purchaseRetreat/auditDisagreePurchaseRetreat")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel auditDisagreePurchaseRetreat() throws Exception {
+        logger.info("################/purchase/purchaseRetreat/auditDisagreePurchaseRetreat 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pageData = HttpUtils.parsePageData();
+        ResultModel model = purchaseRetreatService.auditDisagreePurchaseRetreat(pageData);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/purchase/purchaseRetreat/auditDisagreePurchaseRetreat 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
 }
 
 
