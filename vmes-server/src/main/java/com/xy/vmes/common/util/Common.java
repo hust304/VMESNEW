@@ -281,6 +281,14 @@ public class Common {
 
         //e8d9461fbe704fdcbe2ee88efb310f2c(地区id)  地区(字典名称)
         put("area", "e8d9461fbe704fdcbe2ee88efb310f2c");
+
+        //566b1b81bb6343be9e68bdbe1a460916 售购采销退货类型
+        put("retreatType", "566b1b81bb6343be9e68bdbe1a460916");
+
+            //f69839bbf2394846a65894f0da120df9 退货退款
+            put("retreatRefund", "f69839bbf2394846a65894f0da120df9");
+            //c90c2081328c427e8d65014d98335601 退货换货
+            put("retreatChange", "c90c2081328c427e8d65014d98335601");
     }};
 
     ///////////////--菜单名称--///////////////////////////////////////////////////////////////////
