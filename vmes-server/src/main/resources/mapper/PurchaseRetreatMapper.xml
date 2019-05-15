@@ -39,21 +39,25 @@
             (replace(uuid(), '-', ''),'purchaseRetreat','supplierId','供应商ID',2, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'purchaseRetreat','supplierName','供应商名称',2, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'purchaseRetreat','orderId','采购订单id',3, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'purchaseRetreat','sysCode','退货编号(系统生成)',4, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchaseRetreat','type','退货类型id',4, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchaseRetreat','typeName','退货类型',4, '1','1','1','0',now(), 'admin'),
 
-            (replace(uuid(), '-', ''),'purchaseRetreat','state','状态',5, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'purchaseRetreat','totalSum','退货金额',6, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'purchaseRetreat','retreatDate','退货日期',7, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'purchaseRetreat','auditId','审核人ID',8, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'purchaseRetreat','cuser','创建用户id',9, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchaseRetreat','sysCode','退货编号(系统生成)',5, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchaseRetreat','state','状态',6, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchaseRetreat','totalSum','退货金额',7, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchaseRetreat','realityTotal','实际退货金额',8, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchaseRetreat','retreatDate','退货日期',9, '1','1','1','0',now(), 'admin'),
 
-            (replace(uuid(), '-', ''),'purchaseRetreat','cdate','制单日期',10, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'purchaseRetreat','uuser','修改用户id',11, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'purchaseRetreat','udate','修改时间',12, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'purchaseRetreat','remark','备注',13, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'purchaseRetreat','isdisable','是否启用(0:已禁用 1:启用)',14, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchaseRetreat','auditId','审核人ID',10, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchaseRetreat','cuser','创建用户id',11, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchaseRetreat','cdate','制单日期',12, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchaseRetreat','uuser','修改用户id',13, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchaseRetreat','udate','修改时间',14, '1','1','1','0',now(), 'admin'),
 
-            (replace(uuid(), '-', ''),'purchaseRetreat','orderCode','orderCode',15, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchaseRetreat','remark','备注',15, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchaseRetreat','isdisable','是否启用(0:已禁用 1:启用)',16, '1','1','1','0',now(), 'admin'),
+
+            (replace(uuid(), '-', ''),'purchaseRetreat','orderCode','orderCode',17, '1','1','1','0',now(), 'admin'),
     </insert>
 
     <update id="updateStateByRetreat" parameterType="com.yvan.PageData" >
@@ -75,20 +79,21 @@
         company_id companyId,
         supplier_id supplierId,
         order_id orderId,
-        sys_code sysCode,
+        type type,
 
+        sys_code sysCode,
         state state,
         total_sum totalSum,
         reality_total realityTotal,
         retreat_date retreatDate,
-        audit_id auditId,
 
+        audit_id auditId,
         cuser cuser,
         cdate cdate,
         uuser uuser,
         udate udate,
-        remark remark,
 
+        remark remark,
         isdisable isdisable
         from vmes_purchase_retreat
         <where>
@@ -125,18 +130,21 @@
         retreat.supplier_id supplierId,
         supplier.name supplierName,
         retreat.order_id orderId,
-        retreat.sys_code sysCode,
+        retreat.type type,
+        type.name typeName,
 
+        retreat.sys_code sysCode,
         retreat.state state,
         retreat.total_sum totalSum,
         retreat.reality_total realityTotal,
         DATE_FORMAT(retreat.retreat_date,'%Y-%m-%d') retreatDate,
+
         retreat.audit_id auditId,
         retreat.cuser cuser,
-
         DATE_FORMAT(retreat.cdate,'%Y-%m-%d') cdate,
         retreat.uuser uuser,
         retreat.udate udate,
+
         retreat.remark remark,
         retreat.isdisable isdisable,
 
@@ -144,6 +152,7 @@
         from vmes_purchase_retreat retreat
         left join vmes_purchase_order purchaseOrder on retreat.order_id = purchaseOrder.id
         left join vmes_customer supplier on retreat.supplier_id = supplier.id
+        left join vmes_dictionary type on retreat.type = type.id
         <where>
             <if test="currentCompanyId != null and currentCompanyId != ''" >
                 and retreat.company_id = #{currentCompanyId}

@@ -27,10 +27,13 @@ public class PurchaseRetreat implements Serializable {
 	//采购订单id
 	@TableField("order_id")
 	private String orderId;
+	//退货类型-(字典表-vmes_dictionary.id)
+	@TableField("type")
+	private String type;
+
 	//退货编号(系统生成)
 	@TableField("sys_code")
 	private String sysCode;
-
 	//状态(1:待审核 2:待退货 3:已完成 -1:已取消)
 	@TableField("state")
 	private String state;
@@ -43,10 +46,10 @@ public class PurchaseRetreat implements Serializable {
 	//退货完成日期
 	@TableField("retreat_date")
 	private Date retreatDate;
+
 	//审核人ID
 	@TableField("audit_id")
 	private String auditId;
-
 	//创建用户id
 	@TableField("cuser")
 	private String cuser;
@@ -59,10 +62,10 @@ public class PurchaseRetreat implements Serializable {
 	//修改时间
 	@TableField("udate")
 	private Date udate;
+
 	//备注
 	@TableField("remark")
 	private String remark;
-
 	//是否启用(0:已禁用 1:启用)
 	@TableField("isdisable")
 	private String isdisable;
@@ -163,8 +166,13 @@ public class PurchaseRetreat implements Serializable {
 	public void setIsdisable(String isdisable) {
 		this.isdisable = isdisable;
 	}
-
-/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+	public String getType() {
+		return type;
+	}
+	public void setType(String type) {
+		this.type = type;
+	}
+	/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 
 }
