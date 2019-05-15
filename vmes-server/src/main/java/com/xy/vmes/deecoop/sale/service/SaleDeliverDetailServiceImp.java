@@ -509,26 +509,65 @@ public class SaleDeliverDetailServiceImp implements SaleDeliverDetailService {
             return model;
         }
 
-
         //获取指定栏位字符串-重新调整List<Column>
         String fieldCode = pd.getString("fieldCode");
         if (fieldCode != null && fieldCode.trim().length() > 0) {
             columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
         }
-        Map result = new HashMap();
-        Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
+
         //设置查询排序
         pd.put("orderStr", "detail.cdate asc");
         String orderStr = pd.getString("orderStr");
         if (orderStr != null && orderStr.trim().length() > 0) {
             pd.put("orderStr", orderStr);
         }
+
         List<Map> varList = this.getDataListPage(pd,pg);
+        Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
         List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
+
+        //计价类型(1:先计价 2:后计价)
+        String priceType = pd.getString("priceType");
+        if ("2".equals(priceType)) {
+            for (Map<String, String> mapObject : varMapList) {
+                //orderCount 发货数量
+                BigDecimal orderCount = BigDecimal.valueOf(0D);
+                String orderCount_str = mapObject.get("orderCount");
+                if (orderCount_str != null && orderCount_str.trim().length() > 0) {
+                    try {
+                        orderCount = new BigDecimal(orderCount_str);
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                //sum 发货金额
+                BigDecimal sum = BigDecimal.valueOf(0D);
+                String sum_str = mapObject.get("sum");
+                if (sum_str != null && sum_str.trim().length() > 0) {
+                    try {
+                        sum = new BigDecimal(sum_str);
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                //productPrice 货品单价 := 发货金额 / 发货数量
+                mapObject.put("productPrice", "0.00");
+                if (orderCount.doubleValue() != 0D && sum.doubleValue() != 0D) {
+                    BigDecimal productPrice = BigDecimal.valueOf(sum.doubleValue() / orderCount.doubleValue());
+                    //四舍五入到2位小数
+                    productPrice = productPrice.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                    mapObject.put("productPrice", productPrice.toString());
+
+                }
+            }
+        }
+
+        Map result = new HashMap();
         result.put("hideTitles",titleMap.get("hideTitles"));
         result.put("titles",titleMap.get("titles"));
         result.put("varList",varMapList);
-//        result.put("pageData", pg);
         model.putResult(result);
         return model;
     }
@@ -549,39 +588,20 @@ public class SaleDeliverDetailServiceImp implements SaleDeliverDetailService {
             columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
         }
 
-        List<LinkedHashMap> titlesList = new ArrayList<LinkedHashMap>();
-        List<String> titlesHideList = new ArrayList<String>();
-        Map<String, String> varModelMap = new HashMap<String, String>();
-        if(columnList!=null&&columnList.size()>0){
-            for (Column column : columnList) {
-                if(column!=null){
-                    if("0".equals(column.getIshide())){
-                        titlesHideList.add(column.getTitleKey());
-                    }
-                    LinkedHashMap titlesLinkedMap = new LinkedHashMap();
-                    titlesLinkedMap.put(column.getTitleKey(),column.getTitleName());
-                    varModelMap.put(column.getTitleKey(),"");
-                    titlesList.add(titlesLinkedMap);
-                }
-            }
+        //设置查询排序
+        pd.put("orderStr", "detail.cdate asc");
+        String orderStr = pd.getString("orderStr");
+        if (orderStr != null && orderStr.trim().length() > 0) {
+            pd.put("orderStr", orderStr);
         }
-        Map result = new HashMap();
-        result.put("hideTitles",titlesHideList);
-        result.put("titles",titlesList);
 
-        List<Map> varMapList = new ArrayList();
         List<Map> varList = this.getDataListPage(pd,pg);
-        if(varList!=null&&varList.size()>0){
-            for(int i=0;i<varList.size();i++){
-                Map map = varList.get(i);
-                Map<String, String> varMap = new HashMap<String, String>();
-                varMap.putAll(varModelMap);
-                for (Map.Entry<String, String> entry : varMap.entrySet()) {
-                    varMap.put(entry.getKey(),map.get(entry.getKey())!=null?map.get(entry.getKey()).toString():"");
-                }
-                varMapList.add(varMap);
-            }
-        }
+        Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
+        List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
+
+        Map result = new HashMap();
+        result.put("hideTitles",titleMap.get("hideTitles"));
+        result.put("titles",titleMap.get("titles"));
         result.put("varList",varMapList);
         result.put("pageData", pg);
         model.putResult(result);
