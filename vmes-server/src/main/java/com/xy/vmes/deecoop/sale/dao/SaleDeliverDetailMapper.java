@@ -45,6 +45,7 @@ public interface SaleDeliverDetailMapper extends BaseMapper<SaleDeliverDetail> {
      * 创建时间：2018-12-15
      */
     List<Map> getDataListPage(PageData pd, Pagination pg);
+    List<Map> getDataListPage(PageData pd);
 
     ///////////////////////////////////////////////////////////////////////////
     /**

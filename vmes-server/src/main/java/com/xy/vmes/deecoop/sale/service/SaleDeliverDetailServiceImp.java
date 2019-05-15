@@ -149,7 +149,16 @@ public class SaleDeliverDetailServiceImp implements SaleDeliverDetailService {
      */
     @Override
     public List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception{
-        return saleDeliverDetailMapper.getDataListPage(pd,pg);
+        List<Map> mapList = new ArrayList<Map>();
+        if (pd == null) {return mapList;}
+
+        if (pg == null) {
+            return saleDeliverDetailMapper.getDataListPage(pd);
+        } else if (pg != null) {
+            return saleDeliverDetailMapper.getDataListPage(pd,pg);
+        }
+
+        return mapList;
     }
 
     /**
@@ -522,6 +531,15 @@ public class SaleDeliverDetailServiceImp implements SaleDeliverDetailService {
             pd.put("orderStr", orderStr);
         }
 
+        //是否需要分页 true:需要分页 false:不需要分页
+        Map result = new HashMap();
+        String isNeedPage = pd.getString("isNeedPage");
+        if ("false".equals(isNeedPage)) {
+            pg = null;
+        } else {
+            result.put("pageData", pg);
+        }
+
         List<Map> varList = this.getDataListPage(pd,pg);
         Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
         List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
@@ -564,7 +582,6 @@ public class SaleDeliverDetailServiceImp implements SaleDeliverDetailService {
             }
         }
 
-        Map result = new HashMap();
         result.put("hideTitles",titleMap.get("hideTitles"));
         result.put("titles",titleMap.get("titles"));
         result.put("varList",varMapList);
