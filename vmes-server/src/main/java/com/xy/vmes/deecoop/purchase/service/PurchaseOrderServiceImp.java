@@ -33,30 +33,38 @@ import javax.servlet.http.HttpServletResponse;
 @Service
 @Transactional(readOnly = false)
 public class PurchaseOrderServiceImp implements PurchaseOrderService {
-
-
     @Autowired
     private PurchaseOrderMapper purchaseOrderMapper;
+    @Autowired
+    private PurchaseOrderDetailService purchaseOrderDetailService;
+
+    @Autowired
+    private WarehouseInService warehouseInService;
+    @Autowired
+    private WarehouseInDetailService warehouseInDetailService;
+
+    @Autowired
+    private PurchasePlanService purchasePlanService;
+    @Autowired
+    private PurchasePlanDetailService purchasePlanDetailService;
+
+    @Autowired
+    private PurchaseSignService purchaseSignService;
+    @Autowired
+    private PurchaseSignDetailService purchaseSignDetailService;
+
+    @Autowired
+    private PurchasePaymentService purchasePaymentService;
+    @Autowired
+    private PurchasePaymentDetailService purchasePaymentDetailService;
+
     @Autowired
     private ColumnService columnService;
     @Autowired
     private CoderuleService coderuleService;
     @Autowired
-    private PurchaseOrderDetailService purchaseOrderDetailService;
-    @Autowired
-    private WarehouseInService warehouseInService;
-    @Autowired
-    private WarehouseInDetailService warehouseInDetailService;
-    @Autowired
-    private PurchaseSignService purchaseSignService;
-    @Autowired
-    private PurchaseSignDetailService purchaseSignDetailService;
-    @Autowired
     private FileService fileService;
-    @Autowired
-    private PurchasePlanDetailService purchasePlanDetailService;
-    @Autowired
-    private PurchasePlanService purchasePlanService;
+
     /**
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2019-03-05
@@ -765,71 +773,21 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService {
     }
 
     @Override
-    public void updateState(String id,String remark) throws Exception {
-        PurchaseOrder purchaseOrder = this.selectById(id);
-        purchaseOrder.setRemark(remark);
-        //0:待提交 1:待审核 2:采购中 3:已完成 -1:已取消
-        //0:待提交 1:待审核 2:采购中 3:部分签收 4:已完成 -1:已取消
-        int yqx = 0;//已取消
-        int dtj = 0;//待提交
-        int dsh = 0;//待审核
-        int cgz = 0;//采购中
-        int bfqs = 0;//部分签收
-        int ywc = 0;//已完成
-        if(purchaseOrder!=null){
-            Map columnMap = new HashMap();
-            columnMap.put("parent_id",id);
-            List<PurchaseOrderDetail> detailList = purchaseOrderDetailService.selectByColumnMap(columnMap);
-            if(detailList!=null&&detailList.size()>0){
-                for(int i=0;i<detailList.size();i++){
-                    PurchaseOrderDetail purchaseOrderDetail = detailList.get(i);
-                    if("-1".equals(purchaseOrderDetail.getState())){
-                        yqx = yqx + 1;
-                    }else if("0".equals(purchaseOrderDetail.getState())){
-                        dtj = dtj + 1;
-                    }else if("1".equals(purchaseOrderDetail.getState())){
-                        dsh = dsh + 1;
-                    }else if("2".equals(purchaseOrderDetail.getState())){
-                        cgz = cgz + 1;
-                    }else if("3".equals(purchaseOrderDetail.getState())){
-                        bfqs = bfqs + 1;
-                    }else if("4".equals(purchaseOrderDetail.getState())){
-                        ywc = ywc + 1;
-                    }
-                }
-            }else{
-                //如果当前单据没有明细则自动删除当前单据
-                this.deleteById(id);
-                return;
-            }
-            //该单据明细状态全是已取消状态，则说明当前单据状态为已取消
-            if(yqx>0&&dtj==0&&dsh==0&&cgz==0&&ywc==0&&bfqs==0){
-                purchaseOrder.setState("-1");//已取消
-            }
-            //该单据明细状态全是已完成和已取消状态，则说明当前单据状态为已完成
-            else if(ywc>0&&dtj==0&&dsh==0&&cgz==0&&bfqs==0){
-                purchaseOrder.setState("3");//已完成
-            }
-            //该单据明细状态全是待提交和已取消状态，则说明当前单据状态为待提交
-            else if(dtj>0&&ywc==0&&dsh==0&&cgz==0&&bfqs==0){
-                purchaseOrder.setState("0");//待提交
-            }
-            //该单据明细状态全是待审核和已取消状态，则说明当前单据状态为待审核
-            else if(dsh>0&&dtj==0&&ywc==0&&cgz==0&&bfqs==0){
-                purchaseOrder.setState("1");//待审核
-            }
-            //该单据明细状态存在采购中，则说明当前单据状态为采购中
-            else if(cgz>0||bfqs>0){
-                purchaseOrder.setState("2");//采购中
-            }
+    public void updateState(String id, String remark) throws Exception {
+        PurchaseOrder purchaseOrder = this.updateState(id);
+        if (purchaseOrder == null) {return;}
+
+        if (remark != null && remark.trim().length() > 0) {
+            purchaseOrder.setRemark(remark.trim());
             this.update(purchaseOrder);
         }
-
     }
 
     @Override
-    public void updateState(String id) throws Exception {
+    public PurchaseOrder updateState(String id) throws Exception {
         PurchaseOrder purchaseOrder = this.selectById(id);
+        if (purchaseOrder == null) {return null;}
+
         //0:待提交 1:待审核 2:采购中 3:已完成 -1:已取消
         //0:待提交 1:待审核 2:采购中 3:部分签收 4:已完成 -1:已取消
         int yqx = 0;//已取消
@@ -838,55 +796,85 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService {
         int cgz = 0;//采购中
         int bfqs = 0;//部分签收
         int ywc = 0;//已完成
-        if(purchaseOrder!=null){
-            Map columnMap = new HashMap();
-            columnMap.put("parent_id",id);
-            List<PurchaseOrderDetail> detailList = purchaseOrderDetailService.selectByColumnMap(columnMap);
-            if(detailList!=null&&detailList.size()>0){
-                for(int i=0;i<detailList.size();i++){
-                    PurchaseOrderDetail purchaseOrderDetail = detailList.get(i);
-                    if("-1".equals(purchaseOrderDetail.getState())){
-                        yqx = yqx + 1;
-                    }else if("0".equals(purchaseOrderDetail.getState())){
-                        dtj = dtj + 1;
-                    }else if("1".equals(purchaseOrderDetail.getState())){
-                        dsh = dsh + 1;
-                    }else if("2".equals(purchaseOrderDetail.getState())){
-                        cgz = cgz + 1;
-                    }else if("3".equals(purchaseOrderDetail.getState())){
-                        bfqs = bfqs + 1;
-                    }else if("4".equals(purchaseOrderDetail.getState())){
-                        ywc = ywc + 1;
-                    }
+
+        Map columnMap = new HashMap();
+        columnMap.put("parent_id",id);
+        List<PurchaseOrderDetail> detailList = purchaseOrderDetailService.selectByColumnMap(columnMap);
+        if(detailList!=null&&detailList.size()>0){
+            for(int i=0;i<detailList.size();i++){
+                PurchaseOrderDetail purchaseOrderDetail = detailList.get(i);
+                if("-1".equals(purchaseOrderDetail.getState())){
+                    yqx = yqx + 1;
+                }else if("0".equals(purchaseOrderDetail.getState())){
+                    dtj = dtj + 1;
+                }else if("1".equals(purchaseOrderDetail.getState())){
+                    dsh = dsh + 1;
+                }else if("2".equals(purchaseOrderDetail.getState())){
+                    cgz = cgz + 1;
+                }else if("3".equals(purchaseOrderDetail.getState())){
+                    bfqs = bfqs + 1;
+                }else if("4".equals(purchaseOrderDetail.getState())){
+                    ywc = ywc + 1;
                 }
-            }else{
-                //如果当前单据没有明细则自动删除当前单据
-                this.deleteById(id);
-                return;
             }
-            //该单据明细状态全是已取消状态，则说明当前单据状态为已取消
-            if(yqx>0&&dtj==0&&dsh==0&&cgz==0&&ywc==0&&bfqs==0){
-                purchaseOrder.setState("-1");//已取消
-            }
-            //该单据明细状态全是已完成和已取消状态，则说明当前单据状态为已完成
-            else if(ywc>0&&dtj==0&&dsh==0&&cgz==0&&bfqs==0){
-                purchaseOrder.setState("3");//已完成
-            }
-            //该单据明细状态全是待提交和已取消状态，则说明当前单据状态为待提交
-            else if(dtj>0&&ywc==0&&dsh==0&&cgz==0&&bfqs==0){
-                purchaseOrder.setState("0");//待提交
-            }
-            //该单据明细状态全是待审核和已取消状态，则说明当前单据状态为待审核
-            else if(dsh>0&&dtj==0&&ywc==0&&cgz==0&&bfqs==0){
-                purchaseOrder.setState("1");//待审核
-            }
-            //该单据明细状态存在采购中，则说明当前单据状态为采购中
-            else if(cgz>0||bfqs>0){
-                purchaseOrder.setState("2");//采购中
-            }
-            this.update(purchaseOrder);
+        } else {
+            //如果当前单据没有明细则自动删除当前单据
+            this.deleteById(id);
+            return purchaseOrder;
         }
 
+        //该单据明细状态全是已取消状态，则说明当前单据状态为已取消
+        if(yqx>0&&dtj==0&&dsh==0&&cgz==0&&ywc==0&&bfqs==0){
+            purchaseOrder.setState("-1");//已取消
+        }
+        //该单据明细状态全是已完成和已取消状态，则说明当前单据状态为已完成
+        else if(ywc>0&&dtj==0&&dsh==0&&cgz==0&&bfqs==0){
+            purchaseOrder.setState("3");//已完成
+        }
+        //该单据明细状态全是待提交和已取消状态，则说明当前单据状态为待提交
+        else if(dtj>0&&ywc==0&&dsh==0&&cgz==0&&bfqs==0){
+            purchaseOrder.setState("0");//待提交
+        }
+        //该单据明细状态全是待审核和已取消状态，则说明当前单据状态为待审核
+        else if(dsh>0&&dtj==0&&ywc==0&&cgz==0&&bfqs==0){
+            purchaseOrder.setState("1");//待审核
+        }
+        //该单据明细状态存在采购中，则说明当前单据状态为采购中
+        else if(cgz>0||bfqs>0){
+            purchaseOrder.setState("2");//采购中
+        }
+        this.update(purchaseOrder);
+
+        //////////////////////////////////////////////////////////////////////////////////
+        //采购订单状态(0:待提交 1:待审核 2:采购中 3:已完成 -1:已取消)
+        String orderState = purchaseOrder.getState();
+        if ("3".equals(orderState)) {
+            //付款单类型(1:订单付款 2:订单退款)
+            PurchasePayment payment = purchasePaymentService.createPayment(purchaseOrder.getSupplierId(),
+                    purchaseOrder.getCuser(),
+                    purchaseOrder.getCompanyId(),
+                    "1");
+            //付款金额 paymentSum := amount 采购订单.采购金额(合计金额 - 折扣金额)
+            payment.setPaymentSum(purchaseOrder.getAmount());
+            purchasePaymentService.save(payment);
+
+            //2. 创建收款单明细
+            //获取 <订单id, 退货金额>
+            PurchasePaymentDetail paymentDtl = new PurchasePaymentDetail();
+            paymentDtl.setOrderId(purchaseOrder.getId());
+            //状态(0:待付款 1:已付款 -1:已取消)
+            paymentDtl.setState("1");
+            //paymentSum 实付金额
+            paymentDtl.setPaymentSum(purchaseOrder.getAmount());
+            //discountAmount 折扣金额
+            paymentDtl.setDiscountAmount(BigDecimal.valueOf(0D));
+
+            List<PurchasePaymentDetail> paymentDtlList = new ArrayList<PurchasePaymentDetail>();
+            paymentDtlList.add(paymentDtl);
+            purchasePaymentDetailService.addPaymentDetail(payment, paymentDtlList);
+        }
+
+        return purchaseOrder;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
