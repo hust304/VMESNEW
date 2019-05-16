@@ -625,6 +625,14 @@ public class SaleRetreatServiceImp implements SaleRetreatService {
             return model;
         }
 
+        //退货类型
+        String type = pageData.getString("type");
+        if (type == null || type.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("退货类型id为空或空字符串！");
+            return model;
+        }
+
         String dtlJsonStr = pageData.getString("dtlJsonStr");
         if (dtlJsonStr == null || dtlJsonStr.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
@@ -651,6 +659,7 @@ public class SaleRetreatServiceImp implements SaleRetreatService {
 
         //1. 退货单
         SaleRetreat retreat = new SaleRetreat();
+        retreat.setType(type);
         retreat.setCustomerId(customerId);
         //获取退货总金额
         BigDecimal totalSum = saleRetreatDetailService.findTotalSumByDetailList(retreatDtlList);
@@ -690,6 +699,14 @@ public class SaleRetreatServiceImp implements SaleRetreatService {
             return model;
         }
 
+        //退货类型
+        String type = pageData.getString("type");
+        if (type == null || type.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("退货类型id为空或空字符串！");
+            return model;
+        }
+
         String dtlJsonStr = pageData.getString("dtlJsonStr");
         if (dtlJsonStr == null || dtlJsonStr.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
@@ -717,6 +734,7 @@ public class SaleRetreatServiceImp implements SaleRetreatService {
         //修改退货单(退货总金额)
         SaleRetreat retreatEdit = new SaleRetreat();
         retreatEdit.setId(parentId);
+        retreatEdit.setType(type);
         BigDecimal totalSum = saleRetreatDetailService.findTotalSumByDetailList(retreatDtlList);
         retreatEdit.setTotalSum(totalSum);
         this.update(retreatEdit);

@@ -50,20 +50,24 @@
             (replace(uuid(), '-', ''), 'saleRetreat', 'id', 'id', 0, '1', '0', '1', '0', '2019-2-25 18:00:27', 'admin'),
             (replace(uuid(), '-', ''), 'saleRetreat', 'companyId', '企业id', 1, '1', '0', '1', '0', '2019-2-25 18:00:27', 'admin'),
             (replace(uuid(), '-', ''), 'saleRetreat', 'sysCode', '退货编号', 2, '1', '1', '1', '0', '2019-2-25 18:00:27', 'admin'),
-            (replace(uuid(), '-', ''), 'saleRetreat', 'customerId', '客户id', 3, '1', '0', '1', '0', '2019-2-25 18:00:27', 'admin'),
-            (replace(uuid(), '-', ''), 'saleRetreat', 'customerName', '客户名称', 3, '1', '1', '1', '0', '2019-2-25 18:00:27', 'admin'),
-            (replace(uuid(), '-', ''), 'saleRetreat', 'cdateStr', '制单日期', 4, '1', '1', '1', '0', '2019-2-25 18:00:27', 'admin'),
-            (replace(uuid(), '-', ''), 'saleRetreat', 'cdate', '创建时间', 4, '1', '0', '1', '0', '2019-2-25 18:00:27', 'admin'),
-            (replace(uuid(), '-', ''), 'saleRetreat', 'retreatDate', '退货完成日期', 5, '1', '0', '1', '0', '2019-2-25 18:00:27', 'admin'),
-            (replace(uuid(), '-', ''), 'saleRetreat', 'retreatDateStr', '完成日期', 5, '1', '1', '1', '0', '2019-2-25 18:00:27', 'admin'),
-            (replace(uuid(), '-', ''), 'saleRetreat', 'remark', '备注', 6, '1', '1', '1', '0', '2019-2-25 18:00:27', 'admin'),
-            (replace(uuid(), '-', ''), 'saleRetreat', 'stateName', '状态', 7, '1', '1', '1', '0', '2019-2-25 18:00:27', 'admin'),
-            (replace(uuid(), '-', ''), 'saleRetreat', 'state', '状态id', 7, '1', '0', '1', '0', '2019-2-25 18:00:27', 'admin'),
-            (replace(uuid(), '-', ''), 'saleRetreat', 'totalSum', '退货金额', 8, '1', '0', '1', '0', '2019-2-25 18:00:27', 'admin'),
-            (replace(uuid(), '-', ''), 'saleRetreat', 'cuser', '创建用户id', 9, '1', '0', '1', '0', '2019-2-25 18:00:27', 'admin'),
-            (replace(uuid(), '-', ''), 'saleRetreat', 'uuser', '修改用户id', 10, '1', '0', '1', '0', '2019-2-25 18:00:27', 'admin'),
-            (replace(uuid(), '-', ''), 'saleRetreat', 'udate', '修改时间', 11, '1', '0', '1', '0', '2019-2-25 18:00:27', 'admin'),
-            (replace(uuid(), '-', ''), 'saleRetreat', 'isdisable', '是否启用(0:已禁用 1:启用)', 12, '1', '0', '1', '0', '2019-2-25 18:00:27', 'admin'),
+            (replace(uuid(), '-', ''),'saleRetreat','type','退货类型id',3, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'saleRetreat','typeName','退货类型',3, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''), 'saleRetreat', 'customerId', '客户id', 4, '1', '0', '1', '0', '2019-2-25 18:00:27', 'admin'),
+            (replace(uuid(), '-', ''), 'saleRetreat', 'customerName', '客户名称', 4, '1', '1', '1', '0', '2019-2-25 18:00:27', 'admin'),
+            (replace(uuid(), '-', ''), 'saleRetreat', 'cdateStr', '制单日期', 5, '1', '1', '1', '0', '2019-2-25 18:00:27', 'admin'),
+            (replace(uuid(), '-', ''), 'saleRetreat', 'cdate', '创建时间', 5, '1', '0', '1', '0', '2019-2-25 18:00:27', 'admin'),
+            (replace(uuid(), '-', ''), 'saleRetreat', 'retreatDate', '退货完成日期', 6, '1', '0', '1', '0', '2019-2-25 18:00:27', 'admin'),
+            (replace(uuid(), '-', ''), 'saleRetreat', 'retreatDateStr', '完成日期', 6, '1', '1', '1', '0', '2019-2-25 18:00:27', 'admin'),
+            (replace(uuid(), '-', ''), 'saleRetreat', 'remark', '备注', 7, '1', '1', '1', '0', '2019-2-25 18:00:27', 'admin'),
+            (replace(uuid(), '-', ''), 'saleRetreat', 'stateName', '状态', 8, '1', '1', '1', '0', '2019-2-25 18:00:27', 'admin'),
+            (replace(uuid(), '-', ''), 'saleRetreat', 'state', '状态id', 8, '1', '0', '1', '0', '2019-2-25 18:00:27', 'admin'),
+            (replace(uuid(), '-', ''), 'saleRetreat', 'totalSum', '退货金额', 9, '1', '0', '1', '0', '2019-2-25 18:00:27', 'admin'),
+            (replace(uuid(), '-', ''), 'saleRetreat', 'cuser', '创建用户id', 10, '1', '0', '1', '0', '2019-2-25 18:00:27', 'admin'),
+            (replace(uuid(), '-', ''), 'saleRetreat', 'uuser', '修改用户id', 11, '1', '0', '1', '0', '2019-2-25 18:00:27', 'admin'),
+            (replace(uuid(), '-', ''), 'saleRetreat', 'udate', '修改时间', 12, '1', '0', '1', '0', '2019-2-25 18:00:27', 'admin'),
+            (replace(uuid(), '-', ''), 'saleRetreat', 'isdisable', '是否启用(0:已禁用 1:启用)', 13, '1', '0', '1', '0', '2019-2-25 18:00:27', 'admin'),
+
+
     </insert>
 
     <update id="updateStateByRetreat" parameterType="com.yvan.PageData" >
@@ -84,15 +88,16 @@
         id id,
         company_id companyId,
         customer_id customerId,
+        type type,
         sys_code sysCode,
-        state state,
 
+        state state,
         total_sum totalSum,
         retreat_date retreatDate,
         audit_id auditId,
         cuser cuser,
-        cdate cdate,
 
+        cdate cdate,
         uuser uuser,
         udate udate,
         remark remark,
@@ -132,6 +137,9 @@
         retreat.id parentId,
         retreat.company_id companyId,
         retreat.customer_id customerId,
+        retreat.type type,
+        type.name typeName,
+
         retreat.sys_code sysCode,
         retreat.state state,
         CASE
@@ -142,15 +150,14 @@
             WHEN retreat.state = '-1' THEN '已取消'
         ELSE null
         END stateName,
-
         round(ifnull(retreat.total_sum, 0),2) totalSum,
         retreat.retreat_date retreatDate,
         DATE_FORMAT(retreat.retreat_date,'%Y-%m-%d') retreatDateStr,
         retreat.cuser cuser,
+
         retreat.cdate cdate,
         DATE_FORMAT(retreat.cdate,'%Y-%m-%d') cdateStr,
         retreat.uuser uuser,
-
         retreat.udate udate,
         retreat.remark remark,
         retreat.isdisable isdisable,
@@ -159,6 +166,7 @@
 
         from vmes_sale_retreat retreat
         left join vmes_customer customer on retreat.customer_id = customer.id
+        left join vmes_dictionary type on retreat.type = type.id
         <where>
             <if test="currentCompanyId != null and currentCompanyId != ''" >
                 and retreat.company_id = #{currentCompanyId}

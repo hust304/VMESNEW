@@ -24,13 +24,16 @@ public class SaleRetreat implements Serializable {
 	//客户ID
 	@TableField("customer_id")
 	private String customerId;
+	//退货类型-(字典表-vmes_dictionary.id)
+	@TableField("type")
+	private String type;
 	//退货编号(系统生成)
 	@TableField("sys_code")
 	private String sysCode;
+
 	//状态(0:待提交 1:待审核 2:待退款 3:已完成 -1:已取消)
 	@TableField("state")
 	private String state;
-
 	//退货金额
 	@TableField("total_sum")
 	private BigDecimal totalSum;
@@ -43,10 +46,10 @@ public class SaleRetreat implements Serializable {
 	//创建用户id
 	@TableField("cuser")
 	private String cuser;
+
 	//创建时间
 	@TableField("cdate")
 	private Date cdate;
-
 	//修改用户id
 	@TableField("uuser")
 	private String uuser;
@@ -145,7 +148,13 @@ public class SaleRetreat implements Serializable {
 	public void setAuditId(String auditId) {
 		this.auditId = auditId;
 	}
-	/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+	public String getType() {
+		return type;
+	}
+	public void setType(String type) {
+		this.type = type;
+	}
+/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 
 }
