@@ -544,41 +544,42 @@ public class SaleDeliverDetailServiceImp implements SaleDeliverDetailService {
         Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
         List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
 
-        //计价类型(1:先计价 2:后计价)
-        String priceType = pd.getString("priceType");
-        if ("2".equals(priceType)) {
-            for (Map<String, String> mapObject : varMapList) {
-                //orderCount 发货数量
-                BigDecimal orderCount = BigDecimal.valueOf(0D);
-                String orderCount_str = mapObject.get("orderCount");
-                if (orderCount_str != null && orderCount_str.trim().length() > 0) {
-                    try {
-                        orderCount = new BigDecimal(orderCount_str);
-                    } catch (NumberFormatException e) {
-                        e.printStackTrace();
-                    }
-                }
+        //String priceType = pd.getString("priceType");
+        for (Map<String, String> mapObject : varMapList) {
+            //priceType 计价类型(1:先计价 2:后计价)
+            String priceType = mapObject.get("priceType");
+            if (!"2".equals(priceType)) {continue;}
 
-                //sum 发货金额
-                BigDecimal sum = BigDecimal.valueOf(0D);
-                String sum_str = mapObject.get("sum");
-                if (sum_str != null && sum_str.trim().length() > 0) {
-                    try {
-                        sum = new BigDecimal(sum_str);
-                    } catch (NumberFormatException e) {
-                        e.printStackTrace();
-                    }
+            //orderCount 发货数量
+            BigDecimal orderCount = BigDecimal.valueOf(0D);
+            String orderCount_str = mapObject.get("orderCount");
+            if (orderCount_str != null && orderCount_str.trim().length() > 0) {
+                try {
+                    orderCount = new BigDecimal(orderCount_str);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
                 }
+            }
 
-                //productPrice 货品单价 := 发货金额 / 发货数量
-                mapObject.put("productPrice", "0.00");
-                if (orderCount.doubleValue() != 0D && sum.doubleValue() != 0D) {
-                    BigDecimal productPrice = BigDecimal.valueOf(sum.doubleValue() / orderCount.doubleValue());
-                    //四舍五入到2位小数
-                    productPrice = productPrice.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-                    mapObject.put("productPrice", productPrice.toString());
-
+            //sum 发货金额
+            BigDecimal sum = BigDecimal.valueOf(0D);
+            String sum_str = mapObject.get("sum");
+            if (sum_str != null && sum_str.trim().length() > 0) {
+                try {
+                    sum = new BigDecimal(sum_str);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
                 }
+            }
+
+            //productPrice 货品单价 := 发货金额 / 发货数量
+            mapObject.put("productPrice", "0.00");
+            if (orderCount.doubleValue() != 0D && sum.doubleValue() != 0D) {
+                BigDecimal productPrice = BigDecimal.valueOf(sum.doubleValue() / orderCount.doubleValue());
+                //四舍五入到2位小数
+                productPrice = productPrice.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                mapObject.put("productPrice", productPrice.toString());
+
             }
         }
 
