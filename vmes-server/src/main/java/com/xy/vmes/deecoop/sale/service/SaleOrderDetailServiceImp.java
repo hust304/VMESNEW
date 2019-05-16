@@ -764,6 +764,29 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
     }
 
     /**
+     * 订单明细状态，在订单明细List<SaleOrderDetail>中是否全部相同
+     *   true : 一条或多条相同，在订单明细List
+     *   false: 全部不同，在订单明细List
+     *
+     * @param state       明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
+     * @param objectList  盘点单明细List<SaleOrderDetail>
+     * @return
+     */
+    public boolean isExistStateByDetailList(String state, List<SaleOrderDetail> objectList) {
+        if (state == null || state.trim().length() == 0) {return false;}
+        if (objectList == null || objectList.size() == 0) {return false;}
+
+        for (SaleOrderDetail detail : objectList) {
+            String dtl_state = detail.getState();
+            if (dtl_state != null && state.trim().equals(dtl_state.trim())) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * 获取订单状态-根据订单明细状态
      * 订单状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
      * 订单明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
@@ -827,6 +850,13 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
         checkDtlState = "-1";
         if (this.isAllExistStateByDetailList(checkDtlState, dtlList)) {
             parent.setState("-1");
+            return parent;
+        }
+
+        //4. 验证订单状态(2:待发货) -- 明细列表中状态(4:待发货) 一条或多条
+        checkDtlState = "4";
+        if (this.isExistStateByDetailList(checkDtlState, dtlList)) {
+            parent.setState("2");
             return parent;
         }
 
