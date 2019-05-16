@@ -359,7 +359,6 @@
         detail.plan_id planId,<!-- 采购计划明细ID -->
         detail.product_id productId,<!-- 产品ID -->
         round(ifnull(detail.count, 0), 2) count,<!-- 采购数量 -->
-        round(ifnull(signDetail.arrive_count, 0), 2) arriveCount,<!-- 到货数量 -->
         round(ifnull(detail.price, 0), 2) price,<!-- 单价 -->
         round(ifnull(detail.amount, 0), 2) amount,<!-- 采购金额 -->
         DATE_FORMAT(detail.edate,'%Y-%m-%d') edate,<!-- 期望到货时间 -->
@@ -373,7 +372,10 @@
         detail.remark remark,<!-- 采购补充说明 -->
         detail.isdisable isdisable,<!-- 是否启用(0:已禁用 1:启用) -->
 
-        round(ifnull(detail.count, 0) - ifnull(signDetail.arrive_count, 0), 2) arrivingCount,
+        <!--到货数量:= 签收数量 - (生成退货单)退货数量 -->
+        round((ifnull(signDetail.arrive_count, 0) - ifnull(retreatDetail.count, 0)), 2) arriveCount,
+        <!--当前到货数量:= 采购数量 - (签收数量 - (生成退货单)退货数量)   -->
+        round((ifnull(detail.count, 0) - (ifnull(signDetail.arrive_count, 0) - ifnull(retreatDetail.count, 0))), 2) arrivingCount,
         product.code productCode,
         product.name productName,
         product.spec,
@@ -397,13 +399,25 @@
         left join vmes_dictionary type on product.type = type.id
         left join vmes_dictionary reason on detail.reason = reason.id
 
-        <!--获取到货日期 按(订单明细id)汇总 vmes_purchase_sign_detail-->
+        <!--采购订单明细id)采购签收明细汇总 vmes_purchase_sign_detail-->
         left join (
             select order_detail_id, max(cdate) cdate, sum(arrive_count) arrive_count
             from vmes_purchase_sign_detail
             where isdisable = '1'
             group by order_detail_id
         ) signDetail on detail.id = signDetail.order_detail_id
+        <!--(采购订单明细id)-退货完成数量-退货明细汇总-->
+        left join (
+            select
+                order_detail_id,
+                sum(count) count,
+                sum(amount) amount
+            from vmes_purchase_retreat_detail
+            where <![CDATA[state <> '-1' ]]>
+            group by order_detail_id
+        ) retreatDetail on detail.id = retreatDetail.order_detail_id
+
+
         <where>
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >

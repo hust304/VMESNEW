@@ -539,6 +539,7 @@ public class PurchaseRetreatServiceImp implements PurchaseRetreatService {
                     cuser);
         }
 
+        //修改采购(订单,订单明细)状态
         this.updatePurchaseOrderByState(retreat.getOrderId(), orderDtlList);
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -683,8 +684,14 @@ public class PurchaseRetreatServiceImp implements PurchaseRetreatService {
         }
     }
 
+    /**
+     * 修改采购(订单,订单明细)状态
+     *
+     * @param orderId
+     * @param orderDtlList
+     * @throws Exception
+     */
     private void updatePurchaseOrderByState(String orderId, List<PurchaseOrderDetail> orderDtlList) throws Exception {
-        //3. 修改采购(订单,订单明细)状态
         //按采购订单id-获取<采购订单明细id, 采购订单明细信息Map> - (orderDtlCount:采购订单明细采购数量, checkCount: 验证数量(签收数量-退货数量))
         Map<String, Map<String, Object>> orderDtlMap = purchaseOrderDetailService.findMapOrderDetaiCountByOrderId(orderId);
         for (PurchaseOrderDetail orderDtl : orderDtlList) {
@@ -699,9 +706,11 @@ public class PurchaseRetreatServiceImp implements PurchaseRetreatService {
             //checkCount: 验证数量(签收数量-退货数量)
             BigDecimal checkCount = (BigDecimal)valueMap.get("checkCount");
 
+            //明细状态(0:待提交 1:待审核 2:采购中 3:部分签收 4:已完成 -1:已取消)
             if (checkCount.doubleValue() >= orderDtlCount.doubleValue()) {
-                //明细状态(0:待提交 1:待审核 2:采购中 3:部分签收 4:已完成 -1:已取消)
                 orderDetailEdit.setState("4");
+            } else if (checkCount.doubleValue() < orderDtlCount.doubleValue()) {
+                orderDetailEdit.setState("3");
             }
             purchaseOrderDetailService.update(orderDetailEdit);
         }
@@ -709,8 +718,6 @@ public class PurchaseRetreatServiceImp implements PurchaseRetreatService {
         //修改采购订单状态
         purchaseOrderService.updateState(orderId);
     }
-
-
 
     /**
      * 创建(负值)的付款单
