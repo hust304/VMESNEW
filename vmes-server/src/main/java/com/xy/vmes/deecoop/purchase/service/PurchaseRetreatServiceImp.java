@@ -525,8 +525,11 @@ public class PurchaseRetreatServiceImp implements PurchaseRetreatService {
             return model;
         }
 
+
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         PurchaseRetreat retreat = this.findPurchaseRetreatById(retreatId);
+        PurchaseOrder order_old = purchaseOrderService.selectById(retreat.getOrderId());
+
         //根据退货类型
         //retreatRefund: f69839bbf2394846a65894f0da120df9 退货退款
         //retreatChange: c90c2081328c427e8d65014d98335601 退货换货
@@ -538,46 +541,19 @@ public class PurchaseRetreatServiceImp implements PurchaseRetreatService {
                     orderDtlRetreatMap,
                     orderDtlList);
 
-            //创建(负值)的付款单
-            this.createPurchasePaymentByMinus(realityTotal_big,
-                    supplierId,
-                    companyId,
-                    retreat.getOrderId(),
-                    cuser);
+            //采购订单变更前状态
+            //采购订单状态(0:待提交 1:待审核 2:采购中 3:已完成 -1:已取消)
+            if ("3".equals(order_old.getState())) {
+                //创建(负值)的付款单
+                this.createPurchasePaymentByMinus(realityTotal_big,
+                        supplierId,
+                        companyId,
+                        retreat.getOrderId(),
+                        cuser);
+            }
         }
-
         //修改采购(订单,订单明细)状态
         this.updatePurchaseOrderByState(retreat.getOrderId(), orderDtlList);
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-//        //采购订单状态(0:待提交 1:待审核 2:采购中 3:已完成 -1:已取消)
-//        PurchaseOrder orderDB = purchaseOrderService.selectById(retreat.getOrderId());
-//        String orderState = orderDB.getState();
-//        if ("3".equals(orderState)) {
-//            //付款单类型(1:订单付款 2:订单退款)
-//            PurchasePayment payment = purchasePaymentService.createPayment(retreat.getSupplierId(),
-//                    cuser,
-//                    companyId,
-//                    "1");
-//            //付款金额 paymentSum := amount 采购订单.采购金额(合计金额 - 折扣金额)
-//            payment.setPaymentSum(orderDB.getAmount());
-//            purchasePaymentService.save(payment);
-//
-//            //2. 创建收款单明细
-//            //获取 <订单id, 退货金额>
-//            PurchasePaymentDetail paymentDtl = new PurchasePaymentDetail();
-//            paymentDtl.setOrderId(retreat.getOrderId());
-//            //状态(0:待付款 1:已付款 -1:已取消)
-//            paymentDtl.setState("1");
-//            //paymentSum 实付金额
-//            paymentDtl.setPaymentSum(orderDB.getAmount());
-//            //discountAmount 折扣金额
-//            paymentDtl.setDiscountAmount(BigDecimal.valueOf(0D));
-//
-//            List<PurchasePaymentDetail> paymentDtlList = new ArrayList<PurchasePaymentDetail>();
-//            paymentDtlList.add(paymentDtl);
-//            purchasePaymentDetailService.addPaymentDetail(payment, paymentDtlList);
-//        }
 
         return model;
     }
@@ -698,7 +674,8 @@ public class PurchaseRetreatServiceImp implements PurchaseRetreatService {
      * @param orderDtlList
      * @throws Exception
      */
-    private void updatePurchaseOrderByState(String orderId, List<PurchaseOrderDetail> orderDtlList) throws Exception {
+    private void updatePurchaseOrderByState(String orderId,
+                                            List<PurchaseOrderDetail> orderDtlList) throws Exception {
         //按采购订单id-获取<采购订单明细id, 采购订单明细信息Map> - (orderDtlCount:采购订单明细采购数量, checkCount: 验证数量(签收数量-退货数量))
         Map<String, Map<String, Object>> orderDtlMap = purchaseOrderDetailService.findMapOrderDetaiCountByOrderId(orderId);
         for (PurchaseOrderDetail orderDtl : orderDtlList) {

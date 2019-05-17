@@ -24,13 +24,16 @@ public class PurchasePayment implements Serializable {
 	//供应商ID
 	@TableField("supplier_id")
 	private String supplierId;
+	//采购订单ID
+	@TableField("order_id")
+	private String orderId;
 	//付款单编号
 	@TableField("sys_code")
 	private String sysCode;
+
 	//收款单类型(1:订单付款 2:订单退款)
 	@TableField("type")
 	private String type;
-
 	//付款金额
 	@TableField("payment_sum")
 	private BigDecimal paymentSum;
@@ -43,10 +46,10 @@ public class PurchasePayment implements Serializable {
 	//修改用户id
 	@TableField("uuser")
 	private String uuser;
+
 	//修改时间
 	@TableField("udate")
 	private Date udate;
-
 	//备注
 	@TableField("remark")
 	private String remark;
@@ -127,7 +130,12 @@ public class PurchasePayment implements Serializable {
 	public String getIsdisable() {
 		return isdisable;
 	}
-
+	public String getOrderId() {
+		return orderId;
+	}
+	public void setOrderId(String orderId) {
+		this.orderId = orderId;
+	}
 /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 

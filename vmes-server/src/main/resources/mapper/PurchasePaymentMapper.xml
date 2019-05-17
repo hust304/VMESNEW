@@ -55,15 +55,16 @@
         id id,
         company_id companyId,
         supplier_id supplierId,
+        order_id orderId,
         sys_code sysCode,
-        type type,
 
+        type type,
         payment_sum paymentSum,
         cuser cuser,
         cdate cdate,
         uuser uuser,
-        udate udate,
 
+        udate udate,
         remark remark,
         isdisable isdisable
         from vmes_purchase_payment
@@ -83,6 +84,12 @@
                 </choose>
             </if>
 
+            <if test="orderId != null and orderId != ''">
+                and order_id = #{orderId}
+            </if>
+            <if test="type != null and type != ''">
+                and type = #{type}
+            </if>
 
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >
@@ -100,15 +107,16 @@
         id id,
         company_id companyId,
         supplier_id supplierId,
+        order_id orderId,
         sys_code sysCode,
-        type type,
 
+        type type,
         payment_sum paymentSum,
         cuser cuser,
         cdate cdate,
         uuser uuser,
-        udate udate,
 
+        udate udate,
         remark remark,
         isdisable isdisable
         from vmes_purchase_payment
