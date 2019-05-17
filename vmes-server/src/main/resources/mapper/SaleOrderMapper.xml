@@ -275,12 +275,6 @@
                 <![CDATA[ and saleOrder.order_date <= #{orderDateEnd} ]]>
             </if>
 
-            <!--过滤(允许生成发货单)-->
-            <!--(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已发货 6:已完成 -1:已取消)-->
-            <if test="'true' == isNeedDeliver">
-                and detail.state = '3'
-            </if>
-
             <!--过滤出订单-订单明细id汇总(订购数量 > (发货数量-退货数量))-->
             <if test="'true' == isBydeliver" >
                 and saleOrder.id in (
