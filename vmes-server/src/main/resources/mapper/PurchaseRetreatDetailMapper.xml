@@ -58,6 +58,9 @@
             (replace(uuid(), '-', ''), 'purchaseRetreatDetail', 'productGenreName', '货品属性', 19, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
             (replace(uuid(), '-', ''),'purchaseRetreatDetail','price','单价',20, '1','1','1','0',now(), 'admin'),
 
+            (replace(uuid(), '-', ''),'purchaseRetreatDetail','n2pFormula','n2pFormula',21, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchaseRetreatDetail','p2nFormula','p2nFormula',22, '1','0','1','0',now(), 'admin')
+
     </insert>
 
     <update id="updateStateByDetail" parameterType="com.yvan.PageData" >
@@ -150,13 +153,18 @@
         product.name productName,
         product.spec productSpec,
         product.genre productGenre,
-        genre.name productGenreName
+        genre.name productGenreName,
+
+        <!--货品计量单位-->
+        prodUnit.np_formula n2pFormula,
+        prodUnit.pn_formula p2nFormula
 
         from vmes_purchase_retreat_detail detail
         left join vmes_purchase_order_detail orderDetail on detail.order_detail_id = orderDetail.id
         left join vmes_product product on detail.product_id = product.id
         left join vmes_dictionary orderUnit on detail.unit = orderUnit.id
         left join vmes_dictionary genre on product.genre = genre.id
+        left join vmes_product_unit prodUnit on (detail.product_id = prodUnit.product_id and detail.unit = prodUnit.unit)
         <where>
             <if test="parentId != null and parentId != ''" >
                 and detail.parent_id = #{parentId}

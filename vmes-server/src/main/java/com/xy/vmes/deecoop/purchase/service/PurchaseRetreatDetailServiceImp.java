@@ -1,6 +1,7 @@
 package com.xy.vmes.deecoop.purchase.service;
 
 import com.xy.vmes.common.util.Common;
+import com.xy.vmes.common.util.EvaluateUtil;
 import com.xy.vmes.deecoop.purchase.dao.PurchaseRetreatDetailMapper;
 import com.xy.vmes.entity.*;
 import com.xy.vmes.service.PurchaseOrderDetailService;
@@ -272,12 +273,35 @@ public class PurchaseRetreatDetailServiceImp implements PurchaseRetreatDetailSer
 
         return outDetail;
     }
-    public List<WarehouseOutDetail> retreatDtlList2OutDtlList(List<PurchaseRetreatDetail> retreatDtlList, List<WarehouseOutDetail> outDtlList) {
+    public List<WarehouseOutDetail> retreatDtlList2OutDtlList(List<PurchaseRetreatDetail> retreatDtlList, Map<String, String> productMap, List<WarehouseOutDetail> outDtlList) {
         if (outDtlList == null) {outDtlList = new ArrayList<WarehouseOutDetail>();}
         if (retreatDtlList == null || retreatDtlList.size() == 0) {return outDtlList;}
 
         for (PurchaseRetreatDetail retreatDtl : retreatDtlList) {
             WarehouseOutDetail outDetail = this.retreatDetail2OutDetail(retreatDtl, null);
+
+            //productId 产品ID
+            String productId = outDetail.getProductId();
+
+            //p2nFormula (计价单位转换计量单位公式)
+            String p2nFormula = "";
+            if (productMap != null
+                && productMap.get(productId) != null
+                && productMap.get(productId).trim().length() > 0
+            ) {
+                p2nFormula = productMap.get(productId).trim();
+            }
+
+            //采购数量 - 转换计量单位 - 单位换算公式(p2nFormula)
+            BigDecimal prodCount = BigDecimal.valueOf(0D);
+            try {
+                BigDecimal bigDecimal = EvaluateUtil.countFormulaP2N(outDetail.getCount(), p2nFormula);
+                if (bigDecimal != null) {prodCount = bigDecimal;}
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            outDetail.setCount(prodCount);
+
             outDtlList.add(outDetail);
         }
 

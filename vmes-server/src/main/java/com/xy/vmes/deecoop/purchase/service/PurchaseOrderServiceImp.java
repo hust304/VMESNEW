@@ -2,6 +2,7 @@ package com.xy.vmes.deecoop.purchase.service;
 
 
 import com.xy.vmes.common.util.Common;
+import com.xy.vmes.common.util.EvaluateUtil;
 import com.xy.vmes.deecoop.purchase.dao.PurchaseOrderMapper;
 import com.xy.vmes.entity.*;
 import com.xy.vmes.service.*;
@@ -588,9 +589,15 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService {
             return model;
         }
 
+        //验证采购订单明细(单位) 单位换算公式 是否正确
+        String msgStr = this.checkPurchaseSign(mapList);
+        if (msgStr != null && msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr + "请于管理员联系，维护正确的单位换算公式！");
+            return model;
+        }
+
         String companyID = pd.getString("currentCompanyId");
-
-
         WarehouseIn warehouseIn = (WarehouseIn) HttpUtils.pageData2Entity(pd, new WarehouseIn());
         warehouseIn.setId(Conv.createUuid());
         //状态(0:未完成 1:已完成 -1:已取消)
@@ -613,7 +620,35 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService {
         if(mapList!=null&&mapList.size()>0){
             for(int i=0;i<mapList.size();i++){
                 Map<String, String> detailMap = mapList.get(i);
+
+                //采购数量
+                BigDecimal count = BigDecimal.valueOf(0D);
+                String count_str = detailMap.get("count");
+                if (count_str != null && count_str.trim().length() > 0) {
+                    try {
+                        count = new BigDecimal(count_str);
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                //p2nFormula (计价单位转换计量单位公式)
+                String p2nFormula = "";
+                if (detailMap.get("p2nFormula") != null && detailMap.get("p2nFormula").toString().trim().length() > 0) {
+                    p2nFormula = detailMap.get("p2nFormula").toString().trim();
+                }
+
+                //采购数量 - 转换计量单位 - 单位换算公式(p2nFormula)
+                BigDecimal prodCount = BigDecimal.valueOf(0D);
+                try {
+                    BigDecimal bigDecimal = EvaluateUtil.countFormulaP2N(count, p2nFormula);
+                    if (bigDecimal != null) {prodCount = bigDecimal;}
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
                 WarehouseInDetail warehouseInDetail = (WarehouseInDetail)HttpUtils.pageData2Entity(detailMap, new WarehouseInDetail());
+                warehouseInDetail.setCount(prodCount);
                 warehouseInDetail.setId(Conv.createUuid());
                 warehouseInDetail.setState("0");
                 warehouseInDetail.setParentId(warehouseIn.getId());
@@ -907,6 +942,44 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService {
         newPurchaseOrder.setReceiptAmount(receiptAmount);
         this.update(newPurchaseOrder);
         return model;
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    private String checkPurchaseSign(List<Map<String, String>> mapList) {
+        if (mapList == null || mapList.size() == 0) {return new String();}
+
+        //(计量单位)(库存数量,库存可用数量) 单位换算公式(n2pFormula) (计价单位)(库存数量,库存可用数量)
+        String msgTemp = "第 {0} 行：采购单位：{1} 单位换算公式：{2} 采购数量代入该公式计算错误！" + Common.SYS_ENDLINE_DEFAULT;
+
+        StringBuffer msgBuf = new StringBuffer();
+        for (int i = 0; i < mapList.size(); i++) {
+            Map<String, String> mapObject = mapList.get(i);
+
+            //p2nFormula (计量单位转换计价单位公式)
+            String p2nFormula = "";
+            if (mapObject.get("p2nFormula") != null && mapObject.get("p2nFormula").toString().trim().length() > 0) {
+                p2nFormula = mapObject.get("p2nFormula").toString().trim();
+            }
+
+            BigDecimal testValue = null;
+            try {
+                testValue = EvaluateUtil.countFormulaP2N(BigDecimal.valueOf(1D), p2nFormula);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            //单位名称:采购单位 unit
+            String unit = mapObject.get("unit");
+            if (testValue == null) {
+                String msgStr = MessageFormat.format(msgTemp,
+                        Integer.valueOf(i+1).toString(),
+                        unit,
+                        p2nFormula);
+                msgBuf.append(msgStr);
+            }
+        }
+
+        return msgBuf.toString();
     }
 }
 

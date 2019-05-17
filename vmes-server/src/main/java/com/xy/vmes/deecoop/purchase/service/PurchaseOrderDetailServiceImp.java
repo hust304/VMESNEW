@@ -2,6 +2,7 @@ package com.xy.vmes.deecoop.purchase.service;
 
 
 import com.xy.vmes.common.util.Common;
+import com.xy.vmes.common.util.EvaluateUtil;
 import com.xy.vmes.deecoop.purchase.dao.PurchaseOrderDetailMapper;
 import com.xy.vmes.entity.PurchaseOrderDetail;
 import com.xy.vmes.entity.PurchasePlanDetail;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.text.MessageFormat;
 import java.util.*;
 import com.yvan.Conv;
 import org.springframework.web.multipart.MultipartFile;
@@ -273,8 +275,8 @@ public class PurchaseOrderDetailServiceImp implements PurchaseOrderDetailService
         } else {
             result.put("pageData", pg);
         }
-        List<Map> varList = this.getDataListPage(pd,pg);
 
+        List<Map> varList = this.getDataListPage(pd,pg);
         Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
         List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
 

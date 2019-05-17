@@ -107,7 +107,7 @@ public interface PurchaseRetreatDetailService {
     BigDecimal findTotalSumByDetailList(List<PurchaseRetreatDetail> objectList);
 
     WarehouseOutDetail retreatDetail2OutDetail(PurchaseRetreatDetail retreatDetail, WarehouseOutDetail outDetail);
-    List<WarehouseOutDetail> retreatDtlList2OutDtlList(List<PurchaseRetreatDetail> retreatDtlList, List<WarehouseOutDetail> outDtlList);
+    List<WarehouseOutDetail> retreatDtlList2OutDtlList(List<PurchaseRetreatDetail> retreatDtlList, Map<String, String> productMap, List<WarehouseOutDetail> outDtlList);
 
     String findOrderDtlIdsByRetreatDtlList(List<PurchaseRetreatDetail> objectList);
     /**

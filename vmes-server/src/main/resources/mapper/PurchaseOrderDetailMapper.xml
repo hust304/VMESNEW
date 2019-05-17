@@ -193,7 +193,9 @@
             (replace(uuid(), '-', ''),'PurchaseOrderDetail','arrivingCount','当前到货数量',26, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'PurchaseOrderDetail','id','id',0, '1','0','1','0',now(), 'admin'),
 
-            (replace(uuid(), '-', ''),'PurchaseOrderDetail','signDate','到货日期',27, '1','0','1','0',now(), 'admin')
+            (replace(uuid(), '-', ''),'PurchaseOrderDetail','signDate','到货日期',27, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'PurchaseOrderDetail','n2pFormula','n2pFormula',28, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'PurchaseOrderDetail','p2nFormula','p2nFormula',29, '1','0','1','0',now(), 'admin')
     </insert>
 
 
@@ -379,12 +381,19 @@
         product.code productCode,
         product.name productName,
         product.spec,
+
         genre.name genre,
         genre.id genreId,
+
         unit.name unit,
-        unit.id unitId,
+        detail.unit unitId,
+
         reason.id reasonId,
         reason.name reason,
+
+        <!--货品计量单位-->
+        prodUnit.np_formula n2pFormula,
+        prodUnit.pn_formula p2nFormula,
 
         CASE
         WHEN signDetail.cdate is not null THEN DATE_FORMAT(signDetail.cdate,'%Y-%m-%d')
@@ -394,6 +403,8 @@
         from
         vmes_purchase_order_detail detail
         left join vmes_product product on product.id = detail.product_id
+        left join vmes_product_unit prodUnit on (detail.product_id = prodUnit.product_id and detail.unit = prodUnit.unit)
+
         left join vmes_dictionary genre on product.genre = genre.id
         left join vmes_dictionary unit on detail.unit = unit.id
         left join vmes_dictionary type on product.type = type.id

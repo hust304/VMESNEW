@@ -1,15 +1,12 @@
 package com.xy.vmes.deecoop.purchase.service;
 
 
-import com.xy.vmes.common.util.Common;
-import com.xy.vmes.common.util.DateFormat;
+import com.xy.vmes.common.util.*;
 import com.xy.vmes.deecoop.purchase.dao.PurchaseRetreatMapper;
 import com.xy.vmes.entity.*;
 import com.xy.vmes.service.*;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
-import com.xy.vmes.common.util.ColumnUtil;
-import com.xy.vmes.common.util.StringUtil;
 import com.yvan.DateUtils;
 import com.yvan.PageData;
 import com.yvan.YvanUtil;
@@ -395,6 +392,14 @@ public class PurchaseRetreatServiceImp implements PurchaseRetreatService {
             return model;
         }
 
+        //验证退货单订单明细(单位) 单位换算公式 是否正确
+        String msgStr = this.checkPurchaseRetreatAudit(retreatDtlMapList);
+        if (msgStr != null && msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr + "请于管理员联系，维护正确的单位换算公式！");
+            return model;
+        }
+
         //根据(退货单id)-获取退货单明细List
         List<PurchaseRetreatDetail> retreatDtlList = purchaseRetreatDetailService.findPurchaseRetreatDetailListByParentId(retreatId);
         if (retreatDtlList == null || retreatDtlList.size() == 0) {return model;}
@@ -410,7 +415,9 @@ public class PurchaseRetreatServiceImp implements PurchaseRetreatService {
         warehouseOutService.save(warehouseOut);
 
         //创建出库单明细
-        List<WarehouseOutDetail> outDtlList = purchaseRetreatDetailService.retreatDtlList2OutDtlList(retreatDtlList, null);
+        //获取货品信息Map<货品id, 计价转换计量公式p2nFormula>
+        Map<String, String> productMap = this.findProductMap(retreatDtlMapList);
+        List<WarehouseOutDetail> outDtlList = purchaseRetreatDetailService.retreatDtlList2OutDtlList(retreatDtlList, productMap, null);
         warehouseOutDetailService.addWarehouseOutDetail(warehouseOut, outDtlList);
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -758,6 +765,61 @@ public class PurchaseRetreatServiceImp implements PurchaseRetreatService {
         purchasePaymentDetailService.addPaymentDetail(payment, paymentDtlList_1);
     }
 
+    private String checkPurchaseRetreatAudit(List<Map<String, String>> mapList) {
+        if (mapList == null || mapList.size() == 0) {return new String();}
+
+        //(计量单位)(库存数量,库存可用数量) 单位换算公式(n2pFormula) (计价单位)(库存数量,库存可用数量)
+        String msgTemp = "第 {0} 行：单位：{1} 单位换算公式：{2} 退货数量代入该公式计算错误！" + Common.SYS_ENDLINE_DEFAULT;
+
+        StringBuffer msgBuf = new StringBuffer();
+        for (int i = 0; i < mapList.size(); i++) {
+            Map<String, String> mapObject = mapList.get(i);
+
+            //p2nFormula (计量单位转换计价单位公式)
+            String p2nFormula = "";
+            if (mapObject.get("p2nFormula") != null && mapObject.get("p2nFormula").toString().trim().length() > 0) {
+                p2nFormula = mapObject.get("p2nFormula").toString().trim();
+            }
+
+            BigDecimal testValue = null;
+            try {
+                testValue = EvaluateUtil.countFormulaP2N(BigDecimal.valueOf(1D), p2nFormula);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            //单位名称 unitName
+            String unitName = mapObject.get("unitName");
+            if (testValue == null) {
+                String msgStr = MessageFormat.format(msgTemp,
+                        Integer.valueOf(i+1).toString(),
+                        unitName,
+                        p2nFormula);
+                msgBuf.append(msgStr);
+            }
+        }
+
+        return msgBuf.toString();
+    }
+
+    /**
+     * 根据退货列表List(页面提交)-获取货品信息Map<货品id, 计价转换计量公式p2nFormula>
+     * @param mapList
+     * @return
+     */
+    private Map<String, String> findProductMap(List<Map<String, String>> mapList) {
+        Map<String, String> productMap = new HashMap<String, String>();
+        if (mapList == null || mapList.size() == 0) {return productMap;}
+
+        for (Map<String, String> mapObj : mapList) {
+            String productId = mapObj.get("productId");
+            String p2nFormula = mapObj.get("p2nFormula");
+
+            productMap.put(productId, p2nFormula);
+        }
+
+        return productMap;
+    }
 
 }
 
