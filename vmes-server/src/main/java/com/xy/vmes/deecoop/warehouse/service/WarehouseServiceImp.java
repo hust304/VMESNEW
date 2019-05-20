@@ -1057,6 +1057,13 @@ public class WarehouseServiceImp implements WarehouseService {
             Integer maxCount = this.findMaxSerialNumber(pid);
             warehouse.setSerialNumber(Integer.valueOf(maxCount.intValue() + 1));
         }
+
+        //isSimple 是否简版仓库 Y:是简版 N:非简版 is null:非简版
+        String isSimple = pageData.getString("isSimple");
+        if ("Y".equals(isSimple)) {
+            warehouse.setIsSimple("Y");
+        }
+
         this.save(warehouse);
 
         //virtualGenre: 虚拟库属性(1:内部单位 2:外部单位)
