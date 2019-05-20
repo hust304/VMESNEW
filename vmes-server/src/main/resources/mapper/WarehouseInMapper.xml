@@ -117,7 +117,9 @@
             uuser uuser,
             udate udate,
             remark remark,
-            isdisable isdisable
+            isdisable isdisable,
+
+            is_simple isSimple
         from vmes_warehouse_in
         <choose>
             <!--
@@ -203,7 +205,9 @@
             a.uuser uuser,
             DATE_FORMAT(a.udate,'%Y-%m-%d') udate,
             a.remark remark,
-            a.isdisable isdisable
+            a.isdisable isdisable,
+
+            a.is_simple isSimple
     from vmes_warehouse_in a
         left join vmes_warehouse b on a.warehouse_id = b.id
         left join vmes_user c on a.make_id = c.id
@@ -239,6 +243,9 @@
 
         <if test="detailState != null and detailState != ''" >
             and d.state = #{detailState}
+        </if>
+        <if test="isSimple != null and isSimple != ''" >
+            and a.is_simple = #{isSimple}
         </if>
 
         <!--过滤出当前登录用户是(入库)执行人 (vmes_warehouse_in_executor) 查询语句-->

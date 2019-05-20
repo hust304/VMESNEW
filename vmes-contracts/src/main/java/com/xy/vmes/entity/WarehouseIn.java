@@ -64,6 +64,10 @@ public class WarehouseIn implements Serializable {
 	@TableField("isdisable")
 	private String isdisable;
 
+	//是否简版仓库 Y:是简版 N:非简版 is null:非简版
+	@TableField("is_simple")
+	private String isSimple;
+
 
 	public void setId(String id) {
 		this.id = id;
@@ -155,8 +159,13 @@ public class WarehouseIn implements Serializable {
 	public String getIsdisable() {
 		return isdisable;
 	}
-
-/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+	public String getIsSimple() {
+		return isSimple;
+	}
+	public void setIsSimple(String isSimple) {
+		this.isSimple = isSimple;
+	}
+	/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 
 }

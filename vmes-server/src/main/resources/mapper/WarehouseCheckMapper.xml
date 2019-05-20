@@ -98,11 +98,12 @@
         make_id makeId,
 
         state state,
+        is_simple isSimple,
         cuser cuser,
         cdate cdate,
         uuser uuser,
-        udate udate,
 
+        udate udate,
         remark remark,
         isdisable isdisable
         from vmes_warehouse_check
@@ -178,12 +179,13 @@
               WHEN parent.state = '-1' THEN '已取消'
             ELSE null
             END stateName,
+            parent.is_simple isSimple,
             parent.cuser cuser,
             parent.cdate,
             DATE_FORMAT(parent.cdate,'%Y-%m-%d') cdateStr,
             parent.uuser uuser,
-            DATE_FORMAT(parent.udate,'%Y-%m-%d') udate,
 
+            DATE_FORMAT(parent.udate,'%Y-%m-%d') udate,
             parent.remark remark,
             parent.isdisable isdisable
         from vmes_warehouse_check parent
@@ -210,6 +212,9 @@
 
             <if test="detailState != null and detailState != ''" >
                 and detail.state = #{detailState}
+            </if>
+            <if test="isSimple != null and isSimple != ''" >
+                and parent.is_simple = #{isSimple}
             </if>
 
             <!--按货品属性 查询语句-->

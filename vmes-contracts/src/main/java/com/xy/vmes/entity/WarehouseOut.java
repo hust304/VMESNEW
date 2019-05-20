@@ -31,6 +31,7 @@ public class WarehouseOut implements Serializable {
 	//仓库ID(仓库表-layer:2的记录)
 	@TableField("warehouse_id")
 	private String warehouseId;
+
 	//单位id(部门id或客户id)
 	@TableField("dept_id")
 	private String deptId;
@@ -46,6 +47,7 @@ public class WarehouseOut implements Serializable {
 	//创建用户id
 	@TableField("cuser")
 	private String cuser;
+
 	//创建时间
 	@TableField("cdate")
 	private Date cdate;
@@ -62,6 +64,9 @@ public class WarehouseOut implements Serializable {
 	@TableField("isdisable")
 	private String isdisable;
 
+	//是否简版仓库 Y:是简版 N:非简版 is null:非简版
+	@TableField("is_simple")
+	private String isSimple;
 
 
 	public void setId(String id) {
@@ -154,7 +159,12 @@ public class WarehouseOut implements Serializable {
 	public String getIsdisable() {
 		return isdisable;
 	}
-
+	public String getIsSimple() {
+		return isSimple;
+	}
+	public void setIsSimple(String isSimple) {
+		this.isSimple = isSimple;
+	}
 /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 
