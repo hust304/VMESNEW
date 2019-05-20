@@ -100,7 +100,9 @@ public class Warehouse implements Serializable {
 	//是否启用(0:已禁用 1:启用)
 	@TableField("isdisable")
 	private String isdisable;
-
+	//是否简版仓库 Y:是简版 N:非简版 is null:非简版
+	@TableField("is_simple")
+	private String isSimple;
 
 
 	public void setId(String id) {
@@ -272,7 +274,13 @@ public class Warehouse implements Serializable {
 	public void setIsLeaf(String isLeaf) {
 		this.isLeaf = isLeaf;
 	}
-	/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+	public String getIsSimple() {
+		return isSimple;
+	}
+	public void setIsSimple(String isSimple) {
+		this.isSimple = isSimple;
+	}
+/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 
 }

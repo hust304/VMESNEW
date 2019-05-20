@@ -237,9 +237,9 @@
                 </where>
             ) paymentHist on supplier.id = paymentHist.supplier_id
             left join (
-                <!--采购订单表汇总-->
-                select supplier_id, sum(amount) purchaseSum
-                from vmes_purchase_order
+                <!--采购订单付款单表汇总-->
+                select supplier_id, sum(payment_sum) purchaseSum
+                from vmes_purchase_payment
                 <where>
                     <if test="currentCompanyId != null and currentCompanyId != ''" >
                         and company_id = #{currentCompanyId}
@@ -247,7 +247,6 @@
                     <if test="dateByNow != null and dateByNow != ''">
                         and date_format(cdate, '%Y%m') = #{dateByNow}
                     </if>
-                    and state <![CDATA[<>]]> '-1'
                 </where>
                 group by supplier_id
             ) purchaseOrder on supplier.id = purchaseOrder.supplier_id

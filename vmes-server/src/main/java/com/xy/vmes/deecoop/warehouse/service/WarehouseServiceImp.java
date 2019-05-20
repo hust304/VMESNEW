@@ -778,6 +778,13 @@ public class WarehouseServiceImp implements WarehouseService {
             treeNodeId = id.trim();
         }
         findMap.put("nodeId", treeNodeId);
+
+        //是否简版仓库 Y:是简版 N:非简版 is null:非简版
+        String isSimple = pageData.getString("isSimple");
+        if ("Y".equals(isSimple)) {
+            findMap.put("isSimple", "Y");
+        }
+
         //是否启用(0:已禁用 1:启用)
         findMap.put("isdisable", "1");
         findMap.put("mapSize", Integer.valueOf(findMap.size()));
@@ -947,7 +954,6 @@ public class WarehouseServiceImp implements WarehouseService {
             return model;
         }
 
-
         String companyID = pageData.getString("currentCompanyId");
         //2. (仓库名称)在同一层名称不可重复
         if (this.isExistByName(pid, null, warehouse.getName(),companyID)) {
@@ -980,6 +986,12 @@ public class WarehouseServiceImp implements WarehouseService {
         if (warehouse.getSerialNumber() == null) {
             Integer maxCount = this.findMaxSerialNumber(pid);
             warehouse.setSerialNumber(Integer.valueOf(maxCount.intValue() + 1));
+        }
+
+        //isSimple 是否简版仓库 Y:是简版 N:非简版 is null:非简版
+        String isSimple = pageData.getString("isSimple");
+        if ("Y".equals(isSimple)) {
+            warehouse.setIsSimple("Y");
         }
 
         this.save(warehouse);

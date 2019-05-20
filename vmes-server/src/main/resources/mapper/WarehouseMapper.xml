@@ -41,7 +41,8 @@
 
         udate udate,
         isdisable isdisable,
-        remark remark
+        remark remark,
+        is_simple isSimple
     </sql>
 
     <!-- 批量删除 自动创建，禁止修改-->
@@ -167,6 +168,9 @@
                     <if test="'true' == isEntity" >
                         and entity_type is not null
                     </if>
+                    <if test="isSimple != null and isSimple != ''" >
+                        and is_simple=#{isSimple}
+                    </if>
 
                     <!--queryStr 自定义sql查询语句-->
                     <if test="queryStr != null and queryStr != ''" >
@@ -227,6 +231,7 @@
             a.isdisable isdisable,
 
             a.remark remark,
+            a.is_simple isSimple,
 
             <!--仓库属性-->
             c.name entityTypeName,
@@ -257,6 +262,9 @@
             </if>
             <if test="isLeaf != null and isLeaf != ''" >
                 and a.isLeaf=#{isLeaf}
+            </if>
+            <if test="isSimple != null and isSimple != ''" >
+                and a.is_simple=#{isSimple}
             </if>
 
             <if test="'true' == isNeedWarehouseProduct">
