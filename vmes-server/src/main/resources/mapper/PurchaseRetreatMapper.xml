@@ -154,6 +154,9 @@
         left join vmes_customer supplier on retreat.supplier_id = supplier.id
         left join vmes_dictionary type on retreat.type = type.id
         <where>
+            <if test="id != null and id != ''" >
+                and retreat.id = #{id}
+            </if>
             <if test="currentCompanyId != null and currentCompanyId != ''" >
                 and retreat.company_id = #{currentCompanyId}
             </if>
