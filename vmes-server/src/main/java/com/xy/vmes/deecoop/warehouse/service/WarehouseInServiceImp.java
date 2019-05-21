@@ -428,9 +428,11 @@ public class WarehouseInServiceImp implements WarehouseInService {
 //                    if (qrcode != null && qrcode.trim().length() > 0) {
 //                        detail.setQrcode(qrcode);
 //                    }
-                    if(StringUtils.isEmpty(detail.getRemark())){
-                        detail.setRemark(" ");
+
+                    if (detail.getRemark() == null || detail.getRemark().trim().length() == 0) {
+                        detail.setRemark("");
                     }
+
                     warehouseInDetailService.update(detail);
                 }
             }
