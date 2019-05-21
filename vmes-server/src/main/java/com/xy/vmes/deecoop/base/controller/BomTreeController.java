@@ -199,6 +199,24 @@ public class BomTreeController {
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
     /**
+     * @author 刘威 自动创建，可以修改
+     * @date 2018-10-09
+     */
+    @PostMapping("/base/bomTree/listProdLackNum")
+    public ResultModel listProdLackNum()  throws Exception {
+
+        logger.info("################/base/bomTree/listProdLackNum 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        Pagination pg = HttpUtils.parsePagination(pd);
+        ResultModel model = bomTreeService.listProdLackNum(pd,pg);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/base/bomTree/listProdLackNum 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+    /**
     * @author 刘威 自动创建，可以修改
     * @date 2018-10-09
     */

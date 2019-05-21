@@ -93,6 +93,7 @@ public class HttpUtils {
         //1. 遍历<Map>对象
         for (Iterator iterator = mapObj.keySet().iterator(); iterator.hasNext(); ) {
             String mapKey = (String) iterator.next();
+            if(mapObj.get(mapKey)==null){continue;}
             String mapValue = mapObj.get(mapKey).toString().trim();
             if ("cdate,udate".indexOf(mapKey) != -1) {continue;}
             if (mapValue.length() == 0) {continue;}

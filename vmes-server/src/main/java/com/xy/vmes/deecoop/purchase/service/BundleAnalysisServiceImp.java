@@ -2,6 +2,7 @@ package com.xy.vmes.deecoop.purchase.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
+import com.xy.vmes.common.util.TreeUtil;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.entity.TreeEntity;
 import com.xy.vmes.service.BomTreeService;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -53,7 +55,8 @@ public class BundleAnalysisServiceImp implements BundleAnalysisService {
         }
 
         Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
-
+        result.put("hideTitles",titleMap.get("hideTitles"));
+        result.put("titles",titleMap.get("titles"));
 
 
         String dtlJsonStr = pd.getString("dtlJsonStr");
@@ -71,27 +74,44 @@ public class BundleAnalysisServiceImp implements BundleAnalysisService {
             return model;
         }
 
-        List<TreeEntity> varMapList = new ArrayList();
-
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        String edate = format.format(new Date());
-        if(mapList!=null&&mapList.size()>0){
-            for(int i=0;i<mapList.size();i++){
+        List<Map> treeMapList = new ArrayList();
+        if(mapList!=null&&mapList.size()>0) {
+            for (int i = 0; i < mapList.size(); i++) {
                 Map<String, String> detailMap = mapList.get(i);
+
+                if(detailMap.get("id")==null){
+                    model.putCode(Integer.valueOf(1));
+                    model.putMsg("产品 ID 不能为空！");
+                    return model;
+                }
+                if(detailMap.get("bomId")==null){
+                    model.putCode(Integer.valueOf(1));
+                    model.putMsg("BOM ID 不能为空！");
+                    return model;
+                }
                 TreeEntity treeEntity = (TreeEntity) HttpUtils.pageData2Entity(detailMap, new TreeEntity());
-                treeEntity.setEdate(edate);
-                varMapList.add(treeEntity);
+                BigDecimal planCount = treeEntity.getPlanCount()==null?BigDecimal.ZERO:treeEntity.getPlanCount();
+
+                PageData pageData = new PageData();
+                pageData.put("bomId",treeEntity.getBomId());
+                List<TreeEntity> treeList = bomTreeService.getBomTreeProductList(pageData);
+
+                Map map = new HashMap();
+                map.put("productId",treeEntity.getId());
+                map.put("planCount",planCount);
+                map.put("treeList",treeList);
+                treeMapList.add(map);
             }
         }
-
-//        List<TreeEntity> varMapList = bomTreeService.getBomTreeProductList(pd);
-
-
-        result.put("hideTitles",titleMap.get("hideTitles"));
-        result.put("titles",titleMap.get("titles"));
-        result.put("varList",varMapList);
-        result.put("pageData", pg);
-        model.putResult(result);
-        return model;
+        if(treeMapList!=null&&treeMapList.size()>0){
+            List<TreeEntity> varMapList = TreeUtil.getMaterielLackNum(treeMapList);
+            result.put("varList",varMapList);
+            model.putResult(result);
+            return model;
+        }else {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("无查询记录！");
+            return model;
+        }
     }
 }
