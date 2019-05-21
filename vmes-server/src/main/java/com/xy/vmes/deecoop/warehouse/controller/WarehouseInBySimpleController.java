@@ -1,13 +1,12 @@
 package com.xy.vmes.deecoop.warehouse.controller;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.common.util.Common;
 import com.xy.vmes.common.util.StringUtil;
-import com.xy.vmes.entity.WarehouseIn;
-import com.xy.vmes.entity.WarehouseInDetail;
-import com.xy.vmes.service.CoderuleService;
-import com.xy.vmes.service.FileService;
-import com.xy.vmes.service.WarehouseInDetailService;
-import com.xy.vmes.service.WarehouseInService;
+import com.xy.vmes.entity.*;
+import com.xy.vmes.exception.TableVersionException;
+import com.xy.vmes.service.*;
+
 import com.yvan.Conv;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
@@ -21,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -38,6 +38,11 @@ public class WarehouseInBySimpleController {
     private WarehouseInService warehouseInService;
     @Autowired
     private WarehouseInDetailService warehouseInDetailService;
+
+    @Autowired
+    private WarehouseProductService warehouseProductService;
+    @Autowired
+    private ProductService productService;
 
     @Autowired
     private CoderuleService coderuleService;
@@ -123,7 +128,7 @@ public class WarehouseInBySimpleController {
         //2.添加入库单明细
         List<WarehouseInDetail> detailList = warehouseInDetailService.mapList2DetailList(mapList, null);
         //入库单明细状态(0:待派单 1:执行中 2:已完成 -1.已取消)
-        warehouseInDetailService.addWarehouseInDetail(warehouseIn, detailList, "1");
+        warehouseInDetailService.addWarehouseInDetailBySimple(warehouseIn, detailList);
 
         Long endTime = System.currentTimeMillis();
         logger.info("################/warehouse/warehouseInBySimple/addWarehouseInBySimple 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
@@ -185,6 +190,7 @@ public class WarehouseInBySimpleController {
                     detail.setState("1");
                     detail.setParentId(warehouseIn.getId());
                     detail.setCuser(warehouseIn.getCuser());
+                    detail.setWarehouseId(warehouseIn.getWarehouseId());
 
                     //生成二维码
                     String QRCodeJson = warehouseInDetailService.warehouseInDtl2QRCode(detail);
@@ -198,7 +204,7 @@ public class WarehouseInBySimpleController {
                     if (detail.getRemark() == null || detail.getRemark().trim().length() == 0) {
                         detail.setRemark("");
                     }
-
+                    detail.setWarehouseId(warehouseIn.getWarehouseId());
                     warehouseInDetailService.update(detail);
                 }
             }
@@ -306,6 +312,127 @@ public class WarehouseInBySimpleController {
 
         Long endTime = System.currentTimeMillis();
         logger.info("################/warehouse/warehouseInBySimple/recoveryWarehouseInBySimple 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 执行入库单(简版仓库入库)
+     * @author 陈刚
+     * @date 2018-10-16
+     * @throws Exception
+     */
+    @PostMapping("/warehouse/warehouseInBySimple/executeWarehouseInBySimple")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel executeWarehouseInBySimple() throws Exception {
+        logger.info("################/warehouse/warehouseInBySimple/executeWarehouseInBySimple 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        String parentId = pageData.getString("id");
+        if (parentId == null || parentId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("入库单id为空或空字符串！");
+            return model;
+        }
+
+        String companyId = pageData.getString("currentCompanyId");
+        if (companyId == null || companyId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("企业id为空或空字符串！");
+            return model;
+        }
+
+        String cuser = pageData.getString("cuser");
+
+        List<WarehouseInDetail> inDtlList = warehouseInDetailService.findWarehouseInDetailListByParentId(parentId);
+        if (inDtlList == null || inDtlList.size() == 0) {
+            return model;
+        }
+
+        StringBuffer msgBuf = new StringBuffer();
+        try {
+            for (int i = 0; i < inDtlList.size(); i++) {
+                WarehouseInDetail object = inDtlList.get(i);
+
+                String detailId = object.getId();
+                BigDecimal count = object.getCount();
+                String warehouseId = object.getWarehouseId();
+                String productId = object.getProductId();
+                String code = object.getCode();
+
+                //入库操作
+                WarehouseProduct inObject = new WarehouseProduct();
+                //货位批次号
+                inObject.setCode(code);
+                //产品ID
+                inObject.setProductId(productId);
+                //(实际)货位ID
+                inObject.setWarehouseId(warehouseId);
+
+                //库存变更日志
+                String executeId = Conv.createUuid();
+
+                WarehouseLoginfo loginfo = new WarehouseLoginfo();
+                loginfo.setParentId(parentId);
+                loginfo.setDetailId(detailId);
+                loginfo.setExecuteId(executeId);
+                loginfo.setCompanyId(companyId);
+                loginfo.setCuser(cuser);
+                //operation 操作类型(add:添加 modify:修改 delete:删除:)
+                loginfo.setOperation("add");
+
+                //beforeCount 操作变更前数量(业务相关)
+                loginfo.setBeforeCount(BigDecimal.valueOf(0D));
+                //afterCount 操作变更后数量(业务相关)
+                loginfo.setAfterCount(count);
+
+                String msgStr = warehouseProductService.inStockCount(inObject, count, loginfo);
+                if (msgStr != null && msgStr.trim().length() > 0) {
+                    msgBuf.append("第 " + (i+1) + " 条: " + "入库操作失败:" + msgStr);
+                } else {
+                    Product product = productService.findProductById(productId);
+                    BigDecimal prodCount = BigDecimal.valueOf(0D);
+                    if (product.getStockCount() != null) {
+                        prodCount = product.getStockCount();
+                    }
+
+                    BigDecimal prodStockCount = BigDecimal.valueOf(prodCount.doubleValue() + count.doubleValue());
+                    productService.updateStockCount(product, prodStockCount, cuser);
+                }
+            }
+        } catch (TableVersionException tabExc) {
+            //库存变更 version 锁
+            if (Common.SYS_STOCKCOUNT_ERRORCODE.equals(tabExc.getErrorCode())) {
+                model.putCode(Integer.valueOf(1));
+                model.putMsg(tabExc.getMessage());
+                return model;
+            }
+        }
+
+        if (msgBuf.toString().trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgBuf.toString());
+            return model;
+        }
+
+        //修改入库单明细状态
+        PageData mapDetail = new PageData();
+        mapDetail.put("parentId", parentId);
+        //明细状态:state:状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+        mapDetail.put("state", "2");
+        warehouseInDetailService.updateStateByDetail(mapDetail);
+
+        //修改入库单状态
+        //state:状态(0:未完成 1:已完成 -1:已取消)
+        WarehouseIn warehouseInEdit = new WarehouseIn();
+        warehouseInEdit.setId(parentId);
+        warehouseInEdit.setState("1");
+        warehouseInService.update(warehouseInEdit);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/warehouse/warehouseInBySimple/executeWarehouseInBySimple 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 }

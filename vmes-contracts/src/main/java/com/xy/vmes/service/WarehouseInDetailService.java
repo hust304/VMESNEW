@@ -92,7 +92,7 @@ public interface WarehouseInDetailService {
     String checkDispatcheDetailList(List<WarehouseInDetailEntity> objectList);
 
     void addWarehouseInDetail(WarehouseIn parentObj, List<WarehouseInDetail> objectList) throws Exception;
-    void addWarehouseInDetail(WarehouseIn parentObj, List<WarehouseInDetail> objectList, String detailState) throws Exception;
+    void addWarehouseInDetailBySimple(WarehouseIn parentObj, List<WarehouseInDetail> objectList) throws Exception;
 
     /**
      * 修改入库单明细状态(vmes_warehouse_in_detail)

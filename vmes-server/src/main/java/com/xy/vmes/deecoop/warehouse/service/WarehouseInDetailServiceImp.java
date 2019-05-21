@@ -307,7 +307,7 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
         }
     }
 
-    public void addWarehouseInDetail(WarehouseIn parentObj, List<WarehouseInDetail> objectList, String detailState) throws Exception {
+    public void addWarehouseInDetailBySimple(WarehouseIn parentObj, List<WarehouseInDetail> objectList) throws Exception {
         if (parentObj == null) {return;}
         if (objectList == null || objectList.size() == 0) {return;}
 
@@ -322,14 +322,11 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
                     "PC");
 
             //状态(0:待派单 1:执行中 2:已完成 -1.已取消)
-            detail.setState("0");
-            if (detailState != null && detailState.trim().length() > 0) {
-                detail.setState(detailState);
-            }
-
+            detail.setState("1");
             detail.setParentId(parentObj.getId());
             detail.setCuser(parentObj.getCuser());
             detail.setCode(code);
+            detail.setWarehouseId(parentObj.getWarehouseId());
 
             //生成二维码
             String QRCodeJson = this.warehouseInDtl2QRCode(detail);
