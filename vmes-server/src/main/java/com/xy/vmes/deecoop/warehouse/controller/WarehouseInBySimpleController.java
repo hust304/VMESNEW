@@ -191,13 +191,6 @@ public class WarehouseInBySimpleController {
                     detail.setParentId(warehouseIn.getId());
                     detail.setCuser(warehouseIn.getCuser());
                     detail.setWarehouseId(warehouseIn.getWarehouseId());
-
-                    //生成二维码
-                    String QRCodeJson = warehouseInDetailService.warehouseInDtl2QRCode(detail);
-                    String qrcode = fileService.createQRCode("warehouseIn", QRCodeJson);
-                    if (qrcode != null && qrcode.trim().length() > 0) {
-                        detail.setQrcode(qrcode);
-                    }
                     warehouseInDetailService.save(detail);
                 }
                 else {
@@ -388,7 +381,7 @@ public class WarehouseInBySimpleController {
                 //afterCount 操作变更后数量(业务相关)
                 loginfo.setAfterCount(count);
 
-                String msgStr = warehouseProductService.inStockCount(inObject, count, loginfo);
+                String msgStr = warehouseProductService.inStockCountBySimple(inObject, count, loginfo);
                 if (msgStr != null && msgStr.trim().length() > 0) {
                     msgBuf.append("第 " + (i+1) + " 条: " + "入库操作失败:" + msgStr);
                 } else {

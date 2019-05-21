@@ -314,26 +314,11 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
         for (WarehouseInDetail detail : objectList) {
             detail.setId(Conv.createUuid());
 
-            //获取批次号
-            //PC+yyyyMMdd+00001 = 15位
-            String code = coderuleService.createCoderCdateByDate(parentObj.getCompanyId(),
-                    "vmes_warehouse_in_detail",
-                    "yyyyMMdd",
-                    "PC");
-
             //状态(0:待派单 1:执行中 2:已完成 -1.已取消)
             detail.setState("1");
             detail.setParentId(parentObj.getId());
             detail.setCuser(parentObj.getCuser());
-            detail.setCode(code);
             detail.setWarehouseId(parentObj.getWarehouseId());
-
-            //生成二维码
-            String QRCodeJson = this.warehouseInDtl2QRCode(detail);
-            String qrcode = fileService.createQRCode("warehouseIn", QRCodeJson);
-            if (qrcode != null && qrcode.trim().length() > 0) {
-                detail.setQrcode(qrcode);
-            }
 
             this.save(detail);
         }

@@ -132,6 +132,12 @@ public interface WarehouseProductService {
     String inStockCount(WarehouseProduct object,
                         BigDecimal count,
                         WarehouseLoginfo loginfo) throws TableVersionException,Exception;
+
+    //(简版仓库)入库(变更库存数量)
+    String inStockCountBySimple(WarehouseProduct object,
+                        BigDecimal count,
+                        WarehouseLoginfo loginfo) throws TableVersionException,Exception;
+
     /**
      * 出库(变更库存数量)
      * @param object  出库库存信息
