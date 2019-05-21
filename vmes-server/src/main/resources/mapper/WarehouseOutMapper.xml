@@ -461,6 +461,9 @@
             <if test="state != null and state != ''">
                 and warehouseout.state =  #{state}
             </if>
+            <if test="isSimple != null and isSimple != ''" >
+                and warehouseout.is_simple = #{isSimple}
+            </if>
 
 
             <if test="productCode != null and productCode != ''">

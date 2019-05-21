@@ -124,6 +124,7 @@ public interface WarehouseOutDetailService {
     List<WarehouseOutDetail> mapList2DetailList(List<Map<String, String>> mapList, List<WarehouseOutDetail> objectList);
 
     void addWarehouseOutDetail(WarehouseOut parentObj, List<WarehouseOutDetail> objectList) throws Exception;
+    void addWarehouseOutDetailBySimple(WarehouseOut parentObj, List<WarehouseOutDetail> objectList) throws Exception;
 
     void addWarehouseOutDetail(WarehouseOut parentObj, WarehouseOutDetail detail) throws Exception;
 

@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -132,6 +133,41 @@ public class WarehouseInBySimpleController {
 
         Long endTime = System.currentTimeMillis();
         logger.info("################/warehouse/warehouseInBySimple/addWarehouseInBySimple 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 删除入库单(简版仓库入库)
+     * @author 陈刚
+     * @date 2018-10-16
+     * @throws Exception
+     */
+    @PostMapping("/warehouse/warehouseIn/deleteWarehouseInBySimple")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel deleteWarehouseInBySimple() throws Exception {
+        logger.info("################/warehouse/warehouseInBySimple/deleteWarehouseInBySimple 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        String parentId = pageData.getString("id");
+        if (parentId == null || parentId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("入库单id为空或空字符串！");
+            return model;
+        }
+
+        //2. 删除入库单明细
+        Map columnMap = new HashMap();
+        columnMap.put("parent_id", parentId);
+        warehouseInDetailService.deleteByColumnMap(columnMap);
+
+        //3. 删除入库单
+        warehouseInService.deleteById(parentId);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/warehouse/warehouseInBySimple/deleteWarehouseInBySimple 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
