@@ -183,6 +183,8 @@
                 (replace(uuid(), '-', ''),'BomProduct','udate','修改时间',19, '1','0','1','0',now(), 'admin'),
                 (replace(uuid(), '-', ''),'BomProduct','isdisable','是否启用',20, '1','0','1','0',now(), 'admin'),
                 (replace(uuid(), '-', ''),'BomProduct','remark','备注',21, '1','0','1','0',now(), 'admin'),
+                (replace(uuid(), '-', ''),'BomProduct','planCount','计划数量',22, '1','0','1','0',now(), 'admin'),
+                (replace(uuid(), '-', ''),'BomProduct','lackCount','缺料数量',23, '1','0','1','0',now(), 'admin'),
                 (replace(uuid(), '-', ''),'BomProduct','id','id',0, '1','0','1','0',now(), 'admin')
 
 

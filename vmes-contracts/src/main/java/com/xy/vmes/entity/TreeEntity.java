@@ -44,6 +44,8 @@ public class TreeEntity implements Cloneable {
     private String bomTreeId;
     private String pathId;
     private BigDecimal ratio;
+    private BigDecimal sumRatio;
+    private BigDecimal splitCount;
 
     //产品信息
     private String code;
@@ -57,6 +59,7 @@ public class TreeEntity implements Cloneable {
     private BigDecimal maxCount;
     private BigDecimal expectCount;
     private BigDecimal lackCount;
+    private BigDecimal planCount;
     //子集表头信息
     private List<String> hideTitles;
     private List<LinkedHashMap> titles;
@@ -76,6 +79,30 @@ public class TreeEntity implements Cloneable {
 
     //(必须)当前节点子节点
     private List<TreeEntity> children = new ArrayList<TreeEntity>();
+
+    public BigDecimal getPlanCount() {
+        return planCount;
+    }
+
+    public void setPlanCount(BigDecimal planCount) {
+        this.planCount = planCount;
+    }
+
+    public BigDecimal getSumRatio() {
+        return sumRatio;
+    }
+
+    public void setSumRatio(BigDecimal sumRatio) {
+        this.sumRatio = sumRatio;
+    }
+
+    public BigDecimal getSplitCount() {
+        return splitCount;
+    }
+
+    public void setSplitCount(BigDecimal splitCount) {
+        this.splitCount = splitCount;
+    }
 
     public String getEdate() {
         return edate;

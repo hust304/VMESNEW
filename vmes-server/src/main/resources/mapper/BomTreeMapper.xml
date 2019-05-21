@@ -172,11 +172,14 @@
             (replace(uuid(), '-', ''),'BomTreeProduct','spec','规格型号',3, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'BomTreeProduct','genre','产品属性',4, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'BomTreeProduct','unit','计量单位',5, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'BomTreeProduct','ratio','物料用量',6, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProduct','ratio','物料用量',6, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProduct','sumRatio','产品转化用量',6, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProduct','splitCount','拆分数量',6, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProduct','planCount','计划数量',6, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'BomTreeProduct','stockCount','库存数量',7, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'BomTreeProduct','assembledCount','可组装数量',8, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'BomTreeProduct','maxCount','最大可生产数量',9, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'BomTreeProduct','expectCount','期望生产数量',10, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProduct','expectCount','期望生产数量',10, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'BomTreeProduct','lackCount','缺少数量',11, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'BomTreeProduct','bomId','vmes_bom id',12, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'BomTreeProduct','bomTreeId','产品BomTreeId',13, '1','0','1','0',now(), 'admin'),
@@ -189,7 +192,7 @@
             (replace(uuid(), '-', ''),'BomTreeProduct','isdisable','是否启用',20, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'BomTreeProduct','remark','备注',21, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'BomTreeProduct','pathId','路径',22, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'BomTreeProduct','edate','期望到货日期',22, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProduct','edate','期望到货日期',23, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'BomTreeProduct','id','id',0, '1','0','1','0',now(), 'admin')
 
 
@@ -204,12 +207,15 @@
             (replace(uuid(), '-', ''),'BomTreeProductChildren','spec','规格型号',3, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'BomTreeProductChildren','genre','产品属性',4, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'BomTreeProductChildren','unit','计量单位',5, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'BomTreeProductChildren','ratio','物料用量',6, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProductChildren','ratio','物料用量',6, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProductChildren','upRatio','产品转化用量',6, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProductChildren','splitCount','拆分数量',6, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProductChildren','planCount','计划数量',6, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'BomTreeProductChildren','stockCount','库存数量',7, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'BomTreeProductChildren','assembledCount','可组装数量',8, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'BomTreeProductChildren','maxCount','总数量',9, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'BomTreeProductChildren','expectCount','需要数量',10, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'BomTreeProductChildren','lackCount','缺少数量',11, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProductChildren','expectCount','需要数量',10, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProductChildren','lackCount','缺少数量',11, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'BomTreeProductChildren','bomId','vmes_bom id',12, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'BomTreeProductChildren','bomTreeId','产品BomTreeId',13, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'BomTreeProductChildren','pid','上级产品id',14, '1','0','1','0',now(), 'admin'),
@@ -221,7 +227,7 @@
             (replace(uuid(), '-', ''),'BomTreeProductChildren','isdisable','是否启用',20, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'BomTreeProductChildren','remark','备注',21, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'BomTreeProductChildren','pathId','路径',22, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'BomTreeProductChildren','edate','期望到货日期',22, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProductChildren','edate','期望到货日期',23, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'BomTreeProductChildren','id','id',0, '1','0','1','0',now(), 'admin')
 
     </insert>

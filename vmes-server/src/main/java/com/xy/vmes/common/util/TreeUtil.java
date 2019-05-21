@@ -3,11 +3,16 @@ package com.xy.vmes.common.util;
 import com.xy.vmes.entity.TreeEntity;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class TreeUtil {
 
-    public static Map<String,BigDecimal> productStockCountMap = new HashMap<String,BigDecimal>();
+//    public static Map<String,BigDecimal> materielStockCountMap = new HashMap();
+//    public static Map<String,Map<String,BigDecimal>> productMaterielRatioMap = new HashMap();
+//    public static Map<String,BigDecimal> materielRatioMap = new HashMap();
+//    public static Map<String,BigDecimal> semiFinishedRatioMap =  new HashMap();
+//    public static Map<String,BigDecimal> productStockCountMap = new HashMap();
     /**
      * 指定节点ID-及该指定节点ID下所有节点和子节点-生成树形结构
      * 当(指定节点ID)is null 或空字符串 -从根节点(root)开始生成树形结构
@@ -39,24 +44,171 @@ public class TreeUtil {
     public static TreeEntity switchBomTree(String nodeId, List<TreeEntity> objectList ,BigDecimal expectCount, Map childrenTitleMap) {
         if (objectList == null || objectList.size() == 0) {return new TreeEntity();}
         if (nodeId == null || nodeId.trim().length() == 0) {nodeId = new String("root");}
-        productStockCountMap = new HashMap<String,BigDecimal>();
+        Map<String,BigDecimal> productStockCountMap = new HashMap<String,BigDecimal>();
+        Map<String,BigDecimal> materielStockCountMap = new HashMap<String,BigDecimal>();
+        Map<String,BigDecimal> materielRatioMap = new HashMap<String,BigDecimal>();
+        Map<String,BigDecimal> semiFinishedRatioMap =  new HashMap<String,BigDecimal>();
+
+        Map<String,Map<String,BigDecimal>> cacheMap = new HashMap<String,Map<String,BigDecimal>>();
+        cacheMap.put("productStockCountMap",productStockCountMap);
+        cacheMap.put("materielStockCountMap",materielStockCountMap);
+        cacheMap.put("materielRatioMap",materielRatioMap);
+        cacheMap.put("semiFinishedRatioMap",semiFinishedRatioMap);
         //获得当前节点对象
         TreeEntity nodeObject = findNodeById(nodeId, objectList);
-//        nodeObject.setExpectCount(BigDecimal.ZERO);
+
+        nodeObject.setSumRatio(BigDecimal.ONE);
+        nodeObject.setSplitCount(BigDecimal.ZERO);
+        initCacheMap(nodeObject, objectList,cacheMap);
+
         //Bom齐套分析：期望生产数量
-        nodeObject.setExpectCount(expectCount);
+//        nodeObject.setExpectCount(expectCount);
         //Bom齐套分析：下级物料列表的Title
         nodeObject.setTitles((List<LinkedHashMap>)childrenTitleMap.get("titles"));
         nodeObject.setHideTitles((List<String>)childrenTitleMap.get("hideTitles"));
-        createBomTree(nodeObject, objectList);
+        createBomTree(nodeObject, objectList,cacheMap);
+
 
         //Bom齐套分析：期望生产数量
-        if(nodeObject.getMaxCount().compareTo(expectCount)<0){
-            nodeObject.setLackCount(expectCount.subtract(nodeObject.getMaxCount()));
-        }
+//        if(nodeObject.getMaxCount().compareTo(expectCount)<0){
+//            nodeObject.setLackCount(expectCount.subtract(nodeObject.getMaxCount()));
+//        }
 
         return nodeObject;
     }
+
+
+    public static List<TreeEntity> getProdLackNum(List<Map> treeMapList) {
+        List<TreeEntity> varMapList = new ArrayList();
+
+        Map<String,BigDecimal> productStockCountMap = new HashMap<String,BigDecimal>();
+        Map<String,BigDecimal> materielStockCountMap = new HashMap<String,BigDecimal>();
+
+
+        Map<String,Map<String,BigDecimal>> cacheMap = new HashMap<String,Map<String,BigDecimal>>();
+        cacheMap.put("productStockCountMap",productStockCountMap);
+        cacheMap.put("materielStockCountMap",materielStockCountMap);
+
+        if(treeMapList!=null&&treeMapList.size()>0){
+            for(int i=0;i<treeMapList.size();i++){
+                Map<String,BigDecimal> materielRatioMap = new HashMap<String,BigDecimal>();
+                Map<String,BigDecimal> semiFinishedRatioMap =  new HashMap<String,BigDecimal>();
+                cacheMap.put("materielRatioMap",materielRatioMap);
+                cacheMap.put("semiFinishedRatioMap",semiFinishedRatioMap);
+
+                Map treeMap = treeMapList.get(i);
+                String nodeId = (String)treeMap.get("productId");
+                BigDecimal planCount = (BigDecimal)treeMap.get("planCount");
+                List<TreeEntity> objectList = (List<TreeEntity>)treeMap.get("treeList");
+                //获得当前节点对象
+                TreeEntity nodeObject = findNodeById(nodeId, objectList);
+                nodeObject.setSumRatio(BigDecimal.ONE);
+                nodeObject.setSplitCount(BigDecimal.ZERO);
+                initCacheMap(nodeObject, objectList,cacheMap);
+
+                BigDecimal maxCount = null;
+                for(String key:materielRatioMap.keySet()){
+                    BigDecimal materielRatio = materielRatioMap.get(key);
+                    BigDecimal materielStockCount = materielStockCountMap.get(key);
+                    if(maxCount==null){
+                        maxCount = materielStockCount.divide(materielRatio,0,BigDecimal.ROUND_DOWN);
+                    }else{
+                        if(maxCount.compareTo(materielStockCount.divide(materielRatio,0,BigDecimal.ROUND_DOWN))>0){
+                            maxCount = materielStockCount.divide(materielRatio,0,BigDecimal.ROUND_DOWN);
+                        }
+                    }
+                 }
+
+
+                nodeObject.setPlanCount(planCount);
+                if(planCount.compareTo(BigDecimal.ZERO)==0){
+                    nodeObject.setMaxCount(maxCount);
+                    nodeObject.setLackCount(BigDecimal.ZERO);
+                }else{
+                    if(planCount.compareTo(maxCount)>0){
+                        nodeObject.setMaxCount(maxCount);
+                        nodeObject.setLackCount(planCount.subtract(maxCount));
+                    }else{
+                        nodeObject.setMaxCount(planCount);
+                        nodeObject.setLackCount(BigDecimal.ZERO);
+                    }
+                }
+
+                for(String key:materielRatioMap.keySet()){
+                    BigDecimal materielRatio = materielRatioMap.get(key);
+                    BigDecimal materielStockCount = materielStockCountMap.get(key);
+                    maxCount = nodeObject.getMaxCount();
+                    BigDecimal newMaterielStockCount = materielStockCount.subtract(materielRatio.multiply(maxCount)).setScale(0,BigDecimal.ROUND_DOWN);
+                    materielStockCountMap.put(key,newMaterielStockCount);
+                }
+
+
+                varMapList.add(nodeObject);
+            }
+        }
+        return varMapList;
+    }
+
+
+    public static List<TreeEntity> getMaterielLackNum(List<Map> treeMapList) {
+        List<TreeEntity> varMapList = new ArrayList();
+        List<TreeEntity> materielMapList = new ArrayList();
+        Map<String,BigDecimal> productStockCountMap = new HashMap<String,BigDecimal>();
+        Map<String,BigDecimal> materielStockCountMap = new HashMap<String,BigDecimal>();
+        Map<String,BigDecimal> materielNeedCountMap = new HashMap<String,BigDecimal>();
+
+        Map<String,Map<String,BigDecimal>> cacheMap = new HashMap<String,Map<String,BigDecimal>>();
+        cacheMap.put("productStockCountMap",productStockCountMap);
+        cacheMap.put("materielStockCountMap",materielStockCountMap);
+
+
+        if(treeMapList!=null&&treeMapList.size()>0){
+            for(int i=0;i<treeMapList.size();i++){
+                Map<String,BigDecimal> materielRatioMap = new HashMap<String,BigDecimal>();
+                Map<String,BigDecimal> semiFinishedRatioMap =  new HashMap<String,BigDecimal>();
+                cacheMap.put("materielRatioMap",materielRatioMap);
+                cacheMap.put("semiFinishedRatioMap",semiFinishedRatioMap);
+
+                Map treeMap = treeMapList.get(i);
+                String nodeId = (String)treeMap.get("productId");
+                BigDecimal planCount = (BigDecimal)treeMap.get("planCount");
+                List<TreeEntity> objectList = (List<TreeEntity>)treeMap.get("treeList");
+                //获得当前节点对象
+                TreeEntity nodeObject = findNodeById(nodeId, objectList);
+                nodeObject.setSumRatio(BigDecimal.ONE);
+                nodeObject.setSplitCount(BigDecimal.ZERO);
+                initCacheMap(nodeObject, objectList,cacheMap);
+
+                for(String key:materielRatioMap.keySet()){
+                    TreeEntity materiel = findNodeById(key, objectList);
+                    materielMapList.add(materiel);
+                    BigDecimal materielRatio = materielRatioMap.get(key);
+                    BigDecimal materielNeedCount = planCount.multiply(materielRatio).setScale(0,BigDecimal.ROUND_UP);
+
+                    if(materielNeedCountMap.get(key)!=null){
+                        materielNeedCountMap.put(key,materielNeedCountMap.get(key).add(materielNeedCount));
+                    }else{
+                        materielNeedCountMap.put(key,materielNeedCount);
+                    }
+                }
+
+            }
+        }
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        String edate = format.format(new Date());
+        for(String key:materielNeedCountMap.keySet()){
+            BigDecimal materielNeedCount = materielNeedCountMap.get(key);
+            BigDecimal materielStockCount = materielStockCountMap.get(key);
+            if(materielStockCount.compareTo(materielNeedCount)<0){
+                TreeEntity materiel = findNodeById(key, materielMapList);
+                materiel.setLackCount(materielNeedCount.subtract(materielStockCount).setScale(0,BigDecimal.ROUND_UP));
+                materiel.setEdate(edate);
+                varMapList.add(materiel);
+            }
+        }
+        return varMapList;
+    }
+
 
     public static List<TreeEntity> listSwitchTree(String nodeId, List<TreeEntity> objectList) {
         List<TreeEntity> treeList = new ArrayList<TreeEntity>();
@@ -77,12 +229,18 @@ public class TreeUtil {
      * @param objectList
      * @return
      */
-    private static void createBomTree(TreeEntity nodeObject, List<TreeEntity> objectList) {
+    private static void createBomTree(TreeEntity nodeObject, List<TreeEntity> objectList,Map<String,Map<String,BigDecimal>> cacheMap) {
+        Map<String,BigDecimal> materielRatioMap = cacheMap.get("materielRatioMap");
+        Map<String,BigDecimal> semiFinishedRatioMap = cacheMap.get("semiFinishedRatioMap");
+        Map<String,BigDecimal> productStockCountMap = cacheMap.get("productStockCountMap");
+        Map<String,BigDecimal> materielStockCountMap = cacheMap.get("materielStockCountMap");
         //获得当前节点id下的所有孩子
         List<TreeEntity> childList = findChildListById(nodeObject.getId(), objectList);
-        //Bom齐套分析：上级期望生产数量
-        BigDecimal pExpectCount = nodeObject.getExpectCount()==null?BigDecimal.ZERO:nodeObject.getExpectCount();
+        BigDecimal pUpRatio = nodeObject.getSumRatio()==null?BigDecimal.ZERO:nodeObject.getSumRatio();
         BigDecimal pStockCount = nodeObject.getStockCount()==null?BigDecimal.ZERO:nodeObject.getStockCount();
+        BigDecimal pSplitCount = nodeObject.getSplitCount()==null?BigDecimal.ZERO:nodeObject.getSplitCount();
+
+
         if(childList.size()>0){
             List<TreeEntity> childListNew = new ArrayList<TreeEntity>();
             //Bom齐套分析：上级可组装数量
@@ -93,49 +251,35 @@ public class TreeUtil {
                 BigDecimal ratio = child.getRatio()==null?BigDecimal.ZERO:child.getRatio();
                 //Bom齐套分析：实际库存数量
                 BigDecimal stockCount = child.getStockCount()==null?BigDecimal.ZERO:child.getStockCount();
+                child.setSumRatio(pUpRatio.multiply(ratio));
 
-//                BigDecimal stockCount = BigDecimal.ZERO;
-//                BigDecimal productStockCount = productStockCountMap.get(child.getId());
-//                if(productStockCount==null){
-//                    stockCount = child.getStockCount()==null?BigDecimal.ZERO:child.getStockCount();
-//                }else{
-//                    stockCount = productStockCount;
-//                }
 
-                //Bom齐套分析：可组装数量
-                BigDecimal assembledCount = child.getAssembledCount()==null?BigDecimal.ZERO:child.getAssembledCount();
-                if(ratio.compareTo(BigDecimal.ZERO)>0){
-                    if(pExpectCount.compareTo(BigDecimal.ZERO)>0){
-                        //Bom齐套分析：期望生产数量 = 上级期望生产数量 * 用料比例
-                        BigDecimal expectCount = pExpectCount.multiply(ratio).setScale(2,BigDecimal.ROUND_HALF_UP);
-                        //Bom齐套分析：缺少物料数量 =  期望生产数量 - 实际库存数量 - 可组装数量
-                        BigDecimal lackCount = expectCount.subtract(stockCount).subtract(assembledCount).setScale(2,BigDecimal.ROUND_HALF_UP);
-                        lackCount = lackCount==null?BigDecimal.ZERO:lackCount;
-                        if(lackCount.compareTo(BigDecimal.ZERO)>0){
-                            child.setLackCount(lackCount);
-                        }else {
-                            child.setLackCount(BigDecimal.ZERO);
-                        }
-                        child.setExpectCount(expectCount==null?BigDecimal.ZERO:expectCount);
-                        child.setAssembledCount(assembledCount==null?BigDecimal.ZERO:assembledCount);
-                        child.setStockCount(stockCount==null?BigDecimal.ZERO:stockCount);
-                    }
+                child.setSplitCount(pStockCount.add(pSplitCount).multiply(ratio));
+
+
+                if(materielRatioMap.get(child.getId())!=null){
+                    stockCount = stockCount.multiply(child.getSumRatio()).divide(materielRatioMap.get(child.getId()),0,BigDecimal.ROUND_HALF_UP);
+                    child.setStockCount(stockCount);
                 }
 
+                if(semiFinishedRatioMap.get(child.getId())!=null){
+                    stockCount = stockCount.multiply(child.getSumRatio()).divide(semiFinishedRatioMap.get(child.getId()),0,BigDecimal.ROUND_HALF_UP);
+                    child.setStockCount(stockCount);
+                }
 
                 child.setHideTitles(nodeObject.getHideTitles());
                 child.setTitles(nodeObject.getTitles());
-                createBomTree(child, objectList);
+                createBomTree(child, objectList,cacheMap);
 
-                assembledCount = child.getAssembledCount()==null?BigDecimal.ZERO:child.getAssembledCount();
+                BigDecimal  assembledCount = child.getAssembledCount()==null?BigDecimal.ZERO:child.getAssembledCount();
                 if(ratio.compareTo(BigDecimal.ZERO)>0){
                     if(pAssembledCount==null){
                         //Bom齐套分析：上级可组装数量 = （实际库存数量 + 可组装数量）/ 用料比例
-                        pAssembledCount = stockCount.add(assembledCount).divide(ratio,2,BigDecimal.ROUND_HALF_UP);
+                        pAssembledCount = stockCount.add(assembledCount).divide(ratio,0,BigDecimal.ROUND_HALF_UP);
                     }else{
                         //Bom齐套分析：取物料组成中可组装成品的最小值为上级可组装数量
-                        if(stockCount.add(assembledCount).divide(ratio,2,BigDecimal.ROUND_HALF_UP).compareTo(pAssembledCount)<0){
-                            pAssembledCount = stockCount.add(assembledCount).divide(ratio,2,BigDecimal.ROUND_HALF_UP);
+                        if(stockCount.add(assembledCount).divide(ratio,0,BigDecimal.ROUND_HALF_UP).compareTo(pAssembledCount)<0){
+                            pAssembledCount = stockCount.add(assembledCount).divide(ratio,0,BigDecimal.ROUND_HALF_UP);
                         }
                     }
                 }
@@ -143,35 +287,85 @@ public class TreeUtil {
                 childListNew.add(child);
             }
             if(pAssembledCount!=null){
-                nodeObject.setExpectCount(pExpectCount);
                 //Bom齐套分析：可组装数量
                 nodeObject.setAssembledCount(pAssembledCount);
                 //Bom齐套分析：最大可生产数量
-                nodeObject.setMaxCount(pAssembledCount.add(nodeObject.getStockCount()).setScale(2,BigDecimal.ROUND_HALF_UP));
-                //Bom齐套分析：缺少数量
-                if(pExpectCount.subtract(nodeObject.getMaxCount()).compareTo(BigDecimal.ZERO)<0){
-                    nodeObject.setLackCount(BigDecimal.ZERO);
-                }else{
-                    nodeObject.setLackCount(pExpectCount.subtract(nodeObject.getMaxCount()));
-                }
+                nodeObject.setMaxCount(pAssembledCount.add(nodeObject.getStockCount()).setScale(0,BigDecimal.ROUND_HALF_UP));
             }
             nodeObject.setChildren(childListNew);
         }else{
-            nodeObject.setExpectCount(pExpectCount);
             //Bom齐套分析：可组装数量
             nodeObject.setAssembledCount(BigDecimal.ZERO);
             //Bom齐套分析：最大可生产数量
-            nodeObject.setMaxCount(nodeObject.getStockCount().setScale(2,BigDecimal.ROUND_HALF_UP));
-            //Bom齐套分析：缺少数量
-            if(pExpectCount.subtract(nodeObject.getMaxCount()).compareTo(BigDecimal.ZERO)<0){
-                nodeObject.setLackCount(BigDecimal.ZERO);
-            }else{
-                nodeObject.setLackCount(pExpectCount.subtract(nodeObject.getMaxCount()));
-            }
+            nodeObject.setMaxCount(nodeObject.getStockCount().setScale(0,BigDecimal.ROUND_HALF_UP));
             return;
         }
     }
 
+
+    private static void initCacheMap(TreeEntity nodeObject, List<TreeEntity> objectList,Map<String,Map<String,BigDecimal>> cacheMap) {
+        Map<String,BigDecimal> materielRatioMap = cacheMap.get("materielRatioMap");
+        Map<String,BigDecimal> semiFinishedRatioMap = cacheMap.get("semiFinishedRatioMap");
+        Map<String,BigDecimal> productStockCountMap = cacheMap.get("productStockCountMap");
+        Map<String,BigDecimal> materielStockCountMap = cacheMap.get("materielStockCountMap");
+        //获得当前节点id下的所有孩子
+        List<TreeEntity> childList = findChildListById(nodeObject.getId(), objectList);
+        BigDecimal pStockCount = nodeObject.getStockCount()==null?BigDecimal.ZERO:nodeObject.getStockCount();
+        BigDecimal pSplitCount = nodeObject.getSplitCount()==null?BigDecimal.ZERO:nodeObject.getSplitCount();
+        BigDecimal pUpRatio = nodeObject.getSumRatio()==null?BigDecimal.ZERO:nodeObject.getSumRatio();
+        if(childList.size()>0){
+
+            if(semiFinishedRatioMap.get(nodeObject.getId())!=null){
+                semiFinishedRatioMap.put(nodeObject.getId(),semiFinishedRatioMap.get(nodeObject.getId()).add(nodeObject.getSumRatio()));
+            }else{
+                semiFinishedRatioMap.put(nodeObject.getId(),nodeObject.getSumRatio());
+            }
+
+            List<TreeEntity> childListNew = new ArrayList<TreeEntity>();
+            for(int i = 0; i < childList.size(); i++){
+                TreeEntity child = childList.get(i);
+                //Bom齐套分析：用料比例
+                BigDecimal ratio = child.getRatio()==null?BigDecimal.ZERO:child.getRatio();
+                child.setSumRatio(pUpRatio.multiply(ratio));
+                BigDecimal productStockCount = productStockCountMap.get(nodeObject.getId());
+                if(productStockCount==null){
+                    child.setSplitCount(pStockCount.add(pSplitCount).multiply(ratio));
+                }else{
+                    child.setSplitCount(pSplitCount.multiply(ratio));
+                }
+
+                child.setHideTitles(nodeObject.getHideTitles());
+                child.setTitles(nodeObject.getTitles());
+                initCacheMap(child, objectList,cacheMap);
+                childListNew.add(child);
+            }
+            nodeObject.setChildren(childListNew);
+
+            productStockCountMap.put(nodeObject.getId(),nodeObject.getStockCount());
+        }else{
+            BigDecimal productStockCount = productStockCountMap.get(nodeObject.getId());
+            if(productStockCount==null){
+                if(materielStockCountMap.get(nodeObject.getId())!=null){
+                    materielStockCountMap.put(nodeObject.getId(),materielStockCountMap.get(nodeObject.getId()).add(nodeObject.getSplitCount()).add(nodeObject.getStockCount()));
+                }else{
+                    materielStockCountMap.put(nodeObject.getId(),nodeObject.getSplitCount().add(nodeObject.getStockCount()));
+                }
+            }else{
+                if(materielStockCountMap.get(nodeObject.getId())!=null){
+                    materielStockCountMap.put(nodeObject.getId(),materielStockCountMap.get(nodeObject.getId()).add(nodeObject.getSplitCount()));
+                }else{
+                    materielStockCountMap.put(nodeObject.getId(),nodeObject.getSplitCount());
+                }
+            }
+            if(materielRatioMap.get(nodeObject.getId())!=null){
+                materielRatioMap.put(nodeObject.getId(),materielRatioMap.get(nodeObject.getId()).add(nodeObject.getSumRatio()));
+            }else{
+                materielRatioMap.put(nodeObject.getId(),nodeObject.getSumRatio());
+            }
+            productStockCountMap.put(nodeObject.getId(),nodeObject.getStockCount());
+            return;
+        }
+    }
     /**
      * 本方法为递归调用:
      * @param nodeObject
@@ -324,4 +518,6 @@ public class TreeUtil {
             }
         }
     }
+
+
 }

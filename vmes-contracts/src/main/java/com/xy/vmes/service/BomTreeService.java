@@ -151,6 +151,8 @@ public interface BomTreeService {
                               Map<String, String> dataMap,
                               List<String> prodList,
                               int count);
+
+    ResultModel listProdLackNum(PageData pd, Pagination pg)throws Exception;
 }
 
 
