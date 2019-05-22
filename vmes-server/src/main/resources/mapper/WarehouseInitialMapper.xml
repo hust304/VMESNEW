@@ -74,7 +74,10 @@
             (replace(uuid(), '-', ''),'warehouseInitial','productGenre','productGenre',10, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'warehouseInitial','productType','productType',11, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'warehouseInitial','productUnitName','productUnitName',10, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'warehouseInitial','productGenreName','productGenreName',11, '1','1','1','0',now(), 'admin')
+            (replace(uuid(), '-', ''),'warehouseInitial','productGenreName','productGenreName',11, '1','1','1','0',now(), 'admin'),
+
+            (replace(uuid(), '-', ''),'warehouseInitial','checkStockCount','台账数量',13, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'warehouseInitial','checkCount','盘点数量',14, '1','1','1','0',now(), 'admin')
 
 </insert>
 
@@ -165,7 +168,10 @@
             product.genre productGenre,
             product.type productType,
             unit.name productUnitName,
-            genre.name productGenreName
+            genre.name productGenreName,
+
+            round(ifnull(wp.stock_count, 0), 2) checkStockCount,
+            '' checkCount
 
         from vmes_warehouse_product wp
             left join vmes_warehouse warehouse on wp.warehouse_id = warehouse.id and warehouse.isdisable = '1'
@@ -174,6 +180,9 @@
             left join vmes_dictionary unit on produnit.unit = unit.id
             left join vmes_dictionary genre on product.genre = genre.id
         <where>
+            <if test="productIds != null and productIds != ''" >
+                and wp.product_id in (${productIds})
+            </if>
             <if test="currentCompanyId != null and currentCompanyId != ''" >
                 and wp.company_id=#{currentCompanyId}
             </if>

@@ -257,41 +257,22 @@ public class WarehouseInitialServiceImp implements WarehouseInitialService {
             columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
         }
 
-        List<LinkedHashMap> titlesList = new ArrayList<LinkedHashMap>();
-        List<String> titlesHideList = new ArrayList<String>();
-        Map<String, String> varModelMap = new HashMap<String, String>();
-        if (columnList != null && columnList.size() > 0) {
-            for (Column column : columnList) {
-                if (column != null) {
-                    if ("0".equals(column.getIshide())) {
-                        titlesHideList.add(column.getTitleKey());
-                    }
-                    LinkedHashMap titlesLinkedMap = new LinkedHashMap();
-                    titlesLinkedMap.put(column.getTitleKey(), column.getTitleName());
-                    varModelMap.put(column.getTitleKey(), "");
-                    titlesList.add(titlesLinkedMap);
-                }
-            }
+        String productIds = new String();
+        if (pd.getString("productIds") != null && pd.getString("productIds").trim().length() > 0) {
+            productIds = pd.getString("productIds").trim();
+            productIds = StringUtil.stringTrimSpace(productIds);
+            productIds = "'" + productIds.replace(",", "','") + "'";
         }
-        Map result = new HashMap();
-        result.put("hideTitles",titlesHideList);
-        result.put("titles",titlesList);
+        pd.put("productIds", productIds);
 
-        List<Map> varMapList = new ArrayList();
         List<Map> varList = this.getDataListPage(pd, pg);
-        if (varList != null && varList.size() > 0) {
-            for (int i = 0; i < varList.size(); i++) {
-                Map map = varList.get(i);
-                Map<String, String> varMap = new HashMap<String, String>();
-                varMap.putAll(varModelMap);
-                for (Map.Entry<String, String> entry : varMap.entrySet()) {
-                    varMap.put(entry.getKey(),
-                            map.get(entry.getKey()) != null ? map.get(entry.getKey()).toString() : "");
-                }
-                varMapList.add(varMap);
-            }
-        }
-        result.put("varList",varMapList);
+        Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
+        List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
+
+        Map result = new HashMap();
+        result.put("hideTitles", titleMap.get("hideTitles"));
+        result.put("titles",titleMap.get("titles"));
+        result.put("varList", varMapList);
         result.put("pageData", pg);
 
         model.putResult(result);
