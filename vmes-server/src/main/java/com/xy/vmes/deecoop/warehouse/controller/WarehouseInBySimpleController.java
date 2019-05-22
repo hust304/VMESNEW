@@ -47,8 +47,6 @@ public class WarehouseInBySimpleController {
 
     @Autowired
     private CoderuleService coderuleService;
-    @Autowired
-    private FileService fileService;
 
     @PostMapping("/warehouse/warehouseInBySimple/listPageWarehouseInBySimple")
     public ResultModel listPageWarehouseInBySimple() throws Exception {
