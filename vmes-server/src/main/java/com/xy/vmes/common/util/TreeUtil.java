@@ -258,12 +258,12 @@ public class TreeUtil {
 
 
                 if(materielRatioMap.get(child.getId())!=null){
-                    stockCount = stockCount.multiply(child.getSumRatio()).divide(materielRatioMap.get(child.getId()),0,BigDecimal.ROUND_HALF_UP);
+                    stockCount = stockCount.multiply(child.getSumRatio()).divide(materielRatioMap.get(child.getId()),0,BigDecimal.ROUND_UP);
                     child.setStockCount(stockCount);
                 }
 
                 if(semiFinishedRatioMap.get(child.getId())!=null){
-                    stockCount = stockCount.multiply(child.getSumRatio()).divide(semiFinishedRatioMap.get(child.getId()),0,BigDecimal.ROUND_HALF_UP);
+                    stockCount = stockCount.multiply(child.getSumRatio()).divide(semiFinishedRatioMap.get(child.getId()),0,BigDecimal.ROUND_UP);
                     child.setStockCount(stockCount);
                 }
 
@@ -275,11 +275,11 @@ public class TreeUtil {
                 if(ratio.compareTo(BigDecimal.ZERO)>0){
                     if(pAssembledCount==null){
                         //Bom齐套分析：上级可组装数量 = （实际库存数量 + 可组装数量）/ 用料比例
-                        pAssembledCount = stockCount.add(assembledCount).divide(ratio,0,BigDecimal.ROUND_HALF_UP);
+                        pAssembledCount = stockCount.add(assembledCount).divide(ratio,0,BigDecimal.ROUND_UP);
                     }else{
                         //Bom齐套分析：取物料组成中可组装成品的最小值为上级可组装数量
-                        if(stockCount.add(assembledCount).divide(ratio,0,BigDecimal.ROUND_HALF_UP).compareTo(pAssembledCount)<0){
-                            pAssembledCount = stockCount.add(assembledCount).divide(ratio,0,BigDecimal.ROUND_HALF_UP);
+                        if(stockCount.add(assembledCount).divide(ratio,0,BigDecimal.ROUND_UP).compareTo(pAssembledCount)<0){
+                            pAssembledCount = stockCount.add(assembledCount).divide(ratio,0,BigDecimal.ROUND_UP);
                         }
                     }
                 }
@@ -290,14 +290,14 @@ public class TreeUtil {
                 //Bom齐套分析：可组装数量
                 nodeObject.setAssembledCount(pAssembledCount);
                 //Bom齐套分析：最大可生产数量
-                nodeObject.setMaxCount(pAssembledCount.add(nodeObject.getStockCount()).setScale(0,BigDecimal.ROUND_HALF_UP));
+                nodeObject.setMaxCount(pAssembledCount.add(nodeObject.getStockCount()).setScale(0,BigDecimal.ROUND_UP));
             }
             nodeObject.setChildren(childListNew);
         }else{
             //Bom齐套分析：可组装数量
             nodeObject.setAssembledCount(BigDecimal.ZERO);
             //Bom齐套分析：最大可生产数量
-            nodeObject.setMaxCount(nodeObject.getStockCount().setScale(0,BigDecimal.ROUND_HALF_UP));
+            nodeObject.setMaxCount(nodeObject.getStockCount().setScale(0,BigDecimal.ROUND_UP));
             return;
         }
     }

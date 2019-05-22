@@ -387,8 +387,10 @@
             from vmes_sale_order saleOrder
             left join vmes_sale_order_detail orderDtail on saleOrder.id = orderDtail.parent_id
             left join vmes_sale_retreat_detail retreatDetail on orderDtail.id = retreatDetail.order_detail_id
+            left join vmes_sale_retreat retreat on retreat.id = retreatDetail.parent_id
             <where>
                 and retreatDetail.state = '3'
+                and retreat.type = 'f69839bbf2394846a65894f0da120df9' <!-- 退货退款 -->
                 <if test="currentCompanyId != null and currentCompanyId != ''">
                     and saleOrder.company_id = #{currentCompanyId}
                 </if>

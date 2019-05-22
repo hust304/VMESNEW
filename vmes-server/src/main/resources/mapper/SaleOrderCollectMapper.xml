@@ -204,10 +204,12 @@
         from vmes_sale_order sOrder
         left join vmes_sale_order_detail orderDtail on sOrder.id = orderDtail.parent_id
         left join vmes_sale_retreat_detail retreatDetail on orderDtail.id = retreatDetail.order_detail_id
+        left join vmes_sale_retreat retreat on retreat.id = retreatDetail.parent_id
         <where>
             <if test="id != null and id != ''" >
                 and sOrder.id = #{id}
             </if>
+            and retreat.type = 'f69839bbf2394846a65894f0da120df9' <!-- 退货退款 -->
             and retreatDetail.state = '3'
         </where>
 
