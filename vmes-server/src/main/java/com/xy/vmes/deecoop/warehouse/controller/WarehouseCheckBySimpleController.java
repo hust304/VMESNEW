@@ -319,8 +319,8 @@ public class WarehouseCheckBySimpleController {
                     BigDecimal prodStockCount = BigDecimal.valueOf(prodCount.doubleValue() + modifyCount);
                     productService.updateStockCount(product, prodStockCount, cuser);
 
-                    //明细状态:state:状态(0:待派单 1:执行中 2:已完成 -1.已取消)
-                    detailEdit.setState("2");
+                    //明细状态:state:状态(0:待派单 1:执行中 2:审核中 3:已完成 -1:已取消)
+                    detailEdit.setState("3");
                     detailEdit.setExecuteId(cuser);
                     warehouseCheckDetailService.update(detailEdit);
                 }
