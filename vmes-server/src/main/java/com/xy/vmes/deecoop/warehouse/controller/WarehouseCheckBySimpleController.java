@@ -258,9 +258,11 @@ public class WarehouseCheckBySimpleController {
         StringBuffer msgBuf = new StringBuffer();
         try {
             for (int i = 0; i < detailList.size(); i++) {
+                WarehouseCheckDetail detailEdit = new WarehouseCheckDetail();
                 WarehouseCheckDetail object = detailList.get(i);
 
                 String detailId = object.getId();
+                detailEdit.setId(detailId);
 
                 //盘点库存数量  stockCount
                 BigDecimal afterCount = BigDecimal.valueOf(0D);
@@ -316,6 +318,11 @@ public class WarehouseCheckBySimpleController {
 
                     BigDecimal prodStockCount = BigDecimal.valueOf(prodCount.doubleValue() + modifyCount);
                     productService.updateStockCount(product, prodStockCount, cuser);
+
+                    //明细状态:state:状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+                    detailEdit.setState("2");
+                    detailEdit.setExecuteId(cuser);
+                    warehouseCheckDetailService.update(detailEdit);
                 }
             }
         } catch (TableVersionException tabExc) {
@@ -332,10 +339,6 @@ public class WarehouseCheckBySimpleController {
             model.putMsg(msgBuf.toString());
             return model;
         }
-
-        //修改盘点单明细状态
-        //明细状态:state:状态(0:待派单 1:执行中 2:已完成 -1.已取消)
-        warehouseCheckDetailService.updateStateByDetail(parentId, "2");
 
         //修改盘点单状态
         WarehouseCheck warehouseCheckEdit = new WarehouseCheck();
