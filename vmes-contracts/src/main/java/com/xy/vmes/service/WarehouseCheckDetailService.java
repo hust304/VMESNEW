@@ -107,6 +107,7 @@ public interface WarehouseCheckDetailService {
      */
     String findBusinessIdByMapList(List<Map<String, String>> mapList);
     void addWarehouseCheckDetail(WarehouseCheck parentObj, List<WarehouseProduct> objectList) throws Exception;
+    void addWarehouseCheckDetailBySimple(WarehouseCheck parentObj, List<WarehouseCheckDetail> objectList) throws Exception;
 
     /**
      * 根据盘点明细状态-反写盘点单状态

@@ -297,16 +297,30 @@ public class WarehouseCheckDetailServiceImp implements WarehouseCheckDetailServi
             detail.setState("0");
             detail.setCuser(parentObj.getCuser());
 
-            //获取二维码信息
-            //WarehouseCheckDetail QRCodeObj = this.warehouseCheckDtl2QRCodeObj(detail, null);
-            String qrcode = fileService.createQRCode("warehouseCheck", detail.getId());
-            if (qrcode != null && qrcode.trim().length() > 0) {
-                detail.setQrcode(qrcode);
-            }
+//            //获取二维码信息
+//            //WarehouseCheckDetail QRCodeObj = this.warehouseCheckDtl2QRCodeObj(detail, null);
+//            String qrcode = fileService.createQRCode("warehouseCheck", detail.getId());
+//            if (qrcode != null && qrcode.trim().length() > 0) {
+//                detail.setQrcode(qrcode);
+//            }
 
             this.saveObject(detail);
         }
 
+    }
+
+    public void addWarehouseCheckDetailBySimple(WarehouseCheck parentObj, List<WarehouseCheckDetail> objectList) throws Exception {
+        if (parentObj == null) {return;}
+        if (objectList == null || objectList.size() == 0) {return;}
+
+        for (WarehouseCheckDetail detail : objectList) {
+            detail.setId(Conv.createUuid());
+            //状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+            detail.setState("1");
+            detail.setParentId(parentObj.getId());
+            detail.setCuser(parentObj.getCuser());
+            this.saveObject(detail);
+        }
     }
 
     /**

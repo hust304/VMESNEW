@@ -63,7 +63,7 @@ public class WarehouseInBySimpleController {
     /**
      * 新增入库单(简版仓库入库)
      * @author 陈刚
-     * @date 2018-10-16
+     * @date 2019-10-16
      * @throws Exception
      */
     @PostMapping("/warehouse/warehouseInBySimple/addWarehouseInBySimple")
@@ -137,10 +137,10 @@ public class WarehouseInBySimpleController {
     /**
      * 删除入库单(简版仓库入库)
      * @author 陈刚
-     * @date 2018-10-16
+     * @date 2019-10-16
      * @throws Exception
      */
-    @PostMapping("/warehouse/warehouseIn/deleteWarehouseInBySimple")
+    @PostMapping("/warehouse/warehouseInBySimple/deleteWarehouseInBySimple")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteWarehouseInBySimple() throws Exception {
         logger.info("################/warehouse/warehouseInBySimple/deleteWarehouseInBySimple 执行开始 ################# ");
@@ -172,7 +172,7 @@ public class WarehouseInBySimpleController {
     /**
      * 修改入库单(简版仓库入库)
      * @author 陈刚
-     * @date 2018-10-16
+     * @date 2019-10-16
      * @throws Exception
      */
     @PostMapping("/warehouse/warehouseInBySimple/updateWarehouseInBySimple")
@@ -256,7 +256,7 @@ public class WarehouseInBySimpleController {
     /**
      * 取消入库单(简版仓库入库)
      * @author 陈刚
-     * @date 2018-10-16
+     * @date 2019-10-16
      * @throws Exception
      */
     @PostMapping("/warehouse/warehouseInBySimple/cancelWarehouseInBySimple")
@@ -297,7 +297,7 @@ public class WarehouseInBySimpleController {
     /**
      * 恢复入库单(简版仓库入库)
      * @author 陈刚
-     * @date 2018-10-16
+     * @date 2019-10-16
      * @throws Exception
      */
     @PostMapping("/warehouse/warehouseInBySimple/recoveryWarehouseInBySimple")
@@ -345,7 +345,7 @@ public class WarehouseInBySimpleController {
     /**
      * 执行入库单(简版仓库入库)
      * @author 陈刚
-     * @date 2018-10-16
+     * @date 2019-10-16
      * @throws Exception
      */
     @PostMapping("/warehouse/warehouseInBySimple/executeWarehouseInBySimple")

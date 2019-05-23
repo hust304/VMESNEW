@@ -67,6 +67,9 @@ public class WarehouseCheckDetail implements Serializable {
 	//是否启用(0:已禁用 1:启用)
 	@TableField("isdisable")
 	private String isdisable;
+	//当前盘点时(库存数量)台账数量
+	@TableField("check_stock_count")
+	private BigDecimal checkStockCount;
 
 
 	public void setId(String id) {
@@ -164,6 +167,12 @@ public class WarehouseCheckDetail implements Serializable {
 	}
 	public void setWarehouseProductId(String warehouseProductId) {
 		this.warehouseProductId = warehouseProductId;
+	}
+	public BigDecimal getCheckStockCount() {
+		return checkStockCount;
+	}
+	public void setCheckStockCount(BigDecimal checkStockCount) {
+		this.checkStockCount = checkStockCount;
 	}
 /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 

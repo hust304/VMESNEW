@@ -50,6 +50,8 @@
         (replace(uuid(), '-', ''),'warehouseCheckDetail','isdisable','是否启用(0:已禁用 1:启用)',13, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'warehouseCheckDetail','id','id',0, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'warehouseCheckDetail','parentCode','parentCode',0, '1','1','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'warehouseCheckDetail','checkStockCount','checkStockCount',14, '1','1','1','0',now(), 'admin'),
     </insert>
 
     <update id="updateStateByDetail" parameterType="com.yvan.PageData" >
@@ -84,7 +86,8 @@
             udate udate,
             remark remark,
 
-            isdisable isdisable
+            isdisable isdisable,
+            check_stock_count checkStockCount
         from vmes_warehouse_check_detail
         <choose>
             <!--
@@ -186,6 +189,7 @@
             DATE_FORMAT(detail.udate,'%Y-%m-%d %T') udate,
             detail.remark remark,
             detail.isdisable isdisable,
+            round(ifnull(detail.check_stock_count, 0), 2) checkStockCount,
 
             parent.code parentCode,
 

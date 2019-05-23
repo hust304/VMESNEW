@@ -161,6 +161,9 @@ public interface WarehouseProductService {
     String checkStockCount(WarehouseProduct object,
                            BigDecimal count,
                            WarehouseLoginfo loginfo) throws TableVersionException,Exception;
+    String checkStockCountBySimple(WarehouseProduct object,
+                           BigDecimal count,
+                           WarehouseLoginfo loginfo) throws TableVersionException,Exception;
 
     String updateStockCount(WarehouseProduct object,
                            BigDecimal count,
