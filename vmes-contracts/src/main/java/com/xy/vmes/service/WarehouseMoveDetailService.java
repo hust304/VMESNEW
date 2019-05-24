@@ -132,7 +132,7 @@ public interface WarehouseMoveDetailService {
 
     boolean isAllExistStateByDetailList(String state, String ignoreState, List<WarehouseMoveDetail> detailList) throws Exception;
 
-//    void updateStateByDetail(PageData mapDetail) throws Exception;
+    void updateStateByDetail(PageData mapDetail) throws Exception;
 
     WarehouseMoveDetail findWarehouseMoveDetailById(String detailId) throws Exception;
 

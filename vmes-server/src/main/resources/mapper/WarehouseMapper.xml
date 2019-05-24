@@ -134,6 +134,10 @@
                             </otherwise>
                         </choose>
                     </if>
+                    <if test="notInWarehouseIds != null and notInWarehouseIds != ''" >
+                        and id not in (${notInWarehouseIds})
+                    </if>
+
                     <if test="pid != null and pid != ''" >
                         and pid=#{pid}
                     </if>

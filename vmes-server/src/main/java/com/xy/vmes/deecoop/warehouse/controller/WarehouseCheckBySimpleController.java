@@ -25,7 +25,7 @@ import java.util.Map;
 /**
  * 说明：vmes_warehouse_check 简版仓库盘点Controller
  * @author 陈刚
- * @date 2018-05-23
+ * @date 2019-05-23
  */
 @RestController
 @Slf4j

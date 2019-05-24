@@ -26,7 +26,8 @@
 		udate udate,<!-- 修改时间 -->
 		remark remark,<!-- 备注 -->
 		isdisable isdisable,<!-- 是否启用(0:已禁用 1:启用) -->
-		id id <!-- id -->
+		id id, <!-- id -->
+        is_simple isSimple
     </sql>
 
     <!-- 字段值 自动创建，禁止修改-->
@@ -267,7 +268,8 @@
         DATE_FORMAT(warehousemove.udate,'%Y-%m-%d') udate,
         warehousemove.remark remark,<!-- 备注 -->
         warehousemove.isdisable isdisable,<!-- 是否启用(0:已禁用 1:启用) -->
-        warehousemove.id id <!-- id -->
+        warehousemove.id id, <!-- id -->
+        warehousemove.is_simple isSimple
     </sql>
 
     <!-- 字段值 自动创建，可以修改-->
@@ -336,6 +338,9 @@
             <if test="state != null and state != ''">
                 and warehousemove.state =  #{state}
             </if>
+            <if test="isSimple != null and isSimple != ''" >
+                and warehousemove.is_simple = #{isSimple}
+            </if>
 
             <if test="productCode != null and productCode != ''">
                 and prod.code LIKE CONCAT(CONCAT('%', #{productCode}),'%')
@@ -399,6 +404,9 @@
 
             <if test="state != null and state != ''">
                 and warehousemove.state =  #{state}
+            </if>
+            <if test="isSimple != null and isSimple != ''" >
+                and warehousemove.is_simple = #{isSimple}
             </if>
 
             <if test="productCode != null and productCode != ''">

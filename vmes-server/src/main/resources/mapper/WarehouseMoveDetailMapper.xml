@@ -474,5 +474,16 @@
         </if>
     </select>
 
+    <update id="updateStateByDetail" parameterType="com.yvan.PageData" >
+        update vmes_warehouse_move_detail set
+        state = #{state},
+        udate = now()
+        <where>
+            <if test="parentId != null and parentId != ''" >
+                and parent_id = #{parentId}
+            </if>
+        </where>
+    </update>
+
 
 </mapper>

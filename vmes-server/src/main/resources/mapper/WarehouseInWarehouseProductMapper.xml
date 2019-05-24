@@ -20,6 +20,7 @@
             warehouse.path_id pathId,
             warehouse.layer,
             warehouse.serial_number serialNumber,
+            warehouse.is_simple isSimple,
 
             warehouseProduct.product_id productId,
             warehouseProduct.warehouse_id warehouseId,
@@ -35,13 +36,21 @@
             warehouseProduct.productTypeName,
             warehouseProduct.productGenreName
         from (
-            select a.id,a.code,a.name,b.name warehouseName,a.path_name,a.path_id,a.layer,a.serial_number
+            select a.id,a.code,a.name,b.name warehouseName,a.path_name,a.path_id,a.layer,a.serial_number,a.is_simple
             from vmes_warehouse a
                 left join vmes_warehouse b on a.warehouse_id = b.id
-            where a.isdisable = '1'
+            <where>
+                <if test="notInWarehouseIds != null and notInWarehouseIds != ''" >
+                    and a.id not in (${notInWarehouseIds})
+                </if>
                 <if test="companyId != null and companyId != ''" >
                     and a.company_id=#{companyId}
                 </if>
+                <if test="isSimple != null and isSimple != ''" >
+                    and a.is_simple=#{isSimple}
+                </if>
+                and a.isdisable = '1'
+            </where>
         ) warehouse left join (
             select
                 a.product_id,a.warehouse_id,a.stock_count,

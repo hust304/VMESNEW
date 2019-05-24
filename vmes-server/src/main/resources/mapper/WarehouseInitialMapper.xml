@@ -77,7 +77,8 @@
             (replace(uuid(), '-', ''),'warehouseInitial','productGenreName','productGenreName',11, '1','1','1','0',now(), 'admin'),
 
             (replace(uuid(), '-', ''),'warehouseInitial','checkStockCount','台账数量',13, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'warehouseInitial','checkCount','盘点数量',14, '1','1','1','0',now(), 'admin')
+            (replace(uuid(), '-', ''),'warehouseInitial','checkCount','盘点数量',14, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'warehouseInitial','moveCount','移库数量',15, '1','1','1','0',now(), 'admin')
 
 </insert>
 
@@ -171,7 +172,8 @@
             genre.name productGenreName,
 
             round(ifnull(wp.stock_count, 0), 2) checkStockCount,
-            '' checkCount
+            '' checkCount,
+            '' moveCount
 
         from vmes_warehouse_product wp
             left join vmes_warehouse warehouse on wp.warehouse_id = warehouse.id and warehouse.isdisable = '1'

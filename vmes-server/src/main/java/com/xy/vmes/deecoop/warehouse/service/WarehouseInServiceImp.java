@@ -749,25 +749,8 @@ public class WarehouseInServiceImp implements WarehouseInService {
             columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
         }
 
-        List<LinkedHashMap> titlesList = new ArrayList<LinkedHashMap>();
-        List<String> titlesHideList = new ArrayList<String>();
-        Map<String, String> varModelMap = new HashMap<String, String>();
-        if (columnList != null && columnList.size() > 0) {
-            for (Column column : columnList) {
-                if(column!=null){
-                    if("0".equals(column.getIshide())){
-                        titlesHideList.add(column.getTitleKey());
-                    }
-                    LinkedHashMap titlesLinkedMap = new LinkedHashMap();
-                    titlesLinkedMap.put(column.getTitleKey(),column.getTitleName());
-                    varModelMap.put(column.getTitleKey(),"");
-                    titlesList.add(titlesLinkedMap);
-                }
-            }
-        }
-        Map result = new HashMap();
-        result.put("hideTitles",titlesHideList);
-        result.put("titles",titlesList);
+        String companyId = pd.getString("currentCompanyId");
+        pd.put("companyId", companyId);
 
         pd.put("orderStr", "warehouseProduct.product_id,warehouseProduct.productType,warehouse.layer,warehouse.serial_number");
         String orderStr = pd.getString("orderStr");
@@ -775,29 +758,21 @@ public class WarehouseInServiceImp implements WarehouseInService {
             pd.put("orderStr", orderStr);
         }
 
-//        pd.put("isExistProd", "false");
-//        pd.put("companyId", "02b02026270d4b6582b7bfc576e81971");
-//        pd.put("productId", "01de8e2c87074f06b32567d7c1275808");
-//        pd.put("productType", "d5afe1d25e69406bb3a54adb7b555f25");
-
-        String companyId = pd.getString("currentCompanyId");
-        pd.put("companyId", companyId);
-
-
-        List<Map> varMapList = new ArrayList();
-        List<Map> varList = warehouseInWarehouseProductService.findAllListWarehouse(pd, pg);
-        if(varList != null && varList.size() > 0) {
-            for(int i = 0; i < varList.size(); i++) {
-                Map map = varList.get(i);
-                Map<String, String> varMap = new HashMap<String, String>();
-                varMap.putAll(varModelMap);
-                for (Map.Entry<String, String> entry : varMap.entrySet()) {
-                    varMap.put(entry.getKey(), map.get(entry.getKey()) !=null ? map.get(entry.getKey()).toString():"");
-                }
-                varMapList.add(varMap);
-            }
+        String notInWarehouseIds = new String();
+        if (pd.getString("notInWarehouseIds") != null && pd.getString("notInWarehouseIds").trim().length() > 0) {
+            notInWarehouseIds = pd.getString("notInWarehouseIds").trim();
+            notInWarehouseIds = StringUtil.stringTrimSpace(notInWarehouseIds);
+            notInWarehouseIds = "'" + notInWarehouseIds.replace(",", "','") + "'";
         }
+        pd.put("notInWarehouseIds", notInWarehouseIds);
 
+
+        List<Map> varList = warehouseInWarehouseProductService.findAllListWarehouse(pd, pg);
+        Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
+        List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
+        Map result = new HashMap();
+        result.put("hideTitles",titleMap.get("hideTitles"));
+        result.put("titles",titleMap.get("titles"));
         result.put("varList",varMapList);
         result.put("pageData", pg);
 

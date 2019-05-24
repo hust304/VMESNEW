@@ -333,6 +333,10 @@ public class WarehouseMoveDetailServiceImp implements WarehouseMoveDetailService
         return this.findWarehouseMoveDetail(findMap);
     }
 
+    public void updateStateByDetail(PageData pd) throws Exception{
+        warehouseMoveDetailMapper.updateStateByDetail(pd);
+    }
+
     @Override
     public ResultModel rebackWarehouseMoveDetail(PageData pageData) throws Exception {
         ResultModel model = new ResultModel();
