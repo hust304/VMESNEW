@@ -168,13 +168,13 @@
         from vmes_sale_order saleOrder
         left join (
         select id,
-        round(sum(ifnull(deliverAmount,0)),2) deliverAmount,round(sum(ifnull(receiveAmount,0)),2) receivedAmount,round(sum(ifnull(discountAmount,0)),2) discountedAmount,round(sum(ifnull(invoiceAmount,0)),2) invoiceAmount,round(sum(ifnull(retreatAmount,0)),2) retreatAmount,
-        case when sum(ifnull(deliverAmount,0))-sum(ifnull(retreatAmount,0)) <![CDATA[ > ]]> (sum(ifnull(receiveAmount,0))+sum(ifnull(discountAmount,0))) then round(sum(ifnull(deliverAmount,0)) - sum(ifnull(retreatAmount,0)) - sum(ifnull(receiveAmount,0)) - sum(ifnull(discountAmount,0)),2) else 0.00 end nowReceiveAmount,
-        case when sum(ifnull(deliverAmount,0))-sum(ifnull(retreatAmount,0)) <![CDATA[ < ]]> (sum(ifnull(receiveAmount,0))+sum(ifnull(discountAmount,0))) then round(sum(ifnull(receiveAmount,0)) + sum(ifnull(discountAmount,0)) - sum(ifnull(deliverAmount,0)) + sum(ifnull(retreatAmount,0)),2) else 0.00 end preReceiveAmount
+        round(sum(ifnull(deliverAmount,0))- sum(ifnull(noRetreatAmount,0)),2) deliverAmount,round(sum(ifnull(receiveAmount,0)),2) receivedAmount,round(sum(ifnull(discountAmount,0)),2) discountedAmount,round(sum(ifnull(invoiceAmount,0)),2) invoiceAmount,round(sum(ifnull(retreatAmount,0)),2) retreatAmount,
+        case when sum(ifnull(deliverAmount,0))- sum(ifnull(noRetreatAmount,0))-sum(ifnull(retreatAmount,0)) <![CDATA[ > ]]> (sum(ifnull(receiveAmount,0))+sum(ifnull(discountAmount,0))) then round(sum(ifnull(deliverAmount,0))- sum(ifnull(noRetreatAmount,0)) - sum(ifnull(retreatAmount,0)) - sum(ifnull(receiveAmount,0)) - sum(ifnull(discountAmount,0)),2) else 0.00 end nowReceiveAmount,
+        case when sum(ifnull(deliverAmount,0))- sum(ifnull(noRetreatAmount,0))-sum(ifnull(retreatAmount,0)) <![CDATA[ < ]]> (sum(ifnull(receiveAmount,0))+sum(ifnull(discountAmount,0))) then round(sum(ifnull(receiveAmount,0)) + sum(ifnull(discountAmount,0)) - sum(ifnull(deliverAmount,0)) + sum(ifnull(noRetreatAmount,0)) + sum(ifnull(retreatAmount,0)),2) else 0.00 end preReceiveAmount
         from
         (
         select sOrder.id id,
-        deliverDetail.sum deliverAmount,null receiveAmount,null discountAmount,null invoiceAmount,null retreatAmount
+        deliverDetail.sum deliverAmount,null receiveAmount,null discountAmount,null invoiceAmount,null retreatAmount,null noRetreatAmount
         from vmes_sale_order sOrder
         left join vmes_sale_deliver_detail deliverDetail on deliverDetail.order_id = sOrder.id
         <where>
@@ -187,7 +187,7 @@
         union all
 
         select sOrder.id id,
-        null deliverAmount,receiveDetail.receive_amount receiveAmount,receiveDetail.discount_amount discountAmount,null invoiceAmount,null retreatAmount
+        null deliverAmount,receiveDetail.receive_amount receiveAmount,receiveDetail.discount_amount discountAmount,null invoiceAmount,null retreatAmount,null noRetreatAmount
         from vmes_sale_order sOrder
         left join vmes_sale_receive_detail receiveDetail on receiveDetail.order_id = sOrder.id
         <where>
@@ -200,7 +200,7 @@
         union all
 
         select sOrder.id id,
-        null deliverAmount,null receiveAmount,null discountAmount,null invoiceAmount,ifnull(retreatDetail.order_count,0)*ifnull(orderDtail.product_price,0) retreatAmount
+        null deliverAmount,null receiveAmount,null discountAmount,null invoiceAmount,ifnull(retreatDetail.order_count,0)*ifnull(orderDtail.product_price,0) retreatAmount,null noRetreatAmount
         from vmes_sale_order sOrder
         left join vmes_sale_order_detail orderDtail on sOrder.id = orderDtail.parent_id
         left join vmes_sale_retreat_detail retreatDetail on orderDtail.id = retreatDetail.order_detail_id
@@ -213,11 +213,26 @@
             and retreatDetail.state = '3'
         </where>
 
+        union all
+
+        select sOrder.id id,
+        null deliverAmount,null receiveAmount,null discountAmount,null invoiceAmount,null retreatAmount,ifnull(retreatDetail.order_count,0)*ifnull(orderDtail.product_price,0) noRetreatAmount
+        from vmes_sale_order sOrder
+        left join vmes_sale_order_detail orderDtail on sOrder.id = orderDtail.parent_id
+        left join vmes_sale_retreat_detail retreatDetail on orderDtail.id = retreatDetail.order_detail_id
+        left join vmes_sale_retreat retreat on retreat.id = retreatDetail.parent_id
+        <where>
+            <if test="id != null and id != ''" >
+                and sOrder.id = #{id}
+            </if>
+            and retreat.type = 'c90c2081328c427e8d65014d98335601' <!-- 退货换货 -->
+            and retreatDetail.state = '3'
+        </where>
 
         union all
 
         select sOrder.id id,
-        null deliverAmount,null receiveAmount,null discountAmount,invoiceDetail.sum invoiceAmount,null retreatAmount
+        null deliverAmount,null receiveAmount,null discountAmount,invoiceDetail.sum invoiceAmount,null retreatAmount,null noRetreatAmount
         from vmes_sale_order sOrder
         left join vmes_sale_order_detail orderDetail on orderDetail.parent_id = sOrder.id
         left join vmes_sale_invoice_detail invoiceDetail on invoiceDetail.order_detail_id = orderDetail.id

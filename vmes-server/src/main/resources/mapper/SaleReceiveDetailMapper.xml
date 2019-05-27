@@ -348,14 +348,14 @@
         WHEN sOrder.state = '-1' THEN '已取消'
         ELSE null
         END  orderState,
-        round(sum(ifnull(deliverAmount,0)),2) deliverAmount,round(sum(ifnull(receiveAmount,0)),2) receivedAmount,round(sum(ifnull(discountAmount,0)),2) discountedAmount,'0.00' discountAmount,round(sum(ifnull(receiveAmount,0))+sum(ifnull(discountAmount,0)),2) haveReceivedAmount,
-        case when sum(ifnull(deliverAmount,0)) - sum(ifnull(retreatAmount,0)) <![CDATA[ >= ]]> (sum(ifnull(receiveAmount,0))+sum(ifnull(discountAmount,0))) then round(sum(ifnull(deliverAmount,0)) - sum(ifnull(retreatAmount,0)) - sum(ifnull(receiveAmount,0)) - sum(ifnull(discountAmount,0)),2) else 0.00 end nowReceiveAmount,
-        case when sum(ifnull(deliverAmount,0)) - sum(ifnull(retreatAmount,0)) <![CDATA[ < ]]> (sum(ifnull(receiveAmount,0))+sum(ifnull(discountAmount,0))) then round(sum(ifnull(receiveAmount,0)) + sum(ifnull(retreatAmount,0)) - sum(ifnull(deliverAmount,0)) + sum(ifnull(discountAmount,0)),2) else 0.00 end preReceiveAmount
+        round(sum(ifnull(deliverAmount,0))-sum(ifnull(noRetreatAmount,0)),2) deliverAmount,round(sum(ifnull(receiveAmount,0)),2) receivedAmount,round(sum(ifnull(discountAmount,0)),2) discountedAmount,'0.00' discountAmount,round(sum(ifnull(receiveAmount,0))+sum(ifnull(discountAmount,0)),2) haveReceivedAmount,
+        case when sum(ifnull(deliverAmount,0)) -sum(ifnull(noRetreatAmount,0)) - sum(ifnull(retreatAmount,0)) <![CDATA[ >= ]]> (sum(ifnull(receiveAmount,0))+sum(ifnull(discountAmount,0))) then round(sum(ifnull(deliverAmount,0)) -sum(ifnull(noRetreatAmount,0)) - sum(ifnull(retreatAmount,0)) - sum(ifnull(receiveAmount,0)) - sum(ifnull(discountAmount,0)),2) else 0.00 end nowReceiveAmount,
+        case when sum(ifnull(deliverAmount,0)) -sum(ifnull(noRetreatAmount,0)) - sum(ifnull(retreatAmount,0)) <![CDATA[ < ]]> (sum(ifnull(receiveAmount,0))+sum(ifnull(discountAmount,0))) then round(sum(ifnull(receiveAmount,0)) + sum(ifnull(retreatAmount,0)) + sum(ifnull(noRetreatAmount,0)) - sum(ifnull(deliverAmount,0)) + sum(ifnull(discountAmount,0)),2) else 0.00 end preReceiveAmount
         from
         vmes_sale_order sOrder
         left join(
             select saleOrder.id id,saleOrder.sys_code sysCode,saleOrder.customer_id customerId,saleOrder.current_deliver_date currentDeliverDate,saleOrder.company_id companyId,saleOrder.order_sum orderAmount,saleOrder.state state,DATE_FORMAT(saleOrder.order_date,'%Y-%m-%d') orderDate,
-            deliverDetail.sum deliverAmount,null receiveAmount,null discountAmount,null retreatAmount
+            deliverDetail.sum deliverAmount,null receiveAmount,null discountAmount,null retreatAmount,null noRetreatAmount
             from vmes_sale_order saleOrder
             left join vmes_sale_deliver_detail deliverDetail on deliverDetail.order_id = saleOrder.id
             <where>
@@ -369,7 +369,7 @@
             </where>
             union all
             select saleOrder.id id,saleOrder.sys_code sysCode,saleOrder.customer_id customerId,saleOrder.current_deliver_date currentDeliverDate,saleOrder.company_id companyId,saleOrder.order_sum orderAmount,saleOrder.state state,DATE_FORMAT(saleOrder.order_date,'%Y-%m-%d') orderDate,
-            null deliverAmount,receiveDetail.receive_amount receiveAmount,receiveDetail.discount_amount discountAmount,null retreatAmount
+            null deliverAmount,receiveDetail.receive_amount receiveAmount,receiveDetail.discount_amount discountAmount,null retreatAmount,null noRetreatAmount
             from vmes_sale_order saleOrder
             left join vmes_sale_receive_detail receiveDetail on receiveDetail.order_id = saleOrder.id
             <where>
@@ -383,7 +383,7 @@
             </where>
             union all
             select saleOrder.id id,saleOrder.sys_code sysCode,saleOrder.customer_id customerId,saleOrder.current_deliver_date currentDeliverDate,saleOrder.company_id companyId,saleOrder.order_sum orderAmount,saleOrder.state state,DATE_FORMAT(saleOrder.order_date,'%Y-%m-%d') orderDate,
-            null deliverAmount,null receiveAmount,null discountAmount,ifnull(retreatDetail.order_count,0)*ifnull(orderDtail.product_price,0) retreatAmount
+            null deliverAmount,null receiveAmount,null discountAmount,ifnull(retreatDetail.order_count,0)*ifnull(orderDtail.product_price,0) retreatAmount,null noRetreatAmount
             from vmes_sale_order saleOrder
             left join vmes_sale_order_detail orderDtail on saleOrder.id = orderDtail.parent_id
             left join vmes_sale_retreat_detail retreatDetail on orderDtail.id = retreatDetail.order_detail_id
@@ -391,6 +391,23 @@
             <where>
                 and retreatDetail.state = '3'
                 and retreat.type = 'f69839bbf2394846a65894f0da120df9' <!-- 退货退款 -->
+                <if test="currentCompanyId != null and currentCompanyId != ''">
+                    and saleOrder.company_id = #{currentCompanyId}
+                </if>
+                <if test="customerId != null and customerId != ''">
+                    and saleOrder.customer_id = #{customerId}
+                </if>
+            </where>
+            union all
+            select saleOrder.id id,saleOrder.sys_code sysCode,saleOrder.customer_id customerId,saleOrder.current_deliver_date currentDeliverDate,saleOrder.company_id companyId,saleOrder.order_sum orderAmount,saleOrder.state state,DATE_FORMAT(saleOrder.order_date,'%Y-%m-%d') orderDate,
+            null deliverAmount,null receiveAmount,null discountAmount,null retreatAmount,ifnull(retreatDetail.order_count,0)*ifnull(orderDtail.product_price,0) noRetreatAmount
+            from vmes_sale_order saleOrder
+            left join vmes_sale_order_detail orderDtail on saleOrder.id = orderDtail.parent_id
+            left join vmes_sale_retreat_detail retreatDetail on orderDtail.id = retreatDetail.order_detail_id
+            left join vmes_sale_retreat retreat on retreat.id = retreatDetail.parent_id
+            <where>
+                and retreatDetail.state = '3'
+                and retreat.type = 'c90c2081328c427e8d65014d98335601' <!-- 退货换货 -->
                 <if test="currentCompanyId != null and currentCompanyId != ''">
                     and saleOrder.company_id = #{currentCompanyId}
                 </if>

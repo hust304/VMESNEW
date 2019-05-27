@@ -447,12 +447,12 @@
         left join
         (
             select orderId,orderCode,customerId,companyId,currentDeliverDate,
-            sum(ifnull(deliverAmount,0)) deliverAmount,sum(ifnull(receiveAmount,0)) receiveAmount,
+            sum(ifnull(deliverAmount,0))-sum(ifnull(noRetreatAmount,0)) deliverAmount,sum(ifnull(receiveAmount,0)) receiveAmount,
             case when sum(ifnull(deliverAmount,0)) - sum(ifnull(retreatAmount,0)) <![CDATA[ >= ]]> sum(ifnull(receiveAmount,0))then sum(ifnull(deliverAmount,0))- sum(ifnull(retreatAmount,0)) - sum(ifnull(receiveAmount,0)) else 0.0000 end nowReceiveAmount,
             case when sum(ifnull(deliverAmount,0)) - sum(ifnull(retreatAmount,0)) <![CDATA[ < ]]> sum(ifnull(receiveAmount,0)) then sum(ifnull(receiveAmount,0))+ sum(ifnull(retreatAmount,0)) - sum(ifnull(deliverAmount,0)) else 0.0000 end preReceiveAmount
             from (
                 select saleOrder.id orderId,saleOrder.sys_code orderCode,saleOrder.customer_id customerId,saleOrder.current_deliver_date currentDeliverDate,saleOrder.company_id companyId,
-                deliverDetail.sum deliverAmount,null receiveAmount,null retreatAmount
+                deliverDetail.sum deliverAmount,null receiveAmount,null retreatAmount,null noRetreatAmount
                 from vmes_sale_order saleOrder
                 left join vmes_sale_deliver_detail deliverDetail on deliverDetail.order_id = saleOrder.id
                 <where>
@@ -463,7 +463,7 @@
                 </where>
                 union all
                 select saleOrder.id orderId,saleOrder.sys_code orderCode,saleOrder.customer_id customerId,saleOrder.current_deliver_date currentDeliverDate,saleOrder.company_id companyId,
-                null deliverAmount,(receiveDetail.receive_amount+receiveDetail.discount_amount) receiveAmount,null retreatAmount
+                null deliverAmount,(receiveDetail.receive_amount+receiveDetail.discount_amount) receiveAmount,null retreatAmount,null noRetreatAmount
                 from vmes_sale_order saleOrder
                 left join vmes_sale_receive_detail receiveDetail on receiveDetail.order_id = saleOrder.id
                 <where>
@@ -474,7 +474,7 @@
                 </where>
                 union all
                 select saleOrder.id  orderId,saleOrder.sys_code orderCode,saleOrder.customer_id customerId,saleOrder.current_deliver_date currentDeliverDate,saleOrder.company_id companyId,
-                null deliverAmount,null receiveAmount,ifnull(retreatDetail.order_count,0)*ifnull(orderDtail.product_price,0) retreatAmount
+                null deliverAmount,null receiveAmount,ifnull(retreatDetail.order_count,0)*ifnull(orderDtail.product_price,0) retreatAmount,null noRetreatAmount
                 from vmes_sale_order saleOrder
                 left join vmes_sale_order_detail orderDtail on saleOrder.id = orderDtail.parent_id
                 left join vmes_sale_retreat_detail retreatDetail on orderDtail.id = retreatDetail.order_detail_id
@@ -482,6 +482,20 @@
                 <where>
                     and retreatDetail.state = '3'
                     and retreat.type = 'f69839bbf2394846a65894f0da120df9' <!-- 退货退款 -->
+                    <if test="currentCompanyId != null and currentCompanyId != ''">
+                        and saleOrder.company_id = #{currentCompanyId}
+                    </if>
+                </where>
+                union all
+                select saleOrder.id  orderId,saleOrder.sys_code orderCode,saleOrder.customer_id customerId,saleOrder.current_deliver_date currentDeliverDate,saleOrder.company_id companyId,
+                null deliverAmount,null receiveAmount,null retreatAmount,ifnull(retreatDetail.order_count,0)*ifnull(orderDtail.product_price,0) noRetreatAmount
+                from vmes_sale_order saleOrder
+                left join vmes_sale_order_detail orderDtail on saleOrder.id = orderDtail.parent_id
+                left join vmes_sale_retreat_detail retreatDetail on orderDtail.id = retreatDetail.order_detail_id
+                left join vmes_sale_retreat retreat on retreat.id = retreatDetail.parent_id
+                <where>
+                    and retreatDetail.state = '3'
+                    and retreat.type = 'c90c2081328c427e8d65014d98335601' <!-- 退货换货 -->
                     <if test="currentCompanyId != null and currentCompanyId != ''">
                         and saleOrder.company_id = #{currentCompanyId}
                     </if>
@@ -533,29 +547,37 @@
         round(sum(ifnull(nowReceiveAmount,0)),2) nowReceiveAmount,round(sum(ifnull(preReceiveAmount,0)),2) preReceiveAmount
         from (
             select orderId,orderCode,customerId,companyId,currentDeliverDate,
-            round(sum(ifnull(deliverAmount,0)),2) deliverAmount,round(sum(ifnull(receiveAmount,0)),2) receiveAmount,
-            case when sum(ifnull(deliverAmount,0)) - sum(ifnull(retreatAmount,0)) <![CDATA[ >= ]]> sum(ifnull(receiveAmount,0)) then round(sum(ifnull(deliverAmount,0))- sum(ifnull(retreatAmount,0)) - sum(ifnull(receiveAmount,0)),2) else 0.00 end nowReceiveAmount,
-            case when sum(ifnull(deliverAmount,0)) - sum(ifnull(retreatAmount,0)) <![CDATA[ < ]]>  sum(ifnull(receiveAmount,0)) then round(sum(ifnull(receiveAmount,0))+ sum(ifnull(retreatAmount,0)) - sum(ifnull(deliverAmount,0)),2) else 0.00 end preReceiveAmount
+            round(sum(ifnull(deliverAmount,0))-sum(ifnull(noRetreatAmount,0)),2) deliverAmount,round(sum(ifnull(receiveAmount,0)),2) receiveAmount,
+            case when sum(ifnull(deliverAmount,0)) - sum(ifnull(noRetreatAmount,0)) - sum(ifnull(retreatAmount,0)) <![CDATA[ >= ]]> sum(ifnull(receiveAmount,0)) then round(sum(ifnull(deliverAmount,0)) - sum(ifnull(noRetreatAmount,0)) - sum(ifnull(retreatAmount,0)) - sum(ifnull(receiveAmount,0)),2) else 0.00 end nowReceiveAmount,
+            case when sum(ifnull(deliverAmount,0)) - sum(ifnull(noRetreatAmount,0)) - sum(ifnull(retreatAmount,0)) <![CDATA[ < ]]>  sum(ifnull(receiveAmount,0)) then round(sum(ifnull(receiveAmount,0))+ sum(ifnull(retreatAmount,0)) + sum(ifnull(noRetreatAmount,0)) - sum(ifnull(deliverAmount,0)),2) else 0.00 end preReceiveAmount
             from (
                 select saleOrder.id orderId,saleOrder.sys_code orderCode,saleOrder.customer_id customerId,saleOrder.current_deliver_date currentDeliverDate,saleOrder.company_id companyId,
-                deliverDetail.sum deliverAmount,null receiveAmount,null retreatAmount
+                deliverDetail.sum deliverAmount,null receiveAmount,null retreatAmount,null noRetreatAmount
                 from vmes_sale_order saleOrder
                 left join vmes_sale_deliver_detail deliverDetail on deliverDetail.order_id = saleOrder.id
                 where deliverDetail.state = '1'
                 union all
                 select saleOrder.id orderId,saleOrder.sys_code orderCode,saleOrder.customer_id customerId,saleOrder.current_deliver_date currentDeliverDate,saleOrder.company_id companyId,
-                null deliverAmount,(receiveDetail.receive_amount+receiveDetail.discount_amount) receiveAmount,null retreatAmount
+                null deliverAmount,(receiveDetail.receive_amount+receiveDetail.discount_amount) receiveAmount,null retreatAmount,null noRetreatAmount
                 from vmes_sale_order saleOrder
                 left join vmes_sale_receive_detail receiveDetail on receiveDetail.order_id = saleOrder.id
                 where receiveDetail.state = '1'
                 union all
                 select saleOrder.id  orderId,saleOrder.sys_code orderCode,saleOrder.customer_id customerId,saleOrder.current_deliver_date currentDeliverDate,saleOrder.company_id companyId,
-                null deliverAmount,null receiveAmount,ifnull(retreatDetail.order_count,0)*ifnull(orderDtail.product_price,0) retreatAmount
+                null deliverAmount,null receiveAmount,ifnull(retreatDetail.order_count,0)*ifnull(orderDtail.product_price,0) retreatAmount,null noRetreatAmount
                 from vmes_sale_order saleOrder
                 left join vmes_sale_order_detail orderDtail on saleOrder.id = orderDtail.parent_id
                 left join vmes_sale_retreat_detail retreatDetail on orderDtail.id = retreatDetail.order_detail_id
                 left join vmes_sale_retreat retreat on retreat.id = retreatDetail.parent_id
                 where retreatDetail.state = '3' and retreat.type = 'f69839bbf2394846a65894f0da120df9' <!-- 退货退款 -->
+                union all
+                select saleOrder.id  orderId,saleOrder.sys_code orderCode,saleOrder.customer_id customerId,saleOrder.current_deliver_date currentDeliverDate,saleOrder.company_id companyId,
+                null deliverAmount,null receiveAmount,null retreatAmount,ifnull(retreatDetail.order_count,0)*ifnull(orderDtail.product_price,0) noRetreatAmount
+                from vmes_sale_order saleOrder
+                left join vmes_sale_order_detail orderDtail on saleOrder.id = orderDtail.parent_id
+                left join vmes_sale_retreat_detail retreatDetail on orderDtail.id = retreatDetail.order_detail_id
+                left join vmes_sale_retreat retreat on retreat.id = retreatDetail.parent_id
+                where retreatDetail.state = '3' and retreat.type = 'c90c2081328c427e8d65014d98335601' <!-- 退货换货 -->
             )tab
             <where>
                 <if test="currentCompanyId != null and currentCompanyId != ''">
