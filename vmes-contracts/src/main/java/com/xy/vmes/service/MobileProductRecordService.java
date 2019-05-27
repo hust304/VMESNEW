@@ -12,7 +12,7 @@ import java.util.Map;
 public interface MobileProductRecordService {
 
 
-    List<Map> listPageProductRecords(PageData pd, Pagination pg) throws Exception;
-
+    List<Map<String, Object>> findListProductRecord(PageData pd, Pagination pg);
+    List<Map<String, Object>> findListProductRecordByCode(PageData pd, Pagination pg);
 
 }

@@ -547,6 +547,9 @@
             <if test="companyId != null and companyId != ''" >
                 and a.company_id=#{companyId}
             </if>
+            <if test="code != null and code != ''" >
+                and a.code=#{code}
+            </if>
             <if test="isdisable != null and isdisable != ''" >
                 and a.isdisable=#{isdisable}
             </if>
@@ -556,6 +559,13 @@
             </if>
             <if test="productIsdisable != null and productIsdisable != ''" >
                 and b.isdisable=#{productIsdisable}
+            </if>
+
+            <if test="queryText != null and queryText != ''" >
+                and (a.code LIKE CONCAT(CONCAT(#{queryText}),'%')
+                  or b.code LIKE CONCAT(CONCAT(#{queryText}),'%')
+                  or b.name LIKE CONCAT(CONCAT(#{queryText}),'%')
+                )
             </if>
         </where>
     </select>

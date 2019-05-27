@@ -43,6 +43,7 @@ public interface WarehouseProductMapper extends BaseMapper<WarehouseProduct> {
      * 创建时间：2018-10-16
      */
     List<Map<String, Object>> findWarehouseProductMapList(PageData pd);
+    List<Map<String, Object>> findWarehouseProductMapList(PageData pd, Pagination pg);
 
     /**
      * 创建人：陈刚 自动创建，禁止修改
