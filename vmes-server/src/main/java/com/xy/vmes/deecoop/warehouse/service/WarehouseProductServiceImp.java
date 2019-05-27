@@ -793,6 +793,39 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
 
         return msgBuf.toString();
     }
+    public String moveStockCountBySimple(WarehouseProduct source, WarehouseProduct target, BigDecimal count, WarehouseLoginfo loginfo) throws TableVersionException,Exception {
+        StringBuffer msgBuf = new StringBuffer();
+
+        String msgStr = this.checkMoveWarehouseProductBySimple(source, target);
+        if (msgStr != null && msgStr.trim().length() > 0) {
+            msgBuf.append(msgStr);
+        }
+        if (count == null) {
+            msgBuf.append("移库数量为空" + Common.SYS_ENDLINE_DEFAULT);
+        }
+        if (msgBuf.toString().trim().length() > 0) {
+            return msgBuf.toString().trim();
+        }
+
+        source.setCuser(loginfo.getCuser());
+        source.setCompanyId(loginfo.getCompanyId());
+
+        target.setCuser(loginfo.getCuser());
+        target.setCompanyId(loginfo.getCompanyId());
+
+        //设置库存变更日志-基本信息
+        //business_type:业务类型(in:入库 out:出库: move:移库 check:库存盘点)
+        loginfo.setBusinessType("move");
+        //count:业务数量
+        loginfo.setCount(count);
+
+        msgStr = this.modifyStockCount(source, target, "move", count, loginfo);
+        if (msgStr != null && msgStr.trim().length() > 0) {
+            msgBuf.append(msgStr);
+        }
+
+        return msgBuf.toString();
+    }
 
     /**
      * 变更库存数量唯一接口
@@ -1158,7 +1191,23 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
         if (object.getProductId() == null || object.getProductId().trim().length() == 0) {
             msgBuf.append("(源)货品id为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT);
         }
-        if (object.getCode() == null || object.getCode().trim().length() == 0) {
+        if (object.getWarehouseId() == null || object.getWarehouseId().trim().length() == 0) {
+            msgBuf.append("(源)库位id为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT);
+        }
+
+        return msgBuf.toString();
+    }
+    private String checkSourceWarehouseProductBySimple(WarehouseProduct object) {
+        StringBuffer msgBuf = new StringBuffer();
+        if (object == null) {
+            msgBuf.append("参数错误: (源)source<WarehouseProduct> 为空！");
+            return msgBuf.toString();
+        }
+
+        if (object.getProductId() == null || object.getProductId().trim().length() == 0) {
+            msgBuf.append("(源)货品id为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT);
+        }
+        if (object.getWarehouseId() == null || object.getWarehouseId().trim().length() == 0) {
             msgBuf.append("(源)库位id为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT);
         }
 
@@ -1178,7 +1227,23 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
         if (object.getProductId() == null || object.getProductId().trim().length() == 0) {
             msgBuf.append("(目标)货品id为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT);
         }
-        if (object.getCode() == null || object.getCode().trim().length() == 0) {
+        if (object.getWarehouseId() == null || object.getWarehouseId().trim().length() == 0) {
+            msgBuf.append("(目标)库位id为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT);
+        }
+
+        return msgBuf.toString();
+    }
+    private String checkTargetWarehouseProductBySimple(WarehouseProduct object) {
+        StringBuffer msgBuf = new StringBuffer();
+        if (object == null) {
+            msgBuf.append("参数错误: (目标)target<WarehouseProduct> 为空！");
+            return msgBuf.toString();
+        }
+
+        if (object.getProductId() == null || object.getProductId().trim().length() == 0) {
+            msgBuf.append("(目标)货品id为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT);
+        }
+        if (object.getWarehouseId() == null || object.getWarehouseId().trim().length() == 0) {
             msgBuf.append("(目标)库位id为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT);
         }
 
@@ -1198,6 +1263,25 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
         }
 
         String msg_target = this.checkTargetWarehouseProduct(target);
+        if (msg_target != null && msg_target.trim().length() > 0) {
+            msgBuf.append(msg_target);
+        }
+
+        return msgBuf.toString();
+    }
+    private String checkMoveWarehouseProductBySimple(WarehouseProduct source, WarehouseProduct target) {
+        StringBuffer msgBuf = new StringBuffer();
+        if (source == null || target == null) {
+            msgBuf.append("移库操作:变更源或变更目标对象(source,target) <WarehouseProduct>为空！" + Common.SYS_ENDLINE_DEFAULT);
+            return msgBuf.toString();
+        }
+
+        String msg_source = this.checkSourceWarehouseProductBySimple(source);
+        if (msg_source != null && msg_source.trim().length() > 0) {
+            msgBuf.append(msg_source);
+        }
+
+        String msg_target = this.checkTargetWarehouseProductBySimple(target);
         if (msg_target != null && msg_target.trim().length() > 0) {
             msgBuf.append(msg_target);
         }

@@ -180,6 +180,10 @@ public interface WarehouseProductService {
                           WarehouseProduct target,
                           BigDecimal count,
                           WarehouseLoginfo loginfo) throws TableVersionException,Exception;
+    String moveStockCountBySimple(WarehouseProduct source,
+                                         WarehouseProduct target,
+                                         BigDecimal count,
+                                         WarehouseLoginfo loginfo) throws TableVersionException,Exception;
 
     /**
      * 变更库存数量唯一接口
