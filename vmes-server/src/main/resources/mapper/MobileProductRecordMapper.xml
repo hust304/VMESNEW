@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+说明：仓库管理(入库,出库,盘点,移库)任务单
+创建人：房兆琦
+创建时间：2018-10-16
+ -->
+<mapper namespace="com.xy.vmes.deecoop.mobile.dao.MobileProductMapper">
+
+    <!--手机端库存查询接口-->
+    <select id="listPageProductRecords" parameterType="com.yvan.PageData" resultType="java.util.Map">
+
+    </select>
+
+
+</mapper>
