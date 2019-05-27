@@ -528,9 +528,12 @@
             b.name_en productNameEn,
             b.spec productSpec,
             b.genre productGenre,
+            genre.name productGenreName,
+
 
             b.type productType,
             produnit.unit productUnit,
+            productUnit.name productUnitName,
             b.last_unit productLastUnit,
             b.last_ratio productLastRatio,
             b.price productPrice,
@@ -543,6 +546,8 @@
         from vmes_warehouse_product a
             left join vmes_product b on a.product_id = b.id
             left join vmes_product_unit produnit on b.id = produnit.product_id and produnit.type = 1
+            left join vmes_dictionary genre on b.genre = genre.id
+            left join vmes_dictionary productUnit on produnit.unit = productUnit.id
         <where>
             <if test="companyId != null and companyId != ''" >
                 and a.company_id=#{companyId}
