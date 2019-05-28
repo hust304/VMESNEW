@@ -469,6 +469,7 @@
             round(ifnull(orderDetail.amount, 0), 2) orderDtlAmount,
 
             <!--checkCount:=(签收数量-退货数量)-->
+            round(ifnull(signDetail.arrive_count, 0), 2) orderDtlSignCount,
             round((ifnull(signDetail.arrive_count, 0) - ifnull(retreatDetail.count, 0)), 2) checkCount
 
         from vmes_purchase_order_detail orderDetail

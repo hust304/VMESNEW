@@ -180,9 +180,9 @@ public interface PurchaseOrderDetailService {
      * 按采购订单id-获取采购订单明细信息
      * <采购订单明细id, 采购订单明细信息Map>
      *     发货信息Map
-     *         orderId
-     *         orderDtlCount:采购订单明细采购数量
-     *         orderDtlAmount: 采购订单明细采购金额
+     *         orderDtlCount:     采购订单明细采购数量
+     *         orderDtlAmount:    采购订单明细采购金额
+     *         orderDtlSignCount: 采购订单明细签收数量
      *         checkCount: 验证数量(签收数量-退货数量)
      *
      * 根据采购订单id-获取(采购订单明细id,采购数量,签收数量)

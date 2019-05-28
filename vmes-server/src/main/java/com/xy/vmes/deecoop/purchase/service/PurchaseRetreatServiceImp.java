@@ -689,15 +689,22 @@ public class PurchaseRetreatServiceImp implements PurchaseRetreatService {
             BigDecimal orderDtlCount = (BigDecimal)valueMap.get("orderDtlCount");
             //checkCount: 验证数量(签收数量-退货数量)
             BigDecimal checkCount = (BigDecimal)valueMap.get("checkCount");
+            //orderDtlSignCount: 采购订单明细签收数量
+            BigDecimal orderDtlSignCount = (BigDecimal)valueMap.get("orderDtlSignCount");
 
             //明细状态(0:待提交 1:待审核 2:采购中 3:部分签收 4:已完成 -1:已取消)
-            if (checkCount.doubleValue() >= orderDtlCount.doubleValue()) {
+            if (orderDtlSignCount.doubleValue() == 0 || checkCount.doubleValue() == 0) {
+                orderDetailEdit.setState("2");
+            } else if (checkCount.doubleValue() >= orderDtlCount.doubleValue()) {
                 orderDetailEdit.setState("4");
             } else if (checkCount.doubleValue() < orderDtlCount.doubleValue()) {
                 orderDetailEdit.setState("3");
             }
+
             purchaseOrderDetailService.update(orderDetailEdit);
         }
+
+        //
 
         //修改采购订单状态
         purchaseOrderService.updateState(orderId);

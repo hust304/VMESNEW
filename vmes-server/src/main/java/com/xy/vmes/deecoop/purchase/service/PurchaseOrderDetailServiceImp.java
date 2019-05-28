@@ -549,8 +549,9 @@ public class PurchaseOrderDetailServiceImp implements PurchaseOrderDetailService
      * 按采购订单id-获取采购订单明细信息
      * <采购订单明细id, 采购订单明细信息Map>
      *     发货信息Map
-     *         orderDtlCount:采购订单明细采购数量
-     *         orderDtlAmount: 采购订单明细采购金额
+     *         orderDtlCount:     采购订单明细采购数量
+     *         orderDtlAmount:    采购订单明细采购金额
+     *         orderDtlSignCount: 采购订单明细签收数量
      *         checkCount: 验证数量(签收数量-退货数量)
      *
      * 根据采购订单id-获取(采购订单明细id,采购数量,签收数量)
@@ -590,6 +591,17 @@ public class PurchaseOrderDetailServiceImp implements PurchaseOrderDetailService
             //checkCount 验证数量(签收数量-退货数量)
             BigDecimal checkCount = (BigDecimal)mapObj.get("checkCount");
             mapValue.put("checkCount", checkCount);
+
+            //采购订单明细(签收数量) orderDtlSignCount
+            BigDecimal orderDtlSignCount = BigDecimal.valueOf(0D);
+            if (mapObj.get("orderDtlSignCount") != null) {
+                try {
+                    orderDtlSignCount = (BigDecimal)mapObj.get("orderDtlSignCount");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            mapValue.put("orderDtlSignCount", orderDtlSignCount);
 
             mapObject.put(orderDtlId, mapValue);
         }
