@@ -117,15 +117,16 @@ public interface ProductService {
 
     Product findProduct(PageData object);
     Product findProductById(String id);
-
     List<Product> findProductList(PageData object);
-
     String findIdsByProductList(List<Product> objectList);
     String findIdsByPageMapList(List<Map> mapList);
     List<Map> getDataListPage(PageData pd) throws Exception;
 
     Map<String, String> productObj2QRCodeObj(Product productObj, Map<String, String> QRCodeObj);
-
+    ProductUnit product2ProductUnit(Product product, ProductUnit productUnit,String unit);
+    ProductUnitPrice product2ProductUnitPrice(Product product, ProductUnitPrice productUnitPrice,String unit);
+    Map<String, String> queryMap2ProductMap(Map queryMap, Map<String, String> productMap);
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     void updateStockCount(Product product, BigDecimal count, String uuser) throws Exception;
 
     /**
@@ -137,10 +138,7 @@ public interface ProductService {
      * @throws Exception
      */
     void updateLockCount(String productId, Product oldProduct, BigDecimal lockCount, String uuser) throws Exception;
-
-    ProductUnit product2ProductUnit(Product product, ProductUnit productUnit,String unit);
-    ProductUnitPrice product2ProductUnitPrice(Product product, ProductUnitPrice productUnitPrice,String unit);
-
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ResultModel listPageProducts(PageData pd, Pagination pg) throws Exception;
 
     ResultModel listPageProductPropertys(PageData pd, Pagination pg)  throws Exception;

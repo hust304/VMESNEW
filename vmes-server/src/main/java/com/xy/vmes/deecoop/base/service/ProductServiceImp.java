@@ -297,6 +297,110 @@ public class ProductServiceImp implements ProductService {
         return QRCodeObj;
     }
 
+    public ProductUnit product2ProductUnit(Product product, ProductUnit productUnit,String unit) {
+        if (productUnit == null) {productUnit = new ProductUnit();}
+        if (product == null) {return productUnit;}
+
+        //货品id productId
+        productUnit.setProductId(product.getId());
+        //计价单位 unit
+        productUnit.setUnit(unit);
+        //计量转换计价单位 单位换算公式 np_formula
+        productUnit.setNpFormula("P=N");
+        //计价转换计量单位 单位换算公式 pn_formula
+        productUnit.setPnFormula("N=P");
+        productUnit.setIsdefault("1");
+        productUnit.setType("1");
+        //创建人id
+        productUnit.setCuser(product.getCuser());
+        //货品单价 productPrice
+        if (product.getPrice() != null) {
+            productUnit.setProductPrice(product.getPrice());
+        }
+
+        return productUnit;
+    }
+
+    public ProductUnitPrice product2ProductUnitPrice(Product product, ProductUnitPrice productUnitPrice,String unit) {
+        if (productUnitPrice == null) {productUnitPrice = new ProductUnitPrice();}
+        if (product == null) {return productUnitPrice;}
+
+        //货品ID productId
+        productUnitPrice.setProductId(product.getId());
+        //计价单位ID priceUnit
+        productUnitPrice.setPriceUnit(unit);
+        //货品单价 productPrice
+        productUnitPrice.setProductPrice(product.getPrice());
+        //创建用户id cuser
+        productUnitPrice.setCuser(product.getCuser());
+
+        return productUnitPrice;
+    }
+
+    public Map<String, String> queryMap2ProductMap(Map queryMap, Map<String, String> productMap) {
+        if (productMap == null) {productMap = new HashMap<String, String>();}
+        if (queryMap == null || queryMap.size() == 0) {return productMap;}
+
+        //货品id id productId
+        productMap.put("productId", (String)queryMap.get("id"));
+
+        //货品编号 code productCode
+        String code = new String();
+        if (queryMap.get("code") != null) {
+            code = queryMap.get("code").toString().trim();
+        }
+        productMap.put("productCode", code);
+
+        //货品名称 name productName
+        String name = new String();
+        if (queryMap.get("name") != null) {
+            name = queryMap.get("name").toString().trim();
+        }
+        productMap.put("productName", name);
+
+        //货品规格型号 spec productSpec
+        String spec = new String();
+        if (queryMap.get("spec") != null) {
+            spec = queryMap.get("spec").toString().trim();
+        }
+        productMap.put("productSpec", spec);
+
+        //货品属性 genreName productGenreName
+        String genreName = new String();
+        if (queryMap.get("genreName") != null) {
+            genreName = queryMap.get("genreName").toString().trim();
+        }
+        productMap.put("productGenreName", genreName);
+
+        //货品单位 unitName productUnitName
+        String unitName = new String();
+        if (queryMap.get("unitName") != null) {
+            unitName = queryMap.get("unitName").toString().trim();
+        }
+        productMap.put("productUnitName", unitName);
+
+        //库存数量 stockCount
+        String stockCount = new String("0");
+        BigDecimal stockCount_big = BigDecimal.valueOf(0D);
+        if (queryMap.get("stockCount") != null) {
+            String stockCount_str = queryMap.get("stockCount").toString().trim();
+            try {
+                stockCount_big = new BigDecimal(stockCount_str);
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+            if (stockCount_big.doubleValue() != 0) {
+                //四舍五入到2位小数
+                stockCount_big = stockCount_big.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                stockCount = stockCount_big.toString();
+            }
+        }
+        productMap.put("stockCount", stockCount);
+
+        return productMap;
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     @Override
     public void updateStockCount(Product product, BigDecimal count,String uuser) throws Exception {
         PageData pd = new PageData();
@@ -343,47 +447,7 @@ public class ProductServiceImp implements ProductService {
         this.update(product);
     }
 
-    public ProductUnit product2ProductUnit(Product product, ProductUnit productUnit,String unit) {
-        if (productUnit == null) {productUnit = new ProductUnit();}
-        if (product == null) {return productUnit;}
-
-        //货品id productId
-        productUnit.setProductId(product.getId());
-        //计价单位 unit
-        productUnit.setUnit(unit);
-        //计量转换计价单位 单位换算公式 np_formula
-        productUnit.setNpFormula("P=N");
-        //计价转换计量单位 单位换算公式 pn_formula
-        productUnit.setPnFormula("N=P");
-        productUnit.setIsdefault("1");
-        productUnit.setType("1");
-        //创建人id
-        productUnit.setCuser(product.getCuser());
-        //货品单价 productPrice
-        if (product.getPrice() != null) {
-            productUnit.setProductPrice(product.getPrice());
-        }
-
-        return productUnit;
-    }
-
-    public ProductUnitPrice product2ProductUnitPrice(Product product, ProductUnitPrice productUnitPrice,String unit) {
-        if (productUnitPrice == null) {productUnitPrice = new ProductUnitPrice();}
-        if (product == null) {return productUnitPrice;}
-
-        //货品ID productId
-        productUnitPrice.setProductId(product.getId());
-        //计价单位ID priceUnit
-        productUnitPrice.setPriceUnit(unit);
-        //货品单价 productPrice
-        productUnitPrice.setProductPrice(product.getPrice());
-        //创建用户id cuser
-        productUnitPrice.setCuser(product.getCuser());
-
-        return productUnitPrice;
-    }
-
-
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     @Override
     public ResultModel listPageProducts(PageData pd, Pagination pg) throws Exception {
         ResultModel model = new ResultModel();

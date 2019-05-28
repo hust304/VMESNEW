@@ -154,6 +154,9 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
     public List<Map> getDataListPageDispatch(PageData pd, Pagination pg) throws Exception{
         return warehouseProductMapper.getDataListPageDispatch(pd, pg);
     }
+    public List<Map> getDataListPageDispatch(PageData pd) throws Exception{
+        return warehouseProductMapper.getDataListPageDispatch(pd);
+    }
 
     /**
     * 创建人：陈刚 自动创建，禁止修改
@@ -287,6 +290,71 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
         return warehouseProductMapper.findWarehouseProductByWarehouse(pageData);
     }
 
+    public List<Map<String, String>> findWarehouseProductMapList(String companyId, String productId, String code) {
+        List<Map<String, String>> warehouseList = new ArrayList<Map<String, String>>();
+
+        PageData findMap = new PageData();
+        if (companyId != null && companyId.trim().length() > 0) {
+            findMap.put("currentCompanyId", companyId);
+        }
+        findMap.put("productId", productId);
+        findMap.put("code", code);
+
+        List<Map> mapList = null;
+        try {
+            mapList = warehouseProductMapper.getDataListPageDispatch(findMap);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        if (mapList == null || mapList.size() == 0) {return warehouseList;}
+
+        for (Map<String, Object> mapObject : mapList) {
+            Map<String, String> mapObj = new HashMap<String, String>();
+
+            //货位货品id id warehouseProductId
+            String id = new String();
+            if (mapObject.get("id") != null) {
+                id = mapObject.get("id").toString().trim();
+            }
+            mapObj.put("warehouseProductId", id);
+
+            //货位id warehouseId
+            String warehouseId = new String();
+            if (mapObject.get("warehouseId") != null) {
+                warehouseId = mapObject.get("warehouseId").toString().trim();
+            }
+            mapObj.put("warehouseId", warehouseId);
+
+            //仓库路径名称 name warehousePathName
+            String name = new String();
+            if (mapObject.get("name") != null) {
+                name = mapObject.get("name").toString().trim();
+            }
+            mapObj.put("warehousePathName", name);
+
+            //库存数量 stockCount warehouseStockCount
+            String warehouseStockCount = new String("0");
+            BigDecimal stockCount_big = BigDecimal.valueOf(0D);
+            if (mapObject.get("stockCount") != null) {
+                String stockCount_str = mapObject.get("stockCount").toString().trim();
+                try {
+                    stockCount_big = new BigDecimal(stockCount_str);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+                if (stockCount_big.doubleValue() != 0) {
+                    //四舍五入到2位小数
+                    stockCount_big = stockCount_big.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                    warehouseStockCount = stockCount_big.toString();
+                }
+            }
+            mapObj.put("warehouseStockCount", warehouseStockCount);
+
+            warehouseList.add(mapObj);
+        }
+
+        return warehouseList;
+    }
     ///////////////////////////////////////////////////////////////////////////////////////////
 
     /**

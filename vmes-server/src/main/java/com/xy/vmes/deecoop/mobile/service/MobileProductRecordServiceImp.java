@@ -1,7 +1,7 @@
 package com.xy.vmes.deecoop.mobile.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
-import com.xy.vmes.deecoop.warehouse.dao.WarehouseProductMapper;
+import com.xy.vmes.deecoop.warehouse.dao.WarehouseProductByCollectMapper;
 import com.xy.vmes.service.MobileProductRecordService;
 import com.yvan.PageData;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,13 +20,13 @@ import java.util.Map;
 public class MobileProductRecordServiceImp implements MobileProductRecordService {
 
     @Autowired
-    private WarehouseProductMapper warehouseProductMapper;
+    private WarehouseProductByCollectMapper warehouseProductByCollectMapper;
 
     public List<Map<String, Object>> findListProductRecord(PageData pd, Pagination pg) {
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
 
         try {
-            list = warehouseProductMapper.findWarehouseProductMapList(pd, pg);
+            list = warehouseProductByCollectMapper.findProductMapList(pd, pg);
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -38,7 +38,7 @@ public class MobileProductRecordServiceImp implements MobileProductRecordService
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
 
         try {
-            list = warehouseProductMapper.findWarehouseProductMapList(pd, pg);
+            list = warehouseProductByCollectMapper.findProductMapList(pd, pg);
         }catch (Exception e){
             e.printStackTrace();
         }

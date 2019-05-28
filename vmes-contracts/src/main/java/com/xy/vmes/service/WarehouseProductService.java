@@ -77,7 +77,7 @@ public interface WarehouseProductService {
     List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception;
 
     List<Map> getDataListPageDispatch(PageData pd,Pagination pg) throws Exception;
-
+    List<Map> getDataListPageDispatch(PageData pd) throws Exception;
     /**
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2018-10-16
@@ -103,6 +103,7 @@ public interface WarehouseProductService {
     String warehouseProduct2QRCode(WarehouseProduct warehouseProduct);
 
     List<Map<String, Object>> findWarehouseProductByWarehouse(PageData pageData);
+    List<Map<String, String>> findWarehouseProductMapList(String companyId, String productId, String code);
     ///////////////////////////////////////////////////////////////////////////////////////////
 
     /**
