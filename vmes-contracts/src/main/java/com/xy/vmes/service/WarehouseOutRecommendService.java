@@ -117,7 +117,9 @@ public interface WarehouseOutRecommendService {
 
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+    List<Map<String, String>> findWarehouseOutMapList(String companyId, String productId, String code);
 
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ResultModel listPageWarehouseOutRecommends(PageData pd, Pagination pg) throws Exception;
 
     void exportExcelWarehouseOutRecommends(PageData pd, Pagination pg) throws Exception;

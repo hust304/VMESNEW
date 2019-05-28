@@ -2,6 +2,7 @@ package com.xy.vmes.deecoop.warehouse.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
+import com.xy.vmes.common.util.Common;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.warehouse.dao.WarehouseOutRecommendMapper;
 import com.xy.vmes.entity.Column;
@@ -18,6 +19,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 import com.yvan.Conv;
@@ -195,7 +197,66 @@ public class WarehouseOutRecommendServiceImp implements WarehouseOutRecommendSer
     }
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+    public List<Map<String, String>> findWarehouseOutMapList(String companyId, String productId, String code) {
+        List<Map<String, String>> outList = new ArrayList<Map<String, String>>();
 
+        PageData findMap = new PageData();
+        if (companyId != null && companyId.trim().length() > 0) {
+            findMap.put("companyId", companyId);
+        }
+        findMap.put("productId", productId);
+        findMap.put("code", code);
+
+        List<Map<String, Object>> mapList = null;
+        try {
+            mapList = warehouseOutRecommendMapper.findWarehouseOutMapList(findMap);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        if (mapList == null || mapList.size() == 0) {return outList;}
+
+        for (Map<String, Object> mapObject : mapList) {
+            Map<String, String> mapObj = new HashMap<String, String>();
+
+            //出库单id parentId
+            String parentId = new String();
+            if (mapObject.get("parentId") != null) {
+                parentId = mapObject.get("parentId").toString().trim();
+            }
+            mapObj.put("parentId", parentId);
+
+
+            //出库单编号 parentCode
+            String parentCode = new String();
+            if (mapObject.get("parentCode") != null) {
+                parentCode = mapObject.get("parentCode").toString().trim();
+            }
+            mapObj.put("parentCode", parentCode);
+
+            //出库数量 detailCount
+            String detailCount = new String("0");
+            BigDecimal detailCount_big = BigDecimal.valueOf(0D);
+            if (mapObject.get("detailCount") != null) {
+                String detailCount_str = mapObject.get("detailCount").toString().trim();
+                try {
+                    detailCount_big = new BigDecimal(detailCount_str);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+                if (detailCount_big.doubleValue() != 0) {
+                    //四舍五入到2位小数
+                    detailCount_big = detailCount_big.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                    detailCount = detailCount_big.toString();
+                }
+            }
+            mapObj.put("detailCount", detailCount);
+
+            outList.add(mapObj);
+        }
+
+        return outList;
+    }
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     @Override
     public ResultModel listPageWarehouseOutRecommends(PageData pd, Pagination pg) throws Exception {
         ResultModel model = new ResultModel();

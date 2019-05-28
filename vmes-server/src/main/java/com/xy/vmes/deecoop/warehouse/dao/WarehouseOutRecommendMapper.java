@@ -81,6 +81,7 @@ public interface WarehouseOutRecommendMapper extends BaseMapper<WarehouseOutReco
     void updateToDisableByIds(String[] ids);
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+    List<Map<String, Object>> findWarehouseOutMapList(PageData pd);
 }
 
 

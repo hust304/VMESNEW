@@ -281,6 +281,41 @@
         </if>
     </select>
 
+    <select id="findWarehouseOutMapList" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+            recommend.detail_id,
+            recommend.warehouse_product_id,
+
+            detail.parent_id parentId,
+            parent.code parentCode,
+            round(ifnull(detail.count,0),2) detailCount
+        from vmes_warehouse_out_recommend recommend
+        left join (
+            select id,parent_id,count
+            from vmes_warehouse_out_detail
+            where parent_id in (
+                select id from vmes_warehouse_out
+                <where>
+                    <if test="companyId != null and companyId != ''" >
+                        and company_id = #{companyId}
+                    </if>
+                </where>
+            )
+        ) detail on recommend.detail_id = detail.id
+        left join vmes_warehouse_out parent on detail.parent_id = parent.id
+        left join vmes_warehouse_product warehouseProduct on recommend.warehouse_product_id = warehouseProduct.id
+        <where>
+            <if test="productId != null and productId != ''" >
+                and warehouseProduct.product_id = #{productId}
+            </if>
+            <if test="code != null and code != ''" >
+                and warehouseProduct.code = #{code}
+            </if>
+        </where>
+        <if test="orderStr != null and orderStr != ''" >
+            order by ${orderStr}
+        </if>
+    </select>
 
 
 
