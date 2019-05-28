@@ -45,6 +45,8 @@ public interface WarehouseInDetailMapper extends BaseMapper<WarehouseInDetail> {
     List<Map> getDataListPage(PageData pd, Pagination pg);
     List<Map> getDataListPage(PageData pd);
 
+    List<Map<String, Object>> findWarehouseInMapList(PageData pd);
+
 }
 
 

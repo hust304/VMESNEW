@@ -87,7 +87,7 @@ public interface WarehouseInDetailService {
     List<WarehouseInDetailEntity> mapList2DetailEntityList(List<Map<String, String>> mapList, List<WarehouseInDetailEntity> objectList);
     //WarehouseInDetail warehouseInDtl2QRCodeObj(WarehouseInDetail warehouseInDtl, WarehouseInDetail QRCodeObj);
     String warehouseInDtl2QRCode(WarehouseInDetail warehouseInDtl);
-
+    List<Map<String, String>> findWarehouseInMapList(String companyId, String productId, String code);
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     String checkDispatcheDetailList(List<WarehouseInDetailEntity> objectList);
 

@@ -276,6 +276,39 @@
         </if>
     </select>
 
+    <select id="findWarehouseInMapList" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+            detail.parent_id parentId,
+            parent.code parentCode,
+            round(ifnull(detail.count,0),2) detailCount
+
+        from vmes_warehouse_in_detail detail
+            left join (
+                select id,code
+                from vmes_warehouse_in
+                <where>
+                    <if test="companyId != null and companyId != ''" >
+                        and company_id = #{companyId}
+                    </if>
+                </where>
+            ) parent on detail.parent_id = parent.id
+        <where>
+            <if test="parentId != null and parentId != ''" >
+                and detail.parent_id = #{parentId}
+            </if>
+            <if test="code != null and code != ''" >
+                and detail.code = #{code}
+            </if>
+            <if test="productId != null and productId != ''" >
+                and detail.product_id = #{productId}
+            </if>
+        </where>
+        <if test="orderStr != null and orderStr != ''" >
+            order by ${orderStr}
+        </if>
+
+    </select>
+
 
 
 </mapper>

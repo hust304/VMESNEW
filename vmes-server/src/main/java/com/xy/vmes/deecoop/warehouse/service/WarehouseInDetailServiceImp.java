@@ -2,6 +2,7 @@ package com.xy.vmes.deecoop.warehouse.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
+import com.xy.vmes.common.util.Common;
 import com.xy.vmes.deecoop.warehouse.dao.WarehouseInDetailMapper;
 import com.xy.vmes.entity.*;
 import com.xy.vmes.service.*;
@@ -257,6 +258,66 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
         //System.out.println("QRCodeJson:" + QRCodeJson);
 
         return QRCodeJson;
+    }
+
+    public List<Map<String, String>> findWarehouseInMapList(String companyId, String productId, String code) {
+        List<Map<String, String>> inList = new ArrayList<Map<String, String>>();
+
+        PageData findMap = new PageData();
+        if (companyId != null && companyId.trim().length() > 0) {
+            findMap.put("companyId", companyId);
+        }
+        findMap.put("productId", productId);
+        findMap.put("code", code);
+
+        List<Map<String, Object>> mapList = null;
+        try {
+            mapList = warehouseInDetailMapper.findWarehouseInMapList(findMap);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        if (mapList == null || mapList.size() == 0) {return inList;}
+
+        for (Map<String, Object> mapObject : mapList) {
+            Map<String, String> mapObj = new HashMap<String, String>();
+
+            //入库单id parentId
+            String parentId = new String();
+            if (mapObject.get("parentId") != null) {
+                parentId = mapObject.get("parentId").toString().trim();
+            }
+            mapObj.put("parentId", parentId);
+
+
+            //入库单编号 parentCode
+            String parentCode = new String();
+            if (mapObject.get("parentCode") != null) {
+                parentCode = mapObject.get("parentCode").toString().trim();
+            }
+            mapObj.put("parentCode", parentCode);
+
+            //入库数量 detailCount
+            String detailCount = new String("0");
+            BigDecimal detailCount_big = BigDecimal.valueOf(0D);
+            if (mapObject.get("detailCount") != null) {
+                String detailCount_str = mapObject.get("detailCount").toString().trim();
+                try {
+                    detailCount_big = new BigDecimal(detailCount_str);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+                if (detailCount_big.doubleValue() != 0) {
+                    //四舍五入到2位小数
+                    detailCount_big = detailCount_big.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                    detailCount = detailCount_big.toString();
+                }
+            }
+            mapObj.put("detailCount", detailCount);
+
+            inList.add(mapObj);
+        }
+
+        return inList;
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
