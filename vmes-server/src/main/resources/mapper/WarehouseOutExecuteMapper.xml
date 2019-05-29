@@ -279,6 +279,7 @@
             execut.remark remark,
             round(execut.count,2) actualCount,
             execut.cdate endDate,
+            unix_timestamp(execut.cdate) * 1000 executeDateLong,
 
             product.company_id companyId,
             product.warehouse_id warehouseId,

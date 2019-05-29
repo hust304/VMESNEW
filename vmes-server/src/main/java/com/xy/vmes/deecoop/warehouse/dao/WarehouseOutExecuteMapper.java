@@ -72,6 +72,7 @@ public interface WarehouseOutExecuteMapper extends BaseMapper<WarehouseOutExecut
     * 创建时间：2018-11-01
     */
     List<Map> getDataListPage(PageData pd,Pagination pg);
+    List<Map> getDataListPage(PageData pd);
 
 
     /**

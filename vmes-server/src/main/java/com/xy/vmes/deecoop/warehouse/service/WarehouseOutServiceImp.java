@@ -192,7 +192,9 @@ public class WarehouseOutServiceImp implements WarehouseOutService {
     public List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception{
         return warehouseOutMapper.getDataListPage(pd,pg);
     }
-
+    public List<Map> getDataListPage(PageData pd) throws Exception {
+        return warehouseOutMapper.getDataListPage(pd);
+    }
     /**
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-10-22

@@ -109,7 +109,7 @@ public interface WarehouseOutExecuteService {
     * 创建时间：2018-11-01
     */
     List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception;
-
+    List<Map> getDataListPage(PageData pd) throws Exception;
     /**
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-11-01
@@ -119,7 +119,8 @@ public interface WarehouseOutExecuteService {
 
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
-
+    Long findMaxExecuteDateByMapList(List<Map> mapList);
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ResultModel addWarehouseOutExecute(String detailId, String warehouseId, String warehouseProductId, String currentUserId,String currentCompanyId, BigDecimal count) throws Exception;
 
     ResultModel updateWarehouseOutState(String detailId) throws Exception;

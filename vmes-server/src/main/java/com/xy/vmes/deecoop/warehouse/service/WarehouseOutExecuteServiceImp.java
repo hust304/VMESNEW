@@ -202,6 +202,9 @@ public class WarehouseOutExecuteServiceImp implements WarehouseOutExecuteService
     public List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception{
         return warehouseOutExecuteMapper.getDataListPage(pd,pg);
     }
+    public List<Map> getDataListPage(PageData pd) throws Exception{
+        return warehouseOutExecuteMapper.getDataListPage(pd);
+    }
 
     /**
     * 创建人：刘威 自动创建，禁止修改
@@ -215,7 +218,24 @@ public class WarehouseOutExecuteServiceImp implements WarehouseOutExecuteService
 
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+    public Long findMaxExecuteDateByMapList(List<Map> mapList) {
+        if (mapList == null || mapList.size() == 0) {return Long.valueOf(0L);}
 
+        long max = 0L;
+        for (Map mapObject : mapList) {
+            //出库执行日期 executeDateLong
+            Long executeDateLong = Long.valueOf(0L);
+            if (mapObject.get("executeDateLong") != null) {
+                executeDateLong = (Long)mapObject.get("executeDateLong");
+            }
+            if (max < executeDateLong.longValue()) {
+                max = executeDateLong.longValue();
+            }
+        }
+
+        return Long.valueOf(max);
+    }
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     @Override
     public ResultModel addWarehouseOutExecute(String detailId, String warehouseId, String warehouseProductId, String currentUserId,String currentCompanyId, BigDecimal count) throws Exception {
         ResultModel model = new ResultModel();
