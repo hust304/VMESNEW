@@ -43,10 +43,18 @@ public class ComonFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 
+
+
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
+
+        httpResponse.setHeader("Access-Control-Allow-Origin", "*");
+        httpResponse.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");
+        httpResponse.setHeader("Access-Control-Max-Age", "3600");
+        httpResponse.setHeader("Access-Control-Allow-Headers", "x-requested-with");
+        System.out.println("*********************************过滤器被使用**************************");
 
         logger.info("************getRequestURI:"+ httpRequest.getRequestURI());
         logger.info("************getHeader:"+ httpRequest.getHeader("referer"));
@@ -55,7 +63,7 @@ public class ComonFilter implements Filter {
         ModifyParametersWrapper mParametersWrapper = new ModifyParametersWrapper(httpRequest);
 
         //请求地址中含有字符串“login”和“error”的不参与sessionId校验
-        if(uri.indexOf("login".toLowerCase()) < 0 && uri.indexOf("error".toLowerCase()) < 0 && uri.indexOf("file".toLowerCase())<0 && uri.indexOf("importExcel".toLowerCase())<0
+        if(uri.indexOf("login".toLowerCase()) < 0 && uri.indexOf("home".toLowerCase()) < 0 && uri.indexOf("error".toLowerCase()) < 0 && uri.indexOf("file".toLowerCase())<0 && uri.indexOf("importExcel".toLowerCase())<0
                 && uri.indexOf(".js".toLowerCase())<0 && uri.indexOf(".png".toLowerCase())<0 && uri.indexOf(".ttf".toLowerCase())<0 && uri.indexOf(".html".toLowerCase())<0
                 && uri.indexOf(".css".toLowerCase())<0 && uri.indexOf("test".toLowerCase())<0 && uri.indexOf("mobile".toLowerCase())<0){
             if(uri.equals("/")){
