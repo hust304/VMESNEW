@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.service.*;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
+import com.yvan.YvanUtil;
 import com.yvan.springmvc.ResultModel;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -32,6 +33,8 @@ public class MobileProductRecordController {
     private WarehouseInDetailService warehouseInDetailService;
     @Autowired
     private WarehouseOutRecommendService warehouseOutRecommendService;
+    @Autowired
+    private WarehouseMoveDetailService warehouseMoveDetailService;
 
     @PostMapping("/mobile/mobileProductRecord/findListProductRecord")
     public ResultModel findListProductRecord() throws Exception {
@@ -106,6 +109,7 @@ public class MobileProductRecordController {
      *     warehouse: [{warehouseProductId:货位货品id, warehouseId:货位id, warehouseStockCount:库存数量, warehousePathName:仓库路径名称},]
      *     in:  [{parentId:入库单id,parentCode:入库单编号,detailCount:入库数量},]
      *     out: [{parentId:入库单id,parentCode:入库单编号,detailCount:入库数量},]
+     *     move: [{parentId:入库单id,parentCode:入库单编号,detailCount:入库数量},]
      *
      * @return
      * @throws Exception
@@ -170,6 +174,18 @@ public class MobileProductRecordController {
         //4. 根据(企业id, 货品id, 批次号) 查询  vmes_warehouse_out_recommend
         List<Map<String, String>> outList = warehouseOutRecommendService.findWarehouseOutMapList(companyId, productId, code);
         prodRecordMap.put("out", outList);
+
+        //5. 根据(企业id, 货品id, 批次号) 查询  vmes_warehouse_move_detail
+        List<Map<String, String>> moveList = warehouseMoveDetailService.findWarehouseMoveMapList(companyId, productId, code);
+        prodRecordMap.put("move", moveList);
+
+        String productRecordJsonStr = new String();
+        if (productMap.size() > 0) {
+            productRecordJsonStr = YvanUtil.toJson(prodRecordMap);
+        }
+        System.out.println("productRecordJsonStr:" + productRecordJsonStr);
+
+        model.put("productRecord", prodRecordMap);
 
         Long endTime = System.currentTimeMillis();
         logger.info("################/mobile/mobileProductRecord/findProductRecordByProduct 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");

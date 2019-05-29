@@ -119,24 +119,18 @@ public interface WarehouseMoveDetailService {
     void updateToDisableByIds(String[] ids)throws Exception;
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
-
     List<WarehouseMoveDetail> mapList2DetailList(List<Map<String, String>> mapList, List<WarehouseMoveDetail> objectList);
     List<WarehouseMoveDetailEntity> mapList2DetailEntityList(List<Map<String, String>> mapList, List<WarehouseMoveDetailEntity> objectList);
-
-    void addWarehouseMoveDetail(WarehouseMove parentObj, List<WarehouseMoveDetail> objectList) throws Exception;
-
-    void addWarehouseMoveDetail(WarehouseMove parentObj, WarehouseMoveDetail detail) throws Exception;
-
-
     List<WarehouseMoveDetail> findWarehouseMoveDetailListByParentId(String parentId) throws Exception;
-
+    WarehouseMoveDetail findWarehouseMoveDetailById(String detailId) throws Exception;
     boolean isAllExistStateByDetailList(String state, String ignoreState, List<WarehouseMoveDetail> detailList) throws Exception;
-
+    List<Map<String, String>> findWarehouseMoveMapList(String companyId, String productId, String code);
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    void addWarehouseMoveDetail(WarehouseMove parentObj, List<WarehouseMoveDetail> objectList) throws Exception;
+    void addWarehouseMoveDetail(WarehouseMove parentObj, WarehouseMoveDetail detail) throws Exception;
     void updateStateByDetail(PageData mapDetail) throws Exception;
 
-    WarehouseMoveDetail findWarehouseMoveDetailById(String detailId) throws Exception;
-
-
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ResultModel rebackWarehouseMoveDetail(PageData pageData) throws Exception;
 
     ResultModel deleteWarehouseMoveDetail(PageData pageData) throws Exception;

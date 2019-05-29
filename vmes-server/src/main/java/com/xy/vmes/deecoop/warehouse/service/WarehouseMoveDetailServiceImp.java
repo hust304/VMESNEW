@@ -250,27 +250,6 @@ public class WarehouseMoveDetailServiceImp implements WarehouseMoveDetailService
         }
         return objectList;
     }
-
-    @Override
-    public void addWarehouseMoveDetail(WarehouseMove parentObj, List<WarehouseMoveDetail> objectList) throws Exception{
-        if (parentObj == null) {return;}
-        if (objectList == null || objectList.size() == 0) {return;}
-
-        for (WarehouseMoveDetail detail : objectList) {
-            detail.setParentId(parentObj.getId());
-            detail.setCuser(parentObj.getCuser());
-            this.save(detail);
-        }
-    }
-
-    @Override
-    public void addWarehouseMoveDetail(WarehouseMove parentObj, WarehouseMoveDetail detail) throws Exception{
-        if (parentObj == null) {return;}
-        detail.setParentId(parentObj.getId());
-        detail.setCuser(parentObj.getCuser());
-        this.save(detail);
-    }
-
     @Override
     public List<WarehouseMoveDetail> findWarehouseMoveDetailListByParentId(String parentId) throws Exception {
         if (parentId == null || parentId.trim().length() == 0) {return null;}
@@ -290,6 +269,16 @@ public class WarehouseMoveDetailServiceImp implements WarehouseMoveDetailService
             e.printStackTrace();
         }
         return objectList;
+    }
+
+    public WarehouseMoveDetail findWarehouseMoveDetailById(String id) {
+        if (id == null || id.trim().length() == 0) {return null;}
+
+        PageData findMap = new PageData();
+        findMap.put("id", id);
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+
+        return this.findWarehouseMoveDetail(findMap);
     }
 
     /**
@@ -323,20 +312,92 @@ public class WarehouseMoveDetailServiceImp implements WarehouseMoveDetailService
         return true;
     }
 
-    public WarehouseMoveDetail findWarehouseMoveDetailById(String id) {
-        if (id == null || id.trim().length() == 0) {return null;}
+    public List<Map<String, String>> findWarehouseMoveMapList(String companyId, String productId, String code) {
+        List<Map<String, String>> moveList = new ArrayList<Map<String, String>>();
 
         PageData findMap = new PageData();
-        findMap.put("id", id);
-        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+        if (companyId != null && companyId.trim().length() > 0) {
+            findMap.put("companyId", companyId);
+        }
+        findMap.put("productId", productId);
+        findMap.put("code", code);
 
-        return this.findWarehouseMoveDetail(findMap);
+        List<Map<String, Object>> mapList = null;
+        try {
+            mapList = warehouseMoveDetailMapper.findWarehouseMoveMapList(findMap);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        if (mapList == null || mapList.size() == 0) {return moveList;}
+
+        for (Map<String, Object> mapObject : mapList) {
+            Map<String, String> mapObj = new HashMap<String, String>();
+
+            //移库单id parentId
+            String parentId = new String();
+            if (mapObject.get("parentId") != null) {
+                parentId = mapObject.get("parentId").toString().trim();
+            }
+            mapObj.put("parentId", parentId);
+
+
+            //移库单编号 parentCode
+            String parentCode = new String();
+            if (mapObject.get("parentCode") != null) {
+                parentCode = mapObject.get("parentCode").toString().trim();
+            }
+            mapObj.put("parentCode", parentCode);
+
+            //移库数量 detailCount
+            String detailCount = new String("0");
+            BigDecimal detailCount_big = BigDecimal.valueOf(0D);
+            if (mapObject.get("detailCount") != null) {
+                String detailCount_str = mapObject.get("detailCount").toString().trim();
+                try {
+                    detailCount_big = new BigDecimal(detailCount_str);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+                if (detailCount_big.doubleValue() != 0) {
+                    //四舍五入到2位小数
+                    detailCount_big = detailCount_big.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                    detailCount = detailCount_big.toString();
+                }
+            }
+            mapObj.put("detailCount", detailCount);
+
+            moveList.add(mapObj);
+        }
+
+        return moveList;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    @Override
+    public void addWarehouseMoveDetail(WarehouseMove parentObj, List<WarehouseMoveDetail> objectList) throws Exception{
+        if (parentObj == null) {return;}
+        if (objectList == null || objectList.size() == 0) {return;}
+
+        for (WarehouseMoveDetail detail : objectList) {
+            detail.setParentId(parentObj.getId());
+            detail.setCuser(parentObj.getCuser());
+            this.save(detail);
+        }
+    }
+
+    @Override
+    public void addWarehouseMoveDetail(WarehouseMove parentObj, WarehouseMoveDetail detail) throws Exception{
+        if (parentObj == null) {return;}
+        detail.setParentId(parentObj.getId());
+        detail.setCuser(parentObj.getCuser());
+        this.save(detail);
     }
 
     public void updateStateByDetail(PageData pd) throws Exception{
         warehouseMoveDetailMapper.updateStateByDetail(pd);
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     @Override
     public ResultModel rebackWarehouseMoveDetail(PageData pageData) throws Exception {
         ResultModel model = new ResultModel();
@@ -352,7 +413,7 @@ public class WarehouseMoveDetailServiceImp implements WarehouseMoveDetailService
         columnMap.put("isdisable","1");
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-        //取消出库执行人并记录退单原因
+        //取消移库执行人并记录退单原因
         List<WarehouseMoveExecutor> warehouseMoveExecutorList = warehouseMoveExecutorService.selectByColumnMap(columnMap);
         if(warehouseMoveExecutorList!=null&&warehouseMoveExecutorList.size()>0){
             for(int i=0;i<warehouseMoveExecutorList.size();i++){
@@ -366,7 +427,7 @@ public class WarehouseMoveDetailServiceImp implements WarehouseMoveDetailService
                 warehouseMoveExecutorService.update(warehouseMoveExecutor);
             }
         }
-        //取消出库记录并记录退单原因
+        //取消移库记录并记录退单原因
         List<WarehouseMoveExecute> warehouseMoveExecuteList = warehouseMoveExecuteService.selectByColumnMap(columnMap);
         if(warehouseMoveExecuteList!=null&&warehouseMoveExecuteList.size()>0){
             for(int i=0;i<warehouseMoveExecuteList.size();i++){
@@ -378,9 +439,9 @@ public class WarehouseMoveDetailServiceImp implements WarehouseMoveDetailService
                     warehouseMoveExecute.setRemark(warehouseMoveExecute.getRemark()+"  退单原因:"+rebackBill+" 操作时间："+ dateFormat.format(new Date()));
                 }
                 warehouseMoveExecuteService.update(warehouseMoveExecute);
-                //取消出库执行
+                //取消移库执行
                 try {
-                    //出库操作
+                    //移库操作
                     WarehouseProduct outObject = warehouseProductService.selectById(warehouseMoveExecute.getWarehouseProductId());
                     WarehouseProduct inObject = warehouseProductService.selectById(warehouseMoveExecute.getNewWarehouseProductId());
 
@@ -426,7 +487,7 @@ public class WarehouseMoveDetailServiceImp implements WarehouseMoveDetailService
 //        columnMap.put("detail_id",detailId);
 //        warehouseMoveRecommendService.deleteByColumnMap(columnMap);
 
-        //更新出库单及出库明细状态
+        //更新移库单及移库明细状态
         WarehouseMoveDetail detail = this.selectById(detailId);
 
         columnMap = new HashMap();
