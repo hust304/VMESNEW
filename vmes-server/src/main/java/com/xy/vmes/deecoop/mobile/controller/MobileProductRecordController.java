@@ -1,9 +1,7 @@
 package com.xy.vmes.deecoop.mobile.controller;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
-import com.xy.vmes.service.MobileProductRecordService;
-import com.xy.vmes.service.ProductService;
-import com.xy.vmes.service.WarehouseProductService;
+import com.xy.vmes.service.*;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
@@ -30,6 +28,10 @@ public class MobileProductRecordController {
     private ProductService productService;
     @Autowired
     private WarehouseProductService warehouseProductService;
+    @Autowired
+    private WarehouseInDetailService warehouseInDetailService;
+    @Autowired
+    private WarehouseOutRecommendService warehouseOutRecommendService;
 
     @PostMapping("/mobile/mobileProductRecord/findListProductRecord")
     public ResultModel findListProductRecord() throws Exception {
@@ -102,6 +104,9 @@ public class MobileProductRecordController {
      * 获取货品履历 prodRecordMap<String, Object>
      *     product: {code:批次号,productId:货品id, productCode:货品编号,productName:货品名称,productSpec:货品规格型号,productGenreName:货品属性,productUnitName:货品单位,stockCount:库存数量}
      *     warehouse: [{warehouseProductId:货位货品id, warehouseId:货位id, warehouseStockCount:库存数量, warehousePathName:仓库路径名称},]
+     *     in:  [{parentId:入库单id,parentCode:入库单编号,detailCount:入库数量},]
+     *     out: [{parentId:入库单id,parentCode:入库单编号,detailCount:入库数量},]
+     *
      * @return
      * @throws Exception
      */
@@ -154,13 +159,17 @@ public class MobileProductRecordController {
         }
         prodRecordMap.put("product", productMap);
 
-        //2. 根据(货品id, 批次号) 查询 vmes_warehouse_product
+        //2. 根据(企业id, 货品id, 批次号) 查询 vmes_warehouse_product
         List<Map<String, String>> warehouseList = warehouseProductService.findWarehouseProductMapList(companyId, productId, code);
         prodRecordMap.put("warehouse", warehouseList);
 
+        //3. 根据(企业id, 货品id, 批次号) 查询  vmes_warehouse_in_detail
+        List<Map<String, String>> inList = warehouseInDetailService.findWarehouseInMapList(companyId, productId, code);
+        prodRecordMap.put("in", inList);
 
-
-
+        //4. 根据(企业id, 货品id, 批次号) 查询  vmes_warehouse_out_recommend
+        List<Map<String, String>> outList = warehouseOutRecommendService.findWarehouseOutMapList(companyId, productId, code);
+        prodRecordMap.put("out", outList);
 
         Long endTime = System.currentTimeMillis();
         logger.info("################/mobile/mobileProductRecord/findProductRecordByProduct 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
