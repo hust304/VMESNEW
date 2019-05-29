@@ -4,12 +4,12 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.service.*;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
-import com.yvan.YvanUtil;
 import com.yvan.springmvc.ResultModel;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -37,8 +37,9 @@ public class MobileProductRecordController {
     private WarehouseMoveDetailService warehouseMoveDetailService;
 
     @PostMapping("/mobile/mobileProductRecord/findListProductRecord")
+    //@GetMapping("/mobile/mobileProductRecord/findListProductRecord")
     public ResultModel findListProductRecord() throws Exception {
-        logger.info("################/mobile/mobileProductRecord/listPageProductRecords 执行开始 ################# ");
+        logger.info("################/mobile/mobileProductRecord/findListProductRecord 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
 
@@ -66,6 +67,7 @@ public class MobileProductRecordController {
     }
 
     @PostMapping("/mobile/mobileProductRecord/findListProductRecordByCode")
+    //@GetMapping("/mobile/mobileProductRecord/findListProductRecordByCode")
     public ResultModel findListProductRecordByCode() throws Exception {
         logger.info("################/mobile/mobileProductRecord/findListProductRecordByCode 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -117,6 +119,7 @@ public class MobileProductRecordController {
      * @throws Exception
      */
     @PostMapping("/mobile/mobileProductRecord/findProductRecordByProduct")
+    //@GetMapping("/mobile/mobileProductRecord/findProductRecordByProduct")
     public ResultModel findProductRecordByProduct() throws Exception {
         logger.info("################/mobile/mobileProductRecord/findProductRecordByProduct 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -180,14 +183,13 @@ public class MobileProductRecordController {
         //5. 根据(企业id, 货品id, 批次号) 查询  vmes_warehouse_move_detail
         List<Map<String, String>> moveList = warehouseMoveDetailService.findWarehouseMoveMapList(companyId, productId, code);
         prodRecordMap.put("move", moveList);
-
-        String productRecordJsonStr = new String();
-        if (productMap.size() > 0) {
-            productRecordJsonStr = YvanUtil.toJson(prodRecordMap);
-        }
-        System.out.println("productRecordJsonStr:" + productRecordJsonStr);
-
         model.put("productRecord", prodRecordMap);
+
+//        String productRecordJsonStr = new String();
+//        if (productMap.size() > 0) {
+//            productRecordJsonStr = YvanUtil.toJson(prodRecordMap);
+//        }
+//        System.out.println("productRecordJsonStr:" + productRecordJsonStr);
 
         Long endTime = System.currentTimeMillis();
         logger.info("################/mobile/mobileProductRecord/findProductRecordByProduct 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");

@@ -2,11 +2,8 @@ package com.xy.vmes.deecoop.mobile.controller;
 
 import com.xy.vmes.common.util.Common;
 import com.xy.vmes.common.util.DateFormat;
-import com.xy.vmes.deecoop.warehouse.dao.WarehouseInExecuteMapper;
 import com.xy.vmes.entity.*;
-import com.xy.vmes.exception.TableVersionException;
 import com.xy.vmes.service.*;
-import com.yvan.Conv;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.YvanUtil;
@@ -21,8 +18,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
-import java.text.MessageFormat;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 @RestController
@@ -160,13 +155,14 @@ public class MobileWarehouseInController {
      *     product: {code:批次号,productId:货品id, productCode:货品编号,productName:货品名称,productSpec:货品规格型号,productGenreName:货品属性,productUnitName:货品单位,
      *         typeName:入库类型,deptName:来源单位,count:入库数量,executeDate:完成时间
      *     }
-     *     inExecute: [{executeCount:入库数量, warehousePathName:仓库路径, executeUserName:执行人姓名},]
+     *     inExecute: [{warehousePathName:仓库路径, executeUserName:执行人姓名, executeCount:入库数量},]
      * }
      *
      * @return
      * @throws Exception
      */
     @PostMapping("/mobile/mobileWarehouseIn/findWarehouseInExecuteByDetailId")
+    //@GetMapping("/mobile/mobileWarehouseIn/findWarehouseInExecuteByDetailId")
     public ResultModel findWarehouseInExecuteByDetailId() throws Exception {
         logger.info("################/mobile/mobileWarehouseIn/findWarehouseInExecuteByDetailId 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
@@ -183,7 +179,7 @@ public class MobileWarehouseInController {
 
         //入库执行Map 接口返回值
         PageData findMap = new PageData();
-        Map<String, Object> warehouseInExecute = new HashMap<String, Object>();
+        Map<String, Object> warehouseInExecuteMap = new HashMap<String, Object>();
 
         //根据(入库明细id) 获取入库明细表对象
         WarehouseInDetail detail = warehouseInDetailService.findWarehouseInDetailById(detailId);
@@ -273,7 +269,7 @@ public class MobileWarehouseInController {
 
         List<Map<String, Object>> executeList = new ArrayList<Map<String, Object>>();
         if (inExecuteList != null && inExecuteList.size() > 0) {
-            for (Map<String, Object> mapObject : executeList) {
+            for (Map<String, Object> mapObject : inExecuteList) {
                 Map<String, Object> mapValue = new HashMap<String, Object>();
 
                 //入库数量 executeCount count
@@ -305,14 +301,15 @@ public class MobileWarehouseInController {
             }
         }
 
-        warehouseInExecute.put("product", productMap);
-        warehouseInExecute.put("inExecute", executeList);
+        warehouseInExecuteMap.put("product", productMap);
+        warehouseInExecuteMap.put("inExecute", executeList);
+        model.put("warehouseInExecute", warehouseInExecuteMap);
 
-        String jsonStr = new String();
-        if (warehouseInExecute.size() > 0) {
-            jsonStr = YvanUtil.toJson(warehouseInExecute);
-        }
-        model.set("jsonStr", jsonStr);
+//        String jsonStr = new String();
+//        if (warehouseInExecuteMap.size() > 0) {
+//            jsonStr = YvanUtil.toJson(warehouseInExecuteMap);
+//        }
+//        System.out.println("warehouseInExecuteJsonStr:" + jsonStr);
 
         Long endTime = System.currentTimeMillis();
         logger.info("################/mobile/mobileWarehouseIn/findWarehouseInExecuteByDetailId 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
