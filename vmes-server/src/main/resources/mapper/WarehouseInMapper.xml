@@ -219,6 +219,9 @@
         left join vmes_dictionary genre on prod.genre = genre.id
         left join vmes_dictionary unit on produnit.unit = unit.id
     <where>
+        <if test="parentId != null and parentId != ''" >
+            and a.id = #{parentId}
+        </if>
         <if test="code != null and code != ''">
             and a.code LIKE CONCAT(CONCAT(#{code}),'%')
         </if>

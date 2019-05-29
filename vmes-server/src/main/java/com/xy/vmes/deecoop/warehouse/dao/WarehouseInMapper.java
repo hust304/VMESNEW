@@ -48,7 +48,7 @@ public interface WarehouseInMapper extends BaseMapper<WarehouseIn> {
      * 创建时间：2018-10-16
      */
     List<Map> getDataListPage(PageData pd, Pagination pg);
-
+	List<Map> getDataListPage(PageData pd);
 
 }
 

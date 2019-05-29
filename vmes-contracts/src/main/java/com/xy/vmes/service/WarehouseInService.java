@@ -69,6 +69,7 @@ public interface WarehouseInService {
     * 创建时间：2018-10-16
     */
     List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception;
+    List<Map> getDataListPage(PageData pd) throws Exception;
 
     /**
     * 创建人：陈刚 自动创建，禁止修改

@@ -98,11 +98,10 @@ public interface WarehouseInExecuteService {
     List<WarehouseInExecute> findWarehouseInExecuteListByDetailId(String detailId);
 
     List<WarehouseInExecute> mapList2ExecuteList(List<Map<String, String>> mapList, List<WarehouseInExecute> objectList);
-    ///////////////////////////////////////////////////////////////////////////////
     //BigDecimal findSumCountByExecuteList(List<WarehouseInExecute> objectList);
-
     String checkColumnExecuteList(List<WarehouseInExecute> objectList);
-
+    Long findMaxExecuteDateByMapList(List<Map> mapList);
+    ///////////////////////////////////////////////////////////////////////////////
     ResultModel batchAddWarehouseInExecute(PageData pageData) throws Exception;
 
     ResultModel addWarehouseInExecute(PageData pageData) throws Exception;

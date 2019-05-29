@@ -283,7 +283,7 @@
 
     <select id="findWarehouseOutMapList" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
-            recommend.detail_id,
+            recommend.detail_id detailId,
             recommend.warehouse_product_id,
 
             detail.parent_id parentId,

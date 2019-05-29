@@ -245,8 +245,8 @@ public class WarehouseInExecuteServiceImp implements WarehouseInExecuteService {
 
         return objectList;
     }
-    ///////////////////////////////////////////////////////////////////////////////
-//    public BigDecimal findSumCountByExecuteList(List<WarehouseInExecute> objectList) {
+
+    //    public BigDecimal findSumCountByExecuteList(List<WarehouseInExecute> objectList) {
 //        double sumCount = 0D;
 //        if (objectList != null && objectList.size() > 0) {
 //            for (WarehouseInExecute object : objectList) {
@@ -268,8 +268,8 @@ public class WarehouseInExecuteServiceImp implements WarehouseInExecuteService {
         for (int i = 0; i < objectList.size(); i++) {
             WarehouseInExecute object = objectList.get(i);
             if ((object.getWarehouseId() == null || object.getWarehouseId().trim().length() == 0)
-                || object.getCount() == null
-            ) {
+                    || object.getCount() == null
+                    ) {
                 String str_isnull = MessageFormat.format(column_isnull,
                         Integer.valueOf(i+1).toString(),
                         "实际货位ID",
@@ -280,6 +280,25 @@ public class WarehouseInExecuteServiceImp implements WarehouseInExecuteService {
 
         return msgBuf.toString();
     }
+
+    public Long findMaxExecuteDateByMapList(List<Map> mapList) {
+        if (mapList == null || mapList.size() == 0) {return Long.valueOf(0L);}
+
+        long max = 0L;
+        for (Map mapObject : mapList) {
+            //入库执行日期 executeDateLong
+            Long executeDateLong = Long.valueOf(0L);
+            if (mapObject.get("executeDateLong") != null) {
+                executeDateLong = (Long)mapObject.get("executeDateLong");
+            }
+            if (max < executeDateLong.longValue()) {
+                max = executeDateLong.longValue();
+            }
+        }
+
+        return Long.valueOf(max);
+    }
+    ///////////////////////////////////////////////////////////////////////////////
 
     @Override
     public ResultModel batchAddWarehouseInExecute(PageData pageData) throws Exception {

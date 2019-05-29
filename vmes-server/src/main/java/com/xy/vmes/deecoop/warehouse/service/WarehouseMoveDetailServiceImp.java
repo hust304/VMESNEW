@@ -15,7 +15,6 @@ import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -333,6 +332,9 @@ public class WarehouseMoveDetailServiceImp implements WarehouseMoveDetailService
         for (Map<String, Object> mapObject : mapList) {
             Map<String, String> mapObj = new HashMap<String, String>();
 
+            //移库单明细id detailId
+            mapObj.put("detailId", (String)mapObject.get("detailId"));
+
             //移库单id parentId
             String parentId = new String();
             if (mapObject.get("parentId") != null) {
@@ -365,6 +367,7 @@ public class WarehouseMoveDetailServiceImp implements WarehouseMoveDetailService
                 }
             }
             mapObj.put("detailCount", detailCount);
+            mapObj.put("type", "move");
 
             moveList.add(mapObj);
         }

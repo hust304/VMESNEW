@@ -488,6 +488,7 @@
 
     <select id="findWarehouseMoveMapList" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
+            detail.id detailId,
             detail.parent_id parentId,
             parent.code parentCode,
             round(ifnull(detail.count,0),2) detailCount

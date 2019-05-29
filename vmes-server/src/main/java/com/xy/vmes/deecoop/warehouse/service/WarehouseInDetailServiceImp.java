@@ -281,6 +281,9 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
         for (Map<String, Object> mapObject : mapList) {
             Map<String, String> mapObj = new HashMap<String, String>();
 
+            //入库单明细id detailId
+            mapObj.put("detailId", (String)mapObject.get("detailId"));
+
             //入库单id parentId
             String parentId = new String();
             if (mapObject.get("parentId") != null) {
@@ -313,6 +316,7 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
                 }
             }
             mapObj.put("detailCount", detailCount);
+            mapObj.put("type", "in");
 
             inList.add(mapObj);
         }

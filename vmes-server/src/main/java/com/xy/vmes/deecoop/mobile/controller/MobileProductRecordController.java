@@ -105,11 +105,13 @@ public class MobileProductRecordController {
 
     /**
      * 获取货品履历 prodRecordMap<String, Object>
+     * prodRecordMap: {
      *     product: {code:批次号,productId:货品id, productCode:货品编号,productName:货品名称,productSpec:货品规格型号,productGenreName:货品属性,productUnitName:货品单位,stockCount:库存数量}
      *     warehouse: [{warehouseProductId:货位货品id, warehouseId:货位id, warehouseStockCount:库存数量, warehousePathName:仓库路径名称},]
-     *     in:  [{parentId:入库单id,parentCode:入库单编号,detailCount:入库数量},]
-     *     out: [{parentId:入库单id,parentCode:入库单编号,detailCount:入库数量},]
-     *     move: [{parentId:入库单id,parentCode:入库单编号,detailCount:入库数量},]
+     *     in:  [{detailId:入库单明细id,parentCode:入库单编号,detailCount:入库数量, type:in},]
+     *     out: [{detailId:出库单明细id,parentCode:出库单编号,detailCount:出库数量, type:out},]
+     *     move: [{detailId:移库单明细id,parentCode:移库单编号,detailCount:移库数量, type:move},]
+     * }
      *
      * @return
      * @throws Exception
