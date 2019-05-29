@@ -50,10 +50,16 @@ public class ComonFilter implements Filter {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
 
+//        httpResponse.setHeader("Access-Control-Allow-Origin", "*");
+//        httpResponse.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");
+//        httpResponse.setHeader("Access-Control-Max-Age", "3600");
+//        httpResponse.setHeader("Access-Control-Allow-Headers", "x-requested-with");
+
         httpResponse.setHeader("Access-Control-Allow-Origin", "*");
-        httpResponse.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");
-        httpResponse.setHeader("Access-Control-Max-Age", "3600");
-        httpResponse.setHeader("Access-Control-Allow-Headers", "x-requested-with");
+        httpResponse.setHeader("Access-Control-Allow-Methods", "*");
+        httpResponse.setHeader("Access-Control-Max-Age", "100");
+        httpResponse.setHeader("Access-Control-Allow-Headers", "Content-Type");
+        httpResponse.setHeader("Access-Control-Allow-Credentials", "false");
         System.out.println("*********************************过滤器被使用**************************");
 
         logger.info("************getRequestURI:"+ httpRequest.getRequestURI());
