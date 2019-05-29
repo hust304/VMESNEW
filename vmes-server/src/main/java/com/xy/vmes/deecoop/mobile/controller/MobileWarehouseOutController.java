@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -132,7 +133,7 @@ public class MobileWarehouseOutController {
      *     product: {code:批次号,productId:货品id, productCode:货品编号,productName:货品名称,productSpec:货品规格型号,productGenreName:货品属性,productUnitName:货品单位,
      *         typeName:出库类型,deptName:来源单位,count:出库数量,executeDate:完成时间
      *     }
-     *     inExecute: [{warehousePathName:仓库路径, executeUserName:执行人姓名, executeCount:出库数量},]
+     *     outExecute: [{warehousePathName:仓库路径, executeUserName:执行人姓名, executeCount:出库数量},]
      * }
      *
      * @return
@@ -279,14 +280,14 @@ public class MobileWarehouseOutController {
         }
 
         warehouseOutExecuteMap.put("product", productMap);
-        warehouseOutExecuteMap.put("inExecute", executeList);
+        warehouseOutExecuteMap.put("outExecute", executeList);
         model.put("warehouseOutExecute", warehouseOutExecuteMap);
 
-        String jsonStr = new String();
-        if (warehouseOutExecuteMap.size() > 0) {
-            jsonStr = YvanUtil.toJson(warehouseOutExecuteMap);
-        }
-        System.out.println("warehouseOutExecuteJsonStr:" + jsonStr);
+//        String jsonStr = new String();
+//        if (warehouseOutExecuteMap.size() > 0) {
+//            jsonStr = YvanUtil.toJson(warehouseOutExecuteMap);
+//        }
+//        System.out.println("warehouseOutExecuteJsonStr:" + jsonStr);
 
         Long endTime = System.currentTimeMillis();
         logger.info("################/mobile/mobileWarehouseOut/findWarehouseOutExecuteByDetailId 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
