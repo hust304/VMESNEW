@@ -62,7 +62,8 @@ public class ComonFilter implements Filter {
 //        httpResponse.setHeader("Access-Control-Allow-Credentials", "false");
 
 
-
+        // 允许客户端携带跨域cookie
+        // 当Access-Control-Allow-Credentials设为true的时候，Access-Control-Allow-Origin不能设为星号
         httpResponse.setHeader("Access-Control-Allow-Credentials", "true");
         // 允许指定域访问跨域资源
         //response.setHeader("Access-Control-Allow-Origin", "http://127.0.0.1:9006, http://127.0.0.1:8080");
@@ -74,7 +75,7 @@ public class ComonFilter implements Filter {
         // 设置响应数据格式
         httpResponse.setHeader("Content-Type", "application/json");
 
-        System.out.println("*********************************过滤器被使用**************************");
+//        System.out.println("*********************************过滤器被使用**************************");
 
         logger.info("************getRequestURI:"+ httpRequest.getRequestURI());
         logger.info("************getHeader:"+ httpRequest.getHeader("referer"));
