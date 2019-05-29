@@ -55,11 +55,25 @@ public class ComonFilter implements Filter {
 //        httpResponse.setHeader("Access-Control-Max-Age", "3600");
 //        httpResponse.setHeader("Access-Control-Allow-Headers", "x-requested-with");
 
-        httpResponse.setHeader("Access-Control-Allow-Origin", "*");
-        httpResponse.setHeader("Access-Control-Allow-Methods", "*");
-        httpResponse.setHeader("Access-Control-Max-Age", "100");
-        httpResponse.setHeader("Access-Control-Allow-Headers", "Content-Type");
-        httpResponse.setHeader("Access-Control-Allow-Credentials", "false");
+//        httpResponse.setHeader("Access-Control-Allow-Origin", "*");
+//        httpResponse.setHeader("Access-Control-Allow-Methods", "*");
+//        httpResponse.setHeader("Access-Control-Max-Age", "100");
+//        httpResponse.setHeader("Access-Control-Allow-Headers", "Content-Type");
+//        httpResponse.setHeader("Access-Control-Allow-Credentials", "false");
+
+
+
+        httpResponse.setHeader("Access-Control-Allow-Credentials", "true");
+        // 允许指定域访问跨域资源
+        //response.setHeader("Access-Control-Allow-Origin", "http://127.0.0.1:9006, http://127.0.0.1:8080");
+        httpResponse.setHeader("Access-Control-Allow-Origin", httpRequest.getHeader("Origin"));// *
+        // 允许浏览器发送的请求消息头
+        httpResponse.setHeader("Access-Control-Allow-Headers", httpRequest.getHeader("Access-Control-Request-Headers"));// *
+        // 允许浏览器在预检请求成功之后发送的实际请求方法名
+        httpResponse.setHeader("Access-Control-Allow-Methods", httpRequest.getHeader("Access-Control-Request-Method"));
+        // 设置响应数据格式
+        httpResponse.setHeader("Content-Type", "application/json");
+
         System.out.println("*********************************过滤器被使用**************************");
 
         logger.info("************getRequestURI:"+ httpRequest.getRequestURI());
