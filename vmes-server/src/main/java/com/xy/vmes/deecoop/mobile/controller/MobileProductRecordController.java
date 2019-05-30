@@ -53,6 +53,12 @@ public class MobileProductRecordController {
         }
         findMap.put("companyId", companyId);
 
+        String queryText = new String();
+        if (pd.getString("queryText") != null) {
+            queryText = pd.getString("queryText").toString().trim();
+        }
+        findMap.put("queryText", queryText);
+
         Pagination pg = HttpUtils.parsePagination(pd);
         List<Map<String, Object>> varList = mobileProductRecordService.findListProductRecord(findMap, pg);
 
