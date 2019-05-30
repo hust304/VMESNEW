@@ -340,9 +340,9 @@
 
             detail.parent_id,
             warehouse.path_name pathName,
-            executeUser.user_name executorName,
+            executeUser.user_name executorName
         from (
-            select detail_id, executor_id, warehouse_product_id,count
+            select detail_id, executor_id, warehouse_product_id,count,cdate
             from vmes_warehouse_move_execute
             <where>
                 <if test="companyId != null and companyId != ''" >
@@ -381,7 +381,7 @@
             max(moveExecute.cdate) executeDate,
             unix_timestamp(max(moveExecute.cdate)) * 1000 executeDateLong
         from (
-            select detail_id, warehouse_product_id
+            select detail_id, warehouse_product_id, cdate
             from vmes_warehouse_move_execute
             <where>
                 <if test="companyId != null and companyId != ''" >

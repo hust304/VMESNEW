@@ -91,10 +91,10 @@ public class MobileWarehouseMoveController {
      * @return
      * @throws Exception
      */
-    @PostMapping("/mobile/mobileWarehouseMove/findWarehouseMoveExecuteByDetailId")
-    //@GetMapping("/mobile/mobileWarehouseMove/findWarehouseMoveExecuteByDetailId")
-    public ResultModel findWarehouseMoveExecuteByDetailId() throws Exception {
-        logger.info("################/mobile/mobileWarehouseMove/findWarehouseMoveExecuteByDetailId 执行开始 ################# ");
+    @PostMapping("/mobile/mobileWarehouseMove/findWarehouseMoveExecuteByProduct")
+    //@GetMapping("/mobile/mobileWarehouseMove/findWarehouseMoveExecuteByProduct")
+    public ResultModel findWarehouseMoveExecuteByProduct() throws Exception {
+        logger.info("################/mobile/mobileWarehouseMove/findWarehouseMoveExecuteByProduct 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
@@ -248,14 +248,14 @@ public class MobileWarehouseMoveController {
         warehouseMoveExecuteMap.put("moveExecute", executeList);
         model.put("warehouseMoveExecute", warehouseMoveExecuteMap);
 
-        String jsonStr = new String();
-        if (warehouseMoveExecuteMap.size() > 0) {
-            jsonStr = YvanUtil.toJson(warehouseMoveExecuteMap);
-        }
-        System.out.println("warehouseMoveExecuteJsonStr:" + jsonStr);
+//        String jsonStr = new String();
+//        if (warehouseMoveExecuteMap.size() > 0) {
+//            jsonStr = YvanUtil.toJson(warehouseMoveExecuteMap);
+//        }
+//        System.out.println("warehouseMoveExecuteJsonStr:" + jsonStr);
 
         Long endTime = System.currentTimeMillis();
-        logger.info("################/mobile/mobileWarehouseMove/findWarehouseMoveExecuteByDetailId 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/mobile/mobileWarehouseMove/findWarehouseMoveExecuteByProduct 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 

@@ -567,9 +567,9 @@
         select
             warehouseProduct.product_id productId,
             warehouseProduct.code,
-            sum(moveDetail.count) moveCount
+            round(sum(moveDetail.count), 2) moveCount
         from (
-            select id, parent_id, warehouse_product_id
+            select id, parent_id, warehouse_product_id, count
             from vmes_warehouse_move_detail
             <where>
                 <if test="companyId != null and companyId != ''" >

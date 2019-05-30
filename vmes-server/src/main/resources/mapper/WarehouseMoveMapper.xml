@@ -384,9 +384,8 @@
         left join vmes_dictionary genre on prod.genre = genre.id
         left join vmes_dictionary unit on produnit.unit = unit.id
         <where>
-            <!--queryStr 自定义sql查询语句-->
-            <if test="queryStr != null and queryStr != ''" >
-                and ${queryStr}
+            <if test="parentId != null and parentId != ''">
+                and warehousemove.id = #{parentId}
             </if>
             <if test="code != null and code != ''">
                 and warehousemove.code LIKE CONCAT(CONCAT('%', #{code}),'%')
@@ -427,6 +426,10 @@
 
             <if test="detailState != null and detailState != ''">
                 and detail.state =  #{detailState}
+            </if>
+            <!--queryStr 自定义sql查询语句-->
+            <if test="queryStr != null and queryStr != ''" >
+                and ${queryStr}
             </if>
         </where>
         <if test="orderStr != null and orderStr != ''" >
