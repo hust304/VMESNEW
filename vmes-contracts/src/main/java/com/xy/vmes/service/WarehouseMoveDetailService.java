@@ -8,6 +8,7 @@ import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -124,6 +125,10 @@ public interface WarehouseMoveDetailService {
     WarehouseMoveDetail findWarehouseMoveDetailById(String detailId) throws Exception;
     boolean isAllExistStateByDetailList(String state, String ignoreState, List<WarehouseMoveDetail> detailList) throws Exception;
     List<Map<String, String>> findWarehouseMoveMapList(String companyId, String productId, String code);
+
+    List<Map<String, Object>> findMoveDetailByProductMapList(String companyId, String productId, String code);
+    Map<String, BigDecimal> findProductMapByMapList(List<Map<String, Object>> mapList);
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     void addWarehouseMoveDetail(WarehouseMove parentObj, List<WarehouseMoveDetail> objectList) throws Exception;
     void addWarehouseMoveDetail(WarehouseMove parentObj, WarehouseMoveDetail detail) throws Exception;

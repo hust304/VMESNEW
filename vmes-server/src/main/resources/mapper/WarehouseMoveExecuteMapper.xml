@@ -328,7 +328,91 @@
         order by execut.isdisable desc ,execut.cdate desc
     </select>
 
+    <!-- 获取移库执行记录 -->
+    <select id="findMoveExecuteMapList" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+            moveExecute.detail_id,
+            moveExecute.executor_id,
+            moveExecute.warehouse_product_id,
+            moveExecute.count,
+            moveExecute.cdate,
+            unix_timestamp(moveExecute.cdate) * 1000 executeDateLong,
 
+            detail.parent_id,
+            warehouse.path_name pathName,
+            executeUser.user_name executorName,
+        from (
+            select detail_id, executor_id, warehouse_product_id,count
+            from vmes_warehouse_move_execute
+            <where>
+                <if test="companyId != null and companyId != ''" >
+                    and detail_id in (
+                        select id from vmes_warehouse_move_detail
+                        where parent_id in (
+                            select id from vmes_warehouse_move
+                            where company_id = #{companyId}
+                        )
+                    )
+                </if>
+            </where>
+        ) moveExecute
+            left join vmes_warehouse_product warehouseProduct on moveExecute.warehouse_product_id = warehouseProduct.id
+            left join vmes_warehouse_move_detail detail on moveExecute.detail_id = detail.id
+            left join vmes_warehouse warehouse on warehouseProduct.warehouse_id = warehouse.id
+            left join vmes_user executeUser on moveExecute.executor_id = executeUser.id
+        <where>
+            <if test="parentId != null and parentId != ''" >
+                and detail.parent_id = #{parentId}
+            </if>
+            <if test="productId != null and productId != ''" >
+                and warehouseProduct.product_id = #{productId}
+            </if>
+            <if test="code != null and code != ''" >
+                and warehouseProduct.code = #{code}
+            </if>
+        </where>
+    </select>
+
+    <!-- 根据(货品id,批次号)汇总查询-获取移库执行完成最大时间 -->
+    <select id="findMoveExecuteDateByProduct" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+            warehouseProduct.product_id,
+            warehouseProduct.code,
+            max(moveExecute.cdate) executeDate,
+            unix_timestamp(max(moveExecute.cdate)) * 1000 executeDateLong
+        from (
+            select detail_id, warehouse_product_id
+            from vmes_warehouse_move_execute
+            <where>
+                <if test="companyId != null and companyId != ''" >
+                    and detail_id in (
+                        select id from vmes_warehouse_move_detail
+                        where parent_id in (
+                            select id from vmes_warehouse_move
+                            where company_id = #{companyId}
+                        )
+                    )
+                </if>
+            </where>
+        ) moveExecute
+            left join vmes_warehouse_product warehouseProduct on moveExecute.warehouse_product_id = warehouseProduct.id
+            left join vmes_warehouse_move_detail detail on moveExecute.detail_id = detail.id
+        <where>
+            <if test="parentId != null and parentId != ''" >
+                and detail.parent_id = #{parentId}
+            </if>
+            <if test="productId != null and productId != ''" >
+                and warehouseProduct.product_id = #{productId}
+            </if>
+            <if test="code != null and code != ''" >
+                and warehouseProduct.code = #{code}
+            </if>
+            <if test="detailState != null and detailState != ''" >
+                and detail.state = #{detailState}
+            </if>
+        </where>
+        group by warehouseProduct.product_id,warehouseProduct.code
+    </select>
 
 
 </mapper>

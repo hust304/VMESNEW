@@ -421,7 +421,35 @@
 
         from (
         select
-        <include refid="Field1"></include>
+            detail.parent_id parentId,
+            whprod.warehouse_id warehouseId,
+            whprod.id warehouseProductId,
+            whprod.product_id productId,
+            whprod.code code,
+            round(whprod.stock_count,2) stockCount,
+            round(detail.count,2) count,
+            detail.state,
+            case when detail.state=-1 then '已取消' when detail.state=0 then '待派单' when detail.state=1 then '执行中' when detail.state=2 then '已完成' else null end stateName,
+            detail.cuser cuser,
+            DATE_FORMAT(detail.cdate,'%Y-%m-%d %T') cdate,
+            detail.uuser uuser,
+            DATE_FORMAT(detail.udate,'%Y-%m-%d %T') udate,
+            detail.remark remark,
+            detail.isdisable isdisable,
+            detail.qrcode qrcode,
+
+            prod.code productCode,
+            prod.name productName,
+            prod.spec productSpec,
+            prod.genre productGenre,
+            genre.name productGenreName,
+            produnit.unit productUnit,
+            unit.name productUnitName,
+
+            warehouse.path_name pathName,
+            whmove.code warehouseMoveCode,
+            round(moveexecute.count,2) executeCount,
+            detail.id id
         from
         vmes_warehouse_move_detail detail
         left join vmes_warehouse_move whmove on whmove.id = detail.parent_id
@@ -444,6 +472,13 @@
             </if>
             <if test="detailId != null and detailId != ''">
                 and detail.id =  #{detailId}
+            </if>
+
+            <if test="productId != null and productId != ''">
+                and whprod.product_id =  #{productId}
+            </if>
+            <if test="code != null and code != ''">
+                and whprod.code =  #{code}
             </if>
 
             <if test="productCode != null and productCode != ''">
@@ -488,24 +523,67 @@
 
     <select id="findWarehouseMoveMapList" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
-            detail.id detailId,
-            detail.parent_id parentId,
+            moveDetailTable.parent_id parentId,
             parent.code parentCode,
-            round(ifnull(detail.count,0),2) detailCount
-        from vmes_warehouse_move_detail detail
-        left join (
-            select id,code
-            from vmes_warehouse_move
+            moveDetailTable.product_id productId,
+            moveDetailTable.code
+        from (
+            select
+                moveDetail.parent_id,
+                warehouseProduct.product_id,
+                warehouseProduct.code
+            from (
+                select parent_id, warehouse_product_id
+                from vmes_warehouse_move_detail
+                <where>
+                    <if test="companyId != null and companyId != ''" >
+                        and parent_id in (
+                        select id from vmes_warehouse_move
+                        where company_id = #{companyId}
+                        )
+                    </if>
+                </where>
+            ) moveDetail
+                left join vmes_warehouse_product warehouseProduct on moveDetail.warehouse_product_id = warehouseProduct.id
             <where>
-                <if test="companyId != null and companyId != ''" >
-                    and company_id = #{companyId}
+                <if test="productId != null and productId != ''" >
+                    and warehouseProduct.product_id = #{productId}
+                </if>
+                <if test="code != null and code != ''" >
+                    and warehouseProduct.code = #{code}
                 </if>
             </where>
-        ) parent on detail.parent_id = parent.id
-        left join vmes_warehouse_product warehouseProduct on detail.warehouse_product_id = warehouseProduct.id
+            group by moveDetail.parent_id,warehouseProduct.product_id,warehouseProduct.code
+        ) moveDetailTable
+            left join vmes_warehouse_move parent on moveDetailTable.parent_id = parent.id
+
+        <if test="orderStr != null and orderStr != ''" >
+            order by ${orderStr}
+        </if>
+    </select>
+
+    <!--按(货品id,批次号)汇总查询 vmes_warehouse_move_detail -->
+    <select id="findMoveDetailByProductMapList" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+            warehouseProduct.product_id productId,
+            warehouseProduct.code,
+            sum(moveDetail.count) moveCount
+        from (
+            select id, parent_id, warehouse_product_id
+            from vmes_warehouse_move_detail
+            <where>
+                <if test="companyId != null and companyId != ''" >
+                    and parent_id in (
+                    select id from vmes_warehouse_move
+                    where company_id = #{companyId}
+                    )
+                </if>
+            </where>
+        ) moveDetail
+            left join vmes_warehouse_product warehouseProduct on moveDetail.warehouse_product_id = warehouseProduct.id
         <where>
             <if test="parentId != null and parentId != ''" >
-                and detail.parent_id = #{parentId}
+                and moveDetail.parent_id = #{parentId}
             </if>
             <if test="productId != null and productId != ''" >
                 and warehouseProduct.product_id = #{productId}
@@ -514,9 +592,7 @@
                 and warehouseProduct.code = #{code}
             </if>
         </where>
-        <if test="orderStr != null and orderStr != ''" >
-            order by ${orderStr}
-        </if>
+        group by warehouseProduct.product_id,warehouseProduct.code
     </select>
 
 

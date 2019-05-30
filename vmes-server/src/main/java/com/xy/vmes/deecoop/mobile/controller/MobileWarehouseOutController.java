@@ -180,6 +180,7 @@ public class MobileWarehouseOutController {
         //根据(出库明细id) 获取该(出库明细id)出库执行ListMap
         List<Map> outExecuteList = null;
         try {
+            findMap = new PageData();
             findMap.put("detailId", detailId);
             outExecuteList = warehouseOutExecuteService.getDataListPage(findMap);
         } catch (Exception e) {
@@ -273,7 +274,6 @@ public class MobileWarehouseOutController {
                     executeUserName = mapObject.get("executorName").toString().trim();
                 }
                 mapValue.put("executeUserName", executeUserName);
-
 
                 executeList.add(mapValue);
             }

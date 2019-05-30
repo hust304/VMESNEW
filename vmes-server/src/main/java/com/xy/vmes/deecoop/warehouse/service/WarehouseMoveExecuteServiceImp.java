@@ -3,6 +3,7 @@ package com.xy.vmes.deecoop.warehouse.service;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.Common;
+import com.xy.vmes.common.util.DateFormat;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.warehouse.dao.WarehouseMoveExecuteMapper;
 import com.xy.vmes.entity.*;
@@ -204,10 +205,64 @@ public class WarehouseMoveExecuteServiceImp implements WarehouseMoveExecuteServi
         warehouseMoveExecuteMapper.updateToDisableByIds(ids);
     }
 
-
-
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+    public String findMoveExecuteDateByProduct(String companyId,
+                                               String parentId, String productId, String code, String detailState) {
+        String dateStr = new String();
 
+        List<Map<String, Object>> mapList = null;
+        try {
+            PageData findMap = new PageData();
+            findMap.put("companyId", companyId);
+            findMap.put("parentId", parentId);
+            findMap.put("productId", productId);
+            findMap.put("code", code);
+            findMap.put("detailState", detailState);
+            mapList = warehouseMoveExecuteMapper.findMoveExecuteDateByProduct(findMap);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (mapList == null || mapList.size() == 0) {return new String();}
+
+        Map<String, Object> dateByProductMap = mapList.get(0);
+        Long executeDateLong = Long.valueOf(0L);
+        if (dateByProductMap.get("executeDateLong") != null) {
+            executeDateLong = (Long)dateByProductMap.get("executeDateLong");
+        }
+
+        if (executeDateLong.longValue() > 0) {
+            Date executeDate = new Date();
+            executeDate.setTime(executeDateLong.longValue());
+            try {
+                dateStr = DateFormat.date2String(executeDate, DateFormat.DEFAULT_DATETIME_FORMAT);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return dateStr;
+    }
+
+    public List<Map<String, Object>> findMoveExecuteMapList(String companyId,
+                                                            String parentId,
+                                                            String productId,
+                                                            String code) {
+        List<Map<String, Object>> mapList = null;
+        try {
+            PageData findMap = new PageData();
+            findMap.put("companyId", companyId);
+            findMap.put("parentId", parentId);
+            findMap.put("productId", productId);
+            findMap.put("code", code);
+            mapList = warehouseMoveExecuteMapper.findMoveExecuteMapList(findMap);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return mapList;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     @Override
     public ResultModel executeWarehouseMoveExecute(PageData pageData) throws Exception {
         ResultModel model = new ResultModel();

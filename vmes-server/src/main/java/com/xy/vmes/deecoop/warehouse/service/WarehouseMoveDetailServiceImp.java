@@ -332,9 +332,6 @@ public class WarehouseMoveDetailServiceImp implements WarehouseMoveDetailService
         for (Map<String, Object> mapObject : mapList) {
             Map<String, String> mapObj = new HashMap<String, String>();
 
-            //移库单明细id detailId
-            mapObj.put("detailId", (String)mapObject.get("detailId"));
-
             //移库单id parentId
             String parentId = new String();
             if (mapObject.get("parentId") != null) {
@@ -350,29 +347,57 @@ public class WarehouseMoveDetailServiceImp implements WarehouseMoveDetailService
             }
             mapObj.put("parentCode", parentCode);
 
-            //移库数量 detailCount
-            String detailCount = new String("0");
-            BigDecimal detailCount_big = BigDecimal.valueOf(0D);
-            if (mapObject.get("detailCount") != null) {
-                String detailCount_str = mapObject.get("detailCount").toString().trim();
-                try {
-                    detailCount_big = new BigDecimal(detailCount_str);
-                } catch (NumberFormatException e) {
-                    e.printStackTrace();
-                }
-                if (detailCount_big.doubleValue() != 0) {
-                    //四舍五入到2位小数
-                    detailCount_big = detailCount_big.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-                    detailCount = detailCount_big.toString();
-                }
-            }
-            mapObj.put("detailCount", detailCount);
+            //货品id productId
+            mapObj.put("productId", productId);
+            //批次号 code
+            mapObj.put("code", code);
             mapObj.put("type", "move");
 
             moveList.add(mapObj);
         }
 
         return moveList;
+    }
+
+    public List<Map<String, Object>> findMoveDetailByProductMapList(String companyId, String productId, String code) {
+        List<Map<String, Object>> mapList = new ArrayList<Map<String, Object>>();
+
+        PageData findMap = new PageData();
+        if (companyId != null && companyId.trim().length() > 0) {
+            findMap.put("companyId", companyId);
+        }
+        findMap.put("productId", productId);
+        findMap.put("code", code);
+
+        try {
+            mapList = warehouseMoveDetailMapper.findMoveDetailByProductMapList(findMap);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+
+        return mapList;
+    }
+
+    public Map<String, BigDecimal> findProductMapByMapList(List<Map<String, Object>> mapList) {
+        Map<String, BigDecimal> productMap = new HashMap<String, BigDecimal>();
+        if (mapList == null || mapList.size() == 0) {return productMap;}
+
+        for (Map<String, Object> mapObject : mapList) {
+            String productId = (String)mapObject.get("productId");
+            String code = (String)mapObject.get("code");
+
+            BigDecimal moveCount = BigDecimal.valueOf(0D);
+            if (mapObject.get("moveCount") != null) {
+                moveCount = (BigDecimal)mapObject.get("moveCount");
+                //四舍五入到2位小数
+                moveCount = moveCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+
+                String mapKey = productId + "," + code;
+                productMap.put(mapKey, moveCount);
+            }
+        }
+
+        return productMap;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

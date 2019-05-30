@@ -196,6 +196,9 @@ public class WarehouseMoveServiceImp implements WarehouseMoveService {
     public List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception{
         return warehouseMoveMapper.getDataListPage(pd,pg);
     }
+    public List<Map> getDataListPage(PageData pd) throws Exception{
+        return warehouseMoveMapper.getDataListPage(pd);
+    }
 
     /**
     * 创建人：刘威 自动创建，禁止修改

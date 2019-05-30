@@ -112,7 +112,7 @@ public class MobileProductRecordController {
      *     warehouse: [{warehouseProductId:货位货品id, warehouseId:货位id, warehouseStockCount:库存数量, warehousePathName:仓库路径名称},]
      *     in:  [{detailId:入库单明细id,parentCode:入库单编号,detailCount:入库数量, type:in},]
      *     out: [{detailId:出库单明细id,parentCode:出库单编号,detailCount:出库数量, type:out},]
-     *     move: [{detailId:移库单明细id,parentCode:移库单编号,detailCount:移库数量, type:move},]
+     *     move: [{parentId:移库单id,parentCode:移库单编号,productId:货品id, code:批次号, type:move},]
      * }
      *
      * @return

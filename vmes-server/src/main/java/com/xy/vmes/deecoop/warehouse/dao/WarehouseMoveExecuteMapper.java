@@ -81,6 +81,9 @@ public interface WarehouseMoveExecuteMapper extends BaseMapper<WarehouseMoveExec
     void updateToDisableByIds(String[] ids);
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+    List<Map<String, Object>> findMoveExecuteMapList(PageData pd);
+    List<Map<String, Object>> findMoveExecuteDateByProduct(PageData pd);
+
 }
 
 

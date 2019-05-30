@@ -108,7 +108,7 @@ public interface WarehouseMoveService {
     * 创建时间：2018-11-16
     */
     List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception;
-
+    List<Map> getDataListPage(PageData pd) throws Exception;
     /**
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-11-16
