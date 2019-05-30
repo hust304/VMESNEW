@@ -8,12 +8,12 @@ server:
     remote_ip_header: x-forwarded-for
     protocol_header: x-forwarded-proto
     port-header: X-Forwarded-Port
-  ssl:
-    key-store: server.keystore
-    key-store-type: JKS
-    key-alias: tomcat
-    enabled: true
-    key-store-password: 123456
+#  ssl:
+#    key-store: server.keystore
+#    key-store-type: JKS
+#    key-alias: tomcat
+#    enabled: true
+#    key-store-password: 123456
   use-forward-headers: true
 
 endpoints:
