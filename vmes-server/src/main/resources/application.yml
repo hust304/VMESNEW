@@ -12,12 +12,12 @@ server:
     uri-encoding: UTF-8
     max-threads: 1000
     max-http-header-size: 8096
-#  ssl:
-#    key-store: server.keystore
-#    key-store-type: JKS
-#    key-alias: tomcat
-#    enabled: true
-#    key-store-password: 123456
+  ssl:
+    key-store: server.keystore
+    key-store-type: JKS
+    key-alias: tomcat
+    enabled: true
+    key-store-password: 123456
   use-forward-headers: true
 
 endpoints:
