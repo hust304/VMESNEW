@@ -1029,8 +1029,8 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
             addObj.setCompanyId(object.getCompanyId());
 
             //生成二维码
-            //WarehouseProduct QRCodeObj = this.warehouseProduct2QRCodeObj(addObj, null);
-            String qrcode = fileService.createQRCode("warehouseProduct", addObj.getId());
+            String QRCodeJson = this.warehouseProduct2QRCode(addObj);
+            String qrcode = fileService.createQRCode("warehouseProduct", QRCodeJson);
             if (qrcode != null && qrcode.trim().length() > 0) {
                 addObj.setQrcode(qrcode);
             }

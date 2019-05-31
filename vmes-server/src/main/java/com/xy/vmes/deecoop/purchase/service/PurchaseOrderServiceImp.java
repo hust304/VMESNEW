@@ -656,7 +656,7 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService {
                 //获取批次号
                 //PC+yyyyMMdd+00001 = 15位
                 code = coderuleService.createCoderCdateByDate(warehouseIn.getCompanyId(),
-                        "vmes_warehouse_in_detail",
+                        "vmes_product",
                         "yyyyMMdd",
                         "PC");
                 warehouseInDetail.setCode(code);

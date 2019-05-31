@@ -248,17 +248,15 @@ public class WarehouseProductExcelServiceImp implements WarehouseProductExcelSer
     public void addWarehouseProduct(Map<String, WarehouseProduct> warehouseProductMap, String companyId, String userId) throws Exception {
         if (warehouseProductMap == null || warehouseProductMap.size() == 0) {return;}
 
-        //获取仓库货品(批次号)
-        //PC+yyyyMMdd+00001 = 15位
-        String code = coderuleService.createCoderCdateByDate(companyId,
-                "vmes_warehouse_product",
-                "yyyyMMdd",
-                "PC");
+        //获取Excel导入货品批次号Map<货品id, 批次号>
+        Map<String, String> productPCCodeMap = this.findProductPCCodeMap(companyId, warehouseProductMap);
 
         for (Iterator iterator = warehouseProductMap.keySet().iterator(); iterator.hasNext();) {
             String mapKey = (String)iterator.next();
             WarehouseProduct warehouseProduct = warehouseProductMap.get(mapKey);
+            String productId = warehouseProduct.getProductId();
 
+            String code = productPCCodeMap.get(productId);
             warehouseProduct.setCode(code);
             warehouseProduct.setCuser(userId);
             warehouseProduct.setCompanyId(companyId);
@@ -271,7 +269,6 @@ public class WarehouseProductExcelServiceImp implements WarehouseProductExcelSer
             }
             warehouseProductService.save(warehouseProduct);
 
-            String productId = warehouseProduct.getProductId();
             Product product = productService.findProductById(productId);
             BigDecimal prodCount = BigDecimal.valueOf(0D);
             if (product.getStockCount() != null) {
@@ -394,8 +391,6 @@ public class WarehouseProductExcelServiceImp implements WarehouseProductExcelSer
 
         return strBuf.toString();
     }
-
-
 
     private String checkWarehouseByDataBase(LinkedHashMap<String, String> mapObject,
                                           String companyId,
@@ -529,5 +524,33 @@ public class WarehouseProductExcelServiceImp implements WarehouseProductExcelSer
         }
 
         return strBuf.toString();
+    }
+
+    private Map<String, String> findProductPCCodeMap(String companyId, Map<String, WarehouseProduct> warehouseProductMap) {
+        Map<String, String> productPCCodeMap = new HashMap<String, String>();
+        if (warehouseProductMap == null || warehouseProductMap.size() == 0) {return productPCCodeMap;}
+
+        for (Iterator iterator = warehouseProductMap.keySet().iterator(); iterator.hasNext();) {
+            String mapKey = (String)iterator.next();
+            WarehouseProduct warehouseProduct = warehouseProductMap.get(mapKey);
+            if (warehouseProduct != null && warehouseProduct.getProductId() != null && warehouseProduct.getProductId().trim().length() > 0) {
+                productPCCodeMap.put(warehouseProduct.getProductId().trim(), new String());
+            }
+        }
+
+        for (Iterator iterator_1 = productPCCodeMap.keySet().iterator(); iterator_1.hasNext();) {
+            String mapKey = (String)iterator_1.next();
+
+            //获取批次号
+            //PC+yyyyMMdd+00001 = 15位
+            String code = coderuleService.createCoderCdateByDate(companyId,
+                    "vmes_product",
+                    "yyyyMMdd",
+                    "PC");
+
+            productPCCodeMap.put(mapKey, code);
+        }
+
+        return productPCCodeMap;
     }
 }
