@@ -464,7 +464,7 @@
                 and warehouseout.is_simple = #{isSimple}
             </if>
             <if test="'true' == isNotSimple">
-                <![CDATA[ and warehouseout.is_simple <> 'Y' ]]>
+                and (warehouseout.is_simple is null or warehouseout.is_simple = 'N')
             </if>
 
 

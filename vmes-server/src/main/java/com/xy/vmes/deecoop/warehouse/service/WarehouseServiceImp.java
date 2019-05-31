@@ -785,6 +785,11 @@ public class WarehouseServiceImp implements WarehouseService {
             findMap.put("isSimple", "Y");
         }
 
+        String isNotSimple = pageData.getString("isNotSimple");
+        if ("true".equals(isNotSimple)) {
+            findMap.put("isNotSimple", isNotSimple);
+        }
+
         String notInWarehouseIds = new String();
         if (pageData.getString("notInWarehouseIds") != null && pageData.getString("notInWarehouseIds").trim().length() > 0) {
             notInWarehouseIds = pageData.getString("notInWarehouseIds").trim();

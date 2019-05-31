@@ -408,7 +408,7 @@
                 and warehousemove.is_simple = #{isSimple}
             </if>
             <if test="'true' == isNotSimple">
-                <![CDATA[ and warehousemove.is_simple <> 'Y' ]]>
+                and (warehousemove.is_simple is null or warehousemove.is_simple = 'N')
             </if>
 
             <if test="productCode != null and productCode != ''">

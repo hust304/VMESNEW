@@ -217,7 +217,7 @@
                 and parent.is_simple = #{isSimple}
             </if>
             <if test="'true' == isNotSimple">
-                <![CDATA[ and parent.is_simple <> 'Y' ]]>
+                and (parent.is_simple is null or parent.is_simple = 'N')
             </if>
 
             <!--按货品属性 查询语句-->
