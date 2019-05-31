@@ -250,6 +250,9 @@
         <if test="isSimple != null and isSimple != ''" >
             and a.is_simple = #{isSimple}
         </if>
+        <if test="'true' == isNotSimple">
+            <![CDATA[ and a.is_simple <> 'Y' ]]>
+        </if>
 
         <!--过滤出当前登录用户是(入库)执行人 (vmes_warehouse_in_executor) 查询语句-->
         <if test="'true' == isNeedExecutor">

@@ -407,6 +407,9 @@
             <if test="isSimple != null and isSimple != ''" >
                 and warehousemove.is_simple = #{isSimple}
             </if>
+            <if test="'true' == isNotSimple">
+                <![CDATA[ and warehousemove.is_simple <> 'Y' ]]>
+            </if>
 
             <if test="productCode != null and productCode != ''">
                 and prod.code LIKE CONCAT(CONCAT('%', #{productCode}),'%')

@@ -463,6 +463,9 @@
             <if test="isSimple != null and isSimple != ''" >
                 and warehouseout.is_simple = #{isSimple}
             </if>
+            <if test="'true' == isNotSimple">
+                <![CDATA[ and warehouseout.is_simple <> 'Y' ]]>
+            </if>
 
 
             <if test="productCode != null and productCode != ''">
