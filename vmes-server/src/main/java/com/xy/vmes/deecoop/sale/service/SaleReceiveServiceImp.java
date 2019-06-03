@@ -313,7 +313,8 @@ public class SaleReceiveServiceImp implements SaleReceiveService {
                 orderIdMap.put(orderId, orderId);
                 detail.setDiscountAmount(BigDecimal.valueOf(Double.parseDouble(detailMap.get("discountAmount"))));
                 detail.setReceiveAmount(BigDecimal.valueOf(Double.parseDouble(detailMap.get("receiveAmount"))));
-                detail.setState("1");//收款单状态(0:待收款 1:已收款 -1:已取消)
+                //收款单状态(0:待收款 1:已收款 -1:已取消)
+                detail.setState("0");
                 detail.setUuser(pd.getString("cuser"));
                 detail.setCuser(pd.getString("cuser"));
                 saleReceiveDetailService.save(detail);

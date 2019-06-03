@@ -151,6 +151,7 @@
             (replace(uuid(), '-', ''),'SaleReceive','code','收款单号',1, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'SaleReceive','name','客户名称',2, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'SaleReceive','type','收款类型',3, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceive','typeName','收款类型',3, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'SaleReceive','customerId','客户ID',4, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'SaleReceive','receiveSum','收款总额',5, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'SaleReceive','cdate','收款日期',6, '1','1','1','0',now(), 'admin'),
@@ -279,27 +280,24 @@
     </select>
 
     <!-- 自动创建，可以修改 -->
-    <select id="getDataListPage"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
+    <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
         receive.id,
         receive.code,
         customer.id customerId,
         customer.name,
         round(ifnull(receive.receive_sum, 0),2) receiveSum,
+        receive.type,
         case when receive.type='0' then '预收款'
         when receive.type='1' then '普通收款'
         when receive.type='2' then '发货退款'
         when receive.type='3' then '订单退款'
         when receive.type='4' then '预收款退款'
-        else null end type,
+        else null end typeName,
         DATE_FORMAT(receive.cdate,'%Y-%m-%d') cdate
         from vmes_sale_receive receive
         left join vmes_customer customer on customer.id = receive.customer_id
         <where>
-            <!--queryStr 自定义sql查询语句-->
-            <if test="queryStr != null and queryStr != ''" >
-                and ${queryStr}
-            </if>
             <if test="code != null and code != ''">
                 and receive.code LIKE CONCAT(CONCAT('%', #{code}),'%')
             </if>
@@ -308,6 +306,10 @@
             </if>
             <if test="customerId != null and customerId != ''">
                 and customer.id = #{customerId}
+            </if>
+            <!--queryStr 自定义sql查询语句-->
+            <if test="queryStr != null and queryStr != ''" >
+                and ${queryStr}
             </if>
         </where>
         <if test="orderStr != null and orderStr != ''" >
