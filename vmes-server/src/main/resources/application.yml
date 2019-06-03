@@ -68,7 +68,7 @@ spring:
     filters: stat,wall
 
   activemq:
-     broker-url: tcp://116.196.105.79:61616
+     broker-url: tcp://47.92.1.209.79:61616
      user: admin
      password: admin
      in-memory: true
