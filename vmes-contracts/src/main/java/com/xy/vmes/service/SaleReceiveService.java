@@ -134,9 +134,11 @@ public interface SaleReceiveService {
 
     ResultModel listPageSaleReceives(PageData pd, Pagination pg) throws Exception;
 
-    void exportExcelSaleReceives(PageData pd, Pagination pg) throws Exception;
+    ResultModel auditPassSaleReceive(PageData pd) throws Exception;
 
-    ResultModel importExcelSaleReceives(MultipartFile file) throws Exception;
+    //void exportExcelSaleReceives(PageData pd, Pagination pg) throws Exception;
+
+    //ResultModel importExcelSaleReceives(MultipartFile file) throws Exception;
 
     /**
      *

@@ -118,19 +118,6 @@ public interface SaleReceiveDetailService {
     void updateToDisableByIds(String[] ids)throws Exception;
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
-    List<Map<String, Object>> findReceiveDetailCollectByOrderId(PageData pageData) throws Exception;
-    /**
-     * 获取订单付款信息<订单id, 订单付款信息Map>
-     *     订单付款信息Map
-     *         receiveSum: 付款金额
-     *
-     * @param orderIds
-     * @param state
-     * @return
-     * @throws Exception
-     */
-    Map<String, Map<String, BigDecimal>> findMapOrderReceiveByOrderId(String orderIds, String state) throws Exception;
-    BigDecimal findReceiveSumByOrderId(String orderId) throws Exception;
     /**
      *
      * @param pageData    查询参数对象<HashMap>
@@ -143,8 +130,26 @@ public interface SaleReceiveDetailService {
      */
     List<SaleReceiveDetail> findDataList(PageData pageData, Boolean isQueryAll) throws Exception;
 
-    List<Map> getOrderReceiveDetailDataListPage(PageData pd, Pagination pg) throws Exception;
+    List<SaleReceiveDetail> findSaleReceiveDetailList(PageData object) throws Exception;
+    List<SaleReceiveDetail> findSaleReceiveDetailListByParentId(String parentId) throws Exception;
 
+
+    List<Map> getOrderReceiveDetailDataListPage(PageData pd, Pagination pg) throws Exception;
+    List<Map<String, Object>> findReceiveDetailCollectByOrderId(PageData pageData) throws Exception;
+    /**
+     * 获取订单付款信息<订单id, 订单付款信息Map>
+     *     订单付款信息Map
+     *         receiveSum: 付款金额
+     *
+     * @param orderIds
+     * @param state
+     * @return
+     * @throws Exception
+     */
+    Map<String, Map<String, BigDecimal>> findMapOrderReceiveByOrderId(String orderIds, String state) throws Exception;
+
+    //BigDecimal findReceiveSumByOrderId(String orderId) throws Exception;
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ResultModel listPageOrderReceiveDetail(PageData pd, Pagination pg) throws Exception;
 
     ResultModel listPageSaleReceiveDetails(PageData pd, Pagination pg) throws Exception;

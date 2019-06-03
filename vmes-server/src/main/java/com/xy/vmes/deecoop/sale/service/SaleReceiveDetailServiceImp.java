@@ -2,7 +2,6 @@ package com.xy.vmes.deecoop.sale.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
-import com.xy.vmes.common.util.Common;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.sale.dao.SaleReceiveDetailMapper;
 import com.xy.vmes.entity.Column;
@@ -16,7 +15,6 @@ import com.yvan.PageData;
 import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -198,24 +196,15 @@ public class SaleReceiveDetailServiceImp implements SaleReceiveDetailService {
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
     /**
-     * 创建人：刘威 自动创建，禁止修改
-     * 创建时间：2019-01-10
+     *
+     * @param pageData    查询参数对象<HashMap>
+     * @param isQueryAll  是否查询全部
+     *   true: 无查询条件返回表全部结果集
+     *   false: (false or is null)无查询条件-查询结果集返回空或
+     *
+     * @return
+     * @throws Exception
      */
-    @Override
-    public List<Map> getOrderReceiveDetailDataListPage(PageData pd, Pagination pg) throws Exception{
-        return saleReceiveDetailMapper.getOrderReceiveDetailDataListPage(pd,pg);
-    }
-
-    /**
-    *
-    * @param pageData    查询参数对象<HashMap>
-    * @param isQueryAll  是否查询全部
-    *   true: 无查询条件返回表全部结果集
-    *   false: (false or is null)无查询条件-查询结果集返回空或
-    *
-    * @return
-    * @throws Exception
-    */
     public List<SaleReceiveDetail> findDataList(PageData pageData, Boolean isQueryAll) throws Exception {
         int pageDataSize = 0;
         if (pageData != null && pageData.size() > 0) {
@@ -229,8 +218,29 @@ public class SaleReceiveDetailServiceImp implements SaleReceiveDetailService {
         return this.dataList(pageData);
     }
 
+    public List<SaleReceiveDetail> findSaleReceiveDetailList(PageData object) throws Exception {
+        return this.findDataList(object, null);
+    }
+    public List<SaleReceiveDetail> findSaleReceiveDetailListByParentId(String parentId) throws Exception {
+        if (parentId == null || parentId.trim().length() == 0) {return null;}
+
+        PageData findMap = new PageData();
+        findMap.put("parentId", parentId);
+
+        return this.findSaleReceiveDetailList(findMap);
+    }
+
     public List<Map<String, Object>> findReceiveDetailCollectByOrderId(PageData pageData) throws Exception {
         return saleReceiveDetailMapper.findReceiveDetailCollectByOrderId(pageData);
+    }
+
+    /**
+     * 创建人：刘威 自动创建，禁止修改
+     * 创建时间：2019-01-10
+     */
+    @Override
+    public List<Map> getOrderReceiveDetailDataListPage(PageData pd, Pagination pg) throws Exception{
+        return saleReceiveDetailMapper.getOrderReceiveDetailDataListPage(pd,pg);
     }
 
     /**
@@ -273,32 +283,32 @@ public class SaleReceiveDetailServiceImp implements SaleReceiveDetailService {
 
     }
 
-    public BigDecimal findReceiveSumByOrderId(String orderId) {
-        if (orderId == null || orderId.trim().length() == 0) {return BigDecimal.valueOf(0D);}
-
-        PageData findMap = new PageData();
-        findMap.put("orderId", orderId);
-        //收款单状态(0:待收款 1:已收款 -1:已取消)
-        findMap.put("state", "1");
-        List<Map<String, Object>> mapList = null;
-        try {
-            mapList = this.findReceiveDetailCollectByOrderId(findMap);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        if (mapList == null || mapList.size() == 0) {return BigDecimal.valueOf(0D);}
-
-        double receiveSum = 0D;
-        for (Map<String, Object> objectMap : mapList) {
-            if (objectMap.get("receiveAmount") != null) {
-                BigDecimal receiveAmount = (BigDecimal)objectMap.get("receiveAmount");
-                receiveSum = receiveSum + receiveAmount.doubleValue();
-            }
-        }
-
-        //四舍五入到2位小数
-        return BigDecimal.valueOf(receiveSum).setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-    }
+//    public BigDecimal findReceiveSumByOrderId(String orderId) {
+//        if (orderId == null || orderId.trim().length() == 0) {return BigDecimal.valueOf(0D);}
+//
+//        PageData findMap = new PageData();
+//        findMap.put("orderId", orderId);
+//        //收款单状态(0:待收款 1:已收款 -1:已取消)
+//        findMap.put("state", "1");
+//        List<Map<String, Object>> mapList = null;
+//        try {
+//            mapList = this.findReceiveDetailCollectByOrderId(findMap);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        if (mapList == null || mapList.size() == 0) {return BigDecimal.valueOf(0D);}
+//
+//        double receiveSum = 0D;
+//        for (Map<String, Object> objectMap : mapList) {
+//            if (objectMap.get("receiveAmount") != null) {
+//                BigDecimal receiveAmount = (BigDecimal)objectMap.get("receiveAmount");
+//                receiveSum = receiveSum + receiveAmount.doubleValue();
+//            }
+//        }
+//
+//        //四舍五入到2位小数
+//        return BigDecimal.valueOf(receiveSum).setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+//    }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////
     @Override

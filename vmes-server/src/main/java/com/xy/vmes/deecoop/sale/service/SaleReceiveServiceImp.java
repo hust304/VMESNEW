@@ -381,39 +381,13 @@ public class SaleReceiveServiceImp implements SaleReceiveService {
             columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
         }
 
-        List<LinkedHashMap> titlesList = new ArrayList<LinkedHashMap>();
-        List<String> titlesHideList = new ArrayList<String>();
-        Map<String, String> varModelMap = new HashMap<String, String>();
-        if(columnList!=null&&columnList.size()>0){
-            for (Column column : columnList) {
-                if(column!=null){
-                    if("0".equals(column.getIshide())){
-                        titlesHideList.add(column.getTitleKey());
-                    }
-                    LinkedHashMap titlesLinkedMap = new LinkedHashMap();
-                    titlesLinkedMap.put(column.getTitleKey(),column.getTitleName());
-                    varModelMap.put(column.getTitleKey(),"");
-                    titlesList.add(titlesLinkedMap);
-                }
-            }
-        }
-        Map result = new HashMap();
-        result.put("hideTitles",titlesHideList);
-        result.put("titles",titlesList);
-
-        List<Map> varMapList = new ArrayList();
+        Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
         List<Map> varList = this.getDataListPage(pd,pg);
-        if(varList!=null&&varList.size()>0){
-            for(int i=0;i<varList.size();i++){
-                Map map = varList.get(i);
-                Map<String, String> varMap = new HashMap<String, String>();
-                varMap.putAll(varModelMap);
-                for (Map.Entry<String, String> entry : varMap.entrySet()) {
-                    varMap.put(entry.getKey(),map.get(entry.getKey())!=null?map.get(entry.getKey()).toString():"");
-                }
-                varMapList.add(varMap);
-            }
-        }
+        List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
+
+        Map result = new HashMap();
+        result.put("hideTitles",titleMap.get("hideTitles"));
+        result.put("titles",titleMap.get("titles"));
         result.put("varList",varMapList);
         result.put("pageData", pg);
 
@@ -421,82 +395,112 @@ public class SaleReceiveServiceImp implements SaleReceiveService {
         return model;
     }
 
-    @Override
-    public void exportExcelSaleReceives(PageData pd, Pagination pg) throws Exception {
-        List<Column> columnList = columnService.findColumnList("SaleReceive");
-        if (columnList == null || columnList.size() == 0) {
-            throw new RestException("1","数据库没有生成TabCol，请联系管理员！");
-        }
-
-        //根据查询条件获取业务数据List
-        String ids = (String)pd.getString("ids");
-        String queryStr = "";
-        if (ids != null && ids.trim().length() > 0) {
-            ids = StringUtil.stringTrimSpace(ids);
-            ids = "'" + ids.replace(",", "','") + "'";
-            queryStr = "id in (" + ids + ")";
-        }
-        pd.put("queryStr", queryStr);
-
-        pg.setSize(100000);
-        List<Map> dataList = this.getDataListPage(pd, pg);
-
-        //查询数据转换成Excel导出数据
-        List<LinkedHashMap<String, String>> dataMapList = ColumnUtil.modifyDataList(columnList, dataList);
-        HttpServletResponse response = HttpUtils.currentResponse();
-
-        //查询数据-Excel文件导出
-        String fileName = pd.getString("fileName");
-        if (fileName == null || fileName.trim().length() == 0) {
-            fileName = "ExcelSaleReceive";
-        }
-
-        //导出文件名-中文转码
-        fileName = new String(fileName.getBytes("utf-8"),"ISO-8859-1");
-        ExcelUtil.excelExportByDataList(response, fileName, dataMapList);
-    }
-
-    @Override
-    public ResultModel importExcelSaleReceives(MultipartFile file) throws Exception {
+    public ResultModel auditPassSaleReceive(PageData pd) throws Exception {
         ResultModel model = new ResultModel();
-        //HttpServletRequest Request = HttpUtils.currentRequest();
-
-        if (file == null) {
+        String parentId = pd.getString("parentId");
+        if (parentId == null || parentId.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("请上传Excel文件！");
+            model.putMsg("收款单id为空或空字符串！");
             return model;
         }
 
-        // 验证文件是否合法
-        // 获取上传的文件名(文件名.后缀)
-        String fileName = file.getOriginalFilename();
-        if (fileName == null
-                || !(fileName.matches("^.+\\.(?i)(xlsx)$")
-                || fileName.matches("^.+\\.(?i)(xls)$"))
-                ) {
-            String failMesg = "不是excel格式文件,请重新选择！";
-            model.putCode(Integer.valueOf(1));
-            model.putMsg(failMesg);
-            return model;
+        PageData findMap = new PageData();
+        findMap.put("parentId", parentId);
+        //state 收款单明细状态:(0:待收款(待审核) 1:已收款 -1:已取消)
+        findMap.put("state", "0");
+        List<SaleReceiveDetail> detailList = saleReceiveDetailService.findSaleReceiveDetailList(findMap);
+
+        if (detailList != null && detailList.size() > 0) {
+            for (SaleReceiveDetail detail : detailList) {
+                SaleReceiveDetail editDetail = new SaleReceiveDetail();
+
+                String id = detail.getId();
+                editDetail.setId(id);
+
+                //收款单明细状态:(0:待收款(待审核) 1:已收款 -1:已取消)
+                editDetail.setState("1");
+            }
         }
 
-        // 判断文件的类型，是2003还是2007
-        boolean isExcel2003 = true;
-        if (fileName.matches("^.+\\.(?i)(xlsx)$")) {
-            isExcel2003 = false;
-        }
-
-        List<List<String>> dataLst = ExcelUtil.readExcel(file.getInputStream(), isExcel2003);
-        List<LinkedHashMap<String, String>> dataMapLst = ExcelUtil.reflectMapList(dataLst);
-
-        //1. Excel文件数据dataMapLst -->(转换) ExcelEntity (属性为导入模板字段)
-        //2. Excel导入字段(非空,数据有效性验证[数字类型,字典表(大小)类是否匹配])
-        //3. Excel导入字段-名称唯一性判断-在Excel文件中
-        //4. Excel导入字段-名称唯一性判断-在业务表中判断
-        //5. List<ExcelEntity> --> (转换) List<业务表DB>对象
-        //6. 遍历List<业务表DB> 对业务表添加或修改
         return model;
     }
+
+//    @Override
+//    public void exportExcelSaleReceives(PageData pd, Pagination pg) throws Exception {
+//        List<Column> columnList = columnService.findColumnList("SaleReceive");
+//        if (columnList == null || columnList.size() == 0) {
+//            throw new RestException("1","数据库没有生成TabCol，请联系管理员！");
+//        }
+//
+//        //根据查询条件获取业务数据List
+//        String ids = (String)pd.getString("ids");
+//        String queryStr = "";
+//        if (ids != null && ids.trim().length() > 0) {
+//            ids = StringUtil.stringTrimSpace(ids);
+//            ids = "'" + ids.replace(",", "','") + "'";
+//            queryStr = "id in (" + ids + ")";
+//        }
+//        pd.put("queryStr", queryStr);
+//
+//        pg.setSize(100000);
+//        List<Map> dataList = this.getDataListPage(pd, pg);
+//
+//        //查询数据转换成Excel导出数据
+//        List<LinkedHashMap<String, String>> dataMapList = ColumnUtil.modifyDataList(columnList, dataList);
+//        HttpServletResponse response = HttpUtils.currentResponse();
+//
+//        //查询数据-Excel文件导出
+//        String fileName = pd.getString("fileName");
+//        if (fileName == null || fileName.trim().length() == 0) {
+//            fileName = "ExcelSaleReceive";
+//        }
+//
+//        //导出文件名-中文转码
+//        fileName = new String(fileName.getBytes("utf-8"),"ISO-8859-1");
+//        ExcelUtil.excelExportByDataList(response, fileName, dataMapList);
+//    }
+
+//    @Override
+//    public ResultModel importExcelSaleReceives(MultipartFile file) throws Exception {
+//        ResultModel model = new ResultModel();
+//        //HttpServletRequest Request = HttpUtils.currentRequest();
+//
+//        if (file == null) {
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg("请上传Excel文件！");
+//            return model;
+//        }
+//
+//        // 验证文件是否合法
+//        // 获取上传的文件名(文件名.后缀)
+//        String fileName = file.getOriginalFilename();
+//        if (fileName == null
+//                || !(fileName.matches("^.+\\.(?i)(xlsx)$")
+//                || fileName.matches("^.+\\.(?i)(xls)$"))
+//                ) {
+//            String failMesg = "不是excel格式文件,请重新选择！";
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg(failMesg);
+//            return model;
+//        }
+//
+//        // 判断文件的类型，是2003还是2007
+//        boolean isExcel2003 = true;
+//        if (fileName.matches("^.+\\.(?i)(xlsx)$")) {
+//            isExcel2003 = false;
+//        }
+//
+//        List<List<String>> dataLst = ExcelUtil.readExcel(file.getInputStream(), isExcel2003);
+//        List<LinkedHashMap<String, String>> dataMapLst = ExcelUtil.reflectMapList(dataLst);
+//
+//        //1. Excel文件数据dataMapLst -->(转换) ExcelEntity (属性为导入模板字段)
+//        //2. Excel导入字段(非空,数据有效性验证[数字类型,字典表(大小)类是否匹配])
+//        //3. Excel导入字段-名称唯一性判断-在Excel文件中
+//        //4. Excel导入字段-名称唯一性判断-在业务表中判断
+//        //5. List<ExcelEntity> --> (转换) List<业务表DB>对象
+//        //6. 遍历List<业务表DB> 对业务表添加或修改
+//        return model;
+//    }
 
     public SaleReceive createReceive(String customerId, String cuser, String companyID, String receiveType) {
         SaleReceive receive = new SaleReceive();

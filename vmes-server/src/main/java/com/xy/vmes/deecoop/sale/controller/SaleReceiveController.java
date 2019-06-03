@@ -227,38 +227,81 @@ public class SaleReceiveController {
         return model;
     }
 
-
-    /**
-    * Excel导出
-    * @author 刘威 自动创建，可以修改
-    * @date 2019-01-10
-    */
-    @PostMapping("/sale/saleReceive/exportExcelSaleReceives")
-    public void exportExcelSaleReceives() throws Exception {
-        logger.info("################/sale/saleReceive/exportExcelSaleReceives 执行开始 ################# ");
+    @PostMapping("/sale/saleReceive/auditPassSaleReceive")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel auditPassSaleReceive() throws Exception {
+        logger.info("################/sale/saleReceive/auditPassSaleReceive 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         PageData pd = HttpUtils.parsePageData();
-        Pagination pg = HttpUtils.parsePagination(pd);
-        saleReceiveService.exportExcelSaleReceives(pd,pg);
+        ResultModel model = saleReceiveService.auditPassSaleReceive(pd);
         Long endTime = System.currentTimeMillis();
-        logger.info("################/sale/saleReceive/exportExcelSaleReceives 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
-    }
-
-    /**
-    * Excel导入
-    *
-    * @author 刘威 自动创建，可以修改
-    * @date 2019-01-10
-    */
-    @PostMapping("/sale/saleReceive/importExcelSaleReceives")
-    public ResultModel importExcelSaleReceives(@RequestParam(value="excelFile") MultipartFile file) throws Exception  {
-        logger.info("################/sale/saleReceive/importExcelSaleReceives 执行开始 ################# ");
-        Long startTime = System.currentTimeMillis();
-        ResultModel model = saleReceiveService.importExcelSaleReceives(file);
-        Long endTime = System.currentTimeMillis();
-        logger.info("################/sale/saleReceive/importExcelSaleReceives 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleReceive/auditPassSaleReceive 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
+
+    @PostMapping("/sale/saleReceive/auditDisagreeSaleReceive")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel auditDisagreeSaleReceive() throws Exception {
+        logger.info("################/sale/saleReceive/auditDisagreeSaleReceive 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+
+        String parentId = pd.getString("parentId");
+        if (parentId == null || parentId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("收款单id为空或空字符串！");
+            return model;
+        }
+
+        String remark = pd.getString("remark");
+        if (remark == null || remark.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("不通过原因为空或空字符串！");
+            return model;
+        }
+
+        SaleReceive editReceive = new SaleReceive();
+        editReceive.setId(parentId);
+        editReceive.setRemark(remark);
+        saleReceiveService.update(editReceive);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleReceive/auditDisagreeSaleReceive 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+//    /**
+//    * Excel导出
+//    * @author 刘威 自动创建，可以修改
+//    * @date 2019-01-10
+//    */
+//    @PostMapping("/sale/saleReceive/exportExcelSaleReceives")
+//    public void exportExcelSaleReceives() throws Exception {
+//        logger.info("################/sale/saleReceive/exportExcelSaleReceives 执行开始 ################# ");
+//        Long startTime = System.currentTimeMillis();
+//        PageData pd = HttpUtils.parsePageData();
+//        Pagination pg = HttpUtils.parsePagination(pd);
+//        saleReceiveService.exportExcelSaleReceives(pd,pg);
+//        Long endTime = System.currentTimeMillis();
+//        logger.info("################/sale/saleReceive/exportExcelSaleReceives 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+//    }
+//
+//    /**
+//    * Excel导入
+//    *
+//    * @author 刘威 自动创建，可以修改
+//    * @date 2019-01-10
+//    */
+//    @PostMapping("/sale/saleReceive/importExcelSaleReceives")
+//    public ResultModel importExcelSaleReceives(@RequestParam(value="excelFile") MultipartFile file) throws Exception  {
+//        logger.info("################/sale/saleReceive/importExcelSaleReceives 执行开始 ################# ");
+//        Long startTime = System.currentTimeMillis();
+//        ResultModel model = saleReceiveService.importExcelSaleReceives(file);
+//        Long endTime = System.currentTimeMillis();
+//        logger.info("################/sale/saleReceive/importExcelSaleReceives 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+//        return model;
+//    }
 
 }
 

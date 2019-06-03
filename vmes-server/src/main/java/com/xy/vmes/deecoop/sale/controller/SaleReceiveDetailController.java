@@ -1,16 +1,12 @@
 package com.xy.vmes.deecoop.sale.controller;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
-import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.StringUtil;
-import com.xy.vmes.entity.Column;
 import com.xy.vmes.entity.SaleReceiveDetail;
-import com.xy.vmes.service.ColumnService;
+import com.xy.vmes.service.SaleReceiveDetailByAuditService;
 import com.xy.vmes.service.SaleReceiveDetailService;
-import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
-import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -34,11 +30,12 @@ import java.util.*;
 @RestController
 @Slf4j
 public class SaleReceiveDetailController {
-
     private Logger logger = LoggerFactory.getLogger(SaleReceiveDetailController.class);
 
     @Autowired
     private SaleReceiveDetailService saleReceiveDetailService;
+    @Autowired
+    private SaleReceiveDetailByAuditService saleReceiveDetailByAuditService;
 
 
     /**
@@ -196,11 +193,6 @@ public class SaleReceiveDetailController {
 
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
-
-
-
-
-
     /**
      * @author 刘威 自动创建，可以修改
      * @date 2019-01-10
@@ -217,7 +209,6 @@ public class SaleReceiveDetailController {
         return model;
     }
 
-
     /**
     * @author 刘威 自动创建，可以修改
     * @date 2019-01-10
@@ -231,6 +222,18 @@ public class SaleReceiveDetailController {
         ResultModel model = saleReceiveDetailService.listPageSaleReceiveDetails(pd,pg);
         Long endTime = System.currentTimeMillis();
         logger.info("################/sale/saleReceiveDetail/listPageSaleReceiveDetails 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    @PostMapping("/sale/saleReceiveDetail/findListSaleReceiveDetailByByAudit")
+    public ResultModel findListSaleReceiveDetailByByAudit() throws Exception {
+        logger.info("################/sale/saleReceiveDetail/findListSaleReceiveDetailByByAudit 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        Pagination pg = HttpUtils.parsePagination(pd);
+        ResultModel model = saleReceiveDetailByAuditService.findListSaleReceiveDetailByByAudit(pd,pg);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleReceiveDetail/findListSaleReceiveDetailByByAudit 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
