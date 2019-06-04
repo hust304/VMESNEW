@@ -26,10 +26,24 @@ public class TreeUtil {
         if (nodeId == null || nodeId.trim().length() == 0) {nodeId = new String("root");}
 
         //获得当前节点对象
-        TreeEntity nodeObject = findNodeById(nodeId, objectList);
-        createTree(nodeObject, objectList);
+        TreeEntity nodeObject = TreeUtil.findNodeById(nodeId, objectList);
+        TreeUtil.createTree(nodeObject, objectList);
 
         return nodeObject;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    public static List<TreeEntity> listSwitchTree(String nodeId, List<TreeEntity> objectList) {
+        List<TreeEntity> treeList = new ArrayList<TreeEntity>();
+        if (objectList == null || objectList.size() == 0) {return treeList;}
+        if (nodeId == null || nodeId.trim().length() == 0) {nodeId = new String("root");}
+
+        TreeEntity tree = TreeUtil.switchTree(nodeId, objectList);
+        if (tree != null && tree.getChildren() != null) {
+            treeList = tree.getChildren();
+        }
+
+        return treeList;
     }
 
     /**
@@ -210,19 +224,6 @@ public class TreeUtil {
     }
 
 
-    public static List<TreeEntity> listSwitchTree(String nodeId, List<TreeEntity> objectList) {
-        List<TreeEntity> treeList = new ArrayList<TreeEntity>();
-        if (objectList == null || objectList.size() == 0) {return treeList;}
-        if (nodeId == null || nodeId.trim().length() == 0) {nodeId = new String("root");}
-
-        TreeEntity tree = switchTree(nodeId, objectList);
-        if (tree != null && tree.getChildren() != null) {
-            treeList = tree.getChildren();
-        }
-
-        return treeList;
-    }
-
     /**
      * 本方法为递归调用:
      * @param nodeObject
@@ -374,17 +375,46 @@ public class TreeUtil {
      */
     private static void createTree(TreeEntity nodeObject, List<TreeEntity> objectList) {
         //获得当前节点id下的所有孩子
-        List<TreeEntity> childList = findChildListById(nodeObject.getId(), objectList);
-        if(childList.size()>0){
+        List<TreeEntity> childList = TreeUtil.findChildListById(nodeObject.getId(), objectList);
+        if (childList.size() > 0) {
             List<TreeEntity> childListNew = new ArrayList<TreeEntity>();
             for(int i = 0; i < childList.size(); i++){
                 TreeEntity child = childList.get(i);
-                createTree(child, objectList);
+                TreeUtil.createTree(child, objectList);
                 childListNew.add(child);
             }
             nodeObject.setChildren(childListNew);
-        }else{
+
+            //isChecked 设置树节点是否选中 (true:选中 false:未选中)
+            //非叶子节点是否选中 (isChecked) 判断条件 通过当前节点是否选中 (true:选中 false:未选中)
+            //当前节点是否选中 (true:选中 false:未选中)
+            nodeObject.setIsChecked(nodeObject.getIsBindRole());
+
+            if (childListNew != null && childListNew.size() > 0) {
+                Boolean isChecked = TreeUtil.isAllCheckedByTreeList(childListNew);
+                nodeObject.setIsChecked(isChecked);
+            }
+        } else {
             //nodeObject.setChildren(null);
+
+            //isChecked 设置树节点是否选中 (true:选中 false:未选中)
+            //叶子节点是否选中 (isChecked) 判断条件 通过当前节点-是否绑定角色(true:绑定 false:未绑定)
+
+            //当前节点无叶子节点情况
+            //当前节点-是否绑定角色(true:绑定 false:未绑定)
+            nodeObject.setIsChecked(nodeObject.getIsBindRole());
+
+            //获取该节点下子节点list
+            List<TreeEntity> nodeChildList = null;
+            if (nodeObject != null && nodeObject.getChildren() != null) {
+                nodeChildList = nodeObject.getChildren();
+            }
+
+            if (nodeChildList != null && nodeChildList.size() > 0) {
+                Boolean isChecked = TreeUtil.isAllBindRoleByTreeList(nodeChildList);
+                nodeObject.setIsChecked(isChecked);
+            }
+
             return;
         }
     }
@@ -517,6 +547,28 @@ public class TreeUtil {
                 nodeList.add(leafNode);
             }
         }
+    }
+
+    private static Boolean isAllBindRoleByTreeList(List<TreeEntity> treeList) {
+        if (treeList == null || treeList.size() == 0) {return Boolean.FALSE;}
+
+        for (TreeEntity object : treeList) {
+            if (object.getIsBindRole() == null || !object.getIsBindRole().booleanValue()) {
+                return Boolean.FALSE;
+            }
+        }
+        return Boolean.TRUE;
+    }
+
+    private static Boolean isAllCheckedByTreeList(List<TreeEntity> treeList) {
+        if (treeList == null || treeList.size() == 0) {return Boolean.FALSE;}
+
+        for (TreeEntity object : treeList) {
+            if (object.getIsChecked() == null || !object.getIsChecked().booleanValue()) {
+                return Boolean.FALSE;
+            }
+        }
+        return Boolean.TRUE;
     }
 
 

@@ -29,6 +29,10 @@ public class TreeEntity implements Cloneable {
     private String url;
     //当前节点图标
     private String icon;
+    //当前节点-是否绑定角色(true:绑定 false:未绑定)
+    private Boolean isBindRole;
+    //当前节点是否选中 (true:选中 false:未选中)
+    private Boolean isChecked;
 
     //岗位树(属性)"dept" 部门 "post" 岗位
     private String type;
@@ -73,10 +77,6 @@ public class TreeEntity implements Cloneable {
     //根节点到本节点路径名称
     private String pathName;
 
-    //当前节点-是否绑定角色(1:绑定 0:未绑定)
-    private Boolean isBindRole;
-
-
     //(必须)当前节点子节点
     private List<TreeEntity> children = new ArrayList<TreeEntity>();
 
@@ -118,14 +118,6 @@ public class TreeEntity implements Cloneable {
 
     public void setLackList(List<TreeEntity> lackList) {
         this.lackList = lackList;
-    }
-
-    public Boolean getBindRole() {
-        return isBindRole;
-    }
-
-    public void setBindRole(Boolean bindRole) {
-        isBindRole = bindRole;
     }
 
     public List<String> getHideTitles() {
@@ -362,4 +354,12 @@ public class TreeEntity implements Cloneable {
     public void setPathName(String pathName) {
         this.pathName = pathName;
     }
+    public Boolean getIsChecked() {
+        return isChecked;
+    }
+    public void setIsChecked(Boolean isChecked) {
+        this.isChecked = isChecked;
+    }
+
+
 }
