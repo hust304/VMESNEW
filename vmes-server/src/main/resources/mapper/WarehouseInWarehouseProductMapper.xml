@@ -47,7 +47,10 @@
                     and a.company_id=#{companyId}
                 </if>
                 <if test="isSimple != null and isSimple != ''" >
-                    and a.is_simple=#{isSimple}
+                    and a.is_simple = #{isSimple}
+                </if>
+                <if test="'true' == isNotSimple">
+                    and (a.is_simple is null or a.is_simple = 'N')
                 </if>
                 and a.isdisable = '1'
             </where>
