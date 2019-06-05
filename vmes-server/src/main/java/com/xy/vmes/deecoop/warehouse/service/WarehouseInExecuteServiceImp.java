@@ -453,9 +453,22 @@ public class WarehouseInExecuteServiceImp implements WarehouseInExecuteService {
 //                List<WarehouseInDetail> detailList = warehouseInDetailService.findWarehouseInDetailListByParentId(parentId);
 //                warehouseInDetailService.updateStateWarehouseInDetail(detailList);
 
-
                 WarehouseInDetail detail = warehouseInDetailService.findWarehouseInDetailById(detailId);
                 Task task = taskService.findTaskByBusinessId(detailId);
+
+                //inExecuteType 入库执行类型 (InExecuteByForce 强制入库)
+                String inExecuteType = pageData.getString("inExecuteType");
+                String countByDetail = pageData.getString("countByDetail");
+                if ("InExecuteByForce".equals(inExecuteType) && countByDetail != null && countByDetail.trim().length() > 0) {
+                    try {
+                        BigDecimal countByDetail_big = new BigDecimal(countByDetail);
+                        //四舍五入到2位小数
+                        countByDetail_big = countByDetail_big.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                        detail.setCount(countByDetail_big);
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                }
 
                 Map columnMap = new HashMap();
                 columnMap.put("detail_id",detailId);
