@@ -7,25 +7,6 @@
  -->
 <mapper namespace="com.xy.vmes.deecoop.warehouse.dao.WarehouseCheckExecuteMapper">
 
-    <!-- 字段 自动创建，禁止修改-->
-    <sql id="Field">
-		id id,
-		parent_id parentId,
-		detail_id detailId,
-		executor_id executorId,
-		audit_id auditId,
-
-		count count,
-		state state,
-		cuser cuser,
-		cdate cdate,
-		uuser uuser,
-
-		udate udate,
-		remark remark,
-		isdisable isdisable
-    </sql>
-
     <!-- 批量删除 自动创建，禁止修改-->
     <delete id="deleteByIds" parameterType="java.lang.String">
         delete from vmes_warehouse_check_execute
@@ -102,7 +83,8 @@
 
             udate udate,
             remark remark,
-            isdisable isdisable
+            isdisable isdisable,
+            audit_date auditDate
         from vmes_warehouse_check_execute
         <choose>
             <!--
@@ -179,7 +161,8 @@
 
             udate udate,
             remark remark,
-            isdisable isdisable
+            isdisable isdisable,
+            audit_date auditDate
         from vmes_warehouse_check_execute
         <where>
             <!--queryStr 自定义sql查询语句-->

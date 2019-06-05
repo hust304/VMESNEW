@@ -677,6 +677,7 @@ public class WarehouseCheckExecuteServiceImp implements WarehouseCheckExecuteSer
             WarehouseCheckExecute execute = (WarehouseCheckExecute) HttpUtils.pageData2Entity(mapObject, new WarehouseCheckExecute());
             //状态(0:待审核 2:同意 3:不同意)
             execute.setState("3");
+            execute.setAuditDate(new Date());
             execute.setAuditId(cuser);
             execute.setRemark(remark);
             //是否启用(0:已禁用 1:启用)
@@ -798,6 +799,7 @@ public class WarehouseCheckExecuteServiceImp implements WarehouseCheckExecuteSer
             //状态(0:待审核 2:同意 3:不同意)
             execute.setState("2");
             execute.setAuditId(cuser);
+            execute.setAuditDate(new Date());
             this.update(execute);
 
             //修改盘点明细状态

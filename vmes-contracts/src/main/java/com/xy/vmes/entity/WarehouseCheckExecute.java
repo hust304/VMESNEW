@@ -31,6 +31,7 @@ public class WarehouseCheckExecute implements Serializable {
 	//审核人ID
 	@TableField("audit_id")
 	private String auditId;
+
 	//盘点数量
 	@TableField("count")
 	private BigDecimal count;
@@ -46,6 +47,7 @@ public class WarehouseCheckExecute implements Serializable {
 	//修改用户id
 	@TableField("uuser")
 	private String uuser;
+
 	//修改时间
 	@TableField("udate")
 	private Date udate;
@@ -55,7 +57,9 @@ public class WarehouseCheckExecute implements Serializable {
 	//是否启用(0:已禁用 1:启用)
 	@TableField("isdisable")
 	private String isdisable;
-
+	//审核时间
+	@TableField("audit_date")
+	private Date auditDate;
 
 
 	public void setId(String id) {
@@ -136,8 +140,13 @@ public class WarehouseCheckExecute implements Serializable {
 	public String getIsdisable() {
 		return isdisable;
 	}
-
-/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+	public Date getAuditDate() {
+		return auditDate;
+	}
+	public void setAuditDate(Date auditDate) {
+		this.auditDate = auditDate;
+	}
+	/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 
 }

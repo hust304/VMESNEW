@@ -52,6 +52,9 @@
         (replace(uuid(), '-', ''),'warehouseCheckDetail','parentCode','parentCode',0, '1','1','1','0',now(), 'admin'),
 
         (replace(uuid(), '-', ''),'warehouseCheckDetail','checkStockCount','checkStockCount',14, '1','1','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'warehouseCheckDetail','auditUserName','审核人',15, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseCheckDetail','auditDate','审核时间',16, '1','1','1','0',now(), 'admin'),
     </insert>
 
     <update id="updateStateByDetail" parameterType="com.yvan.PageData" >
@@ -195,6 +198,8 @@
 
             checkExecute.id executeId,
             checkExecute.state executeState,
+            auditUser.user_name auditUserName,
+            DATE_FORMAT(checkExecute.audit_date,'%Y-%m-%d %T') auditDate,
 
             warehouse.path_name pathName,
             warehouse.code warehouseCode,
@@ -218,8 +223,10 @@
             left join vmes_dictionary genre on product.genre = genre.id
             left join vmes_warehouse_check_executor executor on detail.id = executor.detail_id and executor.isdisable = '1'
             left join vmes_user user on executor.executor_id = user.id
-            left join vmes_warehouse_check_execute checkExecute on detail.id = checkExecute.detail_id and checkExecute.isdisable = '1'
             left join vmes_warehouse_product wp on detail.warehouse_product_id = wp.id
+
+            left join vmes_warehouse_check_execute checkExecute on detail.id = checkExecute.detail_id and checkExecute.isdisable = '1'
+            left join vmes_user auditUser on checkExecute.audit_id = auditUser.id
         <where>
             <if test="parentId != null and parentId != ''" >
                 and detail.parent_id = #{parentId}
