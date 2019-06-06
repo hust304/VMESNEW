@@ -312,6 +312,8 @@ public class SaleOrderByChangeServiceImp implements SaleOrderByChangeService {
             orderDtlEntity.setOrderCount(newOrderCount);
             orderDtlEntity.setPriceCount(newOrderCount);
             orderDtlEntity.setNewOrderCount(newOrderCount);
+            //needDeliverCount 可发货数量(计价单位)
+            orderDtlEntity.setNeedDeliverCount(newOrderCount);
 
             //newProductSum 修改货品金额
             BigDecimal newProductSum = BigDecimal.valueOf(0D);
@@ -340,11 +342,14 @@ public class SaleOrderByChangeServiceImp implements SaleOrderByChangeService {
             BigDecimal newOrderCountByProdUnit = productCount;
 
             //oldLockCount 变更前-锁定货品数量(计量单位)
-            orderDtlEntity.setOldLockCount(orderDtlEntity.getLockCount());
-            BigDecimal oldLockCount = orderDtlEntity.getOldLockCount();
+            BigDecimal oldLockCount = BigDecimal.valueOf(0D);
+            if (orderDtlEntity.getLockCount() != null) {
+                oldLockCount = orderDtlEntity.getLockCount();
+            }
+            orderDtlEntity.setOldLockCount(oldLockCount);
 
             //变更后订购数量(计量单位) < 锁定货品数量(计量单位)
-            if (oldLockCount != null && (newOrderCountByProdUnit.doubleValue() < oldLockCount.doubleValue())) {
+            if (oldLockCount.doubleValue() != 0D && newOrderCountByProdUnit.doubleValue() < oldLockCount.doubleValue()) {
                 //newLockCount 变更后-锁定货品数量(计量单位)
                 BigDecimal newLockCount = newOrderCountByProdUnit;
                 if (newLockCount != null && newLockCount.doubleValue() != 0D) {
@@ -418,20 +423,23 @@ public class SaleOrderByChangeServiceImp implements SaleOrderByChangeService {
                 BigDecimal oldLockCount = orderDtlEntity.getOldLockCount();
                 BigDecimal changeLockCount = BigDecimal.valueOf(newLockCount.doubleValue() - oldLockCount.doubleValue());
 
-                //stockCount 当前库存数量
-                BigDecimal stockCount = orderDtlEntity.getStockCount();
                 //productId 货品ID
                 String productId = orderDtlEntity.getProductId();
 
                 //修改锁定库存数量
                 Product oldProduct = new Product();
                 oldProduct.setId(productId);
-                oldProduct.setLockCount(stockCount);
+                oldProduct.setLockCount(oldLockCount);
                 productService.updateLockCount(
                         productId,
                         oldProduct,
                         changeLockCount,
                         null);
+
+                //isLockWarehouse 是否锁定仓库(0:未锁定 1:已锁定)
+                orderDtl.setIsLockWarehouse("1");
+                //lockCount 锁定货品数量(计量单位)
+                orderDtl.setLockCount(newLockCount);
 
                 //versionLockCount
                 Integer versionLockCount = orderDtlEntity.getVersionLockCount();
@@ -490,20 +498,23 @@ public class SaleOrderByChangeServiceImp implements SaleOrderByChangeService {
                 BigDecimal oldLockCount = orderDtlEntity.getOldLockCount();
                 BigDecimal changeLockCount = BigDecimal.valueOf(newLockCount.doubleValue() - oldLockCount.doubleValue());
 
-                //stockCount 当前库存数量
-                BigDecimal stockCount = orderDtlEntity.getStockCount();
                 //productId 货品ID
                 String productId = orderDtlEntity.getProductId();
 
                 //修改锁定库存数量
                 Product oldProduct = new Product();
                 oldProduct.setId(productId);
-                oldProduct.setLockCount(stockCount);
+                oldProduct.setLockCount(oldLockCount);
                 productService.updateLockCount(
                         productId,
                         oldProduct,
                         changeLockCount,
                         null);
+
+                //isLockWarehouse 是否锁定仓库(0:未锁定 1:已锁定)
+                orderDtl.setIsLockWarehouse("1");
+                //lockCount 锁定货品数量(计量单位)
+                orderDtl.setLockCount(newLockCount);
 
                 //versionLockCount
                 Integer versionLockCount = orderDtlEntity.getVersionLockCount();
