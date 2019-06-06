@@ -62,11 +62,18 @@ public class SaleOrderDetailEntity {
 
     //是否启用(0:已禁用 1:启用)
     private String isdisable;
+    //修改锁定库存版本号
+    private Integer versionLockCount;
 
     //(计价单位)本次发货数量
     private BigDecimal orderDtlDeliverCount;
     //非实体类字段:界面传值用
     private String deliverDtlRemark;
+
+    //变更前-订购数量
+    private BigDecimal oldOrderCount;
+    //变更后-订购数量
+    private BigDecimal newOrderCount;
 
     //变更前-锁定货品数量(计量单位)
     private BigDecimal oldLockCount;
@@ -260,5 +267,27 @@ public class SaleOrderDetailEntity {
     }
     public void setStockCount(BigDecimal stockCount) {
         this.stockCount = stockCount;
+    }
+
+    public BigDecimal getOldOrderCount() {
+        return oldOrderCount;
+    }
+    public void setOldOrderCount(BigDecimal oldOrderCount) {
+        this.oldOrderCount = oldOrderCount;
+    }
+
+    public BigDecimal getNewOrderCount() {
+        return newOrderCount;
+    }
+    public void setNewOrderCount(BigDecimal newOrderCount) {
+        this.newOrderCount = newOrderCount;
+    }
+
+    public Integer getVersionLockCount() {
+        return versionLockCount;
+    }
+
+    public void setVersionLockCount(Integer versionLockCount) {
+        this.versionLockCount = versionLockCount;
     }
 }

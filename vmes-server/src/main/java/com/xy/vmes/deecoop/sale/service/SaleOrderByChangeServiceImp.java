@@ -2,6 +2,7 @@ package com.xy.vmes.deecoop.sale.service;
 
 import com.xy.vmes.common.util.Common;
 import com.xy.vmes.common.util.EvaluateUtil;
+import com.xy.vmes.common.util.Producer;
 import com.xy.vmes.entity.*;
 import com.xy.vmes.service.*;
 import com.yvan.HttpUtils;
@@ -47,6 +48,11 @@ public class SaleOrderByChangeServiceImp implements SaleOrderByChangeService {
 
     @Autowired
     private ProductService productService;
+    @Autowired
+    private SaleLockDateService saleLockDateService;
+    //消息队列
+    @Autowired
+    private Producer producer;
 
     /**
      * 变更订单-变更订单明细(订购数量,锁定货品数量)
@@ -103,7 +109,7 @@ public class SaleOrderByChangeServiceImp implements SaleOrderByChangeService {
         //2:待生产
         this.orderChangeByReadyProduce(orderDtlEntityList);
         //3:待出库
-        this.orderChangeByReadyOut(orderDtlEntityList);
+        this.orderChangeByReadyOut(orderDtlEntityList, companyId);
         //4:待发货
         this.orderChangeByReadyDeliver(orderId, cuser, companyId, orderDtlEntityList);
 
@@ -277,20 +283,35 @@ public class SaleOrderByChangeServiceImp implements SaleOrderByChangeService {
         for (Map<String, String> mapObject : mapList) {
             SaleOrderDetailEntity orderDtlEntity = (SaleOrderDetailEntity) HttpUtils.pageData2Entity(mapObject, new SaleOrderDetailEntity());
 
-            //newOrderCount 变更订购数量
-            BigDecimal orderCount = BigDecimal.valueOf(0D);
-            String newOrderCount_Str = mapObject.get("newOrderCount");
-            if (newOrderCount_Str != null && newOrderCount_Str.trim().length() > 0) {
+            //oldOrderCount 变更前-订购数量
+            BigDecimal oldOrderCount = BigDecimal.valueOf(0D);
+            String oldOrderCount_Str = mapObject.get("oldOrderCount");
+            if (oldOrderCount_Str != null && oldOrderCount_Str.trim().length() > 0) {
                 try {
-                    orderCount = new BigDecimal(newOrderCount_Str.trim());
+                    oldOrderCount = new BigDecimal(oldOrderCount_Str.trim());
                 } catch (NumberFormatException e) {
                     e.printStackTrace();
                 }
             }
             //四舍五入到2位小数
-            orderCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-            orderDtlEntity.setOrderCount(orderCount);
-            orderDtlEntity.setPriceCount(orderCount);
+            oldOrderCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+            orderDtlEntity.setOldOrderCount(oldOrderCount);
+
+            //newOrderCount 变更订购数量
+            BigDecimal newOrderCount = BigDecimal.valueOf(0D);
+            String newOrderCount_Str = mapObject.get("newOrderCount");
+            if (newOrderCount_Str != null && newOrderCount_Str.trim().length() > 0) {
+                try {
+                    newOrderCount = new BigDecimal(newOrderCount_Str.trim());
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+            //四舍五入到2位小数
+            newOrderCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+            orderDtlEntity.setOrderCount(newOrderCount);
+            orderDtlEntity.setPriceCount(newOrderCount);
+            orderDtlEntity.setNewOrderCount(newOrderCount);
 
             //newProductSum 修改货品金额
             BigDecimal newProductSum = BigDecimal.valueOf(0D);
@@ -308,32 +329,29 @@ public class SaleOrderByChangeServiceImp implements SaleOrderByChangeService {
 
             //p2nFormula 单位转换公式:计价单位转换计量单位
             String p2nFormula = mapObject.get("p2nFormula");
+
             //productCount 货品数量(计量数量)
-            BigDecimal productCount = EvaluateUtil.countFormulaP2N(orderCount, p2nFormula);
+            BigDecimal productCount = BigDecimal.valueOf(0D);
+            BigDecimal countFormula = EvaluateUtil.countFormulaP2N(newOrderCount, p2nFormula);
+            if (countFormula != null) {productCount = countFormula;}
             orderDtlEntity.setProductCount(productCount);
+
+            //变更后-订购数量(newOrderCount) 计量单位
+            BigDecimal newOrderCountByProdUnit = productCount;
 
             //oldLockCount 变更前-锁定货品数量(计量单位)
             orderDtlEntity.setOldLockCount(orderDtlEntity.getLockCount());
+            BigDecimal oldLockCount = orderDtlEntity.getOldLockCount();
 
-            //newNeedDeliverCount 变更锁定货品数量
-            BigDecimal newNeedDeliverCount = null;
-            String newNeedDeliverCount_Str = mapObject.get("newNeedDeliverCount");
-            if (newNeedDeliverCount_Str != null && newNeedDeliverCount_Str.trim().length() > 0) {
-                try {
-                    newNeedDeliverCount = new BigDecimal(newNeedDeliverCount_Str.trim());
-                } catch (NumberFormatException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            if (newNeedDeliverCount != null) {
-                //四舍五入到2位小数
-                newNeedDeliverCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-                orderDtlEntity.setNeedDeliverCount(newNeedDeliverCount);
-
+            //变更后订购数量(计量单位) < 锁定货品数量(计量单位)
+            if (oldLockCount != null && (newOrderCountByProdUnit.doubleValue() < oldLockCount.doubleValue())) {
                 //newLockCount 变更后-锁定货品数量(计量单位)
-                BigDecimal newLockCount = EvaluateUtil.countFormulaP2N(newNeedDeliverCount, p2nFormula);
-                orderDtlEntity.setNewLockCount(newLockCount);
+                BigDecimal newLockCount = newOrderCountByProdUnit;
+                if (newLockCount != null && newLockCount.doubleValue() != 0D) {
+                    //四舍五入到2位小数
+                    newLockCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                    orderDtlEntity.setNewLockCount(newLockCount);
+                }
             }
 
             objectList.add(orderDtlEntity);
@@ -381,20 +399,21 @@ public class SaleOrderByChangeServiceImp implements SaleOrderByChangeService {
      *
      * @param objectList
      */
-    public void orderChangeByReadyOut(List<SaleOrderDetailEntity> objectList) throws Exception {
+    public void orderChangeByReadyOut(List<SaleOrderDetailEntity> objectList, String companyId) throws Exception {
         if (objectList == null || objectList.size() == 0) {return;}
         //3:待出库
         List<SaleOrderDetailEntity> readyOutList = this.findOrderDetailListByState(objectList, "3");
         if (readyOutList == null || readyOutList.size() == 0) {return;}
 
+        //获取企业id对应的锁定库存时长(毫秒)
+        Long lockTime = saleLockDateService.findLockDateMillisecondByCompanyId(companyId);
+
         for (SaleOrderDetailEntity orderDtlEntity : readyOutList) {
             SaleOrderDetail orderDtl = this.orderDtlEntity2OrderDtl(orderDtlEntity, null);
 
-            //newNeedDeliverCount 变更锁定货品数量
-            BigDecimal newNeedDeliverCount = orderDtlEntity.getNeedDeliverCount();
-            if (newNeedDeliverCount != null) {
-                //newLockCount 变更后-锁定货品数量(计量单位)
-                BigDecimal newLockCount = orderDtlEntity.getNewLockCount();
+            //newLockCount 变更后-锁定货品数量(计量单位)
+            BigDecimal newLockCount = orderDtlEntity.getNewLockCount();
+            if (newLockCount != null) {
                 //oldLockCount 变更前-锁定货品数量(计量单位)
                 BigDecimal oldLockCount = orderDtlEntity.getOldLockCount();
                 BigDecimal changeLockCount = BigDecimal.valueOf(newLockCount.doubleValue() - oldLockCount.doubleValue());
@@ -413,6 +432,25 @@ public class SaleOrderByChangeServiceImp implements SaleOrderByChangeService {
                         oldProduct,
                         changeLockCount,
                         null);
+
+                //versionLockCount
+                Integer versionLockCount = orderDtlEntity.getVersionLockCount();
+
+                if (versionLockCount != null) {
+                    versionLockCount = Integer.valueOf(versionLockCount.intValue() + 1);
+                    orderDtl.setVersionLockCount(versionLockCount);
+
+                    //信息队列信息:(订单明细id,锁定库存版本号,,)
+                    String orderDtl_activeMQ_temp = "{0},{1}";
+                    String orderDtl_activeMQ_msg = MessageFormat.format(orderDtl_activeMQ_temp,
+                            orderDtl.getId(),
+                            orderDtl.getVersionLockCount());
+
+                    //发送消息队列信息
+                    if (lockTime != null && lockTime.longValue() > 0) {
+                        producer.sendMsg(orderDtl_activeMQ_msg, lockTime.longValue());
+                    }
+                }
             }
 
             saleOrderDetailService.update(orderDtl);
@@ -439,14 +477,15 @@ public class SaleOrderByChangeServiceImp implements SaleOrderByChangeService {
         List<SaleOrderDetailEntity> readyDeliverList = this.findOrderDetailListByState(objectList, "4");
         if (readyDeliverList == null || readyDeliverList.size() == 0) {return;}
 
+        //获取企业id对应的锁定库存时长(毫秒)
+        Long lockTime = saleLockDateService.findLockDateMillisecondByCompanyId(companyId);
+
         for (SaleOrderDetailEntity orderDtlEntity : readyDeliverList) {
             SaleOrderDetail orderDtl = this.orderDtlEntity2OrderDtl(orderDtlEntity, null);
 
-            //newNeedDeliverCount 变更锁定货品数量
-            BigDecimal newNeedDeliverCount = orderDtlEntity.getNeedDeliverCount();
-            if (newNeedDeliverCount != null) {
-                //newLockCount 变更后-锁定货品数量(计量单位)
-                BigDecimal newLockCount = orderDtlEntity.getNewLockCount();
+            //newLockCount 变更后-锁定货品数量(计量单位)
+            BigDecimal newLockCount = orderDtlEntity.getNewLockCount();
+            if (newLockCount != null) {
                 //oldLockCount 变更前-锁定货品数量(计量单位)
                 BigDecimal oldLockCount = orderDtlEntity.getOldLockCount();
                 BigDecimal changeLockCount = BigDecimal.valueOf(newLockCount.doubleValue() - oldLockCount.doubleValue());
@@ -465,6 +504,25 @@ public class SaleOrderByChangeServiceImp implements SaleOrderByChangeService {
                         oldProduct,
                         changeLockCount,
                         null);
+
+                //versionLockCount
+                Integer versionLockCount = orderDtlEntity.getVersionLockCount();
+
+                if (versionLockCount != null) {
+                    versionLockCount = Integer.valueOf(versionLockCount.intValue() + 1);
+                    orderDtl.setVersionLockCount(versionLockCount);
+
+                    //信息队列信息:(订单明细id,锁定库存版本号,,)
+                    String orderDtl_activeMQ_temp = "{0},{1}";
+                    String orderDtl_activeMQ_msg = MessageFormat.format(orderDtl_activeMQ_temp,
+                            orderDtl.getId(),
+                            orderDtl.getVersionLockCount());
+
+                    //发送消息队列信息
+                    if (lockTime != null && lockTime.longValue() > 0) {
+                        producer.sendMsg(orderDtl_activeMQ_msg, lockTime.longValue());
+                    }
+                }
             }
 
             saleOrderDetailService.update(orderDtl);
