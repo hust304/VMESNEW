@@ -54,6 +54,9 @@ dependencies {
     compile 'org.apache.activemq:activemq-pool:5.12.1'
 
     compile 'com.corundumstudio.socketio:netty-socketio:1.7.11'
+
+    compile 'org.springframework.boot:spring-boot-starter-amqp'
+
 }
 
 artifacts {

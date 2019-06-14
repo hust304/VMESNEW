@@ -7,5 +7,5 @@ com.yvan.mybatis.MyBatisConfiguration,\
 com.yvan.mybatis.MyBatisConfigurationAfter,\
 com.yvan.druid.DruidAutoConfiguration,\
 com.yvan.filter.ComonFilter,\
-com.yvan.activemq.ActiveMQConfig,\
+com.yvan.rabbitmq.config.RabbitMqConfig,\
 com.yvan.socketio.SocketIOConfig
