@@ -22,16 +22,16 @@ public class Producer {
     @Autowired
     private JmsTemplate jmsTemplate;
 
-    @Autowired
-    private Queue queue;
+//    @Autowired
+//    private Queue queue;
 
 
     public void sendMsg(String msg,Long deadTime) {
-        jmsTemplate.send(queue, session -> {
-            ObjectMessage objectMessage = session.createObjectMessage(msg);
-            objectMessage.setLongProperty(ScheduledMessage.AMQ_SCHEDULED_DELAY,deadTime);
-            return objectMessage;
-        });
+//        jmsTemplate.send(queue, session -> {
+//            ObjectMessage objectMessage = session.createObjectMessage(msg);
+//            objectMessage.setLongProperty(ScheduledMessage.AMQ_SCHEDULED_DELAY,deadTime);
+//            return objectMessage;
+//        });
     }
 
 

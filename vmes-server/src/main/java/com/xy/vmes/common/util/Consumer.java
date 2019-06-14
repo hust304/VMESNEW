@@ -32,7 +32,7 @@ public class Consumer {
      *
      */
     //@JmsListener(destination = "sale.orderDetail.ProductLockcount.queue_test")
-    @JmsListener(destination = "sale.orderDetail.ProductLockcount.queue")
+    //@JmsListener(destination = "sale.orderDetail.ProductLockcount.queue")
     public void receiveProductLockcount (String activeMQ_msg) throws Exception {
         if (activeMQ_msg == null || activeMQ_msg.trim().length() == 0) {
             System.out.println("activeMQ消息队列-收到报文(activeMQ_msg) 为空或空字符串");
