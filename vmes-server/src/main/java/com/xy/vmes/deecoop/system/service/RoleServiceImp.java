@@ -20,6 +20,8 @@ import java.util.*;
 
 import javax.servlet.http.HttpServletResponse;
 
+import static com.xy.vmes.common.util.Common.DICTIONARY_MAP;
+
 /**
 * 说明：vmes_role:角色 实现类
 * 创建人：陈刚 自动创建
@@ -40,6 +42,8 @@ public class RoleServiceImp implements RoleService {
     private UserRoleService userRoleService;
     @Autowired
     private CoderuleService coderuleService;
+    @Autowired
+    private UserService userService;
 
     @Autowired
     private DepartmentService departmentService;
@@ -944,17 +948,23 @@ public class RoleServiceImp implements RoleService {
         mapObj.put("hideTitles", titlesHideList);
         mapObj.put("titles", titlesList);
 
-        //2. 分页查询数据List
-
-
         //角色id-已经绑定的用户ID
         PageData findMap = new PageData();
         String roleId = (String)pageData.get("roleId");
         findMap.put("roleId", roleId);
 
-        //普通用户-外部用户
-        String queryUserType = "user_type in ('69726efa45044117ac94a33ab2938ce4','028fb82cfbe341b1954834edfa2fc18d')";
-        findMap.put("queryUserType", queryUserType);
+        //获取当前登录用户id
+        String userID = (String)pageData.get("cuser");
+        User user = userService.findUserById(userID);
+        if (user != null && DICTIONARY_MAP.get("userType_admin").equals(user.getUserType())) {
+            //超级管理员 --> userType_admin:6839818aecfc41be8f367e62502dfde4
+            //查询(用户类型:=企业管理员 )
+            findMap.put("queryUserType", "user_type in ('2fb9bbee46ca4ce1913f3a673a7dd68f')");
+        } else if (user != null && DICTIONARY_MAP.get("userType_company").equals(user.getUserType())) {
+            //企业管理员 --> userType_company:2fb9bbee46ca4ce1913f3a673a7dd68f
+            //查询(用户类型:= 普通用户-外部用户)
+            findMap.put("queryUserType", "user_type in ('69726efa45044117ac94a33ab2938ce4','028fb82cfbe341b1954834edfa2fc18d')");
+        }
 
         List<Map<String, String>> varMapList = new ArrayList<Map<String, String>>();
         List<Map<String, Object>> varList = userRoleService.listUserByRole(findMap);
