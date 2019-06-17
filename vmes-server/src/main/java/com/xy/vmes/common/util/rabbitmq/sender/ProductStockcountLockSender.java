@@ -24,7 +24,8 @@ public class ProductStockcountLockSender {
      * @param timeStamp  消息队列中的时间(毫秒单位)
      */
     public void sendMsg(String message, Integer timeStamp) {
-        //System.out.println("(Product)发送消息:" + message);
+        System.out.println("(Product)发送消息:" + message + " timeStamp:" + timeStamp.toString());
+
         rabbitTemplate.convertAndSend(RabbitMqConfig.PRODUCT_STOCKCOUNT_LOCK_EXCHANGE,
                 RabbitMqConfig.PRODUCT_STOCKCOUNT_LOCK_QUEUE,
                 message,
@@ -35,6 +36,18 @@ public class ProductStockcountLockSender {
                         return message;
                     }
                 });
+
+//        //本地测试环境
+//        rabbitTemplate.convertAndSend(RabbitMqConfig.EXCHANGE_TEST,
+//                RabbitMqConfig.QUEUE_TEST,
+//                message,
+//                new MessagePostProcessor() {
+//                    @Override
+//                    public Message postProcessMessage(Message message) throws AmqpException {
+//                        message.getMessageProperties().setHeader("x-delay", timeStamp);
+//                        return message;
+//                    }
+//                });
     }
 
 }

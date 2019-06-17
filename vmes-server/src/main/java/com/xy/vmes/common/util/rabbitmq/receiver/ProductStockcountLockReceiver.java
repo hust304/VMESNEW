@@ -23,9 +23,10 @@ public class ProductStockcountLockReceiver {
     @Autowired
     private ProductService productService;
 
+    //@RabbitListener(queues = RabbitMqConfig.QUEUE_TEST)
     @RabbitListener(queues = RabbitMqConfig.PRODUCT_STOCKCOUNT_LOCK_QUEUE)
     public void receive(String rabbitMq_msg) throws Exception{
-        //System.out.println("(Product)接收队列消息： " + content);
+        //System.out.println("(Product)接收队列消息： " + rabbitMq_msg);
 
         if (rabbitMq_msg == null || rabbitMq_msg.trim().length() == 0) {
             System.out.println("rabbitMq消息队列-收到报文(rabbitMq_msg) 为空或空字符串");

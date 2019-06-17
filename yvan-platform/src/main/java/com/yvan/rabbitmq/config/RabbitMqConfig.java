@@ -19,6 +19,11 @@ public class RabbitMqConfig {
     //public static final String DELAY_ROUTING_KEY = "spring-boot-routingKey_B";
     //public static final String ROUTINGKEY_C = "spring-boot-routingKey_C";
 
+    //////////////////////////////////////////////////////////////////////////
+    //本地测试环境
+    //public static final String EXCHANGE_TEST = "exchange_test";
+    //public static final String QUEUE_TEST = "queue_test";
+
 //    @Bean public ConnectionFactory connectionFactory() {
 //        CachingConnectionFactory cachingConnectionFactory = new CachingConnectionFactory(this.host, this.port);
 //        cachingConnectionFactory.setUsername(this.userName);
