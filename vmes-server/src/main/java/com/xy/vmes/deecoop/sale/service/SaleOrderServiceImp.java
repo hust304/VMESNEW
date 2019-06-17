@@ -2,6 +2,7 @@ package com.xy.vmes.deecoop.sale.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.*;
+import com.xy.vmes.common.util.rabbitmq.sender.ProductStockcountLockSender;
 import com.xy.vmes.deecoop.sale.dao.SaleOrderMapper;
 import com.xy.vmes.entity.*;
 import com.xy.vmes.service.*;
@@ -50,7 +51,7 @@ public class SaleOrderServiceImp implements SaleOrderService {
     CustomerService customerService;
     //消息队列
     @Autowired
-    private Producer producer;
+    private ProductStockcountLockSender sender;
 
     /**
      * 创建人：陈刚 自动创建，禁止修改
@@ -829,7 +830,7 @@ public class SaleOrderServiceImp implements SaleOrderService {
 
                     //发送消息队列信息
                     if (lockTime != null && lockTime.longValue() > 0) {
-                        producer.sendMsg(orderDtl_activeMQ_msg, lockTime.longValue());
+                        sender.sendMsg(orderDtl_activeMQ_msg, lockTime.intValue());
                     }
                 }
 

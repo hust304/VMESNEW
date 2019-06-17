@@ -14,7 +14,7 @@ import com.yvan.rabbitmq.config.RabbitMqConfig;
  * @date 2019-06-13
  */
 @Component
-public class FirstSender {
+public class ProductStockcountLockSender {
     @Autowired
     private RabbitTemplate rabbitTemplate;
 
@@ -24,9 +24,9 @@ public class FirstSender {
      * @param timeStamp  消息队列中的时间(毫秒单位)
      */
     public void sendMsg(String message, Integer timeStamp) {
-        System.out.println("发送消息:" + message);
-        rabbitTemplate.convertAndSend(RabbitMqConfig.EXCHANGE_A,
-                RabbitMqConfig.QUEUE_A,
+        //System.out.println("(Product)发送消息:" + message);
+        rabbitTemplate.convertAndSend(RabbitMqConfig.PRODUCT_STOCKCOUNT_LOCK_EXCHANGE,
+                RabbitMqConfig.PRODUCT_STOCKCOUNT_LOCK_QUEUE,
                 message,
                 new MessagePostProcessor() {
                     @Override

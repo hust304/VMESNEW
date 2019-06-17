@@ -1,18 +1,8 @@
 package com.xy.vmes.deecoop.sale.controller;
 
-import com.xy.vmes.common.util.Common;
-import com.xy.vmes.common.util.Producer;
-import com.xy.vmes.common.util.StringUtil;
-import com.xy.vmes.entity.Column;
-import com.xy.vmes.entity.Product;
-import com.xy.vmes.entity.SaleOrder;
-import com.xy.vmes.entity.SaleOrderDetail;
-import com.xy.vmes.exception.ApplicationException;
 import com.xy.vmes.service.*;
-import com.yvan.DateUtils;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
-import com.yvan.YvanUtil;
 import com.yvan.springmvc.ResultModel;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -21,10 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.math.BigDecimal;
-import java.text.MessageFormat;
-import java.util.*;
 
 @RestController
 @Slf4j

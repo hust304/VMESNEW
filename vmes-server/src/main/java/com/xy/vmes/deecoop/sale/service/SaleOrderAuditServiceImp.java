@@ -2,7 +2,7 @@ package com.xy.vmes.deecoop.sale.service;
 
 import com.xy.vmes.common.util.Common;
 import com.xy.vmes.common.util.EvaluateUtil;
-import com.xy.vmes.common.util.Producer;
+import com.xy.vmes.common.util.rabbitmq.sender.ProductStockcountLockSender;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.sale.dao.SaleOrderAuditMapper;
 import com.xy.vmes.entity.*;
@@ -49,7 +49,7 @@ public class SaleOrderAuditServiceImp implements SaleOrderAuditService {
     private CustomerService customerService;
     //消息队列
     @Autowired
-    private Producer producer;
+    private ProductStockcountLockSender sirstSender;
 
     public List<Map> findPageListByLockStock(PageData pd) throws Exception {
         return saleOrderAuditMapper.findPageListByLockStock(pd);
@@ -386,7 +386,7 @@ public class SaleOrderAuditServiceImp implements SaleOrderAuditService {
 
             //将订单明细id作为消息体放入消息队列中，消息时长(毫秒)-根据企业id查询(vmes_sale_lock_date)
             if (lockTime != null && lockTime.longValue() > 0) {
-                producer.sendMsg(orderDtl_activeMQ_msg, lockTime.longValue());
+                sirstSender.sendMsg(orderDtl_activeMQ_msg, lockTime.intValue());
             }
         }
         return model;

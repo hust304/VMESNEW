@@ -2,7 +2,7 @@ package com.xy.vmes.deecoop.sale.service;
 
 import com.xy.vmes.common.util.Common;
 import com.xy.vmes.common.util.EvaluateUtil;
-import com.xy.vmes.common.util.Producer;
+import com.xy.vmes.common.util.rabbitmq.sender.ProductStockcountLockSender;
 import com.xy.vmes.entity.*;
 import com.xy.vmes.service.*;
 import com.yvan.HttpUtils;
@@ -52,7 +52,7 @@ public class SaleOrderByChangeServiceImp implements SaleOrderByChangeService {
     private SaleLockDateService saleLockDateService;
     //消息队列
     @Autowired
-    private Producer producer;
+    private ProductStockcountLockSender firstSender;
 
     /**
      * 变更订单-变更订单明细(订购数量,锁定货品数量)
@@ -456,7 +456,7 @@ public class SaleOrderByChangeServiceImp implements SaleOrderByChangeService {
 
                     //发送消息队列信息
                     if (lockTime != null && lockTime.longValue() > 0) {
-                        producer.sendMsg(orderDtl_activeMQ_msg, lockTime.longValue());
+                        firstSender.sendMsg(orderDtl_activeMQ_msg, lockTime.intValue());
                     }
                 }
             }
@@ -531,7 +531,7 @@ public class SaleOrderByChangeServiceImp implements SaleOrderByChangeService {
 
                     //发送消息队列信息
                     if (lockTime != null && lockTime.longValue() > 0) {
-                        producer.sendMsg(orderDtl_activeMQ_msg, lockTime.longValue());
+                        firstSender.sendMsg(orderDtl_activeMQ_msg, lockTime.intValue());
                     }
                 }
             }
