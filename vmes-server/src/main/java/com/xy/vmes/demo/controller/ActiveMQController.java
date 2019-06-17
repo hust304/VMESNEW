@@ -1,21 +1,14 @@
 package com.xy.vmes.demo.controller;
 
 import com.corundumstudio.socketio.*;
-import com.corundumstudio.socketio.listener.DataListener;
-import com.corundumstudio.socketio.protocol.Packet;
-import com.xy.vmes.common.util.Producer;
-import com.yvan.socketio.SocketIOConfig;
+import com.xy.vmes.common.util.activemq.Producer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.jms.*;
-import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.UUID;
 
 @RestController
 public class ActiveMQController {

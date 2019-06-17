@@ -1,4 +1,4 @@
-package com.xy.vmes.common.util;
+package com.xy.vmes.common.util.activemq;
 
 import com.xy.vmes.entity.SaleOrderDetail;
 import com.xy.vmes.service.ProductService;

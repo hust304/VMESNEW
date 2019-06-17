@@ -1,4 +1,4 @@
-package com.xy.vmes.common.util;
+package com.xy.vmes.common.util.activemq;
 
 
 import org.apache.activemq.ScheduledMessage;
