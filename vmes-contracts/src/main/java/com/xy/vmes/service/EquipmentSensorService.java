@@ -4,6 +4,8 @@ import com.xy.vmes.entity.EquipmentSensor;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
+
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -97,7 +99,13 @@ public interface EquipmentSensorService {
     EquipmentSensor findEquipmentSensor(PageData object) throws Exception;
     EquipmentSensor findEquipmentSensorById(String id) throws Exception;
     List<EquipmentSensor> findEquipmentSensorList(PageData object) throws Exception;
+    PageData setupSqlOrder(String orderStr, PageData pageData);
 
+    LinkedHashMap<String, String> findTargetCodeMap(List<EquipmentSensor> list);
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    String checkColumnByEdit(EquipmentSensor object);
+    boolean isExistByName(String id, String equipmentId, String targetName);
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**
     * 分页查询
@@ -106,7 +114,7 @@ public interface EquipmentSensorService {
     * @return      返回对象ResultModel
     * @throws Exception
     */
-    ResultModel listPageEquipmentSensors(PageData pd,Pagination pg) throws Exception;
+    ResultModel listPageEquipmentSensor(PageData pd,Pagination pg) throws Exception;
     ResultModel findAllEquipmentBySensor(PageData pd,Pagination pg) throws Exception;
 
 

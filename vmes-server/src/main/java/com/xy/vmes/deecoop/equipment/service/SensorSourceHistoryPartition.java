@@ -1,4 +1,4 @@
-package com.xy.vmes.deecoop.base.service;
+package com.xy.vmes.deecoop.equipment.service;
 
 import com.xy.vmes.common.util.DateFormat;
 

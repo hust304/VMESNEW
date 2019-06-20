@@ -1,5 +1,6 @@
 package com.xy.vmes.deecoop.equipment.service;
 
+import com.xy.vmes.common.util.Common;
 import com.xy.vmes.deecoop.equipment.dao.EquipmentSensorMapper;
 import com.xy.vmes.entity.EquipmentSensor;
 import com.xy.vmes.service.EquipmentSensorService;
@@ -13,6 +14,8 @@ import com.yvan.springmvc.ResultModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.text.MessageFormat;
 import java.util.*;
 import com.yvan.Conv;
 
@@ -198,6 +201,91 @@ public class EquipmentSensorServiceImp implements EquipmentSensorService {
     public List<EquipmentSensor> findEquipmentSensorList(PageData object) throws Exception {
         return this.findDataList(object, null);
     }
+
+    public PageData setupSqlOrder(String orderStr, PageData pageData) {
+        if (pageData == null) {pageData = new PageData();}
+        if (orderStr != null && orderStr.trim().length() > 0) {
+            pageData.put("orderStr", orderStr.trim());
+        }
+        return pageData;
+    }
+
+    public LinkedHashMap<String, String> findTargetCodeMap(List<EquipmentSensor> list) {
+        LinkedHashMap<String, String> codeMap = new LinkedHashMap<String, String>();
+        if (list == null || list.size() == 0) {return codeMap;}
+
+        for (EquipmentSensor object : list) {
+            String targetCode = object.getTargetCode();
+            if (targetCode != null && targetCode.trim().length() > 0) {
+                codeMap.put(targetCode.trim(), targetCode.trim());
+            }
+        }
+
+        return codeMap;
+    }
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    public String checkColumnByEdit(EquipmentSensor object) {
+        if (object == null) {return new String();}
+
+        StringBuffer msgBuf = new StringBuffer();
+        String column_isnull = "({0})输入为空或空字符串，({0})是必填字段不可为空！" + Common.SYS_ENDLINE_DEFAULT;
+
+        //设备ID equipmentId
+        if (object.getEquipmentId() == null || object.getEquipmentId().trim().length() == 0) {
+            msgBuf.append("设备id为空或空字符串！");
+            msgBuf.append(Common.SYS_ENDLINE_DEFAULT);
+        }
+
+        //指标类型 targetType
+        if (object.getTargetType() == null || object.getTargetType().trim().length() == 0) {
+            String str_isnull = MessageFormat.format(column_isnull, "指标类型");
+            msgBuf.append(str_isnull);
+
+        }
+
+        //指标名称 targetName
+        if (object.getTargetName() == null || object.getTargetName().trim().length() == 0) {
+            String str_isnull = MessageFormat.format(column_isnull, "指标名称");
+            msgBuf.append(str_isnull);
+        }
+
+        //指标类型 targetType (A:传感器指标 B:分析指标)
+        if ("A".equals(object.getTargetType().trim())) {
+            //指标公式 targetFormula
+            object.setTargetFormula(null);
+            //指标公式(转换栏位名称公式-SQL查询语句直接使用) targetFormulaColumn
+            object.setTargetFormulaColumn(null);
+        } else if ("B".equals(object.getTargetType().trim())
+                && object.getTargetFormula() == null || object.getTargetFormula().trim().length() == 0
+        ) {
+            String str_isnull = MessageFormat.format(column_isnull, "指标公式");
+            msgBuf.append(str_isnull);
+        }
+
+        return msgBuf.toString();
+    }
+
+    public boolean isExistByName(String id, String equipmentId, String targetName) {
+        if (targetName == null || targetName.trim().length() == 0) {return false;}
+
+        List<EquipmentSensor> objectList = null;
+        try {
+            PageData findMap = new PageData();
+            findMap.put("isSelfExist", "true");
+            findMap.put("targetName", targetName);
+            findMap.put("equipmentId", equipmentId);
+            findMap.put("id", id);
+
+            objectList = this.findEquipmentSensorList(findMap);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if (objectList != null && objectList.size() > 0) {return true;}
+
+        return false;
+    }
+
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**
     *
@@ -206,7 +294,7 @@ public class EquipmentSensorServiceImp implements EquipmentSensorService {
     * @return      返回对象ResultModel
     * @throws Exception
     */
-    public ResultModel listPageEquipmentSensors(PageData pd,Pagination pg) throws Exception {
+    public ResultModel listPageEquipmentSensor(PageData pd,Pagination pg) throws Exception {
         ResultModel model = new ResultModel();
 
         List<Column> columnList = columnService.findColumnList("equipmentSensor");

@@ -17,6 +17,12 @@ public class Common {
     public final static String SYS_DEFAULT_ISDISABLE_1 = "1";
     public final static String SYS_DEFAULT_ISDISABLE_0 = "0";
 
+    //设备-设备传感器指标(设备联网)
+    //设备传感器-最大指标个数(100)-与表(vmes_sensor_source,vmes_sensor_source_history)字段对应 (A0001..A0100 B0001..B0100)
+    public final static Integer SYS_EQUIPMENT_SENSORTARGET_TARGETCODE_MAXCOUNT = Integer.valueOf(100);
+    //设备传感器-指标编号-(A0001..A0100 B0001..B0100)
+    public final static Integer SYS_EQUIPMENT_SENSORTARGET_TARGETCODE_MAXDIGIT = Integer.valueOf(5);
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     public final static String REDIS_SECURITY_CODE = "securityCode";
     public final static String DEPARTMENT_ROOT_ID = "b6ff76cb95f711e884ad00163e105f05";
