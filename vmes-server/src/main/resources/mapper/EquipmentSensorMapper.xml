@@ -48,6 +48,15 @@
     </update>
 
     <!-- ***************************************************以上为自动生成代码禁止修改，请在下面添加业务代码************************************************* -->
+    <delete id="deleteTableByEquipment" parameterType="com.yvan.PageData">
+        delete from vmes_equipment_sensor
+        <where>
+            <if test="equipmentId != null and equipmentId != ''" >
+                and equipment_id = #{equipmentId}
+            </if>
+        </where>
+    </delete>
+
     <insert id="equipmentSensor" >
         delete from vmes_column where model_code = 'equipmentSensor' ;
         insert into vmes_column (

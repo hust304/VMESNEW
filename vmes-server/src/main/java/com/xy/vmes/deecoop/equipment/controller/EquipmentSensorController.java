@@ -132,6 +132,157 @@ public class EquipmentSensorController {
         return model;
     }
 
+    /**
+     * 删除-设备传感器指标
+     * @author 陈刚
+     * @date 2019-10-16
+     * @throws Exception
+     */
+    @PostMapping("/equipment/equipmentSensor/deleteEquipmentSensor")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel deleteEquipmentSensor() throws Exception {
+        logger.info("################/equipment/equipmentSensor/deleteEquipmentSensor 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        String id = pageData.getString("id");
+        if (id == null || id.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("设备传感器指标id为空或空字符串！");
+            return model;
+        }
+
+        equipmentSensorService.deleteById(id);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/equipment/equipmentSensor/deleteEquipmentSensor 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * (按设备)删除-设备传感器指标
+     * @author 陈刚
+     * @date 2019-10-16
+     * @throws Exception
+     */
+    @PostMapping("/equipment/equipmentSensor/deleteEquipmentSensorByEquipment")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel deleteEquipmentSensorByEquipment() throws Exception {
+        logger.info("################/equipment/equipmentSensor/deleteEquipmentSensorByEquipment 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        String equipmentId = pageData.getString("equipmentId");
+        if (equipmentId == null || equipmentId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("设备id为空或空字符串！");
+            return model;
+        }
+
+        equipmentSensorService.deleteTableByEquipment(equipmentId);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/equipment/equipmentSensor/deleteEquipmentSensorByEquipment 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 修改-设备传感器指标
+     * @author 陈刚
+     * @date 2019-10-16
+     * @throws Exception
+     */
+    @PostMapping("/equipment/equipmentSensor/updateEquipmentSensor")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel updateEquipmentSensor() throws Exception {
+        logger.info("################/equipment/equipmentSensor/updateEquipmentSensor 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+        EquipmentSensor eqptSensor = (EquipmentSensor) HttpUtils.pageData2Entity(pageData, new EquipmentSensor());
+
+        //非空判断
+        String msgStr = equipmentSensorService.checkColumnByEdit(eqptSensor);
+        if (msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
+
+        //该设备下-指标名称是否相同
+        if (equipmentSensorService.isExistByName(eqptSensor.getId(), eqptSensor.getEquipmentId(), eqptSensor.getTargetName())) {
+            String msgTemp = "该指标名称: {0} 在系统中已经重复！" + Common.SYS_ENDLINE_DEFAULT;
+            String str_isnull = MessageFormat.format(msgTemp, eqptSensor.getTargetName());
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(str_isnull);
+            return model;
+        }
+
+        EquipmentSensor editObject = new EquipmentSensor();
+        editObject.setId(eqptSensor.getId());
+        editObject.setTargetName(eqptSensor.getTargetName());
+        editObject.setTargetFormula(eqptSensor.getTargetFormula());
+        editObject.setTargetFormulaColumn(eqptSensor.getTargetFormulaColumn());
+        if (eqptSensor.getRemark() == null || eqptSensor.getRemark().trim().length() == 0) {
+            editObject.setRemark("");
+        } else {
+            editObject.setRemark(eqptSensor.getRemark().trim());
+        }
+
+        equipmentSensorService.update(editObject);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/equipment/equipmentSensor/updateEquipmentSensor 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 修改-设备传感器指标(禁用)状态
+     * @author 陈刚
+     * @date 2019-10-16
+     * @throws Exception
+     */
+    @PostMapping("/equipment/equipmentSensor/updateDisableEquipmentSensor")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel updateDisableEquipmentSensor() throws Exception {
+        logger.info("################/equipment/equipmentSensor/updateDisableEquipmentSensor 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        String id = pageData.getString("id");
+        String isdisable = pageData.getString("isdisable");
+
+        //非空判断
+        String msgStr = new String();
+        if (id == null || id.trim().length() == 0) {
+            msgStr = msgStr + "id为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT;
+        }
+        if (isdisable == null || isdisable.trim().length() == 0) {
+            msgStr = msgStr + "isdisable为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT;
+        }
+        if (msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
+
+        EquipmentSensor editObject = new EquipmentSensor();
+        editObject.setId(id);
+        editObject.setIsdisable(isdisable);
+        equipmentSensorService.update(editObject);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/equipment/equipmentSensor/updateDisableEquipmentSensor 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
 }
 
 

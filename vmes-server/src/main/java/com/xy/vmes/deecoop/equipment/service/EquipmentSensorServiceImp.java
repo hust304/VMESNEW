@@ -224,6 +224,9 @@ public class EquipmentSensorServiceImp implements EquipmentSensorService {
         return codeMap;
     }
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    public void deleteTableByEquipment(String equipmentId) {
+        equipmentSensorMapper.deleteTableByEquipment(equipmentId);
+    }
     public String checkColumnByEdit(EquipmentSensor object) {
         if (object == null) {return new String();}
 
@@ -312,9 +315,10 @@ public class EquipmentSensorServiceImp implements EquipmentSensorService {
         Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
 
         //设置查询排序方式
-        //pd.put("orderStr", "a.cdate asc");
         String orderStr = pd.getString("orderStr");
-        if (orderStr != null && orderStr.trim().length() > 0) {
+        if (orderStr == null || orderStr.trim().length() == 0) {
+            pd.put("orderStr", "cdate asc");
+        } else if (orderStr != null && orderStr.trim().length() > 0) {
             pd.put("orderStr", orderStr);
         }
 
