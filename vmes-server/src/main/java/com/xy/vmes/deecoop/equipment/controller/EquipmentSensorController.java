@@ -2,6 +2,7 @@ package com.xy.vmes.deecoop.equipment.controller;
 
 import com.xy.vmes.common.util.Common;
 import com.xy.vmes.entity.EquipmentSensor;
+import com.xy.vmes.service.EquipmentSensorFormulaService;
 import com.xy.vmes.service.EquipmentSensorService;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
@@ -35,6 +36,8 @@ public class EquipmentSensorController {
     private EquipmentSensorService equipmentSensorService;
     @Autowired
     private EquipmentSensorTargetService equipmentSensorTargetService;
+    @Autowired
+    private EquipmentSensorFormulaService equipmentSensorFormulaService;
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
     /**
@@ -98,7 +101,7 @@ public class EquipmentSensorController {
             return model;
         }
 
-        //获取全部传感器指标编码
+        //1. 获取全部传感器指标编码
         //指标编码前缀 := 指标类型(A:传感器指标 B:分析指标)
         LinkedHashMap<String, String> allCodeMap = equipmentSensorTargetService.findAllTargetCodeMap(
                 Common.SYS_EQUIPMENT_SENSORTARGET_TARGETCODE_MAXCOUNT,
@@ -120,6 +123,19 @@ public class EquipmentSensorController {
             return model;
         }
         eqptSensor.setTargetCode(targetCode);
+
+        //2. targetType指标类型 := B:分析指标 [公式转换:=sql查询可以直接使用]
+        // targetType指标类型(A:传感器指标 B:分析指标)
+        if ("B".equals(eqptSensor.getTargetType())) {
+            String targetFormulaColumn = equipmentSensorFormulaService.formula2TargetFormulaColumn(
+                    eqptSensor.getEquipmentId(),
+                    eqptSensor.getTargetType(),
+                    eqptSensor.getTargetFormula());
+            eqptSensor.setTargetFormulaColumn(targetFormulaColumn);
+        } else if ("A".equals(eqptSensor.getTargetType())) {
+            eqptSensor.setTargetFormula(null);
+            eqptSensor.setTargetFormulaColumn(null);
+        }
 
         //获取企业id
         String companyID = pageData.getString("currentCompanyId");
@@ -226,12 +242,24 @@ public class EquipmentSensorController {
         EquipmentSensor editObject = new EquipmentSensor();
         editObject.setId(eqptSensor.getId());
         editObject.setTargetName(eqptSensor.getTargetName());
-        editObject.setTargetFormula(eqptSensor.getTargetFormula());
-        editObject.setTargetFormulaColumn(eqptSensor.getTargetFormulaColumn());
         if (eqptSensor.getRemark() == null || eqptSensor.getRemark().trim().length() == 0) {
             editObject.setRemark("");
         } else {
             editObject.setRemark(eqptSensor.getRemark().trim());
+        }
+
+        //2. targetType指标类型 := B:分析指标 [公式转换:=sql查询可以直接使用]
+        // targetType指标类型(A:传感器指标 B:分析指标)
+        if ("B".equals(eqptSensor.getTargetType())) {
+            String targetFormulaColumn = equipmentSensorFormulaService.formula2TargetFormulaColumn(
+                    eqptSensor.getEquipmentId(),
+                    eqptSensor.getTargetType(),
+                    eqptSensor.getTargetFormula());
+            editObject.setTargetFormula(eqptSensor.getTargetFormula());
+            editObject.setTargetFormulaColumn(targetFormulaColumn);
+        } else if ("A".equals(eqptSensor.getTargetType())) {
+            editObject.setTargetFormula(null);
+            editObject.setTargetFormulaColumn(null);
         }
 
         equipmentSensorService.update(editObject);

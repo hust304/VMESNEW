@@ -166,6 +166,14 @@
             <if test="targetType != null and targetType != ''">
                 and target_type = #{targetType}
             </if>
+
+            <if test="targetCode != null and targetCode != ''">
+                and target_code = #{targetCode}
+            </if>
+            <if test="targetCodes != null and targetCodes != ''">
+                and target_code in (${targetCodes})
+            </if>
+
             <if test="targetName != null and targetName != ''">
                 and target_name = #{targetName}
             </if>

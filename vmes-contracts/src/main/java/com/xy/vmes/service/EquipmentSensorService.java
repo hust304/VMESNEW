@@ -102,6 +102,7 @@ public interface EquipmentSensorService {
     PageData setupSqlOrder(String orderStr, PageData pageData);
 
     LinkedHashMap<String, String> findTargetCodeMap(List<EquipmentSensor> list);
+    String findTargetCode(Map<String, String> mapObject);
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     void deleteTableByEquipment(String equipmentId);

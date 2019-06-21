@@ -223,6 +223,28 @@ public class EquipmentSensorServiceImp implements EquipmentSensorService {
 
         return codeMap;
     }
+
+    public String findTargetCode(Map<String, String> mapObject) {
+        StringBuffer strBuf = new StringBuffer();
+        if (mapObject == null || mapObject.size() == 0) {return strBuf.toString();}
+
+        for (Iterator iterator = mapObject.keySet().iterator(); iterator.hasNext();) {
+            String targetCode = (String) iterator.next();
+            if (targetCode != null && targetCode.trim().length() > 0) {
+                strBuf.append(targetCode.trim());
+                strBuf.append(",");
+            }
+        }
+
+        String strTemp = strBuf.toString();
+        if (strTemp.trim().length() > 0 && strTemp.lastIndexOf(",") != -1) {
+            strTemp = strTemp.substring(0, strTemp.lastIndexOf(","));
+            return strTemp;
+        }
+
+        return strBuf.toString();
+    }
+
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public void deleteTableByEquipment(String equipmentId) {
         equipmentSensorMapper.deleteTableByEquipment(equipmentId);
