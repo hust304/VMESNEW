@@ -1,4 +1,4 @@
-package com.xy.vmes.deecoop.warehouse.controller;
+package com.xy.vmes.deecoop.equipment.controller;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.Common;
@@ -6,7 +6,6 @@ import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.*;
 import com.xy.vmes.exception.TableVersionException;
 import com.xy.vmes.service.*;
-
 import com.yvan.Conv;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
@@ -26,14 +25,14 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 说明：vmes_warehouse_in: 简版仓库入库单Controller
+ * 说明：vmes_warehouse_in: (备件库)入库单Controller
  * @author 陈刚 自动生成
- * @date 2018-05-21
+ * @date 2018-06-24
  */
 @RestController
 @Slf4j
-public class WarehouseInBySimpleController {
-    private Logger logger = LoggerFactory.getLogger(WarehouseInBySimpleController.class);
+public class EquipmentWarehouseInBySpareController {
+    private Logger logger = LoggerFactory.getLogger(EquipmentWarehouseInBySpareController.class);
 
     @Autowired
     private WarehouseInService warehouseInService;
@@ -48,28 +47,30 @@ public class WarehouseInBySimpleController {
     @Autowired
     private CoderuleService coderuleService;
 
-    @PostMapping("/warehouse/warehouseInBySimple/listPageWarehouseInBySimple")
-    public ResultModel listPageWarehouseInBySimple() throws Exception {
-        logger.info("################/warehouse/warehouseInBySimple/listPageWarehouseInBySimple 执行开始 ################# ");
+    @PostMapping("/equipment/warehouseInBySpare/listPageWarehouseInBySpare")
+    public ResultModel listPageWarehouseInBySpare() throws Exception {
+        logger.info("################/equipment/warehouseInBySpare/listPageWarehouseInBySpare 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
+
         PageData pd = HttpUtils.parsePageData();
         Pagination pg = HttpUtils.parsePagination(pd);
         ResultModel model = warehouseInService.listPageWarehouseIn(pd,pg);
+
         Long endTime = System.currentTimeMillis();
-        logger.info("################/warehouse/warehouseInBySimple/listPageWarehouseInBySimple 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/equipment/warehouseInBySpare/listPageWarehouseInBySpare 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
     /**
-     * 新增入库单(简版仓库入库)
+     * 新增入库单(备件库入库)
      * @author 陈刚
-     * @date 2019-10-16
+     * @date 2019-06-24
      * @throws Exception
      */
-    @PostMapping("/warehouse/warehouseInBySimple/addWarehouseInBySimple")
+    @PostMapping("/equipment/warehouseInBySpare/addWarehouseInBySpare")
     @Transactional(rollbackFor=Exception.class)
-    public ResultModel addWarehouseInBySimple() throws Exception {
-        logger.info("################/warehouse/warehouseInBySimple/addWarehouseInBySimple 执行开始 ################# ");
+    public ResultModel addWarehouseInBySpare() throws Exception {
+        logger.info("################/equipment/warehouseInBySpare/addWarehouseInBySpare 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
 
         ResultModel model = new ResultModel();
@@ -120,8 +121,6 @@ public class WarehouseInBySimpleController {
         //入库单编号
         String code = coderuleService.createCoder(companyID, "vmes_warehouse_in", "I");
         warehouseIn.setCode(code);
-        //isSimple 是否简版仓库 Y:是简版 N:非简版 is null:非简版
-        warehouseIn.setIsSimple("Y");
         warehouseInService.save(warehouseIn);
 
         //2.添加入库单明细
@@ -130,20 +129,20 @@ public class WarehouseInBySimpleController {
         warehouseInDetailService.addWarehouseInDetailBySimple(warehouseIn, detailList);
 
         Long endTime = System.currentTimeMillis();
-        logger.info("################/warehouse/warehouseInBySimple/addWarehouseInBySimple 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/equipment/warehouseInBySpare/addWarehouseInBySpare 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
     /**
-     * 删除入库单(简版仓库入库)
+     * 删除入库单(备件库入库)
      * @author 陈刚
-     * @date 2019-10-16
+     * @date 2019-06-24
      * @throws Exception
      */
-    @PostMapping("/warehouse/warehouseInBySimple/deleteWarehouseInBySimple")
+    @PostMapping("/equipment/warehouseInBySpare/deleteWarehouseInBySpare")
     @Transactional(rollbackFor=Exception.class)
-    public ResultModel deleteWarehouseInBySimple() throws Exception {
-        logger.info("################/warehouse/warehouseInBySimple/deleteWarehouseInBySimple 执行开始 ################# ");
+    public ResultModel deleteWarehouseInBySpare() throws Exception {
+        logger.info("################/equipment/warehouseInBySpare/deleteWarehouseInBySpare 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
 
         ResultModel model = new ResultModel();
@@ -165,20 +164,20 @@ public class WarehouseInBySimpleController {
         warehouseInService.deleteById(parentId);
 
         Long endTime = System.currentTimeMillis();
-        logger.info("################/warehouse/warehouseInBySimple/deleteWarehouseInBySimple 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/equipment/warehouseInBySpare/deleteWarehouseInBySpare 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
     /**
-     * 修改入库单(简版仓库入库)
+     * 修改入库单(备件库)
      * @author 陈刚
-     * @date 2019-10-16
+     * @date 2019-06-24
      * @throws Exception
      */
-    @PostMapping("/warehouse/warehouseInBySimple/updateWarehouseInBySimple")
+    @PostMapping("/equipment/warehouseInBySpare/updateWarehouseInBySpare")
     @Transactional(rollbackFor=Exception.class)
-    public ResultModel updateWarehouseInBySimple() throws Exception {
-        logger.info("################/warehouse/warehouseInBySimple/updateWarehouseInBySimple 执行开始 ################# ");
+    public ResultModel updateWarehouseInBySpare() throws Exception {
+        logger.info("################/equipment/warehouseInBySpare/updateWarehouseInBySpare 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
 
         ResultModel model = new ResultModel();
@@ -249,20 +248,20 @@ public class WarehouseInBySimpleController {
         }
 
         Long endTime = System.currentTimeMillis();
-        logger.info("################/warehouse/warehouseInBySimple/updateWarehouseInBySimple 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/equipment/warehouseInBySpare/updateWarehouseInBySpare 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
     /**
-     * 取消入库单(简版仓库入库)
+     * 取消入库单(备件库)
      * @author 陈刚
-     * @date 2019-10-16
+     * @date 2019-06-24
      * @throws Exception
      */
-    @PostMapping("/warehouse/warehouseInBySimple/cancelWarehouseInBySimple")
+    @PostMapping("/equipment/warehouseInBySpare/cancelWarehouseInBySpare")
     @Transactional(rollbackFor=Exception.class)
-    public ResultModel cancelWarehouseInBySimple() throws Exception {
-        logger.info("################/warehouse/warehouseInBySimple/cancelWarehouseInBySimple 执行开始 ################# ");
+    public ResultModel cancelWarehouseInBySpare() throws Exception {
+        logger.info("################/equipment/warehouseInBySpare/cancelWarehouseInBySpare 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
 
         ResultModel model = new ResultModel();
@@ -290,20 +289,20 @@ public class WarehouseInBySimpleController {
         warehouseInService.update(warehouseIn);
 
         Long endTime = System.currentTimeMillis();
-        logger.info("################/warehouse/warehouseInBySimple/cancelWarehouseInBySimple 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/equipment/warehouseInBySpare/cancelWarehouseInBySpare 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
     /**
-     * 恢复入库单(简版仓库入库)
+     * 恢复入库单(备件库)
      * @author 陈刚
-     * @date 2019-10-16
+     * @date 2019-06-24
      * @throws Exception
      */
-    @PostMapping("/warehouse/warehouseInBySimple/recoveryWarehouseInBySimple")
+    @PostMapping("/equipment/warehouseInBySpare/recoveryWarehouseInBySpare")
     @Transactional(rollbackFor=Exception.class)
-    public ResultModel recoveryWarehouseInBySimple() throws Exception {
-        logger.info("################/warehouse/warehouseInBySimple/recoveryWarehouseInBySimple 执行开始 ################# ");
+    public ResultModel recoveryWarehouseInBySpare() throws Exception {
+        logger.info("################/equipment/warehouseInBySpare/recoveryWarehouseInBySpare 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
 
         ResultModel model = new ResultModel();
@@ -338,7 +337,7 @@ public class WarehouseInBySimpleController {
         warehouseInService.update(warehouseIn);
 
         Long endTime = System.currentTimeMillis();
-        logger.info("################/warehouse/warehouseInBySimple/recoveryWarehouseInBySimple 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/equipment/warehouseInBySpare/recoveryWarehouseInBySpare 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -348,10 +347,10 @@ public class WarehouseInBySimpleController {
      * @date 2019-10-16
      * @throws Exception
      */
-    @PostMapping("/warehouse/warehouseInBySimple/executeWarehouseInBySimple")
+    @PostMapping("/equipment/warehouseInBySpare/executeWarehouseInBySpare")
     @Transactional(rollbackFor=Exception.class)
-    public ResultModel executeWarehouseInBySimple() throws Exception {
-        logger.info("################/warehouse/warehouseInBySimple/executeWarehouseInBySimple 执行开始 ################# ");
+    public ResultModel executeWarehouseInBySpare() throws Exception {
+        logger.info("################/equipment/warehouseInBySpare/executeWarehouseInBySpare 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
 
         ResultModel model = new ResultModel();
@@ -459,7 +458,7 @@ public class WarehouseInBySimpleController {
         warehouseInService.update(warehouseInEdit);
 
         Long endTime = System.currentTimeMillis();
-        logger.info("################/warehouse/warehouseInBySimple/executeWarehouseInBySimple 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/equipment/warehouseInBySpare/executeWarehouseInBySpare 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 }
