@@ -38,6 +38,11 @@ public class CompanyServiceImp implements CompanyService {
     @Autowired
     private UserDefinedMenuService userDefinedMenuService;
 
+    @Autowired
+    private CoderuleService coderuleService;
+    @Autowired
+    private FileService fileService;
+
     /**
      * 创建人：陈刚
      * 创建时间：2018-07-27
@@ -472,6 +477,40 @@ public class CompanyServiceImp implements CompanyService {
         }
 
         departmentService.save(companyObj);
+
+        //创建备件仓库:当创建企业时默认创建备件仓库
+        Map<String, Object> valueMap = new HashMap<String, Object>();
+        String warehouse_id =Conv.createUuid();
+        valueMap.put("id", warehouse_id);
+        ////实体库 warehouseEntity 2d75e49bcb9911e884ad00163e105f05
+        valueMap.put("pid", Common.DICTIONARY_MAP.get("warehouseEntity"));
+        valueMap.put("company_id", companyObj.getId());
+        valueMap.put("entity_type", "2c81c25fbe9a45519e2df5bccaed240d");
+        valueMap.put("layer", Integer.valueOf(2));
+
+        valueMap.put("qrcode", "");
+        //获取仓库编码
+        String code = coderuleService.createCoder(companyObj.getId(), "vmes_warehouse","WE");
+        valueMap.put("code", code);
+        valueMap.put("warehouse_id", warehouse_id);
+        valueMap.put("name", "备件库");
+        valueMap.put("path_id", "df930aaecb7111e884ad00163e105f05-2d75e49bcb9911e884ad00163e105f05-" + warehouse_id);
+
+        valueMap.put("path_name", "备件库");
+        valueMap.put("cuser", companyObj.getCuser());
+        valueMap.put("cdate", new Date());
+
+        //创建备件仓库:创建企业时默认创建备件仓库
+        try {
+            //生成货位二维码
+            String qrcode = fileService.createQRCode("warehouseBase", warehouse_id);
+            if (qrcode != null && qrcode.trim().length() > 0) {
+                valueMap.put("qrcode", qrcode);
+            }
+            companyMapper.insertWarehouseBySpare(valueMap);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         //4. 创建(企业管理员)账户
 

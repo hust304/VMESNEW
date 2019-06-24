@@ -199,4 +199,17 @@
         ('7ccd175ca8c711e884ad00163e105f05', 'company', 'id6', 'id6', 33, '1', '0', '1', '0', '2018-8-26 08:32:18', 'admin'),
     </insert>
 
+    <!--创建备件仓库:当创建企业时默认创建备件仓库-->
+    <insert id="insertWarehouseBySpare" parameterType = "java.util.Map">
+        INSERT INTO vmes_warehouse (
+            id,pid,company_id,entity_type,layer,
+            qrcode,code,warehouse_id,name,path_id,
+            path_name,cuser,cdate
+        ) VALUES (
+            #{id},#{pid},#{company_id},#{entity_type},#{layer},
+            #{qrcode},#{code},#{warehouse_id},#{name},#{path_id},
+            #{path_name},#{cuser},#{cdate}
+        )
+    </insert>
+
 </mapper>

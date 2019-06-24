@@ -25,4 +25,12 @@ public interface CompanyMapper  {
     List<Map> getDataListPage(PageData pd, Pagination pg);
 
     List<Map> findListCompany(PageData pd);
+
+    /**
+     * 创建备件仓库:
+     * 当创建企业时默认创建备件仓库
+     *
+     * @param valueMap
+     */
+    void insertWarehouseBySpare(Map<String, Object> valueMap);
 }
