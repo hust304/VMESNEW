@@ -488,6 +488,32 @@
                 and detail.state =  #{detailState}
             </if>
 
+            <!--过滤出 (备件库)-->
+            <if test="'true' == isNeedWarehouseSpare">
+                and warehouseout.warehouse_id in (
+                    select id from vmes_warehouse
+                    <where>
+                        <if test="currentCompanyId != null and currentCompanyId != ''" >
+                            and company_id = #{currentCompanyId}
+                        </if>
+                        and name = '备件库' and layer = 2
+                    </where>
+                )
+            </if>
+
+            <!--过滤出(非备件库) 自定义sql查询语句-->
+            <if test="'true' == isNeedNotInWarehouseSpare">
+                and warehouseout.warehouse_id not in (
+                    select id from vmes_warehouse
+                    <where>
+                        <if test="currentCompanyId != null and currentCompanyId != ''" >
+                            and company_id = #{currentCompanyId}
+                        </if>
+                        and name = '备件库' and layer = 2
+                    </where>
+                )
+            </if>
+
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >
                 and ${queryStr}
