@@ -202,10 +202,13 @@ public class WarehouseInitialServiceImp implements WarehouseInitialService {
     }
 
     public void deleteTableByBusiness(String companyId) throws Exception {
+        //删除的是否备件库(true: 删除的是备件库 false: 删除的是非备件库)
+        String isDelNotSpare = "false";
+
         //删除入库业务表
-        warehouseInService.deleteTableByWarehouseIn(companyId);
+        warehouseInService.deleteTableByWarehouseIn(companyId, isDelNotSpare);
         //删除出库业务表
-        warehouseOutService.deleteTableByWarehouseOut(companyId);
+        warehouseOutService.deleteTableByWarehouseOut(companyId, isDelNotSpare);
         //删除仓库盘点业务表
         warehouseCheckService.deleteTableByWarehouseCheck(companyId);
         //删除移库业务表
@@ -229,12 +232,11 @@ public class WarehouseInitialServiceImp implements WarehouseInitialService {
         }
 
         //删除仓库货品表(库存表)
-        Map<String, String> columnMap = new HashMap<String, String>();
-        columnMap.put("company_id", companyId);
-        warehouseProductService.deleteByColumnMap(columnMap);
+        warehouseProductService.deleteTable(companyId, isDelNotSpare);
 
         //货品表(库存数量,锁定库存数量)初始化为零
-        productService.initialProductByStockCount(companyId);
+        String isSpare = "false";
+        productService.initialProductByStockCount(companyId, isSpare);
 
         taskService.deleteTableByTask(companyId);
     }
