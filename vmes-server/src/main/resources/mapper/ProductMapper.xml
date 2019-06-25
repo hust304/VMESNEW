@@ -165,11 +165,11 @@
             </if>
             <!--过滤出 货品属性(备件)-->
             <if test="'true' == isNeedGenreSpare">
-                and prod.genre = '384cfd1329e648618b5a237ce1038bab'
+                and genre = '384cfd1329e648618b5a237ce1038bab'
             </if>
             <!--过滤出 货品属性(非备件)-->
             <if test="'true' == isNeedNotInGenreSpare">
-                <![CDATA[ and prod.genre <> '384cfd1329e648618b5a237ce1038bab' ]]>
+                <![CDATA[ and genre <> '384cfd1329e648618b5a237ce1038bab' ]]>
             </if>
         </where>
     </update>

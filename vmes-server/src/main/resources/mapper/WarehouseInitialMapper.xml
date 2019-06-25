@@ -80,6 +80,8 @@
             (replace(uuid(), '-', ''),'warehouseInitial','checkCount','盘点数量',14, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'warehouseInitial','moveCount','移库数量',15, '1','1','1','0',now(), 'admin')
 
+            (replace(uuid(), '-', ''),'warehouseInitial','productSafetyCount','安全库存数量',16, '1','1','1','0',now(), 'admin')
+
 </insert>
 
 
@@ -170,6 +172,7 @@
             product.type productType,
             unit.name productUnitName,
             genre.name productGenreName,
+            round(ifnull(product.safety_count, 0), 2) productSafetyCount,
 
             round(ifnull(wp.stock_count, 0), 2) checkStockCount,
             '' checkCount,

@@ -13,12 +13,25 @@ public interface WarehouseProductExcelService {
                                   Integer index,
                                   Integer maxShowRow);
 
+    String checkColumnImportExcelBySpare(List<LinkedHashMap<String, String>> objectList,
+                                  String companyId,
+                                  Integer index,
+                                  Integer maxShowRow);
+
+
     String checkColumnImportExcelByDataBase(List<LinkedHashMap<String, String>> objectList,
                                             String companyId,
                                             Integer index,
                                             Integer maxShowRow,
                                             Map<String, String> warehouseMap,
                                             Map<String, String> productMap);
+    String checkColumnImportExcelByDataBaseBySpare(List<LinkedHashMap<String, String>> objectList,
+                                            String companyId,
+                                            Integer index,
+                                            Integer maxShowRow,
+                                            Map<String, String> productMap);
+
+
 
     void findWarehouseProductMapByExcelDataList(List<LinkedHashMap<String, String>> objectList,
                                                 Map<String, WarehouseProduct> warehouseProductMap,
@@ -26,4 +39,5 @@ public interface WarehouseProductExcelService {
                                                 Map<String, String> productMap);
 
     void addWarehouseProduct(Map<String, WarehouseProduct> warehouseProductMap, String companyId, String userId) throws Exception;
+    void addWarehouseProductBySpare(Map<String, WarehouseProduct> warehouseProductMap, String companyId, String userId) throws Exception;
 }
