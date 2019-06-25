@@ -116,7 +116,14 @@ public interface WarehouseOutService {
     void updateToDisableByIds(String[] ids)throws Exception;
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
-    void deleteTableByWarehouseOut(String companyId) throws Exception;
+    //void deleteTableByWarehouseOut(String companyId) throws Exception;
+    /**
+     *
+     * @param companyId  企业id
+     * @param isSpare    是否备件库(true: 删除的是备件库 false: 删除的是非备件库)
+     * @throws Exception
+     */
+    void deleteTableByWarehouseOut(String companyId, String isSpare) throws Exception;
 
     String checkColumn(WarehouseOut object);
 

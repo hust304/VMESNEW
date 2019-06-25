@@ -205,18 +205,46 @@ public class WarehouseOutServiceImp implements WarehouseOutService {
     }
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
-    public void deleteTableByWarehouseOut(String companyId) throws Exception {
+//    public void deleteTableByWarehouseOut(String companyId) throws Exception {
+//        PageData pageData = new PageData();
+//        pageData.put("companyId", companyId);
+//
+//        warehouseOutMapper.deleteTableByRecommend(pageData);
+//        warehouseOutMapper.deleteTableByExecute(pageData);
+//        warehouseOutMapper.deleteTableByExecutor(pageData);
+//        warehouseOutMapper.deleteTableByDetail(pageData);
+//
+//        Map<String, String> columnMap = new HashMap<String, String>();
+//        columnMap.put("company_id", companyId);
+//        this.deleteByColumnMap(columnMap);
+//    }
+
+    /**
+     *
+     * @param companyId  企业id
+     * @param isSpare    是否备件库(true: 删除的是备件库 false: 删除的是非备件库)
+     * @throws Exception
+     */
+    public void deleteTableByWarehouseOut(String companyId, String isSpare) throws Exception {
         PageData pageData = new PageData();
         pageData.put("companyId", companyId);
+        //isSpare:=false 或 isSpare is null (删除的是非备件库)
+        pageData.put("isNeedNotInWarehouseSpare", "true");
+
+        if ("true".equals(isSpare)) {
+            pageData.put("isNeedNotInWarehouseSpare", null);
+
+            //isSpare:=true (删除的是备件库)
+            pageData.put("isNeedWarehouseSpare", "true");
+        }
 
         warehouseOutMapper.deleteTableByRecommend(pageData);
         warehouseOutMapper.deleteTableByExecute(pageData);
         warehouseOutMapper.deleteTableByExecutor(pageData);
         warehouseOutMapper.deleteTableByDetail(pageData);
 
-        Map<String, String> columnMap = new HashMap<String, String>();
-        columnMap.put("company_id", companyId);
-        this.deleteByColumnMap(columnMap);
+        //删除 parent 表
+        warehouseOutMapper.deleteTable(pageData);
     }
 
     public String checkColumn(WarehouseOut object) {

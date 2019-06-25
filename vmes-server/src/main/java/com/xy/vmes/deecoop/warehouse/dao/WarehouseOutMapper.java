@@ -81,6 +81,7 @@ public interface WarehouseOutMapper extends BaseMapper<WarehouseOut> {
     void updateToDisableByIds(String[] ids);
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+    void deleteTable(PageData pageData);
     void deleteTableByDetail(PageData pageData);
     void deleteTableByExecute(PageData pageData);
     void deleteTableByExecutor(PageData pageData);
