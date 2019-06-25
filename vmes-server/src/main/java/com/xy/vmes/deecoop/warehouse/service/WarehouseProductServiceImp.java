@@ -169,6 +169,28 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
     /**
+     *
+     * @param companyId  企业id
+     * @param isSpare    是否备件库(true: 删除的是备件库 false: 删除的是非备件库)
+     * @throws Exception
+     */
+    public void deleteTable(String companyId, String isSpare) {
+        PageData pageData = new PageData();
+        pageData.put("companyId", companyId);
+        //isSpare:=false 或 isSpare is null (删除的是非备件库)
+        pageData.put("isNeedNotInWarehouseSpare", "true");
+
+        if ("true".equals(isSpare)) {
+            pageData.put("isNeedNotInWarehouseSpare", null);
+
+            //isSpare:=true (删除的是备件库)
+            pageData.put("isNeedWarehouseSpare", "true");
+        }
+
+        warehouseProductMapper.deleteTable(pageData);
+    }
+
+    /**
      * 创建人：陈刚
      * 创建时间：2018-07-26
      */

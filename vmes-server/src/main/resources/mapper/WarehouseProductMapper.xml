@@ -27,6 +27,40 @@
     </update>
 
     <!-- ***************************************************以上为自动生成代码禁止修改，请在下面添加业务代码************************************************* -->
+    <delete id="deleteTable" parameterType="com.yvan.PageData">
+        delete from vmes_warehouse_product
+        <where>
+            <if test="companyId != null and companyId != ''" >
+                and company_id = #{companyId}
+            </if>
+            <!--过滤出 (备件库)-->
+            <if test="'true' == isNeedWarehouseSpare">
+                and warehouse_id in (
+                select id from vmes_warehouse
+                <where>
+                    <if test="currentCompanyId != null and currentCompanyId != ''" >
+                        and company_id = #{currentCompanyId}
+                    </if>
+                    and name = '备件库' and layer = 2
+                </where>
+                )
+            </if>
+
+            <!--过滤出(非备件库) 自定义sql查询语句-->
+            <if test="'true' == isNeedNotInWarehouseSpare">
+                and warehouse_id not in (
+                select id from vmes_warehouse
+                <where>
+                    <if test="currentCompanyId != null and currentCompanyId != ''" >
+                        and company_id = #{currentCompanyId}
+                    </if>
+                    and name = '备件库' and layer = 2
+                </where>
+                )
+            </if>
+        </where>
+    </delete>
+
     <insert id="insertColumn" >
         delete from vmes_column where model_code = 'warehouseProduct' ;
         insert into vmes_column (

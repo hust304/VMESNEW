@@ -195,9 +195,22 @@ public class ProductServiceImp implements ProductService {
     }
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
-    public void initialProductByStockCount(String companyId) throws Exception {
+    /**
+     *
+     * @param companyId  企业id
+     * @param isSpare    是否备件库(true: 是备件库 false: 非备件库)
+     * @throws Exception
+     */
+    public void initialProductByStockCount(String companyId, String isSpare) throws Exception {
         PageData pageData = new PageData();
         pageData.put("companyId", companyId);
+        //isSpare:=false 或 is null 非备件库
+        pageData.put("isNeedNotInGenreSpare", "true");
+
+        if ("true".equals(isSpare)) {
+            pageData.put("isNeedNotInGenreSpare", null);
+            pageData.put("isNeedGenreSpare", "true");
+        }
         productMapper.updateProductInitialByStockCount(pageData);
     }
 
