@@ -40,6 +40,8 @@ public class EquipmentWarehouseInBySpareController {
     private WarehouseInDetailService warehouseInDetailService;
 
     @Autowired
+    private WarehouseService warehouseService;
+    @Autowired
     private WarehouseProductService warehouseProductService;
     @Autowired
     private ProductService productService;
@@ -109,6 +111,19 @@ public class EquipmentWarehouseInBySpareController {
         if (mapList == null || mapList.size() == 0) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("入库单明细Json字符串-转换成List错误！");
+            return model;
+        }
+
+        //获取备件库
+        PageData findMap = new PageData();
+        findMap.put("companyId", companyID);
+        findMap.put("name", "备件库");
+        findMap.put("layer", Integer.valueOf(2));
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+        Warehouse warehouseSpare = warehouseService.findWarehouse(findMap);
+        if (warehouseSpare == null) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("您所在的企业不存在(备件库)，请与管理员联系！");
             return model;
         }
 
