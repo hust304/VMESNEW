@@ -276,6 +276,22 @@ public class Common {
             //609fa44c031847569a1d9e2516be4b41 组装出库
             put("assembleOut", "609fa44c031847569a1d9e2516be4b41");
 
+        //a804369b392c4035bc766cc536b29d35 备件库入库类型
+        put("warehouseInTypeBySpare", "a804369b392c4035bc766cc536b29d35");
+            //1df17a08d9c243beb20621967e517f95 维保退库
+            put("repairRetreatInBySpare", "1df17a08d9c243beb20621967e517f95");
+            //d21439b31f624a74b8cf0e60cd264bbd 采购入库
+            put("purchaseInBySpare", "d21439b31f624a74b8cf0e60cd264bbd");
+            //071aa97f4b97460eb5c2f9f16a9463a2 手动入库
+
+        //e3a230b566714fa885fca490486098f7 备件库出库类型
+        put("warehouseOutTypeBySpare", "e3a230b566714fa885fca490486098f7");
+            //e1a4ccb5a2d44dc79668d18de6983582 领料出库
+            put("receiveOutBySpare", "e1a4ccb5a2d44dc79668d18de6983582");
+            //e4e41774648b47febce36e08d4649e58 采购退货出库
+            put("purchaseOutBySpare", "e4e41774648b47febce36e08d4649e58");
+            //4bb95a5b9b4e470eb1b43d87fd89671c 手动出库
+
         //95c01e57c01e4b869a1940b8ded3c315(移库类型id)  移库类型(字典名称)
         put("warehouseMoveType", "95c01e57c01e4b869a1940b8ded3c315");
 
