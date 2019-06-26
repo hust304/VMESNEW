@@ -399,7 +399,11 @@ public class WarehouseInitialServiceImp implements WarehouseInitialService {
             throw new RestException("1","数据库没有生成TabCol，请联系管理员！");
         }
 
-        //根据查询条件获取业务数据List
+        //获取指定栏位字符串-重新调整List<Column>
+        String fieldCode = pd.getString("fieldCode");
+        if (fieldCode != null && fieldCode.trim().length() > 0) {
+            columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
+        }
 
         String ids = (String)pd.getString("ids");
         String queryStr = "";
