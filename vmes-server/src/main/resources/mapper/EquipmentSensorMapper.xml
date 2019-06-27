@@ -271,11 +271,13 @@
             ELSE null
             END bindSensorStateName,
 
+            type.name typeName,
             '' businessState,
             '' businessStateName
 
         from vmes_equipment equipment
             left join vmes_department department on equipment.dept_id = department.id
+            left join vmes_dictionary type on equipment.type = type.id
             left join (
                 select equipment_id, count(id) sensorTargetCount
                 from vmes_equipment_sensor
@@ -299,9 +301,18 @@
             <if test="pid!= null and pid != '' and layer != null">
                 and department.id_${layer} = #{pid}
             </if>
-
             <if test="equipmentIsdisable!= null and equipmentIsdisable != ''">
                 and equipment.isdisable = #{equipmentIsdisable}
+            </if>
+
+            <if test="code != null and code != ''">
+                and equipment.code = #{code}
+            </if>
+            <if test="name != null and name != ''">
+                and equipment.name LIKE CONCAT(CONCAT('%', #{name}),'%')
+            </if>
+            <if test="typeName != null and typeName != ''">
+                and type.name LIKE CONCAT(CONCAT('%', #{typeName}),'%')
             </if>
 
             <!--queryStr 自定义sql查询语句-->
