@@ -2,6 +2,7 @@ package com.xy.vmes.deecoop.equipment.controller;
 
 import com.xy.vmes.common.util.Common;
 import com.xy.vmes.entity.Product;
+import com.xy.vmes.entity.WarehouseLoginfo;
 import com.xy.vmes.entity.WarehouseProduct;
 import com.xy.vmes.service.*;
 import com.yvan.ExcelUtil;
@@ -212,6 +213,12 @@ public class EquipmentWarehouseInitialBySpareController {
         PageData pageData = HttpUtils.parsePageData();
 
         String cuser = pageData.getString("cuser");
+        String companyId = pageData.getString("currentCompanyId");
+        if (companyId == null || companyId.trim().length() == 0) {
+            model.putCode("1");
+            model.putMsg("企业id为空或空字符串！");
+            return model;
+        }
         String id = pageData.getString("id");
         if (id == null || id.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
@@ -282,11 +289,16 @@ public class EquipmentWarehouseInitialBySpareController {
         //货品变更数量:= 变更后数量 - 变更前数量
         BigDecimal modifyCount = BigDecimal.valueOf(afterCountBig.doubleValue() - beforeCountBig.doubleValue());
         if (modifyCount.doubleValue() != 0D) {
-            WarehouseProduct warehouseProductEdit = new WarehouseProduct();
-            warehouseProductEdit.setId(id);
-            warehouseProductEdit.setUuser(cuser);
-            warehouseProductEdit.setStockCount(afterCountBig);
-            warehouseProductService.update(warehouseProductEdit);
+            WarehouseLoginfo loginfo = new WarehouseLoginfo();
+            loginfo.setCuser(cuser);
+            loginfo.setCompanyId(companyId);
+            //操作变更前数量(业务相关)
+            loginfo.setBeforeCount(beforeCountBig);
+            //操作变更后数量(业务相关)
+            loginfo.setAfterCount(afterCountBig);
+            warehouseProductService.updateStockCount(warehouseProduct,
+                    modifyCount,
+                    loginfo);
 
             BigDecimal prodStockCount = BigDecimal.valueOf(prodCount.doubleValue() + modifyCount.doubleValue());
             //四舍五入到2位小数
