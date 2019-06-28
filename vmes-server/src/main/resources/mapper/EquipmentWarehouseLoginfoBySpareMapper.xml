@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+说明：vmes_warehouse_loginfo:(备件库)货品库存数量变更日志表 Mapper.xml
+创建人：陈刚
+创建时间：2019-06-27
+ -->
+<mapper namespace="com.xy.vmes.deecoop.equipment.dao.EquipmentWarehouseLoginfoBySpareMapper">
+    <insert id="insertColumn" >
+        delete from vmes_column where model_code = 'warehouseLoginfoBySpare' ;
+        insert into vmes_column (
+        id,model_code,title_key,title_name,serial_number,
+        isdisable,ishide,isedit,ismust,cdate,
+        cuser
+        ) VALUES
+        (replace(uuid(), '-', ''),'warehouseLoginfoBySpare','id','id',0, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseLoginfoBySpare','warehouseProductId','货品仓库id',1, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseLoginfoBySpare','count','当前操作数量',2, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseLoginfoBySpare','beforeCount','操作变更前数量(业务相关)',3, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseLoginfoBySpare','afterCount','操作变更后数量(业务相关)',4, '1','1','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'warehouseLoginfoBySpare','beforeStockCount','变更前库存数量',5, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseLoginfoBySpare','afterStockCount','变更后库存数量',6, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseLoginfoBySpare','operationCount','操作数量(正数:加库存 负数:减库存)',7, '1','1','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'warehouseLoginfoBySpare','businessType','业务类型(in:入库 out:出库: move:移库 check:库存盘点)',8, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseLoginfoBySpare','operation','操作类型(add:添加 modify:修改 delete:删除:)',9, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseLoginfoBySpare','cuser','创建用户id',10, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseLoginfoBySpare','cdate','创建时间',11, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseLoginfoBySpare','remark','备注',12, '1','1','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'warehouseLoginfoBySpare','appOperateId','操作名称id',13, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseLoginfoBySpare','appOperateName','操作名称',14, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseLoginfoBySpare','appOperate','操作对象',15, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseLoginfoBySpare','appOperateUserName','操作人',16, '1','1','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''), 'warehouseLoginfoBySpare', 'productCode', '货品编码', 17, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'warehouseLoginfoBySpare', 'productName', '货品名称', 18, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'warehouseLoginfoBySpare', 'productSpec', '规格型号', 19, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'warehouseLoginfoBySpare', 'productGenre', '货品属性id', 20, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'warehouseLoginfoBySpare', 'productGenreName', '货品属性', 21, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'warehouseLoginfoBySpare', 'productUnitName', '单位', 22, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin')
+
+</insert>
+
+    <select id="findListWarehouseLoginfoBySpare" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+            loginfo.id,
+            loginfo.warehouseProductId,
+            round(ifnull(loginfo.count, 0), 2) count,
+
+            round(ifnull(loginfo.beforeStockCount, 0), 2) beforeStockCount,
+            round(ifnull(loginfo.afterStockCount, 0), 2) afterStockCount,
+            round(ifnull(loginfo.operation_count, 0), 2) operationCount,
+
+            loginfo.business_type businessType,
+            loginfo.operation operation,
+            loginfo.cuser cuser,
+            loginfo.cdate cdate,
+            loginfo.remark remark,
+
+            <!--操作名称-->
+            loginfo.appOperateId,
+            loginfo.appOperateName,
+            loginfo.appOperate,
+            makeUser.user_name appOperateUserName,
+
+            <!--货品信息(备件)-->
+            product.code productCode,
+            product.name productName,
+            product.spec productSpec,
+            product.genre productGenre,
+            genre.name productGenreName,
+            unit.name productUnitName
+        from (
+            <!--(入库)库存变更日志-->
+            select
+                a.id,
+                a.target_wp_id warehouseProductId,
+                a.count,
+
+                a.target_before_stockcount beforeStockCount,
+                a.target_after_stockcount afterStockCount,
+                a.operation_count,
+
+                a.business_type,
+                a.operation,
+                a.cuser,
+                a.cdate,
+                a.remark,
+
+                <!--操作名称-->
+                a.business_type appOperateId,
+                '入库' appOperateName,
+                c.dept_name appOperate
+
+            from vmes_warehouse_loginfo a
+                left join vmes_warehouse_in_detail b on a.detail_id = b.id
+                left join vmes_warehouse_in c on b.parent_id = c.id
+            <where>
+                <if test="companyId != null and companyId != ''" >
+                    and a.company_id = #{companyId} and a.business_type in ('in')
+                </if>
+            </where>
+            UNION ALL
+
+            <!--(出库)库存变更日志-->
+            select
+                a.id,
+                a.source_wp_id warehouseProductId,
+                a.count,
+
+                a.source_before_stockcount beforeStockCount,
+                a.source_after_stockcount afterStockCount,
+                a.operation_count,
+
+                a.business_type,
+                a.operation,
+                a.cuser,
+                a.cdate,
+                a.remark,
+
+                <!--操作名称-->
+                a.business_type appOperateId,
+                '出库' appOperateName,
+                c.dept_name appOperate
+            from vmes_warehouse_loginfo a
+                left join vmes_warehouse_out_detail b on a.detail_id = b.id
+                left join vmes_warehouse_out c on b.parent_id = c.id
+            <where>
+                <if test="companyId != null and companyId != ''" >
+                    and a.company_id = #{companyId} and a.business_type in ('out')
+                </if>
+            </where>
+            UNION ALL
+
+            <!--(修改)库存变更日志-->
+            select
+                a.id,
+                a.target_wp_id warehouseProductId,
+                a.count,
+
+                a.target_before_stockcount beforeStockCount,
+                a.target_after_stockcount afterStockCount,
+                a.operation_count,
+
+                a.business_type,
+                a.operation,
+                a.cuser,
+                a.cdate,
+                a.remark,
+
+                <!--操作名称-->
+                a.business_type appOperateId,
+                '调整' appOperateName,
+                '备件仓库' appOperate
+            from vmes_warehouse_loginfo a
+            <where>
+                <if test="companyId != null and companyId != ''" >
+                    and a.company_id = #{companyId} and a.business_type in ('update')
+                </if>
+            </where>
+        ) loginfo
+            left join vmes_user makeUser on loginfo.cuser = makeUser.id
+            left join vmes_warehouse_product d on loginfo.warehouseProductId = d.id
+            left join vmes_product product on d.product_id = product.id
+            left join vmes_product_unit produnit on product.id = produnit.product_id and produnit.type = 1
+
+            left join vmes_dictionary genre on product.genre = genre.id
+            left join vmes_dictionary unit on produnit.unit = unit.id
+        <where>
+            <if test="productId != null and productId != ''" >
+                and d.product_id = #{productId}
+            </if>
+
+            <!--页面查询条件-->
+            <if test="productCode != null and productCode != ''">
+                and product.code = #{productCode}
+            </if>
+            <if test="productName != null and productName != ''">
+                and product.name LIKE CONCAT(CONCAT('%', #{productName}),'%')
+            </if>
+            <if test="productSpec != null and productSpec != ''">
+                and product.spec LIKE CONCAT(CONCAT('%', #{productSpec}),'%')
+            </if>
+
+            <!--货品属性(备件 384cfd1329e648618b5a237ce1038bab)-->
+            and product.genre = '384cfd1329e648618b5a237ce1038bab'
+        </where>
+        <if test="orderStr != null and orderStr != ''" >
+            order by ${orderStr}
+        </if>
+    </select>
+</mapper>
