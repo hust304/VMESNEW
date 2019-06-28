@@ -33,13 +33,14 @@
         (replace(uuid(), '-', ''),'warehouseLoginfoBySpare','appOperateName','操作名称',14, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'warehouseLoginfoBySpare','appOperate','操作对象',15, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'warehouseLoginfoBySpare','appOperateUserName','操作人',16, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseLoginfoBySpare','appOperateTime','操作时间',17, '1','1','1','0',now(), 'admin'),
 
-        (replace(uuid(), '-', ''), 'warehouseLoginfoBySpare', 'productCode', '货品编码', 17, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
-        (replace(uuid(), '-', ''), 'warehouseLoginfoBySpare', 'productName', '货品名称', 18, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
-        (replace(uuid(), '-', ''), 'warehouseLoginfoBySpare', 'productSpec', '规格型号', 19, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
-        (replace(uuid(), '-', ''), 'warehouseLoginfoBySpare', 'productGenre', '货品属性id', 20, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
-        (replace(uuid(), '-', ''), 'warehouseLoginfoBySpare', 'productGenreName', '货品属性', 21, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
-        (replace(uuid(), '-', ''), 'warehouseLoginfoBySpare', 'productUnitName', '单位', 22, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin')
+        (replace(uuid(), '-', ''), 'warehouseLoginfoBySpare', 'productCode', '货品编码', 18, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'warehouseLoginfoBySpare', 'productName', '货品名称', 19, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'warehouseLoginfoBySpare', 'productSpec', '规格型号', 20, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'warehouseLoginfoBySpare', 'productGenre', '货品属性id', 21, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'warehouseLoginfoBySpare', 'productGenreName', '货品属性', 22, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'warehouseLoginfoBySpare', 'productUnitName', '单位', 23, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin')
 
 </insert>
 
@@ -64,6 +65,7 @@
             loginfo.appOperateName,
             loginfo.appOperate,
             makeUser.user_name appOperateUserName,
+            DATE_FORMAT(loginfo.cdate,'%Y-%m-%d %T') appOperateTime,
 
             <!--货品信息(备件)-->
             product.code productCode,
@@ -182,6 +184,12 @@
             </if>
             <if test="productSpec != null and productSpec != ''">
                 and product.spec LIKE CONCAT(CONCAT('%', #{productSpec}),'%')
+            </if>
+            <if test="beginDate != null and beginDate != ''">
+                <![CDATA[ and loginfo.cdate >= #{beginDate} ]]>
+            </if>
+            <if test="endDate != null and endDate != ''">
+                <![CDATA[ and loginfo.cdate <= #{endDate} ]]>
             </if>
 
             <!--货品属性(备件 384cfd1329e648618b5a237ce1038bab)-->
