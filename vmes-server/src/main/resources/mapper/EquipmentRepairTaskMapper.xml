@@ -10,7 +10,6 @@
     <!-- 批量删除 自动创建，禁止修改-->
     <delete id="deleteByIds" parameterType="java.lang.String">
         delete from vmes_equipment_repairTask
-        <include refid="tableName"></include>
         where id in
         <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
 		#{item}
