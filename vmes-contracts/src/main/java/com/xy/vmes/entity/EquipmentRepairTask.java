@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 /** 
  * 说明：vmes_equipment_repairTask:设备维修任务表 实体类
  * @author 陈刚 自动生成
- * @date 2019-07-01
+ * @date 2019-07-02
  */
 @TableName("vmes_equipment_repairTask")
 public class EquipmentRepairTask implements Serializable {
@@ -44,11 +44,17 @@ public class EquipmentRepairTask implements Serializable {
 	//任务领取时间
 	@TableField("receive_date")
 	private Date receiveDate;
-	//任务退单时间
-	@TableField("retreat_date")
-	private Date retreatDate;
+	//取消原因
+	@TableField("cancel_reason")
+	private String cancelReason;
 
-	//退回方式(1:退回备件库, 2:退回虚拟库)
+	//取消时间
+	@TableField("cancel_date")
+	private Date cancelDate;
+	//取消人id
+	@TableField("cancel_user")
+	private String cancelUser;
+	//退回方式(1:退回仓库, 2:退回虚拟库)
 	@TableField("retreat_type")
 	private String retreatType;
 	//创建用户id
@@ -57,19 +63,20 @@ public class EquipmentRepairTask implements Serializable {
 	//创建时间
 	@TableField("cdate")
 	private Date cdate;
+
 	//修改用户id
 	@TableField("uuser")
 	private String uuser;
 	//修改时间
 	@TableField("udate")
 	private Date udate;
-
 	//备注
 	@TableField("remark")
 	private String remark;
 	//是否启用(0:已禁用 1:启用)
 	@TableField("isdisable")
 	private String isdisable;
+
 
 
 	public void setId(String id) {
@@ -90,11 +97,11 @@ public class EquipmentRepairTask implements Serializable {
 	public String getRepairUser() {
 		return repairUser;
 	}
-	public String getFaultDescribe() {
-		return faultDescribe;
-	}
 	public void setFaultDescribe(String faultDescribe) {
 		this.faultDescribe = faultDescribe;
+	}
+	public String getFaultDescribe() {
+		return faultDescribe;
 	}
 	public void setTimeLength(BigDecimal timeLength) {
 		this.timeLength = timeLength;
@@ -126,11 +133,23 @@ public class EquipmentRepairTask implements Serializable {
 	public Date getReceiveDate() {
 		return receiveDate;
 	}
-	public void setRetreatDate(Date retreatDate) {
-		this.retreatDate = retreatDate;
+	public void setCancelReason(String cancelReason) {
+		this.cancelReason = cancelReason;
 	}
-	public Date getRetreatDate() {
-		return retreatDate;
+	public String getCancelReason() {
+		return cancelReason;
+	}
+	public void setCancelDate(Date cancelDate) {
+		this.cancelDate = cancelDate;
+	}
+	public Date getCancelDate() {
+		return cancelDate;
+	}
+	public void setCancelUser(String cancelUser) {
+		this.cancelUser = cancelUser;
+	}
+	public String getCancelUser() {
+		return cancelUser;
 	}
 	public void setRetreatType(String retreatType) {
 		this.retreatType = retreatType;

@@ -36,19 +36,7 @@ public interface EquipmentRepairTaskService {
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2019-07-01
      */
-    void updateToDisableByIds(String[] ids)throws Exception;
-
-    /**
-     * 创建人：陈刚 自动创建，禁止修改
-     * 创建时间：2019-07-01
-     */
     void deleteById(String id) throws Exception;
-
-    /**
-     * 创建人：陈刚 自动创建，禁止修改
-     * 创建时间：2019-07-01
-     */
-    void deleteByIds(String[] ids) throws Exception;
 
     /**
      * 创建人：陈刚 自动创建，禁止修改
@@ -82,6 +70,12 @@ public interface EquipmentRepairTaskService {
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
     /**
+     * 创建人：陈刚
+     * 创建时间：2019-07-01
+     */
+    void updateIsdisableByRepairId(String isdisable, String repairId) throws Exception;
+
+    /**
      *
      * @param pageData    查询参数对象<HashMap>
      * @param isQueryAll  是否查询全部
@@ -97,6 +91,7 @@ public interface EquipmentRepairTaskService {
     EquipmentRepairTask findRepairTaskById(String id) throws Exception;
     List<EquipmentRepairTask> findRepairTaskList(PageData object) throws Exception;
 
+    boolean isExistRepairTaskByRepairId(String repairId);
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**
     * 分页查询

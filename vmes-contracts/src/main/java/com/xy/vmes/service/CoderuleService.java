@@ -159,7 +159,7 @@ public interface CoderuleService {
     String createCoderByDate(String companyID,String tableName,String dateFormat,String prefix);
 
     /**
-     * 获取流水号：前缀+日期（yyyyMMdd）+6位流水号，如P20180808001
+     * 获取流水号：前缀+日期（yyyyMMdd）+5位流水号，如P2018080800001
      * 创建人：刘威
      * @param companyID   公司ID
      * @param tableName   表名

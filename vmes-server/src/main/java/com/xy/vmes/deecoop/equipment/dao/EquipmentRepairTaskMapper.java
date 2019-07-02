@@ -23,13 +23,7 @@ public interface EquipmentRepairTaskMapper extends BaseMapper<EquipmentRepairTas
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2019-07-01
      */
-    void deleteByIds(String[] ids);
-
-    /**
-     * 创建人：陈刚 自动创建，禁止修改
-     * 创建时间：2019-07-01
-     */
-    void updateToDisableByIds(String[] ids);
+    void updateIsdisableByRepairId(PageData pd);
 
     /**
      * 创建人：陈刚 自动创建，禁止修改
@@ -43,7 +37,6 @@ public interface EquipmentRepairTaskMapper extends BaseMapper<EquipmentRepairTas
      */
     List<Map> getDataListPage(PageData pd, Pagination pg);
     List<Map> getDataListPage(PageData pd);
-    /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 }
 
 

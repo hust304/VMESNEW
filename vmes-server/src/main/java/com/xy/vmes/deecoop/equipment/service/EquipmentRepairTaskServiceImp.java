@@ -95,26 +95,8 @@ public class EquipmentRepairTaskServiceImp implements EquipmentRepairTaskService
      * 创建时间：2019-07-01
      */
     @Override
-    public void deleteByIds(String[] ids) throws Exception{
-        equipmentRepairTaskMapper.deleteByIds(ids);
-    }
-
-    /**
-     * 创建人：陈刚 自动创建，禁止修改
-     * 创建时间：2019-07-01
-     */
-    @Override
     public void deleteByColumnMap(Map columnMap) throws Exception{
         equipmentRepairTaskMapper.deleteByMap(columnMap);
-    }
-
-    /**
-     * 创建人：陈刚 自动创建，禁止修改
-     * 创建时间：2019-07-01
-     */
-    @Override
-    public void updateToDisableByIds(String[] ids)throws Exception{
-        equipmentRepairTaskMapper.updateToDisableByIds(ids);
     }
 
     /**
@@ -144,6 +126,21 @@ public class EquipmentRepairTaskServiceImp implements EquipmentRepairTaskService
     }
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+    /**
+     * 创建人：陈刚
+     * 创建时间：2019-07-01
+     */
+    public void updateIsdisableByRepairId(String isdisable, String repairId)throws Exception {
+        if (isdisable == null || isdisable.trim().length() == 0) {return;}
+        if (repairId == null || repairId.trim().length() == 0) {return;}
+        if ("0,1".indexOf(isdisable.trim()) == -1) {return;}
+
+        PageData valueMap = new PageData();
+        valueMap.put("isdisable", isdisable);
+        valueMap.put("repairId", repairId);
+        equipmentRepairTaskMapper.updateIsdisableByRepairId(valueMap);
+    }
+
     /**
     *
     * @param pageData    查询参数对象<HashMap>
@@ -187,6 +184,24 @@ public class EquipmentRepairTaskServiceImp implements EquipmentRepairTaskService
         return this.findDataList(object, null);
     }
 
+    public boolean isExistRepairTaskByRepairId(String repairId) {
+        if (repairId == null || repairId.trim().length() == 0) {return false;}
+
+        List<EquipmentRepairTask> repairTaskList = null;
+        try {
+            PageData findMap = new PageData();
+            findMap.put("repairId", repairId);
+            repairTaskList = this.findRepairTaskList(findMap);
+
+            if (repairTaskList != null && repairTaskList.size() > 0) {
+                return true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**
     *

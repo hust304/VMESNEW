@@ -192,7 +192,7 @@ public class EquipmentRepairServiceImp implements EquipmentRepairService {
     * @return      返回对象ResultModel
     * @throws Exception
     */
-    public ResultModel listPageEquipmentRepairs(PageData pd,Pagination pg) throws Exception{
+    public ResultModel listPageEquipmentRepair(PageData pd,Pagination pg) throws Exception{
         ResultModel model = new ResultModel();
 
         List<Column> columnList = columnService.findColumnList("equipmentRepair");

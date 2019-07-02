@@ -7,26 +7,13 @@
  -->
 <mapper namespace="com.xy.vmes.deecoop.equipment.dao.EquipmentRepairTaskMapper">
 
-    <!-- 批量删除 自动创建，禁止修改-->
-    <delete id="deleteByIds" parameterType="java.lang.String">
-        delete from vmes_equipment_repairTask
-        where id in
-        <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
-		#{item}
-        </foreach>
-    </delete>
-
-    <!-- 自动创建，禁止修改-->
-    <update id="updateToDisableByIds" parameterType="java.lang.String" >
-        update vmes_equipment_repairTask
-        set isdisable = '0' ,udate = now()
-        where id in
-        <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
-        #{item}
-        </foreach>
+    <update id="updateIsdisableByRepairId" parameterType="com.yvan.PageData" >
+        update vmes_equipment_repairTask set
+        isdisable = #{isdisable},
+        udate = now()
+        where repair_id = #{repairId}
     </update>
 
-    <!-- ***************************************************以上为自动生成代码禁止修改，请在下面添加业务代码************************************************* -->
     <insert id="insertColumn" >
         delete from vmes_column where model_code = 'equipmentRepairTask' ;
         insert into vmes_column (
@@ -70,14 +57,16 @@
         task_state taskState,
         task_type taskType,
         receive_date receiveDate,
-        retreat_date retreatDate,
+        cancel_reason cancelReason,
 
+        cancel_date cancelDate,
+        cancel_user cancelUser,
         retreat_type retreatType,
         cuser cuser,
         cdate cdate,
+
         uuser uuser,
         udate udate,
-
         remark remark,
         isdisable isdisable
         from vmes_equipment_repairTask
@@ -127,14 +116,16 @@
         task_state taskState,
         task_type taskType,
         receive_date receiveDate,
-        retreat_date retreatDate,
+        cancel_reason cancelReason,
 
+        cancel_date cancelDate,
+        cancel_user cancelUser,
         retreat_type retreatType,
         cuser cuser,
         cdate cdate,
+
         uuser uuser,
         udate udate,
-
         remark remark,
         isdisable isdisable
         from vmes_equipment_repairTask

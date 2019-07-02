@@ -38,13 +38,17 @@
             (replace(uuid(), '-', ''),'equipmentRepair','companyId','企业ID',1, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentRepair','equipmentId','设备ID',2, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentRepair','repairTaskId','维修任务ID',3, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'equipmentRepair','sysCode','维修单编号(系统生成)',4, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentRepair','sysCode','维修单编号',4, '1','1','1','0',now(), 'admin'),
 
             (replace(uuid(), '-', ''),'equipmentRepair','warnDate','报警时间',5, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentRepair','warnDateTimeStr','报警时间',5, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentRepair','faultDescribe','故障描述',6, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentRepair','equipmentState','设备状态(1:故障 2:维修中 3:已完成)',7, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentRepair','equipmentStateName','状态',7, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentRepair','beginTime','开始维修时间',8, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentRepair','beginTimeStr','开始维修时间',8, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentRepair','endTime','完成维修时间',9, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentRepair','endTimeStr','完成维修时间',9, '1','1','1','0',now(), 'admin'),
 
             (replace(uuid(), '-', ''),'equipmentRepair','cancelReason','取消原因',10, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentRepair','cancelDate','取消时间',11, '1','1','1','0',now(), 'admin'),
@@ -56,6 +60,9 @@
             (replace(uuid(), '-', ''),'equipmentRepair','udate','修改时间',16, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentRepair','remark','备注',17, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentRepair','isdisable','是否启用(0:已禁用 1:启用)',18, '1','1','1','0',now(), 'admin'),
+
+            (replace(uuid(), '-', ''),'equipmentRepair','equipmentCode','设备编码',19, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentRepair','equipmentName','设备名称',20, '1','1','1','0',now(), 'admin')
     </insert>
 
 
@@ -120,35 +127,60 @@
     <!-- 自动创建，可以修改 -->
     <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
-        id id,
-        company_id companyId,
-        equipment_id equipmentId,
-        repair_task_id repairTaskId,
-        sys_code sysCode,
+        repair.id id,
+        repair.company_id companyId,
+        repair.equipment_id equipmentId,
+        repair.repair_task_id repairTaskId,
+        repair.sys_code sysCode,
 
-        warn_date warnDate,
-        fault_describe faultDescribe,
-        equipment_state equipmentState,
-        begin_time beginTime,
-        end_time endTime,
+        repair.warn_date warnDate,
+        DATE_FORMAT(repair.warn_date,'%Y-%m-%d %T') warnDateTimeStr,
+        repair.fault_describe faultDescribe,
+        repair.equipment_state equipmentState,
+        CASE
+            WHEN repair.equipment_state = '1' THEN '故障'
+            WHEN repair.equipment_state = '2' THEN '维修中'
+            WHEN repair.equipment_state = '3' THEN '已完成'
+        ELSE null
+        END equipmentStateName,
+        repair.begin_time beginTime,
+        DATE_FORMAT(repair.begin_time,'%Y-%m-%d %T') beginTimeStr,
+        repair.end_time endTime,
+        DATE_FORMAT(repair.end_time,'%Y-%m-%d %T') endTimeStr,
 
-        cancel_reason cancelReason,
-        cancel_date cancelDate,
-        cancel_user cancelUser,
-        cuser cuser,
-        cdate cdate,
+        repair.cancel_reason cancelReason,
+        repair.cancel_date cancelDate,
+        repair.cancel_user cancelUser,
+        repair.cuser cuser,
+        repair.cdate cdate,
 
-        uuser uuser,
-        udate udate,
-        remark remark,
-        isdisable isdisable
-        from vmes_equipment_repair
+        repair.uuser uuser,
+        repair.udate udate,
+        repair.remark remark,
+        repair.isdisable isdisable,
+
+        eqpt.code equipmentCode,
+        eqpt.name equipmentName
+
+        from vmes_equipment_repair repair
+        left join vmes_equipment eqpt on repair.equipment_id = eqpt.id
         <where>
             <if test="equipmentId != null and equipmentId != ''">
                 and equipment_id = #{equipmentId}
             </if>
             <if test="companyId != null and companyId != ''">
                 and company_id = #{companyId}
+            </if>
+
+            <!--页面查询条件-->
+            <if test="equipmentCode != null and equipmentCode != ''">
+                and eqpt.code LIKE CONCAT(CONCAT('%', #{equipmentCode}),'%')
+            </if>
+            <if test="equipmentName != null and equipmentName != ''">
+                and eqpt.name LIKE CONCAT(CONCAT('%', #{equipmentName}),'%')
+            </if>
+            <if test="equipmentState != null and equipmentState != ''">
+                and repair.equipment_state = #{equipmentState}
             </if>
 
             <!--queryStr 自定义sql查询语句-->

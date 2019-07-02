@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 /** 
  * 说明：vmes_equipment_repairTask_detail:设备维修任务明细表 实体类
  * @author 陈刚 自动生成
- * @date 2019-07-01
+ * @date 2019-07-02
  */
 @TableName("vmes_equipment_repairTask_detail")
 public class EquipmentRepairTaskDetail implements Serializable {
@@ -25,29 +25,36 @@ public class EquipmentRepairTaskDetail implements Serializable {
 	//备件ID(货品)ID
 	@TableField("product_id")
 	private String productId;
+	//货品分类(0:货品类1:备件类)
+	@TableField("product_type")
+	private String productType;
 	//领取数量
 	@TableField("receive_count")
 	private BigDecimal receiveCount;
-	//领取出库明细ID
-	@TableField("receive_outdtl_id")
-	private String receiveOutdtlId;
-
 	//实际使用数量
 	@TableField("apply_count")
 	private BigDecimal applyCount;
-	//退回方式(1:退回备件库, 2:退回虚拟库)
+	//退回方式(1:退回仓库, 2:退回虚拟库)
 	@TableField("retreat_type")
 	private String retreatType;
 	//退回数量
 	@TableField("retreat_count")
 	private BigDecimal retreatCount;
-	//退回入库明细ID
-	@TableField("retreat_indtl_id")
-	private String retreatIndtlId;
+	//出库明细ID(领取)
+	@TableField("out_dtl_id")
+	private String outDtlId;
+	//出库数量(领取)
+	@TableField("out_count")
+	private BigDecimal outCount;
+	//入库明细ID(退还)
+	@TableField("in_dtl_id")
+	private String inDtlId;
+	//入库数量(退还)
+	@TableField("in_count")
+	private BigDecimal inCount;
 	//虚拟库ID(货位ID)
 	@TableField("warehouse_id")
 	private String warehouseId;
-
 	//创建用户id
 	@TableField("cuser")
 	private String cuser;
@@ -63,10 +70,10 @@ public class EquipmentRepairTaskDetail implements Serializable {
 	//备注
 	@TableField("remark")
 	private String remark;
-
 	//是否启用(0:已禁用 1:启用)
 	@TableField("isdisable")
 	private String isdisable;
+
 
 
 	public void setId(String id) {
@@ -87,17 +94,17 @@ public class EquipmentRepairTaskDetail implements Serializable {
 	public String getProductId() {
 		return productId;
 	}
+	public void setProductType(String productType) {
+		this.productType = productType;
+	}
+	public String getProductType() {
+		return productType;
+	}
 	public void setReceiveCount(BigDecimal receiveCount) {
 		this.receiveCount = receiveCount;
 	}
 	public BigDecimal getReceiveCount() {
 		return receiveCount;
-	}
-	public void setReceiveOutdtlId(String receiveOutdtlId) {
-		this.receiveOutdtlId = receiveOutdtlId;
-	}
-	public String getReceiveOutdtlId() {
-		return receiveOutdtlId;
 	}
 	public void setApplyCount(BigDecimal applyCount) {
 		this.applyCount = applyCount;
@@ -117,11 +124,29 @@ public class EquipmentRepairTaskDetail implements Serializable {
 	public BigDecimal getRetreatCount() {
 		return retreatCount;
 	}
-	public void setRetreatIndtlId(String retreatIndtlId) {
-		this.retreatIndtlId = retreatIndtlId;
+	public void setOutDtlId(String outDtlId) {
+		this.outDtlId = outDtlId;
 	}
-	public String getRetreatIndtlId() {
-		return retreatIndtlId;
+	public String getOutDtlId() {
+		return outDtlId;
+	}
+	public void setOutCount(BigDecimal outCount) {
+		this.outCount = outCount;
+	}
+	public BigDecimal getOutCount() {
+		return outCount;
+	}
+	public void setInDtlId(String inDtlId) {
+		this.inDtlId = inDtlId;
+	}
+	public String getInDtlId() {
+		return inDtlId;
+	}
+	public void setInCount(BigDecimal inCount) {
+		this.inCount = inCount;
+	}
+	public BigDecimal getInCount() {
+		return inCount;
 	}
 	public void setWarehouseId(String warehouseId) {
 		this.warehouseId = warehouseId;

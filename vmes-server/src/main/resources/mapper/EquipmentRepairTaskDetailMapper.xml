@@ -36,19 +36,22 @@
         ) VALUES
             (replace(uuid(), '-', ''),'equipmentRepairTaskDetail','taskId','维修任务ID',1, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentRepairTaskDetail','productId','备件ID(货品)ID',2, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'equipmentRepairTaskDetail','receiveCount','领取数量',3, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'equipmentRepairTaskDetail','receiveOutdtlId','领取出库明细ID',4, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentRepairTaskDetail','productType','货品分类(0:货品类1:备件类)',3, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentRepairTaskDetail','receiveCount','领取数量',4, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentRepairTaskDetail','applyCount','实际使用数量',5, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'equipmentRepairTaskDetail','retreatType','退回方式(1:退回备件库, 2:退回虚拟库)',6, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentRepairTaskDetail','retreatType','退回方式(1:退回仓库, 2:退回虚拟库)',6, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentRepairTaskDetail','retreatCount','退回数量',7, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'equipmentRepairTaskDetail','retreatIndtlId','退回入库明细ID',8, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'equipmentRepairTaskDetail','warehouseId','虚拟库ID(货位ID)',9, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'equipmentRepairTaskDetail','cuser','创建用户id',10, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'equipmentRepairTaskDetail','cdate','创建时间',11, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'equipmentRepairTaskDetail','uuser','修改用户id',12, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'equipmentRepairTaskDetail','udate','修改时间',13, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'equipmentRepairTaskDetail','remark','备注',14, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'equipmentRepairTaskDetail','isdisable','是否启用(0:已禁用 1:启用)',15, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentRepairTaskDetail','outDtlId','出库明细ID(领取)',8, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentRepairTaskDetail','outCount','出库数量(领取)',9, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentRepairTaskDetail','inDtlId','入库明细ID(退还)',10, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentRepairTaskDetail','inCount','入库数量(退还)',11, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentRepairTaskDetail','warehouseId','虚拟库ID(货位ID)',12, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentRepairTaskDetail','cuser','创建用户id',13, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentRepairTaskDetail','cdate','创建时间',14, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentRepairTaskDetail','uuser','修改用户id',15, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentRepairTaskDetail','udate','修改时间',16, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentRepairTaskDetail','remark','备注',17, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentRepairTaskDetail','isdisable','是否启用(0:已禁用 1:启用)',18, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentRepairTaskDetail','id','id',0, '1','1','1','0',now(), 'admin')
     </insert>
 
@@ -59,21 +62,24 @@
         id id,
         task_id taskId,
         product_id productId,
+        product_type productType,
         receive_count receiveCount,
-        receive_outdtl_id receiveOutdtlId,
 
         apply_count applyCount,
         retreat_type retreatType,
         retreat_count retreatCount,
-        retreat_indtl_id retreatIndtlId,
-        warehouse_id warehouseId,
+        out_dtl_id outDtlId,
+        out_count outCount,
 
+        in_dtl_id inDtlId,
+        in_count inCount,
+        warehouse_id warehouseId,
         cuser cuser,
         cdate cdate,
+
         uuser uuser,
         udate udate,
         remark remark,
-
         isdisable isdisable
         from vmes_equipment_repairTask_detail
         <where>
@@ -114,21 +120,24 @@
         id id,
         task_id taskId,
         product_id productId,
+        product_type productType,
         receive_count receiveCount,
-        receive_outdtl_id receiveOutdtlId,
 
         apply_count applyCount,
         retreat_type retreatType,
         retreat_count retreatCount,
-        retreat_indtl_id retreatIndtlId,
-        warehouse_id warehouseId,
+        out_dtl_id outDtlId,
+        out_count outCount,
 
+        in_dtl_id inDtlId,
+        in_count inCount,
+        warehouse_id warehouseId,
         cuser cuser,
         cdate cdate,
+
         uuser uuser,
         udate udate,
         remark remark,
-
         isdisable isdisable
         from vmes_equipment_repairTask_detail
         <where>
