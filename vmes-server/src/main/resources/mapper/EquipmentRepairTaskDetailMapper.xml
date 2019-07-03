@@ -34,25 +34,35 @@
         isdisable,ishide,isedit,ismust,cdate,
         cuser
         ) VALUES
+            (replace(uuid(), '-', ''),'equipmentRepairTaskDetail','id','id',0, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentRepairTaskDetail','taskId','维修任务ID',1, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentRepairTaskDetail','productId','备件ID(货品)ID',2, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentRepairTaskDetail','productType','货品分类(0:货品类1:备件类)',3, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentRepairTaskDetail','receiveCount','领取数量',4, '1','1','1','0',now(), 'admin'),
+
             (replace(uuid(), '-', ''),'equipmentRepairTaskDetail','applyCount','实际使用数量',5, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentRepairTaskDetail','retreatType','退回方式(1:退回仓库, 2:退回虚拟库)',6, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentRepairTaskDetail','retreatCount','退回数量',7, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentRepairTaskDetail','outDtlId','出库明细ID(领取)',8, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentRepairTaskDetail','outCount','出库数量(领取)',9, '1','1','1','0',now(), 'admin'),
+
             (replace(uuid(), '-', ''),'equipmentRepairTaskDetail','inDtlId','入库明细ID(退还)',10, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentRepairTaskDetail','inCount','入库数量(退还)',11, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentRepairTaskDetail','warehouseId','虚拟库ID(货位ID)',12, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentRepairTaskDetail','cuser','创建用户id',13, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentRepairTaskDetail','cdate','创建时间',14, '1','1','1','0',now(), 'admin'),
+
             (replace(uuid(), '-', ''),'equipmentRepairTaskDetail','uuser','修改用户id',15, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentRepairTaskDetail','udate','修改时间',16, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentRepairTaskDetail','remark','备注',17, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentRepairTaskDetail','isdisable','是否启用(0:已禁用 1:启用)',18, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'equipmentRepairTaskDetail','id','id',0, '1','1','1','0',now(), 'admin')
+
+            (replace(uuid(), '-', ''), 'equipmentRepairTaskDetail', 'productCode', '货品编码', 18, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'equipmentRepairTaskDetail', 'productName', '货品名称', 19, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'equipmentRepairTaskDetail', 'productSpec', '规格型号', 20, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'equipmentRepairTaskDetail', 'productGenre', '货品属性id', 21, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'equipmentRepairTaskDetail', 'productGenreName', '货品属性', 22, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'equipmentRepairTaskDetail', 'productUnitName', '单位', 23, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin')
     </insert>
 
 
@@ -117,29 +127,42 @@
     <!-- 自动创建，可以修改 -->
     <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
-        id id,
-        task_id taskId,
-        product_id productId,
-        product_type productType,
-        receive_count receiveCount,
+        taskDtl.id id,
+        taskDtl.task_id taskId,
+        taskDtl.product_id productId,
+        taskDtl.product_type productType,
+        round(taskDtl.receive_count, 2) receiveCount,
 
-        apply_count applyCount,
-        retreat_type retreatType,
-        retreat_count retreatCount,
-        out_dtl_id outDtlId,
-        out_count outCount,
+        round(taskDtl.apply_count, 2) applyCount,
+        taskDtl.retreat_type retreatType,
+        round(taskDtl.retreat_count, 2) retreatCount,
+        taskDtl.out_dtl_id outDtlId,
+        round(taskDtl.out_count, 2) outCount,
 
-        in_dtl_id inDtlId,
-        in_count inCount,
-        warehouse_id warehouseId,
-        cuser cuser,
-        cdate cdate,
+        taskDtl.in_dtl_id inDtlId,
+        round(taskDtl.in_count, 2) inCount,
+        taskDtl.warehouse_id warehouseId,
+        taskDtl.cuser cuser,
+        taskDtl.cdate cdate,
 
-        uuser uuser,
-        udate udate,
-        remark remark,
-        isdisable isdisable
-        from vmes_equipment_repairTask_detail
+        taskDtl.uuser uuser,
+        taskDtl.udate udate,
+        taskDtl.remark remark,
+        taskDtl.isdisable isdisable,
+
+        <!--货品信息(备件)-->
+        product.code productCode,
+        product.name productName,
+        product.spec productSpec,
+        product.genre productGenre,
+        genre.name productGenreName,
+        unit.name productUnitName
+
+        from vmes_equipment_repairTask_detail taskDtl
+        left join vmes_product product on taskDtl.product_id = product.id
+        left join vmes_product_unit produnit on taskDtl.product_id = produnit.product_id and produnit.type = 1
+        left join vmes_dictionary genre on product.genre = genre.id
+        left join vmes_dictionary unit on produnit.unit = unit.id
         <where>
             <if test="taskId != null and taskId != ''">
                 and task_id = #{taskId}

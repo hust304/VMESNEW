@@ -107,7 +107,7 @@ public interface EquipmentRepairTaskDetailService {
     * @return      返回对象ResultModel
     * @throws Exception
     */
-    ResultModel listPageEquipmentRepairTaskDetails(PageData pd,Pagination pg) throws Exception;
+    ResultModel listPageRepairTaskDetail(PageData pd,Pagination pg) throws Exception;
 
 
 

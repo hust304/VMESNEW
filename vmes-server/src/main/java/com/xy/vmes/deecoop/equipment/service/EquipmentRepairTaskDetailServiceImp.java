@@ -203,7 +203,7 @@ public class EquipmentRepairTaskDetailServiceImp implements EquipmentRepairTaskD
     * @return      返回对象ResultModel
     * @throws Exception
     */
-    public ResultModel listPageEquipmentRepairTaskDetails(PageData pd,Pagination pg) throws Exception{
+    public ResultModel listPageRepairTaskDetail(PageData pd,Pagination pg) throws Exception{
         ResultModel model = new ResultModel();
 
         List<Column> columnList = columnService.findColumnList("equipmentRepairTaskDetail");
@@ -234,6 +234,11 @@ public class EquipmentRepairTaskDetailServiceImp implements EquipmentRepairTaskD
             pg = null;
         } else {
             result.put("pageData", pg);
+        }
+
+        String type = pd.getString("type");
+        if ("add".equals(type)) {
+            pd.put("queryStr", "1=2");
         }
 
         List<Map> varList = this.getDataListPage(pd,pg);

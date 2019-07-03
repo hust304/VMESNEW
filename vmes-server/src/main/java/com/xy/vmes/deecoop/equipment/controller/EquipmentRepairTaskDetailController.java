@@ -24,21 +24,21 @@ public class EquipmentRepairTaskDetailController {
     private Logger logger = LoggerFactory.getLogger(EquipmentRepairTaskDetailController.class);
 
     @Autowired
-    private EquipmentRepairTaskDetailService equipmentRepairTaskDetailService;
+    private EquipmentRepairTaskDetailService repairTaskDetailService;
 
     /**
     * @author 陈刚 自动创建，可以修改
     * @date 2019-07-01
     */
-    @PostMapping("/equipment/equipmentRepairTaskDetail/listPageEquipmentRepairTaskDetails")
-    public ResultModel listPageEquipmentRepairTaskDetails() throws Exception {
-        logger.info("################/equipment/equipmentRepairTaskDetail/listPageEquipmentRepairTaskDetails 执行开始 ################# ");
+    @PostMapping("/equipment/equipmentRepairTaskDetail/listPageRepairTaskDetail")
+    public ResultModel listPageRepairTaskDetail() throws Exception {
+        logger.info("################/equipment/equipmentRepairTaskDetail/listPageRepairTaskDetail 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         PageData pd = HttpUtils.parsePageData();
         Pagination pg = HttpUtils.parsePagination(pd);
-        ResultModel model = equipmentRepairTaskDetailService.listPageEquipmentRepairTaskDetails(pd,pg);
+        ResultModel model = repairTaskDetailService.listPageRepairTaskDetail(pd,pg);
         Long endTime = System.currentTimeMillis();
-        logger.info("################/equipment/equipmentRepairTaskDetail/listPageEquipmentRepairTaskDetails 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/equipment/equipmentRepairTaskDetail/listPageRepairTaskDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
