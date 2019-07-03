@@ -23,6 +23,18 @@ public class Common {
     //设备传感器-指标编号-(A0001..A0100 B0001..B0100)
     public final static Integer SYS_EQUIPMENT_SENSORTARGET_TARGETCODE_MAXDIGIT = Integer.valueOf(5);
 
+    //仓库类型(复杂版仓库 简版仓库)
+    //复杂版仓库
+    public final static String SYS_WAREHOUSE_COMPLEX = "warehouseByComplex";
+    //简版仓库
+    public final static String SYS_WAREHOUSE_SIMPLE = "warehouseBySimple";
+    //warehouseByComplex:复杂版仓库:15a6c4ca92fe42a0a82320287538b727(菜单id)
+    //warehouseBySimple:简版仓库:5abe8f434e114a87a73b85ed74bc78e7(菜单id)
+    public static final Map<String, String> SYS_WAREHOUSE_NAMEKEY_MAP = new HashMap<String, String>() {{
+        put(SYS_WAREHOUSE_COMPLEX, SYS_MENU_MAP.get("warehouseByComplex"));
+        put(SYS_WAREHOUSE_SIMPLE, SYS_MENU_MAP.get("warehouseBySimple"));
+    }};
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     public final static String REDIS_SECURITY_CODE = "securityCode";
     public final static String DEPARTMENT_ROOT_ID = "b6ff76cb95f711e884ad00163e105f05";
@@ -331,13 +343,16 @@ public class Common {
         put("product", "73883f69b4034b7f89e9d59bc4919a6a");
 
         //******仓库******
-        //warehouse: '仓库',
-        put("warehouse", "15a6c4ca92fe42a0a82320287538b727");
+        //warehouseByComplex: '仓库',(复杂版仓库)
+        put("warehouseByComplex", "15a6c4ca92fe42a0a82320287538b727");
             //基础 base ff1330a1a96246c0b041451b3212bbee
             put("base", "ff1330a1a96246c0b041451b3212bbee");
                 //库位配置 position e4fd9624f7b94e499dd2b7015b3df332
                 put("position", "e4fd9624f7b94e499dd2b7015b3df332");
                 //库位初始化 () bb00131c20b64b1da92321b0f71ef129
+
+        //warehouseBySimple '仓库'(简版仓库)
+        put("warehouseBySimple", "5abe8f434e114a87a73b85ed74bc78e7");
 
         //table: '报表',
         put("table", "156b96f3245d4a5ba45ca3c2e67fd803");
@@ -395,15 +410,15 @@ public class Common {
         put("app", "ab8a6ef2480f4fa0a6445524a33a8181");
     }};
 
-    //收费菜单项目
-    public static final Map<String, String> SYS_MENU_PAYMENT_MAP = new HashMap<String, String>() {{
-        //sale: '销售',
-        put("sale", "94caec1bca7e4131b16bfcee9b1351e2");
-        //product: '生产',
-        put("product", "73883f69b4034b7f89e9d59bc4919a6a");
-        //warehouse: '仓库',
-        put("warehouse", "15a6c4ca92fe42a0a82320287538b727");
-        //purchase: 采购
-        put("purchase", "3f5e1bcd2d3745998773413ccbded554");
-    }};
+//    //收费菜单项目
+//    public static final Map<String, String> SYS_MENU_PAYMENT_MAP = new HashMap<String, String>() {{
+//        //sale: '销售',
+//        put("sale", "94caec1bca7e4131b16bfcee9b1351e2");
+//        //product: '生产',
+//        put("product", "73883f69b4034b7f89e9d59bc4919a6a");
+//        //warehouse: '仓库',
+//        put("warehouse", "15a6c4ca92fe42a0a82320287538b727");
+//        //purchase: 采购
+//        put("purchase", "3f5e1bcd2d3745998773413ccbded554");
+//    }};
 }
