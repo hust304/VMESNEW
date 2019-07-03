@@ -70,13 +70,7 @@ public class EquipmentRepairTaskDetailController {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
-        String repairTaskId = pageData.getString("repairTaskId");
-        if (repairTaskId == null || repairTaskId.trim().length() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("维修任务id为空或空字符串！");
-            return model;
-        }
-
+        //创建(复杂版,简版)仓库-出库单-需要的参数///////////////////////////////////////////////////////////////////////////////////
         String cuser = pageData.getString("cuser");
         String roleId = pageData.getString("roleId");
         if (roleId == null || roleId.trim().length() == 0) {
@@ -84,7 +78,27 @@ public class EquipmentRepairTaskDetailController {
             model.putMsg("当前用户角色id为空或空字符串！");
             return model;
         }
+        //创建出库单
+        String deptId = pageData.getString("deptId");
+        if (deptId == null || deptId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("部门id为空或空字符串！");
+            return model;
+        }
+        String companyId = pageData.getString("currentCompanyId");
+        if (companyId == null || companyId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("企业id为空或空字符串！");
+            return model;
+        }
 
+        //业务相关参数////////////////////////////////////////////////////////////////////////////////////////////////////////
+        String repairTaskId = pageData.getString("repairTaskId");
+        if (repairTaskId == null || repairTaskId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("维修任务id为空或空字符串！");
+            return model;
+        }
         String dtlJsonStr = pageData.getString("dtlJsonStr");
         if (dtlJsonStr == null || dtlJsonStr.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
@@ -107,24 +121,8 @@ public class EquipmentRepairTaskDetailController {
             return model;
         }
 
-        Map<String, Map<String, Object>> productByOutMap = repairTaskDetailService.findProductMapByOut(jsonMapList);
-
-        //创建出库单
-        String deptId = pageData.getString("deptId");
-        if (deptId == null || deptId.trim().length() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("部门id为空或空字符串！");
-            return model;
-        }
-
-        String companyId = pageData.getString("currentCompanyId");
-        if (companyId == null || companyId.trim().length() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("企业id为空或空字符串！");
-            return model;
-        }
-
         String msgStr = new String();
+        Map<String, Map<String, Object>> productByOutMap = repairTaskDetailService.findProductMapByOut(jsonMapList);
         if (Common.SYS_WAREHOUSE_COMPLEX.equals(warehouse)) {
             //复杂版仓库:warehouseByComplex:Common.SYS_WAREHOUSE_COMPLEX
             msgStr = warehouseOutCreateService.createWarehouseOutByComplex(deptId,
