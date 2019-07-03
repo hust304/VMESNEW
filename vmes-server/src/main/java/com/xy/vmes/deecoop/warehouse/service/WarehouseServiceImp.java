@@ -119,6 +119,9 @@ public class WarehouseServiceImp implements WarehouseService {
      */
     @Override
     public List<Map> getDataListPage(PageData pd, Pagination pg) throws Exception{
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         return warehouseMapper.getDataListPage(pd,pg);
     }
 
@@ -147,6 +150,9 @@ public class WarehouseServiceImp implements WarehouseService {
      * @return
      */
     public List<Map> findListWarehouseByWarehouseProduct(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         return warehouseMapper.findListWarehouseByWarehouseProduct(pd, pg);
     }
 
@@ -819,6 +825,9 @@ public class WarehouseServiceImp implements WarehouseService {
 
     @Override
     public ResultModel listPageWarehouse(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         ResultModel model = new ResultModel();
 
         List<Column> columnList = columnService.findColumnList("warehouse");
@@ -1444,6 +1453,9 @@ public class WarehouseServiceImp implements WarehouseService {
 
     @Override
     public void exportExcelWarehouse(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         List<Column> columnList = columnService.findColumnList("warehouse");
         if (columnList == null || columnList.size() == 0) {
             throw new RestException("1","数据库没有生成TabCol，请联系管理员！");

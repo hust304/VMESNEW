@@ -215,7 +215,7 @@ public class CoderuleServiceImp implements CoderuleService {
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2018-10-16
      */
-    @Override
+//    @Override
     public void deleteByColumnMap(Map columnMap) throws Exception{
         coderuleMapper.deleteByMap(columnMap);
     }
@@ -765,7 +765,6 @@ public class CoderuleServiceImp implements CoderuleService {
      * @param dateFormat  日期格式
      * @return
      */
-    @Override
     public String createCoderByDate(String companyID,String tableName,String dateFormat) {
         //(企业编号+前缀字符+日期字符+流水号)-(company+prefix+date+code)
         //(无需+前缀字符+无需+流水号)-W000142
@@ -814,7 +813,6 @@ public class CoderuleServiceImp implements CoderuleService {
      * @param prefix      前缀名称
      * @return
      */
-    @Override
     public String createCoderByDate(String companyID, String tableName, String dateFormat, String prefix) {
         //(企业编号+前缀字符+日期字符+流水号)-(company+prefix+date+code)
         //(无需+前缀字符+无需+流水号)-W000142

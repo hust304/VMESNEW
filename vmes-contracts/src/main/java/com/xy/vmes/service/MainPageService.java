@@ -16,7 +16,7 @@ import java.util.Map;
 */
 public interface MainPageService {
 
-
+//
     ResultModel changePassWord(PageData pd) throws Exception;
 
     ResultModel changePageStyle(PageData pd) throws Exception;

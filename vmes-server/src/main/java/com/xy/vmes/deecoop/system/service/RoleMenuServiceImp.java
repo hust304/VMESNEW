@@ -10,6 +10,7 @@ import com.xy.vmes.entity.TreeEntity;
 import com.xy.vmes.service.MenuService;
 import com.xy.vmes.service.MenuTreeService;
 import com.xy.vmes.service.RoleMenuService;
+import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.xy.vmes.common.util.StringUtil;
 import com.yvan.platform.RestException;
@@ -97,6 +98,9 @@ public class RoleMenuServiceImp implements RoleMenuService {
     */
     @Override
     public List<RoleMenu> dataListPage(PageData pd,Pagination pg) throws Exception{
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         return roleMenuMapper.dataListPage(pd,pg);
     }
 

@@ -121,13 +121,13 @@ public interface EmployeeService {
      * 创建人：刘威
      * 创建时间：2018-08-06
      */
-    List<Map> selectEmployeeAndUserById(PageData pd) throws Exception;
+    List<Map> selectEmployeeAndUserById(PageData pd) throws Exception;//@
 
-    Employee findEmployee(PageData object);
-    List<Employee> findEmployeeList(PageData object);
-    Employee findEmployeeById(String id);
-    boolean isExistByMobile(String id, String mobile);
-    boolean isExistByCode(String id, String code, String companyId);
+    Employee findEmployee(PageData object);//@
+//    List<Employee> findEmployeeList(PageData object);
+    Employee findEmployeeById(String id);//@
+    boolean isExistByMobile(String id, String mobile);//@
+    boolean isExistByCode(String id, String code, String companyId);//@
 
     ResultModel addEmployeeAndUser(PageData pd) throws Exception;
 

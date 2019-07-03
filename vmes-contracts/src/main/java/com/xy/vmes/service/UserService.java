@@ -90,7 +90,7 @@ public interface UserService {
      * 创建人：刘威
      * 创建时间：2018-07-23
      */
-    void deleteByIds(String[] ids) throws Exception;
+//    void deleteByIds(String[] ids) throws Exception;
 
     /**
      * 判断用户手机号是否存在
@@ -98,7 +98,7 @@ public interface UserService {
      * 创建人：刘威
      * 创建时间：2018-07-26
      */
-    boolean isExistMobile(PageData pd) throws Exception;
+    boolean isExistMobile(PageData pd) throws Exception;//@
 
     /**
      * 批量修改用户信息为禁用状态
@@ -106,19 +106,19 @@ public interface UserService {
      * 创建人：刘威
      * 创建时间：2018-07-26
      */
-    void updateToDisableByIds(String[] ids) throws Exception;
+//    void updateToDisableByIds(String[] ids) throws Exception;
 
     /**
      * 创建人：刘威
      * 创建时间：2018-08-03
      */
-    void updateToDisableByEmployIds(String[] ids) throws Exception;
+//    void updateToDisableByEmployIds(String[] ids) throws Exception;
 
     /**
      * 创建人：刘威
      * 创建时间：2018-07-26
      */
-    List<LinkedHashMap> getColumnList() throws Exception;
+//    List<LinkedHashMap> getColumnList() throws Exception;
 
     /**
      * 创建人：刘威
@@ -136,14 +136,14 @@ public interface UserService {
      * 创建人：刘威
      * 创建时间：2018-08-03
      */
-    ResultModel createUserAndRole(PageData pd, Employee employee ) throws Exception;
+    ResultModel createUserAndRole(PageData pd, Employee employee ) throws Exception;//@
 
-    User findUser(PageData object);
-    User findUserById(String id);
-    Boolean isExistUserByUserCode(String id, String userCode);
+    User findUser(PageData object);//@
+    User findUserById(String id);//@
+    Boolean isExistUserByUserCode(String id, String userCode);//@
 //    boolean isExistByMobile(String id, String mobile);
 
-    List<User> findUserList(PageData object);
+//    List<User> findUserList(PageData object);
 
     /**
      * 获取企业管理员
@@ -151,7 +151,7 @@ public interface UserService {
      * @param companyID  企业id
      * @return
      */
-    User findCompanyAdmin(String companyID);
+    User findCompanyAdmin(String companyID);//@
 
     /**
      * 批量修改(企业管理员)为禁用状态
@@ -159,7 +159,7 @@ public interface UserService {
      * 创建人：陈刚
      * 创建时间：2018-08-06
      */
-    void updateDisableByCompanyIds(String[] companyIds);
+//    void updateDisableByCompanyIds(String[] companyIds);
 
     /**
      * 创建人：刘威
@@ -185,7 +185,7 @@ public interface UserService {
     void exportExcelUsers(PageData pd,Pagination pg) throws Exception;
     ResultModel importExcelUser(MultipartFile file) throws Exception;
 
-    Integer findUserCountByCompanyId(String companyId);
+//    Integer findUserCountByCompanyId(String companyId);
 }
 
 

@@ -74,39 +74,40 @@ public interface UserRoleService {
     void deleteByColumnMap(Map columnMap) throws Exception;
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
-    List<UserRole> findUserRoleList(PageData object);
-    UserRole findUserRole(PageData object);
+    List<UserRole> findUserRoleList(PageData object);//@
+
+    UserRole findUserRole(PageData object);//@
 
     /**
      * 创建人：刘威
      * 创建时间：2018-07-23
      */
-    void deleteByIds(String[] ids) throws Exception;
+//    void deleteByIds(String[] ids) throws Exception;
 
     /**
      * 用户角色-关联角色表
      * @param pd
      * @return
      */
-    List<Map<String, Object>> findUserRoleMapList(PageData pd);
+//    List<Map<String, Object>> findUserRoleMapList(PageData pd);
 
     /**
      * 创建人：刘威
      * 创建时间：2018-07-26
      */
-    void deleteUserRoleByUserId(String userId) throws Exception;
+    void deleteUserRoleByUserId(String userId) throws Exception;//@
     /**
      * 创建人：陈刚
      * 创建时间：2018-07-31
      */
-    void deleteUserRoleByRoleId(String roleId) throws Exception;
+    void deleteUserRoleByRoleId(String roleId) throws Exception;//@
 
     /**
      * 添加用户角色
      * 创建人：陈刚
      * 创建时间：2018-07-31
      */
-    void addUserRoleByUserIds(String roleId, String userIds, String cuser);
+    void addUserRoleByUserIds(String roleId, String userIds, String cuser);//@
 
     /**
      * 修改禁用属性(isdisable)
@@ -114,38 +115,38 @@ public interface UserRoleService {
      * 创建人：陈刚
      * 创建时间：2018-07-31
      */
-    void updateDisableByRoleId(String roleId);
+//    void updateDisableByRoleId(String roleId);
 
     /**
      * 根据userID-获取角色ID(','逗号分隔的字符串)
      * @param userID
      * @return
      */
-    String findRoleIdsByByUserID(String userID);
+    String findRoleIdsByByUserID(String userID);//@
     /**
      * 根据roleID-获取用户ID(','逗号分隔的字符串)
      * @param roleID
      * @return
      */
-    String findUserIdsByByRoleID(String roleID);
+    String findUserIdsByByRoleID(String roleID);//@
 
     /**
      * 创建人：陈刚
      * 创建时间：2018-07-31
      */
-    Role userRoleMap2Role(Map<String, Object> mapObject, Role object);
-    List<Role> userRoleMap2RoleList(List<Map<String, Object>> mapList, List<Role> objectList);
+//    Role userRoleMap2Role(Map<String, Object> mapObject, Role object);
+//    List<Role> userRoleMap2RoleList(List<Map<String, Object>> mapList, List<Role> objectList);
 
     /**
      * 创建人：陈刚
      * 创建时间：2018-08-22
      */
-    List<LinkedHashMap<String, String>> listUserColumn();
+//    List<LinkedHashMap<String, String>> listUserColumn();
     /**
      * 创建人：陈刚
      * 创建时间：2018-08-22
      */
-    List<Map<String, Object>> listUserByRole(PageData pd);
+    List<Map<String, Object>> listUserByRole(PageData pd);//@
 
     /**
      * 获取角色ID(','逗号分隔的字符串)
@@ -155,7 +156,7 @@ public interface UserRoleService {
      * @param mapList
      * @return
      */
-    String findUserIdsByMapList(List<Map<String, Object>> mapList);
+//    String findUserIdsByMapList(List<Map<String, Object>> mapList);
 
 }
 

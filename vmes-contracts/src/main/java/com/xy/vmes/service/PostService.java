@@ -118,10 +118,10 @@ public interface PostService {
 
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
-    Map<String, String> getKeyNameMap();
-    Map<String, String> getNameKeyMap();
-    void createBusinessMap();
-    void implementBusinessMapByDeptId(String deptId);
+//    Map<String, String> getKeyNameMap();
+    Map<String, String> getNameKeyMap();//@
+//    void createBusinessMap();
+    void implementBusinessMapByDeptId(String deptId);//@
 
 //    /**
 //     * 生成岗位编码
@@ -134,22 +134,22 @@ public interface PostService {
 //     */
 //    String createCoder(String companyID);
 
-    Post findPost(PageData object);
-    Post findPostById(String id);
-    List<Post> findPostList(PageData object);
-    List<Post> findPostListByDeptId(String deptId);
+//    Post findPost(PageData object);
+//    Post findPostById(String id);
+//    List<Post> findPostList(PageData object);
+    List<Post> findPostListByDeptId(String deptId);//@
 
     /**
      * 获取部门岗位List
      * 创建人：陈刚
      * 创建时间：2018-08-28
      */
-    List<Map<String, Object>> listDeptPost(PageData pd);
+//    List<Map<String, Object>> listDeptPost(PageData pd);
 
-    TreeEntity deptPost2Tree(DeptPostEntity deptPost, TreeEntity tree);
-    List<TreeEntity> deptPostList2TreeList(List<Map<String, Object>> mapList, List<TreeEntity> treeList);
+//    TreeEntity deptPost2Tree(DeptPostEntity deptPost, TreeEntity tree);
+//    List<TreeEntity> deptPostList2TreeList(List<Map<String, Object>> mapList, List<TreeEntity> treeList);
 
-    String checkDelPostByIds(String ids);
+//    String checkDelPostByIds(String ids);
 
     ResultModel addPost(PageData pd) throws Exception;
 

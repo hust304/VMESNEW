@@ -118,7 +118,7 @@ public class MenuTreeServiceImp implements MenuTreeService {
         pageData.put("isdisable", "1");
         pageData.put("queryStr", pidQuery);
         pageData.put("mapSize", Integer.valueOf(pageData.size()));
-
+//
         List<Menu> childList = null;
         try {
             childList = menuService.findMenuList(pageData);

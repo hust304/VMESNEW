@@ -119,9 +119,9 @@ public interface DictionaryService {
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
     Map<String, String> getKeyNameMap();
     Map<String, String> getNameKeyMap();
-    void createBusinessMap();
+//    void createBusinessMap();
     void implementBusinessMapByParentID(String parentId, String companyId);
-    void implementBusinessMapByParentID(String parentId, String companyId, String idNotin);
+    void implementBusinessMapByParentID(String parentId, String companyId, String idNotin);//@
     //获取区域<id, 区域名称路径>-字典表
     void implementBusinessMapByAreaPath();
 
@@ -134,8 +134,8 @@ public interface DictionaryService {
     Dictionary findDictionary(PageData object);
     Dictionary findDictionaryById(String id);
 
-    List<Dictionary> findDictionaryList(PageData object);
-    List<Dictionary> findDictionaryListByPid(String pid);
+    List<Dictionary> findDictionaryList(PageData object);//@
+    List<Dictionary> findDictionaryListByPid(String pid);//@
 
     /**
      * 字典名称同一层级是否相同
@@ -147,14 +147,14 @@ public interface DictionaryService {
      *     true : 组织名称存在名称相同
      *     false: 组织名称不存在名称相同(默认值)
      */
-    boolean isExistByName(String pid, String id, String name,String currentCompanyId);
+    boolean isExistByName(String pid, String id, String name,String currentCompanyId);//@
 
-    Dictionary id2DictionaryByLayer(String id, Integer layer, Dictionary objectDB);
-    Dictionary paterObject2ObjectDB(Dictionary paterObject, Dictionary objectDB);
-    Dictionary clearDictionaryByPath(Dictionary objectDB);
-    Dictionary object2objectDB(Dictionary object, Dictionary objectDB);
+    Dictionary id2DictionaryByLayer(String id, Integer layer, Dictionary objectDB);//@
+    Dictionary paterObject2ObjectDB(Dictionary paterObject, Dictionary objectDB);//@
+    Dictionary clearDictionaryByPath(Dictionary objectDB);//@
+    Dictionary object2objectDB(Dictionary object, Dictionary objectDB);//@
 
-    Integer findMaxSerialNumber(String pid);
+    Integer findMaxSerialNumber(String pid);//@
 
     /**
      * check字典列表List<Dictionary>是否允许删除
@@ -165,9 +165,9 @@ public interface DictionaryService {
      * @param ids
      * @return
      */
-    String checkDeleteDictionaryByIds(String ids);
+    String checkDeleteDictionaryByIds(String ids);//@
 
-    String findDictionaryIdById(String id, Integer layer, String prefix);
+//    String findDictionaryIdById(String id, Integer layer, String prefix);
 
     ResultModel addDictionary(PageData pd) throws Exception;
 
@@ -188,7 +188,7 @@ public interface DictionaryService {
     ResultModel dataListDictionarys(PageData pd) throws Exception;
 
 
-    List<Map<String, Object>> findDictionaryListByPathName(String companyId, String isNeedCompany, String id, Integer id_layer, Integer quert_layer);
+//    List<Map<String, Object>> findDictionaryListByPathName(String companyId, String isNeedCompany, String id, Integer id_layer, Integer quert_layer);
 }
 
 

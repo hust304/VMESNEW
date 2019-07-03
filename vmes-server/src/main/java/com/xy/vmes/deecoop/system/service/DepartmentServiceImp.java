@@ -102,6 +102,9 @@ public class DepartmentServiceImp implements DepartmentService {
     */
     @Override
     public List<Department> dataListPage(PageData pd,Pagination pg) throws Exception{
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         return departmentMapper.dataListPage(pd,pg);
     }
 
@@ -217,6 +220,9 @@ public class DepartmentServiceImp implements DepartmentService {
      */
     @Override
     public List<Map> getDataListPage(PageData pd, Pagination pg) throws Exception{
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         return departmentMapper.getDataListPage(pd, pg);
     }
 
@@ -1404,6 +1410,9 @@ public class DepartmentServiceImp implements DepartmentService {
 
     @Override
     public ResultModel listPageDepartments(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         ResultModel model = new ResultModel();
         Map result = new HashMap();
         List<Column> columnList = columnService.findColumnList("department");
@@ -1450,6 +1459,9 @@ public class DepartmentServiceImp implements DepartmentService {
 
     @Override
     public void exportExcelDepartments(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         List<Column> columnList = columnService.findColumnList("department");
         if (columnList == null || columnList.size() == 0) {
             throw new RestException("1","数据库没有生成TabCol，请联系管理员！");

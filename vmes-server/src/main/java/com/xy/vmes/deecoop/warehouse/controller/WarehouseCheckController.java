@@ -44,8 +44,7 @@ public class WarehouseCheckController {
         logger.info("################warehouseCheck/listPagewarehouseChecks 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         PageData pd = HttpUtils.parsePageData();
-        Pagination pg = HttpUtils.parsePagination(pd);
-        ResultModel model = warehouseCheckService.listPagewarehouseChecks(pd,pg);
+        ResultModel model = warehouseCheckService.listPagewarehouseChecks(pd);
         Long endTime = System.currentTimeMillis();
         logger.info("################warehouseCheck/listPagewarehouseChecks 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;

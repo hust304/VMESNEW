@@ -6,7 +6,7 @@ import com.yvan.springmvc.ResultModel;
 import java.util.Map;
 
 public interface UserLoginService {
-    Map<String, Object> findRedisMap(String jsonString);
+//    Map<String, Object> findRedisMap(String jsonString);
 
     ResultModel loginIn(PageData pageData) throws Exception;
 

@@ -78,13 +78,13 @@ public interface RoleService {
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2018-07-30
      */
-    List<LinkedHashMap> getColumnList() throws Exception;
+    List<LinkedHashMap> getColumnList() throws Exception;//@
 
     /**
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2018-07-30
      */
-    List<Map> getDataListPage(PageData pd, Pagination pg) throws Exception;
+    List<Map> getDataListPage(PageData pd, Pagination pg) throws Exception;//@
 
     /**
      * 批量修改角色信息为禁用状态
@@ -92,10 +92,10 @@ public interface RoleService {
      * 创建人：陈刚
      * 创建时间：2018-07-30
      */
-    void updateDisableByIds(String[] ids) throws Exception;
+//    void updateDisableByIds(String[] ids) throws Exception;
 
-    List<Role> findRoleList(PageData object);
-    Role findRoleById(String id);
+    List<Role> findRoleList(PageData object);//@
+    Role findRoleById(String id);//@
 
     /**
      * check角色ID是否允许删除
@@ -106,7 +106,7 @@ public interface RoleService {
      * @param roleIds
      * @return
      */
-    String checkDeleteRoleByRoleIds(String roleIds);
+//    String checkDeleteRoleByRoleIds(String roleIds);
 
     /**
      * 获取角色ID(','逗号分隔的字符串)
@@ -116,7 +116,7 @@ public interface RoleService {
      * @param objectList
      * @return
      */
-    String findRoleIdsByRoleList(List<Role> objectList);
+    String findRoleIdsByRoleList(List<Role> objectList);//@
 
     /**
      * 角色名称是否相同
@@ -128,7 +128,7 @@ public interface RoleService {
      *     true : 角色名称相同
      *     false: 角色名称不相同(默认值)
      */
-    boolean isExistByName(String companyId, String id, String name);
+//    boolean isExistByName(String companyId, String id, String name);
 
     ResultModel listPageRoles(PageData pd, Pagination pg) throws Exception;
 
@@ -165,10 +165,10 @@ public interface RoleService {
     ResultModel addRoleByName(PageData pageData)  throws Exception;
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
-    Map<String, String> getKeyNameMap();
-    Map<String, String> getNameKeyMap();
-    void createBusinessMap();
-    void implementBusinessMapByCompanyId(String companyId);
+//    Map<String, String> getKeyNameMap();
+    Map<String, String> getNameKeyMap();//@
+//    void createBusinessMap();
+    void implementBusinessMapByCompanyId(String companyId);//@
 }
 
 

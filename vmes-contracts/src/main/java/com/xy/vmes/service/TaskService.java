@@ -80,7 +80,7 @@ public interface TaskService {
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2019-01-30
      */
-    List<Task> dataList(PageData pd) throws Exception;
+    List<Task> dataList(PageData pd) throws Exception;//@
     /**
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2019-01-30
@@ -88,23 +88,21 @@ public interface TaskService {
     List<Map> getDataListPage(PageData pd, Pagination pg) throws Exception;
 
     /**
-     * @param pageData    查询参数对象<HashMap>
-     * @param isQueryAll  是否查询全部
      *   true: 无查询条件返回表全部结果集
      *   false: (false or is null)无查询条件-查询结果集返回空或
      *
      * @return
      * @throws Exception
      */
-    List<Task> findDataList(PageData pageData, Boolean isQueryAll) throws Exception;
+//    List<Task> findDataList(PageData pageData, Boolean isQueryAll) throws Exception;
 
-    Task findTask(PageData object) throws Exception;
-    Task findTaskById(String id) throws Exception;
+//    Task findTask(PageData object) throws Exception;
+//    Task findTaskById(String id) throws Exception;
     Task findTaskByBusinessId(String businessId) throws Exception;
-    List<Task> findTaskList(PageData object) throws Exception;
+//    List<Task> findTaskList(PageData object) throws Exception;
 
-    Task warehouseInDtl2Task(WarehouseInDetailEntity detailObj, Task taskObj);
-    Task warehouseCheckDtl2Task(WarehouseCheckDetailEntity detailObj, Task taskObj);
+    Task warehouseInDtl2Task(PageData pd);
+    Task warehouseCheckDtl2Task(PageData pd);
 
     Task createTaskByWarehouseOut(String businessId, String executorId, String cuser);
     Task createTaskByWarehouseMove(String businessId, String executorId, String cuser);

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.deecoop.system.dao.UserDefinedMenuMapper;
 import com.xy.vmes.entity.UserDefinedMenu;
 import com.xy.vmes.service.UserDefinedMenuService;
+import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -86,6 +87,9 @@ public class UserDefinedMenuServiceImp implements UserDefinedMenuService {
     */
     @Override
     public List<UserDefinedMenu> dataListPage(PageData pd,Pagination pg) throws Exception{
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         return userDefinedMenuMapper.dataListPage(pd,pg);
     }
 

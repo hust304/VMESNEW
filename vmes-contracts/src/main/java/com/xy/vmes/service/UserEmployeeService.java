@@ -17,26 +17,26 @@ public interface UserEmployeeService {
      * 创建人：陈刚
      * 创建时间：2018-07-20
      */
-    List<Map<String, Object>> findViewUserEmployList(PageData object);
+    List<Map<String, Object>> findViewUserEmployList(PageData object);//@
 
-    Map<String, Object> findViewUserEmployByUserId(String userId);
-    Map<String, Object> findViewUserEmployByEmployID(String employID);
-
-    /**
-     * 创建人：陈刚
-     * 创建时间：2018-07-20
-     */
-    User mapObject2User(Map<String, Object> mapObject, User object);
+    Map<String, Object> findViewUserEmployByUserId(String userId);//@
+//    Map<String, Object> findViewUserEmployByEmployID(String employID);
 
     /**
      * 创建人：陈刚
      * 创建时间：2018-07-20
      */
-    Employee mapObject2Employee(Map<String, Object> mapObject, Employee object);
+    User mapObject2User(Map<String, Object> mapObject, User object);//@
+
+    /**
+     * 创建人：陈刚
+     * 创建时间：2018-07-20
+     */
+    Employee mapObject2Employee(Map<String, Object> mapObject, Employee object);//@
 
     /**
      * 创建人：陈刚
      * 创建时间：2018-07-24
      */
-    Map<String, Object> userEmployMap2RedisMap(Map<String, Object> objectMap, Map<String, Object> redisMap);
+//    Map<String, Object> userEmployMap2RedisMap(Map<String, Object> objectMap, Map<String, Object> redisMap);
 }

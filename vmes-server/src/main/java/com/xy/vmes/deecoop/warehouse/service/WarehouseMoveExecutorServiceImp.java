@@ -116,6 +116,9 @@ public class WarehouseMoveExecutorServiceImp implements WarehouseMoveExecutorSer
     */
     @Override
     public List<WarehouseMoveExecutor> dataListPage(PageData pd,Pagination pg) throws Exception{
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         return warehouseMoveExecutorMapper.dataListPage(pd,pg);
     }
 
@@ -191,6 +194,9 @@ public class WarehouseMoveExecutorServiceImp implements WarehouseMoveExecutorSer
     */
     @Override
     public List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception{
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         return warehouseMoveExecutorMapper.getDataListPage(pd,pg);
     }
 
@@ -256,6 +262,9 @@ public class WarehouseMoveExecutorServiceImp implements WarehouseMoveExecutorSer
 
     @Override
     public ResultModel listPageWarehouseMoveExecutors(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         ResultModel model = new ResultModel();
         Map result = new HashMap();
 
@@ -307,6 +316,9 @@ public class WarehouseMoveExecutorServiceImp implements WarehouseMoveExecutorSer
 
     @Override
     public void exportExcelWarehouseMoveExecutors(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         List<Column> columnList = columnService.findColumnList("WarehouseMoveExecutor");
         if (columnList == null || columnList.size() == 0) {
             throw new RestException("1","数据库没有生成TabCol，请联系管理员！");

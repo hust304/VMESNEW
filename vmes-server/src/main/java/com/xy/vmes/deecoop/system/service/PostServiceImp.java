@@ -111,6 +111,9 @@ public class PostServiceImp implements PostService {
     */
     @Override
     public List<Post> dataListPage(PageData pd,Pagination pg) throws Exception{
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         return postMapper.dataListPage(pd,pg);
     }
 
@@ -185,6 +188,9 @@ public class PostServiceImp implements PostService {
      */
     @Override
     public List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception{
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         return postMapper.getDataListPage(pd,pg);
     }
 
@@ -516,6 +522,9 @@ public class PostServiceImp implements PostService {
 
     @Override
     public ResultModel listPagePosts(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         ResultModel model = new ResultModel();
         //1. 查询遍历List列表
         List<Column> columnList = columnService.findColumnList("post");
@@ -579,6 +588,9 @@ public class PostServiceImp implements PostService {
 
     @Override
     public void exportExcelPosts(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         List<Column> columnList = columnService.findColumnList("post");
         if (columnList == null || columnList.size() == 0) {
             throw new RestException("1","数据库没有生成TabCol，请联系管理员！");

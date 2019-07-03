@@ -112,6 +112,9 @@ public class UserServiceImp implements UserService {
      */
     @Override
     public List<User> dataListPage(PageData pd,Pagination pg) throws Exception{
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         return userMapper.dataListPage(pd,pg);
     }
 
@@ -152,7 +155,7 @@ public class UserServiceImp implements UserService {
      * 创建人：刘威
      * 创建时间：2018-07-23
      */
-    @Override
+//    @Override
     public void deleteByIds(String[] ids) throws Exception{
         userMapper.deleteByIds(ids);
     }
@@ -227,28 +230,28 @@ public class UserServiceImp implements UserService {
      * 创建人：刘威
      * 创建时间：2018-07-26
      */
-    @Override
-    public void updateToDisableByIds(String[] ids) throws Exception{
-        userMapper.updateToDisableByIds(ids);
-    }
+//    @Override
+//    public void updateToDisableByIds(String[] ids) throws Exception{
+//        userMapper.updateToDisableByIds(ids);
+//    }
 
-    /**
-     * 创建人：刘威
-     * 创建时间：2018-08-03
-     */
-    @Override
-    public void  updateToDisableByEmployIds(String[] ids) throws Exception{
-        userMapper.updateToDisableByEmployIds(ids);
-    }
+//    /**
+//     * 创建人：刘威
+//     * 创建时间：2018-08-03
+//     */
+//    @Override
+//    public void  updateToDisableByEmployIds(String[] ids) throws Exception{
+//        userMapper.updateToDisableByEmployIds(ids);
+//    }
 
-    /**
-     * 创建人：刘威
-     * 创建时间：2018-07-26
-     */
-    @Override
-    public List<LinkedHashMap> getColumnList() throws Exception{
-        return userMapper.getColumnList();
-    }
+//    /**
+//     * 创建人：刘威
+//     * 创建时间：2018-07-26
+//     */
+//    @Override
+//    public List<LinkedHashMap> getColumnList() throws Exception{
+//        return userMapper.getColumnList();
+//    }
 
     /**
      * 创建人：刘威
@@ -265,6 +268,9 @@ public class UserServiceImp implements UserService {
      */
     @Override
     public List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception{
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         return userMapper.getDataListPage(pd,pg);
     }
 
@@ -917,6 +923,9 @@ public class UserServiceImp implements UserService {
 
     @Override
     public ResultModel listPageUsers(PageData pd,Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         ResultModel model = new ResultModel();
         List<Column> columnList = columnService.findColumnList("user");
         if (columnList == null || columnList.size() == 0) {
@@ -980,6 +989,9 @@ public class UserServiceImp implements UserService {
 
     @Override
     public void exportExcelUsers(PageData pd,Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         List<Column> columnList = columnService.findColumnList("user");
         if (columnList == null || columnList.size() == 0) {
             throw new RestException("1","数据库没有生成TabCol，请联系管理员！");

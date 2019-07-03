@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.deecoop.warehouse.dao.WarehouseLoginfoMapper;
 import com.xy.vmes.entity.WarehouseLoginfo;
 import com.xy.vmes.service.WarehouseLoginfoService;
+import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -53,6 +54,9 @@ public class WarehouseLoginfoServiceImp implements WarehouseLoginfoService {
     */
     @Override
     public List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception{
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         return warehouseLoginfoMapper.getDataListPage(pd,pg);
     }
 

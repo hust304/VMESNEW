@@ -53,13 +53,13 @@ public class HttpUtils {
     /**
      * 从当前请求中获取分页方法和内容
      */
-    public static Pagination parsePagination(PageData pg) {
+    public static Pagination parsePagination(PageData pd) {
 //        HttpServletRequest request = currentRequest();
 //        HttpParameterParser parser = HttpParameterParser.newInstance(request);
 //        PageData  parser = parsePageData();
 //        PageData parser = new PageData(request);
-        int pageNo = StringUtils.isEmpty(pg.getString("pageNo"))?1:Integer.parseInt(pg.getString("pageNo"));
-        int pageSize = StringUtils.isEmpty(pg.getString("pageSize"))?10:Integer.parseInt(pg.getString("pageSize"));
+        int pageNo = StringUtils.isEmpty(pd.getString("pageNo"))?1:Integer.parseInt(pd.getString("pageNo"));
+        int pageSize = StringUtils.isEmpty(pd.getString("pageSize"))?10:Integer.parseInt(pd.getString("pageSize"));
 //        String orderBy = parser.getString("orderBy");
         if (pageNo <= 0) {
             pageNo = 1;
@@ -70,6 +70,7 @@ public class HttpUtils {
 
         Pagination pagination = new Page(pageNo, pageSize);
         pagination.setOpenSort(false);
+        pd.put("pg",pagination);
         return pagination;
     }
 

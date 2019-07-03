@@ -16,19 +16,19 @@ import java.util.List;
  * 创建时间：2018-07-19
  */
 public interface DepartmentTreeService {
-    List<Department> getList_0();
-    List<Department> getList_1();
-    List<Department> getList_2();
-    List<Department> getList_3();
-    List<Department> getList_4();
-    List<Department> getList_5();
+//    List<Department> getList_0();
+//    List<Department> getList_1();
+//    List<Department> getList_2();
+//    List<Department> getList_3();
+//    List<Department> getList_4();
+//    List<Department> getList_5();
 
     /**
      * 初始化方法
      * 创建人：陈刚
      * 创建时间：2018-07-19
      */
-    void initialization();
+    void initialization();//@
 
     /**
      * 根据部门对象<Department>当前部门节点下面所有节点生成树形结构
@@ -48,18 +48,18 @@ public interface DepartmentTreeService {
      * 创建时间：2018-07-19
      *
      */
-    void findDeptTree(String pids);
+    void findDeptTree(String pids);//@
 
     /**
      * 根据已知的部门List<Department>-生成树形结构
      * @param deptList
      * @param layer
      */
-    void findDeptTreeByDeptList(List<Department> deptList, Integer layer);
+//    void findDeptTreeByDeptList(List<Department> deptList, Integer layer);
 
     /**
      * 创建人：陈刚
      * 创建时间：2018-07-19
      */
-    TreeEntity dept2Tree(Department dept, TreeEntity tree);
+//    TreeEntity dept2Tree(Department dept, TreeEntity tree);
 }

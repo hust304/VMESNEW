@@ -81,15 +81,15 @@ public interface RoleMenuService {
      * 创建人：陈刚
      * 创建时间：2018-07-31
      */
-    void deleteRoleMenuByRoleId(String roleId) throws Exception;
-    void deleteRoleMenuByMenuId(String menuId) throws Exception;
+    void deleteRoleMenuByRoleId(String roleId) throws Exception;//@
+    void deleteRoleMenuByMenuId(String menuId) throws Exception;//@
 
     /**
      * 添加角色菜单
      * 创建人：陈刚
      * 创建时间：2018-07-31
      */
-    void addRoleMenuByMeunIds(String roleId, String meunIds);
+    void addRoleMenuByMeunIds(String roleId, String meunIds);//@
 
     /**
      * 修改禁用属性(isdisable)
@@ -97,28 +97,28 @@ public interface RoleMenuService {
      * 创建人：陈刚
      * 创建时间：2018-07-31
      */
-    void updateDisableByRoleId(String roleId);
+//    void updateDisableByRoleId(String roleId);
 
     /**
      * 角色菜单-关联菜单表-<Map>
      * @param pd
      * @return
      */
-    List<Map<String, Object>> findRoleMenuMapList(PageData pd);
+    List<Map<String, Object>> findRoleMenuMapList(PageData pd);//@
 
     /**
      * 创建人：陈刚
      * 创建时间：2018-07-31
      */
-    Menu mapObject2Menu(Map<String, Object> mapObject, Menu object);
+//    Menu mapObject2Menu(Map<String, Object> mapObject, Menu object);
 
-    List<Menu> mapList2MenuList(List<Map<String, Object>> mapList, List<Menu> objectList);
+    List<Menu> mapList2MenuList(List<Map<String, Object>> mapList, List<Menu> objectList);//@
 
     /**
      * 创建人：陈刚
      * 创建时间：2018-08-23
      */
-    List<Map<String, Object>> listMenuMapByRole(PageData pd);
+    List<Map<String, Object>> listMenuMapByRole(PageData pd);//@
 
     /**
      * 角色菜单ListList<Map<String, Object>>转换成-树结构体List<TreeEntity>
@@ -126,17 +126,17 @@ public interface RoleMenuService {
      * @param treeList 树结构体List<TreeEntity>
      * @return
      */
-    List<TreeEntity> roleMenuList2TreeList(List<Map<String, Object>> mapList, List<TreeEntity> treeList);
+    List<TreeEntity> roleMenuList2TreeList(List<Map<String, Object>> mapList, List<TreeEntity> treeList);//@
 
-    MenuEntity menu2MenuEntity(Menu menu, MenuEntity entity);
-    List<MenuEntity> menuList2MenuEntityList(List<Menu> menuList, List<MenuEntity> entityList);
+//    MenuEntity menu2MenuEntity(Menu menu, MenuEntity entity);
+//    List<MenuEntity> menuList2MenuEntityList(List<Menu> menuList, List<MenuEntity> entityList);
 
-    MenuEntity treeEntity2MenuEntity(TreeEntity treeEntity, MenuEntity entity);
-    List<MenuEntity> treeList2MenuEntityList(List<TreeEntity> treeList, List<MenuEntity> entityList);
+//    MenuEntity treeEntity2MenuEntity(TreeEntity treeEntity, MenuEntity entity);
+    List<MenuEntity> treeList2MenuEntityList(List<TreeEntity> treeList, List<MenuEntity> entityList);//@
 
-    void orderAcsByLayer(List<MenuEntity> entityList);
+    void orderAcsByLayer(List<MenuEntity> entityList);//@
 
-    String findMenuidByRoleIds(String roleIds);
+    String findMenuidByRoleIds(String roleIds);//@
 
 }
 

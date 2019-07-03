@@ -8,6 +8,7 @@ import com.xy.vmes.entity.UserRole;
 import com.xy.vmes.service.RoleService;
 import com.xy.vmes.service.UserRoleService;
 import com.yvan.Conv;
+import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.xy.vmes.common.util.StringUtil;
 import com.yvan.platform.RestException;
@@ -90,6 +91,9 @@ public class UserRoleServiceImp implements UserRoleService {
     */
     @Override
     public List<UserRole> dataListPage(PageData pd,Pagination pg) throws Exception{
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         return userRoleMapper.dataListPage(pd,pg);
     }
 
@@ -131,10 +135,9 @@ public class UserRoleServiceImp implements UserRoleService {
      * 创建人：刘威
      * 创建时间：2018-07-23
      */
-    @Override
-    public void deleteByIds(String[] ids) throws Exception{
-        userRoleMapper.deleteByIds(ids);
-    }
+//    public void deleteByIds(String[] ids) throws Exception{
+//        userRoleMapper.deleteByIds(ids);
+//    }
 
     /**
      * 用户角色-关联角色表

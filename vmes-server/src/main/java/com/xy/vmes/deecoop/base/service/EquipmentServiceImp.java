@@ -110,6 +110,9 @@ public class EquipmentServiceImp implements EquipmentService {
     */
     @Override
     public List<Equipment> dataListPage(PageData pd,Pagination pg) throws Exception{
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         return equipmentMapper.dataListPage(pd,pg);
     }
 
@@ -175,6 +178,9 @@ public class EquipmentServiceImp implements EquipmentService {
     */
     @Override
     public List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception{
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         return equipmentMapper.getDataListPage(pd,pg);
     }
 
@@ -194,6 +200,9 @@ public class EquipmentServiceImp implements EquipmentService {
 
     @Override
     public ResultModel listPageEquipments(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         ResultModel model = new ResultModel();
 
         List<Column> columnList = columnService.findColumnList("Equipment");
@@ -225,6 +234,9 @@ public class EquipmentServiceImp implements EquipmentService {
 
     @Override
     public void exportExcelEquipments(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         List<Column> columnList = columnService.findColumnList("Equipment");
         if (columnList == null || columnList.size() == 0) {
             throw new RestException("1","数据库没有生成TabCol，请联系管理员！");

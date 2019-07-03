@@ -148,9 +148,15 @@ public class WarehouseCheckExecuteServiceImp implements WarehouseCheckExecuteSer
      * 创建时间：2018-11-15
      */
     public List<Map> getDataListPage(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         return warehouseCheckExecuteMapper.getDataListPage(pd, pg);
     }
     public List<Map> findListWarehouseCheckExecuteByAudit(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         //return warehouseCheckExecuteMapper.findListWarehouseCheckExecuteByAudit(pd, pg);
         List<Map> mapList = new ArrayList<Map>();
         if (pd == null) {return mapList;}
@@ -423,6 +429,9 @@ public class WarehouseCheckExecuteServiceImp implements WarehouseCheckExecuteSer
 
     @Override
     public ResultModel findListByWarehouseCheckExecute(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         ResultModel model = new ResultModel();
 
         List<Column> columnList = columnService.findColumnList("warehouseCheckExecuteByAudit");

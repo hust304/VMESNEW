@@ -5,6 +5,7 @@ import com.xy.vmes.common.util.DateFormat;
 import com.xy.vmes.deecoop.system.dao.RoleButtonMapper;
 import com.xy.vmes.entity.*;
 import com.xy.vmes.service.RoleButtonService;
+import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.xy.vmes.common.util.StringUtil;
 import com.yvan.platform.RestException;
@@ -88,6 +89,9 @@ public class RoleButtonServiceImp implements RoleButtonService {
     */
     @Override
     public List<RoleButton> dataListPage(PageData pd,Pagination pg) throws Exception{
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         return roleButtonMapper.dataListPage(pd,pg);
     }
 

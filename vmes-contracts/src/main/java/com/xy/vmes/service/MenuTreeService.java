@@ -19,18 +19,18 @@ import java.util.Map;
  * 创建时间：2018-07-31
  */
 public interface MenuTreeService {
-    List<Menu> getList_1();
-    List<Menu> getList_2();
-    List<Menu> getList_3();
-    List<Menu> getList_4();
-    List<Menu> getList_5();
+//    List<Menu> getList_1();
+//    List<Menu> getList_2();
+//    List<Menu> getList_3();
+//    List<Menu> getList_4();
+//    List<Menu> getList_5();
 
     /**
      * 初始化方法
      * 创建人：陈刚
      * 创建时间：2018-07-31
      */
-    void initialization();
+    void initialization();//@
 
     /**
      * 根据菜单对象<Menu>当前菜单节点下面所有节点生成树形结构
@@ -50,14 +50,14 @@ public interface MenuTreeService {
      * 创建时间：2018-07-31
      *
      */
-    void findMenuTree(String pids);
+    void findMenuTree(String pids);//@
 
     /**
      * 根据已知的菜单List<Menu>-生成树形结构
      * @param menuList
      * @param layer
      */
-    void findMenuTreeByList(List<Menu> menuList, Integer layer);
+    void findMenuTreeByList(List<Menu> menuList, Integer layer);//@
 
     /**
      * 递归调用-生成菜单树
@@ -71,29 +71,29 @@ public interface MenuTreeService {
      * @param treeList  菜单树-结构体
      * @return
      */
-    List<TreeEntity> creatMenuTree(Integer layer, Map<String, List<TreeEntity>> childMap, List<TreeEntity> treeList);
+    List<TreeEntity> creatMenuTree(Integer layer, Map<String, List<TreeEntity>> childMap, List<TreeEntity> treeList);//@
 
     /**
      * 创建人：陈刚
      * 创建时间：2018-07-19
      */
-    TreeEntity menu2Tree(Menu menu, TreeEntity tree);
+    TreeEntity menu2Tree(Menu menu, TreeEntity tree);//@
 
-    /**
-     * 遍历当前菜单层List<TreeEntity>-获取pid节点Map<pid, List<Menu>
-     * @param menuList  当前菜单层List<TreeEntity>
-     * @param nodeMap   Map<pid, List<TreeEntity>
-     * @return
-     */
-    Map<String, List<TreeEntity>> treeList2Map(List<TreeEntity> menuList, Map<String, List<TreeEntity>> nodeMap);
+//    /**
+//     * 遍历当前菜单层List<TreeEntity>-获取pid节点Map<pid, List<Menu>
+//     * @param menuList  当前菜单层List<TreeEntity>
+//     * @param nodeMap   Map<pid, List<TreeEntity>
+//     * @return
+//     */
+//    Map<String, List<TreeEntity>> treeList2Map(List<TreeEntity> menuList, Map<String, List<TreeEntity>> nodeMap);
 
-    /**
-     * 菜单List<Menu>转换成-树结构体List<TreeEntity>
-     * @param menuList  菜单List<Menu>
-     * @param treeList  树结构体List<TreeEntity>
-     * @return
-     */
-    List<TreeEntity> menuList2TreeList(List<Menu> menuList, List<TreeEntity> treeList);
+//    /**
+//     * 菜单List<Menu>转换成-树结构体List<TreeEntity>
+//     * @param menuList  菜单List<Menu>
+//     * @param treeList  树结构体List<TreeEntity>
+//     * @return
+//     */
+//    List<TreeEntity> menuList2TreeList(List<Menu> menuList, List<TreeEntity> treeList);
 
     ResultModel menuTreeLoad() throws Exception;
 }

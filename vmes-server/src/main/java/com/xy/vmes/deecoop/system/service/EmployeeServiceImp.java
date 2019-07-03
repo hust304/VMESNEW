@@ -121,6 +121,9 @@ public class EmployeeServiceImp implements EmployeeService {
     */
     @Override
     public List<Employee> dataListPage(PageData pd,Pagination pg) throws Exception{
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         return employeeMapper.dataListPage(pd,pg);
     }
 
@@ -196,6 +199,9 @@ public class EmployeeServiceImp implements EmployeeService {
      */
     @Override
     public List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception{
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         return employeeMapper.getDataListPage(pd,pg);
     }
 
@@ -916,6 +922,9 @@ public class EmployeeServiceImp implements EmployeeService {
 
     @Override
     public ResultModel listPageEmployees(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         ResultModel model = new ResultModel();
         Map result = new HashMap();
         List<Column> columnList = columnService.findColumnList("employee");
@@ -994,6 +1003,9 @@ public class EmployeeServiceImp implements EmployeeService {
 
     @Override
     public void exportExcelEmployees(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         List<Column> columnList = columnService.findColumnList("employee");
         if (columnList == null || columnList.size() == 0) {
             throw new RestException("1","数据库没有生成TabCol，请联系管理员！");

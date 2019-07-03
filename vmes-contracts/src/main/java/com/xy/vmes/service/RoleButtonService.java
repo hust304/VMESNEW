@@ -75,21 +75,21 @@ public interface RoleButtonService {
 
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
-    List<RoleButton> findRoleButtonList(PageData object);
+    List<RoleButton> findRoleButtonList(PageData object);//@
 
     /**
      * 根据当前角色ID-删除角色按钮
      * 创建人：陈刚
      * 创建时间：2018-07-31
      */
-    void deleteRoleButtonByRoleId(String roleId) throws Exception;
-    void deleteRoleButtonByButtonId(String buttonId) throws Exception;
+    void deleteRoleButtonByRoleId(String roleId) throws Exception;//@
+    void deleteRoleButtonByButtonId(String buttonId) throws Exception;//@
     /**
      * 添加角色按钮
      * 创建人：陈刚
      * 创建时间：2018-07-31
      */
-    void addRoleButtonByMeunIds(String roleId, String buttonIds);
+    void addRoleButtonByMeunIds(String roleId, String buttonIds);//@
 
     /**
      * 修改禁用属性(isdisable)
@@ -97,20 +97,20 @@ public interface RoleButtonService {
      * 创建人：陈刚
      * 创建时间：2018-07-31
      */
-    void updateDisableByRoleId(String roleId);
+//    void updateDisableByRoleId(String roleId);
 
     /**
      * 创建人：陈刚
      * 创建时间：2018-08-27
      */
-    List<Map<String, Object>> listMenuButtonMapByRole(PageData pd);
+    List<Map<String, Object>> listMenuButtonMapByRole(PageData pd);//@
 
     /**
      * 创建人：陈刚
      * 创建时间：2018-08-27
      */
-    MenuButton mapObject2MenuButton(Map<String, Object> mapObject, MenuButton object);
-    MenuButtonEntity menuButton2ButtonsEntity(MenuButton button, MenuButtonEntity entity);
+//    MenuButton mapObject2MenuButton(Map<String, Object> mapObject, MenuButton object);
+    MenuButtonEntity menuButton2ButtonsEntity(MenuButton button, MenuButtonEntity entity);//@
 
     /**
      * 角色按钮ListList<Map<String, Object>>转换成-按钮结构体List<MenuButtonEntity>
@@ -118,7 +118,7 @@ public interface RoleButtonService {
      * @param buttonList 树结构体List<MenuButtonEntity>
      * @return
      */
-    List<MenuButtonEntity> roleButtonList2ButtonList(List<Map<String, Object>> mapList, List<MenuButtonEntity> buttonList);
+    List<MenuButtonEntity> roleButtonList2ButtonList(List<Map<String, Object>> mapList, List<MenuButtonEntity> buttonList);//@
 
     /**
      * 获取按钮ID(','逗号分隔的字符串)
@@ -128,7 +128,7 @@ public interface RoleButtonService {
      * @param objectList
      * @return
      */
-    String findButtonIdsByRoleButtonList(List<RoleButton> objectList);
+    String findButtonIdsByRoleButtonList(List<RoleButton> objectList);//@
 }
 
 

@@ -77,10 +77,10 @@ public interface DepartmentService {
 
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
-    Map<String, String> getDeptKeyNameMap();
+//    Map<String, String> getDeptKeyNameMap();
     Map<String, String> getDeptNameKeyMap();
-    void createDeptMap();
-    void implementDeptMapByParentID(String parentId);
+//    void createDeptMap();
+//    void implementDeptMapByParentID(String parentId);
     void implementDeptMapByCompanyId(String companyId);
 
     /**
@@ -93,7 +93,7 @@ public interface DepartmentService {
      * 创建人：陈刚
      * 创建时间：2018-08-08
      */
-    List<LinkedHashMap> getColumnList() throws Exception;
+    List<LinkedHashMap> getColumnList() throws Exception;//@
 
     /**
      * 创建人：陈刚
@@ -107,7 +107,7 @@ public interface DepartmentService {
      * 创建人：陈刚
      * 创建时间：2018-07-27
      */
-    void updateDisableByIds(String[] ids) throws Exception;
+//    void updateDisableByIds(String[] ids) throws Exception;
 
     /**
      * 生成部门编码
@@ -118,7 +118,7 @@ public interface DepartmentService {
      * @param companyID  公司ID-组织架构ID
      * @return
      */
-    String createCoder(String companyID);
+//    String createCoder(String companyID);
 
     /**
      * 创建人：陈刚
@@ -126,7 +126,7 @@ public interface DepartmentService {
      * @param object
      * @return
      */
-    String checkColumnByAdd(Department object);
+//    String checkColumnByAdd(Department object);
 
     /**
      * 创建人：陈刚
@@ -134,7 +134,7 @@ public interface DepartmentService {
      * @param object
      * @return
      */
-    String checkColumnByEdit(Department object);
+//    String checkColumnByEdit(Department object);
 
     /**
      * 组织名称同一层级是否相同
@@ -146,23 +146,23 @@ public interface DepartmentService {
      *     true : 组织名称存在名称相同
      *     false: 组织名称不存在名称相同(默认值)
      */
-    boolean isExistByName(String pid, String id, String name);
+//    boolean isExistByName(String pid, String id, String name);
 
     /**
      * 创建人：陈刚
      * 创建时间：2018-07-18
      */
-    Department findDepartment(PageData object);
-    Department findDepartmentById(String id);
-    Department findDepartmentByRoot();
+    Department findDepartment(PageData object);//@
+    Department findDepartmentById(String id);//@
+    Department findDepartmentByRoot();//@
 
     /**
      * 创建人：陈刚
      * 创建时间：2018-07-18
      */
-    List<Department> findDepartmentList(PageData object);
-    List<Department> findDepartmentListByPid(String pid);
-    Integer findMaxSerialNumber(String pid);
+    List<Department> findDepartmentList(PageData object);//@
+    List<Department> findDepartmentListByPid(String pid);//@
+    Integer findMaxSerialNumber(String pid);//@
 
     /**
      * 根据部门对象<Department>当前部门节点下面所有节点生成树形结构
@@ -185,7 +185,7 @@ public interface DepartmentService {
      * @param detp 允许为空-<Department>对象(vmes_department:系统部门表)
      * @return
      */
-    Tree<Department> findTree(Department detp);
+//    Tree<Department> findTree(Department detp);
 
     /**
      * 获取部门id字符串-(','分隔的字符串)
@@ -193,7 +193,7 @@ public interface DepartmentService {
      * 创建时间：2018-07-19
      *
      */
-    String findDeptidByDeptList(List<Department> objectList);
+    String findDeptidByDeptList(List<Department> objectList);//@
 
     /**
      * 获取部门最大级别-遍历部门List<Department>
@@ -203,7 +203,7 @@ public interface DepartmentService {
      * @param objectList
      * @return
      */
-    Integer findMaxLayerByDeptList(List<Department> objectList);
+//    Integer findMaxLayerByDeptList(List<Department> objectList);
 
     /**
      * 遍历List<Department>-获取(长名称,长编码)- 通过'-'练级的字符串
@@ -212,7 +212,7 @@ public interface DepartmentService {
      *     "LongName"
      *     "LongCode"
      */
-    Map<String, String> findLongNameCode(List<Department> objectList);
+//    Map<String, String> findLongNameCode(List<Department> objectList);
     /**
      * 根据父节点<Department>对象-(id_0,id_1,...,id_5)
      * 查询获得组织架构路径List<Department>
@@ -222,7 +222,7 @@ public interface DepartmentService {
      *     "LongName"
      *     "LongCode"
      */
-    List<Department> findPathListByPater(Department paterObject);
+//    List<Department> findPathListByPater(Department paterObject);
 
     /**
      * 根据父pid父节点<Department>对象-(id_0,id_1,...,id_5)-查询获得组织架构路径List<Department>
@@ -233,7 +233,7 @@ public interface DepartmentService {
      *     "LongName"
      *     "LongCode"
      */
-    Map<String, String> findLongNameCodeByPid(String pid);
+//    Map<String, String> findLongNameCodeByPid(String pid);
 
     /**
      * 根据父节点<Department>对象-(id_0,id_1,...,id_5)-查询获得组织架构路径List<Department>
@@ -244,11 +244,11 @@ public interface DepartmentService {
      *     "LongName"
      *     "LongCode"
      */
-    Map<String, String> findLongNameCodeByPater(Department Pater);
-    Department paterObject2ObjectDB(Department paterObject, Department objectDB);
-    Department id2DepartmentByLayer(String id, Integer layer, Department objectDB);
-    Department clearDepartmentByPath(Department objectDB);
-    Department object2objectDB(Department object, Department objectDB);
+//    Map<String, String> findLongNameCodeByPater(Department Pater);
+    Department paterObject2ObjectDB(Department paterObject, Department objectDB);//@
+    Department id2DepartmentByLayer(String id, Integer layer, Department objectDB);//@
+//    Department clearDepartmentByPath(Department objectDB);
+//    Department object2objectDB(Department object, Department objectDB);
 
     /**
      * check部门列表List<Department>是否允许删除
@@ -260,7 +260,7 @@ public interface DepartmentService {
      * @param ids
      * @return
      */
-    String checkDeleteDeptByIds(String ids);
+//    String checkDeleteDeptByIds(String ids);
 
 
     /**
@@ -277,7 +277,7 @@ public interface DepartmentService {
      * @param prefix 前缀
      * @return
      */
-    String findDeptidById(String id, Integer layer, String prefix);
+    String findDeptidById(String id, Integer layer, String prefix);//@
 
     /**
      * 递归调用-添加(系统组织架构)vmes_department
@@ -292,11 +292,7 @@ public interface DepartmentService {
      * @param nameList  部门名称
      * @param count     递归执行次数
      */
-    String addBusinessByNameList(String cuser,
-                                 Department parent,
-                                 DeptExcelEntity excelEntity,
-                                 List<String> nameList,
-                                 int count);
+    String addBusinessByNameList(String cuser,Department parent,DeptExcelEntity excelEntity,List<String> nameList,int count);//@
 
     ResultModel treeDepartments(PageData pd) throws Exception;
 
@@ -314,7 +310,7 @@ public interface DepartmentService {
 
     ResultModel importExcelDepartments(MultipartFile file)throws Exception;
 
-    List<Map<String, Object>> findDepartmentListByDeptPathName(String companyId);
+//    List<Map<String, Object>> findDepartmentListByDeptPathName(String companyId);
 }
 
 

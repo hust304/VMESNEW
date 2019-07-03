@@ -115,14 +115,14 @@ public interface MenuButtonService {
     void updateToDisableByIds(String[] ids)throws Exception;
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
-    List<MenuButton> findMenuButtonList(PageData object);
-    List<MenuButton> findMenuButtonListByIds(String ids);
+    List<MenuButton> findMenuButtonList(PageData object);//@
+//    List<MenuButton> findMenuButtonListByIds(String ids);
     /**
      * 根据ID-查询菜单按钮表(vmes_menu_button)
      * @param id
      * @return
      */
-    MenuButton findMenuButtonById(String id);
+//    MenuButton findMenuButtonById(String id);
 
     /**
      * 遍历List<MenuButton>-获取(修改禁用属性主键ID,物理删除主键ID)
@@ -134,14 +134,14 @@ public interface MenuButtonService {
      * @param objectList
      * @return
      */
-    Map<String, String> checkDeleteMenuButtonByList(List<MenuButton> objectList);
+//    Map<String, String> checkDeleteMenuButtonByList(List<MenuButton> objectList);
 
     /**
      * 根据菜单ID-删除菜单按钮
      * 创建人：陈刚
      * 创建时间：2018-08-01
      */
-    void deleteMenuButtonByMenuId(String menuId) throws Exception;
+    void deleteMenuButtonByMenuId(String menuId) throws Exception;//@
 
     /**
      * 修改禁用属性(isdisable)
@@ -149,7 +149,7 @@ public interface MenuButtonService {
      * 创建人：陈刚
      * 创建时间：2018-08-01
      */
-    void updateDisableByMenuId(String menuId);
+//    void updateDisableByMenuId(String menuId);
 
     /**
      * 创建人：陈刚
@@ -157,14 +157,14 @@ public interface MenuButtonService {
      * @param object
      * @return
      */
-    String checkColumnByAdd(MenuButton object);
+//    String checkColumnByAdd(MenuButton object);
     /**
      * 创建人：陈刚
      * 创建时间：2018-08-03
      * @param object
      * @return
      */
-    String checkColumnByEdit(MenuButton object);
+//    String checkColumnByEdit(MenuButton object);
 
     /**
      * 菜单ID-按钮名称是否相同
@@ -176,7 +176,7 @@ public interface MenuButtonService {
      *     true : 菜单名称存在名称相同
      *     false: 菜单名称不存在名称相同(默认值)
      */
-    boolean isExistByName(String menuId, String id, String name);
+//    boolean isExistByName(String menuId, String id, String name);
 
     /**
      * 菜单ID-按钮属性值是否相同
@@ -188,9 +188,9 @@ public interface MenuButtonService {
      *     true : 菜单名称存在名称相同
      *     false: 菜单名称不存在名称相同(默认值)
      */
-    boolean isExistByNameEn(String menuId, String id, String nameEn);
-    Integer findMaxSerialNumber(String menuId);
-    MenuButton object2objectDB(MenuButton object, MenuButton objectDB);
+//    boolean isExistByNameEn(String menuId, String id, String nameEn);
+//    Integer findMaxSerialNumber(String menuId);
+//    MenuButton object2objectDB(MenuButton object, MenuButton objectDB);
 
     /**
      * 获取按钮ID(','逗号分隔的字符串)
@@ -200,7 +200,7 @@ public interface MenuButtonService {
      * @param objectList
      * @return
      */
-    String findButtonIdsByMenuButtonList(List<MenuButton> objectList);
+//    String findButtonIdsByMenuButtonList(List<MenuButton> objectList);
 
     ResultModel addMeunButton(PageData pageData) throws Exception;
 

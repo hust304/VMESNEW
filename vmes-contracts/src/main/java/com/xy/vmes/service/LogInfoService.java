@@ -119,7 +119,7 @@ public interface LogInfoService {
      * @param methodPath
      * @return
      */
-    String findMethodPrefix(String methodPath);
+    String findMethodPrefix(String methodPath);//@
 
     /**
      * 获取业务表名：
@@ -127,13 +127,13 @@ public interface LogInfoService {
      * @param methodPath
      * @return
      */
-    String findTable(String methodPath);
+    String findTable(String methodPath);//@
 
     /**
      * 创建新的日志对象<Loginfo>
      * @return
      */
-    LogInfo createLoginfo(LogInfo object);
+    LogInfo createLoginfo(LogInfo object);//@
 
     ResultModel listPageLogInfos(PageData pd, Pagination pg) throws Exception;
 

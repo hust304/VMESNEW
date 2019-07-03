@@ -16,7 +16,7 @@ public interface CompanyService {
      * @param object
      * @return
      */
-    String checkColumnByAdd(Department object);
+//    String checkColumnByAdd(Department object);
 
     /**
      * 创建人：陈刚
@@ -24,7 +24,7 @@ public interface CompanyService {
      * @param object
      * @return
      */
-    String checkColumnByEdit(Department object);
+//    String checkColumnByEdit(Department object);
 
     /**
      * 企业名称同一层级是否相同
@@ -36,7 +36,7 @@ public interface CompanyService {
      *     true : 组织名称存在名称相同
      *     false: 组织名称不存在名称相同(默认值)
      */
-    boolean isExistByName(String pid, String id, String name);
+//    boolean isExistByName(String pid, String id, String name);
 
     /**
      * 企业编码同一层级是否相同
@@ -48,9 +48,9 @@ public interface CompanyService {
      *     true : 组织名称存在名称相同
      *     false: 组织名称不存在名称相同(默认值)
      */
-    boolean isExistByCode(String pid, String id, String code);
+//    boolean isExistByCode(String pid, String id, String code);
 
-    Department object2objectDB(Department object, Department objectDB);
+//    Department object2objectDB(Department object, Department objectDB);
     //Integer findMaxSerialNumber(String pid);
 
     /**
@@ -62,13 +62,13 @@ public interface CompanyService {
      * @param ids
      * @return
      */
-    String checkDeleteCompanyByIds(String ids);
+//    String checkDeleteCompanyByIds(String ids);
 
     /**
      * 创建人：陈刚
      * 创建时间：2018-08-16
      */
-    List<LinkedHashMap> getColumnList() throws Exception;
+//    List<LinkedHashMap> getColumnList() throws Exception;
 
     /**
      * 创建人：陈刚
@@ -96,4 +96,6 @@ public interface CompanyService {
     ResultModel deleteCompanyAdmins(PageData pageData) throws Exception;
 
     ResultModel findListCompany(PageData pageData) throws Exception;
+
+    ResultModel listPageCompanyAdmins(PageData pd) throws Exception;
 }

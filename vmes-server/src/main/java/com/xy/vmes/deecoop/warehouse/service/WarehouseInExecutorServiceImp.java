@@ -6,6 +6,7 @@ import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.warehouse.dao.WarehouseInExecutorMapper;
 import com.xy.vmes.entity.*;
 import com.xy.vmes.service.*;
+import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -123,6 +124,9 @@ public class WarehouseInExecutorServiceImp implements WarehouseInExecutorService
      */
     @Override
     public List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception{
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         return warehouseInExecutorMapper.getDataListPage(pd,pg);
     }
 
@@ -201,8 +205,10 @@ public class WarehouseInExecutorServiceImp implements WarehouseInExecutorService
             object.setCuser(detail.getCuser());
             object.setDetailId(detail.getId());
             object.setExecutorId(userId);
-
-            Task task = taskService.warehouseInDtl2Task(detail, null);
+            PageData pd = new PageData();
+            pd.put("detail",detail);
+            pd.put("task",null);
+            Task task = taskService.warehouseInDtl2Task(pd);
             task.setExecutorId(userId);
             try {
                 this.save(object);
@@ -216,6 +222,9 @@ public class WarehouseInExecutorServiceImp implements WarehouseInExecutorService
 
     @Override
     public ResultModel listPageWarehouseInExecutor(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         ResultModel model = new ResultModel();
 
         List<Column> columnList = columnService.findColumnList("warehouseInExecutor");
@@ -309,6 +318,9 @@ public class WarehouseInExecutorServiceImp implements WarehouseInExecutorService
 
     @Override
     public ResultModel findListByWarehouseInExecutor(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         ResultModel model = new ResultModel();
 
         Map result = new HashMap();

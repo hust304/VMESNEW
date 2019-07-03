@@ -91,7 +91,7 @@ public interface WarehouseCheckService {
     List<WarehouseCheck> findWarehouseCheckList(PageData object) throws Exception;
 
 
-    ResultModel listPagewarehouseChecks(PageData pd, Pagination pg) throws Exception;
+    ResultModel listPagewarehouseChecks(PageData pd) throws Exception;
 
     ResultModel addWarehouseCheck(PageData pageData) throws Exception;
 

@@ -110,6 +110,9 @@ public class ProductUnitServiceImp implements ProductUnitService {
     */
     @Override
     public List<ProductUnit> dataListPage(PageData pd,Pagination pg) throws Exception{
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         return productUnitMapper.dataListPage(pd,pg);
     }
 
@@ -185,6 +188,9 @@ public class ProductUnitServiceImp implements ProductUnitService {
     */
     @Override
     public List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception{
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         return productUnitMapper.getDataListPage(pd,pg);
     }
     public List<Map> getDataListPage(PageData pd) throws Exception{
@@ -265,6 +271,9 @@ public class ProductUnitServiceImp implements ProductUnitService {
 
     @Override
     public ResultModel listPageProductUnits(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         ResultModel model = new ResultModel();
 
         List<Column> columnList = columnService.findColumnList("ProductUnit");
@@ -636,6 +645,9 @@ public class ProductUnitServiceImp implements ProductUnitService {
 
     @Override
     public void exportExcelProductUnits(PageData pd,Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         List<Column> columnList = columnService.findColumnList("ProductUnit");
         if (columnList == null || columnList.size() == 0) {
             throw new RestException("1","数据库没有生成TabCol，请联系管理员！");

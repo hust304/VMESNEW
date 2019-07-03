@@ -135,6 +135,9 @@ public class WarehouseInExecuteServiceImp implements WarehouseInExecuteService {
     */
     @Override
     public List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception{
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         return warehouseInExecuteMapper.getDataListPage(pd,pg);
     }
 
@@ -965,6 +968,9 @@ public class WarehouseInExecuteServiceImp implements WarehouseInExecuteService {
 
     @Override
     public ResultModel findListWarehouseInExecuteByEdit(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         ResultModel model = new ResultModel();
         Map result = new HashMap();
 

@@ -103,6 +103,9 @@ public class MenuServiceImp implements MenuService {
     */
     @Override
     public List<Menu> dataListPage(PageData pd,Pagination pg) throws Exception{
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         return menuMapper.dataListPage(pd,pg);
     }
 
@@ -140,7 +143,6 @@ public class MenuServiceImp implements MenuService {
     @Autowired
     private CoderuleService coderuleService;
 
-    @Override
     public void deleteByIds(String[] ids) throws Exception{
         menuMapper.deleteByIds(ids);
     }
@@ -149,10 +151,9 @@ public class MenuServiceImp implements MenuService {
      * 创建人：陈刚
      * 创建时间：2018-08-08
      */
-    @Override
-    public List<LinkedHashMap> getColumnList() throws Exception{
-        return menuMapper.getColumnList();
-    }
+//    public List<LinkedHashMap> getColumnList() throws Exception{
+//        return menuMapper.getColumnList();
+//    }
 
     /**
      * 创建人：陈刚
@@ -160,6 +161,9 @@ public class MenuServiceImp implements MenuService {
      */
     @Override
     public List<Map> getDataListPage(PageData pd, Pagination pg) throws Exception{
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         return menuMapper.getDataListPage(pd, pg);
     }
 
@@ -607,6 +611,9 @@ public class MenuServiceImp implements MenuService {
 
     @Override
     public ResultModel listPageMenus(PageData pd,Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         ResultModel model = new ResultModel();
         Map<String, Object> mapObj = new HashMap<String, Object>();
 
@@ -660,6 +667,9 @@ public class MenuServiceImp implements MenuService {
 
     @Override
     public void exportExcelMenus(PageData pd,Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         String ids = pd.getString("ids");
         String queryColumn = pd.getString("queryColumn");
         List<Column> columnList = columnService.findColumnList("menu");

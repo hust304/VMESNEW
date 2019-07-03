@@ -168,6 +168,9 @@ public class CustomerInvoiceServiceImp implements CustomerInvoiceService {
      */
     @Override
     public List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception{
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         return customerInvoiceMapper.getDataListPage(pd,pg);
     }
 
@@ -210,6 +213,9 @@ public class CustomerInvoiceServiceImp implements CustomerInvoiceService {
     ///////////////////////////////////////////////////////////////////////////////////////////////
     @Override
     public void exportExcelCustomerInvoices(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         List<Column> columnList = columnService.findColumnList("customerInvoice");
         if (columnList == null || columnList.size() == 0) {
             throw new RestException("1","数据库没有生成TabCol，请联系管理员！");
@@ -285,6 +291,9 @@ public class CustomerInvoiceServiceImp implements CustomerInvoiceService {
 
     @Override
     public ResultModel listPageCustomerInvoices(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         ResultModel model = new ResultModel();
         List<Column> columnList = columnService.findColumnList("customerInvoice");
         if (columnList == null || columnList.size() == 0) {

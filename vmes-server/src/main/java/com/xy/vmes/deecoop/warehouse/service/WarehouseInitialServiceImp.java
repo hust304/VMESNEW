@@ -184,6 +184,9 @@ public class WarehouseInitialServiceImp implements WarehouseInitialService {
      */
     @Override
     public List<Map> getDataListPage(PageData pd, Pagination pg) throws Exception{
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         return warehouseInitialMapper.getDataListPage(pd, pg);
     }
 
@@ -244,6 +247,9 @@ public class WarehouseInitialServiceImp implements WarehouseInitialService {
 
     @Override
     public ResultModel listPageWarehouseInitial(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         ResultModel model = new ResultModel();
 
         List<Column> columnList = columnService.findColumnList("warehouseInitial");
@@ -394,6 +400,9 @@ public class WarehouseInitialServiceImp implements WarehouseInitialService {
 
     @Override
     public void exportExcelWarehouseInitial(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         List<Column> columnList = columnService.findColumnList("warehouseInitial");
         if (columnList == null || columnList.size() == 0) {
             throw new RestException("1","数据库没有生成TabCol，请联系管理员！");

@@ -126,7 +126,7 @@ public interface TemplateService {
      * @return
      * @throws Exception
      */
-    List<Template> findDataList(PageData pageData, Boolean isQueryAll) throws Exception;
+//    List<Template> findDataList(PageData pageData, Boolean isQueryAll) throws Exception;
 
     /**
     * 分页查询

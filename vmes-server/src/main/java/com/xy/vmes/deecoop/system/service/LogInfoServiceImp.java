@@ -107,6 +107,9 @@ public class LogInfoServiceImp implements LogInfoService {
      */
     @Override
     public List<LogInfo> dataListPage(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         return logInfoMapper.dataListPage(pd, pg);
     }
 
@@ -173,6 +176,9 @@ public class LogInfoServiceImp implements LogInfoService {
      */
     @Override
     public List<Map> getDataListPage(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         return logInfoMapper.getDataListPage(pd, pg);
     }
 
@@ -269,6 +275,9 @@ public class LogInfoServiceImp implements LogInfoService {
 
     @Override
     public ResultModel listPageLogInfos(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         ResultModel model = new ResultModel();
 
         String cdate = pd.getString("cdate");

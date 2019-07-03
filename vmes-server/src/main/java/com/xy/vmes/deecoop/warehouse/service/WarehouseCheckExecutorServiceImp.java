@@ -5,6 +5,7 @@ import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.warehouse.dao.WarehouseCheckExecutorMapper;
 import com.xy.vmes.entity.*;
 import com.xy.vmes.service.*;
+import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.YvanUtil;
 import com.yvan.springmvc.ResultModel;
@@ -160,6 +161,9 @@ public class WarehouseCheckExecutorServiceImp implements WarehouseCheckExecutorS
      * 创建时间：2018-11-15
      */
     public List<Map> getDataListPage(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         return warehouseCheckExecutorMapper.getDataListPage(pd, pg);
     }
 
@@ -170,6 +174,9 @@ public class WarehouseCheckExecutorServiceImp implements WarehouseCheckExecutorS
      * @throws Exception
      */
     public List<Map> findListWarehouseCheckExecutorByAddExecute(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         return warehouseCheckExecutorMapper.findListWarehouseCheckExecutorByAddExecute(pd, pg);
     }
     public List<Map> findListWarehouseCheckExecutorByAddExecute(PageData pd) throws Exception {
@@ -226,8 +233,10 @@ public class WarehouseCheckExecutorServiceImp implements WarehouseCheckExecutorS
             object.setDetailId(detail.getId());
             object.setCuser(detail.getCuser());
             object.setExecutorId(userId);
-
-            Task task = taskService.warehouseCheckDtl2Task(detail, null);
+            PageData pd = new PageData();
+            pd.put("detail",detail);
+            pd.put("task",null);
+            Task task = taskService.warehouseCheckDtl2Task(pd);
             task.setExecutorId(userId);
 
             try {
@@ -241,6 +250,9 @@ public class WarehouseCheckExecutorServiceImp implements WarehouseCheckExecutorS
 
     @Override
     public ResultModel findListByWarehouseCheckExecutor(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         ResultModel model = new ResultModel();
 
         List<Column> columnList = columnService.findColumnList("warehouseCheckExecutorByAddExecute");
@@ -302,6 +314,9 @@ public class WarehouseCheckExecutorServiceImp implements WarehouseCheckExecutorS
     }
 
     public ResultModel listPageWarehouseCheckExecutor(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         ResultModel model = new ResultModel();
 
         List<Column> columnList = columnService.findColumnList("warehouseCheckExecutor");

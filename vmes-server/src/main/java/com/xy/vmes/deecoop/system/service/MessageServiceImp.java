@@ -138,6 +138,9 @@ public class MessageServiceImp implements MessageService {
      */
     @Override
     public List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception{
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         return messageMapper.getDataListPage(pd,pg);
     }
     public List<Map> getDataListPage(PageData pd) throws Exception {
@@ -179,7 +182,9 @@ public class MessageServiceImp implements MessageService {
     * @throws Exception
     */
     public ResultModel listPageMessages(PageData pd,Pagination pg) throws Exception{
-
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         ResultModel model = new ResultModel();
         Map result = new HashMap();
         List<Column> columnList = columnService.findColumnList("message");

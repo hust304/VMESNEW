@@ -109,6 +109,9 @@ public class WarehouseOutRecommendServiceImp implements WarehouseOutRecommendSer
     */
     @Override
     public List<WarehouseOutRecommend> dataListPage(PageData pd,Pagination pg) throws Exception{
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         return warehouseOutRecommendMapper.dataListPage(pd,pg);
     }
 
@@ -184,6 +187,9 @@ public class WarehouseOutRecommendServiceImp implements WarehouseOutRecommendSer
     */
     @Override
     public List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception{
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         return warehouseOutRecommendMapper.getDataListPage(pd,pg);
     }
 
@@ -263,6 +269,9 @@ public class WarehouseOutRecommendServiceImp implements WarehouseOutRecommendSer
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     @Override
     public ResultModel listPageWarehouseOutRecommends(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         ResultModel model = new ResultModel();
         Map result = new HashMap();
 
@@ -314,6 +323,9 @@ public class WarehouseOutRecommendServiceImp implements WarehouseOutRecommendSer
 
     @Override
     public void exportExcelWarehouseOutRecommends(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         List<Column> columnList = columnService.findColumnList("WarehouseOutRecommend");
         if (columnList == null || columnList.size() == 0) {
             throw new RestException("1","数据库没有生成TabCol，请联系管理员！");

@@ -111,6 +111,9 @@ public class BomTreeServiceImp implements BomTreeService {
     */
     @Override
     public List<BomTree> dataListPage(PageData pd,Pagination pg) throws Exception{
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         return bomTreeMapper.dataListPage(pd,pg);
     }
 
@@ -176,6 +179,9 @@ public class BomTreeServiceImp implements BomTreeService {
     */
     @Override
     public List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception{
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         return bomTreeMapper.getDataListPage(pd,pg);
     }
 
@@ -209,6 +215,9 @@ public class BomTreeServiceImp implements BomTreeService {
 
     @Override
     public ResultModel listProdLackNum(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         ResultModel model = new ResultModel();
         Map result = new HashMap();
         List<Column> columnList = columnService.findColumnList("BomTreeProduct");
@@ -334,6 +343,9 @@ public class BomTreeServiceImp implements BomTreeService {
 
     @Override
     public ResultModel listPageBomTrees(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         ResultModel model = new ResultModel();
         Map result = new HashMap();
         List<Column> columnList = columnService.findColumnList("BomTree");
@@ -383,6 +395,9 @@ public class BomTreeServiceImp implements BomTreeService {
 
     @Override
     public void exportExcelBomTrees(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         List<Column> columnList = columnService.findColumnList("BomTree");
         if (columnList == null || columnList.size() == 0) {
             throw new RestException("1","数据库没有生成TabCol，请联系管理员！");

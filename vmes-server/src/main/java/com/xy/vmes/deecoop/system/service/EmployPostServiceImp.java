@@ -6,6 +6,7 @@ import com.xy.vmes.deecoop.system.dao.EmployPostMapper;
 import com.xy.vmes.entity.Department;
 import com.xy.vmes.entity.EmployPost;
 import com.xy.vmes.service.EmployPostService;
+import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.platform.RestException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +35,7 @@ public class EmployPostServiceImp implements EmployPostService {
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-08-01
     */
-    @Override
+//    @Override
     public void save(EmployPost employPost) throws Exception{
         employPost.setId(Conv.createUuid());
         employPost.setCdate(new Date());
@@ -46,7 +47,7 @@ public class EmployPostServiceImp implements EmployPostService {
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-08-01
     */
-    @Override
+//    @Override
     public void update(EmployPost employPost) throws Exception{
         employPost.setUdate(new Date());
         employPostMapper.updateById(employPost);
@@ -56,7 +57,7 @@ public class EmployPostServiceImp implements EmployPostService {
      * 创建人：刘威 自动创建，禁止修改
      * 创建时间：2018-08-01
      */
-    @Override
+//    @Override
     public void updateAll(EmployPost employPost) throws Exception{
         employPost.setUdate(new Date());
         employPostMapper.updateAllColumnById(employPost);
@@ -66,7 +67,7 @@ public class EmployPostServiceImp implements EmployPostService {
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-08-01
     */
-    @Override
+//    @Override
     //@Cacheable(cacheNames = "employPost", key = "''+#id")
     public EmployPost selectById(String id) throws Exception{
         return employPostMapper.selectById(id);
@@ -76,7 +77,7 @@ public class EmployPostServiceImp implements EmployPostService {
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-08-01
     */
-    @Override
+//    @Override
     public void deleteById(String id) throws Exception{
         employPostMapper.deleteById(id);
     }
@@ -85,7 +86,7 @@ public class EmployPostServiceImp implements EmployPostService {
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-08-01
     */
-    @Override
+//    @Override
     public void deleteByIds(String[] ids) throws Exception{
         employPostMapper.deleteByIds(ids);
     }
@@ -94,8 +95,11 @@ public class EmployPostServiceImp implements EmployPostService {
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-08-01
     */
-    @Override
+//    @Override
     public List<EmployPost> dataListPage(PageData pd,Pagination pg) throws Exception{
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         return employPostMapper.dataListPage(pd,pg);
     }
 
@@ -103,7 +107,7 @@ public class EmployPostServiceImp implements EmployPostService {
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-08-01
     */
-    @Override
+//    @Override
     public List<EmployPost> dataList(PageData pd) throws Exception{
         return employPostMapper.dataList(pd);
     }
@@ -112,7 +116,7 @@ public class EmployPostServiceImp implements EmployPostService {
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-08-01
     */
-    @Override
+//    @Override
     public List<LinkedHashMap> findColumnList() throws Exception{
         return employPostMapper.findColumnList();
     }
@@ -121,7 +125,7 @@ public class EmployPostServiceImp implements EmployPostService {
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-08-01
     */
-    @Override
+//    @Override
     public List<Map> findDataList(PageData pd) throws Exception{
         return employPostMapper.findDataList(pd);
     }
@@ -131,7 +135,7 @@ public class EmployPostServiceImp implements EmployPostService {
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-08-01
     */
-    @Override
+//    @Override
     public void deleteByColumnMap(Map columnMap) throws Exception{
         employPostMapper.deleteByMap(columnMap);
     }
@@ -140,7 +144,7 @@ public class EmployPostServiceImp implements EmployPostService {
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-08-01
     */
-    @Override
+//    @Override
     public List<EmployPost> selectByColumnMap(Map columnMap) throws Exception{
     List<EmployPost> employPostList =  employPostMapper.selectByMap(columnMap);
         return employPostList;
@@ -150,7 +154,7 @@ public class EmployPostServiceImp implements EmployPostService {
      * 创建人：刘威 自动创建，禁止修改
      * 创建时间：2018-08-01
      */
-    @Override
+//    @Override
     public List<LinkedHashMap> getColumnList() throws Exception{
         return employPostMapper.getColumnList();
     }
@@ -159,7 +163,7 @@ public class EmployPostServiceImp implements EmployPostService {
      * 创建人：刘威 自动创建，禁止修改
      * 创建时间：2018-08-01
      */
-    @Override
+//    @Override
     public List<Map> getDataList(PageData pd) throws Exception{
         return employPostMapper.getDataList(pd);
     }
@@ -168,8 +172,11 @@ public class EmployPostServiceImp implements EmployPostService {
      * 创建人：刘威 自动创建，禁止修改
      * 创建时间：2018-08-01
      */
-    @Override
+//    @Override
     public List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception{
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         return employPostMapper.getDataListPage(pd,pg);
     }
 
@@ -177,7 +184,6 @@ public class EmployPostServiceImp implements EmployPostService {
      * 创建人：刘威 自动创建，禁止修改
      * 创建时间：2018-08-01
      */
-    @Override
     public void updateToDisableByIds(String[] ids)throws Exception{
         employPostMapper.updateToDisableByIds(ids);
     }

@@ -6,6 +6,7 @@ import com.xy.vmes.deecoop.base.dao.DepartmentCustomerMapper;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.service.ColumnService;
 import com.xy.vmes.service.DepartmentCustomerService;
+import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,11 +29,17 @@ public class DepartmentCustomerServiceImp implements DepartmentCustomerService {
      * 创建时间：2018-10-24
      */
     public List<Map> getDataListPage(PageData pd, Pagination pg) throws Exception{
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         return departmentCustomerMapper.getDataListPage(pd, pg);
     }
 
     @Override
     public ResultModel listPageDepartmentCustomer(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         ResultModel model = new ResultModel();
         List<Column> columnList = columnService.findColumnList("departmentCustomer");
         if (columnList == null || columnList.size() == 0) {

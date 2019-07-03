@@ -132,7 +132,7 @@ public interface AttachmentService {
      * @return
      * @throws Exception
      */
-    List<Attachment> findDataList(PageData pageData, Boolean isQueryAll) throws Exception;
+//    List<Attachment> findDataList(PageData pageData, Boolean isQueryAll) throws Exception;
 
     /**
     * 分页查询

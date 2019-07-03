@@ -80,7 +80,7 @@ public interface MessageService {
      * 创建时间：2019-04-18
      */
     List<Map> getDataListPage(PageData pd, Pagination pg) throws Exception;
-    List<Map> getDataListPage(PageData pd) throws Exception;
+//    List<Map> getDataListPage(PageData pd) throws Exception;
     List<Map> findListMessage(PageData pd) throws Exception;
 
     /**
@@ -93,7 +93,7 @@ public interface MessageService {
      * @return
      * @throws Exception
      */
-    List<Message> findDataList(PageData pageData, Boolean isQueryAll) throws Exception;
+//    List<Message> findDataList(PageData pageData, Boolean isQueryAll) throws Exception;
 
     ResultModel listPageMessages(PageData pd, Pagination pg) throws Exception;
     ResultModel addMessage(PageData pd) throws Exception;

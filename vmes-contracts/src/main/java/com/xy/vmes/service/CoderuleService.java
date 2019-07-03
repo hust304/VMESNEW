@@ -47,12 +47,12 @@ public interface CoderuleService {
      * 创建人：陈刚
      * 创建时间：2018-07-26
      */
-    Coderule findCoderule(PageData pd);
+//    Coderule findCoderule(PageData pd);
     /**
      * 创建人：陈刚
      * 创建时间：2018-07-26
      */
-    Map<String, Object> findCoderuleMap(PageData pd);
+//    Map<String, Object> findCoderuleMap(PageData pd);
 
     /**
      * 获取最新系统流水号
@@ -60,7 +60,7 @@ public interface CoderuleService {
      * @param tableName  业务名称(表名)
      * @return
      */
-    Coderule findNewCodeByCoderule(String companyId, String tableName, String type);
+//    Coderule findNewCodeByCoderule(String companyId, String tableName, String type);
 
     /**
      * 获取最新系统流水号
@@ -69,19 +69,19 @@ public interface CoderuleService {
      * @param dayString  日期(yyyyMMdd)
      * @return
      */
-    Coderule findNewCodeByCoderule(String companyId, String tableName, String type, String dayString);
+//    Coderule findNewCodeByCoderule(String companyId, String tableName, String type, String dayString);
 
     /**
      * 创建人：陈刚
      * 创建时间：2018-07-26
      */
-    Integer updateCoderule(PageData pd) throws Exception;
+//    Integer updateCoderule(PageData pd) throws Exception;
 
     /**
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2018-07-26
      */
-    void deleteByColumnMap(Map columnMap) throws Exception;
+//    void deleteByColumnMap(Map columnMap) throws Exception;
 
     ////////////////////////////////////////////////////////////////////////////////////////////
     /**
@@ -107,14 +107,14 @@ public interface CoderuleService {
      * @param object  生成编码-通用编码规则需要的参数对象
      * @return
      */
-    String findCoderule(CoderuleEntity object);
+    String findCoderule(CoderuleEntity object);//@
 
     /**
      * 按照当天日期(yyyy-MM-dd)流水号递增
      * @param object
      * @return
      */
-    String findCoderuleByDate(CoderuleEntity object);
+//    String findCoderuleByDate(CoderuleEntity object);
 
     ////////////////////////////////////////////////////////////////////////////////////////////
     /**
@@ -134,7 +134,7 @@ public interface CoderuleService {
      * @param tableName   表名
      * @return
      */
-    String createCoder(String companyID,String tableName);
+    String createCoder(String companyID,String tableName);//@
 
     /**
      * 获取流水号：公司编码+日期（yyyyMMdd）+3位流水号，如DEECOOP20180808001
@@ -144,7 +144,7 @@ public interface CoderuleService {
      * @param dateFormat  日期格式
      * @return
      */
-    String createCoderByDate(String companyID,String tableName,String dateFormat);
+//    String createCoderByDate(String companyID,String tableName,String dateFormat);
 
 
     /**
@@ -156,10 +156,10 @@ public interface CoderuleService {
      * @param prefix      前缀名称
      * @return
      */
-    String createCoderByDate(String companyID,String tableName,String dateFormat,String prefix);
+//    String createCoderByDate(String companyID,String tableName,String dateFormat,String prefix);
 
     /**
-     * 获取流水号：前缀+日期（yyyyMMdd）+5位流水号，如P2018080800001
+     * 获取流水号：前缀+日期（yyyyMMdd）+5位流水号，如P20180808001
      * 创建人：刘威
      * @param companyID   公司ID
      * @param tableName   表名

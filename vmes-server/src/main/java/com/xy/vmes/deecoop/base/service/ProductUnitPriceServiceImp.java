@@ -6,6 +6,7 @@ import com.xy.vmes.entity.Column;
 import com.xy.vmes.entity.ProductUnitPrice;
 import com.xy.vmes.service.ColumnService;
 import com.xy.vmes.service.ProductUnitPriceService;
+import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -135,6 +136,9 @@ public class ProductUnitPriceServiceImp implements ProductUnitPriceService {
      * 创建时间：2018-11-15
      */
     public List<Map> getDataListPage(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         return productUnitPriceMapper.getDataListPage(pd, pg);
     }
     /**
@@ -162,6 +166,9 @@ public class ProductUnitPriceServiceImp implements ProductUnitPriceService {
 
     @Override
     public ResultModel listPageProductUnitPrices(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         ResultModel model = new ResultModel();
         List<Column> columnList = columnService.findColumnList("productUnitPrice");
         if (columnList == null || columnList.size() == 0) {

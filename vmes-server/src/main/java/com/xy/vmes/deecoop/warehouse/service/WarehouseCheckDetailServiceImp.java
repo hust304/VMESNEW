@@ -160,6 +160,9 @@ public class WarehouseCheckDetailServiceImp implements WarehouseCheckDetailServi
     @Override
     public List<Map> getDataListPage(PageData pd, Pagination pg) throws Exception{
         //return warehouseCheckDetailMapper.getDataListPage(pd, pg);
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         List<Map> mapList = new ArrayList<Map>();
         if (pd == null) {return mapList;}
 
@@ -464,6 +467,9 @@ public class WarehouseCheckDetailServiceImp implements WarehouseCheckDetailServi
 
     @Override
     public ResultModel listPageWarehouseCheckDetails(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         ResultModel model = new ResultModel();
 
         List<Column> columnList = columnService.findColumnList("warehouseCheckDetail");

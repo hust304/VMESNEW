@@ -147,11 +147,17 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
     */
     @Override
     public List<Map> getDataListPage(PageData pd, Pagination pg) throws Exception{
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         return warehouseProductMapper.getDataListPage(pd, pg);
     }
 
     @Override
     public List<Map> getDataListPageDispatch(PageData pd, Pagination pg) throws Exception{
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         return warehouseProductMapper.getDataListPageDispatch(pd, pg);
     }
     public List<Map> getDataListPageDispatch(PageData pd) throws Exception{
@@ -1382,16 +1388,25 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
 
     @Override
     public List<Map> getWarehouseProductView(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         return warehouseProductMapper.warehouseProductView(pd,pg);
     }
 
     @Override
     public List<Map> getWarehouseDetailView(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         return warehouseProductMapper.warehouseDetailView(pd,pg);
     }
 
     @Override
     public List<Map> getWarehouseProductMove(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         return warehouseProductMapper.warehouseProductMove(pd,pg);
     }
 
@@ -1400,6 +1415,9 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
     /////////////////////////////////////////////////////////////////////////////////
     //手机端功能
     public List<Map> findListPageWarehouseByProduct(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         return warehouseProductMapper.findListPageWarehouseByProduct(pd,pg);
     }
 
@@ -1437,6 +1455,9 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
 
     @Override
     public ResultModel listPageWarehouseProductView(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         ResultModel model = new ResultModel();
         Map result = new HashMap();
 
@@ -1465,6 +1486,9 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
 
     @Override
     public ResultModel listPageWarehouseProductMove(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         ResultModel model = new ResultModel();
         Map result = new HashMap();
 
@@ -1522,6 +1546,9 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
 
     @Override
     public ResultModel listPageWarehouseDetailView(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         ResultModel model = new ResultModel();
         Map result = new HashMap();
 
@@ -1573,6 +1600,9 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
 
     @Override
     public ResultModel listPageWarehouseProductsDispatch(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         ResultModel model = new ResultModel();
         Map result = new HashMap();
         DecimalFormat df = new DecimalFormat("0.00");
@@ -1638,6 +1668,9 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
 
     @Override
     public ResultModel listPageWarehouseProductsDispatchOption(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         ResultModel model = new ResultModel();
 
         Map result = new HashMap();
@@ -1690,6 +1723,9 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
 
     @Override
     public void exportExcelWarehouseProducts(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         List<Column> columnList = columnService.findColumnList("WarehouseProduct");
         if (columnList == null || columnList.size() == 0) {
             throw new RestException("1","数据库没有生成TabCol，请联系管理员！");

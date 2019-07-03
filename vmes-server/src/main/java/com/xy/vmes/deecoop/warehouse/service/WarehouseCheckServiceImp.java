@@ -158,6 +158,9 @@ public class WarehouseCheckServiceImp implements WarehouseCheckService {
      */
     @Override
     public List<Map> getDataListPage(PageData pd, Pagination pg) throws Exception{
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         return warehouseCheckMapper.getDataListPage(pd, pg);
     }
 
@@ -189,8 +192,9 @@ public class WarehouseCheckServiceImp implements WarehouseCheckService {
     }
 
     @Override
-    public ResultModel listPagewarehouseChecks(PageData pd, Pagination pg) throws Exception {
+    public ResultModel listPagewarehouseChecks(PageData pd) throws Exception {
         ResultModel model = new ResultModel();
+        Pagination pg = HttpUtils.parsePagination(pd);
         Map result = new HashMap();
         List<Column> columnList = columnService.findColumnList("warehouseCheck");
         if (columnList == null || columnList.size() == 0) {
@@ -499,6 +503,9 @@ public class WarehouseCheckServiceImp implements WarehouseCheckService {
 
     @Override
     public void exportExcelwarehouseChecks(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         List<Column> columnList = columnService.findColumnList("warehouseCheckManage");
         if (columnList == null || columnList.size() == 0) {
             throw new RestException("1","数据库没有生成TabCol，请联系管理员！");

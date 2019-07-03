@@ -241,7 +241,7 @@ public class UserLoginServiceImp implements UserLoginService {
         //deptId部门id-postId岗位ID
         dataMap.put("deptId", user.getDeptId());
         dataMap.put("postId", "");
-
+//
         //userRole用户角色(角色ID','分隔的字符串)
         String roleIds = userRoleService.findRoleIdsByByUserID(user.getId());
         dataMap.put("roleIds", roleIds);

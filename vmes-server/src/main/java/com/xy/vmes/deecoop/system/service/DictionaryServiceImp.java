@@ -112,6 +112,9 @@ public class DictionaryServiceImp implements DictionaryService {
     */
     @Override
     public List<Dictionary> dataListPage(PageData pd,Pagination pg) throws Exception{
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         return dictionaryMapper.dataListPage(pd,pg);
     }
 
@@ -186,6 +189,9 @@ public class DictionaryServiceImp implements DictionaryService {
      */
     @Override
     public List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception{
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         return dictionaryMapper.getDataListPage(pd,pg);
     }
 
@@ -202,17 +208,23 @@ public class DictionaryServiceImp implements DictionaryService {
     private Map<String, String> keyNameMap;
     private Map<String, String> nameKeyMap;
 
+    @Override
     public Map<String, String> getKeyNameMap() {
         return keyNameMap;
     }
+
+    @Override
     public Map<String, String> getNameKeyMap() {
         return nameKeyMap;
     }
+
 
     public void createBusinessMap() {
         this.keyNameMap = new HashMap<String, String>();
         this.nameKeyMap = new HashMap<String, String>();
     }
+
+    @Override
     public void implementBusinessMapByParentID(String parentId, String companyId) {
         this.createBusinessMap();
 
@@ -718,6 +730,9 @@ public class DictionaryServiceImp implements DictionaryService {
 
     @Override
     public ResultModel listPageDictionarys(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         ResultModel model = new ResultModel();
         Map result = new HashMap();
 //        List<LinkedHashMap> titles = new ArrayList<LinkedHashMap>();

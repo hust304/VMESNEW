@@ -20,116 +20,116 @@ public interface EmployPostService {
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-08-01
     */
-    void save(EmployPost employPost) throws Exception;
+    void save(EmployPost employPost) throws Exception;//@
 
     /**
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-08-01
     */
-    void update(EmployPost employPost) throws Exception;
+    void update(EmployPost employPost) throws Exception;//@
 
     /**
      * 创建人：刘威 自动创建，禁止修改
      * 创建时间：2018-08-01
      */
-    void updateAll(EmployPost employPost) throws Exception;
+//    void updateAll(EmployPost employPost) throws Exception;
 
     /**
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-08-01
     */
-    void deleteById(String id) throws Exception;
+    void deleteById(String id) throws Exception;//@
 
     /**
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-08-01
     */
-    void deleteByIds(String[] ids) throws Exception;
+//    void deleteByIds(String[] ids) throws Exception;
 
     /**
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-08-01
     */
-    EmployPost selectById(String id) throws Exception;
+    EmployPost selectById(String id) throws Exception;//@
 
     /**
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-08-01
     */
-    List<EmployPost> dataListPage(PageData pd,Pagination pg) throws Exception;
+//    List<EmployPost> dataListPage(PageData pd,Pagination pg) throws Exception;
 
     /**
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-08-01
     */
-    List<EmployPost> dataList(PageData pd) throws Exception;
+    List<EmployPost> dataList(PageData pd) throws Exception;//@
 
     /**
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-08-01
     */
-    List<LinkedHashMap> findColumnList() throws Exception;
+//    List<LinkedHashMap> findColumnList() throws Exception;
 
     /**
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-08-01
     */
-    List<Map> findDataList(PageData pd) throws Exception;
+//    List<Map> findDataList(PageData pd) throws Exception;
 
     /**
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-08-01
     */
-    void deleteByColumnMap(Map columnMap) throws Exception;
+    void deleteByColumnMap(Map columnMap) throws Exception;//@
 
     /**
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-08-01
     */
-    List<EmployPost> selectByColumnMap(Map columnMap) throws Exception;
+    List<EmployPost> selectByColumnMap(Map columnMap) throws Exception;//@
 
 
     /**
      * 创建人：刘威 自动创建，禁止修改
      * 创建时间：2018-08-01
      */
-    List<LinkedHashMap> getColumnList() throws Exception;
+//    List<LinkedHashMap> getColumnList() throws Exception;
 
     /**
      * 创建人：刘威 自动创建，禁止修改
      * 创建时间：2018-08-01
      */
-    List<Map> getDataList(PageData pd) throws Exception;
+    List<Map> getDataList(PageData pd) throws Exception;//@
 
     /**
      * 创建人：刘威 自动创建，禁止修改
      * 创建时间：2018-08-01
      */
-    List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception;
+//    List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception;
 
     /**
      * 创建人：刘威 自动创建，禁止修改
      * 创建时间：2018-08-01
      */
-    void updateToDisableByIds(String[] ids)throws Exception;
+//    void updateToDisableByIds(String[] ids)throws Exception;
 
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
-    void deleteEmployPostByEmployId(String employId) throws Exception;
-    void deleteEmployPostByPostId(String postId) throws Exception;
+    void deleteEmployPostByEmployId(String employId) throws Exception;//@
+//    void deleteEmployPostByPostId(String postId) throws Exception;
 
     /**
      * 创建人：刘威
      * 创建时间：2018-08-03
      */
-    void updateToDisableByEmployIds(String[] ids) throws Exception;
+    void updateToDisableByEmployIds(String[] ids) throws Exception;//@
 
-    List<EmployPost> findEmployPostList(PageData object);
-    List<EmployPost> findEmployPostListByPostId(String postId);
+//    List<EmployPost> findEmployPostList(PageData object);
+    List<EmployPost> findEmployPostListByPostId(String postId);//@
 
-    EmployPost findEmployPost(PageData object);
-    EmployPost findEmployPostById(String id);
-    EmployPost findMainEmployPost(String employId);
+//    EmployPost findEmployPost(PageData object);
+//    EmployPost findEmployPostById(String id);
+    EmployPost findMainEmployPost(String employId);//@
 
     /**
      * check (员工id, 岗位id字符串)-岗位id字符串 中是否含有主岗
@@ -137,7 +137,7 @@ public interface EmployPostService {
      * @param postIds  岗位id字符串
      * @return
      */
-    boolean checkEmployMainPostByPostIds(String employId, String postIds);
+    boolean checkEmployMainPostByPostIds(String employId, String postIds);//@
 }
 
 

@@ -144,6 +144,9 @@ public class TaskServiceImp implements TaskService {
      */
     @Override
     public List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception{
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         return taskMapper.getDataListPage(pd,pg);
     }
 
@@ -199,7 +202,9 @@ public class TaskServiceImp implements TaskService {
         return this.findDataList(object, null);
     }
 
-    public Task warehouseInDtl2Task(WarehouseInDetailEntity detailObj, Task taskObj) {
+    public Task warehouseInDtl2Task(PageData pd) {
+        WarehouseInDetailEntity detailObj = pd.get("detail")==null?null:(WarehouseInDetailEntity)pd.get("detail");
+        Task taskObj = pd.get("task")==null?null:(Task)pd.get("task");
         if (taskObj == null) {taskObj = new Task();}
         if (detailObj == null) {return taskObj;}
 
@@ -244,7 +249,10 @@ public class TaskServiceImp implements TaskService {
         return taskObj;
     }
 
-    public Task warehouseCheckDtl2Task(WarehouseCheckDetailEntity detailObj, Task taskObj) {
+    public Task warehouseCheckDtl2Task(PageData pd) {
+
+        WarehouseCheckDetailEntity detailObj = pd.get("detail")==null?null:(WarehouseCheckDetailEntity)pd.get("detail");
+        Task taskObj = pd.get("task")==null?null:(Task)pd.get("task");
         if (taskObj == null) {taskObj = new Task();}
         if (detailObj == null) {return taskObj;}
 
@@ -270,7 +278,9 @@ public class TaskServiceImp implements TaskService {
     * @throws Exception
     */
     public ResultModel listPageTasks(PageData pd,Pagination pg) throws Exception{
-
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         ResultModel model = new ResultModel();
 
         List<Column> columnList = columnService.findColumnList("task");
@@ -331,7 +341,9 @@ public class TaskServiceImp implements TaskService {
     * @throws Exception
     */
     public void exportExcelTasks(PageData pd,Pagination pg) throws Exception{
-
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         List<Column> columnList = columnService.findColumnList("task");
         if (columnList == null || columnList.size() == 0) {
             throw new RestException("1","数据库没有生成TabCol，请联系管理员！");

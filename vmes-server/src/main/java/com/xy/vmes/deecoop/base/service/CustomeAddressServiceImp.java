@@ -110,6 +110,9 @@ public class CustomeAddressServiceImp implements CustomeAddressService {
     */
     @Override
     public List<CustomeAddress> dataListPage(PageData pd,Pagination pg) throws Exception{
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         return customeAddressMapper.dataListPage(pd,pg);
     }
 
@@ -166,6 +169,9 @@ public class CustomeAddressServiceImp implements CustomeAddressService {
     */
     @Override
     public List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception{
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         return customeAddressMapper.getDataListPage(pd,pg);
     }
 
@@ -455,6 +461,9 @@ public class CustomeAddressServiceImp implements CustomeAddressService {
 
     @Override
     public void exportExcelCustomeAddresss(PageData pd, Pagination pg) throws Exception{
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         List<Column> columnList = columnService.findColumnList("customeAddress");
         if (columnList == null || columnList.size() == 0) {
             throw new RestException("1","数据库没有生成TabCol，请联系管理员！");

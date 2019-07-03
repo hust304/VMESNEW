@@ -73,36 +73,36 @@ public interface UserDefinedMenuService {
 
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
-    void deleteUserDefinedMenuByUserId(String userId) throws Exception;
-    void deleteUserDefinedMenuByMenuId(String menuId) throws Exception;
+    void deleteUserDefinedMenuByUserId(String userId) throws Exception;//@
+    void deleteUserDefinedMenuByMenuId(String menuId) throws Exception;//@
 
     /**
      * 创建人：刘威
      * 创建时间：2018-07-31
      */
-    void deleteByColumnMap(Map columnMap) throws Exception;
-
-
-    /**
-     * 创建人：刘威
-     * 创建时间：2018-07-31
-     */
-    List<UserDefinedMenu> selectByColumnMap(Map columnMap) throws Exception;
-
-
+    void deleteByColumnMap(Map columnMap) throws Exception;//@
 
 
     /**
      * 创建人：刘威
      * 创建时间：2018-07-31
      */
-    List<LinkedHashMap> getColumnList() throws Exception;
+    List<UserDefinedMenu> selectByColumnMap(Map columnMap) throws Exception;//@
+
+
+
 
     /**
      * 创建人：刘威
      * 创建时间：2018-07-31
      */
-    List<Map> getDataList(PageData pd) throws Exception;
+    List<LinkedHashMap> getColumnList() throws Exception;//@
+
+    /**
+     * 创建人：刘威
+     * 创建时间：2018-07-31
+     */
+    List<Map> getDataList(PageData pd) throws Exception;//@
 }
 
 

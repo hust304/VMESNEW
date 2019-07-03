@@ -107,6 +107,9 @@ public class MenuButtonServiceImp implements MenuButtonService {
     */
     @Override
     public List<MenuButton> dataListPage(PageData pd,Pagination pg) throws Exception{
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         return menuButtonMapper.dataListPage(pd,pg);
     }
 
@@ -182,6 +185,9 @@ public class MenuButtonServiceImp implements MenuButtonService {
     */
     @Override
     public List<Map> getDataListPage(PageData pd, Pagination pg) throws Exception{
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         return menuButtonMapper.getDataListPage(pd, pg);
     }
 
@@ -498,7 +504,7 @@ public class MenuButtonServiceImp implements MenuButtonService {
             model.putMsg(msgStr);
             return model;
         }
-
+//
         //menuId 获取菜单对象<Menu>
         Menu menuObj = menuService.findMenuById(buttonObj.getMenuId());
         if (menuObj == null) {
@@ -669,6 +675,9 @@ public class MenuButtonServiceImp implements MenuButtonService {
 
     @Override
     public ResultModel listPageMenuButtons(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         ResultModel model = new ResultModel();
         Map<String, Object> mapObj = new HashMap<String, Object>();
 
@@ -727,6 +736,9 @@ public class MenuButtonServiceImp implements MenuButtonService {
 
     @Override
     public void exportExcelMenuButtons(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         String ids = pd.getString("ids");
         String queryColumn = pd.getString("queryColumn");
         List<Column> columnList = columnService.findColumnList("button");

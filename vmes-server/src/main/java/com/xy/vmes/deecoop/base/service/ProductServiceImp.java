@@ -116,6 +116,9 @@ public class ProductServiceImp implements ProductService {
     */
     @Override
     public List<Product> dataListPage(PageData pd,Pagination pg) throws Exception{
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         return productMapper.dataListPage(pd,pg);
     }
 
@@ -182,6 +185,9 @@ public class ProductServiceImp implements ProductService {
     */
     @Override
     public List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception{
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         return productMapper.getDataListPage(pd,pg);
     }
 
@@ -463,6 +469,9 @@ public class ProductServiceImp implements ProductService {
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     @Override
     public ResultModel listPageProducts(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         ResultModel model = new ResultModel();
 
         List<Column> columnList = columnService.findColumnList("product");
@@ -608,6 +617,9 @@ public class ProductServiceImp implements ProductService {
 
     @Override
     public ResultModel listPageProductPropertys(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         ResultModel model = new ResultModel();
 
         List<Column> columnList = columnService.findColumnList("productProperty");
@@ -821,6 +833,9 @@ public class ProductServiceImp implements ProductService {
 
     @Override
     public void exportExcelProducts(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         List<Column> columnList = columnService.findColumnList("product");
         if (columnList == null || columnList.size() == 0) {
             throw new RestException("1","数据库没有生成TabCol，请联系管理员！");

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.deecoop.base.dao.ProductPropertyMapper;
 import com.xy.vmes.entity.ProductProperty;
 import com.xy.vmes.service.ProductPropertyService;
+import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.YvanUtil;
 import com.yvan.platform.RestException;
@@ -121,6 +122,9 @@ public class ProductPropertyServiceImp implements ProductPropertyService {
     */
     @Override
     public List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception{
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         return productPropertyMapper.getDataListPage(pd,pg);
     }
 

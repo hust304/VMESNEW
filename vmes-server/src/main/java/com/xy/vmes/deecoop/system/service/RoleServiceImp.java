@@ -112,6 +112,9 @@ public class RoleServiceImp implements RoleService {
     */
     @Override
     public List<Role> dataListPage(PageData pd,Pagination pg) throws Exception{
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         return roleMapper.dataListPage(pd,pg);
     }
 
@@ -160,6 +163,9 @@ public class RoleServiceImp implements RoleService {
      */
     @Override
     public List<Map> getDataListPage(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         return roleMapper.getDataListPage(pd, pg);
     }
 
@@ -307,6 +313,9 @@ public class RoleServiceImp implements RoleService {
 
     @Override
     public ResultModel listPageRoles(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         ResultModel model = new ResultModel();
         //1. 查询遍历List列表
         List<Column> columnList = columnService.findColumnList("role");
@@ -364,6 +373,9 @@ public class RoleServiceImp implements RoleService {
 
     @Override
     public void exportExcelRoles(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         List<Column> columnList = columnService.findColumnList("role");
         if (columnList == null || columnList.size() == 0) {
             throw new RestException("1","数据库没有生成TabCol，请联系管理员！");

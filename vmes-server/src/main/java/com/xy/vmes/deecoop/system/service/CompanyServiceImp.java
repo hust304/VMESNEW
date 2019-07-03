@@ -287,6 +287,9 @@ public class CompanyServiceImp implements CompanyService {
      * 创建时间：2018-08-16
      */
     public List<Map> getDataListPage(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         return companyMapper.getDataListPage(pd, pg);
     }
 
@@ -345,6 +348,9 @@ public class CompanyServiceImp implements CompanyService {
 
     @Override
     public void exportExcelCompanys(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         List<Column> columnList = columnService.findColumnList("company");
         if (columnList == null || columnList.size() == 0) {
             throw new RestException("1","数据库没有生成TabCol，请联系管理员！");
@@ -613,7 +619,7 @@ public class CompanyServiceImp implements CompanyService {
             model.putMsg(msgBuf.toString());
             return model;
         }
-
+//
         //3. 修改企业信息
         Department companyDB = departmentService.findDepartmentById(companyObj.getId());
         companyDB = this.object2objectDB(companyObj, companyDB);
@@ -774,6 +780,66 @@ public class CompanyServiceImp implements CompanyService {
         result.put("hideTitles",titleMap.get("hideTitles"));
         result.put("titles",titleMap.get("titles"));
         result.put("varList",varMapList);
+
+        model.putResult(result);
+        return model;
+    }
+
+    @Override
+    public ResultModel listPageCompanyAdmins(PageData pd) throws Exception {
+        ResultModel model = new ResultModel();
+        List<Column> columnList = columnService.findColumnList("company");
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
+        }
+
+        List<LinkedHashMap> titlesList = new ArrayList<LinkedHashMap>();
+        List<String> titlesHideList = new ArrayList<String>();
+        Map<String, String> varModelMap = new HashMap<String, String>();
+        if(columnList!=null&&columnList.size()>0){
+            for (Column column : columnList) {
+                if(column!=null){
+                    if("0".equals(column.getIshide())){
+                        titlesHideList.add(column.getTitleKey());
+                    }
+                    LinkedHashMap titlesLinkedMap = new LinkedHashMap();
+                    titlesLinkedMap.put(column.getTitleKey(),column.getTitleName());
+                    varModelMap.put(column.getTitleKey(),"");
+                    titlesList.add(titlesLinkedMap);
+                }
+            }
+        }
+
+        Map result = new HashMap();
+        result.put("hideTitles",titlesHideList);
+        result.put("titles",titlesList);
+
+        pd.put("layer", "1");
+
+        pd.put("orderStr", "a.cdate desc");
+        String orderStr = pd.getString("orderStr");
+        if (orderStr != null && orderStr.trim().length() > 0) {
+            pd.put("orderStr", orderStr);
+        }
+
+        Pagination pg = HttpUtils.parsePagination(pd);
+        List<Map> varMapList = new ArrayList();
+        List<Map> varList = this.getDataListPage(pd, pg);
+        if(varList!=null&&varList.size()>0){
+            for(int i=0;i<varList.size();i++){
+                Map map = varList.get(i);
+                Map<String, String> varMap = new HashMap<String, String>();
+                varMap.putAll(varModelMap);
+                for (Map.Entry<String, String> entry : varMap.entrySet()) {
+                    varMap.put(entry.getKey(),map.get(entry.getKey())!=null?map.get(entry.getKey()).toString():"");
+                }
+                varMapList.add(varMap);
+            }
+        }
+        result.put("varList",varMapList);
+        result.put("pageData", pg);
 
         model.putResult(result);
         return model;
