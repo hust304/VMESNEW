@@ -1,5 +1,6 @@
 package com.xy.vmes.deecoop.equipment.service;
 
+import com.xy.vmes.common.util.Common;
 import com.xy.vmes.deecoop.equipment.dao.EquipmentRepairTaskDetailMapper;
 import com.xy.vmes.entity.EquipmentRepairTaskDetail;
 import com.xy.vmes.service.EquipmentRepairTaskDetailService;
@@ -8,11 +9,14 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.service.ColumnService;
+import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
 import java.util.*;
 import com.yvan.Conv;
 
@@ -194,8 +198,79 @@ public class EquipmentRepairTaskDetailServiceImp implements EquipmentRepairTaskD
 
         return this.findRepairTaskDetailList(findMap);
     }
-
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    public List<EquipmentRepairTaskDetail> jsonMapList2DetailList(List<Map<String, String>> jsonMapList, List<EquipmentRepairTaskDetail> objectList) {
+        if (objectList == null) {objectList = new ArrayList<EquipmentRepairTaskDetail>();}
+        if (jsonMapList == null || jsonMapList.size() == 0) {return objectList;}
+
+        for (Map<String, String> mapObject : jsonMapList) {
+            EquipmentRepairTaskDetail detail = (EquipmentRepairTaskDetail)HttpUtils.pageData2Entity(mapObject, new EquipmentRepairTaskDetail());
+            objectList.add(detail);
+        }
+
+        return objectList;
+    }
+
+    /**
+     * 返回货品Map
+     * Map<String, Map<String, Object>>
+     * Map<货品id, 货品Map>
+     *     productId: 货品id
+     *     outDtlId:  出库明细id
+     *     outCount:  出库数量
+     *
+     * @param jsonMapList
+     * @return
+     */
+    public Map<String, Map<String, Object>> findProductMapByOut(List<Map<String, String>> jsonMapList) {
+        Map<String, Map<String, Object>> productByOutMap = new HashMap<String, Map<String, Object>>();
+        if (jsonMapList == null || jsonMapList.size() == 0) {return productByOutMap;}
+
+        for (Map<String, String> mapObject : jsonMapList) {
+            String productId = mapObject.get("productId");
+
+            //receiveCount 领取数量 := outCount 出库数量
+            BigDecimal receiveCount = BigDecimal.valueOf(0D);
+            String receiveCountStr = mapObject.get("receiveCount");
+            if (receiveCountStr != null && receiveCountStr.trim().length() > 0) {
+                try {
+                    receiveCount = new BigDecimal(receiveCountStr);
+                    //四舍五入到2位小数
+                    receiveCount = receiveCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            Map<String, Object> productMap = new HashMap<String, Object>();
+            productMap.put("productId", productId);
+            productMap.put("outDtlId", null);
+            productMap.put("outCount", receiveCount);
+
+            productByOutMap.put(productId, productMap);
+        }
+
+        return productByOutMap;
+    }
+
+    public void addRepairTaskDetail(String cuser,
+                                    List<EquipmentRepairTaskDetail> objectList,
+                                    Map<String, Map<String, Object>> productByOutMap) throws Exception {
+        if (objectList == null || objectList.size() == 0) {return;}
+
+        for (EquipmentRepairTaskDetail detail : objectList) {
+            String productId = detail.getProductId();
+            detail.setCuser(cuser);
+
+            Map<String, Object> productMap = productByOutMap.get(productId);
+            String outDtlId = (String)productMap.get("outDtlId");
+            detail.setOutDtlId(outDtlId);
+
+            this.save(detail);
+        }
+    }
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     /**
     *
     * @param pd    查询参数对象PageData

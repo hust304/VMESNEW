@@ -98,6 +98,25 @@ public interface EquipmentRepairTaskDetailService {
 
     List<EquipmentRepairTaskDetail> findRepairTaskDetailList(PageData object) throws Exception;
     List<EquipmentRepairTaskDetail> findRepairTaskDetailListByTaskId(String taskId) throws Exception;
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    List<EquipmentRepairTaskDetail> jsonMapList2DetailList(List<Map<String, String>> jsonMapList, List<EquipmentRepairTaskDetail> objectList);
+
+    /**
+     * 返回货品Map
+     * Map<String, Map<String, Object>>
+     * Map<货品id, 货品Map>
+     *     productId: 货品id
+     *     outDtlId:  出库明细id
+     *     outCount:  出库数量
+     *
+     * @param jsonMapList
+     * @return
+     */
+    Map<String, Map<String, Object>> findProductMapByOut(List<Map<String, String>> jsonMapList);
+
+    void addRepairTaskDetail(String cuser,
+                             List<EquipmentRepairTaskDetail> objectList,
+                             Map<String, Map<String, Object>> productByOutMap) throws Exception;
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**

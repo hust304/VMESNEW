@@ -8,6 +8,7 @@ import com.xy.vmes.service.RoleMenuService;
 import com.xy.vmes.service.WarehouseToolService;
 import com.yvan.PageData;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
@@ -17,6 +18,7 @@ import java.util.Map;
  * 创建人：陈刚
  * 创建时间：2019-07-03
  */
+@Service
 public class WarehouseToolServiceImp implements WarehouseToolService {
     @Autowired
     private RoleMenuService roleMenuService;

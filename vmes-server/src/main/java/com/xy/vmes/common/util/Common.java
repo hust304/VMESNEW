@@ -281,6 +281,8 @@ public class Common {
             put("purchaseOut", "4cba5d3815644b26920777512a20474b");
             //609fa44c031847569a1d9e2516be4b41 组装出库
             put("assembleOut", "609fa44c031847569a1d9e2516be4b41");
+            //fa51ae2e17a9409d822fc4c9192d652c 维保领料出库
+            put("repairReceiveOut", "fa51ae2e17a9409d822fc4c9192d652c");
 
         //a804369b392c4035bc766cc536b29d35 备件库入库类型
         put("warehouseInTypeBySpare", "a804369b392c4035bc766cc536b29d35");

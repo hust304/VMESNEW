@@ -341,8 +341,9 @@
                 ) customerPrice on produnit.unit = customerPrice.unit and prod.id = customerPrice.product_id
 
             </if>
-       <where>
-           <!-- 过滤出库存产品 -->
+        <where>
+
+            <!-- 过滤出库存产品 -->
             <if test="'true' == isNeedWarehouseProduct">
                 and prod.id in (
                     select product_id from vmes_warehouse_product
@@ -360,6 +361,13 @@
             <if test="productId != null and productId != ''">
                 and prod.id = #{productId}
             </if>
+            <if test="inProductIds != null and inProductIds != ''">
+               and prod.id in (${inProductIds})
+            </if>
+            <if test="notInProductIds != null and notInProductIds != ''">
+                and prod.id not in (${notInProductIds})
+            </if>
+
             <if test="code != null and code != ''">
                 and prod.code LIKE CONCAT(CONCAT(#{code}),'%')
             </if>

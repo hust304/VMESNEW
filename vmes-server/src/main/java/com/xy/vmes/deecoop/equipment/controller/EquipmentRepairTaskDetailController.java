@@ -1,16 +1,25 @@
 package com.xy.vmes.deecoop.equipment.controller;
 
+import com.xy.vmes.common.util.Common;
+import com.xy.vmes.entity.EquipmentRepairTaskDetail;
 import com.xy.vmes.service.EquipmentRepairTaskDetailService;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.service.WarehouseOutCreateService;
+import com.xy.vmes.service.WarehouseToolService;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
+import com.yvan.YvanUtil;
 import com.yvan.springmvc.ResultModel;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -26,6 +35,11 @@ public class EquipmentRepairTaskDetailController {
     @Autowired
     private EquipmentRepairTaskDetailService repairTaskDetailService;
 
+    @Autowired
+    private WarehouseToolService warehouseToolService;
+    @Autowired
+    private WarehouseOutCreateService warehouseOutCreateService;
+
     /**
     * @author 陈刚 自动创建，可以修改
     * @date 2019-07-01
@@ -39,6 +53,107 @@ public class EquipmentRepairTaskDetailController {
         ResultModel model = repairTaskDetailService.listPageRepairTaskDetail(pd,pg);
         Long endTime = System.currentTimeMillis();
         logger.info("################/equipment/equipmentRepairTaskDetail/listPageRepairTaskDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 新增-设备维修单-维修任务明细
+     * @author 陈刚
+     * @date 2019-07-01
+     */
+    @PostMapping("/equipment/equipmentRepairTaskDetail/addRepairTaskDetail")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel addRepairTaskDetail() throws Exception {
+        logger.info("################/equipment/equipmentRepairTaskDetail/addRepairTaskDetail 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        String repairTaskId = pageData.getString("repairTaskId");
+        if (repairTaskId == null || repairTaskId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("维修任务id为空或空字符串！");
+            return model;
+        }
+
+        String cuser = pageData.getString("cuser");
+        String roleId = pageData.getString("roleId");
+        if (roleId == null || roleId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("当前用户角色id为空或空字符串！");
+            return model;
+        }
+
+        String dtlJsonStr = pageData.getString("dtlJsonStr");
+        if (dtlJsonStr == null || dtlJsonStr.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("请至少选择一项货品！");
+            return model;
+        }
+
+        List<Map<String, String>> jsonMapList = (List<Map<String, String>>) YvanUtil.jsonToList(dtlJsonStr);
+        if (jsonMapList == null || jsonMapList.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("Json字符串-转换成List错误！");
+            return model;
+        }
+
+        //根据(用户角色id)获取仓库属性(复杂版仓库,简版仓库)
+        String warehouse = warehouseToolService.findWarehouseAttribute(roleId);
+        if (warehouse == null || warehouse.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("当前用户角色无(复杂版仓库，简版仓库)菜单，请与管理员联系！");
+            return model;
+        }
+
+        Map<String, Map<String, Object>> productByOutMap = repairTaskDetailService.findProductMapByOut(jsonMapList);
+
+        //创建出库单
+        String deptId = pageData.getString("deptId");
+        if (deptId == null || deptId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("部门id为空或空字符串！");
+            return model;
+        }
+
+        String companyId = pageData.getString("currentCompanyId");
+        if (companyId == null || companyId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("企业id为空或空字符串！");
+            return model;
+        }
+
+        String msgStr = new String();
+        if (Common.SYS_WAREHOUSE_COMPLEX.equals(warehouse)) {
+            //复杂版仓库:warehouseByComplex:Common.SYS_WAREHOUSE_COMPLEX
+            msgStr = warehouseOutCreateService.createWarehouseOutByComplex(deptId,
+                    cuser,
+                    companyId,
+                    //fa51ae2e17a9409d822fc4c9192d652c 维保领料出库:repairReceiveOut
+                    Common.DICTIONARY_MAP.get("repairReceiveOut"),
+                    productByOutMap);
+
+
+        } else if (Common.SYS_WAREHOUSE_SIMPLE.equals(warehouse)) {
+            //简版仓库:warehouseBySimple:Common.SYS_WAREHOUSE_SIMPLE
+        }
+
+        if (msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
+
+        //添加-vmes_equipment_repairTask_detail:设备维修任务明细表
+        List<EquipmentRepairTaskDetail> taskDetailList = repairTaskDetailService.jsonMapList2DetailList(jsonMapList, null);
+        repairTaskDetailService.addRepairTaskDetail(cuser,
+                taskDetailList,
+                productByOutMap);
+
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/equipment/equipmentRepairTaskDetail/addRepairTaskDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
