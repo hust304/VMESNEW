@@ -28,12 +28,6 @@ public class Common {
     public final static String SYS_WAREHOUSE_COMPLEX = "warehouseByComplex";
     //简版仓库
     public final static String SYS_WAREHOUSE_SIMPLE = "warehouseBySimple";
-    //warehouseByComplex:复杂版仓库:15a6c4ca92fe42a0a82320287538b727(菜单id)
-    //warehouseBySimple:简版仓库:5abe8f434e114a87a73b85ed74bc78e7(菜单id)
-    public static final Map<String, String> SYS_WAREHOUSE_NAMEKEY_MAP = new HashMap<String, String>() {{
-        put(SYS_WAREHOUSE_COMPLEX, SYS_MENU_MAP.get("warehouseByComplex"));
-        put(SYS_WAREHOUSE_SIMPLE, SYS_MENU_MAP.get("warehouseBySimple"));
-    }};
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     public final static String REDIS_SECURITY_CODE = "securityCode";
@@ -408,6 +402,13 @@ public class Common {
 
         //******App 手机主页面菜单******
         put("app", "ab8a6ef2480f4fa0a6445524a33a8181");
+    }};
+
+    //warehouseByComplex:复杂版仓库:15a6c4ca92fe42a0a82320287538b727(菜单id)
+    //warehouseBySimple:简版仓库:5abe8f434e114a87a73b85ed74bc78e7(菜单id)
+    public static final Map<String, String> SYS_WAREHOUSE_NAMEKEY_MAP = new HashMap<String, String>() {{
+        put(SYS_WAREHOUSE_COMPLEX, SYS_MENU_MAP.get("warehouseByComplex"));
+        put(SYS_WAREHOUSE_SIMPLE, SYS_MENU_MAP.get("warehouseBySimple"));
     }};
 
 //    //收费菜单项目
