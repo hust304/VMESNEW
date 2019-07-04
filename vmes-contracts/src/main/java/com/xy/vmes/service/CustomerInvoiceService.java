@@ -70,18 +70,6 @@ public interface CustomerInvoiceService {
      */
     List<CustomerInvoice> selectByColumnMap(Map columnMap) throws Exception;
 
-    /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
-    /**
-     *
-     * @param pageData    查询参数对象<HashMap>
-     * @param isQueryAll  是否查询全部
-     *   true: 无查询条件返回表全部结果集
-     *   false: (false or is null)无查询条件-查询结果集返回空或
-     *
-     * @return
-     * @throws Exception
-     */
-    List<CustomerInvoice> findDataList(PageData pageData, Boolean isQueryAll) throws Exception;
 
     /**
      * 创建人：陈刚 自动创建，禁止修改
@@ -95,11 +83,24 @@ public interface CustomerInvoiceService {
      */
     List<Map> getDataListPage(PageData pd, Pagination pg) throws Exception;
 
-    CustomerInvoice findCustomerInvoice(PageData object) throws Exception;
-    CustomerInvoice findCustomerInvoiceById(String id) throws Exception;
+    /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+    /**
+     *
+     *   true: 无查询条件返回表全部结果集
+     *   false: (false or is null)无查询条件-查询结果集返回空或
+     *
+     * @return
+     * @throws Exception
+     */
+//    List<CustomerInvoice> findDataList(PageData pageData, Boolean isQueryAll) throws Exception;
 
-    List<CustomerInvoice> findCustomerInvoiceList(PageData object) throws Exception;
-    List<CustomerInvoice> findCustomerInvoiceListByCustomerId(String customerId) throws Exception;
+
+
+//    CustomerInvoice findCustomerInvoice(PageData object) throws Exception;
+//    CustomerInvoice findCustomerInvoiceById(String id) throws Exception;
+
+//    List<CustomerInvoice> findCustomerInvoiceList(PageData object) throws Exception;
+//    List<CustomerInvoice> findCustomerInvoiceListByCustomerId(String customerId) throws Exception;
 
     void updateDefaultByCustomerId(PageData pageData);
 

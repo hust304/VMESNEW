@@ -124,6 +124,9 @@ public class WarehouseOutDetailServiceImp implements WarehouseOutDetailService {
     */
     @Override
     public List<WarehouseOutDetail> dataListPage(PageData pd,Pagination pg) throws Exception{
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         return warehouseOutDetailMapper.dataListPage(pd,pg);
     }
 
@@ -644,6 +647,9 @@ public class WarehouseOutDetailServiceImp implements WarehouseOutDetailService {
 
     @Override
     public ResultModel listPageWarehouseOutDetails(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         ResultModel model = new ResultModel();
 
         List<Column> columnList = columnService.findColumnList("WarehouseOutDetail");
@@ -758,6 +764,9 @@ public class WarehouseOutDetailServiceImp implements WarehouseOutDetailService {
 
     @Override
     public ResultModel listPageWarehouseOutDetailsOutRecords(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         ResultModel model = new ResultModel();
         Map result = new HashMap();
 
@@ -868,6 +877,9 @@ public class WarehouseOutDetailServiceImp implements WarehouseOutDetailService {
 
     @Override
     public ResultModel listPageWarehouseOutDetailsExecute(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         ResultModel model = new ResultModel();
 
         Map result = new HashMap();
@@ -921,6 +933,9 @@ public class WarehouseOutDetailServiceImp implements WarehouseOutDetailService {
 
     @Override
     public ResultModel listPageWarehouseOutDetailsDispatch(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         ResultModel model = new ResultModel();
         Map result = new HashMap();
 
@@ -972,6 +987,9 @@ public class WarehouseOutDetailServiceImp implements WarehouseOutDetailService {
 
     @Override
     public void exportExcelWarehouseOutDetails(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         List<Column> columnList = columnService.findColumnList("WarehouseOutDetail");
         if (columnList == null || columnList.size() == 0) {
             throw new RestException("1","数据库没有生成TabCol，请联系管理员！");

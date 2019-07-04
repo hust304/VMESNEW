@@ -9,15 +9,15 @@ public interface BomExcelService {
                                   String companyId,
                                   String userId,
                                   Integer index,
-                                  Integer maxShowRow);
+                                  Integer maxShowRow);//@
 
-    String checkExistImportExcelBySelf(List<LinkedHashMap<String, String>> objectList,
-                                       Integer index,
-                                       Integer maxShowRow);
+//    String checkExistImportExcelBySelf(List<LinkedHashMap<String, String>> objectList,
+//                                       Integer index,
+//                                       Integer maxShowRow);
 
-    String checkExistImportExcelByDatabase(List<LinkedHashMap<String, String>> objectList,
-                                           Integer index,
-                                           Integer maxShowRow);
+//    String checkExistImportExcelByDatabase(List<LinkedHashMap<String, String>> objectList,
+//                                           Integer index,
+//                                           Integer maxShowRow);
 
     /**
      * 获取添加BOM及BOMTree数据Map结构体- Excel导入数据
@@ -25,9 +25,9 @@ public interface BomExcelService {
      *
      * @return
      */
-    Map<String, List<Map<String, String>>> findBomMapByImportDataList(List<LinkedHashMap<String, String>> objectList);
+    Map<String, List<Map<String, String>>> findBomMapByImportDataList(List<LinkedHashMap<String, String>> objectList);//@
 
-    void addImportExcelByMap(Map<String, List<Map<String, String>>> bomMap);
+    void addImportExcelByMap(Map<String, List<Map<String, String>>> bomMap);//@
 
 
 

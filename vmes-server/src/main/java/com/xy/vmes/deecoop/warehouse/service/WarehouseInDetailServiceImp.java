@@ -521,6 +521,9 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
 
     @Override
     public ResultModel listPageWarehouseInDetail(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         ResultModel model = new ResultModel();
 
         List<Column> columnList = columnService.findColumnList("warehouseInDetail");
@@ -563,6 +566,9 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
 
     @Override
     public ResultModel listPageDetailProduct(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         ResultModel model = new ResultModel();
 
         List<Column> columnList = columnService.findColumnList("warehouseInDetailProduct");

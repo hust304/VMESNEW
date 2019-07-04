@@ -269,6 +269,36 @@ public class SaleOrderController {
         return model;
     }
 
+
+
+
+    @PostMapping("/sale/saleOrder/addCustomerBalance")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel addCustomerBalance()  throws Exception {
+
+        logger.info("################/sale/saleOrder/addCustomerBalance 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = saleOrderService.addCustomerBalance(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleOrder/addCustomerBalance 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+    @PostMapping("/sale/saleOrder/updateCustomerBalance")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel updateCustomerBalance()  throws Exception {
+
+        logger.info("################/sale/saleOrder/updateCustomerBalance 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = saleOrderService.updateCustomerBalancee(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleOrder/updateCustomerBalance 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
 }
 
 

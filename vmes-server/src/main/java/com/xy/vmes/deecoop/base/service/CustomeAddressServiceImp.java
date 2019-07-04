@@ -191,7 +191,6 @@ public class CustomeAddressServiceImp implements CustomeAddressService {
      * @param object
      * @return
      */
-    @Override
     public String checkColumnByAddEdit(CustomeAddress object) {
         if (object == null) {return new String();}
 
@@ -214,7 +213,6 @@ public class CustomeAddressServiceImp implements CustomeAddressService {
         return msgBuf.toString();
     }
 
-    @Override
     public CustomeAddress findCustomeAddress(PageData object) {
         if (object == null) {return null;}
 
@@ -232,7 +230,6 @@ public class CustomeAddressServiceImp implements CustomeAddressService {
         return null;
     }
 
-    @Override
     public CustomeAddress findCustomeAddressById(String id) {
         if (id == null || id.trim().length() == 0) {return null;}
 
@@ -246,7 +243,7 @@ public class CustomeAddressServiceImp implements CustomeAddressService {
         return null;
     }
 
-    @Override
+
     public List<CustomeAddress> findCustomeAddressList(PageData object) {
         if (object == null) {return null;}
 
@@ -260,7 +257,6 @@ public class CustomeAddressServiceImp implements CustomeAddressService {
         return objectList;
     }
 
-    @Override
     public List<CustomeAddress> findCustomeAddressListByCustId(String custId) {
         List<CustomeAddress> objectList = new ArrayList<CustomeAddress>();
         if (custId == null || custId.trim().length() == 0) {return objectList;}
@@ -273,12 +269,12 @@ public class CustomeAddressServiceImp implements CustomeAddressService {
         return objectList;
     }
 
-    @Override
+
     public void updateDefaultByCustId(PageData pageData) {
         customeAddressMapper.updateDefaultByCustId(pageData);
     }
 
-    @Override
+
     public void deleteCustAddrByCustId(String custId) throws Exception {
         if (custId == null || custId.trim().length() == 0) {return;}
 
@@ -361,7 +357,7 @@ public class CustomeAddressServiceImp implements CustomeAddressService {
         //是否默认(0:非默认 1:默认)
         custAddr.setIsdefault("0");
 
-        String msgStr = customeAddressService.checkColumnByAddEdit(custAddr);
+        String msgStr = this.checkColumnByAddEdit(custAddr);
         if (msgStr.trim().length() > 0) {
             model.putCode(Integer.valueOf(1));
             model.putMsg(msgStr);
@@ -374,7 +370,7 @@ public class CustomeAddressServiceImp implements CustomeAddressService {
         findMap.put("customerId", customerId);
         findMap.put("isdefault", "1");
         findMap.put("mapSize", Integer.valueOf(findMap.size()));
-        List<CustomeAddress> objectList = customeAddressService.findCustomeAddressList(findMap);
+        List<CustomeAddress> objectList = this.findCustomeAddressList(findMap);
         if (objectList == null || objectList.size() == 0) {
             custAddr.setIsdefault("1");
         }
@@ -388,7 +384,7 @@ public class CustomeAddressServiceImp implements CustomeAddressService {
         ResultModel model = new ResultModel();
         //1. 非空判断
         CustomeAddress custAddrDB = (CustomeAddress)HttpUtils.pageData2Entity(pageData, new CustomeAddress());
-        String msgStr = customeAddressService.checkColumnByAddEdit(custAddrDB);
+        String msgStr = this.checkColumnByAddEdit(custAddrDB);
         if (msgStr.trim().length() > 0) {
             model.putCode(Integer.valueOf(1));
             model.putMsg(msgStr);
@@ -416,7 +412,7 @@ public class CustomeAddressServiceImp implements CustomeAddressService {
             return model;
         }
 
-        List<CustomeAddress> addressList = customeAddressService.findCustomeAddressListByCustId(customerId);
+        List<CustomeAddress> addressList = this.findCustomeAddressListByCustId(customerId);
         if (addressList != null && addressList.size() == 1) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("当前客户地址只有一条，不可修改默认属性！");
@@ -431,14 +427,14 @@ public class CustomeAddressServiceImp implements CustomeAddressService {
             mapObject.put("customerId", customerId);
             //是否默认(0:非默认 1:默认)
             mapObject.put("isdefault", "0");
-            customeAddressService.updateDefaultByCustId(mapObject);
+            this.updateDefaultByCustId(mapObject);
         }
 
-        CustomeAddress custAddrDB = customeAddressService.findCustomeAddressById(addressId);
+        CustomeAddress custAddrDB = this.findCustomeAddressById(addressId);
         if (custAddrDB != null) {
             //是否默认(0:非默认 1:默认)
             custAddrDB.setIsdefault(isdefault);
-            customeAddressService.update(custAddrDB);
+            this.update(custAddrDB);
         }
         return model;
     }

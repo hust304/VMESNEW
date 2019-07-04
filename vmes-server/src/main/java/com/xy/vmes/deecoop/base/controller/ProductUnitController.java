@@ -338,21 +338,21 @@ public class ProductUnitController {
         logger.info("################productUnit/exportExcelProductUnits 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
     }
 
-    /**
-    * Excel导入
-    *
-    * @author 刘威 自动创建，可以修改
-    * @date 2018-11-15
-    */
-    @PostMapping("/base/productUnit/importExcelProductUnits")
-    public ResultModel importExcelProductUnits(@RequestParam(value="excelFile") MultipartFile file) throws Exception  {
-        logger.info("################productUnit/importExcelProductUnits 执行开始 ################# ");
-        Long startTime = System.currentTimeMillis();
-        ResultModel model = productUnitService.importExcelProductUnits(file);
-        Long endTime = System.currentTimeMillis();
-        logger.info("################productUnit/importExcelProductUnits 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
-        return model;
-    }
+//    /**
+//    * Excel导入
+//    *
+//    * @author 刘威 自动创建，可以修改
+//    * @date 2018-11-15
+//    */
+//    @PostMapping("/base/productUnit/importExcelProductUnits")
+//    public ResultModel importExcelProductUnits(@RequestParam(value="excelFile") MultipartFile file) throws Exception  {
+//        logger.info("################productUnit/importExcelProductUnits 执行开始 ################# ");
+//        Long startTime = System.currentTimeMillis();
+//        ResultModel model = productUnitService.importExcelProductUnits(file);
+//        Long endTime = System.currentTimeMillis();
+//        logger.info("################productUnit/importExcelProductUnits 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+//        return model;
+//    }
 
 }
 

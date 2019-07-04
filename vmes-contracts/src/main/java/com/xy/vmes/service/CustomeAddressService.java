@@ -103,22 +103,17 @@ public interface CustomeAddressService {
     void updateToDisableByIds(String[] ids)throws Exception;
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
-    /**
-     * 创建人：陈刚
-     * 创建时间：2018-09-20
-     * @param object
-     * @return
-     */
-    String checkColumnByAddEdit(CustomeAddress object);
 
-    CustomeAddress findCustomeAddress(PageData object);
-    CustomeAddress findCustomeAddressById(String id);
+//    String checkColumnByAddEdit(CustomeAddress object);
 
-    List<CustomeAddress> findCustomeAddressList(PageData object);
-    List<CustomeAddress> findCustomeAddressListByCustId(String custId);
+//    CustomeAddress findCustomeAddress(PageData object);
+//    CustomeAddress findCustomeAddressById(String id);
 
-    void updateDefaultByCustId(PageData pageData);
-    void deleteCustAddrByCustId(String custId) throws Exception;
+//    List<CustomeAddress> findCustomeAddressList(PageData object);
+//    List<CustomeAddress> findCustomeAddressListByCustId(String custId);
+
+//    void updateDefaultByCustId(PageData pageData);
+    void deleteCustAddrByCustId(String custId) throws Exception;//@
 
     ResultModel listPageCustomeAddress(PageData pd)throws Exception;
 

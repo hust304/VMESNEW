@@ -539,7 +539,7 @@ public class SaleOrderAuditServiceImp implements SaleOrderAuditService {
             Customer customer = customerService.selectById(orderDB.getCustomerId());
             //操作类型 (0:变更 1:录入收款 2:预付款 -1:费用分摊)
             String remark_1 = "费用分摊：" + customer.getBalance().subtract(customer.getBalance().subtract(orderDB.getAdvanceSum())).setScale(2, BigDecimal.ROUND_HALF_UP);
-            customerService.updateCustomerBalance(
+            saleOrderService.updateCustomerBalance(
                     customer,
                     customer.getBalance().subtract(orderDB.getAdvanceSum()),
                     pageData.getString("uuser"),

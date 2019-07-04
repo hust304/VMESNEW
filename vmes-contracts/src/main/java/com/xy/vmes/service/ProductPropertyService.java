@@ -75,29 +75,29 @@ public interface ProductPropertyService {
     List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception;
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
-    ProductProperty findProductProperty(PageData object);
-    ProductProperty findProductPropertyById(String id);
+//    ProductProperty findProductProperty(PageData object);
+//    ProductProperty findProductPropertyById(String id);
 
-    List<ProductProperty> findProductPropertyList(PageData object);
-    List<ProductProperty> findProductPropertyListByProdId(String prodId);
+    List<ProductProperty> findProductPropertyList(PageData object);//@
+//    List<ProductProperty> findProductPropertyListByProdId(String prodId);
 
-    void deleteProdPropertyByProdId(String prodId) throws Exception;
+    void deleteProdPropertyByProdId(String prodId) throws Exception;//@
 
-    ProductProperty map2ProdProperty(Map<String, Object> mapObj, ProductProperty object);
-    List<ProductProperty> mapList2ProductPropertyList(List<Map<String, Object>> mapList, List<ProductProperty> objectList);
+//    ProductProperty map2ProdProperty(Map<String, Object> mapObj, ProductProperty object);
+    List<ProductProperty> mapList2ProductPropertyList(List<Map<String, Object>> mapList);
 
     void addProductProperty(String cuser, String prodId, List<ProductProperty> objectList);
 
-    Map<String, String> prodProperty2Map(ProductProperty object, Map<String, String> mapObject);
+//    Map<String, String> prodProperty2Map(ProductProperty object, Map<String, String> mapObject);
 
-    String prodPropertyList2JsonString(List<ProductProperty> objectList);
+//    String prodPropertyList2JsonString(List<ProductProperty> objectList);
 
     /////////////////////////////////////////////////////////////////////////////////////
-    Map<String, String> findProdPropertyJsonByProductPropertyList(List<ProductProperty> objectList);
-    Map<String, String> findProdPropertyNameByProductPropertyList(List<ProductProperty> objectList);
+    Map<String, String> findProdPropertyJsonByProductPropertyList(List<ProductProperty> objectList);//@
+//    Map<String, String> findProdPropertyNameByProductPropertyList(List<ProductProperty> objectList);
 
-    Map<String, List<ProductProperty>> findProdPropertyMap(List<ProductProperty> objectList);
-    Map<String, String> findProdPropertyJson(Map<String, List<ProductProperty>> mapObject);
+//    Map<String, List<ProductProperty>> findProdPropertyMap(List<ProductProperty> objectList);
+//    Map<String, String> findProdPropertyJson(Map<String, List<ProductProperty>> mapObject);
 
 }
 

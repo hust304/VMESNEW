@@ -122,6 +122,9 @@ public class WarehouseMoveDetailServiceImp implements WarehouseMoveDetailService
     */
     @Override
     public List<WarehouseMoveDetail> dataListPage(PageData pd,Pagination pg) throws Exception{
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         return warehouseMoveDetailMapper.dataListPage(pd,pg);
     }
 
@@ -660,6 +663,9 @@ public class WarehouseMoveDetailServiceImp implements WarehouseMoveDetailService
 
     @Override
     public ResultModel listPageWarehouseMoveDetailsExecute(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         ResultModel model = new ResultModel();
 
         Map result = new HashMap();
@@ -745,6 +751,9 @@ public class WarehouseMoveDetailServiceImp implements WarehouseMoveDetailService
 
     @Override
     public ResultModel listPageWarehouseMoveDetailsRecords(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         ResultModel model = new ResultModel();
 
         Map result = new HashMap();
@@ -802,6 +811,9 @@ public class WarehouseMoveDetailServiceImp implements WarehouseMoveDetailService
 
     @Override
     public ResultModel listPageWarehouseMoveDetails(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         ResultModel model = new ResultModel();
 
         List<Column> columnList = columnService.findColumnList("WarehouseMoveDetail");
@@ -838,6 +850,9 @@ public class WarehouseMoveDetailServiceImp implements WarehouseMoveDetailService
 
     @Override
     public void exportExcelWarehouseMoveDetails(PageData pd, Pagination pg) throws Exception {
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
         List<Column> columnList = columnService.findColumnList("WarehouseMoveDetail");
         if (columnList == null || columnList.size() == 0) {
             throw new RestException("1","数据库没有生成TabCol，请联系管理员！");

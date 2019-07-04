@@ -1,11 +1,13 @@
 package com.xy.vmes.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.entity.Customer;
 import com.xy.vmes.entity.SaleOrder;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -129,6 +131,17 @@ public interface SaleOrderService {
 
 
     void updateOrderStateCompelete(String id) throws Exception;
+
+    ResultModel addCustomerBalance(PageData pd) throws Exception;
+
+    ResultModel updateCustomerBalancee(PageData pd) throws Exception;
+
+    void updateCustomerBalance(
+            Customer oldCustomer,
+            BigDecimal balance,
+            String uuser,
+            String type,
+            String remark) throws Exception;
 }
 
 

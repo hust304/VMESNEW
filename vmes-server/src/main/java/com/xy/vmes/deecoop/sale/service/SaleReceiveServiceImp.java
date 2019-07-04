@@ -324,7 +324,7 @@ public class SaleReceiveServiceImp implements SaleReceiveService {
         Customer oldCustomer = customerService.selectById(customerId);
         //操作类型 (0:变更 1:录入收款 2:预付款 -1:费用分摊)
         String remark_1 = "费用分摊：" + oldCustomer.getBalance().subtract(detailBalance).setScale(2, BigDecimal.ROUND_HALF_UP);
-        customerService.updateCustomerBalance(
+        saleOrderService.updateCustomerBalance(
                 oldCustomer,
                 oldCustomer.getBalance().subtract(detailBalance),
                 pd.getString("uuser"),

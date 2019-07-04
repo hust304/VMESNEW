@@ -682,45 +682,45 @@ public class ProductUnitServiceImp implements ProductUnitService {
         ExcelUtil.excelExportByDataList(response, fileName, dataMapList);
     }
 
-    @Override
-    public ResultModel importExcelProductUnits(MultipartFile file) throws Exception {
-        ResultModel model = new ResultModel();
-        if (file == null) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("请上传Excel文件！");
-            return model;
-        }
-
-        // 验证文件是否合法
-        // 获取上传的文件名(文件名.后缀)
-        String fileName = file.getOriginalFilename();
-        if (fileName == null
-                || !(fileName.matches("^.+\\.(?i)(xlsx)$")
-                || fileName.matches("^.+\\.(?i)(xls)$"))
-                ) {
-            String failMesg = "不是excel格式文件,请重新选择！";
-            model.putCode(Integer.valueOf(1));
-            model.putMsg(failMesg);
-            return model;
-        }
-
-        // 判断文件的类型，是2003还是2007
-        boolean isExcel2003 = true;
-        if (fileName.matches("^.+\\.(?i)(xlsx)$")) {
-            isExcel2003 = false;
-        }
-
-        List<List<String>> dataLst = ExcelUtil.readExcel(file.getInputStream(), isExcel2003);
-        List<LinkedHashMap<String, String>> dataMapLst = ExcelUtil.reflectMapList(dataLst);
-
-        //1. Excel文件数据dataMapLst -->(转换) ExcelEntity (属性为导入模板字段)
-        //2. Excel导入字段(非空,数据有效性验证[数字类型,字典表(大小)类是否匹配])
-        //3. Excel导入字段-名称唯一性判断-在Excel文件中
-        //4. Excel导入字段-名称唯一性判断-在业务表中判断
-        //5. List<ExcelEntity> --> (转换) List<业务表DB>对象
-        //6. 遍历List<业务表DB> 对业务表添加或修改
-        return model;
-    }
+//    @Override
+//    public ResultModel importExcelProductUnits(MultipartFile file) throws Exception {
+//        ResultModel model = new ResultModel();
+//        if (file == null) {
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg("请上传Excel文件！");
+//            return model;
+//        }
+//
+//        // 验证文件是否合法
+//        // 获取上传的文件名(文件名.后缀)
+//        String fileName = file.getOriginalFilename();
+//        if (fileName == null
+//                || !(fileName.matches("^.+\\.(?i)(xlsx)$")
+//                || fileName.matches("^.+\\.(?i)(xls)$"))
+//                ) {
+//            String failMesg = "不是excel格式文件,请重新选择！";
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg(failMesg);
+//            return model;
+//        }
+//
+//        // 判断文件的类型，是2003还是2007
+//        boolean isExcel2003 = true;
+//        if (fileName.matches("^.+\\.(?i)(xlsx)$")) {
+//            isExcel2003 = false;
+//        }
+//
+//        List<List<String>> dataLst = ExcelUtil.readExcel(file.getInputStream(), isExcel2003);
+//        List<LinkedHashMap<String, String>> dataMapLst = ExcelUtil.reflectMapList(dataLst);
+//
+//        //1. Excel文件数据dataMapLst -->(转换) ExcelEntity (属性为导入模板字段)
+//        //2. Excel导入字段(非空,数据有效性验证[数字类型,字典表(大小)类是否匹配])
+//        //3. Excel导入字段-名称唯一性判断-在Excel文件中
+//        //4. Excel导入字段-名称唯一性判断-在业务表中判断
+//        //5. List<ExcelEntity> --> (转换) List<业务表DB>对象
+//        //6. 遍历List<业务表DB> 对业务表添加或修改
+//        return model;
+//    }
 }
 
 
