@@ -1,7 +1,9 @@
 package com.xy.vmes.deecoop.equipment.controller;
 
 import com.xy.vmes.common.util.Common;
+import com.xy.vmes.entity.Department;
 import com.xy.vmes.entity.EquipmentRepairTaskDetail;
+import com.xy.vmes.service.DepartmentService;
 import com.xy.vmes.service.EquipmentRepairTaskDetailService;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
@@ -39,6 +41,9 @@ public class EquipmentRepairTaskDetailController {
     private WarehouseToolService warehouseToolService;
     @Autowired
     private WarehouseOutCreateService warehouseOutCreateService;
+
+    @Autowired
+    private DepartmentService departmentService;
 
     /**
     * @author 陈刚 自动创建，可以修改
@@ -121,11 +126,19 @@ public class EquipmentRepairTaskDetailController {
             return model;
         }
 
+        //部门id 获取部门名称
+        String deptName = new String();
+        Department department = departmentService.findDepartmentById(deptId);
+        if (department != null && department.getName() != null) {
+            deptName = department.getName().trim();
+        }
+
         String msgStr = new String();
         Map<String, Map<String, Object>> productByOutMap = repairTaskDetailService.findProductMapByOut(jsonMapList);
         if (Common.SYS_WAREHOUSE_COMPLEX.equals(warehouse)) {
             //复杂版仓库:warehouseByComplex:Common.SYS_WAREHOUSE_COMPLEX
             msgStr = warehouseOutCreateService.createWarehouseOutByComplex(deptId,
+                    deptName,
                     cuser,
                     companyId,
                     //fa51ae2e17a9409d822fc4c9192d652c 维保领料出库:repairReceiveOut
@@ -135,6 +148,13 @@ public class EquipmentRepairTaskDetailController {
 
         } else if (Common.SYS_WAREHOUSE_SIMPLE.equals(warehouse)) {
             //简版仓库:warehouseBySimple:Common.SYS_WAREHOUSE_SIMPLE
+            msgStr = warehouseOutCreateService.createWarehouseOutBySimple(deptId,
+                    deptName,
+                    cuser,
+                    companyId,
+                    //fa51ae2e17a9409d822fc4c9192d652c 维保领料出库:repairReceiveOut
+                    Common.DICTIONARY_MAP.get("repairReceiveOut"),
+                    productByOutMap);
         }
 
         if (msgStr.trim().length() > 0) {
