@@ -73,17 +73,17 @@ public interface ProductUnitPriceService {
     List<ProductUnitPrice> dataList(PageData pd) throws Exception;
     List<Map> getDataListPage(PageData pd, Pagination pg) throws Exception;
 
-    /**
-     *
-     * @param pageData    查询参数对象<HashMap>
-     * @param isQueryAll  是否查询全部
-     *   true: 无查询条件返回表全部结果集
-     *   false: (false or is null)无查询条件-查询结果集返回空或
-     *
-     * @return
-     * @throws Exception
-     */
-    List<ProductUnitPrice> findDataList(PageData pageData, Boolean isQueryAll) throws Exception;
+//    /**
+//     *
+//     * @param pageData    查询参数对象<HashMap>
+//     * @param isQueryAll  是否查询全部
+//     *   true: 无查询条件返回表全部结果集
+//     *   false: (false or is null)无查询条件-查询结果集返回空或
+//     *
+//     * @return
+//     * @throws Exception
+//     */
+//    List<ProductUnitPrice> findDataList(PageData pageData, Boolean isQueryAll) throws Exception;
 
     ResultModel listPageProductUnitPrices(PageData pd, Pagination pg)throws Exception;
 }

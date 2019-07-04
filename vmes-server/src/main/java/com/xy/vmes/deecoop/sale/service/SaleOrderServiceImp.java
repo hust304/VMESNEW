@@ -696,7 +696,7 @@ public class SaleOrderServiceImp implements SaleOrderService {
             Customer customer = customerService.selectById(order.getCustomerId());
             //操作类型 (0:变更 1:录入收款 2:预付款 -1:费用分摊)
             String remark_1 = "费用分摊：" + customer.getBalance().subtract(customer.getBalance().subtract(order.getAdvanceSum().negate())).setScale(2, BigDecimal.ROUND_HALF_UP);
-            customerService.updateCustomerBalance(
+            this.updateCustomerBalance(
                     customer,
                     customer.getBalance().subtract(order.getAdvanceSum().negate()),
                     pageData.getString("uuser"),
@@ -931,6 +931,74 @@ public class SaleOrderServiceImp implements SaleOrderService {
         //5. List<ExcelEntity> --> (转换) List<业务表DB>对象
         //6. 遍历List<业务表DB> 对业务表添加或修改
         return model;
+    }
+
+
+    @Override
+    public ResultModel addCustomerBalance(PageData pd) throws Exception {
+        ResultModel model = new ResultModel();
+        BigDecimal addBalance = BigDecimal.valueOf(Double.parseDouble(pd.getString("addBalance")));
+        Customer Customer = customerService.selectById(pd.getString("id"));
+
+        String remark = "录入收款："+ Customer.getBalance().add(addBalance).subtract(Customer.getBalance()).setScale(2, BigDecimal.ROUND_HALF_UP);
+        this.updateCustomerBalance(
+                Customer,
+                Customer.getBalance().add(addBalance),
+                pd.getString("uuser"),
+                //操作类型 (0:变更 1:录入收款 2:预付款 -1:费用分摊)
+                "1",
+                remark);
+        return model;
+    }
+
+    @Override
+    public ResultModel updateCustomerBalancee(PageData pd) throws Exception {
+        ResultModel model = new ResultModel();
+        Customer newCustomer = (Customer) HttpUtils.pageData2Entity(pd, new Customer());
+        Customer oldCustomer = customerService.selectById(newCustomer.getId());
+
+        String remarkTemp = "变更前：{0} 变更后：{1}";
+        String remark = MessageFormat.format(remarkTemp,
+                oldCustomer.getBalance().setScale(2, BigDecimal.ROUND_HALF_UP),
+                newCustomer.getBalance().setScale(2, BigDecimal.ROUND_HALF_UP));
+
+        this.updateCustomerBalance(
+                oldCustomer,
+                newCustomer.getBalance(),
+                pd.getString("uuser"),
+                //操作类型 (0:变更 1:录入收款 2:预付款 -1:费用分摊)
+                "0",
+                remark
+        );
+        return model;
+    }
+
+
+    @Override
+    public void updateCustomerBalance(
+            Customer oldCustomer,
+            BigDecimal balance,
+            String uuser,
+            String type,
+            String remark) throws Exception {
+        PageData pd = new PageData();
+        pd.put("id",oldCustomer.getId());
+        pd.put("version",oldCustomer.getVersion());
+        pd.put("uuser",uuser);
+        pd.put("balance",balance);
+        customerService.updateCustomerBalance(pd);
+
+        SaleReceiveRecord saleReceiveRecord = new SaleReceiveRecord();
+        saleReceiveRecord.setBeforeAmount(oldCustomer.getBalance());
+        saleReceiveRecord.setAfterAmount(balance);
+        saleReceiveRecord.setAmount(balance.subtract(oldCustomer.getBalance()));
+        saleReceiveRecord.setCustomerId(oldCustomer.getId());
+        //操作类型 (0:变更 1:录入收款 2:预付款 -1:费用分摊)
+        saleReceiveRecord.setType(type);
+        saleReceiveRecord.setRemark(remark);
+        saleReceiveRecord.setUuser(uuser);
+        saleReceiveRecord.setCuser(uuser);
+        saleReceiveRecordService.save(saleReceiveRecord);
     }
 }
 

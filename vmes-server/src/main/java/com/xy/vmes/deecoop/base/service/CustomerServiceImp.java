@@ -44,15 +44,15 @@ public class CustomerServiceImp implements CustomerService {
     @Autowired
     private CustomeAddressService customeAddressService;
 
-    @Autowired
-    private FileService fileService;
+//    @Autowired
+//    private FileService fileService;
     @Autowired
     private CoderuleService coderuleService;
     @Autowired
     private ColumnService columnService;
 
-    @Autowired
-    private SaleReceiveRecordService saleReceiveRecordService;
+//    @Autowired
+//    private SaleReceiveRecordService saleReceiveRecordService;
     @Autowired
     private CustomerExcelService customerExcelService;
 
@@ -306,32 +306,32 @@ public class CustomerServiceImp implements CustomerService {
     }
 
 
-    @Override
-    public void updateCustomerBalance(
-            Customer oldCustomer,
-            BigDecimal balance,
-            String uuser,
-            String type,
-            String remark) throws Exception {
-        PageData pd = new PageData();
-        pd.put("id",oldCustomer.getId());
-        pd.put("version",oldCustomer.getVersion());
-        pd.put("uuser",uuser);
-        pd.put("balance",balance);
-        customerMapper.updateCustomerBalance(pd);
-
-        SaleReceiveRecord saleReceiveRecord = new SaleReceiveRecord();
-        saleReceiveRecord.setBeforeAmount(oldCustomer.getBalance());
-        saleReceiveRecord.setAfterAmount(balance);
-        saleReceiveRecord.setAmount(balance.subtract(oldCustomer.getBalance()));
-        saleReceiveRecord.setCustomerId(oldCustomer.getId());
-        //操作类型 (0:变更 1:录入收款 2:预付款 -1:费用分摊)
-        saleReceiveRecord.setType(type);
-        saleReceiveRecord.setRemark(remark);
-        saleReceiveRecord.setUuser(uuser);
-        saleReceiveRecord.setCuser(uuser);
-        saleReceiveRecordService.save(saleReceiveRecord);
-    }
+//    @Override
+//    public void updateCustomerBalance(
+//            Customer oldCustomer,
+//            BigDecimal balance,
+//            String uuser,
+//            String type,
+//            String remark) throws Exception {
+//        PageData pd = new PageData();
+//        pd.put("id",oldCustomer.getId());
+//        pd.put("version",oldCustomer.getVersion());
+//        pd.put("uuser",uuser);
+//        pd.put("balance",balance);
+//        customerMapper.updateCustomerBalance(pd);
+//
+//        SaleReceiveRecord saleReceiveRecord = new SaleReceiveRecord();
+//        saleReceiveRecord.setBeforeAmount(oldCustomer.getBalance());
+//        saleReceiveRecord.setAfterAmount(balance);
+//        saleReceiveRecord.setAmount(balance.subtract(oldCustomer.getBalance()));
+//        saleReceiveRecord.setCustomerId(oldCustomer.getId());
+//        //操作类型 (0:变更 1:录入收款 2:预付款 -1:费用分摊)
+//        saleReceiveRecord.setType(type);
+//        saleReceiveRecord.setRemark(remark);
+//        saleReceiveRecord.setUuser(uuser);
+//        saleReceiveRecord.setCuser(uuser);
+//        saleReceiveRecordService.save(saleReceiveRecord);
+//    }
 
     public void updateCustomerBalance(
             Customer customer,
@@ -345,59 +345,59 @@ public class CustomerServiceImp implements CustomerService {
         customerMapper.updateCustomerBalance(pd);
     }
 
-    @Override
+
     public List<Map> getPreReceiveAmount(PageData pd) throws Exception{
         return  customerMapper.getPreReceiveAmount(pd);
     }
 
-    @Override
+
     public List<Map> getNowReceiveAmount(PageData pd) throws Exception{
         return  customerMapper.getNowReceiveAmount(pd);
     }
 
-    @Override
+
     public Map<String, Object> getReceiveAmount(PageData pd) throws Exception {
         return  customerMapper.getReceiveAmount(pd);
     }
 
-    @Override
-    public ResultModel addCustomerBalance(PageData pd) throws Exception {
-        ResultModel model = new ResultModel();
-        BigDecimal addBalance = BigDecimal.valueOf(Double.parseDouble(pd.getString("addBalance")));
-        Customer Customer = customerService.selectById(pd.getString("id"));
-
-        String remark = "录入收款："+ Customer.getBalance().add(addBalance).subtract(Customer.getBalance()).setScale(2, BigDecimal.ROUND_HALF_UP);
-        customerService.updateCustomerBalance(
-                Customer,
-                Customer.getBalance().add(addBalance),
-                pd.getString("uuser"),
-                //操作类型 (0:变更 1:录入收款 2:预付款 -1:费用分摊)
-                "1",
-                remark);
-        return model;
-    }
-
-    @Override
-    public ResultModel updateCustomerBalancee(PageData pd) throws Exception {
-        ResultModel model = new ResultModel();
-        Customer newCustomer = (Customer) HttpUtils.pageData2Entity(pd, new Customer());
-        Customer oldCustomer = customerService.selectById(newCustomer.getId());
-
-        String remarkTemp = "变更前：{0} 变更后：{1}";
-        String remark = MessageFormat.format(remarkTemp,
-                oldCustomer.getBalance().setScale(2, BigDecimal.ROUND_HALF_UP),
-                newCustomer.getBalance().setScale(2, BigDecimal.ROUND_HALF_UP));
-
-        customerService.updateCustomerBalance(
-                oldCustomer,
-                newCustomer.getBalance(),
-                pd.getString("uuser"),
-                //操作类型 (0:变更 1:录入收款 2:预付款 -1:费用分摊)
-                "0",
-                remark
-        );
-        return model;
-    }
+//    @Override
+//    public ResultModel addCustomerBalance(PageData pd) throws Exception {
+//        ResultModel model = new ResultModel();
+//        BigDecimal addBalance = BigDecimal.valueOf(Double.parseDouble(pd.getString("addBalance")));
+//        Customer Customer = customerService.selectById(pd.getString("id"));
+//
+//        String remark = "录入收款："+ Customer.getBalance().add(addBalance).subtract(Customer.getBalance()).setScale(2, BigDecimal.ROUND_HALF_UP);
+//        customerService.updateCustomerBalance(
+//                Customer,
+//                Customer.getBalance().add(addBalance),
+//                pd.getString("uuser"),
+//                //操作类型 (0:变更 1:录入收款 2:预付款 -1:费用分摊)
+//                "1",
+//                remark);
+//        return model;
+//    }
+//
+//    @Override
+//    public ResultModel updateCustomerBalancee(PageData pd) throws Exception {
+//        ResultModel model = new ResultModel();
+//        Customer newCustomer = (Customer) HttpUtils.pageData2Entity(pd, new Customer());
+//        Customer oldCustomer = customerService.selectById(newCustomer.getId());
+//
+//        String remarkTemp = "变更前：{0} 变更后：{1}";
+//        String remark = MessageFormat.format(remarkTemp,
+//                oldCustomer.getBalance().setScale(2, BigDecimal.ROUND_HALF_UP),
+//                newCustomer.getBalance().setScale(2, BigDecimal.ROUND_HALF_UP));
+//
+//        customerService.updateCustomerBalance(
+//                oldCustomer,
+//                newCustomer.getBalance(),
+//                pd.getString("uuser"),
+//                //操作类型 (0:变更 1:录入收款 2:预付款 -1:费用分摊)
+//                "0",
+//                remark
+//        );
+//        return model;
+//    }
 
     @Override
     public ResultModel listPageCustomers(PageData pd, Pagination pg) throws Exception {
@@ -529,7 +529,7 @@ public class CustomerServiceImp implements CustomerService {
         result.put("varList",varMapList);
         result.put("pageData", pg);
 
-        Map<String,Object> receiveMap = customerService.getReceiveAmount(pd);
+        Map<String,Object> receiveMap = this.getReceiveAmount(pd);
         if(receiveMap!=null){
             result.put("preReceiveAmount", receiveMap.get("preReceiveAmount"));
             result.put("nowReceiveAmount", receiveMap.get("nowReceiveAmount"));
@@ -604,39 +604,39 @@ public class CustomerServiceImp implements CustomerService {
         return model;
     }
 
-    @Override
-    public ResultModel addCustomer(PageData pageData) throws Exception {
-        ResultModel model = new ResultModel();
-        //1. 非空判断
-        String name = pageData.getString("name");
-        if (name == null || name.trim().length() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("名称输入为空或空字符串，名称为必填不可为空！");
-            return model;
-        }
-
-        //获取客户供应商编码
-        String companyId = pageData.getString("currentCompanyId");
-        String code = coderuleService.createCoder(companyId,"vmes_customer","C");
-        if(StringUtils.isEmpty(code)){
-            model.putCode(1);
-            model.putMsg("客户供应商编码规则创建异常，请重新操作！");
-            return model;
-        }
-
-        Customer object = (Customer)HttpUtils.pageData2Entity(pageData, new Customer());
-        object.setId(Conv.createUuid());
-        object.setCuser(pageData.getString("cuser"));
-        object.setCompanyId(companyId);
-        object.setCode(code);
-        //生成客户供应商二维码
-        String qrcode = fileService.createQRCode("customer", object.getId());
-        if (qrcode != null && qrcode.trim().length() > 0) {
-            object.setQrcode(qrcode);
-        }
-        customerService.save(object);
-        return model;
-    }
+//    @Override
+//    public ResultModel addCustomer(PageData pageData) throws Exception {
+//        ResultModel model = new ResultModel();
+//        //1. 非空判断
+//        String name = pageData.getString("name");
+//        if (name == null || name.trim().length() == 0) {
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg("名称输入为空或空字符串，名称为必填不可为空！");
+//            return model;
+//        }
+//
+//        //获取客户供应商编码
+//        String companyId = pageData.getString("currentCompanyId");
+//        String code = coderuleService.createCoder(companyId,"vmes_customer","C");
+//        if(StringUtils.isEmpty(code)){
+//            model.putCode(1);
+//            model.putMsg("客户供应商编码规则创建异常，请重新操作！");
+//            return model;
+//        }
+//
+//        Customer object = (Customer)HttpUtils.pageData2Entity(pageData, new Customer());
+//        object.setId(Conv.createUuid());
+//        object.setCuser(pageData.getString("cuser"));
+//        object.setCompanyId(companyId);
+//        object.setCode(code);
+//        //生成客户供应商二维码
+//        String qrcode = fileService.createQRCode("customer", object.getId());
+//        if (qrcode != null && qrcode.trim().length() > 0) {
+//            object.setQrcode(qrcode);
+//        }
+//        customerService.save(object);
+//        return model;
+//    }
 
     @Override
     public ResultModel updateCustomer(PageData pageData) throws Exception {
@@ -755,69 +755,69 @@ public class CustomerServiceImp implements CustomerService {
 
     }
 
-    @Override
-    public ResultModel importExcelCustomers(MultipartFile file) throws Exception {
-        ResultModel model = new ResultModel();
-        if (file == null) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("请上传Excel文件！");
-            return model;
-        }
-
-        // 验证文件是否合法
-        // 获取上传的文件名(文件名.后缀)
-        String fileName = file.getOriginalFilename();
-        if (fileName == null
-                || !(fileName.matches("^.+\\.(?i)(xlsx)$")
-                || fileName.matches("^.+\\.(?i)(xls)$"))
-                ) {
-            String failMesg = "不是excel格式文件,请重新选择！";
-            model.putCode(Integer.valueOf(1));
-            model.putMsg(failMesg);
-            return model;
-        }
-
-        // 判断文件的类型，是2003还是2007
-        boolean isExcel2003 = true;
-        if (fileName.matches("^.+\\.(?i)(xlsx)$")) {
-            isExcel2003 = false;
-        }
-
-        List<List<String>> dataLst = ExcelUtil.readExcel(file.getInputStream(), isExcel2003);
-        List<LinkedHashMap<String, String>> dataMapLst = ExcelUtil.reflectMapList(dataLst);
-
-        HttpServletRequest httpRequest = HttpUtils.currentRequest();
-        String companyId = (String)httpRequest.getParameter("companyId");
-        String userId = (String)httpRequest.getParameter("userId");
-
-        if (dataMapLst == null || dataMapLst.size() == 1) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("导入文件数据为空，请至少填写一行导入数据！");
-            return model;
-        }
-        //去掉列表名称行
-        dataMapLst.remove(0);
-
-        //1. Excel导入字段(非空,数据有效性验证[数字类型,字典表(大小)类是否匹配])
-        String msgStr = customerExcelService.checkColumnImportExcel(dataMapLst,
-                companyId,
-                userId,
-                Integer.valueOf(3),
-                Common.SYS_IMPORTEXCEL_MESSAGE_MAXROW);
-        if (msgStr != null && msgStr.trim().length() > 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg(this.exportExcelError(msgStr).toString());
-            return model;
-        }
-
-        //2. Excel导入字段-名称唯一性判断-在Excel文件中
-        //3. Excel导入字段-名称唯一性判断-在业务表中判断
-        //4. Excel数据添加到货品表
-        customerExcelService.addImportExcelByList(dataMapLst);
-
-
-        return model;
-    }
+//    @Override
+//    public ResultModel importExcelCustomers(MultipartFile file) throws Exception {
+//        ResultModel model = new ResultModel();
+//        if (file == null) {
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg("请上传Excel文件！");
+//            return model;
+//        }
+//
+//        // 验证文件是否合法
+//        // 获取上传的文件名(文件名.后缀)
+//        String fileName = file.getOriginalFilename();
+//        if (fileName == null
+//                || !(fileName.matches("^.+\\.(?i)(xlsx)$")
+//                || fileName.matches("^.+\\.(?i)(xls)$"))
+//                ) {
+//            String failMesg = "不是excel格式文件,请重新选择！";
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg(failMesg);
+//            return model;
+//        }
+//
+//        // 判断文件的类型，是2003还是2007
+//        boolean isExcel2003 = true;
+//        if (fileName.matches("^.+\\.(?i)(xlsx)$")) {
+//            isExcel2003 = false;
+//        }
+//
+//        List<List<String>> dataLst = ExcelUtil.readExcel(file.getInputStream(), isExcel2003);
+//        List<LinkedHashMap<String, String>> dataMapLst = ExcelUtil.reflectMapList(dataLst);
+//
+//        HttpServletRequest httpRequest = HttpUtils.currentRequest();
+//        String companyId = (String)httpRequest.getParameter("companyId");
+//        String userId = (String)httpRequest.getParameter("userId");
+//
+//        if (dataMapLst == null || dataMapLst.size() == 1) {
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg("导入文件数据为空，请至少填写一行导入数据！");
+//            return model;
+//        }
+//        //去掉列表名称行
+//        dataMapLst.remove(0);
+//
+//        //1. Excel导入字段(非空,数据有效性验证[数字类型,字典表(大小)类是否匹配])
+//        String msgStr = customerExcelService.checkColumnImportExcel(dataMapLst,
+//                companyId,
+//                userId,
+//                Integer.valueOf(3),
+//                Common.SYS_IMPORTEXCEL_MESSAGE_MAXROW);
+//        if (msgStr != null && msgStr.trim().length() > 0) {
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg(this.exportExcelError(msgStr).toString());
+//            return model;
+//        }
+//
+//        //2. Excel导入字段-名称唯一性判断-在Excel文件中
+//        //3. Excel导入字段-名称唯一性判断-在业务表中判断
+//        //4. Excel数据添加到货品表
+//        customerExcelService.addImportExcelByList(dataMapLst);
+//
+//
+//        return model;
+//    }
 
     @Override
     public ResultModel listTreeCustomer(PageData pd) throws Exception {
@@ -841,12 +841,18 @@ public class CustomerServiceImp implements CustomerService {
         return model;
     }
 
-    private StringBuffer exportExcelError(String msgStr) {
-        StringBuffer msgBuf = new StringBuffer();
-        msgBuf.append("Excel导入失败！" + Common.SYS_ENDLINE_DEFAULT);
-        msgBuf.append(msgStr.trim());
-        msgBuf.append("请核对后再次导入" + Common.SYS_ENDLINE_DEFAULT);
+//    private StringBuffer exportExcelError(String msgStr) {
+//        StringBuffer msgBuf = new StringBuffer();
+//        msgBuf.append("Excel导入失败！" + Common.SYS_ENDLINE_DEFAULT);
+//        msgBuf.append(msgStr.trim());
+//        msgBuf.append("请核对后再次导入" + Common.SYS_ENDLINE_DEFAULT);
+//
+//        return msgBuf;
+//    }
 
-        return msgBuf;
+
+    @Override
+    public void updateCustomerBalance(PageData pd) throws Exception {
+        customerMapper.updateCustomerBalance(pd);
     }
 }

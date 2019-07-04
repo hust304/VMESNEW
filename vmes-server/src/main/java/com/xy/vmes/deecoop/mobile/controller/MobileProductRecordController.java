@@ -169,7 +169,7 @@ public class MobileProductRecordController {
         }
 
         if (mapList != null && mapList.size() > 0) {
-            productMap = productService.queryMap2ProductMap(mapList.get(0), productMap);
+            productMap = productService.queryMap2ProductMap(mapList.get(0));
             productMap.put("code", code);
         }
         prodRecordMap.put("product", productMap);

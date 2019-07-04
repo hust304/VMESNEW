@@ -220,7 +220,7 @@ public class MobileWarehouseInController {
         }
 
         if (mapList != null && mapList.size() > 0) {
-            productMap = productService.queryMap2ProductMap(mapList.get(0), productMap);
+            productMap = productService.queryMap2ProductMap(mapList.get(0));
 
             //设置入库信息
             //入库类型 typeName

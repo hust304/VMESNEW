@@ -36,20 +36,9 @@ public class ProductServiceImp implements ProductService {
     @Autowired
     private ProductMapper productMapper;
     @Autowired
-    private ProductUnitService productUnitService;
-    @Autowired
-    private ProductUnitPriceService productUnitPriceService;
-    @Autowired
     private ProductPropertyService productPropertyService;
-
-    @Autowired
-    private CoderuleService coderuleService;
-    @Autowired
-    private FileService fileService;
     @Autowired
     private ColumnService columnService;
-    @Autowired
-    private ProductExcelService productExcelService;
 
     /**
     * 创建人：陈刚 自动创建，禁止修改
@@ -316,8 +305,8 @@ public class ProductServiceImp implements ProductService {
         return QRCodeObj;
     }
 
-    public ProductUnit product2ProductUnit(Product product, ProductUnit productUnit,String unit) {
-        if (productUnit == null) {productUnit = new ProductUnit();}
+    public ProductUnit product2ProductUnit(Product product, String unit) {
+        ProductUnit productUnit = new ProductUnit();
         if (product == null) {return productUnit;}
 
         //货品id productId
@@ -340,8 +329,8 @@ public class ProductServiceImp implements ProductService {
         return productUnit;
     }
 
-    public ProductUnitPrice product2ProductUnitPrice(Product product, ProductUnitPrice productUnitPrice,String unit) {
-        if (productUnitPrice == null) {productUnitPrice = new ProductUnitPrice();}
+    public ProductUnitPrice product2ProductUnitPrice(Product product,String unit) {
+        ProductUnitPrice productUnitPrice = new ProductUnitPrice();
         if (product == null) {return productUnitPrice;}
 
         //货品ID productId
@@ -356,8 +345,8 @@ public class ProductServiceImp implements ProductService {
         return productUnitPrice;
     }
 
-    public Map<String, String> queryMap2ProductMap(Map queryMap, Map<String, String> productMap) {
-        if (productMap == null) {productMap = new HashMap<String, String>();}
+    public Map<String, String> queryMap2ProductMap(Map queryMap) {
+        Map<String, String> productMap = new HashMap<String, String>();
         if (queryMap == null || queryMap.size() == 0) {return productMap;}
 
         //货品id id productId
@@ -672,71 +661,71 @@ public class ProductServiceImp implements ProductService {
         return model;
     }
 
-    @Override
-    public ResultModel addProduct(PageData pageData) throws Exception {
-        ResultModel model = new ResultModel();
-        //1. 非空判断
-        String name = pageData.getString("name");
-        if (name == null || name.trim().length() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("名称输入为空或空字符串，名称为必填不可为空！");
-            return model;
-        }
-
-        //获取产品编码
-        String companyId = pageData.getString("currentCompanyId");
-        String code = coderuleService.createCoder(companyId,"vmes_product","P");
-        if(StringUtils.isEmpty(code)){
-            model.putCode(1);
-            model.putMsg("产品编码规则创建异常，请重新操作！");
-            return model;
-        }
-
-        //2. 添加产品表(vmes_product)
-        Product product = (Product) HttpUtils.pageData2Entity(pageData, new Product());
-        product.setCuser(pageData.getString("cuser"));
-        product.setCompanyId(companyId);
-        product.setCode(code);
-
-        //生成产品二维码
-        product.setId(Conv.createUuid());
-        String qrcode = fileService.createQRCode("product", product.getId());
-        if (qrcode != null && qrcode.trim().length() > 0) {
-            product.setQrcode(qrcode);
-        }
-        this.save(product);
-
-        //3. 添加 vmes_product_unit
-        ProductUnit productUnit = this.product2ProductUnit(product, null,pageData.getString("unit"));
-        productUnitService.save(productUnit);
-
-        //4. 添加 vmes_product_unit_price
-        if (product.getPrice() != null) {
-            ProductUnitPrice productUnitPrice = this.product2ProductUnitPrice(product, null,pageData.getString("unit"));
-            productUnitPriceService.save(productUnitPrice);
-        }
-
-        //5. 添加产品属性表(vmes_product_property)
-        String dataListJsonStr = pageData.getString("prodPropertyJsonStr");
-        //测试代码-真实环境无此代码
-        //dataListJsonStr = "[{\"name\":\"属性名称_1\",\"value\":\"属性值_1\",\"remark\":\"备注_1\"},{\"name\":\"属性名称_2\",\"value\":\"属性值_2\",\"remark\":\"备注_2\"}]";
-
-        if (dataListJsonStr != null && dataListJsonStr.trim().length() > 0) {
-            //JsonString 转换成List<Map<String, Object>>
-            List<Map<String, Object>> dataList = (List<Map<String, Object>>) YvanUtil.jsonToList(dataListJsonStr);
-            if (dataList == null || dataList.size() == 0) {
-                model.putCode(Integer.valueOf(1));
-                model.putMsg("自定义产品属性Json字符串-转换成List错误！");
-                return model;
-            }
-
-            List<ProductProperty> propertyList = productPropertyService.mapList2ProductPropertyList(dataList, null);
-            productPropertyService.addProductProperty(pageData.getString("cuser"),
-                    product.getId(),
-                    propertyList);
-        }
-        return model;
-    }
+//    @Override
+//    public ResultModel addProduct(PageData pageData) throws Exception {
+//        ResultModel model = new ResultModel();
+//        //1. 非空判断
+//        String name = pageData.getString("name");
+//        if (name == null || name.trim().length() == 0) {
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg("名称输入为空或空字符串，名称为必填不可为空！");
+//            return model;
+//        }
+//
+//        //获取产品编码
+//        String companyId = pageData.getString("currentCompanyId");
+//        String code = coderuleService.createCoder(companyId,"vmes_product","P");
+//        if(StringUtils.isEmpty(code)){
+//            model.putCode(1);
+//            model.putMsg("产品编码规则创建异常，请重新操作！");
+//            return model;
+//        }
+//
+//        //2. 添加产品表(vmes_product)
+//        Product product = (Product) HttpUtils.pageData2Entity(pageData, new Product());
+//        product.setCuser(pageData.getString("cuser"));
+//        product.setCompanyId(companyId);
+//        product.setCode(code);
+//
+//        //生成产品二维码
+//        product.setId(Conv.createUuid());
+//        String qrcode = fileService.createQRCode("product", product.getId());
+//        if (qrcode != null && qrcode.trim().length() > 0) {
+//            product.setQrcode(qrcode);
+//        }
+//        this.save(product);
+//
+//        //3. 添加 vmes_product_unit
+//        ProductUnit productUnit = this.product2ProductUnit(product, null,pageData.getString("unit"));
+//        productUnitService.save(productUnit);
+//
+//        //4. 添加 vmes_product_unit_price
+//        if (product.getPrice() != null) {
+//            ProductUnitPrice productUnitPrice = this.product2ProductUnitPrice(product, null,pageData.getString("unit"));
+//            productUnitPriceService.save(productUnitPrice);
+//        }
+//
+//        //5. 添加产品属性表(vmes_product_property)
+//        String dataListJsonStr = pageData.getString("prodPropertyJsonStr");
+//        //测试代码-真实环境无此代码
+//        //dataListJsonStr = "[{\"name\":\"属性名称_1\",\"value\":\"属性值_1\",\"remark\":\"备注_1\"},{\"name\":\"属性名称_2\",\"value\":\"属性值_2\",\"remark\":\"备注_2\"}]";
+//
+//        if (dataListJsonStr != null && dataListJsonStr.trim().length() > 0) {
+//            //JsonString 转换成List<Map<String, Object>>
+//            List<Map<String, Object>> dataList = (List<Map<String, Object>>) YvanUtil.jsonToList(dataListJsonStr);
+//            if (dataList == null || dataList.size() == 0) {
+//                model.putCode(Integer.valueOf(1));
+//                model.putMsg("自定义产品属性Json字符串-转换成List错误！");
+//                return model;
+//            }
+//
+//            List<ProductProperty> propertyList = productPropertyService.mapList2ProductPropertyList(dataList, null);
+//            productPropertyService.addProductProperty(pageData.getString("cuser"),
+//                    product.getId(),
+//                    propertyList);
+//        }
+//        return model;
+//    }
 
     @Override
     public ResultModel updateProduct(PageData pageData) throws Exception {
@@ -766,7 +755,7 @@ public class ProductServiceImp implements ProductService {
             }
 
             //添加产品属性表(vmes_product_property)-按照json字符串数据(dataListJsonStr)
-            List<ProductProperty> propertyList = productPropertyService.mapList2ProductPropertyList(dataList, null);
+            List<ProductProperty> propertyList = productPropertyService.mapList2ProductPropertyList(dataList);
             productPropertyService.addProductProperty(pageData.getString("cuser"),
                     productDB.getId(),
                     propertyList);
@@ -869,77 +858,77 @@ public class ProductServiceImp implements ProductService {
         ExcelUtil.excelExportByDataList(response, fileName, dataMapList);
     }
 
-    @Override
-    public ResultModel importExcelProduct(MultipartFile file) throws Exception {
-        ResultModel model = new ResultModel();
-        if (file == null) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("请上传Excel文件！");
-            return model;
-        }
+//    @Override
+//    public ResultModel importExcelProduct(MultipartFile file) throws Exception {
+//        ResultModel model = new ResultModel();
+//        if (file == null) {
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg("请上传Excel文件！");
+//            return model;
+//        }
+//
+//        // 验证文件是否合法
+//        // 获取上传的文件名(文件名.后缀)
+//        String fileName = file.getOriginalFilename();
+//        if (fileName == null
+//                || !(fileName.matches("^.+\\.(?i)(xlsx)$")
+//                || fileName.matches("^.+\\.(?i)(xls)$"))
+//                ) {
+//            String failMesg = "不是excel格式文件,请重新选择！";
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg(failMesg);
+//            return model;
+//        }
+//
+//        // 判断文件的类型，是2003还是2007
+//        boolean isExcel2003 = true;
+//        if (fileName.matches("^.+\\.(?i)(xlsx)$")) {
+//            isExcel2003 = false;
+//        }
+//
+//        List<List<String>> dataLst = ExcelUtil.readExcel(file.getInputStream(), isExcel2003);
+//        List<LinkedHashMap<String, String>> dataMapLst = ExcelUtil.reflectMapList(dataLst);
+//
+//        HttpServletRequest httpRequest = HttpUtils.currentRequest();
+//        String companyId = (String)httpRequest.getParameter("companyId");
+//        String userId = (String)httpRequest.getParameter("userId");
+//
+//        if (dataMapLst == null || dataMapLst.size() == 1) {
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg("导入文件数据为空，请至少填写一行导入数据！");
+//            return model;
+//        }
+//        //去掉列表名称行
+//        dataMapLst.remove(0);
+//
+//        //1. Excel导入字段(非空,数据有效性验证[数字类型,字典表(大小)类是否匹配])
+//        String msgStr = productExcelService.checkColumnImportExcel(dataMapLst,
+//                companyId,
+//                userId,
+//                Integer.valueOf(3),
+//                Common.SYS_IMPORTEXCEL_MESSAGE_MAXROW);
+//        if (msgStr != null && msgStr.trim().length() > 0) {
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg(this.exportExcelError(msgStr).toString());
+//            return model;
+//        }
+//
+//        //2. Excel导入字段-名称唯一性判断-在Excel文件中
+//        //3. Excel导入字段-名称唯一性判断-在业务表中判断
+//        //4. Excel数据添加到货品表
+//        productExcelService.addImportExcelByList(dataMapLst);
+//
+//        return model;
+//    }
 
-        // 验证文件是否合法
-        // 获取上传的文件名(文件名.后缀)
-        String fileName = file.getOriginalFilename();
-        if (fileName == null
-                || !(fileName.matches("^.+\\.(?i)(xlsx)$")
-                || fileName.matches("^.+\\.(?i)(xls)$"))
-                ) {
-            String failMesg = "不是excel格式文件,请重新选择！";
-            model.putCode(Integer.valueOf(1));
-            model.putMsg(failMesg);
-            return model;
-        }
-
-        // 判断文件的类型，是2003还是2007
-        boolean isExcel2003 = true;
-        if (fileName.matches("^.+\\.(?i)(xlsx)$")) {
-            isExcel2003 = false;
-        }
-
-        List<List<String>> dataLst = ExcelUtil.readExcel(file.getInputStream(), isExcel2003);
-        List<LinkedHashMap<String, String>> dataMapLst = ExcelUtil.reflectMapList(dataLst);
-
-        HttpServletRequest httpRequest = HttpUtils.currentRequest();
-        String companyId = (String)httpRequest.getParameter("companyId");
-        String userId = (String)httpRequest.getParameter("userId");
-
-        if (dataMapLst == null || dataMapLst.size() == 1) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("导入文件数据为空，请至少填写一行导入数据！");
-            return model;
-        }
-        //去掉列表名称行
-        dataMapLst.remove(0);
-
-        //1. Excel导入字段(非空,数据有效性验证[数字类型,字典表(大小)类是否匹配])
-        String msgStr = productExcelService.checkColumnImportExcel(dataMapLst,
-                companyId,
-                userId,
-                Integer.valueOf(3),
-                Common.SYS_IMPORTEXCEL_MESSAGE_MAXROW);
-        if (msgStr != null && msgStr.trim().length() > 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg(this.exportExcelError(msgStr).toString());
-            return model;
-        }
-
-        //2. Excel导入字段-名称唯一性判断-在Excel文件中
-        //3. Excel导入字段-名称唯一性判断-在业务表中判断
-        //4. Excel数据添加到货品表
-        productExcelService.addImportExcelByList(dataMapLst);
-
-        return model;
-    }
-
-    private StringBuffer exportExcelError(String msgStr) {
-        StringBuffer msgBuf = new StringBuffer();
-        msgBuf.append("Excel导入失败！" + Common.SYS_ENDLINE_DEFAULT);
-        msgBuf.append(msgStr.trim());
-        msgBuf.append("请核对后再次导入" + Common.SYS_ENDLINE_DEFAULT);
-
-        return msgBuf;
-    }
+//    private StringBuffer exportExcelError(String msgStr) {
+//        StringBuffer msgBuf = new StringBuffer();
+//        msgBuf.append("Excel导入失败！" + Common.SYS_ENDLINE_DEFAULT);
+//        msgBuf.append(msgStr.trim());
+//        msgBuf.append("请核对后再次导入" + Common.SYS_ENDLINE_DEFAULT);
+//
+//        return msgBuf;
+//    }
 }
 
 

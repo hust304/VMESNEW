@@ -370,7 +370,7 @@ public class CustomerInvoiceServiceImp implements CustomerInvoiceService {
         findMap.put("customerId", customerId);
         findMap.put("isdefault", "1");
         findMap.put("mapSize", Integer.valueOf(findMap.size()));
-        List<CustomerInvoice> objectList = customerInvoiceService.findCustomerInvoiceList(findMap);
+        List<CustomerInvoice> objectList = this.findCustomerInvoiceList(findMap);
         if (objectList == null || objectList.size() == 0) {
             custInvoice.setIsdefault("1");
         }
@@ -402,7 +402,7 @@ public class CustomerInvoiceServiceImp implements CustomerInvoiceService {
             return model;
         }
 
-        List<CustomerInvoice> invoiceList = customerInvoiceService.findCustomerInvoiceListByCustomerId(customerId);
+        List<CustomerInvoice> invoiceList = this.findCustomerInvoiceListByCustomerId(customerId);
         if (invoiceList != null && invoiceList.size() == 1) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("当前客户地址只有一条，不可修改默认属性！");
@@ -456,7 +456,7 @@ public class CustomerInvoiceServiceImp implements CustomerInvoiceService {
 
         PageData findMap = new PageData();
         findMap.put("ids", sql_ids);
-        List<CustomerInvoice> objectList = customerInvoiceService.findCustomerInvoiceList(findMap);
+        List<CustomerInvoice> objectList = this.findCustomerInvoiceList(findMap);
         if (objectList != null && objectList.size() > 0) {
             for(int i = 0; i < objectList.size(); i++) {
                 CustomerInvoice object = objectList.get(i);

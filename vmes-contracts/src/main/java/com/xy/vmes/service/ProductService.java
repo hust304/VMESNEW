@@ -124,14 +124,14 @@ public interface ProductService {
     Product findProduct(PageData object);
     Product findProductById(String id);
     List<Product> findProductList(PageData object);
-    String findIdsByProductList(List<Product> objectList);
-    String findIdsByPageMapList(List<Map> mapList);
+//    String findIdsByProductList(List<Product> objectList);
+//    String findIdsByPageMapList(List<Map> mapList);
     List<Map> getDataListPage(PageData pd) throws Exception;
 
-    Map<String, String> productObj2QRCodeObj(Product productObj, Map<String, String> QRCodeObj);
-    ProductUnit product2ProductUnit(Product product, ProductUnit productUnit,String unit);
-    ProductUnitPrice product2ProductUnitPrice(Product product, ProductUnitPrice productUnitPrice,String unit);
-    Map<String, String> queryMap2ProductMap(Map queryMap, Map<String, String> productMap);
+//    Map<String, String> productObj2QRCodeObj(Product productObj, Map<String, String> QRCodeObj);
+    ProductUnit product2ProductUnit(Product product, String unit);
+    ProductUnitPrice product2ProductUnitPrice(Product product,String unit);
+    Map<String, String> queryMap2ProductMap(Map queryMap);
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     void updateStockCount(Product product, BigDecimal count, String uuser) throws Exception;
 
@@ -149,7 +149,7 @@ public interface ProductService {
 
     ResultModel listPageProductPropertys(PageData pd, Pagination pg)  throws Exception;
 
-    ResultModel addProduct(PageData pageData) throws Exception;
+//    ResultModel addProduct(PageData pageData) throws Exception;
 
     ResultModel updateProduct(PageData pageData) throws Exception;
 
@@ -159,7 +159,7 @@ public interface ProductService {
 
     void exportExcelProducts(PageData pd, Pagination pg) throws Exception;
 
-    ResultModel importExcelProduct(MultipartFile file) throws Exception;
+//    ResultModel importExcelProduct(MultipartFile file) throws Exception;
 }
 
 

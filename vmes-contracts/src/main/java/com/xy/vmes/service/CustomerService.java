@@ -105,7 +105,7 @@ public interface CustomerService {
     void updateToDisableByIds(String[] ids) throws Exception;
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
-    Customer findCustomer(PageData object);
+//    Customer findCustomer(PageData object);
     Customer findCustomerById(String id);
 
     /**
@@ -118,42 +118,41 @@ public interface CustomerService {
      * @param ids
      * @return
      */
-    boolean checkDeleteCustomerByIds(String ids);
+//    boolean checkDeleteCustomerByIds(String ids);
 
     /**
      * 获取(删除,修改)客户表主键id(vmes_customer)-通过','分隔的字符串
      *     <"DeleteIds", 客户表主键id>
      *     <"UpdateIds", 客户表主键id>
-     * @param ids
      * @return
      */
-    Map<String, String> findDeleteCustIdsByIds(String ids);
+//    Map<String, String> findDeleteCustIdsByIds(String ids);
 
-    List<TreeEntity> getTreeList(PageData pd) throws Exception;
+    List<TreeEntity> getTreeList(PageData pd) throws Exception;//@
 
-    List<Map> getReceiveDataListPage(PageData pd,Pagination pg) throws Exception;
+    List<Map> getReceiveDataListPage(PageData pd,Pagination pg) throws Exception;//@
 
-    void updateCustomerBalance(
-            Customer customer,
-            BigDecimal balance,
-            String uuser,
-            String type,
-            String remark) throws Exception;
+//    void updateCustomerBalance(
+//            Customer customer,
+//            BigDecimal balance,
+//            String uuser,
+//            String type,
+//            String remark) throws Exception;
 
     void updateCustomerBalance(
             Customer customer,
             BigDecimal balance,
             String uuser) throws Exception;
 
-    List<Map> getPreReceiveAmount(PageData pd) throws Exception;
+//    List<Map> getPreReceiveAmount(PageData pd) throws Exception;
 
-    List<Map> getNowReceiveAmount(PageData pd) throws Exception;
+//    List<Map> getNowReceiveAmount(PageData pd) throws Exception;
 
-    Map<String,Object> getReceiveAmount(PageData pd) throws Exception;
+//    Map<String,Object> getReceiveAmount(PageData pd) throws Exception;
 
-    ResultModel addCustomerBalance(PageData pd)throws Exception;
-
-    ResultModel updateCustomerBalancee(PageData pd) throws Exception;
+//    ResultModel addCustomerBalance(PageData pd)throws Exception;
+//
+//    ResultModel updateCustomerBalancee(PageData pd) throws Exception;
 
     ResultModel listPageCustomers(PageData pd, Pagination pg)throws Exception;
 
@@ -161,7 +160,7 @@ public interface CustomerService {
 
     ResultModel listPageCustomerAccountDays(PageData pd, Pagination pg)throws Exception;
 
-    ResultModel addCustomer(PageData pageData)throws Exception;
+//    ResultModel addCustomer(PageData pageData)throws Exception;
 
     ResultModel updateCustomer(PageData pageData)throws Exception;
 
@@ -171,11 +170,12 @@ public interface CustomerService {
 
     void exportExcelCustomers(PageData pd, Pagination pg)throws Exception;
 
-    ResultModel importExcelCustomers(MultipartFile file)throws Exception;
+//    ResultModel importExcelCustomers(MultipartFile file)throws Exception;
 
     ResultModel listTreeCustomer(PageData pd)throws Exception;
 
 
+    void updateCustomerBalance(PageData pd)throws Exception;
 }
 
 

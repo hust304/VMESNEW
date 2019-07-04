@@ -116,9 +116,9 @@ public interface EquipmentService {
 
     void exportExcelEquipments(PageData pd, Pagination pg) throws Exception;
 
-    ResultModel importExcelEquipments(MultipartFile file) throws Exception;
+//    ResultModel importExcelEquipments(MultipartFile file) throws Exception;
 
-    ResultModel addEquipment(PageData pd) throws Exception;
+//    ResultModel addEquipment(PageData pd) throws Exception;
 }
 
 

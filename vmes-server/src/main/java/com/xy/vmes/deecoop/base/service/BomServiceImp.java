@@ -210,7 +210,7 @@ public class BomServiceImp implements BomService {
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 
-    @Override
+
     public void updateToNotDefaultByPorId(String prodId) throws Exception {
         bomMapper.updateToNotDefaultByPorId(prodId);
     }
@@ -298,7 +298,7 @@ public class BomServiceImp implements BomService {
 
 
         pg.setSize(100000);
-        List<Map> dataList = bomService.getDataListPage(pd, pg);
+        List<Map> dataList = this.getDataListPage(pd, pg);
 
         //查询数据转换成Excel导出数据
         List<LinkedHashMap<String, String>> dataMapList = ColumnUtil.modifyDataList(columnList, dataList);
@@ -429,7 +429,7 @@ public class BomServiceImp implements BomService {
     public ResultModel updateBom(PageData pd) throws Exception {
         ResultModel model = new ResultModel();
         Bom bom = (Bom)HttpUtils.pageData2Entity(pd, new Bom());
-        bomService.update(bom);
+        this.update(bom);
         return model;
     }
 
@@ -438,9 +438,9 @@ public class BomServiceImp implements BomService {
         ResultModel model = new ResultModel();
         Bom bom = (Bom)HttpUtils.pageData2Entity(pd, new Bom());
         if(!StringUtils.isEmpty(pd.getString("prodId"))){
-            bomService.updateToNotDefaultByPorId(pd.getString("prodId"));
+            this.updateToNotDefaultByPorId(pd.getString("prodId"));
         }
-        bomService.update(bom);
+        this.update(bom);
         return model;
     }
 
@@ -456,7 +456,7 @@ public class BomServiceImp implements BomService {
         String id_str = StringUtil.stringTrimSpace(ids);
         String[] id_arry = id_str.split(",");
         if(id_arry.length>0){
-            bomService.deleteByIds(id_arry);
+            this.deleteByIds(id_arry);
             bomTreeService.deleteByBomIds(id_arry);
         }
         return model;
