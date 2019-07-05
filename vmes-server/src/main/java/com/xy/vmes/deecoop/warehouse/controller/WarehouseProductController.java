@@ -4,16 +4,12 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.Column;
-import com.xy.vmes.entity.Product;
-import com.xy.vmes.entity.WarehouseLoginfo;
 import com.xy.vmes.entity.WarehouseProduct;
 import com.xy.vmes.service.ColumnService;
-import com.xy.vmes.service.ProductService;
+import com.xy.vmes.service.WarehouseProductByCollectService;
 import com.xy.vmes.service.WarehouseProductService;
-import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
-import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -21,15 +17,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import org.apache.commons.lang.StringUtils;
 
-import javax.servlet.http.HttpServletResponse;
-import java.math.BigDecimal;
-import java.text.DecimalFormat;
 import java.util.*;
-
-
 
 /**
 * 说明：出库明细Controller
@@ -39,11 +29,15 @@ import java.util.*;
 @RestController
 @Slf4j
 public class WarehouseProductController {
-
     private Logger logger = LoggerFactory.getLogger(WarehouseProductController.class);
 
     @Autowired
     private WarehouseProductService warehouseProductService;
+    @Autowired
+    private WarehouseProductByCollectService warehouseProductByCollectService;
+
+    @Autowired
+    private ColumnService columnService;
 
     /**
     * @author 刘威 自动创建，禁止修改
@@ -130,8 +124,6 @@ public class WarehouseProductController {
         return model;
     }
 
-
-
     /**
     * @author 刘威 自动创建，禁止修改
     * @date 2018-10-31
@@ -149,14 +141,7 @@ public class WarehouseProductController {
         logger.info("################warehouseProduct/dataList 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
-
-
-
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
-
-
-
-
 
     /**
      * @author 刘威
@@ -190,8 +175,6 @@ public class WarehouseProductController {
         return model;
     }
 
-
-
     /**
      * @author 刘威 自动创建，可以修改
      * @date 2018-10-31
@@ -208,8 +191,6 @@ public class WarehouseProductController {
         logger.info("################warehouseProduct/listPageWarehouseProductView 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
-
-
 
     /**
      * @author 刘威 自动创建，可以修改
@@ -228,7 +209,6 @@ public class WarehouseProductController {
         return model;
     }
 
-
     /**
      * @author 刘威 自动创建，可以修改
      * @date 2018-10-31
@@ -245,9 +225,6 @@ public class WarehouseProductController {
         logger.info("################warehouseProduct/listPageWarehouseDetailView 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
-
-
-
 
     /**
     * @author 刘威 自动创建，可以修改
@@ -266,7 +243,6 @@ public class WarehouseProductController {
         return model;
     }
 
-
     /**
      * @author 刘威 自动创建，可以修改
      * @date 2018-10-31
@@ -284,38 +260,63 @@ public class WarehouseProductController {
         return model;
     }
 
-
-    /**
-    * Excel导出
-    * @author 刘威 自动创建，可以修改
-    * @date 2018-10-31
-    */
-    @PostMapping("/warehouse/warehouseProduct/exportExcelWarehouseProducts")
-    public void exportExcelWarehouseProducts() throws Exception {
-        logger.info("################warehouseProduct/exportExcelWarehouseProducts 执行开始 ################# ");
+    //获取仓库货品信息(虚拟库)-根据(货品id)汇总
+    @PostMapping("/warehouse/warehouseProduct/findListProductByByVirtual")
+    public ResultModel findListProductByByVirtual() throws Exception {
+        logger.info("################/warehouse/warehouseProduct/findListProductByByVirtual 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         Pagination pg = HttpUtils.parsePagination(pd);
-        warehouseProductService.exportExcelWarehouseProducts(pd,pg);
-        Long endTime = System.currentTimeMillis();
-        logger.info("################warehouseProduct/exportExcelWarehouseProducts 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
-    }
 
-    /**
-    * Excel导入
-    *
-    * @author 刘威 自动创建，可以修改
-    * @date 2018-10-31
-    */
-    @PostMapping("/warehouse/warehouseProduct/importExcelWarehouseProducts")
-    public ResultModel importExcelWarehouseProducts(@RequestParam(value="excelFile") MultipartFile file) throws Exception  {
-        logger.info("################warehouseProduct/importExcelWarehouseProducts 执行开始 ################# ");
-        Long startTime = System.currentTimeMillis();
-        ResultModel model = warehouseProductService.importExcelWarehouseProducts(file);
+        List<Column> columnList = columnService.findColumnList("equipmentRepair");
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
+        }
+
+        //获取指定栏位字符串-重新调整List<Column>
+        String fieldCode = pd.getString("fieldCode");
+        if (fieldCode != null && fieldCode.trim().length() > 0) {
+            columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
+        }
+        Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
+
+        //设置查询排序方式
+        //pd.put("orderStr", "a.cdate asc");
+        String orderStr = pd.getString("orderStr");
+        if (orderStr != null && orderStr.trim().length() > 0) {
+            pd.put("orderStr", orderStr);
+        }
+
+//        //是否需要分页 true:需要分页 false:不需要分页
+//        Map result = new HashMap();
+//        String isNeedPage = pd.getString("isNeedPage");
+//        if ("false".equals(isNeedPage)) {
+//            pg = null;
+//        } else {
+//            result.put("pageData", pg);
+//        }
+
+        //参数:(deptId deptPlaceKey) 虚拟库查询必须条件-从界面获取参数
+        //deptId: 部门id (当前登录用户所属部门id) 用户登录后前端就已经获得
+        //deptPlaceKey: 字典表定义(vmes_dictionary:pid:db46547d1bcb4c14baa228db1e8aaffe)
+        List<Map> varList = warehouseProductByCollectService.findProductByVirtual(pd,pg);
+        List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
+
+        Map result = new HashMap();
+        result.put("hideTitles",titleMap.get("hideTitles"));
+        result.put("titles",titleMap.get("titles"));
+        result.put("varList",varMapList);
+        model.putResult(result);
+
         Long endTime = System.currentTimeMillis();
-        logger.info("################warehouseProduct/importExcelWarehouseProducts 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/warehouse/warehouseProduct/findListProductByByVirtual 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
+
 
 
 }

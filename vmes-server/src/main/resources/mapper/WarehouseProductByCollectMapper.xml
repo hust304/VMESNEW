@@ -49,4 +49,50 @@
             order by ${orderStr}
         </if>
     </select>
+
+
+    <!-- 获取仓库货品信息(虚拟库)-根据(货品id)汇总 -->
+    <select id="findProductByVirtual" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+        warehouseProduct.product_id productId,
+        round(warehouseProduct.stock_count, 2) stockCount,
+
+        product.code productCode,
+        product.name productName,
+        product.name_en productNameEn,
+        product.spec productSpec,
+        product.genre productGenre,
+        genre.name productGenreName,
+        produnit.unit productUnit,
+        productUnit.name productUnitName
+        from (
+            select product_id,sum(stock_count) stock_count
+            from vmes_warehouse_product
+            <where>
+                <!-- 虚拟库存查询条件 -->
+                and warehouse_id in (
+                    select id
+                    from vmes_warehouse
+                    <where>
+                        <if test="companyId != null and companyId != ''" >
+                            and company_id = #{companyId}
+                        </if>
+                        and dept_id = #{deptId}
+                        and dept_place_key = #{deptPlaceKey}
+                    </where>
+                )
+                <if test="companyId != null and companyId != ''" >
+                    and company_id = #{companyId}
+                </if>
+            </where>
+            group by product_id
+        ) warehouseProduct
+            left join vmes_product product on warehouseProduct.product_id = product.id
+            left join vmes_product_unit produnit on warehouseProduct.product_id = produnit.product_id and produnit.type = 1
+            left join vmes_dictionary genre on product.genre = genre.id
+            left join vmes_dictionary productUnit on produnit.unit = productUnit.id
+
+    </select>
+
+
 </mapper>
