@@ -25,9 +25,9 @@ public class EquipmentRepairTaskDetail implements Serializable {
 	//备件ID(货品)ID
 	@TableField("product_id")
 	private String productId;
-	//货品分类(0:货品类1:备件类)
-	@TableField("product_type")
-	private String productType;
+	//仓库属性(entity:实体库 virtual:虚拟库)
+	@TableField("warehouse_genre")
+	private String warehouseGenre;
 	//领取数量
 	@TableField("receive_count")
 	private BigDecimal receiveCount;
@@ -75,7 +75,6 @@ public class EquipmentRepairTaskDetail implements Serializable {
 	private String isdisable;
 
 
-
 	public void setId(String id) {
 		this.id = id;
 	}
@@ -94,11 +93,11 @@ public class EquipmentRepairTaskDetail implements Serializable {
 	public String getProductId() {
 		return productId;
 	}
-	public void setProductType(String productType) {
-		this.productType = productType;
+	public String getWarehouseGenre() {
+		return warehouseGenre;
 	}
-	public String getProductType() {
-		return productType;
+	public void setWarehouseGenre(String warehouseGenre) {
+		this.warehouseGenre = warehouseGenre;
 	}
 	public void setReceiveCount(BigDecimal receiveCount) {
 		this.receiveCount = receiveCount;

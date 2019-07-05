@@ -37,7 +37,7 @@
             (replace(uuid(), '-', ''),'equipmentRepairTaskDetail','id','id',0, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentRepairTaskDetail','taskId','维修任务ID',1, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentRepairTaskDetail','productId','备件ID(货品)ID',2, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'equipmentRepairTaskDetail','productType','货品分类(0:货品类1:备件类)',3, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentRepairTaskDetail','warehouseGenre','仓库属性(entity:实体库 virtual:虚拟库)',3, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentRepairTaskDetail','receiveCount','领取数量',4, '1','1','1','0',now(), 'admin'),
 
             (replace(uuid(), '-', ''),'equipmentRepairTaskDetail','applyCount','实际使用数量',5, '1','1','1','0',now(), 'admin'),
@@ -72,7 +72,7 @@
         id id,
         task_id taskId,
         product_id productId,
-        product_type productType,
+        warehouse_genre warehouseGenre,
         receive_count receiveCount,
 
         apply_count applyCount,
@@ -130,7 +130,7 @@
         taskDtl.id id,
         taskDtl.task_id taskId,
         taskDtl.product_id productId,
-        taskDtl.product_type productType,
+        taskDtl.warehouse_genre warehouseGenre,
         round(taskDtl.receive_count, 2) receiveCount,
 
         round(taskDtl.apply_count, 2) applyCount,
