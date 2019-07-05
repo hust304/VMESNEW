@@ -261,16 +261,16 @@ public class WarehouseProductController {
     }
 
     //获取仓库货品信息(虚拟库)-根据(货品id)汇总
-    @PostMapping("/warehouse/warehouseProduct/findListProductByByVirtual")
-    public ResultModel findListProductByByVirtual() throws Exception {
-        logger.info("################/warehouse/warehouseProduct/findListProductByByVirtual 执行开始 ################# ");
+    @PostMapping("/warehouse/warehouseProduct/findListProductByWarehouseVirtual")
+    public ResultModel findListProductByWarehouseVirtual() throws Exception {
+        logger.info("################/warehouse/warehouseProduct/findListProductByWarehouseVirtual 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
 
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         Pagination pg = HttpUtils.parsePagination(pd);
 
-        List<Column> columnList = columnService.findColumnList("equipmentRepair");
+        List<Column> columnList = columnService.findColumnList("productByWarehouseVirtual");
         if (columnList == null || columnList.size() == 0) {
             model.putCode("1");
             model.putMsg("数据库没有生成TabCol，请联系管理员！");
@@ -303,7 +303,7 @@ public class WarehouseProductController {
         //参数:(deptId deptPlaceKey) 虚拟库查询必须条件-从界面获取参数
         //deptId: 部门id (当前登录用户所属部门id) 用户登录后前端就已经获得
         //deptPlaceKey: 字典表定义(vmes_dictionary:pid:db46547d1bcb4c14baa228db1e8aaffe)
-        List<Map> varList = warehouseProductByCollectService.findProductByVirtual(pd,pg);
+        List<Map> varList = warehouseProductByCollectService.findProductByWarehouseVirtual(pd,pg);
         List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
 
         Map result = new HashMap();
@@ -313,7 +313,7 @@ public class WarehouseProductController {
         model.putResult(result);
 
         Long endTime = System.currentTimeMillis();
-        logger.info("################/warehouse/warehouseProduct/findListProductByByVirtual 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/warehouse/warehouseProduct/findListProductByWarehouseVirtual 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 

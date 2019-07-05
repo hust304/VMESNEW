@@ -17,11 +17,11 @@ public class WarehouseProductByCollectServiceImp implements WarehouseProductByCo
     @Autowired
     private WarehouseProductByCollectMapper warehouseProductByCollectMapper;
 
-    public List<Map> findProductByVirtual(PageData pd) throws Exception {
-        return warehouseProductByCollectMapper.findProductByVirtual(pd);
+    //获取仓库货品信息(虚拟库)-根据(货品id)汇总
+    public List<Map> findProductByWarehouseVirtual(PageData pd) throws Exception {
+        return warehouseProductByCollectMapper.findProductByWarehouseVirtual(pd);
     }
-
-    public List<Map> findProductByVirtual(PageData pd, Pagination pg) throws Exception {
-        return warehouseProductByCollectMapper.findProductByVirtual(pd, pg);
+    public List<Map> findProductByWarehouseVirtual(PageData pd, Pagination pg) throws Exception {
+        return warehouseProductByCollectMapper.findProductByWarehouseVirtual(pd, pg);
     }
 }

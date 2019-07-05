@@ -8,6 +8,6 @@ import java.util.Map;
 
 public interface WarehouseProductByCollectService {
     //获取仓库货品信息(虚拟库)-根据(货品id)汇总
-    List<Map> findProductByVirtual(PageData pd) throws Exception;
-    List<Map> findProductByVirtual(PageData pd, Pagination pg) throws Exception;
+    List<Map> findProductByWarehouseVirtual(PageData pd) throws Exception;
+    List<Map> findProductByWarehouseVirtual(PageData pd, Pagination pg) throws Exception;
 }

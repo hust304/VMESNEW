@@ -49,17 +49,34 @@
             order by ${orderStr}
         </if>
     </select>
+    <!-- **************************************************************************************************** -->
 
+    <insert id="productByWarehouseVirtual" >
+        delete from vmes_column where model_code = 'productByWarehouseVirtual' ;
+        insert into vmes_column (
+        id,model_code,title_key,title_name,serial_number,
+        isdisable,ishide,isedit,ismust,cdate,
+        cuser
+        ) VALUES
+            (replace(uuid(), '-', ''), 'productByWarehouseVirtual', 'productId', '货品id', 0, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'productByWarehouseVirtual', 'productCode', '货品编码', 1, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'productByWarehouseVirtual', 'productName', '货品名称', 2, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'productByWarehouseVirtual', 'productSpec', '规格型号', 3, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'productByWarehouseVirtual', 'productGenre', '货品属性id', 4, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'productByWarehouseVirtual', 'productGenreName', '货品属性', 4, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'productByWarehouseVirtual', 'productUnit', '单位id', 5, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'productByWarehouseVirtual', 'productUnitName', '单位', 5, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'productByWarehouseVirtual', 'stockCount', '库存数量', 6, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin')
 
+    </insert>
     <!-- 获取仓库货品信息(虚拟库)-根据(货品id)汇总 -->
-    <select id="findProductByVirtual" parameterType="com.yvan.PageData" resultType="java.util.Map">
+    <select id="findProductByWarehouseVirtual" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
         warehouseProduct.product_id productId,
         round(warehouseProduct.stock_count, 2) stockCount,
 
         product.code productCode,
         product.name productName,
-        product.name_en productNameEn,
         product.spec productSpec,
         product.genre productGenre,
         genre.name productGenreName,

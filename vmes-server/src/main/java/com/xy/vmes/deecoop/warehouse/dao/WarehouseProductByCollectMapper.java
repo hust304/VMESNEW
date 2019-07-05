@@ -15,7 +15,7 @@ public interface WarehouseProductByCollectMapper {
     List<Map<String, Object>> findProductMapList(PageData pd, Pagination pg);
 
     //获取仓库货品信息(虚拟库)-根据(货品id)汇总
-    List<Map> findProductByVirtual(PageData pd);
-    List<Map> findProductByVirtual(PageData pd, Pagination pg);
+    List<Map> findProductByWarehouseVirtual(PageData pd);
+    List<Map> findProductByWarehouseVirtual(PageData pd, Pagination pg);
 
 }
