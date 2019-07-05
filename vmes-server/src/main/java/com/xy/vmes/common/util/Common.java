@@ -256,6 +256,16 @@ public class Common {
 
         //db46547d1bcb4c14baa228db1e8aaffe(字典id)  部门货位名称(字典名称)
         put("departmentPosition", "db46547d1bcb4c14baa228db1e8aaffe");
+            //364398458ba149eeb6418def062dc93c 物料区
+            put("deptProduct", "364398458ba149eeb6418def062dc93c");
+            //edb488c6b89e44dd98749e208bf51cc1 待检区
+            put("deptCheck", "edb488c6b89e44dd98749e208bf51cc1");
+            //1e1585114d2246beabecaae868e62d37 合格区
+            put("deptStandard", "1e1585114d2246beabecaae868e62d37");
+            //d723af8e2a884e6abb9487c4701a0e7c 不合格区
+            put("deptNotStandard", "d723af8e2a884e6abb9487c4701a0e7c");
+            //a42f32ef9d39476e932e1e30b77fefbb 维保
+            put("deptRepair", "a42f32ef9d39476e932e1e30b77fefbb");
 
         //d7fc4c594c5a4c8e81266c52cbf30110(字典id)  仓库类型(字典名称)
         put("warehouseType", "d7fc4c594c5a4c8e81266c52cbf30110");
