@@ -191,27 +191,27 @@ public class WarehouseInitialServiceImp implements WarehouseInitialService {
     }
 
     //仓库初始化(复杂版仓库)
-    public List<Map> warehouseInitialByComplex(PageData pd, Pagination pg) throws Exception {
+    public List<Map> findWarehouseInitialByComplex(PageData pd, Pagination pg) throws Exception {
         List<Map> mapList = new ArrayList<Map>();
         if (pd == null) {return mapList;}
 
         if (pg == null) {
-            return warehouseInitialMapper.warehouseInitialByComplex(pd);
+            return warehouseInitialMapper.findWarehouseProductByComplex(pd);
         } else if (pg != null) {
-            return warehouseInitialMapper.warehouseInitialByComplex(pd, pg);
+            return warehouseInitialMapper.findWarehouseProductByComplex(pd, pg);
         }
 
         return mapList;
     }
     //仓库初始化(简版仓库)
-    public List<Map> warehouseInitialBySimple(PageData pd, Pagination pg) throws Exception {
+    public List<Map> findWarehouseInitialBySimple(PageData pd, Pagination pg) throws Exception {
         List<Map> mapList = new ArrayList<Map>();
         if (pd == null) {return mapList;}
 
         if (pg == null) {
-            return warehouseInitialMapper.warehouseInitialBySimple(pd);
+            return warehouseInitialMapper.findWarehouseProductBySimple(pd);
         } else if (pg != null) {
-            return warehouseInitialMapper.warehouseInitialBySimple(pd,pg);
+            return warehouseInitialMapper.findWarehouseProductBySimple(pd,pg);
         }
 
         return mapList;

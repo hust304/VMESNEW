@@ -273,17 +273,17 @@
         (replace(uuid(), '-', ''),'warehouseInitialByComplex','isdisable','是否启用(0:已禁用 1:启用)',10, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'warehouseInitialByComplex','version','版本号(库存数量修改时)',11, '1','1','1','0',now(), 'admin'),
 
-        (replace(uuid(), '-', ''),'warehouseInitialByComplex','warehouseCode','warehouseCode',8, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'warehouseInitialByComplex','pathName','pathName',8, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'warehouseInitialByComplex','productCode','productCode',9, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'warehouseInitialByComplex','productName','productName',10, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'warehouseInitialByComplex','productSpec','productSpec',11, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseInitialByComplex','warehouseCode','货位编码',8, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseInitialByComplex','pathName','货位名称',8, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseInitialByComplex','productCode','货品编码',9, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseInitialByComplex','productName','货品名称',10, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseInitialByComplex','productSpec','规格型号',11, '1','1','1','0',now(), 'admin'),
 
-        (replace(uuid(), '-', ''),'warehouseInitialByComplex','productUnit','productUnit',9, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'warehouseInitialByComplex','productGenre','productGenre',10, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'warehouseInitialByComplex','productType','productType',11, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'warehouseInitialByComplex','productUnitName','productUnitName',10, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'warehouseInitialByComplex','productGenreName','productGenreName',11, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseInitialByComplex','productUnit','计量单位id',9, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseInitialByComplex','productGenre','货品属性id',10, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseInitialByComplex','productType','货品类别id',11, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseInitialByComplex','productUnitName','计量单位',10, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseInitialByComplex','productGenreName','货品属性',11, '1','1','1','0',now(), 'admin'),
 
         (replace(uuid(), '-', ''),'warehouseInitialByComplex','productSafetyCount','安全库存数量',16, '1','1','1','0',now(), 'admin')
     </insert>
@@ -396,21 +396,20 @@
         ) VALUES
         (replace(uuid(), '-', ''),'warehouseInitialBySimple','companyId','companyId',0, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'warehouseInitialBySimple','warehouseId','仓库货位ID',1, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'warehouseInitialBySimple','productId','产品ID',2, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseInitialBySimple','productId','货品id',2, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'warehouseInitialBySimple','stockCount','库存数量',4, '1','1','1','0',now(), 'admin'),
 
+        (replace(uuid(), '-', ''),'warehouseInitialBySimple','warehouseCode','货位编码',8, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseInitialBySimple','pathName','货位名称',8, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseInitialBySimple','productCode','货品编码',9, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseInitialBySimple','productName','货品名称',10, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseInitialBySimple','productSpec','规格型号',11, '1','1','1','0',now(), 'admin'),
 
-        (replace(uuid(), '-', ''),'warehouseInitialBySimple','warehouseCode','warehouseCode',8, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'warehouseInitialBySimple','pathName','pathName',8, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'warehouseInitialBySimple','productCode','productCode',9, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'warehouseInitialBySimple','productName','productName',10, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'warehouseInitialBySimple','productSpec','productSpec',11, '1','1','1','0',now(), 'admin'),
-
-        (replace(uuid(), '-', ''),'warehouseInitialBySimple','productUnit','productUnit',9, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'warehouseInitialBySimple','productGenre','productGenre',10, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'warehouseInitialBySimple','productType','productType',11, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'warehouseInitialBySimple','productUnitName','productUnitName',10, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'warehouseInitialBySimple','productGenreName','productGenreName',11, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseInitialBySimple','productUnit','计量单位id',9, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseInitialBySimple','productGenre','货品属性id',10, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseInitialBySimple','productType','货品类别id',11, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseInitialBySimple','productUnitName','计量单位',10, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseInitialBySimple','productGenreName','货品属性',11, '1','1','1','0',now(), 'admin'),
 
         (replace(uuid(), '-', ''),'warehouseInitialBySimple','productSafetyCount','安全库存数量',16, '1','1','1','0',now(), 'admin')
     </insert>
@@ -465,30 +464,32 @@
                             and path_id like '%2d75e49bcb9911e884ad00163e105f05%'
                             and is_simple = 'Y'
                         </if>
-                        and isdisable = '1'
 
-                        <!--nodeId 树形结构指定节点id 自定义sql查询语句-->
-                        <if test="nodeId != null and nodeId != ''" >
-                            and path_id LIKE CONCAT(CONCAT('%', #{nodeId}),'%')
-                        </if>
-
-                        <!--按货位属性 查询语句-->
-                        <if test="warehouseCode != null and warehouseCode != ''">
-                            and code LIKE CONCAT(CONCAT(#{warehouseCode}),'%')
-                        </if>
-                        <if test="pathName != null and pathName != ''">
-                            and path_name LIKE CONCAT('%', CONCAT(#{pathName}),'%')
-                        </if>
                     </where>
                 )
             </where>
             group by warehouse_id,product_id,company_id
         ) warehouseProduct
-            left join vmes_product product on wp.product_id = product.id and product.isdisable = '1'
-            left join vmes_product_unit produnit on wp.product_id = produnit.product_id and produnit.type = 1
+            left join vmes_warehouse warehouse on warehouseProduct.warehouse_id = warehouse.id and warehouse.isdisable = '1'
+            left join vmes_product product on warehouseProduct.product_id = product.id and product.isdisable = '1'
+            left join vmes_product_unit produnit on warehouseProduct.product_id = produnit.product_id and produnit.type = 1
             left join vmes_dictionary unit on produnit.unit = unit.id
             left join vmes_dictionary genre on product.genre = genre.id
         <where>
+            <!--nodeId 树形结构指定节点id 自定义sql查询语句-->
+            <if test="nodeId != null and nodeId != ''" >
+                and warehouse.path_id LIKE CONCAT(CONCAT('%', #{nodeId}),'%')
+            </if>
+
+            <!--按货位属性 查询语句-->
+            <if test="warehouseCode != null and warehouseCode != ''">
+                and warehouse.code LIKE CONCAT(CONCAT(#{warehouseCode}),'%')
+            </if>
+            <if test="pathName != null and pathName != ''">
+                and warehouse.path_name LIKE CONCAT('%', CONCAT(#{pathName}),'%')
+            </if>
+
+
             <!--按货品属性 查询语句-->
             <if test="productCode != null and productCode != ''">
                 and product.code LIKE CONCAT(CONCAT(#{productCode}),'%')

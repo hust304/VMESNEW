@@ -86,9 +86,9 @@ public interface WarehouseInitialService {
     List<Map> getDataListPage(PageData pd, Pagination pg) throws Exception;
 
     //仓库初始化(复杂版仓库)
-    List<Map> warehouseInitialByComplex(PageData pd, Pagination pg) throws Exception;
+    List<Map> findWarehouseInitialByComplex(PageData pd, Pagination pg) throws Exception;
     //仓库初始化(简版仓库)
-    List<Map> warehouseInitialBySimple(PageData pd, Pagination pg) throws Exception;
+    List<Map> findWarehouseInitialBySimple(PageData pd, Pagination pg) throws Exception;
 
     void initialByWarehouse(String cuser, String companyId) throws Exception;
     void deleteTableByBusiness(String companyId) throws Exception;
