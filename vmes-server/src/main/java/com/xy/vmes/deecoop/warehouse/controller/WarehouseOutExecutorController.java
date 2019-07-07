@@ -233,38 +233,6 @@ public class WarehouseOutExecutorController {
     }
 
 
-    /**
-    * Excel导出
-    * @author 刘威 自动创建，可以修改
-    * @date 2018-11-01
-    */
-    @PostMapping("/warehouse/warehouseOutExecutor/exportExcelWarehouseOutExecutors")
-    public void exportExcelWarehouseOutExecutors() throws Exception {
-        logger.info("################warehouseOutExecutor/exportExcelWarehouseOutExecutors 执行开始 ################# ");
-        Long startTime = System.currentTimeMillis();
-        PageData pd = HttpUtils.parsePageData();
-        Pagination pg = HttpUtils.parsePagination(pd);
-        warehouseOutExecutorService.exportExcelWarehouseOutExecutors(pd,pg);
-        Long endTime = System.currentTimeMillis();
-        logger.info("################warehouseOutExecutor/exportExcelWarehouseOutExecutors 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
-    }
-
-    /**
-    * Excel导入
-    *
-    * @author 刘威 自动创建，可以修改
-    * @date 2018-11-01
-    */
-    @PostMapping("/warehouse/warehouseOutExecutor/importExcelWarehouseOutExecutors")
-    public ResultModel importExcelWarehouseOutExecutors(@RequestParam(value="excelFile") MultipartFile file) throws Exception  {
-        logger.info("################warehouseOutExecutor/importExcelWarehouseOutExecutors 执行开始 ################# ");
-        Long startTime = System.currentTimeMillis();
-        ResultModel model = warehouseOutExecutorService.importExcelWarehouseOutExecutors(file);
-        Long endTime = System.currentTimeMillis();
-        logger.info("################warehouseOutExecutor/importExcelWarehouseOutExecutors 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
-        return model;
-    }
-
 }
 
 

@@ -256,7 +256,7 @@ public class WarehouseOutDetailServiceImp implements WarehouseOutDetailService {
         if (objectList == null || objectList.size() == 0) {return;}
 
         for (WarehouseOutDetail detail : objectList) {
-            detail.setWarehouseId(parentObj.getWarehouseId());
+            //detail.setWarehouseId(parentObj.getWarehouseId());
             //状态(0:待派单 1:执行中 2:已完成 -1.已取消)
             detail.setState("1");
             detail.setParentId(parentObj.getId());

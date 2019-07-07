@@ -19,9 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 说明：vmes_warehouse_out: 简版仓库入库单Controller
@@ -37,9 +35,15 @@ public class WarehouseOutBySimpleController {
     private WarehouseOutService warehouseOutService;
     @Autowired
     private WarehouseOutDetailService warehouseOutDetailService;
+    @Autowired
+    private WarehouseOutExecutorService warehouseOutExecutorService;
+    @Autowired
+    private WarehouseOutExecuteService warehouseOutExecuteService;
 
     @Autowired
     private WarehouseProductService warehouseProductService;
+    @Autowired
+    private WarehouseProductToolService warehouseProductToolService;
     @Autowired
     private ProductService productService;
 
@@ -113,6 +117,21 @@ public class WarehouseOutBySimpleController {
         //2.添加出库单明细
         List<WarehouseOutDetail> detailList = warehouseOutDetailService.mapList2DetailList(mapList, null);
         warehouseOutDetailService.addWarehouseOutDetailBySimple(warehouseOut, detailList);
+
+        //3.添加出库单派单表
+        warehouseOutExecutorService.addWarehouseOutExecutorBySimple(detailList);
+
+        //4.添加出库单执行表
+        List<WarehouseOutExecute> executeList = new ArrayList<WarehouseOutExecute>();
+        for (WarehouseOutDetail outDetail : detailList) {
+            String productId = outDetail.getProductId();
+            BigDecimal count = outDetail.getCount();
+            List<Map<String, Object>> outMapList = warehouseProductToolService.findWarehouseProductOutMapList(productId, companyID, count);
+            if (outMapList != null && outMapList.size() > 0) {
+                executeList = warehouseOutExecuteService.outMapList2ExecuteList(outDetail, outMapList, executeList);
+            }
+        }
+        warehouseOutExecuteService.addWarehouseOutExecuteBySimple(executeList);
 
         Long endTime = System.currentTimeMillis();
         logger.info("################/warehouse/warehouseOutBySimple/addWarehouseOutBySimple 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
@@ -358,20 +377,89 @@ public class WarehouseOutBySimpleController {
 
         String cuser = pageData.getString("cuser");
 
-        List<WarehouseOutDetail> outDtlList = warehouseOutDetailService.findWarehouseOutDetailListByParentId(parentId);
-        if (outDtlList == null || outDtlList.size() == 0) {
+//        List<WarehouseOutDetail> outDtlList = warehouseOutDetailService.findWarehouseOutDetailListByParentId(parentId);
+//        if (outDtlList == null || outDtlList.size() == 0) {
+//            return model;
+//        }
+
+//        StringBuffer msgBuf = new StringBuffer();
+//        try {
+//            for (int i = 0; i < outDtlList.size(); i++) {
+//                WarehouseOutDetail object = outDtlList.get(i);
+//
+//                String detailId = object.getId();
+//                BigDecimal count = object.getCount();
+//                String warehouseId = object.getWarehouseId();
+//                String productId = object.getProductId();
+//
+//                //(简版仓库)出库操作
+//                WarehouseProduct outObject = new WarehouseProduct();
+//                //产品ID
+//                outObject.setProductId(productId);
+//                //(实际)货位ID
+//                outObject.setWarehouseId(warehouseId);
+//
+//                //库存变更日志
+//                String executeId = Conv.createUuid();
+//
+//                WarehouseLoginfo loginfo = new WarehouseLoginfo();
+//                loginfo.setParentId(parentId);
+//                loginfo.setDetailId(detailId);
+//                loginfo.setExecuteId(executeId);
+//                loginfo.setCompanyId(companyId);
+//                loginfo.setCuser(cuser);
+//                //operation 操作类型(add:添加 modify:修改 delete:删除:)
+//                loginfo.setOperation("add");
+//
+//                //beforeCount 操作变更前数量(业务相关)
+//                loginfo.setBeforeCount(BigDecimal.valueOf(0D));
+//                //afterCount 操作变更后数量(业务相关)
+//                loginfo.setAfterCount(count);
+//
+//                String msgStr = warehouseProductService.outStockCountBySimple(outObject, count, loginfo);
+//                if (msgStr != null && msgStr.trim().length() > 0) {
+//                    msgBuf.append("第 " + (i+1) + " 条: " + "出库操作失败:" + msgStr);
+//                } else {
+//                    Product product = productService.findProductById(productId);
+//                    BigDecimal prodCount = BigDecimal.valueOf(0D);
+//                    if (product.getStockCount() != null) {
+//                        prodCount = product.getStockCount();
+//                    }
+//
+//                    BigDecimal prodStockCount = BigDecimal.valueOf(prodCount.doubleValue() - count.doubleValue());
+//                    productService.updateStockCount(product, prodStockCount, cuser);
+//                }
+//            }
+//        } catch (TableVersionException tabExc) {
+//            //库存变更 version 锁
+//            if (Common.SYS_STOCKCOUNT_ERRORCODE.equals(tabExc.getErrorCode())) {
+//                model.putCode(Integer.valueOf(1));
+//                model.putMsg(tabExc.getMessage());
+//                return model;
+//            }
+//        }
+//
+//        if (msgBuf.toString().trim().length() > 0) {
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg(msgBuf.toString());
+//            return model;
+//        }
+
+        List<Map> executeList = warehouseOutExecuteService.findExecuteListByParentId(parentId);
+        if (executeList == null || executeList.size() == 0) {
             return model;
         }
 
         StringBuffer msgBuf = new StringBuffer();
         try {
-            for (int i = 0; i < outDtlList.size(); i++) {
-                WarehouseOutDetail object = outDtlList.get(i);
+            for (int i = 0; i < executeList.size(); i++) {
+                Map object = executeList.get(i);
 
-                String detailId = object.getId();
-                BigDecimal count = object.getCount();
-                String warehouseId = object.getWarehouseId();
-                String productId = object.getProductId();
+                String detailId = (String)object.get("detailId");
+                BigDecimal count = (BigDecimal)object.get("actualCount");
+                String warehouseId = (String)object.get("warehouseId");
+                String productId = (String)object.get("productId");
+                String code = (String)object.get("code");
 
                 //(简版仓库)出库操作
                 WarehouseProduct outObject = new WarehouseProduct();
@@ -379,6 +467,8 @@ public class WarehouseOutBySimpleController {
                 outObject.setProductId(productId);
                 //(实际)货位ID
                 outObject.setWarehouseId(warehouseId);
+                //货位批次号
+                outObject.setCode(code);
 
                 //库存变更日志
                 String executeId = Conv.createUuid();
@@ -397,7 +487,7 @@ public class WarehouseOutBySimpleController {
                 //afterCount 操作变更后数量(业务相关)
                 loginfo.setAfterCount(count);
 
-                String msgStr = warehouseProductService.outStockCountBySimple(outObject, count, loginfo);
+                String msgStr = warehouseProductService.outStockCount(outObject, count, loginfo);
                 if (msgStr != null && msgStr.trim().length() > 0) {
                     msgBuf.append("第 " + (i+1) + " 条: " + "出库操作失败:" + msgStr);
                 } else {
@@ -425,6 +515,7 @@ public class WarehouseOutBySimpleController {
             model.putMsg(msgBuf.toString());
             return model;
         }
+
 
         //修改出库单明细状态
         PageData mapDetail = new PageData();
