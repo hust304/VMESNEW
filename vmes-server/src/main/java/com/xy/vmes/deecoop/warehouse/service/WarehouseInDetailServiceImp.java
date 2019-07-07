@@ -385,6 +385,14 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
             detail.setCuser(parentObj.getCuser());
             detail.setWarehouseId(parentObj.getWarehouseId());
 
+            //获取批次号
+            //PC+yyyyMMdd+00001 = 15位
+            String code = coderuleService.createCoderCdateByDate(parentObj.getCompanyId(),
+                    "vmes_product",
+                    "yyyyMMdd",
+                    "PC");
+            detail.setCode(code);
+
             this.save(detail);
         }
     }
