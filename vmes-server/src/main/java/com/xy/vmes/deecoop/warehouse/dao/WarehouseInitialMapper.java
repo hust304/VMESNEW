@@ -45,6 +45,17 @@ public interface WarehouseInitialMapper extends BaseMapper<WarehouseInitial> {
      * 创建时间：2018-11-20
      */
     List<Map> getDataListPage(PageData pd, Pagination pg);
+
+    //仓库初始化(复杂版仓库)
+    List<Map> warehouseInitialByComplex(PageData pd);
+    List<Map> warehouseInitialByComplex(PageData pd, Pagination pg);
+
+    //仓库初始化(简版仓库)
+    List<Map> warehouseInitialBySimple(PageData pd);
+    List<Map> warehouseInitialBySimple(PageData pd, Pagination pg);
+
+
+
 }
 
 

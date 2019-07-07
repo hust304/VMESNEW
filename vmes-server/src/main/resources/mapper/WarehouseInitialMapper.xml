@@ -247,6 +247,275 @@
         </if>
     </select>
 
+    <!-- warehouseEdition(仓库版本): warehouseByComplex(复杂版仓库)-对应实体库********************************************* -->
+    <insert id="warehouseInitialByComplex" >
+        delete from vmes_column where model_code = 'warehouseInitialByComplex' ;
+        insert into vmes_column (
+        id,model_code,title_key,title_name,serial_number,
+        isdisable,ishide,isedit,ismust,cdate,
+        cuser
+        ) VALUES
+        (replace(uuid(), '-', ''),'warehouseInitialByComplex','id','id',0, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseInitialByComplex','qrcode','qrcode',0, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseInitialByComplex','companyId','companyId',0, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseInitialByComplex','warehouseId','仓库货位ID',1, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseInitialByComplex','productId','产品ID',2, '1','1','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'warehouseInitialByComplex','code','货位批次号',3, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseInitialByComplex','stockCount','库存数量',4, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseInitialByComplex','cuser','创建用户id',5, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseInitialByComplex','cdate','创建时间',6, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseInitialByComplex','uuser','修改用户id',7, '1','1','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'warehouseInitialByComplex','auditDate','审核时间',8, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseInitialByComplex','udate','修改时间',8, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseInitialByComplex','remark','备注',9, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseInitialByComplex','isdisable','是否启用(0:已禁用 1:启用)',10, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseInitialByComplex','version','版本号(库存数量修改时)',11, '1','1','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'warehouseInitialByComplex','warehouseCode','warehouseCode',8, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseInitialByComplex','pathName','pathName',8, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseInitialByComplex','productCode','productCode',9, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseInitialByComplex','productName','productName',10, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseInitialByComplex','productSpec','productSpec',11, '1','1','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'warehouseInitialByComplex','productUnit','productUnit',9, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseInitialByComplex','productGenre','productGenre',10, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseInitialByComplex','productType','productType',11, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseInitialByComplex','productUnitName','productUnitName',10, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseInitialByComplex','productGenreName','productGenreName',11, '1','1','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'warehouseInitialByComplex','productSafetyCount','安全库存数量',16, '1','1','1','0',now(), 'admin')
+    </insert>
+
+    <select id="findWarehouseProductByComplex" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+        wp.id id,
+        wp.qrcode qrcode,
+        wp.company_id companyId,
+        wp.warehouse_id warehouseId,
+        wp.product_id productId,
+
+        wp.code code,
+        round(ifnull(wp.stock_count, 0), 2) stockCount,
+        wp.cuser cuser,
+        wp.cdate cdate,
+        wp.uuser uuser,
+
+        wp.audit_date auditDate,
+        wp.udate udate,
+        wp.remark remark,
+        wp.isdisable isdisable,
+        wp.version version,
+
+        <!--vmes_warehouse:仓库货位表-->
+        warehouse.path_id pathId,
+        warehouse.path_name pathName,
+        warehouse.code warehouseCode,
+
+        <!--货品表-->
+        product.code productCode,
+        product.name productName,
+        product.spec productSpec,
+        produnit.unit productUnit,
+        product.genre productGenre,
+        product.type productType,
+        unit.name productUnitName,
+        genre.name productGenreName,
+        round(ifnull(product.safety_count, 0), 2) productSafetyCount
+
+        from vmes_warehouse_product wp
+        left join vmes_warehouse warehouse on wp.warehouse_id = warehouse.id and warehouse.isdisable = '1'
+        left join vmes_product product on wp.product_id = product.id and product.isdisable = '1'
+        left join vmes_product_unit produnit on produnit.product_id = product.id and produnit.type = 1
+        left join vmes_dictionary unit on produnit.unit = unit.id
+        left join vmes_dictionary genre on product.genre = genre.id
+        <where>
+            <if test="productIds != null and productIds != ''" >
+                and wp.product_id in (${productIds})
+            </if>
+            <if test="currentCompanyId != null and currentCompanyId != ''" >
+                and wp.company_id=#{currentCompanyId}
+            </if>
+            <!--nodeId 树形结构指定节点id 自定义sql查询语句-->
+            <if test="nodeId != null and nodeId != ''" >
+                and warehouse.path_id LIKE CONCAT(CONCAT('%', #{nodeId}),'%')
+            </if>
+
+            <!--按货位属性 查询语句-->
+            <if test="warehouseCode != null and warehouseCode != ''">
+                and warehouse.code LIKE CONCAT(CONCAT(#{warehouseCode}),'%')
+            </if>
+            <if test="pathName != null and pathName != ''">
+                and warehouse.path_name LIKE CONCAT('%', CONCAT(#{pathName}),'%')
+            </if>
+
+            <!--warehouseEdition(仓库版本): warehouseByComplex(复杂版仓库)-对应实体库(简版仓库过滤出) -->
+            <!--实体库 2d75e49bcb9911e884ad00163e105f05-->
+            <if test="'warehouseByComplex' == warehouseEdition">
+                and warehouse.path_id like '%2d75e49bcb9911e884ad00163e105f05%'
+                and (warehouse.is_simple is null or warehouse.is_simple = 'N')
+            </if>
+
+
+            <!--按货品属性 查询语句-->
+            <if test="productCode != null and productCode != ''">
+                and product.code LIKE CONCAT(CONCAT(#{productCode}),'%')
+            </if>
+            <if test="productName != null and productName != ''">
+                and product.name LIKE CONCAT(CONCAT('%', #{productName}),'%')
+            </if>
+            <if test="productSpec != null and productSpec != ''">
+                and product.spec LIKE CONCAT(CONCAT(#{productSpec}),'%')
+            </if>
+            <if test="productGenreName != null and productGenreName != ''">
+                and genre.name LIKE CONCAT(CONCAT(#{productGenreName}),'%')
+            </if>
+            <if test="productUnitName != null and productUnitName != ''">
+                and unit.name LIKE CONCAT(CONCAT(#{productUnitName}),'%')
+            </if>
+
+            <!--queryStr 自定义sql查询语句-->
+            <if test="queryStr != null and queryStr != ''" >
+                and ${queryStr}
+            </if>
+
+        </where>
+        <if test="orderStr != null and orderStr != ''" >
+            order by ${orderStr}
+        </if>
+    </select>
+
+    <!-- warehouseEdition(仓库版本): warehouseBySimple(简版仓库)-对应实体库(简版仓库)********************************************* -->
+    <insert id="warehouseInitialBySimple" >
+        delete from vmes_column where model_code = 'warehouseInitialBySimple' ;
+        insert into vmes_column (
+        id,model_code,title_key,title_name,serial_number,
+        isdisable,ishide,isedit,ismust,cdate,
+        cuser
+        ) VALUES
+        (replace(uuid(), '-', ''),'warehouseInitialBySimple','companyId','companyId',0, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseInitialBySimple','warehouseId','仓库货位ID',1, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseInitialBySimple','productId','产品ID',2, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseInitialBySimple','stockCount','库存数量',4, '1','1','1','0',now(), 'admin'),
+
+
+        (replace(uuid(), '-', ''),'warehouseInitialBySimple','warehouseCode','warehouseCode',8, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseInitialBySimple','pathName','pathName',8, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseInitialBySimple','productCode','productCode',9, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseInitialBySimple','productName','productName',10, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseInitialBySimple','productSpec','productSpec',11, '1','1','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'warehouseInitialBySimple','productUnit','productUnit',9, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseInitialBySimple','productGenre','productGenre',10, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseInitialBySimple','productType','productType',11, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseInitialBySimple','productUnitName','productUnitName',10, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseInitialBySimple','productGenreName','productGenreName',11, '1','1','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'warehouseInitialBySimple','productSafetyCount','安全库存数量',16, '1','1','1','0',now(), 'admin')
+    </insert>
+
+    <!-- warehouseEdition(仓库版本): warehouseBySimple(简版仓库)-对应实体库(简版仓库)********************************************* -->
+    <select id="findWarehouseProductBySimple" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+            warehouseProduct.company_id companyId,
+            warehouseProduct.warehouse_id warehouseId,
+            warehouseProduct.product_id productId,
+            round(warehouseProduct.stock_count, 2) stockCount,
+
+            <!--vmes_warehouse:仓库货位表-->
+            warehouse.path_id pathId,
+            warehouse.path_name pathName,
+            warehouse.code warehouseCode,
+
+            <!--货品表-->
+            product.code productCode,
+            product.name productName,
+            product.spec productSpec,
+            produnit.unit productUnit,
+            product.genre productGenre,
+            product.type productType,
+            unit.name productUnitName,
+            genre.name productGenreName,
+            round(ifnull(product.safety_count, 0), 2) productSafetyCount
+        from (
+            select
+                warehouse_id,
+                product_id,
+                company_id,
+                sum(stock_count) stock_count
+            from vmes_warehouse_product
+            <where>
+                <if test="productIds != null and productIds != ''" >
+                    and product_id in (${productIds})
+                </if>
+                <if test="currentCompanyId != null and currentCompanyId != ''" >
+                    and company_id = #{currentCompanyId}
+                </if>
+                and warehouse_id in (
+                    select id
+                    from vmes_warehouse
+                    <where>
+                        <if test="currentCompanyId != null and currentCompanyId != ''" >
+                            and company_id = #{currentCompanyId}
+                        </if>
+                        <!--warehouseEdition(仓库版本): warehouseBySimple(简版仓库)-对应实体库(简版仓库) -->
+                        <!--实体库 2d75e49bcb9911e884ad00163e105f05-->
+                        <if test="'warehouseBySimple' == warehouseEdition">
+                            and path_id like '%2d75e49bcb9911e884ad00163e105f05%'
+                            and is_simple = 'Y'
+                        </if>
+                        and isdisable = '1'
+
+                        <!--nodeId 树形结构指定节点id 自定义sql查询语句-->
+                        <if test="nodeId != null and nodeId != ''" >
+                            and path_id LIKE CONCAT(CONCAT('%', #{nodeId}),'%')
+                        </if>
+
+                        <!--按货位属性 查询语句-->
+                        <if test="warehouseCode != null and warehouseCode != ''">
+                            and code LIKE CONCAT(CONCAT(#{warehouseCode}),'%')
+                        </if>
+                        <if test="pathName != null and pathName != ''">
+                            and path_name LIKE CONCAT('%', CONCAT(#{pathName}),'%')
+                        </if>
+                    </where>
+                )
+            </where>
+            group by warehouse_id,product_id,company_id
+        ) warehouseProduct
+            left join vmes_product product on wp.product_id = product.id and product.isdisable = '1'
+            left join vmes_product_unit produnit on wp.product_id = produnit.product_id and produnit.type = 1
+            left join vmes_dictionary unit on produnit.unit = unit.id
+            left join vmes_dictionary genre on product.genre = genre.id
+        <where>
+            <!--按货品属性 查询语句-->
+            <if test="productCode != null and productCode != ''">
+                and product.code LIKE CONCAT(CONCAT(#{productCode}),'%')
+            </if>
+            <if test="productName != null and productName != ''">
+                and product.name LIKE CONCAT(CONCAT('%', #{productName}),'%')
+            </if>
+            <if test="productSpec != null and productSpec != ''">
+                and product.spec LIKE CONCAT(CONCAT(#{productSpec}),'%')
+            </if>
+            <if test="productGenreName != null and productGenreName != ''">
+                and genre.name LIKE CONCAT(CONCAT(#{productGenreName}),'%')
+            </if>
+            <if test="productUnitName != null and productUnitName != ''">
+                and unit.name LIKE CONCAT(CONCAT(#{productUnitName}),'%')
+            </if>
+
+            <!--queryStr 自定义sql查询语句-->
+            <if test="queryStr != null and queryStr != ''" >
+                and ${queryStr}
+            </if>
+
+        </where>
+        <if test="orderStr != null and orderStr != ''" >
+            order by ${orderStr}
+        </if>
+    </select>
 
 
 

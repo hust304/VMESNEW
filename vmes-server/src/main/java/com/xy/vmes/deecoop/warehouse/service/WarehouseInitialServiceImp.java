@@ -190,6 +190,33 @@ public class WarehouseInitialServiceImp implements WarehouseInitialService {
         return warehouseInitialMapper.getDataListPage(pd, pg);
     }
 
+    //仓库初始化(复杂版仓库)
+    public List<Map> warehouseInitialByComplex(PageData pd, Pagination pg) throws Exception {
+        List<Map> mapList = new ArrayList<Map>();
+        if (pd == null) {return mapList;}
+
+        if (pg == null) {
+            return warehouseInitialMapper.warehouseInitialByComplex(pd);
+        } else if (pg != null) {
+            return warehouseInitialMapper.warehouseInitialByComplex(pd, pg);
+        }
+
+        return mapList;
+    }
+    //仓库初始化(简版仓库)
+    public List<Map> warehouseInitialBySimple(PageData pd, Pagination pg) throws Exception {
+        List<Map> mapList = new ArrayList<Map>();
+        if (pd == null) {return mapList;}
+
+        if (pg == null) {
+            return warehouseInitialMapper.warehouseInitialBySimple(pd);
+        } else if (pg != null) {
+            return warehouseInitialMapper.warehouseInitialBySimple(pd,pg);
+        }
+
+        return mapList;
+    }
+
     public void initialByWarehouse(String cuser, String companyId) throws Exception {
         if (companyId == null || companyId.trim().length() == 0) {return;}
 
@@ -244,7 +271,7 @@ public class WarehouseInitialServiceImp implements WarehouseInitialService {
         taskService.deleteTableByTask(companyId);
     }
 
-
+    /////////////////////////////////////////////////////////////////////////////////////////////////////
     @Override
     public ResultModel listPageWarehouseInitial(PageData pd, Pagination pg) throws Exception {
         if(pg==null){
