@@ -191,9 +191,17 @@ public class WarehouseInitialServiceImp implements WarehouseInitialService {
     }
 
     //仓库初始化(复杂版仓库)
-    public List<Map> findWarehouseInitialByComplex(PageData pd, Pagination pg) throws Exception {
+    public List<Map> findWarehouseInitialByComplex(PageData pd) throws Exception {
         List<Map> mapList = new ArrayList<Map>();
         if (pd == null) {return mapList;}
+
+        Pagination pg = null;
+
+        //是否需要分页 true:需要分页 false:不需要分页
+        String isNeedPage = pd.getString("isNeedPage");
+        if ("true".equals(isNeedPage)) {
+            pg = HttpUtils.parsePagination(pd);
+        }
 
         if (pg == null) {
             return warehouseInitialMapper.findWarehouseProductByComplex(pd);
@@ -204,9 +212,17 @@ public class WarehouseInitialServiceImp implements WarehouseInitialService {
         return mapList;
     }
     //仓库初始化(简版仓库)
-    public List<Map> findWarehouseInitialBySimple(PageData pd, Pagination pg) throws Exception {
+    public List<Map> findWarehouseInitialBySimple(PageData pd) throws Exception {
         List<Map> mapList = new ArrayList<Map>();
         if (pd == null) {return mapList;}
+
+        Pagination pg = null;
+
+        //是否需要分页 true:需要分页 false:不需要分页
+        String isNeedPage = pd.getString("isNeedPage");
+        if ("true".equals(isNeedPage)) {
+            pg = HttpUtils.parsePagination(pd);
+        }
 
         if (pg == null) {
             return warehouseInitialMapper.findWarehouseProductBySimple(pd);

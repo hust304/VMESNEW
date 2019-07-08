@@ -60,7 +60,6 @@ public class WarehouseInitialController {
 
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
-        Pagination pg = HttpUtils.parsePagination(pd);
 
         List<Column> columnList = columnService.findColumnList("warehouseInitialBySimple");
         if (columnList == null || columnList.size() == 0) {
@@ -86,20 +85,17 @@ public class WarehouseInitialController {
         //是否需要分页 true:需要分页 false:不需要分页
         Map result = new HashMap();
         String isNeedPage = pd.getString("isNeedPage");
-        if ("false".equals(isNeedPage)) {
-            pg = null;
-        } else {
-            result.put("pageData", pg);
+        if ("true".equals(isNeedPage)) {
+            result.put("pageData", HttpUtils.parsePagination(pd));
         }
 
-        List<Map> varList = warehouseInitialService.findWarehouseInitialBySimple(pd, pg);
+        List<Map> varList = warehouseInitialService.findWarehouseInitialBySimple(pd);
         Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
         List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
 
         result.put("hideTitles", titleMap.get("hideTitles"));
         result.put("titles",titleMap.get("titles"));
         result.put("varList", varMapList);
-        result.put("pageData", pg);
 
         model.putResult(result);
 
