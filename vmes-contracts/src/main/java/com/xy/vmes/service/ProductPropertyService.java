@@ -84,7 +84,7 @@ public interface ProductPropertyService {
     void deleteProdPropertyByProdId(String prodId) throws Exception;//@
 
 //    ProductProperty map2ProdProperty(Map<String, Object> mapObj, ProductProperty object);
-    List<ProductProperty> mapList2ProductPropertyList(List<Map<String, Object>> mapList);
+//    List<ProductProperty> mapList2ProductPropertyList(List<Map<String, Object>> mapList);
 
     void addProductProperty(String cuser, String prodId, List<ProductProperty> objectList);
 

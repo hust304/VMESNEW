@@ -176,7 +176,6 @@ public class EquipmentServiceImp implements EquipmentService {
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-09-20
     */
-    @Override
     public List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception{
         if(pg==null){
             pg =  HttpUtils.parsePagination(pd);

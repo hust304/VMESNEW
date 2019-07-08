@@ -1,11 +1,11 @@
 package com.xy.vmes.deecoop.system.service;
 
 import com.xy.vmes.deecoop.system.dao.CoderuleMapper;
+import com.xy.vmes.deecoop.system.dao.DepartmentMapper;
 import com.xy.vmes.entity.Coderule;
 import com.xy.vmes.entity.CoderuleEntity;
 import com.xy.vmes.entity.Department;
 import com.xy.vmes.service.CoderuleService;
-import com.xy.vmes.service.DepartmentService;
 import com.yvan.Conv;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
@@ -35,7 +35,7 @@ public class CoderuleServiceImp implements CoderuleService {
     @Autowired
     private CoderuleMapper coderuleMapper;
     @Autowired
-    private DepartmentService departmentService;
+    private DepartmentMapper departmentMapper;
 
 
     /**
@@ -281,7 +281,7 @@ public class CoderuleServiceImp implements CoderuleService {
                 PageData findMap = new PageData();
                 findMap.put("id", object.getCompanyID());
                 findMap.put("mapSize", Integer.valueOf(findMap.size()));
-                deptObj = departmentService.findDepartment(findMap);
+                deptObj = this.findDepartment(findMap);
                 if (deptObj != null && deptObj.getCode() != null && deptObj.getCode().trim().length() > 0) {
                     companyNumber = deptObj.getCode().trim();
                 }
@@ -407,6 +407,24 @@ public class CoderuleServiceImp implements CoderuleService {
         return businessCode;
     }
 
+
+    public Department findDepartment(PageData object) {
+        if (object == null) {return null;}
+
+        List<Department> objectList = null;
+        try {
+            objectList = departmentMapper.dataList(object);
+        } catch (Exception e) {
+            throw new RestException("", e.getMessage());
+        }
+
+        if (objectList != null && objectList.size() > 0) {
+            return objectList.get(0);
+        }
+
+        return null;
+    }
+
     /**
      * 获取业务编号-根据通用编码规则(企业编号+前缀字符+日期字符+流水号)
      * 按照当天日期(yyyy-MM-dd)流水号递增
@@ -469,7 +487,7 @@ public class CoderuleServiceImp implements CoderuleService {
                 PageData findMap = new PageData();
                 findMap.put("id", object.getCompanyID());
                 findMap.put("mapSize", Integer.valueOf(findMap.size()));
-                deptObj = departmentService.findDepartment(findMap);
+                deptObj = this.findDepartment(findMap);
                 if (deptObj != null && deptObj.getCode() != null && deptObj.getCode().trim().length() > 0) {
                     companyNumber = deptObj.getCode().trim();
                 }

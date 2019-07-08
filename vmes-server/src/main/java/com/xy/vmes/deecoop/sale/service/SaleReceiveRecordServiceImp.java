@@ -262,7 +262,12 @@ public class SaleReceiveRecordServiceImp implements SaleReceiveRecordService {
         new_balanceBig = new_balanceBig.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
 
         try {
-            customerService.updateCustomerBalance(customer, new_balanceBig, user);
+            PageData pd = new PageData();
+            pd.put("id",customer.getId());
+            pd.put("version",customer.getVersion());
+            pd.put("uuser",user);
+            pd.put("balance",new_balanceBig);
+            customerService.updateCustomerBalance(pd);
         } catch (Exception e) {
             e.printStackTrace();
             throw new TableVersionException(Common.SYS_STOCKCOUNT_ERRORCODE, "当前系统繁忙，请稍后操作！");
