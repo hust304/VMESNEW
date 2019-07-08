@@ -155,10 +155,10 @@ public interface WarehouseProductService {
     String outStockCount(WarehouseProduct object,
                          BigDecimal count,
                          WarehouseLoginfo loginfo) throws TableVersionException,Exception;
-    //(简版仓库)出库(变更库存数量)
-    String outStockCountBySimple(WarehouseProduct object,
-                         BigDecimal count,
-                         WarehouseLoginfo loginfo) throws TableVersionException,Exception;
+//    //(简版仓库)出库(变更库存数量)
+//    String outStockCountBySimple(WarehouseProduct object,
+//                         BigDecimal count,
+//                         WarehouseLoginfo loginfo) throws TableVersionException,Exception;
 
     /**
      * 盘点(变更库存数量)

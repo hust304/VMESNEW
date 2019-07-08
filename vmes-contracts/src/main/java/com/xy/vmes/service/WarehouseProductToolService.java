@@ -25,10 +25,14 @@ public interface WarehouseProductToolService {
      *    warehouseId
      *    outCount
      *
-     * @param productId     货品id 不可为空
-     * @param companyId     企业id 允许为空
-     * @param productCount  货品数量(需要出库数量) 不可为空
+     * @param productId        货品id 不可为空
+     * @param companyId        企业id 允许为空
+     * @param warehouseEdition 仓库版本 (warehouseByComplex:复杂版仓库 warehouseBySimple:简版仓库)
+     * @param productCount     货品数量(需要出库数量) 不可为空
      * @return
      */
-    List<Map<String, Object>> findWarehouseProductOutMapList (String productId, String companyId, BigDecimal productCount) throws ApplicationException;
+    List<Map<String, Object>> findWarehouseProductOutMapList (String productId,
+                                                              String companyId,
+                                                              String warehouseEdition,
+                                                              BigDecimal productCount) throws ApplicationException;
 }

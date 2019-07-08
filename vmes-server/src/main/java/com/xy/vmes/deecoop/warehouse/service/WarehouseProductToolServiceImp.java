@@ -35,12 +35,16 @@ public class WarehouseProductToolServiceImp implements WarehouseProductToolServi
      *    warehouseId
      *    outCount
      *
-     * @param productId     货品id 不可为空
-     * @param companyId     企业id 允许为空
-     * @param productCount  货品数量(需要出库数量) 不可为空
+     * @param productId        货品id 不可为空
+     * @param companyId        企业id 允许为空
+     * @param warehouseEdition 仓库版本 (warehouseByComplex:复杂版仓库 warehouseBySimple:简版仓库)
+     * @param productCount     货品数量(需要出库数量) 不可为空
      * @return
      */
-    public List<Map<String, Object>> findWarehouseProductOutMapList (String productId, String companyId, BigDecimal productCount) throws ApplicationException {
+    public List<Map<String, Object>> findWarehouseProductOutMapList (String productId,
+                                                                     String companyId,
+                                                                     String warehouseEdition,
+                                                                     BigDecimal productCount) throws ApplicationException {
         if (productId == null || productId.trim().length() == 0) {
             throw new ApplicationException("货品id为空或空字符串");
         }
@@ -60,6 +64,8 @@ public class WarehouseProductToolServiceImp implements WarehouseProductToolServi
             if (companyId != null && companyId.trim().length() > 0) {
                 findMap.put("companyId", companyId.trim());
             }
+            //仓库版本 (warehouseByComplex:复杂版仓库 warehouseBySimple:简版仓库)
+            findMap.put("warehouseEdition", warehouseEdition);
             findMap.put("queryStr", "stock_count > 0 ");
             findMap.put("orderStr", "cdate asc");
             findMap.put("mapSize", Integer.valueOf(findMap.size()));

@@ -708,40 +708,40 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
         return msgBuf.toString();
     }
 
-    //(简版仓库)出库(变更库存数量)
-    public String outStockCountBySimple(WarehouseProduct object,
-                                 BigDecimal count,
-                                 WarehouseLoginfo loginfo) throws TableVersionException,Exception {
-        StringBuffer msgBuf = new StringBuffer();
-
-        String msgStr = this.checkOutWarehouseProductBySimple(object);
-        if (msgStr != null && msgStr.trim().length() > 0) {
-            msgBuf.append(msgStr);
-        }
-        if (count == null) {
-            msgBuf.append("出库数量为空" + Common.SYS_ENDLINE_DEFAULT);
-        }
-        if (msgBuf.toString().trim().length() > 0) {
-            return msgBuf.toString().trim();
-        }
-
-        object.setCuser(loginfo.getCuser());
-        object.setCompanyId(loginfo.getCompanyId());
-
-        //设置库存变更日志-基本信息
-        //business_type:业务类型(in:入库 out:出库: move:移库 check:库存盘点)
-        loginfo.setBusinessType("out");
-        //count:业务数量
-        loginfo.setCount(count);
-
-        //type:(in:入库 out:出库 move:移库, check:盘点)
-        msgStr = this.modifyStockCount(object, null, "out", count, loginfo);
-        if (msgStr != null && msgStr.trim().length() > 0) {
-            msgBuf.append(msgStr);
-        }
-
-        return msgBuf.toString();
-    }
+//    //(简版仓库)出库(变更库存数量)
+//    public String outStockCountBySimple(WarehouseProduct object,
+//                                 BigDecimal count,
+//                                 WarehouseLoginfo loginfo) throws TableVersionException,Exception {
+//        StringBuffer msgBuf = new StringBuffer();
+//
+//        String msgStr = this.checkOutWarehouseProductBySimple(object);
+//        if (msgStr != null && msgStr.trim().length() > 0) {
+//            msgBuf.append(msgStr);
+//        }
+//        if (count == null) {
+//            msgBuf.append("出库数量为空" + Common.SYS_ENDLINE_DEFAULT);
+//        }
+//        if (msgBuf.toString().trim().length() > 0) {
+//            return msgBuf.toString().trim();
+//        }
+//
+//        object.setCuser(loginfo.getCuser());
+//        object.setCompanyId(loginfo.getCompanyId());
+//
+//        //设置库存变更日志-基本信息
+//        //business_type:业务类型(in:入库 out:出库: move:移库 check:库存盘点)
+//        loginfo.setBusinessType("out");
+//        //count:业务数量
+//        loginfo.setCount(count);
+//
+//        //type:(in:入库 out:出库 move:移库, check:盘点)
+//        msgStr = this.modifyStockCount(object, null, "out", count, loginfo);
+//        if (msgStr != null && msgStr.trim().length() > 0) {
+//            msgBuf.append(msgStr);
+//        }
+//
+//        return msgBuf.toString();
+//    }
 
     /**
      * 盘点(变更库存数量)
@@ -1257,22 +1257,22 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
         return msgBuf.toString();
     }
 
-    private String checkOutWarehouseProductBySimple(WarehouseProduct object) {
-        StringBuffer msgBuf = new StringBuffer();
-        if (object == null) {
-            msgBuf.append("参数错误: 出库对象<WarehouseProduct> 为空！");
-            return msgBuf.toString();
-        }
-
-        if (object.getProductId() == null || object.getProductId().trim().length() == 0) {
-            msgBuf.append("货品id为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT);
-        }
-        if (object.getWarehouseId() == null || object.getWarehouseId().trim().length() == 0) {
-            msgBuf.append("库位id为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT);
-        }
-
-        return msgBuf.toString();
-    }
+//    private String checkOutWarehouseProductBySimple(WarehouseProduct object) {
+//        StringBuffer msgBuf = new StringBuffer();
+//        if (object == null) {
+//            msgBuf.append("参数错误: 出库对象<WarehouseProduct> 为空！");
+//            return msgBuf.toString();
+//        }
+//
+//        if (object.getProductId() == null || object.getProductId().trim().length() == 0) {
+//            msgBuf.append("货品id为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT);
+//        }
+//        if (object.getWarehouseId() == null || object.getWarehouseId().trim().length() == 0) {
+//            msgBuf.append("库位id为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT);
+//        }
+//
+//        return msgBuf.toString();
+//    }
 
     private String checkSourceWarehouseProduct(WarehouseProduct object) {
         StringBuffer msgBuf = new StringBuffer();

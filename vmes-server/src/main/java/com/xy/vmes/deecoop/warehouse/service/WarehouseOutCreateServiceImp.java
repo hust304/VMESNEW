@@ -3,6 +3,7 @@ package com.xy.vmes.deecoop.warehouse.service;
 import com.xy.vmes.common.util.Common;
 import com.xy.vmes.entity.WarehouseOut;
 import com.xy.vmes.entity.WarehouseOutDetail;
+import com.xy.vmes.entity.WarehouseOutExecute;
 import com.xy.vmes.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,13 @@ public class WarehouseOutCreateServiceImp implements WarehouseOutCreateService {
     private WarehouseOutService warehouseOutService;
     @Autowired
     private WarehouseOutDetailService warehouseOutDetailService;
+    @Autowired
+    private WarehouseOutExecutorService warehouseOutExecutorService;
+    @Autowired
+    private WarehouseOutExecuteService warehouseOutExecuteService;
+
+    @Autowired
+    private WarehouseProductToolService warehouseProductToolService;
 
     /**
      * 创建出库单(复杂版仓库)
@@ -40,8 +48,8 @@ public class WarehouseOutCreateServiceImp implements WarehouseOutCreateService {
      * @param outType         出库类型id
      * @param productByOutMap 货品出库Map<货品id, 货品Map>
      *
-     * Map<String, Map<String, Object>>
-     * 货品Map<货品id, 货品Map>
+     * 货品出库Map<货品id, 货品Map<String, Object>>
+     * 货品Map<String, Object>
      *     productId: 货品id
      *     outDtlId:  出库明细id
      *     outCount:  出库数量
@@ -101,7 +109,7 @@ public class WarehouseOutCreateServiceImp implements WarehouseOutCreateService {
      * @param outType         出库类型id
      * @param productByOutMap 货品出库Map<货品id, 货品Map>
      *
-     * Map<String, Map<String, Object>>
+     * 货品出库Map<货品id, 货品Map<String, Object>>
      * 货品Map<String, Object>
      *     productId: 货品id
      *     outDtlId:  出库明细id
@@ -127,7 +135,7 @@ public class WarehouseOutCreateServiceImp implements WarehouseOutCreateService {
             return msgStr.toString();
         }
 
-        //创建出库单
+        //1.添加出库单
         WarehouseOut warehouseOut = warehouseOutService.createWarehouseOut(deptId,
                 deptName,
                 cuser,
@@ -141,8 +149,29 @@ public class WarehouseOutCreateServiceImp implements WarehouseOutCreateService {
         warehouseOut.setWarehouseId(Common.DICTIONARY_MAP.get("warehouseEntity"));
         warehouseOutService.save(warehouseOut);
 
+        //2.添加出库单明细
         List<WarehouseOutDetail> outDtlList = this.productMap2OutDetailList(productByOutMap, null);
         warehouseOutDetailService.addWarehouseOutDetailBySimple(warehouseOut, outDtlList);
+
+        //3.添加出库单派单表
+        warehouseOutExecutorService.addWarehouseOutExecutorBySimple(outDtlList);
+
+        //4.添加出库单执行表
+        List<WarehouseOutExecute> executeList = new ArrayList<WarehouseOutExecute>();
+        for (WarehouseOutDetail outDetail : outDtlList) {
+            String productId = outDetail.getProductId();
+            BigDecimal count = outDetail.getCount();
+
+            //仓库版本 (warehouseByComplex:复杂版仓库 warehouseBySimple:简版仓库)
+            List<Map<String, Object>> outMapList = warehouseProductToolService.findWarehouseProductOutMapList(productId,
+                    companyId,
+                    Common.SYS_WAREHOUSE_SIMPLE,
+                    count);
+            if (outMapList != null && outMapList.size() > 0) {
+                executeList = warehouseOutExecuteService.outMapList2ExecuteList(outDetail, outMapList, executeList);
+            }
+        }
+        warehouseOutExecuteService.addWarehouseOutExecuteBySimple(executeList);
 
         for (WarehouseOutDetail detail : outDtlList) {
             String productId = detail.getProductId();

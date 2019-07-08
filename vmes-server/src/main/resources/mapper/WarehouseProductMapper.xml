@@ -156,6 +156,53 @@
                         and company_id = #{companyId}
                     </if>
 
+                    <!--warehouseEdition(仓库版本): warehouseByComplex(复杂版仓库)-对应实体库(简版仓库过滤出) -->
+                    <!--实体库 2d75e49bcb9911e884ad00163e105f05-->
+                    <if test="'warehouseByComplex' == warehouseEdition">
+                        and warehouse_id in (
+                            select id from vmes_warehouse
+                            <where>
+                                <if test="companyId != null and companyId != ''" >
+                                    and company_id = #{companyId}
+                                </if>
+                                and path_id like '%2d75e49bcb9911e884ad00163e105f05%'
+                                and (is_simple is null or is_simple = 'N')
+                                and isdisable = '1'
+                            </where>
+                        )
+                    </if>
+
+                    <!--warehouseEdition(仓库版本): warehouseBySimple(简版仓库)-对应实体库(简版仓库) -->
+                    <!--实体库 2d75e49bcb9911e884ad00163e105f05-->
+                    <if test="'warehouseBySimple' == warehouseEdition">
+                        and warehouse_id in (
+                            select id from vmes_warehouse
+                            <where>
+                                <if test="companyId != null and companyId != ''" >
+                                    and company_id = #{companyId}
+                                </if>
+                                and path_id like '%2d75e49bcb9911e884ad00163e105f05%'
+                                and is_simple = 'Y'
+                                and isdisable = '1'
+                            </where>
+                        )
+                    </if>
+
+                    <!--warehouseEdition(仓库版本): warehouseByVirtual(虚拟库) -->
+                    <if test="'warehouseByVirtual' == warehouseEdition">
+                        and warehouse_id in (
+                            select id from vmes_warehouse
+                            <where>
+                                <if test="companyId != null and companyId != ''" >
+                                    and company_id = #{companyId}
+                                </if>
+                                and dept_id = #{deptId}
+                                and dept_place_key = #{deptPlaceKey}
+                                and isdisable = '1'
+                            </where>
+                        )
+                    </if>
+
                     <!--queryStr 自定义sql查询语句-->
                     <if test="queryStr != null and queryStr != ''" >
                         and ${queryStr}

@@ -212,9 +212,9 @@ public class EquipmentRepairTaskDetailServiceImp implements EquipmentRepairTaskD
     }
 
     /**
-     * 返回货品Map
-     * Map<String, Map<String, Object>>
-     * Map<货品id, 货品Map>
+     * 返回货品出库Map
+     * 货品出库Map<货品id, 货品Map<String, Object>>
+     * 货品Map<String, Object>
      *     productId: 货品id
      *     outDtlId:  出库明细id
      *     outCount:  出库数量
