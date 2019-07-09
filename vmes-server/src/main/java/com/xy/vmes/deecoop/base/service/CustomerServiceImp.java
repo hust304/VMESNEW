@@ -333,17 +333,17 @@ public class CustomerServiceImp implements CustomerService {
 //        saleReceiveRecordService.save(saleReceiveRecord);
 //    }
 
-    public void updateCustomerBalance(
-            Customer customer,
-            BigDecimal balance,
-            String uuser) throws Exception {
-        PageData pd = new PageData();
-        pd.put("id",customer.getId());
-        pd.put("version",customer.getVersion());
-        pd.put("uuser",uuser);
-        pd.put("balance",balance);
-        customerMapper.updateCustomerBalance(pd);
-    }
+//    public void updateCustomerBalance(
+//            Customer customer,
+//            BigDecimal balance,
+//            String uuser) throws Exception {
+//        PageData pd = new PageData();
+//        pd.put("id",customer.getId());
+//        pd.put("version",customer.getVersion());
+//        pd.put("uuser",uuser);
+//        pd.put("balance",balance);
+//        customerMapper.updateCustomerBalance(pd);
+//    }
 
 
     public List<Map> getPreReceiveAmount(PageData pd) throws Exception{

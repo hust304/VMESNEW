@@ -100,7 +100,7 @@ public interface EquipmentService {
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-09-20
     */
-    List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception;
+//    List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception;
 
     /**
     * 创建人：刘威 自动创建，禁止修改

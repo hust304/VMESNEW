@@ -188,36 +188,36 @@ public class ProductPropertyServiceImp implements ProductPropertyService {
     }
 
 
-    public ProductProperty map2ProdProperty(Map<String, Object> mapObj, ProductProperty object) {
-        if (object == null) {object = new ProductProperty();}
-        if (mapObj == null) {return object;}
-
-        //{name:属性名称,value:属性值，remark:备注}
-        if (mapObj.get("name") != null && mapObj.get("name").toString().trim().length() > 0) {
-            object.setName(mapObj.get("name").toString().trim());
-        }
-        if (mapObj.get("value") != null && mapObj.get("value").toString().trim().length() > 0) {
-            object.setValue(mapObj.get("value").toString().trim());
-        }
-        if (mapObj.get("remark") != null && mapObj.get("remark").toString().trim().length() > 0) {
-            object.setRemark(mapObj.get("remark").toString().trim());
-        }
-
-        return object;
-    }
-
-    @Override
-    public List<ProductProperty> mapList2ProductPropertyList(List<Map<String, Object>> mapList) {
-        ArrayList<ProductProperty> objectList = new ArrayList<ProductProperty>();
-        if (mapList == null || mapList.size() == 0) {return objectList;}
-
-        for (Map<String, Object> mapObject : mapList) {
-            ProductProperty object = this.map2ProdProperty(mapObject, null);
-            objectList.add(object);
-        }
-
-        return objectList;
-    }
+//    public ProductProperty map2ProdProperty(Map<String, Object> mapObj, ProductProperty object) {
+//        if (object == null) {object = new ProductProperty();}
+//        if (mapObj == null) {return object;}
+//
+//        //{name:属性名称,value:属性值，remark:备注}
+//        if (mapObj.get("name") != null && mapObj.get("name").toString().trim().length() > 0) {
+//            object.setName(mapObj.get("name").toString().trim());
+//        }
+//        if (mapObj.get("value") != null && mapObj.get("value").toString().trim().length() > 0) {
+//            object.setValue(mapObj.get("value").toString().trim());
+//        }
+//        if (mapObj.get("remark") != null && mapObj.get("remark").toString().trim().length() > 0) {
+//            object.setRemark(mapObj.get("remark").toString().trim());
+//        }
+//
+//        return object;
+//    }
+//
+//    @Override
+//    public List<ProductProperty> mapList2ProductPropertyList(List<Map<String, Object>> mapList) {
+//        ArrayList<ProductProperty> objectList = new ArrayList<ProductProperty>();
+//        if (mapList == null || mapList.size() == 0) {return objectList;}
+//
+//        for (Map<String, Object> mapObject : mapList) {
+//            ProductProperty object = this.map2ProdProperty(mapObject, null);
+//            objectList.add(object);
+//        }
+//
+//        return objectList;
+//    }
 
     @Override
     public void addProductProperty(String cuser, String prodId, List<ProductProperty> objectList) {

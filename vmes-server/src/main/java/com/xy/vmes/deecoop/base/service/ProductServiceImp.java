@@ -172,7 +172,7 @@ public class ProductServiceImp implements ProductService {
     * 创建人：陈刚 自动创建，禁止修改
     * 创建时间：2018-09-21
     */
-    @Override
+
     public List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception{
         if(pg==null){
             pg =  HttpUtils.parsePagination(pd);
@@ -755,7 +755,7 @@ public class ProductServiceImp implements ProductService {
             }
 
             //添加产品属性表(vmes_product_property)-按照json字符串数据(dataListJsonStr)
-            List<ProductProperty> propertyList = productPropertyService.mapList2ProductPropertyList(dataList);
+            List<ProductProperty> propertyList = mapList2ProductPropertyList(dataList);
             productPropertyService.addProductProperty(pageData.getString("cuser"),
                     productDB.getId(),
                     propertyList);
@@ -766,6 +766,38 @@ public class ProductServiceImp implements ProductService {
         this.update(productDB);
         return model;
     }
+
+    public ProductProperty map2ProdProperty(Map<String, Object> mapObj, ProductProperty object) {
+        if (object == null) {object = new ProductProperty();}
+        if (mapObj == null) {return object;}
+
+        //{name:属性名称,value:属性值，remark:备注}
+        if (mapObj.get("name") != null && mapObj.get("name").toString().trim().length() > 0) {
+            object.setName(mapObj.get("name").toString().trim());
+        }
+        if (mapObj.get("value") != null && mapObj.get("value").toString().trim().length() > 0) {
+            object.setValue(mapObj.get("value").toString().trim());
+        }
+        if (mapObj.get("remark") != null && mapObj.get("remark").toString().trim().length() > 0) {
+            object.setRemark(mapObj.get("remark").toString().trim());
+        }
+
+        return object;
+    }
+
+
+    public List<ProductProperty> mapList2ProductPropertyList(List<Map<String, Object>> mapList) {
+        ArrayList<ProductProperty> objectList = new ArrayList<ProductProperty>();
+        if (mapList == null || mapList.size() == 0) {return objectList;}
+
+        for (Map<String, Object> mapObject : mapList) {
+            ProductProperty object = this.map2ProdProperty(mapObject, null);
+            objectList.add(object);
+        }
+
+        return objectList;
+    }
+
 
     @Override
     public ResultModel updateDisableProduct(PageData pageData) throws Exception {

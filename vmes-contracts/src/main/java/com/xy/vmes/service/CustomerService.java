@@ -139,10 +139,10 @@ public interface CustomerService {
 //            String type,
 //            String remark) throws Exception;
 
-    void updateCustomerBalance(
-            Customer customer,
-            BigDecimal balance,
-            String uuser) throws Exception;
+//    void updateCustomerBalance(
+//            Customer customer,
+//            BigDecimal balance,
+//            String uuser) throws Exception;
 
 //    List<Map> getPreReceiveAmount(PageData pd) throws Exception;
 
