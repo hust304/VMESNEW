@@ -1,6 +1,7 @@
 package com.xy.vmes.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.entity.WarehouseOut;
 import com.xy.vmes.entity.WarehouseOutDetail;
 import com.xy.vmes.entity.WarehouseOutExecute;
 import com.yvan.PageData;
@@ -135,6 +136,10 @@ public interface WarehouseOutExecuteService {
 
 
     void addWarehouseOutExecuteBySimple(List<WarehouseOutExecute> executeList) throws Exception;
+
+    void executeWarehouseOutExecuteBySimple(WarehouseOut warehouseIn) throws Exception;
+
+
     List<Map> findExecuteListByParentId(String parentId) throws Exception;
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

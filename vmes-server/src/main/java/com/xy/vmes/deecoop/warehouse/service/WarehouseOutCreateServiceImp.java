@@ -259,6 +259,8 @@ public class WarehouseOutCreateServiceImp implements WarehouseOutCreateService {
             }
         }
         warehouseOutExecuteService.addWarehouseOutExecuteBySimple(executeList);
+        //5.出库单执行
+        warehouseOutExecuteService.executeWarehouseOutExecuteBySimple(warehouseOut);
 
         for (WarehouseOutDetail detail : outDtlList) {
             String productId = detail.getProductId();

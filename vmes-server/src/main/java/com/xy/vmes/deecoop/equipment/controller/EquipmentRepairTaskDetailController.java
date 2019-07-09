@@ -445,16 +445,19 @@ public class EquipmentRepairTaskDetailController {
 
                 String productId = objectMap.get("productId");
                 Map<String, Object> producValueMap = productByInMap.get(productId);
+                //inDtlId:   入库明细id
+                String inDtlId = (String)producValueMap.get("inDtlId");
+                detailEdit.setInDtlId(inDtlId);
+                //inCount:   入库数量
+                BigDecimal inCount = (BigDecimal)producValueMap.get("inCount");
+                detailEdit.setInCount(inCount);
 
-
-
+                //retreatType 退库方式(1:生成退库单 2:退回虚拟库)
+                detailEdit.setRetreatType(retreatType);
 
                 repairTaskDetailService.update(detailEdit);
             }
         }
-
-
-
 
         ///////////////////////////////////////////////////////////////////////////////
         //修改维修任务单状态

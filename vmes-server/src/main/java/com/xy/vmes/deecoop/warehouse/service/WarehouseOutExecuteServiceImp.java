@@ -1,29 +1,24 @@
 package com.xy.vmes.deecoop.warehouse.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
-import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.Common;
-import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.warehouse.dao.WarehouseOutExecuteMapper;
 import com.xy.vmes.entity.*;
+import com.xy.vmes.exception.ApplicationException;
 import com.xy.vmes.exception.TableVersionException;
 import com.xy.vmes.service.*;
 import com.yvan.*;
-import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import javax.servlet.http.HttpServletResponse;
 
 /**
 * 说明：出库执行 实现类
@@ -291,6 +286,87 @@ public class WarehouseOutExecuteServiceImp implements WarehouseOutExecuteService
         for (WarehouseOutExecute outExecute : executeList) {
             this.save(outExecute);
         }
+    }
+
+    public void executeWarehouseOutExecuteBySimple(WarehouseOut warehouseOut) throws Exception {
+        List<Map> executeList = this.findExecuteListByParentId(warehouseOut.getId());
+        if (executeList == null || executeList.size() == 0) {return;}
+
+        StringBuffer msgBuf = new StringBuffer();
+        try {
+            for (int i = 0; i < executeList.size(); i++) {
+                Map object = executeList.get(i);
+
+                String detailId = (String)object.get("detailId");
+                BigDecimal count = (BigDecimal)object.get("actualCount");
+                String warehouseId = (String)object.get("warehouseId");
+                String productId = (String)object.get("productId");
+                String code = (String)object.get("code");
+
+                //(简版仓库)出库操作
+                WarehouseProduct outObject = new WarehouseProduct();
+                //产品ID
+                outObject.setProductId(productId);
+                //(实际)货位ID
+                outObject.setWarehouseId(warehouseId);
+                //货位批次号
+                outObject.setCode(code);
+
+                //库存变更日志
+                String executeId = Conv.createUuid();
+
+                WarehouseLoginfo loginfo = new WarehouseLoginfo();
+                loginfo.setParentId(warehouseOut.getId());
+                loginfo.setDetailId(detailId);
+                loginfo.setExecuteId(executeId);
+                loginfo.setCompanyId(warehouseOut.getCompanyId());
+                loginfo.setCuser(warehouseOut.getCuser());
+                //operation 操作类型(add:添加 modify:修改 delete:删除:)
+                loginfo.setOperation("add");
+
+                //beforeCount 操作变更前数量(业务相关)
+                loginfo.setBeforeCount(BigDecimal.valueOf(0D));
+                //afterCount 操作变更后数量(业务相关)
+                loginfo.setAfterCount(count);
+
+                String msgStr = warehouseProductService.outStockCount(outObject, count, loginfo);
+                if (msgStr != null && msgStr.trim().length() > 0) {
+                    msgBuf.append("第 " + (i+1) + " 条: " + "出库操作失败:" + msgStr);
+                } else {
+                    Product product = productService.findProductById(productId);
+                    BigDecimal prodCount = BigDecimal.valueOf(0D);
+                    if (product.getStockCount() != null) {
+                        prodCount = product.getStockCount();
+                    }
+
+                    BigDecimal prodStockCount = BigDecimal.valueOf(prodCount.doubleValue() - count.doubleValue());
+                    productService.updateStockCount(product, prodStockCount, warehouseOut.getCuser());
+                }
+            }
+        } catch (TableVersionException tabExc) {
+            //库存变更 version 锁
+            if (Common.SYS_STOCKCOUNT_ERRORCODE.equals(tabExc.getErrorCode())) {
+                throw new ApplicationException("系统繁忙请稍后再次操作");
+            }
+        }
+
+        if (msgBuf.toString().trim().length() > 0) {
+            throw new ApplicationException(msgBuf.toString());
+        }
+
+        //修改出库单明细状态
+        PageData mapDetail = new PageData();
+        mapDetail.put("parentId", warehouseOut.getId());
+        //明细状态:state:状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+        mapDetail.put("state", "2");
+        warehouseOutDetailService.updateStateByDetail(mapDetail);
+
+        //修改出库单状态
+        //state:状态(0:未完成 1:已完成 -1:已取消)
+        WarehouseOut warehouseoutEdit = new WarehouseOut();
+        warehouseoutEdit.setId(warehouseOut.getId());
+        warehouseoutEdit.setState("1");
+        warehouseOutService.update(warehouseoutEdit);
     }
 
     public List<Map> findExecuteListByParentId(String parentId) {
