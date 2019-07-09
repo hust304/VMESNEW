@@ -3,7 +3,6 @@ package com.xy.vmes.deecoop.purchase.service;
 
 import com.xy.vmes.deecoop.purchase.dao.PurchaseSignMapper;
 import com.xy.vmes.entity.PurchaseSign;
-import com.xy.vmes.entity.PurchaseSignDetail;
 import com.xy.vmes.service.PurchaseSignDetailService;
 import com.xy.vmes.service.PurchaseSignService;
 

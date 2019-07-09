@@ -1,6 +1,6 @@
 package com.xy.vmes.deecoop.base.service;
 
-import com.xy.vmes.common.util.Common;
+import com.yvan.common.util.Common;
 import com.xy.vmes.entity.Customer;
 import com.xy.vmes.service.*;
 import com.yvan.Conv;

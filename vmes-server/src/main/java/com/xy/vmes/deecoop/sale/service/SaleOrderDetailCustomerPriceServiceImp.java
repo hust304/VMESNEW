@@ -1,6 +1,5 @@
 package com.xy.vmes.deecoop.sale.service;
 
-import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.sale.dao.SaleOrderDetailCustomerPriceMapper;
 import com.xy.vmes.service.SaleOrderDetailCustomerPriceService;
 import com.yvan.PageData;

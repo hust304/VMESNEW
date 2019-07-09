@@ -7,6 +7,8 @@ import com.xy.vmes.deecoop.sale.dao.SaleOrderMapper;
 import com.xy.vmes.entity.*;
 import com.xy.vmes.service.*;
 import com.yvan.*;
+import com.yvan.common.util.Common;
+import com.xy.vmes.common.util.StringUtil;
 import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
 import org.springframework.beans.factory.annotation.Autowired;

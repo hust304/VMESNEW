@@ -1,5 +1,6 @@
 package com.xy.vmes.common.util;
 
+import com.yvan.common.util.Common;
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
 

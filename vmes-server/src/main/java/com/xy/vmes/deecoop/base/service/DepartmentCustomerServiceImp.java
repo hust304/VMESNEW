@@ -1,7 +1,7 @@
 package com.xy.vmes.deecoop.base.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
-import com.xy.vmes.common.util.Common;
+import com.yvan.common.util.Common;
 import com.xy.vmes.deecoop.base.dao.DepartmentCustomerMapper;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.service.ColumnService;

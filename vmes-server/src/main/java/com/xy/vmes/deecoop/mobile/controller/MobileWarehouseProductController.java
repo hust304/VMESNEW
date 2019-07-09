@@ -1,7 +1,7 @@
 package com.xy.vmes.deecoop.mobile.controller;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
-import com.xy.vmes.common.util.Common;
+import com.yvan.common.util.Common;
 import com.xy.vmes.entity.WarehouseProduct;
 import com.xy.vmes.service.WarehouseProductService;
 import com.yvan.HttpUtils;
@@ -12,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 

@@ -1,10 +1,8 @@
 package com.xy.vmes.deecoop.equipment.controller;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
-import com.xy.vmes.common.util.Common;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.*;
-import com.xy.vmes.exception.TableVersionException;
 import com.xy.vmes.service.*;
 import com.yvan.Conv;
 import com.yvan.HttpUtils;
@@ -19,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

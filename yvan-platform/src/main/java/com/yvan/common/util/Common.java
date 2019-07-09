@@ -1,4 +1,4 @@
-package com.xy.vmes.common.util;
+package com.yvan.common.util;
 
 import java.util.HashMap;
 import java.util.Map;

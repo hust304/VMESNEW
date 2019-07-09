@@ -1,6 +1,6 @@
 package com.xy.vmes.deecoop.equipment.controller;
 
-import com.xy.vmes.common.util.Common;
+import com.yvan.common.util.Common;
 import com.xy.vmes.entity.Product;
 import com.xy.vmes.entity.WarehouseLoginfo;
 import com.xy.vmes.entity.WarehouseProduct;

@@ -7,7 +7,7 @@ import com.xy.vmes.deecoop.system.dao.UserMapper;
 import com.xy.vmes.entity.*;
 import com.xy.vmes.service.*;
 import com.yvan.*;
-import com.xy.vmes.common.util.Common;
+import com.yvan.common.util.Common;
 import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
 import org.apache.commons.lang.StringUtils;

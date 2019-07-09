@@ -1,6 +1,6 @@
 package com.xy.vmes.deecoop.equipment.service;
 
-import com.xy.vmes.common.util.Common;
+import com.yvan.common.util.Common;
 import com.xy.vmes.deecoop.equipment.dao.EquipmentRepairTaskDetailMapper;
 import com.xy.vmes.entity.EquipmentRepairTaskDetail;
 import com.xy.vmes.service.EquipmentRepairTaskDetailService;

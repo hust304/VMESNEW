@@ -2,7 +2,7 @@ package com.xy.vmes.deecoop.system.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
-import com.xy.vmes.common.util.Common;
+import com.yvan.common.util.Common;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.common.util.TreeUtil;
 import com.xy.vmes.deecoop.system.dao.RoleMapper;
@@ -20,7 +20,7 @@ import java.util.*;
 
 import javax.servlet.http.HttpServletResponse;
 
-import static com.xy.vmes.common.util.Common.DICTIONARY_MAP;
+import static com.yvan.common.util.Common.DICTIONARY_MAP;
 
 /**
 * 说明：vmes_role:角色 实现类

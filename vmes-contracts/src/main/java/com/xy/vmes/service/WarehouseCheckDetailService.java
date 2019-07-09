@@ -88,8 +88,8 @@ public interface WarehouseCheckDetailService {
      */
     List<Map> getDataListPage(PageData pd, Pagination pg) throws Exception;
 
-    WarehouseCheckDetail findWarehouseCheckDetail(PageData object) throws Exception;
-    WarehouseCheckDetail findWarehouseCheckDetailById(String id) throws Exception;
+//    WarehouseCheckDetail findWarehouseCheckDetail(PageData object) throws Exception;
+    WarehouseCheckDetail findWarehouseCheckDetailById(String id) throws Exception;//@
 
     List<WarehouseCheckDetail> findWarehouseCheckDetailList(PageData object) throws Exception;
     List<WarehouseCheckDetail> findWarehouseCheckDetailListByParentId(String parentId) throws Exception;

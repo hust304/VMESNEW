@@ -1,19 +1,13 @@
 package com.xy.vmes.deecoop.base.controller;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
-import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.StringUtil;
-import com.xy.vmes.common.util.TreeUtil;
-import com.xy.vmes.entity.BomTree;
-import com.xy.vmes.entity.Column;
 import com.xy.vmes.entity.Bom;
-import com.xy.vmes.entity.TreeEntity;
 import com.xy.vmes.service.BomTreeService;
 import com.xy.vmes.service.CoderuleService;
 import com.xy.vmes.service.ColumnService;
 import com.xy.vmes.service.BomService;
 import com.yvan.*;
-import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -25,7 +19,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.http.HttpServletResponse;
-import java.math.BigDecimal;
 import java.util.*;
 
 

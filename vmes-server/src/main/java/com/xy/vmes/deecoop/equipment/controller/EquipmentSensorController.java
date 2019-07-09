@@ -1,6 +1,6 @@
 package com.xy.vmes.deecoop.equipment.controller;
 
-import com.xy.vmes.common.util.Common;
+import com.yvan.common.util.Common;
 import com.xy.vmes.entity.EquipmentSensor;
 import com.xy.vmes.service.EquipmentSensorFormulaService;
 import com.xy.vmes.service.EquipmentSensorService;

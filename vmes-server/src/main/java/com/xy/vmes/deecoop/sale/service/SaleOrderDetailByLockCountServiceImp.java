@@ -1,7 +1,7 @@
 package com.xy.vmes.deecoop.sale.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
-import com.xy.vmes.common.util.Common;
+import com.yvan.common.util.Common;
 import com.xy.vmes.common.util.EvaluateUtil;
 import com.xy.vmes.common.util.rabbitmq.sender.ProductStockcountLockSender;
 import com.xy.vmes.deecoop.sale.dao.SaleOrderDetailByLockCountMapper;

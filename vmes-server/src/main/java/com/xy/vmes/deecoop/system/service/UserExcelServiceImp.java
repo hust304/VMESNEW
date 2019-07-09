@@ -1,6 +1,6 @@
 package com.xy.vmes.deecoop.system.service;
 
-import com.xy.vmes.common.util.Common;
+import com.yvan.common.util.Common;
 import com.xy.vmes.entity.Employee;
 import com.xy.vmes.entity.User;
 import com.xy.vmes.entity.UserRole;

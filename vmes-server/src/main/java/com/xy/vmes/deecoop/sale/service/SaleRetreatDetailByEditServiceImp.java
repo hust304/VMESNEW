@@ -1,6 +1,5 @@
 package com.xy.vmes.deecoop.sale.service;
 
-import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.sale.dao.SaleRetreatDetailByEditMapper;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.service.ColumnService;

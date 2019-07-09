@@ -1,7 +1,6 @@
 package com.xy.vmes.deecoop.equipment.controller;
 
 import com.xy.vmes.common.util.ColumnUtil;
-import com.xy.vmes.common.util.Common;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.entity.Department;
 import com.xy.vmes.entity.EquipmentRepairTask;
@@ -12,6 +11,7 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.YvanUtil;
+import com.yvan.common.util.Common;
 import com.yvan.springmvc.ResultModel;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;

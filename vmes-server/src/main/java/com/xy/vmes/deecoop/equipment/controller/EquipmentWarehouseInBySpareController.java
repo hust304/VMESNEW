@@ -1,7 +1,7 @@
 package com.xy.vmes.deecoop.equipment.controller;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
-import com.xy.vmes.common.util.Common;
+import com.yvan.common.util.Common;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.*;
 import com.xy.vmes.exception.TableVersionException;

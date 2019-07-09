@@ -1,7 +1,7 @@
 package com.xy.vmes.deecoop.fileIO.service;
 
 
-import com.xy.vmes.common.util.Common;
+import com.yvan.common.util.Common;
 import com.xy.vmes.deecoop.fileIO.dao.AttachmentMapper;
 import com.xy.vmes.entity.Attachment;
 import com.xy.vmes.service.AttachmentService;

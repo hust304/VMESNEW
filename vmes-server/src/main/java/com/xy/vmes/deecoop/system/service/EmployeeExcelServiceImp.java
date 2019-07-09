@@ -1,6 +1,6 @@
 package com.xy.vmes.deecoop.system.service;
 
-import com.xy.vmes.common.util.Common;
+import com.yvan.common.util.Common;
 import com.xy.vmes.common.util.DateFormat;
 import com.xy.vmes.entity.EmployPost;
 import com.xy.vmes.entity.Employee;

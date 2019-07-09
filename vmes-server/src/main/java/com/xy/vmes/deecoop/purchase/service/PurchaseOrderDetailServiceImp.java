@@ -1,8 +1,7 @@
 package com.xy.vmes.deecoop.purchase.service;
 
 
-import com.xy.vmes.common.util.Common;
-import com.xy.vmes.common.util.EvaluateUtil;
+import com.yvan.common.util.Common;
 import com.xy.vmes.deecoop.purchase.dao.PurchaseOrderDetailMapper;
 import com.xy.vmes.entity.PurchaseOrderDetail;
 import com.xy.vmes.entity.PurchasePlanDetail;
@@ -23,7 +22,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.text.MessageFormat;
 import java.util.*;
 import com.yvan.Conv;
 import org.springframework.web.multipart.MultipartFile;

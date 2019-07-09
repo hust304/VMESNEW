@@ -1,20 +1,7 @@
 package com.xy.vmes.deecoop.base.service;
 
-import com.xy.vmes.common.util.Common;
-import com.xy.vmes.common.util.DateFormat;
-import com.xy.vmes.entity.Equipment;
 import com.xy.vmes.service.*;
-import com.yvan.Conv;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.text.MessageFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 
 @Service
 public class EquipmentExcelServiceImp implements EquipmentExcelService {

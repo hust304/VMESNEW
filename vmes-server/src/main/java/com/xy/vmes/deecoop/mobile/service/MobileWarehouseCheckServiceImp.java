@@ -1,14 +1,11 @@
 package com.xy.vmes.deecoop.mobile.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
-import com.xy.vmes.common.util.Common;
-import com.xy.vmes.deecoop.mobile.dao.MobileProductMapper;
+import com.yvan.common.util.Common;
 import com.xy.vmes.deecoop.mobile.dao.MobileWarehouseCheckMapper;
 import com.xy.vmes.entity.WarehouseCheckDetail;
 import com.xy.vmes.service.*;
-import com.yvan.HttpUtils;
 import com.yvan.PageData;
-import com.yvan.YvanUtil;
 import com.yvan.springmvc.ResultModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

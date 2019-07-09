@@ -1,6 +1,5 @@
 package com.xy.vmes.deecoop.equipment.controller;
 
-import com.xy.vmes.common.util.Common;
 import com.xy.vmes.entity.EquipmentRepair;
 import com.xy.vmes.entity.EquipmentRepairTask;
 import com.xy.vmes.service.CoderuleService;
@@ -20,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.List;
 
 /**
 * 说明：vmes_equipment_repair:设备维修表Controller

@@ -9,7 +9,7 @@ import com.xy.vmes.service.CoderuleService;
 import com.yvan.Conv;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
-import com.xy.vmes.common.util.Common;
+import com.yvan.common.util.Common;
 import com.xy.vmes.common.util.DateFormat;
 import com.yvan.platform.RestException;
 import org.springframework.beans.factory.annotation.Autowired;

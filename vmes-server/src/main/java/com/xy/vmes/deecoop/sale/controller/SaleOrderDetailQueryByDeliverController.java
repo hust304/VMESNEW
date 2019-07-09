@@ -1,9 +1,5 @@
 package com.xy.vmes.deecoop.sale.controller;
 
-import com.baomidou.mybatisplus.plugins.pagination.Pagination;
-import com.xy.vmes.common.util.StringUtil;
-import com.xy.vmes.entity.Column;
-import com.xy.vmes.service.ColumnService;
 import com.xy.vmes.service.SaleOrderDetailQueryByDeliveService;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
@@ -14,8 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.*;
 
 /**
  * 说明：订单明细查询汇总 Controller

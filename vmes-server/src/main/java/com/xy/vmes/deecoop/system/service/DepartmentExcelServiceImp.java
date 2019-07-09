@@ -1,6 +1,6 @@
 package com.xy.vmes.deecoop.system.service;
 
-import com.xy.vmes.common.util.Common;
+import com.yvan.common.util.Common;
 import com.xy.vmes.entity.Department;
 import com.xy.vmes.entity.DeptExcelEntity;
 import com.xy.vmes.service.DepartmentExcelService;

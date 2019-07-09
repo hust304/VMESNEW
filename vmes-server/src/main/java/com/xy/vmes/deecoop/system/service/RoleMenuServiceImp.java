@@ -1,7 +1,7 @@
 package com.xy.vmes.deecoop.system.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
-import com.xy.vmes.common.util.Common;
+import com.yvan.common.util.Common;
 import com.xy.vmes.common.util.DateFormat;
 import com.xy.vmes.deecoop.system.dao.RoleMenuMapper;
 import com.xy.vmes.entity.Menu;

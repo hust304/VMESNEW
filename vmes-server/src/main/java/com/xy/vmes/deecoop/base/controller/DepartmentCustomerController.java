@@ -1,8 +1,6 @@
 package com.xy.vmes.deecoop.base.controller;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
-import com.xy.vmes.common.util.Common;
-import com.xy.vmes.entity.Column;
 import com.xy.vmes.service.ColumnService;
 import com.xy.vmes.service.DepartmentCustomerService;
 import com.yvan.HttpUtils;
@@ -14,8 +12,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.*;
 
 /**
  * 说明：部门客户供应商

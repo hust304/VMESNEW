@@ -1,6 +1,6 @@
 package com.xy.vmes.deecoop.sale.service;
 
-import com.xy.vmes.common.util.Common;
+import com.yvan.common.util.Common;
 import com.xy.vmes.common.util.EvaluateUtil;
 import com.xy.vmes.common.util.rabbitmq.sender.ProductStockcountLockSender;
 import com.xy.vmes.common.util.StringUtil;

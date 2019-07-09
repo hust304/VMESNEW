@@ -1,7 +1,6 @@
 package com.xy.vmes.deecoop.system.service;
 
 
-import com.xy.vmes.common.util.Common;
 import com.xy.vmes.deecoop.system.dao.MessageMapper;
 import com.xy.vmes.entity.Message;
 import com.xy.vmes.service.MessageService;

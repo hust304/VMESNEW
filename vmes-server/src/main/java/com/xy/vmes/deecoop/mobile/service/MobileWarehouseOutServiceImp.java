@@ -1,6 +1,6 @@
 package com.xy.vmes.deecoop.mobile.service;
 
-import com.xy.vmes.common.util.Common;
+import com.yvan.common.util.Common;
 import com.xy.vmes.deecoop.mobile.dao.MobileWarehouseOutMapper;
 import com.xy.vmes.service.MobileWarehouseOutService;
 import com.xy.vmes.service.WarehouseOutDetailService;

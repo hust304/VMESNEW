@@ -1,7 +1,6 @@
 package com.xy.vmes.deecoop.base.service;
 
-import com.baomidou.mybatisplus.annotations.TableField;
-import com.xy.vmes.common.util.Common;
+import com.yvan.common.util.Common;
 import com.xy.vmes.entity.Bom;
 import com.xy.vmes.entity.Product;
 import com.xy.vmes.service.*;
