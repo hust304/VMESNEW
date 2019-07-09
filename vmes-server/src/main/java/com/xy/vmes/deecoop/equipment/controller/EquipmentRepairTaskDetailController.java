@@ -464,6 +464,9 @@ public class EquipmentRepairTaskDetailController {
         EquipmentRepairTask repairTaskEidt = new EquipmentRepairTask();
         repairTaskEidt.setId(repairTaskId);
         repairTaskEidt.setTaskResult(taskResult);
+        if (repairTaskMap != null && repairTaskMap.get("remark") != null) {
+            repairTaskEidt.setRemark(repairTaskMap.get("remark"));
+        }
         repairTaskService.update(repairTaskEidt);
 
         Long endTime = System.currentTimeMillis();
