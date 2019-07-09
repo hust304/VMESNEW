@@ -27,7 +27,7 @@ public interface WarehouseOutCreateService {
      *     outDtlId:  出库明细id
      *     outCount:  出库数量
      */
-    String createWarehouseOutByComplex(String deptId,
+    void createWarehouseOutByComplex(String deptId,
                                        String deptName,
                                        String cuser,
                                        String companyId,
@@ -50,10 +50,35 @@ public interface WarehouseOutCreateService {
      *     outDtlId:  出库明细id
      *     outCount:  出库数量
      */
-    String createWarehouseOutBySimple(String deptId,
+    void createWarehouseOutBySimple(String deptId,
                                       String deptName,
                                       String cuser,
                                       String companyId,
                                       String outType,
                                       Map<String, Map<String, Object>> productByOutMap) throws Exception;
+
+    /**
+     * 创建出库单(虚拟库)-与简版出库单类似
+     *
+     * @param deptId          (部门,供应商,客户)id
+     * @param deptName        (部门,供应商,客户)名称
+     * @param deptPlaceKey    部门库位key
+     * @param cuser           用户id
+     * @param companyId       企业id
+     * @param outType         出库类型id
+     * @param productByOutMap 货品出库Map<货品id, 货品Map>
+     *
+     * 货品出库Map<货品id, 货品Map<String, Object>>
+     * 货品Map<String, Object>
+     *     productId: 货品id
+     *     outDtlId:  出库明细id
+     *     outCount:  出库数量
+     */
+    void createWarehouseOutByVirtual(String deptId,
+                                     String deptName,
+                                     String deptPlaceKey,
+                                     String cuser,
+                                     String companyId,
+                                     String outType,
+                                     Map<String, Map<String, Object>> productByOutMap) throws Exception;
 }

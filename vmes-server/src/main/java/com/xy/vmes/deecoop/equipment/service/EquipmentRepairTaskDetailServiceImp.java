@@ -212,6 +212,62 @@ public class EquipmentRepairTaskDetailServiceImp implements EquipmentRepairTaskD
     }
 
     /**
+     * 获取新的editJsonMapList
+     * 遍历 editJsonMapList 将退回数量(不等于零)数据筛选出来
+     *
+     *   receiveCount 领取数量
+     *   applyCount   实际使用数量
+     *   retreatCount 退回数量 := 领取数量 - 实际使用数量
+     *
+     *
+     * @param editJsonMapList
+     * @return
+     */
+    public List<Map<String, String>> findNewEditJsonMapList (List<Map<String, String>> editJsonMapList) {
+        List<Map<String, String>> newEditJsonMapList = new ArrayList<Map<String, String>>();
+
+        for (Map<String, String> mapObject : editJsonMapList) {
+            //领取数量 receiveCount
+            BigDecimal receiveCount = BigDecimal.valueOf(0D);
+            String receiveCountStr = mapObject.get("receiveCount");
+            if (receiveCountStr != null && receiveCountStr.trim().length() > 0) {
+                try {
+                    receiveCount = new BigDecimal(receiveCountStr);
+                    //四舍五入到2位小数
+                    receiveCount = receiveCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+            mapObject.put("receiveCount", receiveCount.toString());
+
+            //实际使用数量 applyCount
+            BigDecimal applyCount = BigDecimal.valueOf(0D);
+            String applyCountStr = mapObject.get("applyCount");
+            if (applyCountStr != null && applyCountStr.trim().length() > 0) {
+                try {
+                    applyCount = new BigDecimal(applyCountStr);
+                    //四舍五入到2位小数
+                    applyCount = applyCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+            mapObject.put("applyCount", applyCount.toString());
+
+            //退回数量 retreatCount := 领取数量 - 实际使用数量
+            BigDecimal retreatCount = BigDecimal.valueOf(receiveCount.doubleValue() - applyCount.doubleValue());
+            //四舍五入到2位小数
+            retreatCount = retreatCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+            mapObject.put("retreatCount", retreatCount.toString());
+
+            if (0D != retreatCount.doubleValue()) {newEditJsonMapList.add(mapObject);}
+        }
+
+        return newEditJsonMapList;
+    }
+
+    /**
      * 返回货品出库Map
      * 货品出库Map<货品id, 货品Map<String, Object>>
      * 货品Map<String, Object>
@@ -251,6 +307,48 @@ public class EquipmentRepairTaskDetailServiceImp implements EquipmentRepairTaskD
         }
 
         return productByOutMap;
+    }
+
+    /**
+     * 返回货品入库Map
+     * 货品入库Map<货品id, 货品Map<String, Object>>
+     * 货品Map<String, Object>
+     *     productId: 货品id
+     *     inDtlId:   入库明细id
+     *     inCount:   入库数量
+     *
+     * @param jsonMapList
+     * @return
+     */
+    public Map<String, Map<String, Object>> findProductMapByIn(List<Map<String, String>> jsonMapList) {
+        Map<String, Map<String, Object>> productByInMap = new HashMap<String, Map<String, Object>>();
+        if (jsonMapList == null || jsonMapList.size() == 0) {return productByInMap;}
+
+        for (Map<String, String> mapObject : jsonMapList) {
+            String productId = mapObject.get("productId");
+
+            //退回数量 retreatCount := inCount 入库数量
+            BigDecimal retreatCount = BigDecimal.valueOf(0D);
+            String retreatCountStr = mapObject.get("retreatCount");
+            if (retreatCountStr != null && retreatCountStr.trim().length() > 0) {
+                try {
+                    retreatCount = new BigDecimal(retreatCountStr);
+                    //四舍五入到2位小数
+                    retreatCount = retreatCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            Map<String, Object> productMap = new HashMap<String, Object>();
+            productMap.put("productId", productId);
+            productMap.put("inDtlId", null);
+            productMap.put("inCount", retreatCount);
+
+            productByInMap.put(productId, productMap);
+        }
+
+        return productByInMap;
     }
 
     public void addRepairTaskDetail(String cuser,

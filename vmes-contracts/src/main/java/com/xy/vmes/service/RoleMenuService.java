@@ -138,6 +138,15 @@ public interface RoleMenuService {
 
     String findMenuidByRoleIds(String roleIds);//@
 
+    /**
+     * 获取仓库属性(复杂版仓库,简版仓库)
+     * 1. 根据(用户角色id)查询角色菜单表(vmes_role_menu)
+     * 2. 返回值(warehouseByComplex:复杂版仓库 warehouseBySimple:简版仓库)
+     * @param roleId  用户角色id
+     * @return
+     */
+    String findWarehouseAttribute(String roleId);
+
 }
 
 

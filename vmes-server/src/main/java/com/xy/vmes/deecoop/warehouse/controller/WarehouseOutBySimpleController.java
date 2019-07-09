@@ -51,7 +51,7 @@ public class WarehouseOutBySimpleController {
     private CoderuleService coderuleService;
 
     /**
-     * 新增出库单(简版仓库入库)
+     * 新增出库单(简版仓库出库)
      * @author 陈刚
      * @date 2018-05-21
      * @throws Exception
@@ -126,7 +126,10 @@ public class WarehouseOutBySimpleController {
         for (WarehouseOutDetail outDetail : detailList) {
             String productId = outDetail.getProductId();
             BigDecimal count = outDetail.getCount();
-            List<Map<String, Object>> outMapList = warehouseProductToolService.findWarehouseProductOutMapList(productId, companyID, count);
+            List<Map<String, Object>> outMapList = warehouseProductToolService.findWarehouseProductOutMapList(productId,
+                    companyID,
+                    Common.SYS_WAREHOUSE_SIMPLE,
+                    count);
             if (outMapList != null && outMapList.size() > 0) {
                 executeList = warehouseOutExecuteService.outMapList2ExecuteList(outDetail, outMapList, executeList);
             }

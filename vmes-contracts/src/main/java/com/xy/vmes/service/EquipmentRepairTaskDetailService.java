@@ -100,6 +100,17 @@ public interface EquipmentRepairTaskDetailService {
     List<EquipmentRepairTaskDetail> findRepairTaskDetailListByTaskId(String taskId) throws Exception;
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     List<EquipmentRepairTaskDetail> jsonMapList2DetailList(List<Map<String, String>> jsonMapList, List<EquipmentRepairTaskDetail> objectList);
+    /**
+     * 获取新的editJsonMapList
+     * 遍历 editJsonMapList 将退回数量(不等于零)数据筛选出来
+     *   receiveCount 领取数量
+     *   applyCount   实际使用数量
+     *   retreatCount 退回数量 := 领取数量 - 实际使用数量
+     *
+     * @param editJsonMapList
+     * @return
+     */
+    List<Map<String, String>> findNewEditJsonMapList (List<Map<String, String>> editJsonMapList);
 
     /**
      * 返回货品出库Map
@@ -113,6 +124,19 @@ public interface EquipmentRepairTaskDetailService {
      * @return
      */
     Map<String, Map<String, Object>> findProductMapByOut(List<Map<String, String>> jsonMapList);
+
+    /**
+     * 返回货品入库Map
+     * 货品入库Map<货品id, 货品Map<String, Object>>
+     * 货品Map<String, Object>
+     *     productId: 货品id
+     *     inDtlId:   入库明细id
+     *     inCount:   入库数量
+     *
+     * @param jsonMapList
+     * @return
+     */
+    Map<String, Map<String, Object>> findProductMapByIn(List<Map<String, String>> jsonMapList);
 
     void addRepairTaskDetail(String cuser,
                              List<EquipmentRepairTaskDetail> objectList,

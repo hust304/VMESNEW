@@ -273,13 +273,17 @@ public class Common {
         //550e0457a3d34149ba3199d90b0ae198(字典id)  入库类型(字典名称)
         put("warehouseInType", "550e0457a3d34149ba3199d90b0ae198");
             //生产入库 2c4a104aedc046848455f5fa6e3da87c
+            put("produceIn", "2c4a104aedc046848455f5fa6e3da87c");
             //采购入库 d78ceba5beef41f5be16f0ceee775399
             put("purchaseIn", "d78ceba5beef41f5be16f0ceee775399");
             //外协入库 064dda15d44d4f8fa6330c5c7e46300e
             //销售退货入库 81907167d5c8498692e6c4f3694c5cfa
             put("saleRetreatIn", "81907167d5c8498692e6c4f3694c5cfa");
             //生产退库 8e35209f19804e94940f076c8d71b955
+            put("produceRetreatIn", "2c4a104aedc046848455f5fa6e3da87c");
             //组装入库 80ac00503a1d41e5926be50f93c32c54
+            //c396683796d54b8693b522a2c0ad2793 维保领料退回入库
+            put("repairRetreatIn", "c396683796d54b8693b522a2c0ad2793");
 
         //20c09785a7b54ec280d10c988be21929(字典id)  出库类型(字典名称)
         put("warehouseOutType", "20c09785a7b54ec280d10c988be21929");

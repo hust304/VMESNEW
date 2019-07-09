@@ -1,6 +1,7 @@
 package com.xy.vmes.deecoop.system.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.common.util.Common;
 import com.xy.vmes.common.util.DateFormat;
 import com.xy.vmes.deecoop.system.dao.RoleMenuMapper;
 import com.xy.vmes.entity.Menu;
@@ -474,6 +475,51 @@ public class RoleMenuServiceImp implements RoleMenuService {
                 return object_0.getLayer().compareTo(object_1.getLayer());
             }
         });
+    }
+
+    /**
+     * 获取仓库属性(复杂版仓库,简版仓库)
+     * 1. 根据(用户角色id)查询角色菜单表(vmes_role_menu)
+     * 2. 返回值(warehouseByComplex:复杂版仓库 warehouseBySimple:简版仓库)
+     *
+     * @param roleIds  用户角色id
+     * @return
+     */
+    public String findWarehouseAttribute(String roleIds) {
+        if (roleIds == null || roleIds.trim().length() == 0) {
+            return null;
+        }
+
+        roleIds = StringUtil.stringTrimSpace(roleIds);
+        roleIds = "'" + roleIds.replace(",", "','") + "'";
+
+        List<Map<String, Object>> mapList = null;
+        try {
+            PageData findMap = new PageData();
+            findMap.put("roleIds", roleIds);
+            //是否禁用(0:已禁用 1:启用)
+            findMap.put("isdisable", "1");
+            findMap.put("mapSize", Integer.valueOf(findMap.size()));
+            mapList = this.findRoleMenuMapList(findMap);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (mapList == null || mapList.size() == 0) {return null;}
+
+        List<Menu> menuList = this.mapList2MenuList(mapList, null);
+        String menuIds = menuService.findMenuidByMenuList(menuList);
+        if (menuIds == null || menuIds.trim().length() == 0) {return null;}
+
+        //warehouseByComplex:复杂版仓库:15a6c4ca92fe42a0a82320287538b727(菜单id)
+        //warehouseBySimple:简版仓库:5abe8f434e114a87a73b85ed74bc78e7(菜单id)
+        menuIds = StringUtil.stringTrimSpace(menuIds);
+        if (menuIds.indexOf(Common.SYS_WAREHOUSE_NAMEKEY_MAP.get("warehouseByComplex")) != -1) {
+            return Common.SYS_WAREHOUSE_COMPLEX;
+        } else if (menuIds.indexOf(Common.SYS_WAREHOUSE_NAMEKEY_MAP.get("warehouseBySimple")) != -1) {
+            return Common.SYS_WAREHOUSE_SIMPLE;
+        }
+
+        return null;
     }
 }
 

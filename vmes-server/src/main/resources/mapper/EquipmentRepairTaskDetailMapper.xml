@@ -62,7 +62,11 @@
             (replace(uuid(), '-', ''), 'equipmentRepairTaskDetail', 'productSpec', '规格型号', 20, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
             (replace(uuid(), '-', ''), 'equipmentRepairTaskDetail', 'productGenre', '货品属性id', 21, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
             (replace(uuid(), '-', ''), 'equipmentRepairTaskDetail', 'productGenreName', '货品属性', 22, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
-            (replace(uuid(), '-', ''), 'equipmentRepairTaskDetail', 'productUnitName', '单位', 23, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin')
+            (replace(uuid(), '-', ''), 'equipmentRepairTaskDetail', 'productUnitName', '单位', 23, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+
+            (replace(uuid(), '-', ''), 'equipmentRepairTaskDetail', 'lockCount', 'lockCount', 24, '1', '1', '1', '0', '2018-12-6 09:16:39', 'admin'),
+            (replace(uuid(), '-', ''), 'equipmentRepairTaskDetail', 'stockCount', 'stockCount', 25, '1', '1', '1', '0', '2018-12-6 09:16:39', 'admin'),
+            (replace(uuid(), '-', ''), 'equipmentRepairTaskDetail', 'productStockCount', '库存可用数量', 26, '1', '1', '1', '0', '2018-12-6 09:16:39', 'admin')
     </insert>
 
 
@@ -156,7 +160,11 @@
         product.spec productSpec,
         product.genre productGenre,
         genre.name productGenreName,
-        unit.name productUnitName
+        unit.name productUnitName,
+
+        round(ifnull(product.lock_count, 0), 2) lockCount,
+        round(ifnull(product.stock_count, 0), 2) stockCount,
+        round((ifnull(product.stock_count, 0) - ifnull(product.lock_count, 0)), 2) productStockCount
 
         from vmes_equipment_repairTask_detail taskDtl
         left join vmes_product product on taskDtl.product_id = product.id

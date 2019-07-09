@@ -93,6 +93,7 @@ public interface WarehouseInDetailService {
 
     void addWarehouseInDetail(WarehouseIn parentObj, List<WarehouseInDetail> objectList) throws Exception;
     void addWarehouseInDetailBySimple(WarehouseIn parentObj, List<WarehouseInDetail> objectList) throws Exception;
+    void executeWarehouseInDetailBySimple(WarehouseIn warehouseIn, List<WarehouseInDetail> detailList) throws Exception;
 
     /**
      * 修改入库单明细状态(vmes_warehouse_in_detail)
@@ -104,7 +105,7 @@ public interface WarehouseInDetailService {
      *
      * @param detailList
      */
-    void updateStateWarehouseInDetail(List<WarehouseInDetail> detailList) throws Exception;
+    //void updateStateWarehouseInDetail(List<WarehouseInDetail> detailList) throws Exception;
 
 
     /**
