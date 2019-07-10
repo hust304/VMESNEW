@@ -368,10 +368,11 @@ public class EquipmentRepairTaskDetailController {
 
         ///////////////////////////////////////////////////////////////////////////////
         //修改维修任务明细-生成入库单 editJsonMapList
-        //遍历 editJsonMapList 将退回数量(不等于零)数据筛选出来
-        List<Map<String, String>> newEditJsonMapList = repairTaskDetailService.findNewEditJsonMapList(editJsonMapList);
-        if (newEditJsonMapList.size() > 0) {
-            Map<String, Map<String, Object>> productByInMap = repairTaskDetailService.findProductMapByIn(newEditJsonMapList);
+        Map<String, List<Map<String, String>>> newEditJsonMap = repairTaskDetailService.findNewEditJsonMap(editJsonMapList);
+        //notEqualZeroList: 退回数量(不等于零)List
+        List<Map<String, String>> notEqualZeroList = newEditJsonMap.get("notEqualZeroList");
+        if (notEqualZeroList != null && notEqualZeroList.size() > 0) {
+            Map<String, Map<String, Object>> productByInMap = repairTaskDetailService.findProductMapByIn(notEqualZeroList);
 
             //retreatType 退库方式(1:生成退库单 2:退回虚拟库)
             if ("1".equals(retreatType) && Common.SYS_WAREHOUSE_COMPLEX.equals(warehouse)) {
@@ -411,7 +412,7 @@ public class EquipmentRepairTaskDetailController {
             }
 
             //(维修任务id)-维修任务明细(领料货品明细)
-            for (Map<String, String> objectMap : newEditJsonMapList) {
+            for (Map<String, String> objectMap : notEqualZeroList) {
                 EquipmentRepairTaskDetail detailEdit = new EquipmentRepairTaskDetail();
 
                 String id = objectMap.get("id");
@@ -456,6 +457,45 @@ public class EquipmentRepairTaskDetailController {
                 detailEdit.setRetreatType(retreatType);
 
                 repairTaskDetailService.update(detailEdit);
+            }
+
+            //equalZeroList:    退回数量(等于零)List
+            List<Map<String, String>> equalZeroList = newEditJsonMap.get("equalZeroList");
+            if (equalZeroList != null && equalZeroList.size() > 0) {
+                for (Map<String, String> objectMap : equalZeroList) {
+                    EquipmentRepairTaskDetail detailEdit = new EquipmentRepairTaskDetail();
+
+                    String id = objectMap.get("id");
+                    detailEdit.setId(id);
+
+                    //实际使用数量 applyCount
+                    BigDecimal applyCount = BigDecimal.valueOf(0D);
+                    if (objectMap.get("applyCount") != null) {
+                        try {
+                            applyCount = new BigDecimal(objectMap.get("applyCount").trim());
+                            //四舍五入到2位小数
+                            applyCount = applyCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                        } catch (NumberFormatException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    detailEdit.setApplyCount(applyCount);
+
+                    //退回数量 retreatCount := 领取数量 - 实际使用数量
+                    BigDecimal retreatCount = BigDecimal.valueOf(0D);
+                    if (objectMap.get("retreatCount") != null) {
+                        try {
+                            retreatCount = new BigDecimal(objectMap.get("retreatCount").trim());
+                            //四舍五入到2位小数
+                            retreatCount = retreatCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                        } catch (NumberFormatException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    detailEdit.setApplyCount(retreatCount);
+
+                    repairTaskDetailService.update(detailEdit);
+                }
             }
         }
 

@@ -212,19 +212,26 @@ public class EquipmentRepairTaskDetailServiceImp implements EquipmentRepairTaskD
     }
 
     /**
-     * 获取新的editJsonMapList
-     * 遍历 editJsonMapList 将退回数量(不等于零)数据筛选出来
+     * 获取新的editJsonMap
+     * Map<String, List<Map<String, String>>>
+     *     notEqualZeroList: 退回数量(不等于零)List
+     *     equalZeroList:    退回数量(等于零)List
      *
+     * Map<String, String>
      *   receiveCount 领取数量
      *   applyCount   实际使用数量
      *   retreatCount 退回数量 := 领取数量 - 实际使用数量
      *
-     *
      * @param editJsonMapList
      * @return
      */
-    public List<Map<String, String>> findNewEditJsonMapList (List<Map<String, String>> editJsonMapList) {
-        List<Map<String, String>> newEditJsonMapList = new ArrayList<Map<String, String>>();
+    public Map<String, List<Map<String, String>>> findNewEditJsonMap (List<Map<String, String>> editJsonMapList) {
+        Map<String, List<Map<String, String>>> newEditJsonMap = new HashMap<String, List<Map<String, String>>>();
+
+        //退回数量(不等于零)List
+        List<Map<String, String>> notEqualZeroList = new ArrayList<Map<String, String>>();
+        //退回数量(等于零)List
+        List<Map<String, String>> equalZeroList = new ArrayList<Map<String, String>>();
 
         for (Map<String, String> mapObject : editJsonMapList) {
             //领取数量 receiveCount
@@ -261,10 +268,17 @@ public class EquipmentRepairTaskDetailServiceImp implements EquipmentRepairTaskD
             retreatCount = retreatCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
             mapObject.put("retreatCount", retreatCount.toString());
 
-            if (0D != retreatCount.doubleValue()) {newEditJsonMapList.add(mapObject);}
+            if (0D != retreatCount.doubleValue()) {
+                notEqualZeroList.add(mapObject);
+            } else if (0D == retreatCount.doubleValue()) {
+                equalZeroList.add(mapObject);
+            }
         }
 
-        return newEditJsonMapList;
+        newEditJsonMap.put("notEqualZeroList", notEqualZeroList);
+        newEditJsonMap.put("equalZeroList", equalZeroList);
+
+        return newEditJsonMap;
     }
 
     /**

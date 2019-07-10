@@ -101,8 +101,12 @@ public interface EquipmentRepairTaskDetailService {
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     List<EquipmentRepairTaskDetail> jsonMapList2DetailList(List<Map<String, String>> jsonMapList, List<EquipmentRepairTaskDetail> objectList);
     /**
-     * 获取新的editJsonMapList
-     * 遍历 editJsonMapList 将退回数量(不等于零)数据筛选出来
+     * 获取新的editJsonMap
+     * Map<String, List<Map<String, String>>>
+     *     notEqualZeroList: 退回数量(不等于零)List
+     *     equalZeroList:    退回数量(等于零)List
+     *
+     * Map<String, String>
      *   receiveCount 领取数量
      *   applyCount   实际使用数量
      *   retreatCount 退回数量 := 领取数量 - 实际使用数量
@@ -110,7 +114,7 @@ public interface EquipmentRepairTaskDetailService {
      * @param editJsonMapList
      * @return
      */
-    List<Map<String, String>> findNewEditJsonMapList (List<Map<String, String>> editJsonMapList);
+    Map<String, List<Map<String, String>>> findNewEditJsonMap(List<Map<String, String>> editJsonMapList);
 
     /**
      * 返回货品出库Map
