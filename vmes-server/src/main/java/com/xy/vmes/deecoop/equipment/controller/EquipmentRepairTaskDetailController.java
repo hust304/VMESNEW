@@ -1,10 +1,7 @@
 package com.xy.vmes.deecoop.equipment.controller;
 
 import com.xy.vmes.common.util.ColumnUtil;
-import com.xy.vmes.entity.Column;
-import com.xy.vmes.entity.Department;
-import com.xy.vmes.entity.EquipmentRepairTask;
-import com.xy.vmes.entity.EquipmentRepairTaskDetail;
+import com.xy.vmes.entity.*;
 import com.xy.vmes.service.*;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
@@ -36,6 +33,8 @@ import java.util.Map;
 public class EquipmentRepairTaskDetailController {
     private Logger logger = LoggerFactory.getLogger(EquipmentRepairTaskDetailController.class);
 
+    @Autowired
+    private EquipmentRepairService repairService;
     @Autowired
     private EquipmentRepairTaskService repairTaskService;
     @Autowired
@@ -514,6 +513,14 @@ public class EquipmentRepairTaskDetailController {
         //taskState 任务状态(0:未领取任务 1:已领取任务 2:已领料 3:已报工 4:已退单 )
         repairTaskEidt.setTaskState("3");
         repairTaskService.update(repairTaskEidt);
+
+        //修改设备维修单状态
+        EquipmentRepairTask repairTask = repairTaskService.findRepairTaskById(repairTaskId);
+        EquipmentRepair repairEdit = new EquipmentRepair();
+        repairEdit.setId(repairTask.getRepairId());
+        //equipmentState 设备状态(1:故障 2:维修中 3:已完成)
+        repairEdit.setEquipmentState("3");
+        repairService.update(repairEdit);
 
         Long endTime = System.currentTimeMillis();
         logger.info("################/equipment/equipmentRepairTaskDetail/updateRepairTaskDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
