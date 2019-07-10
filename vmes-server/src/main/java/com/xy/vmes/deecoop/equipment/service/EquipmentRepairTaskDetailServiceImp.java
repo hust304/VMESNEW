@@ -375,8 +375,18 @@ public class EquipmentRepairTaskDetailServiceImp implements EquipmentRepairTaskD
             detail.setCuser(cuser);
 
             Map<String, Object> productMap = productByOutMap.get(productId);
-            String outDtlId = (String)productMap.get("outDtlId");
+            //outDtlId:  出库明细id
+            String outDtlId = new String();
+            if (productMap != null && productMap.get("outDtlId") != null) {
+                outDtlId = (String)productMap.get("outDtlId");
+            }
             detail.setOutDtlId(outDtlId);
+
+            //outCount:  出库数量
+            if (productMap != null && productMap.get("outCount") != null) {
+                BigDecimal outCount = (BigDecimal)productMap.get("outCount");
+                detail.setOutCount(outCount);
+            }
 
             this.save(detail);
         }

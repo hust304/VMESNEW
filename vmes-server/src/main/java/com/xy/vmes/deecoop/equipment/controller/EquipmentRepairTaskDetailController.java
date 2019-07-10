@@ -222,13 +222,17 @@ public class EquipmentRepairTaskDetailController {
                     productByOutMap);
         }
 
-
-
         //添加-vmes_equipment_repairTask_detail:设备维修任务明细表
         List<EquipmentRepairTaskDetail> taskDetailList = repairTaskDetailService.jsonMapList2DetailList(jsonMapList, null);
         repairTaskDetailService.addRepairTaskDetail(cuser,
                 taskDetailList,
                 productByOutMap);
+
+        //修改设备维修任务状态 (0:未领取任务 1:已领取任务 2:已领料 3:已报工 4:已退单 )
+        EquipmentRepairTask repairTaskEdit = new EquipmentRepairTask();
+        repairTaskEdit.setId(repairTaskId);
+        repairTaskEdit.setTaskState("2");
+        repairTaskService.update(repairTaskEdit);
 
         Long endTime = System.currentTimeMillis();
         logger.info("################/equipment/equipmentRepairTaskDetail/addRepairTaskDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
@@ -442,7 +446,7 @@ public class EquipmentRepairTaskDetailController {
                         e.printStackTrace();
                     }
                 }
-                detailEdit.setApplyCount(retreatCount);
+                detailEdit.setRetreatCount(retreatCount);
 
                 String productId = objectMap.get("productId");
                 Map<String, Object> producValueMap = productByInMap.get(productId);
@@ -507,6 +511,8 @@ public class EquipmentRepairTaskDetailController {
         if (repairTaskMap != null && repairTaskMap.get("remark") != null) {
             repairTaskEidt.setRemark(repairTaskMap.get("remark"));
         }
+        //taskState 任务状态(0:未领取任务 1:已领取任务 2:已领料 3:已报工 4:已退单 )
+        repairTaskEidt.setTaskState("3");
         repairTaskService.update(repairTaskEidt);
 
         Long endTime = System.currentTimeMillis();

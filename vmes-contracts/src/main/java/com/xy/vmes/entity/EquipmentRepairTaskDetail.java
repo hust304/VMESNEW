@@ -99,12 +99,12 @@ public class EquipmentRepairTaskDetail implements Serializable {
 	public void setWarehouseGenre(String warehouseGenre) {
 		this.warehouseGenre = warehouseGenre;
 	}
-//	public void setReceiveCount(BigDecimal receiveCount) {
-//		this.receiveCount = receiveCount;
-//	}
-//	public BigDecimal getReceiveCount() {
-//		return receiveCount;
-//	}
+	public void setReceiveCount(BigDecimal receiveCount) {
+		this.receiveCount = receiveCount;
+	}
+	public BigDecimal getReceiveCount() {
+		return receiveCount;
+	}
 	public void setApplyCount(BigDecimal applyCount) {
 		this.applyCount = applyCount;
 	}
