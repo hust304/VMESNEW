@@ -5,7 +5,6 @@ import com.xy.vmes.entity.EquipmentRepairTask;
 import com.xy.vmes.service.CoderuleService;
 import com.xy.vmes.service.EquipmentRepairService;
 
-import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.service.EquipmentRepairTaskService;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
@@ -47,8 +46,7 @@ public class EquipmentRepairController {
         logger.info("################/equipment/equipmentRepair/listPageEquipmentRepair 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         PageData pd = HttpUtils.parsePageData();
-        Pagination pg = HttpUtils.parsePagination(pd);
-        ResultModel model = equipmentRepairService.listPageEquipmentRepair(pd,pg);
+        ResultModel model = equipmentRepairService.listPageEquipmentRepair(pd);
         Long endTime = System.currentTimeMillis();
         logger.info("################/equipment/equipmentRepair/listPageEquipmentRepair 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;

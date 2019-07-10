@@ -1,10 +1,8 @@
 package com.xy.vmes.deecoop.equipment.controller;
 
-import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.entity.*;
 import com.xy.vmes.service.*;
 
-import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.YvanUtil;
@@ -19,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -39,8 +36,6 @@ public class EquipmentRepairTaskDetailController {
     private EquipmentRepairTaskService repairTaskService;
     @Autowired
     private EquipmentRepairTaskDetailService repairTaskDetailService;
-    @Autowired
-    private EquipmentRepairTaskOutDetailService repairTaskOutDetailService;
 
     @Autowired
     private WarehouseOutCreateService warehouseOutCreateService;
@@ -51,8 +46,6 @@ public class EquipmentRepairTaskDetailController {
     private RoleMenuService roleMenuService;
     @Autowired
     private DepartmentService departmentService;
-    @Autowired
-    private ColumnService columnService;
 
     /**
     * @author 陈刚 自动创建，可以修改
@@ -63,67 +56,78 @@ public class EquipmentRepairTaskDetailController {
         logger.info("################/equipment/equipmentRepairTaskDetail/listPageRepairTaskDetail 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         PageData pd = HttpUtils.parsePageData();
-        Pagination pg = HttpUtils.parsePagination(pd);
-        ResultModel model = repairTaskDetailService.listPageRepairTaskDetail(pd,pg);
+        ResultModel model = repairTaskDetailService.listPageRepairTaskDetail(pd);
         Long endTime = System.currentTimeMillis();
         logger.info("################/equipment/equipmentRepairTaskDetail/listPageRepairTaskDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
-    /**
-     * @author 陈刚 自动创建，可以修改
-     * @date 2019-07-01
-     */
     @PostMapping("/equipment/equipmentRepairTaskDetail/findListTaskDetailByOutDetail")
     public ResultModel findListTaskDetailByOutDetail() throws Exception {
         logger.info("################/equipment/equipmentRepairTaskDetail/findListTaskDetailByOutDetail 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
-        Pagination pg = HttpUtils.parsePagination(pd);
-
-        List<Column> columnList = columnService.findColumnList("equipmentRepairTaskDetailByOutDetail");
-        if (columnList == null || columnList.size() == 0) {
-            model.putCode("1");
-            model.putMsg("数据库没有生成TabCol，请联系管理员！");
-            return model;
-        }
-
-        //获取指定栏位字符串-重新调整List<Column>
-        String fieldCode = pd.getString("fieldCode");
-        if (fieldCode != null && fieldCode.trim().length() > 0) {
-            columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
-        }
-        Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
-
-        //设置查询排序方式
-        //pd.put("orderStr", "a.cdate asc");
-        String orderStr = pd.getString("orderStr");
-        if (orderStr != null && orderStr.trim().length() > 0) {
-            pd.put("orderStr", orderStr);
-        }
-
-        //是否需要分页 true:需要分页 false:不需要分页
-        Map result = new HashMap();
-        String isNeedPage = pd.getString("isNeedPage");
-        if ("false".equals(isNeedPage)) {
-            pg = null;
-        } else {
-            result.put("pageData", pg);
-        }
-
-        List<Map> varList = repairTaskOutDetailService.findTaskDetailByOutDetail(pd, pg);
-        List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
-
-        result.put("hideTitles",titleMap.get("hideTitles"));
-        result.put("titles",titleMap.get("titles"));
-        result.put("varList",varMapList);
-        model.putResult(result);
-
+        ResultModel model = repairTaskDetailService.findListTaskDetailByOutDetail(pd);
         Long endTime = System.currentTimeMillis();
         logger.info("################/equipment/equipmentRepairTaskDetail/findListTaskDetailByOutDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
+
+
+//    /**
+//     * @author 陈刚 自动创建，可以修改
+//     * @date 2019-07-01
+//     */
+//    @PostMapping("/equipment/equipmentRepairTaskDetail/findListTaskDetailByOutDetail")
+//    public ResultModel findListTaskDetailByOutDetail() throws Exception {
+//        logger.info("################/equipment/equipmentRepairTaskDetail/findListTaskDetailByOutDetail 执行开始 ################# ");
+//        Long startTime = System.currentTimeMillis();
+//        ResultModel model = new ResultModel();
+//        PageData pd = HttpUtils.parsePageData();
+//        Pagination pg = HttpUtils.parsePagination(pd);
+//
+//        List<Column> columnList = columnService.findColumnList("equipmentRepairTaskDetailByOutDetail");
+//        if (columnList == null || columnList.size() == 0) {
+//            model.putCode("1");
+//            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+//            return model;
+//        }
+//
+//        //获取指定栏位字符串-重新调整List<Column>
+//        String fieldCode = pd.getString("fieldCode");
+//        if (fieldCode != null && fieldCode.trim().length() > 0) {
+//            columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
+//        }
+//        Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
+//
+//        //设置查询排序方式
+//        //pd.put("orderStr", "a.cdate asc");
+//        String orderStr = pd.getString("orderStr");
+//        if (orderStr != null && orderStr.trim().length() > 0) {
+//            pd.put("orderStr", orderStr);
+//        }
+//
+//        //是否需要分页 true:需要分页 false:不需要分页
+//        Map result = new HashMap();
+//        String isNeedPage = pd.getString("isNeedPage");
+//        if ("false".equals(isNeedPage)) {
+//            pg = null;
+//        } else {
+//            result.put("pageData", pg);
+//        }
+//
+//        List<Map> varList = repairTaskOutDetailService.findTaskDetailByOutDetail(pd, pg);
+//        List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
+//
+//        result.put("hideTitles",titleMap.get("hideTitles"));
+//        result.put("titles",titleMap.get("titles"));
+//        result.put("varList",varMapList);
+//        model.putResult(result);
+//
+//        Long endTime = System.currentTimeMillis();
+//        logger.info("################/equipment/equipmentRepairTaskDetail/findListTaskDetailByOutDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+//        return model;
+//    }
 
     /**
      * 新增-设备维修单-维修任务明细

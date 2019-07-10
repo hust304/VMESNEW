@@ -101,6 +101,14 @@
                 <if test="companyId != null and companyId != ''" >
                     and company_id = #{companyId}
                 </if>
+
+                <if test="productIds != null and productIds != ''" >
+                    and product_id in (${productIds})
+                </if>
+                <if test="notInProductIds != null and notInProductIds != ''" >
+                    and product_id not in (${notInProductIds})
+                </if>
+
             </where>
             group by product_id
         ) warehouseProduct

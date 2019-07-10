@@ -1,5 +1,6 @@
 package com.xy.vmes.deecoop.equipment.service;
 
+import com.yvan.HttpUtils;
 import com.yvan.common.util.Common;
 import com.xy.vmes.deecoop.equipment.dao.EquipmentSensorMapper;
 import com.xy.vmes.entity.EquipmentSensor;
@@ -315,12 +316,12 @@ public class EquipmentSensorServiceImp implements EquipmentSensorService {
     /**
     *
     * @param pd    查询参数对象PageData
-    * @param pg    分页参数对象Pagination
     * @return      返回对象ResultModel
     * @throws Exception
     */
-    public ResultModel listPageEquipmentSensor(PageData pd,Pagination pg) throws Exception {
+    public ResultModel listPageEquipmentSensor(PageData pd) throws Exception {
         ResultModel model = new ResultModel();
+        Pagination pg = HttpUtils.parsePagination(pd);
 
         List<Column> columnList = columnService.findColumnList("equipmentSensor");
         if (columnList == null || columnList.size() == 0) {
@@ -353,8 +354,8 @@ public class EquipmentSensorServiceImp implements EquipmentSensorService {
             result.put("pageData", pg);
         }
 
-        List<Map> varList = this.getDataListPage(pd,pg);
-        List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
+        List<Map> varList = this.getDataListPage(pd, pg);
+        List<Map> varMapList = ColumnUtil.getVarMapList(varList, titleMap);
 
         result.put("hideTitles",titleMap.get("hideTitles"));
         result.put("titles",titleMap.get("titles"));
@@ -363,8 +364,9 @@ public class EquipmentSensorServiceImp implements EquipmentSensorService {
         return model;
     }
 
-    public ResultModel findAllEquipmentBySensor(PageData pd,Pagination pg) throws Exception {
+    public ResultModel findAllEquipmentBySensor(PageData pd) throws Exception {
         ResultModel model = new ResultModel();
+        Pagination pg = HttpUtils.parsePagination(pd);
 
         List<Column> columnList = columnService.findColumnList("equipmentBindSensor");
         if (columnList == null || columnList.size() == 0) {
@@ -402,7 +404,7 @@ public class EquipmentSensorServiceImp implements EquipmentSensorService {
             result.put("pageData", pg);
         }
 
-        List<Map> varList = this.findAllEquipmentBySensorMapList(pd,pg);
+        List<Map> varList = this.findAllEquipmentBySensorMapList(pd, pg);
         List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
 
         result.put("hideTitles",titleMap.get("hideTitles"));
@@ -412,7 +414,42 @@ public class EquipmentSensorServiceImp implements EquipmentSensorService {
         return model;
     }
 
+    //获取设备全部传感器指标-公式编辑器调用
+    public ResultModel findListEquipmentSensorByEquipment(PageData pd) throws Exception {
+        ResultModel model = new ResultModel();
 
+        String equipmentId = pd.getString("equipmentId");
+        if (equipmentId == null || equipmentId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("设备id为空或空字符串！");
+            return model;
+        }
+
+        List<EquipmentSensor> sensorList = new ArrayList<EquipmentSensor>();
+        try {
+            PageData findMap = new PageData();
+            findMap.put("equipmentId", equipmentId);
+            //是否启用(0:已禁用 1:启用)
+            findMap.put("isdisable", "1");
+            findMap.put("orderStr", "target_code asc");
+            sensorList = findEquipmentSensorList(findMap);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        List<Map<String, Object>> sensorMapList = new ArrayList<Map<String, Object>>();
+        for (EquipmentSensor object : sensorList) {
+            Map<String, Object> valueMap = new LinkedHashMap<String, Object>();
+            valueMap.put("id", object.getId());
+            valueMap.put("targetCode", object.getTargetCode());
+            valueMap.put("targetName", object.getTargetName());
+            valueMap.put("targetFormula", object.getTargetFormula());
+            sensorMapList.add(valueMap);
+        }
+
+        model.put("EquipmentSensor", sensorMapList);
+        return model;
+    }
 
 }
 

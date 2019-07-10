@@ -5,7 +5,6 @@ import com.xy.vmes.entity.EquipmentSensor;
 import com.xy.vmes.service.EquipmentSensorFormulaService;
 import com.xy.vmes.service.EquipmentSensorService;
 
-import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.service.EquipmentSensorTargetService;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
@@ -20,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 import java.text.MessageFormat;
 import java.util.LinkedHashMap;
 import java.util.List;
-
 
 /**
 * 说明：vmes_equipment_sensor:设备传感器指标(设备联网)Controller
@@ -49,8 +47,7 @@ public class EquipmentSensorController {
         logger.info("################/equipment/equipmentSensor/listPageEquipmentSensor 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         PageData pd = HttpUtils.parsePageData();
-        Pagination pg = HttpUtils.parsePagination(pd);
-        ResultModel model = equipmentSensorService.listPageEquipmentSensor(pd,pg);
+        ResultModel model = equipmentSensorService.listPageEquipmentSensor(pd);
         Long endTime = System.currentTimeMillis();
         logger.info("################/equipment/equipmentSensor/listPageEquipmentSensor 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
@@ -61,10 +58,21 @@ public class EquipmentSensorController {
         logger.info("################/equipment/equipmentSensor/findAllEquipmentBySensor 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         PageData pd = HttpUtils.parsePageData();
-        Pagination pg = HttpUtils.parsePagination(pd);
-        ResultModel model = equipmentSensorService.findAllEquipmentBySensor(pd, pg);
+        ResultModel model = equipmentSensorService.findAllEquipmentBySensor(pd);
         Long endTime = System.currentTimeMillis();
         logger.info("################/equipment/equipmentSensor/findAllEquipmentBySensor 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    //获取设备全部传感器指标-公式编辑器调用
+    @PostMapping("/equipment/equipmentSensor/findListEquipmentSensorByEquipment")
+    public ResultModel findEquipmentSensorByEquipment() throws Exception {
+        logger.info("################/equipment/equipmentSensor/findListEquipmentSensorByEquipment 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = equipmentSensorService.findListEquipmentSensorByEquipment(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/equipment/equipmentSensor/findListEquipmentSensorByEquipment 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 

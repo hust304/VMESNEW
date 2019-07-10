@@ -1,5 +1,6 @@
 package com.xy.vmes.deecoop.equipment.service;
 
+import com.xy.vmes.service.EquipmentRepairTaskOutDetailService;
 import com.yvan.common.util.Common;
 import com.xy.vmes.deecoop.equipment.dao.EquipmentRepairTaskDetailMapper;
 import com.xy.vmes.entity.EquipmentRepairTaskDetail;
@@ -30,6 +31,8 @@ import com.yvan.Conv;
 public class EquipmentRepairTaskDetailServiceImp implements EquipmentRepairTaskDetailService {
     @Autowired
     private EquipmentRepairTaskDetailMapper equipmentRepairTaskDetailMapper;
+    @Autowired
+    private EquipmentRepairTaskOutDetailService repairTaskOutDetailService;
     @Autowired
     private ColumnService columnService;
 
@@ -396,12 +399,12 @@ public class EquipmentRepairTaskDetailServiceImp implements EquipmentRepairTaskD
     /**
     *
     * @param pd    查询参数对象PageData
-    * @param pg    分页参数对象Pagination
     * @return      返回对象ResultModel
     * @throws Exception
     */
-    public ResultModel listPageRepairTaskDetail(PageData pd,Pagination pg) throws Exception{
+    public ResultModel listPageRepairTaskDetail(PageData pd) throws Exception{
         ResultModel model = new ResultModel();
+        Pagination pg = HttpUtils.parsePagination(pd);
 
         List<Column> columnList = columnService.findColumnList("equipmentRepairTaskDetail");
         if (columnList == null || columnList.size() == 0) {
@@ -444,6 +447,52 @@ public class EquipmentRepairTaskDetailServiceImp implements EquipmentRepairTaskD
         result.put("hideTitles",titleMap.get("hideTitles"));
         result.put("titles",titleMap.get("titles"));
         result.put("varList",varMapList);
+
+        model.putResult(result);
+        return model;
+    }
+
+    public ResultModel findListTaskDetailByOutDetail(PageData pd) throws Exception {
+        ResultModel model = new ResultModel();
+        Pagination pg = HttpUtils.parsePagination(pd);
+
+        List<Column> columnList = columnService.findColumnList("equipmentRepairTaskDetailByOutDetail");
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
+        }
+
+        //获取指定栏位字符串-重新调整List<Column>
+        String fieldCode = pd.getString("fieldCode");
+        if (fieldCode != null && fieldCode.trim().length() > 0) {
+            columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
+        }
+        Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
+
+        //设置查询排序方式
+        //pd.put("orderStr", "a.cdate asc");
+        String orderStr = pd.getString("orderStr");
+        if (orderStr != null && orderStr.trim().length() > 0) {
+            pd.put("orderStr", orderStr);
+        }
+
+        //是否需要分页 true:需要分页 false:不需要分页
+        Map result = new HashMap();
+        String isNeedPage = pd.getString("isNeedPage");
+        if ("false".equals(isNeedPage)) {
+            pg = null;
+        } else {
+            result.put("pageData", pg);
+        }
+
+        List<Map> varList = repairTaskOutDetailService.findTaskDetailByOutDetail(pd, pg);
+        List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
+
+        result.put("hideTitles",titleMap.get("hideTitles"));
+        result.put("titles",titleMap.get("titles"));
+        result.put("varList",varMapList);
+
         model.putResult(result);
         return model;
     }

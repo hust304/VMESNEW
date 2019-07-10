@@ -112,12 +112,13 @@ public interface EquipmentSensorService {
     /**
     * 分页查询
     * @param pd    查询参数对象PageData
-    * @param pg    分页参数对象Pagination
     * @return      返回对象ResultModel
     * @throws Exception
     */
-    ResultModel listPageEquipmentSensor(PageData pd,Pagination pg) throws Exception;
-    ResultModel findAllEquipmentBySensor(PageData pd,Pagination pg) throws Exception;
+    ResultModel listPageEquipmentSensor(PageData pd) throws Exception;
+    ResultModel findAllEquipmentBySensor(PageData pd) throws Exception;
+    //获取设备全部传感器指标-公式编辑器调用
+    ResultModel findListEquipmentSensorByEquipment(PageData pd) throws Exception;
 
 
 }
