@@ -8,11 +8,14 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.service.ColumnService;
+import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
 import java.util.*;
 import com.yvan.Conv;
 
@@ -206,12 +209,12 @@ public class EquipmentRepairTaskServiceImp implements EquipmentRepairTaskService
     /**
     *
     * @param pd    查询参数对象PageData
-    * @param pg    分页参数对象Pagination
     * @return      返回对象ResultModel
     * @throws Exception
     */
-    public ResultModel listPageEquipmentRepairTasks(PageData pd,Pagination pg) throws Exception{
+    public ResultModel listPageEquipmentRepairTask(PageData pd) throws Exception{
         ResultModel model = new ResultModel();
+        Pagination pg = HttpUtils.parsePagination(pd);
 
         List<Column> columnList = columnService.findColumnList("equipmentRepairTask");
         if (columnList == null || columnList.size() == 0) {
@@ -243,8 +246,32 @@ public class EquipmentRepairTaskServiceImp implements EquipmentRepairTaskService
             result.put("pageData", pg);
         }
 
-        List<Map> varList = this.getDataListPage(pd,pg);
-        List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
+        List<Map> varList = this.getDataListPage(pd, pg);
+        //遍历查询结果集
+        for (Map objectMap : varList) {
+            String timeLengthStr = new String();
+            //timeLength 预计维修时长(单位秒)
+            BigDecimal timeLength = (BigDecimal)objectMap.get("timeLength");
+            if (timeLength != null) {
+                long timeLengthLong = timeLength.longValue();
+                if (0 < timeLengthLong && timeLengthLong < 60) {
+                    //单位(秒)
+                    timeLengthStr = Long.valueOf(timeLengthLong) + "(秒)";
+                } else if (60 <= timeLengthLong && timeLengthLong < 60*60) {
+                    //单位(分钟)
+                    timeLengthStr = Long.valueOf(timeLengthLong / 60) + "(分钟)";
+                } else if (60*60 <= timeLengthLong && timeLengthLong < 24*60*60) {
+                    //单位(小时)
+                    timeLengthStr = Long.valueOf(timeLengthLong / 60*60) + "(小时)";
+                } else if (timeLengthLong >= 24*60*60) {
+                    //单位(天)
+                    timeLengthStr = Long.valueOf(timeLengthLong / 24*60*60) + "(天)";
+                }
+            }
+            objectMap.put("timeLengthStr", timeLengthStr);
+        }
+
+        List<Map> varMapList = ColumnUtil.getVarMapList(varList, titleMap);
 
         result.put("hideTitles",titleMap.get("hideTitles"));
         result.put("titles",titleMap.get("titles"));

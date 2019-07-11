@@ -41,16 +41,16 @@ public class EquipmentRepairTask implements Serializable {
 	//任务类型(1:维修 2:退单)
 	@TableField("task_type")
 	private String taskType;
-	//任务领取时间
-	@TableField("receive_date")
-	private Date receiveDate;
+	//任务开始时间(领取时间)
+	@TableField("begin_time")
+	private Date beginTime;
+	//任务结束时间
+	@TableField("end_time")
+	private Date endTime;
+
 	//取消原因
 	@TableField("cancel_reason")
 	private String cancelReason;
-
-	//取消时间
-	@TableField("cancel_date")
-	private Date cancelDate;
 	//取消人id
 	@TableField("cancel_user")
 	private String cancelUser;
@@ -76,7 +76,6 @@ public class EquipmentRepairTask implements Serializable {
 	//是否启用(0:已禁用 1:启用)
 	@TableField("isdisable")
 	private String isdisable;
-
 
 
 	public void setId(String id) {
@@ -127,23 +126,23 @@ public class EquipmentRepairTask implements Serializable {
 	public String getTaskType() {
 		return taskType;
 	}
-	public void setReceiveDate(Date receiveDate) {
-		this.receiveDate = receiveDate;
+	public Date getBeginTime() {
+		return beginTime;
 	}
-	public Date getReceiveDate() {
-		return receiveDate;
+	public void setBeginTime(Date beginTime) {
+		this.beginTime = beginTime;
+	}
+	public Date getEndTime() {
+		return endTime;
+	}
+	public void setEndTime(Date endTime) {
+		this.endTime = endTime;
 	}
 	public void setCancelReason(String cancelReason) {
 		this.cancelReason = cancelReason;
 	}
 	public String getCancelReason() {
 		return cancelReason;
-	}
-	public void setCancelDate(Date cancelDate) {
-		this.cancelDate = cancelDate;
-	}
-	public Date getCancelDate() {
-		return cancelDate;
 	}
 	public void setCancelUser(String cancelUser) {
 		this.cancelUser = cancelUser;

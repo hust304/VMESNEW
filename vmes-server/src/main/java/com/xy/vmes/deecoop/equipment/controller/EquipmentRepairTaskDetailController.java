@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -316,6 +317,7 @@ public class EquipmentRepairTaskDetailController {
             return model;
         }
 
+        //报工结果:任务执行结果(0:未解决 1:已解决)
         String taskResult = repairTaskMap.get("taskResult");
         if (taskResult == null || taskResult.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
@@ -510,21 +512,38 @@ public class EquipmentRepairTaskDetailController {
         //修改维修任务单状态
         EquipmentRepairTask repairTaskEidt = new EquipmentRepairTask();
         repairTaskEidt.setId(repairTaskId);
+        //报工结果:任务执行结果(0:未解决 1:已解决)
         repairTaskEidt.setTaskResult(taskResult);
         if (repairTaskMap != null && repairTaskMap.get("remark") != null) {
             repairTaskEidt.setRemark(repairTaskMap.get("remark"));
         }
         //taskState 任务状态(0:未领取任务 1:已领取任务 2:已领料 3:已报工 4:已退单 )
         repairTaskEidt.setTaskState("3");
+        //endTime 任务结束时间
+        repairTaskEidt.setEndTime(new Date());
         repairTaskService.update(repairTaskEidt);
 
         //修改设备维修单状态
-        EquipmentRepairTask repairTask = repairTaskService.findRepairTaskById(repairTaskId);
         EquipmentRepair repairEdit = new EquipmentRepair();
-        repairEdit.setId(repairTask.getRepairId());
-        //equipmentState 设备状态(1:故障 2:维修中 3:已完成)
-        repairEdit.setEquipmentState("3");
-        repairService.update(repairEdit);
+        EquipmentRepairTask repairTask = repairTaskService.findRepairTaskById(repairTaskId);
+        //taskResult:报工结果:任务执行结果(0:未解决 1:已解决)
+        if ("1".equals(taskResult)) {
+            //报工结果:任务执行结果:1:已解决
+            repairEdit.setId(repairTask.getRepairId());
+            //equipmentState 设备状态(1:故障 2:维修中 3:已完成)
+            repairEdit.setEquipmentState("3");
+            //完成维修时间 endTime
+            repairEdit.setEndTime(new Date());
+            //isdisable 是否启用(0:已禁用 1:启用)
+            repairEdit.setIsdisable("0");
+            repairService.update(repairEdit);
+        } else if ("0".equals(taskResult)) {
+            //报工结果:任务执行结果:0:未解决
+            repairEdit.setId(repairTask.getRepairId());
+            //equipmentState 设备状态(1:故障 2:维修中 3:已完成)
+            repairEdit.setEquipmentState("1");
+            repairService.update(repairEdit);
+        }
 
         Long endTime = System.currentTimeMillis();
         logger.info("################/equipment/equipmentRepairTaskDetail/updateRepairTaskDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");

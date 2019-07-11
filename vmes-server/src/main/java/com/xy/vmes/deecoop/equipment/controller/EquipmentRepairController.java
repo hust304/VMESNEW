@@ -174,7 +174,6 @@ public class EquipmentRepairController {
 
         //1. 设备维修单id 查询 vmes_equipment_repairTask:
         boolean isExistTask = repairTaskService.isExistRepairTaskByRepairId(repairId);
-
         if (isExistTask) {
             //设备维修单id 禁用全部设备维修任务表
             //是否启用(0:已禁用 1:启用)
@@ -195,10 +194,8 @@ public class EquipmentRepairController {
         repairTask.setTaskState("1");
         //task_type:任务类型(1:维修 2:退单)
         repairTask.setTaskType("1");
-        //receiveDate 任务领取时间
-        if (!isExistTask) {
-            repairTask.setReceiveDate(new Date());
-        }
+        //beginTime 任务开始时间(领取时间)
+        repairTask.setBeginTime(new Date());
         repairTask.setCuser(cuser);
         repairTaskService.save(repairTask);
 
@@ -208,10 +205,6 @@ public class EquipmentRepairController {
         repairEdit.setRepairTaskId(repairTask.getId());
         //equipmentState:设备状态(1:故障 2:维修中 3:已完成)
         repairEdit.setEquipmentState("2");
-        //开始维修时间 := 任务领取时间
-        if (!isExistTask) {
-            repairEdit.setBeginTime(repairTask.getReceiveDate());
-        }
         equipmentRepairService.update(repairEdit);
 
         Long endTime = System.currentTimeMillis();

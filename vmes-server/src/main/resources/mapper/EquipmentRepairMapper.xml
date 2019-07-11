@@ -62,7 +62,8 @@
             (replace(uuid(), '-', ''),'equipmentRepair','isdisable','是否启用(0:已禁用 1:启用)',18, '1','1','1','0',now(), 'admin'),
 
             (replace(uuid(), '-', ''),'equipmentRepair','equipmentCode','设备编码',19, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'equipmentRepair','equipmentName','设备名称',20, '1','1','1','0',now(), 'admin')
+            (replace(uuid(), '-', ''),'equipmentRepair','equipmentName','设备名称',20, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentRepair','taskState','任务状态id',21, '1','1','1','0',now(), 'admin')
     </insert>
 
 
@@ -159,11 +160,13 @@
         repair.remark remark,
         repair.isdisable isdisable,
 
+        task.task_state taskState,
         eqpt.code equipmentCode,
         eqpt.name equipmentName
 
         from vmes_equipment_repair repair
-        left join vmes_equipment eqpt on repair.equipment_id = eqpt.id
+            left join vmes_equipment_repairTask task on repair.repair_task_id = task.id
+            left join vmes_equipment eqpt on repair.equipment_id = eqpt.id
         <where>
             <if test="equipmentId != null and equipmentId != ''">
                 and equipment_id = #{equipmentId}

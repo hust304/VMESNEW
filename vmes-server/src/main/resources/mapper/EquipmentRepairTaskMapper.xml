@@ -14,7 +14,7 @@
         where repair_id = #{repairId}
     </update>
 
-    <insert id="insertColumn" >
+    <insert id="equipmentRepairTask" >
         delete from vmes_column where model_code = 'equipmentRepairTask' ;
         insert into vmes_column (
         id,model_code,title_key,title_name,serial_number,
@@ -24,14 +24,20 @@
             (replace(uuid(), '-', ''),'equipmentRepairTask','id','id',0, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentRepairTask','repairId','设备维修单id',1, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentRepairTask','repairUser','维修人id',2, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentRepairTask','repairUserCode','维修人账号',2, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentRepairTask','repairUserName','维修人',2, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentRepairTask','faultDescribe','故障描述',3, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentRepairTask','timeLength','预计维修时长(单位秒)',4, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentRepairTask','timeLengthStr','预计维修时长',4, '1','1','1','0',now(), 'admin'),
 
-            (replace(uuid(), '-', ''),'equipmentRepairTask','taskResult','执行结果(0:未解决 1:已解决)',5, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentRepairTask','taskResult','执行结果id',5, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentRepairTask','taskResultName','执行结果',5, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentRepairTask','taskState','任务状态(0:未领取任务 1:已领取任务 2:已领料 3:已报工 4:已退单 )',6, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentRepairTask','taskType','任务类型(1:维修 2:退单)',7, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'equipmentRepairTask','receiveDate','任务领取时间',8, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'equipmentRepairTask','retreatDate','任务退单时间',9, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentRepairTask','beginTime','任务开始时间',8, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentRepairTask','beginTimeStr','任务开始时间',8, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentRepairTask','endTime','任务结束时间',9, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentRepairTask','endTimeStr','任务结束时间',9, '1','1','1','0',now(), 'admin'),
 
             (replace(uuid(), '-', ''),'equipmentRepairTask','retreatType','退回方式',10, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentRepairTask','cuser','创建用户id',11, '1','1','1','0',now(), 'admin'),
@@ -40,7 +46,7 @@
             (replace(uuid(), '-', ''),'equipmentRepairTask','udate','修改时间',14, '1','1','1','0',now(), 'admin'),
 
             (replace(uuid(), '-', ''),'equipmentRepairTask','remark','备注',15, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'equipmentRepairTask','isdisable','是否启用(0:已禁用 1:启用)',16, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentRepairTask','isdisable','是否启用(0:已禁用 1:启用)',16, '1','1','1','0',now(), 'admin')
     </insert>
 
 
@@ -56,10 +62,10 @@
         task_result taskResult,
         task_state taskState,
         task_type taskType,
-        receive_date receiveDate,
-        cancel_reason cancelReason,
+        begin_time beginTime,
+        end_time endTime,
 
-        cancel_date cancelDate,
+        cancel_reason cancelReason,
         cancel_user cancelUser,
         retreat_type retreatType,
         cuser cuser,
@@ -106,32 +112,44 @@
     <!-- 自动创建，可以修改 -->
     <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
-        id id,
-        repair_id repairId,
-        repair_user repairUser,
-        fault_describe faultDescribe,
-        time_length timeLength,
+            task.id id,
+            task.repair_id repairId,
+            task.repair_user repairUser,
+            task.fault_describe faultDescribe,
+            task.time_length timeLength,
+            '' timeLengthStr,
 
-        task_result taskResult,
-        task_state taskState,
-        task_type taskType,
-        receive_date receiveDate,
-        cancel_reason cancelReason,
+            task.task_result taskResult,
+            CASE
+                WHEN task.task_result = '0' THEN '未解决'
+                WHEN task.task_result = '1' THEN '已解决'
+            ELSE null
+            END taskResultName,
+            task.task_state taskState,
+            task.task_type taskType,
+            task.begin_time beginTime,
+            DATE_FORMAT(task.begin_time,'%Y-%m-%d %T') beginTimeStr,
+            task.end_time endTime,
+            DATE_FORMAT(task.end_time,'%Y-%m-%d %T') endTimeStr,
 
-        cancel_date cancelDate,
-        cancel_user cancelUser,
-        retreat_type retreatType,
-        cuser cuser,
-        cdate cdate,
+            task.cancel_reason cancelReason,
+            task.cancel_user cancelUser,
+            task.retreat_type retreatType,
+            task.cuser cuser,
+            task.cdate cdate,
 
-        uuser uuser,
-        udate udate,
-        remark remark,
-        isdisable isdisable
-        from vmes_equipment_repairTask
+            task.uuser uuser,
+            task.udate udate,
+            task.remark remark,
+            task.isdisable isdisable,
+
+            repairUser.user_code repairUserCode,
+            repairUser.user_name repairUserName
+        from vmes_equipment_repairTask task
+            left join vmes_user repairUser on task.repair_user = repairUser.id
         <where>
             <if test="repairId != null and repairId != ''">
-                and repair_id = #{repairId}
+                and task.repair_id = #{repairId}
             </if>
             <if test="isdisable != null and isdisable != ''">
                 and isdisable = #{isdisable}

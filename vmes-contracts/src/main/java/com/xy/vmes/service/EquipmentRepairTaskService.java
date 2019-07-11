@@ -96,11 +96,10 @@ public interface EquipmentRepairTaskService {
     /**
     * 分页查询
     * @param pd    查询参数对象PageData
-    * @param pg    分页参数对象Pagination
     * @return      返回对象ResultModel
     * @throws Exception
     */
-    ResultModel listPageEquipmentRepairTasks(PageData pd,Pagination pg) throws Exception;
+    ResultModel listPageEquipmentRepairTask(PageData pd) throws Exception;
 
 
 }
