@@ -143,7 +143,7 @@ public class TreeUtil {
                         nodeObject.setMaxCount(maxCount);
                         nodeObject.setLackCount(planCount.subtract(maxCount));
                     }else{
-                        nodeObject.setMaxCount(planCount);
+                        nodeObject.setMaxCount(maxCount);
                         nodeObject.setLackCount(BigDecimal.ZERO);
                     }
                 }

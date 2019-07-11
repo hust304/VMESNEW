@@ -58,7 +58,7 @@ public class WarehouseCheckServiceImp implements WarehouseCheckService {
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2018-11-13
      */
-    @Override
+
     public WarehouseCheck selectById(String id) throws Exception{
         return warehouseCheckMapper.selectById(id);
     }
@@ -67,7 +67,7 @@ public class WarehouseCheckServiceImp implements WarehouseCheckService {
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2018-11-13
      */
-    @Override
+
     public List<WarehouseCheck> selectByColumnMap(Map columnMap) throws Exception{
         List<WarehouseCheck> warehouseCheckList =  warehouseCheckMapper.selectByMap(columnMap);
         return warehouseCheckList;
@@ -77,7 +77,7 @@ public class WarehouseCheckServiceImp implements WarehouseCheckService {
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2018-11-13
      */
-    @Override
+
     public void update(WarehouseCheck warehouseCheck) throws Exception{
         warehouseCheck.setUdate(new Date());
         warehouseCheckMapper.updateById(warehouseCheck);
@@ -87,7 +87,7 @@ public class WarehouseCheckServiceImp implements WarehouseCheckService {
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2018-11-13
      */
-    @Override
+
     public void updateAll(WarehouseCheck warehouseCheck) throws Exception{
         warehouseCheck.setUdate(new Date());
         warehouseCheckMapper.updateAllColumnById(warehouseCheck);
@@ -97,7 +97,7 @@ public class WarehouseCheckServiceImp implements WarehouseCheckService {
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2018-11-13
      */
-    @Override
+
     public void updateToDisableByIds(String[] ids)throws Exception{
         warehouseCheckMapper.updateToDisableByIds(ids);
     }
@@ -106,7 +106,7 @@ public class WarehouseCheckServiceImp implements WarehouseCheckService {
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2018-11-13
      */
-    @Override
+
     public void deleteById(String id) throws Exception{
         warehouseCheckMapper.deleteById(id);
     }
@@ -115,7 +115,7 @@ public class WarehouseCheckServiceImp implements WarehouseCheckService {
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2018-11-13
      */
-    @Override
+
     public void deleteByIds(String[] ids) throws Exception{
         warehouseCheckMapper.deleteByIds(ids);
     }
@@ -124,7 +124,7 @@ public class WarehouseCheckServiceImp implements WarehouseCheckService {
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2018-11-13
      */
-    @Override
+
     public void deleteByColumnMap(Map columnMap) throws Exception{
         warehouseCheckMapper.deleteByMap(columnMap);
     }
@@ -147,7 +147,7 @@ public class WarehouseCheckServiceImp implements WarehouseCheckService {
      * 创建人：陈刚
      * 创建时间：2018-11-13
      */
-    @Override
+
     public List<WarehouseCheck> dataList(PageData pd) throws Exception{
         return warehouseCheckMapper.dataList(pd);
     }
@@ -156,7 +156,7 @@ public class WarehouseCheckServiceImp implements WarehouseCheckService {
      * 创建人：陈刚
      * 创建时间：2018-11-13
      */
-    @Override
+
     public List<Map> getDataListPage(PageData pd, Pagination pg) throws Exception{
         if(pg==null){
             pg =  HttpUtils.parsePagination(pd);
@@ -579,7 +579,7 @@ public class WarehouseCheckServiceImp implements WarehouseCheckService {
     }
 
 
-    @Override
+
     public void updateState(String id) throws Exception {
         WarehouseCheck warehouseCheck = this.findWarehouseCheckById(id);
         int yqx = 0;//已取消

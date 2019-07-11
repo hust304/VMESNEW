@@ -51,7 +51,7 @@ public class WarehouseCheckExecuteServiceImp implements WarehouseCheckExecuteSer
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2018-11-13
      */
-    @Override
+
     public void save(WarehouseCheckExecute object) throws Exception{
         object.setId(Conv.createUuid());
         object.setCdate(new Date());
@@ -63,7 +63,7 @@ public class WarehouseCheckExecuteServiceImp implements WarehouseCheckExecuteSer
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2018-11-13
      */
-    @Override
+
     public WarehouseCheckExecute selectById(String id) throws Exception{
         return warehouseCheckExecuteMapper.selectById(id);
     }
@@ -72,7 +72,7 @@ public class WarehouseCheckExecuteServiceImp implements WarehouseCheckExecuteSer
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2018-11-13
      */
-    @Override
+
     public List<WarehouseCheckExecute> selectByColumnMap(Map columnMap) throws Exception{
         List<WarehouseCheckExecute> warehouseCheckDetailList =  warehouseCheckExecuteMapper.selectByMap(columnMap);
         return warehouseCheckDetailList;
@@ -82,7 +82,7 @@ public class WarehouseCheckExecuteServiceImp implements WarehouseCheckExecuteSer
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2018-11-13
      */
-    @Override
+
     public void update(WarehouseCheckExecute object) throws Exception{
         object.setUdate(new Date());
         warehouseCheckExecuteMapper.updateById(object);
@@ -92,7 +92,7 @@ public class WarehouseCheckExecuteServiceImp implements WarehouseCheckExecuteSer
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2018-11-13
      */
-    @Override
+
     public void updateAll(WarehouseCheckExecute object) throws Exception{
         object.setUdate(new Date());
         warehouseCheckExecuteMapper.updateAllColumnById(object);
@@ -102,7 +102,7 @@ public class WarehouseCheckExecuteServiceImp implements WarehouseCheckExecuteSer
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2018-11-13
      */
-    @Override
+
     public void deleteById(String id) throws Exception{
         warehouseCheckExecuteMapper.deleteById(id);
     }
@@ -111,7 +111,7 @@ public class WarehouseCheckExecuteServiceImp implements WarehouseCheckExecuteSer
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2018-11-13
      */
-    @Override
+
     public void deleteByIds(String[] ids) throws Exception{
         warehouseCheckExecuteMapper.deleteByIds(ids);
     }
@@ -120,7 +120,7 @@ public class WarehouseCheckExecuteServiceImp implements WarehouseCheckExecuteSer
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2018-11-13
      */
-    @Override
+
     public void deleteByColumnMap(Map columnMap) throws Exception{
         warehouseCheckExecuteMapper.deleteByMap(columnMap);
     }
@@ -129,7 +129,7 @@ public class WarehouseCheckExecuteServiceImp implements WarehouseCheckExecuteSer
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2018-11-13
      */
-    @Override
+
     public void updateToDisableByIds(String[] ids)throws Exception{
         warehouseCheckExecuteMapper.updateToDisableByIds(ids);
     }

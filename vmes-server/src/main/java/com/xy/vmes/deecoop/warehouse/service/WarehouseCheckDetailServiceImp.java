@@ -43,7 +43,7 @@ public class WarehouseCheckDetailServiceImp implements WarehouseCheckDetailServi
     * 创建人：陈刚 自动创建，禁止修改
     * 创建时间：2018-11-13
     */
-    @Override
+
     public void save(WarehouseCheckDetail warehouseCheckDetail) throws Exception{
         warehouseCheckDetail.setId(Conv.createUuid());
         warehouseCheckDetail.setCdate(new Date());
@@ -70,7 +70,7 @@ public class WarehouseCheckDetailServiceImp implements WarehouseCheckDetailServi
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2018-11-13
      */
-    @Override
+
     public List<WarehouseCheckDetail> selectByColumnMap(Map columnMap) throws Exception{
         List<WarehouseCheckDetail> warehouseCheckDetailList =  warehouseCheckDetailMapper.selectByMap(columnMap);
         return warehouseCheckDetailList;
@@ -90,7 +90,7 @@ public class WarehouseCheckDetailServiceImp implements WarehouseCheckDetailServi
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2018-11-13
      */
-    @Override
+
     public void updateAll(WarehouseCheckDetail warehouseCheckDetail) throws Exception{
         warehouseCheckDetail.setUdate(new Date());
         warehouseCheckDetailMapper.updateAllColumnById(warehouseCheckDetail);
@@ -100,7 +100,7 @@ public class WarehouseCheckDetailServiceImp implements WarehouseCheckDetailServi
     * 创建人：陈刚 自动创建，禁止修改
     * 创建时间：2018-11-13
     */
-    @Override
+
     public void deleteById(String id) throws Exception{
         warehouseCheckDetailMapper.deleteById(id);
     }
@@ -109,7 +109,7 @@ public class WarehouseCheckDetailServiceImp implements WarehouseCheckDetailServi
     * 创建人：陈刚 自动创建，禁止修改
     * 创建时间：2018-11-13
     */
-    @Override
+
     public void deleteByIds(String[] ids) throws Exception{
         warehouseCheckDetailMapper.deleteByIds(ids);
     }
@@ -127,7 +127,7 @@ public class WarehouseCheckDetailServiceImp implements WarehouseCheckDetailServi
     * 创建人：陈刚 自动创建，禁止修改
     * 创建时间：2018-11-13
     */
-    @Override
+
     public void updateToDisableByIds(String[] ids)throws Exception{
         warehouseCheckDetailMapper.updateToDisableByIds(ids);
     }
@@ -147,7 +147,7 @@ public class WarehouseCheckDetailServiceImp implements WarehouseCheckDetailServi
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2018-11-13
      */
-    @Override
+
     public List<WarehouseCheckDetail> dataList(PageData pd) throws Exception{
         return warehouseCheckDetailMapper.dataList(pd);
     }
@@ -156,7 +156,7 @@ public class WarehouseCheckDetailServiceImp implements WarehouseCheckDetailServi
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2018-11-13
      */
-    @Override
+
     public List<Map> getDataListPage(PageData pd, Pagination pg) throws Exception{
         //return warehouseCheckDetailMapper.getDataListPage(pd, pg);
         if(pg==null){
@@ -210,8 +210,8 @@ public class WarehouseCheckDetailServiceImp implements WarehouseCheckDetailServi
         return this.findWarehouseCheckDetailList(findMap);
     }
 
-    public List<WarehouseCheckDetail> mapList2DetailList(List<Map<String, String>> mapList, List<WarehouseCheckDetail> objectList) {
-        if (objectList == null) {objectList = new ArrayList<WarehouseCheckDetail>();}
+    public List<WarehouseCheckDetail> mapList2DetailList(List<Map<String, String>> mapList) {
+        List<WarehouseCheckDetail> objectList = new ArrayList<WarehouseCheckDetail>();
         if (mapList == null || mapList.size() == 0) {return objectList;}
 
         for (Map<String, String> mapObject : mapList) {
@@ -311,16 +311,15 @@ public class WarehouseCheckDetailServiceImp implements WarehouseCheckDetailServi
 
     }
 
-    public void addWarehouseCheckDetailBySimple(WarehouseCheck parentObj, List<WarehouseCheckDetail> objectList) throws Exception {
-        if (parentObj == null) {return;}
+    public void addWarehouseCheckDetailBySimple(String parentId,String cuser, List<WarehouseCheckDetail> objectList) throws Exception {
         if (objectList == null || objectList.size() == 0) {return;}
 
         for (WarehouseCheckDetail detail : objectList) {
             detail.setId(Conv.createUuid());
             //状态(0:待派单 1:执行中 2:已完成 -1.已取消)
             detail.setState("1");
-            detail.setParentId(parentObj.getId());
-            detail.setCuser(parentObj.getCuser());
+            detail.setParentId(parentId);
+            detail.setCuser(cuser);
             this.saveObject(detail);
         }
     }

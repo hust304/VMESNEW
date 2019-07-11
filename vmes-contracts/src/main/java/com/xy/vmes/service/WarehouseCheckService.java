@@ -32,13 +32,13 @@ public interface WarehouseCheckService {
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2018-11-13
      */
-    void updateAll(WarehouseCheck object) throws Exception;
+    void updateAll(WarehouseCheck object) throws Exception;//@
 
     /**
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2018-11-13
      */
-    void updateToDisableByIds(String[] ids)throws Exception;
+    void updateToDisableByIds(String[] ids)throws Exception;//@
 
     /**
      * 创建人：陈刚 自动创建，禁止修改
@@ -50,45 +50,45 @@ public interface WarehouseCheckService {
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2018-11-13
      */
-    void deleteByIds(String[] ids) throws Exception;
+    void deleteByIds(String[] ids) throws Exception;//@
 
     /**
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2018-11-13
      */
-    void deleteByColumnMap(Map columnMap) throws Exception;
+    void deleteByColumnMap(Map columnMap) throws Exception;//@
 
     /**
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2018-11-13
      */
-    WarehouseCheck selectById(String id) throws Exception;
+    WarehouseCheck selectById(String id) throws Exception;//@
 
     /**
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2018-11-13
      */
-    List<WarehouseCheck> selectByColumnMap(Map columnMap) throws Exception;
+    List<WarehouseCheck> selectByColumnMap(Map columnMap) throws Exception;//@
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
-    void deleteTableByWarehouseCheck(String companyId) throws Exception;
+    void deleteTableByWarehouseCheck(String companyId) throws Exception;//@
 
     /**
      * 创建人：陈刚
      * 创建时间：2018-11-13
      */
-    List<WarehouseCheck> dataList(PageData pd) throws Exception;
+    List<WarehouseCheck> dataList(PageData pd) throws Exception;//@
 
     /**
      * 创建人：陈刚
      * 创建时间：2018-11-13
      */
-    List<Map> getDataListPage(PageData pd, Pagination pg) throws Exception;
+    List<Map> getDataListPage(PageData pd, Pagination pg) throws Exception;//@
 
-    WarehouseCheck findWarehouseCheck(PageData object) throws Exception;
-    WarehouseCheck findWarehouseCheckById(String id) throws Exception;
+    WarehouseCheck findWarehouseCheck(PageData object) throws Exception;//@
+    WarehouseCheck findWarehouseCheckById(String id) throws Exception;//@
 
-    List<WarehouseCheck> findWarehouseCheckList(PageData object) throws Exception;
+    List<WarehouseCheck> findWarehouseCheckList(PageData object) throws Exception;//@
 
 
     ResultModel listPagewarehouseChecks(PageData pd) throws Exception;
@@ -107,7 +107,7 @@ public interface WarehouseCheckService {
 
     ResultModel importExcelwarehouseChecks(MultipartFile file) throws Exception;
 
-    void updateState(String id) throws Exception;
+    void updateState(String id) throws Exception;//@
 }
 
 

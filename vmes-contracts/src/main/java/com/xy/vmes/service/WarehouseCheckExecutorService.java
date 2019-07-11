@@ -21,73 +21,73 @@ public interface WarehouseCheckExecutorService {
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2018-11-15
      */
-    void save(WarehouseCheckExecutor object) throws Exception;
+    void save(WarehouseCheckExecutor object) throws Exception;//@
 
     /**
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2018-11-15
      */
-    void update(WarehouseCheckExecutor object) throws Exception;
+    void update(WarehouseCheckExecutor object) throws Exception;//@
 
     /**
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2018-11-15
      */
-    void updateAll(WarehouseCheckExecutor object) throws Exception;
+    void updateAll(WarehouseCheckExecutor object) throws Exception;//@
 
     /**
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2018-11-15
      */
-    void updateToDisableByIds(String[] ids)throws Exception;
+    void updateToDisableByIds(String[] ids)throws Exception;//@
 
     /**
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2018-11-15
      */
-    void deleteById(String id) throws Exception;
+    void deleteById(String id) throws Exception;//@
 
     /**
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2018-11-15
      */
-    void deleteByIds(String[] ids) throws Exception;
+    void deleteByIds(String[] ids) throws Exception;//@
 
     /**
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2018-11-15
      */
-    void deleteByColumnMap(Map columnMap) throws Exception;
+    void deleteByColumnMap(Map columnMap) throws Exception;//@
 
     /**
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2018-11-15
      */
-    WarehouseCheckExecutor selectById(String id) throws Exception;
+    WarehouseCheckExecutor selectById(String id) throws Exception;//@
 
     /**
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2018-11-15
      */
-    List<WarehouseCheckExecutor> selectByColumnMap(Map columnMap) throws Exception;
+    List<WarehouseCheckExecutor> selectByColumnMap(Map columnMap) throws Exception;//@
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
     void updateIsdisableByExecutor(String isdisable,
                                    String remark,
                                    String parentId,
                                    String detailId,
-                                   String executorId);
+                                   String executorId);//@
     /**
      * 创建人：陈刚
      * 创建时间：2018-11-15
      */
-    List<WarehouseCheckExecutor> dataList(PageData pd) throws Exception;
+    List<WarehouseCheckExecutor> dataList(PageData pd) throws Exception;//@
 
     /**
      * 创建人：陈刚
      * 创建时间：2018-11-15
      */
-    List<Map> getDataListPage(PageData pd, Pagination pg) throws Exception;
+    List<Map> getDataListPage(PageData pd, Pagination pg) throws Exception;//@
 
     /**
      * 获取盘点明细执行人列表(添加盘点执行)
@@ -95,14 +95,14 @@ public interface WarehouseCheckExecutorService {
      * @return
      * @throws Exception
      */
-    List<Map> findListWarehouseCheckExecutorByAddExecute(PageData pd, Pagination pg) throws Exception;
+    List<Map> findListWarehouseCheckExecutorByAddExecute(PageData pd, Pagination pg) throws Exception;//@
     List<Map> findListWarehouseCheckExecutorByAddExecute(PageData pd) throws Exception;
 
-    WarehouseCheckExecutor findWarehouseCheckExecutor(PageData object) throws Exception;
-    WarehouseCheckExecutor findWarehouseCheckExecutorById(String id) throws Exception;
+    WarehouseCheckExecutor findWarehouseCheckExecutor(PageData object) throws Exception;//@
+    WarehouseCheckExecutor findWarehouseCheckExecutorById(String id) throws Exception;//@
 
-    List<WarehouseCheckExecutor> findWarehouseCheckExecutorList(PageData object) throws Exception;
-    List<WarehouseCheckExecutor> findWarehouseCheckExecutorListByDetailId(String detailId) throws Exception;
+    List<WarehouseCheckExecutor> findWarehouseCheckExecutorList(PageData object) throws Exception;//@
+    List<WarehouseCheckExecutor> findWarehouseCheckExecutorListByDetailId(String detailId) throws Exception;//@
 
     void addWarehouseCheckExecutor(WarehouseCheckDetailEntity detail, String userIds) throws Exception;
 

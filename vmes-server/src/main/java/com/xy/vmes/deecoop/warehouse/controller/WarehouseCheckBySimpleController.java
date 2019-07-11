@@ -99,8 +99,8 @@ public class WarehouseCheckBySimpleController {
         warehouseCheckService.save(warehouseCheck);
 
         //2.添加盘点单明细
-        List<WarehouseCheckDetail> detailList = warehouseCheckDetailService.mapList2DetailList(mapList, null);
-        warehouseCheckDetailService.addWarehouseCheckDetailBySimple(warehouseCheck, detailList);
+        List<WarehouseCheckDetail> detailList = warehouseCheckDetailService.mapList2DetailList(mapList);
+        warehouseCheckDetailService.addWarehouseCheckDetailBySimple(parentId,cuser, detailList);
 
         Long endTime = System.currentTimeMillis();
         logger.info("################/warehouse/warehouseCheckBySimple/addWarehouseCheckBySimple 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
