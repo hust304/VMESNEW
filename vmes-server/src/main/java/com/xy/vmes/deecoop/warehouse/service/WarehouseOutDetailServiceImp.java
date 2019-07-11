@@ -251,6 +251,19 @@ public class WarehouseOutDetailServiceImp implements WarehouseOutDetailService {
         }
     }
 
+    @Override
+    public void addWarehouseOutDetail(String parentId, String cuser, List<WarehouseOutDetail> objectList) throws Exception {
+        if (objectList == null || objectList.size() == 0) {return;}
+
+        for (WarehouseOutDetail detail : objectList) {
+            //状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+            detail.setState("0");
+            detail.setParentId(parentId);
+            detail.setCuser(cuser);
+            this.save(detail);
+        }
+    }
+
     public void addWarehouseOutDetailBySimple(WarehouseOut parentObj, List<WarehouseOutDetail> objectList) throws Exception {
         if (parentObj == null) {return;}
         if (objectList == null || objectList.size() == 0) {return;}

@@ -346,6 +346,37 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
         return msgBuf.toString();
     }
 
+    @Override
+    public void addWarehouseInDetail(String parentId, String cuser, String companyId, List<WarehouseInDetail> objectList) throws Exception {
+        if (objectList == null || objectList.size() == 0) {return;}
+
+        for (WarehouseInDetail detail : objectList) {
+            detail.setId(Conv.createUuid());
+
+            //获取批次号
+            //PC+yyyyMMdd+00001 = 15位
+            String code = coderuleService.createCoderCdateByDate(companyId,
+                    "vmes_product",
+                    "yyyyMMdd",
+                    "PC");
+
+            //状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+            detail.setState("0");
+            detail.setParentId(parentId);
+            detail.setCuser(cuser);
+            detail.setCode(code);
+
+            //生成二维码
+            String QRCodeJson = this.warehouseInDtl2QRCode(detail);
+            String qrcode = fileService.createQRCode("warehouseIn", QRCodeJson);
+            if (qrcode != null && qrcode.trim().length() > 0) {
+                detail.setQrcode(qrcode);
+            }
+
+            this.save(detail);
+        }
+    }
+
     public void addWarehouseInDetail(WarehouseIn parentObj, List<WarehouseInDetail> objectList) throws Exception {
         if (parentObj == null) {return;}
         if (objectList == null || objectList.size() == 0) {return;}

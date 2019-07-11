@@ -92,6 +92,9 @@ public interface WarehouseInDetailService {
     String checkDispatcheDetailList(List<WarehouseInDetailEntity> objectList);
 
     void addWarehouseInDetail(WarehouseIn parentObj, List<WarehouseInDetail> objectList) throws Exception;
+
+    void addWarehouseInDetail(String parentId,String cuser,String companyId, List<WarehouseInDetail> objectList) throws Exception;
+
     void addWarehouseInDetailBySimple(WarehouseIn parentObj, List<WarehouseInDetail> objectList) throws Exception;
     void executeWarehouseInDetailBySimple(WarehouseIn warehouseIn, List<WarehouseInDetail> detailList) throws Exception;
 

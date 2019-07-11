@@ -102,7 +102,7 @@ public class SaleRetreatAuditServiceImp implements SaleRetreatAuditService {
 
         //创建入库单明细
         List<WarehouseInDetail> inDtlList = saleRetreatDetailService.retreatDtlList2InDtlList(retreatDtlList, null);
-        warehouseInDetailService.addWarehouseInDetail(warehouseIn, inDtlList);
+        warehouseInDetailService.addWarehouseInDetail(warehouseIn.getId(),warehouseIn.getCuser(),warehouseIn.getCompanyId(), inDtlList);
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //<退货单明细id, 入库明细id>Map
