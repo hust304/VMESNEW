@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+说明：设备信息状态综合查询 Mapper.xml
+创建人：陈刚
+创建时间：2019-07-11
+ -->
+<mapper namespace="com.xy.vmes.deecoop.equipment.dao.EquipmentStateMapper">
+    <select id="findEquipmentState" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+            equipment.id id,
+            equipment.company_id companyId,
+            equipment.qrcode qrcode,
+            equipment.code code,
+            equipment.name name,
+
+            equipment.spec spec,
+            equipment.type type,
+            type.name typeName,
+            equipment.supplier supplier,
+            equipment.dept_id deptId,
+            equipment.buy_date buyDate,
+
+            equipment.remark remark,
+            equipment.cuser cuser,
+            equipment.cdate cdate,
+            equipment.photo photo,
+
+            department.name deptName,
+            department.long_name deptPathName,
+
+            <!--设备联网 vmes_equipment_sensor -->
+            CASE
+                WHEN equipmentSensor.sensorTargetCount is null THEN 'N'
+                WHEN equipmentSensor.sensorTargetCount is not null THEN 'Y'
+            ELSE null
+            END isBindSensor,
+
+            CASE
+                WHEN equipmentSensor.sensorTargetCount is null THEN '非联网设备'
+                WHEN equipmentSensor.sensorTargetCount is not null THEN '联网设备'
+            ELSE null
+            END bindSensorStateName,
+
+
+            <!--设备状态 vmes_equipment_repair -->
+            CASE
+                <!--设备维修状态 vmes_equipment_repair -->
+                WHEN equipmentRepair.equipment_state = '1' THEN '1'
+                WHEN equipmentRepair.equipment_state = '2' THEN '2'
+            <!--设备保养状态  -->
+            ELSE null
+            END equipmentState,
+
+            CASE
+                <!--设备维修状态 vmes_equipment_repair -->
+                WHEN equipmentRepair.equipment_state = '1' THEN '故障'
+                WHEN equipmentRepair.equipment_state = '2' THEN '维修中'
+                <!--设备保养状态  -->
+            ELSE null
+            END equipmentStateName,
+
+            <!--设备传感器状态  -->
+            '在线' equipmentActivityName
+
+        from vmes_equipment equipment
+            left join vmes_department department on equipment.dept_id = department.id
+            left join vmes_dictionary type on equipment.type = type.id
+
+            <!--设备联网 vmes_equipment_sensor -->
+            left join (
+                select equipment_id, count(id) sensorTargetCount
+                from vmes_equipment_sensor
+                <where>
+                    <if test="companyId != null and companyId != ''">
+                        and company_id = #{companyId}
+                    </if>
+                </where>
+                group by equipment_id
+            ) equipmentSensor on equipment.id = equipmentSensor.equipment_id
+
+            <!--设备维修状态 vmes_equipment_repair -->
+            left join (
+                select equipment_id, equipment_state
+                from vmes_equipment_repair
+                <where>
+                    <if test="companyId != null and companyId != ''">
+                        and company_id = #{companyId}
+                    </if>
+                    and isdisable = '1'
+                </where>
+            ) equipmentRepair on equipment.id = equipmentRepair.equipment_id
+
+            <!--设备保养状态  -->
+            <!--设备传感器状态  -->
+
+        <where>
+            <if test="companyId != null and companyId != ''">
+                and equipment.company_id = #{companyId}
+            </if>
+            <if test="equipmentId != null and equipmentId != ''">
+                and equipment.id = #{equipmentId}
+            </if>
+        </where>
+    </select>
+
+
+</mapper>
