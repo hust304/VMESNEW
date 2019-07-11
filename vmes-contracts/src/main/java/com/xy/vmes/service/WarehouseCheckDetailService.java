@@ -22,82 +22,82 @@ public interface WarehouseCheckDetailService {
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2018-11-13
      */
-    void save(WarehouseCheckDetail object) throws Exception;
-    void saveObject(WarehouseCheckDetail object) throws Exception;
+    void save(WarehouseCheckDetail object) throws Exception;//@
+    void saveObject(WarehouseCheckDetail object) throws Exception;//@
 
     /**
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2018-11-13
      */
-    void update(WarehouseCheckDetail object) throws Exception;
+    void update(WarehouseCheckDetail object) throws Exception;//@
 
     /**
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2018-11-13
      */
-    void updateAll(WarehouseCheckDetail object) throws Exception;
+    void updateAll(WarehouseCheckDetail object) throws Exception;//@
 
     /**
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2018-11-13
      */
-    void updateToDisableByIds(String[] ids)throws Exception;
+    void updateToDisableByIds(String[] ids)throws Exception;//@
 
     /**
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2018-11-13
      */
-    void deleteById(String id) throws Exception;
+    void deleteById(String id) throws Exception;//@
 
     /**
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2018-11-13
      */
-    void deleteByIds(String[] ids) throws Exception;
+    void deleteByIds(String[] ids) throws Exception;//@
 
     /**
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2018-11-13
      */
     void deleteByColumnMap(Map columnMap) throws Exception;
+//
+    /**
+     * 创建人：陈刚 自动创建，禁止修改
+     * 创建时间：2018-11-13
+     */
+    WarehouseCheckDetail selectById(String id) throws Exception;//@
 
     /**
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2018-11-13
      */
-    WarehouseCheckDetail selectById(String id) throws Exception;
+    List<WarehouseCheckDetail> selectByColumnMap(Map columnMap) throws Exception;//@
 
-    /**
-     * 创建人：陈刚 自动创建，禁止修改
-     * 创建时间：2018-11-13
-     */
-    List<WarehouseCheckDetail> selectByColumnMap(Map columnMap) throws Exception;
-
-    /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+//    /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
     void updateStateByDetail(String parentId, String state);
 
     /**
      * 创建人：陈刚
      * 创建时间：2018-11-13
      */
-    List<WarehouseCheckDetail> dataList(PageData pd) throws Exception;
+    List<WarehouseCheckDetail> dataList(PageData pd) throws Exception;//@
 
     /**
      * 创建人：陈刚
      * 创建时间：2018-11-13
      */
-    List<Map> getDataListPage(PageData pd, Pagination pg) throws Exception;
+    List<Map> getDataListPage(PageData pd, Pagination pg) throws Exception;//@
 
-//    WarehouseCheckDetail findWarehouseCheckDetail(PageData object) throws Exception;
+    WarehouseCheckDetail findWarehouseCheckDetail(PageData object) throws Exception;//@
     WarehouseCheckDetail findWarehouseCheckDetailById(String id) throws Exception;//@
 
-    List<WarehouseCheckDetail> findWarehouseCheckDetailList(PageData object) throws Exception;
+    List<WarehouseCheckDetail> findWarehouseCheckDetailList(PageData object) throws Exception;//@
     List<WarehouseCheckDetail> findWarehouseCheckDetailListByParentId(String parentId) throws Exception;
 
-    List<WarehouseCheckDetail> mapList2DetailList(List<Map<String, String>> mapList, List<WarehouseCheckDetail> objectList);
-    List<WarehouseCheckDetailEntity> mapList2DetailEntityList(List<Map<String, String>> mapList, List<WarehouseCheckDetailEntity> objectList);
+    List<WarehouseCheckDetail> mapList2DetailList(List<Map<String, String>> mapList);
+    List<WarehouseCheckDetailEntity> mapList2DetailEntityList(List<Map<String, String>> mapList, List<WarehouseCheckDetailEntity> objectList);//@
 
-    WarehouseCheckDetail warehouseCheckDtl2QRCodeObj(WarehouseCheckDetail warehouseCheckDtl, WarehouseCheckDetail QRCodeObj);
+    WarehouseCheckDetail warehouseCheckDtl2QRCodeObj(WarehouseCheckDetail warehouseCheckDtl, WarehouseCheckDetail QRCodeObj);//@
     /////////////////////////////////////////////////////////////
     /**
      * 获取业务id字符串(逗号分隔的字符串)
@@ -105,9 +105,9 @@ public interface WarehouseCheckDetailService {
      * @param mapList 业务id
      * @return
      */
-    String findBusinessIdByMapList(List<Map<String, String>> mapList);
-    void addWarehouseCheckDetail(WarehouseCheck parentObj, List<WarehouseProduct> objectList) throws Exception;
-    void addWarehouseCheckDetailBySimple(WarehouseCheck parentObj, List<WarehouseCheckDetail> objectList) throws Exception;
+    String findBusinessIdByMapList(List<Map<String, String>> mapList);//@
+    void addWarehouseCheckDetail(WarehouseCheck parentObj, List<WarehouseProduct> objectList) throws Exception;//@
+    void addWarehouseCheckDetailBySimple(String parentId,String cuser,List<WarehouseCheckDetail> objectList) throws Exception;
 
     /**
      * 根据盘点明细状态-反写盘点单状态
@@ -118,7 +118,7 @@ public interface WarehouseCheckDetailService {
      * @param dtlList      入库单明细List<WarehouseCheckDetail>
      * @param ignoreState  忽视状态
      */
-    void updateParentStateByDetailList(WarehouseCheck parent, List<WarehouseCheckDetail> dtlList, String ignoreState) throws Exception;
+    void updateParentStateByDetailList(WarehouseCheck parent, List<WarehouseCheckDetail> dtlList, String ignoreState) throws Exception;//@
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**
@@ -131,7 +131,7 @@ public interface WarehouseCheckDetailService {
      * @param objectList  盘点单明细List<WarehouseCheckDetail>
      * @return
      */
-    boolean isExistStateByDetailList(String state, String ignoreState, List<WarehouseCheckDetail> objectList);
+    boolean isExistStateByDetailList(String state, String ignoreState, List<WarehouseCheckDetail> objectList);//@
 
     /**
      * 盘点明细状态，在盘点明细List<WarehouseCheckDetail>中是否全部相同
@@ -143,7 +143,7 @@ public interface WarehouseCheckDetailService {
      * @param objectList  盘点单明细List<WarehouseCheckDetail>
      * @return
      */
-    boolean isAllExistStateByDetailList(String state, String ignoreState, List<WarehouseCheckDetail> objectList);
+    boolean isAllExistStateByDetailList(String state, String ignoreState, List<WarehouseCheckDetail> objectList);//@
 
     /**
      * 获取盘点单状态-根据盘点明细状态
@@ -154,11 +154,11 @@ public interface WarehouseCheckDetailService {
      * @param dtlList      盘点单明细List<WarehouseCheckDetail>
      * @return
      */
-    String findParentStateByDetailList(String ignoreState, List<WarehouseCheckDetail> dtlList);
+    String findParentStateByDetailList(String ignoreState, List<WarehouseCheckDetail> dtlList);//@
 
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    //boolean isAllAuditStateByDetailExecuteList(String state, List<Map<String, Object>> mapList);
+    boolean isAllAuditStateByDetailExecuteList(String state, List<Map<String, Object>> mapList);//@
 
     ResultModel listPageWarehouseCheckDetails(PageData pd, Pagination pg) throws Exception;
 
