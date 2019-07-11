@@ -26,13 +26,13 @@ public class RedisUtils {
 
         Jedis jedis = null;
         try {
-            String strTemp = new String("*:" + userID);
+            String strTemp = new String("*:" + userID + ":*");
             if (loginType.trim().length() > 0) {
-                strTemp = strTemp + "*:" + loginType;
+                strTemp = strTemp + ":" + loginType;
             }
+            //strTemp := "*:userID:*:loginType"
 
             jedis = redisClient.getJedisPool().getResource();
-            //strTemp := "*:userID*:loginType"
             Set<String> keySet = jedis.keys(strTemp);
             if (keySet == null || keySet.size() == 0) {return null;}
 
@@ -62,8 +62,14 @@ public class RedisUtils {
 
         Jedis jedis = null;
         try {
+            String strTemp = new String("*:" + userID + ":*");
+            if (loginType.trim().length() > 0) {
+                strTemp = strTemp + ":" + loginType;
+            }
+            //strTemp(*:userID:*:loginType)
+
             jedis = redisClient.getJedisPool().getResource();
-            Set<String> keySet = jedis.keys("*" + userID + "*" + loginType);
+            Set<String> keySet = jedis.keys(strTemp);
             for (Iterator iterator = keySet.iterator(); iterator.hasNext();) {
                 String key = (String) iterator.next();
                 if(jedis.exists(key)){

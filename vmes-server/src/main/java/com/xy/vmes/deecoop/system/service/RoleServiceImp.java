@@ -906,9 +906,23 @@ public class RoleServiceImp implements RoleService {
         findMap.put("userIsdisable", "1");
         //查询用户未绑定角色
         //findMap.put("queryIsBindRole", "userRole.role_id is null");
+
         //普通用户-外部用户
-        String queryUserType = "user_type in ('69726efa45044117ac94a33ab2938ce4','028fb82cfbe341b1954834edfa2fc18d')";
-        findMap.put("queryUserType", queryUserType);
+        //String queryUserType = "user_type in ('69726efa45044117ac94a33ab2938ce4','028fb82cfbe341b1954834edfa2fc18d')";
+        //findMap.put("queryUserType", queryUserType);
+
+        //获取当前登录用户id
+        String userID = (String)pageData.get("cuser");
+        User user = userService.findUserById(userID);
+        if (user != null && DICTIONARY_MAP.get("userType_admin").equals(user.getUserType())) {
+            //超级管理员 --> userType_admin:6839818aecfc41be8f367e62502dfde4
+            //查询(用户类型:=企业管理员 )
+            findMap.put("queryUserType", "user_type in ('2fb9bbee46ca4ce1913f3a673a7dd68f')");
+        } else if (user != null && DICTIONARY_MAP.get("userType_company").equals(user.getUserType())) {
+            //企业管理员 --> userType_company:2fb9bbee46ca4ce1913f3a673a7dd68f
+            //查询(用户类型:= 普通用户-外部用户)
+            findMap.put("queryUserType", "user_type in ('69726efa45044117ac94a33ab2938ce4','028fb82cfbe341b1954834edfa2fc18d')");
+        }
 
         List<Map<String, String>> varMapList = new ArrayList<Map<String, String>>();
         List<Map<String, Object>> varList = userRoleService.listUserByRole(findMap);
