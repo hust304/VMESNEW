@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+说明：vmes_equipment_repairTask_detail:设备维修任务明细详情
+创建人：陈刚
+创建时间：2019-07-12
+ -->
+<mapper namespace="com.xy.vmes.deecoop.equipment.dao.EquipmentRepairTaskDetailInfoMapper">
+    <insert id="equipmentRepairTaskDetailByInfo" >
+        delete from vmes_column where model_code = 'equipmentRepairTaskDetailByInfo' ;
+        insert into vmes_column (
+        id,model_code,title_key,title_name,serial_number,
+        isdisable,ishide,isedit,ismust,cdate,
+        cuser
+        ) VALUES
+        (replace(uuid(), '-', ''),'equipmentRepairTaskDetailByInfo','id','id',0, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'equipmentRepairTaskDetailByInfo','taskId','维修任务ID',1, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'equipmentRepairTaskDetailByInfo','productId','备件ID(货品)ID',2, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'equipmentRepairTaskDetailByInfo','warehouseGenre','仓库属性(entity:实体库 virtual:虚拟库)',3, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'equipmentRepairTaskDetailByInfo','warehouseGenreName','货品领取仓库属性',3, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'equipmentRepairTaskDetailByInfo','receiveCount','领取数量',4, '1','1','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'equipmentRepairTaskDetailByInfo','applyCount','实际使用数量',5, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'equipmentRepairTaskDetailByInfo','retreatType','退还方式(1:退还仓库, 2:退还虚拟库)',6, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'equipmentRepairTaskDetailByInfo','retreatTypeName','退还方式',6, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'equipmentRepairTaskDetailByInfo','retreatCount','退还数量',7, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'equipmentRepairTaskDetailByInfo','outDtlId','出库明细ID(领取)',8, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'equipmentRepairTaskDetailByInfo','outCount','出库数量(领取)',9, '1','1','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'equipmentRepairTaskDetailByInfo','inDtlId','入库明细ID(退还)',10, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'equipmentRepairTaskDetailByInfo','inCount','入库数量(退还)',11, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'equipmentRepairTaskDetailByInfo','warehouseId','虚拟库ID(货位ID)',12, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'equipmentRepairTaskDetailByInfo','cuser','创建用户id',13, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'equipmentRepairTaskDetailByInfo','cdate','创建时间',14, '1','1','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'equipmentRepairTaskDetailByInfo','uuser','修改用户id',15, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'equipmentRepairTaskDetailByInfo','udate','修改时间',16, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'equipmentRepairTaskDetailByInfo','remark','备注',17, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'equipmentRepairTaskDetailByInfo','isdisable','是否启用(0:已禁用 1:启用)',18, '1','1','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''), 'equipmentRepairTaskDetailByInfo', 'productCode', '货品编码', 18, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'equipmentRepairTaskDetailByInfo', 'productName', '货品名称', 19, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'equipmentRepairTaskDetailByInfo', 'productSpec', '规格型号', 20, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'equipmentRepairTaskDetailByInfo', 'productGenre', '货品属性id', 21, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'equipmentRepairTaskDetailByInfo', 'productGenreName', '货品属性', 22, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'equipmentRepairTaskDetailByInfo', 'productUnitName', '单位', 23, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+
+        (replace(uuid(), '-', ''), 'equipmentRepairTaskDetailByInfo', 'lockCount', 'lockCount', 24, '1', '1', '1', '0', '2018-12-6 09:16:39', 'admin'),
+        (replace(uuid(), '-', ''), 'equipmentRepairTaskDetailByInfo', 'stockCount', 'stockCount', 25, '1', '1', '1', '0', '2018-12-6 09:16:39', 'admin'),
+        (replace(uuid(), '-', ''), 'equipmentRepairTaskDetailByInfo', 'productStockCount', '库存可用数量', 26, '1', '1', '1', '0', '2018-12-6 09:16:39', 'admin'),
+
+        (replace(uuid(), '-', ''), 'equipmentRepairTaskDetailByInfo', 'outDtlState', '出库执行状态', 27, '1', '1', '1', '0', '2018-12-6 09:16:39', 'admin'),
+        (replace(uuid(), '-', ''), 'equipmentRepairTaskDetailByInfo', 'outDtlStateName', '领取货品状态', 27, '1', '1', '1', '0', '2018-12-6 09:16:39', 'admin'),
+        (replace(uuid(), '-', ''), 'equipmentRepairTaskDetailByInfo', 'inDtlState', '入库执行状态', 28, '1', '1', '1', '0', '2018-12-6 09:16:39', 'admin'),
+        (replace(uuid(), '-', ''), 'equipmentRepairTaskDetailByInfo', 'inDtlStateName', '退还货品状态', 27, '1', '1', '1', '0', '2018-12-6 09:16:39', 'admin'),
+        (replace(uuid(), '-', ''), 'equipmentRepairTaskDetailByInfo', 'inOutDtlStateName', '仓库执行状态', 29, '1', '1', '1', '0', '2018-12-6 09:16:39', 'admin'),
+    </insert>
+
+    <select id="findRepairTaskDetailByInfo" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+        taskDtl.id id,
+        taskDtl.task_id taskId,
+        taskDtl.product_id productId,
+        taskDtl.warehouse_genre warehouseGenre,
+        CASE
+            WHEN taskDtl.warehouse_genre = 'entity' THEN '实体库'
+            WHEN taskDtl.warehouse_genre = 'virtual' THEN '虚拟库'
+        ELSE null
+        END warehouseGenreName,
+
+        round(taskDtl.receive_count, 2) receiveCount,
+
+        round(taskDtl.apply_count, 2) applyCount,
+        taskDtl.retreat_type retreatType,
+        CASE
+            WHEN taskDtl.retreat_type = '1' THEN '退还仓库'
+            WHEN taskDtl.retreat_type = '2' THEN '退还虚拟库'
+        ELSE null
+        END retreatTypeName,
+
+        round(taskDtl.retreat_count, 2) retreatCount,
+        taskDtl.out_dtl_id outDtlId,
+        round(taskDtl.out_count, 2) outCount,
+
+        taskDtl.in_dtl_id inDtlId,
+        round(taskDtl.in_count, 2) inCount,
+        taskDtl.warehouse_id warehouseId,
+        taskDtl.cuser cuser,
+        taskDtl.cdate cdate,
+
+        taskDtl.uuser uuser,
+        taskDtl.udate udate,
+        taskDtl.remark remark,
+        taskDtl.isdisable isdisable,
+
+        <!--货品信息(备件)-->
+        product.code productCode,
+        product.name productName,
+        product.spec productSpec,
+        product.genre productGenre,
+        genre.name productGenreName,
+        unit.name productUnitName,
+
+        round(ifnull(product.lock_count, 0), 2) lockCount,
+        round(ifnull(product.stock_count, 0), 2) stockCount,
+        round((ifnull(product.stock_count, 0) - ifnull(product.lock_count, 0)), 2) productStockCount,
+
+        outDtl.state outDtlState,
+        CASE
+            WHEN outDtl.state = '0' THEN '待派单'
+            WHEN outDtl.state = '1' THEN '执行中'
+            WHEN outDtl.state = '2' THEN '已完成'
+            WHEN outDtl.state = '-1' THEN '退还仓库'
+        ELSE null
+        END outDtlStateName,
+
+        inDtl.state inDtlState,
+        CASE
+            WHEN inDtl.state = '0' THEN '待派单'
+            WHEN inDtl.state = '1' THEN '执行中'
+            WHEN inDtl.state = '2' THEN '已完成'
+            WHEN inDtl.state = '-1' THEN '已取消'
+        ELSE null
+        END inDtlStateName,
+
+        CASE
+            WHEN outDtl.state = '0' THEN '(出库)待派单'
+            WHEN outDtl.state = '1' THEN '(出库)执行中'
+            WHEN outDtl.state = '2' THEN '(出库)已完成'
+            WHEN outDtl.state = '-1' THEN '(出库)退还仓库'
+
+            WHEN inDtl.state = '0' THEN '(入库)待派单'
+            WHEN inDtl.state = '1' THEN '(入库)执行中'
+            WHEN inDtl.state = '2' THEN '(入库)已完成'
+            WHEN inDtl.state = '-1' THEN '(入库)已取消'
+        ELSE null
+        END inOutDtlStateName
+
+        from vmes_equipment_repairTask_detail taskDtl
+            left join vmes_product product on taskDtl.product_id = product.id
+            left join vmes_product_unit produnit on taskDtl.product_id = produnit.product_id and produnit.type = 1
+            left join vmes_dictionary genre on product.genre = genre.id
+            left join vmes_dictionary unit on produnit.unit = unit.id
+
+            left join vmes_warehouse_out_detail outDtl on taskDtl.out_dtl_id = outDtl.id
+            left join vmes_warehouse_in_detail inDtl on taskDtl.in_dtl_id = inDtl.id
+
+        <where>
+            <if test="taskId != null and taskId != ''">
+                and taskDtl.task_id = #{taskId}
+            </if>
+
+            <!--queryStr 自定义sql查询语句-->
+            <if test="queryStr != null and queryStr != ''" >
+                and ${queryStr}
+            </if>
+        </where>
+        <if test="orderStr != null and orderStr != ''" >
+            order by ${orderStr}
+        </if>
+    </select>
+
+</mapper>
