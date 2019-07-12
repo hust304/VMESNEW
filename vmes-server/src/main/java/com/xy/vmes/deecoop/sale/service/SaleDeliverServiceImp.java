@@ -402,7 +402,7 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
         warehouseOutService.save(warehouseOut);
 
         List<WarehouseOutDetail> outDtlList = saleOrderDetailService.orderDtlList2OutDtlList(orderDtlList, null);
-        warehouseOutDetailService.addWarehouseOutDetail(warehouseOut, outDtlList);
+        warehouseOutDetailService.addWarehouseOutDetail(warehouseOut.getId(),warehouseOut.getCuser(), outDtlList);
         //订单明细id --> 出库明细id -- <订单明细id, 出库明细id>Map
         Map<String, String> orderDtl2OutDtlMap = new HashMap<String, String>();
         for (WarehouseOutDetail outDtl : outDtlList) {
