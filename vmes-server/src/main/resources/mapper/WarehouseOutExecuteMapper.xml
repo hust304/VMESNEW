@@ -248,32 +248,29 @@
     <!-- 自动创建，可以修改 -->
     <select id="getDataList" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
-        execut.id id,
-        execut.detail_id detailId,
-        round(execut.count,2) actualCount,
-        execut.warehouse_product_id warehouseProductId,
-        execut.cdate endDate,
-        execut.isdisable isdisable,
-        execut.remark remark,
+            execut.id id,
+            execut.detail_id detailId,
+            round(execut.count,2) actualCount,
+            execut.warehouse_product_id warehouseProductId,
+            execut.cdate endDate,
+            execut.isdisable isdisable,
+            execut.remark remark,
 
-        product.company_id companyId,
-        product.warehouse_id warehouseId,
-        product.product_id productId,
-        product.code code,
-        round(product.stock_count,2) stockCount,
-        product.qrcode qrcode,
+            product.company_id companyId,
+            product.warehouse_id warehouseId,
+            product.product_id productId,
+            product.code code,
+            round(product.stock_count,2) stockCount,
+            product.qrcode qrcode,
 
-        executor.cdate startDate,
-        vmesuser.user_name executorName,
-        warehouse.path_name name,
-
-
-        from
-        vmes_warehouse_out_execute execut
-        left join vmes_warehouse_product product on execut.warehouse_product_id = product.id
-        left join vmes_warehouse warehouse on warehouse.id = product.warehouse_id
-        left join vmes_user vmesuser on vmesuser.id = execut.executor_id
-        left join vmes_warehouse_out_executor executor on executor.detail_id = execut.detail_id and executor.executor_id = execut.executor_id and executor.isdisable = '1'
+            executor.cdate startDate,
+            vmesuser.user_name executorName,
+            warehouse.path_name name
+        from vmes_warehouse_out_execute execut
+            left join vmes_warehouse_product product on execut.warehouse_product_id = product.id
+            left join vmes_warehouse warehouse on warehouse.id = product.warehouse_id
+            left join vmes_user vmesuser on vmesuser.id = execut.executor_id
+            left join vmes_warehouse_out_executor executor on executor.detail_id = execut.detail_id and executor.executor_id = execut.executor_id and executor.isdisable = '1'
         <where>
             <if test="detailId != null and detailId != ''">
                 and execut.detail_id = #{detailId}
