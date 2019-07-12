@@ -61,6 +61,7 @@
             END equipmentStateName,
 
             <!--设备传感器状态  -->
+            '1' equipmentActivity,
             '在线' equipmentActivityName
 
         from vmes_equipment equipment
