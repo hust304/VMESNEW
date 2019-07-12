@@ -159,6 +159,18 @@ public class WarehouseInitialController {
         return model;
     }
 
+    @PostMapping("/warehouse/warehouseInitial/deleteWarehouseProductBySimple")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel deleteWarehouseProductBySimple() throws Exception {
+        logger.info("################/warehouse/warehouseInitial/deleteWarehouseProductBySimple 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pageData = HttpUtils.parsePageData();
+        ResultModel model = warehouseInitialService.deleteWarehouseProductBySimple(pageData);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/warehouse/warehouseInitial/deleteWarehouseProductBySimple 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
     /**
     * Excel导出
     * @author 陈刚 自动创建，可以修改

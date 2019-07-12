@@ -191,6 +191,14 @@
             <if test="currentCompanyId != null and currentCompanyId != ''" >
                 and wp.company_id=#{currentCompanyId}
             </if>
+
+            <if test="warehouseIds != null and warehouseIds != ''" >
+                and wp.warehouse_id in (${warehouseIds})
+            </if>
+            <if test="notInWarehouseIds != null and notInWarehouseIds != ''" >
+                and wp.warehouse_id not in (${notInWarehouseIds})
+            </if>
+
             <!--nodeId 树形结构指定节点id 自定义sql查询语句-->
             <if test="nodeId != null and nodeId != ''" >
                 and warehouse.path_id LIKE CONCAT(CONCAT('%', #{nodeId}),'%')
