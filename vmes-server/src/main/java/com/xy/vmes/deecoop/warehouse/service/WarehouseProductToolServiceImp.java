@@ -206,7 +206,67 @@ public class WarehouseProductToolServiceImp implements WarehouseProductToolServi
         }
 
         return outMapList;
+    }
 
+    /**
+     * (简版仓库)仓库货品减少时-按照先进先出原则-(vmes_warehouse_product)变更库存数量
+     *
+     * 返回结构体: List<Map<String, Object>>
+     * Map<String, Object>
+     *    warehouseProductId
+     *    outCount
+     *
+     * @param objectList   List<WarehouseProduct>仓库货品结果集
+     * @param changeCount  变更库存数量
+     * @return
+     */
+    public List<Map<String, Object>> findWarehouseProductReduceMapListBySimple(List<WarehouseProduct> objectList, BigDecimal changeCount) {
+        List<Map<String, Object>> outMapList = new ArrayList<Map<String, Object>>();
+        if (objectList == null || objectList.size() == 0) {return outMapList;}
+        if (changeCount == null) {return outMapList;}
+
+        //List<WarehouseProduct> objectList，按(cdate)升序排列
+        warehouseProductService.orderAcsByCdate(objectList);
+
+        //addCount:累加器(库存数量)
+        BigDecimal addCount = BigDecimal.valueOf(0D);
+        //2. 遍历结果集 List<WarehouseProduct>
+        for (WarehouseProduct object : objectList) {
+            Map<String, Object> valueMap = new HashMap<String, Object>();
+
+            String warehouseProductId = object.getId();
+            valueMap.put("warehouseProductId", warehouseProductId);
+
+            //库存数量 stockCount
+            BigDecimal stockCount = object.getStockCount();
+            addCount = BigDecimal.valueOf(addCount.doubleValue() + stockCount.doubleValue());
+            if (addCount.doubleValue() <= changeCount.doubleValue()) {
+                valueMap.put("outCount", stockCount);
+                outMapList.add(valueMap);
+                if (addCount.doubleValue() == changeCount.doubleValue()) {
+                    return outMapList;
+                }
+            } else if (addCount.doubleValue() > changeCount.doubleValue()) {
+                //出库数量 := 库存数量 + (需要出库数量 - 累加器(库存数量))
+                BigDecimal outCount = BigDecimal.valueOf(stockCount.doubleValue() + (changeCount.doubleValue() - addCount.doubleValue()));
+                valueMap.put("outCount", outCount);
+                outMapList.add(valueMap);
+                return outMapList;
+            }
+        }
+
+        return outMapList;
+    }
+
+    public Map<String, WarehouseProduct> warehouseProductList2Map(List<WarehouseProduct> objectList) {
+        Map<String, WarehouseProduct> objectMap = new HashMap<String, WarehouseProduct>();
+        if (objectList == null || objectList.size() == 0) {return objectMap;}
+
+        for (WarehouseProduct object : objectList) {
+            objectMap.put(object.getId(), object);
+        }
+
+        return objectMap;
     }
 
 }

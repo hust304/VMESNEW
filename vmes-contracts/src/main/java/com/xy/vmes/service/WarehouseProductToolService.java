@@ -1,5 +1,6 @@
 package com.xy.vmes.service;
 
+import com.xy.vmes.entity.WarehouseProduct;
 import com.xy.vmes.exception.ApplicationException;
 
 import java.math.BigDecimal;
@@ -61,4 +62,21 @@ public interface WarehouseProductToolService {
                                                                        String deptId,
                                                                        String deptPlaceKey,
                                                                        BigDecimal productCount) throws ApplicationException;
+
+
+    /**
+     * (简版仓库)仓库货品减少时-按照先进先出原则-(vmes_warehouse_product)变更库存数量
+     *
+     * 返回结构体: List<Map<String, Object>>
+     * Map<String, Object>
+     *    warehouseProductId
+     *    outCount
+     *
+     * @param objectList   List<WarehouseProduct>仓库货品结果集
+     * @param changeCount  变更库存数量
+     * @return
+     */
+    List<Map<String, Object>> findWarehouseProductReduceMapListBySimple(List<WarehouseProduct> objectList, BigDecimal changeCount);
+
+    Map<String, WarehouseProduct> warehouseProductList2Map(List<WarehouseProduct> objectList);
 }

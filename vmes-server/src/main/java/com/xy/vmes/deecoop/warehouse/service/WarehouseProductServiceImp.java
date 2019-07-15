@@ -383,6 +383,37 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
 
         return warehouseList;
     }
+
+    /**
+     * 按照(cdate创建时间)升序排序，返回结果集
+     * 按值应用调用方法
+     *
+     * @param objectList
+     */
+    public void orderAcsByCdate(List<WarehouseProduct> objectList) {
+        Collections.sort(objectList, new Comparator<Object>() {
+            public int compare(Object arg0, Object arg1) {
+                WarehouseProduct object_0 = (WarehouseProduct)arg0;
+                WarehouseProduct object_1 = (WarehouseProduct)arg1;
+                return object_0.getCdate().compareTo(object_1.getCdate());
+            }
+        });
+    }
+    /**
+     * 按照(cdate创建时间)降序排序，返回结果集
+     * 按值应用调用方法
+     *
+     * @param objectList
+     */
+    public void orderDescByCdate(List<WarehouseProduct> objectList) {
+        Collections.sort(objectList, new Comparator<Object>() {
+            public int compare(Object arg0, Object arg1) {
+                WarehouseProduct object_0 = (WarehouseProduct)arg0;
+                WarehouseProduct object_1 = (WarehouseProduct)arg1;
+                return object_1.getCdate().compareTo(object_0.getCdate());
+            }
+        });
+    }
     ///////////////////////////////////////////////////////////////////////////////////////////
 
     /**

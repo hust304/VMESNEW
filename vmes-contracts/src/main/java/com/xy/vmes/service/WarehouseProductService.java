@@ -111,6 +111,9 @@ public interface WarehouseProductService {
 
     List<Map<String, Object>> findWarehouseProductByWarehouse(PageData pageData);
     List<Map<String, String>> findWarehouseProductMapList(String companyId, String productId, String code);
+
+    void orderAcsByCdate(List<WarehouseProduct> objectList);
+    void orderDescByCdate(List<WarehouseProduct> objectList);
     ///////////////////////////////////////////////////////////////////////////////////////////
 
     /**
