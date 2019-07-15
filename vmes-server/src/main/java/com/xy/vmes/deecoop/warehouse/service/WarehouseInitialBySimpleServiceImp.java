@@ -187,7 +187,7 @@ public class WarehouseInitialBySimpleServiceImp implements WarehouseInitialBySim
 
         //新(货位id,货品id)仓库数量-sql查询已经按(货位id,货品id)汇总
         BigDecimal newStockCount = BigDecimal.valueOf(0D);
-        String newStockCountStr = pageData.getString("oldStockCount");
+        String newStockCountStr = pageData.getString("newStockCount");
         if (newStockCountStr != null) {
             try {
                 newStockCount = new BigDecimal(newStockCountStr);
@@ -237,6 +237,9 @@ public class WarehouseInitialBySimpleServiceImp implements WarehouseInitialBySim
 
                 //变更后库存数量 := 变更前库存数量 - outCount
                 BigDecimal afterCountBig = BigDecimal.valueOf(beforeCountBig.doubleValue() - outCount.doubleValue());
+                //四舍五入到2位小数
+                afterCountBig = afterCountBig.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+
                 warehouseProduct.setUuser(cuser);
                 warehouseProduct.setStockCount(afterCountBig);
                 warehouseProductService.update(warehouseProduct);
@@ -254,9 +257,37 @@ public class WarehouseInitialBySimpleServiceImp implements WarehouseInitialBySim
                 productService.updateStockCount(product, prodStockCount, cuser);
             }
 
-
-        } else if (changeStockCount.doubleValue() < 0D) {
+        } else if (changeStockCount.doubleValue() > 0D) {
             //in 库存加数量
+            //List<WarehouseProduct> objectList，按(cdate)降序排列
+            warehouseProductService.orderDescByCdate(objectList);
+
+            WarehouseProduct warehouseProduct = objectList.get(0);
+            BigDecimal beforeCountBig = BigDecimal.valueOf(0D);
+            if (warehouseProduct.getStockCount() != null) {
+                beforeCountBig = warehouseProduct.getStockCount();
+            }
+
+            //变更后库存数量 := 变更前库存数量 + changeStockCount
+            BigDecimal afterCountBig = BigDecimal.valueOf(beforeCountBig.doubleValue() + changeStockCount.doubleValue());
+            //四舍五入到2位小数
+            afterCountBig = afterCountBig.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+
+            warehouseProduct.setUuser(cuser);
+            warehouseProduct.setStockCount(afterCountBig);
+            warehouseProductService.update(warehouseProduct);
+
+            Product product = productService.findProductById(warehouseProduct.getProductId());
+            BigDecimal prodCount = BigDecimal.valueOf(0D);
+            if (product.getStockCount() != null) {
+                prodCount = product.getStockCount();
+            }
+
+            BigDecimal modifyCount = BigDecimal.valueOf(afterCountBig.doubleValue() - beforeCountBig.doubleValue());
+            BigDecimal prodStockCount = BigDecimal.valueOf(prodCount.doubleValue() + modifyCount.doubleValue());
+            //四舍五入到2位小数
+            prodStockCount = prodStockCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+            productService.updateStockCount(product, prodStockCount, cuser);
         }
 
         return model;
