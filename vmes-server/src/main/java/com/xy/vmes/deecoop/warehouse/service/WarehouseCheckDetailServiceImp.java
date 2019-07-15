@@ -311,7 +311,7 @@ public class WarehouseCheckDetailServiceImp implements WarehouseCheckDetailServi
 
     }
 
-    public void addWarehouseCheckDetailBySimple(String parentId,String cuser, List<WarehouseCheckDetail> objectList) throws Exception {
+    public void addWarehouseCheckDetailBySimple(String parentId, String cuser, List<WarehouseCheckDetail> objectList) throws Exception {
         if (objectList == null || objectList.size() == 0) {return;}
 
         for (WarehouseCheckDetail detail : objectList) {

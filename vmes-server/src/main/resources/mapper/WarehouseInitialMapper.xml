@@ -419,7 +419,10 @@
         (replace(uuid(), '-', ''),'warehouseInitialBySimple','productUnitName','计量单位',10, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'warehouseInitialBySimple','productGenreName','货品属性',11, '1','1','1','0',now(), 'admin'),
 
-        (replace(uuid(), '-', ''),'warehouseInitialBySimple','productSafetyCount','安全库存数量',16, '1','1','1','0',now(), 'admin')
+        (replace(uuid(), '-', ''),'warehouseInitialBySimple','productSafetyCount','安全库存数量',16, '1','1','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'warehouseInitialBySimple','checkStockCount','台账数量',17, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseInitialBySimple','checkCount','盘点数量',18, '1','1','1','0',now(), 'admin')
     </insert>
 
     <!-- warehouseEdition(仓库版本): warehouseBySimple(简版仓库)-对应实体库(简版仓库)********************************************* -->
@@ -444,7 +447,10 @@
             product.type productType,
             unit.name productUnitName,
             genre.name productGenreName,
-            round(ifnull(product.safety_count, 0), 2) productSafetyCount
+            round(ifnull(product.safety_count, 0), 2) productSafetyCount,
+
+            round(warehouseProduct.stock_count, 2) checkStockCount,
+            '' checkCount
         from (
             select
                 warehouse_id,
@@ -456,6 +462,7 @@
                 <if test="productIds != null and productIds != ''" >
                     and product_id in (${productIds})
                 </if>
+
                 <if test="currentCompanyId != null and currentCompanyId != ''" >
                     and company_id = #{currentCompanyId}
                 </if>
@@ -463,6 +470,13 @@
                     select id
                     from vmes_warehouse
                     <where>
+                        <if test="warehouseIds != null and warehouseIds != ''" >
+                            and id in (${warehouseIds})
+                        </if>
+                        <if test="notInWarehouseIds != null and notInWarehouseIds != ''" >
+                            and id not in (${notInWarehouseIds})
+                        </if>
+
                         <if test="currentCompanyId != null and currentCompanyId != ''" >
                             and company_id = #{currentCompanyId}
                         </if>

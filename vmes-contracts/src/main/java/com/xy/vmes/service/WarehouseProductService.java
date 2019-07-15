@@ -144,10 +144,10 @@ public interface WarehouseProductService {
                         BigDecimal count,
                         WarehouseLoginfo loginfo) throws TableVersionException,Exception;
 
-    //(简版仓库)入库(变更库存数量)
-    String inStockCountBySimple(WarehouseProduct object,
-                        BigDecimal count,
-                        WarehouseLoginfo loginfo) throws TableVersionException,Exception;
+//    //(简版仓库)入库(变更库存数量)
+//    String inStockCountBySimple(WarehouseProduct object,
+//                        BigDecimal count,
+//                        WarehouseLoginfo loginfo) throws TableVersionException,Exception;
 
     /**
      * 出库(变更库存数量)
@@ -172,9 +172,9 @@ public interface WarehouseProductService {
     String checkStockCount(WarehouseProduct object,
                            BigDecimal count,
                            WarehouseLoginfo loginfo) throws TableVersionException,Exception;
-    String checkStockCountBySimple(WarehouseProduct object,
-                           BigDecimal count,
-                           WarehouseLoginfo loginfo) throws TableVersionException,Exception;
+//    String checkStockCountBySimple(WarehouseProduct object,
+//                           BigDecimal count,
+//                           WarehouseLoginfo loginfo) throws TableVersionException,Exception;
 
     String updateStockCount(WarehouseProduct object,
                            BigDecimal count,

@@ -54,6 +54,12 @@ public class WarehouseCheckServiceImp implements WarehouseCheckService {
         warehouseCheckMapper.insert(warehouseCheck);
     }
 
+    public void saveNotId(WarehouseCheck object) throws Exception {
+        object.setCdate(new Date());
+        object.setUdate(new Date());
+        warehouseCheckMapper.insert(object);
+    }
+
     /**
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2018-11-13
