@@ -211,27 +211,27 @@ public class WarehouseInitialServiceImp implements WarehouseInitialService {
 
         return mapList;
     }
-    //仓库初始化(简版仓库)
-    public List<Map> findWarehouseInitialBySimple(PageData pd) throws Exception {
-        List<Map> mapList = new ArrayList<Map>();
-        if (pd == null) {return mapList;}
-
-        Pagination pg = null;
-
-        //是否需要分页 true:需要分页 false:不需要分页
-        String isNeedPage = pd.getString("isNeedPage");
-        if ("true".equals(isNeedPage)) {
-            pg = HttpUtils.parsePagination(pd);
-        }
-
-        if (pg == null) {
-            return warehouseInitialMapper.findWarehouseProductBySimple(pd);
-        } else if (pg != null) {
-            return warehouseInitialMapper.findWarehouseProductBySimple(pd,pg);
-        }
-
-        return mapList;
-    }
+//    //仓库初始化(简版仓库)
+//    public List<Map> findWarehouseInitialBySimple(PageData pd) throws Exception {
+//        List<Map> mapList = new ArrayList<Map>();
+//        if (pd == null) {return mapList;}
+//
+//        Pagination pg = null;
+//
+//        //是否需要分页 true:需要分页 false:不需要分页
+//        String isNeedPage = pd.getString("isNeedPage");
+//        if ("true".equals(isNeedPage)) {
+//            pg = HttpUtils.parsePagination(pd);
+//        }
+//
+//        if (pg == null) {
+//            return warehouseInitialMapper.findWarehouseProductBySimple(pd);
+//        } else if (pg != null) {
+//            return warehouseInitialMapper.findWarehouseProductBySimple(pd,pg);
+//        }
+//
+//        return mapList;
+//    }
 
     public void initialByWarehouse(String cuser, String companyId) throws Exception {
         if (companyId == null || companyId.trim().length() == 0) {return;}
@@ -404,6 +404,7 @@ public class WarehouseInitialServiceImp implements WarehouseInitialService {
         //四舍五入到2位小数
         prodStockCount = prodStockCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
         productService.updateStockCount(product, prodStockCount, cuser);
+
         return model;
     }
 
@@ -441,55 +442,55 @@ public class WarehouseInitialServiceImp implements WarehouseInitialService {
         return model;
     }
 
-    public ResultModel deleteWarehouseProductBySimple(PageData pageData) throws Exception {
-        ResultModel model = new ResultModel();
-        String cuser = pageData.getString("cuser");
-
-        String warehouseId = pageData.getString("warehouseId");
-        if (warehouseId == null || warehouseId.trim().length() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("货位id为空或空字符串！");
-            return model;
-        }
-
-        String productId = pageData.getString("productId");
-        if (productId == null || productId.trim().length() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("货品id为空或空字符串！");
-            return model;
-        }
-
-        //当前(货位id,货品id)仓库数量-sql查询已经按(货位id,货品id)汇总
-        BigDecimal stockCount = BigDecimal.valueOf(0D);
-        String stockCountStr = pageData.getString("stockCount");
-        if (stockCountStr != null) {
-            try {
-                stockCount = new BigDecimal(stockCountStr);
-                //四舍五入到2位小数
-                stockCount = stockCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-            } catch (NumberFormatException e) {
-                e.printStackTrace();
-            }
-        }
-
-        //删除库存表(vmes_warehouse_product:仓库货位产品库存表)
-        Map columnMap = new HashMap();
-        columnMap.put("product_id", productId);
-        columnMap.put("warehouse_id", warehouseId);
-        warehouseProductService.deleteByColumnMap(columnMap);
-
-        Product product = productService.findProductById(productId);
-        BigDecimal prodCount = BigDecimal.valueOf(0D);
-        if (product.getStockCount() != null) {
-            prodCount = product.getStockCount();
-        }
-
-        BigDecimal prodStockCount = BigDecimal.valueOf(prodCount.doubleValue() - stockCount.doubleValue());
-        //四舍五入到2位小数
-        prodStockCount = prodStockCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-        productService.updateStockCount(product, prodStockCount, cuser);
-        return model;
-    }
+//    public ResultModel deleteWarehouseProductBySimple(PageData pageData) throws Exception {
+//        ResultModel model = new ResultModel();
+//        String cuser = pageData.getString("cuser");
+//
+//        String warehouseId = pageData.getString("warehouseId");
+//        if (warehouseId == null || warehouseId.trim().length() == 0) {
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg("货位id为空或空字符串！");
+//            return model;
+//        }
+//
+//        String productId = pageData.getString("productId");
+//        if (productId == null || productId.trim().length() == 0) {
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg("货品id为空或空字符串！");
+//            return model;
+//        }
+//
+//        //当前(货位id,货品id)仓库数量-sql查询已经按(货位id,货品id)汇总
+//        BigDecimal stockCount = BigDecimal.valueOf(0D);
+//        String stockCountStr = pageData.getString("stockCount");
+//        if (stockCountStr != null) {
+//            try {
+//                stockCount = new BigDecimal(stockCountStr);
+//                //四舍五入到2位小数
+//                stockCount = stockCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+//            } catch (NumberFormatException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//
+//        //删除库存表(vmes_warehouse_product:仓库货位产品库存表)
+//        Map columnMap = new HashMap();
+//        columnMap.put("product_id", productId);
+//        columnMap.put("warehouse_id", warehouseId);
+//        warehouseProductService.deleteByColumnMap(columnMap);
+//
+//        Product product = productService.findProductById(productId);
+//        BigDecimal prodCount = BigDecimal.valueOf(0D);
+//        if (product.getStockCount() != null) {
+//            prodCount = product.getStockCount();
+//        }
+//
+//        BigDecimal prodStockCount = BigDecimal.valueOf(prodCount.doubleValue() - stockCount.doubleValue());
+//        //四舍五入到2位小数
+//        prodStockCount = prodStockCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+//        productService.updateStockCount(product, prodStockCount, cuser);
+//        return model;
+//    }
 
     @Override
     public void exportExcelWarehouseInitial(PageData pd, Pagination pg) throws Exception {

@@ -88,7 +88,7 @@ public interface WarehouseInitialService {
     //仓库初始化(复杂版仓库)
     List<Map> findWarehouseInitialByComplex(PageData pd) throws Exception;
     //仓库初始化(简版仓库)
-    List<Map> findWarehouseInitialBySimple(PageData pd) throws Exception;
+    //List<Map> findWarehouseInitialBySimple(PageData pd) throws Exception;
 
     void initialByWarehouse(String cuser, String companyId) throws Exception;
     void deleteTableByBusiness(String companyId) throws Exception;
@@ -102,7 +102,7 @@ public interface WarehouseInitialService {
 
     ResultModel deleteWarehouseProduct(PageData pageData) throws Exception;
 
-    ResultModel deleteWarehouseProductBySimple(PageData pageData) throws Exception;
+    //ResultModel deleteWarehouseProductBySimple(PageData pageData) throws Exception;
 
     void exportExcelWarehouseInitial(PageData pd, Pagination pg) throws Exception;
 

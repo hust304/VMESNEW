@@ -1,9 +1,6 @@
 package com.xy.vmes.deecoop.warehouse.controller;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
-import com.xy.vmes.common.util.ColumnUtil;
-import com.xy.vmes.common.util.StringUtil;
-import com.xy.vmes.entity.Column;
 import com.xy.vmes.service.*;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
@@ -16,15 +13,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 /**
-* 说明：vmes_warehouse_initial:仓库初始化设定Controller
-* @author 陈刚 自动生成
-* @date 2018-11-20
-*/
+ * 说明：vmes_warehouse_initial:仓库初始化设定Controller
+ * @author 陈刚 自动生成
+ * @date 2018-11-20
+ */
 @RestController
 @Slf4j
 public class WarehouseInitialController {
@@ -52,57 +45,57 @@ public class WarehouseInitialController {
         return model;
     }
 
-    //仓库初始化(简版仓库)
-    @PostMapping("/warehouse/warehouseInitial/findWarehouseInitialBySimple")
-    public ResultModel findWarehouseInitialBySimple() throws Exception {
-        logger.info("################/warehouse/warehouseInitial/findWarehouseInitialBySimple 执行开始 ################# ");
-        Long startTime = System.currentTimeMillis();
-
-        ResultModel model = new ResultModel();
-        PageData pd = HttpUtils.parsePageData();
-
-        List<Column> columnList = columnService.findColumnList("warehouseInitialBySimple");
-        if (columnList == null || columnList.size() == 0) {
-            model.putCode("1");
-            model.putMsg("数据库没有生成TabCol，请联系管理员！");
-            return model;
-        }
-
-        //获取指定栏位字符串-重新调整List<Column>
-        String fieldCode = pd.getString("fieldCode");
-        if (fieldCode != null && fieldCode.trim().length() > 0) {
-            columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
-        }
-
-        String productIds = new String();
-        if (pd.getString("productIds") != null && pd.getString("productIds").trim().length() > 0) {
-            productIds = pd.getString("productIds").trim();
-            productIds = StringUtil.stringTrimSpace(productIds);
-            productIds = "'" + productIds.replace(",", "','") + "'";
-        }
-        pd.put("productIds", productIds);
-
-        //是否需要分页 true:需要分页 false:不需要分页
-        Map result = new HashMap();
-        String isNeedPage = pd.getString("isNeedPage");
-        if ("true".equals(isNeedPage)) {
-            result.put("pageData", HttpUtils.parsePagination(pd));
-        }
-
-        List<Map> varList = warehouseInitialService.findWarehouseInitialBySimple(pd);
-        Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
-        List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
-
-        result.put("hideTitles", titleMap.get("hideTitles"));
-        result.put("titles",titleMap.get("titles"));
-        result.put("varList", varMapList);
-
-        model.putResult(result);
-
-        Long endTime = System.currentTimeMillis();
-        logger.info("################/warehouse/warehouseInitial/findWarehouseInitialBySimple 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
-        return model;
-    }
+//    //仓库初始化(简版仓库)
+//    @PostMapping("/warehouse/warehouseInitial/findWarehouseInitialBySimple")
+//    public ResultModel findWarehouseInitialBySimple() throws Exception {
+//        logger.info("################/warehouse/warehouseInitial/findWarehouseInitialBySimple 执行开始 ################# ");
+//        Long startTime = System.currentTimeMillis();
+//
+//        ResultModel model = new ResultModel();
+//        PageData pd = HttpUtils.parsePageData();
+//
+//        List<Column> columnList = columnService.findColumnList("warehouseInitialBySimple");
+//        if (columnList == null || columnList.size() == 0) {
+//            model.putCode("1");
+//            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+//            return model;
+//        }
+//
+//        //获取指定栏位字符串-重新调整List<Column>
+//        String fieldCode = pd.getString("fieldCode");
+//        if (fieldCode != null && fieldCode.trim().length() > 0) {
+//            columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
+//        }
+//
+//        String productIds = new String();
+//        if (pd.getString("productIds") != null && pd.getString("productIds").trim().length() > 0) {
+//            productIds = pd.getString("productIds").trim();
+//            productIds = StringUtil.stringTrimSpace(productIds);
+//            productIds = "'" + productIds.replace(",", "','") + "'";
+//        }
+//        pd.put("productIds", productIds);
+//
+//        //是否需要分页 true:需要分页 false:不需要分页
+//        Map result = new HashMap();
+//        String isNeedPage = pd.getString("isNeedPage");
+//        if ("true".equals(isNeedPage)) {
+//            result.put("pageData", HttpUtils.parsePagination(pd));
+//        }
+//
+//        List<Map> varList = warehouseInitialService.findWarehouseInitialBySimple(pd);
+//        Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
+//        List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
+//
+//        result.put("hideTitles", titleMap.get("hideTitles"));
+//        result.put("titles",titleMap.get("titles"));
+//        result.put("varList", varMapList);
+//
+//        model.putResult(result);
+//
+//        Long endTime = System.currentTimeMillis();
+//        logger.info("################/warehouse/warehouseInitial/findWarehouseInitialBySimple 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+//        return model;
+//    }
 
     /**
      * 初始化仓库
@@ -159,17 +152,17 @@ public class WarehouseInitialController {
         return model;
     }
 
-    @PostMapping("/warehouse/warehouseInitial/deleteWarehouseProductBySimple")
-    @Transactional(rollbackFor=Exception.class)
-    public ResultModel deleteWarehouseProductBySimple() throws Exception {
-        logger.info("################/warehouse/warehouseInitial/deleteWarehouseProductBySimple 执行开始 ################# ");
-        Long startTime = System.currentTimeMillis();
-        PageData pageData = HttpUtils.parsePageData();
-        ResultModel model = warehouseInitialService.deleteWarehouseProductBySimple(pageData);
-        Long endTime = System.currentTimeMillis();
-        logger.info("################/warehouse/warehouseInitial/deleteWarehouseProductBySimple 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
-        return model;
-    }
+//    @PostMapping("/warehouse/warehouseInitial/deleteWarehouseProductBySimple")
+//    @Transactional(rollbackFor=Exception.class)
+//    public ResultModel deleteWarehouseProductBySimple() throws Exception {
+//        logger.info("################/warehouse/warehouseInitial/deleteWarehouseProductBySimple 执行开始 ################# ");
+//        Long startTime = System.currentTimeMillis();
+//        PageData pageData = HttpUtils.parsePageData();
+//        ResultModel model = warehouseInitialService.deleteWarehouseProductBySimple(pageData);
+//        Long endTime = System.currentTimeMillis();
+//        logger.info("################/warehouse/warehouseInitial/deleteWarehouseProductBySimple 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+//        return model;
+//    }
 
     /**
     * Excel导出
