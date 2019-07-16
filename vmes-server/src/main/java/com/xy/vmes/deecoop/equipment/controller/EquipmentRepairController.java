@@ -172,13 +172,13 @@ public class EquipmentRepairController {
             timeLengthLong = timeLengthLong * 24 * 60 * 60;
         }
 
-        //1. 设备维修单id 查询 vmes_equipment_repairTask:
-        boolean isExistTask = repairTaskService.isExistRepairTaskByRepairId(repairId);
-        if (isExistTask) {
-            //设备维修单id 禁用全部设备维修任务表
-            //是否启用(0:已禁用 1:启用)
-            repairTaskService.updateIsdisableByRepairId("0", repairId);
-        }
+//        //1. 设备维修单id 查询 vmes_equipment_repairTask:
+//        boolean isExistTask = repairTaskService.isExistRepairTaskByRepairId(repairId);
+//        if (isExistTask) {
+//            //设备维修单id 禁用全部设备维修任务表
+//            //是否启用(0:已禁用 1:启用)
+//            repairTaskService.updateIsdisableByRepairId("0", repairId);
+//        }
 
         //2. 创建-设备维修任务表 vmes_equipment_repairTask
         EquipmentRepairTask repairTask = new EquipmentRepairTask();
@@ -209,6 +209,79 @@ public class EquipmentRepairController {
 
         Long endTime = System.currentTimeMillis();
         logger.info("################/equipment/equipmentRepair/equipmentRepairReceive 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 取消-设备维修单
+     * @author 陈刚
+     * @date 2019-07-01
+     * @throws Exception
+     */
+    @PostMapping("/equipment/equipmentRepair/cancelEquipmentRepair")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel cancelEquipmentRepair() throws Exception {
+        logger.info("################/equipment/equipmentRepair/cancelEquipmentRepair 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        String cuser = pageData.getString("cuser");
+        String repairId = pageData.getString("repairId");
+        if (repairId == null || repairId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("设备维修单id为空或空字符串！");
+            return model;
+        }
+
+        String cancelReason = pageData.getString("cancelReason");
+        if (cancelReason == null || cancelReason.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("取消原因为空或空字符串！");
+            return model;
+        }
+
+        String repairTaskId = pageData.getString("repairTaskId");
+        if (repairTaskId == null || repairTaskId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("维修任务id为空或空字符串！");
+            return model;
+        }
+
+        EquipmentRepair repairEdit = new EquipmentRepair();
+        repairEdit.setId(repairId);
+        //equipmentState:设备状态(1:故障 2:维修中 3:已完成)
+        repairEdit.setEquipmentState("3");
+        //isdisable 是否启用(0:已禁用 1:启用)
+        repairEdit.setIsdisable("0");
+
+        //cancelReason 取消原因
+        repairEdit.setCancelReason(cancelReason);
+        //cancelDate 取消时间
+        repairEdit.setCancelDate(new Date());
+        //cancelUser 取消人
+        repairEdit.setCancelUser(cuser);
+        equipmentRepairService.update(repairEdit);
+
+        if (repairTaskId != null && repairTaskId.trim().length() > 0) {
+            EquipmentRepairTask repairTaskEdit = new EquipmentRepairTask();
+            repairTaskEdit.setId(repairTaskId);
+            //cancelReason 取消原因
+            repairTaskEdit.setCancelReason(cancelReason);
+            //cancelUser 取消人
+            repairTaskEdit.setCancelUser(cuser);
+            //endTime 任务结束时间
+            repairTaskEdit.setEndTime(new Date());
+            //taskResult 执行结果(0:未解决 1:已解决)
+            repairTaskEdit.setTaskResult("1");
+            //taskState 任务状态(0:未领取任务 1:已领取任务 2:已领料 3:已报工 4:已退单 )
+            repairTaskEdit.setTaskState("4");
+            repairTaskService.update(repairTaskEdit);
+        }
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/equipment/equipmentRepair/cancelEquipmentRepair 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
