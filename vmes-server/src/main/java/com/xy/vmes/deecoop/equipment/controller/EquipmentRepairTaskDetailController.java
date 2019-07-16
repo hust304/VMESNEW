@@ -424,44 +424,44 @@ public class EquipmentRepairTaskDetailController {
 
                 repairTaskDetailService.update(detailEdit);
             }
+        }
 
-            //equalZeroList:    退回数量(等于零)List
-            List<Map<String, String>> equalZeroList = newEditJsonMap.get("equalZeroList");
-            if (equalZeroList != null && equalZeroList.size() > 0) {
-                for (Map<String, String> objectMap : equalZeroList) {
-                    EquipmentRepairTaskDetail detailEdit = new EquipmentRepairTaskDetail();
+        //equalZeroList:    退回数量(等于零)List
+        List<Map<String, String>> equalZeroList = newEditJsonMap.get("equalZeroList");
+        if (equalZeroList != null && equalZeroList.size() > 0) {
+            for (Map<String, String> objectMap : equalZeroList) {
+                EquipmentRepairTaskDetail detailEdit = new EquipmentRepairTaskDetail();
 
-                    String id = objectMap.get("id");
-                    detailEdit.setId(id);
+                String id = objectMap.get("id");
+                detailEdit.setId(id);
 
-                    //实际使用数量 applyCount
-                    BigDecimal applyCount = BigDecimal.valueOf(0D);
-                    if (objectMap.get("applyCount") != null) {
-                        try {
-                            applyCount = new BigDecimal(objectMap.get("applyCount").trim());
-                            //四舍五入到2位小数
-                            applyCount = applyCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-                        } catch (NumberFormatException e) {
-                            e.printStackTrace();
-                        }
+                //实际使用数量 applyCount
+                BigDecimal applyCount = BigDecimal.valueOf(0D);
+                if (objectMap.get("applyCount") != null) {
+                    try {
+                        applyCount = new BigDecimal(objectMap.get("applyCount").trim());
+                        //四舍五入到2位小数
+                        applyCount = applyCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
                     }
-                    detailEdit.setApplyCount(applyCount);
-
-                    //退回数量 retreatCount := 领取数量 - 实际使用数量
-                    BigDecimal retreatCount = BigDecimal.valueOf(0D);
-                    if (objectMap.get("retreatCount") != null) {
-                        try {
-                            retreatCount = new BigDecimal(objectMap.get("retreatCount").trim());
-                            //四舍五入到2位小数
-                            retreatCount = retreatCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-                        } catch (NumberFormatException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    detailEdit.setApplyCount(retreatCount);
-
-                    repairTaskDetailService.update(detailEdit);
                 }
+                detailEdit.setApplyCount(applyCount);
+
+                //退回数量 retreatCount := 领取数量 - 实际使用数量
+                BigDecimal retreatCount = BigDecimal.valueOf(0D);
+                if (objectMap.get("retreatCount") != null) {
+                    try {
+                        retreatCount = new BigDecimal(objectMap.get("retreatCount").trim());
+                        //四舍五入到2位小数
+                        retreatCount = retreatCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                }
+                detailEdit.setRetreatCount(retreatCount);
+
+                repairTaskDetailService.update(detailEdit);
             }
         }
 
