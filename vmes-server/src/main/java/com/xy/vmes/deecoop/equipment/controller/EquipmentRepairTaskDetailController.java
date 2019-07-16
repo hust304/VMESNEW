@@ -39,6 +39,8 @@ public class EquipmentRepairTaskDetailController {
     private EquipmentRepairTaskDetailService repairTaskDetailService;
     @Autowired
     private EquipmentRepairTaskDetailInfoService repairTaskDetailInfoService;
+    @Autowired
+    private EquipmentRepairTaskOutDetailService repairTaskOutDetailService;
 
     @Autowired
     private WarehouseOutCreateService warehouseOutCreateService;
@@ -84,6 +86,36 @@ public class EquipmentRepairTaskDetailController {
         ResultModel model = repairTaskDetailInfoService.findListRepairTaskDetailByInfo(pd);
         Long endTime = System.currentTimeMillis();
         logger.info("################/equipment/equipmentRepairTaskDetail/findListRepairTaskDetailByInfo 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    //获取维修任务货品明细-是否出库执行完成
+    // 根据(维修任务id)查询(vmes_equipment_repairTask_detail)
+    @PostMapping("/equipment/equipmentRepairTaskDetail/findIsAllOutExecute")
+    public ResultModel findIsAllOutExecute() throws Exception {
+        logger.info("################/equipment/equipmentRepairTaskDetail/findIsAllOutExecute 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+
+        String repairTaskId = pd.getString("repairTaskId");
+        if (repairTaskId == null || repairTaskId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("维修任务id为空或空字符串！");
+            return model;
+        }
+
+        //获取维修任务货品明细-是否出库执行完成
+        //true : 全部出库完成(默认值)
+        //false: 一条或多条出库未完成
+        model.put("isAllOut", "true");
+        if (!repairTaskOutDetailService.isAllOutExecuteRepairTaskDetail(repairTaskId)) {
+            model.put("isAllOut", "false");
+        }
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/equipment/equipmentRepairTaskDetail/findIsAllOutExecute 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 

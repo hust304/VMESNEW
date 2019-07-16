@@ -30,4 +30,35 @@ public class EquipmentRepairTaskOutDetailServiceImp implements EquipmentRepairTa
 
         return mapList;
     }
+
+    /**
+     * 获取维修任务货品明细-是否出库执行完成
+     * (vmes_equipment_repairTask_detail, vmes_warehouse_out_detail)
+     *
+     * @param repairTaskId  维修任务id
+     *
+     * @return
+     *   true : 全部出库完成(默认值)
+     *   false: 一条或多条出库未完成
+     */
+    public boolean isAllOutExecuteRepairTaskDetail(String repairTaskId) {
+        if (repairTaskId == null || repairTaskId.trim().length() == 0) {return true;}
+
+        List<Map> mapList = null;
+        try {
+            PageData findMap = new PageData();
+            mapList = this.findTaskDetailByOutDetail(findMap, null);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (mapList == null || mapList.size() == 0) {return true;}
+
+        for (Map objectMap : mapList) {
+            //出库单明细状态(0:待派单 1:执行中 2:已完成)
+            String outDtlState = (String)objectMap.get("outDtlState");
+            if (!"2".equals(outDtlState)) {return false;}
+        }
+
+        return true;
+    }
 }
