@@ -59,7 +59,7 @@ public class MobileWarehouseMoveServiceImp implements MobileWarehouseMoveService
 
         PageData findMap = new PageData();
         findMap.put("detailId", detailId);
-        List<Map> moveMapList = warehouseMoveDetailService.getDataListPage(findMap,null);
+        List<Map> moveMapList = warehouseMoveDetailService.getDataListPage(findMap);
 
         Map moveMap = null;
         if (moveMapList != null && moveMapList.size() > 0) {

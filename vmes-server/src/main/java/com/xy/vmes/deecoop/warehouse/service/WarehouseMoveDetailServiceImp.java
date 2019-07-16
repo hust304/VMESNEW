@@ -194,6 +194,13 @@ public class WarehouseMoveDetailServiceImp implements WarehouseMoveDetailService
         return warehouseMoveDetailMapper.getDataList(pd);
     }
 
+    @Override
+    public List<Map> getDataListPage(PageData pd) throws Exception{
+        List<Map> mapList = new ArrayList<Map>();
+        if (pd == null) {return mapList;}
+        return warehouseMoveDetailMapper.getDataListPage(pd);
+    }
+
     /**
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-11-16

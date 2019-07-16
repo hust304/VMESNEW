@@ -37,14 +37,8 @@ public class MobileWarehouseProductController {
         PageData pd = HttpUtils.parsePageData();
         Pagination pg = HttpUtils.parsePagination(pd);
 
-        List<Map> varList = warehouseProductService.findListPageWarehouseByProduct(pd,pg);
+        model = warehouseProductService.findListPageWarehouseByProduct(pd);
 
-
-        Map result = new HashMap();
-        result.put("varList", varList);
-        result.put("pageData", pg);
-
-        model.putResult(result);
         Long endTime = System.currentTimeMillis();
         logger.info("################/mobile/mobileWarehouseProduct/listPageWarehouseByProduct 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;

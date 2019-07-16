@@ -255,6 +255,9 @@ public interface WarehouseProductService {
     //手机端功能
     List<Map> findListPageWarehouseByProduct(PageData pd, Pagination pg) throws Exception;
 
+    ResultModel findListPageWarehouseByProduct(PageData pd) throws Exception;
+
+
     ResultModel updateWarehouseProduct(PageData pd) throws Exception;
 
     ResultModel listPageWarehouseProductView(PageData pd, Pagination pg) throws Exception;

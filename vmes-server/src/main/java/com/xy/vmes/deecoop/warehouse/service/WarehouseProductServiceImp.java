@@ -1452,6 +1452,20 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
         return warehouseProductMapper.findListPageWarehouseByProduct(pd,pg);
     }
 
+
+    //手机端功能
+    @Override
+    public ResultModel findListPageWarehouseByProduct(PageData pd) throws Exception {
+        Pagination pg =  HttpUtils.parsePagination(pd);
+        ResultModel model = new ResultModel();
+        List<Map> varList = warehouseProductMapper.findListPageWarehouseByProduct(pd,pg);
+        Map result = new HashMap();
+        result.put("varList", varList);
+        result.put("pageData", pg);
+        model.putResult(result);
+        return model;
+    }
+
     @Override
     public ResultModel updateWarehouseProduct(PageData pd) throws Exception {
         ResultModel model = new ResultModel();

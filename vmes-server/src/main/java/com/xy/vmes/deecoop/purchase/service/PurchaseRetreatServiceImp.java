@@ -421,7 +421,7 @@ public class PurchaseRetreatServiceImp implements PurchaseRetreatService {
         //获取货品信息Map<货品id, 计价转换计量公式p2nFormula>
         Map<String, String> productMap = this.findProductMap(retreatDtlMapList);
         List<WarehouseOutDetail> outDtlList = purchaseRetreatDetailService.retreatDtlList2OutDtlList(retreatDtlList, productMap, null);
-        warehouseOutDetailService.addWarehouseOutDetail(warehouseOut, outDtlList);
+        warehouseOutDetailService.addWarehouseOutDetail(warehouseOut.getId(),warehouseOut.getCuser(), outDtlList);
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //<退货单明细id, 出库明细id>Map
