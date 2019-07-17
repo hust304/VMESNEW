@@ -229,12 +229,13 @@
                     <if test="menuIsdisable != null and menuIsdisable != ''" >
                         and a.isdisable = #{menuIsdisable}
                     </if>
-                    <if test="rootStr != null and rootStr != ''" >
-                        or ${rootStr}
-                    </if>
                     <!--queryStr 自定义sql查询语句 b.role_id in ()-->
                     <if test="queryStr != null and queryStr != ''" >
                         and ${queryStr}
+                    </if>
+
+                    <if test="rootStr != null and rootStr != ''" >
+                        or ${rootStr}
                     </if>
 
                 </where>
