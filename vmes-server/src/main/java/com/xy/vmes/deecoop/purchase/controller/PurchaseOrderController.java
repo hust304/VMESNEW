@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.service.RoleMenuService;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
+import com.yvan.YvanUtil;
 import com.yvan.springmvc.ResultModel;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -15,6 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -391,10 +395,26 @@ public class PurchaseOrderController {
 
         //业务相关参数////////////////////////////////////////////////////////////////////////////////////////////////////////
         String cuser = pageData.getString("cuser");
+        String purchaseOrderId = pageData.getString("purchaseOrderId");
+        if (purchaseOrderId == null || purchaseOrderId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("采购订单id为空或空字符串！");
+            return model;
+        }
 
-        //purchaseOrderId: this.initData.temp.id,
+        String dtlJsonStr = pageData.getString("dtlJsonStr");
+        if (dtlJsonStr == null || dtlJsonStr.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("请至少添加选择一条货品数据！");
+            return model;
+        }
 
-                //dtlJsonStr: dtlJsonStr
+        List<Map<String, String>> mapList = (List<Map<String, String>>) YvanUtil.jsonToList(dtlJsonStr);
+        if (mapList == null || mapList.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("采购签收单明细Json字符串-转换成List错误！");
+            return model;
+        }
 
         Long endTime = System.currentTimeMillis();
         logger.info("################/purchase/purchaseOrder/signPurchaseOrder 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
