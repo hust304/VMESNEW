@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+说明：采购订单明细汇总Mapper.xml
+创建人：陈刚
+创建时间：2019-07-17
+ -->
+<mapper namespace="com.xy.vmes.deecoop.purchase.dao.PurchaseOrderDetailCollectMapper">
+    <!-- 获取(采购数量,签收数量,退货数量[已完成])  -->
+    <!-- (采购订单明细id)采购订单明细汇总 vmes_purchase_order_detail, vmes_purchase_sign_detail, vmes_purchase_retreat_detail-->
+    <select id="findPurchaseOrderDetailCollect" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+            detail.id detailId,
+            detail.parent_id parentId,
+            <!--采购数量 -->
+            detail.count detailCount,
+
+            <!--签收数量 -->
+            round(ifnull(signDetail.arrive_count, 0), 2) signCount,
+            <!--(已完成)退货数量 -->
+            round(ifnull(retreatDetail.count, 0), 2) retreatCount,
+            <!--到货数量:= 签收数量 - (已完成)退货数量 -->
+            round((ifnull(signDetail.arrive_count, 0) - ifnull(retreatDetail.count, 0)), 2) arriveCount
+
+        from vmes_purchase_order_detail detail
+            <!--签收数量 (采购订单明细id)采购签收明细汇总 vmes_purchase_sign_detail-->
+            left join (
+                select order_detail_id, sum(arrive_count) arrive_count
+                from vmes_purchase_sign_detail
+                where isdisable = '1'
+                group by order_detail_id
+            ) signDetail on detail.id = signDetail.order_detail_id
+            <!--(已完成)退货数量 (采购订单明细id)退货明细汇总 vmes_purchase_retreat_detail-->
+            left join (
+                select order_detail_id, sum(count) count
+                from vmes_purchase_retreat_detail
+                where state = '3'
+                group by order_detail_id
+            ) retreatDetail on detail.id = retreatDetail.order_detail_id
+        <where>
+            <if test="parentId != null and parentId != ''">
+                and detail.parent_id =  #{parentId}
+            </if>
+        </where>
+        <if test="orderStr != null and orderStr != ''" >
+            order by ${orderStr}
+        </if>
+    </select>
+
+</mapper>
