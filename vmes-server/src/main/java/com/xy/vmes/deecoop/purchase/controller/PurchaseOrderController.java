@@ -4,6 +4,7 @@ import com.xy.vmes.service.PurchaseOrderService;
 import com.xy.vmes.entity.PurchaseOrder;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.service.RoleMenuService;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
@@ -29,6 +30,9 @@ public class PurchaseOrderController {
 
     @Autowired
     private PurchaseOrderService purchaseOrderService;
+
+    @Autowired
+    private RoleMenuService roleMenuService;
 
     /**
     * @author 刘威 自动创建，禁止修改
@@ -316,18 +320,82 @@ public class PurchaseOrderController {
         return model;
     }
 
+//    /**
+//     * @author 刘威 自动创建，禁止修改
+//     * @date 2019-02-28
+//     */
+//    @PostMapping("/purchase/purchaseOrder/signPurchaseOrder")
+//    @Transactional(rollbackFor=Exception.class)
+//    public ResultModel signPurchaseOrder()  throws Exception {
+//
+//        logger.info("################/purchase/purchaseOrder/signPurchaseOrder 执行开始 ################# ");
+//        Long startTime = System.currentTimeMillis();
+//        PageData pd = HttpUtils.parsePageData();
+//        ResultModel model = purchaseOrderService.signPurchaseOrder(pd);
+//        Long endTime = System.currentTimeMillis();
+//        logger.info("################/purchase/purchaseOrder/signPurchaseOrder 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+//        return model;
+//    }
+
     /**
      * @author 刘威 自动创建，禁止修改
      * @date 2019-02-28
      */
     @PostMapping("/purchase/purchaseOrder/signPurchaseOrder")
     @Transactional(rollbackFor=Exception.class)
-    public ResultModel signPurchaseOrder()  throws Exception {
-
+    public ResultModel signPurchaseOrder() throws Exception {
         logger.info("################/purchase/purchaseOrder/signPurchaseOrder 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        PageData pd = HttpUtils.parsePageData();
-        ResultModel model = purchaseOrderService.signPurchaseOrder(pd);
+
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        //创建(复杂版,简版)仓库-出库单-需要的参数///////////////////////////////////////////////////////////////////////////////////
+        String roleId = pageData.getString("roleId");
+        if (roleId == null || roleId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("当前用户角色id为空或空字符串！");
+            return model;
+        }
+        //供应商(供应商id,供应商名称)
+        String supplierName = pageData.getString("supplierName");
+        String supplierId = pageData.getString("supplierId");
+        if (supplierId == null || supplierId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("供应商id为空或空字符串！");
+            return model;
+        }
+
+        //仓库id
+        String warehouseId = pageData.getString("warehouseId");
+        if (warehouseId == null || warehouseId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("仓库id为空或空字符串！");
+            return model;
+        }
+
+        String companyId = pageData.getString("currentCompanyId");
+        if (companyId == null || companyId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("企业id为空或空字符串！");
+            return model;
+        }
+
+        //根据(用户角色id)获取仓库属性(复杂版仓库,简版仓库)
+        String warehouse = roleMenuService.findWarehouseAttribute(roleId);
+        if (warehouse == null || warehouse.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("当前用户角色无(复杂版仓库，简版仓库)菜单，请与管理员联系！");
+            return model;
+        }
+
+        //业务相关参数////////////////////////////////////////////////////////////////////////////////////////////////////////
+        String cuser = pageData.getString("cuser");
+
+        //purchaseOrderId: this.initData.temp.id,
+
+                //dtlJsonStr: dtlJsonStr
+
         Long endTime = System.currentTimeMillis();
         logger.info("################/purchase/purchaseOrder/signPurchaseOrder 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;

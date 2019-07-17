@@ -374,7 +374,7 @@
         detail.remark remark,<!-- 采购补充说明 -->
         detail.isdisable isdisable,<!-- 是否启用(0:已禁用 1:启用) -->
 
-        <!--到货数量:= 签收数量 - (生成退货单)退货数量 -->
+        <!--到货数量:= 签收数量 - (已完成)退货数量 -->
         round((ifnull(signDetail.arrive_count, 0) - ifnull(retreatDetail.count, 0)), 2) arriveCount,
         <!--当前到货数量:= 采购数量 - (签收数量 - (生成退货单)退货数量)   -->
         round((ifnull(detail.count, 0) - (ifnull(signDetail.arrive_count, 0) - ifnull(retreatDetail.count, 0))), 2) arrivingCount,
@@ -424,7 +424,7 @@
                 sum(count) count,
                 sum(amount) amount
             from vmes_purchase_retreat_detail
-            where <![CDATA[state <> '-1' ]]>
+            where state = '3'
             group by order_detail_id
         ) retreatDetail on detail.id = retreatDetail.order_detail_id
 

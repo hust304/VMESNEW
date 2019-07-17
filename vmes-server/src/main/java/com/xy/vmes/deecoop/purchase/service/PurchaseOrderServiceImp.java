@@ -568,156 +568,156 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService {
     }
 
 
-    @Override
-    public ResultModel signPurchaseOrder(PageData pd) throws Exception {
-
-        ResultModel model = new ResultModel();
-        String dtlJsonStr = pd.getString("dtlJsonStr");
-        String orderId = pd.getString("orderId");
-
-        if (dtlJsonStr == null || dtlJsonStr.trim().length() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("请至少添加选择一条货品数据！");
-            return model;
-        }
-
-        List<Map<String, String>> mapList = (List<Map<String, String>>) YvanUtil.jsonToList(dtlJsonStr);
-        if (mapList == null || mapList.size() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("采购签收单明细Json字符串-转换成List错误！");
-            return model;
-        }
-
-        //验证采购订单明细(单位) 单位换算公式 是否正确
-        String msgStr = this.checkPurchaseSign(mapList);
-        if (msgStr != null && msgStr.trim().length() > 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg(msgStr + "请于管理员联系，维护正确的单位换算公式！");
-            return model;
-        }
-
-        String companyID = pd.getString("currentCompanyId");
-        WarehouseIn warehouseIn = (WarehouseIn) HttpUtils.pageData2Entity(pd, new WarehouseIn());
-        warehouseIn.setId(Conv.createUuid());
-        //状态(0:未完成 1:已完成 -1:已取消)
-        warehouseIn.setState("0");
-        warehouseIn.setCompanyId(companyID);
-        //入库单编号
-        String code = coderuleService.createCoder(companyID, "vmes_warehouse_in", "I");
-        warehouseIn.setCode(code);
-        warehouseInService.save(warehouseIn);
-
-        PurchaseSign purchaseSign =  new PurchaseSign();
-        purchaseSign.setSdate(new Date());
-        purchaseSign.setSignId(warehouseIn.getMakeId());
-        purchaseSign.setCompanyId(companyID);
-        purchaseSign.setInId(warehouseIn.getId());
-        purchaseSign.setOrderId(orderId);
-        purchaseSignService.save(purchaseSign);
-
-        String purchaseOrderId = null;
-        if(mapList!=null&&mapList.size()>0){
-            for(int i=0;i<mapList.size();i++){
-                Map<String, String> detailMap = mapList.get(i);
-
-                //当前签收数量
-                BigDecimal count = BigDecimal.valueOf(0D);
-                String count_str = detailMap.get("count");
-                if (count_str != null && count_str.trim().length() > 0) {
-                    try {
-                        count = new BigDecimal(count_str);
-                    } catch (NumberFormatException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                //p2nFormula (计价单位转换计量单位公式)
-                String p2nFormula = "";
-                if (detailMap.get("p2nFormula") != null && detailMap.get("p2nFormula").toString().trim().length() > 0) {
-                    p2nFormula = detailMap.get("p2nFormula").toString().trim();
-                }
-
-                //采购数量 - 转换计量单位 - 单位换算公式(p2nFormula)
-                BigDecimal prodCount = BigDecimal.valueOf(0D);
-                try {
-                    BigDecimal bigDecimal = EvaluateUtil.countFormulaP2N(count, p2nFormula);
-                    if (bigDecimal != null) {prodCount = bigDecimal;}
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-                WarehouseInDetail warehouseInDetail = (WarehouseInDetail)HttpUtils.pageData2Entity(detailMap, new WarehouseInDetail());
-                warehouseInDetail.setCount(prodCount);
-                warehouseInDetail.setId(Conv.createUuid());
-                warehouseInDetail.setState("0");
-                warehouseInDetail.setParentId(warehouseIn.getId());
-                warehouseInDetail.setCuser(warehouseIn.getCuser());
-                //获取批次号
-                //PC+yyyyMMdd+00001 = 15位
-                code = coderuleService.createCoderCdateByDate(warehouseIn.getCompanyId(),
-                        "vmes_product",
-                        "yyyyMMdd",
-                        "PC");
-                warehouseInDetail.setCode(code);
-                //生成二维码
-                String QRCodeJson = warehouseInDetailService.warehouseInDtl2QRCode(warehouseInDetail);
-                String qrcode = fileService.createQRCode("warehouseIn", QRCodeJson);
-                warehouseInDetail.setQrcode(qrcode);
-                warehouseInDetailService.save(warehouseInDetail);
-
-                String orderDetailId = detailMap.get("orderDetailId");
-                PurchaseSignDetail purchaseSignDetail = new PurchaseSignDetail();
-                purchaseSignDetail.setInDetailId(warehouseInDetail.getId());
-                purchaseSignDetail.setOrderDetailId(orderDetailId);
-                purchaseSignDetail.setArriveCount(count);
-                purchaseSignDetail.setProductId(warehouseInDetail.getProductId());
-                purchaseSignDetail.setParentId(purchaseSign.getId());
-                purchaseSignDetail.setCuser(purchaseSign.getCuser());
-                purchaseSignDetail.setUuser(purchaseSign.getUuser());
-                purchaseSignDetailService.save(purchaseSignDetail);
-
-
-                PurchaseOrderDetail purchaseOrderDetail = purchaseOrderDetailService.selectById(orderDetailId);
-                purchaseOrderId = purchaseOrderDetail.getParentId();
-                String planDetailId = purchaseOrderDetail.getPlanId();
-                PurchasePlanDetail purchasePlanDetail = purchasePlanDetailService.selectById(planDetailId);
-                BigDecimal arriveCount = BigDecimal.ZERO;
-                PageData pageData = new PageData();
-                pageData.put("order_detail_id",orderDetailId);
-                pageData.put("isdisable","1");
-                List<PurchaseSignDetail> purchaseSignDetailList =purchaseSignDetailService.selectByColumnMap(pageData);
-                if(purchaseSignDetailList!=null&&purchaseSignDetailList.size()>0){
-                    for(int k=0;k<purchaseSignDetailList.size();k++){
-                        PurchaseSignDetail detail = purchaseSignDetailList.get(k);
-                        arriveCount = arriveCount.add(detail.getArriveCount());
-                    }
-                }
-//                BigDecimal arriveCount = purchaseOrderDetail.getArriveCount().add(warehouseInDetail.getCount());
-//                purchaseOrderDetail.setArriveCount(arriveCount);
-                if(arriveCount.compareTo(BigDecimal.ZERO)>=0){
-                    if(arriveCount.compareTo(purchaseOrderDetail.getCount())>=0){
-                        purchaseOrderDetail.setState("4");
-                        purchaseOrderDetail.setAdate(new Date());
-                        if(purchasePlanDetail!=null){
-                            purchasePlanDetail.setState("4");
-                        }
-                    }else{
-                        purchaseOrderDetail.setState("3");
-                    }
-                }else{
-                    purchaseOrderDetail.setState("2");
-                }
-                purchaseOrderDetailService.update(purchaseOrderDetail);
-                if(purchasePlanDetail!=null){
-                    purchasePlanDetailService.update(purchasePlanDetail);
-                    purchasePlanService.updateState(purchasePlanDetail.getParentId());
-                }
-
-            }
-        }
-        this.updateState(purchaseOrderId);
-        return model;
-    }
+//    @Override
+//    public ResultModel signPurchaseOrder(PageData pd) throws Exception {
+//
+//        ResultModel model = new ResultModel();
+//        String dtlJsonStr = pd.getString("dtlJsonStr");
+//        String orderId = pd.getString("orderId");
+//
+//        if (dtlJsonStr == null || dtlJsonStr.trim().length() == 0) {
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg("请至少添加选择一条货品数据！");
+//            return model;
+//        }
+//
+//        List<Map<String, String>> mapList = (List<Map<String, String>>) YvanUtil.jsonToList(dtlJsonStr);
+//        if (mapList == null || mapList.size() == 0) {
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg("采购签收单明细Json字符串-转换成List错误！");
+//            return model;
+//        }
+//
+//        //验证采购订单明细(单位) 单位换算公式 是否正确
+//        String msgStr = this.checkPurchaseSign(mapList);
+//        if (msgStr != null && msgStr.trim().length() > 0) {
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg(msgStr + "请于管理员联系，维护正确的单位换算公式！");
+//            return model;
+//        }
+//
+//        String companyID = pd.getString("currentCompanyId");
+//        WarehouseIn warehouseIn = (WarehouseIn) HttpUtils.pageData2Entity(pd, new WarehouseIn());
+//        warehouseIn.setId(Conv.createUuid());
+//        //状态(0:未完成 1:已完成 -1:已取消)
+//        warehouseIn.setState("0");
+//        warehouseIn.setCompanyId(companyID);
+//        //入库单编号
+//        String code = coderuleService.createCoder(companyID, "vmes_warehouse_in", "I");
+//        warehouseIn.setCode(code);
+//        warehouseInService.save(warehouseIn);
+//
+//        PurchaseSign purchaseSign =  new PurchaseSign();
+//        purchaseSign.setSdate(new Date());
+//        purchaseSign.setSignId(warehouseIn.getMakeId());
+//        purchaseSign.setCompanyId(companyID);
+//        purchaseSign.setInId(warehouseIn.getId());
+//        purchaseSign.setOrderId(orderId);
+//        purchaseSignService.save(purchaseSign);
+//
+//        String purchaseOrderId = null;
+//        if(mapList!=null&&mapList.size()>0){
+//            for(int i=0;i<mapList.size();i++){
+//                Map<String, String> detailMap = mapList.get(i);
+//
+//                //当前签收数量
+//                BigDecimal count = BigDecimal.valueOf(0D);
+//                String count_str = detailMap.get("count");
+//                if (count_str != null && count_str.trim().length() > 0) {
+//                    try {
+//                        count = new BigDecimal(count_str);
+//                    } catch (NumberFormatException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//
+//                //p2nFormula (计价单位转换计量单位公式)
+//                String p2nFormula = "";
+//                if (detailMap.get("p2nFormula") != null && detailMap.get("p2nFormula").toString().trim().length() > 0) {
+//                    p2nFormula = detailMap.get("p2nFormula").toString().trim();
+//                }
+//
+//                //采购数量 - 转换计量单位 - 单位换算公式(p2nFormula)
+//                BigDecimal prodCount = BigDecimal.valueOf(0D);
+//                try {
+//                    BigDecimal bigDecimal = EvaluateUtil.countFormulaP2N(count, p2nFormula);
+//                    if (bigDecimal != null) {prodCount = bigDecimal;}
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//
+//                WarehouseInDetail warehouseInDetail = (WarehouseInDetail)HttpUtils.pageData2Entity(detailMap, new WarehouseInDetail());
+//                warehouseInDetail.setCount(prodCount);
+//                warehouseInDetail.setId(Conv.createUuid());
+//                warehouseInDetail.setState("0");
+//                warehouseInDetail.setParentId(warehouseIn.getId());
+//                warehouseInDetail.setCuser(warehouseIn.getCuser());
+//                //获取批次号
+//                //PC+yyyyMMdd+00001 = 15位
+//                code = coderuleService.createCoderCdateByDate(warehouseIn.getCompanyId(),
+//                        "vmes_product",
+//                        "yyyyMMdd",
+//                        "PC");
+//                warehouseInDetail.setCode(code);
+//                //生成二维码
+//                String QRCodeJson = warehouseInDetailService.warehouseInDtl2QRCode(warehouseInDetail);
+//                String qrcode = fileService.createQRCode("warehouseIn", QRCodeJson);
+//                warehouseInDetail.setQrcode(qrcode);
+//                warehouseInDetailService.save(warehouseInDetail);
+//
+//                String orderDetailId = detailMap.get("orderDetailId");
+//                PurchaseSignDetail purchaseSignDetail = new PurchaseSignDetail();
+//                purchaseSignDetail.setInDetailId(warehouseInDetail.getId());
+//                purchaseSignDetail.setOrderDetailId(orderDetailId);
+//                purchaseSignDetail.setArriveCount(count);
+//                purchaseSignDetail.setProductId(warehouseInDetail.getProductId());
+//                purchaseSignDetail.setParentId(purchaseSign.getId());
+//                purchaseSignDetail.setCuser(purchaseSign.getCuser());
+//                purchaseSignDetail.setUuser(purchaseSign.getUuser());
+//                purchaseSignDetailService.save(purchaseSignDetail);
+//
+//
+//                PurchaseOrderDetail purchaseOrderDetail = purchaseOrderDetailService.selectById(orderDetailId);
+//                purchaseOrderId = purchaseOrderDetail.getParentId();
+//                String planDetailId = purchaseOrderDetail.getPlanId();
+//                PurchasePlanDetail purchasePlanDetail = purchasePlanDetailService.selectById(planDetailId);
+//                BigDecimal arriveCount = BigDecimal.ZERO;
+//                PageData pageData = new PageData();
+//                pageData.put("order_detail_id",orderDetailId);
+//                pageData.put("isdisable","1");
+//                List<PurchaseSignDetail> purchaseSignDetailList =purchaseSignDetailService.selectByColumnMap(pageData);
+//                if(purchaseSignDetailList!=null&&purchaseSignDetailList.size()>0){
+//                    for(int k=0;k<purchaseSignDetailList.size();k++){
+//                        PurchaseSignDetail detail = purchaseSignDetailList.get(k);
+//                        arriveCount = arriveCount.add(detail.getArriveCount());
+//                    }
+//                }
+////                BigDecimal arriveCount = purchaseOrderDetail.getArriveCount().add(warehouseInDetail.getCount());
+////                purchaseOrderDetail.setArriveCount(arriveCount);
+//                if(arriveCount.compareTo(BigDecimal.ZERO)>=0){
+//                    if(arriveCount.compareTo(purchaseOrderDetail.getCount())>=0){
+//                        purchaseOrderDetail.setState("4");
+//                        purchaseOrderDetail.setAdate(new Date());
+//                        if(purchasePlanDetail!=null){
+//                            purchasePlanDetail.setState("4");
+//                        }
+//                    }else{
+//                        purchaseOrderDetail.setState("3");
+//                    }
+//                }else{
+//                    purchaseOrderDetail.setState("2");
+//                }
+//                purchaseOrderDetailService.update(purchaseOrderDetail);
+//                if(purchasePlanDetail!=null){
+//                    purchasePlanDetailService.update(purchasePlanDetail);
+//                    purchasePlanService.updateState(purchasePlanDetail.getParentId());
+//                }
+//
+//            }
+//        }
+//        this.updateState(purchaseOrderId);
+//        return model;
+//    }
 
     @Override
     public ResultModel addPurchaseOrder(PageData pd) throws Exception {
