@@ -397,7 +397,7 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
             detail.setCuser(parentObj.getCuser());
             detail.setCode(code);
 
-            //生成二维码
+            //生成批次号二维码(批次号,产品ID,产品名称)
             String QRCodeJson = this.warehouseInDtl2QRCode(detail);
             String qrcode = fileService.createQRCode("warehouseIn", QRCodeJson);
             if (qrcode != null && qrcode.trim().length() > 0) {
@@ -428,6 +428,13 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
                     "yyyyMMdd",
                     "PC");
             detail.setCode(code);
+
+            //生成批次号二维码(批次号,产品ID,产品名称)
+            String QRCodeJson = this.warehouseInDtl2QRCode(detail);
+            String qrcode = fileService.createQRCode("warehouseIn", QRCodeJson);
+            if (qrcode != null && qrcode.trim().length() > 0) {
+                detail.setQrcode(qrcode);
+            }
 
             this.save(detail);
         }
