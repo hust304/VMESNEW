@@ -197,6 +197,8 @@ public class EquipmentRepairTaskDetailController {
             //复杂版仓库:warehouseByComplex:Common.SYS_WAREHOUSE_COMPLEX
             warehouseOutCreateService.createWarehouseOutByComplex(deptId,
                     deptName,
+                    //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
+                    Common.DICTIONARY_MAP.get("warehouseEntity"),
                     cuser,
                     companyId,
                     //fa51ae2e17a9409d822fc4c9192d652c 维保领料出库:repairReceiveOut
@@ -208,6 +210,8 @@ public class EquipmentRepairTaskDetailController {
             //简版仓库:warehouseBySimple:Common.SYS_WAREHOUSE_SIMPLE
             warehouseOutCreateService.createWarehouseOutBySimple(deptId,
                     deptName,
+                    //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
+                    Common.DICTIONARY_MAP.get("warehouseEntity"),
                     cuser,
                     companyId,
                     //fa51ae2e17a9409d822fc4c9192d652c 维保领料出库:repairReceiveOut
@@ -378,6 +382,8 @@ public class EquipmentRepairTaskDetailController {
                 //复杂版仓库:warehouseByComplex:Common.SYS_WAREHOUSE_COMPLEX
                 warehouseInCreateService.createWarehouseInByComplex(deptId,
                         deptName,
+                        //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
+                        Common.DICTIONARY_MAP.get("warehouseEntity"),
                         cuser,
                         companyId,
                         //维保领料退回入库:repairRetreatIn:c396683796d54b8693b522a2c0ad2793 Common.DICTIONARY_MAP
@@ -389,6 +395,8 @@ public class EquipmentRepairTaskDetailController {
                 //简版仓库:warehouseBySimple:Common.SYS_WAREHOUSE_SIMPLE
                 warehouseInCreateService.createWarehouseInBySimple(deptId,
                         deptName,
+                        //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
+                        Common.DICTIONARY_MAP.get("warehouseEntity"),
                         cuser,
                         companyId,
                         //维保领料退回入库:repairRetreatIn:c396683796d54b8693b522a2c0ad2793 Common.DICTIONARY_MAP

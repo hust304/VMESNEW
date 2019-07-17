@@ -40,6 +40,7 @@ public class WarehouseInCreateServiceImp implements WarehouseInCreateService {
      *
      * @param deptId          (部门,供应商,客户)id
      * @param deptName        (部门,供应商,客户)名称
+     * @param warehouseId     仓库id
      * @param cuser           用户id
      * @param companyId       企业id
      * @param inType          入库类型id
@@ -53,6 +54,7 @@ public class WarehouseInCreateServiceImp implements WarehouseInCreateService {
      */
     public void createWarehouseInByComplex(String deptId,
                                            String deptName,
+                                           String warehouseId,
                                            String cuser,
                                            String companyId,
                                            String inType,
@@ -77,9 +79,7 @@ public class WarehouseInCreateServiceImp implements WarehouseInCreateService {
                 cuser,
                 companyId,
                 inType);
-
-        //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
-        warehouseIn.setWarehouseId(Common.DICTIONARY_MAP.get("warehouseEntity"));
+        warehouseIn.setWarehouseId(warehouseId);
         warehouseInService.save(warehouseIn);
 
         //创建入库单明细
@@ -100,6 +100,7 @@ public class WarehouseInCreateServiceImp implements WarehouseInCreateService {
      *
      * @param deptId          (部门,供应商,客户)id
      * @param deptName        (部门,供应商,客户)名称
+     * @param warehouseId     仓库id
      * @param cuser           用户id
      * @param companyId       企业id
      * @param inType          入库类型id
@@ -113,6 +114,7 @@ public class WarehouseInCreateServiceImp implements WarehouseInCreateService {
      */
     public void createWarehouseInBySimple(String deptId,
                                           String deptName,
+                                          String warehouseId,
                                           String cuser,
                                           String companyId,
                                           String inType,
@@ -140,9 +142,7 @@ public class WarehouseInCreateServiceImp implements WarehouseInCreateService {
 
         //isSimple 是否简版仓库 Y:是简版 N:非简版 is null:非简版
         warehouseIn.setIsSimple("Y");
-
-        //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
-        warehouseIn.setWarehouseId(Common.DICTIONARY_MAP.get("warehouseEntity"));
+        warehouseIn.setWarehouseId(warehouseId);
         warehouseInService.save(warehouseIn);
 
         //创建入库单明细

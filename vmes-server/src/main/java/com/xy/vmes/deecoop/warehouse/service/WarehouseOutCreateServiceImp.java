@@ -44,6 +44,7 @@ public class WarehouseOutCreateServiceImp implements WarehouseOutCreateService {
      *
      * @param deptId          (部门,供应商,客户)id
      * @param deptName        (部门,供应商,客户)名称
+     * @param warehouseId     仓库id
      * @param cuser           用户id
      * @param companyId       企业id
      * @param outType         出库类型id
@@ -56,11 +57,12 @@ public class WarehouseOutCreateServiceImp implements WarehouseOutCreateService {
      *     outCount:  出库数量
      */
     public void createWarehouseOutByComplex(String deptId,
-                                              String deptName,
-                                              String cuser,
-                                              String companyId,
-                                              String outType,
-                                              Map<String, Map<String, Object>> productByOutMap) throws Exception {
+                                            String deptName,
+                                            String warehouseId,
+                                            String cuser,
+                                            String companyId,
+                                            String outType,
+                                            Map<String, Map<String, Object>> productByOutMap) throws Exception {
         StringBuffer msgStr = new StringBuffer();
         if (deptId == null || deptId.trim().length() == 0) {
             msgStr.append("部门id为空或空字符串" + Common.SYS_ENDLINE_DEFAULT);
@@ -82,8 +84,7 @@ public class WarehouseOutCreateServiceImp implements WarehouseOutCreateService {
                 companyId,
                 outType);
 
-        //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
-        warehouseOut.setWarehouseId(Common.DICTIONARY_MAP.get("warehouseEntity"));
+        warehouseOut.setWarehouseId(warehouseId);
         warehouseOutService.save(warehouseOut);
 
         List<WarehouseOutDetail> outDtlList = this.productMap2OutDetailList(productByOutMap, null);
@@ -104,6 +105,7 @@ public class WarehouseOutCreateServiceImp implements WarehouseOutCreateService {
      *
      * @param deptId          (部门,供应商,客户)id
      * @param deptName        (部门,供应商,客户)名称
+     * @param warehouseId     仓库id
      * @param cuser           用户id
      * @param companyId       企业id
      * @param outType         出库类型id
@@ -116,10 +118,11 @@ public class WarehouseOutCreateServiceImp implements WarehouseOutCreateService {
      *     outCount:  出库数量
      */
     public void createWarehouseOutBySimple(String deptId,
-                                             String deptName,
-                                             String cuser,
-                                             String companyId,
-                                             String outType,
+                                           String deptName,
+                                           String warehouseId,
+                                           String cuser,
+                                           String companyId,
+                                           String outType,
                                            Map<String, Map<String, Object>> productByOutMap) throws Exception {
         StringBuffer msgStr = new StringBuffer();
         if (deptId == null || deptId.trim().length() == 0) {
@@ -144,9 +147,7 @@ public class WarehouseOutCreateServiceImp implements WarehouseOutCreateService {
 
         //isSimple 是否简版仓库 Y:是简版 N:非简版 is null:非简版
         warehouseOut.setIsSimple("Y");
-
-        //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
-        warehouseOut.setWarehouseId(Common.DICTIONARY_MAP.get("warehouseEntity"));
+        warehouseOut.setWarehouseId(warehouseId);
         warehouseOutService.save(warehouseOut);
 
         //2.添加出库单明细

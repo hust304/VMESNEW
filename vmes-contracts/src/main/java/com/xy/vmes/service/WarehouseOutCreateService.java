@@ -16,6 +16,7 @@ public interface WarehouseOutCreateService {
      *
      * @param deptId          (部门,供应商,客户)id
      * @param deptName        (部门,供应商,客户)名称
+     * @param warehouseId     仓库id
      * @param cuser           用户id
      * @param companyId       企业id
      * @param outType         出库类型id
@@ -28,17 +29,19 @@ public interface WarehouseOutCreateService {
      *     outCount:  出库数量
      */
     void createWarehouseOutByComplex(String deptId,
-                                       String deptName,
-                                       String cuser,
-                                       String companyId,
-                                       String outType,
-                                       Map<String, Map<String, Object>> productByOutMap) throws Exception;
+                                     String deptName,
+                                     String warehouseId,
+                                     String cuser,
+                                     String companyId,
+                                     String outType,
+                                     Map<String, Map<String, Object>> productByOutMap) throws Exception;
 
     /**
      * 创建出库单(简版仓库)
      *
      * @param deptId          (部门,供应商,客户)id
      * @param deptName        (部门,供应商,客户)名称
+     * @param warehouseId     仓库id
      * @param cuser           用户id
      * @param companyId       企业id
      * @param outType         出库类型id
@@ -51,11 +54,12 @@ public interface WarehouseOutCreateService {
      *     outCount:  出库数量
      */
     void createWarehouseOutBySimple(String deptId,
-                                      String deptName,
-                                      String cuser,
-                                      String companyId,
-                                      String outType,
-                                      Map<String, Map<String, Object>> productByOutMap) throws Exception;
+                                    String deptName,
+                                    String warehouseId,
+                                    String cuser,
+                                    String companyId,
+                                    String outType,
+                                    Map<String, Map<String, Object>> productByOutMap) throws Exception;
 
     /**
      * 创建出库单(虚拟库)-与简版出库单类似

@@ -16,6 +16,7 @@ public interface WarehouseInCreateService {
      *
      * @param deptId          (部门,供应商,客户)id
      * @param deptName        (部门,供应商,客户)名称
+     * @param warehouseId     仓库id
      * @param cuser           用户id
      * @param companyId       企业id
      * @param inType          入库类型id
@@ -29,6 +30,7 @@ public interface WarehouseInCreateService {
      */
     void createWarehouseInByComplex(String deptId,
                                     String deptName,
+                                    String warehouseId,
                                     String cuser,
                                     String companyId,
                                     String inType,
@@ -39,6 +41,7 @@ public interface WarehouseInCreateService {
      *
      * @param deptId          (部门,供应商,客户)id
      * @param deptName        (部门,供应商,客户)名称
+     * @param warehouseId     仓库id
      * @param cuser           用户id
      * @param companyId       企业id
      * @param inType          入库类型id
@@ -52,6 +55,7 @@ public interface WarehouseInCreateService {
      */
     void createWarehouseInBySimple(String deptId,
                                    String deptName,
+                                   String warehouseId,
                                    String cuser,
                                    String companyId,
                                    String inType,
