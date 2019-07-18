@@ -373,7 +373,7 @@ public class PurchaseOrderController {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
-        //创建(复杂版,简版)仓库-出库单-需要的参数///////////////////////////////////////////////////////////////////////////////////
+        //创建(复杂版,简版)仓库-入库单-需要的参数///////////////////////////////////////////////////////////////////////////////////
         String roleId = pageData.getString("roleId");
         if (roleId == null || roleId.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
@@ -460,7 +460,7 @@ public class PurchaseOrderController {
                     productByInMap);
         }
 
-        //2. 采购订单签收
+        //2. 创建采购签收单
         Map<String, Object> valueMap = new HashMap<String, Object>();
         valueMap.put("productByInMap", productByInMap);
         valueMap.put("jsonMapList", jsonMapList);
