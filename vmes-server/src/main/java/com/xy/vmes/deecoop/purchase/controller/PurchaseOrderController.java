@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -529,7 +530,7 @@ public class PurchaseOrderController {
         }
 
         //修改采购订单状态
-        purchasePlanService.updateState(purchaseOrderId);
+        purchaseOrderService.updateState(purchaseOrderId);
 
         Long endTime = System.currentTimeMillis();
         logger.info("################/purchase/purchaseOrder/signPurchaseOrder 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
