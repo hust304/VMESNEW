@@ -369,6 +369,7 @@ public class PurchaseSignServiceImp implements PurchaseSignService {
         PurchaseSign purchaseSign =  new PurchaseSign();
         purchaseSign.setSdate(new Date());
         purchaseSign.setSignId(cuser);
+        purchaseSign.setCuser(cuser);
         purchaseSign.setCompanyId(companyId);
         purchaseSign.setOrderId(orderId);
         this.save(purchaseSign);
