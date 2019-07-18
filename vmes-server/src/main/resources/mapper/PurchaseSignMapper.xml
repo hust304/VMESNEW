@@ -207,7 +207,6 @@
         sign.remark remark,<!-- 备注 -->
         sign.isdisable isdisable,<!-- 是否启用(0:已禁用 1:启用) -->
         vmesuser.user_name signName,
-        warehouseIn.code warehouseInCode,
         sign.id id <!-- id -->
     </sql>
 
@@ -241,7 +240,6 @@
         select
         <include refid="Field1"></include>
         from vmes_purchase_sign sign
-        left join vmes_warehouse_in warehouseIn on warehouseIn.id = sign.in_id
         left join vmes_user vmesuser on vmesuser.id = sign.sign_id
         <where>
             <!--queryStr 自定义sql查询语句-->
@@ -262,7 +260,6 @@
         select
         <include refid="Field1"></include>
         from vmes_purchase_sign sign
-        left join vmes_warehouse_in warehouseIn on warehouseIn.id = sign.in_id
         left join vmes_user vmesuser on vmesuser.id = sign.sign_id
         <where>
             <!--queryStr 自定义sql查询语句-->

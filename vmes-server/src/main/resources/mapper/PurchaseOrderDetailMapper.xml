@@ -195,7 +195,8 @@
 
             (replace(uuid(), '-', ''),'PurchaseOrderDetail','signDate','到货日期',27, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'PurchaseOrderDetail','n2pFormula','n2pFormula',28, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'PurchaseOrderDetail','p2nFormula','p2nFormula',29, '1','0','1','0',now(), 'admin')
+            (replace(uuid(), '-', ''),'PurchaseOrderDetail','p2nFormula','p2nFormula',29, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'PurchaseOrderDetail','planParentId','planParentId',30, '1','0','1','0',now(), 'admin')
     </insert>
 
 
@@ -373,6 +374,7 @@
         detail.attachment attachment,<!-- 附件 -->
         detail.remark remark,<!-- 采购补充说明 -->
         detail.isdisable isdisable,<!-- 是否启用(0:已禁用 1:启用) -->
+        planDtl.parent_id planParentId,
 
         <!--到货数量:= 签收数量 - (已完成)退货数量 -->
         round((ifnull(signDetail.arrive_count, 0) - ifnull(retreatDetail.count, 0)), 2) arriveCount,
@@ -402,6 +404,7 @@
 
         from
         vmes_purchase_order_detail detail
+        left join vmes_purchase_plan_detail planDtl on detail.plan_id = planDtl.id
         left join vmes_product product on product.id = detail.product_id
         left join vmes_product_unit prodUnit on (detail.product_id = prodUnit.product_id and detail.unit = prodUnit.unit)
 

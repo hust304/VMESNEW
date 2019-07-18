@@ -185,6 +185,20 @@ public interface PurchaseOrderService {
     List<Map<String, Object>> findPurchaseOrderBySupplier(PageData pd);
 
     ResultModel addReceipt(PageData pd) throws Exception;
+
+    /**
+     * 返回货品入库Map
+     * 货品入库Map<货品id, 货品Map<String, Object>>
+     * 货品Map<String, Object>
+     *     productId: 货品id
+     *     inDtlId:   入库明细id
+     *     inCount:   入库数量
+     *
+     * @param jsonMapList
+     * @return
+     */
+    Map<String, Map<String, Object>> findProductMapByIn(List<Map<String, String>> jsonMapList);
+
 }
 
 

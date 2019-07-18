@@ -1,8 +1,8 @@
 package com.xy.vmes.deecoop.purchase.service;
 
-
 import com.xy.vmes.deecoop.purchase.dao.PurchaseSignMapper;
 import com.xy.vmes.entity.PurchaseSign;
+import com.xy.vmes.entity.PurchaseSignDetail;
 import com.xy.vmes.service.PurchaseSignDetailService;
 import com.xy.vmes.service.PurchaseSignService;
 
@@ -12,11 +12,14 @@ import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.service.ColumnService;
 import com.yvan.*;
+import com.yvan.common.util.Common;
 import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
 import java.util.*;
 
 import org.springframework.web.multipart.MultipartFile;
@@ -344,6 +347,74 @@ public class PurchaseSignServiceImp implements PurchaseSignService {
         //5. List<ExcelEntity> --> (转换) List<业务表DB>对象
         //6. 遍历List<业务表DB> 对业务表添加或修改
         return model;
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    /**
+     * 创建采购签收单及签收明细
+     *
+     * @param cuser      当前用户id
+     * @param companyId  企业id
+     * @param orderId    采购订单id
+     * @param valueMap   参数Map<String, Object>
+     *   productByInMap: 入库货品数据Map
+     *   jsonMapList：    签收界面传回json数据
+     * @throws Exception
+     */
+    public void createPurchaseSign(String cuser,
+                                   String companyId,
+                                   String orderId,
+                                   Map<String, Object> valueMap) throws Exception {
+        //创建签收单
+        PurchaseSign purchaseSign =  new PurchaseSign();
+        purchaseSign.setSdate(new Date());
+        purchaseSign.setSignId(cuser);
+        purchaseSign.setCompanyId(companyId);
+        purchaseSign.setOrderId(orderId);
+        this.save(purchaseSign);
+
+        // 货品入库Map<货品id, 货品Map<String, Object>>
+        // 货品Map<String, Object>
+        //     productId: 货品id
+        //     inDtlId:   入库明细id
+        //     inCount:   入库数量
+        Map<String, Map<String, Object>> productByInMap = (Map<String, Map<String, Object>>)valueMap.get("productByInMap");
+
+        List<Map<String, String>> jsonMapList = (List<Map<String, String>>)valueMap.get("jsonMapList");
+        if (jsonMapList != null && jsonMapList.size() > 0) {
+            for (Map<String, String> jsonObject : jsonMapList) {
+                PurchaseSignDetail purchaseSignDetail = new PurchaseSignDetail();
+
+                String orderDetailId = jsonObject.get("orderDetailId");
+                purchaseSignDetail.setOrderDetailId(orderDetailId);
+
+                String productId = jsonObject.get("productId");
+                purchaseSignDetail.setProductId(productId);
+
+                if (productByInMap != null && productByInMap.get(productId) != null) {
+                    Map<String, Object> productInMap = productByInMap.get(productId);
+                    purchaseSignDetail.setInDetailId((String)productInMap.get("inDtlId"));
+                }
+
+                //到货数量 count := inCount 入库数量
+                BigDecimal count = BigDecimal.valueOf(0D);
+                String countStr = jsonObject.get("count");
+                if (countStr != null && countStr.trim().length() > 0) {
+                    try {
+                        count = new BigDecimal(countStr);
+                        //四舍五入到2位小数
+                        count = count.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                }
+                purchaseSignDetail.setArriveCount(count);
+
+                purchaseSignDetail.setParentId(purchaseSign.getId());
+                purchaseSignDetail.setCuser(purchaseSign.getCuser());
+                purchaseSignDetailService.save(purchaseSignDetail);
+            }
+        }
     }
 
 

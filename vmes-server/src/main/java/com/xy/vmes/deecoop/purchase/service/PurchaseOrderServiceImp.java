@@ -680,7 +680,7 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService {
 //                PurchaseOrderDetail purchaseOrderDetail = purchaseOrderDetailService.selectById(orderDetailId);
 //                purchaseOrderId = purchaseOrderDetail.getParentId();
 //                String planDetailId = purchaseOrderDetail.getPlanId();
-//                PurchasePlanDetail purchasePlanDetail = purchasePlanDetailService.selectById(planDetailId);
+//                //PurchasePlanDetail purchasePlanDetail = purchasePlanDetailService.selectById(planDetailId);
 //                BigDecimal arriveCount = BigDecimal.ZERO;
 //                PageData pageData = new PageData();
 //                pageData.put("order_detail_id",orderDetailId);
@@ -955,6 +955,63 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService {
         return model;
     }
 
+    /**
+     * 返回货品入库Map
+     * 货品入库Map<货品id, 货品Map<String, Object>>
+     * 货品Map<String, Object>
+     *     productId: 货品id
+     *     inDtlId:   入库明细id
+     *     inCount:   入库数量
+     *
+     * @param jsonMapList
+     * @return
+     */
+    public Map<String, Map<String, Object>> findProductMapByIn(List<Map<String, String>> jsonMapList) {
+        Map<String, Map<String, Object>> productByInMap = new HashMap<String, Map<String, Object>>();
+        if (jsonMapList == null || jsonMapList.size() == 0) {return productByInMap;}
+
+        for (Map<String, String> mapObject : jsonMapList) {
+            String productId = mapObject.get("productId");
+
+            //到货数量 count := inCount 入库数量
+            BigDecimal count = BigDecimal.valueOf(0D);
+            String countStr = mapObject.get("count");
+            if (countStr != null && countStr.trim().length() > 0) {
+                try {
+                    count = new BigDecimal(countStr);
+                    //四舍五入到2位小数
+                    count = count.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            //p2nFormula (计价单位转换计量单位公式)
+            String p2nFormula = "";
+            if (mapObject.get("p2nFormula") != null && mapObject.get("p2nFormula").toString().trim().length() > 0) {
+                p2nFormula = mapObject.get("p2nFormula").toString().trim();
+            }
+
+            //采购数量 - 转换计量单位 - 单位换算公式(p2nFormula)
+            BigDecimal prodCount = BigDecimal.valueOf(0D);
+            try {
+                BigDecimal bigDecimal = EvaluateUtil.countFormulaP2N(count, p2nFormula);
+                if (bigDecimal != null) {prodCount = bigDecimal;}
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            Map<String, Object> productMap = new HashMap<String, Object>();
+            productMap.put("productId", productId);
+            productMap.put("inDtlId", null);
+            productMap.put("inCount", prodCount);
+
+            productByInMap.put(productId, productMap);
+        }
+
+        return productByInMap;
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     private String checkPurchaseSign(List<Map<String, String>> mapList) {
         if (mapList == null || mapList.size() == 0) {return new String();}
@@ -992,6 +1049,7 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService {
 
         return msgBuf.toString();
     }
+
 }
 
 

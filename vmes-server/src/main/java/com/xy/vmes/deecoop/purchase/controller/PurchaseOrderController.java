@@ -1,13 +1,15 @@
 package com.xy.vmes.deecoop.purchase.controller;
 
-import com.xy.vmes.service.PurchaseOrderService;
+import com.xy.vmes.entity.PurchaseOrderDetail;
+import com.xy.vmes.entity.PurchasePlanDetail;
+import com.xy.vmes.service.*;
 import com.xy.vmes.entity.PurchaseOrder;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
-import com.xy.vmes.service.RoleMenuService;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.YvanUtil;
+import com.yvan.common.util.Common;
 import com.yvan.springmvc.ResultModel;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -17,6 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -33,10 +37,24 @@ public class PurchaseOrderController {
     private Logger logger = LoggerFactory.getLogger(PurchaseOrderController.class);
 
     @Autowired
+    private PurchaseSignService purchaseSignService;
+
+    @Autowired
+    private PurchasePlanService purchasePlanService;
+    @Autowired
+    private PurchasePlanDetailService purchasePlanDetailService;
+
+    @Autowired
     private PurchaseOrderService purchaseOrderService;
+    @Autowired
+    private PurchaseOrderDetailService purchaseOrderDetailService;
+    @Autowired
+    private PurchaseOrderDetailToolService purchaseOrderDetailToolService;
 
     @Autowired
     private RoleMenuService roleMenuService;
+    @Autowired
+    private WarehouseInCreateService warehouseInCreateService;
 
     /**
     * @author 刘威 自动创建，禁止修改
@@ -409,12 +427,109 @@ public class PurchaseOrderController {
             return model;
         }
 
-        List<Map<String, String>> mapList = (List<Map<String, String>>) YvanUtil.jsonToList(dtlJsonStr);
-        if (mapList == null || mapList.size() == 0) {
+        List<Map<String, String>> jsonMapList = (List<Map<String, String>>) YvanUtil.jsonToList(dtlJsonStr);
+        if (jsonMapList == null || jsonMapList.size() == 0) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("采购签收单明细Json字符串-转换成List错误！");
             return model;
         }
+
+        //1. 创建入库单////////////////////////////////////////////////////////////////////////////////////////////////////////
+        Map<String, Map<String, Object>> productByInMap = purchaseOrderService.findProductMapByIn(jsonMapList);
+        if (Common.SYS_WAREHOUSE_COMPLEX.equals(warehouse)) {
+            //复杂版仓库:warehouseByComplex:Common.SYS_WAREHOUSE_COMPLEX
+            warehouseInCreateService.createWarehouseInByComplex(supplierId,
+                    supplierName,
+                    warehouseId,
+                    cuser,
+                    companyId,
+                    //d78ceba5beef41f5be16f0ceee775399 采购入库:purchaseIn
+                    Common.DICTIONARY_MAP.get("purchaseIn"),
+                    productByInMap);
+
+        } else if (Common.SYS_WAREHOUSE_SIMPLE.equals(warehouse)) {
+            //简版仓库:warehouseBySimple:Common.SYS_WAREHOUSE_SIMPLE
+            warehouseInCreateService.createWarehouseInBySimple(supplierId,
+                    supplierName,
+                    warehouseId,
+                    cuser,
+                    companyId,
+                    //d78ceba5beef41f5be16f0ceee775399 采购入库:purchaseIn
+                    Common.DICTIONARY_MAP.get("purchaseIn"),
+                    productByInMap);
+        }
+
+        //2. 采购订单签收
+        Map<String, Object> valueMap = new HashMap<String, Object>();
+        valueMap.put("productByInMap", productByInMap);
+        valueMap.put("jsonMapList", jsonMapList);
+        purchaseSignService.createPurchaseSign(cuser,
+                companyId,
+                purchaseOrderId,
+                valueMap);
+
+        //3. 修改采购订单明细状态-根据(采购订单明细id,采购数量,到货数量)
+
+//获取(采购数量,签收数量,退货数量[已完成])
+//Map<采购订单明细id, 采购明细Map<String, Object>>
+//采购明细Map<String, Object>
+//    detailId: 采购订单明细id
+//    parentId: 采购订单id
+//    detailCount: 采购数量
+//    signCount: 签收数量
+//    retreatCount: 退货数量(已完成)
+//    arriveCount: 到货数量:= 签收数量 - 退货数量(已完成)
+        Map<String, Map<String, Object>> detailMap = purchaseOrderDetailToolService.findPurchaseOrderDetailMap(purchaseOrderId);
+        //修改采购订单明细
+        if (jsonMapList != null && jsonMapList.size() > 0) {
+            for (Map<String, String> jsonObject : jsonMapList) {
+                String orderDetailId = jsonObject.get("orderDetailId");
+                Map<String, Object> detailValue = detailMap.get(orderDetailId);
+
+                //detailCount: 采购数量
+                BigDecimal detailCount = BigDecimal.valueOf(0D);
+                if (detailValue.get("detailCount") != null) {
+                    detailCount = (BigDecimal)detailValue.get("detailCount");
+                }
+
+                //arriveCount 到货数量:= 签收数量 - 退货数量(已完成)
+                BigDecimal arriveCount = BigDecimal.valueOf(0D);
+                if (detailValue.get("detailCount") != null) {
+                    arriveCount = (BigDecimal)detailValue.get("arriveCount");
+                }
+
+                //状态(0:待提交 1:待审核 2:采购中 3:部分签收 4:已完成 -1:已取消)
+                PurchaseOrderDetail detailEdit = new PurchaseOrderDetail();
+                detailEdit.setId(orderDetailId);
+                if (arriveCount.doubleValue() >= detailCount.doubleValue()) {
+                    detailEdit.setState("4");
+                } else {
+                    detailEdit.setState("3");
+                }
+                purchaseOrderDetailService.update(detailEdit);
+
+                //采购计划明细id planDtlId
+                String planDtlId = jsonObject.get("planDtlId");
+                if (planDtlId != null && planDtlId.trim().length() > 0
+                    && "4".equals(detailEdit.getState())
+                ) {
+                    PurchasePlanDetail planDtlEdit = new PurchasePlanDetail();
+                    planDtlEdit.setId(planDtlId);
+                    //采购计划明细状态(0:待提交 1:待审核 2:待执行 3:执行中 4:已完成 -1:已取消)
+                    planDtlEdit.setState("4");
+                    purchasePlanDetailService.update(planDtlEdit);
+
+                    //采购计划id planId
+                    String planId = jsonObject.get("planId");
+                    if (planId != null && planId.trim().length() > 0) {
+                        purchasePlanService.updateState(planId);
+                    }
+                }
+            }
+        }
+
+        //修改采购订单状态
+        purchasePlanService.updateState(purchaseOrderId);
 
         Long endTime = System.currentTimeMillis();
         logger.info("################/purchase/purchaseOrder/signPurchaseOrder 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");

@@ -1,6 +1,5 @@
 package com.xy.vmes.service;
 
-
 import com.xy.vmes.entity.PurchaseSign;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.yvan.PageData;
@@ -157,6 +156,23 @@ public interface PurchaseSignService {
     * @throws Exception
     */
     ResultModel importExcelPurchaseSigns(MultipartFile file) throws Exception;
+
+    //////////////////////////////////////////////////////////////////////////////////
+    /**
+     * 创建采购签收单及签收明细
+     *
+     * @param cuser      当前用户id
+     * @param companyId  企业id
+     * @param orderId    采购订单id
+     * @param valueMap   参数Map<String, Object>
+     *   productByInMap: 入库货品数据Map
+     *   jsonMapList：    签收界面传回json数据
+     * @throws Exception
+     */
+    void createPurchaseSign(String cuser,
+                            String companyId,
+                            String orderId,
+                            Map<String, Object> valueMap) throws Exception;
 
 }
 
