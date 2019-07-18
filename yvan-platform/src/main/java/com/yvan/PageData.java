@@ -62,7 +62,12 @@ public class PageData extends HashMap implements Map {
                 returnMap.put("sessionID", sessionID);
             }
         }
-
+        if(returnMap.get("cdate")!=null){
+            returnMap.put("cdate",null);
+        }
+        if(returnMap.get("udate")!=null){
+            returnMap.put("udate",null);
+        }
         map = returnMap;
     }
 

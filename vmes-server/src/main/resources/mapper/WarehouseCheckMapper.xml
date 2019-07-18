@@ -181,7 +181,7 @@
             END stateName,
             parent.is_simple isSimple,
             parent.cuser cuser,
-            parent.cdate,
+            DATE_FORMAT(parent.cdate,'%Y-%m-%d') cdate,
             DATE_FORMAT(parent.cdate,'%Y-%m-%d') cdateStr,
             parent.uuser uuser,
 

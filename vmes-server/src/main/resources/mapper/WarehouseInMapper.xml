@@ -312,7 +312,7 @@
             END stateName,
             a.cuser cuser,
 
-            a.cdate,
+            DATE_FORMAT(a.cdate,'%Y-%m-%d') cdate,
             DATE_FORMAT(a.cdate,'%Y-%m-%d') cdateStr,
             a.uuser uuser,
             DATE_FORMAT(a.udate,'%Y-%m-%d') udate,
