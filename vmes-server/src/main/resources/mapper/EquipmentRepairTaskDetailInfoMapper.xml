@@ -110,7 +110,7 @@
             WHEN outDtl.state = '0' THEN '待派单'
             WHEN outDtl.state = '1' THEN '执行中'
             WHEN outDtl.state = '2' THEN '已完成'
-            WHEN outDtl.state = '-1' THEN '退还仓库'
+            WHEN outDtl.state = '-1' THEN '已取消'
         ELSE null
         END outDtlStateName,
 
@@ -127,7 +127,7 @@
             WHEN outDtl.state = '0' THEN '(出库)待派单'
             WHEN outDtl.state = '1' THEN '(出库)执行中'
             WHEN outDtl.state = '2' THEN '(出库)已完成'
-            WHEN outDtl.state = '-1' THEN '(出库)退还仓库'
+            WHEN outDtl.state = '-1' THEN '(出库)已取消'
 
             WHEN inDtl.state = '0' THEN '(入库)待派单'
             WHEN inDtl.state = '1' THEN '(入库)执行中'

@@ -169,10 +169,10 @@
             left join vmes_equipment eqpt on repair.equipment_id = eqpt.id
         <where>
             <if test="equipmentId != null and equipmentId != ''">
-                and equipment_id = #{equipmentId}
+                and repair.equipment_id = #{equipmentId}
             </if>
-            <if test="companyId != null and companyId != ''">
-                and company_id = #{companyId}
+            <if test="currentCompanyId != null and currentCompanyId != ''">
+                and repair.company_id = #{currentCompanyId}
             </if>
 
             <!--页面查询条件-->

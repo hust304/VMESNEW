@@ -142,6 +142,9 @@
         from vmes_purchase_payment_record paymentRecord
             left join vmes_customer customer on paymentRecord.supplier_id = customer.id
         <where>
+            <if test="supplierId != null and supplierId != ''" >
+                and paymentRecord.supplier_id = #{supplierId}
+            </if>
             <if test="currentCompanyId != null and currentCompanyId != ''" >
                 and paymentRecord.company_id = #{currentCompanyId}
             </if>

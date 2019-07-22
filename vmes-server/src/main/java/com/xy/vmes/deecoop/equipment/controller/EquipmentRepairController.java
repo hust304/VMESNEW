@@ -188,8 +188,6 @@ public class EquipmentRepairController {
         //timeLength 预计维修时长(单位秒)
         repairTask.setTimeLength(BigDecimal.valueOf(timeLengthLong));
         repairTask.setFaultDescribe(faultDescribe);
-        //task_result:执行结果(0:未解决 1:已解决)
-        repairTask.setTaskResult("0");
         //task_state:任务状态(0:未领取任务 1:已领取任务 2:已领料 3:已报工 4:已退单 )
         repairTask.setTaskState("1");
         //task_type:任务类型(1:维修 2:退单)
