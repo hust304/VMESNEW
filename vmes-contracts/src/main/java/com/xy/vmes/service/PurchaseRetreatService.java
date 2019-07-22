@@ -118,17 +118,32 @@ public interface PurchaseRetreatService {
     /**
      * 创建(负值)的付款单
      *
-     * @param realityTotal
-     * @param supplierId
-     * @param companyId
-     * @param orderId
-     * @param cuser
+     * @param realityTotal 金额
+     * @param supplierId   供应商id
+     * @param companyId    企业id
+     * @param orderId      采购订单id
+     * @param cuser        用户id
      */
     void createPurchasePaymentByMinus(BigDecimal realityTotal,
                                       String supplierId,
                                       String companyId,
                                       String orderId,
                                       String cuser) throws Exception;
+
+    /**
+     * 创建(正值)的付款单
+     *
+     * @param realityTotal 金额
+     * @param supplierId   供应商id
+     * @param companyId    企业id
+     * @param orderId      采购订单id
+     * @param cuser        用户id
+     */
+    void createPurchasePaymentByPlus(BigDecimal realityTotal,
+                                     String supplierId,
+                                     String companyId,
+                                     String orderId,
+                                     String cuser) throws Exception;
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**
     * 分页查询
