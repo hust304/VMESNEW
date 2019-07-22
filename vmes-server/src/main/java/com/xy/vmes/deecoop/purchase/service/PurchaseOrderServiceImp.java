@@ -879,47 +879,6 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService {
         }
         this.update(purchaseOrder);
 
-        //////////////////////////////////////////////////////////////////////////////////
-        //采购订单状态(0:待提交 1:待审核 2:采购中 3:已完成 -1:已取消)
-        String orderState = purchaseOrder.getState();
-        if ("3".equals(orderState)) {
-            //orderId 采购订单id
-            String orderId = purchaseOrder.getId();
-
-            //采购订单id 查询采购订单付款单表(vmes_purchase_payment)
-            PageData findMap = new PageData();
-            findMap.put("orderId", orderId);
-            //付款单类型(1:订单付款 2:订单退款)
-            findMap.put("type", "1");
-
-            PurchasePayment purchasePayment = purchasePaymentService.findPurchasePayment(findMap);
-            if (purchasePayment == null) {
-                //付款单类型(1:订单付款 2:订单退款)
-                PurchasePayment payment = purchasePaymentService.createPayment(purchaseOrder.getSupplierId(),
-                        purchaseOrder.getCuser(),
-                        purchaseOrder.getCompanyId(),
-                        "1");
-                //付款金额 paymentSum := amount 采购订单.采购金额(合计金额 - 折扣金额)
-                payment.setPaymentSum(purchaseOrder.getAmount());
-                purchasePaymentService.save(payment);
-
-                //2. 创建收款单明细
-                //获取 <订单id, 退货金额>
-                PurchasePaymentDetail paymentDtl = new PurchasePaymentDetail();
-                paymentDtl.setOrderId(purchaseOrder.getId());
-                //状态(0:待付款 1:已付款 -1:已取消)
-                paymentDtl.setState("1");
-                //paymentSum 实付金额
-                paymentDtl.setPaymentSum(purchaseOrder.getAmount());
-                //discountAmount 折扣金额
-                paymentDtl.setDiscountAmount(BigDecimal.valueOf(0D));
-
-                List<PurchasePaymentDetail> paymentDtlList = new ArrayList<PurchasePaymentDetail>();
-                paymentDtlList.add(paymentDtl);
-                purchasePaymentDetailService.addPaymentDetail(payment, paymentDtlList);
-            }
-        }
-
         return purchaseOrder;
     }
 
