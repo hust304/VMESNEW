@@ -47,10 +47,13 @@ public class PurchaseOrderController {
     @Autowired
     private PurchaseOrderDetailToolService purchaseOrderDetailToolService;
 
+//    @Autowired
+//    private PurchasePaymentService purchasePaymentService;
+//    @Autowired
+//    private PurchasePaymentDetailService purchasePaymentDetailService;
+
     @Autowired
-    private PurchasePaymentService purchasePaymentService;
-    @Autowired
-    private PurchasePaymentDetailService purchasePaymentDetailService;
+    private PurchaseRetreatService purchaseRetreatService;
 
     @Autowired
     private RoleMenuService roleMenuService;
@@ -365,7 +368,7 @@ public class PurchaseOrderController {
      * 1. 创建入库单-(根据用户角色菜单)-创建(复杂版,简版)入库单
      * 2. 创建采购签收单-(采购签收单,采购签收明细)
      * 3. 修改采购订单明细状态-根据(采购订单明细id,采购数量,到货数量)
-     * 4. 采购订单签收完成时-创建正值的付款单
+     * 4. 当前采购订单签收单-创建正值的付款单
      *
      * @author 刘威 自动创建，禁止修改
      * @date 2019-02-28
@@ -538,34 +541,43 @@ public class PurchaseOrderController {
         //修改采购订单状态
         purchaseOrderService.updateState(purchaseOrderId);
 
-        //4. 采购订单签收完成时-创建正值的付款单
-        PurchaseOrder purchaseOrder = purchaseOrderService.selectById(purchaseOrderId);
-        //状态(0:待提交 1:待审核 2:采购中 3:已完成 -1:已取消)
-        if ("3".equals(purchaseOrder.getState())) {
-            //付款单类型(1:订单付款 2:订单退款)
-            PurchasePayment payment = purchasePaymentService.createPayment(purchaseOrder.getSupplierId(),
-                    purchaseOrder.getCuser(),
-                    purchaseOrder.getCompanyId(),
-                    "1");
-            //付款金额 paymentSum := amount 采购订单.采购金额(合计金额 - 折扣金额)
-            payment.setPaymentSum(purchaseOrder.getAmount());
-            purchasePaymentService.save(payment);
+        //4. 当前采购订单签收单-创建正值的付款单
+        BigDecimal realityTotal = BigDecimal.valueOf(0D);
+        if (jsonMapList != null && jsonMapList.size() > 0) {
+            for (Map<String, String> jsonObject : jsonMapList) {
+                //签收数量
+                BigDecimal count = BigDecimal.valueOf(0D);
+                String countStr = jsonObject.get("count");
+                if (countStr != null && countStr.trim().length() > 0) {
+                    try {
+                        count = new BigDecimal(countStr);
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                }
 
-            //2. 创建收款单明细
-            //获取 <订单id, 退货金额>
-            PurchasePaymentDetail paymentDtl = new PurchasePaymentDetail();
-            paymentDtl.setOrderId(purchaseOrder.getId());
-            //状态(0:待付款 1:已付款 -1:已取消)
-            paymentDtl.setState("1");
-            //paymentSum 实付金额
-            paymentDtl.setPaymentSum(purchaseOrder.getAmount());
-            //discountAmount 折扣金额
-            paymentDtl.setDiscountAmount(BigDecimal.valueOf(0D));
+                //单价
+                BigDecimal price = BigDecimal.valueOf(0D);
+                String priceStr = jsonObject.get("price");
+                if (priceStr != null && priceStr.trim().length() > 0) {
+                    try {
+                        price = new BigDecimal(priceStr);
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                }
 
-            List<PurchasePaymentDetail> paymentDtlList = new ArrayList<PurchasePaymentDetail>();
-            paymentDtlList.add(paymentDtl);
-            purchasePaymentDetailService.addPaymentDetail(payment, paymentDtlList);
+                realityTotal = BigDecimal.valueOf(realityTotal.doubleValue() + (count.doubleValue() * price.doubleValue()));
+            }
         }
+        //四舍五入到2位小数
+        realityTotal = realityTotal.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+
+        purchaseRetreatService.createPurchasePaymentByPlus(realityTotal,
+                supplierId,
+                companyId,
+                purchaseOrderId,
+                cuser);
 
         Long endTime = System.currentTimeMillis();
         logger.info("################/purchase/purchaseOrder/signPurchaseOrder 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
