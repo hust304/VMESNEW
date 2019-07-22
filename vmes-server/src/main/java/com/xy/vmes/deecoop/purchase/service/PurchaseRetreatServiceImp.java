@@ -300,11 +300,11 @@ public class PurchaseRetreatServiceImp implements PurchaseRetreatService {
     /**
      * 创建(负值)的付款单
      *
-     * @param realityTotal
-     * @param supplierId
-     * @param companyId
-     * @param orderId
-     * @param cuser
+     * @param realityTotal 金额
+     * @param supplierId   供应商id
+     * @param companyId    企业id
+     * @param orderId      采购订单id
+     * @param cuser        用户id
      */
     public void createPurchasePaymentByMinus(BigDecimal realityTotal,
                                              String supplierId,
@@ -334,6 +334,45 @@ public class PurchaseRetreatServiceImp implements PurchaseRetreatService {
         List<PurchasePaymentDetail> paymentDtlList_1 = new ArrayList<PurchasePaymentDetail>();
         paymentDtlList_1.add(paymentDtl);
         purchasePaymentDetailService.addPaymentDetail(payment, paymentDtlList_1);
+    }
+
+    /**
+     * 创建(正值)的付款单
+     *
+     * @param realityTotal 金额
+     * @param supplierId   供应商id
+     * @param companyId    企业id
+     * @param orderId      采购订单id
+     * @param cuser        用户id
+     */
+    public void createPurchasePaymentByPlus(BigDecimal realityTotal,
+                                            String supplierId,
+                                            String companyId,
+                                            String orderId,
+                                            String cuser) throws Exception {
+        //付款单类型(1:订单付款 2:订单退款)
+        PurchasePayment payment = purchasePaymentService.createPayment(supplierId,
+                cuser,
+                companyId,
+                "1");
+        //付款金额 paymentSum := amount 采购订单.采购金额(合计金额 - 折扣金额)
+        payment.setPaymentSum(realityTotal);
+        purchasePaymentService.save(payment);
+
+        //2. 创建收款单明细
+        //获取 <订单id, 退货金额>
+        PurchasePaymentDetail paymentDtl = new PurchasePaymentDetail();
+        paymentDtl.setOrderId(orderId);
+        //状态(0:待付款 1:已付款 -1:已取消)
+        paymentDtl.setState("1");
+        //paymentSum 实付金额
+        paymentDtl.setPaymentSum(realityTotal);
+        //discountAmount 折扣金额
+        paymentDtl.setDiscountAmount(BigDecimal.valueOf(0D));
+
+        List<PurchasePaymentDetail> paymentDtlList = new ArrayList<PurchasePaymentDetail>();
+        paymentDtlList.add(paymentDtl);
+        purchasePaymentDetailService.addPaymentDetail(payment, paymentDtlList);
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
