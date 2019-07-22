@@ -220,38 +220,38 @@ public class PurchaseRetreatController {
             String retreatDtl_id = jsonObject.get("id");
             detailEdit.setId(retreatDtl_id);
 
-            //count: 退货数量
-            BigDecimal count = BigDecimal.valueOf(0D);
-            String count_str = jsonObject.get("count");
-            if (count_str != null && count_str.trim().length() > 0) {
-                try {
-                    count = new BigDecimal(count_str.trim());
-                    //四舍五入到2位小数
-                    count = count.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-                } catch (NumberFormatException e) {
-                    e.printStackTrace();
-                }
-            }
-            detailEdit.setCount(count);
-
-            //price: 货品单价
-            BigDecimal price = BigDecimal.valueOf(0D);
-            String price_str = jsonObject.get("price");
-            if (price_str != null && price_str.trim().length() > 0) {
-                try {
-                    price = new BigDecimal(price_str.trim());
-                    //四舍五入到2位小数
-                    price = price.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-                } catch (NumberFormatException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            //amount: 退货金额 := 退货数量 * 货品单价
-            BigDecimal amount = BigDecimal.valueOf(count.doubleValue() * price.doubleValue());
-            //四舍五入到2位小数
-            amount = amount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-            detailEdit.setAmount(amount);
+//            //count: 退货数量
+//            BigDecimal count = BigDecimal.valueOf(0D);
+//            String count_str = jsonObject.get("count");
+//            if (count_str != null && count_str.trim().length() > 0) {
+//                try {
+//                    count = new BigDecimal(count_str.trim());
+//                    //四舍五入到2位小数
+//                    count = count.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+//                } catch (NumberFormatException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//            detailEdit.setCount(count);
+//
+//            //price: 货品单价
+//            BigDecimal price = BigDecimal.valueOf(0D);
+//            String price_str = jsonObject.get("price");
+//            if (price_str != null && price_str.trim().length() > 0) {
+//                try {
+//                    price = new BigDecimal(price_str.trim());
+//                    //四舍五入到2位小数
+//                    price = price.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+//                } catch (NumberFormatException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//            //amount: 退货金额 := 退货数量 * 货品单价
+//            BigDecimal amount = BigDecimal.valueOf(count.doubleValue() * price.doubleValue());
+//            //四舍五入到2位小数
+//            amount = amount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+//            detailEdit.setAmount(amount);
 
             //(关联)出库单明细
             String productId = jsonObject.get("productId");
@@ -262,7 +262,6 @@ public class PurchaseRetreatController {
 
             //退货单明细状态(1:待审核 2:待退货 3:已完成 -1:已取消)
             detailEdit.setState("3");
-
             purchaseRetreatDetailService.update(detailEdit);
         }
 
@@ -273,13 +272,15 @@ public class PurchaseRetreatController {
         retreatEdit.setAuditId(cuser);
         //状态(1:待审核 2:待退货 3:已完成 -1:已取消)
         retreatEdit.setState("3");
-        //退货总额:实际退货金额
-        if (realityTotal_big.doubleValue() != 0) {
-            //四舍五入到2位小数
-            realityTotal_big = realityTotal_big.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-            retreatEdit.setRealityTotal(realityTotal_big);
-        }
+//        //退货总额:实际退货金额
+//        if (realityTotal_big.doubleValue() != 0) {
+//            //四舍五入到2位小数
+//            realityTotal_big = realityTotal_big.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+//            retreatEdit.setRealityTotal(realityTotal_big);
+//        }
+        purchaseRetreatService.update(retreatEdit);
 
+        //3. 修改采购订单明细(订购数量,货品金额)////////////////////////////////////////////////////////////////////////////////////////////
         //获取退货单表对象-根据退货单id查询(vmes_purchase_retreat)
         PurchaseRetreat retreat = purchaseRetreatService.findPurchaseRetreatById(retreatId);
         //采购订单id
@@ -303,7 +304,6 @@ public class PurchaseRetreatController {
             return model;
         }
 
-        //3. 修改采购订单明细(订购数量,货品金额)////////////////////////////////////////////////////////////////////////////////////////////
         //根据退货类型
         //retreatRefund: f69839bbf2394846a65894f0da120df9 退货退款
         //retreatChange: c90c2081328c427e8d65014d98335601 退货换货
