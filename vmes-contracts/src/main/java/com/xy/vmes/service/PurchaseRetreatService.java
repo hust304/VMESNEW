@@ -4,6 +4,8 @@ import com.xy.vmes.entity.PurchaseRetreat;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
+
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -100,6 +102,35 @@ public interface PurchaseRetreatService {
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
+     * 修改订单明细和订单
+     * 修改采购订单明细-变更订单明细(订购数量,货品金额)
+     *
+     * @param valueMap 入口参数
+     * 参数说明:
+     * Map<String, Object>
+     *   retreatId:          退货单id
+     *   realityTotal:       退货金额
+     *   orderDtlRetreatMap: 采购订单明细退货信息
+     *   orderDtlList:       采购订单明细
+     */
+    void updatePurchaseOrder(Map<String, Object> valueMap) throws Exception;
+
+    /**
+     * 创建(负值)的付款单
+     *
+     * @param realityTotal
+     * @param supplierId
+     * @param companyId
+     * @param orderId
+     * @param cuser
+     */
+    void createPurchasePaymentByMinus(BigDecimal realityTotal,
+                                      String supplierId,
+                                      String companyId,
+                                      String orderId,
+                                      String cuser) throws Exception;
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /**
     * 分页查询
     * @param pd    查询参数对象PageData
     * @param pg    分页参数对象Pagination
@@ -108,8 +139,22 @@ public interface PurchaseRetreatService {
     */
     ResultModel listPageRetreat(PageData pd,Pagination pg) throws Exception;
     ResultModel addPurchaseRetreat(PageData pageData) throws Exception;
-    ResultModel auditPassPurchaseRetreat(PageData pageData) throws Exception;
+    //ResultModel auditPassPurchaseRetreat(PageData pageData) throws Exception;
     ResultModel auditDisagreePurchaseRetreat(PageData pageData) throws Exception;
+
+    //////////////////////////////////////////////////////////////////////////////////
+    /**
+     * 返回货品出库Map
+     * 货品出库Map<货品id, 货品Map<String, Object>>
+     * 货品Map<String, Object>
+     *     productId: 货品id
+     *     outDtlId:   出库明细id
+     *     outCount:   出库数量
+     *
+     * @param jsonMapList
+     * @return
+     */
+    Map<String, Map<String, Object>> findProductMapByOut(List<Map<String, String>> jsonMapList);
 
 }
 

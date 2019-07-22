@@ -59,7 +59,10 @@
             (replace(uuid(), '-', ''),'purchaseRetreatDetail','price','单价',20, '1','1','1','0',now(), 'admin'),
 
             (replace(uuid(), '-', ''),'purchaseRetreatDetail','n2pFormula','n2pFormula',21, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'purchaseRetreatDetail','p2nFormula','p2nFormula',22, '1','0','1','0',now(), 'admin')
+            (replace(uuid(), '-', ''),'purchaseRetreatDetail','p2nFormula','p2nFormula',22, '1','0','1','0',now(), 'admin'),
+
+            (replace(uuid(), '-', ''),'purchaseRetreatDetail','planDtlId','采购计划明细id',23, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchaseRetreatDetail','planParentId','采购计划id',24, '1','0','1','0',now(), 'admin')
 
     </insert>
 
@@ -158,12 +161,18 @@
         product.genre productGenre,
         genre.name productGenreName,
 
+        <!--采购计划-->
+        orderDetail.plan_id planDtlId,
+        planDtl.parent_id planParentId,
+
         <!--货品计量单位-->
         prodUnit.np_formula n2pFormula,
         prodUnit.pn_formula p2nFormula
 
         from vmes_purchase_retreat_detail detail
         left join vmes_purchase_order_detail orderDetail on detail.order_detail_id = orderDetail.id
+        left join vmes_purchase_plan_detail planDtl on orderDetail.plan_id = planDtl.id
+
         left join vmes_product product on detail.product_id = product.id
         left join vmes_dictionary orderUnit on detail.unit = orderUnit.id
         left join vmes_dictionary genre on product.genre = genre.id

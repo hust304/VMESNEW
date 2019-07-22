@@ -41,6 +41,10 @@
             <if test="parentId != null and parentId != ''">
                 and detail.parent_id =  #{parentId}
             </if>
+            <if test="detailIds != null and detailIds != ''">
+                and detail.id in (${detailIds})
+            </if>
+
         </where>
         <if test="orderStr != null and orderStr != ''" >
             order by ${orderStr}
