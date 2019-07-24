@@ -75,7 +75,7 @@
             (replace(uuid(), '-', ''),'equipmentBindSensor','name','设备名称',4, '1','1','1','0',now(), 'admin'),
 
             (replace(uuid(), '-', ''),'equipmentBindSensor','nameEn','英文名称',5, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'equipmentBindSensor','spec','规格型号',6, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentBindSensor','spec','设备型号',6, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentBindSensor','type','设备类型ID',8, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentBindSensor','typeName','设备类型',7, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentBindSensor','supplier','厂商名称',9, '1','1','1','0',now(), 'admin'),
@@ -181,6 +181,7 @@
         equipment_id equipmentId,
         target_type targetType,
         CASE
+          WHEN target_type = 'O' THEN '标准指标'
           WHEN target_type = 'A' THEN '传感器指标'
           WHEN target_type = 'B' THEN '分析指标'
         ELSE null

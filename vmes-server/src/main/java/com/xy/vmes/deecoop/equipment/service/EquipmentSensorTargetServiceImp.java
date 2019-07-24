@@ -58,10 +58,13 @@ public class EquipmentSensorTargetServiceImp implements EquipmentSensorTargetSer
 
         for (Iterator iterator = allCodeMap.keySet().iterator(); iterator.hasNext();) {
             String allCodeMapKey = (String) iterator.next();
-
-            if (applyCodeMap.get(allCodeMapKey) == null) {
-                return allCodeMapKey;
+            if("A0001,A0002,A0003,A0004,A0005,A0006,A0007,A0008,A0009,A0010,A0011,A0012,A0013,A0014,A0015,A0016,A0017,A0018,A0019,A0020"
+                    .indexOf(applyCodeMap.get(allCodeMapKey))<0){
+                if (applyCodeMap.get(allCodeMapKey) == null) {
+                    return allCodeMapKey;
+                }
             }
+
         }
         return new String();
     }

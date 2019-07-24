@@ -156,6 +156,80 @@ public class EquipmentSensorController {
         return model;
     }
 
+
+
+    /**
+     * 新增-设备传感器指标
+     * @author 陈刚
+     * @date 2019-10-16
+     * @throws Exception
+     */
+    @PostMapping("/equipment/equipmentSensor/addStandardEquipmentSensor")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel addStandardEquipmentSensor() throws Exception {
+        logger.info("################/equipment/equipmentSensor/addEquipmentSensor 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+        String companyID = pageData.getString("currentCompanyId");
+        String equipmentId = pageData.getString("equipmentId");
+        String currentUserId = pageData.getString("currentUserId");
+
+        EquipmentSensor eqptSensor = new EquipmentSensor();
+        eqptSensor.setTargetType("O");
+        eqptSensor.setTargetCode("A0001");
+        eqptSensor.setTargetName("是否开机");
+        eqptSensor.setRemark("0：否 1：是");
+        eqptSensor.setEquipmentId(equipmentId);
+        eqptSensor.setCompanyId(companyID);
+        eqptSensor.setCuser(currentUserId);
+        eqptSensor.setUuser(currentUserId);
+        equipmentSensorService.save(eqptSensor);
+
+        eqptSensor = new EquipmentSensor();
+        eqptSensor.setTargetType("O");
+        eqptSensor.setTargetCode("A0002");
+        eqptSensor.setTargetName("是否工作");
+        eqptSensor.setRemark("0：否 1：是");
+        eqptSensor.setEquipmentId(equipmentId);
+        eqptSensor.setCompanyId(companyID);
+        eqptSensor.setCuser(currentUserId);
+        eqptSensor.setUuser(currentUserId);
+        equipmentSensorService.save(eqptSensor);
+
+
+        eqptSensor = new EquipmentSensor();
+        eqptSensor.setTargetType("O");
+        eqptSensor.setTargetCode("A0003");
+        eqptSensor.setTargetName("是否故障");
+        eqptSensor.setRemark("0：否 1：是");
+        eqptSensor.setEquipmentId(equipmentId);
+        eqptSensor.setCompanyId(companyID);
+        eqptSensor.setCuser(currentUserId);
+        eqptSensor.setUuser(currentUserId);
+        equipmentSensorService.save(eqptSensor);
+
+
+        eqptSensor = new EquipmentSensor();
+        eqptSensor.setTargetType("O");
+        eqptSensor.setTargetCode("A0004");
+        eqptSensor.setTargetName("生产计数");
+        eqptSensor.setRemark(null);
+        eqptSensor.setEquipmentId(equipmentId);
+        eqptSensor.setCompanyId(companyID);
+        eqptSensor.setCuser(currentUserId);
+        eqptSensor.setUuser(currentUserId);
+        equipmentSensorService.save(eqptSensor);
+
+
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/equipment/equipmentSensor/addEquipmentSensor 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
     /**
      * 删除-设备传感器指标
      * @author 陈刚
