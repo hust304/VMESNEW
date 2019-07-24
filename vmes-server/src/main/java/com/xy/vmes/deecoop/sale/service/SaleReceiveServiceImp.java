@@ -315,45 +315,45 @@ public class SaleReceiveServiceImp implements SaleReceiveService {
             }
         }
 
-        Customer oldCustomer = customerService.selectById(customerId);
-        //操作类型 (0:变更 1:录入收款 2:预付款 -1:费用分摊)
-        String remark_1 = "费用分摊：" + oldCustomer.getBalance().subtract(detailBalance).setScale(2, BigDecimal.ROUND_HALF_UP);
-        saleOrderService.updateCustomerBalance(
-                oldCustomer,
-                oldCustomer.getBalance().subtract(detailBalance),
-                pd.getString("uuser"),
-                "-1",
-                remark_1);
+//        Customer oldCustomer = customerService.selectById(customerId);
+//        //操作类型 (0:变更 1:录入收款 2:预付款 -1:费用分摊)
+//        String remark_1 = "费用分摊：" + oldCustomer.getBalance().subtract(detailBalance).setScale(2, BigDecimal.ROUND_HALF_UP);
+//        saleOrderService.updateCustomerBalance(
+//                oldCustomer,
+//                oldCustomer.getBalance().subtract(detailBalance),
+//                pd.getString("uuser"),
+//                "-1",
+//                remark_1);
 
 
-        //查询付款单明细 vmes_sale_receive_detail
-        //收款明细状态(0:待收款 1:已收款 -1:已取消)
-        Map<String, Map<String, BigDecimal>> orderReceiveMap = saleReceiveDetailService.findMapOrderReceiveByOrderId(orderIdsBuf.toString(), "1");
+//        //查询付款单明细 vmes_sale_receive_detail
+//        //收款明细状态(0:待收款 1:已收款 -1:已取消)
+//        Map<String, Map<String, BigDecimal>> orderReceiveMap = saleReceiveDetailService.findMapOrderReceiveByOrderId(orderIdsBuf.toString(), "1");
 
-        //反写订单状态
-        if (orderIdMap.size() > 0) {
-            for (Iterator iterator = orderIdMap.keySet().iterator(); iterator.hasNext(); ) {
-                String orderId = (String) iterator.next();
-                if (orderReceiveMap.get(orderId) != null) {
-                    Map<String, BigDecimal> receiveMap = orderReceiveMap.get(orderId);
-                    SaleOrder saleOrder = saleOrderService.findSaleOrderById(orderId);
-                    //订单id-订单已完成付款金额
-                    BigDecimal receiveSum = BigDecimal.valueOf(0D);
-                    if (receiveMap.get("receiveSum") != null) {
-                        receiveSum = receiveMap.get("receiveSum");
-                    }
-                    BigDecimal orderSum = saleOrder.getOrderSum();
-                    if (receiveSum.doubleValue() >= orderSum.doubleValue()) {
-                        //订单状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
-                        if("3".equals(saleOrder.getState())){
-                            saleOrder.setState("4");
-                            saleOrder.setPayDate(new Date());
-                            saleOrderService.update(saleOrder);
-                        }
-                    }
-                }
-            }
-        }
+//        //反写订单状态
+//        if (orderIdMap.size() > 0) {
+//            for (Iterator iterator = orderIdMap.keySet().iterator(); iterator.hasNext(); ) {
+//                String orderId = (String) iterator.next();
+//                if (orderReceiveMap.get(orderId) != null) {
+//                    Map<String, BigDecimal> receiveMap = orderReceiveMap.get(orderId);
+//                    SaleOrder saleOrder = saleOrderService.findSaleOrderById(orderId);
+//                    //订单id-订单已完成付款金额
+//                    BigDecimal receiveSum = BigDecimal.valueOf(0D);
+//                    if (receiveMap.get("receiveSum") != null) {
+//                        receiveSum = receiveMap.get("receiveSum");
+//                    }
+//                    BigDecimal orderSum = saleOrder.getOrderSum();
+//                    if (receiveSum.doubleValue() >= orderSum.doubleValue()) {
+//                        //订单状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
+//                        if("3".equals(saleOrder.getState())){
+//                            saleOrder.setState("4");
+//                            saleOrder.setPayDate(new Date());
+//                            saleOrderService.update(saleOrder);
+//                        }
+//                    }
+//                }
+//            }
+//        }
 
         return model;
     }
@@ -391,19 +391,81 @@ public class SaleReceiveServiceImp implements SaleReceiveService {
 
     public ResultModel auditPassSaleReceive(PageData pd) throws Exception {
         ResultModel model = new ResultModel();
+
         String parentId = pd.getString("parentId");
         if (parentId == null || parentId.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("收款单id为空或空字符串！");
             return model;
         }
+        String cuser = pd.getString("cuser");
 
+
+        //1.获取收款单对象 (收款单id)
+        SaleReceive saleReceive = this.selectById(parentId);
+        //receiveSum 收款单总额
+        BigDecimal receiveSum = saleReceive.getReceiveSum();
+
+        String customerId = saleReceive.getCustomerId();
+        Customer oldCustomer = customerService.selectById(customerId);
+        //操作类型 (0:变更 1:录入收款 2:预付款 -1:费用分摊)
+        String remark_1 = "费用分摊：" + oldCustomer.getBalance().subtract(receiveSum).setScale(2, BigDecimal.ROUND_HALF_UP);
+        saleOrderService.updateCustomerBalance(
+                oldCustomer,
+                oldCustomer.getBalance().subtract(receiveSum),
+                cuser,
+                "-1",
+                remark_1);
+
+        //2.获取收款明细
         PageData findMap = new PageData();
         findMap.put("parentId", parentId);
         //state 收款单明细状态:(0:待收款(待审核) 1:已收款 -1:已取消)
         findMap.put("state", "0");
         List<SaleReceiveDetail> detailList = saleReceiveDetailService.findSaleReceiveDetailList(findMap);
 
+        //3.反写订单状态
+        //获取采购订单id-通过遍历收款明细
+        StringBuffer orderIdsBuf = new StringBuffer();
+        Map<String, String> orderIdMap = new HashMap<String, String>();
+        if (detailList != null && detailList.size() > 0) {
+            for (SaleReceiveDetail detail : detailList) {
+                String orderId = detail.getOrderId();
+                if (orderId != null && orderId.trim().length() > 0) {
+                    orderIdsBuf.append(orderId.trim()).append(",");
+                    orderIdMap.put(orderId.trim(), orderId.trim());
+                }
+            }
+        }
+        //查询付款单明细 vmes_sale_receive_detail
+        //收款明细状态(0:待收款 1:已收款 -1:已取消)
+        Map<String, Map<String, BigDecimal>> orderReceiveMap = saleReceiveDetailService.findMapOrderReceiveByOrderId(orderIdsBuf.toString(), "1");
+
+        if (orderIdMap.size() > 0) {
+            for (Iterator iterator = orderIdMap.keySet().iterator(); iterator.hasNext(); ) {
+                String orderId = (String) iterator.next();
+                if (orderReceiveMap.get(orderId) != null) {
+                    Map<String, BigDecimal> receiveMap = orderReceiveMap.get(orderId);
+                    SaleOrder saleOrder = saleOrderService.findSaleOrderById(orderId);
+                    //订单id-订单已完成付款金额
+                    BigDecimal receiveSumByOrder = BigDecimal.valueOf(0D);
+                    if (receiveMap.get("receiveSum") != null) {
+                        receiveSumByOrder = receiveMap.get("receiveSum");
+                    }
+                    BigDecimal orderSum = saleOrder.getOrderSum();
+                    if (receiveSumByOrder.doubleValue() >= orderSum.doubleValue()) {
+                        //订单状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
+                        if("3".equals(saleOrder.getState())){
+                            saleOrder.setState("4");
+                            saleOrder.setPayDate(new Date());
+                            saleOrderService.update(saleOrder);
+                        }
+                    }
+                }
+            }
+        }
+
+        //4. 修改收款单明细状态
         if (detailList != null && detailList.size() > 0) {
             for (SaleReceiveDetail detail : detailList) {
                 SaleReceiveDetail editDetail = new SaleReceiveDetail();
