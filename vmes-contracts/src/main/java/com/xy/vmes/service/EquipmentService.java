@@ -114,6 +114,9 @@ public interface EquipmentService {
 
     ResultModel listPageEquipments(PageData pd, Pagination pg) throws Exception;
 
+    //获取部门表和设备表的树形结构
+    ResultModel treeDepartmentEquipment(PageData pd) throws Exception;
+
     void exportExcelEquipments(PageData pd, Pagination pg) throws Exception;
 
 //    ResultModel importExcelEquipments(MultipartFile file) throws Exception;

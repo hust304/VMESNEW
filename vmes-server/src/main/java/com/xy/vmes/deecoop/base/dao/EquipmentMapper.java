@@ -73,6 +73,13 @@ public interface EquipmentMapper extends BaseMapper<Equipment> {
     void updateToDisableByIds(String[] ids);
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+    /**
+     * 部门表加设备表(UNION ALL)
+     *
+     * 创建人：陈刚
+     * 创建时间：2019-07-24
+     */
+    List<Map<String, Object>> listDepartmentEquipment(PageData pd);
 }
 
 

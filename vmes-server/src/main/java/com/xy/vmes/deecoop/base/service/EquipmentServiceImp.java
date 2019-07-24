@@ -3,9 +3,9 @@ package com.xy.vmes.deecoop.base.service;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.StringUtil;
+import com.xy.vmes.common.util.TreeUtil;
 import com.xy.vmes.deecoop.base.dao.EquipmentMapper;
-import com.xy.vmes.entity.Column;
-import com.xy.vmes.entity.Equipment;
+import com.xy.vmes.entity.*;
 import com.xy.vmes.service.*;
 import com.yvan.*;
 import com.yvan.platform.RestException;
@@ -28,16 +28,20 @@ import javax.servlet.http.HttpServletResponse;
 public class EquipmentServiceImp implements EquipmentService {
 
     @Autowired
-    private EquipmentMapper equipmentMapper;
+    private DepartmentService departmentService;
     @Autowired
-    private ColumnService columnService;
+    private EquipmentMapper equipmentMapper;
+
     @Autowired
     private EquipmentExcelService equipmentExcelService;
 
     @Autowired
+    private ColumnService columnService;
+    @Autowired
     private FileService fileService;
     @Autowired
     private CoderuleService coderuleService;
+
     /**
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-09-20
@@ -225,6 +229,41 @@ public class EquipmentServiceImp implements EquipmentService {
         return model;
     }
 
+    //获取部门表和设备表的树形结构
+    @Override
+    public ResultModel treeDepartmentEquipment(PageData pd) throws Exception {
+        ResultModel model = new ResultModel();
+
+        PageData findMap = new PageData();
+        findMap.put("deptDisable", pd.getString("deptDisable"));
+        findMap.put("postDisable", pd.getString("postDisable"));
+
+        String deptId = pd.getString("currentCompanyId");
+        if (deptId != null && deptId.trim().length() > 0) {
+            String queryIdStr = departmentService.findDeptidById(deptId, null, null);
+            findMap.put("deptQuery", queryIdStr);
+
+            String queryIdStr_1 = departmentService.findDeptidById(deptId, null, "b.");
+            findMap.put("postQuery", queryIdStr_1);
+        }
+
+        //1. 查询(部门+岗位)表
+        List<Map<String, Object>> deptPostList = equipmentMapper.listDepartmentEquipment(findMap);
+        List<TreeEntity> treeList = this.deptEquipmentList2TreeList(deptPostList, null);
+
+        //2. 获得部门岗位树形结构
+        TreeEntity treeObj = TreeUtil.switchTree(deptId, treeList);
+        String treeJsonStr = YvanUtil.toJson(treeObj);
+        System.out.println("treeJsonStr: " + treeJsonStr);
+
+        //3. 树形结构返回前端
+        Map result = new HashMap();
+        result.put("treeList", treeObj);
+        model.putResult(result);
+
+        return model;
+    }
+
     @Override
     public void exportExcelEquipments(PageData pd, Pagination pg) throws Exception {
         if(pg==null){
@@ -360,6 +399,43 @@ public class EquipmentServiceImp implements EquipmentService {
 //
 //        return msgBuf;
 //    }
+
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    private List<TreeEntity> deptEquipmentList2TreeList(List<Map<String, Object>> mapList, List<TreeEntity> treeList) {
+        if (treeList == null) {treeList = new ArrayList<TreeEntity>();}
+        if (mapList == null || mapList.size() == 0) {return treeList;}
+
+        //遍历mapList-生成treeList
+        for (Map<String, Object> mapObj : mapList) {
+            DeptEquipmentEntity deptEqpt = (DeptEquipmentEntity)HttpUtils.pageData2Entity(mapObj, new DeptEquipmentEntity());
+            TreeEntity tree = this.deptEquipment2Tree(deptEqpt, null);
+            treeList.add(tree);
+        }
+        return treeList;
+    }
+
+    private TreeEntity deptEquipment2Tree(DeptEquipmentEntity deptEqpt, TreeEntity tree) {
+        if (tree == null) {tree = new TreeEntity();}
+        if (deptEqpt == null) {return tree;}
+
+        //id;
+        tree.setId(deptEqpt.getId());
+        //pid;
+        tree.setPid(deptEqpt.getPid());
+        //deptName;
+        tree.setDeptName(deptEqpt.getDeptName());
+        //eqptName;
+        tree.setEqptName(deptEqpt.getEqptName());
+        //layer;
+        tree.setLayer(deptEqpt.getLayer());
+        //serialNumber;
+        tree.setSerialNumber(deptEqpt.getSerialNumber());
+        //"dept" 部门 "eqpt" 设备
+        tree.setType(deptEqpt.getType());
+
+        return tree;
+    }
 }
 
 

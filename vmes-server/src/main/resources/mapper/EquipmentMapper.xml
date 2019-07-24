@@ -371,6 +371,48 @@
     </select>
 
 
+    <!-- 部门表 + 设备表 -->
+    <select id="listDepartmentEquipment" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+            id,
+            pid,
+            name deptName,
+            '' eqptName,
+            layer,
+            serial_number serialNumber,
+            'dept' type
+        from vmes_department
+        <where>
+            <if test="deptDisable!= null and deptDisable != ''">
+                and isdisable = #{deptDisable}
+            </if>
+            <if test="deptQuery != null and deptQuery != ''" >
+                and ${deptQuery}
+            </if>
+        </where>
+        UNION ALL
+        select
+            a.id,
+            a.dept_id as pid,
+            b.name deptName,
+            a.name eqptName,
+            null layer,
+            0 serialNumber,
+            'eqpt' type
+        from vmes_equipment a
+            left join vmes_department b on a.dept_id = b.id
+        <where>
+            <if test="eqptQuery != null and eqptQuery != ''" >
+                and ${eqptQuery}
+            </if>
+            <if test="eqptDisable!= null and eqptDisable != ''">
+                and a.isdisable = #{eqptDisable}
+            </if>
+            and a.dept_id is not null
+        </where>
+    </select>
+
+
 
 
 </mapper>

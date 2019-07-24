@@ -213,6 +213,23 @@ public class EquipmentController {
         return model;
     }
 
+    /**
+     * 部门设备树
+     *
+     * @author 陈刚
+     * @date 2019-07-24
+     */
+    @PostMapping("/base/equipment/treeDepartmentEquipment")
+    public ResultModel treeDepartmentEquipment() throws Exception {
+        logger.info("################/base/equipment/treeDepartmentEquipment 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = equipmentService.treeDepartmentEquipment(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/base/equipment/treeDepartmentEquipment 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
 
     /**
     * Excel导出

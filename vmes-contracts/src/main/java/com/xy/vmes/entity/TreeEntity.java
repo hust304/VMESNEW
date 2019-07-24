@@ -38,6 +38,8 @@ public class TreeEntity implements Cloneable {
     private String type;
     private String deptName;
     private String postName;
+    //设备名称 部门设备树
+    private String eqptName;
 
     //数据字典属性
     private String label;
@@ -361,5 +363,11 @@ public class TreeEntity implements Cloneable {
         this.isChecked = isChecked;
     }
 
+    public String getEqptName() {
+        return eqptName;
+    }
 
+    public void setEqptName(String eqptName) {
+        this.eqptName = eqptName;
+    }
 }
