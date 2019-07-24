@@ -236,7 +236,7 @@ public class EquipmentServiceImp implements EquipmentService {
 
         PageData findMap = new PageData();
         findMap.put("deptDisable", pd.getString("deptDisable"));
-        findMap.put("postDisable", pd.getString("postDisable"));
+        findMap.put("eqptDisable", pd.getString("eqptDisable"));
 
         String deptId = pd.getString("currentCompanyId");
         if (deptId != null && deptId.trim().length() > 0) {
@@ -244,7 +244,7 @@ public class EquipmentServiceImp implements EquipmentService {
             findMap.put("deptQuery", queryIdStr);
 
             String queryIdStr_1 = departmentService.findDeptidById(deptId, null, "b.");
-            findMap.put("postQuery", queryIdStr_1);
+            findMap.put("eqptQuery", queryIdStr_1);
         }
 
         //1. 查询(部门+岗位)表
@@ -423,10 +423,15 @@ public class EquipmentServiceImp implements EquipmentService {
         tree.setId(deptEqpt.getId());
         //pid;
         tree.setPid(deptEqpt.getPid());
+        //isdisable
+        tree.setIsdisable(deptEqpt.getIsdisable());
+        //name;
+        tree.setName(deptEqpt.getName());
         //deptName;
         tree.setDeptName(deptEqpt.getDeptName());
         //eqptName;
         tree.setEqptName(deptEqpt.getEqptName());
+
         //layer;
         tree.setLayer(deptEqpt.getLayer());
         //serialNumber;

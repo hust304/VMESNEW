@@ -376,6 +376,8 @@
         select
             id,
             pid,
+            isdisable,
+            name,
             name deptName,
             '' eqptName,
             layer,
@@ -394,6 +396,8 @@
         select
             a.id,
             a.dept_id as pid,
+            a.isdisable,
+            a.name,
             b.name deptName,
             a.name eqptName,
             null layer,
