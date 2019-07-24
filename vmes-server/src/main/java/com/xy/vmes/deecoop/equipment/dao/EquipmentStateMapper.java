@@ -16,4 +16,15 @@ import java.util.Map;
 @Repository
 public interface EquipmentStateMapper {
     List<Map> findEquipmentState(PageData pd);
+
+
+    Map getOutputNum(PageData pd);
+
+    Map getStartDate(PageData pd);
+
+    Map getCollectDate(PageData pd);
+
+    List<Map> get24HoursData(PageData pd);
+
+    List<Map> get24HoursDataDetail(PageData pd);
 }

@@ -43,26 +43,34 @@
             END bindSensorStateName,
 
 
-            <!--设备状态 vmes_equipment_repair -->
+            <!--设备状态 待命中:0 工作中:1 保养中:2 故障中:3 维修中:4-->
             CASE
+                WHEN equipmentRepair.equipment_state is null and equipmentSensorSource.A0001 = '0' THEN '0'
+                WHEN equipmentRepair.equipment_state is null and equipmentSensorSource.A0001 = '1' THEN '1'
+                WHEN equipmentRepair.equipment_state is null and equipmentSensorSource.A0001 is null  THEN '0'
                 <!--设备维修状态 vmes_equipment_repair -->
-                WHEN equipmentRepair.equipment_state = '1' THEN '1'
-                WHEN equipmentRepair.equipment_state = '2' THEN '2'
+                WHEN equipmentRepair.equipment_state = '1' THEN '3'
+                WHEN equipmentRepair.equipment_state = '2' THEN '4'
             <!--设备保养状态  -->
             ELSE null
             END equipmentState,
 
             CASE
+                WHEN equipmentRepair.equipment_state is null and equipmentSensorSource.A0001 = '0' THEN '待命中'
+                WHEN equipmentRepair.equipment_state is null and equipmentSensorSource.A0001 = '1' THEN '工作中'
+                WHEN equipmentRepair.equipment_state is null and equipmentSensorSource.A0001 is null  THEN '待命中'
+
                 <!--设备维修状态 vmes_equipment_repair -->
-                WHEN equipmentRepair.equipment_state = '1' THEN '故障'
+                WHEN equipmentRepair.equipment_state = '1' THEN '故障中'
                 WHEN equipmentRepair.equipment_state = '2' THEN '维修中'
                 <!--设备保养状态  -->
+                <!--WHEN state = '1' THEN '保养中' -->
             ELSE null
             END equipmentStateName,
 
             <!--设备传感器状态  -->
-            '1' equipmentActivity,
-            '在线' equipmentActivityName
+            CASE WHEN equipmentSensorSource.equipment_id is not null THEN '1' else '0' equipmentActivity,
+            CASE WHEN equipmentSensorSource.equipment_id is not null THEN '在线' else '不在线'  equipmentActivityName
 
         from vmes_equipment equipment
             left join vmes_department department on equipment.dept_id = department.id
@@ -73,24 +81,41 @@
                 select equipment_id, count(id) sensorTargetCount
                 from vmes_equipment_sensor
                 <where>
-                    <if test="companyId != null and companyId != ''">
-                        and company_id = #{companyId}
+                    <if test="equipmentId != null and equipmentId != ''">
+                        and equipment_id = #{equipmentId}
                     </if>
                 </where>
                 group by equipment_id
             ) equipmentSensor on equipment.id = equipmentSensor.equipment_id
+
+
+            <!--设备联网当天数据 vmes_sensor_source -->
+            left join (
+                select equipment_id, A0001, A0002
+                from vmes_sensor_source
+                <where>
+                    <if test="equipmentId != null and equipmentId != ''">
+                        and equipment_id = #{equipmentId}
+                    </if>
+                </where>
+                <![CDATA[ and cdate <= now() and cdate >= date_add(now(), interval -30 minute) ]]>
+                order by cdate desc limit 1
+            ) equipmentSensorSource on equipment.id = equipmentSensorSource.equipment_id
 
             <!--设备维修状态 vmes_equipment_repair -->
             left join (
                 select equipment_id, equipment_state
                 from vmes_equipment_repair
                 <where>
-                    <if test="companyId != null and companyId != ''">
-                        and company_id = #{companyId}
+                    <if test="equipmentId != null and equipmentId != ''">
+                        and equipment_id = #{equipmentId}
                     </if>
                     and isdisable = '1'
                 </where>
             ) equipmentRepair on equipment.id = equipmentRepair.equipment_id
+
+
+
 
             <!--设备保养状态  -->
             <!--设备传感器状态  -->
@@ -104,6 +129,64 @@
             </if>
         </where>
     </select>
+
+    <select id="getOutputNum"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
+      select equipment_id equipmentId,max(A0003)-min(A0003) outputNum from vmes_sensor_source
+        <where>
+            <if test="equipmentId != null and equipmentId != ''">
+                and equipment_id = #{equipmentId}
+            </if>
+        </where>
+    </select>
+
+    <select id="getStartDate"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
+        select equipment_id equipmentId,cdate startDate from vmes_sensor_source
+        <where>
+            <if test="equipmentId != null and equipmentId != ''">
+                and equipment_id = #{equipmentId}
+            </if>
+            and A0001 = '1'
+        </where>
+        order by cdate asc limit 1
+    </select>
+
+    <select id="getCollectDate"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
+        select equipment_id equipmentId,cdate collectDate from vmes_sensor_source
+        <where>
+            <if test="equipmentId != null and equipmentId != ''">
+                and equipment_id = #{equipmentId}
+            </if>
+            and A0001 = '1'
+        </where>
+        order by cdate desc limit 1
+    </select>
+
+
+
+    <select id="get24HoursData"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
+        select cdate,A0001,A0002,A0003 from vmes_sensor_source
+        <where>
+            <if test="equipmentId != null and equipmentId != ''">
+                and equipment_id = #{equipmentId}
+            </if>
+        </where>
+        order by cdate asc
+    </select>
+
+    <select id="get24HoursDataDetail"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
+        select
+        cdate,
+        ${colSQL}
+        from vmes_sensor_source
+        <where>
+            <if test="equipmentId != null and equipmentId != ''">
+                and equipment_id = #{equipmentId}
+            </if>
+        </where>
+        order by cdate desc limit 1
+    </select>
+
+
 
 
 </mapper>

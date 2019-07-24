@@ -178,6 +178,26 @@ public class EquipmentSensorController {
             return model;
         }
 
+        EquipmentSensor equipmentSensor = equipmentSensorService.selectById(id);
+        pageData = new PageData();
+        pageData.put("queryStr"," target_formula like '%"+equipmentSensor.getTargetCode()+"%' and equipment_id = '"+equipmentSensor.getEquipmentId()+"' ");
+
+        List<EquipmentSensor> equipmentSensorList = equipmentSensorService.dataList(pageData);
+        if(equipmentSensorList!=null&&equipmentSensorList.size()>0){
+            String equipmentSensorNames = null;
+            for(int i=0;i<equipmentSensorList.size();i++){
+                EquipmentSensor obj = equipmentSensorList.get(i);
+                if(equipmentSensorNames==null){
+                    equipmentSensorNames = obj.getTargetName();
+                }else{
+                    equipmentSensorNames = equipmentSensorNames+ "," + obj.getTargetName();
+                }
+            }
+
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("该设备传感器指标已被其他分析指标("+equipmentSensorNames+")引用，不能直接删除，请先删除分析指标！");
+            return model;
+        }
         equipmentSensorService.deleteById(id);
 
         Long endTime = System.currentTimeMillis();

@@ -36,6 +36,16 @@ public class EquipmentSensor implements Serializable {
 	//指标公式
 	@TableField("target_formula")
 	private String targetFormula;
+
+
+	//指标公式
+	@TableField("target_formula_sql")
+	private String targetFormulaSql;
+
+	//指标公式
+	@TableField("target_formula_display")
+	private String targetFormulaDisplay;
+
 	//指标公式(转换栏位名称公式-SQL查询语句直接使用)
 	@TableField("target_formula_column")
 	private String targetFormulaColumn;
@@ -59,6 +69,22 @@ public class EquipmentSensor implements Serializable {
 	@TableField("isdisable")
 	private String isdisable;
 
+
+	public String getTargetFormulaSql() {
+		return targetFormulaSql;
+	}
+
+	public void setTargetFormulaSql(String targetFormulaSql) {
+		this.targetFormulaSql = targetFormulaSql;
+	}
+
+	public String getTargetFormulaDisplay() {
+		return targetFormulaDisplay;
+	}
+
+	public void setTargetFormulaDisplay(String targetFormulaDisplay) {
+		this.targetFormulaDisplay = targetFormulaDisplay;
+	}
 
 	public void setId(String id) {
 		this.id = id;
