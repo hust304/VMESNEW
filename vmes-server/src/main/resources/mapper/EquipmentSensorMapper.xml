@@ -113,6 +113,8 @@
 
         target_name targetName,
         target_formula targetFormula,
+        target_formula_sql targetFormulaSql,
+        target_formula_display targetFormulaDisplay,
         target_formula_column targetFormulaColumn,
         cuser cuser,
         cdate cdate,
@@ -187,6 +189,8 @@
 
         target_name targetName,
         target_formula targetFormula,
+        target_formula_sql targetFormulaSql,
+        target_formula_display targetFormulaDisplay,
         target_formula_column targetFormulaColumn,
         cuser cuser,
         cdate cdate,
