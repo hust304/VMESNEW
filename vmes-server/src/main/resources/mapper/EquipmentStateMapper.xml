@@ -69,8 +69,8 @@
             END equipmentStateName,
 
             <!--设备传感器状态  -->
-            CASE WHEN equipmentSensorSource.equipment_id is not null THEN '1' else '0' equipmentActivity,
-            CASE WHEN equipmentSensorSource.equipment_id is not null THEN '在线' else '不在线'  equipmentActivityName
+            CASE WHEN equipmentSensorSource.equipment_id is not null THEN '1' else '0' END equipmentActivity,
+            CASE WHEN equipmentSensorSource.equipment_id is not null THEN '在线' else '不在线' END equipmentActivityName
 
         from vmes_equipment equipment
             left join vmes_department department on equipment.dept_id = department.id
@@ -97,8 +97,8 @@
                     <if test="equipmentId != null and equipmentId != ''">
                         and equipment_id = #{equipmentId}
                     </if>
+                    <![CDATA[ and cdate <= now() and cdate >= date_add(now(), interval -30 minute) ]]>
                 </where>
-                <![CDATA[ and cdate <= now() and cdate >= date_add(now(), interval -30 minute) ]]>
                 order by cdate desc limit 1
             ) equipmentSensorSource on equipment.id = equipmentSensorSource.equipment_id
 
