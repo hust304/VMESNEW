@@ -101,11 +101,10 @@ public interface EquipmentMaintainContentService {
     /**
     * 分页查询
     * @param pd    查询参数对象PageData
-    * @param pg    分页参数对象Pagination
     * @return      返回对象ResultModel
     * @throws Exception
     */
-    ResultModel listPageEquipmentMaintainContent(PageData pd,Pagination pg) throws Exception;
+    ResultModel listPageEquipmentMaintainContent(PageData pd) throws Exception;
 
 
 }

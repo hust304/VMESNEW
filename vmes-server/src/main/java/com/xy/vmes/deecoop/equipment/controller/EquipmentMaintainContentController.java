@@ -1,9 +1,9 @@
 package com.xy.vmes.deecoop.equipment.controller;
 
 import com.xy.vmes.entity.EquipmentMaintainContent;
+import com.xy.vmes.service.DepartmentService;
 import com.xy.vmes.service.EquipmentMaintainContentService;
 
-import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
@@ -28,6 +28,9 @@ public class EquipmentMaintainContentController {
     @Autowired
     private EquipmentMaintainContentService maintainContentService;
 
+    @Autowired
+    private DepartmentService departmentService;
+
     /**
     * @author 陈刚 自动创建，可以修改
     * @date 2019-07-24
@@ -37,8 +40,32 @@ public class EquipmentMaintainContentController {
         logger.info("################/equipment/equipmentMaintainContent/listPageMaintainContent 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         PageData pd = HttpUtils.parsePageData();
-        Pagination pg = HttpUtils.parsePagination(pd);
-        ResultModel model = maintainContentService.listPageEquipmentMaintainContent(pd,pg);
+
+        //id: id,
+        String id = pd.getString("id");
+
+        //layer: layer,
+        Integer layer = null;
+        String layerStr = pd.getString("layer");
+        if (layerStr != null && layerStr.trim().length() > 0) {
+            try {
+                layer = Integer.valueOf(layerStr);
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+        }
+
+        //type: ("dept" 部门 "eqpt" 设备)
+        String type = pd.getString("type");
+        if ("dept".equals(type) && id != null && id.trim().length() > 0) {
+            String queryIdStr = departmentService.findDeptidById(id, layer, "department.");
+            pd.put("deptEqptQueryStr", queryIdStr);
+        } else if ("eqpt".equals(type) && id != null && id.trim().length() > 0) {
+            pd.put("equipmentId", id);
+        }
+
+        ResultModel model = maintainContentService.listPageEquipmentMaintainContent(pd);
+
         Long endTime = System.currentTimeMillis();
         logger.info("################/equipment/equipmentMaintainContent/listPageMaintainContent 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;

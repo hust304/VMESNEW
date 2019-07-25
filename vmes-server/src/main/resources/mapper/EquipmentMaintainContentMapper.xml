@@ -35,6 +35,7 @@
         isdisable,ishide,isedit,ismust,cdate,
         cuser
         ) VALUES
+            (replace(uuid(), '-', ''),'equipmentMaintainContent','id','id',0, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentMaintainContent','companyId','企业ID',1, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentMaintainContent','equipmentId','设备ID',2, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentMaintainContent','content','保养内容',3, '1','1','1','0',now(), 'admin'),
@@ -44,7 +45,13 @@
             (replace(uuid(), '-', ''),'equipmentMaintainContent','udate','修改时间',7, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentMaintainContent','remark','备注',8, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentMaintainContent','isdisable','是否启用(0:已禁用 1:启用)',9, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'equipmentMaintainContent','id','id',0, '1','1','1','0',now(), 'admin')
+
+            (replace(uuid(), '-', ''),'equipmentMaintainContent','code','设备编码',10, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentMaintainContent','name','设备名称',11, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentMaintainContent','spec','设备型号',12, '1','1','1','0',now(), 'admin'),
+
+            (replace(uuid(), '-', ''),'equipmentMaintainContent','deptName','所属部门',13, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentMaintainContent','deptPathName','部门名称',14, '1','1','1','0',now(), 'admin')
     </insert>
 
 
@@ -90,30 +97,67 @@
     </select>
 
     <!-- 自动创建，可以修改 -->
-    <select id="getDataListPage"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
+    <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
-        id id,
-        company_id companyId,
-        equipment_id equipmentId,
-        content content,
-        cuser cuser,
-        cdate cdate,
-        uuser uuser,
-        udate udate,
-        remark remark,
-        isdisable isdisable
-        from vmes_equipment_maintain_content
+        maintainContent.id id,
+        maintainContent.company_id companyId,
+        maintainContent.equipment_id equipmentId,
+        maintainContent.content content,
+        maintainContent.cuser cuser,
+        maintainContent.cdate cdate,
+        maintainContent.uuser uuser,
+        maintainContent.udate udate,
+        maintainContent.remark remark,
+        maintainContent.isdisable isdisable,
+
+        equipment.code code,
+        equipment.name name,
+        equipment.spec spec,
+
+        department.name deptName,
+        department.long_name deptPathName
+
+        from vmes_equipment_maintain_content maintainContent
+        left join vmes_equipment equipment on maintainContent.equipment_id = equipment.id
+        left join vmes_department department on equipment.dept_id = department.id
         <where>
+            <if test="currentCompanyId != null and currentCompanyId != ''">
+                and maintainContent.company_id = #{currentCompanyId}
+            </if>
+            <if test="equipmentId != null and equipmentId != ''">
+                and maintainContent.equipment_id = #{equipmentId}
+            </if>
+            <if test="maintainContentIsdisable != null and maintainContentIsdisable != ''">
+                and maintainContent.isdisable = #{maintainContentIsdisable}
+            </if>
+
+            <if test="content != null and content != ''">
+                and maintainContent.content LIKE CONCAT(CONCAT('%', #{content}),'%')
+            </if>
+            <if test="code != null and code != ''">
+                and equipment.code LIKE CONCAT(CONCAT('%', #{code}),'%')
+            </if>
+            <if test="name != null and name != ''">
+                and equipment.name LIKE CONCAT(CONCAT('%', #{name}),'%')
+            </if>
+            <if test="spec != null and spec != ''">
+                and equipment.spec LIKE CONCAT(CONCAT('%', #{spec}),'%')
+            </if>
+            <if test="equipmentIsdisable != null and equipmentIsdisable != ''">
+                and equipment.isdisable = #{equipmentIsdisable}
+            </if>
+
+            <!--部门设备 自定义sql查询语句-->
+            <if test="deptEqptQueryStr != null and deptEqptQueryStr != ''">
+                and ${deptEqptQueryStr}
+            </if>
+
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >
                 and ${queryStr}
             </if>
-            <if test="code != null and code != ''">
-                and code LIKE CONCAT(CONCAT('%', #{code}),'%')
-            </if>
-            <if test="name != null and name != ''">
-                and name LIKE CONCAT(CONCAT('%', #{name}),'%')
-            </if>
+
+
         </where>
         <if test="orderStr != null and orderStr != ''" >
             order by ${orderStr}

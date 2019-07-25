@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.service.ColumnService;
+import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -189,12 +190,12 @@ public class EquipmentMaintainContentServiceImp implements EquipmentMaintainCont
     /**
     *
     * @param pd    查询参数对象PageData
-    * @param pg    分页参数对象Pagination
     * @return      返回对象ResultModel
     * @throws Exception
     */
-    public ResultModel listPageEquipmentMaintainContent(PageData pd,Pagination pg) throws Exception{
+    public ResultModel listPageEquipmentMaintainContent(PageData pd) throws Exception{
         ResultModel model = new ResultModel();
+        Pagination pg = HttpUtils.parsePagination(pd);
 
         List<Column> columnList = columnService.findColumnList("equipmentMaintainContent");
         if (columnList == null || columnList.size() == 0) {
@@ -227,7 +228,7 @@ public class EquipmentMaintainContentServiceImp implements EquipmentMaintainCont
         }
 
         List<Map> varList = this.getDataListPage(pd, pg);
-        List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
+        List<Map> varMapList = ColumnUtil.getVarMapList(varList, titleMap);
 
         result.put("hideTitles",titleMap.get("hideTitles"));
         result.put("titles",titleMap.get("titles"));
