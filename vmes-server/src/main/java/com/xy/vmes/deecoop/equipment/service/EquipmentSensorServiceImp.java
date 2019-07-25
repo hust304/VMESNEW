@@ -247,8 +247,8 @@ public class EquipmentSensorServiceImp implements EquipmentSensorService {
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    public void deleteTableByEquipment(String equipmentId) {
-        equipmentSensorMapper.deleteTableByEquipment(equipmentId);
+    public void deleteTableByEquipment(PageData pd) {
+        equipmentSensorMapper.deleteTableByEquipment(pd);
     }
     public String checkColumnByEdit(EquipmentSensor object) {
         if (object == null) {return new String();}
