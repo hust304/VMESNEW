@@ -45,7 +45,7 @@ public interface EquipmentSensorMapper extends BaseMapper<EquipmentSensor> {
     List<Map> getDataListPage(PageData pd);
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
-    void deleteTableByEquipment(String equipmentId);
+    void deleteTableByEquipment(PageData pd);
     List<Map> findAllEquipmentBySensor(PageData pd, Pagination pg);
     List<Map> findAllEquipmentBySensor(PageData pd);
 }

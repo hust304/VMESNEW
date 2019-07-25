@@ -301,7 +301,7 @@ public class EquipmentSensorController {
             return model;
         }
 
-        equipmentSensorService.deleteTableByEquipment(equipmentId);
+        equipmentSensorService.deleteTableByEquipment(pageData);
 
         Long endTime = System.currentTimeMillis();
         logger.info("################/equipment/equipmentSensor/deleteEquipmentSensorByEquipment 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
