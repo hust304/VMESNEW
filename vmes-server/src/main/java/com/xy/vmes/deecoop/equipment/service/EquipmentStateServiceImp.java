@@ -140,9 +140,9 @@ public class EquipmentStateServiceImp implements EquipmentStateService {
                 Map dataMap = hoursData.get(i);
                 Date cdate = dataMap.get("cdate")!=null?(Date)dataMap.get("cdate"):null;
                 String time = dateFormat.format(cdate);
-                String isOpen = dataMap.get("A0001")!=null?(String)dataMap.get("A0001"):null;;
-                String isWork = dataMap.get("A0002")!=null?(String)dataMap.get("A0002"):null;;
-                String isAlarm = dataMap.get("A0003")!=null?(String)dataMap.get("A0003"):null;;
+                String isOpen = dataMap.get("A0001")!=null?(String)dataMap.get("A0001"):null;
+                String isWork = dataMap.get("A0002")!=null?(String)dataMap.get("A0002"):null;
+                String isAlarm = dataMap.get("A0003")!=null?(String)dataMap.get("A0003"):null;
                 if("1".equals(isOpen)&&openStartDate==null){
                     openStartDate = time;
                 }
@@ -274,6 +274,9 @@ public class EquipmentStateServiceImp implements EquipmentStateService {
         titleMap.put("cdate","时间");
         titlesList.add(titleMap);
         String colSQL = null;
+        pd.put("isdisable","1");
+        pd.put("orderStr"," target_code asc ");
+
         List<EquipmentSensor> listSensor = equipmentSensorService.dataList(pd);
         if(listSensor!=null&&listSensor.size()>0){
             for(int i=0;i<listSensor.size();i++){

@@ -180,6 +180,7 @@ public class EquipmentSensorController {
         eqptSensor.setTargetType("O");
         eqptSensor.setTargetCode("A0001");
         eqptSensor.setTargetName("是否开机");
+        eqptSensor.setTargetFormulaSql("A0001");
         eqptSensor.setRemark("0：否 1：是");
         eqptSensor.setEquipmentId(equipmentId);
         eqptSensor.setCompanyId(companyID);
@@ -191,6 +192,7 @@ public class EquipmentSensorController {
         eqptSensor.setTargetType("O");
         eqptSensor.setTargetCode("A0002");
         eqptSensor.setTargetName("是否工作");
+        eqptSensor.setTargetFormulaSql("A0002");
         eqptSensor.setRemark("0：否 1：是");
         eqptSensor.setEquipmentId(equipmentId);
         eqptSensor.setCompanyId(companyID);
@@ -203,6 +205,7 @@ public class EquipmentSensorController {
         eqptSensor.setTargetType("O");
         eqptSensor.setTargetCode("A0003");
         eqptSensor.setTargetName("是否故障");
+        eqptSensor.setTargetFormulaSql("A0003");
         eqptSensor.setRemark("0：否 1：是");
         eqptSensor.setEquipmentId(equipmentId);
         eqptSensor.setCompanyId(companyID);
@@ -215,6 +218,7 @@ public class EquipmentSensorController {
         eqptSensor.setTargetType("O");
         eqptSensor.setTargetCode("A0004");
         eqptSensor.setTargetName("生产计数");
+        eqptSensor.setTargetFormulaSql("A0004");
         eqptSensor.setRemark(null);
         eqptSensor.setEquipmentId(equipmentId);
         eqptSensor.setCompanyId(companyID);

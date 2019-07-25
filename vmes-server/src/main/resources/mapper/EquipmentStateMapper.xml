@@ -131,7 +131,7 @@
     </select>
 
     <select id="getOutputNum"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
-      select equipment_id equipmentId,max(A0003)-min(A0003) outputNum from vmes_sensor_source
+      select equipment_id equipmentId,max(A0004)-min(A0004) outputNum from vmes_sensor_source
         <where>
             <if test="equipmentId != null and equipmentId != ''">
                 and equipment_id = #{equipmentId}
@@ -140,7 +140,7 @@
     </select>
 
     <select id="getStartDate"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
-        select equipment_id equipmentId,cdate startDate from vmes_sensor_source
+        select equipment_id equipmentId,DATE_FORMAT(cdate,'%Y-%m-%d %H:%i:%s') startDate from vmes_sensor_source
         <where>
             <if test="equipmentId != null and equipmentId != ''">
                 and equipment_id = #{equipmentId}
@@ -151,7 +151,7 @@
     </select>
 
     <select id="getCollectDate"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
-        select equipment_id equipmentId,cdate collectDate from vmes_sensor_source
+        select equipment_id equipmentId,DATE_FORMAT(cdate,'%Y-%m-%d %H:%i:%s')  collectDate from vmes_sensor_source
         <where>
             <if test="equipmentId != null and equipmentId != ''">
                 and equipment_id = #{equipmentId}
@@ -175,7 +175,7 @@
 
     <select id="get24HoursDataDetail"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
         select
-        cdate,
+        DATE_FORMAT(cdate,'%Y-%m-%d %H:%i:%s') cdate,
         ${colSQL}
         from vmes_sensor_source
         <where>
@@ -183,7 +183,7 @@
                 and equipment_id = #{equipmentId}
             </if>
         </where>
-        order by cdate desc limit 1
+        order by cdate desc
     </select>
 
 
