@@ -175,15 +175,18 @@
 
     <select id="get24HoursDataDetail"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
         select
-        DATE_FORMAT(cdate,'%Y-%m-%d %H:%i:%s') cdate,
-        ${colSQL}
-        from vmes_sensor_source
+        DATE_FORMAT(t.cdate,'%Y-%m-%d %H:%i:%s') cdate,
+        ${colStr}
+        from ${viewStr} t
         <where>
             <if test="equipmentId != null and equipmentId != ''">
-                and equipment_id = #{equipmentId}
+                and t.equipment_id = #{equipmentId}
+            </if>
+            <if test="queryStr != null and queryStr != ''" >
+                and ${queryStr}
             </if>
         </where>
-        order by cdate desc
+        order by t.cdate desc
     </select>
 
 

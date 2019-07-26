@@ -1,5 +1,6 @@
 package com.xy.vmes.deecoop.equipment.service;
 
+import com.xy.vmes.deecoop.equipment.dao.EquipmentStateMapper;
 import com.yvan.HttpUtils;
 import com.yvan.common.util.Common;
 import com.xy.vmes.deecoop.equipment.dao.EquipmentSensorMapper;
@@ -12,6 +13,7 @@ import com.xy.vmes.entity.Column;
 import com.xy.vmes.service.ColumnService;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +32,8 @@ import com.yvan.Conv;
 public class EquipmentSensorServiceImp implements EquipmentSensorService {
     @Autowired
     private EquipmentSensorMapper equipmentSensorMapper;
+    @Autowired
+    private EquipmentStateMapper equipmentStateMapper;
     @Autowired
     private ColumnService columnService;
 
@@ -443,7 +447,7 @@ public class EquipmentSensorServiceImp implements EquipmentSensorService {
             valueMap.put("id", object.getId());
             valueMap.put("targetCode", object.getTargetCode());
             valueMap.put("targetName", object.getTargetName());
-            valueMap.put("targetFormula", object.getTargetFormula());
+            valueMap.put("targetFormula", object.getTargetFormulaSql());
             sensorMapList.add(valueMap);
         }
 
@@ -451,6 +455,14 @@ public class EquipmentSensorServiceImp implements EquipmentSensorService {
         return model;
     }
 
+
+    @Override
+    public void checkEquipmentSensorFormula(PageData pd) throws Exception {
+        if(StringUtils.isEmpty(pd.getString("viewStr"))){
+            pd.put("viewStr","( select * from vmes_sensor_source )");
+        }
+        List<Map> varMapList = equipmentStateMapper.get24HoursDataDetail(pd);
+    }
 }
 
 

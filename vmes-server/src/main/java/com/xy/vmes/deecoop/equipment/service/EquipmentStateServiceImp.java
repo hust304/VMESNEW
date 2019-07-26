@@ -12,6 +12,7 @@ import com.xy.vmes.service.EquipmentStateService;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -255,8 +256,11 @@ public class EquipmentStateServiceImp implements EquipmentStateService {
         Map result = new HashMap();
 
         Map titlesAndSQLMap = get24HoursDataTitlesAndSQL(pd);
-        String colSQL = titlesAndSQLMap.get("colSQL")!=null?(String)titlesAndSQLMap.get("colSQL"):null;
-        pd.put("colSQL",colSQL);
+        String colStr = titlesAndSQLMap.get("colStr")!=null?(String)titlesAndSQLMap.get("colStr"):null;
+        pd.put("colStr",colStr);
+        if(StringUtils.isEmpty(pd.getString("viewStr"))){
+            pd.put("viewStr","( select * from vmes_sensor_source )");
+        }
         List<Map> varMapList = equipmentStateMapper.get24HoursDataDetail(pd);
 
         result.put("hideTitles",null);
@@ -273,7 +277,7 @@ public class EquipmentStateServiceImp implements EquipmentStateService {
         LinkedHashMap titleMap = new LinkedHashMap();
         titleMap.put("cdate","时间");
         titlesList.add(titleMap);
-        String colSQL = null;
+        String colStr = null;
         pd.put("isdisable","1");
         pd.put("orderStr"," target_code asc ");
 
@@ -284,15 +288,15 @@ public class EquipmentStateServiceImp implements EquipmentStateService {
                 titleMap = new LinkedHashMap();
                 titleMap.put(equipmentSensor.getTargetCode(),equipmentSensor.getTargetName());
                 titlesList.add(titleMap);
-                if(colSQL==null){
-                    colSQL = equipmentSensor.getTargetFormulaSql() + " " + equipmentSensor.getTargetCode();
+                if(colStr==null){
+                    colStr = equipmentSensor.getTargetFormulaSql() + " " + equipmentSensor.getTargetCode();
                 }else {
-                    colSQL = colSQL + "," + equipmentSensor.getTargetFormulaSql() + " " + equipmentSensor.getTargetCode();
+                    colStr = colStr + "," + equipmentSensor.getTargetFormulaSql() + " " + equipmentSensor.getTargetCode();
                 }
             }
         }
         map.put("titlesList",titlesList);
-        map.put("colSQL",colSQL);
+        map.put("colStr",colStr);
         return map;
     }
 
