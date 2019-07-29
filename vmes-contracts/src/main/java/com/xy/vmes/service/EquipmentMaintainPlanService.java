@@ -99,6 +99,19 @@ public interface EquipmentMaintainPlanService {
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**
+     * 添加设备保养计划
+     * @param valueMap
+     *
+     * 参数说明:
+     * valueMap Map<String, Object>
+     * eqptJsonMapList: 设备jsonMapList List<Map<String, String>>
+     * planObject: 周期计划设定 EquipmentMaintainPlan
+     */
+    void addMaintainPlan(Map<String, Object> valueMap);
+
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /**
     * 分页查询
     * @param pd    查询参数对象PageData
     * @return      返回对象ResultModel

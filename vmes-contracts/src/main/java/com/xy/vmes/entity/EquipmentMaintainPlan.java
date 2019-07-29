@@ -12,7 +12,7 @@ import java.util.*;
  * @date 2019-07-25
  */
 @TableName("vmes_equipment_maintain_plan")
-public class EquipmentMaintainPlan implements Serializable {
+public class EquipmentMaintainPlan implements Serializable,Cloneable {
 	private static final long serialVersionUID = 1L;
 
 	//
@@ -63,7 +63,7 @@ public class EquipmentMaintainPlan implements Serializable {
 	@TableField("period_name")
 	private String periodName;
 
-	//重复类型 (everDay:每天 dayOfWeek:每周星期几 weekOfMonth:每月第几个星期几 dayOfYear:每年某月某日 workDay:工作日[周1-周5])
+	//重复类型 (everDay:每天 dayOfWeek:每周星期几 weekOfMonth:每月第几个星期几 dayOfYear:每年某月某日 workDay:工作日[周1-周5] customPeriod:自定义周期)
 	@TableField("sys_period_type")
 	private String sysPeriodType;
 	//重复类型名称
@@ -230,6 +230,14 @@ public class EquipmentMaintainPlan implements Serializable {
 	}
 
 /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
-
+public EquipmentMaintainPlan clone() {
+	EquipmentMaintainPlan object = null;
+	try{
+		object = (EquipmentMaintainPlan)super.clone();
+	}catch(CloneNotSupportedException e) {
+		e.printStackTrace();
+	}
+	return object;
+}
 
 }

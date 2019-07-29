@@ -1,7 +1,9 @@
 package com.xy.vmes.deecoop.equipment.service;
 
+import com.xy.vmes.common.util.DateFormat;
 import com.xy.vmes.deecoop.equipment.dao.EquipmentMaintainPlanMapper;
 import com.xy.vmes.entity.EquipmentMaintainPlan;
+import com.xy.vmes.service.CoderuleService;
 import com.xy.vmes.service.EquipmentMaintainPlanService;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
@@ -10,6 +12,7 @@ import com.xy.vmes.entity.Column;
 import com.xy.vmes.service.ColumnService;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
+import com.yvan.common.util.Common;
 import com.yvan.springmvc.ResultModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,6 +33,8 @@ public class EquipmentMaintainPlanServiceImp implements EquipmentMaintainPlanSer
     private EquipmentMaintainPlanMapper equipmentMaintainPlanMapper;
     @Autowired
     private ColumnService columnService;
+    @Autowired
+    private CoderuleService coderuleService;
 
     /**
      * 创建人：陈刚 自动创建，禁止修改
@@ -190,6 +195,39 @@ public class EquipmentMaintainPlanServiceImp implements EquipmentMaintainPlanSer
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**
+     * 添加设备保养计划
+     * @param valueMap
+     *
+     * 参数说明:
+     * valueMap Map<String, Object>
+     * eqptJsonMapList: 设备jsonMapList List<Map<String, String>>
+     * planObject: 周期计划设定 EquipmentMaintainPlan
+     */
+    public void addMaintainPlan(Map<String, Object> valueMap) {
+        if (valueMap == null) {return;}
+        //周期计划设定
+        EquipmentMaintainPlan planObject = (EquipmentMaintainPlan)valueMap.get("planObject");
+        if (planObject == null) {return;}
+        List<Map<String, String>> jsonMapList = (List<Map<String, String>>)valueMap.get("eqptJsonMapList");
+        if (jsonMapList == null || jsonMapList.size() == 0) {return;}
+
+        //modeId 保养方式(自定义 按周期 数据字典-vmes_dictionary.id)
+        String modeId = planObject.getModeId();
+
+        //设备保养方式: 7ef6384e92a343ccb839112a5d59b2fe (vmes_dictionary.id) 设备保养计划(模块)
+        //maintainModeCustom ee66976e1b3d453bae8839e6e9458b2f 自定义
+        //maintainModePeriod 9a05a30aa81e4637b498703b14cde8b1 按周期
+        if (Common.DICTIONARY_MAP.get("maintainModePeriod").equals(modeId)) {
+            this.addMaintainPlanByPeriod(planObject, jsonMapList);
+        } else if (Common.DICTIONARY_MAP.get("maintainModeCustom").equals(modeId)) {
+            this.addMaintainPlanByCustom(planObject, jsonMapList);
+        }
+
+
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /**
     *
     * @param pd    查询参数对象PageData
     * @return      返回对象ResultModel
@@ -237,6 +275,83 @@ public class EquipmentMaintainPlanServiceImp implements EquipmentMaintainPlanSer
         result.put("varList",varMapList);
         model.putResult(result);
         return model;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /**
+     * 添加设备保养计划(按周期)
+     *
+     * @param planObject
+     * @param jsonMapList
+     */
+    private void addMaintainPlanByPeriod(EquipmentMaintainPlan planObject, List<Map<String, String>> jsonMapList) {
+        if (planObject == null) {return;}
+        if (jsonMapList == null || jsonMapList.size() == 0) {return;}
+
+        for (Map<String, String> mapObject : jsonMapList) {
+            EquipmentMaintainPlan addMaintainPlan = planObject.clone();
+
+            String equipmentId = mapObject.get("equipmentId");
+            addMaintainPlan.setEquipmentId(equipmentId);
+            String maintainContentId = mapObject.get("maintainContentId");
+            addMaintainPlan.setMaintainContentId(maintainContentId);
+
+            String companyId = planObject.getCompanyId();
+            //sysCode 保养计划单编号(系统生成)
+            //MP+yyyyMMdd+00001 = 15位
+            String code = coderuleService.createCoderCdateByDate(companyId,
+                    "vmes_equipment_maintain_plan",
+                    "yyyyMMdd",
+                    "MP");
+            addMaintainPlan.setSysCode(code);
+
+            try {
+                this.save(addMaintainPlan);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * 添加设备保养计划(自定义)
+     *
+     * @param planObject
+     * @param jsonMapList
+     */
+    private void addMaintainPlanByCustom(EquipmentMaintainPlan planObject, List<Map<String, String>> jsonMapList) {
+        if (planObject == null) {return;}
+        if (jsonMapList == null || jsonMapList.size() == 0) {return;}
+
+        for (Map<String, String> mapObject : jsonMapList) {
+            EquipmentMaintainPlan addMaintainPlan = planObject.clone();
+
+            String equipmentId = mapObject.get("equipmentId");
+            addMaintainPlan.setEquipmentId(equipmentId);
+            String maintainContentId = mapObject.get("maintainContentId");
+            addMaintainPlan.setMaintainContentId(maintainContentId);
+
+            //maintainDate 计划保养时间
+            String maintainDateStr = mapObject.get("maintainDate");
+            Date maintainDate = DateFormat.dateString2Date(maintainDateStr, DateFormat.DEFAULT_DATE_FORMAT);
+            addMaintainPlan.setMaintainDate(maintainDate);
+
+            String companyId = planObject.getCompanyId();
+            //sysCode 保养计划单编号(系统生成)
+            //MP+yyyyMMdd+00001 = 15位
+            String code = coderuleService.createCoderCdateByDate(companyId,
+                    "vmes_equipment_maintain_plan",
+                    "yyyyMMdd",
+                    "MP");
+            addMaintainPlan.setSysCode(code);
+
+            try {
+                this.save(addMaintainPlan);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
     }
 
 
