@@ -135,14 +135,17 @@ public class EquipmentSensorController {
         //2. targetType指标类型 := B:分析指标 [公式转换:=sql查询可以直接使用]
         // targetType指标类型(A:传感器指标 B:分析指标)
         if ("B".equals(eqptSensor.getTargetType())) {
-            String targetFormulaColumn = equipmentSensorFormulaService.formula2TargetFormulaColumn(
-                    eqptSensor.getEquipmentId(),
-                    eqptSensor.getTargetType(),
-                    eqptSensor.getTargetFormula());
-            eqptSensor.setTargetFormulaColumn(targetFormulaColumn);
+//            String targetFormulaColumn = equipmentSensorFormulaService.formula2TargetFormulaColumn(
+//                    eqptSensor.getEquipmentId(),
+//                    eqptSensor.getTargetType(),
+//                    eqptSensor.getTargetFormula());
+            eqptSensor.setTargetFormula(eqptSensor.getTargetFormula());
+            eqptSensor.setTargetFormulaSql(eqptSensor.getTargetFormulaSql());
+            eqptSensor.setTargetFormulaDisplay(eqptSensor.getTargetFormulaDisplay());
         } else if ("A".equals(eqptSensor.getTargetType())) {
             eqptSensor.setTargetFormula(null);
-            eqptSensor.setTargetFormulaColumn(null);
+            eqptSensor.setTargetFormulaSql(eqptSensor.getTargetCode());
+            eqptSensor.setTargetFormulaDisplay(null);
         }
 
         //获取企业id
@@ -273,7 +276,7 @@ public class EquipmentSensorController {
             }
 
             model.putCode(Integer.valueOf(1));
-            model.putMsg("该设备传感器指标已被其他分析指标("+equipmentSensorNames+")引用，不能直接删除，请先删除分析指标！");
+            model.putMsg("该设备传感器指标已被其他分析指标("+equipmentSensorNames+")引用，不能直接删除，请先删除"+equipmentSensorNames+"！");
             return model;
         }
         equipmentSensorService.deleteById(id);
@@ -357,18 +360,35 @@ public class EquipmentSensorController {
         //2. targetType指标类型 := B:分析指标 [公式转换:=sql查询可以直接使用]
         // targetType指标类型(A:传感器指标 B:分析指标)
         if ("B".equals(eqptSensor.getTargetType())) {
-            String targetFormulaColumn = equipmentSensorFormulaService.formula2TargetFormulaColumn(
-                    eqptSensor.getEquipmentId(),
-                    eqptSensor.getTargetType(),
-                    eqptSensor.getTargetFormula());
+//            String targetFormulaColumn = equipmentSensorFormulaService.formula2TargetFormulaColumn(
+//                    eqptSensor.getEquipmentId(),
+//                    eqptSensor.getTargetType(),
+//                    eqptSensor.getTargetFormula());
             editObject.setTargetFormula(eqptSensor.getTargetFormula());
-            editObject.setTargetFormulaColumn(targetFormulaColumn);
+            editObject.setTargetFormulaSql(eqptSensor.getTargetFormulaSql());
+            editObject.setTargetFormulaDisplay(eqptSensor.getTargetFormulaDisplay());
+            pageData = new PageData();
+            pageData.put("equipmentId",eqptSensor.getEquipmentId());
+            pageData.put("targetFormula",eqptSensor.getTargetCode());
+            pageData.put("queryStr"," id not in ('"+eqptSensor.getId()+"') ");
+            List<EquipmentSensor>  equipmentSensorList = equipmentSensorService.dataList(pageData);
+            if(equipmentSensorList!=null&&equipmentSensorList.size()>0){
+                for(int i=0;i<equipmentSensorList.size();i++){
+                    EquipmentSensor equipmentSensor = equipmentSensorList.get(i);
+                    String targetFormula = equipmentSensor.getTargetFormula();
+                    String targetFormulaSql = targetFormula.replace(eqptSensor.getTargetCode(),eqptSensor.getTargetFormulaSql());
+                    equipmentSensor.setTargetFormulaSql(targetFormulaSql);
+                    equipmentSensorService.update(equipmentSensor);
+                }
+            }
+
         } else if ("A".equals(eqptSensor.getTargetType())) {
             editObject.setTargetFormula(null);
-            editObject.setTargetFormulaColumn(null);
+            editObject.setTargetFormulaSql(eqptSensor.getTargetCode());
+            editObject.setTargetFormulaDisplay(null);
         }
-
         equipmentSensorService.update(editObject);
+
 
         Long endTime = System.currentTimeMillis();
         logger.info("################/equipment/equipmentSensor/updateEquipmentSensor 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
@@ -416,6 +436,34 @@ public class EquipmentSensorController {
         logger.info("################/equipment/equipmentSensor/updateDisableEquipmentSensor 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
+
+
+    /**
+     * 修改-设备传感器指标(禁用)状态
+     * @author 陈刚
+     * @date 2019-10-16
+     * @throws Exception
+     */
+    @PostMapping("/equipment/equipmentSensor/checkEquipmentSensorFormula")
+    public ResultModel checkEquipmentSensorFormula() throws Exception {
+        logger.info("################/equipment/equipmentSensor/checkEquipmentSensorFormula 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+        try {
+            equipmentSensorService.checkEquipmentSensorFormula(pd);
+        }catch (Exception e){
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("校验公式逻辑错误，请重新编辑！");
+            return model;
+        }
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/equipment/equipmentSensor/checkEquipmentSensorFormula 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
 
 }
 

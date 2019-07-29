@@ -121,6 +121,7 @@ public interface EquipmentSensorService {
     ResultModel findListEquipmentSensorByEquipment(PageData pd) throws Exception;
 
 
+    void checkEquipmentSensorFormula(PageData pd) throws Exception;
 }
 
 
