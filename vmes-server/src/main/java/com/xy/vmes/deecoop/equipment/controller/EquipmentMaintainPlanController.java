@@ -81,17 +81,18 @@ public class EquipmentMaintainPlanController {
             endPlan = DateFormat.dateString2Date(endPlanStr, DateFormat.DEFAULT_DATE_FORMAT);
         }
 
-        //计划对象 <EquipmentMaintainPlan>
-        EquipmentMaintainPlan planObject = (EquipmentMaintainPlan) HttpUtils.pageData2Entity(pageData, new EquipmentMaintainPlan());
-        planObject.setBeginPlan(beginPlan);
-        planObject.setEndPlan(endPlan);
-
         String companyId = pageData.getString("currentCompanyId");
         if (companyId == null || companyId.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("企业id为空或空字符串！");
             return model;
         }
+
+        //计划对象 <EquipmentMaintainPlan>
+        EquipmentMaintainPlan planObject = (EquipmentMaintainPlan) HttpUtils.pageData2Entity(pageData, new EquipmentMaintainPlan());
+        planObject.setBeginPlan(beginPlan);
+        planObject.setEndPlan(endPlan);
+        planObject.setCompanyId(companyId);
 
         String eqptJsonStr = pageData.getString("eqptJsonStr");
         if (eqptJsonStr == null || eqptJsonStr.trim().length() == 0) {

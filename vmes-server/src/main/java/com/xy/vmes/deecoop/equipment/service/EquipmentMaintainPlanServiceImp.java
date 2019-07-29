@@ -267,8 +267,31 @@ public class EquipmentMaintainPlanServiceImp implements EquipmentMaintainPlanSer
             result.put("pageData", pg);
         }
 
-        List<Map> varList = this.getDataListPage(pd,pg);
-        List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
+        List<Map> varList = this.getDataListPage(pd, pg);
+        for (Map<String, Object> mapObject : varList) {
+            String cycleName = new String();
+
+            //modeId 保养方式(自定义 按周期 数据字典-vmes_dictionary.id)
+            String modeId = (String)mapObject.get("modeId");
+            //maintainModeCustom ee66976e1b3d453bae8839e6e9458b2f 自定义
+            //maintainModePeriod 9a05a30aa81e4637b498703b14cde8b1 按周期
+
+            if (Common.DICTIONARY_MAP.get("maintainModePeriod").equals(modeId)) {
+                //sysPeriodType 重复类型 (everDay:每天 dayOfWeek:每周星期几 weekOfMonth:每月第几个星期几 dayOfYear:每年某月某日 workDay:工作日[周1-周5] customPeriod:自定义周期)
+                String sysPeriodType = (String)mapObject.get("sysPeriodType");
+                if ("customPeriod".equals(sysPeriodType)) {
+                    String periodName = (String)mapObject.get("periodName");
+                    if (periodName != null && periodName.trim().length() > 0) {cycleName = periodName;}
+                } else if ("everDay,dayOfWeek,weekOfMonth,dayOfYear,workDay".indexOf(sysPeriodType) != -1) {
+                    String sysPeriodTypeName = (String)mapObject.get("sysPeriodTypeName");
+                    if (sysPeriodTypeName != null && sysPeriodTypeName.trim().length() > 0) {cycleName = sysPeriodTypeName;}
+                }
+            }
+
+            mapObject.put("cycleName", cycleName);
+        }
+
+        List<Map> varMapList = ColumnUtil.getVarMapList(varList, titleMap);
 
         result.put("hideTitles",titleMap.get("hideTitles"));
         result.put("titles",titleMap.get("titles"));
