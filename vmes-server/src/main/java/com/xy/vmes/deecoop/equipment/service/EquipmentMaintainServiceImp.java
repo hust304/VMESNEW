@@ -2,6 +2,8 @@ package com.xy.vmes.deecoop.equipment.service;
 
 import com.xy.vmes.deecoop.equipment.dao.EquipmentMaintainMapper;
 import com.xy.vmes.entity.EquipmentMaintain;
+import com.xy.vmes.entity.EquipmentMaintainPlan;
+import com.xy.vmes.service.CoderuleService;
 import com.xy.vmes.service.EquipmentMaintainService;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
@@ -30,6 +32,8 @@ public class EquipmentMaintainServiceImp implements EquipmentMaintainService {
     private EquipmentMaintainMapper equipmentMaintainMapper;
     @Autowired
     private ColumnService columnService;
+    @Autowired
+    private CoderuleService coderuleService;
 
     /**
     * 创建人：陈刚 自动创建，禁止修改
@@ -187,6 +191,38 @@ public class EquipmentMaintainServiceImp implements EquipmentMaintainService {
 
         return this.dataList(pageData);
     }
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * 创建设备保养单
+     * @param cuser      用户id
+     * @param companyId  企业id
+     * @param plan       设备保养计划对象<EquipmentMaintainPlan>
+     */
+    public void addMaintainByCustom(String cuser, String companyId, EquipmentMaintainPlan plan) throws Exception {
+        EquipmentMaintain addMaintain = new EquipmentMaintain();
+        addMaintain.setCuser(cuser);
+        addMaintain.setCompanyId(companyId);
+        //planId 保养计划ID
+        addMaintain.setPlanId(plan.getId());
+
+        //sysCode 保养单编号(系统生成)
+        //设备维修单编号
+        //EM+yyyyMMdd+00001 = 15位
+        String code = coderuleService.createCoderCdateByDate(companyId,
+                "vmes_equipment_maintain:",
+                "yyyyMMdd",
+                "EM");
+        addMaintain.setSysCode(code);
+
+        //maintainDate 保养时间(yyyy-MM-dd)
+        addMaintain.setMaintainDate(plan.getMaintainDate());
+        //equipmentState 设备状态(1:待保养 2:保养中 3:已完成)
+        addMaintain.setEquipmentState("1");
+
+        this.save(addMaintain);
+    }
+    public void addMaintainByPeriod() {}
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**

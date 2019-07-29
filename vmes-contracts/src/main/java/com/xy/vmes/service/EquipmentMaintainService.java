@@ -2,6 +2,7 @@ package com.xy.vmes.service;
 
 import com.xy.vmes.entity.EquipmentMaintain;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.entity.EquipmentMaintainPlan;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
 import java.util.List;
@@ -97,6 +98,16 @@ public interface EquipmentMaintainService {
     EquipmentMaintain findMaintainById(String id) throws Exception;
     List<EquipmentMaintain> findMaintainList(PageData object) throws Exception;
 
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * 创建设备保养单
+     * @param cuser      用户id
+     * @param companyId  企业id
+     * @param plan       设备保养计划对象<EquipmentMaintainPlan>
+     */
+    void addMaintainByCustom(String cuser, String companyId, EquipmentMaintainPlan plan) throws Exception;
+    void addMaintainByPeriod();
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**
     * 分页查询
