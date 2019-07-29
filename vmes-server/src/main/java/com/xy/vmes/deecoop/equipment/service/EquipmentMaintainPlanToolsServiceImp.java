@@ -79,7 +79,7 @@ public class EquipmentMaintainPlanToolsServiceImp implements EquipmentMaintainPl
         //2. customPeriod:自定义周期
         //每3个月13日
         //每3周星期一
-        String tempStr = "每{0}{1}{3}";
+        String tempStr = "每{0}{1}{2}";
         if ("customPeriod".equals(sysPeriodType)) {
             //periodCount 重复频率数字(间隔数字)
             String periodCount = planObject.getPeriodCount().toString();

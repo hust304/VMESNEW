@@ -1,5 +1,6 @@
 package com.yvan.common.util;
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -93,6 +94,47 @@ public class Common {
         put("5", "已发货");
         put("6", "已完成");
         put("-1", "已取消");
+    }};
+
+    //当前日期星期几
+    public static final Map<Integer, String> SYS_DAYOFWEEK_TO_WEEKNAME  = new HashMap<Integer, String>() {{
+        put(Integer.valueOf(Calendar.SUNDAY), "星期日");
+        put(Integer.valueOf(Calendar.MONDAY), "星期一");
+        put(Integer.valueOf(Calendar.TUESDAY), "星期二");
+        put(Integer.valueOf(Calendar.WEDNESDAY), "星期三");
+        put(Integer.valueOf(Calendar.THURSDAY), "星期四");
+        put(Integer.valueOf(Calendar.FRIDAY), "星期五");
+        put(Integer.valueOf(Calendar.SATURDAY), "星期六");
+    }};
+
+    //周的名称
+    public static final Map<String, String> SYS_WEEKNAME = new HashMap<String, String>() {{
+        put("SUNDAY", "星期日");
+        put("MONDAY", "星期一");
+        put("TUESDAY", "星期二");
+        put("WEDNESDAY", "星期三");
+        put("THURSDAY", "星期四");
+        put("FRIDAY", "星期五");
+        put("SATURDAY", "星期六");
+    }};
+
+    public static final Map<String, Integer> SYS_WEEK_DAYOFWEEK = new HashMap<String, Integer>() {{
+        put("SUNDAY", Integer.valueOf(Calendar.SUNDAY));
+        put("MONDAY", Integer.valueOf(Calendar.MONDAY));
+        put("TUESDAY", Integer.valueOf(Calendar.TUESDAY));
+        put("WEDNESDAY", Integer.valueOf(Calendar.WEDNESDAY));
+        put("THURSDAY", Integer.valueOf(Calendar.THURSDAY));
+        put("FRIDAY", Integer.valueOf(Calendar.FRIDAY));
+        put("SATURDAY", Integer.valueOf(Calendar.SATURDAY));
+    }};
+
+    //当前月第几周
+    public static final Map<Integer, String> SYS_WEEK_WEEKINMONTH = new HashMap<Integer, String>() {{
+        put(Integer.valueOf(1), "第一");
+        put(Integer.valueOf(2), "第二");
+        put(Integer.valueOf(3), "第三");
+        put(Integer.valueOf(4), "第四");
+        put(Integer.valueOf(5), "第五");
     }};
 
 
@@ -333,6 +375,13 @@ public class Common {
             put("retreatRefund", "f69839bbf2394846a65894f0da120df9");
             //c90c2081328c427e8d65014d98335601 退货换货
             put("retreatChange", "c90c2081328c427e8d65014d98335601");
+
+        //设备保养方式: 7ef6384e92a343ccb839112a5d59b2fe (vmes_dictionary.id) 设备保养计划(模块)
+        put("equipmentMaintainMode", "7ef6384e92a343ccb839112a5d59b2fe");
+            //maintainModeCustom ee66976e1b3d453bae8839e6e9458b2f 自定义
+            put("maintainModeCustom", "ee66976e1b3d453bae8839e6e9458b2f");
+            //maintainModePeriod 9a05a30aa81e4637b498703b14cde8b1 按周期
+            put("maintainModePeriod", "9a05a30aa81e4637b498703b14cde8b1");
     }};
 
     ///////////////--菜单名称--///////////////////////////////////////////////////////////////////
