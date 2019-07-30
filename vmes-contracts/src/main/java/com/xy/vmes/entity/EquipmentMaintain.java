@@ -24,13 +24,16 @@ public class EquipmentMaintain implements Serializable {
 	//设备ID
 	@TableField("equipment_id")
 	private String equipmentId;
+	//保养内容ID(保养内容表vmes_equipment_maintain_content.id)
+	@TableField("maintain_content_id")
+	private String maintainContentId;
 	//保养计划ID
 	@TableField("plan_id")
 	private String planId;
+
 	//保养任务ID
 	@TableField("maintain_task_id")
 	private String maintainTaskId;
-
 	//保养单编号(系统生成)
 	@TableField("sys_code")
 	private String sysCode;
@@ -43,10 +46,10 @@ public class EquipmentMaintain implements Serializable {
 	//保养时间(yyyy-MM-dd)
 	@TableField("maintain_date")
 	private Date maintainDate;
+
 	//下一保养时间(yyyy-MM-dd)
 	@TableField("next_maintain_date")
 	private Date nextMaintainDate;
-
 	//设备状态(1:待保养 2:保养中 3:已完成)
 	@TableField("equipment_state")
 	private String equipmentState;
@@ -59,10 +62,10 @@ public class EquipmentMaintain implements Serializable {
 	//取消原因
 	@TableField("cancel_reason")
 	private String cancelReason;
+
 	//取消时间
 	@TableField("cancel_date")
 	private Date cancelDate;
-
 	//取消人id
 	@TableField("cancel_user")
 	private String cancelUser;
@@ -75,10 +78,10 @@ public class EquipmentMaintain implements Serializable {
 	//创建用户id
 	@TableField("cuser")
 	private String cuser;
+
 	//创建时间
 	@TableField("cdate")
 	private Date cdate;
-
 	//修改用户id
 	@TableField("uuser")
 	private String uuser;
@@ -110,6 +113,12 @@ public class EquipmentMaintain implements Serializable {
 	}
 	public String getEquipmentId() {
 		return equipmentId;
+	}
+	public void setMaintainContentId(String maintainContentId) {
+		this.maintainContentId = maintainContentId;
+	}
+	public String getMaintainContentId() {
+		return maintainContentId;
 	}
 	public void setPlanId(String planId) {
 		this.planId = planId;
