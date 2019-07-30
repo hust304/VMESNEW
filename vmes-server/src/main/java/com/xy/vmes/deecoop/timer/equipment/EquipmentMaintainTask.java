@@ -1,5 +1,6 @@
 package com.xy.vmes.deecoop.timer.equipment;
 
+import com.xy.vmes.common.util.DateFormat;
 import com.xy.vmes.entity.Department;
 import com.xy.vmes.entity.EquipmentMaintainPlan;
 import com.xy.vmes.service.DepartmentService;
@@ -45,7 +46,8 @@ public class EquipmentMaintainTask {
     @Scheduled(cron = "0 0 1 1 * ?")
     public void createMaintainTimer() {
         Date nowDate = new Date();
-        Long nowTimeLong = nowDate.getTime();
+        //当前系统日期(yyyy-MM-dd)
+        String nowDateStr = DateFormat.date2String(nowDate, DateFormat.DEFAULT_DATE_FORMAT);
 
         //1. 获取系统全部企业
         List<Department> companyList = null;
@@ -71,6 +73,7 @@ public class EquipmentMaintainTask {
             try {
                 PageData findMap = new PageData();
                 findMap.put("companyId", companyId);
+                findMap.put("nowDate", nowDateStr);
                 //isdisable 是否禁用(0:已禁用 1:启用)
                 findMap.put("isdisable", "1");
                 planList = maintainPlanService.findMaintainPlanList(findMap);

@@ -8,8 +8,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.MessageFormat;
+import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 说明：vmes_equipment_maintain_plan:设备保养计划工具实现类
@@ -115,5 +118,128 @@ public class EquipmentMaintainPlanToolsServiceImp implements EquipmentMaintainPl
                 planObject.setSysPeriodTypeName(sysPeriodTypeName);
             }
         }
+    }
+
+    /**
+     * 获取计划周期的起止日期
+     * 重复类型(everDay:每天 dayOfWeek:每周星期几 weekOfMonth:每月第几个星期几 dayOfYear:每年某月某日 workDay:工作日[周1-周5] customPeriod:自定义周期)
+     *
+     * @param nowDate 系统当前时间
+     * @param plan    设备保养计划对象(周期计划)
+     *
+     * 返回值参数说明
+     * Map<重复类型Key, 周期起止日期时间Map>
+     * 重复类型Key:
+     *   everDay:每天
+     *   dayOfWeek:每周星期几
+     *   weekOfMonth:每月第几个星期几
+     *   dayOfYear:每年某月某日
+     *   workDay:工作日[周1-周5]
+     *   customPeriod:自定义周期
+     *
+     *  周期起止日期时间Map:
+     *  Map<String, Date>>
+     *      beginDateTime: 周期起始日期时间(yyyy-MM-dd HH:mm:ss)
+     *      endDateTime:   周期结束日期时间(yyyy-MM-dd HH:mm:ss)
+     */
+    public Map<String, Map<String, Date>> findPlanPeriod(Date nowDate, EquipmentMaintainPlan plan) {
+        Map<String, Map<String, Date>> valueMap = new HashMap<String, Map<String, Date>>();
+
+        if (nowDate == null) {nowDate = new Date();}
+        if (plan == null) {return valueMap;}
+
+        //获取当前日期(yyyy-MM-dd)
+        String nowDateStr = DateFormat.date2String(nowDate, DateFormat.DEFAULT_DATE_FORMAT);
+
+        //beginPlan 计划开始日期
+        Date beginPlan = plan.getBeginPlan();
+        String beginPlanStr = DateFormat.date2String(beginPlan, DateFormat.DEFAULT_DATE_FORMAT);
+
+        //endPlan 计划结束日期
+        Date endPlan = plan.getEndPlan();
+        String endPlanStr = DateFormat.date2String(endPlan, DateFormat.DEFAULT_DATE_FORMAT);
+        long endPlanLong = DateFormat.dateString2Date(endPlanStr, DateFormat.DEFAULT_DATE_FORMAT).getTime();
+
+        //1. 系统匹配周期 sysPeriodType
+        //sysPeriodType (everDay:每天 dayOfWeek:每周星期几 weekOfMonth:每月第几个星期几 dayOfYear:每年某月某日 workDay:工作日[周1-周5] customPeriod:自定义周期)
+        String sysPeriodType = plan.getSysPeriodType();
+        if ("everDay".equals(sysPeriodType)) {
+            Map<String, Date> dateTiemMap = new HashMap<String, Date>();
+
+            String beginTimeStr = nowDateStr + " 00:00:00";
+            Date beginDateTime = DateFormat.dateString2Date(beginTimeStr, DateFormat.DEFAULT_DATETIME_FORMAT);
+            dateTiemMap.put("beginDateTime", beginDateTime);
+
+            String endTimeStr = nowDateStr + " 23:59:59";
+            Date endDateTime = DateFormat.dateString2Date(endTimeStr, DateFormat.DEFAULT_DATETIME_FORMAT);
+            dateTiemMap.put("endDateTime", endDateTime);
+
+            valueMap.put("everDay", dateTiemMap);
+        } else if ("dayOfWeek".equals(sysPeriodType)) {
+            /**
+             * 1. (当前日期,计划开始日期)之间的天数
+             * 2. (当前日期,计划开始日期)之间的天数与(数字7)--（取整,取余）运算
+             *   取整: 当前日期在第几个周期范围内
+             * 本周期开始日期: 计划开始日期 + (几个周期) * 7
+             * 本周期结束日期: 计划开始日期 + (几个周期) * 7 - 1
+             */
+            Map<String, Date> dateTiemMap = new HashMap<String, Date>();
+
+            //(当前日期,计划开始日期) 之间的天数
+            int beginPlan2nowDateCount  = DateFormat.getDays(beginPlan, nowDate) + 1;
+            int day = beginPlan2nowDateCount % 7;
+
+            int week = -1;
+            if (day != 0) {
+                week = beginPlan2nowDateCount/7;
+            } else if (day == 0) {
+                week = beginPlan2nowDateCount/7 - 1;
+            }
+
+            //获取本周期-开始日期(yyyy-MM-dd)
+            int addDayByBegin = week * 7;
+            String beginDateStr = beginPlanStr;
+            try {
+                beginDateStr = DateFormat.getAddDay(beginPlanStr, DateFormat.DEFAULT_DATE, addDayByBegin, DateFormat.DEFAULT_DATE_FORMAT);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            String beginTimeStr = beginDateStr + " 00:00:00";
+            Date beginDateTime = DateFormat.dateString2Date(beginTimeStr, DateFormat.DEFAULT_DATETIME_FORMAT);
+            dateTiemMap.put("beginDateTime", beginDateTime);
+
+            //获取本周期-结束日期(yyyy-MM-dd)
+            int addDayByEnd = (week+1) * 7 - 1;
+            String endDateStr = endPlanStr;
+            try {
+                endDateStr = DateFormat.getAddDay(beginPlanStr, DateFormat.DEFAULT_DATE, addDayByEnd, DateFormat.DEFAULT_DATE_FORMAT);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            Date endDate = DateFormat.dateString2Date(endDateStr, DateFormat.DEFAULT_DATE_FORMAT);
+            long endDateLong = endDate.getTime();
+
+            //本周期结束日期 与 计划结束日期 比较
+            if (endDateLong < endPlanLong) {
+                String endTimeStr = endDateStr + " 23:59:59";
+                Date endDateTime = DateFormat.dateString2Date(endTimeStr, DateFormat.DEFAULT_DATETIME_FORMAT);
+                dateTiemMap.put("endDateTime", endDateTime);
+
+            } else if (endDateLong >= endPlanLong) {
+                String endTimeStr = endPlanStr + " 23:59:59";
+                Date endDateTime = DateFormat.dateString2Date(endTimeStr, DateFormat.DEFAULT_DATETIME_FORMAT);
+                dateTiemMap.put("endDateTime", endDateTime);
+            }
+
+            valueMap.put("dayOfWeek", dateTiemMap);
+        } else if ("weekOfMonth".equals(sysPeriodType)) {
+            Map<String, Date> dateTiemMap = new HashMap<String, Date>();
+            valueMap.put("weekOfMonth", dateTiemMap);
+        }
+
+
+
+        return valueMap;
     }
 }

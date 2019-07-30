@@ -1,9 +1,12 @@
 package com.xy.vmes.common.util;
 
+import com.yvan.common.util.Common;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 public class DateFormat {
     /**缺省日期格式*/
@@ -79,6 +82,56 @@ public class DateFormat {
         rightNow.add(intField, amount);
         String day = dateFormat.format(rightNow.getTime());
         return day;
+    }
+
+    //获得两个时间之间的天数,考虑隔年的情况
+    public static int getDays(Date fDate, Date oDate) {
+        Calendar d1 = Calendar.getInstance();
+        Calendar d2 = Calendar.getInstance();
+        d1.setTime(fDate);
+        d2.setTime(oDate);
+
+        if (d1.after(d2)) {
+            java.util.Calendar swap = d1;
+            d1 = d2;
+            d2 = swap;
+        }
+        int days = d2.get(Calendar.DAY_OF_YEAR) - d1.get(Calendar.DAY_OF_YEAR);
+        int y2 = d2.get(Calendar.YEAR);
+        if (d1.get(Calendar.YEAR) != y2) {
+            d1 = (Calendar) d1.clone();
+            do {
+                days += d1.getActualMaximum(Calendar.DAY_OF_YEAR);
+                d1.add(java.util.Calendar.YEAR, 1);
+            } while (d1.get(java.util.Calendar.YEAR) != y2);
+        }
+        return days;
+    }
+
+    public static int findDayByWeekMin(int dayOfWeek) {
+        int toWeekMin = 0;
+        List<Integer> dayList = Common.SYS_DAYOFWEEK_LIST;
+        if (dayList == null || dayList.size() == 0) {return toWeekMin;}
+
+        for (Integer intObject : dayList) {
+            if (intObject != null && intObject.intValue() == dayOfWeek) {
+                toWeekMin = dayList.indexOf(intObject);
+            }
+        }
+
+        return toWeekMin;
+    }
+
+    public static int findDayByWeekMax(int dayOfWeek) {
+        int toWeekMax = 0;
+        List<Integer> dayList = Common.SYS_DAYOFWEEK_LIST;
+        if (dayList == null || dayList.size() == 0) {return toWeekMax;}
+
+        int index = DateFormat.findDayByWeekMin(dayOfWeek);
+        int indexMax = dayList.size() - 1;
+
+        toWeekMax = indexMax - index;
+        return toWeekMax;
     }
 
     public static void main(String args[]) throws ParseException {

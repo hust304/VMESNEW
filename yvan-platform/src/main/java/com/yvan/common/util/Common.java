@@ -1,8 +1,6 @@
 package com.yvan.common.util;
 
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class Common {
     //linux系统:文件系统根路径
@@ -94,6 +92,17 @@ public class Common {
         put("5", "已发货");
         put("6", "已完成");
         put("-1", "已取消");
+    }};
+
+    //
+    public static final List<Integer> SYS_DAYOFWEEK_LIST = new ArrayList<Integer>() {{
+        add(Integer.valueOf(Calendar.SUNDAY));
+        add(Integer.valueOf(Calendar.MONDAY));
+        add(Integer.valueOf(Calendar.TUESDAY));
+        add(Integer.valueOf(Calendar.WEDNESDAY));
+        add(Integer.valueOf(Calendar.THURSDAY));
+        add(Integer.valueOf(Calendar.FRIDAY));
+        add(Integer.valueOf(Calendar.SATURDAY));
     }};
 
     //当前日期星期几
