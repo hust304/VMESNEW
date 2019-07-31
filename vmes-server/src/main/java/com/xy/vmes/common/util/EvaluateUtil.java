@@ -5,9 +5,9 @@ import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.text.MessageFormat;
+import java.text.ParseException;
+import java.util.*;
 
 /**
  * Created by 46368 on 2018/11/14.
@@ -76,7 +76,7 @@ public class EvaluateUtil {
         return EvaluateUtil.formulaReckon(parmMap, formula);
     }
 
-    public static void main(String args[]) {
+    public static void main(String args[]) throws ParseException {
 
 //        Binding binding = new Binding();
 //
@@ -96,18 +96,73 @@ public class EvaluateUtil {
 //        System.out.println(F1.toString());
 //        //System.out.println(F2);
 
-        Map<String, Object> parmMap = new HashMap<String, Object>();
-        //parmMap.put("P", "10");
+//        Map<String, Object> parmMap = new HashMap<String, Object>();
+//        //parmMap.put("P", "10");
+//
+//        parmMap.put("F", "2.5");
+//        parmMap.put("T", Integer.valueOf(30));
+//        parmMap.put("A", "100");
+//        parmMap.put("P0", "100");
+//
+//        //BigDecimal valueBig = EvaluateUtil.formulaReckon(parmMap, "N=8*P");
+//        BigDecimal valueBig = EvaluateUtil.formulaReckon(parmMap, "P1=(1+0.1 * (F/100) * T)*P0");
+//
+//        System.out.println("valueBig: " + valueBig.toString());
 
-        parmMap.put("F", "2.5");
-        parmMap.put("T", Integer.valueOf(30));
-        parmMap.put("A", "100");
-        parmMap.put("P0", "100");
+        //2019-07-30 第五个星期二
+        //2019-08-01 第一个星期四
 
-        //BigDecimal valueBig = EvaluateUtil.formulaReckon(parmMap, "N=8*P");
-        BigDecimal valueBig = EvaluateUtil.formulaReckon(parmMap, "P1=(1+0.1 * (F/100) * T)*P0");
+        String beginPlanStr = "2019-06-28";
+        Date beginPlan = DateFormat.dateString2Date(beginPlanStr, DateFormat.DEFAULT_DATE_FORMAT);
+        //System.out.println("timeLong: " + beginPlan.getTime());
 
-        System.out.println("valueBig: " + valueBig.toString());
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(beginPlan);
+
+//        int temp = calendar.get(Calendar.DAY_OF_WEEK);
+//        String tempStr = Common.SYS_DAYOFWEEK_TO_WEEKNAME.get(Integer.valueOf(temp));
+//        System.out.println("tempStr: " + tempStr);
+
+        //当前月第几周
+        int weekInMonth = calendar.get(Calendar.DAY_OF_WEEK_IN_MONTH);
+        //System.out.println("当前月第 " + weekInMonth + " 周");
+        //当前日期星期几
+        int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+
+        String tempStr = "每月{0}个{1}";
+        String sysPeriodTypeName = MessageFormat.format(tempStr,
+                Common.SYS_WEEK_WEEKINMONTH.get(Integer.valueOf(weekInMonth)),
+                Common.SYS_DAYOFWEEK_TO_WEEKNAME.get(Integer.valueOf(dayOfWeek)));
+        System.out.println("sysPeriodTypeName: " + sysPeriodTypeName);
+
+//        String endPlanStr = "2019-07-31 12:14:23";
+//        Date endPlan = DateFormat.dateString2Date(endPlanStr, DateFormat.DEFAULT_DATE_FORMAT);
+//        int count = DateFormat.getDays(beginPlan, endPlan);
+//        //int count = CalendarUtil.getDaysNoAfter(beginPlan, endPlan);
+//
+//        System.out.println("count: " + count);
+
+
+//        String dayOfYearStr = DateFormat.date2String(beginPlan, "MM月dd日");
+//        System.out.println("每年" + dayOfYearStr);
+
+
+        //2019-07-30 第五个星期二
+        //2019-08-01 第一个星期四
+
+        //当前月第几周
+        //int weekInMonth = calendar.get(Calendar.DAY_OF_WEEK_IN_MONTH);
+        //System.out.println("当前月第 " + weekInMonth + " 周");
+        //当前日期星期几
+//        int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+//
+//        int day1 = DateFormat.findDayByWeekMin(Calendar.TUESDAY);
+//        int day2 = DateFormat.findDayByWeekMax(dayOfWeek);
+//
+//        int addDay = (4-1) * 7 + (day1 + day2 + 1);
+//        String newDateStr = DateFormat.getAddDay(beginPlanStr, DateFormat.DEFAULT_DATE, addDay, DateFormat.DEFAULT_DATE_FORMAT);
+//        System.out.println("newDateStr:" + newDateStr);
+
 
     }
 }

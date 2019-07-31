@@ -150,6 +150,7 @@ public class EquipmentMaintainPlanToolsServiceImp implements EquipmentMaintainPl
 
         //获取当前日期(yyyy-MM-dd)
         String nowDateStr = DateFormat.date2String(nowDate, DateFormat.DEFAULT_DATE_FORMAT);
+        nowDate = DateFormat.dateString2Date(nowDateStr, DateFormat.DEFAULT_DATE_FORMAT);
 
         //beginPlan 计划开始日期
         Date beginPlan = plan.getBeginPlan();
@@ -234,12 +235,125 @@ public class EquipmentMaintainPlanToolsServiceImp implements EquipmentMaintainPl
 
             valueMap.put("dayOfWeek", dateTiemMap);
         } else if ("weekOfMonth".equals(sysPeriodType)) {
-            Map<String, Date> dateTiemMap = new HashMap<String, Date>();
-            valueMap.put("weekOfMonth", dateTiemMap);
+            Map<String, Date> dateTiemMap = this.findWeekOfMonthMap(nowDate, beginPlan);
+            if (dateTiemMap != null) {
+                valueMap.put("weekOfMonth", dateTiemMap);
+            }
         }
-
-
 
         return valueMap;
     }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /**
+     * 获取本周期内的起止日期时间-(weekOfMonth:每月第几个星期几)
+     * (计划起始日期)为第一次调用--获取本周期的(起始日期时间, 结束日期时间)
+     *     获取本周期起始日期-第几个星期几
+     *     获取本周期起始日期-下一个月第一天-第几个星期几
+     * 例如:
+     *   2019-07-30 第五个星期二
+     *   2019-08-01 第一个星期四 (下个月第一天)
+     *
+     *   本周期起始日期时间:2019-07-30 00:00:00
+     *   本周期结束日期时间:2019-08-26 23:59:59
+     *
+     *   下一周期起始日期:2019-08-27 (2019年08月 第五个星期二)-(2019-08-01) + addDay
+     *      公式 = (4-1) * 7 + (day1 + day2 + 1);
+     *      公式意义: (2019-08-01 第一个星期四) 向前推到 第四个星期四 [(4-1) * 7]
+     *               星期四到本周最后一天 + 星期二到本周第一天 + 1 [day1 + day2 + 1]
+     *
+     *
+     *
+     * 本方法为递归调用
+     * 递归结束条件: 当前系统时间 <= 本周期结束日期
+     *
+     *  周期起止日期时间Map:
+     *  Map<String, Date>>
+     *      beginDateTime: 周期起始日期时间(yyyy-MM-dd HH:mm:ss)
+     *      endDateTime:   周期结束日期时间(yyyy-MM-dd HH:mm:ss)
+     *
+     * @param nowDate    当前系统时间
+     * @param beginDate  起始日期
+     * @return
+     */
+    private Map<String, Date> findWeekOfMonthMap(Date nowDate, Date beginDate) {
+        String beginDateStr = DateFormat.date2String(beginDate, DateFormat.DEFAULT_DATE_FORMAT);
+
+        //1. 获取本周期起始日期-第几个星期几
+        Calendar calendar_1 = Calendar.getInstance();
+        calendar_1.setTime(beginDate);
+
+        //当前月第几周
+        int weekInMonth_1 = calendar_1.get(Calendar.DAY_OF_WEEK_IN_MONTH);
+        //当前日期星期几
+        int dayOfWeek_1 = calendar_1.get(Calendar.DAY_OF_WEEK);
+
+        //2. 获取本周期起始日期-本月第一天
+        String beginMonthStr = DateFormat.date2String(beginDate, "yyyy-MM") + "-01";
+        //获取本周期起始日期-下一个月第一天
+        String beginNextMonthStr = beginMonthStr;
+        try {
+            beginNextMonthStr = DateFormat.getAddDay(beginMonthStr, DateFormat.DEFAULT_MONTH, 1, DateFormat.DEFAULT_DATE_FORMAT);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        Date beginNextMonthDate = DateFormat.dateString2Date(beginNextMonthStr, DateFormat.DEFAULT_DATE_FORMAT);
+
+        //3. 下一个月第一天-第几个星期几
+        Calendar calendar_2 = Calendar.getInstance();
+        calendar_2.setTime(beginNextMonthDate);
+
+        //当前月第几周
+        int weekInMonth_2 = calendar_2.get(Calendar.DAY_OF_WEEK_IN_MONTH);
+        //当前日期星期几
+        int dayOfWeek_2 = calendar_2.get(Calendar.DAY_OF_WEEK);
+
+        //4. 获取下一个周期的起始日期
+        int addDay = 0;
+        if (weekInMonth_1 == 1 && (dayOfWeek_2 <= dayOfWeek_1) ) {
+            addDay = dayOfWeek_1 - dayOfWeek_2;
+        } else if (weekInMonth_1 > 1) {
+            int day1 = DateFormat.findDayByWeekMin(dayOfWeek_1);
+            int day2 = DateFormat.findDayByWeekMax(dayOfWeek_2);
+            addDay = ((weekInMonth_1 - 1) - weekInMonth_2) * 7 + (day1 + day2 + 1);
+        }
+
+        String nextBeginDateStr = beginNextMonthStr;
+        try {
+            nextBeginDateStr = DateFormat.getAddDay(beginNextMonthStr, DateFormat.DEFAULT_DATE, addDay, DateFormat.DEFAULT_DATE_FORMAT);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        Date nextBeginDate = DateFormat.dateString2Date(nextBeginDateStr, DateFormat.DEFAULT_DATE_FORMAT);
+
+        String endDateStr = beginNextMonthStr;
+        try {
+            endDateStr = DateFormat.getAddDay(beginNextMonthStr, DateFormat.DEFAULT_DATE, (addDay-1), DateFormat.DEFAULT_DATE_FORMAT);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        Date endDate = DateFormat.dateString2Date(endDateStr, DateFormat.DEFAULT_DATE_FORMAT);
+
+        //本周期结束日期 与 当前日期比较
+        if (endDate.getTime() >= nowDate.getTime()) {
+            Map<String, Date> dateTiemMap = new HashMap<String, Date>();
+
+            String beginTimeStr = beginDateStr + " 00:00:00";
+            Date beginDateTime = DateFormat.dateString2Date(beginTimeStr, DateFormat.DEFAULT_DATETIME_FORMAT);
+            dateTiemMap.put("beginDateTime", beginDateTime);
+
+            String endTimeStr = endDateStr + " 23:59:59";
+            Date endDateTime = DateFormat.dateString2Date(endTimeStr, DateFormat.DEFAULT_DATETIME_FORMAT);
+            dateTiemMap.put("endDateTime", endDateTime);
+
+            return dateTiemMap;
+        } else if (endDate.getTime() < nowDate.getTime()) {
+            return this.findWeekOfMonthMap(nowDate, nextBeginDate);
+        }
+
+        return null;
+    }
+
+
+
 }
