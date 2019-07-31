@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 设备-设备保养-定时任务
@@ -91,12 +92,13 @@ public class EquipmentMaintainTimerTask {
                 if (Common.DICTIONARY_MAP.get("maintainModeCustom").equals(modeId)) {
                     //创建-自定义(计划)
                     try {
-                        maintainService.addMaintainByCustom(plan.getCuser(), companyId, plan);
+                        maintainService.addMaintainByCustom(plan);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 } else if (Common.DICTIONARY_MAP.get("maintainModePeriod").equals(modeId)) {
                     //按周期(计划)
+                    Map<String, Map<String, Date>> valueMap = maintainPlanToolsService.findPlanPeriod(new Date(), plan);
                 }
             }
 

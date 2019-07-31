@@ -195,21 +195,24 @@ public class EquipmentMaintainServiceImp implements EquipmentMaintainService {
 
     /**
      * 创建设备保养单
-     * @param cuser      用户id
-     * @param companyId  企业id
-     * @param plan       设备保养计划对象<EquipmentMaintainPlan>
+     * @param plan  设备保养计划对象<EquipmentMaintainPlan>
      */
-    public void addMaintainByCustom(String cuser, String companyId, EquipmentMaintainPlan plan) throws Exception {
+    public void addMaintainByCustom(EquipmentMaintainPlan plan) throws Exception {
         EquipmentMaintain addMaintain = new EquipmentMaintain();
-        addMaintain.setCuser(cuser);
-        addMaintain.setCompanyId(companyId);
+        //equipmentId 设备ID
+        addMaintain.setEquipmentId(plan.getEquipmentId());
+        //maintainContentId 保养内容ID
+        addMaintain.setMaintainContentId(plan.getMaintainContentId());
+
+        addMaintain.setCuser(plan.getCuser());
+        addMaintain.setCompanyId(plan.getCompanyId());
         //planId 保养计划ID
         addMaintain.setPlanId(plan.getId());
 
         //sysCode 保养单编号(系统生成)
         //设备维修单编号
         //EM+yyyyMMdd+00001 = 15位
-        String code = coderuleService.createCoderCdateByDate(companyId,
+        String code = coderuleService.createCoderCdateByDate(plan.getCompanyId(),
                 "vmes_equipment_maintain:",
                 "yyyyMMdd",
                 "EM");
@@ -222,7 +225,75 @@ public class EquipmentMaintainServiceImp implements EquipmentMaintainService {
 
         this.save(addMaintain);
     }
-    public void addMaintainByPeriod() {}
+
+    /**
+     * 创建设备保养单
+     *
+     * 参数说明:
+     * Map<重复类型Key, 周期起止日期时间Map>
+     * 重复类型Key:
+     *   everDay:每天
+     *   dayOfWeek:每周星期几
+     *   weekOfMonth:每月第几个星期几
+     *   dayOfYear:每年某月某日
+     *   workDay:工作日[周1-周5]
+     *   customPeriod:自定义周期
+     *
+     *  周期起止日期时间Map:
+     *  Map<String, Date>>
+     *      beginDateTime: 周期起始日期时间(yyyy-MM-dd HH:mm:ss)
+     *      endDateTime:   周期结束日期时间(yyyy-MM-dd HH:mm:ss)
+     *
+     * @param valueMap  周期数据Map
+     * @param plan      设备保养计划对象<EquipmentMaintainPlan>
+     */
+    public void addMaintainByPeriod(Map<String, Map<String, Date>> valueMap, EquipmentMaintainPlan plan) throws Exception {
+        //sysPeriodType 重复类型 (everDay:每天 dayOfWeek:每周星期几 weekOfMonth:每月第几个星期几 dayOfYear:每年某月某日 workDay:工作日[周1-周5] customPeriod:自定义周期)
+        String sysPeriodType = null;
+        if (plan != null) {
+            sysPeriodType = plan.getSysPeriodType();
+        }
+
+        if (sysPeriodType != null && valueMap != null && valueMap.get(sysPeriodType) != null) {
+            Map<String, Date> dateMap = valueMap.get(sysPeriodType);
+            //sysBeginTime:保养开始时间(根据保养计划-系统计算)
+            //sysEndTime:保养结束时间(根据保养计划-系统计算)
+            //maintainDate:保养时间
+            //nextMaintainDate:下一保养时间
+        }
+
+
+
+
+
+
+        EquipmentMaintain addMaintain = new EquipmentMaintain();
+        //equipmentId 设备ID
+        addMaintain.setEquipmentId(plan.getEquipmentId());
+        //maintainContentId 保养内容ID
+        addMaintain.setMaintainContentId(plan.getMaintainContentId());
+
+        addMaintain.setCuser(plan.getCuser());
+        addMaintain.setCompanyId(plan.getCompanyId());
+        //planId 保养计划ID
+        addMaintain.setPlanId(plan.getId());
+
+        //sysCode 保养单编号(系统生成)
+        //设备维修单编号
+        //EM+yyyyMMdd+00001 = 15位
+        String code = coderuleService.createCoderCdateByDate(plan.getCompanyId(),
+                "vmes_equipment_maintain:",
+                "yyyyMMdd",
+                "EM");
+        addMaintain.setSysCode(code);
+
+        //equipmentState 设备状态(1:待保养 2:保养中 3:已完成)
+        addMaintain.setEquipmentState("1");
+
+
+
+        this.save(addMaintain);
+    }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**

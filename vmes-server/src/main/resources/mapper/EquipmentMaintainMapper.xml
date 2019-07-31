@@ -110,6 +110,25 @@
                 </choose>
             </if>
 
+            <if test="companyId != null and companyId != ''">
+                and company_id = #{companyId}
+            </if>
+            <if test="equipmentId != null and equipmentId != ''">
+                and equipment_id = #{equipmentId}
+            </if>
+            <if test="maintainContentId != null and maintainContentId != ''">
+                and maintain_content_id = #{maintainContentId}
+            </if>
+            <if test="planId != null and planId != ''">
+                and plan_id = #{planId}
+            </if>
+
+            <if test="sysBeginTime != null and sysBeginTime != ''">
+                and sys_begin_time = #{sysBeginTime}
+            </if>
+            <if test="sysEndTime != null and sysEndTime != ''">
+                and sys_end_time = #{sysEndTime}
+            </if>
 
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >
