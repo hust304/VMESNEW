@@ -23,7 +23,7 @@ import java.util.List;
  */
 @Component
 @EnableScheduling
-public class EquipmentMaintainTask {
+public class EquipmentMaintainTimerTask {
     @Autowired
     private EquipmentMaintainPlanService maintainPlanService;
     @Autowired
