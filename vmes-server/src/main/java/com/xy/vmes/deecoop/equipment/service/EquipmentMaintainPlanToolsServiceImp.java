@@ -23,12 +23,6 @@ import java.util.Map;
 @Transactional(readOnly = false)
 public class EquipmentMaintainPlanToolsServiceImp implements EquipmentMaintainPlanToolsService {
 
-//    private static final Map<String, String> SYS_PERIODTYPE_KEYNAME_MAP = new HashMap<String, String>() {{
-//        put("day", "天");
-//        put("week", "周");
-//        put("month", "月");
-//    }};
-
     /**
      * 调整保养计划对象(周期计划)
      * 本方法按值引用(方法调用后参数对象发生改变)
@@ -155,11 +149,13 @@ public class EquipmentMaintainPlanToolsServiceImp implements EquipmentMaintainPl
         //beginPlan 计划开始日期
         Date beginPlan = plan.getBeginPlan();
         String beginPlanStr = DateFormat.date2String(beginPlan, DateFormat.DEFAULT_DATE_FORMAT);
+        beginPlan = DateFormat.dateString2Date(beginPlanStr, DateFormat.DEFAULT_DATE_FORMAT);
 
         //endPlan 计划结束日期
         Date endPlan = plan.getEndPlan();
         String endPlanStr = DateFormat.date2String(endPlan, DateFormat.DEFAULT_DATE_FORMAT);
-        long endPlanLong = DateFormat.dateString2Date(endPlanStr, DateFormat.DEFAULT_DATE_FORMAT).getTime();
+        endPlan = DateFormat.dateString2Date(endPlanStr, DateFormat.DEFAULT_DATE_FORMAT);
+        long endPlanLong = endPlan.getTime();
 
         //1. 系统匹配周期 sysPeriodType
         //sysPeriodType (everDay:每天 dayOfWeek:每周星期几 weekOfMonth:每月第几个星期几 dayOfYear:每年某月某日 workDay:工作日[周1-周5] customPeriod:自定义周期)
@@ -239,9 +235,136 @@ public class EquipmentMaintainPlanToolsServiceImp implements EquipmentMaintainPl
             if (dateTiemMap != null) {
                 valueMap.put("weekOfMonth", dateTiemMap);
             }
+        } else if ("dayOfYear".equals(sysPeriodType)) {
+            //dayOfYear:每年某月某日
+            Map<String, Date> dateTiemMap = this.findDayOfYearMap(nowDate, beginPlan);
+            if (dateTiemMap != null) {
+                valueMap.put("weekOfMonth", dateTiemMap);
+            }
+        } else if ("workDay".equals(sysPeriodType)) {
+            //workDay:工作日[周1-周5]
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(beginPlan);
+            int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+
+            if (dayOfWeek == Integer.valueOf(Calendar.MONDAY)
+                || dayOfWeek == Integer.valueOf(Calendar.TUESDAY)
+                || dayOfWeek == Integer.valueOf(Calendar.WEDNESDAY)
+                || dayOfWeek == Integer.valueOf(Calendar.THURSDAY)
+                || dayOfWeek == Integer.valueOf(Calendar.FRIDAY)
+            ) {
+                Map<String, Date> dateTiemMap = new HashMap<String, Date>();
+
+                String beginTimeStr = nowDateStr + " 00:00:00";
+                Date beginDateTime = DateFormat.dateString2Date(beginTimeStr, DateFormat.DEFAULT_DATETIME_FORMAT);
+                dateTiemMap.put("beginDateTime", beginDateTime);
+
+                String endTimeStr = nowDateStr + " 23:59:59";
+                Date endDateTime = DateFormat.dateString2Date(endTimeStr, DateFormat.DEFAULT_DATETIME_FORMAT);
+                dateTiemMap.put("endDateTime", endDateTime);
+
+                valueMap.put("everDay", dateTiemMap);
+            } else if (dayOfWeek == Integer.valueOf(Calendar.SATURDAY) || dayOfWeek == Integer.valueOf(Calendar.SUNDAY)) {
+                valueMap.put("everDay", null);
+            }
+        }
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////
+        //1. 自定义周期 sysPeriodType
+        //sysPeriodType (everDay:每天 dayOfWeek:每周星期几 weekOfMonth:每月第几个星期几 dayOfYear:每年某月某日 workDay:工作日[周1-周5] customPeriod:自定义周期)
+        if ("customPeriod".equals(sysPeriodType)) {
+            //periodType 重复频率类型(day:天 week:周 month:月)
+            String periodType = plan.getPeriodType();
+
+            //periodCount 重复频率数字(间隔数字)
+            Integer periodCount = plan.getPeriodCount();
+
+            if ("week".equals(periodType)) {
+                //periodDayofweek 重复时间(周)-(SUNDAY:周日 MONDAY:周1 TUESDAY:周2 WEDNESDAY:周3 THURSDAY:周4 FRIDAY:周5 SATURDAY:周6)
+                String periodDayofweekStr = plan.getPeriodDayofweek();
+                int periodDayofweek = Common.SYS_WEEK_DAYOFWEEK.get(periodDayofweekStr);
+
+                //获取第一个星期几(dayOfWeek) - 计划(起始日期, 结束日期)
+                Date firstDate = this.findFirstDateByWeekCustom(periodDayofweek, beginPlan, endPlan);
+
+                Map<String, Date> dateTiemMap = this.findWeekMapByCustom(nowDate, firstDate, periodCount.intValue());
+                if (dateTiemMap != null) {
+                    valueMap.put("customPeriod", dateTiemMap);
+                }
+
+            } else if ("month".equals(periodType)) {
+                //periodDayofmonth 重复时间(月)-(01-31)
+                String periodDayofmonth = plan.getPeriodDayofmonth();
+                Date firstDate = findDateByMonthCustom(periodDayofmonth, beginPlan);
+
+                Map<String, Date> dateTiemMap = this.findMonthMapByCustom(nowDate, firstDate, periodCount.intValue(), periodDayofmonth);
+                if (dateTiemMap != null) {
+                    valueMap.put("customPeriod", dateTiemMap);
+                }
+            }
         }
 
         return valueMap;
+    }
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * 获取第一个星期几(dayOfWeek) - 计划(起始日期, 结束日期)
+     * @param dayOfWeek  一个星期中的某天
+     * @param beginPlan  计划起始日期
+     * @param endPlan    计划结束日期
+     * @return
+     */
+    private Date findFirstDateByWeekCustom(int dayOfWeek, Date beginPlan, Date endPlan) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(beginPlan);
+
+        Date valueDate = beginPlan;
+        //获取(起始日期, 结束日期) 之间的天数
+        int days = DateFormat.getDays(beginPlan, endPlan);
+        for (int i = 0; i <= days; i++) {
+            calendar.add(Calendar.DATE, i);
+            if (dayOfWeek == calendar.get(Calendar.DAY_OF_WEEK)) {
+                valueDate = calendar.getTime();
+                break;
+            }
+        }
+
+        return valueDate;
+    }
+
+    /**
+     * 获取日期(一个月中的某天,给定的日期)
+     * 闰2月 大月31天 小月30天
+     *
+     * @param dayOfMonthStr 一个月中的某天
+     * @param date          给定的日期
+     * @return
+     */
+    private Date findDateByMonthCustom(String dayOfMonthStr, Date date) {
+        int dayOfMonth = Integer.valueOf(dayOfMonthStr).intValue();
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+
+        int year = calendar.get(Calendar.YEAR);
+        //自然月份 取值范围[1,12] (注意jdk JANUARY:一月:0)
+        int month = calendar.get(Calendar.MONTH) + 1;
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+        //获取当前自然月的最后一天
+        //处理(闰2月,大月31天,小月30天)
+        Date dateTemp = DateFormat.findLastDayByMonth(year, month, DateFormat.DEFAULT_DATE_FORMAT);
+        calendar.setTime(dateTemp);
+        int maxDay = calendar.get(Calendar.DAY_OF_MONTH);
+        if (dayOfMonth <= maxDay) {
+            day = dayOfMonth;
+        } else if (dayOfMonth > maxDay) {
+            day = maxDay;
+        }
+
+        calendar.set(year, month, day);
+        return calendar.getTime();
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -261,8 +384,6 @@ public class EquipmentMaintainPlanToolsServiceImp implements EquipmentMaintainPl
      *      公式 = (4-1) * 7 + (day1 + day2 + 1);
      *      公式意义: (2019-08-01 第一个星期四) 向前推到 第四个星期四 [(4-1) * 7]
      *               星期四到本周最后一天 + 星期二到本周第一天 + 1 [day1 + day2 + 1]
-     *
-     *
      *
      * 本方法为递归调用
      * 递归结束条件: 当前系统时间 <= 本周期结束日期
@@ -353,6 +474,211 @@ public class EquipmentMaintainPlanToolsServiceImp implements EquipmentMaintainPl
 
         return null;
     }
+
+    /**
+     * 获取本周期内的起止日期时间-(dayOfYear:每年某月某日)
+     * (计划起始日期)为第一次调用--获取本周期的(起始日期时间, 结束日期时间)
+     *
+     * 本方法为递归调用
+     * 递归结束条件: 当前系统时间 <= 本周期结束日期
+     *
+     *  周期起止日期时间Map:
+     *  Map<String, Date>>
+     *      beginDateTime: 周期起始日期时间(yyyy-MM-dd HH:mm:ss)
+     *      endDateTime:   周期结束日期时间(yyyy-MM-dd HH:mm:ss)
+     *
+     * @param nowDate    当前系统时间
+     * @param beginDate  起始日期
+     * @return
+     */
+    private Map<String, Date> findDayOfYearMap(Date nowDate, Date beginDate) {
+        String beginDateStr = DateFormat.date2String(beginDate, DateFormat.DEFAULT_DATE_FORMAT);
+
+        //获取本周期起始日期 (计划开始日期)
+        Calendar calendar_1 = Calendar.getInstance();
+        calendar_1.setTime(beginDate);
+
+        int year = calendar_1.get(Calendar.YEAR);
+        //自然月份 取值范围[1,12] (注意jdk JANUARY:一月:0)
+        int month = calendar_1.get(Calendar.MONTH) + 1;
+        int day = calendar_1.get(Calendar.DAY_OF_MONTH);
+
+        //获取下一个周期的起始日期
+        Calendar calendar_2 = Calendar.getInstance();
+        int nextYear = year + 1;
+        int nextMonth = month;
+        int nextDay = 1;
+
+        //处理(闰2月,大月31天,小月30天)
+        Date dateTemp = DateFormat.findLastDayByMonth(nextYear, nextMonth, DateFormat.DEFAULT_DATE_FORMAT);
+        calendar_2.setTime(dateTemp);
+        int maxDay = calendar_2.get(Calendar.DAY_OF_MONTH);
+        if (day <= maxDay) {
+            nextDay = day;
+        } else if (day > maxDay) {
+            nextDay = maxDay;
+        }
+
+        calendar_2.set(nextYear, nextMonth, nextDay);
+        Date nextBeginDate = calendar_2.getTime();
+
+        calendar_2.set(nextYear, nextMonth, (nextDay-1));
+        Date endDate = calendar_2.getTime();
+        String endDateStr = DateFormat.date2String(endDate, DateFormat.DEFAULT_DATE_FORMAT);
+
+        //本周期结束日期 与 当前日期比较
+        if (endDate.getTime() >= nowDate.getTime()) {
+            Map<String, Date> dateTiemMap = new HashMap<String, Date>();
+
+            String beginTimeStr = beginDateStr + " 00:00:00";
+            Date beginDateTime = DateFormat.dateString2Date(beginTimeStr, DateFormat.DEFAULT_DATETIME_FORMAT);
+            dateTiemMap.put("beginDateTime", beginDateTime);
+
+            String endTimeStr = endDateStr + " 23:59:59";
+            Date endDateTime = DateFormat.dateString2Date(endTimeStr, DateFormat.DEFAULT_DATETIME_FORMAT);
+            dateTiemMap.put("endDateTime", endDateTime);
+
+            return dateTiemMap;
+        } else if (endDate.getTime() < nowDate.getTime()) {
+            return this.findWeekOfMonthMap(nowDate, nextBeginDate);
+        }
+
+        return null;
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /**
+     * 获取本周期内的起止日期时间-(week 自定义周期)
+     * (计划起始日期)为第一次调用--获取本周期的(起始日期时间, 结束日期时间)
+     *
+     * 本方法为递归调用
+     * 递归结束条件: 当前系统时间 <= 本周期结束日期
+     *
+     *  周期起止日期时间Map:
+     *  Map<String, Date>>
+     *      beginDateTime: 周期起始日期时间(yyyy-MM-dd HH:mm:ss)
+     *      endDateTime:   周期结束日期时间(yyyy-MM-dd HH:mm:ss)
+     *
+     * @param nowDate    当前系统时间
+     * @param beginDate  起始日期
+     * @param spaceCount 间隔周数
+     * @return
+     */
+    private Map<String, Date> findWeekMapByCustom(Date nowDate, Date beginDate, int spaceCount) {
+        String beginDateStr = DateFormat.date2String(beginDate, DateFormat.DEFAULT_DATE_FORMAT);
+
+        //获取本周期起始日期
+        Calendar calendar_1 = Calendar.getInstance();
+        calendar_1.setTime(beginDate);
+
+        //获取下一个周期的起始日期
+        int addDay = spaceCount * 7;
+        Calendar calendar_2 = Calendar.getInstance();
+        calendar_2.add(Calendar.DATE, addDay);
+
+        Date nextBeginDate = calendar_2.getTime();
+        Date endDate = calendar_2.getTime();
+        String endDateStr = DateFormat.date2String(endDate, DateFormat.DEFAULT_DATE_FORMAT);
+
+        //本周期结束日期 与 当前日期比较
+        if (endDate.getTime() >= nowDate.getTime()) {
+            Map<String, Date> dateTiemMap = new HashMap<String, Date>();
+
+            String beginTimeStr = beginDateStr + " 00:00:00";
+            Date beginDateTime = DateFormat.dateString2Date(beginTimeStr, DateFormat.DEFAULT_DATETIME_FORMAT);
+            dateTiemMap.put("beginDateTime", beginDateTime);
+
+            String endTimeStr = endDateStr + " 23:59:59";
+            Date endDateTime = DateFormat.dateString2Date(endTimeStr, DateFormat.DEFAULT_DATETIME_FORMAT);
+            dateTiemMap.put("endDateTime", endDateTime);
+
+            return dateTiemMap;
+        } else if (endDate.getTime() < nowDate.getTime()) {
+            return this.findWeekMapByCustom(nowDate, nextBeginDate, spaceCount);
+        }
+
+        return null;
+    }
+
+    /**
+     * 获取本周期内的起止日期时间-(month 自定义周期)
+     * (计划起始日期)为第一次调用--获取本周期的(起始日期时间, 结束日期时间)
+     *
+     * 本方法为递归调用
+     * 递归结束条件: 当前系统时间 <= 本周期结束日期
+     *
+     *  周期起止日期时间Map:
+     *  Map<String, Date>>
+     *      beginDateTime: 周期起始日期时间(yyyy-MM-dd HH:mm:ss)
+     *      endDateTime:   周期结束日期时间(yyyy-MM-dd HH:mm:ss)
+     *
+     * @param nowDate       当前系统时间
+     * @param beginDate     起始日期
+     * @param spaceCount    间隔月数
+     * @param dayOfMonthStr 一个月中的某天
+     * @return
+     */
+    private Map<String, Date> findMonthMapByCustom(Date nowDate, Date beginDate, int spaceCount, String dayOfMonthStr) {
+        int dayOfMonth = Integer.valueOf(dayOfMonthStr).intValue();
+        String beginDateStr = DateFormat.date2String(beginDate, DateFormat.DEFAULT_DATE_FORMAT);
+
+        //获取本周期起始日期
+        Calendar calendar_1 = Calendar.getInstance();
+        calendar_1.setTime(beginDate);
+
+        //获取下一个周期的起始日期
+        Calendar calendar_2 = Calendar.getInstance();
+        calendar_2.add(Calendar.MONTH, spaceCount);
+
+        int nextYear = calendar_2.get(Calendar.YEAR);
+        //自然月份 取值范围[1,12] (注意jdk JANUARY:一月:0)
+        int nextMonth = calendar_2.get(Calendar.MONTH) + 1;
+        int nextDay = calendar_2.get(Calendar.DAY_OF_MONTH);
+
+        //处理(闰2月,大月31天,小月30天)
+        Date dateTemp = DateFormat.findLastDayByMonth(nextYear, nextMonth, DateFormat.DEFAULT_DATE_FORMAT);
+        calendar_2.setTime(dateTemp);
+        int maxDay = calendar_2.get(Calendar.DAY_OF_MONTH);
+        if (dayOfMonth <= maxDay) {
+            nextDay = dayOfMonth;
+        } else if (dayOfMonth > maxDay) {
+            nextDay = maxDay;
+        }
+        calendar_2.set(nextYear, (nextMonth-1), nextDay);
+
+        Date nextBeginDate = calendar_2.getTime();
+        Date endDate = calendar_2.getTime();
+        String endDateStr = DateFormat.date2String(endDate, DateFormat.DEFAULT_DATE_FORMAT);
+
+        //本周期结束日期 与 当前日期比较
+        if (endDate.getTime() >= nowDate.getTime()) {
+            Map<String, Date> dateTiemMap = new HashMap<String, Date>();
+
+            String beginTimeStr = beginDateStr + " 00:00:00";
+            Date beginDateTime = DateFormat.dateString2Date(beginTimeStr, DateFormat.DEFAULT_DATETIME_FORMAT);
+            dateTiemMap.put("beginDateTime", beginDateTime);
+
+            String endTimeStr = endDateStr + " 23:59:59";
+            Date endDateTime = DateFormat.dateString2Date(endTimeStr, DateFormat.DEFAULT_DATETIME_FORMAT);
+            dateTiemMap.put("endDateTime", endDateTime);
+
+            return dateTiemMap;
+        } else if (endDate.getTime() < nowDate.getTime()) {
+            return this.findMonthMapByCustom(nowDate, nextBeginDate, spaceCount, dayOfMonthStr);
+        }
+        return null;
+    }
+
+
+
+
+
+
+
+
+
+
+
 
 
 

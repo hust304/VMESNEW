@@ -134,6 +134,31 @@ public class DateFormat {
         return toWeekMax;
     }
 
+    /**
+     * 计算给定月最后一天
+     *
+     * @param year       年份
+     * @param month      自然月份 取值范围[1,12] (注意jdk JANUARY:一月:0)
+     * @param strFormat  日期格式
+     * @return
+     */
+    public static Date findLastDayByMonth(int year, int month, String strFormat) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(year, month-1, 1);
+        calendar.add(Calendar.MONTH, 1);
+        calendar.add(Calendar.DATE,-1);
+
+        Date date = null;
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat(strFormat);
+            date = sdf.parse(sdf.format(calendar.getTime()));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return date;
+    }
+
     public static void main(String args[]) throws ParseException {
         //Date date = DateFormat.dateString2Date("201902", "yyyyMM");
 

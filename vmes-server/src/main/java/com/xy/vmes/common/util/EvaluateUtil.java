@@ -112,7 +112,7 @@ public class EvaluateUtil {
         //2019-07-30 第五个星期二
         //2019-08-01 第一个星期四
 
-        String beginPlanStr = "2019-06-28";
+        String beginPlanStr = "2019-07-05";
         Date beginPlan = DateFormat.dateString2Date(beginPlanStr, DateFormat.DEFAULT_DATE_FORMAT);
         //System.out.println("timeLong: " + beginPlan.getTime());
 
@@ -123,23 +123,22 @@ public class EvaluateUtil {
 //        String tempStr = Common.SYS_DAYOFWEEK_TO_WEEKNAME.get(Integer.valueOf(temp));
 //        System.out.println("tempStr: " + tempStr);
 
-        //当前月第几周
-        int weekInMonth = calendar.get(Calendar.DAY_OF_WEEK_IN_MONTH);
-        //System.out.println("当前月第 " + weekInMonth + " 周");
-        //当前日期星期几
-        int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+//        //当前月第几周
+//        int weekInMonth = calendar.get(Calendar.DAY_OF_WEEK_IN_MONTH);
+//        //System.out.println("当前月第 " + weekInMonth + " 周");
+//        //当前日期星期几
+//        int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+//
+//        String tempStr = "每月{0}个{1}";
+//        String sysPeriodTypeName = MessageFormat.format(tempStr,
+//                Common.SYS_WEEK_WEEKINMONTH.get(Integer.valueOf(weekInMonth)),
+//                Common.SYS_DAYOFWEEK_TO_WEEKNAME.get(Integer.valueOf(dayOfWeek)));
+//        System.out.println("sysPeriodTypeName: " + sysPeriodTypeName);
 
-        String tempStr = "每月{0}个{1}";
-        String sysPeriodTypeName = MessageFormat.format(tempStr,
-                Common.SYS_WEEK_WEEKINMONTH.get(Integer.valueOf(weekInMonth)),
-                Common.SYS_DAYOFWEEK_TO_WEEKNAME.get(Integer.valueOf(dayOfWeek)));
-        System.out.println("sysPeriodTypeName: " + sysPeriodTypeName);
-
-//        String endPlanStr = "2019-07-31 12:14:23";
+//        String endPlanStr = "2019-07-07";
 //        Date endPlan = DateFormat.dateString2Date(endPlanStr, DateFormat.DEFAULT_DATE_FORMAT);
 //        int count = DateFormat.getDays(beginPlan, endPlan);
 //        //int count = CalendarUtil.getDaysNoAfter(beginPlan, endPlan);
-//
 //        System.out.println("count: " + count);
 
 
@@ -163,6 +162,21 @@ public class EvaluateUtil {
 //        String newDateStr = DateFormat.getAddDay(beginPlanStr, DateFormat.DEFAULT_DATE, addDay, DateFormat.DEFAULT_DATE_FORMAT);
 //        System.out.println("newDateStr:" + newDateStr);
 
+        //int Month = calendar.get(Calendar.MONTH);
+        //System.out.println("Month:" + Month);
 
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH) + 1;
+        int day = calendar.get(Calendar.DAY_OF_MONTH );
+        System.out.println("year:" + year + " month:" + month + " day:" + day);
+
+//        Date dayOfMonthDate = DateFormat.findLastDayByMonth(year, month, DateFormat.DEFAULT_DATE_FORMAT);
+//        String dayStr = DateFormat.date2String(dayOfMonthDate, DateFormat.DEFAULT_DATE_FORMAT);
+//        System.out.println("dayStr:" + dayStr);
+
+        calendar.add(Calendar.DATE, 7);
+        Date newDate = calendar.getTime();
+        String newDateStr = DateFormat.date2String(newDate, DateFormat.DEFAULT_DATE_FORMAT);
+        System.out.println("newDateStr:" + newDateStr);
     }
 }
