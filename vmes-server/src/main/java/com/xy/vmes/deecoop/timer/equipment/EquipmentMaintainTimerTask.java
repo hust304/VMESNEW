@@ -1,6 +1,7 @@
 package com.xy.vmes.deecoop.timer.equipment;
 
 import com.xy.vmes.common.util.DateFormat;
+import com.xy.vmes.deecoop.timer.purchase.PurchasePaymentTask;
 import com.xy.vmes.entity.Department;
 import com.xy.vmes.entity.EquipmentMaintainPlan;
 import com.xy.vmes.service.DepartmentService;
@@ -9,11 +10,14 @@ import com.xy.vmes.service.EquipmentMaintainPlanToolsService;
 import com.xy.vmes.service.EquipmentMaintainService;
 import com.yvan.PageData;
 import com.yvan.common.util.Common;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.text.MessageFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -25,13 +29,20 @@ import java.util.Map;
 @Component
 @EnableScheduling
 public class EquipmentMaintainTimerTask {
+    private Logger logger = LoggerFactory.getLogger(EquipmentMaintainTimerTask.class);
+
+    //EquipmentMaintainTimerTask.createMaintainTimer(yyyy-MM-dd HH:mm:ss):开始执行
+    private String begin_end_logger_msg_temp = "{0}.{1}({2}):{3}";
+
     @Autowired
     private EquipmentMaintainPlanService maintainPlanService;
     @Autowired
     private EquipmentMaintainPlanToolsService maintainPlanToolsService;
-
     @Autowired
     private EquipmentMaintainService maintainService;
+
+    @Autowired
+    private DepartmentService departmentService;
 
     /**
      * 创建设备保养单-定时任务
@@ -54,6 +65,15 @@ public class EquipmentMaintainTimerTask {
         //当前系统日期(yyyy-MM-dd)
         String nowDateStr = DateFormat.date2String(nowDate, DateFormat.DEFAULT_DATE_FORMAT);
         nowDate = DateFormat.dateString2Date(nowDateStr, DateFormat.DEFAULT_DATE_FORMAT);
+
+        //定时器开始执行日志
+        String dateTimeStr = DateFormat.date2String(new Date(), DateFormat.DEFAULT_DATETIME_FORMAT);
+        String begin_logger_msg = MessageFormat.format(begin_end_logger_msg_temp,
+                "EquipmentMaintainTimerTask",
+                "createMaintainTimer",
+                dateTimeStr,
+                "开始执行");
+        logger.info(begin_logger_msg);
 
         //1. 获取系统全部企业
         List<Department> companyList = null;
@@ -123,7 +143,13 @@ public class EquipmentMaintainTimerTask {
                      *      endDateTime:   周期结束日期时间(yyyy-MM-dd HH:mm:ss)
                      *      nextMaintainDate: 下一保养日期(yyyy-MM-dd)
                      */
-                    Map<String, Map<String, Date>> valueMap = maintainPlanToolsService.findPlanPeriod(nowDate, plan);
+                    Map<String, Map<String, Date>> valueMap = null;
+                    try {
+                        valueMap = maintainPlanToolsService.findPlanPeriod(nowDate, plan);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
                     if (valueMap == null || valueMap.get(sysPeriodType) == null) {continue;}
                     Map<String, Date> dateMap = valueMap.get(sysPeriodType);
                     //创建-周期计划-保养单
@@ -135,10 +161,16 @@ public class EquipmentMaintainTimerTask {
                 }
             }
         }
-    }
 
-    @Autowired
-    private DepartmentService departmentService;
+        //定时器结束执行日志
+        dateTimeStr = DateFormat.date2String(new Date(), DateFormat.DEFAULT_DATETIME_FORMAT);
+        String end_logger_msg = MessageFormat.format(begin_end_logger_msg_temp,
+                "EquipmentMaintainTimerTask",
+                "createMaintainTimer",
+                dateTimeStr,
+                "结束执行");
+        logger.info(end_logger_msg);
+    }
 
 
 }

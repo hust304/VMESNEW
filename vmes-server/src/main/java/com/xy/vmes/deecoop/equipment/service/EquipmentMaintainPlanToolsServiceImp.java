@@ -176,7 +176,13 @@ public class EquipmentMaintainPlanToolsServiceImp implements EquipmentMaintainPl
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(nowDate);
             calendar.add(Calendar.DATE, 1);
-            dateTiemMap.put("nextMaintainDate", calendar.getTime());
+            Date nextDate = calendar.getTime();
+
+            //本周期结束日期 与 计划结束日期 比较
+            if (nextDate.getTime() <= endPlanLong) {
+                //下一保养日期(yyyy-MM-dd)
+                dateTiemMap.put("nextMaintainDate", nextDate);
+            }
 
             valueMap.put("everDay", dateTiemMap);
         } else if ("dayOfWeek".equals(sysPeriodType)) {
@@ -226,7 +232,7 @@ public class EquipmentMaintainPlanToolsServiceImp implements EquipmentMaintainPl
             long endDateLong = endDate.getTime();
 
             //本周期结束日期 与 计划结束日期 比较
-            if (endDateLong < endPlanLong) {
+            if (endDateLong <= endPlanLong) {
                 String endTimeStr = endDateStr + " 23:59:59";
                 Date endDateTime = DateFormat.dateString2Date(endTimeStr, DateFormat.DEFAULT_DATETIME_FORMAT);
                 dateTiemMap.put("endDateTime", endDateTime);
@@ -237,7 +243,7 @@ public class EquipmentMaintainPlanToolsServiceImp implements EquipmentMaintainPl
                 calendar.add(Calendar.DATE, 1);
                 dateTiemMap.put("nextMaintainDate", calendar.getTime());
 
-            } else if (endDateLong >= endPlanLong) {
+            } else if (endDateLong > endPlanLong) {
                 String endTimeStr = endPlanStr + " 23:59:59";
                 Date endDateTime = DateFormat.dateString2Date(endTimeStr, DateFormat.DEFAULT_DATETIME_FORMAT);
                 dateTiemMap.put("endDateTime", endDateTime);
