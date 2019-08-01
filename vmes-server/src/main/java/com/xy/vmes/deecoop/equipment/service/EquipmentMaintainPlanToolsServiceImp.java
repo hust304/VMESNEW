@@ -135,6 +135,7 @@ public class EquipmentMaintainPlanToolsServiceImp implements EquipmentMaintainPl
      *  Map<String, Date>>
      *      beginDateTime: 周期起始日期时间(yyyy-MM-dd HH:mm:ss)
      *      endDateTime:   周期结束日期时间(yyyy-MM-dd HH:mm:ss)
+     *      nextMaintainDate: 下一保养日期(yyyy-MM-dd)
      */
     public Map<String, Map<String, Date>> findPlanPeriod(Date nowDate, EquipmentMaintainPlan plan) {
         Map<String, Map<String, Date>> valueMap = new HashMap<String, Map<String, Date>>();
@@ -171,8 +172,15 @@ public class EquipmentMaintainPlanToolsServiceImp implements EquipmentMaintainPl
             Date endDateTime = DateFormat.dateString2Date(endTimeStr, DateFormat.DEFAULT_DATETIME_FORMAT);
             dateTiemMap.put("endDateTime", endDateTime);
 
+            //下一保养日期(yyyy-MM-dd)
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(nowDate);
+            calendar.add(Calendar.DATE, 1);
+            dateTiemMap.put("nextMaintainDate", calendar.getTime());
+
             valueMap.put("everDay", dateTiemMap);
         } else if ("dayOfWeek".equals(sysPeriodType)) {
+            //dayOfWeek:每周星期几
             /**
              * 1. (当前日期,计划开始日期)之间的天数
              * 2. (当前日期,计划开始日期)之间的天数与(数字7)--（取整,取余）运算
@@ -223,6 +231,12 @@ public class EquipmentMaintainPlanToolsServiceImp implements EquipmentMaintainPl
                 Date endDateTime = DateFormat.dateString2Date(endTimeStr, DateFormat.DEFAULT_DATETIME_FORMAT);
                 dateTiemMap.put("endDateTime", endDateTime);
 
+                //下一保养日期(yyyy-MM-dd)
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(endDate);
+                calendar.add(Calendar.DATE, 1);
+                dateTiemMap.put("nextMaintainDate", calendar.getTime());
+
             } else if (endDateLong >= endPlanLong) {
                 String endTimeStr = endPlanStr + " 23:59:59";
                 Date endDateTime = DateFormat.dateString2Date(endTimeStr, DateFormat.DEFAULT_DATETIME_FORMAT);
@@ -231,20 +245,21 @@ public class EquipmentMaintainPlanToolsServiceImp implements EquipmentMaintainPl
 
             valueMap.put("dayOfWeek", dateTiemMap);
         } else if ("weekOfMonth".equals(sysPeriodType)) {
-            Map<String, Date> dateTiemMap = this.findWeekOfMonthMap(nowDate, beginPlan);
+            //weekOfMonth:每月第几个星期几
+            Map<String, Date> dateTiemMap = this.findWeekOfMonthMap(nowDate, beginPlan, endPlan);
             if (dateTiemMap != null) {
                 valueMap.put("weekOfMonth", dateTiemMap);
             }
         } else if ("dayOfYear".equals(sysPeriodType)) {
             //dayOfYear:每年某月某日
-            Map<String, Date> dateTiemMap = this.findDayOfYearMap(nowDate, beginPlan);
+            Map<String, Date> dateTiemMap = this.findDayOfYearMap(nowDate, beginPlan, endPlan);
             if (dateTiemMap != null) {
                 valueMap.put("weekOfMonth", dateTiemMap);
             }
         } else if ("workDay".equals(sysPeriodType)) {
             //workDay:工作日[周1-周5]
             Calendar calendar = Calendar.getInstance();
-            calendar.setTime(beginPlan);
+            calendar.setTime(nowDate);
             int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
 
             if (dayOfWeek == Integer.valueOf(Calendar.MONDAY)
@@ -262,6 +277,19 @@ public class EquipmentMaintainPlanToolsServiceImp implements EquipmentMaintainPl
                 String endTimeStr = nowDateStr + " 23:59:59";
                 Date endDateTime = DateFormat.dateString2Date(endTimeStr, DateFormat.DEFAULT_DATETIME_FORMAT);
                 dateTiemMap.put("endDateTime", endDateTime);
+
+                //下一保养日期(yyyy-MM-dd)
+                if (dayOfWeek == Integer.valueOf(Calendar.MONDAY)
+                    || dayOfWeek == Integer.valueOf(Calendar.TUESDAY)
+                    || dayOfWeek == Integer.valueOf(Calendar.WEDNESDAY)
+                    || dayOfWeek == Integer.valueOf(Calendar.THURSDAY)
+                ) {
+                    calendar.add(Calendar.DATE, 1);
+                    dateTiemMap.put("nextMaintainDate", calendar.getTime());
+                } else if (dayOfWeek == Integer.valueOf(Calendar.FRIDAY)) {
+                    calendar.add(Calendar.DATE, 3);
+                    dateTiemMap.put("nextMaintainDate", calendar.getTime());
+                }
 
                 valueMap.put("everDay", dateTiemMap);
             } else if (dayOfWeek == Integer.valueOf(Calendar.SATURDAY) || dayOfWeek == Integer.valueOf(Calendar.SUNDAY)) {
@@ -287,7 +315,7 @@ public class EquipmentMaintainPlanToolsServiceImp implements EquipmentMaintainPl
                 //获取第一个星期几(dayOfWeek) - 计划(起始日期, 结束日期)
                 Date firstDate = this.findFirstDateByWeekCustom(periodDayofweek, beginPlan, endPlan);
 
-                Map<String, Date> dateTiemMap = this.findWeekMapByCustom(nowDate, firstDate, periodCount.intValue());
+                Map<String, Date> dateTiemMap = this.findWeekMapByCustom(nowDate, firstDate, endPlan, periodCount.intValue());
                 if (dateTiemMap != null) {
                     valueMap.put("customPeriod", dateTiemMap);
                 }
@@ -297,7 +325,7 @@ public class EquipmentMaintainPlanToolsServiceImp implements EquipmentMaintainPl
                 String periodDayofmonth = plan.getPeriodDayofmonth();
                 Date firstDate = findDateByMonthCustom(periodDayofmonth, beginPlan);
 
-                Map<String, Date> dateTiemMap = this.findMonthMapByCustom(nowDate, firstDate, periodCount.intValue(), periodDayofmonth);
+                Map<String, Date> dateTiemMap = this.findMonthMapByCustom(nowDate, firstDate, endPlan, periodCount.intValue(), periodDayofmonth);
                 if (dateTiemMap != null) {
                     valueMap.put("customPeriod", dateTiemMap);
                 }
@@ -392,13 +420,16 @@ public class EquipmentMaintainPlanToolsServiceImp implements EquipmentMaintainPl
      *  Map<String, Date>>
      *      beginDateTime: 周期起始日期时间(yyyy-MM-dd HH:mm:ss)
      *      endDateTime:   周期结束日期时间(yyyy-MM-dd HH:mm:ss)
+     *      nextMaintainDate: 下一保养日期(yyyy-MM-dd)
      *
      * @param nowDate    当前系统时间
      * @param beginDate  起始日期
+     * @param endPlan    计划结束日期
      * @return
      */
-    private Map<String, Date> findWeekOfMonthMap(Date nowDate, Date beginDate) {
+    private Map<String, Date> findWeekOfMonthMap(Date nowDate, Date beginDate, Date endPlan) {
         String beginDateStr = DateFormat.date2String(beginDate, DateFormat.DEFAULT_DATE_FORMAT);
+        String endPlanStr = DateFormat.date2String(endPlan, DateFormat.DEFAULT_DATE_FORMAT);
 
         //1. 获取本周期起始日期-第几个星期几
         Calendar calendar_1 = Calendar.getInstance();
@@ -463,13 +494,26 @@ public class EquipmentMaintainPlanToolsServiceImp implements EquipmentMaintainPl
             Date beginDateTime = DateFormat.dateString2Date(beginTimeStr, DateFormat.DEFAULT_DATETIME_FORMAT);
             dateTiemMap.put("beginDateTime", beginDateTime);
 
-            String endTimeStr = endDateStr + " 23:59:59";
-            Date endDateTime = DateFormat.dateString2Date(endTimeStr, DateFormat.DEFAULT_DATETIME_FORMAT);
-            dateTiemMap.put("endDateTime", endDateTime);
+            if (endDate.getTime() <= endPlan.getTime()) {
+                String endTimeStr = endDateStr + " 23:59:59";
+                Date endDateTime = DateFormat.dateString2Date(endTimeStr, DateFormat.DEFAULT_DATETIME_FORMAT);
+                dateTiemMap.put("endDateTime", endDateTime);
+
+                //下一保养日期(yyyy-MM-dd)
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(endDate);
+                calendar.add(Calendar.DATE, 1);
+                dateTiemMap.put("nextMaintainDate", calendar.getTime());
+
+            } else if (endDate.getTime() > endPlan.getTime()) {
+                String endTimeStr = endPlanStr + " 23:59:59";
+                Date endDateTime = DateFormat.dateString2Date(endTimeStr, DateFormat.DEFAULT_DATETIME_FORMAT);
+                dateTiemMap.put("endDateTime", endDateTime);
+            }
 
             return dateTiemMap;
         } else if (endDate.getTime() < nowDate.getTime()) {
-            return this.findWeekOfMonthMap(nowDate, nextBeginDate);
+            return this.findWeekOfMonthMap(nowDate, nextBeginDate, endPlan);
         }
 
         return null;
@@ -486,13 +530,16 @@ public class EquipmentMaintainPlanToolsServiceImp implements EquipmentMaintainPl
      *  Map<String, Date>>
      *      beginDateTime: 周期起始日期时间(yyyy-MM-dd HH:mm:ss)
      *      endDateTime:   周期结束日期时间(yyyy-MM-dd HH:mm:ss)
+     *      nextMaintainDate: 下一保养日期(yyyy-MM-dd)
      *
      * @param nowDate    当前系统时间
      * @param beginDate  起始日期
+     * @param endPlan    计划结束日期
      * @return
      */
-    private Map<String, Date> findDayOfYearMap(Date nowDate, Date beginDate) {
+    private Map<String, Date> findDayOfYearMap(Date nowDate, Date beginDate, Date endPlan) {
         String beginDateStr = DateFormat.date2String(beginDate, DateFormat.DEFAULT_DATE_FORMAT);
+        String endPlanStr = DateFormat.date2String(endPlan, DateFormat.DEFAULT_DATE_FORMAT);
 
         //获取本周期起始日期 (计划开始日期)
         Calendar calendar_1 = Calendar.getInstance();
@@ -534,13 +581,25 @@ public class EquipmentMaintainPlanToolsServiceImp implements EquipmentMaintainPl
             Date beginDateTime = DateFormat.dateString2Date(beginTimeStr, DateFormat.DEFAULT_DATETIME_FORMAT);
             dateTiemMap.put("beginDateTime", beginDateTime);
 
-            String endTimeStr = endDateStr + " 23:59:59";
-            Date endDateTime = DateFormat.dateString2Date(endTimeStr, DateFormat.DEFAULT_DATETIME_FORMAT);
-            dateTiemMap.put("endDateTime", endDateTime);
+            if (endDate.getTime() <= endPlan.getTime()) {
+                String endTimeStr = endDateStr + " 23:59:59";
+                Date endDateTime = DateFormat.dateString2Date(endTimeStr, DateFormat.DEFAULT_DATETIME_FORMAT);
+                dateTiemMap.put("endDateTime", endDateTime);
+
+                //下一保养日期(yyyy-MM-dd)
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(endDate);
+                calendar.add(Calendar.DATE, 1);
+                dateTiemMap.put("nextMaintainDate", calendar.getTime());
+            } else if (endDate.getTime() > endPlan.getTime()) {
+                String endTimeStr = endPlanStr + " 23:59:59";
+                Date endDateTime = DateFormat.dateString2Date(endTimeStr, DateFormat.DEFAULT_DATETIME_FORMAT);
+                dateTiemMap.put("endDateTime", endDateTime);
+            }
 
             return dateTiemMap;
         } else if (endDate.getTime() < nowDate.getTime()) {
-            return this.findWeekOfMonthMap(nowDate, nextBeginDate);
+            return this.findDayOfYearMap(nowDate, nextBeginDate, endPlan);
         }
 
         return null;
@@ -558,25 +617,27 @@ public class EquipmentMaintainPlanToolsServiceImp implements EquipmentMaintainPl
      *  Map<String, Date>>
      *      beginDateTime: 周期起始日期时间(yyyy-MM-dd HH:mm:ss)
      *      endDateTime:   周期结束日期时间(yyyy-MM-dd HH:mm:ss)
+     *      nextMaintainDate: 下一保养日期(yyyy-MM-dd)
      *
      * @param nowDate    当前系统时间
      * @param beginDate  起始日期
+     * @param endPlan    计划结束日期
      * @param spaceCount 间隔周数
      * @return
      */
-    private Map<String, Date> findWeekMapByCustom(Date nowDate, Date beginDate, int spaceCount) {
+    private Map<String, Date> findWeekMapByCustom(Date nowDate, Date beginDate, Date endPlan, int spaceCount) {
         String beginDateStr = DateFormat.date2String(beginDate, DateFormat.DEFAULT_DATE_FORMAT);
+        String endPlanStr = DateFormat.date2String(endPlan, DateFormat.DEFAULT_DATE_FORMAT);
 
-        //获取本周期起始日期
-        Calendar calendar_1 = Calendar.getInstance();
-        calendar_1.setTime(beginDate);
+        Calendar calendar_2 = Calendar.getInstance();
+        calendar_2.setTime(beginDate);
 
         //获取下一个周期的起始日期
         int addDay = spaceCount * 7;
-        Calendar calendar_2 = Calendar.getInstance();
         calendar_2.add(Calendar.DATE, addDay);
-
         Date nextBeginDate = calendar_2.getTime();
+
+        calendar_2.add(Calendar.DATE, -1);
         Date endDate = calendar_2.getTime();
         String endDateStr = DateFormat.date2String(endDate, DateFormat.DEFAULT_DATE_FORMAT);
 
@@ -588,13 +649,25 @@ public class EquipmentMaintainPlanToolsServiceImp implements EquipmentMaintainPl
             Date beginDateTime = DateFormat.dateString2Date(beginTimeStr, DateFormat.DEFAULT_DATETIME_FORMAT);
             dateTiemMap.put("beginDateTime", beginDateTime);
 
-            String endTimeStr = endDateStr + " 23:59:59";
-            Date endDateTime = DateFormat.dateString2Date(endTimeStr, DateFormat.DEFAULT_DATETIME_FORMAT);
-            dateTiemMap.put("endDateTime", endDateTime);
+            if (endDate.getTime() <= endPlan.getTime()) {
+                String endTimeStr = endDateStr + " 23:59:59";
+                Date endDateTime = DateFormat.dateString2Date(endTimeStr, DateFormat.DEFAULT_DATETIME_FORMAT);
+                dateTiemMap.put("endDateTime", endDateTime);
+
+                //下一保养日期(yyyy-MM-dd)
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(endDate);
+                calendar.add(Calendar.DATE, 1);
+                dateTiemMap.put("nextMaintainDate", calendar.getTime());
+            } else if (endDate.getTime() > endPlan.getTime()) {
+                String endTimeStr = endPlanStr + " 23:59:59";
+                Date endDateTime = DateFormat.dateString2Date(endTimeStr, DateFormat.DEFAULT_DATETIME_FORMAT);
+                dateTiemMap.put("endDateTime", endDateTime);
+            }
 
             return dateTiemMap;
         } else if (endDate.getTime() < nowDate.getTime()) {
-            return this.findWeekMapByCustom(nowDate, nextBeginDate, spaceCount);
+            return this.findWeekMapByCustom(nowDate, nextBeginDate, endPlan, spaceCount);
         }
 
         return null;
@@ -611,23 +684,23 @@ public class EquipmentMaintainPlanToolsServiceImp implements EquipmentMaintainPl
      *  Map<String, Date>>
      *      beginDateTime: 周期起始日期时间(yyyy-MM-dd HH:mm:ss)
      *      endDateTime:   周期结束日期时间(yyyy-MM-dd HH:mm:ss)
+     *      nextMaintainDate: 下一保养日期(yyyy-MM-dd)
      *
      * @param nowDate       当前系统时间
      * @param beginDate     起始日期
+     * @param endPlan       计划结束日期
      * @param spaceCount    间隔月数
      * @param dayOfMonthStr 一个月中的某天
      * @return
      */
-    private Map<String, Date> findMonthMapByCustom(Date nowDate, Date beginDate, int spaceCount, String dayOfMonthStr) {
+    private Map<String, Date> findMonthMapByCustom(Date nowDate, Date beginDate, Date endPlan, int spaceCount, String dayOfMonthStr) {
         int dayOfMonth = Integer.valueOf(dayOfMonthStr).intValue();
         String beginDateStr = DateFormat.date2String(beginDate, DateFormat.DEFAULT_DATE_FORMAT);
+        String endPlanStr = DateFormat.date2String(endPlan, DateFormat.DEFAULT_DATE_FORMAT);
 
-        //获取本周期起始日期
-        Calendar calendar_1 = Calendar.getInstance();
-        calendar_1.setTime(beginDate);
-
-        //获取下一个周期的起始日期
         Calendar calendar_2 = Calendar.getInstance();
+        calendar_2.setTime(beginDate);
+        //获取下一个周期的起始日期
         calendar_2.add(Calendar.MONTH, spaceCount);
 
         int nextYear = calendar_2.get(Calendar.YEAR);
@@ -645,8 +718,9 @@ public class EquipmentMaintainPlanToolsServiceImp implements EquipmentMaintainPl
             nextDay = maxDay;
         }
         calendar_2.set(nextYear, (nextMonth-1), nextDay);
-
         Date nextBeginDate = calendar_2.getTime();
+
+        calendar_2.add(Calendar.DATE, -1);
         Date endDate = calendar_2.getTime();
         String endDateStr = DateFormat.date2String(endDate, DateFormat.DEFAULT_DATE_FORMAT);
 
@@ -658,28 +732,28 @@ public class EquipmentMaintainPlanToolsServiceImp implements EquipmentMaintainPl
             Date beginDateTime = DateFormat.dateString2Date(beginTimeStr, DateFormat.DEFAULT_DATETIME_FORMAT);
             dateTiemMap.put("beginDateTime", beginDateTime);
 
-            String endTimeStr = endDateStr + " 23:59:59";
-            Date endDateTime = DateFormat.dateString2Date(endTimeStr, DateFormat.DEFAULT_DATETIME_FORMAT);
-            dateTiemMap.put("endDateTime", endDateTime);
+            if (endDate.getTime() <= endPlan.getTime()) {
+                String endTimeStr = endDateStr + " 23:59:59";
+                Date endDateTime = DateFormat.dateString2Date(endTimeStr, DateFormat.DEFAULT_DATETIME_FORMAT);
+                dateTiemMap.put("endDateTime", endDateTime);
+
+                //下一保养日期(yyyy-MM-dd)
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(endDate);
+                calendar.add(Calendar.DATE, 1);
+                dateTiemMap.put("nextMaintainDate", calendar.getTime());
+            } else if (endDate.getTime() > endPlan.getTime()) {
+                String endTimeStr = endPlanStr + " 23:59:59";
+                Date endDateTime = DateFormat.dateString2Date(endTimeStr, DateFormat.DEFAULT_DATETIME_FORMAT);
+                dateTiemMap.put("endDateTime", endDateTime);
+            }
 
             return dateTiemMap;
         } else if (endDate.getTime() < nowDate.getTime()) {
-            return this.findMonthMapByCustom(nowDate, nextBeginDate, spaceCount, dayOfMonthStr);
+            return this.findMonthMapByCustom(nowDate, nextBeginDate, endPlan, spaceCount, dayOfMonthStr);
         }
         return null;
     }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }
