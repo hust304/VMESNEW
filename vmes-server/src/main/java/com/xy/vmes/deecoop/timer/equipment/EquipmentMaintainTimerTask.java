@@ -33,20 +33,24 @@ public class EquipmentMaintainTimerTask {
     @Autowired
     private EquipmentMaintainService maintainService;
 
-    @Autowired
-    private DepartmentService departmentService;
-
     /**
      * 创建设备保养单-定时任务
-     * 每月1号凌晨1点执行：(0 0 1 1 * ?)
+     * 每天凌晨1点执行        (0 0 1 * * ?)
      *
      * 1. 获取系统全部企业
      * 2. 查询设备保养计划(vmes_equipment_maintain_plan)
      *
      */
-    @Scheduled(cron = "0 0 1 1 * ?")
+    //每天12点30分执行 (0 30 12 * * ?)
+    //@Scheduled(cron = "0 30 12 * * ?") //测试代码-真实环境无此代码
+
+    @Scheduled(cron = "0 0 1 * * ?")
     public void createMaintainTimer() {
         Date nowDate = new Date();
+
+        //String dateStr = "2019-07-30";  //测试代码-真实环境无此代码
+        //Date nowDate = DateFormat.dateString2Date(dateStr, DateFormat.DEFAULT_DATE_FORMAT); //测试代码-真实环境无此代码
+
         //当前系统日期(yyyy-MM-dd)
         String nowDateStr = DateFormat.date2String(nowDate, DateFormat.DEFAULT_DATE_FORMAT);
         nowDate = DateFormat.dateString2Date(nowDateStr, DateFormat.DEFAULT_DATE_FORMAT);
@@ -132,6 +136,9 @@ public class EquipmentMaintainTimerTask {
             }
         }
     }
+
+    @Autowired
+    private DepartmentService departmentService;
 
 
 }
