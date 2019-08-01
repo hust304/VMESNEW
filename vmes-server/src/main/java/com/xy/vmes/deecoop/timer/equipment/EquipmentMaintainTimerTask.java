@@ -1,7 +1,6 @@
 package com.xy.vmes.deecoop.timer.equipment;
 
 import com.xy.vmes.common.util.DateFormat;
-import com.xy.vmes.deecoop.timer.purchase.PurchasePaymentTask;
 import com.xy.vmes.entity.Department;
 import com.xy.vmes.entity.EquipmentMaintainPlan;
 import com.xy.vmes.service.DepartmentService;
