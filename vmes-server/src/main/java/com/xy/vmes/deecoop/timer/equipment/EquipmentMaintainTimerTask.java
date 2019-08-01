@@ -92,6 +92,9 @@ public class EquipmentMaintainTimerTask {
         //2. 遍历系统全部企业
         for (Department company : companyList) {
             String companyId = company.getId();
+            if ("45c9f73fd58a49348a6e1d31625b2763".equals(companyId)) {
+                System.out.println("45c9f73fd58a49348a6e1d31625b2763");
+            }
 
             //根据(企业id)-查询设备保养计划(vmes_equipment_maintain_plan)
             List<EquipmentMaintainPlan> planList = null;
