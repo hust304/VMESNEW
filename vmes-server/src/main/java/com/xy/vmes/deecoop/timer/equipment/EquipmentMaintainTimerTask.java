@@ -49,6 +49,7 @@ public class EquipmentMaintainTimerTask {
         Date nowDate = new Date();
         //当前系统日期(yyyy-MM-dd)
         String nowDateStr = DateFormat.date2String(nowDate, DateFormat.DEFAULT_DATE_FORMAT);
+        nowDate = DateFormat.dateString2Date(nowDateStr, DateFormat.DEFAULT_DATE_FORMAT);
 
         //1. 获取系统全部企业
         List<Department> companyList = null;
@@ -118,7 +119,7 @@ public class EquipmentMaintainTimerTask {
                      *      endDateTime:   周期结束日期时间(yyyy-MM-dd HH:mm:ss)
                      *      nextMaintainDate: 下一保养日期(yyyy-MM-dd)
                      */
-                    Map<String, Map<String, Date>> valueMap = maintainPlanToolsService.findPlanPeriod(new Date(), plan);
+                    Map<String, Map<String, Date>> valueMap = maintainPlanToolsService.findPlanPeriod(nowDate, plan);
                     if (valueMap == null || valueMap.get(sysPeriodType) == null) {continue;}
                     Map<String, Date> dateMap = valueMap.get(sysPeriodType);
                     //创建-周期计划-保养单
