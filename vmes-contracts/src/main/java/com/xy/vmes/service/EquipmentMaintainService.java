@@ -103,22 +103,13 @@ public interface EquipmentMaintainService {
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
-     * 创建设备保养单
+     * 创建设备保养单(设备保养定时任务调用)
      * @param plan  设备保养计划对象<EquipmentMaintainPlan>
      */
-    void addMaintainByCustom(EquipmentMaintainPlan plan) throws Exception;
+    void addMaintainCustomByTimer(EquipmentMaintainPlan plan) throws Exception;
+
     /**
-     * 创建设备保养单
-     *
-     * 参数说明:
-     * Map<重复类型Key, 周期起止日期时间Map>
-     * 重复类型Key:
-     *   everDay:每天
-     *   dayOfWeek:每周星期几
-     *   weekOfMonth:每月第几个星期几
-     *   dayOfYear:每年某月某日
-     *   workDay:工作日[周1-周5]
-     *   customPeriod:自定义周期
+     * 创建设备保养单(设备保养定时任务调用)
      *
      *  周期起止日期时间Map:
      *  Map<String, Date>>
@@ -126,10 +117,10 @@ public interface EquipmentMaintainService {
      *      endDateTime:   周期结束日期时间(yyyy-MM-dd HH:mm:ss)
      *      nextMaintainDate: 下一保养日期(yyyy-MM-dd)
      *
-     * @param valueMap  周期数据Map
+     * @param dateMap   周期数据Map
      * @param plan      设备保养计划对象<EquipmentMaintainPlan>
      */
-    void addMaintainByPeriod(Map<String, Map<String, Date>> valueMap, EquipmentMaintainPlan plan) throws Exception;
+    void addMaintainPeriodByTimer(Map<String, Date> dateMap, EquipmentMaintainPlan plan) throws Exception;
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**
     * 分页查询

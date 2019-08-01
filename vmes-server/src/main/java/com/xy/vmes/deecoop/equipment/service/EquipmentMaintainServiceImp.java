@@ -195,15 +195,17 @@ public class EquipmentMaintainServiceImp implements EquipmentMaintainService {
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
-     * 创建设备保养单
+     * 创建设备保养单(设备保养定时任务调用)
      * @param plan  设备保养计划对象<EquipmentMaintainPlan>
      */
-    public void addMaintainByCustom(EquipmentMaintainPlan plan) throws Exception {
+    public void addMaintainCustomByTimer(EquipmentMaintainPlan plan) throws Exception {
         EquipmentMaintain addMaintain = new EquipmentMaintain();
         //equipmentId 设备ID
         addMaintain.setEquipmentId(plan.getEquipmentId());
         //maintainContentId 保养内容ID
         addMaintain.setMaintainContentId(plan.getMaintainContentId());
+        //isStop 是否停机 (1:停机保养 0:非停机保养)
+        addMaintain.setIsStop(plan.getIsStop());
 
         addMaintain.setCuser(plan.getCuser());
         addMaintain.setCompanyId(plan.getCompanyId());
@@ -224,21 +226,14 @@ public class EquipmentMaintainServiceImp implements EquipmentMaintainService {
         //equipmentState 设备状态(1:待保养 2:保养中 3:已完成)
         addMaintain.setEquipmentState("1");
 
+        //isValidState 保养单有效状态(1:有效 0:无效 is null 无效)
+        addMaintain.setIsValidState("1");
+
         this.save(addMaintain);
     }
 
     /**
-     * 创建设备保养单
-     *
-     * 参数说明:
-     * Map<重复类型Key, 周期起止日期时间Map>
-     * 重复类型Key:
-     *   everDay:每天
-     *   dayOfWeek:每周星期几
-     *   weekOfMonth:每月第几个星期几
-     *   dayOfYear:每年某月某日
-     *   workDay:工作日[周1-周5]
-     *   customPeriod:自定义周期
+     * 创建设备保养单(设备保养定时任务调用)
      *
      *  周期起止日期时间Map:
      *  Map<String, Date>>
@@ -246,19 +241,12 @@ public class EquipmentMaintainServiceImp implements EquipmentMaintainService {
      *      endDateTime:   周期结束日期时间(yyyy-MM-dd HH:mm:ss)
      *      nextMaintainDate: 下一保养日期(yyyy-MM-dd)
      *
-     * @param valueMap  周期数据Map
+     * @param dateMap   周期数据Map
      * @param plan      设备保养计划对象<EquipmentMaintainPlan>
      */
-    public void addMaintainByPeriod(Map<String, Map<String, Date>> valueMap, EquipmentMaintainPlan plan) throws Exception {
-        if (valueMap == null) {return;}
-        if (plan == null) {return;}
-
-        //sysPeriodType 重复类型 (everDay:每天 dayOfWeek:每周星期几 weekOfMonth:每月第几个星期几 dayOfYear:每年某月某日 workDay:工作日[周1-周5] customPeriod:自定义周期)
-        String sysPeriodType = plan.getSysPeriodType();
-        if (sysPeriodType == null || sysPeriodType.trim().length() == 0) {return;}
-
-        Map<String, Date> dateMap = valueMap.get(sysPeriodType);
+    public void addMaintainPeriodByTimer(Map<String, Date> dateMap, EquipmentMaintainPlan plan) throws Exception {
         if (dateMap == null) {return;}
+        if (plan == null) {return;}
 
         //beginDateTime: 周期起始日期时间(yyyy-MM-dd HH:mm:ss)
         String beginDateTimeStr = null;
@@ -273,46 +261,76 @@ public class EquipmentMaintainServiceImp implements EquipmentMaintainService {
         if (endDateTime != null) {
             endDateTimeStr = DateFormat.date2String(endDateTime, DateFormat.DEFAULT_DATETIME_FORMAT);
         }
-
         //nextMaintainDate: 下一保养日期(yyyy-MM-dd)
         Date nextMaintainDate = dateMap.get("nextMaintainDate");
 
-            //sysBeginTime:保养开始时间(根据保养计划-系统计算)
-            //sysEndTime:保养结束时间(根据保养计划-系统计算)
-            //maintainDate:保养时间
-            //nextMaintainDate:下一保养时间
+        //(企业id,保养计划id,周期起始日期时间,周期结束日期时间) 查询(vmes_equipment_maintain:设备保养表)
+        PageData findMap = new PageData();
+        findMap.put("companyId", plan.getCompanyId());
+        findMap.put("planId", plan.getId());
+        findMap.put("sysBeginTime", beginDateTimeStr);
+        findMap.put("sys_end_time", endDateTimeStr);
+        //是否启用(0:已禁用 1:启用)
+        findMap.put("isdisable", "1");
+        EquipmentMaintain maintainObj = this.findMaintain(findMap);
+        if (maintainObj != null) {return;}
 
+        EquipmentMaintain addMaintain = new EquipmentMaintain();
+        //equipmentId 设备ID
+        addMaintain.setEquipmentId(plan.getEquipmentId());
+        //maintainContentId 保养内容ID
+        addMaintain.setMaintainContentId(plan.getMaintainContentId());
+        //isStop 是否停机 (1:停机保养 0:非停机保养)
+        addMaintain.setIsStop(plan.getIsStop());
 
+        addMaintain.setCuser(plan.getCuser());
+        addMaintain.setCompanyId(plan.getCompanyId());
+        //planId 保养计划ID
+        addMaintain.setPlanId(plan.getId());
 
+        //sysCode 保养单编号(系统生成)
+        //设备维修单编号
+        //EM+yyyyMMdd+00001 = 15位
+        String code = coderuleService.createCoderCdateByDate(plan.getCompanyId(),
+                "vmes_equipment_maintain:",
+                "yyyyMMdd",
+                "EM");
+        addMaintain.setSysCode(code);
 
+        //equipmentState 设备状态(1:待保养 2:保养中 3:已完成)
+        addMaintain.setEquipmentState("1");
 
+        //sysBeginTime:保养开始时间(根据保养计划-系统计算)
+        addMaintain.setSysBeginTime(beginDateTime);
+        //sysEndTime:保养结束时间(根据保养计划-系统计算)
+        addMaintain.setSysEndTime(endDateTime);
 
-//        EquipmentMaintain addMaintain = new EquipmentMaintain();
-//        //equipmentId 设备ID
-//        addMaintain.setEquipmentId(plan.getEquipmentId());
-//        //maintainContentId 保养内容ID
-//        addMaintain.setMaintainContentId(plan.getMaintainContentId());
-//
-//        addMaintain.setCuser(plan.getCuser());
-//        addMaintain.setCompanyId(plan.getCompanyId());
-//        //planId 保养计划ID
-//        addMaintain.setPlanId(plan.getId());
-//
-//        //sysCode 保养单编号(系统生成)
-//        //设备维修单编号
-//        //EM+yyyyMMdd+00001 = 15位
-//        String code = coderuleService.createCoderCdateByDate(plan.getCompanyId(),
-//                "vmes_equipment_maintain:",
-//                "yyyyMMdd",
-//                "EM");
-//        addMaintain.setSysCode(code);
-//
-//        //equipmentState 设备状态(1:待保养 2:保养中 3:已完成)
-//        addMaintain.setEquipmentState("1");
-//
-//
-//
-//        this.save(addMaintain);
+        //maintainDate:保养时间(yyyy-MM-dd)
+        String maintainDateStr = DateFormat.date2String(beginDateTime, DateFormat.DEFAULT_DATE_FORMAT);
+        Date maintainDate = DateFormat.dateString2Date(maintainDateStr, DateFormat.DEFAULT_DATE_FORMAT);
+        addMaintain.setMaintainDate(maintainDate);
+        //nextMaintainDate:下一保养时间
+        addMaintain.setNextMaintainDate(nextMaintainDate);
+
+        //(企业id,保养计划id,保养单有效状态) 查询(vmes_equipment_maintain:设备保养表)
+        //查询(vmes_equipment_maintain:设备保养表)-(企业id,保养计划id,有效)设备保养表单
+        findMap = new PageData();
+        findMap.put("companyId", plan.getCompanyId());
+        findMap.put("planId", plan.getId());
+        //保养单有效状态(1:有效 0:无效 is null 无效)
+        findMap.put("isValidState", "1");
+        //是否启用(0:已禁用 1:启用)
+        findMap.put("isdisable", "1");
+        List<EquipmentMaintain> maintainList = this.findMaintainList(findMap);
+
+        //isValidState 保养单有效状态(1:有效 0:无效 is null 无效)
+        addMaintain.setIsValidState("0");
+        if (maintainList == null || maintainList.size() == 0) {
+            //isValidState 保养单有效状态(1:有效 0:无效 is null 无效)
+            addMaintain.setIsValidState("1");
+        }
+
+        this.save(addMaintain);
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

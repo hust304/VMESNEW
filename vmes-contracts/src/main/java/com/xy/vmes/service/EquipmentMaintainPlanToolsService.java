@@ -40,6 +40,7 @@ public interface EquipmentMaintainPlanToolsService {
      *  Map<String, Date>>
      *      beginDateTime: 周期起始日期时间(yyyy-MM-dd HH:mm:ss)
      *      endDateTime:   周期结束日期时间(yyyy-MM-dd HH:mm:ss)
+     *      nextMaintainDate: 下一保养日期(yyyy-MM-dd)
      */
     Map<String, Map<String, Date>> findPlanPeriod(Date nowDate, EquipmentMaintainPlan plan);
 

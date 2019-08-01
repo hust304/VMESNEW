@@ -72,7 +72,7 @@ public class EquipmentMaintain implements Serializable {
 	//取消人id
 	@TableField("cancel_user")
 	private String cancelUser;
-	//是否允许保养(0:不允许 1:允许)
+	//是否允许保养(0:不允许 1:允许)-放弃此字段
 	@TableField("is_allow_maintain")
 	private String isAllowMaintain;
 	//保养单有效状态(1:有效 0:无效 is null 无效)
