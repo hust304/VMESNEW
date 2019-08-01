@@ -1,5 +1,6 @@
 package com.xy.vmes.deecoop.equipment.service;
 
+import com.xy.vmes.common.util.DateFormat;
 import com.xy.vmes.deecoop.equipment.dao.EquipmentMaintainMapper;
 import com.xy.vmes.entity.EquipmentMaintain;
 import com.xy.vmes.entity.EquipmentMaintainPlan;
@@ -243,56 +244,75 @@ public class EquipmentMaintainServiceImp implements EquipmentMaintainService {
      *  Map<String, Date>>
      *      beginDateTime: 周期起始日期时间(yyyy-MM-dd HH:mm:ss)
      *      endDateTime:   周期结束日期时间(yyyy-MM-dd HH:mm:ss)
+     *      nextMaintainDate: 下一保养日期(yyyy-MM-dd)
      *
      * @param valueMap  周期数据Map
      * @param plan      设备保养计划对象<EquipmentMaintainPlan>
      */
     public void addMaintainByPeriod(Map<String, Map<String, Date>> valueMap, EquipmentMaintainPlan plan) throws Exception {
+        if (valueMap == null) {return;}
+        if (plan == null) {return;}
+
         //sysPeriodType 重复类型 (everDay:每天 dayOfWeek:每周星期几 weekOfMonth:每月第几个星期几 dayOfYear:每年某月某日 workDay:工作日[周1-周5] customPeriod:自定义周期)
-        String sysPeriodType = null;
-        if (plan != null) {
-            sysPeriodType = plan.getSysPeriodType();
+        String sysPeriodType = plan.getSysPeriodType();
+        if (sysPeriodType == null || sysPeriodType.trim().length() == 0) {return;}
+
+        Map<String, Date> dateMap = valueMap.get(sysPeriodType);
+        if (dateMap == null) {return;}
+
+        //beginDateTime: 周期起始日期时间(yyyy-MM-dd HH:mm:ss)
+        String beginDateTimeStr = null;
+        Date beginDateTime = dateMap.get("beginDateTime");
+        if (beginDateTime != null) {
+            beginDateTimeStr = DateFormat.date2String(beginDateTime, DateFormat.DEFAULT_DATETIME_FORMAT);
         }
 
-        if (sysPeriodType != null && valueMap != null && valueMap.get(sysPeriodType) != null) {
-            Map<String, Date> dateMap = valueMap.get(sysPeriodType);
+        //endDateTime: 周期结束日期时间(yyyy-MM-dd HH:mm:ss)
+        String endDateTimeStr = null;
+        Date endDateTime = dateMap.get("endDateTime");
+        if (endDateTime != null) {
+            endDateTimeStr = DateFormat.date2String(endDateTime, DateFormat.DEFAULT_DATETIME_FORMAT);
+        }
+
+        //nextMaintainDate: 下一保养日期(yyyy-MM-dd)
+        Date nextMaintainDate = dateMap.get("nextMaintainDate");
+
             //sysBeginTime:保养开始时间(根据保养计划-系统计算)
             //sysEndTime:保养结束时间(根据保养计划-系统计算)
             //maintainDate:保养时间
             //nextMaintainDate:下一保养时间
-        }
 
 
 
 
 
 
-        EquipmentMaintain addMaintain = new EquipmentMaintain();
-        //equipmentId 设备ID
-        addMaintain.setEquipmentId(plan.getEquipmentId());
-        //maintainContentId 保养内容ID
-        addMaintain.setMaintainContentId(plan.getMaintainContentId());
-
-        addMaintain.setCuser(plan.getCuser());
-        addMaintain.setCompanyId(plan.getCompanyId());
-        //planId 保养计划ID
-        addMaintain.setPlanId(plan.getId());
-
-        //sysCode 保养单编号(系统生成)
-        //设备维修单编号
-        //EM+yyyyMMdd+00001 = 15位
-        String code = coderuleService.createCoderCdateByDate(plan.getCompanyId(),
-                "vmes_equipment_maintain:",
-                "yyyyMMdd",
-                "EM");
-        addMaintain.setSysCode(code);
-
-        //equipmentState 设备状态(1:待保养 2:保养中 3:已完成)
-        addMaintain.setEquipmentState("1");
-
-
-
-        this.save(addMaintain);
+//        EquipmentMaintain addMaintain = new EquipmentMaintain();
+//        //equipmentId 设备ID
+//        addMaintain.setEquipmentId(plan.getEquipmentId());
+//        //maintainContentId 保养内容ID
+//        addMaintain.setMaintainContentId(plan.getMaintainContentId());
+//
+//        addMaintain.setCuser(plan.getCuser());
+//        addMaintain.setCompanyId(plan.getCompanyId());
+//        //planId 保养计划ID
+//        addMaintain.setPlanId(plan.getId());
+//
+//        //sysCode 保养单编号(系统生成)
+//        //设备维修单编号
+//        //EM+yyyyMMdd+00001 = 15位
+//        String code = coderuleService.createCoderCdateByDate(plan.getCompanyId(),
+//                "vmes_equipment_maintain:",
+//                "yyyyMMdd",
+//                "EM");
+//        addMaintain.setSysCode(code);
+//
+//        //equipmentState 设备状态(1:待保养 2:保养中 3:已完成)
+//        addMaintain.setEquipmentState("1");
+//
+//
+//
+//        this.save(addMaintain);
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

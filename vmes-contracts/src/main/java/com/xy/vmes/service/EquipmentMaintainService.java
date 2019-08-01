@@ -124,6 +124,7 @@ public interface EquipmentMaintainService {
      *  Map<String, Date>>
      *      beginDateTime: 周期起始日期时间(yyyy-MM-dd HH:mm:ss)
      *      endDateTime:   周期结束日期时间(yyyy-MM-dd HH:mm:ss)
+     *      nextMaintainDate: 下一保养日期(yyyy-MM-dd)
      *
      * @param valueMap  周期数据Map
      * @param plan      设备保养计划对象<EquipmentMaintainPlan>
