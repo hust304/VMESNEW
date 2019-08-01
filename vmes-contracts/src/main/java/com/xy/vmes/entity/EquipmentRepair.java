@@ -37,16 +37,19 @@ public class EquipmentRepair implements Serializable {
 	//故障描述
 	@TableField("fault_describe")
 	private String faultDescribe;
+	//是否停机 (1:停机维修 0:非停机维修)
+	@TableField("is_stop")
+	private String isStop;
 	//设备状态(1:故障 2:维修中 3:已完成)
 	@TableField("equipment_state")
 	private String equipmentState;
 	//开始维修时间
 	@TableField("begin_time")
 	private Date beginTime;
+
 	//完成维修时间
 	@TableField("end_time")
 	private Date endTime;
-
 	//取消原因
 	@TableField("cancel_reason")
 	private String cancelReason;
@@ -59,10 +62,10 @@ public class EquipmentRepair implements Serializable {
 	//创建用户id
 	@TableField("cuser")
 	private String cuser;
+
 	//创建时间
 	@TableField("cdate")
 	private Date cdate;
-
 	//修改用户id
 	@TableField("uuser")
 	private String uuser;
@@ -191,7 +194,12 @@ public class EquipmentRepair implements Serializable {
 	public String getIsdisable() {
 		return isdisable;
 	}
-
+	public String getIsStop() {
+		return isStop;
+	}
+	public void setIsStop(String isStop) {
+		this.isStop = isStop;
+	}
 /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 

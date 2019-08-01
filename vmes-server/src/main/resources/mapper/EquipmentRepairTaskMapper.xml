@@ -57,20 +57,21 @@
         repair_id repairId,
         repair_user repairUser,
         fault_describe faultDescribe,
-        time_length timeLength,
+        is_stop isStop,
 
+        time_length timeLength,
         task_result taskResult,
         task_state taskState,
         task_type taskType,
         begin_time beginTime,
-        end_time endTime,
 
+        end_time endTime,
         cancel_reason cancelReason,
         cancel_user cancelUser,
         retreat_type retreatType,
         cuser cuser,
-        cdate cdate,
 
+        cdate cdate,
         uuser uuser,
         udate udate,
         remark remark,
@@ -116,9 +117,10 @@
             task.repair_id repairId,
             task.repair_user repairUser,
             task.fault_describe faultDescribe,
+            task.is_stop isStop,
+
             task.time_length timeLength,
             '' timeLengthStr,
-
             task.task_result taskResult,
             CASE
                 WHEN task.task_result = '0' THEN '未解决'
@@ -129,15 +131,15 @@
             task.task_type taskType,
             task.begin_time beginTime,
             DATE_FORMAT(task.begin_time,'%Y-%m-%d %T') beginTimeStr,
+
             task.end_time endTime,
             DATE_FORMAT(task.end_time,'%Y-%m-%d %T') endTimeStr,
-
             task.cancel_reason cancelReason,
             task.cancel_user cancelUser,
             task.retreat_type retreatType,
             task.cuser cuser,
-            task.cdate cdate,
 
+            task.cdate cdate,
             task.uuser uuser,
             task.udate udate,
             task.remark remark,

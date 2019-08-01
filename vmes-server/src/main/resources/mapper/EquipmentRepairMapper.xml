@@ -78,16 +78,17 @@
 
         warn_date warnDate,
         fault_describe faultDescribe,
+        is_stop isStop,
         equipment_state equipmentState,
         begin_time beginTime,
-        end_time endTime,
 
+        end_time endTime,
         cancel_reason cancelReason,
         cancel_date cancelDate,
         cancel_user cancelUser,
         cuser cuser,
-        cdate cdate,
 
+        cdate cdate,
         uuser uuser,
         udate udate,
         remark remark,
@@ -137,6 +138,7 @@
         repair.warn_date warnDate,
         DATE_FORMAT(repair.warn_date,'%Y-%m-%d %T') warnDateTimeStr,
         repair.fault_describe faultDescribe,
+        repair.is_stop isStop,
         repair.equipment_state equipmentState,
         CASE
             WHEN repair.equipment_state = '1' THEN '故障'
@@ -146,15 +148,15 @@
         END equipmentStateName,
         repair.begin_time beginTime,
         DATE_FORMAT(repair.begin_time,'%Y-%m-%d %T') beginTimeStr,
+
         repair.end_time endTime,
         DATE_FORMAT(repair.end_time,'%Y-%m-%d %T') endTimeStr,
-
         repair.cancel_reason cancelReason,
         repair.cancel_date cancelDate,
         repair.cancel_user cancelUser,
         repair.cuser cuser,
-        repair.cdate cdate,
 
+        repair.cdate cdate,
         repair.uuser uuser,
         repair.udate udate,
         repair.remark remark,

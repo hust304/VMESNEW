@@ -24,13 +24,16 @@ public class EquipmentMaintainPlan implements Serializable,Cloneable {
 	//设备ID
 	@TableField("equipment_id")
 	private String equipmentId;
-	//保养计划单编号(系统生成)
-	@TableField("sys_code")
-	private String sysCode;
 	//保养内容ID(保养内容表vmes_equipment_maintain_content.id)
 	@TableField("maintain_content_id")
 	private String maintainContentId;
+	//是否停机 (1:停机保养 0:非停机保养)
+	@TableField("is_stop")
+	private String isStop;
 
+	//保养计划单编号(系统生成)
+	@TableField("sys_code")
+	private String sysCode;
 	//保养方式(自定义 按周期 数据字典-vmes_dictionary.id)
 	@TableField("mode_id")
 	private String modeId;
@@ -43,10 +46,10 @@ public class EquipmentMaintainPlan implements Serializable,Cloneable {
 	//计划结束日期
 	@TableField("end_plan")
 	private Date endPlan;
+
 	//重复频率类型(day:天 week:周 month:月)
 	@TableField("period_type")
 	private String periodType;
-
 	//重复频率数字(间隔数字)
 	@TableField("period_count")
 	private Integer periodCount;
@@ -59,10 +62,10 @@ public class EquipmentMaintainPlan implements Serializable,Cloneable {
 	//重复时间(天)-(01-24)
 	@TableField("period_hourofday")
 	private String periodHourofday;
+
 	//自定义重复名称
 	@TableField("period_name")
 	private String periodName;
-
 	//重复类型 (everDay:每天 dayOfWeek:每周星期几 weekOfMonth:每月第几个星期几 dayOfYear:每年某月某日 workDay:工作日[周1-周5] customPeriod:自定义周期)
 	@TableField("sys_period_type")
 	private String sysPeriodType;
@@ -75,10 +78,10 @@ public class EquipmentMaintainPlan implements Serializable,Cloneable {
 	//创建时间
 	@TableField("cdate")
 	private Date cdate;
+
 	//修改用户id
 	@TableField("uuser")
 	private String uuser;
-
 	//修改时间
 	@TableField("udate")
 	private Date udate;
@@ -228,8 +231,14 @@ public class EquipmentMaintainPlan implements Serializable,Cloneable {
 	public String getIsdisable() {
 		return isdisable;
 	}
+	public String getIsStop() {
+		return isStop;
+	}
+	public void setIsStop(String isStop) {
+		this.isStop = isStop;
+	}
 
-/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+	/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 public EquipmentMaintainPlan clone() {
 	EquipmentMaintainPlan object = null;
 	try{

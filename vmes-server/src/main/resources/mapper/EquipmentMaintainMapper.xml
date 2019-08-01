@@ -68,30 +68,32 @@
         company_id companyId,
         equipment_id equipmentId,
         maintain_content_id maintainContentId,
-        plan_id planId,
+        is_stop isStop,
 
+        plan_id planId,
         maintain_task_id maintainTaskId,
         sys_code sysCode,
         sys_begin_time sysBeginTime,
         sys_end_time sysEndTime,
-        maintain_date maintainDate,
 
+        maintain_date maintainDate,
         next_maintain_date nextMaintainDate,
         equipment_state equipmentState,
         begin_time beginTime,
         end_time endTime,
-        cancel_reason cancelReason,
 
+        cancel_reason cancelReason,
         cancel_date cancelDate,
         cancel_user cancelUser,
         is_allow_maintain isAllowMaintain,
         is_valid_state isValidState,
-        cuser cuser,
 
+        cuser cuser,
         cdate cdate,
         uuser uuser,
         udate udate,
         remark remark,
+
         isdisable isdisable
         from vmes_equipment_maintain
         <where>
@@ -147,30 +149,32 @@
         company_id companyId,
         equipment_id equipmentId,
         maintain_content_id maintainContentId,
-        plan_id planId,
+        is_stop isStop,
 
+        plan_id planId,
         maintain_task_id maintainTaskId,
         sys_code sysCode,
         sys_begin_time sysBeginTime,
         sys_end_time sysEndTime,
-        maintain_date maintainDate,
 
+        maintain_date maintainDate,
         next_maintain_date nextMaintainDate,
         equipment_state equipmentState,
         begin_time beginTime,
         end_time endTime,
-        cancel_reason cancelReason,
 
+        cancel_reason cancelReason,
         cancel_date cancelDate,
         cancel_user cancelUser,
         is_allow_maintain isAllowMaintain,
         is_valid_state isValidState,
-        cuser cuser,
 
+        cuser cuser,
         cdate cdate,
         uuser uuser,
         udate udate,
         remark remark,
+
         isdisable isdisable
         from vmes_equipment_maintain
         <where>

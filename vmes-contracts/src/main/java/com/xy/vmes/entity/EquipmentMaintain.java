@@ -27,10 +27,13 @@ public class EquipmentMaintain implements Serializable {
 	//保养内容ID(保养内容表vmes_equipment_maintain_content.id)
 	@TableField("maintain_content_id")
 	private String maintainContentId;
+	//是否停机 (1:停机保养 0:非停机保养)
+	@TableField("is_stop")
+	private String isStop;
+
 	//保养计划ID
 	@TableField("plan_id")
 	private String planId;
-
 	//保养任务ID
 	@TableField("maintain_task_id")
 	private String maintainTaskId;
@@ -43,10 +46,10 @@ public class EquipmentMaintain implements Serializable {
 	//保养结束时间(根据保养计划-系统计算)
 	@TableField("sys_end_time")
 	private Date sysEndTime;
+
 	//保养时间(yyyy-MM-dd)
 	@TableField("maintain_date")
 	private Date maintainDate;
-
 	//下一保养时间(yyyy-MM-dd)
 	@TableField("next_maintain_date")
 	private Date nextMaintainDate;
@@ -59,10 +62,10 @@ public class EquipmentMaintain implements Serializable {
 	//完成保养时间
 	@TableField("end_time")
 	private Date endTime;
+
 	//取消原因
 	@TableField("cancel_reason")
 	private String cancelReason;
-
 	//取消时间
 	@TableField("cancel_date")
 	private Date cancelDate;
@@ -75,10 +78,10 @@ public class EquipmentMaintain implements Serializable {
 	//保养单有效状态(1:有效 0:无效 is null 无效)
 	@TableField("is_valid_state")
 	private String isValidState;
+
 	//创建用户id
 	@TableField("cuser")
 	private String cuser;
-
 	//创建时间
 	@TableField("cdate")
 	private Date cdate;
@@ -91,6 +94,7 @@ public class EquipmentMaintain implements Serializable {
 	//备注
 	@TableField("remark")
 	private String remark;
+
 	//是否启用(0:已禁用 1:启用)
 	@TableField("isdisable")
 	private String isdisable;
@@ -246,7 +250,12 @@ public class EquipmentMaintain implements Serializable {
 	public String getIsdisable() {
 		return isdisable;
 	}
-
+	public String getIsStop() {
+		return isStop;
+	}
+	public void setIsStop(String isStop) {
+		this.isStop = isStop;
+	}
 /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 
