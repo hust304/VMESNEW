@@ -442,75 +442,67 @@ public class EquipmentMaintainPlanToolsServiceImp implements EquipmentMaintainPl
      * @return
      */
     private Map<String, Date> findWeekOfMonthMap(Date nowDate, Date beginDate, Date beginPlan, Date endPlan) {
-        String beginDateStr = DateFormat.date2String(beginDate, DateFormat.DEFAULT_DATE_FORMAT);
-        String endPlanStr = DateFormat.date2String(endPlan, DateFormat.DEFAULT_DATE_FORMAT);
+        Calendar calendar = Calendar.getInstance();
 
         //计划开始日期-第几个星期几
-        Calendar beginCalendar = Calendar.getInstance();
-        beginCalendar.setTime(beginPlan);
-
+        calendar.setTime(beginPlan);
         //计划开始日期-当前月第几周
-        int beginPlan_weekInMonth = beginCalendar.get(Calendar.DAY_OF_WEEK_IN_MONTH);
+        int beginPlan_weekInMonth = calendar.get(Calendar.DAY_OF_WEEK_IN_MONTH);
         //计划开始日期-当前日期星期几
-        int beginPlan_dayOfWeek = beginCalendar.get(Calendar.DAY_OF_WEEK);
+        int beginPlan_dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
 
-        //2. 获取本周期起始日期-本月第一天
-        String beginMonthStr = DateFormat.date2String(beginDate, "yyyy-MM") + "-01";
-        //获取本周期起始日期-下一个月第一天
-        String beginNextMonthStr = beginMonthStr;
-        try {
-            beginNextMonthStr = DateFormat.getAddDay(beginMonthStr, DateFormat.DEFAULT_MONTH, 1, DateFormat.DEFAULT_DATE_FORMAT);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        Date beginNextMonthDate = DateFormat.dateString2Date(beginNextMonthStr, DateFormat.DEFAULT_DATE_FORMAT);
-        Calendar calendarMonth = Calendar.getInstance();
-        calendarMonth.setTime(beginNextMonthDate);
+        //本次调用-起始日期-当前月的第一天
+        calendar.setTime(beginDate);
+        int beginYear = calendar.get(Calendar.YEAR);
         //自然月份 取值范围[1,12] (注意jdk JANUARY:一月:0)
-        int month = calendarMonth.get(Calendar.MONTH) + 1;
+        int beginMonth = calendar.get(Calendar.MONTH) + 1;
+        calendar.set(beginYear, (beginMonth-1), 1);
+        Date beginMonthFirstDay = calendar.getTime();
 
-        //3. 下一个月第一天-第几个星期几
-        Calendar calendar_2 = Calendar.getInstance();
-        calendar_2.setTime(beginNextMonthDate);
+        //本次调用-起始日期-下一个月第一天
+        calendar.setTime(beginMonthFirstDay);
+        calendar.add(Calendar.MONTH, 1);
+        Date beginNextMonthDate = calendar.getTime();
 
+        //下一个月第一天-第几个星期几
+        calendar.setTime(beginNextMonthDate);
         //当前月第几周
-        int weekInMonth_2 = calendar_2.get(Calendar.DAY_OF_WEEK_IN_MONTH);
+        int nextMonthFirstDay_weekInMonth = calendar.get(Calendar.DAY_OF_WEEK_IN_MONTH);
         //当前日期星期几
-        int dayOfWeek_2 = calendar_2.get(Calendar.DAY_OF_WEEK);
+        int nextMonthFirstDay_dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+        //自然月份 取值范围[1,12] (注意jdk JANUARY:一月:0)
+        int nextMonth = calendar.get(Calendar.MONTH) + 1;
 
         //4. 获取下一个周期的起始日期
         int addDay = 0;
-        if (beginPlan_weekInMonth == 1 && (dayOfWeek_2 <= beginPlan_weekInMonth) ) {
-            addDay = beginPlan_dayOfWeek - dayOfWeek_2;
+        if (beginPlan_weekInMonth == 1 && (nextMonthFirstDay_dayOfWeek <= beginPlan_weekInMonth) ) {
+            addDay = beginPlan_dayOfWeek - nextMonthFirstDay_dayOfWeek;
         } else if (beginPlan_weekInMonth > 1) {
             int day1 = DateFormat.findDayByWeekMin(beginPlan_dayOfWeek);
-            int day2 = DateFormat.findDayByWeekMax(dayOfWeek_2);
-            addDay = ((beginPlan_weekInMonth - 1) - weekInMonth_2) * 7 + (day1 + day2 + 1);
+            int day2 = DateFormat.findDayByWeekMax(nextMonthFirstDay_dayOfWeek);
+            addDay = ((beginPlan_weekInMonth - 1) - nextMonthFirstDay_weekInMonth) * 7 + (day1 + day2 + 1);
 
-            calendarMonth.add(Calendar.DATE, addDay);
+            calendar.add(Calendar.DATE, addDay);
             //自然月份 取值范围[1,12] (注意jdk JANUARY:一月:0)
-            int nextMonth = calendarMonth.get(Calendar.MONTH) + 1;
+            int nextPeriodMonth = calendar.get(Calendar.MONTH) + 1;
 
-            if (month < nextMonth) {
-                addDay = ((beginPlan_weekInMonth - 1) - weekInMonth_2 - 1) * 7 + (day1 + day2 + 1);
+            if (nextMonth < nextPeriodMonth) {
+                addDay = ((beginPlan_weekInMonth - 1) - nextMonthFirstDay_weekInMonth - 1) * 7 + (day1 + day2 + 1);
             }
         }
 
-        String nextBeginDateStr = beginNextMonthStr;
-        try {
-            nextBeginDateStr = DateFormat.getAddDay(beginNextMonthStr, DateFormat.DEFAULT_DATE, addDay, DateFormat.DEFAULT_DATE_FORMAT);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        Date nextBeginDate = DateFormat.dateString2Date(nextBeginDateStr, DateFormat.DEFAULT_DATE_FORMAT);
+        //下一个月第一天
+        calendar.setTime(beginNextMonthDate);
+        calendar.add(Calendar.DATE, addDay);
+        Date nextBeginDate = calendar.getTime();
 
-        String endDateStr = beginNextMonthStr;
-        try {
-            endDateStr = DateFormat.getAddDay(beginNextMonthStr, DateFormat.DEFAULT_DATE, (addDay-1), DateFormat.DEFAULT_DATE_FORMAT);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        Date endDate = DateFormat.dateString2Date(endDateStr, DateFormat.DEFAULT_DATE_FORMAT);
+        calendar.setTime(beginNextMonthDate);
+        calendar.add(Calendar.DATE, (addDay-1));
+        Date endDate = calendar.getTime();
+        String endDateStr = DateFormat.date2String(endDate, DateFormat.DEFAULT_DATE_FORMAT);
+
+        String beginDateStr = DateFormat.date2String(beginDate, DateFormat.DEFAULT_DATE_FORMAT);
+        String endPlanStr = DateFormat.date2String(endPlan, DateFormat.DEFAULT_DATE_FORMAT);
 
         //本周期结束日期 与 当前日期比较
         if (endDate.getTime() >= nowDate.getTime()) {
@@ -526,7 +518,6 @@ public class EquipmentMaintainPlanToolsServiceImp implements EquipmentMaintainPl
                 dateTiemMap.put("endDateTime", endDateTime);
 
                 //下一保养日期(yyyy-MM-dd)
-                Calendar calendar = Calendar.getInstance();
                 calendar.setTime(endDate);
                 calendar.add(Calendar.DATE, 1);
                 dateTiemMap.put("nextMaintainDate", calendar.getTime());
