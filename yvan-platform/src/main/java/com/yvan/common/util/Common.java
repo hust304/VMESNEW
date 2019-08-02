@@ -333,8 +333,10 @@ public class Common {
             //生产退库 8e35209f19804e94940f076c8d71b955
             put("produceRetreatIn", "2c4a104aedc046848455f5fa6e3da87c");
             //组装入库 80ac00503a1d41e5926be50f93c32c54
-            //c396683796d54b8693b522a2c0ad2793 维保领料退回入库
+            //c396683796d54b8693b522a2c0ad2793 维修领料退回入库
             put("repairRetreatIn", "c396683796d54b8693b522a2c0ad2793");
+            //d9c9eb85db0d4c8faa09ddc2b8173859 保养领料退回入库
+            put("maintainRetreatIn", "d9c9eb85db0d4c8faa09ddc2b8173859");
 
         //20c09785a7b54ec280d10c988be21929(字典id)  出库类型(字典名称)
         put("warehouseOutType", "20c09785a7b54ec280d10c988be21929");
@@ -346,8 +348,10 @@ public class Common {
             put("purchaseOut", "4cba5d3815644b26920777512a20474b");
             //609fa44c031847569a1d9e2516be4b41 组装出库
             put("assembleOut", "609fa44c031847569a1d9e2516be4b41");
-            //fa51ae2e17a9409d822fc4c9192d652c 维保领料出库
+            //fa51ae2e17a9409d822fc4c9192d652c 维修领料出库
             put("repairReceiveOut", "fa51ae2e17a9409d822fc4c9192d652c");
+            //8bcbc84893cf46daabbd2522bee482ad 保养领料出库
+            put("maintainReceiveOut", "8bcbc84893cf46daabbd2522bee482ad");
 
         //a804369b392c4035bc766cc536b29d35 备件库入库类型
         put("warehouseInTypeBySpare", "a804369b392c4035bc766cc536b29d35");

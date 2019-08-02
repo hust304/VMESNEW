@@ -35,30 +35,52 @@
         cuser
         ) VALUES
             (replace(uuid(), '-', ''),'equipmentMaintain','id','id',0, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'equipmentMaintain','companyId','企业ID',1, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'equipmentMaintain','equipmentId','设备ID',2, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'equipmentMaintain','maintainContentId','保养内容ID(保养内容表vmes_equipment_maintain_content.id)',3, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'equipmentMaintain','planId','保养计划ID',4, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'equipmentMaintain','maintainTaskId','保养任务ID',5, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'equipmentMaintain','sysCode','保养单编号(系统生成)',6, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'equipmentMaintain','sysBeginTime','保养开始时间(根据保养计划-系统计算)',7, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'equipmentMaintain','sysEndTime','保养结束时间(根据保养计划-系统计算)',8, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'equipmentMaintain','maintainDate','保养时间(yyyy-MM-dd)',9, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'equipmentMaintain','nextMaintainDate','下一保养时间(yyyy-MM-dd)',10, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'equipmentMaintain','equipmentState','设备状态(1:待保养 2:保养中 3:已完成)',11, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'equipmentMaintain','beginTime','开始保养时间',12, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'equipmentMaintain','endTime','完成保养时间',13, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'equipmentMaintain','cancelReason','取消原因',14, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'equipmentMaintain','cancelDate','取消时间',15, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'equipmentMaintain','cancelUser','取消人id',16, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'equipmentMaintain','isAllowMaintain','是否允许保养(0:不允许 1:允许)',17, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'equipmentMaintain','isValidState','保养单有效状态(1:有效 0:无效 is null 无效)',18, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'equipmentMaintain','cuser','创建用户id',19, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'equipmentMaintain','cdate','创建时间',20, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'equipmentMaintain','uuser','修改用户id',21, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'equipmentMaintain','udate','修改时间',22, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'equipmentMaintain','remark','备注',23, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'equipmentMaintain','isdisable','是否启用(0:已禁用 1:启用)',24, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentMaintain','companyId','企业id',1, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentMaintain','equipmentId','设备id',2, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentMaintain','maintainContentId','保养内容id',3, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentMaintain','maintainContent','保养内容',4, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentMaintain','isStop','是否停机id',4, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentMaintain','isStopName','是否停机',4, '1','1','1','0',now(), 'admin'),
+
+            (replace(uuid(), '-', ''),'equipmentMaintain','planId','保养计划id',5, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentMaintain','maintainTaskId','保养任务id',6, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentMaintain','sysCode','保养单号',7, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentMaintain','sysBeginTime','当前周期开始时间',8, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentMaintain','sysEndTime','当前周期结束时间',9, '1','1','1','0',now(), 'admin'),
+
+            (replace(uuid(), '-', ''),'equipmentMaintain','maintainDate','保养时间(yyyy-MM-dd)',10, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentMaintain','maintainDateStr','保养时间',10, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentMaintain','nextMaintainDate','下一保养时间(yyyy-MM-dd)',11, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentMaintain','nextMaintainDateStr','下一保养时间',11, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentMaintain','equipmentState','设备状态(1:待保养 2:保养中 3:已完成)',12, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentMaintain','equipmentStateName','状态',12, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentMaintain','beginTime','开始保养时间',13, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentMaintain','beginTimeStr','开始保养时间',13, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentMaintain','endTime','完成保养时间',14, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentMaintain','endTimeStr','完成保养时间',14, '1','1','1','0',now(), 'admin'),
+
+            (replace(uuid(), '-', ''),'equipmentMaintain','cancelReason','取消原因',15, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentMaintain','cancelDate','取消时间',16, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentMaintain','cancelUser','取消人id',17, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentMaintain','isAllowMaintain','是否允许保养(0:不允许 1:允许)',18, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentMaintain','isValidState','保养单有效状态(1:有效 0:无效 is null 无效)',19, '1','1','1','0',now(), 'admin'),
+
+            (replace(uuid(), '-', ''),'equipmentMaintain','cuser','创建用户id',20, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentMaintain','cdate','创建时间',21, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentMaintain','uuser','修改用户id',22, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentMaintain','udate','修改时间',23, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentMaintain','remark','备注',24, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentMaintain','isdisable','是否启用(0:已禁用 1:启用)',25, '1','1','1','0',now(), 'admin'),
+
+            (replace(uuid(), '-', ''),'equipmentMaintain','code','设备编码',26, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentMaintain','name','设备名称',27, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentMaintain','spec','设备型号',28, '1','1','1','0',now(), 'admin'),
+
+            (replace(uuid(), '-', ''),'equipmentMaintain','maintainUser','保养人id',29, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentMaintain','maintainUserCode','保养人账号',30, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentMaintain','maintainUserName','保养人',31, '1','1','1','0',now(), 'admin'),
+
+            (replace(uuid(), '-', ''),'equipmentMaintain','modeName','保养方式',32, '1','1','1','0',now(), 'admin'),
     </insert>
 
     <!-- 列表(全部) 自动创建，禁止修改-->
@@ -152,40 +174,102 @@
     <!-- 自动创建，可以修改 -->
     <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
-        id id,
-        company_id companyId,
-        equipment_id equipmentId,
-        maintain_content_id maintainContentId,
-        is_stop isStop,
+        maintain.id id,
+        maintain.company_id companyId,
+        maintain.equipment_id equipmentId,
+        maintain.maintain_content_id maintainContentId,
+        content.content maintainContent,
+        maintain.is_stop isStop,
+        CASE
+        WHEN maintain.is_stop = '1' THEN '停机保养'
+        WHEN maintain.is_stop = '0' THEN '非停机保养'
+        ELSE null
+        END isStopName,
 
-        plan_id planId,
-        maintain_task_id maintainTaskId,
-        sys_code sysCode,
-        sys_begin_time sysBeginTime,
-        sys_end_time sysEndTime,
+        maintain.plan_id planId,
+        maintain.maintain_task_id maintainTaskId,
+        maintain.sys_code sysCode,
+        maintain.sys_begin_time sysBeginTime,
+        maintain.sys_end_time sysEndTime,
 
-        maintain_date maintainDate,
-        next_maintain_date nextMaintainDate,
-        equipment_state equipmentState,
-        begin_time beginTime,
-        end_time endTime,
+        maintain.maintain_date maintainDate,
+        DATE_FORMAT(maintain.maintain_date,'%Y-%m-%d') maintainDateStr,
+        maintain.next_maintain_date nextMaintainDate,
+        DATE_FORMAT(maintain.next_maintain_date,'%Y-%m-%d') nextMaintainDateStr,
+        maintain.equipment_state equipmentState,
+        CASE
+        WHEN maintain.equipment_state = '1' THEN '待保养'
+        WHEN maintain.equipment_state = '2' THEN '保养中'
+        WHEN maintain.equipment_state = '3' THEN '已完成'
+        ELSE null
+        END equipmentStateName,
+        maintain.begin_time beginTime,
+        DATE_FORMAT(maintain.begin_time,'%Y-%m-%d %T') beginTimeStr,
+        maintain.end_time endTime,
+        DATE_FORMAT(maintain.end_time,'%Y-%m-%d %T') endTimeStr,
 
-        cancel_reason cancelReason,
-        cancel_date cancelDate,
-        cancel_user cancelUser,
-        is_allow_maintain isAllowMaintain,
-        is_valid_state isValidState,
+        maintain.cancel_reason cancelReason,
+        maintain.cancel_date cancelDate,
+        maintain.cancel_user cancelUser,
+        maintain.is_allow_maintain isAllowMaintain,
+        maintain.is_valid_state isValidState,
 
-        cuser cuser,
-        cdate cdate,
-        uuser uuser,
-        udate udate,
-        remark remark,
+        maintain.cuser cuser,
+        maintain.cdate cdate,
+        maintain.uuser uuser,
+        maintain.udate udate,
+        maintain.remark remark,
+        maintain.isdisable isdisable,
 
-        isdisable isdisable
-        from vmes_equipment_maintain
+        equipment.code code,
+        equipment.name name,
+        equipment.spec spec,
+
+        task.maintain_user maintainUser,
+        maintainUser.user_code maintainUserCode,
+        maintainUser.user_name maintainUserName,
+
+        mode.name modeName
+
+        from vmes_equipment_maintain maintain
+            left join vmes_equipment equipment on maintain.equipment_id = equipment.id
+            left join vmes_equipment_maintain_content content on maintain.maintain_content_id = content.id
+            left join vmes_equipment_maintain_plan plan on maintain.plan_id = plan.id
+            left join vmes_dictionary mode on plan.mode_id = mode.id
+
+            left join vmes_equipment_maintainTask task on maintain.maintain_task_id = task.id
+            left join vmes_user maintainUser on task.maintain_user = maintainUser.id
         <where>
+            <if test="companyId != null and companyId != ''">
+                and maintain.company_id = #{companyId}
+            </if>
+            <if test="equipmentId != null and equipmentId != ''">
+                and maintain.equipment_id = #{equipmentId}
+            </if>
+            <if test="maintainContentId != null and maintainContentId != ''">
+                and maintain.maintain_content_id = #{maintainContentId}
+            </if>
+            <if test="planId != null and planId != ''">
+                and maintain.plan_id = #{planId}
+            </if>
 
+            <if test="isValidState != null and isValidState != ''">
+                and maintain.is_valid_state = #{isValidState}
+            </if>
+            <if test="isdisable != null and isdisable != ''">
+                and maintain.isdisable = #{isdisable}
+            </if>
+
+            <!--页面查询条件-->
+            <if test="equipmentCode != null and equipmentCode != ''">
+                and equipment.code LIKE CONCAT(CONCAT('%', #{equipmentCode}),'%')
+            </if>
+            <if test="equipmentName != null and equipmentName != ''">
+                and equipment.name LIKE CONCAT(CONCAT('%', #{equipmentName}),'%')
+            </if>
+            <if test="equipmentState != null and equipmentState != ''">
+                and maintain.equipment_state = #{equipmentState}
+            </if>
 
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >

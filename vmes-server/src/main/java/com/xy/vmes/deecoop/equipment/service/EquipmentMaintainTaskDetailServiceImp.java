@@ -8,12 +8,16 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.service.ColumnService;
+import com.xy.vmes.service.EquipmentMaintainTaskOutDetailService;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
+import com.yvan.common.util.Common;
 import com.yvan.springmvc.ResultModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
 import java.util.*;
 import com.yvan.Conv;
 
@@ -28,6 +32,8 @@ public class EquipmentMaintainTaskDetailServiceImp implements EquipmentMaintainT
 
     @Autowired
     private EquipmentMaintainTaskDetailMapper equipmentMaintainTaskDetailMapper;
+    @Autowired
+    private EquipmentMaintainTaskOutDetailService maintainTaskOutDetailService;
     @Autowired
     private ColumnService columnService;
 
@@ -126,6 +132,30 @@ public class EquipmentMaintainTaskDetailServiceImp implements EquipmentMaintainT
         return mapList;
     }
 
+    /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+    /**
+     *
+     * @param pageData    查询参数对象<HashMap>
+     * @param isQueryAll  是否查询全部
+     *   true: 无查询条件返回表全部结果集
+     *   false: (false or is null)无查询条件-查询结果集返回空或
+     *
+     * @return
+     * @throws Exception
+     */
+    public List<EquipmentMaintainTaskDetail> findDataList(PageData pageData, Boolean isQueryAll) throws Exception {
+        int pageDataSize = 0;
+        if (pageData != null && pageData.size() > 0) {
+            pageDataSize = pageData.size();
+        }
+
+        if ((isQueryAll == null || true != isQueryAll.booleanValue()) && pageDataSize == 0) {
+            return new ArrayList<EquipmentMaintainTaskDetail>();
+        }
+
+        return this.dataList(pageData);
+    }
+
     public EquipmentMaintainTaskDetail findMaintainTaskDetail(PageData object) throws Exception {
         List<EquipmentMaintainTaskDetail> objectList = this.findMaintainTaskDetailList(object);
         if (objectList != null && objectList.size() > 0) {
@@ -155,37 +185,96 @@ public class EquipmentMaintainTaskDetailServiceImp implements EquipmentMaintainT
         return this.findMaintainTaskDetailList(findMap);
     }
 
-    /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
-    /**
-    *
-    * @param pageData    查询参数对象<HashMap>
-    * @param isQueryAll  是否查询全部
-    *   true: 无查询条件返回表全部结果集
-    *   false: (false or is null)无查询条件-查询结果集返回空或
-    *
-    * @return
-    * @throws Exception
-    */
-    public List<EquipmentMaintainTaskDetail> findDataList(PageData pageData, Boolean isQueryAll) throws Exception {
-        int pageDataSize = 0;
-        if (pageData != null && pageData.size() > 0) {
-            pageDataSize = pageData.size();
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    public List<EquipmentMaintainTaskDetail> jsonMapList2DetailList(List<Map<String, String>> jsonMapList, List<EquipmentMaintainTaskDetail> objectList) {
+        if (objectList == null) {objectList = new ArrayList<EquipmentMaintainTaskDetail>();}
+        if (jsonMapList == null || jsonMapList.size() == 0) {return objectList;}
+
+        for (Map<String, String> mapObject : jsonMapList) {
+            EquipmentMaintainTaskDetail detail = (EquipmentMaintainTaskDetail)HttpUtils.pageData2Entity(mapObject, new EquipmentMaintainTaskDetail());
+            objectList.add(detail);
         }
 
-        if ((isQueryAll == null || true != isQueryAll.booleanValue()) && pageDataSize == 0) {
-            return new ArrayList<EquipmentMaintainTaskDetail>();
-        }
-
-        return this.dataList(pageData);
+        return objectList;
     }
 
+    /**
+     * 返回货品出库Map
+     * 货品出库Map<货品id, 货品Map<String, Object>>
+     * 货品Map<String, Object>
+     *     productId: 货品id
+     *     outDtlId:  出库明细id
+     *     outCount:  出库数量
+     *
+     * @param jsonMapList
+     * @return
+     */
+    public Map<String, Map<String, Object>> findProductMapByOut(List<Map<String, String>> jsonMapList) {
+        Map<String, Map<String, Object>> productByOutMap = new HashMap<String, Map<String, Object>>();
+        if (jsonMapList == null || jsonMapList.size() == 0) {return productByOutMap;}
+
+        for (Map<String, String> mapObject : jsonMapList) {
+            String productId = mapObject.get("productId");
+
+            //receiveCount 领取数量 := outCount 出库数量
+            BigDecimal receiveCount = BigDecimal.valueOf(0D);
+            String receiveCountStr = mapObject.get("receiveCount");
+            if (receiveCountStr != null && receiveCountStr.trim().length() > 0) {
+                try {
+                    receiveCount = new BigDecimal(receiveCountStr);
+                    //四舍五入到2位小数
+                    receiveCount = receiveCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            Map<String, Object> productMap = new HashMap<String, Object>();
+            productMap.put("productId", productId);
+            productMap.put("outDtlId", null);
+            productMap.put("outCount", receiveCount);
+
+            productByOutMap.put(productId, productMap);
+        }
+
+        return productByOutMap;
+    }
+
+    public void addMaintainTaskDetail(String cuser,
+                                    List<EquipmentMaintainTaskDetail> objectList,
+                                    Map<String, Map<String, Object>> productByOutMap) throws Exception {
+        if (objectList == null || objectList.size() == 0) {return;}
+
+        for (EquipmentMaintainTaskDetail detail : objectList) {
+            String productId = detail.getProductId();
+            detail.setCuser(cuser);
+
+            Map<String, Object> productMap = productByOutMap.get(productId);
+            //outDtlId:  出库明细id
+            String outDtlId = new String();
+            if (productMap != null && productMap.get("outDtlId") != null) {
+                outDtlId = (String)productMap.get("outDtlId");
+            }
+            detail.setOutDtlId(outDtlId);
+
+            //outCount:  出库数量
+            if (productMap != null && productMap.get("outCount") != null) {
+                BigDecimal outCount = (BigDecimal)productMap.get("outCount");
+                detail.setOutCount(outCount);
+            }
+
+            this.save(detail);
+        }
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**
     *
     * @param pd    查询参数对象PageData
     * @return      返回对象ResultModel
     * @throws Exception
     */
-    public ResultModel listPageEquipmentMaintainTaskDetail(PageData pd) throws Exception{
+    public ResultModel listPageMaintainTaskDetail(PageData pd) throws Exception{
         ResultModel model = new ResultModel();
         Pagination pg = HttpUtils.parsePagination(pd);
 
@@ -225,6 +314,51 @@ public class EquipmentMaintainTaskDetailServiceImp implements EquipmentMaintainT
         result.put("hideTitles",titleMap.get("hideTitles"));
         result.put("titles",titleMap.get("titles"));
         result.put("varList",varMapList);
+        model.putResult(result);
+        return model;
+    }
+
+    public ResultModel findListTaskDetailByOutDetail(PageData pd) throws Exception {
+        ResultModel model = new ResultModel();
+        Pagination pg = HttpUtils.parsePagination(pd);
+
+        List<Column> columnList = columnService.findColumnList("equipmentMaintainTaskDetailByOutDetail");
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
+        }
+
+        //获取指定栏位字符串-重新调整List<Column>
+        String fieldCode = pd.getString("fieldCode");
+        if (fieldCode != null && fieldCode.trim().length() > 0) {
+            columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
+        }
+        Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
+
+        //设置查询排序方式
+        //pd.put("orderStr", "a.cdate asc");
+        String orderStr = pd.getString("orderStr");
+        if (orderStr != null && orderStr.trim().length() > 0) {
+            pd.put("orderStr", orderStr);
+        }
+
+        //是否需要分页 true:需要分页 false:不需要分页
+        Map result = new HashMap();
+        String isNeedPage = pd.getString("isNeedPage");
+        if ("false".equals(isNeedPage)) {
+            pg = null;
+        } else {
+            result.put("pageData", pg);
+        }
+
+        List<Map> varList = maintainTaskOutDetailService.findTaskDetailByOutDetail(pd, pg);
+        List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
+
+        result.put("hideTitles",titleMap.get("hideTitles"));
+        result.put("titles",titleMap.get("titles"));
+        result.put("varList",varMapList);
+
         model.putResult(result);
         return model;
     }

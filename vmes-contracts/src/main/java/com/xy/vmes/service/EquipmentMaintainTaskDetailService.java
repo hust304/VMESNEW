@@ -87,13 +87,36 @@ public interface EquipmentMaintainTaskDetailService {
     List<EquipmentMaintainTaskDetail> findMaintainTaskDetailList(PageData object) throws Exception;
     List<EquipmentMaintainTaskDetail> findMaintainTaskDetailListByTaskId(String taskId) throws Exception;
 
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    List<EquipmentMaintainTaskDetail> jsonMapList2DetailList(List<Map<String, String>> jsonMapList, List<EquipmentMaintainTaskDetail> objectList);
+
+    /**
+     * 返回货品出库Map
+     * 货品出库Map<货品id, 货品Map<String, Object>>
+     * 货品Map<String, Object>
+     *     productId: 货品id
+     *     outDtlId:  出库明细id
+     *     outCount:  出库数量
+     *
+     * @param jsonMapList
+     * @return
+     */
+    Map<String, Map<String, Object>> findProductMapByOut(List<Map<String, String>> jsonMapList);
+
+
+    void addMaintainTaskDetail(String cuser,
+                             List<EquipmentMaintainTaskDetail> objectList,
+                             Map<String, Map<String, Object>> productByOutMap) throws Exception;
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**
     * 分页查询
     * @param pd    查询参数对象PageData
     * @return      返回对象ResultModel
     * @throws Exception
     */
-    ResultModel listPageEquipmentMaintainTaskDetail(PageData pd) throws Exception;
+    ResultModel listPageMaintainTaskDetail(PageData pd) throws Exception;
+    ResultModel findListTaskDetailByOutDetail(PageData pd) throws Exception;
 
 
 }
