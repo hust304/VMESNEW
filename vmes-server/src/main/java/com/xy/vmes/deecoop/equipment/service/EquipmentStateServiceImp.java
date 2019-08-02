@@ -77,6 +77,22 @@ public class EquipmentStateServiceImp implements EquipmentStateService {
                     valueMap.put("equipmentStateName", (String)object.get("equipmentStateName"));
                 }
 
+                // alarmState 设备状态
+                valueMap.put("alarmState", "");
+                if (object.get("alarmState") != null) {
+                    valueMap.put("alarmState", (String)object.get("alarmState"));
+                }
+                //alarmStateName 设备状态(故障,维修中)
+                valueMap.put("alarmStateName", "");
+                if (object.get("alarmStateName") != null) {
+                    valueMap.put("alarmStateName", (String)object.get("alarmStateName"));
+                }
+
+                valueMap.put("alarmId", "");
+                if (object.get("alarmId") != null) {
+                    valueMap.put("alarmId", (String)object.get("alarmId"));
+                }
+
                 //isBindSensor 联网状态
                 valueMap.put("isBindSensor", "");
                 if (object.get("isBindSensor") != null) {

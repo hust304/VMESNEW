@@ -43,30 +43,44 @@
             END bindSensorStateName,
 
 
-            <!--设备状态 待命中:0 工作中:1 保养中:2 故障中:3 维修中:4-->
+            <!--设备状态 待命中:0 工作中:1 保养中:2 维修中:3-->
             CASE
-                WHEN equipmentRepair.equipment_state is null and equipmentSensorSource.A0001 = '0' THEN '0'
-                WHEN equipmentRepair.equipment_state is null and equipmentSensorSource.A0001 = '1' THEN '1'
-                WHEN equipmentRepair.equipment_state is null and equipmentSensorSource.A0001 is null  THEN '0'
-                <!--设备维修状态 vmes_equipment_repair -->
-                WHEN equipmentRepair.equipment_state = '1' THEN '3'
-                WHEN equipmentRepair.equipment_state = '2' THEN '4'
-            <!--设备保养状态  -->
+                WHEN equipmentSensorSource.A0002 is null and equipmentMaintain.equipment_id is null and equipmentRepair.equipment_id is null   THEN '0'
+                WHEN equipmentSensorSource.A0002 is not null and equipmentSensorSource.A0002 = '0' and equipmentMaintain.equipment_id is null and equipmentRepair.equipment_id is null   THEN '0'
+                WHEN equipmentSensorSource.A0002 is not null and equipmentSensorSource.A0002 = '1' and equipmentMaintain.equipment_id is null and equipmentRepair.equipment_id is null   THEN '1'
+                WHEN equipmentMaintain.equipment_id is not null and equipmentRepair.equipment_id is null   THEN '2'
+                WHEN equipmentRepair.equipment_id is not null  THEN '3'
             ELSE null
             END equipmentState,
 
             CASE
-                WHEN equipmentRepair.equipment_state is null and equipmentSensorSource.A0001 = '0' THEN '待命中'
-                WHEN equipmentRepair.equipment_state is null and equipmentSensorSource.A0001 = '1' THEN '工作中'
-                WHEN equipmentRepair.equipment_state is null and equipmentSensorSource.A0001 is null  THEN '待命中'
-
-                <!--设备维修状态 vmes_equipment_repair -->
-                WHEN equipmentRepair.equipment_state = '1' THEN '故障中'
-                WHEN equipmentRepair.equipment_state = '2' THEN '维修中'
-                <!--设备保养状态  -->
-                <!--WHEN state = '1' THEN '保养中' -->
+                WHEN equipmentSensorSource.A0002 is null and equipmentMaintain.equipment_id is null and equipmentRepair.equipment_id is null   THEN '待命中'
+                WHEN equipmentSensorSource.A0002 is not null and equipmentSensorSource.A0002 = '0' and equipmentMaintain.equipment_id is null and equipmentRepair.equipment_id is null   THEN '待命中'
+                WHEN equipmentSensorSource.A0002 is not null and equipmentSensorSource.A0002 = '1' and equipmentMaintain.equipment_id is null and equipmentRepair.equipment_id is null   THEN '工作中'
+                WHEN equipmentMaintain.equipment_id is not null and equipmentRepair.equipment_id is null   THEN '保养中'
+                WHEN equipmentRepair.equipment_id is not null  THEN '维修中'
             ELSE null
             END equipmentStateName,
+
+            CASE
+            WHEN equipmentSensorSource.A0003 is null and equipmentAlarm.equipment_id is null THEN '0'
+            WHEN equipmentSensorSource.A0003 is null and equipmentAlarm.equipment_id is not null THEN '1'
+            WHEN equipmentSensorSource.A0003 is not null and equipmentSensorSource.A0003 = '0' THEN '0'
+            WHEN equipmentSensorSource.A0003 is not null and equipmentSensorSource.A0003 = '0' and equipmentAlarm.equipment_id is not null THEN '1'
+            WHEN equipmentSensorSource.A0003 is not null and equipmentSensorSource.A0003 = '1' THEN '1'
+            ELSE null
+            END alarmState,
+
+            CASE
+            WHEN equipmentSensorSource.A0003 is null and equipmentAlarm.equipment_id is null THEN '无故障'
+            WHEN equipmentSensorSource.A0003 is null and equipmentAlarm.equipment_id is not null THEN '故障'
+            WHEN equipmentSensorSource.A0003 is not null and equipmentSensorSource.A0003 = '0' THEN '无故障'
+            WHEN equipmentSensorSource.A0003 is not null and equipmentSensorSource.A0003 = '0' and equipmentAlarm.equipment_id is not null THEN '故障'
+            WHEN equipmentSensorSource.A0003 is not null and equipmentSensorSource.A0003 = '1' THEN '故障'
+            ELSE null
+            END alarmStateName,
+
+            equipmentAlarm.equipment_id alarmId,
 
             <!--设备传感器状态  -->
             CASE WHEN equipmentSensorSource.equipment_id is not null THEN '1' else '0' END equipmentActivity,
@@ -91,7 +105,7 @@
 
             <!--设备联网当天数据 vmes_sensor_source -->
             left join (
-                select equipment_id, A0001, A0002
+                select equipment_id, A0001, A0002, A0003
                 from vmes_sensor_source
                 <where>
                     <if test="equipmentId != null and equipmentId != ''">
@@ -104,17 +118,49 @@
 
             <!--设备维修状态 vmes_equipment_repair -->
             left join (
-                select equipment_id, equipment_state
+                select equipment_id
                 from vmes_equipment_repair
                 <where>
                     <if test="equipmentId != null and equipmentId != ''">
                         and equipment_id = #{equipmentId}
                     </if>
                     and isdisable = '1'
+                    and equipment_state = '2'
+                    and is_stop = '1'
+                    <![CDATA[ and begin_time <= now() and IFNULL(end_time,now()) >= now() ]]>
                 </where>
+                order by cdate desc limit 1
             ) equipmentRepair on equipment.id = equipmentRepair.equipment_id
 
 
+            left join (
+            select equipment_id
+            from vmes_equipment_repair
+            <where>
+                <if test="equipmentId != null and equipmentId != ''">
+                    and equipment_id = #{equipmentId}
+                </if>
+                and isdisable = '1'
+                and equipment_state = '1'
+            </where>
+            order by cdate desc limit 1
+            ) equipmentAlarm on equipment.id = equipmentAlarm.equipment_id
+
+            left join (
+            select equipment_id
+            from vmes_equipment_maintain
+            <where>
+                <if test="equipmentId != null and equipmentId != ''">
+                    and equipment_id = #{equipmentId}
+                </if>
+                and isdisable = '1'
+                and equipment_state = '2'
+                and is_stop = '1'
+                and is_valid_state = '1'
+                <![CDATA[ and begin_time <= now() and IFNULL(end_time,now()) >= now() ]]>
+            </where>
+            order by cdate desc limit 1
+            ) equipmentMaintain on equipment.id = equipmentMaintain.equipment_id
 
 
             <!--设备保养状态  -->
@@ -175,7 +221,7 @@
 
     <select id="get24HoursDataDetail"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
         select
-        DATE_FORMAT(t.cdate,'%Y-%m-%d %H:%i:%s') cdate,
+        DATE_FORMAT(t.cdate,'%H:%i:%s') cdate,
         ${colStr}
         from ${viewStr} t
         <where>
