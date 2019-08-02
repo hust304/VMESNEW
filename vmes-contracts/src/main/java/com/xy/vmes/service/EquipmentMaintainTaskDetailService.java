@@ -89,6 +89,21 @@ public interface EquipmentMaintainTaskDetailService {
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     List<EquipmentMaintainTaskDetail> jsonMapList2DetailList(List<Map<String, String>> jsonMapList, List<EquipmentMaintainTaskDetail> objectList);
+    /**
+     * 获取新的editJsonMap
+     * Map<String, List<Map<String, String>>>
+     *     notEqualZeroList: 退回数量(不等于零)List
+     *     equalZeroList:    退回数量(等于零)List
+     *
+     * Map<String, String>
+     *   receiveCount 领取数量
+     *   applyCount   实际使用数量
+     *   retreatCount 退回数量 := 领取数量 - 实际使用数量
+     *
+     * @param editJsonMapList
+     * @return
+     */
+    Map<String, List<Map<String, String>>> findNewEditJsonMap(List<Map<String, String>> editJsonMapList);
 
     /**
      * 返回货品出库Map
@@ -102,6 +117,19 @@ public interface EquipmentMaintainTaskDetailService {
      * @return
      */
     Map<String, Map<String, Object>> findProductMapByOut(List<Map<String, String>> jsonMapList);
+
+    /**
+     * 返回货品入库Map
+     * 货品入库Map<货品id, 货品Map<String, Object>>
+     * 货品Map<String, Object>
+     *     productId: 货品id
+     *     inDtlId:   入库明细id
+     *     inCount:   入库数量
+     *
+     * @param jsonMapList
+     * @return
+     */
+    Map<String, Map<String, Object>> findProductMapByIn(List<Map<String, String>> jsonMapList);
 
 
     void addMaintainTaskDetail(String cuser,
