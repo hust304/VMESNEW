@@ -62,7 +62,7 @@ public class EquipmentMaintainController {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
-        String describe = pageData.getString("describe");
+        String maintainDescribe = pageData.getString("maintainDescribe");
         String cuser = pageData.getString("cuser");
 
         String maintainId = pageData.getString("maintainId");
@@ -84,7 +84,7 @@ public class EquipmentMaintainController {
         maintainTask.setMaintainId(maintainId);
         //maintainUser 保养人id
         maintainTask.setMaintainUser(maintainUser);
-        maintainTask.setDescribe(describe);
+        maintainTask.setMaintainDescribe(maintainDescribe);
         //task_state:任务状态(0:未领取任务 1:已领取任务 2:已领料 3:已报工 4:已退单 )
         maintainTask.setTaskState("1");
         //task_type:任务类型(1:保养 2:退单)

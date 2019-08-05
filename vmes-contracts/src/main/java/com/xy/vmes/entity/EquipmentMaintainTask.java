@@ -25,8 +25,8 @@ public class EquipmentMaintainTask implements Serializable {
 	@TableField("maintain_user")
 	private String maintainUser;
 	//保养描述
-	@TableField("describe")
-	private String describe;
+	@TableField("maintain_describe")
+	private String maintainDescribe;
 	//执行结果(0:未解决 1:已解决)
 	@TableField("task_result")
 	private String taskResult;
@@ -92,12 +92,13 @@ public class EquipmentMaintainTask implements Serializable {
 	public String getMaintainUser() {
 		return maintainUser;
 	}
-	public void setDescribe(String describe) {
-		this.describe = describe;
+	public String getMaintainDescribe() {
+		return maintainDescribe;
 	}
-	public String getDescribe() {
-		return describe;
+	public void setMaintainDescribe(String maintainDescribe) {
+		this.maintainDescribe = maintainDescribe;
 	}
+
 	public void setTaskResult(String taskResult) {
 		this.taskResult = taskResult;
 	}

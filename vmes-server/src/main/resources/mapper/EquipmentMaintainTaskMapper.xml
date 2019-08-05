@@ -36,7 +36,7 @@
         ) VALUES
             (replace(uuid(), '-', ''),'equipmentMaintainTask','maintainId','保养单id',1, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentMaintainTask','maintainUser','保养人id',2, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'equipmentMaintainTask','describe','保养描述',3, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentMaintainTask','maintainDescribe','保养描述',3, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentMaintainTask','taskResult','执行结果(0:未解决 1:已解决)',4, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentMaintainTask','taskState','任务状态(0:未领取任务 1:已领取任务 2:已领料 3:已报工 4:已退单 )',5, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentMaintainTask','taskType','任务类型(1:保养 2:退单)',6, '1','1','1','0',now(), 'admin'),
@@ -61,7 +61,7 @@
         id id,
         maintain_id maintainId,
         maintain_user maintainUser,
-        describe describe,
+        maintain_describe maintainDescribe,
         task_result taskResult,
 
         task_state taskState,
@@ -116,7 +116,7 @@
         id id,
         maintain_id maintainId,
         maintain_user maintainUser,
-        describe describe,
+        maintain_describe maintainDescribe,
         task_result taskResult,
 
         task_state taskState,

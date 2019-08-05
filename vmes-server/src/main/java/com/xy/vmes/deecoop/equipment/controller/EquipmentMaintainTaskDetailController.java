@@ -230,10 +230,10 @@ public class EquipmentMaintainTaskDetailController {
      * @author 陈刚
      * @date 2019-07-01
      */
-    @PostMapping("/equipment/equipmentRepairTaskDetail/updateMaintainTaskDetail")
+    @PostMapping("/equipment/equipmentMaintainTaskDetail/updateMaintainTaskDetail")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel updateMaintainTaskDetail() throws Exception {
-        logger.info("################/equipment/equipmentRepairTaskDetail/updateMaintainTaskDetail 执行开始 ################# ");
+        logger.info("################/equipment/equipmentMaintainTaskDetail/updateMaintainTaskDetail 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
 
         ResultModel model = new ResultModel();
@@ -556,7 +556,7 @@ public class EquipmentMaintainTaskDetailController {
         }
 
         Long endTime = System.currentTimeMillis();
-        logger.info("################/equipment/equipmentRepairTaskDetail/updateMaintainTaskDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/equipment/equipmentMaintainTaskDetail/updateMaintainTaskDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 }
