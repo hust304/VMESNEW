@@ -169,6 +169,41 @@ public class EquipmentMaintainServiceImp implements EquipmentMaintainService {
         return this.findDataList(object, null);
     }
 
+    /**
+     * 获取下一个保养计划(周期保养计划)
+     *
+     * @param maintain  保养单对象<EquipmentMaintain>
+     * @return
+     */
+    public EquipmentMaintain findNextMaintainByPeriod(EquipmentMaintain maintain) {
+        if (maintain == null) {return null;}
+
+        //nextMaintainDate 下一保养时间(yyyy-MM-dd)
+        Date nextMaintainDate = maintain.getNextMaintainDate();
+        if (nextMaintainDate == null) {return null;}
+        String nextMaintainDateStr = DateFormat.date2String(nextMaintainDate, DateFormat.DEFAULT_DATE_FORMAT);
+
+        //sysBeginTime 保养开始时间(根据保养计划-系统计算)
+        String sysBeginTimeStr = nextMaintainDateStr;
+
+
+        EquipmentMaintain nextMaintain = null;
+        try {
+            PageData findMap = new PageData();
+            findMap.put("sysBeginTime", sysBeginTimeStr);
+            //保养单有效状态(1:有效 0:无效 is null 无效)
+            findMap.put("isValidState", "0");
+            //是否启用(0:已禁用 1:启用)
+            findMap.put("isdisable", "1");
+            findMap.put("orderStr", "cdate asc");
+
+            nextMaintain = this.findMaintain(findMap);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return nextMaintain;
+    }
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
     /**
     *

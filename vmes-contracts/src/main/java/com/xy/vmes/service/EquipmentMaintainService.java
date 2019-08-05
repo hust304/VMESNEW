@@ -100,6 +100,14 @@ public interface EquipmentMaintainService {
     EquipmentMaintain findMaintainById(String id) throws Exception;
     List<EquipmentMaintain> findMaintainList(PageData object) throws Exception;
 
+    /**
+     * 获取下一个保养计划(周期保养计划)
+     *
+     * @param @param maintain  保养单对象<EquipmentMaintain>
+     * @return
+     */
+    EquipmentMaintain findNextMaintainByPeriod(EquipmentMaintain maintain);
+
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
