@@ -67,14 +67,14 @@ public class EquipmentRepairTaskDetailController {
         return model;
     }
 
-    @PostMapping("/equipment/equipmentRepairTaskDetail/findListTaskDetailByOutDetail")
-    public ResultModel findListTaskDetailByOutDetail() throws Exception {
-        logger.info("################/equipment/equipmentRepairTaskDetail/findListTaskDetailByOutDetail 执行开始 ################# ");
+    @PostMapping("/equipment/equipmentRepairTaskDetail/findListRepairTaskDetailByOutDetail")
+    public ResultModel findListRepairTaskDetailByOutDetail() throws Exception {
+        logger.info("################/equipment/equipmentRepairTaskDetail/findListRepairTaskDetailByOutDetail 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         PageData pd = HttpUtils.parsePageData();
         ResultModel model = repairTaskDetailService.findListTaskDetailByOutDetail(pd);
         Long endTime = System.currentTimeMillis();
-        logger.info("################/equipment/equipmentRepairTaskDetail/findListTaskDetailByOutDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/equipment/equipmentRepairTaskDetail/findListRepairTaskDetailByOutDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
