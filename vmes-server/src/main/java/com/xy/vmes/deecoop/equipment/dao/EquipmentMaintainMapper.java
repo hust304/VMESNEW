@@ -31,6 +31,8 @@ public interface EquipmentMaintainMapper extends BaseMapper<EquipmentMaintain> {
      */
     void updateToDisableByIds(String[] ids);
 
+    void updateIsdisableByPlan(PageData pd);
+
     /**
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2019-07-29

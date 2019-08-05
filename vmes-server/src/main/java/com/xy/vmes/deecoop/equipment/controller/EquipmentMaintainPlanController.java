@@ -5,6 +5,7 @@ import com.xy.vmes.entity.EquipmentMaintainPlan;
 import com.xy.vmes.service.EquipmentMaintainPlanService;
 
 import com.xy.vmes.service.EquipmentMaintainPlanToolsService;
+import com.xy.vmes.service.EquipmentMaintainService;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.YvanUtil;
@@ -36,6 +37,8 @@ public class EquipmentMaintainPlanController {
     private EquipmentMaintainPlanService maintainPlanService;
     @Autowired
     private EquipmentMaintainPlanToolsService maintainPlanToolsService;
+    @Autowired
+    private EquipmentMaintainService maintainService;
 
     /**
     * @author 陈刚 自动创建，可以修改
@@ -125,6 +128,44 @@ public class EquipmentMaintainPlanController {
 
         Long endTime = System.currentTimeMillis();
         logger.info("################/equipment/equipmentMaintainPlan/addMaintainPlan 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 逻辑删除-设备保养计划
+     * 修改-设备保养计划(是否禁用状态)-(禁用)
+     *
+     * @author 陈刚
+     * @date 2019-08-05
+     * @throws Exception
+     */
+    @PostMapping("/equipment/equipmentMaintainPlan/updateDisableMaintainPlan")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel updateDisableMaintainPlan() throws Exception {
+        logger.info("################/equipment/equipmentMaintainPlan/updateDisableMaintainPlan 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        String planId = pageData.getString("planId");
+        if (planId == null || planId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("保养计划id为空或空字符串！");
+            return model;
+        }
+
+        EquipmentMaintainPlan maintainPlanEdit = new EquipmentMaintainPlan();
+        maintainPlanEdit.setId(planId);
+        //isdisable 是否启用(0:已禁用 1:启用)
+        maintainPlanEdit.setIsdisable("0");
+        maintainPlanService.update(maintainPlanEdit);
+
+        //isdisable 是否启用(0:已禁用 1:启用)
+        maintainService.updateIsdisableByPlan(planId, "0");
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/equipment/equipmentMaintainPlan/updateDisableMaintainPlan 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 

@@ -1,6 +1,7 @@
 package com.xy.vmes.deecoop.equipment.service;
 
 import com.xy.vmes.common.util.DateFormat;
+import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.equipment.dao.EquipmentMaintainMapper;
 import com.xy.vmes.entity.EquipmentMaintain;
 import com.xy.vmes.entity.EquipmentMaintainPlan;
@@ -366,6 +367,17 @@ public class EquipmentMaintainServiceImp implements EquipmentMaintainService {
         }
 
         this.save(addMaintain);
+    }
+
+    public void updateIsdisableByPlan(String parentIds, String isdisable) {
+        if (parentIds == null || parentIds.trim().length() == 0) {return;}
+
+        PageData columnMap = new PageData();
+        parentIds = StringUtil.stringTrimSpace(parentIds);
+        parentIds = "'" + parentIds.replace(",", "','") + "'";
+        columnMap.put("parentIds", parentIds);
+        columnMap.put("isdisable", isdisable);
+        equipmentMaintainMapper. updateIsdisableByPlan(columnMap);
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

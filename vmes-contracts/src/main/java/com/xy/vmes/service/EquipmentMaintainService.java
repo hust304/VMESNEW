@@ -129,6 +129,8 @@ public interface EquipmentMaintainService {
      * @param plan      设备保养计划对象<EquipmentMaintainPlan>
      */
     void addMaintainPeriodByTimer(Map<String, Date> dateMap, EquipmentMaintainPlan plan) throws Exception;
+
+    void updateIsdisableByPlan(String parentIds, String isdisable);
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**
     * 分页查询
