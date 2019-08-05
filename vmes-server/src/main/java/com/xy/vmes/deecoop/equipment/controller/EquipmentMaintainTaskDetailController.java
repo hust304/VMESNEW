@@ -40,6 +40,8 @@ public class EquipmentMaintainTaskDetailController {
     @Autowired
     private EquipmentMaintainTaskDetailService maintainTaskDetailService;
     @Autowired
+    private EquipmentMaintainTaskDetailInfoService maintainTaskDetailInfoService;
+    @Autowired
     private EquipmentMaintainTaskOutDetailService maintainTaskOutDetailService;
 
     @Autowired
@@ -78,7 +80,6 @@ public class EquipmentMaintainTaskDetailController {
         return model;
     }
 
-
     //获取保养任务货品明细-是否出库执行完成
     // 根据(保养任务id)查询(vmes_equipment_maintainTask_detail)
     @PostMapping("/equipment/equipmentMaintainTaskDetail/findIsAllOutExecuteByMaintain")
@@ -106,6 +107,17 @@ public class EquipmentMaintainTaskDetailController {
 
         Long endTime = System.currentTimeMillis();
         logger.info("################/equipment/equipmentMaintainTaskDetail/findIsAllOutExecuteByMaintain 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    @PostMapping("/equipment/equipmentMaintainTaskDetail/findListMaintainTaskDetailByInfo")
+    public ResultModel findListMaintainTaskDetailByInfo() throws Exception {
+        logger.info("################/equipment/equipmentMaintainTaskDetail/findListMaintainTaskDetailByInfo 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = maintainTaskDetailInfoService.findListMaintainTaskDetailByInfo(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/equipment/equipmentMaintainTaskDetail/findListMaintainTaskDetailByInfo 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -509,13 +521,30 @@ public class EquipmentMaintainTaskDetailController {
         maintainTaskEidt.setEndTime(new Date());
         maintainTaskService.update(maintainTaskEidt);
 
-        //修改设备保养单状态
+
+        //当前保养单对象
+        //设定:当前保养单-下一个保养单(保养单有效状态:1:有效)
         EquipmentMaintainTask maintainTask = maintainTaskService.findMaintainTaskById(maintainTaskId);
         EquipmentMaintain maintain = maintainService.findMaintainById(maintainTask.getMaintainId());
         //planId:保养计划ID
         String planId = maintain.getPlanId();
         EquipmentMaintainPlan maintainPlan = maintainPlanService.findMaintainPlanById(planId);
 
+        //modeId 保养方式(自定义 按周期 数据字典-vmes_dictionary.id)
+        //maintainModeCustom ee66976e1b3d453bae8839e6e9458b2f 自定义
+        //maintainModePeriod 9a05a30aa81e4637b498703b14cde8b1 按周期
+        String modeId = maintainPlan.getModeId();
+        if (Common.DICTIONARY_MAP.get("maintainModePeriod").equals(modeId)) {
+            //获取下一个保养单对象
+            EquipmentMaintain nextMaintain = maintainService.findNextMaintainByPeriod(maintain);
+            if (nextMaintain != null) {
+                //isValidState 保养单有效状态(1:有效 0:无效 is null 无效)
+                nextMaintain.setIsValidState("1");
+                maintainService.update(nextMaintain);
+            }
+        }
+
+        //修改设备保养单状态
         EquipmentMaintain maintainEdit = new EquipmentMaintain();
         //taskResult:报工结果:任务执行结果(0:未解决 1:已解决)
         if ("1".equals(taskResult)) {
@@ -531,20 +560,6 @@ public class EquipmentMaintainTaskDetailController {
             //isValidState 保养单有效状态(1:有效 0:无效 is null 无效)
             maintainEdit.setIsValidState("0");
             maintainService.update(maintainEdit);
-
-            //modeId 保养方式(自定义 按周期 数据字典-vmes_dictionary.id)
-            //maintainModeCustom ee66976e1b3d453bae8839e6e9458b2f 自定义
-            //maintainModePeriod 9a05a30aa81e4637b498703b14cde8b1 按周期
-            String modeId = maintainPlan.getModeId();
-            if (Common.DICTIONARY_MAP.get("maintainModePeriod").equals(modeId)) {
-                //获取下一个保养单对象
-                EquipmentMaintain nextMaintain = maintainService.findNextMaintainByPeriod(maintain);
-                if (nextMaintain != null) {
-                    //isValidState 保养单有效状态(1:有效 0:无效 is null 无效)
-                    maintainEdit.setIsValidState("1");
-                    maintainService.update(nextMaintain);
-                }
-            }
 
             //查询下一个保养单
         } else if ("0".equals(taskResult)) {

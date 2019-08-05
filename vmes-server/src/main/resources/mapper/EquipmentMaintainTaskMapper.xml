@@ -34,24 +34,32 @@
         isdisable,ishide,isedit,ismust,cdate,
         cuser
         ) VALUES
+            (replace(uuid(), '-', ''),'equipmentMaintainTask','id','id',0, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentMaintainTask','maintainId','保养单id',1, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentMaintainTask','maintainUser','保养人id',2, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentMaintainTask','maintainUserCode','保养人账号',2, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentMaintainTask','maintainUserName','保养人',2, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentMaintainTask','maintainDescribe','保养描述',3, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'equipmentMaintainTask','taskResult','执行结果(0:未解决 1:已解决)',4, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentMaintainTask','taskResult','执行结果id',4, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentMaintainTask','taskResultName','执行结果',5, '1','1','1','0',now(), 'admin'),
+
             (replace(uuid(), '-', ''),'equipmentMaintainTask','taskState','任务状态(0:未领取任务 1:已领取任务 2:已领料 3:已报工 4:已退单 )',5, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentMaintainTask','taskType','任务类型(1:保养 2:退单)',6, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentMaintainTask','beginTime','任务开始时间(领取时间)',7, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentMaintainTask','beginTimeStr','任务开始时间',7, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentMaintainTask','endTime','任务结束时间',8, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentMaintainTask','endTimeStr','任务结束时间',8, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentMaintainTask','cancelReason','取消原因',9, '1','1','1','0',now(), 'admin'),
+
             (replace(uuid(), '-', ''),'equipmentMaintainTask','cancelUser','取消人id',10, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentMaintainTask','retreatType','退回方式(1:退回仓库, 2:退回虚拟库)',11, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentMaintainTask','cuser','创建用户id',12, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentMaintainTask','cdate','创建时间',13, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentMaintainTask','uuser','修改用户id',14, '1','1','1','0',now(), 'admin'),
+
             (replace(uuid(), '-', ''),'equipmentMaintainTask','udate','修改时间',15, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentMaintainTask','remark','备注',16, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentMaintainTask','isdisable','是否启用(0:已禁用 1:启用)',17, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'equipmentMaintainTask','id','id',0, '1','1','1','0',now(), 'admin')
     </insert>
 
 
@@ -113,28 +121,40 @@
     <!-- 自动创建，可以修改 -->
     <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
-        id id,
-        maintain_id maintainId,
-        maintain_user maintainUser,
-        maintain_describe maintainDescribe,
-        task_result taskResult,
+        task.id id,
+        task.maintain_id maintainId,
+        task.maintain_user maintainUser,
+        task.maintain_describe maintainDescribe,
+        task.task_result taskResult,
+        CASE
+        WHEN task.task_result = '0' THEN '未解决'
+        WHEN task.task_result = '1' THEN '已解决'
+        ELSE null
+        END taskResultName,
 
-        task_state taskState,
-        task_type taskType,
-        begin_time beginTime,
-        end_time endTime,
-        cancel_reason cancelReason,
+        task.task_state taskState,
+        task.task_type taskType,
+        task.begin_time beginTime,
+        DATE_FORMAT(task.begin_time,'%Y-%m-%d %T') beginTimeStr,
+        task.end_time endTime,
+        DATE_FORMAT(task.end_time,'%Y-%m-%d %T') endTimeStr,
+        task.cancel_reason cancelReason,
 
-        cancel_user cancelUser,
-        retreat_type retreatType,
-        cuser cuser,
-        cdate cdate,
-        uuser uuser,
+        task.cancel_user cancelUser,
+        task.retreat_type retreatType,
+        task.cuser cuser,
+        task.cdate cdate,
+        task.uuser uuser,
 
-        udate udate,
-        remark remark,
-        isdisable isdisable
-        from vmes_equipment_maintainTask
+        task.udate udate,
+        task.remark remark,
+        task.isdisable isdisable,
+
+        maintainUser.user_code maintainUserCode,
+        maintainUser.user_name maintainUserName
+
+        from vmes_equipment_maintainTask task
+        left join vmes_user maintainUser on task.maintain_user = maintainUser.id
         <where>
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >
