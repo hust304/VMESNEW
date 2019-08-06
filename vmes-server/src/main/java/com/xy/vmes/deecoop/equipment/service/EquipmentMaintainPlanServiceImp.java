@@ -368,8 +368,8 @@ public class EquipmentMaintainPlanServiceImp implements EquipmentMaintainPlanSer
             String maintainDateStr = mapObject.get("maintainDate");
             Date maintainDate = DateFormat.dateString2Date(maintainDateStr, DateFormat.DEFAULT_DATE_FORMAT);
             addMaintainPlan.setMaintainDate(maintainDate);
-            addMaintainPlan.setBeginPlan(maintainDate);
-            addMaintainPlan.setEndPlan(maintainDate);
+            //addMaintainPlan.setBeginPlan(maintainDate);
+            //addMaintainPlan.setEndPlan(maintainDate);
 
             String companyId = planObject.getCompanyId();
             //sysCode 保养计划单编号(系统生成)
