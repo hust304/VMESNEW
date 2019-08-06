@@ -405,14 +405,20 @@ public class EquipmentMaintainServiceImp implements EquipmentMaintainService {
         }
         Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
 
-        String companyId = pd.getString("currentCompanyId");
-        pd.put("companyId", companyId);
+        //添加保养计划界面使用该参数
+        String type = pd.getString("type");
+        if ("add".equals(type)) {
+            pd.put("queryStr", "1=2");
+        } else {
+            String companyId = pd.getString("currentCompanyId");
+            pd.put("companyId", companyId);
 
-        //设备保养单状态
-        String equipmentState = pd.getString("equipmentState");
-        if (equipmentState == null || equipmentState.trim().length() == 0) {
-            //保养单有效状态(1:有效 0:无效 is null 无效)
-            pd.put("isValidState", "1");
+            //设备保养单状态
+            String equipmentState = pd.getString("equipmentState");
+            if (equipmentState == null || equipmentState.trim().length() == 0) {
+                //保养单有效状态(1:有效 0:无效 is null 无效)
+                pd.put("isValidState", "1");
+            }
         }
 
         //设置查询排序方式

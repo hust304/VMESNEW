@@ -56,7 +56,58 @@ public class EquipmentMaintainPlanController {
     }
 
     /**
-     * 新增-设备保养计划
+     * 新增-设备保养计划(自定义计划)
+     * @author 陈刚
+     * @date 2019-07-24
+     * @throws Exception
+     */
+    @PostMapping("/equipment/equipmentMaintainPlan/addMaintainPlanByCustom")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel addMaintainPlanByCustom() throws Exception {
+        logger.info("################/equipment/equipmentMaintainPlan/addMaintainPlanByCustom 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        String companyId = pageData.getString("currentCompanyId");
+        if (companyId == null || companyId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("企业id为空或空字符串！");
+            return model;
+        }
+
+        String eqptJsonStr = pageData.getString("eqptJsonStr");
+        if (eqptJsonStr == null || eqptJsonStr.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("请至少选择一项设备！");
+            return model;
+        }
+
+        List<Map<String, String>> jsonMapList = (List<Map<String, String>>) YvanUtil.jsonToList(eqptJsonStr);
+        if (jsonMapList == null || jsonMapList.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("Json字符串-转换成List错误！");
+            return model;
+        }
+
+        //计划对象 <EquipmentMaintainPlan>
+        EquipmentMaintainPlan planObject = (EquipmentMaintainPlan) HttpUtils.pageData2Entity(pageData, new EquipmentMaintainPlan());
+        planObject.setCompanyId(companyId);
+
+        //添加设备保养计划
+        Map<String, Object> valueMap = new HashMap<String, Object>();
+        valueMap.put("planObject", planObject);
+        valueMap.put("eqptJsonMapList", jsonMapList);
+        maintainPlanService.addMaintainPlan(valueMap);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/equipment/equipmentMaintainPlan/addMaintainPlanByCustom 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 新增-设备保养计划(周期计划)
      * @author 陈刚
      * @date 2019-07-24
      * @throws Exception
