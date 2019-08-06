@@ -195,8 +195,8 @@ public class PurchaseRetreatController {
                     Common.DICTIONARY_MAP.get("warehouseEntity"),
                     cuser,
                     companyId,
-                    //d78ceba5beef41f5be16f0ceee775399 采购入库:purchaseIn
-                    Common.DICTIONARY_MAP.get("purchaseIn"),
+                    //4cba5d3815644b26920777512a20474b 采购退货出库:purchaseOut
+                    Common.DICTIONARY_MAP.get("purchaseOut"),
                     productByOutMap);
 
         } else if (Common.SYS_WAREHOUSE_SIMPLE.equals(warehouse)) {
@@ -207,8 +207,8 @@ public class PurchaseRetreatController {
                     Common.DICTIONARY_MAP.get("warehouseEntity"),
                     cuser,
                     companyId,
-                    //d78ceba5beef41f5be16f0ceee775399 采购入库:purchaseIn
-                    Common.DICTIONARY_MAP.get("purchaseIn"),
+                    //4cba5d3815644b26920777512a20474b 采购退货出库:purchaseOut
+                    Common.DICTIONARY_MAP.get("purchaseOut"),
                     productByOutMap);
         }
 
