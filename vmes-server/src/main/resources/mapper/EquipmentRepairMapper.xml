@@ -63,7 +63,10 @@
 
             (replace(uuid(), '-', ''),'equipmentRepair','equipmentCode','设备编码',19, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentRepair','equipmentName','设备名称',20, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'equipmentRepair','taskState','任务状态id',21, '1','1','1','0',now(), 'admin')
+            (replace(uuid(), '-', ''),'equipmentRepair','taskState','任务状态id',21, '1','1','1','0',now(), 'admin'),
+
+            (replace(uuid(), '-', ''),'equipmentRepair','isStop','是否停机id',22, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentRepair','isStopName','是否停机',22, '1','1','1','0',now(), 'admin'),
     </insert>
 
 
@@ -139,6 +142,11 @@
         DATE_FORMAT(repair.warn_date,'%Y-%m-%d %T') warnDateTimeStr,
         repair.fault_describe faultDescribe,
         repair.is_stop isStop,
+        CASE
+            WHEN repair.is_stop = '1' THEN '停机维修'
+            WHEN repair.is_stop = '0' THEN '非停机维修'
+        ELSE null
+        END isStopName,
         repair.equipment_state equipmentState,
         CASE
             WHEN repair.equipment_state = '1' THEN '故障'

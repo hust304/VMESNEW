@@ -138,6 +138,13 @@ public class EquipmentRepairController {
             return model;
         }
 
+        String isStop = pageData.getString("isStop");
+        if (isStop == null || isStop.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("请选择是否停机为空或空字符串！");
+            return model;
+        }
+
         //teimType (M:分钟 H:小时 D:天)
         String teimType = pageData.getString("teimType");
         if (teimType == null || teimType.trim().length() == 0) {
@@ -185,6 +192,8 @@ public class EquipmentRepairController {
         repairTask.setRepairId(repairId);
         //repairUser 维修人id
         repairTask.setRepairUser(repairUser);
+        //isStop 是否停机 (1:停机维修 0:非停机维修)
+        repairTask.setIsStop(isStop);
         //timeLength 预计维修时长(单位秒)
         repairTask.setTimeLength(BigDecimal.valueOf(timeLengthLong));
         repairTask.setFaultDescribe(faultDescribe);
@@ -204,6 +213,10 @@ public class EquipmentRepairController {
         repairEdit.setBeginTime(repairTask.getBeginTime());
         //equipmentState:设备状态(1:故障 2:维修中 3:已完成)
         repairEdit.setEquipmentState("2");
+        //isStop 是否停机 (1:停机维修 0:非停机维修)
+        if (repairTask.getIsStop() != null) {
+            repairEdit.setIsStop(repairTask.getIsStop().trim());
+        }
         equipmentRepairService.update(repairEdit);
 
         Long endTime = System.currentTimeMillis();
