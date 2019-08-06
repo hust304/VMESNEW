@@ -250,6 +250,17 @@ public class EquipmentMaintainPlanServiceImp implements EquipmentMaintainPlanSer
             columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
         }
         Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
+        String isNeedPage = pd.getString("isNeedPage");
+
+        //添加保养计划界面使用该参数
+        String type = pd.getString("type");
+        if ("add".equals(type)) {
+            pd.clear();
+            pd.put("queryStr", "1=2");
+        } else {
+            String companyId = pd.getString("currentCompanyId");
+            pd.put("companyId", companyId);
+        }
 
         //设置查询排序方式
         //pd.put("orderStr", "a.cdate asc");
@@ -260,7 +271,6 @@ public class EquipmentMaintainPlanServiceImp implements EquipmentMaintainPlanSer
 
         //是否需要分页 true:需要分页 false:不需要分页
         Map result = new HashMap();
-        String isNeedPage = pd.getString("isNeedPage");
         if ("false".equals(isNeedPage)) {
             pg = null;
         } else {

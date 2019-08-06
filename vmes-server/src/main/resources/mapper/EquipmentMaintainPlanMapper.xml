@@ -43,6 +43,7 @@
             (replace(uuid(), '-', ''),'equipmentMaintainPlan','modeId','保养方式id',5, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentMaintainPlan','modeName','保养方式',5, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentMaintainPlan','maintainDate','计划保养时间',6, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'equipmentMaintainPlan','maintainDateStr','保养时间',6, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentMaintainPlan','beginPlan','计划开始日期',7, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentMaintainPlan','endPlan','计划结束日期',8, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentMaintainPlan','periodType','重复频率类型(day:天 week:周 month:月)',9, '1','1','1','0',now(), 'admin'),
@@ -151,6 +152,7 @@
         plan.mode_id modeId,
         mode.name modeName,
         plan.maintain_date maintainDate,
+        DATE_FORMAT(plan.maintain_date,'%Y-%m-%d') maintainDateStr,
         plan.begin_plan beginPlan,
         plan.end_plan endPlan,
 
@@ -190,8 +192,8 @@
             <if test="equipmentId != null and equipmentId != ''">
                 and plan.equipment_id = #{equipmentId}
             </if>
-            <if test="currentCompanyId != null and currentCompanyId != ''">
-                and plan.company_id = #{currentCompanyId}
+            <if test="companyId != null and companyId != ''">
+                and plan.company_id = #{companyId}
             </if>
 
             <if test="content != null and content != ''">
