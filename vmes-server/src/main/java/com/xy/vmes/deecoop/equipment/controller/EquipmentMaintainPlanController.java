@@ -265,20 +265,6 @@ public class EquipmentMaintainPlanController {
         planObject.setEndPlan(endPlan);
         planObject.setCompanyId(companyId);
 
-        String eqptJsonStr = pageData.getString("eqptJsonStr");
-        if (eqptJsonStr == null || eqptJsonStr.trim().length() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("请至少选择一项设备！");
-            return model;
-        }
-
-        List<Map<String, String>> jsonMapList = (List<Map<String, String>>) YvanUtil.jsonToList(eqptJsonStr);
-        if (jsonMapList == null || jsonMapList.size() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("Json字符串-转换成List错误！");
-            return model;
-        }
-
         //调整保养计划对象(周期计划)
         //modeId 保养方式(自定义 按周期 数据字典-vmes_dictionary.id)
         //设备保养方式: 7ef6384e92a343ccb839112a5d59b2fe (vmes_dictionary.id) 设备保养计划(模块)
