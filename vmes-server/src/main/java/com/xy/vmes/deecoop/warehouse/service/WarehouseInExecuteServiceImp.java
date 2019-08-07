@@ -384,6 +384,18 @@ public class WarehouseInExecuteServiceImp implements WarehouseInExecuteService {
                 //批次号
                 String code = (String)warehouseInDetailMap.get("code");
 
+                BigDecimal executeCount = BigDecimal.valueOf(0D);
+                String executeCountStr = (String)warehouseInDetailMap.get("executeCount");
+                if (executeCountStr != null && executeCountStr.trim().length() > 0) {
+                    try {
+                        executeCount = new BigDecimal(executeCountStr);
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                //获取当前输入的(入库数量)汇总
+                BigDecimal adderCount = BigDecimal.valueOf(0D);
                 //入库执行明细 executeMap
                 // 界面上 model_code := 'warehouseInExecutorByAddExecute' 中获得
                 for (int i = 0; i < executeList.size(); i++) {
@@ -401,6 +413,7 @@ public class WarehouseInExecuteServiceImp implements WarehouseInExecuteService {
                             e.printStackTrace();
                         }
                     }
+                    adderCount = BigDecimal.valueOf(adderCount.doubleValue() + count_Big.doubleValue());
 
                     //入库操作
                     WarehouseProduct inObject = new WarehouseProduct();
@@ -461,15 +474,11 @@ public class WarehouseInExecuteServiceImp implements WarehouseInExecuteService {
 
                 //inExecuteType 入库执行类型 (InExecuteByForce 强制入库)
                 String inExecuteType = pageData.getString("inExecuteType");
-                String countByDetail = pageData.getString("countByDetail");
-                if ("InExecuteByForce".equals(inExecuteType) && countByDetail != null && countByDetail.trim().length() > 0) {
-                    try {
-                        BigDecimal countByDetail_big = new BigDecimal(countByDetail);
-                        //四舍五入到2位小数
-                        countByDetail_big = countByDetail_big.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                if ("InExecuteByForce".equals(inExecuteType)) {
+                    //已完成数量 + 当前输入(入库数量)
+                    BigDecimal countByDetail_big = BigDecimal.valueOf(executeCount.doubleValue() + adderCount.doubleValue());
+                    if (countByDetail_big.doubleValue() != 0) {
                         detail.setCount(countByDetail_big);
-                    } catch (NumberFormatException e) {
-                        e.printStackTrace();
                     }
                 }
 
