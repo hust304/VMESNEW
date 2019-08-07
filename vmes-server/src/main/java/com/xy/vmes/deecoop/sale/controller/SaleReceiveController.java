@@ -253,9 +253,15 @@ public class SaleReceiveController {
             return model;
         }
 
+        String cuser = pd.getString("cuser");
+
         SaleReceive editReceive = new SaleReceive();
         editReceive.setId(parentId);
         editReceive.setRemark(remark);
+        //auditResult 审核结果(0:未通过 1:已通过)
+        editReceive.setAuditResult("0");
+        //auditUserId 审核人ID
+        editReceive.setAuditUserId(cuser);
         saleReceiveService.update(editReceive);
 
         Long endTime = System.currentTimeMillis();

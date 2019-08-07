@@ -53,6 +53,12 @@ public class SaleReceive implements Serializable {
 	@TableField("company_id")
 	private String companyId;
 
+	//审核人ID
+	@TableField("audit_user_id")
+	private String auditUserId;
+	//审核结果(0:未通过 1:已通过)
+	@TableField("audit_result")
+	private String auditResult;
 
 
 	public void setId(String id) {
@@ -127,7 +133,18 @@ public class SaleReceive implements Serializable {
 	public String getCompanyId() {
 		return companyId;
 	}
-
+	public String getAuditUserId() {
+		return auditUserId;
+	}
+	public void setAuditUserId(String auditUserId) {
+		this.auditUserId = auditUserId;
+	}
+	public String getAuditResult() {
+		return auditResult;
+	}
+	public void setAuditResult(String auditResult) {
+		this.auditResult = auditResult;
+	}
 /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 

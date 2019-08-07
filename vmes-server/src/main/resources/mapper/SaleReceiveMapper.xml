@@ -25,7 +25,9 @@
 		remark remark,<!-- 备注 -->
 		isdisable isdisable,<!-- 是否启用(0:已禁用 1:启用) -->
 		company_id companyId,<!-- 公司ID -->
-		id id <!-- id -->
+		id id, <!-- id -->
+        audit_user_id auditUserId,
+        audit_result auditResult
     </sql>
 
     <!-- 字段值 自动创建，禁止修改-->
@@ -158,7 +160,10 @@
             (replace(uuid(), '-', ''),'SaleReceive','remark','备注',7, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'SaleReceive','isdisable','是否启用',8, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'SaleReceive','companyId','公司ID',9, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleReceive','id','id',0, '1','0','1','0',now(), 'admin')
+            (replace(uuid(), '-', ''),'SaleReceive','id','id',0, '1','0','1','0',now(), 'admin'),
+
+            (replace(uuid(), '-', ''),'SaleReceive','auditUserId','审核人id',10, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceive','auditResult','审核结果',10, '1','0','1','0',now(), 'admin'),
     </insert>
 
 
@@ -295,7 +300,9 @@
         when receive.type='4' then '预收款退款'
         else null end typeName,
         DATE_FORMAT(receive.cdate,'%Y-%m-%d') cdate,
-        receive.remark
+        receive.remark,
+        receive.audit_user_id auditUserId,
+        receive.audit_result auditResult
 
         from vmes_sale_receive receive
         left join vmes_customer customer on customer.id = receive.customer_id

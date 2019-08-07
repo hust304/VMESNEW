@@ -478,6 +478,13 @@ public class SaleReceiveServiceImp implements SaleReceiveService {
             }
         }
 
+        //5.修改审核状态
+        //auditResult 审核结果(0:未通过 1:已通过)
+        saleReceive.setAuditResult("1");
+        //auditUserId 审核人ID
+        saleReceive.setAuditUserId(cuser);
+        this.update(saleReceive);
+
         return model;
     }
 
