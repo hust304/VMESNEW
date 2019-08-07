@@ -92,15 +92,15 @@ public interface CustomerInvoiceService {
      * @return
      * @throws Exception
      */
-//    List<CustomerInvoice> findDataList(PageData pageData, Boolean isQueryAll) throws Exception;
+    List<CustomerInvoice> findDataList(PageData pageData, Boolean isQueryAll) throws Exception;
 
 
 
-//    CustomerInvoice findCustomerInvoice(PageData object) throws Exception;
-//    CustomerInvoice findCustomerInvoiceById(String id) throws Exception;
+    CustomerInvoice findCustomerInvoice(PageData object) throws Exception;
+    CustomerInvoice findCustomerInvoiceById(String id) throws Exception;
 
-//    List<CustomerInvoice> findCustomerInvoiceList(PageData object) throws Exception;
-//    List<CustomerInvoice> findCustomerInvoiceListByCustomerId(String customerId) throws Exception;
+    List<CustomerInvoice> findCustomerInvoiceList(PageData object) throws Exception;
+    List<CustomerInvoice> findCustomerInvoiceListByCustomerId(String customerId) throws Exception;
 
     void updateDefaultByCustomerId(PageData pageData);
 

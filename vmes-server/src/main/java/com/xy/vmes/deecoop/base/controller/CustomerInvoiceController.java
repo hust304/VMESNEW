@@ -1,6 +1,7 @@
 package com.xy.vmes.deecoop.base.controller;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.entity.CustomerInvoice;
 import com.xy.vmes.service.CustomerInvoiceService;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
@@ -12,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 
 /**
@@ -43,6 +46,44 @@ public class CustomerInvoiceController {
         logger.info("################/base/customerInvoice/listPageCustomerInvoices 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
+
+    /**
+     * @author 陈刚 自动创建，可以修改
+     * @date 2019-01-09
+     */
+    @PostMapping("/base/customerInvoice/findIsExistCustomerInvoice")
+    public ResultModel findIsExistCustomerInvoice() throws Exception {
+        logger.info("################/base/customerInvoice/findIsExistCustomerInvoice 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+        //客户id
+        String customerId = pd.getString("customerId");
+
+        String isExistCustomerInvoice = "false";
+        List<CustomerInvoice> objectList = null;
+        try {
+            PageData findMap = new PageData();
+            findMap.put("customerId", customerId);
+            //是否启用(0:已禁用 1:启用)
+            findMap.put("isdefault", "1");
+            objectList = customerInvoiceService.findCustomerInvoiceList(findMap);
+
+            if (objectList != null && objectList.size() > 0) {
+                isExistCustomerInvoice = "true";
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        model.put("isExistCustomerInvoice", isExistCustomerInvoice);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/base/customerInvoice/findIsExistCustomerInvoice 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
 
     /**
      * 新增客户开票信息
