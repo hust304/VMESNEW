@@ -377,44 +377,51 @@ public class EquipmentRepairTaskDetailController {
             Map<String, Map<String, Object>> productByInMap = repairTaskDetailService.findProductMapByIn(notEqualZeroList);
 
             //retreatType 退库方式(1:生成退库单 2:退回虚拟库)
-            if ("1".equals(retreatType) && Common.SYS_WAREHOUSE_COMPLEX.equals(warehouse)) {
-                //退库方式:1:生成退库单: (生成复杂版入库单)
-                //复杂版仓库:warehouseByComplex:Common.SYS_WAREHOUSE_COMPLEX
-                warehouseInCreateService.createWarehouseInByComplex(deptId,
-                        deptName,
-                        //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
-                        Common.DICTIONARY_MAP.get("warehouseEntity"),
-                        cuser,
-                        companyId,
-                        //维保领料退回入库:repairRetreatIn:c396683796d54b8693b522a2c0ad2793 Common.DICTIONARY_MAP
-                        Common.DICTIONARY_MAP.get("repairRetreatIn"),
-                        productByInMap);
+            try {
+                if ("1".equals(retreatType) && Common.SYS_WAREHOUSE_COMPLEX.equals(warehouse)) {
+                    //退库方式:1:生成退库单: (生成复杂版入库单)
+                    //复杂版仓库:warehouseByComplex:Common.SYS_WAREHOUSE_COMPLEX
+                    warehouseInCreateService.createWarehouseInByComplex(deptId,
+                            deptName,
+                            //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
+                            Common.DICTIONARY_MAP.get("warehouseEntity"),
+                            cuser,
+                            companyId,
+                            //维保领料退回入库:repairRetreatIn:c396683796d54b8693b522a2c0ad2793 Common.DICTIONARY_MAP
+                            Common.DICTIONARY_MAP.get("repairRetreatIn"),
+                            productByInMap);
 
-            } else if ("1".equals(retreatType) && Common.SYS_WAREHOUSE_SIMPLE.equals(warehouse)) {
-                //退库方式:1:生成退库单: (生成简版入库单)
-                //简版仓库:warehouseBySimple:Common.SYS_WAREHOUSE_SIMPLE
-                warehouseInCreateService.createWarehouseInBySimple(deptId,
-                        deptName,
-                        //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
-                        Common.DICTIONARY_MAP.get("warehouseEntity"),
-                        cuser,
-                        companyId,
-                        //维保领料退回入库:repairRetreatIn:c396683796d54b8693b522a2c0ad2793 Common.DICTIONARY_MAP
-                        Common.DICTIONARY_MAP.get("repairRetreatIn"),
-                        productByInMap);
+                } else if ("1".equals(retreatType) && Common.SYS_WAREHOUSE_SIMPLE.equals(warehouse)) {
+                    //退库方式:1:生成退库单: (生成简版入库单)
+                    //简版仓库:warehouseBySimple:Common.SYS_WAREHOUSE_SIMPLE
+                    warehouseInCreateService.createWarehouseInBySimple(deptId,
+                            deptName,
+                            //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
+                            Common.DICTIONARY_MAP.get("warehouseEntity"),
+                            cuser,
+                            companyId,
+                            //维保领料退回入库:repairRetreatIn:c396683796d54b8693b522a2c0ad2793 Common.DICTIONARY_MAP
+                            Common.DICTIONARY_MAP.get("repairRetreatIn"),
+                            productByInMap);
 
-            } else if ("2".equals(retreatType)) {
-                //退库方式:2:退回虚拟库-(生成虚拟库入库单)
-                warehouseInCreateService.createWarehouseInByVirtual(deptId,
-                        deptName,
-                        //维保:deptRepair:a42f32ef9d39476e932e1e30b77fefbb Common.DICTIONARY_MAP
-                        Common.DICTIONARY_MAP.get("deptRepair"),
-                        "维保",
-                        cuser,
-                        companyId,
-                        //维保领料退回入库:repairRetreatIn:c396683796d54b8693b522a2c0ad2793 Common.DICTIONARY_MAP
-                        Common.DICTIONARY_MAP.get("repairRetreatIn"),
-                        productByInMap);
+                } else if ("2".equals(retreatType)) {
+                    //退库方式:2:退回虚拟库-(生成虚拟库入库单)
+                    warehouseInCreateService.createWarehouseInByVirtual(deptId,
+                            deptName,
+                            //维保:deptRepair:a42f32ef9d39476e932e1e30b77fefbb Common.DICTIONARY_MAP
+                            Common.DICTIONARY_MAP.get("deptRepair"),
+                            "维保",
+                            cuser,
+                            companyId,
+                            //维保领料退回入库:repairRetreatIn:c396683796d54b8693b522a2c0ad2793 Common.DICTIONARY_MAP
+                            Common.DICTIONARY_MAP.get("repairRetreatIn"),
+                            productByInMap);
+                }
+            } catch (Exception e) {
+                String msgStr = e.getMessage();
+                model.putCode(Integer.valueOf(1));
+                model.putMsg(msgStr);
+                return model;
             }
 
             //(维修任务id)-维修任务明细(领料货品明细)
