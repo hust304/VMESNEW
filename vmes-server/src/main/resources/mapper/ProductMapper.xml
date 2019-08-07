@@ -245,10 +245,10 @@
                         and id in (${ids})
                     </if>
                     <if test="code != null and code != ''" >
-                        and code=#{code}
+                        and code LIKE CONCAT('%',CONCAT(#{code}),'%')
                     </if>
                     <if test="name != null and name != ''" >
-                        and name=#{name}
+                        and name LIKE CONCAT('%',CONCAT(#{name}),'%')
                     </if>
                     <if test="companyId != null and companyId != ''" >
                         and company_id=#{companyId}
@@ -258,7 +258,7 @@
                     </if>
 
                     <if test="spec != null and spec != ''" >
-                        and spec=#{spec}
+                        and spec LIKE CONCAT(CONCAT(#{spec}),'%')
                     </if>
                     <if test="unit != null and unit != ''" >
                         and unit=#{unit}
@@ -369,19 +369,19 @@
             </if>
 
             <if test="code != null and code != ''">
-                and prod.code LIKE CONCAT(CONCAT(#{code}),'%')
+                and prod.code LIKE CONCAT('%',CONCAT(#{code}),'%')
             </if>
             <if test="name != null and name != ''">
-                and prod.name LIKE CONCAT(CONCAT(#{name}),'%')
+                and prod.name LIKE CONCAT('%',CONCAT(#{name}),'%')
             </if>
             <if test="genreName != null and genreName != ''">
-                and genre.name LIKE CONCAT(CONCAT(#{genreName}),'%')
+                and genre.name LIKE CONCAT('%',CONCAT(#{genreName}),'%')
             </if>
             <if test="typeName != null and typeName != ''">
-                and type.name LIKE CONCAT(CONCAT(#{typeName}),'%')
+                and type.name LIKE CONCAT('%',CONCAT(#{typeName}),'%')
             </if>
             <if test="unitName != null and unitName != ''">
-                and unit.name LIKE CONCAT(CONCAT(#{unitName}),'%')
+                and unit.name LIKE CONCAT('%',CONCAT(#{unitName}),'%')
             </if>
             <if test="currentCompanyId != null and currentCompanyId != ''" >
                 and prod.company_id=#{currentCompanyId}
@@ -390,7 +390,7 @@
                 and prod.spec=#{spec}
             </if>
             <if test="genre != null and genre != ''" >
-                and prod.genre=#{genre}
+                and prod.genre LIKE CONCAT('%',CONCAT(#{genre}),'%')
             </if>
             <!--过滤出 货品属性(备件)-->
             <if test="'true' == isNeedGenreSpare">
