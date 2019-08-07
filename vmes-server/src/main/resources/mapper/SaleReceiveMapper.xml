@@ -163,7 +163,9 @@
             (replace(uuid(), '-', ''),'SaleReceive','id','id',0, '1','0','1','0',now(), 'admin'),
 
             (replace(uuid(), '-', ''),'SaleReceive','auditUserId','审核人id',10, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'SaleReceive','auditResult','审核结果',10, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceive','auditResult','审核结果',11, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceive','auditResultName','审核结果',11, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleReceive','isAudit','isAudit',12, '1','0','1','0',now(), 'admin')
     </insert>
 
 
@@ -302,7 +304,19 @@
         DATE_FORMAT(receive.cdate,'%Y-%m-%d') cdate,
         receive.remark,
         receive.audit_user_id auditUserId,
-        receive.audit_result auditResult
+        receive.audit_result auditResult,
+        CASE
+            WHEN receive.audit_result = '0' THEN '未通过'
+            WHEN receive.audit_result = '1' THEN '已通过'
+        ELSE null
+        END auditResultName,
+
+        CASE
+            WHEN receive.audit_result = '0' THEN '1'
+            WHEN receive.audit_result = '1' THEN '1'
+        ELSE '0'
+        END isAudit
+
 
         from vmes_sale_receive receive
         left join vmes_customer customer on customer.id = receive.customer_id
