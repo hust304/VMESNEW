@@ -478,6 +478,13 @@ public class Common {
             //customer: 客户供应商,
             put("customer", "66628bbd6bdd4f47a903feaec2feab59");
 
+        //******设备******
+        put("equipment", "77692fa6a7ae4b4aabcef8d10d7671f4");
+            //equipmentRepair 设备维修 bfbb17fb01e44c648b1938b0e131202c
+            put("equipmentRepair", "bfbb17fb01e44c648b1938b0e131202c");
+            //equipmentMaintain 设备保养 c9d0c50536c74470b990887d939a2041
+            put("equipmentMaintain", "c9d0c50536c74470b990887d939a2041");
+
         //******App 手机主页面菜单******
         put("app", "ab8a6ef2480f4fa0a6445524a33a8181");
     }};
