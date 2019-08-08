@@ -356,7 +356,7 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
             //获取批次号
             //PC+yyyyMMdd+00001 = 15位
             String code = coderuleService.createCoderCdateByDate(companyId,
-                    "vmes_product",
+                    "vmes_product_pc",
                     "yyyyMMdd",
                     "PC");
 
@@ -387,7 +387,7 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
             //获取批次号
             //PC+yyyyMMdd+00001 = 15位
             String code = coderuleService.createCoderCdateByDate(parentObj.getCompanyId(),
-                    "vmes_product",
+                    "vmes_product_pc",
                     "yyyyMMdd",
                     "PC");
 
@@ -424,7 +424,7 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
             //获取批次号
             //PC+yyyyMMdd+00001 = 15位
             String code = coderuleService.createCoderCdateByDate(parentObj.getCompanyId(),
-                    "vmes_product",
+                    "vmes_product_pc",
                     "yyyyMMdd",
                     "PC");
             detail.setCode(code);

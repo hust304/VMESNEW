@@ -869,7 +869,7 @@ public class WarehouseProductExcelServiceImp implements WarehouseProductExcelSer
             //获取批次号
             //PC+yyyyMMdd+00001 = 15位
             String code = coderuleService.createCoderCdateByDate(companyId,
-                    "vmes_product",
+                    "vmes_product_pc",
                     "yyyyMMdd",
                     "PC");
 
