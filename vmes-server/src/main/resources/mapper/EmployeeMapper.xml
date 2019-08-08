@@ -566,6 +566,10 @@
         left join vmes_role role on role.id = userrole.role_id
         left join vmes_dictionary dictionary on employee.political = dictionary.id
         <where>
+            <if test="employeeId!= null and employeeId != ''">
+                and employee.id = #{employeeId}
+            </if>
+
             <!-- 员工表查询 (code,name) 必须在最前面-创建有索引 -->
             <if test="code!= null and code != ''">
                 and employee.code LIKE CONCAT(CONCAT(#{code}),'%')

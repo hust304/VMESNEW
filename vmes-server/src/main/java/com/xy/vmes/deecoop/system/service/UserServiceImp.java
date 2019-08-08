@@ -711,6 +711,7 @@ public class UserServiceImp implements UserService {
 
         //新绑定员工
         String employeeId = pd.getString("employeeId");
+        String employeeDeptId = new String();
         if (employeeId != null && employeeId.trim().length() > 0) {
             Employee employee = employeeService.findEmployeeById(employeeId);
             if (employee != null) {
@@ -721,6 +722,23 @@ public class UserServiceImp implements UserService {
                 employee.setEmail(email);
 //                employee.setName(userName);
                 employeeService.update(employee);
+
+                //获取新绑定员工的(部门id) 根据(employeeId员工id) 查询
+                List<Map> employeeMapList = null;
+                try {
+                    PageData findMap = new PageData();
+                    findMap.put("employeeId", employeeId);
+                    employeeMapList = employeeService.getDataListPage(findMap);
+
+                    if (employeeMapList != null && employeeMapList.size() > 0) {
+                        Map<String, Object> employeeMap = employeeMapList.get(0);
+                        if (employeeMap != null && employeeMap.get("deptId") != null) {
+                            employeeDeptId = (String)employeeMap.get("deptId");
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
 
             user.setEmployId(employeeId);
@@ -730,6 +748,10 @@ public class UserServiceImp implements UserService {
             user.setEmail(email);
             //user_name:姓名->name:员工姓名
             user.setUserName(userName);
+            //设定用户(所属部门id) <-- 新绑定员工(所属部门id)
+            if (employeeDeptId != null && employeeDeptId.trim().length() > 0) {
+                user.setDeptId(employeeDeptId);
+            }
         }
 
         user.setRemark("");

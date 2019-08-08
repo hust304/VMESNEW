@@ -108,6 +108,7 @@ public interface EmployeeService {
      * 创建时间：2018-08-02
      */
     List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception;
+    List<Map> getDataListPage(PageData pd) throws Exception;
 
     /**
      * 创建人：刘威 自动创建，禁止修改
