@@ -40,6 +40,9 @@ public class WarehouseInitial implements Serializable {
 	//是否启用(0:已禁用 1:启用)
 	@TableField("isdisable")
 	private String isdisable;
+	//是否允许初始化(0:不允许 1:允许)
+	@TableField("is_allow_initial")
+	private String isAllowInitial;
 
 
 	public void setId(String id) {
@@ -90,8 +93,13 @@ public class WarehouseInitial implements Serializable {
 	public String getIsdisable() {
 		return isdisable;
 	}
-
-/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+	public String getIsAllowInitial() {
+		return isAllowInitial;
+	}
+	public void setIsAllowInitial(String isAllowInitial) {
+		this.isAllowInitial = isAllowInitial;
+	}
+	/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 
 }

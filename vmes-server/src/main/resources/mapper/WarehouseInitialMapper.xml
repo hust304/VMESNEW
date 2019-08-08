@@ -95,7 +95,8 @@
             cdate cdate,
             uuser uuser,
             udate udate,
-            isdisable isdisable
+            isdisable isdisable,
+            is_allow_initial isAllowInitial
         from vmes_warehouse_initial
         <choose>
             <!--
@@ -122,6 +123,10 @@
                                 and id = #{id}
                             </otherwise>
                         </choose>
+                    </if>
+
+                    <if test="companyId != null and companyId != ''" >
+                        and company_id = #{companyId}
                     </if>
 
 
