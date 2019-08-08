@@ -143,7 +143,7 @@ public interface UserService {
     Boolean isExistUserByUserCode(String id, String userCode);//@
 //    boolean isExistByMobile(String id, String mobile);
 
-//    List<User> findUserList(PageData object);
+    List<User> findUserList(PageData object);
 
     /**
      * 获取企业管理员

@@ -39,6 +39,8 @@ public class DictionaryController {
     private DictionaryService dictionaryService;
 
     @Autowired
+    private UserService userService;
+    @Autowired
     private UserRoleService userRoleService;
     @Autowired
     RoleMenuService roleMenuService;
@@ -410,8 +412,25 @@ public class DictionaryController {
 
         List<TreeEntity> treeList = dictionaryService.getTreeList(findMap);
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        String cuser = pd.getString("cuser");
-        String roleIds = userRoleService.findRoleIdsByByUserID(cuser);
+        //获取当前企业管理员角色-- 当前(企业id,企业管理员)
+        //企业管理员:userType_company:2fb9bbee46ca4ce1913f3a673a7dd68f  数据字典:pid:744f2d88c9f647d0a4d967a714193850
+        List<User> userList = null;
+        try {
+            findMap.clear();
+            findMap.put("companyId", companyId);
+            findMap.put("userType", Common.DICTIONARY_MAP.get("userType_company"));
+            findMap.put("mapSize", Integer.valueOf(findMap.size()));
+            userList = userService.findUserList(findMap);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        //当前企业管理员用户id
+        String companyUserId = new String();
+        if (userList != null && userList.size() > 0) {
+            companyUserId = userList.get(0).getId();
+        }
+        String roleIds = userRoleService.findRoleIdsByByUserID(companyUserId);
 
         findMap = new PageData();
         findMap.put("roleId", roleIds);
@@ -463,18 +482,38 @@ public class DictionaryController {
                         ) {
                     //purchase 采购 3f5e1bcd2d3745998773413ccbded554 --> (purchaseIn d78ceba5beef41f5be16f0ceee775399 采购入库)
                     continue;
+                } else if (userRoleMenuMap.get(Common.SYS_MENU_MAP.get("equipmentRepair")) != null
+                        && Common.DICTIONARY_MAP.get("repairRetreatIn").equals(treeId)
+                        ) {
+                    //equipmentRepair 设备维修 bfbb17fb01e44c648b1938b0e131202c --> (repairRetreatIn c396683796d54b8693b522a2c0ad2793 维修领料退回入库)
+                    continue;
+                } else if (userRoleMenuMap.get(Common.SYS_MENU_MAP.get("equipmentMaintain")) != null
+                        && Common.DICTIONARY_MAP.get("maintainRetreatIn").equals(treeId)
+                        ) {
+                    //equipmentMaintain 设备保养 c9d0c50536c74470b990887d939a2041 --> (maintainRetreatIn d9c9eb85db0d4c8faa09ddc2b8173859 保养领料退回入库)
+                    continue;
                 }
 
                 //出库类型
                 //sale 销售 94caec1bca7e4131b16bfcee9b1351e2 --> (saleOut 9459be975cd94ada8443cdf32f52c2be 销售发货出库)
                 if (userRoleMenuMap.get(Common.SYS_MENU_MAP.get("sale")) != null
-                        && Common.DICTIONARY_MAP.get("saleOut").equals(treeId)
-                        ) {
+                    && Common.DICTIONARY_MAP.get("saleOut").equals(treeId)
+                ) {
                     continue;
                 } else if (userRoleMenuMap.get(Common.SYS_MENU_MAP.get("purchase")) != null
-                        && Common.DICTIONARY_MAP.get("purchaseOut").equals(treeId)
-                        ) {
+                    && Common.DICTIONARY_MAP.get("purchaseOut").equals(treeId)
+                ) {
                     //purchase 采购 3f5e1bcd2d3745998773413ccbded554 --> (purchaseOut 4cba5d3815644b26920777512a20474b 采购退货出库)
+                    continue;
+                } else if (userRoleMenuMap.get(Common.SYS_MENU_MAP.get("equipmentRepair")) != null
+                    && Common.DICTIONARY_MAP.get("repairReceiveOut").equals(treeId)
+                ) {
+                    //equipmentRepair 设备维修 bfbb17fb01e44c648b1938b0e131202c --> (repairReceiveOut fa51ae2e17a9409d822fc4c9192d652c 维修领料出库)
+                    continue;
+                } else if (userRoleMenuMap.get(Common.SYS_MENU_MAP.get("equipmentMaintain")) != null
+                    && Common.DICTIONARY_MAP.get("maintainReceiveOut").equals(treeId)
+                ) {
+                    //equipmentMaintain 设备保养 c9d0c50536c74470b990887d939a2041 --> (maintainReceiveOut 8bcbc84893cf46daabbd2522bee482ad 保养领料出库)
                     continue;
                 }
 
