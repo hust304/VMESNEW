@@ -1,6 +1,7 @@
 package com.xy.vmes.deecoop.purchase.controller;
 
 import com.xy.vmes.entity.*;
+import com.xy.vmes.exception.ApplicationException;
 import com.xy.vmes.service.*;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
@@ -444,41 +445,42 @@ public class PurchaseOrderController {
             return model;
         }
 
-        //1. 创建入库单////////////////////////////////////////////////////////////////////////////////////////////////////////
-        Map<String, Map<String, Object>> productByInMap = purchaseOrderService.findProductMapByIn(jsonMapList);
-        if (Common.SYS_WAREHOUSE_COMPLEX.equals(warehouse)) {
-            //复杂版仓库:warehouseByComplex:Common.SYS_WAREHOUSE_COMPLEX
-            warehouseInCreateService.createWarehouseInByComplex(supplierId,
-                    supplierName,
-                    warehouseId,
-                    cuser,
+        try {
+            //1. 创建入库单////////////////////////////////////////////////////////////////////////////////////////////////////////
+            Map<String, Map<String, Object>> productByInMap = purchaseOrderService.findProductMapByIn(jsonMapList);
+            if (Common.SYS_WAREHOUSE_COMPLEX.equals(warehouse)) {
+                //复杂版仓库:warehouseByComplex:Common.SYS_WAREHOUSE_COMPLEX
+                warehouseInCreateService.createWarehouseInByComplex(supplierId,
+                        supplierName,
+                        warehouseId,
+                        cuser,
+                        companyId,
+                        //d78ceba5beef41f5be16f0ceee775399 采购入库:purchaseIn
+                        Common.DICTIONARY_MAP.get("purchaseIn"),
+                        productByInMap);
+
+            } else if (Common.SYS_WAREHOUSE_SIMPLE.equals(warehouse)) {
+                //简版仓库:warehouseBySimple:Common.SYS_WAREHOUSE_SIMPLE
+                warehouseInCreateService.createWarehouseInBySimple(supplierId,
+                        supplierName,
+                        warehouseId,
+                        cuser,
+                        companyId,
+                        //d78ceba5beef41f5be16f0ceee775399 采购入库:purchaseIn
+                        Common.DICTIONARY_MAP.get("purchaseIn"),
+                        productByInMap);
+            }
+
+            //2. 创建采购签收单
+            Map<String, Object> valueMap = new HashMap<String, Object>();
+            valueMap.put("productByInMap", productByInMap);
+            valueMap.put("jsonMapList", jsonMapList);
+            purchaseSignService.createPurchaseSign(cuser,
                     companyId,
-                    //d78ceba5beef41f5be16f0ceee775399 采购入库:purchaseIn
-                    Common.DICTIONARY_MAP.get("purchaseIn"),
-                    productByInMap);
+                    purchaseOrderId,
+                    valueMap);
 
-        } else if (Common.SYS_WAREHOUSE_SIMPLE.equals(warehouse)) {
-            //简版仓库:warehouseBySimple:Common.SYS_WAREHOUSE_SIMPLE
-            warehouseInCreateService.createWarehouseInBySimple(supplierId,
-                    supplierName,
-                    warehouseId,
-                    cuser,
-                    companyId,
-                    //d78ceba5beef41f5be16f0ceee775399 采购入库:purchaseIn
-                    Common.DICTIONARY_MAP.get("purchaseIn"),
-                    productByInMap);
-        }
-
-        //2. 创建采购签收单
-        Map<String, Object> valueMap = new HashMap<String, Object>();
-        valueMap.put("productByInMap", productByInMap);
-        valueMap.put("jsonMapList", jsonMapList);
-        purchaseSignService.createPurchaseSign(cuser,
-                companyId,
-                purchaseOrderId,
-                valueMap);
-
-        //3. 修改采购订单明细状态-根据(采购订单明细id,采购数量,到货数量)
+            //3. 修改采购订单明细状态-根据(采购订单明细id,采购数量,到货数量)
 
 //获取(采购数量,签收数量,退货数量[已完成])
 //Map<采购订单明细id, 采购明细Map<String, Object>>
@@ -489,95 +491,102 @@ public class PurchaseOrderController {
 //    signCount: 签收数量
 //    retreatCount: 退货数量(已完成)
 //    arriveCount: 到货数量:= 签收数量 - 退货数量(已完成)
-        Map<String, Map<String, Object>> detailMap = purchaseOrderDetailToolService.findPurchaseOrderDetailMap(purchaseOrderId);
-        //修改采购订单明细
-        if (jsonMapList != null && jsonMapList.size() > 0) {
-            for (Map<String, String> jsonObject : jsonMapList) {
-                String orderDetailId = jsonObject.get("orderDetailId");
-                Map<String, Object> detailValue = detailMap.get(orderDetailId);
+            Map<String, Map<String, Object>> detailMap = purchaseOrderDetailToolService.findPurchaseOrderDetailMap(purchaseOrderId);
+            //修改采购订单明细
+            if (jsonMapList != null && jsonMapList.size() > 0) {
+                for (Map<String, String> jsonObject : jsonMapList) {
+                    String orderDetailId = jsonObject.get("orderDetailId");
+                    Map<String, Object> detailValue = detailMap.get(orderDetailId);
 
-                //detailCount: 采购数量
-                BigDecimal detailCount = BigDecimal.valueOf(0D);
-                if (detailValue.get("detailCount") != null) {
-                    detailCount = (BigDecimal)detailValue.get("detailCount");
-                }
+                    //detailCount: 采购数量
+                    BigDecimal detailCount = BigDecimal.valueOf(0D);
+                    if (detailValue.get("detailCount") != null) {
+                        detailCount = (BigDecimal)detailValue.get("detailCount");
+                    }
 
-                //arriveCount 到货数量:= 签收数量 - 退货数量(已完成)
-                BigDecimal arriveCount = BigDecimal.valueOf(0D);
-                if (detailValue.get("detailCount") != null) {
-                    arriveCount = (BigDecimal)detailValue.get("arriveCount");
-                }
+                    //arriveCount 到货数量:= 签收数量 - 退货数量(已完成)
+                    BigDecimal arriveCount = BigDecimal.valueOf(0D);
+                    if (detailValue.get("detailCount") != null) {
+                        arriveCount = (BigDecimal)detailValue.get("arriveCount");
+                    }
 
-                //状态(0:待提交 1:待审核 2:采购中 3:部分签收 4:已完成 -1:已取消)
-                PurchaseOrderDetail detailEdit = new PurchaseOrderDetail();
-                detailEdit.setId(orderDetailId);
-                if (arriveCount.doubleValue() >= detailCount.doubleValue()) {
-                    detailEdit.setState("4");
-                } else {
-                    detailEdit.setState("3");
-                }
-                purchaseOrderDetailService.update(detailEdit);
+                    //状态(0:待提交 1:待审核 2:采购中 3:部分签收 4:已完成 -1:已取消)
+                    PurchaseOrderDetail detailEdit = new PurchaseOrderDetail();
+                    detailEdit.setId(orderDetailId);
+                    if (arriveCount.doubleValue() >= detailCount.doubleValue()) {
+                        detailEdit.setState("4");
+                    } else {
+                        detailEdit.setState("3");
+                    }
+                    purchaseOrderDetailService.update(detailEdit);
 
-                //采购计划明细id planDtlId
-                String planDtlId = jsonObject.get("planDtlId");
-                if (planDtlId != null && planDtlId.trim().length() > 0
-                    && "4".equals(detailEdit.getState())
-                ) {
-                    PurchasePlanDetail planDtlEdit = new PurchasePlanDetail();
-                    planDtlEdit.setId(planDtlId);
-                    //采购计划明细状态(0:待提交 1:待审核 2:待执行 3:执行中 4:已完成 -1:已取消)
-                    planDtlEdit.setState("4");
-                    purchasePlanDetailService.update(planDtlEdit);
+                    //采购计划明细id planDtlId
+                    String planDtlId = jsonObject.get("planDtlId");
+                    if (planDtlId != null && planDtlId.trim().length() > 0
+                            && "4".equals(detailEdit.getState())
+                            ) {
+                        PurchasePlanDetail planDtlEdit = new PurchasePlanDetail();
+                        planDtlEdit.setId(planDtlId);
+                        //采购计划明细状态(0:待提交 1:待审核 2:待执行 3:执行中 4:已完成 -1:已取消)
+                        planDtlEdit.setState("4");
+                        purchasePlanDetailService.update(planDtlEdit);
 
-                    //采购计划id planId
-                    String planId = jsonObject.get("planId");
-                    if (planId != null && planId.trim().length() > 0) {
-                        purchasePlanService.updateState(planId);
+                        //采购计划id planId
+                        String planId = jsonObject.get("planId");
+                        if (planId != null && planId.trim().length() > 0) {
+                            purchasePlanService.updateState(planId);
+                        }
                     }
                 }
             }
-        }
 
-        //修改采购订单状态
-        purchaseOrderService.updateState(purchaseOrderId);
+            //修改采购订单状态
+            purchaseOrderService.updateState(purchaseOrderId);
 
-        //4. 当前采购订单签收单-创建正值的付款单
-        BigDecimal realityTotal = BigDecimal.valueOf(0D);
-        if (jsonMapList != null && jsonMapList.size() > 0) {
-            for (Map<String, String> jsonObject : jsonMapList) {
-                //签收数量
-                BigDecimal count = BigDecimal.valueOf(0D);
-                String countStr = jsonObject.get("count");
-                if (countStr != null && countStr.trim().length() > 0) {
-                    try {
-                        count = new BigDecimal(countStr);
-                    } catch (NumberFormatException e) {
-                        e.printStackTrace();
+            //4. 当前采购订单签收单-创建正值的付款单
+            BigDecimal realityTotal = BigDecimal.valueOf(0D);
+            if (jsonMapList != null && jsonMapList.size() > 0) {
+                for (Map<String, String> jsonObject : jsonMapList) {
+                    //签收数量
+                    BigDecimal count = BigDecimal.valueOf(0D);
+                    String countStr = jsonObject.get("count");
+                    if (countStr != null && countStr.trim().length() > 0) {
+                        try {
+                            count = new BigDecimal(countStr);
+                        } catch (NumberFormatException e) {
+                            e.printStackTrace();
+                        }
                     }
-                }
 
-                //单价
-                BigDecimal price = BigDecimal.valueOf(0D);
-                String priceStr = jsonObject.get("price");
-                if (priceStr != null && priceStr.trim().length() > 0) {
-                    try {
-                        price = new BigDecimal(priceStr);
-                    } catch (NumberFormatException e) {
-                        e.printStackTrace();
+                    //单价
+                    BigDecimal price = BigDecimal.valueOf(0D);
+                    String priceStr = jsonObject.get("price");
+                    if (priceStr != null && priceStr.trim().length() > 0) {
+                        try {
+                            price = new BigDecimal(priceStr);
+                        } catch (NumberFormatException e) {
+                            e.printStackTrace();
+                        }
                     }
-                }
 
-                realityTotal = BigDecimal.valueOf(realityTotal.doubleValue() + (count.doubleValue() * price.doubleValue()));
+                    realityTotal = BigDecimal.valueOf(realityTotal.doubleValue() + (count.doubleValue() * price.doubleValue()));
+                }
             }
-        }
-        //四舍五入到2位小数
-        realityTotal = realityTotal.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+            //四舍五入到2位小数
+            realityTotal = realityTotal.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
 
-        purchaseRetreatService.createPurchasePaymentByPlus(realityTotal,
-                supplierId,
-                companyId,
-                purchaseOrderId,
-                cuser);
+            purchaseRetreatService.createPurchasePaymentByPlus(realityTotal,
+                    supplierId,
+                    companyId,
+                    purchaseOrderId,
+                    cuser);
+        } catch (ApplicationException appExc) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(appExc.getMessage());
+        } catch (Exception exc) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(exc.getMessage());
+        }
 
         Long endTime = System.currentTimeMillis();
         logger.info("################/purchase/purchaseOrder/signPurchaseOrder 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");

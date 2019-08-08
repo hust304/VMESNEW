@@ -1,6 +1,7 @@
 package com.xy.vmes.deecoop.equipment.controller;
 
 import com.xy.vmes.entity.*;
+import com.xy.vmes.exception.ApplicationException;
 import com.xy.vmes.service.*;
 
 import com.yvan.HttpUtils;
@@ -340,234 +341,243 @@ public class EquipmentMaintainTaskDetailController {
                 return model;
             }
         }
-
         ///////////////////////////////////////////////////////////////////////////////
-        //保养任务明细追加货品(虚拟库中追加货品)-货品从虚拟库中(出库) addJsonMapList
-        if (addJsonMapList.size() > 0) {
-            String msgStr = new String();
-            Map<String, Map<String, Object>> productByOutMap = maintainTaskDetailService.findProductMapByOut(addJsonMapList);
 
-            //虚拟库:warehouseBySimple:Common.SYS_WAREHOUSE_SIMPLE
-            warehouseOutCreateService.createWarehouseOutByVirtual(deptId,
-                    deptName,
-                    Common.DICTIONARY_MAP.get("deptRepair"),
-                    cuser,
-                    companyId,
-                    //8bcbc84893cf46daabbd2522bee482ad 保养领料出库:maintainReceiveOut
-                    Common.DICTIONARY_MAP.get("maintainReceiveOut"),
-                    productByOutMap);
-            if (msgStr.trim().length() > 0) {
-                model.putCode(Integer.valueOf(1));
-                model.putMsg(msgStr);
-                return model;
-            }
+        try {
+            //保养任务明细追加货品(虚拟库中追加货品)-货品从虚拟库中(出库) addJsonMapList
+            if (addJsonMapList.size() > 0) {
+                String msgStr = new String();
+                Map<String, Map<String, Object>> productByOutMap = maintainTaskDetailService.findProductMapByOut(addJsonMapList);
 
-            //添加-vmes_equipment_maintainTask_detail:设备保养任务明细表
-            List<EquipmentMaintainTaskDetail> taskDetailList = maintainTaskDetailService.jsonMapList2DetailList(addJsonMapList, null);
-            maintainTaskDetailService.addMaintainTaskDetail(cuser,
-                    taskDetailList,
-                    productByOutMap);
-        }
-
-        ///////////////////////////////////////////////////////////////////////////////
-        //修改保养任务明细-生成入库单 editJsonMapList
-        Map<String, List<Map<String, String>>> newEditJsonMap = maintainTaskDetailService.findNewEditJsonMap(editJsonMapList);
-        //notEqualZeroList: 退回数量(不等于零)List
-        List<Map<String, String>> notEqualZeroList = newEditJsonMap.get("notEqualZeroList");
-        if (notEqualZeroList != null && notEqualZeroList.size() > 0) {
-            Map<String, Map<String, Object>> productByInMap = maintainTaskDetailService.findProductMapByIn(notEqualZeroList);
-
-            //retreatType 退库方式(1:生成退库单 2:退回虚拟库)
-            if ("1".equals(retreatType) && Common.SYS_WAREHOUSE_COMPLEX.equals(warehouse)) {
-                //退库方式:1:生成退库单: (生成复杂版入库单)
-                //复杂版仓库:warehouseByComplex:Common.SYS_WAREHOUSE_COMPLEX
-                warehouseInCreateService.createWarehouseInByComplex(deptId,
+                //虚拟库:warehouseBySimple:Common.SYS_WAREHOUSE_SIMPLE
+                warehouseOutCreateService.createWarehouseOutByVirtual(deptId,
                         deptName,
-                        //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
-                        Common.DICTIONARY_MAP.get("warehouseEntity"),
-                        cuser,
-                        companyId,
-                        //d9c9eb85db0d4c8faa09ddc2b8173859 保养领料退回入库:maintainRetreatIn
-                        Common.DICTIONARY_MAP.get("maintainRetreatIn"),
-                        productByInMap);
-
-            } else if ("1".equals(retreatType) && Common.SYS_WAREHOUSE_SIMPLE.equals(warehouse)) {
-                //退库方式:1:生成退库单: (生成简版入库单)
-                //简版仓库:warehouseBySimple:Common.SYS_WAREHOUSE_SIMPLE
-                warehouseInCreateService.createWarehouseInBySimple(deptId,
-                        deptName,
-                        //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
-                        Common.DICTIONARY_MAP.get("warehouseEntity"),
-                        cuser,
-                        companyId,
-                        //d9c9eb85db0d4c8faa09ddc2b8173859 保养领料退回入库:maintainRetreatIn
-                        Common.DICTIONARY_MAP.get("maintainRetreatIn"),
-                        productByInMap);
-
-            } else if ("2".equals(retreatType)) {
-                //退库方式:2:退回虚拟库-(生成虚拟库入库单)
-                warehouseInCreateService.createWarehouseInByVirtual(deptId,
-                        deptName,
-                        //维保:deptRepair:a42f32ef9d39476e932e1e30b77fefbb Common.DICTIONARY_MAP
                         Common.DICTIONARY_MAP.get("deptRepair"),
-                        "维保",
                         cuser,
                         companyId,
-                        //d9c9eb85db0d4c8faa09ddc2b8173859 保养领料退回入库:maintainRetreatIn
-                        Common.DICTIONARY_MAP.get("maintainRetreatIn"),
-                        productByInMap);
+                        //8bcbc84893cf46daabbd2522bee482ad 保养领料出库:maintainReceiveOut
+                        Common.DICTIONARY_MAP.get("maintainReceiveOut"),
+                        productByOutMap);
+                if (msgStr.trim().length() > 0) {
+                    model.putCode(Integer.valueOf(1));
+                    model.putMsg(msgStr);
+                    return model;
+                }
+
+                //添加-vmes_equipment_maintainTask_detail:设备保养任务明细表
+                List<EquipmentMaintainTaskDetail> taskDetailList = maintainTaskDetailService.jsonMapList2DetailList(addJsonMapList, null);
+                maintainTaskDetailService.addMaintainTaskDetail(cuser,
+                        taskDetailList,
+                        productByOutMap);
             }
 
-            //(保养任务id)-保养任务明细(领料货品明细)
-            for (Map<String, String> objectMap : notEqualZeroList) {
-                EquipmentMaintainTaskDetail detailEdit = new EquipmentMaintainTaskDetail();
-
-                String id = objectMap.get("id");
-                detailEdit.setId(id);
-
-                //实际使用数量 applyCount
-                BigDecimal applyCount = BigDecimal.valueOf(0D);
-                if (objectMap.get("applyCount") != null) {
-                    try {
-                        applyCount = new BigDecimal(objectMap.get("applyCount").trim());
-                        //四舍五入到2位小数
-                        applyCount = applyCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-                    } catch (NumberFormatException e) {
-                        e.printStackTrace();
-                    }
-                }
-                detailEdit.setApplyCount(applyCount);
-
-                //退回数量 retreatCount := 领取数量 - 实际使用数量
-                BigDecimal retreatCount = BigDecimal.valueOf(0D);
-                if (objectMap.get("retreatCount") != null) {
-                    try {
-                        retreatCount = new BigDecimal(objectMap.get("retreatCount").trim());
-                        //四舍五入到2位小数
-                        retreatCount = retreatCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-                    } catch (NumberFormatException e) {
-                        e.printStackTrace();
-                    }
-                }
-                detailEdit.setRetreatCount(retreatCount);
-
-                String productId = objectMap.get("productId");
-                Map<String, Object> producValueMap = productByInMap.get(productId);
-                //inDtlId:   入库明细id
-                String inDtlId = (String)producValueMap.get("inDtlId");
-                detailEdit.setInDtlId(inDtlId);
-                //inCount:   入库数量
-                BigDecimal inCount = (BigDecimal)producValueMap.get("inCount");
-                detailEdit.setInCount(inCount);
+            ///////////////////////////////////////////////////////////////////////////////
+            //修改保养任务明细-生成入库单 editJsonMapList
+            Map<String, List<Map<String, String>>> newEditJsonMap = maintainTaskDetailService.findNewEditJsonMap(editJsonMapList);
+            //notEqualZeroList: 退回数量(不等于零)List
+            List<Map<String, String>> notEqualZeroList = newEditJsonMap.get("notEqualZeroList");
+            if (notEqualZeroList != null && notEqualZeroList.size() > 0) {
+                Map<String, Map<String, Object>> productByInMap = maintainTaskDetailService.findProductMapByIn(notEqualZeroList);
 
                 //retreatType 退库方式(1:生成退库单 2:退回虚拟库)
-                detailEdit.setRetreatType(retreatType);
+                if ("1".equals(retreatType) && Common.SYS_WAREHOUSE_COMPLEX.equals(warehouse)) {
+                    //退库方式:1:生成退库单: (生成复杂版入库单)
+                    //复杂版仓库:warehouseByComplex:Common.SYS_WAREHOUSE_COMPLEX
+                    warehouseInCreateService.createWarehouseInByComplex(deptId,
+                            deptName,
+                            //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
+                            Common.DICTIONARY_MAP.get("warehouseEntity"),
+                            cuser,
+                            companyId,
+                            //d9c9eb85db0d4c8faa09ddc2b8173859 保养领料退回入库:maintainRetreatIn
+                            Common.DICTIONARY_MAP.get("maintainRetreatIn"),
+                            productByInMap);
 
-                maintainTaskDetailService.update(detailEdit);
-            }
-        }
+                } else if ("1".equals(retreatType) && Common.SYS_WAREHOUSE_SIMPLE.equals(warehouse)) {
+                    //退库方式:1:生成退库单: (生成简版入库单)
+                    //简版仓库:warehouseBySimple:Common.SYS_WAREHOUSE_SIMPLE
+                    warehouseInCreateService.createWarehouseInBySimple(deptId,
+                            deptName,
+                            //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
+                            Common.DICTIONARY_MAP.get("warehouseEntity"),
+                            cuser,
+                            companyId,
+                            //d9c9eb85db0d4c8faa09ddc2b8173859 保养领料退回入库:maintainRetreatIn
+                            Common.DICTIONARY_MAP.get("maintainRetreatIn"),
+                            productByInMap);
 
-        //equalZeroList:    退回数量(等于零)List
-        List<Map<String, String>> equalZeroList = newEditJsonMap.get("equalZeroList");
-        if (equalZeroList != null && equalZeroList.size() > 0) {
-            for (Map<String, String> objectMap : equalZeroList) {
-                EquipmentMaintainTaskDetail detailEdit = new EquipmentMaintainTaskDetail();
-
-                String id = objectMap.get("id");
-                detailEdit.setId(id);
-
-                //实际使用数量 applyCount
-                BigDecimal applyCount = BigDecimal.valueOf(0D);
-                if (objectMap.get("applyCount") != null) {
-                    try {
-                        applyCount = new BigDecimal(objectMap.get("applyCount").trim());
-                        //四舍五入到2位小数
-                        applyCount = applyCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-                    } catch (NumberFormatException e) {
-                        e.printStackTrace();
-                    }
+                } else if ("2".equals(retreatType)) {
+                    //退库方式:2:退回虚拟库-(生成虚拟库入库单)
+                    warehouseInCreateService.createWarehouseInByVirtual(deptId,
+                            deptName,
+                            //维保:deptRepair:a42f32ef9d39476e932e1e30b77fefbb Common.DICTIONARY_MAP
+                            Common.DICTIONARY_MAP.get("deptRepair"),
+                            "维保",
+                            cuser,
+                            companyId,
+                            //d9c9eb85db0d4c8faa09ddc2b8173859 保养领料退回入库:maintainRetreatIn
+                            Common.DICTIONARY_MAP.get("maintainRetreatIn"),
+                            productByInMap);
                 }
-                detailEdit.setApplyCount(applyCount);
 
-                //退回数量 retreatCount := 领取数量 - 实际使用数量
-                BigDecimal retreatCount = BigDecimal.valueOf(0D);
-                if (objectMap.get("retreatCount") != null) {
-                    try {
-                        retreatCount = new BigDecimal(objectMap.get("retreatCount").trim());
-                        //四舍五入到2位小数
-                        retreatCount = retreatCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-                    } catch (NumberFormatException e) {
-                        e.printStackTrace();
+                //(保养任务id)-保养任务明细(领料货品明细)
+                for (Map<String, String> objectMap : notEqualZeroList) {
+                    EquipmentMaintainTaskDetail detailEdit = new EquipmentMaintainTaskDetail();
+
+                    String id = objectMap.get("id");
+                    detailEdit.setId(id);
+
+                    //实际使用数量 applyCount
+                    BigDecimal applyCount = BigDecimal.valueOf(0D);
+                    if (objectMap.get("applyCount") != null) {
+                        try {
+                            applyCount = new BigDecimal(objectMap.get("applyCount").trim());
+                            //四舍五入到2位小数
+                            applyCount = applyCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                        } catch (NumberFormatException e) {
+                            e.printStackTrace();
+                        }
                     }
+                    detailEdit.setApplyCount(applyCount);
+
+                    //退回数量 retreatCount := 领取数量 - 实际使用数量
+                    BigDecimal retreatCount = BigDecimal.valueOf(0D);
+                    if (objectMap.get("retreatCount") != null) {
+                        try {
+                            retreatCount = new BigDecimal(objectMap.get("retreatCount").trim());
+                            //四舍五入到2位小数
+                            retreatCount = retreatCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                        } catch (NumberFormatException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    detailEdit.setRetreatCount(retreatCount);
+
+                    String productId = objectMap.get("productId");
+                    Map<String, Object> producValueMap = productByInMap.get(productId);
+                    //inDtlId:   入库明细id
+                    String inDtlId = (String)producValueMap.get("inDtlId");
+                    detailEdit.setInDtlId(inDtlId);
+                    //inCount:   入库数量
+                    BigDecimal inCount = (BigDecimal)producValueMap.get("inCount");
+                    detailEdit.setInCount(inCount);
+
+                    //retreatType 退库方式(1:生成退库单 2:退回虚拟库)
+                    detailEdit.setRetreatType(retreatType);
+
+                    maintainTaskDetailService.update(detailEdit);
                 }
-                detailEdit.setRetreatCount(retreatCount);
-
-                maintainTaskDetailService.update(detailEdit);
             }
-        }
 
-        ///////////////////////////////////////////////////////////////////////////////
-        //修改保养任务单状态
-        EquipmentMaintainTask maintainTaskEidt = new EquipmentMaintainTask();
-        maintainTaskEidt.setId(maintainTaskId);
-        //报工结果:任务执行结果(0:未解决 1:已解决)
-        maintainTaskEidt.setTaskResult(taskResult);
-        if (maintainTaskMap != null && maintainTaskMap.get("remark") != null) {
-            maintainTaskEidt.setRemark(maintainTaskMap.get("remark"));
-        }
-        //taskState 任务状态(0:未领取任务 1:已领取任务 2:已领料 3:已报工 4:已退单 )
-        maintainTaskEidt.setTaskState("3");
-        //endTime 任务结束时间
-        maintainTaskEidt.setEndTime(new Date());
-        maintainTaskService.update(maintainTaskEidt);
+            //equalZeroList:    退回数量(等于零)List
+            List<Map<String, String>> equalZeroList = newEditJsonMap.get("equalZeroList");
+            if (equalZeroList != null && equalZeroList.size() > 0) {
+                for (Map<String, String> objectMap : equalZeroList) {
+                    EquipmentMaintainTaskDetail detailEdit = new EquipmentMaintainTaskDetail();
+
+                    String id = objectMap.get("id");
+                    detailEdit.setId(id);
+
+                    //实际使用数量 applyCount
+                    BigDecimal applyCount = BigDecimal.valueOf(0D);
+                    if (objectMap.get("applyCount") != null) {
+                        try {
+                            applyCount = new BigDecimal(objectMap.get("applyCount").trim());
+                            //四舍五入到2位小数
+                            applyCount = applyCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                        } catch (NumberFormatException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    detailEdit.setApplyCount(applyCount);
+
+                    //退回数量 retreatCount := 领取数量 - 实际使用数量
+                    BigDecimal retreatCount = BigDecimal.valueOf(0D);
+                    if (objectMap.get("retreatCount") != null) {
+                        try {
+                            retreatCount = new BigDecimal(objectMap.get("retreatCount").trim());
+                            //四舍五入到2位小数
+                            retreatCount = retreatCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                        } catch (NumberFormatException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    detailEdit.setRetreatCount(retreatCount);
+
+                    maintainTaskDetailService.update(detailEdit);
+                }
+            }
+
+            ///////////////////////////////////////////////////////////////////////////////
+            //修改保养任务单状态
+            EquipmentMaintainTask maintainTaskEidt = new EquipmentMaintainTask();
+            maintainTaskEidt.setId(maintainTaskId);
+            //报工结果:任务执行结果(0:未解决 1:已解决)
+            maintainTaskEidt.setTaskResult(taskResult);
+            if (maintainTaskMap != null && maintainTaskMap.get("remark") != null) {
+                maintainTaskEidt.setRemark(maintainTaskMap.get("remark"));
+            }
+            //taskState 任务状态(0:未领取任务 1:已领取任务 2:已领料 3:已报工 4:已退单 )
+            maintainTaskEidt.setTaskState("3");
+            //endTime 任务结束时间
+            maintainTaskEidt.setEndTime(new Date());
+            maintainTaskService.update(maintainTaskEidt);
 
 
-        //当前保养单对象
-        //设定:当前保养单-下一个保养单(保养单有效状态:1:有效)
-        EquipmentMaintainTask maintainTask = maintainTaskService.findMaintainTaskById(maintainTaskId);
-        EquipmentMaintain maintain = maintainService.findMaintainById(maintainTask.getMaintainId());
-        //planId:保养计划ID
-        String planId = maintain.getPlanId();
-        EquipmentMaintainPlan maintainPlan = maintainPlanService.findMaintainPlanById(planId);
+            //当前保养单对象
+            //设定:当前保养单-下一个保养单(保养单有效状态:1:有效)
+            EquipmentMaintainTask maintainTask = maintainTaskService.findMaintainTaskById(maintainTaskId);
+            EquipmentMaintain maintain = maintainService.findMaintainById(maintainTask.getMaintainId());
+            //planId:保养计划ID
+            String planId = maintain.getPlanId();
+            EquipmentMaintainPlan maintainPlan = maintainPlanService.findMaintainPlanById(planId);
 
-        //modeId 保养方式(自定义 按周期 数据字典-vmes_dictionary.id)
-        //maintainModeCustom ee66976e1b3d453bae8839e6e9458b2f 自定义
-        //maintainModePeriod 9a05a30aa81e4637b498703b14cde8b1 按周期
-        String modeId = maintainPlan.getModeId();
-        if (Common.DICTIONARY_MAP.get("maintainModePeriod").equals(modeId)) {
-            //获取下一个保养单对象
-            EquipmentMaintain nextMaintain = maintainService.findNextMaintainByPeriod(maintain);
-            if (nextMaintain != null) {
+            //modeId 保养方式(自定义 按周期 数据字典-vmes_dictionary.id)
+            //maintainModeCustom ee66976e1b3d453bae8839e6e9458b2f 自定义
+            //maintainModePeriod 9a05a30aa81e4637b498703b14cde8b1 按周期
+            String modeId = maintainPlan.getModeId();
+            if (Common.DICTIONARY_MAP.get("maintainModePeriod").equals(modeId)) {
+                //获取下一个保养单对象
+                EquipmentMaintain nextMaintain = maintainService.findNextMaintainByPeriod(maintain);
+                if (nextMaintain != null) {
+                    //isValidState 保养单有效状态(1:有效 0:无效 is null 无效)
+                    nextMaintain.setIsValidState("1");
+                    maintainService.update(nextMaintain);
+                }
+            }
+
+            //修改设备保养单状态
+            EquipmentMaintain maintainEdit = new EquipmentMaintain();
+            //taskResult:报工结果:任务执行结果(0:未解决 1:已解决)
+            if ("1".equals(taskResult)) {
+                //报工结果:任务执行结果:1:已解决
+                maintainEdit.setId(maintainTask.getMaintainId());
+                //equipmentState 设备状态(1:待保养 2:保养中 3:已完成)
+                maintainEdit.setEquipmentState("3");
+                //完成维修时间 endTime
+                maintainEdit.setEndTime(new Date());
+                //isdisable 是否启用(0:已禁用 1:启用)
+                //maintainEdit.setIsdisable("0");
+
                 //isValidState 保养单有效状态(1:有效 0:无效 is null 无效)
-                nextMaintain.setIsValidState("1");
-                maintainService.update(nextMaintain);
+                maintainEdit.setIsValidState("0");
+                maintainService.update(maintainEdit);
+
+                //查询下一个保养单
+            } else if ("0".equals(taskResult)) {
+                //报工结果:任务执行结果:0:未解决
+                maintainEdit.setId(maintainTask.getMaintainId());
+                //equipmentState 设备状态(1:待保养 2:保养中 3:已完成)
+                maintainEdit.setEquipmentState("1");
+                maintainService.update(maintainEdit);
             }
-        }
 
-        //修改设备保养单状态
-        EquipmentMaintain maintainEdit = new EquipmentMaintain();
-        //taskResult:报工结果:任务执行结果(0:未解决 1:已解决)
-        if ("1".equals(taskResult)) {
-            //报工结果:任务执行结果:1:已解决
-            maintainEdit.setId(maintainTask.getMaintainId());
-            //equipmentState 设备状态(1:待保养 2:保养中 3:已完成)
-            maintainEdit.setEquipmentState("3");
-            //完成维修时间 endTime
-            maintainEdit.setEndTime(new Date());
-            //isdisable 是否启用(0:已禁用 1:启用)
-            //maintainEdit.setIsdisable("0");
-
-            //isValidState 保养单有效状态(1:有效 0:无效 is null 无效)
-            maintainEdit.setIsValidState("0");
-            maintainService.update(maintainEdit);
-
-            //查询下一个保养单
-        } else if ("0".equals(taskResult)) {
-            //报工结果:任务执行结果:0:未解决
-            maintainEdit.setId(maintainTask.getMaintainId());
-            //equipmentState 设备状态(1:待保养 2:保养中 3:已完成)
-            maintainEdit.setEquipmentState("1");
-            maintainService.update(maintainEdit);
+        } catch (ApplicationException appExc) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(appExc.getMessage());
+        } catch (Exception exc) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(exc.getMessage());
         }
 
         Long endTime = System.currentTimeMillis();

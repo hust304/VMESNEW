@@ -58,7 +58,7 @@ public class WarehouseInCreateServiceImp implements WarehouseInCreateService {
                                            String cuser,
                                            String companyId,
                                            String inType,
-                                           Map<String, Map<String, Object>> productByInMap) throws Exception {
+                                           Map<String, Map<String, Object>> productByInMap) throws ApplicationException {
         StringBuffer msgStr = new StringBuffer();
         if (deptId == null || deptId.trim().length() == 0) {
             msgStr.append("部门id为空或空字符串" + Common.SYS_ENDLINE_DEFAULT);
@@ -73,25 +73,29 @@ public class WarehouseInCreateServiceImp implements WarehouseInCreateService {
             throw new ApplicationException(msgStr.toString());
         }
 
-        //创建入库单
-        WarehouseIn warehouseIn = warehouseInService.createWarehouseIn(deptId,
-                deptName,
-                cuser,
-                companyId,
-                inType);
-        warehouseIn.setWarehouseId(warehouseId);
-        warehouseInService.save(warehouseIn);
+        try {
+            //创建入库单
+            WarehouseIn warehouseIn = warehouseInService.createWarehouseIn(deptId,
+                    deptName,
+                    cuser,
+                    companyId,
+                    inType);
+            warehouseIn.setWarehouseId(warehouseId);
+            warehouseInService.save(warehouseIn);
 
-        //创建入库单明细
-        List<WarehouseInDetail> inDtlList = this.productMap2InDetailList(productByInMap, null);
-        warehouseInDetailService.addWarehouseInDetail(warehouseIn, inDtlList);
+            //创建入库单明细
+            List<WarehouseInDetail> inDtlList = this.productMap2InDetailList(productByInMap, null);
+            warehouseInDetailService.addWarehouseInDetail(warehouseIn, inDtlList);
 
-        for (WarehouseInDetail detail : inDtlList) {
-            String productId = detail.getProductId();
-            String inDtlId = detail.getId();
+            for (WarehouseInDetail detail : inDtlList) {
+                String productId = detail.getProductId();
+                String inDtlId = detail.getId();
 
-            Map<String, Object> productMap = productByInMap.get(productId);
-            productMap.put("inDtlId", inDtlId);
+                Map<String, Object> productMap = productByInMap.get(productId);
+                productMap.put("inDtlId", inDtlId);
+            }
+        } catch (Exception e) {
+            throw new ApplicationException(e.getMessage());
         }
     }
 
@@ -118,7 +122,7 @@ public class WarehouseInCreateServiceImp implements WarehouseInCreateService {
                                           String cuser,
                                           String companyId,
                                           String inType,
-                                          Map<String, Map<String, Object>> productByInMap) throws Exception {
+                                          Map<String, Map<String, Object>> productByInMap) throws ApplicationException {
         StringBuffer msgStr = new StringBuffer();
         if (deptId == null || deptId.trim().length() == 0) {
             msgStr.append("部门id为空或空字符串" + Common.SYS_ENDLINE_DEFAULT);
@@ -133,29 +137,34 @@ public class WarehouseInCreateServiceImp implements WarehouseInCreateService {
             throw new ApplicationException(msgStr.toString());
         }
 
-        //创建入库单
-        WarehouseIn warehouseIn = warehouseInService.createWarehouseIn(deptId,
-                deptName,
-                cuser,
-                companyId,
-                inType);
+        try {
+            //创建入库单
+            WarehouseIn warehouseIn = warehouseInService.createWarehouseIn(deptId,
+                    deptName,
+                    cuser,
+                    companyId,
+                    inType);
 
-        //isSimple 是否简版仓库 Y:是简版 N:非简版 is null:非简版
-        warehouseIn.setIsSimple("Y");
-        warehouseIn.setWarehouseId(warehouseId);
-        warehouseInService.save(warehouseIn);
+            //isSimple 是否简版仓库 Y:是简版 N:非简版 is null:非简版
+            warehouseIn.setIsSimple("Y");
+            warehouseIn.setWarehouseId(warehouseId);
+            warehouseInService.save(warehouseIn);
 
-        //创建入库单明细
-        List<WarehouseInDetail> inDtlList = this.productMap2InDetailList(productByInMap, null);
-        warehouseInDetailService.addWarehouseInDetailBySimple(warehouseIn, inDtlList);
+            //创建入库单明细
+            List<WarehouseInDetail> inDtlList = this.productMap2InDetailList(productByInMap, null);
+            warehouseInDetailService.addWarehouseInDetailBySimple(warehouseIn, inDtlList);
 
-        for (WarehouseInDetail detail : inDtlList) {
-            String productId = detail.getProductId();
-            String inDtlId = detail.getId();
+            for (WarehouseInDetail detail : inDtlList) {
+                String productId = detail.getProductId();
+                String inDtlId = detail.getId();
 
-            Map<String, Object> productMap = productByInMap.get(productId);
-            productMap.put("inDtlId", inDtlId);
+                Map<String, Object> productMap = productByInMap.get(productId);
+                productMap.put("inDtlId", inDtlId);
+            }
+        } catch (Exception e) {
+            throw new ApplicationException(e.getMessage());
         }
+
     }
 
     /**
@@ -183,7 +192,7 @@ public class WarehouseInCreateServiceImp implements WarehouseInCreateService {
                                            String cuser,
                                            String companyId,
                                            String inType,
-                                           Map<String, Map<String, Object>> productByInMap) throws Exception {
+                                           Map<String, Map<String, Object>> productByInMap) throws ApplicationException {
         StringBuffer msgStr = new StringBuffer();
         if (deptId == null || deptId.trim().length() == 0) {
             msgStr.append("部门id为空或空字符串" + Common.SYS_ENDLINE_DEFAULT);
@@ -201,37 +210,42 @@ public class WarehouseInCreateServiceImp implements WarehouseInCreateService {
             throw new ApplicationException(msgStr.toString());
         }
 
-        //虚拟库位-(虚拟库-部门名称-部门货位名称)
-        Warehouse warehouse = warehouseToolService.findWarehouseByVirtual(companyId,
-                deptId,
-                deptName,
-                deptPlaceKey,
-                deptPlaceName);
+        try {
+            //虚拟库位-(虚拟库-部门名称-部门货位名称)
+            Warehouse warehouse = warehouseToolService.findWarehouseByVirtual(companyId,
+                    deptId,
+                    deptName,
+                    deptPlaceKey,
+                    deptPlaceName);
 
-        //创建入库单
-        WarehouseIn warehouseIn = warehouseInService.createWarehouseIn(deptId,
-                deptName,
-                cuser,
-                companyId,
-                inType);
+            //创建入库单
+            WarehouseIn warehouseIn = warehouseInService.createWarehouseIn(deptId,
+                    deptName,
+                    cuser,
+                    companyId,
+                    inType);
 
-        //虚拟库:warehouseVirtual:56f5e83dcb9911e884ad00163e105f05
-        warehouseIn.setWarehouseId(Common.DICTIONARY_MAP.get("warehouseVirtual"));
-        warehouseInService.save(warehouseIn);
+            //虚拟库:warehouseVirtual:56f5e83dcb9911e884ad00163e105f05
+            warehouseIn.setWarehouseId(Common.DICTIONARY_MAP.get("warehouseVirtual"));
+            warehouseInService.save(warehouseIn);
 
-        //创建入库单明细
-        List<WarehouseInDetail> inDtlList = this.productMap2InDetailList(productByInMap, null, warehouse.getId());
-        warehouseInDetailService.addWarehouseInDetailBySimple(warehouseIn, inDtlList);
-        //入库单明细-入库执行
-        warehouseInDetailService.executeWarehouseInDetailBySimple(warehouseIn, inDtlList);
+            //创建入库单明细
+            List<WarehouseInDetail> inDtlList = this.productMap2InDetailList(productByInMap, null, warehouse.getId());
+            warehouseInDetailService.addWarehouseInDetailBySimple(warehouseIn, inDtlList);
+            //入库单明细-入库执行
+            warehouseInDetailService.executeWarehouseInDetailBySimple(warehouseIn, inDtlList);
 
-        for (WarehouseInDetail detail : inDtlList) {
-            String productId = detail.getProductId();
-            String inDtlId = detail.getId();
+            for (WarehouseInDetail detail : inDtlList) {
+                String productId = detail.getProductId();
+                String inDtlId = detail.getId();
 
-            Map<String, Object> productMap = productByInMap.get(productId);
-            productMap.put("inDtlId", inDtlId);
+                Map<String, Object> productMap = productByInMap.get(productId);
+                productMap.put("inDtlId", inDtlId);
+            }
+        } catch (Exception e) {
+            throw new ApplicationException(e.getMessage());
         }
+
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

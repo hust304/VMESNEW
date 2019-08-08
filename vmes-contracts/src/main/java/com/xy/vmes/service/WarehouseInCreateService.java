@@ -1,5 +1,7 @@
 package com.xy.vmes.service;
 
+import com.xy.vmes.exception.ApplicationException;
+
 import java.util.Map;
 
 /**
@@ -34,7 +36,7 @@ public interface WarehouseInCreateService {
                                     String cuser,
                                     String companyId,
                                     String inType,
-                                    Map<String, Map<String, Object>> productByInMap) throws Exception;
+                                    Map<String, Map<String, Object>> productByInMap) throws ApplicationException;
 
     /**
      * 创建入库单(简版仓库)
@@ -59,7 +61,7 @@ public interface WarehouseInCreateService {
                                    String cuser,
                                    String companyId,
                                    String inType,
-                                   Map<String, Map<String, Object>> productByInMap) throws Exception;
+                                   Map<String, Map<String, Object>> productByInMap) throws ApplicationException;
 
     /**
      * 创建入库单(虚拟库)-与简版入库单类似
@@ -86,5 +88,5 @@ public interface WarehouseInCreateService {
                                     String cuser,
                                     String companyId,
                                     String inType,
-                                    Map<String, Map<String, Object>> productByInMap) throws Exception;
+                                    Map<String, Map<String, Object>> productByInMap) throws ApplicationException;
 }
