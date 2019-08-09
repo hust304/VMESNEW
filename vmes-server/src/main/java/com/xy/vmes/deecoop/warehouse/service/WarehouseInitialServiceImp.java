@@ -674,30 +674,6 @@ public class WarehouseInitialServiceImp implements WarehouseInitialService {
         //4. 遍历Map<String, WarehouseProduct> 对业务表添加
         warehouseProductExcelService.addWarehouseProduct(warehouseProductMap, companyId, userId);
 
-        //(企业id)查询 vmes_warehouse_initial
-        WarehouseInitial warehouseInitial = null;
-        try {
-            PageData findMap = new PageData();
-            findMap.put("companyId", companyId);
-            findMap.put("mapSize", Integer.valueOf(findMap.size()));
-            warehouseInitial = this.findWarehouseInitial(findMap);
-
-            if (warehouseInitial == null) {
-                WarehouseInitial addObject = new WarehouseInitial();
-                addObject.setCuser(userId);
-                addObject.setCompanyId(companyId);
-                this.save(addObject);
-            } else if (warehouseInitial != null) {
-                //是否禁用按钮(0:已禁用 1:启用) (0和1字符串,初始化按钮,导入按钮,禁用初始化按钮)
-                //0和1字符串 第一位:初始化按钮 第二位:导入按钮 第三位:禁用初始化按钮
-                warehouseInitial.setIsDisableButton("101");
-                this.update(warehouseInitial);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
         return model;
     }
 }

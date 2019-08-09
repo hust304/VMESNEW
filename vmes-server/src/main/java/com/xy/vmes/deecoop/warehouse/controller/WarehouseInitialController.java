@@ -14,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * 说明：vmes_warehouse_initial:仓库初始化设定Controller
  * @author 陈刚 自动生成
@@ -279,7 +281,38 @@ public class WarehouseInitialController {
     public ResultModel importExcelWarehouseInitial(@RequestParam(value="excelFile") MultipartFile file) throws Exception  {
         logger.info("################warehouseInitial/importExcelWarehouseInitial 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        ResultModel model = warehouseInitialService.importExcelWarehouseInitial(file);
+        ResultModel model = new ResultModel();
+
+        HttpServletRequest httpRequest = HttpUtils.currentRequest();
+        String companyId = (String)httpRequest.getParameter("companyId");
+        String userId = (String)httpRequest.getParameter("userId");
+
+        //(企业id)查询 vmes_warehouse_initial
+        WarehouseInitial warehouseInitial = null;
+        try {
+            model = warehouseInitialService.importExcelWarehouseInitial(file);
+
+            PageData findMap = new PageData();
+            findMap.put("companyId", companyId);
+            findMap.put("mapSize", Integer.valueOf(findMap.size()));
+            warehouseInitial = warehouseInitialService.findWarehouseInitial(findMap);
+
+            if (warehouseInitial == null) {
+                WarehouseInitial addObject = new WarehouseInitial();
+                addObject.setCuser(userId);
+                addObject.setCompanyId(companyId);
+                warehouseInitialService.save(addObject);
+            } else if (warehouseInitial != null) {
+                //是否禁用按钮(0:已禁用 1:启用) (0和1字符串,初始化按钮,导入按钮,禁用初始化按钮)
+                //0和1字符串 第一位:初始化按钮 第二位:导入按钮 第三位:禁用初始化按钮
+                warehouseInitial.setIsDisableButton("101");
+                warehouseInitialService.update(warehouseInitial);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         Long endTime = System.currentTimeMillis();
         logger.info("################warehouseInitial/importExcelWarehouseInitial 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
