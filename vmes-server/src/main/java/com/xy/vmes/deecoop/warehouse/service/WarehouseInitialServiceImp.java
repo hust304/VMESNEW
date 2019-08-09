@@ -65,6 +65,8 @@ public class WarehouseInitialServiceImp implements WarehouseInitialService {
     private WarehouseProductService warehouseProductService;
     @Autowired
     private WarehouseProductExcelService warehouseProductExcelService;
+    @Autowired
+    private WarehouseToWarehouseProductService warehouseToWarehouseProductService;
 
     @Autowired
     private ProductService productService;
@@ -573,6 +575,36 @@ public class WarehouseInitialServiceImp implements WarehouseInitialService {
         pd.put("queryStr", queryStr);
         pg.setSize(100000);
         List<Map> dataList = this.getDataListPage(pd, pg);
+
+        //查询数据转换成Excel导出数据
+        List<LinkedHashMap<String, String>> dataMapList = ColumnUtil.modifyDataList(columnList, dataList);
+        HttpServletResponse response = HttpUtils.currentResponse();
+
+        //查询数据-Excel文件导出
+        String fileName = pd.getString("fileName");
+        if (fileName == null || fileName.trim().length() == 0) {
+            fileName = "ExcelWarehouseInitial";
+        }
+
+        //导出文件名-中文转码
+        fileName = new String(fileName.getBytes("utf-8"),"ISO-8859-1");
+        ExcelUtil.excelExportByDataList(response, fileName, dataMapList);
+    }
+
+    public void exportExcelTemplateWarehouseInitial(PageData pd) throws Exception {
+        List<Column> columnList = columnService.findColumnList("warehouseInitial");
+        if (columnList == null || columnList.size() == 0) {
+            throw new RestException("1","数据库没有生成TabCol，请联系管理员！");
+        }
+
+        //获取指定栏位字符串-重新调整List<Column>
+        String fieldCode = pd.getString("fieldCode");
+        if (fieldCode != null && fieldCode.trim().length() > 0) {
+            columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
+        }
+
+        //pd.put("queryStr", queryStr);
+        List<Map> dataList = warehouseToWarehouseProductService.findMapListWarehouseToWarehouseProduct(pd);
 
         //查询数据转换成Excel导出数据
         List<LinkedHashMap<String, String>> dataMapList = ColumnUtil.modifyDataList(columnList, dataList);

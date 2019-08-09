@@ -274,6 +274,18 @@ public class WarehouseInitialController {
         logger.info("################warehouseInitial/exportExcelWarehouseInitial 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
     }
 
+    @PostMapping("/warehouse/warehouseInitial/exportExcelTemplateWarehouseInitial")
+    public void exportExcelTemplateWarehouseInitial() throws Exception {
+        logger.info("################warehouseInitial/exportExcelWarehouseInitial 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        PageData pd = HttpUtils.parsePageData();
+        //warehouseInitialService.exportExcelWarehouseInitial(pd);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################warehouseInitial/exportExcelWarehouseInitial 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+    }
+
     /**
     * Excel导入
     *

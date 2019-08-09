@@ -111,6 +111,7 @@ public interface WarehouseInitialService {
     //ResultModel deleteWarehouseProductBySimple(PageData pageData) throws Exception;
 
     void exportExcelWarehouseInitial(PageData pd, Pagination pg) throws Exception;
+    void exportExcelTemplateWarehouseInitial(PageData pd) throws Exception;
 
     ResultModel importExcelWarehouseInitial(MultipartFile file) throws Exception;
 }

@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+说明：仓库表(vmes_warehouse)-关联仓库货品表(vmes_warehouse_product) Mapper.xml
+创建人：陈刚
+创建时间：2019-08-09
+ -->
+<mapper namespace="com.xy.vmes.deecoop.warehouse.dao.WarehouseToWarehouseProductMapper">
+    <insert id="warehouseToWarehouseProduct" >
+        delete from vmes_column where model_code = 'warehouseToWarehouseProduct' ;
+        insert into vmes_column (
+        id,model_code,title_key,title_name,serial_number,
+        isdisable,ishide,isedit,ismust,cdate,
+        cuser
+        ) VALUES
+        (replace(uuid(), '-', ''),'warehouseToWarehouseProduct','id','id',0, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseToWarehouseProduct','pid','上级id-根root',1, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseToWarehouseProduct','companyId','公司ID-组织架构',2, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseToWarehouseProduct','entityType','实体库-仓库类型-(货品属性一致)-(字典表-vmes_dictionary.id)',3, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseToWarehouseProduct','virtualGenre','虚拟库-属性(1:内部单位 2:外部单位)',4, '1','1','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'warehouseToWarehouseProduct','virtualDeptId','内部单位(部门ID)',5, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseToWarehouseProduct','virtualDeptName','内部单位名称',6, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseToWarehouseProduct','virtualCustomerId','外部单位ID(客户id)',7, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseToWarehouseProduct','virtualCustomerName','外部单位名称',8, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseToWarehouseProduct','layer','货位级别',9, '1','1','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'warehouseToWarehouseProduct','qrcode','二维码-(图片相对路径)',10, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseToWarehouseProduct','warehouseCode','货位编码',11, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseToWarehouseProduct','warehouseId','仓库ID',12, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseToWarehouseProduct','name','货位名称',13, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseToWarehouseProduct','nameEn','英文名称',14, '1','1','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'warehouseToWarehouseProduct','deptId','货位所属部门ID',15, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseToWarehouseProduct','deptPlaceKey','部门货位ID-(字典表-vmes_dictionary.id)',16, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseToWarehouseProduct','pathName','货位名称',17, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseToWarehouseProduct','pathId','根节点到本节点路径ID',18, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseToWarehouseProduct','isopen','是否公开 (0:不公开:企业内部维护 1:公开:超级管理员维护)',19, '1','1','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'warehouseToWarehouseProduct','remark','备注',20, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseToWarehouseProduct','cuser','创建用户id',21, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseToWarehouseProduct','cdate','创建时间',22, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseToWarehouseProduct','uuser','修改用户id',23, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseToWarehouseProduct','udate','修改时间',24, '1','1','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'warehouseToWarehouseProduct','isdisable','是否启用(0:已禁用 1:启用)',25, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseToWarehouseProduct','isSimple','isSimple',26, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseToWarehouseProduct','serialNumber','同级排列序号',27, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseToWarehouseProduct','isLeaf','是否叶子(0:非叶子 1:是叶子)',28, '1','1','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'warehouseToWarehouseProduct','productCode','货品编码',29, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseToWarehouseProduct','productName','货品名称',30, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseToWarehouseProduct','productSpec','规格型号',31, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseToWarehouseProduct','productUnit','计量单位',32, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseToWarehouseProduct','productUnitName','计量单位',32, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseToWarehouseProduct','productGenre','货品属性',33, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseToWarehouseProduct','productGenreName','货品属性',33, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseToWarehouseProduct','productType','productType',34, '1','1','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'warehouseToWarehouseProduct','stockCount','库存数量',35, '1','1','1','0',now(), 'admin'),
+
+    </insert>
+
+
+    <select id="findMapListWarehouseToWarehouseProduct" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+            warehouse.id id,
+            warehouse.pid pid,
+            warehouse.company_id companyId,
+            warehouse.entity_type entityType,
+            warehouse.virtual_genre virtualGenre,
+
+            warehouse.virtual_dept_id virtualDeptId,
+            warehouse.virtual_dept_name virtualDeptName,
+            warehouse.virtual_customer_id virtualCustomerId,
+            warehouse.virtual_customer_name virtualCustomerName,
+            warehouse.layer layer,
+
+            warehouse.qrcode qrcode,
+            warehouse.code warehouseCode,
+            warehouse.warehouse_id warehouseId,
+            warehouse.name name,
+            warehouse.name_en nameEn,
+
+            warehouse.dept_id deptId,
+            warehouse.dept_place_key deptPlaceKey,
+            warehouse.path_name pathName,
+            warehouse.path_id pathId,
+            warehouse.isopen isopen,
+
+            warehouse.remark remark,
+            warehouse.cuser cuser,
+            warehouse.cdate cdate,
+            warehouse.uuser uuser,
+            warehouse.udate udate,
+
+            warehouse.isdisable isdisable,
+            warehouse.is_simple isSimple,
+            warehouse.serial_number serialNumber,
+            warehouse.isLeaf,
+
+            round(ifnull(wp.stock_count, 0), 2) stockCount,
+
+            <!--货品表-->
+            product.code productCode,
+            product.name productName,
+            product.spec productSpec,
+            produnit.unit productUnit,
+            unit.name productUnitName,
+            product.genre productGenre,
+            genre.name productGenreName,
+            product.type productType
+
+        from vmes_warehouse warehouse
+            left join vmes_warehouse_product wp on warehouse.id = wp.warehouse_id and warehouse.isdisable = '1' and wp.isdisable = '1'
+            left join vmes_product product on wp.product_id = product.id and product.isdisable = '1'
+            left join vmes_product_unit produnit on produnit.product_id = product.id and produnit.type = 1
+            left join vmes_dictionary unit on produnit.unit = unit.id
+            left join vmes_dictionary genre on product.genre = genre.id
+
+        <where>
+            <if test="companyId != null and companyId != ''" >
+                and warehouse.company_id = #{companyId}
+            </if>
+
+        </where>
+
+
+    </select>
+</mapper>
