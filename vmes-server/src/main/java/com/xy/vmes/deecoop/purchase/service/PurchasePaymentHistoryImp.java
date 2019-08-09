@@ -222,7 +222,7 @@ public class PurchasePaymentHistoryImp implements PurchasePaymentHistoryService 
         PurchaseCompanyPeriod companyPeriod = purchaseCompanyPeriodService.findPurchaseCompanyPeriodByCompanyId(companyId);
         if (companyPeriod == null || companyPeriod.getInitialPeriod() == null || companyPeriod.getInitialPeriod().trim().length() == 0) {
             model.putCode("1");
-            model.putMsg("您所在的企业无初始付款期间，请在(采购-基础-设定首次付款期间)设定，与企业管理员联系！");
+            model.putMsg("您所在的企业暂无数据，请先在(采购-基础-期初值设定)设定供应商期初值！");
             return model;
         }
 

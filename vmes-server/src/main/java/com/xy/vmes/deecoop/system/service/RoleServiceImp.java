@@ -1025,6 +1025,8 @@ public class RoleServiceImp implements RoleService {
                     Map<String, String> userMap = new HashMap<String, String>();
                     userMap.put("id", id);
                     userMap.put("userName", userName);
+                    userMap.put("label",userName);
+                    userMap.put("value",id);
                     userMapList.add(userMap);
                 }
             }
