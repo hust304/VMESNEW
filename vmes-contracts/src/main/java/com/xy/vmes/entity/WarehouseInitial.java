@@ -40,9 +40,10 @@ public class WarehouseInitial implements Serializable {
 	//是否启用(0:已禁用 1:启用)
 	@TableField("isdisable")
 	private String isdisable;
-	//是否允许初始化(0:不允许 1:允许)
-	@TableField("is_allow_initial")
-	private String isAllowInitial;
+	//是否禁用按钮(0:已禁用 1:启用) (0和1字符串,初始化按钮,导入按钮)
+	//0和1字符串 第一位:初始化按钮 第二位:导入按钮
+	@TableField("is_disable_button")
+	private String isDisableButton;
 
 
 	public void setId(String id) {
@@ -93,13 +94,13 @@ public class WarehouseInitial implements Serializable {
 	public String getIsdisable() {
 		return isdisable;
 	}
-	public String getIsAllowInitial() {
-		return isAllowInitial;
+	public String getIsDisableButton() {
+		return isDisableButton;
 	}
-	public void setIsAllowInitial(String isAllowInitial) {
-		this.isAllowInitial = isAllowInitial;
+	public void setIsDisableButton(String isDisableButton) {
+		this.isDisableButton = isDisableButton;
 	}
-	/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 
 }

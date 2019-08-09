@@ -96,7 +96,7 @@
             uuser uuser,
             udate udate,
             isdisable isdisable,
-            is_allow_initial isAllowInitial
+            is_disable_button isDisableButton
         from vmes_warehouse_initial
         <choose>
             <!--
