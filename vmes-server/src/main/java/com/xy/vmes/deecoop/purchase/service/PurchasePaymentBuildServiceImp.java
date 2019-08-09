@@ -1,6 +1,8 @@
 package com.xy.vmes.deecoop.purchase.service;
 
 
+import com.xy.vmes.entity.PurchaseCompanyPeriod;
+import com.xy.vmes.service.PurchaseCompanyPeriodService;
 import com.yvan.common.util.Common;
 import com.xy.vmes.common.util.DateFormat;
 import com.xy.vmes.deecoop.purchase.dao.PurchasePaymentBuildMapper;
@@ -40,7 +42,8 @@ public class PurchasePaymentBuildServiceImp implements PurchasePaymentBuildServi
     private PurchasePaymentBuildMapper purchasePaymentBuildMapper;
     @Autowired
     private ColumnService columnService;
-
+    @Autowired
+    PurchaseCompanyPeriodService purchaseCompanyPeriodService;
     /**
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2019-03-11
@@ -210,6 +213,28 @@ public class PurchasePaymentBuildServiceImp implements PurchasePaymentBuildServi
     public ResultModel editPaymentBuild(PageData pageData) throws Exception {
         ResultModel model = new ResultModel();
 
+        String companyId = pageData.getString("currentCompanyId");
+
+        PurchaseCompanyPeriod companyPeriod = purchaseCompanyPeriodService.findPurchaseCompanyPeriodByCompanyId(companyId);
+
+        if(companyPeriod == null){
+            companyPeriod = new PurchaseCompanyPeriod();
+            companyPeriod.setCompanyId(companyId);
+            //初始付款期 initialPeriodDate(yyyy-MM-dd) 默认 初始付款期:=当前付款期
+            String initialPeriodDate_str = DateFormat.date2String(new Date(), "yyyy-MM");
+            initialPeriodDate_str = initialPeriodDate_str + "-" + "01";
+            Date initialPeriodDate = DateFormat.dateString2Date(initialPeriodDate_str, DateFormat.DEFAULT_DATE_FORMAT);
+            companyPeriod.setInitialPeriodDate(initialPeriodDate);
+            companyPeriod.setPaymentPeriodDate(initialPeriodDate);
+
+            String initialPeriod = DateFormat.date2String(companyPeriod.getInitialPeriodDate(), "yyyyMM");
+            companyPeriod.setInitialPeriod(initialPeriod);
+            companyPeriod.setPaymentPeriod(initialPeriod);
+
+            purchaseCompanyPeriodService.save(companyPeriod);
+        }
+
+
         String supplierId = pageData.getString("supplierId");
         if (supplierId == null || supplierId.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
@@ -217,13 +242,13 @@ public class PurchasePaymentBuildServiceImp implements PurchasePaymentBuildServi
             return model;
         }
 
-        //付款期间 paymentPeriodDate
-        String paymentPeriodDate_str = pageData.getString("paymentPeriodDate");
-        if (paymentPeriodDate_str == null || paymentPeriodDate_str.trim().length() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("付款期间为必填项不可为空！");
-            return model;
-        }
+//        //付款期间 paymentPeriodDate
+//        String paymentPeriodDate_str = pageData.getString("paymentPeriodDate");
+//        if (paymentPeriodDate_str == null || paymentPeriodDate_str.trim().length() == 0) {
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg("付款期间为必填项不可为空！");
+//            return model;
+//        }
 
         //付款类型 paymentType
         String paymentType = pageData.getString("paymentType");
@@ -246,10 +271,10 @@ public class PurchasePaymentBuildServiceImp implements PurchasePaymentBuildServi
         paymentBuild.setSupplierId(supplierId);
 
         //付款期间 paymentPeriodDate(yyyy-MM-dd)
-        Date paymentPeriodDate = DateFormat.dateString2Date(paymentPeriodDate_str, DateFormat.DEFAULT_DATE_FORMAT);
-        paymentPeriodDate_str = DateFormat.date2String(paymentPeriodDate, "yyyy-MM");
+//        Date paymentPeriodDate = DateFormat.dateString2Date(paymentPeriodDate_str, DateFormat.DEFAULT_DATE_FORMAT);
+        String paymentPeriodDate_str = DateFormat.date2String(new Date(), "yyyy-MM");
         paymentPeriodDate_str = paymentPeriodDate_str + "-" + "01";
-        paymentPeriodDate = DateFormat.dateString2Date(paymentPeriodDate_str, DateFormat.DEFAULT_DATE_FORMAT);
+        Date paymentPeriodDate = DateFormat.dateString2Date(paymentPeriodDate_str, DateFormat.DEFAULT_DATE_FORMAT);
         paymentBuild.setPaymentPeriodDate(paymentPeriodDate);
 
         //付款期间(yyyymm)
