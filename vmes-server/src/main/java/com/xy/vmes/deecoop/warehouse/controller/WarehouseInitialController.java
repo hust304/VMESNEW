@@ -1,6 +1,7 @@
 package com.xy.vmes.deecoop.warehouse.controller;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.entity.WarehouseInitial;
 import com.xy.vmes.service.*;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
@@ -42,6 +43,47 @@ public class WarehouseInitialController {
         ResultModel model = warehouseInitialService.listPageWarehouseInitial(pd,pg);
         Long endTime = System.currentTimeMillis();
         logger.info("################warehouseInitial/listPageWarehouseInitial 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 获取是否禁用按钮(0:已禁用 1:启用)
+     * 0和1字符串 第一位:初始化按钮 第二位:导入按钮 第三位:禁用初始化按钮
+     *
+     * @author 陈刚
+     * @date 2019-08-09
+     */
+    @PostMapping("/warehouse/warehouseInitial/findIsDisableButton")
+    public ResultModel findIsDisableButton() throws Exception {
+        logger.info("################/warehouse/warehouseInitial/findIsDisableButton 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+        String companyId = pageData.getString("companyId");
+
+        //默认值(011) := 初始化按钮(禁用),导入按钮(启用),禁用初始化按钮(启用)
+        String isDisableButton = new String("011");
+        WarehouseInitial warehouseInitial = null;
+        try {
+            PageData findMap = new PageData();
+            findMap.put("companyId", companyId);
+            findMap.put("mapSize", Integer.valueOf(findMap.size()));
+            warehouseInitial = warehouseInitialService.findWarehouseInitial(findMap);
+            if (warehouseInitial != null
+                && warehouseInitial.getIsDisableButton() != null
+                && warehouseInitial.getIsDisableButton().trim().length() > 0
+            ) {
+                isDisableButton = warehouseInitial.getIsDisableButton().trim();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        model.put("isDisableButton", isDisableButton);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/warehouse/warehouseInitial/findIsDisableButton 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -113,6 +155,53 @@ public class WarehouseInitialController {
         ResultModel model = warehouseInitialService.initialWarehouse(pageData);
         Long endTime = System.currentTimeMillis();
         logger.info("################/warehouseInitial/initialWarehouse 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 禁用初始化按钮
+     *
+     * @author 陈刚
+     * @date 2018-08-09
+     * @throws Exception
+     */
+    @PostMapping("/warehouse/warehouseInitial/disableWarehouseInitial")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel disableWarehouseInitial() throws Exception {
+        logger.info("################/warehouse/warehouseInitial/disableWarehouseInitial 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+        String companyId = pageData.getString("companyId");
+        String userId = pageData.getString("cuser");
+
+        //(企业id)查询 vmes_warehouse_initial
+        WarehouseInitial warehouseInitial = null;
+        try {
+            PageData findMap = new PageData();
+            findMap.put("companyId", companyId);
+            findMap.put("mapSize", Integer.valueOf(findMap.size()));
+            warehouseInitial = warehouseInitialService.findWarehouseInitial(findMap);
+
+            if (warehouseInitial == null) {
+                WarehouseInitial addObject = new WarehouseInitial();
+                addObject.setCuser(userId);
+                addObject.setCompanyId(companyId);
+                warehouseInitialService.save(addObject);
+            } else if (warehouseInitial != null) {
+                //是否禁用按钮(0:已禁用 1:启用) (0和1字符串,初始化按钮,导入按钮,禁用初始化按钮)
+                //0和1字符串 第一位:初始化按钮 第二位:导入按钮 第三位:禁用初始化按钮
+                warehouseInitial.setIsDisableButton("000");
+                warehouseInitialService.update(warehouseInitial);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/warehouse/warehouseInitial/disableWarehouseInitial 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 

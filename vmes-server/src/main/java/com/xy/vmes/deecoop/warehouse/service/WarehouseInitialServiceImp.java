@@ -211,6 +211,40 @@ public class WarehouseInitialServiceImp implements WarehouseInitialService {
 
         return mapList;
     }
+
+    public WarehouseInitial findWarehouseInitial(PageData object) {
+        if (object == null) {return null;}
+
+        List<WarehouseInitial> objectList = this.findWarehouseInitialList(object);
+        if (objectList != null && objectList.size() > 0) {
+            return objectList.get(0);
+        }
+
+        return null;
+    }
+    public WarehouseInitial findWarehouseInitialById(String id) {
+        if (id == null || id.trim().length() == 0) {return null;}
+
+        PageData findMap = new PageData();
+        findMap.put("id", id);
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+
+        return this.findWarehouseInitial(findMap);
+    }
+
+    public List<WarehouseInitial> findWarehouseInitialList(PageData object) {
+        if (object == null) {return null;}
+
+        List<WarehouseInitial> objectList = new ArrayList<WarehouseInitial>();
+        try {
+            objectList = this.dataList(object);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return objectList;
+    }
+
 //    //仓库初始化(简版仓库)
 //    public List<Map> findWarehouseInitialBySimple(PageData pd) throws Exception {
 //        List<Map> mapList = new ArrayList<Map>();
@@ -233,18 +267,36 @@ public class WarehouseInitialServiceImp implements WarehouseInitialService {
 //        return mapList;
 //    }
 
+    /////////////////////////////////////////////////////////////////////////////////////////////////////
     public void initialByWarehouse(String cuser, String companyId) throws Exception {
         if (companyId == null || companyId.trim().length() == 0) {return;}
 
+        //删除业务相关表
         this.deleteTableByBusiness(companyId);
 
-        //是否启用(0:已禁用 1:启用)
-        this.updateIsdisable("0", companyId);
+        //(企业id)查询 vmes_warehouse_initial
+        WarehouseInitial warehouseInitial = null;
+        try {
+            PageData findMap = new PageData();
+            findMap.put("companyId", companyId);
+            findMap.put("mapSize", Integer.valueOf(findMap.size()));
+            warehouseInitial = this.findWarehouseInitial(findMap);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-        WarehouseInitial addObject = new WarehouseInitial();
-        addObject.setCuser(cuser);
-        addObject.setCompanyId(companyId);
-        this.save(addObject);
+        if (warehouseInitial == null) {
+            WarehouseInitial addObject = new WarehouseInitial();
+            addObject.setCuser(cuser);
+            addObject.setCompanyId(companyId);
+            this.save(addObject);
+        } else if (warehouseInitial != null) {
+            //是否禁用按钮(0:已禁用 1:启用) (0和1字符串,初始化按钮,导入按钮,禁用初始化按钮)
+            //0和1字符串 第一位:初始化按钮 第二位:导入按钮 第三位:禁用初始化按钮
+            warehouseInitial.setIsDisableButton("011");
+            this.update(warehouseInitial);
+        }
+
     }
 
     public void deleteTableByBusiness(String companyId) throws Exception {
@@ -621,6 +673,31 @@ public class WarehouseInitialServiceImp implements WarehouseInitialService {
 
         //4. 遍历Map<String, WarehouseProduct> 对业务表添加
         warehouseProductExcelService.addWarehouseProduct(warehouseProductMap, companyId, userId);
+
+        //(企业id)查询 vmes_warehouse_initial
+        WarehouseInitial warehouseInitial = null;
+        try {
+            PageData findMap = new PageData();
+            findMap.put("companyId", companyId);
+            findMap.put("mapSize", Integer.valueOf(findMap.size()));
+            warehouseInitial = this.findWarehouseInitial(findMap);
+
+            if (warehouseInitial == null) {
+                WarehouseInitial addObject = new WarehouseInitial();
+                addObject.setCuser(userId);
+                addObject.setCompanyId(companyId);
+                this.save(addObject);
+            } else if (warehouseInitial != null) {
+                //是否禁用按钮(0:已禁用 1:启用) (0和1字符串,初始化按钮,导入按钮,禁用初始化按钮)
+                //0和1字符串 第一位:初始化按钮 第二位:导入按钮 第三位:禁用初始化按钮
+                warehouseInitial.setIsDisableButton("101");
+                this.update(warehouseInitial);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         return model;
     }
 }

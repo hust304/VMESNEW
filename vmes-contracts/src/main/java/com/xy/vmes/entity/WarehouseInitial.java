@@ -40,11 +40,10 @@ public class WarehouseInitial implements Serializable {
 	//是否启用(0:已禁用 1:启用)
 	@TableField("isdisable")
 	private String isdisable;
-	//是否禁用按钮(0:已禁用 1:启用) (0和1字符串,初始化按钮,导入按钮)
-	//0和1字符串 第一位:初始化按钮 第二位:导入按钮
+	//是否禁用按钮(0:已禁用 1:启用) (0和1字符串,初始化按钮,导入按钮,禁用初始化按钮)
+	//0和1字符串 第一位:初始化按钮 第二位:导入按钮 第三位:禁用初始化按钮
 	@TableField("is_disable_button")
 	private String isDisableButton;
-
 
 	public void setId(String id) {
 		this.id = id;
