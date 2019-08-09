@@ -285,15 +285,18 @@ public class WarehouseInitialServiceImp implements WarehouseInitialService {
             e.printStackTrace();
         }
 
+        //是否禁用按钮(0:已禁用 1:启用) (0和1字符串,初始化按钮,导入按钮,禁用初始化按钮)
+        //0和1字符串 第一位:初始化按钮 第二位:导入按钮 第三位:禁用初始化按钮
+        String isDisableButton = "011";
+
         if (warehouseInitial == null) {
             WarehouseInitial addObject = new WarehouseInitial();
             addObject.setCuser(cuser);
             addObject.setCompanyId(companyId);
+            addObject.setIsDisableButton(isDisableButton);
             this.save(addObject);
         } else if (warehouseInitial != null) {
-            //是否禁用按钮(0:已禁用 1:启用) (0和1字符串,初始化按钮,导入按钮,禁用初始化按钮)
-            //0和1字符串 第一位:初始化按钮 第二位:导入按钮 第三位:禁用初始化按钮
-            warehouseInitial.setIsDisableButton("011");
+            warehouseInitial.setIsDisableButton(isDisableButton);
             this.update(warehouseInitial);
         }
 
