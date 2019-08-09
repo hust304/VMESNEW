@@ -475,6 +475,8 @@ public class SaleReceiveServiceImp implements SaleReceiveService {
 
                 //收款单明细状态:(0:待收款(待审核) 1:已收款 -1:已取消)
                 editDetail.setState("1");
+
+                saleReceiveDetailService.update(editDetail);
             }
         }
 
