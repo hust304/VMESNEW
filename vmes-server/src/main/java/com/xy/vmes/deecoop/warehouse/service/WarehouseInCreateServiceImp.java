@@ -146,7 +146,7 @@ public class WarehouseInCreateServiceImp implements WarehouseInCreateService {
                     inType);
 
             //isSimple 是否简版仓库 Y:是简版 N:非简版 is null:非简版
-            warehouseIn.setIsSimple("Y");
+            //warehouseIn.setIsSimple("Y");
             warehouseIn.setWarehouseId(warehouseId);
             warehouseInService.save(warehouseIn);
 

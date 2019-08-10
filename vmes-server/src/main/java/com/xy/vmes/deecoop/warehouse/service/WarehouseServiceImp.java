@@ -1010,11 +1010,11 @@ public class WarehouseServiceImp implements WarehouseService {
             warehouse.setSerialNumber(Integer.valueOf(maxCount.intValue() + 1));
         }
 
-        //isSimple 是否简版仓库 Y:是简版 N:非简版 is null:非简版
-        String isSimple = pageData.getString("isSimple");
-        if ("Y".equals(isSimple)) {
-            warehouse.setIsSimple("Y");
-        }
+//        //isSimple 是否简版仓库 Y:是简版 N:非简版 is null:非简版
+//        String isSimple = pageData.getString("isSimple");
+//        if ("Y".equals(isSimple)) {
+//            warehouse.setIsSimple("Y");
+//        }
 
         this.save(warehouse);
         return model;
@@ -1080,11 +1080,11 @@ public class WarehouseServiceImp implements WarehouseService {
             warehouse.setSerialNumber(Integer.valueOf(maxCount.intValue() + 1));
         }
 
-        //isSimple 是否简版仓库 Y:是简版 N:非简版 is null:非简版
-        String isSimple = pageData.getString("isSimple");
-        if ("Y".equals(isSimple)) {
-            warehouse.setIsSimple("Y");
-        }
+//        //isSimple 是否简版仓库 Y:是简版 N:非简版 is null:非简版
+//        String isSimple = pageData.getString("isSimple");
+//        if ("Y".equals(isSimple)) {
+//            warehouse.setIsSimple("Y");
+//        }
 
         this.save(warehouse);
 

@@ -102,7 +102,7 @@ public class WarehouseMoveBySimpleController {
         String code = coderuleService.createCoder(companyId, "vmes_warehouse_move", "M");
         warehouseMove.setCode(code);
         //isSimple 是否简版仓库 Y:是简版 N:非简版 is null:非简版
-        warehouseMove.setIsSimple("Y");
+        //warehouseMove.setIsSimple("Y");
         warehouseMove.setCuser(cuser);
         warehouseMove.setMakeId(cuser);
         warehouseMoveService.save(warehouseMove);

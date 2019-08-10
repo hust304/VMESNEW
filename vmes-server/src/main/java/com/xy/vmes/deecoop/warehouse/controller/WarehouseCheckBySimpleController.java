@@ -95,7 +95,7 @@ public class WarehouseCheckBySimpleController {
         String code = coderuleService.createCoder(companyId, "vmes_warehouse_check", "C");
         warehouseCheck.setCode(code);
         //isSimple 是否简版仓库 Y:是简版 N:非简版 is null:非简版
-        warehouseCheck.setIsSimple("Y");
+        //warehouseCheck.setIsSimple("Y");
         warehouseCheck.setCuser(cuser);
         warehouseCheck.setMakeId(cuser);
         warehouseCheckService.saveNotId(warehouseCheck);

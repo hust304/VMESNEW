@@ -119,7 +119,7 @@ public class EquipmentWarehouseOutBySpareController {
         String code = coderuleService.createCoder(companyID, "vmes_warehouse_out", "O");
         warehouseOut.setCode(code);
         //isSimple 是否简版仓库 Y:是简版 N:非简版 is null:非简版
-        warehouseOut.setIsSimple("Y");
+        //warehouseOut.setIsSimple("Y");
         warehouseOutService.save(warehouseOut);
 
         //2.添加出库单明细

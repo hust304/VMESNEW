@@ -146,7 +146,7 @@ public class WarehouseOutCreateServiceImp implements WarehouseOutCreateService {
                 outType);
 
         //isSimple 是否简版仓库 Y:是简版 N:非简版 is null:非简版
-        warehouseOut.setIsSimple("Y");
+        //warehouseOut.setIsSimple("Y");
         warehouseOut.setWarehouseId(warehouseId);
         warehouseOutService.save(warehouseOut);
 
