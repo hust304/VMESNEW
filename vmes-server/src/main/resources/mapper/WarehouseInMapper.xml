@@ -359,12 +359,7 @@
         <if test="detailState != null and detailState != ''" >
             and d.state = #{detailState}
         </if>
-        <if test="isSimple != null and isSimple != ''" >
-            and a.is_simple = #{isSimple}
-        </if>
-        <if test="'true' == isNotSimple">
-            and (a.is_simple is null or a.is_simple = 'N')
-        </if>
+
 
         <!--过滤出当前登录用户是(入库)执行人 (vmes_warehouse_in_executor) 查询语句-->
         <if test="'true' == isNeedExecutor">

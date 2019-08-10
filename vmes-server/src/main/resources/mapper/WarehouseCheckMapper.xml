@@ -213,12 +213,6 @@
             <if test="detailState != null and detailState != ''" >
                 and detail.state = #{detailState}
             </if>
-            <if test="isSimple != null and isSimple != ''" >
-                and parent.is_simple = #{isSimple}
-            </if>
-            <if test="'true' == isNotSimple">
-                and (parent.is_simple is null or parent.is_simple = 'N')
-            </if>
 
             <!--按货品属性 查询语句-->
             <if test="productCode != null and productCode != ''">
