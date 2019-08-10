@@ -352,7 +352,8 @@ public class EquipmentMaintainTaskDetailController {
                 //虚拟库:warehouseBySimple:Common.SYS_WAREHOUSE_SIMPLE
                 warehouseOutCreateService.createWarehouseOutByVirtual(deptId,
                         deptName,
-                        Common.DICTIONARY_MAP.get("deptRepair"),
+                        //其他:deptOther:a42f32ef9d39476e932e1e30b77fefbb Common.DICTIONARY_MAP
+                        Common.DICTIONARY_MAP.get("deptOther"),
                         cuser,
                         companyId,
                         //8bcbc84893cf46daabbd2522bee482ad 保养领料出库:maintainReceiveOut
@@ -410,9 +411,9 @@ public class EquipmentMaintainTaskDetailController {
                     //退库方式:2:退回虚拟库-(生成虚拟库入库单)
                     warehouseInCreateService.createWarehouseInByVirtual(deptId,
                             deptName,
-                            //维保:deptRepair:a42f32ef9d39476e932e1e30b77fefbb Common.DICTIONARY_MAP
-                            Common.DICTIONARY_MAP.get("deptRepair"),
-                            "维保",
+                            //其他:deptOther:a42f32ef9d39476e932e1e30b77fefbb Common.DICTIONARY_MAP
+                            Common.DICTIONARY_MAP.get("deptOther"),
+                            "其他",
                             cuser,
                             companyId,
                             //d9c9eb85db0d4c8faa09ddc2b8173859 保养领料退回入库:maintainRetreatIn

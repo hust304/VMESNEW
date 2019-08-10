@@ -1089,7 +1089,7 @@ public class WarehouseServiceImp implements WarehouseService {
         this.save(warehouse);
 
         //virtualGenre: 虚拟库属性(1:内部单位 2:外部单位)
-        //1:内部单位:默认创建(物料区,待检区,合格区,不合格区)-这4个货位
+        //1:内部单位:默认创建(物料区,待检区,合格区,不合格区,其他)-这5个货位
         if ("1".equals(warehouse.getVirtualGenre())) {
             //departmentPosition 部门货位名称(字典名称)
             dictionaryService.implementBusinessMapByParentID(Common.DICTIONARY_MAP.get("departmentPosition"), null);

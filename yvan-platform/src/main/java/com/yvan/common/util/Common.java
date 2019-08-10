@@ -315,8 +315,8 @@ public class Common {
             put("deptStandard", "1e1585114d2246beabecaae868e62d37");
             //d723af8e2a884e6abb9487c4701a0e7c 不合格区
             put("deptNotStandard", "d723af8e2a884e6abb9487c4701a0e7c");
-            //a42f32ef9d39476e932e1e30b77fefbb 维保
-            put("deptRepair", "a42f32ef9d39476e932e1e30b77fefbb");
+            //a42f32ef9d39476e932e1e30b77fefbb 其他
+            put("deptOther", "a42f32ef9d39476e932e1e30b77fefbb");
 
         //d7fc4c594c5a4c8e81266c52cbf30110(字典id)  仓库类型(字典名称)
         put("warehouseType", "d7fc4c594c5a4c8e81266c52cbf30110");
