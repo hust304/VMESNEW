@@ -134,9 +134,9 @@ public class WarehouseCheck implements Serializable {
 	public String getIsSimple() {
 		return isSimple;
 	}
-//	public void setIsSimple(String isSimple) {
-//		this.isSimple = isSimple;
-//	}
+	public void setIsSimple(String isSimple) {
+		this.isSimple = isSimple;
+	}
 /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 
