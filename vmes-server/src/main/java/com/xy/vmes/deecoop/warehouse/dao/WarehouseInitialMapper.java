@@ -47,8 +47,8 @@ public interface WarehouseInitialMapper extends BaseMapper<WarehouseInitial> {
     List<Map> getDataListPage(PageData pd, Pagination pg);
 
     //仓库初始化(复杂版仓库)
-    List<Map> findWarehouseProductByComplex(PageData pd);
-    List<Map> findWarehouseProductByComplex(PageData pd, Pagination pg);
+    //List<Map> findWarehouseProductByComplex(PageData pd);
+    //List<Map> findWarehouseProductByComplex(PageData pd, Pagination pg);
 
     //仓库初始化(简版仓库)
     List<Map> findWarehouseProductBySimple(PageData pd);

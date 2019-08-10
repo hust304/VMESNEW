@@ -91,7 +91,7 @@ public interface WarehouseInitialService {
     List<WarehouseInitial> findWarehouseInitialList(PageData object);
 
     //仓库初始化(复杂版仓库)
-    List<Map> findWarehouseInitialByComplex(PageData pd) throws Exception;
+    //List<Map> findWarehouseInitialByComplex(PageData pd) throws Exception;
     //仓库初始化(简版仓库)
     //List<Map> findWarehouseInitialBySimple(PageData pd) throws Exception;
 
