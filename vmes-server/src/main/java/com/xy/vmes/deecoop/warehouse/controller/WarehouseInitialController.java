@@ -1,10 +1,14 @@
 package com.xy.vmes.deecoop.warehouse.controller;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.common.util.ColumnUtil;
+import com.xy.vmes.entity.Column;
 import com.xy.vmes.entity.WarehouseInitial;
 import com.xy.vmes.service.*;
+import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
+import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -15,6 +19,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 说明：vmes_warehouse_initial:仓库初始化设定Controller
@@ -28,6 +37,9 @@ public class WarehouseInitialController {
 
     @Autowired
     private WarehouseInitialService warehouseInitialService;
+    @Autowired
+    private WarehouseToWarehouseProductService warehouseToWarehouseProductService;
+
     @Autowired
     private ColumnService columnService;
 
@@ -276,14 +288,57 @@ public class WarehouseInitialController {
 
     @PostMapping("/warehouse/warehouseInitial/exportExcelTemplateWarehouseInitial")
     public void exportExcelTemplateWarehouseInitial() throws Exception {
-        logger.info("################warehouseInitial/exportExcelWarehouseInitial 执行开始 ################# ");
+        logger.info("################/warehouse/warehouseInitial/exportExcelTemplateWarehouseInitial 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-
         PageData pd = HttpUtils.parsePageData();
-        //warehouseInitialService.exportExcelWarehouseInitial(pd);
+
+        List<Column> columnList = columnService.findColumnList("warehouseToWarehouseProduct");
+        if (columnList == null || columnList.size() == 0) {
+            throw new RestException("1","数据库没有生成TabCol，请联系管理员！");
+        }
+
+        //获取指定栏位字符串-重新调整List<Column>
+        String fieldCode = pd.getString("fieldCode");
+        if (fieldCode != null && fieldCode.trim().length() > 0) {
+            columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
+        }
+
+        if (pd.getString("currentCompanyId") != null) {
+            pd.put("companyId", pd.getString("currentCompanyId").trim());
+        }
+
+        List<Map> dataList = new ArrayList<Map>();
+        try {
+            dataList = warehouseToWarehouseProductService.findMapListWarehouseToWarehouseProduct(pd);
+            if (dataList != null && dataList.size() > 0) {
+                for (Map<String, Object> mapObject : dataList) {
+                    mapObject.put("productCode", "");
+                    mapObject.put("productName", "");
+                    mapObject.put("productSpec", "");
+                    mapObject.put("productGenreName", "");
+                    mapObject.put("productUnitName", "");
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        //查询数据转换成Excel导出数据
+        List<LinkedHashMap<String, String>> dataMapList = ColumnUtil.modifyDataList(columnList, dataList);
+        HttpServletResponse response = HttpUtils.currentResponse();
+
+        //查询数据-Excel文件导出
+        String fileName = pd.getString("fileName");
+        if (fileName == null || fileName.trim().length() == 0) {
+            fileName = "ExcelWarehouseInitial";
+        }
+
+        //导出文件名-中文转码
+        fileName = new String(fileName.getBytes("utf-8"),"ISO-8859-1");
+        ExcelUtil.excelExportByDataList(response, fileName, dataMapList);
 
         Long endTime = System.currentTimeMillis();
-        logger.info("################warehouseInitial/exportExcelWarehouseInitial 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/warehouse/warehouseInitial/exportExcelTemplateWarehouseInitial 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
     }
 
     /**
