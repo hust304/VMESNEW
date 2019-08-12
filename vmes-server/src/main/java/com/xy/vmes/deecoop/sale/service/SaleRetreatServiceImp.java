@@ -743,6 +743,13 @@ public class SaleRetreatServiceImp implements SaleRetreatService {
         retreatEdit.setType(type);
         BigDecimal totalSum = saleRetreatDetailService.findTotalSumByDetailList(retreatDtlList);
         retreatEdit.setTotalSum(totalSum);
+
+        //状态状态(0:待提交 1:待审核 2:待退款 3:已完成 -1:已取消)
+        //isAutoCommit true:自动提交 false:手动提交
+        String isAutoCommit = pageData.getString("isAutoCommit");
+        if (isAutoCommit != null && "true".equals(isAutoCommit.trim())) {
+            retreatEdit.setState("1");
+        }
         this.update(retreatEdit);
 
         Map<String, Object> columnMap = new HashMap<String, Object>();
