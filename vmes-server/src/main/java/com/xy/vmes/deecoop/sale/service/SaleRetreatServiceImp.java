@@ -665,8 +665,6 @@ public class SaleRetreatServiceImp implements SaleRetreatService {
         BigDecimal totalSum = saleRetreatDetailService.findTotalSumByDetailList(retreatDtlList);
         retreat.setTotalSum(totalSum);
 
-        //状态状态(0:待提交 1:待审核 2:待退款 3:已完成 -1:已取消)
-        retreat.setState("0");
         String companyID = pageData.getString("currentCompanyId");
         retreat.setCompanyId(companyID);
 
@@ -680,6 +678,14 @@ public class SaleRetreatServiceImp implements SaleRetreatService {
                 "yyyyMMdd",
                 "T");
         retreat.setSysCode(code);
+
+        //状态状态(0:待提交 1:待审核 2:待退款 3:已完成 -1:已取消)
+        retreat.setState("0");
+        //isAutoCommit true:自动提交 false:手动提交
+        String isAutoCommit = pageData.getString("isAutoCommit");
+        if (isAutoCommit != null && "true".equals(isAutoCommit.trim())) {
+            retreat.setState("1");
+        }
         this.save(retreat);
 
         //2. 退货单明细
