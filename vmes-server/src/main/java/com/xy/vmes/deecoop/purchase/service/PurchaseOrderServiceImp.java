@@ -794,7 +794,15 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService {
             model.putMsg("采购订单明细Json字符串-转换成List错误！");
             return model;
         }
+
+        //(0:待提交 1:待审核 2:采购中 3:已完成 -1:已取消)
+        //isAutoCommit true:自动提交 false:手动提交
+        String isAutoCommit = pd.getString("isAutoCommit");
+        if (isAutoCommit != null && "true".equals(isAutoCommit.trim())) {
+            purchaseOrder.setState("1");
+        }
         this.update(purchaseOrder);
+
         Map columnMap = new HashMap();
         columnMap.put("parent_id",purchaseOrder.getId());
         purchaseOrderDetailService.deleteByColumnMap(columnMap);
