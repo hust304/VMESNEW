@@ -454,7 +454,15 @@ public class PurchasePlanServiceImp implements PurchasePlanService {
             model.putMsg("采购计划明细Json字符串-转换成List错误！");
             return model;
         }
+
+        //(0:待提交 1:待审核 2:待执行 3:执行中 4:已完成 -1:已取消)
+        //isAutoCommit true:自动提交 false:手动提交
+        String isAutoCommit = pd.getString("isAutoCommit");
+        if (isAutoCommit != null && "true".equals(isAutoCommit.trim())) {
+            purchasePlan.setState("1");
+        }
         this.update(purchasePlan);
+
         Map columnMap = new HashMap();
         columnMap.put("parent_id",purchasePlan.getId());
         purchasePlanDetailService.deleteByColumnMap(columnMap);
