@@ -62,6 +62,7 @@ public class SaleOrderByInvoiceServiceImp implements SaleOrderByInvoiceService {
             model.putMsg("数据库没有生成TabCol，请联系管理员！");
             return model;
         }
+
         String secondFieldCode = pd.getString("secondFieldCode");
         if (secondFieldCode != null && secondFieldCode.trim().length() > 0) {
             columnList = columnService.modifyColumnByFieldCode(secondFieldCode, columnList);
@@ -83,8 +84,12 @@ public class SaleOrderByInvoiceServiceImp implements SaleOrderByInvoiceService {
                 varMap.put("titles", secondTitleMap.get("titles"));
                 varMap.put("pid", null);
                 //查询第二层数据
-                varMap.put("children", this.findSecondList(map, secondTitleMap));
-                varMapList.add(varMap);
+                List<Map> secondList = this.findSecondList(map, secondTitleMap);
+
+                if(secondList!=null&&secondList.size()>0){
+                    varMap.put("children", secondList);
+                    varMapList.add(varMap);
+                }
             }
         }
         result.put("varList",varMapList);
@@ -98,7 +103,7 @@ public class SaleOrderByInvoiceServiceImp implements SaleOrderByInvoiceService {
 
         PageData findMap = new PageData();
         findMap.put("parentId", parentId);
-
+        findMap.put("queryStr"," (ifnull(orderDetail.count, 0) - ifnull(invoice0.invoice_count, 0) - ifnull(invoice1.invoice_count, 0)) > 0 ");
         List<Map> secondMapList = new ArrayList();
         List<Map> varList = orderDetailByInvoiceService.findListPageOrderDetailByInvoice(findMap);
         if(varList != null && varList.size() > 0) {
