@@ -79,7 +79,7 @@
             <!--已收款-->
             round(ifnull(receive.receive_sum, 0), 2) receiveSum,
             <!--已开票金额-->
-            round(ifnull(invoice.invoice_sum, 0), 2) invoiceSum,
+            round(ifnull(orderInvoice.invoice_sum, 0), 2) invoiceSum,
             <!--已发货金额-->
             round(ifnull(deliver.deliver_sum, 0), 2) deliverSum
         from view_sale_order_by_invoice saleOrder
@@ -90,9 +90,6 @@
         <!--付款明细表汇总 view_sale_receive_detail-->
         left join view_sale_receive_detail receive on saleOrder.id = receive.order_id
 
-        <!--开票明细表汇总(1:已开票) view_sale_invoice_detail-->
-        left join view_sale_invoice_detail invoice on saleOrder.id = invoice.order_id
-
         <!--发货明细表汇总(1:已发货) vmes_sale_deliver_detail-->
         left join (
             select order_id, sum(sum) deliver_sum
@@ -102,15 +99,15 @@
         ) deliver on saleOrder.id = deliver.order_id
 
         <!--已生成开票订单查询-->
-        <!--
+
         left join (
-            select b.parent_id order_id
+            select b.parent_id order_id, sum(a.sum) invoice_sum
             from vmes_sale_invoice_detail a
             left join vmes_sale_order_detail b on a.order_detail_id = b.id
-            where a.state in ('0','1')
+            where a.state in ('1')
             group by b.parent_id
         ) orderInvoice on saleOrder.id = orderInvoice.order_id
-        -->
+
         <where>
             <if test="currentCompanyId != null and currentCompanyId != ''" >
                 and saleOrder.company_id = #{currentCompanyId}
@@ -126,6 +123,10 @@
             </if>
             <if test="customerName != null and customerName != ''">
                 and customer.name LIKE CONCAT(CONCAT(#{customerName}),'%')
+            </if>
+            <!--queryStr 自定义sql查询语句-->
+            <if test="queryStr != null and queryStr != ''" >
+                and ${queryStr}
             </if>
         </where>
         <if test="orderStr != null and orderStr != ''" >
