@@ -438,6 +438,14 @@ public class SaleOrderServiceImp implements SaleOrderService {
             order.setTotalSum(BigDecimal.valueOf(0D));
             order.setOrderSum(BigDecimal.valueOf(0D));
         }
+
+        //状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
+        //isAutoCommit true:自动提交 false:手动提交
+        String isAutoCommit = pageData.getString("isAutoCommit");
+        if (isAutoCommit != null && "true".equals(isAutoCommit.trim())) {
+            order.setState("1");
+        }
+
         this.update(order);
 
 //        //3.修改客户余额(vmes_customer.balance)
