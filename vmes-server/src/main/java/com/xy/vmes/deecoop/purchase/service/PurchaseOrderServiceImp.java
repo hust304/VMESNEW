@@ -743,9 +743,16 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService {
                 "O");
         purchaseOrder.setCode(code);
         purchaseOrder.setCompanyId(companyID);
+
         //(0:待提交 1:待审核 2:采购中 3:已完成 -1:已取消)
         purchaseOrder.setState("0");
+        //isAutoCommit true:自动提交 false:手动提交
+        String isAutoCommit = pd.getString("isAutoCommit");
+        if (isAutoCommit != null && "true".equals(isAutoCommit.trim())) {
+            purchaseOrder.setState("1");
+        }
         this.save(purchaseOrder);
+
         if(mapList!=null&&mapList.size()>0){
             for(int i=0;i<mapList.size();i++){
                 Map<String, String> detailMap = mapList.get(i);
