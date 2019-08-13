@@ -166,7 +166,6 @@
                                     and company_id = #{companyId}
                                 </if>
                                 and path_id like '%2d75e49bcb9911e884ad00163e105f05%'
-                                and (is_simple is null or is_simple = 'N')
                                 and isdisable = '1'
                             </where>
                         )
@@ -182,7 +181,6 @@
                                     and company_id = #{companyId}
                                 </if>
                                 and path_id like '%2d75e49bcb9911e884ad00163e105f05%'
-                                and is_simple = 'Y'
                                 and isdisable = '1'
                             </where>
                         )
