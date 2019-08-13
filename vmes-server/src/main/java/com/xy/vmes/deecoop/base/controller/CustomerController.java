@@ -319,6 +319,7 @@ public class CustomerController {
             object.setQrcode(qrcode);
         }
         customerService.save(object);
+        model.put("id",object.getId());
         Long endTime = System.currentTimeMillis();
         logger.info("################customer/addCustomer 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
