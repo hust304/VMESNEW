@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+说明：发货明细关联出库明细 Mapper.xml
+创建人：陈刚
+创建时间：2019-08-13
+ -->
+<mapper namespace="com.xy.vmes.deecoop.sale.dao.SaleDeliverDtlOnOutDtlMapper">
+    <insert id="saleDeliverDetailOnOutDetail" >
+    delete from vmes_column where model_code = 'saleDeliverDetailOnOutDetail' ;
+    insert into vmes_column (
+    id,model_code,title_key,title_name,serial_number,
+    isdisable,ishide,isedit,ismust,cdate,
+    cuser
+    ) VALUES
+        (replace(uuid(), '-', ''), 'saleDeliverDetailOnOutDetail', 'id', 'id', 0, '1', '0', '1', '0', '2018-12-16 11:15:19', 'admin'),
+        (replace(uuid(), '-', ''), 'saleDeliverDetailOnOutDetail', 'parentId', '发货单ID', 1, '1', '0', '1', '0', '2018-12-16 11:15:19', 'admin'),
+        (replace(uuid(), '-', ''), 'saleDeliverDetailOnOutDetail', 'orderId', '订单id', 2, '1', '0', '1', '0', '2018-12-16 11:15:19', 'admin'),
+        (replace(uuid(), '-', ''), 'saleDeliverDetailOnOutDetail', 'orderDetaiId', '订单明细ID', 3, '1', '0', '1', '0', '2018-12-16 11:15:19', 'admin'),
+        (replace(uuid(), '-', ''), 'saleDeliverDetailOnOutDetail', 'outDetailId', '出单明细id', 4, '1', '0', '1', '0', '2018-12-16 11:15:19', 'admin'),
+
+        (replace(uuid(), '-', ''), 'saleDeliverDetailOnOutDetail', 'productId', 'productId', 5, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleDeliverDetailOnOutDetail', 'state', '发货状态(0:待发货 1:已发货 -1:已取消)', 6, '1', '0', '1', '0', '2018-12-16 11:15:19', 'admin'),
+        (replace(uuid(), '-', ''), 'saleDeliverDetailOnOutDetail', 'stateName', '发货状态', 6, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+        (replace(uuid(), '-', ''), 'saleDeliverDetailOnOutDetail', 'orderUnit', '单位id', 7, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleDeliverDetailOnOutDetail', 'orderCount', '发货数量', 8, '1', '1', '1', '0', '2018-12-16 11:15:19', 'admin'),
+        (replace(uuid(), '-', ''), 'saleDeliverDetailOnOutDetail', 'priceUnit', '计价单位id', 9, '1', '0', '1', '0', '2018-12-16 11:15:19', 'admin'),
+
+        (replace(uuid(), '-', ''), 'saleDeliverDetailOnOutDetail', 'priceCount', '结算数量', 10, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleDeliverDetailOnOutDetail', 'productPrice', '货品单价', 11, '1', '1', '1', '0', '2018-12-16 11:15:19', 'admin'),
+        (replace(uuid(), '-', ''), 'saleDeliverDetailOnOutDetail', 'sum', '发货金额', 12, '1', '1', '1', '0', '2018-12-16 11:15:19', 'admin'),
+        (replace(uuid(), '-', ''), 'saleDeliverDetailOnOutDetail', 'deliverDate', '发货日期', 13, '1', '0', '1', '0', '2018-12-16 11:15:19', 'admin'),
+        (replace(uuid(), '-', ''), 'saleDeliverDetailOnOutDetail', 'cuser', '创建用户id', 14, '1', '0', '1', '0', '2018-12-16 11:15:19', 'admin'),
+
+        (replace(uuid(), '-', ''), 'saleDeliverDetailOnOutDetail', 'cdate', '创建时间', 15, '1', '0', '1', '0', '2018-12-16 11:15:19', 'admin'),
+        (replace(uuid(), '-', ''), 'saleDeliverDetailOnOutDetail', 'uuser', '修改用户id', 16, '1', '0', '1', '0', '2018-12-16 11:15:19', 'admin'),
+        (replace(uuid(), '-', ''), 'saleDeliverDetailOnOutDetail', 'udate', '修改时间', 17, '1', '0', '1', '0', '2018-12-16 11:15:19', 'admin'),
+        (replace(uuid(), '-', ''), 'saleDeliverDetailOnOutDetail', 'remark', '备注', 18, '1', '1', '1', '0', '2018-12-16 11:15:19', 'admin'),
+        (replace(uuid(), '-', ''), 'saleDeliverDetailOnOutDetail', 'isdisable', '是否启用(0:已禁用 1:启用)', 19, '1', '0', '1', '0', '2018-12-16 11:15:19', 'admin'),
+
+        (replace(uuid(), '-', ''), 'saleDeliverDetailOnOutDetail', 'deliverCode', '发货单号', 20, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+
+
+        (replace(uuid(), '-', ''), 'saleDeliverDetailOnOutDetail', 'productCode', '货品编码', 21, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleDeliverDetailOnOutDetail', 'productName', '货品名称', 22, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleDeliverDetailOnOutDetail', 'productSpec', '规格型号', 23, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleDeliverDetailOnOutDetail', 'productGenre', '货品属性id', 24, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleDeliverDetailOnOutDetail', 'productGenreName', '货品属性', 24, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleDeliverDetailOnOutDetail', 'orderUnitName', '单位', 25, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleDeliverDetailOnOutDetail', 'priceUnitName', '计价单位', 26, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+
+        (replace(uuid(), '-', ''), 'saleDeliverDetailOnOutDetail', 'sysOrderCode', '订单编号', 27, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+        (replace(uuid(), '-', ''),'saleDeliverDetailOnOutDetail','customerId','客户id',28, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'saleDeliverDetailOnOutDetail','customerCode','客户编号',29, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'saleDeliverDetailOnOutDetail','customerName','客户名称',30, '1','1','1','0',now(), 'admin'),
+
+    </insert>
+
+
+    <select id="findSaleDeliverDetailOnOutDetail" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+            deliverDetail.id id,
+            deliverDetail.parent_id parentId,
+            deliverDetail.order_id orderId,
+            deliverDetail.order_detai_id orderDetaiId,
+            deliverDetail.out_detail_id outDetailId,
+
+            deliverDetail.product_id productId,
+            deliverDetail.state state,
+            CASE
+                WHEN deliverDetail.state = '0' THEN '待发货'
+                WHEN deliverDetail.state = '1' THEN '已发货'
+                WHEN deliverDetail.state = '-1' THEN '已取消'
+            ELSE null
+            END stateName,
+            deliverDetail.order_unit orderUnit,
+            round(ifnull(deliverDetail.order_count, 0), 2) orderCount,
+            deliverDetail.price_unit priceUnit,
+
+            round(ifnull(deliverDetail.price_count, 0), 2) priceCount,
+            round(ifnull(deliverDetail.product_price, 0), 2) productPrice,
+            round(ifnull(deliverDetail.sum, 0), 2) sum,
+            deliverDetail.deliver_date deliverDate,
+            deliverDetail.cuser cuser,
+
+            deliverDetail.cdate cdate,
+            deliverDetail.uuser uuser,
+            deliverDetail.udate udate,
+            deliverDetail.remark remark,
+            deliverDetail.isdisable isdisable,
+
+            deliver.deliver_code deliverCode,
+            saleOrder.sys_code sysOrderCode,
+
+            deliver.customer_id customerId,
+            customer.code customerCode,
+            customer.name customerName,
+
+            <!--货品表-->
+            product.code productCode,
+            product.name productName,
+            product.spec productSpec,
+            product.genre productGenre,
+            genre.name productGenreName,
+            orderUnit.name orderUnitName,
+            priceUnit.name priceUnitName
+
+        from vmes_sale_deliver_detail deliverDetail
+            left join vmes_sale_deliver deliver on deliverDetail.parent_id = deliver.id
+            left join vmes_customer customer on deliver.customer_id = customer.id
+
+            left join vmes_sale_order saleOrder on deliverDetail.order_id = saleOrder.id
+
+            left join vmes_product product on deliverDetail.product_id = product.id
+            left join vmes_dictionary genre on product.genre = genre.id
+            left join vmes_dictionary orderUnit on deliverDetail.order_unit = orderUnit.id
+            left join vmes_dictionary priceUnit on deliverDetail.price_unit = priceUnit.id
+
+            left join vmes_warehouse_out_detail outDetail on deliverDetail.out_detail_id = outDetail.id
+        <where>
+            <!--出库单明细 sql子查询 字符串-->
+            <if test="outDtlQuerySql != null and outDtlQuerySql != ''" >
+                and deliverDetail.out_detail_id in (${outDtlQuerySql})
+            </if>
+
+        </where>
+        <if test="orderStr != null and orderStr != ''" >
+            order by ${orderStr}
+        </if>
+    </select>
+
+</mapper>

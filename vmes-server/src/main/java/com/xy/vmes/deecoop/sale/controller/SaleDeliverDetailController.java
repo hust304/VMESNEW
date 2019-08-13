@@ -3,6 +3,7 @@ package com.xy.vmes.deecoop.sale.controller;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.service.SaleDeliverDetailByRetreatService;
 import com.xy.vmes.service.SaleDeliverDetailService;
+import com.xy.vmes.service.SaleDeliverDtlOnOutDtlService;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
@@ -29,6 +30,8 @@ public class SaleDeliverDetailController {
     private SaleDeliverDetailService saleDeliverDetailService;
     @Autowired
     private SaleDeliverDetailByRetreatService saleDeliverDetailByRetreatService;
+    @Autowired
+    private SaleDeliverDtlOnOutDtlService saleDeliverDtlOnOutDtlService;
 
     /**
     * @author 陈刚 自动创建，可以修改
@@ -76,7 +79,23 @@ public class SaleDeliverDetailController {
         return model;
     }
 
+    /**
+     * 获取采购发货单明细信息-根据出库单信息(出库单id)
+     * @return
+     * @throws Exception
+     */
+    @PostMapping("/sale/saleDeliverDetail/listPageDeliverDetailByOut")
+    public ResultModel listPageDeliverDetailByOut() throws Exception {
+        logger.info("################/sale/saleDeliverDetail/listPageDeliverDetailByOut 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
 
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = saleDeliverDtlOnOutDtlService.listPageDeliverDetailByOut(pd);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleDeliverDetail/listPageDeliverDetailByOut 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
 
     /**
      * 修改发货单(发货明细)
