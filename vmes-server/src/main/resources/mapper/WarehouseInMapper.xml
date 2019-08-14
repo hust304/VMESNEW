@@ -403,13 +403,13 @@
         </if>
 
         <!--warehouse_attribute:仓库属性(warehouse:(简版,复杂版)仓库 spare:备件库)-->
-        <!--过滤出 (备件库)-->
+        <!--过滤出 (备件库)-入库单-->
         <if test="'true' == isNeedWarehouseSpare">
             and a.warehouse_attribute = 'spare'
         </if>
 
-        <!--过滤出(非备件库) 自定义sql查询语句-->
-        <if test="'true' == isNeedNotInWarehouseSpare">
+        <!--过滤出(复杂版,简版)仓库-入库单(非备件库) 自定义sql查询语句-->
+        <if test="'true' == isNeedWarehouseWarehouse">
             and a.warehouse_attribute = 'warehouse'
         </if>
 
