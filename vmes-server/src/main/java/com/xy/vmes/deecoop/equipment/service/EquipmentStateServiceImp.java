@@ -310,7 +310,7 @@ public class EquipmentStateServiceImp implements EquipmentStateService {
                 titleMap.put(equipmentSensor.getTargetCode(),equipmentSensor.getTargetName());
                 titlesList.add(titleMap);
                 if(colStr==null){
-                    colStr = equipmentSensor.getTargetFormulaSql() + " " + equipmentSensor.getTargetCode();
+                    colStr = " ,"+equipmentSensor.getTargetFormulaSql() + " " + equipmentSensor.getTargetCode();
                 }else {
                     colStr = colStr + "," + equipmentSensor.getTargetFormulaSql() + " " + equipmentSensor.getTargetCode();
                 }
