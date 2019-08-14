@@ -221,7 +221,7 @@
 
     <select id="get24HoursDataDetail"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
         select
-        DATE_FORMAT(t.cdate,'%H:%i:%s') cdate,
+        DATE_FORMAT(t.cdate,'%H:%i:%s') cdate
         ${colStr}
         from ${viewStr} t
         <where>
