@@ -130,10 +130,15 @@ public class EquipmentStateServiceImp implements EquipmentStateService {
         Map outputNumMap = equipmentStateMapper.getOutputNum(pd);
         Map startDateMap = equipmentStateMapper.getStartDate(pd);
         Map collectDateMap = equipmentStateMapper.getCollectDate(pd);
-
-        model.put("outputNum",outputNumMap.get("outputNum"));
-        model.put("startDate",startDateMap.get("startDate"));
-        model.put("collectDate",collectDateMap.get("collectDate"));
+        if(outputNumMap!=null&&outputNumMap.size()>0){
+            model.put("outputNum",outputNumMap.get("outputNum"));
+        }
+        if(startDateMap!=null&&startDateMap.size()>0){
+            model.put("startDate",startDateMap.get("startDate"));
+        }
+        if(collectDateMap!=null&&collectDateMap.size()>0){
+            model.put("collectDate",collectDateMap.get("collectDate"));
+        }
         return model;
     }
 
