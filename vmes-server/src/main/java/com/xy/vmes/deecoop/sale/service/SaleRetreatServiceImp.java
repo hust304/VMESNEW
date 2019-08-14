@@ -689,7 +689,20 @@ public class SaleRetreatServiceImp implements SaleRetreatService {
         this.save(retreat);
 
         //2. 退货单明细
-        saleRetreatDetailService.addSaleRetreatDetail(retreat, retreatDtlList);
+        //saleRetreatDetailService.addSaleRetreatDetail(retreat, retreatDtlList);
+        if (retreatDtlList != null && retreatDtlList.size() > 0) {
+            for (SaleRetreatDetail detail : retreatDtlList) {
+                //退货明细状态 (0:待提交 1:待审核 2:待退款 3:已完成 -1:已取消)
+                detail.setState("0");
+                if (isAutoCommit != null && "true".equals(isAutoCommit.trim())) {
+                    detail.setState("1");
+                }
+
+                detail.setParentId(retreat.getId());
+                detail.setCuser(retreat.getCuser());
+                saleRetreatDetailService.save(detail);
+            }
+        }
 
         return model;
     }

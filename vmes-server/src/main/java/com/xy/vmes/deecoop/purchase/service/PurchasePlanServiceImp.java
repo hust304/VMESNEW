@@ -427,8 +427,13 @@ public class PurchasePlanServiceImp implements PurchasePlanService {
                     purchasePlanDetail.setReason("350135d34d1b43aeb4e2977061632045");//齐套分析预采
                 }
                 purchasePlanDetail.getProductId();
+
                 //(0:待提交 1:待审核 2:待执行 3:执行中 4:已完成 -1:已取消)
                 purchasePlanDetail.setState("0");
+                if (isAutoCommit != null && "true".equals(isAutoCommit.trim())) {
+                    purchasePlanDetail.setState("1");
+                }
+
                 purchasePlanDetail.setCuser(purchasePlan.getCuser());
                 purchasePlanDetail.setUuser(purchasePlan.getUuser());
                 purchasePlanDetailService.save(purchasePlanDetail);

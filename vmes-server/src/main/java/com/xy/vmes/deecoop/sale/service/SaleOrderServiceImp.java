@@ -343,7 +343,33 @@ public class SaleOrderServiceImp implements SaleOrderService {
         this.save(order);
 
         //2.添加订单明细
-        saleOrderDetailService.addSaleOrderDetail(order, detailList);
+        //saleOrderDetailService.addSaleOrderDetail(order, detailList);
+        if (detailList != null && detailList.size() > 0) {
+            for (SaleOrderDetail detail : detailList) {
+                //订单明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
+                detail.setState("0");
+                if (isAutoCommit != null && "true".equals(isAutoCommit.trim())) {
+                    detail.setState("1");
+                }
+
+                detail.setParentId(order.getId());
+                detail.setCuser(order.getCuser());
+
+                //计价类型(1:先计价 2:后计价)
+                if (order.getPriceType() != null && "2".equals(order.getPriceType().trim())) {
+                    //计价单位id
+                    detail.setPriceUnit(null);
+                    //货品数量(计价数量)
+                    detail.setPriceCount(BigDecimal.valueOf(0D));
+                    //货品单价
+                    detail.setProductPrice(BigDecimal.valueOf(0D));
+                    //货品金额(订购数量 * 货品单价)
+                    detail.setProductSum(BigDecimal.valueOf(0D));
+                }
+
+                saleOrderDetailService.save(detail);
+            }
+        }
 
         //3.修改客户余额(vmes_customer.balance)
         //advance_sum:预付款(定金)
