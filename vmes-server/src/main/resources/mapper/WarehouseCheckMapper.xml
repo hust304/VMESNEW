@@ -105,7 +105,8 @@
 
         udate udate,
         remark remark,
-        isdisable isdisable
+        isdisable isdisable,
+        warehouse_attribute warehouseAttribute
         from vmes_warehouse_check
         <choose>
             <!--

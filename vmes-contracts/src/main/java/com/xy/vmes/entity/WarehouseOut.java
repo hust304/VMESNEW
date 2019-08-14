@@ -67,6 +67,9 @@ public class WarehouseOut implements Serializable {
 	//是否简版仓库 Y:是简版 N:非简版 is null:非简版
 	@TableField("is_simple")
 	private String isSimple;
+	//仓库属性(spare:备件库)
+	@TableField("warehouse_attribute")
+	private String warehouseAttribute;
 
 
 	public void setId(String id) {
@@ -165,7 +168,13 @@ public class WarehouseOut implements Serializable {
 	public void setIsSimple(String isSimple) {
 		this.isSimple = isSimple;
 	}
-/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+	public String getWarehouseAttribute() {
+		return warehouseAttribute;
+	}
+	public void setWarehouseAttribute(String warehouseAttribute) {
+		this.warehouseAttribute = warehouseAttribute;
+	}
+	/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 
 }

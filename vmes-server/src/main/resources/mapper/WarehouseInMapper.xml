@@ -231,7 +231,8 @@
             remark remark,
             isdisable isdisable,
 
-            is_simple isSimple
+            is_simple isSimple,
+            warehouse_attribute warehouseAttribute
         from vmes_warehouse_in
         <choose>
             <!--
