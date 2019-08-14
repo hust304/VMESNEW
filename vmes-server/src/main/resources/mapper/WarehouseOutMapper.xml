@@ -144,31 +144,18 @@
             <if test="companyId != null and companyId != ''" >
                 and company_id = #{companyId}
             </if>
-            <!--过滤出 (备件库)-->
+
+            <!--warehouse_attribute:仓库属性(warehouse:(简版,复杂版)仓库 spare:备件库)-->
+            <!--过滤出 (备件库)-出库单-->
             <if test="'true' == isNeedWarehouseSpare">
-                and warehouse_id in (
-                select id from vmes_warehouse
-                <where>
-                    <if test="currentCompanyId != null and currentCompanyId != ''" >
-                        and company_id = #{currentCompanyId}
-                    </if>
-                    and name = '备件库' and layer = 2
-                </where>
-                )
+                and warehouse_attribute = 'spare'
             </if>
 
-            <!--过滤出(非备件库) 自定义sql查询语句-->
-            <if test="'true' == isNeedNotInWarehouseSpare">
-                and warehouse_id not in (
-                select id from vmes_warehouse
-                <where>
-                    <if test="currentCompanyId != null and currentCompanyId != ''" >
-                        and company_id = #{currentCompanyId}
-                    </if>
-                    and name = '备件库' and layer = 2
-                </where>
-                )
+            <!--过滤出(复杂版,简版)仓库-出库单(非备件库) 自定义sql查询语句-->
+            <if test="'true' == isNeedWarehouseWarehouse">
+                and warehouse_attribute = 'warehouse'
             </if>
+
         </where>
     </delete>
 
@@ -181,31 +168,17 @@
                     and company_id = #{companyId}
                 </if>
 
-                <!--过滤出 (备件库)-->
+                <!--warehouse_attribute:仓库属性(warehouse:(简版,复杂版)仓库 spare:备件库)-->
+                <!--过滤出 (备件库)-出库单-->
                 <if test="'true' == isNeedWarehouseSpare">
-                    and warehouse_id in (
-                    select id from vmes_warehouse
-                    <where>
-                        <if test="currentCompanyId != null and currentCompanyId != ''" >
-                            and company_id = #{currentCompanyId}
-                        </if>
-                        and name = '备件库' and layer = 2
-                    </where>
-                    )
+                    and warehouse_attribute = 'spare'
                 </if>
 
-                <!--过滤出(非备件库) 自定义sql查询语句-->
-                <if test="'true' == isNeedNotInWarehouseSpare">
-                    and warehouse_id not in (
-                    select id from vmes_warehouse
-                    <where>
-                        <if test="currentCompanyId != null and currentCompanyId != ''" >
-                            and company_id = #{currentCompanyId}
-                        </if>
-                        and name = '备件库' and layer = 2
-                    </where>
-                    )
+                <!--过滤出(复杂版,简版)仓库-出库单(非备件库) 自定义sql查询语句-->
+                <if test="'true' == isNeedWarehouseWarehouse">
+                    and warehouse_attribute = 'warehouse'
                 </if>
+
             </where>
         )
     </delete>
@@ -221,31 +194,17 @@
                         and company_id = #{companyId}
                     </if>
 
-                    <!--过滤出 (备件库)-->
+                    <!--warehouse_attribute:仓库属性(warehouse:(简版,复杂版)仓库 spare:备件库)-->
+                    <!--过滤出 (备件库)-出库单-->
                     <if test="'true' == isNeedWarehouseSpare">
-                        and warehouse_id in (
-                        select id from vmes_warehouse
-                        <where>
-                            <if test="currentCompanyId != null and currentCompanyId != ''" >
-                                and company_id = #{currentCompanyId}
-                            </if>
-                            and name = '备件库' and layer = 2
-                        </where>
-                        )
+                        and warehouse_attribute = 'spare'
                     </if>
 
-                    <!--过滤出(非备件库) 自定义sql查询语句-->
-                    <if test="'true' == isNeedNotInWarehouseSpare">
-                        and warehouse_id not in (
-                        select id from vmes_warehouse
-                        <where>
-                            <if test="currentCompanyId != null and currentCompanyId != ''" >
-                                and company_id = #{currentCompanyId}
-                            </if>
-                            and name = '备件库' and layer = 2
-                        </where>
-                        )
+                    <!--过滤出(复杂版,简版)仓库-出库单(非备件库) 自定义sql查询语句-->
+                    <if test="'true' == isNeedWarehouseWarehouse">
+                        and warehouse_attribute = 'warehouse'
                     </if>
+
                 </where>
             )
         )
@@ -262,31 +221,17 @@
                         and company_id = #{companyId}
                     </if>
 
-                    <!--过滤出 (备件库)-->
+                    <!--warehouse_attribute:仓库属性(warehouse:(简版,复杂版)仓库 spare:备件库)-->
+                    <!--过滤出 (备件库)-出库单-->
                     <if test="'true' == isNeedWarehouseSpare">
-                        and warehouse_id in (
-                        select id from vmes_warehouse
-                        <where>
-                            <if test="currentCompanyId != null and currentCompanyId != ''" >
-                                and company_id = #{currentCompanyId}
-                            </if>
-                            and name = '备件库' and layer = 2
-                        </where>
-                        )
+                        and warehouse_attribute = 'spare'
                     </if>
 
-                    <!--过滤出(非备件库) 自定义sql查询语句-->
-                    <if test="'true' == isNeedNotInWarehouseSpare">
-                        and warehouse_id not in (
-                        select id from vmes_warehouse
-                        <where>
-                            <if test="currentCompanyId != null and currentCompanyId != ''" >
-                                and company_id = #{currentCompanyId}
-                            </if>
-                            and name = '备件库' and layer = 2
-                        </where>
-                        )
+                    <!--过滤出(复杂版,简版)仓库-出库单(非备件库) 自定义sql查询语句-->
+                    <if test="'true' == isNeedWarehouseWarehouse">
+                        and warehouse_attribute = 'warehouse'
                     </if>
+
                 </where>
             )
         )
@@ -303,30 +248,15 @@
                         and company_id = #{companyId}
                     </if>
 
-                    <!--过滤出 (备件库)-->
+                    <!--warehouse_attribute:仓库属性(warehouse:(简版,复杂版)仓库 spare:备件库)-->
+                    <!--过滤出 (备件库)-出库单-->
                     <if test="'true' == isNeedWarehouseSpare">
-                        and warehouse_id in (
-                        select id from vmes_warehouse
-                        <where>
-                            <if test="currentCompanyId != null and currentCompanyId != ''" >
-                                and company_id = #{currentCompanyId}
-                            </if>
-                            and name = '备件库' and layer = 2
-                        </where>
-                        )
+                        and warehouse_attribute = 'spare'
                     </if>
 
-                    <!--过滤出(非备件库) 自定义sql查询语句-->
-                    <if test="'true' == isNeedNotInWarehouseSpare">
-                        and warehouse_id not in (
-                        select id from vmes_warehouse
-                        <where>
-                            <if test="currentCompanyId != null and currentCompanyId != ''" >
-                                and company_id = #{currentCompanyId}
-                            </if>
-                            and name = '备件库' and layer = 2
-                        </where>
-                        )
+                    <!--过滤出(复杂版,简版)仓库-出库单(非备件库) 自定义sql查询语句-->
+                    <if test="'true' == isNeedWarehouseWarehouse">
+                        and warehouse_attribute = 'warehouse'
                     </if>
                 </where>
             )
@@ -617,30 +547,15 @@
                 and detail.state =  #{detailState}
             </if>
 
-            <!--过滤出 (备件库)-->
+            <!--warehouse_attribute:仓库属性(warehouse:(简版,复杂版)仓库 spare:备件库)-->
+            <!--过滤出 (备件库)-出库单-->
             <if test="'true' == isNeedWarehouseSpare">
-                and warehouseout.warehouse_id in (
-                    select id from vmes_warehouse
-                    <where>
-                        <if test="currentCompanyId != null and currentCompanyId != ''" >
-                            and company_id = #{currentCompanyId}
-                        </if>
-                        and name = '备件库' and layer = 2
-                    </where>
-                )
+                and warehouseout.warehouse_attribute = 'spare'
             </if>
 
-            <!--过滤出(非备件库) 自定义sql查询语句-->
-            <if test="'true' == isNeedNotInWarehouseSpare">
-                and warehouseout.warehouse_id not in (
-                    select id from vmes_warehouse
-                    <where>
-                        <if test="currentCompanyId != null and currentCompanyId != ''" >
-                            and company_id = #{currentCompanyId}
-                        </if>
-                        and name = '备件库' and layer = 2
-                    </where>
-                )
+            <!--过滤出(复杂版,简版)仓库-出库单(非备件库) 自定义sql查询语句-->
+            <if test="'true' == isNeedWarehouseWarehouse">
+                and warehouseout.warehouse_attribute = 'warehouse'
             </if>
 
             <!--queryStr 自定义sql查询语句-->
