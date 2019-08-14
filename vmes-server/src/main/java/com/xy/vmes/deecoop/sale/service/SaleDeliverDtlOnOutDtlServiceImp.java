@@ -70,9 +70,7 @@ public class SaleDeliverDtlOnOutDtlServiceImp implements SaleDeliverDtlOnOutDtlS
             model.putMsg("出库单id为空或空字符串！");
             return model;
         }
-
-        String outDtlQuerySql = "select id from vmes_warehouse_out_detail where parent_id = '" + outId + "' and isdisable = '1' ";
-        pd.put("outDtlQuerySql", outDtlQuerySql);
+        pd.put("outParentId", outId);
 
         //设置查询排序方式
         String orderStr = pd.getString("orderStr");

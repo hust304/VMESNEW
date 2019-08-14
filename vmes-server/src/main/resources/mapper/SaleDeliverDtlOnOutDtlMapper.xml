@@ -116,11 +116,13 @@
             left join vmes_dictionary orderUnit on deliverDetail.order_unit = orderUnit.id
             left join vmes_dictionary priceUnit on deliverDetail.price_unit = priceUnit.id
 
-            left join vmes_warehouse_out_detail outDetail on deliverDetail.out_detail_id = outDetail.id
         <where>
-            <!--出库单明细 sql子查询 字符串-->
-            <if test="outDtlQuerySql != null and outDtlQuerySql != ''" >
-                and deliverDetail.out_detail_id in (${outDtlQuerySql})
+            <!--出库单id-->
+            <if test="outParentId != null and outParentId != ''" >
+                and deliverDetail.out_detail_id in (
+                    select id from vmes_warehouse_out_detail
+                    where parent_id = #{outParentId}
+                )
             </if>
 
         </where>
