@@ -925,7 +925,7 @@ public class RoleServiceImp implements RoleService {
         }
 
         List<Map<String, String>> varMapList = new ArrayList<Map<String, String>>();
-        List<Map<String, Object>> varList = userRoleService.listUserByRole(findMap);
+        List<Map> varList = userRoleService.listUserByRole(findMap);
         if(varList != null && varList.size() > 0) {
             for (Map<String, Object> map : varList) {
                 Map<String, String> varMap = new HashMap<String, String>();
@@ -993,7 +993,7 @@ public class RoleServiceImp implements RoleService {
         }
 
         List<Map<String, String>> varMapList = new ArrayList<Map<String, String>>();
-        List<Map<String, Object>> varList = userRoleService.listUserByRole(findMap);
+        List<Map> varList = userRoleService.listUserByRole(findMap);
         if(varList != null && varList.size() > 0) {
             for (Map<String, Object> map : varList) {
                 Map<String, String> varMap = new HashMap<String, String>();
@@ -1014,7 +1014,7 @@ public class RoleServiceImp implements RoleService {
     public ResultModel findListUserByRole(PageData pageData) throws Exception {
         ResultModel model = new ResultModel();
 
-        List<Map<String, Object>> mapList = userRoleService.listUserByRole(pageData);
+        List<Map> mapList = userRoleService.listUserByRole(pageData);
 
         List<Map<String, String>> userMapList = new ArrayList<Map<String, String>>();
         if (mapList != null && mapList.size() > 0) {
@@ -1034,6 +1034,36 @@ public class RoleServiceImp implements RoleService {
 
         Map result = new HashMap();
         result.put("options", userMapList);
+        model.putResult(result);
+        return model;
+    }
+
+    @Override
+    public ResultModel listUserByRole(PageData pd) throws Exception {
+        Pagination pg = HttpUtils.parsePagination(pd);
+        ResultModel model = new ResultModel();
+        Map result = new HashMap();
+        List<Column> columnList = columnService.findColumnList("userRole");
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
+        }
+
+        //获取指定栏位字符串-重新调整List<Column>
+        String fieldCode = pd.getString("fieldCode");
+        if (fieldCode != null && fieldCode.trim().length() > 0) {
+            columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
+        }
+
+        Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
+        List<Map>  varList = userRoleService.listUserByRole(pd);
+        List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
+
+        result.put("hideTitles",titleMap.get("hideTitles"));
+        result.put("titles",titleMap.get("titles"));
+        result.put("varList",varMapList);
+        result.put("pageData", pg);
         model.putResult(result);
         return model;
     }

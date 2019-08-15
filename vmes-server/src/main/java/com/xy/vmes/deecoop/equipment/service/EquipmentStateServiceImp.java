@@ -33,18 +33,8 @@ public class EquipmentStateServiceImp implements EquipmentStateService {
         ResultModel model = new ResultModel();
 
         String companyId = pd.getString("currentCompanyId");
-        String equipmentId = pd.getString("equipmentId");
-
-        //查询结果集 mapList，系统将is null 的这段给忽略掉了
-        List<Map> mapList = new ArrayList<Map>();
-        try {
-            PageData findMap = new PageData();
-            findMap.put("companyId", companyId);
-            findMap.put("equipmentId", equipmentId);
-            mapList = equipmentStateMapper.findEquipmentState(findMap);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        pd.put("companyId", companyId);
+        List<Map> mapList = equipmentStateMapper.findEquipmentState(pd);
 
         List<Map<String, String>> valueMapList = new ArrayList<Map<String, String>>();
         if (mapList != null && mapList.size() > 0) {

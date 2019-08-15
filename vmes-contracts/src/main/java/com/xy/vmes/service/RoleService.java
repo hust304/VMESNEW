@@ -169,6 +169,8 @@ public interface RoleService {
     Map<String, String> getNameKeyMap();//@
 //    void createBusinessMap();
     void implementBusinessMapByCompanyId(String companyId);//@
+
+    ResultModel listUserByRole(PageData pd)  throws Exception;
 }
 
 

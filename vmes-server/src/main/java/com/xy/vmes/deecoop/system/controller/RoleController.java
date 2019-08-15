@@ -468,6 +468,18 @@ public class RoleController {
         return model;
     }
 
+
+    @PostMapping("/system/role/listUserByRole")
+    public ResultModel listUserByRole() throws Exception {
+        logger.info("################role/listUserByRole 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = roleService.listUserByRole(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################role/listUserByRole 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
     /**
      * 获取当前角色id已经绑定用户List
      *
