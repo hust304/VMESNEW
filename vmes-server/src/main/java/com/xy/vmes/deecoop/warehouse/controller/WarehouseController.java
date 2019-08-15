@@ -2,9 +2,12 @@ package com.xy.vmes.deecoop.warehouse.controller;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.StringUtil;
+import com.xy.vmes.common.util.TreeUtil;
+import com.xy.vmes.entity.TreeEntity;
 import com.xy.vmes.entity.Warehouse;
 import com.xy.vmes.service.*;
 import com.yvan.*;
+import com.yvan.common.util.Common;
 import com.yvan.springmvc.ResultModel;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -157,6 +160,8 @@ public class WarehouseController {
         return model;
     }
 
+
+
     /**
     * @author 陈刚
     * @date 2018-10-10
@@ -184,6 +189,115 @@ public class WarehouseController {
         logger.info("################/warehouseBase/findListWarehouseByWarehouseProduct 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
+
+    @PostMapping("/warehouse/warehouseBase/treeSelectWarehouse")
+    public ResultModel treeSelectWarehouse () throws Exception {
+        logger.info("################/warehouse/warehouseBase/treeSelectWarehouse 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+
+        String companyId = pd.getString("currentCompanyId");
+        if (companyId == null || companyId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("企业id为空或空字符串！");
+            return model;
+        }
+
+        String isNeedEntityVirtual = new String();
+        if (pd.getString("isNeedEntityVirtual") != null) {
+            isNeedEntityVirtual = pd.getString("isNeedEntityVirtual").trim();
+        }
+        pd.put("isNeedEntityVirtual", isNeedEntityVirtual);
+        //是否启用(0:已禁用 1:启用)
+        pd.put("isdisable", "1");
+
+        String orderStr = new String();
+        if (pd.getString("orderStr") != null) {
+            orderStr = pd.getString("orderStr").trim();
+        }
+        pd.put("orderStr", orderStr);
+
+        List<TreeEntity> treeList = new ArrayList<TreeEntity>();
+        List<Map> mapList = new ArrayList<Map>();
+        try {
+            mapList = warehouseService.getDataListPage(pd);
+            if (mapList != null && mapList.size() > 0) {
+                for (Map<String, Object> mapObject : mapList) {
+                    TreeEntity treeNode = new TreeEntity();
+                    //id 当前节点ID
+                    String id = (String)mapObject.get("id");
+                    treeNode.setId(id);
+                    treeNode.setValue(id);
+
+                    //pid 当前节点父ID
+                    String pid = (String)mapObject.get("pid");
+                    treeNode.setPid(pid);
+
+                    //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
+                    //虚拟库:warehouseVirtual:56f5e83dcb9911e884ad00163e105f05
+                    if (Common.DICTIONARY_MAP.get("warehouseEntity").equals(pid)
+                        || Common.DICTIONARY_MAP.get("warehouseVirtual").equals(pid)
+                    ) {
+                        treeNode.setPid(Common.DICTIONARY_MAP.get("warehouseRoot"));
+                    }
+
+                    //name (必须)当前节点名称
+                    String name = (String)mapObject.get("name");
+                    treeNode.setName(name);
+                    treeNode.setLabel(name);
+
+                    //isdisable (必须)是否禁用(0:已禁用 1:启用)
+                    String isdisable = (String)mapObject.get("isdisable");
+                    treeNode.setIsdisable(isdisable);
+
+                    //layer 当前节点级别
+                    Integer layer = Integer.valueOf(0);
+                    if (mapObject.get("layer") != null) {
+                        layer = (Integer)mapObject.get("layer");
+                    }
+                    treeNode.setLayer(layer);
+
+                    //serialNumber 节点顺序
+                    Integer serialNumber = Integer.valueOf(0);
+                    if (mapObject.get("layer") != null) {
+                        serialNumber = (Integer)mapObject.get("serialNumber");
+                    }
+                    treeNode.setSerialNumber(serialNumber);
+
+
+                    treeList.add(treeNode);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        //插入根节点
+        TreeEntity rootNode = new TreeEntity();
+        Warehouse rootWarehouse = warehouseService.findWarehouseById(Common.DICTIONARY_MAP.get("warehouseRoot"));
+        rootNode.setId(rootWarehouse.getId());
+        rootNode.setPid(rootWarehouse.getPid());
+        rootNode.setName(rootWarehouse.getName());
+        rootNode.setIsdisable(rootWarehouse.getIsdisable());
+        rootNode.setLayer(rootWarehouse.getLayer());
+        rootNode.setSerialNumber(rootWarehouse.getSerialNumber());
+        treeList.add(rootNode);
+
+        TreeEntity treeObj = TreeUtil.switchTree(Common.DICTIONARY_MAP.get("warehouseRoot"), treeList);
+        String treeJsonStr = YvanUtil.toJson(treeObj);
+        System.out.println("treeJsonStr: " + treeJsonStr);
+
+        Map result = new HashMap();
+        result.put("options", treeObj.getChildren());
+        model.putResult(result);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/warehouse/warehouseBase/treeSelectWarehouse 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
 
     /**
      * 新增仓库(实体库)

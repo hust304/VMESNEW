@@ -229,6 +229,7 @@
             a.name name,
             a.name_en nameEn,
 
+            a.serial_number serialNumber,
             a.dept_id deptId,
             a.dept_place_key deptPlaceKey,
             a.path_name pathName,
@@ -290,7 +291,13 @@
             <if test="nodeId != null and nodeId != ''" >
                 and a.path_id LIKE CONCAT(CONCAT('%', #{nodeId}),'%')
             </if>
-            <!--queryStr 自定义sql查询语句-->
+            <!--nodeId 实体库,虚拟库 自定义sql查询语句-->
+            <if test="'true' == isNeedEntityVirtual">
+                <!--实体库:2d75e49bcb9911e884ad00163e105f05 虚拟库:56f5e83dcb9911e884ad00163e105f05 仓库表:vmes_warehouse-->
+                and (a.path_id LIKE '%2d75e49bcb9911e884ad00163e105f05%' or a.path_id LIKE '%56f5e83dcb9911e884ad00163e105f05%')
+            </if>
+
+        <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >
                 and ${queryStr}
             </if>
