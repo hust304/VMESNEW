@@ -74,7 +74,7 @@ public interface UserRoleMapper extends BaseMapper<UserRole> {
 	 * 创建人：陈刚
 	 * 创建时间：2018-08-22
 	 */
-	List<Map<String, Object>> listUserByRole(PageData pd);
+	List<Map> listUserByRole(PageData pd);
 
 
 }

@@ -234,6 +234,7 @@
         <!--查询显示字段-->
         user.user_code userCode,
         user.user_name userName,
+        role.name roleName,
         <!--查询隐藏字段-->
         CASE
           WHEN userRole.role_id is null THEN false

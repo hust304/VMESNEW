@@ -367,7 +367,7 @@ public class UserRoleServiceImp implements UserRoleService {
      * 创建人：陈刚
      * 创建时间：2018-08-22
      */
-    public List<Map<String, Object>> listUserByRole(PageData pd) {
+    public List<Map> listUserByRole(PageData pd) {
         return userRoleMapper.listUserByRole(pd);
     }
 

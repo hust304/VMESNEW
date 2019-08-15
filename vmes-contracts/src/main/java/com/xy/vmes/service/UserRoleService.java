@@ -146,7 +146,7 @@ public interface UserRoleService {
      * 创建人：陈刚
      * 创建时间：2018-08-22
      */
-    List<Map<String, Object>> listUserByRole(PageData pd);//@
+    List<Map> listUserByRole(PageData pd);//@
 
     /**
      * 获取角色ID(','逗号分隔的字符串)
