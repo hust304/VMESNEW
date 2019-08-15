@@ -190,6 +190,16 @@ public class WarehouseController {
         return model;
     }
 
+    /**
+     * 仓库-入库管理-新增(页面)-仓库(多级选择框)
+     * 获取当前企业(实体库,虚拟库)下面的仓库
+     * isNeedwarehouseGenre 是否需要仓库属性
+     *   isNeedwarehouseGenre:true:需要显示仓库属性(只显示仓库属性节点)
+     *   isNeedwarehouseGenre:true:实体库只获取(仓库)这一层级 (layer:2 的这一层-layer大于2的节点筛选出去)
+     *
+     * @return
+     * @throws Exception
+     */
     @PostMapping("/warehouse/warehouseBase/treeSelectWarehouse")
     public ResultModel treeSelectWarehouse () throws Exception {
         logger.info("################/warehouse/warehouseBase/treeSelectWarehouse 执行开始 ################# ");
@@ -213,6 +223,9 @@ public class WarehouseController {
         //是否启用(0:已禁用 1:启用)
         pd.put("isdisable", "1");
 
+        //isNeedwarehouseGenre 是否需要仓库属性
+        String isNeedwarehouseGenre = pd.getString("isNeedwarehouseGenre");
+
         String orderStr = new String();
         if (pd.getString("orderStr") != null) {
             orderStr = pd.getString("orderStr").trim();
@@ -225,6 +238,25 @@ public class WarehouseController {
             mapList = warehouseService.getDataListPage(pd);
             if (mapList != null && mapList.size() > 0) {
                 for (Map<String, Object> mapObject : mapList) {
+                    String pathId = (String)mapObject.get("pathId");
+
+                    //layer 当前节点级别
+                    Integer layer = Integer.valueOf(0);
+                    if (mapObject.get("layer") != null) {
+                        layer = (Integer)mapObject.get("layer");
+                    }
+
+                    //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
+                    //虚拟库:warehouseVirtual:56f5e83dcb9911e884ad00163e105f05
+                    //实体库: 只获取(仓库)这一层级 (layer:2 的这一层-layer大于2的节点筛选出去)
+                    if ("true".equals(isNeedwarehouseGenre)
+                        && pathId != null && pathId.trim().length() > 0
+                        && pathId.indexOf(Common.DICTIONARY_MAP.get("warehouseEntity")) != -1
+                        && layer.intValue() != 2
+                    ) {
+                        continue;
+                    }
+
                     TreeEntity treeNode = new TreeEntity();
                     //id 当前节点ID
                     String id = (String)mapObject.get("id");
@@ -253,7 +285,6 @@ public class WarehouseController {
                     treeNode.setIsdisable(isdisable);
 
                     //layer 当前节点级别
-                    Integer layer = Integer.valueOf(0);
                     if (mapObject.get("layer") != null) {
                         layer = (Integer)mapObject.get("layer");
                     }
@@ -265,7 +296,6 @@ public class WarehouseController {
                         serialNumber = (Integer)mapObject.get("serialNumber");
                     }
                     treeNode.setSerialNumber(serialNumber);
-
 
                     treeList.add(treeNode);
                 }

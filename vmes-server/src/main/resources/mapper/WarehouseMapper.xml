@@ -297,6 +297,14 @@
                 and (a.path_id LIKE '%2d75e49bcb9911e884ad00163e105f05%' or a.path_id LIKE '%56f5e83dcb9911e884ad00163e105f05%')
             </if>
 
+            <!--备件库 自定义sql查询语句-->
+            <if test="'true' == isNeedSpare">
+                and a.name = '备件库'
+            </if>
+            <if test="'true' == isNotNeedSpare">
+                <![CDATA[ and a.name <> '备件库' ]]>
+            </if>
+
         <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >
                 and ${queryStr}
