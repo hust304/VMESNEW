@@ -74,7 +74,21 @@ public class WarehouseInitialController {
 
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
-        String companyId = pageData.getString("companyId");
+
+        String companyId = pageData.getString("currentCompanyId");
+        if (companyId == null || companyId.trim().length() == 0) {
+            model.putCode("1");
+            model.putMsg("企业id为空或空字符串！");
+            return model;
+        }
+
+        //初始化仓库属性(warehouseGenre) warehouse:(简版,复杂版)仓库 spare:备件库
+        String warehouseGenre = pageData.getString("warehouseGenre");
+        if (warehouseGenre == null || warehouseGenre.trim().length() == 0) {
+            model.putCode("1");
+            model.putMsg("初始化仓库属性为空或空字符串！");
+            return model;
+        }
 
         //默认值(011) := 初始化按钮(禁用),导入按钮(启用),禁用初始化按钮(启用)
         String isDisableButton = new String("011");
@@ -82,6 +96,7 @@ public class WarehouseInitialController {
         try {
             PageData findMap = new PageData();
             findMap.put("companyId", companyId);
+            findMap.put("warehouseAttribute", warehouseGenre);
             findMap.put("mapSize", Integer.valueOf(findMap.size()));
             warehouseInitial = warehouseInitialService.findWarehouseInitial(findMap);
             if (warehouseInitial != null
