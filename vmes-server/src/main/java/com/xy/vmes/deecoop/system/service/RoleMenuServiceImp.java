@@ -521,6 +521,11 @@ public class RoleMenuServiceImp implements RoleMenuService {
 
         return null;
     }
+
+    @Override
+    public void deleteMenuFromParentRole(PageData pd) throws Exception {
+        roleMenuMapper.deleteMenuFromParentRole(pd);
+    }
 }
 
 

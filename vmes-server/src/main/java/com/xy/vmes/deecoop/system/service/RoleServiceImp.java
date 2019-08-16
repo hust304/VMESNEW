@@ -636,12 +636,22 @@ public class RoleServiceImp implements RoleService {
             return model;
         }
 
-        //2. 删除角色用户(当前角色)
-        userRoleService.deleteUserRoleByRoleId(roleId);
+//        //2. 删除角色用户(当前角色)
+//        userRoleService.deleteUserRoleByRoleId(roleId);
 
         String userIds = (String)pageData.get("userIds");
         //3. 添加角色用户(当前角色)
         userRoleService.addUserRoleByUserIds(roleId, userIds, (String)pageData.get("cuser"));
+
+        //4. 如果是企业管理员角色变更，则需修改企业管理员下面角色对应的菜单权限
+        Role role = this.selectById(roleId);
+        //判断是否为企业管理员角色：如果当前角色的公司ID是b6ff76cb95f711e884ad00163e105f05，就判断为企业管理员角色
+        if("b6ff76cb95f711e884ad00163e105f05".equals(role.getCompanyId())){
+            PageData pd = new PageData();
+            pd.put("roleId",roleId);
+            roleMenuService.deleteMenuFromParentRole(pd);
+        }
+
         return model;
     }
 
@@ -683,6 +693,15 @@ public class RoleServiceImp implements RoleService {
 
         //4. 添加角色菜单(当前角色)
         roleMenuService.addRoleMenuByMeunIds(roleID, meunIds);
+
+        //5. 如果是企业管理员角色变更，则需修改企业管理员下面角色对应的菜单权限
+        Role role = this.selectById(roleID);
+        //判断是否为企业管理员角色：如果当前角色的公司ID是b6ff76cb95f711e884ad00163e105f05，就判断为企业管理员角色
+        if("b6ff76cb95f711e884ad00163e105f05".equals(role.getCompanyId())){
+            PageData pd = new PageData();
+            pd.put("roleId",roleID);
+            roleMenuService.deleteMenuFromParentRole(pd);
+        }
         return model;
     }
 

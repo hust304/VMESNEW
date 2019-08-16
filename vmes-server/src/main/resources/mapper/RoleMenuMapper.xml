@@ -304,4 +304,40 @@
     </select>
 
 
+
+    <!-- 批量删除 自动创建，禁止修改-->
+    <delete id="deleteMenuFromParentRole" parameterType="com.yvan.PageData">
+        delete from
+        <include refid="tableName"></include>
+        where
+        id in
+        (
+            select * from (
+            select distinct roleMenu.id
+            from vmes_user_role userRole
+            left join vmes_user vmesUser on vmesUser.id = userRole.user_id
+            left join vmes_role role on role.company_id = vmesUser.company_id
+            left join vmes_role_menu roleMenu on roleMenu.role_id = role.id
+        <where>
+            <if test="roleId != null and roleId!=''" >
+                and userRole.role_id = #{roleId}
+            </if>
+            <if test="companyId != null and companyId!=''" >
+                and role.company_id = #{companyId}
+            </if>
+            and role.id is not null and roleMenu.id is not null
+            and roleMenu.menu_id not in
+            (
+              select menu_id from vmes_role_menu
+            <where>
+                <if test="roleId != null and roleId!=''" >
+                    and role_id = #{roleId}
+                </if>
+            </where>
+            )
+        </where>
+            )tab
+        )
+    </delete>
+
 </mapper>

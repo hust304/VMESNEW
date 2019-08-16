@@ -45,7 +45,8 @@ public class UserServiceImp implements UserService {
     private UserRoleService userRoleService;
     @Autowired
     private UserDefinedMenuService userDefinedMenuService;
-
+    @Autowired
+    private RoleMenuService roleMenuService;
     @Autowired
     private ColumnService columnService;
     @Autowired
@@ -695,6 +696,14 @@ public class UserServiceImp implements UserService {
             userRole.setCuser(pd.getString("cuser"));
             userRole.setUuser(pd.getString("uuser"));
             userRoleService.save(userRole);
+        }
+        //如果是企业管理员角色变更，则需修改企业管理员下面角色对应的菜单权限
+        //判断是否为企业管理员角色：如果当前用户类型是2fb9bbee46ca4ce1913f3a673a7dd68f，就判断为企业管理员角色
+        if("2fb9bbee46ca4ce1913f3a673a7dd68f".equals(user.getUserType())){
+            PageData parm = new PageData();
+            pd.put("roleId",pd.getString("roleId"));
+            pd.put("companyId",user.getCompanyId());
+            roleMenuService.deleteMenuFromParentRole(parm);
         }
 
         //原绑定员工
