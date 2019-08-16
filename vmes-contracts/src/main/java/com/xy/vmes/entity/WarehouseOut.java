@@ -69,7 +69,7 @@ public class WarehouseOut implements Serializable {
 	private String isSimple;
 	//仓库属性(warehouse:(简版,复杂版)仓库 spare:备件库)
 	@TableField("warehouse_attribute")
-	private String warehouseAttribute = "warehouse";
+	private String warehouseAttribute;
 
 
 	public void setId(String id) {

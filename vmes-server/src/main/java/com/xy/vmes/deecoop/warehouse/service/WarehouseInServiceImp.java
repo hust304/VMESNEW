@@ -394,6 +394,8 @@ public class WarehouseInServiceImp implements WarehouseInService {
         //入库单编号
         String code = coderuleService.createCoder(companyID, "vmes_warehouse_in", "I");
         warehouseIn.setCode(code);
+        //warehouseAttribute 仓库属性(warehouse:(简版,复杂版)仓库 spare:备件库)
+        warehouseIn.setWarehouseAttribute("warehouse");
         this.save(warehouseIn);
 
         //2.添加入库单明细

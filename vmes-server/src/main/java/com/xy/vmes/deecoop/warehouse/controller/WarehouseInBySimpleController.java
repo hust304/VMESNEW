@@ -120,8 +120,8 @@ public class WarehouseInBySimpleController {
         //入库单编号
         String code = coderuleService.createCoder(companyID, "vmes_warehouse_in", "I");
         warehouseIn.setCode(code);
-        //isSimple 是否简版仓库 Y:是简版 N:非简版 is null:非简版
-        //warehouseIn.setIsSimple("Y");
+        //warehouseAttribute 仓库属性(warehouse:(简版,复杂版)仓库 spare:备件库)
+        warehouseIn.setWarehouseAttribute("warehouse");
         warehouseInService.save(warehouseIn);
 
         //2.添加入库单明细
