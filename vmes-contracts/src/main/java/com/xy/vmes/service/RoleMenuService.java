@@ -147,6 +147,7 @@ public interface RoleMenuService {
      */
     String findWarehouseAttribute(String roleId);
 
+    void deleteMenuFromParentRole(PageData pd) throws Exception;
 }
 
 
