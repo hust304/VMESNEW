@@ -484,9 +484,19 @@
             <if test="typeName != null and typeName != ''">
                 and type.name LIKE CONCAT(CONCAT('%', #{typeName}),'%')
             </if>
+
+
             <if test="warehouseId != null and warehouseId != ''">
                 and warehouse.path_id LIKE CONCAT(CONCAT('%', #{warehouseId}),'%')
             </if>
+            <!--备件库 自定义sql查询语句-->
+            <if test="'true' == isNeedSpare">
+                and warehouse.name = '备件库'
+            </if>
+            <if test="'true' == isNotNeedSpare">
+                <![CDATA[ and warehouse.name <> '备件库' ]]>
+            </if>
+
             <if test="currentCompanyId != null and currentCompanyId != ''">
                 and wp.company_id = #{currentCompanyId}
             </if>
