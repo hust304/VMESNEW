@@ -818,7 +818,10 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService {
                 PurchaseOrderDetail purchaseOrderDetail = (PurchaseOrderDetail) HttpUtils.pageData2Entity(detailMap, new PurchaseOrderDetail());
                 purchaseOrderDetail.setParentId(purchaseOrder.getId());
                 //(0:待提交 1:待审核 2:采购中 3:已完成 -1:已取消)
-                purchaseOrderDetail.setState("0");
+                //purchaseOrderDetail.setState("0");
+                if (isAutoCommit != null && "true".equals(isAutoCommit.trim())) {
+                    purchaseOrderDetail.setState("1");
+                }
                 purchaseOrderDetail.setCuser(purchaseOrder.getCuser());
                 purchaseOrderDetail.setUuser(purchaseOrder.getUuser());
                 purchaseOrderDetailService.save(purchaseOrderDetail);

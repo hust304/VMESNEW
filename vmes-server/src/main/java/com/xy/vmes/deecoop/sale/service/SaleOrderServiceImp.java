@@ -424,6 +424,9 @@ public class SaleOrderServiceImp implements SaleOrderService {
             return model;
         }
 
+        //isAutoCommit true:自动提交 false:手动提交
+        String isAutoCommit = pageData.getString("isAutoCommit");
+
         //获取订单明细
         List<SaleOrderDetail> detailList = saleOrderDetailService.mapList2OrderDetailListByEdit(mapList, null);
 
@@ -449,10 +452,17 @@ public class SaleOrderServiceImp implements SaleOrderService {
                 if (detailId == null || detailId.trim().length() == 0) {
                     //明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已发货 6:已完成 -1:已取消)
                     detail.setState("0");
+                    if (isAutoCommit != null && "true".equals(isAutoCommit.trim())) {
+                        detail.setState("1");
+                    }
+
                     detail.setParentId(order.getId());
                     detail.setCuser(order.getCuser());
                     saleOrderDetailService.save(detail);
                 } else {
+                    if (isAutoCommit != null && "true".equals(isAutoCommit.trim())) {
+                        detail.setState("1");
+                    }
                     saleOrderDetailService.update(detail);
                 }
             }
@@ -466,8 +476,6 @@ public class SaleOrderServiceImp implements SaleOrderService {
         }
 
         //状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
-        //isAutoCommit true:自动提交 false:手动提交
-        String isAutoCommit = pageData.getString("isAutoCommit");
         if (isAutoCommit != null && "true".equals(isAutoCommit.trim())) {
             order.setState("1");
         }
