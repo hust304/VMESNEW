@@ -785,15 +785,23 @@ public class WarehouseServiceImp implements WarehouseService {
         }
         findMap.put("nodeId", treeNodeId);
 
-        //是否简版仓库 Y:是简版 N:非简版 is null:非简版
-        String isSimple = pageData.getString("isSimple");
-        if ("Y".equals(isSimple)) {
-            findMap.put("isSimple", "Y");
-        }
+//        //是否简版仓库 Y:是简版 N:非简版 is null:非简版
+//        String isSimple = pageData.getString("isSimple");
+//        if ("Y".equals(isSimple)) {
+//            findMap.put("isSimple", "Y");
+//        }
+//
+//        String isNotSimple = pageData.getString("isNotSimple");
+//        if ("true".equals(isNotSimple)) {
+//            findMap.put("isNotSimple", isNotSimple);
+//        }
 
-        String isNotSimple = pageData.getString("isNotSimple");
-        if ("true".equals(isNotSimple)) {
-            findMap.put("isNotSimple", isNotSimple);
+        //是否需要(备件库) isNeedSpare isNotNeedSpare
+        if ("true".equals(pageData.getString("isNeedSpare"))) {
+            findMap.put("isNeedSpare", "true");
+        }
+        if ("true".equals(pageData.getString("isNotNeedSpare"))) {
+            findMap.put("isNotNeedSpare", "true");
         }
 
         String notInWarehouseIds = new String();
