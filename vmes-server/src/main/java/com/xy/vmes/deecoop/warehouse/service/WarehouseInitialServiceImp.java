@@ -303,6 +303,8 @@ public class WarehouseInitialServiceImp implements WarehouseInitialService {
             addObject.setCuser(cuser);
             addObject.setCompanyId(companyId);
             addObject.setIsDisableButton(isDisableButton);
+            //warehouseAttribute 仓库属性(warehouse:(简版,复杂版)仓库 spare:备件库)
+            addObject.setWarehouseAttribute(warehouseGenre);
             this.save(addObject);
         } else if (warehouseInitial != null) {
             warehouseInitial.setIsDisableButton(isDisableButton);

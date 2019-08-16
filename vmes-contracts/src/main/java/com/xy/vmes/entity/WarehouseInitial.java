@@ -31,6 +31,7 @@ public class WarehouseInitial implements Serializable {
 	//创建时间
 	@TableField("cdate")
 	private Date cdate;
+
 	//修改用户id
 	@TableField("uuser")
 	private String uuser;
@@ -44,6 +45,10 @@ public class WarehouseInitial implements Serializable {
 	//0和1字符串 第一位:初始化按钮 第二位:导入按钮 第三位:禁用初始化按钮
 	@TableField("is_disable_button")
 	private String isDisableButton;
+	//仓库属性(warehouse:(简版,复杂版)仓库 spare:备件库)
+	@TableField("warehouse_attribute")
+	private String warehouseAttribute;
+
 
 	public void setId(String id) {
 		this.id = id;
@@ -98,6 +103,12 @@ public class WarehouseInitial implements Serializable {
 	}
 	public void setIsDisableButton(String isDisableButton) {
 		this.isDisableButton = isDisableButton;
+	}
+	public String getWarehouseAttribute() {
+		return warehouseAttribute;
+	}
+	public void setWarehouseAttribute(String warehouseAttribute) {
+		this.warehouseAttribute = warehouseAttribute;
 	}
 /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 

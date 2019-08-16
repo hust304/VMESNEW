@@ -187,7 +187,23 @@ public class WarehouseInitialController {
 
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
-        String companyId = pageData.getString("companyId");
+
+        String companyId = pageData.getString("currentCompanyId");
+        if (companyId == null || companyId.trim().length() == 0) {
+            model.putCode("1");
+            model.putMsg("企业id为空或空字符串！");
+            return model;
+        }
+
+        //初始化仓库属性
+        //warehouse:(简版,复杂版)仓库 spare:备件库
+        String warehouseGenre = pageData.getString("warehouseGenre");
+        if (warehouseGenre == null || warehouseGenre.trim().length() == 0) {
+            model.putCode("1");
+            model.putMsg("初始化仓库属性为空或空字符串！");
+            return model;
+        }
+
         String userId = pageData.getString("cuser");
 
         //(企业id)查询 vmes_warehouse_initial
@@ -195,6 +211,7 @@ public class WarehouseInitialController {
         try {
             PageData findMap = new PageData();
             findMap.put("companyId", companyId);
+            findMap.put("warehouseAttribute", warehouseGenre);
             findMap.put("mapSize", Integer.valueOf(findMap.size()));
             warehouseInitial = warehouseInitialService.findWarehouseInitial(findMap);
 
@@ -207,6 +224,8 @@ public class WarehouseInitialController {
                 addObject.setCuser(userId);
                 addObject.setCompanyId(companyId);
                 addObject.setIsDisableButton(isDisableButton);
+                //warehouseAttribute 仓库属性(warehouse:(简版,复杂版)仓库 spare:备件库)
+                addObject.setWarehouseAttribute(warehouseGenre);
                 warehouseInitialService.save(addObject);
             } else if (warehouseInitial != null) {
                 warehouseInitial.setIsDisableButton(isDisableButton);
@@ -357,6 +376,15 @@ public class WarehouseInitialController {
         String companyId = (String)httpRequest.getParameter("companyId");
         String userId = (String)httpRequest.getParameter("userId");
 
+        //初始化仓库属性
+        //warehouse:(简版,复杂版)仓库 spare:备件库
+        String warehouseGenre = (String)httpRequest.getParameter("warehouseGenre");
+        if (warehouseGenre == null || warehouseGenre.trim().length() == 0) {
+            model.putCode("1");
+            model.putMsg("初始化仓库属性为空或空字符串！");
+            return model;
+        }
+
         //(企业id)查询 vmes_warehouse_initial
         WarehouseInitial warehouseInitial = null;
         try {
@@ -376,6 +404,8 @@ public class WarehouseInitialController {
                 addObject.setCuser(userId);
                 addObject.setCompanyId(companyId);
                 addObject.setIsDisableButton(isDisableButton);
+                //warehouseAttribute 仓库属性(warehouse:(简版,复杂版)仓库 spare:备件库)
+                addObject.setWarehouseAttribute(warehouseGenre);
                 warehouseInitialService.save(addObject);
             } else if (warehouseInitial != null) {
                 warehouseInitial.setIsDisableButton(isDisableButton);
