@@ -541,6 +541,14 @@
                 and (warehouse.layer > 1 and warehouse.path_id like ${parentWarehouseId})
             </if>
 
+            <!--备件库 自定义sql查询语句-->
+            <if test="'true' == isNeedSpare">
+                and warehouse.name = '备件库'
+            </if>
+            <if test="'true' == isNotNeedSpare">
+                <![CDATA[ and warehouse.name <> '备件库' ]]>
+            </if>
+
             <![CDATA[ and product.stock_count > 0 ]]>
         </where>
         <if test="orderStr != null and orderStr != ''" >
