@@ -374,7 +374,11 @@ public class WarehouseInitialController {
 
         HttpServletRequest httpRequest = HttpUtils.currentRequest();
         String companyId = (String)httpRequest.getParameter("companyId");
-        String userId = (String)httpRequest.getParameter("userId");
+        if (companyId == null || companyId.trim().length() == 0) {
+            model.putCode("1");
+            model.putMsg("企业id为空或空字符串！");
+            return model;
+        }
 
         //初始化仓库属性
         //warehouse:(简版,复杂版)仓库 spare:备件库
@@ -384,6 +388,8 @@ public class WarehouseInitialController {
             model.putMsg("初始化仓库属性为空或空字符串！");
             return model;
         }
+
+        String userId = (String)httpRequest.getParameter("userId");
 
         //(企业id)查询 vmes_warehouse_initial
         WarehouseInitial warehouseInitial = null;
