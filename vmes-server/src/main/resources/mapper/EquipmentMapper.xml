@@ -317,6 +317,9 @@
             <if test="isdisable!= null and isdisable != ''">
                 and equipment.isdisable = #{isdisable}
             </if>
+            <if test="currentCompanyId != null and currentCompanyId != ''" >
+                and equipment.company_id=#{currentCompanyId}
+            </if>
         </where>
         <if test="orderStr != null and orderStr != ''" >
             order by ${orderStr}
@@ -363,6 +366,9 @@
             </if>
             <if test="pid!= null and pid != '' and layer != null"><!-- 关键词检索 -->
                 and department.id_${layer} = #{pid}
+            </if>
+            <if test="currentCompanyId != null and currentCompanyId != ''" >
+                and equipment.company_id=#{currentCompanyId}
             </if>
         </where>
         <if test="orderStr != null and orderStr != ''" >
