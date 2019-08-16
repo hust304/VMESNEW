@@ -299,7 +299,10 @@
             (replace(uuid(), '-', ''),'WarehouseOut','udate','修改时间',12, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'WarehouseOut','remark','备注',13, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'WarehouseOut','isdisable','是否启用',14, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseOut','id','id',0, '1','0','1','0',now(), 'admin')
+            (replace(uuid(), '-', ''),'WarehouseOut','id','id',0, '1','0','1','0',now(), 'admin'),
+
+            (replace(uuid(), '-', ''),'WarehouseOut','pid','仓库父节点id',15, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'WarehouseOut','pathId','当前仓库路径id',16, '1','1','1','0',now(), 'admin')
     </insert>
 
 
@@ -490,7 +493,31 @@
     <!-- 自动创建，可以修改 -->
     <select id="getDataListPage"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
         select
-        <include refid="Field1"></include>
+            distinct
+            warehouseout.company_id companyId,<!-- 企业ID-组织架构 -->
+            warehouseout.code code,<!-- 出库单编码 -->
+            warehouseout.type,<!-- 出库类型-(字典表-vmes_dictionary.id) -->
+            type.name typeName,
+            warehouseout.warehouse_id warehouseId,<!-- 仓库ID(仓库表-layer:2的记录) -->
+            warehouseout.dept_id deptId,<!-- 单位id(部门id或客户id) -->
+            warehouseout.dept_name deptName,<!-- 单位名称(部门或客户) -->
+            user.user_name makeName,
+            warehouseout.make_id makeId,<!-- 制单人ID -->
+            warehouseout.state state,<!-- 状态(0:未完成 1:已完成 -1:已取消) -->
+            case when warehouseout.state=-1 then '已取消' when warehouseout.state=0 then '未完成' when warehouseout.state=1 then '已完成' else null end stateName,<!-- 状态(0:未完成 1:已完成 -1:已取消) -->
+            warehouseout.cuser cuser,<!-- 创建用户id -->
+            DATE_FORMAT(warehouseout.cdate,'%Y-%m-%d') cdate,
+            warehouseout.uuser uuser,<!-- 修改用户id -->
+            DATE_FORMAT(warehouseout.udate,'%Y-%m-%d') udate,
+            warehouseout.remark remark,<!-- 备注 -->
+            warehouseout.isdisable isdisable,<!-- 是否启用(0:已禁用 1:启用) -->
+            warehouseout.id id, <!-- id -->
+            warehouseout.is_simple isSimple,
+
+            warehouse.name warehouseName,
+            warehouse.pid pid,
+            warehouse.path_id pathId
+
         from
         vmes_warehouse_out warehouseout
         left join vmes_dictionary type on type.id = warehouseout.type

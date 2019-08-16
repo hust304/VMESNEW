@@ -149,6 +149,9 @@
             ('9a37713ed5a211e884ad00163e105f05', 'warehouseIn', 'udate', '修改时间', 10, '1', '0', '1', '0', '2018-10-22 10:31:38', 'admin');
             ('9a377193d5a211e884ad00163e105f05', 'warehouseIn', 'remark', '备注', 11, '1', '0', '1', '0', '2018-10-22 10:31:38', 'admin');
             ('9a3771e4d5a211e884ad00163e105f05', 'warehouseIn', 'isdisable', '是否启用', 12, '1', '0', '1', '0', '2018-10-22 10:31:38', 'admin');
+
+            (replace(uuid(), '-', ''),'warehouseIn','pid','仓库父节点id',13, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'warehouseIn','pathId','当前仓库路径id',14, '1','1','1','0',now(), 'admin')
     </insert>
 
 
@@ -233,14 +236,12 @@
         select
             distinct
             a.id id,
-            <!--级联table 传值用 -->
             a.id parentId,
             a.company_id companyId,
             a.code code,
             a.type type,
             type.name typeName,
             a.warehouse_id warehouseId,
-            b.name warehouseName,
 
             a.dept_id deptId,
             a.dept_name deptName,
@@ -261,8 +262,12 @@
             DATE_FORMAT(a.udate,'%Y-%m-%d') udate,
             a.remark remark,
             a.isdisable isdisable,
+            a.is_simple isSimple,
 
-            a.is_simple isSimple
+            b.name warehouseName,
+            b.pid pid,
+            b.path_id pathId
+
     from vmes_warehouse_in a
         left join vmes_warehouse b on a.warehouse_id = b.id
         left join vmes_user c on a.make_id = c.id
