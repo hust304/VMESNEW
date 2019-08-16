@@ -166,19 +166,18 @@ public class WarehouseInServiceImp implements WarehouseInService {
     /**
      *
      * @param companyId  企业id
-     * @param isSpare    是否备件库(true: 删除的是备件库 false: 删除的是非备件库)
+     * @param warehouseGenre 仓库属性(warehouse:(简版,复杂版)仓库 spare:备件库)
      * @throws Exception
      */
-    public void deleteTableByWarehouseIn(String companyId, String isSpare) throws Exception {
+    public void deleteTableByWarehouseIn(String companyId, String warehouseGenre) throws Exception {
         PageData pageData = new PageData();
         pageData.put("companyId", companyId);
-        //isSpare:=false 或 isSpare is null (删除的是非备件库)
-        pageData.put("isNeedNotInWarehouseSpare", "true");
 
-        if ("true".equals(isSpare)) {
-            pageData.put("isNeedNotInWarehouseSpare", null);
-
-            //isSpare:=true (删除的是备件库)
+        if ("warehouse".equals(warehouseGenre)) {
+            //warehouse:(简版,复杂版)仓库的入库单 清除
+            pageData.put("isNeedWarehouseWarehouse", "true");
+        } else if ("spare".equals(warehouseGenre)) {
+            //spare:备件库的入库单 清除
             pageData.put("isNeedWarehouseSpare", "true");
         }
 

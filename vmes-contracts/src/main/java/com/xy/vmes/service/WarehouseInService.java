@@ -83,10 +83,10 @@ public interface WarehouseInService {
     /**
      *
      * @param companyId  企业id
-     * @param isSpare    是否备件库(true: 删除的是备件库 false: 删除的是非备件库)
+     * @param warehouseGenre 仓库属性(warehouse:(简版,复杂版)仓库 spare:备件库)
      * @throws Exception
      */
-    void deleteTableByWarehouseIn(String companyId, String isSpare) throws Exception;
+    void deleteTableByWarehouseIn(String companyId, String warehouseGenre) throws Exception;
 
     WarehouseIn findWarehouseIn(PageData object);
     WarehouseIn findWarehouseInById(String id);

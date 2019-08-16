@@ -96,8 +96,23 @@ public interface WarehouseInitialService {
     //List<Map> findWarehouseInitialBySimple(PageData pd) throws Exception;
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
-    void initialByWarehouse(String cuser, String companyId) throws Exception;
-    void deleteTableByBusiness(String companyId) throws Exception;
+
+    /**
+     * 仓库初始化
+     * @param warehouseGenre 仓库属性(warehouse:(简版,复杂版)仓库 spare:备件库)
+     * @param cuser
+     * @param companyId
+     * @throws Exception
+     */
+    void initialByWarehouse(String warehouseGenre, String cuser, String companyId) throws Exception;
+
+    /**
+     * 删除仓库相关业务数据
+     * @param warehouseGenre 仓库属性(warehouse:(简版,复杂版)仓库 spare:备件库)
+     * @param companyId
+     * @throws Exception
+     */
+    void deleteTableByBusiness(String warehouseGenre, String companyId) throws Exception;
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
     ResultModel listPageWarehouseInitial(PageData pd, Pagination pg) throws Exception;

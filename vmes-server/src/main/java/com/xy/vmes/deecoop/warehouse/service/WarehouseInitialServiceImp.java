@@ -270,11 +270,18 @@ public class WarehouseInitialServiceImp implements WarehouseInitialService {
 //    }
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
-    public void initialByWarehouse(String cuser, String companyId) throws Exception {
+    /**
+     * 仓库初始化
+     * @param warehouseGenre 仓库属性(warehouse:(简版,复杂版)仓库 spare:备件库)
+     * @param cuser
+     * @param companyId
+     * @throws Exception
+     */
+    public void initialByWarehouse(String warehouseGenre, String cuser, String companyId) throws Exception {
         if (companyId == null || companyId.trim().length() == 0) {return;}
 
         //删除业务相关表
-        this.deleteTableByBusiness(companyId);
+        this.deleteTableByBusiness(warehouseGenre, companyId);
 
         //(企业id)查询 vmes_warehouse_initial
         WarehouseInitial warehouseInitial = null;
@@ -304,14 +311,17 @@ public class WarehouseInitialServiceImp implements WarehouseInitialService {
 
     }
 
-    public void deleteTableByBusiness(String companyId) throws Exception {
-        //删除的是否备件库(true: 删除的是备件库 false: 删除的是非备件库)
-        String isDelNotSpare = "false";
-
+    /**
+     * 删除仓库相关业务数据
+     * @param warehouseGenre 仓库属性(warehouse:(简版,复杂版)仓库 spare:备件库)
+     * @param companyId
+     * @throws Exception
+     */
+    public void deleteTableByBusiness(String warehouseGenre, String companyId) throws Exception {
         //删除入库业务表
-        warehouseInService.deleteTableByWarehouseIn(companyId, isDelNotSpare);
+        warehouseInService.deleteTableByWarehouseIn(companyId, warehouseGenre);
         //删除出库业务表
-        warehouseOutService.deleteTableByWarehouseOut(companyId, isDelNotSpare);
+        warehouseOutService.deleteTableByWarehouseOut(companyId, warehouseGenre);
         //删除仓库盘点业务表
         warehouseCheckService.deleteTableByWarehouseCheck(companyId);
         //删除移库业务表
@@ -335,6 +345,14 @@ public class WarehouseInitialServiceImp implements WarehouseInitialService {
         }
 
         //删除仓库货品表(库存表)
+        //true: 删除的是备件库 warehouseGenre:= spare:备件库
+        //false: 删除的是非备件库 warehouseGenre:= warehouse:(简版,复杂版)仓库
+        String isDelNotSpare = "false";
+        if ("warehouse".equals(warehouseGenre)) {
+            isDelNotSpare = "false";
+        } else if ("spare".equals(warehouseGenre)) {
+            isDelNotSpare = "true";
+        }
         warehouseProductService.deleteTable(companyId, isDelNotSpare);
 
         //货品表(库存数量,锁定库存数量)初始化为零
@@ -399,7 +417,17 @@ public class WarehouseInitialServiceImp implements WarehouseInitialService {
             model.putMsg("企业id为空或空字符串！");
             return model;
         }
-        this.initialByWarehouse(cuser, companyId);
+
+        //初始化仓库属性
+        //warehouse:(简版,复杂版)仓库 spare:备件库
+        String warehouseGenre = pageData.getString("warehouseGenre");
+        if (warehouseGenre == null || warehouseGenre.trim().length() == 0) {
+            model.putCode("1");
+            model.putMsg("初始化仓库属性为空或空字符串！");
+            return model;
+        }
+
+        this.initialByWarehouse(warehouseGenre, cuser, companyId);
         return model;
     }
 
