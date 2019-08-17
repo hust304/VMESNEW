@@ -1,13 +1,13 @@
 package com.xy.vmes.deecoop.equipment.controller;
 
+import com.xy.vmes.common.util.ColumnUtil;
+import com.xy.vmes.entity.*;
 import com.yvan.common.util.Common;
-import com.xy.vmes.entity.Product;
-import com.xy.vmes.entity.WarehouseLoginfo;
-import com.xy.vmes.entity.WarehouseProduct;
 import com.xy.vmes.service.*;
 import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
+import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -15,17 +15,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 说明：vmes_warehouse_initial: 仓库初始化设定Controller
@@ -38,164 +33,18 @@ public class EquipmentWarehouseInitialBySpareController {
     private Logger logger = LoggerFactory.getLogger(EquipmentWarehouseInitialBySpareController.class);
 
     @Autowired
-    private WarehouseInService warehouseInService;
-    @Autowired
-    private WarehouseOutService warehouseOutService;
-
-    @Autowired
     private WarehouseProductService warehouseProductService;
     @Autowired
-    private WarehouseProductExcelService warehouseProductExcelService;
+    private WarehouseToWarehouseProductService warehouseToWarehouseProductService;
+    @Autowired
+    private WarehouseService warehouseService;
+
     @Autowired
     private ProductService productService;
 
-    /**
-     * 初始化仓库(备件库)
-     *
-     * @author 陈刚
-     * @date 2019-06-25
-     * @throws Exception
-     */
-    @PostMapping("/equipment/warehouseInitialBySpare/initialWarehouseBySpare")
-    @Transactional(rollbackFor=Exception.class)
-    public ResultModel initialWarehouseBySpare() throws Exception {
-        logger.info("################/equipment/warehouseInitialBySpare/initialWarehouseBySpare 执行开始 ################# ");
-        Long startTime = System.currentTimeMillis();
+    @Autowired
+    private ColumnService columnService;
 
-        ResultModel model = new ResultModel();
-        PageData pageData = HttpUtils.parsePageData();
-
-        String cuser = pageData.getString("cuser");
-        String companyId = pageData.getString("currentCompanyId");
-        if (companyId == null || companyId.trim().length() == 0) {
-            model.putCode("1");
-            model.putMsg("企业id为空或空字符串！");
-            return model;
-        }
-
-        //是否删除备件库(true: 删除的是备件库 false: 删除的是非备件库)
-        String isDelSpare = "true";
-
-        //删除入库业务表:删除(备件库)的入库单
-        warehouseInService.deleteTableByWarehouseIn(companyId, isDelSpare);
-        //删除出库业务表:删除(备件库)的出库单
-        warehouseOutService.deleteTableByWarehouseOut(companyId, isDelSpare);
-
-        //删除仓库货品表(库存表)
-        warehouseProductService.deleteTable(companyId, isDelSpare);
-
-        //货品表(库存数量,锁定库存数量)初始化为零-货品属性是(备件)
-        String isSpare = "true";
-        productService.initialProductByStockCount(companyId, isSpare);
-
-//        WarehouseInitial addObject = new WarehouseInitial();
-//        addObject.setCuser(cuser);
-//        addObject.setCompanyId(companyId);
-//        warehouseInitialService.save(addObject);
-
-        Long endTime = System.currentTimeMillis();
-        logger.info("################/equipment/warehouseInitialBySpare/initialWarehouseBySpare 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
-        return model;
-    }
-
-    /**
-     * (备件库)Excel导入
-     *
-     * @author 陈刚
-     * @date 2019-06-25
-     */
-    @PostMapping("/equipment/warehouseInitialBySpare/importExcelInitialWarehouseBySpare")
-    public ResultModel importExcelInitialWarehouseBySpare(@RequestParam(value="excelFile") MultipartFile file) throws Exception  {
-        logger.info("################/equipment/warehouseInitialBySpare/importExcelInitialWarehouseBySpare 执行开始 ################# ");
-        Long startTime = System.currentTimeMillis();
-        ResultModel model = new ResultModel();
-
-        if (file == null) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("请上传Excel文件！");
-            return model;
-        }
-
-        // 验证文件是否合法
-        // 获取上传的文件名(文件名.后缀)
-        String fileName = file.getOriginalFilename();
-        if (fileName == null
-                || !(fileName.matches("^.+\\.(?i)(xlsx)$")
-                || fileName.matches("^.+\\.(?i)(xls)$"))
-                ) {
-            String failMesg = "不是excel格式文件,请重新选择！";
-            model.putCode(Integer.valueOf(1));
-            model.putMsg(failMesg);
-            return model;
-        }
-
-        // 判断文件的类型，是2003还是2007
-        boolean isExcel2003 = true;
-        if (fileName.matches("^.+\\.(?i)(xlsx)$")) {
-            isExcel2003 = false;
-        }
-
-        List<List<String>> dataLst = ExcelUtil.readExcel(file.getInputStream(), isExcel2003);
-        List<LinkedHashMap<String, String>> dataMapLst = ExcelUtil.reflectMapList(dataLst);
-
-        HttpServletRequest httpRequest = HttpUtils.currentRequest();
-        String companyId = (String)httpRequest.getParameter("companyId");
-        String userId = (String)httpRequest.getParameter("userId");
-
-        if (dataMapLst == null || dataMapLst.size() == 1) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("导入文件数据为空，请至少填写一行导入数据！");
-            return model;
-        }
-        dataMapLst.remove(0);
-
-        StringBuffer checkColumnMsgStr = new StringBuffer();
-        //1. Excel导入字段(非空,数据有效性验证[数字类型,字典表(大小)类是否匹配])
-        String msgStr = warehouseProductExcelService.checkColumnImportExcelBySpare(dataMapLst,
-                companyId,
-                Integer.valueOf(3),
-                Common.SYS_IMPORTEXCEL_MESSAGE_MAXROW);
-        if (msgStr != null && msgStr.trim().length() > 0) {
-            checkColumnMsgStr.append(msgStr);
-        }
-
-        //2. (货品编码,货品名称,规格型号,货品属性,计量单位) 名称匹配
-        Map<String, String> productMap = new HashMap<String, String>();
-        msgStr = warehouseProductExcelService.checkColumnImportExcelByDataBaseBySpare(dataMapLst,
-                companyId,
-                Integer.valueOf(3),
-                Common.SYS_IMPORTEXCEL_MESSAGE_MAXROW,
-                productMap);
-        if (msgStr != null && msgStr.trim().length() > 0) {
-            checkColumnMsgStr.append(msgStr);
-        }
-
-        if (checkColumnMsgStr.toString().trim().length() > 0) {
-            StringBuffer msgBuf = new StringBuffer();
-            msgBuf.append("Excel导入失败！" + Common.SYS_ENDLINE_DEFAULT);
-            msgBuf.append(checkColumnMsgStr.toString().trim());
-            msgBuf.append("请核对后再次导入" + Common.SYS_ENDLINE_DEFAULT);
-
-            model.putCode(Integer.valueOf(1));
-            model.putMsg(msgBuf.toString());
-            return model;
-        }
-
-        //3. 遍历Excel导入List-Map<String, WarehouseProduct>
-        Map<String, String> warehouseMap = new HashMap<String, String>();
-        Map<String, WarehouseProduct> warehouseProductMap = new HashMap<String, WarehouseProduct>();
-        warehouseProductExcelService.findWarehouseProductMapByExcelDataList(dataMapLst,
-                warehouseProductMap,
-                warehouseMap,
-                productMap);
-
-        //4. 遍历Map<String, WarehouseProduct> 对业务表添加
-        warehouseProductExcelService.addWarehouseProductBySpare(warehouseProductMap, companyId, userId);
-
-        Long endTime = System.currentTimeMillis();
-        logger.info("################/equipment/warehouseInitialBySpare/importExcelInitialWarehouseBySpare 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
-        return model;
-    }
 
     /**
      * (备件库)修改仓库货品(库存数量)
@@ -365,6 +214,88 @@ public class EquipmentWarehouseInitialBySpareController {
 
         Long endTime = System.currentTimeMillis();
         logger.info("################/equipment/warehouseInitialBySpare/deleteWarehouseProductBySpare 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    @PostMapping("/equipment/warehouseInitialBySpare/exportExcelTemplateWarehouseInitialBySpare")
+    public ResultModel exportExcelTemplateWarehouseInitialBySpare() throws Exception {
+        logger.info("################/equipment/warehouseInitialBySpare/exportExcelTemplateWarehouseInitialBySpare 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+
+        List<Column> columnList = columnService.findColumnList("warehouseToWarehouseProduct");
+        if (columnList == null || columnList.size() == 0) {
+            throw new RestException("1","数据库没有生成TabCol，请联系管理员！");
+        }
+
+        //获取指定栏位字符串-重新调整List<Column>
+        String fieldCode = pd.getString("fieldCode");
+        if (fieldCode != null && fieldCode.trim().length() > 0) {
+            columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
+        }
+
+        String companyId = pd.getString("currentCompanyId");
+        if (companyId == null || companyId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("企业id为空或空字符串！");
+            return model;
+        }
+        pd.put("companyId", companyId.trim());
+
+        Warehouse warehouse = null;
+        try {
+            PageData findMap = new PageData();
+            findMap.put("companyId", companyId);
+            //warehouseSpareName:备件库名称定义:备件库
+            findMap.put("name", Common.DICTIONARY_MAP.get("warehouseSpareName"));
+            //是否启用(0:已禁用 1:启用)
+            findMap.put("isdisable", "1");
+            findMap.put("mapSize", Integer.valueOf(findMap.size()));
+            warehouse =  warehouseService.findWarehouse(findMap );
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (warehouse == null) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("您所在的企业不存在备件库，请与管理员联系！");
+            return model;
+        }
+
+        List<Map> dataList = new ArrayList<Map>();
+        try {
+            pd.put("isNeedSpare", "true");
+            dataList = warehouseToWarehouseProductService.findMapListWarehouseToWarehouseProduct(pd);
+            if (dataList != null && dataList.size() > 0) {
+                for (Map<String, Object> mapObject : dataList) {
+                    mapObject.put("productCode", "");
+                    mapObject.put("productName", "");
+                    mapObject.put("productSpec", "");
+                    mapObject.put("productGenreName", "");
+                    mapObject.put("productUnitName", "");
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        //查询数据转换成Excel导出数据
+        List<LinkedHashMap<String, String>> dataMapList = ColumnUtil.modifyDataList(columnList, dataList);
+        HttpServletResponse response = HttpUtils.currentResponse();
+
+        //查询数据-Excel文件导出
+        String fileName = pd.getString("fileName");
+        if (fileName == null || fileName.trim().length() == 0) {
+            fileName = "ExcelWarehouseInitial";
+        }
+
+        //导出文件名-中文转码
+        fileName = new String(fileName.getBytes("utf-8"),"ISO-8859-1");
+        ExcelUtil.excelExportByDataList(response, fileName, dataMapList);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/equipment/warehouseInitialBySpare/exportExcelTemplateWarehouseInitialBySpare 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 }

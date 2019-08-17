@@ -123,6 +123,14 @@
                 and warehouse.company_id = #{companyId}
             </if>
 
+            <!--备件库 自定义sql查询语句-->
+            <if test="'true' == isNeedSpare">
+                and warehouse.name = '备件库'
+            </if>
+            <if test="'true' == isNotNeedSpare">
+                <![CDATA[ and warehouse.name <> '备件库' ]]>
+            </if>
+
         </where>
 
 
