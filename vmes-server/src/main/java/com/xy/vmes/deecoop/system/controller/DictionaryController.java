@@ -390,10 +390,10 @@ public class DictionaryController {
         logger.info("################/system/dictionary/findListDictionaryByRoleMenu 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         PageData pd = HttpUtils.parsePageData();
-        ResultModel model = new ResultModel();
 
+        ResultModel model = new ResultModel();
         PageData findMap = new PageData();
-        findMap.put("orderStr", "serial_number asc");
+
         String companyId = pd.getString("currentCompanyId");
         findMap.put("companyId", companyId);
 
@@ -409,6 +409,15 @@ public class DictionaryController {
         String id = Common.DICTIONARY_MAP.get(dictionaryKey);
         findMap.put("pid", id);
         findMap.put("selfQueryStr", "id = '" + id + "'");
+
+        String isNeedName = pd.getString("isNeedName");
+        String nameValue = pd.getString("nameValue");
+        if ("true".equals(isNeedName) && nameValue != null && nameValue.trim().length() > 0) {
+            findMap.put("isNeedName", isNeedName);
+            findMap.put("nameValue", nameValue.trim());
+        }
+
+        findMap.put("orderStr", "serial_number asc");
 
         List<TreeEntity> treeList = dictionaryService.getTreeList(findMap);
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
