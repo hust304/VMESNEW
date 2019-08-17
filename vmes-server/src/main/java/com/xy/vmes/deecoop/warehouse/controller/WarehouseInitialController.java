@@ -413,6 +413,7 @@ public class WarehouseInitialController {
 
             PageData findMap = new PageData();
             findMap.put("companyId", companyId);
+            findMap.put("warehouseAttribute", warehouseGenre);
             findMap.put("mapSize", Integer.valueOf(findMap.size()));
             warehouseInitial = warehouseInitialService.findWarehouseInitial(findMap);
 
@@ -443,6 +444,4 @@ public class WarehouseInitialController {
     }
 
 }
-
-
 

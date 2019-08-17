@@ -288,6 +288,7 @@ public class WarehouseInitialServiceImp implements WarehouseInitialService {
         try {
             PageData findMap = new PageData();
             findMap.put("companyId", companyId);
+            findMap.put("warehouseAttribute", warehouseGenre);
             findMap.put("mapSize", Integer.valueOf(findMap.size()));
             warehouseInitial = this.findWarehouseInitial(findMap);
         } catch (Exception e) {
@@ -347,18 +348,17 @@ public class WarehouseInitialServiceImp implements WarehouseInitialService {
         }
 
         //删除仓库货品表(库存表)
-        //true: 删除的是备件库 warehouseGenre:= spare:备件库
-        //false: 删除的是非备件库 warehouseGenre:= warehouse:(简版,复杂版)仓库
-        String isDelNotSpare = "false";
+        //isSpare:true: 删除的是备件库 warehouseGenre:= spare:备件库
+        //isSpare:false: 删除的是非备件库 warehouseGenre:= warehouse:(简版,复杂版)仓库
+        String isSpare = "false";
         if ("warehouse".equals(warehouseGenre)) {
-            isDelNotSpare = "false";
+            isSpare = "false";
         } else if ("spare".equals(warehouseGenre)) {
-            isDelNotSpare = "true";
+            isSpare = "true";
         }
-        warehouseProductService.deleteTable(companyId, isDelNotSpare);
+        warehouseProductService.deleteTable(companyId, isSpare);
 
         //货品表(库存数量,锁定库存数量)初始化为零
-        String isSpare = "false";
         productService.initialProductByStockCount(companyId, isSpare);
 
         taskService.deleteTableByTask(companyId);
