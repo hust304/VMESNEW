@@ -397,6 +397,8 @@ public class WarehouseProductExcelServiceImp implements WarehouseProductExcelSer
         findMap.put("companyId", companyId);
         findMap.put("name", "备件库");
         findMap.put("layer", Integer.valueOf(2));
+        //是否启用(0:已禁用 1:启用)
+        findMap.put("isdisable", "1");
         findMap.put("mapSize", Integer.valueOf(findMap.size()));
         Warehouse warehouseSpare = warehouseService.findWarehouse(findMap);
 
