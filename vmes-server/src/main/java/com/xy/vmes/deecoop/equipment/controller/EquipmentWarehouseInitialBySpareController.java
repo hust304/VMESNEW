@@ -44,6 +44,8 @@ public class EquipmentWarehouseInitialBySpareController {
     private WarehouseProductExcelService warehouseProductExcelService;
 
     @Autowired
+    private WarehouseInitialService warehouseInitialService;
+    @Autowired
     private WarehouseService warehouseService;
     @Autowired
     private ProductService productService;
@@ -462,6 +464,38 @@ public class EquipmentWarehouseInitialBySpareController {
 
         //4. 遍历Map<String, WarehouseProduct> 对业务表添加
         warehouseProductExcelService.addWarehouseProductBySpare(warehouseProductMap, companyId, userId);
+
+        //(企业id)查询 vmes_warehouse_initial
+        WarehouseInitial warehouseInitial = null;
+        try {
+            findMap = new PageData();
+            findMap.put("companyId", companyId);
+            //初始化仓库属性
+            //warehouse:(简版,复杂版)仓库 spare:备件库
+            findMap.put("warehouseAttribute", "spare");
+            findMap.put("mapSize", Integer.valueOf(findMap.size()));
+            warehouseInitial = warehouseInitialService.findWarehouseInitial(findMap);
+
+            //是否禁用按钮(0:已禁用 1:启用) (0和1字符串,初始化按钮,导入按钮,禁用初始化按钮)
+            //0和1字符串 第一位:初始化按钮 第二位:导入按钮 第三位:禁用初始化按钮
+            String isDisableButton = "101";
+
+            if (warehouseInitial == null) {
+                WarehouseInitial addObject = new WarehouseInitial();
+                addObject.setCuser(userId);
+                addObject.setCompanyId(companyId);
+                addObject.setIsDisableButton(isDisableButton);
+                //warehouseAttribute 仓库属性(warehouse:(简版,复杂版)仓库 spare:备件库)
+                addObject.setWarehouseAttribute("spare");
+                warehouseInitialService.save(addObject);
+            } else if (warehouseInitial != null) {
+                warehouseInitial.setIsDisableButton(isDisableButton);
+                warehouseInitialService.update(warehouseInitial);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         Long endTime = System.currentTimeMillis();
         logger.info("################/equipment/warehouseInitialBySpare/importExcelInitialWarehouseBySpare 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");

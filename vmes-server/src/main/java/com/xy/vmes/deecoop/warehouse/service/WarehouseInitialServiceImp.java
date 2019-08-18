@@ -321,31 +321,43 @@ public class WarehouseInitialServiceImp implements WarehouseInitialService {
      * @throws Exception
      */
     public void deleteTableByBusiness(String warehouseGenre, String companyId) throws Exception {
-        //删除入库业务表
-        warehouseInService.deleteTableByWarehouseIn(companyId, warehouseGenre);
-        //删除出库业务表
-        warehouseOutService.deleteTableByWarehouseOut(companyId, warehouseGenre);
-        //删除仓库盘点业务表
-        warehouseCheckService.deleteTableByWarehouseCheck(companyId);
-        //删除移库业务表
-        warehouseMoveService.deleteTableByWarehouseMove(companyId);
 
-        //销售
-        if(saleOrderService != null) {
-            saleOrderService.deleteTableByOrder(companyId);
+        //仓库业务表
+        if ("warehouse".equals(warehouseGenre)) {
+            //删除入库业务表
+            warehouseInService.deleteTableByWarehouseIn(companyId, warehouseGenre);
+            //删除出库业务表
+            warehouseOutService.deleteTableByWarehouseOut(companyId, warehouseGenre);
+            //删除仓库盘点业务表
+            warehouseCheckService.deleteTableByWarehouseCheck(companyId);
+            //删除移库业务表
+            warehouseMoveService.deleteTableByWarehouseMove(companyId);
+        } else if ("spare".equals(warehouseGenre)) {
+            //删除入库业务表
+            warehouseInService.deleteTableByWarehouseIn(companyId, warehouseGenre);
+            //删除出库业务表
+            warehouseOutService.deleteTableByWarehouseOut(companyId, warehouseGenre);
+
         }
-        if(saleDeliverService != null) {
-            saleDeliverService.deleteTableByDeliver(companyId);
-        }
-        if (saleInvoiceService != null) {
-            saleInvoiceService.deleteTableByInvoice(companyId);
-        }
-        if (saleRetreatService != null) {
-            saleRetreatService.deleteTableBySaleRetreat(companyId);
-        }
-        if (saleReceiveService != null) {
-            saleReceiveService.deleteTableByReceive(companyId);
-        }
+
+//        //销售业务表
+//        if ("warehouse".equals(warehouseGenre)) {
+//            if(saleOrderService != null) {
+//                saleOrderService.deleteTableByOrder(companyId);
+//            }
+//            if(saleDeliverService != null) {
+//                saleDeliverService.deleteTableByDeliver(companyId);
+//            }
+//            if (saleInvoiceService != null) {
+//                saleInvoiceService.deleteTableByInvoice(companyId);
+//            }
+//            if (saleRetreatService != null) {
+//                saleRetreatService.deleteTableBySaleRetreat(companyId);
+//            }
+//            if (saleReceiveService != null) {
+//                saleReceiveService.deleteTableByReceive(companyId);
+//            }
+//        }
 
         //删除仓库货品表(库存表)
         //isSpare:true: 删除的是备件库 warehouseGenre:= spare:备件库
