@@ -126,7 +126,7 @@ public class EquipmentWarehouseOutBySpareController {
         warehouseOut.setState("0");
         warehouseOut.setCompanyId(companyID);
         //出库单编号
-        String code = coderuleService.createCoder(companyID, "vmes_warehouse_out_spare", "O");
+        String code = coderuleService.createCoder(companyID, "vmes_warehouse_out", "O");
         warehouseOut.setCode(code);
         //warehouseAttribute 仓库属性(warehouse:(简版,复杂版)仓库 spare:备件库)
         warehouseOut.setWarehouseAttribute("spare");
