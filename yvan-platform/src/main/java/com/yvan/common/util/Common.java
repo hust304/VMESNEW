@@ -272,7 +272,7 @@ public class Common {
         //productGenre: 4c4bd1b59954438c8bf56facd97a0c7e 货品属性
         put("productGenre", "4c4bd1b59954438c8bf56facd97a0c7e");
             //备件:productGenreSpare:384cfd1329e648618b5a237ce1038bab
-            put("productGenreSpare ", "384cfd1329e648618b5a237ce1038bab");
+            put("productGenreSpare", "384cfd1329e648618b5a237ce1038bab");
 
         //productType: a39ac4c1e02e45788eb03a52a5e9a972 货品类型
         put("productType", "a39ac4c1e02e45788eb03a52a5e9a972");
