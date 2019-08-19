@@ -215,6 +215,44 @@ public class EquipmentRepairTaskDetailServiceImp implements EquipmentRepairTaskD
     }
 
     /**
+     * 获取Map结构体
+     * 遍历JsonMapList-根据货品属性(productGenre)-返回Map结构体
+     * 1.货品属性:productGenre:备件   添加到:warehouseList
+     * 2.货品属性:productGenre:非备件 添加到:spareList
+     *
+     * Map<String, List<Map<String, String>>>
+     *     warehouseList: 复杂版仓库,简版仓库
+     *     spareList:     备件库
+     *
+     * @param jsonMapList 页面JsonMapList
+     * @return
+     */
+    public Map<String, List<Map<String, String>>> findMapByProductGenre(List<Map<String, String>> jsonMapList) {
+        Map<String, List<Map<String, String>>> mapValue = new HashMap<String, List<Map<String, String>>>();
+        if (jsonMapList == null || jsonMapList.size() == 0) {return mapValue;}
+
+        List<Map<String, String>> warehouseList = new ArrayList<>();
+        List<Map<String, String>> spareList = new ArrayList<>();
+        for (Map<String, String> mapObject : jsonMapList) {
+            //productGenre 货品属性
+            String productGenre = mapObject.get("productGenre");
+
+            //备件:productGenreSpare:384cfd1329e648618b5a237ce1038bab
+            if (Common.DICTIONARY_MAP.get("productGenreSpare").equals(productGenre)) {
+                //货品属性:productGenre:备件 ==> spareList备件库
+                spareList.add(mapObject);
+            } else {
+                //货品属性:productGenre:非备件 ==> warehouseList 复杂版仓库,简版仓库
+                warehouseList.add(mapObject);
+            }
+        }
+
+        mapValue.put("warehouseList", warehouseList);
+        mapValue.put("spareList", spareList);
+        return mapValue;
+    }
+
+    /**
      * 获取新的editJsonMap
      * Map<String, List<Map<String, String>>>
      *     notEqualZeroList: 退回数量(不等于零)List
@@ -285,7 +323,10 @@ public class EquipmentRepairTaskDetailServiceImp implements EquipmentRepairTaskD
     }
 
     /**
-     * 返回货品出库Map
+     * 该方法按值引用调用-参数货品出库Map(productMap)
+     * 方法调用后-参数(productMap)发生改变
+     *
+     * 货品出库Map
      * 货品出库Map<货品id, 货品Map<String, Object>>
      * 货品Map<String, Object>
      *     productId: 货品id
@@ -293,11 +334,12 @@ public class EquipmentRepairTaskDetailServiceImp implements EquipmentRepairTaskD
      *     outCount:  出库数量
      *
      * @param jsonMapList
+     * @param productByOutMap
      * @return
      */
-    public Map<String, Map<String, Object>> findProductMapByOut(List<Map<String, String>> jsonMapList) {
-        Map<String, Map<String, Object>> productByOutMap = new HashMap<String, Map<String, Object>>();
-        if (jsonMapList == null || jsonMapList.size() == 0) {return productByOutMap;}
+    public void findProductMapByOut(List<Map<String, String>> jsonMapList, Map<String, Map<String, Object>> productByOutMap) {
+        if (productByOutMap == null) {productByOutMap = new HashMap<String, Map<String, Object>>();}
+        if (jsonMapList == null || jsonMapList.size() == 0) {return;}
 
         for (Map<String, String> mapObject : jsonMapList) {
             String productId = mapObject.get("productId");
@@ -323,7 +365,6 @@ public class EquipmentRepairTaskDetailServiceImp implements EquipmentRepairTaskD
             productByOutMap.put(productId, productMap);
         }
 
-        return productByOutMap;
     }
 
     /**
@@ -377,18 +418,20 @@ public class EquipmentRepairTaskDetailServiceImp implements EquipmentRepairTaskD
             String productId = detail.getProductId();
             detail.setCuser(cuser);
 
-            Map<String, Object> productMap = productByOutMap.get(productId);
-            //outDtlId:  出库明细id
-            String outDtlId = new String();
-            if (productMap != null && productMap.get("outDtlId") != null) {
-                outDtlId = (String)productMap.get("outDtlId");
-            }
-            detail.setOutDtlId(outDtlId);
+            if (productByOutMap != null && productByOutMap.get(productId) != null) {
+                Map<String, Object> productMap = productByOutMap.get(productId);
+                //outDtlId:  出库明细id
+                String outDtlId = new String();
+                if (productMap != null && productMap.get("outDtlId") != null) {
+                    outDtlId = (String)productMap.get("outDtlId");
+                }
+                detail.setOutDtlId(outDtlId);
 
-            //outCount:  出库数量
-            if (productMap != null && productMap.get("outCount") != null) {
-                BigDecimal outCount = (BigDecimal)productMap.get("outCount");
-                detail.setOutCount(outCount);
+                //outCount:  出库数量
+                if (productMap != null && productMap.get("outCount") != null) {
+                    BigDecimal outCount = (BigDecimal)productMap.get("outCount");
+                    detail.setOutCount(outCount);
+                }
             }
 
             this.save(detail);
