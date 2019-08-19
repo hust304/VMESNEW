@@ -219,6 +219,13 @@
                     <if test="layerQueryStr != null and layerQueryStr != ''" >
                         or ${layerQueryStr}
                     </if>
+
+                    <if test="'true' == isNeedEntity">
+                        <![CDATA[ and id <> '56f5e83dcb9911e884ad00163e105f05' ]]>
+                    </if>
+                    <if test="'true' == isNeedVirtual">
+                        <![CDATA[ and id <> '2d75e49bcb9911e884ad00163e105f05' ]]>
+                    </if>
                 </where>
             </otherwise>
         </choose>

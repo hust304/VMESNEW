@@ -351,6 +351,12 @@
                         <if test="currentCompanyId != null and currentCompanyId != ''" >
                             and company_id=#{currentCompanyId}
                         </if>
+                        <if test="warehouseId != null and warehouseId != ''" >
+                            and warehouse_id in (
+                                select id from vmes_warehouse
+                                where company_id=#{currentCompanyId} and path_id LIKE CONCAT(CONCAT('%', #{warehouseId}),'%')
+                            )
+                        </if>
                         and isdisable = '1'
 
                     </where>
