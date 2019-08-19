@@ -796,6 +796,19 @@ public class WarehouseServiceImp implements WarehouseService {
 //            findMap.put("isNotSimple", isNotSimple);
 //        }
 
+        //isNeedEntityVirtual 查询结果集需要(实体库,虚拟库)
+        if ("true".equals(pageData.getString("isNeedEntityVirtual"))) {
+            findMap.put("isNeedEntityVirtual", "true");
+        }
+        //isNeedEntity 查询结果集需要(实体库)
+        if ("true".equals(pageData.getString("isNeedEntity"))) {
+            findMap.put("isNeedEntity", "true");
+        }
+        //isNeedVirtual 查询结果集需要(虚拟库)
+        if ("true".equals(pageData.getString("isNeedVirtual"))) {
+            findMap.put("isNeedVirtual", "true");
+        }
+
         //是否需要(备件库) isNeedSpare isNotNeedSpare
         if ("true".equals(pageData.getString("isNeedSpare"))) {
             findMap.put("isNeedSpare", "true");
