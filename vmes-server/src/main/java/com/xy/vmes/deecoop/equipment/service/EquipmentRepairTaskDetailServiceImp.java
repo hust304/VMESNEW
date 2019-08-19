@@ -322,49 +322,49 @@ public class EquipmentRepairTaskDetailServiceImp implements EquipmentRepairTaskD
         return newEditJsonMap;
     }
 
-    /**
-     * 该方法按值引用调用-参数货品出库Map(productMap)
-     * 方法调用后-参数(productMap)发生改变
-     *
-     * 货品出库Map
-     * 货品出库Map<货品id, 货品Map<String, Object>>
-     * 货品Map<String, Object>
-     *     productId: 货品id
-     *     outDtlId:  出库明细id
-     *     outCount:  出库数量
-     *
-     * @param jsonMapList
-     * @param productByOutMap
-     * @return
-     */
-    public void findProductMapByOut(List<Map<String, String>> jsonMapList, Map<String, Map<String, Object>> productByOutMap) {
-        if (productByOutMap == null) {productByOutMap = new HashMap<String, Map<String, Object>>();}
-        if (jsonMapList == null || jsonMapList.size() == 0) {return;}
-
-        for (Map<String, String> mapObject : jsonMapList) {
-            String productId = mapObject.get("productId");
-
-            //receiveCount 领取数量 := outCount 出库数量
-            BigDecimal receiveCount = BigDecimal.valueOf(0D);
-            String receiveCountStr = mapObject.get("receiveCount");
-            if (receiveCountStr != null && receiveCountStr.trim().length() > 0) {
-                try {
-                    receiveCount = new BigDecimal(receiveCountStr);
-                    //四舍五入到2位小数
-                    receiveCount = receiveCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-                } catch (NumberFormatException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            Map<String, Object> productMap = new HashMap<String, Object>();
-            productMap.put("productId", productId);
-            productMap.put("outDtlId", null);
-            productMap.put("outCount", receiveCount);
-
-            productByOutMap.put(productId, productMap);
-        }
-    }
+//    /**
+//     * 该方法按值引用调用-参数货品出库Map(productMap)
+//     * 方法调用后-参数(productMap)发生改变
+//     *
+//     * 货品出库Map
+//     * 货品出库Map<货品id, 货品Map<String, Object>>
+//     * 货品Map<String, Object>
+//     *     productId: 货品id
+//     *     outDtlId:  出库明细id
+//     *     outCount:  出库数量
+//     *
+//     * @param jsonMapList
+//     * @param productByOutMap
+//     * @return
+//     */
+//    public void findProductMapByOut(List<Map<String, String>> jsonMapList, Map<String, Map<String, Object>> productByOutMap) {
+//        if (productByOutMap == null) {productByOutMap = new HashMap<String, Map<String, Object>>();}
+//        if (jsonMapList == null || jsonMapList.size() == 0) {return;}
+//
+//        for (Map<String, String> mapObject : jsonMapList) {
+//            String productId = mapObject.get("productId");
+//
+//            //receiveCount 领取数量 := outCount 出库数量
+//            BigDecimal receiveCount = BigDecimal.valueOf(0D);
+//            String receiveCountStr = mapObject.get("receiveCount");
+//            if (receiveCountStr != null && receiveCountStr.trim().length() > 0) {
+//                try {
+//                    receiveCount = new BigDecimal(receiveCountStr);
+//                    //四舍五入到2位小数
+//                    receiveCount = receiveCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+//                } catch (NumberFormatException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//            Map<String, Object> productMap = new HashMap<String, Object>();
+//            productMap.put("productId", productId);
+//            productMap.put("outDtlId", null);
+//            productMap.put("outCount", receiveCount);
+//
+//            productByOutMap.put(productId, productMap);
+//        }
+//    }
     /**
      * 返回货品出库Map
      * 货品出库Map<货品id, 货品Map<String, Object>>

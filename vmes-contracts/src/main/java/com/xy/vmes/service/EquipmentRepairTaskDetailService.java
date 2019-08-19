@@ -133,22 +133,22 @@ public interface EquipmentRepairTaskDetailService {
      */
     Map<String, List<Map<String, String>>> findNewEditJsonMap(List<Map<String, String>> editJsonMapList);
 
-    /**
-     * 该方法按值引用调用-参数货品出库Map(productMap)
-     * 方法调用后-参数(productMap)发生改变
-     *
-     * 货品出库Map
-     * 货品出库Map<货品id, 货品Map<String, Object>>
-     * 货品Map<String, Object>
-     *     productId: 货品id
-     *     outDtlId:  出库明细id
-     *     outCount:  出库数量
-     *
-     * @param jsonMapList
-     * @param productByOutMap
-     * @return
-     */
-    void findProductMapByOut(List<Map<String, String>> jsonMapList, Map<String, Map<String, Object>> productByOutMap);
+//    /**
+//     * 该方法按值引用调用-参数货品出库Map(productMap)
+//     * 方法调用后-参数(productMap)发生改变
+//     *
+//     * 货品出库Map
+//     * 货品出库Map<货品id, 货品Map<String, Object>>
+//     * 货品Map<String, Object>
+//     *     productId: 货品id
+//     *     outDtlId:  出库明细id
+//     *     outCount:  出库数量
+//     *
+//     * @param jsonMapList
+//     * @param productByOutMap
+//     * @return
+//     */
+//    void findProductMapByOut(List<Map<String, String>> jsonMapList, Map<String, Map<String, Object>> productByOutMap);
     /**
      * 返回货品出库Map
      * 货品出库Map<货品id, 货品Map<String, Object>>
@@ -188,8 +188,6 @@ public interface EquipmentRepairTaskDetailService {
     */
     ResultModel listPageRepairTaskDetail(PageData pd) throws Exception;
     ResultModel findListTaskDetailByOutDetail(PageData pd) throws Exception;
-
-
 
 
 }

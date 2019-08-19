@@ -234,8 +234,6 @@ public class EquipmentRepairTaskDetailController {
         //////////////////////////////////////////////////////////////////////////////////////////////////////////
         //(复杂版,简版)仓库
         if (warehouseList != null && warehouseList.size() > 0) {
-            repairTaskDetailService.findProductMapByOut(warehouseList, prodOutMapByAddDetail);
-
             Map<String, Map<String, Object>> productByOutMap = repairTaskDetailService.findProductMapByOut(warehouseList);
             if (Common.SYS_WAREHOUSE_COMPLEX.equals(warehouse)) {
                 //复杂版仓库:warehouseByComplex:Common.SYS_WAREHOUSE_COMPLEX
@@ -262,12 +260,18 @@ public class EquipmentRepairTaskDetailController {
                         Common.DICTIONARY_MAP.get("repairReceiveOut"),
                         productByOutMap);
             }
+
+            if (productByOutMap != null) {
+                for (Iterator iterator = productByOutMap.keySet().iterator(); iterator.hasNext();) {
+                    String mapKey = (String) iterator.next();
+                    Map<String, Object> mapValue = productByOutMap.get(mapKey);
+                    prodOutMapByAddDetail.put(mapKey, mapValue);
+                }
+            }
         }
         //////////////////////////////////////////////////////////////////////////////////////////////////////////
         //(备件)仓库
         if (spareList != null && spareList.size() > 0) {
-            repairTaskDetailService.findProductMapByOut(spareList, prodOutMapByAddDetail);
-
             Map<String, Map<String, Object>> productByOutMap = repairTaskDetailService.findProductMapByOut(spareList);
             warehouseOutCreateService.createWarehouseOutByBySpare(deptId,
                     deptName,
@@ -278,6 +282,14 @@ public class EquipmentRepairTaskDetailController {
                     //spareOut:备件出库 12e84fefddc449a78cc3bf8075475823
                     Common.DICTIONARY_MAP.get("spareOut"),
                     productByOutMap);
+
+            if (productByOutMap != null) {
+                for (Iterator iterator = productByOutMap.keySet().iterator(); iterator.hasNext();) {
+                    String mapKey = (String) iterator.next();
+                    Map<String, Object> mapValue = productByOutMap.get(mapKey);
+                    prodOutMapByAddDetail.put(mapKey, mapValue);
+                }
+            }
         }
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////
