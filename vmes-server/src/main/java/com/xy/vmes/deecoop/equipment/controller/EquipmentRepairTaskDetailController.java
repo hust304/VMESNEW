@@ -179,10 +179,14 @@ public class EquipmentRepairTaskDetailController {
         //spareList:     备件库
         Map<String, List<Map<String, String>>> valueMap = repairTaskDetailService.findMapByProductGenre(jsonMapList);
         if (valueMap == null || valueMap.size() == 0) {return model;}
+
         List<Map<String, String>> warehouseList = new ArrayList<>();
         if (valueMap != null && valueMap.get("warehouseList") != null) {
             warehouseList = valueMap.get("warehouseList");
         }
+
+        //备件库-表对象
+        Warehouse warehouseSpare = null;
         List<Map<String, String>> spareList = new ArrayList<>();
         if (valueMap != null && valueMap.get("spareList") != null) {
             spareList = valueMap.get("spareList");
@@ -190,7 +194,6 @@ public class EquipmentRepairTaskDetailController {
 
         //系统备件库是否存在
         if (spareList != null && spareList.size() > 0) {
-            Warehouse warehouseSpare = null;
             try {
                 //获取备件库
                 PageData findMap = new PageData();
@@ -227,11 +230,13 @@ public class EquipmentRepairTaskDetailController {
             deptName = department.getName().trim();
         }
 
-        Map<String, Map<String, Object>> productByOutMap = new HashMap<String, Map<String, Object>>();
+        Map<String, Map<String, Object>> prodOutMapByAddDetail = new HashMap<String, Map<String, Object>>();
         //////////////////////////////////////////////////////////////////////////////////////////////////////////
         //(复杂版,简版)仓库
         if (warehouseList != null && warehouseList.size() > 0) {
-            repairTaskDetailService.findProductMapByOut(warehouseList, productByOutMap);
+            repairTaskDetailService.findProductMapByOut(warehouseList, prodOutMapByAddDetail);
+
+            Map<String, Map<String, Object>> productByOutMap = repairTaskDetailService.findProductMapByOut(warehouseList);
             if (Common.SYS_WAREHOUSE_COMPLEX.equals(warehouse)) {
                 //复杂版仓库:warehouseByComplex:Common.SYS_WAREHOUSE_COMPLEX
                 warehouseOutCreateService.createWarehouseOutByComplex(deptId,
@@ -261,7 +266,18 @@ public class EquipmentRepairTaskDetailController {
         //////////////////////////////////////////////////////////////////////////////////////////////////////////
         //(备件)仓库
         if (spareList != null && spareList.size() > 0) {
-            repairTaskDetailService.findProductMapByOut(spareList, productByOutMap);
+            repairTaskDetailService.findProductMapByOut(spareList, prodOutMapByAddDetail);
+
+            Map<String, Map<String, Object>> productByOutMap = repairTaskDetailService.findProductMapByOut(spareList);
+            warehouseOutCreateService.createWarehouseOutByBySpare(deptId,
+                    deptName,
+                    //备件库
+                    warehouseSpare.getId(),
+                    cuser,
+                    companyId,
+                    //spareOut:备件出库 12e84fefddc449a78cc3bf8075475823
+                    Common.DICTIONARY_MAP.get("spareOut"),
+                    productByOutMap);
         }
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -269,7 +285,7 @@ public class EquipmentRepairTaskDetailController {
         List<EquipmentRepairTaskDetail> taskDetailList = repairTaskDetailService.jsonMapList2DetailList(jsonMapList, null);
         repairTaskDetailService.addRepairTaskDetail(cuser,
                 taskDetailList,
-                productByOutMap);
+                prodOutMapByAddDetail);
 
         //修改设备维修任务状态 (0:未领取任务 1:已领取任务 2:已领料 3:已报工 4:已退单 )
         EquipmentRepairTask repairTaskEdit = new EquipmentRepairTask();
