@@ -454,9 +454,29 @@ public class EquipmentRepairTaskDetailController {
             if (notEqualZeroList != null && notEqualZeroList.size() > 0) {
                 Map<String, Map<String, Object>> prodOutMapByEditDetail = new HashMap<String, Map<String, Object>>();
 
-                Map<String, Map<String, Object>> productByInMap = repairTaskDetailService.findProductMapByIn(notEqualZeroList);
+                //遍历JsonMapList-根据货品属性(productGenre)-返回Map结构体
+                //warehouseList: 复杂版仓库,简版仓库
+                //spareList:     备件库
+                Map<String, List<Map<String, String>>> valueMap = repairTaskDetailService.findMapByProductGenre(notEqualZeroList);
+
+                List<Map<String, String>> warehouseList = new ArrayList<>();
+                if (valueMap != null && valueMap.get("warehouseList") != null) {
+                    warehouseList = valueMap.get("warehouseList");
+                }
+
+                //备件库-表对象
+                List<Map<String, String>> spareList = new ArrayList<>();
+                if (valueMap != null && valueMap.get("spareList") != null) {
+                    spareList = valueMap.get("spareList");
+                }
+
                 //retreatType 退库方式(1:生成退库单 2:退回虚拟库)
-                if ("1".equals(retreatType) && Common.SYS_WAREHOUSE_COMPLEX.equals(warehouse)) {
+                if ("1".equals(retreatType)
+                    && Common.SYS_WAREHOUSE_COMPLEX.equals(warehouse)
+                    && warehouseList.size() > 0
+                ) {
+                    Map<String, Map<String, Object>> productByInMap = repairTaskDetailService.findProductMapByIn(warehouseList);
+
                     //退库方式:1:生成退库单: (生成复杂版入库单)
                     //复杂版仓库:warehouseByComplex:Common.SYS_WAREHOUSE_COMPLEX
                     warehouseInCreateService.createWarehouseInByComplex(deptId,
@@ -476,7 +496,12 @@ public class EquipmentRepairTaskDetailController {
                             prodOutMapByEditDetail.put(mapKey, mapValue);
                         }
                     }
-                } else if ("1".equals(retreatType) && Common.SYS_WAREHOUSE_SIMPLE.equals(warehouse)) {
+                } else if ("1".equals(retreatType)
+                    && Common.SYS_WAREHOUSE_SIMPLE.equals(warehouse)
+                    && warehouseList.size() > 0
+                ) {
+                    Map<String, Map<String, Object>> productByInMap = repairTaskDetailService.findProductMapByIn(warehouseList);
+
                     //退库方式:1:生成退库单: (生成简版入库单)
                     //简版仓库:warehouseBySimple:Common.SYS_WAREHOUSE_SIMPLE
                     warehouseInCreateService.createWarehouseInBySimple(deptId,
@@ -496,7 +521,52 @@ public class EquipmentRepairTaskDetailController {
                             prodOutMapByEditDetail.put(mapKey, mapValue);
                         }
                     }
+                } else if ("1".equals(retreatType) && spareList.size() > 0) {
+                    Warehouse warehouseSpare = null;
+                    try {
+                        //获取备件库
+                        PageData findMap = new PageData();
+                        findMap.put("companyId", companyId);
+                        findMap.put("name", "备件库");
+                        findMap.put("layer", Integer.valueOf(2));
+                        //是否启用(0:已禁用 1:启用)
+                        findMap.put("isdisable", "1");
+                        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+                        warehouseSpare = warehouseService.findWarehouse(findMap);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    if (warehouseSpare == null) {
+                        model.putCode(Integer.valueOf(1));
+                        model.putMsg("您所在的企业不存在(备件库)，请与管理员联系！");
+                        return model;
+                    }
+
+                    Map<String, Map<String, Object>> productByInMap = repairTaskDetailService.findProductMapByIn(spareList);
+
+                    //(备件库)入库单
+                    warehouseInCreateService.createWarehouseInBySimple(deptId,
+                            deptName,
+                            //备件库
+                            warehouseSpare.getId(),
+                            cuser,
+                            companyId,
+                            //spareIn:备件入库 4ac4616c7b254950af24e0c8eda0c6f7
+                            Common.DICTIONARY_MAP.get("spareIn"),
+                            productByInMap);
+
+
+                    if (productByInMap != null) {
+                        for (Iterator iterator = productByInMap.keySet().iterator(); iterator.hasNext();) {
+                            String mapKey = (String) iterator.next();
+                            Map<String, Object> mapValue = productByInMap.get(mapKey);
+                            prodOutMapByEditDetail.put(mapKey, mapValue);
+                        }
+                    }
+
                 } else if ("2".equals(retreatType)) {
+                    Map<String, Map<String, Object>> productByInMap = repairTaskDetailService.findProductMapByIn(notEqualZeroList);
+
                     //退库方式:2:退回虚拟库-(生成虚拟库入库单)
                     warehouseInCreateService.createWarehouseInByVirtual(deptId,
                             deptName,

@@ -168,6 +168,73 @@ public class WarehouseInCreateServiceImp implements WarehouseInCreateService {
     }
 
     /**
+     * 创建入库单(备件库)
+     *
+     * @param deptId          (部门,供应商,客户)id
+     * @param deptName        (部门,供应商,客户)名称
+     * @param warehouseId     仓库id
+     * @param cuser           用户id
+     * @param companyId       企业id
+     * @param inType          入库类型id
+     * @param productByInMap  货品入库Map<货品id, 货品Map>
+     *
+     * 货品入库Map<货品id, 货品Map<String, Object>>
+     * 货品Map<String, Object>
+     *     productId: 货品id
+     *     inDtlId:   入库明细id
+     *     inCount:   入库数量
+     */
+    public void createWarehouseInBySpare(String deptId,
+                                  String deptName,
+                                  String warehouseId,
+                                  String cuser,
+                                  String companyId,
+                                  String inType,
+                                  Map<String, Map<String, Object>> productByInMap) throws ApplicationException {
+        StringBuffer msgStr = new StringBuffer();
+        if (deptId == null || deptId.trim().length() == 0) {
+            msgStr.append("部门id为空或空字符串" + Common.SYS_ENDLINE_DEFAULT);
+        }
+        if (companyId == null || companyId.trim().length() == 0) {
+            msgStr.append("企业id为空或空字符串" + Common.SYS_ENDLINE_DEFAULT);
+        }
+        if (inType == null || inType.trim().length() == 0) {
+            msgStr.append("入库类型id为空或空字符串" + Common.SYS_ENDLINE_DEFAULT);
+        }
+        if (msgStr.toString().trim().length() > 0) {
+            throw new ApplicationException(msgStr.toString());
+        }
+
+        try {
+            //创建入库单
+            WarehouseIn warehouseIn = warehouseInService.createWarehouseIn(deptId,
+                    deptName,
+                    cuser,
+                    companyId,
+                    inType);
+
+            //warehouseAttribute 仓库属性(warehouse:(简版,复杂版)仓库 spare:备件库)
+            warehouseIn.setWarehouseAttribute("spare");
+            warehouseIn.setWarehouseId(warehouseId);
+            warehouseInService.save(warehouseIn);
+
+            //创建入库单明细
+            List<WarehouseInDetail> inDtlList = this.productMap2InDetailList(productByInMap, null);
+            warehouseInDetailService.addWarehouseInDetailBySimple(warehouseIn, inDtlList);
+
+            for (WarehouseInDetail detail : inDtlList) {
+                String productId = detail.getProductId();
+                String inDtlId = detail.getId();
+
+                Map<String, Object> productMap = productByInMap.get(productId);
+                productMap.put("inDtlId", inDtlId);
+            }
+        } catch (Exception e) {
+            throw new ApplicationException(e.getMessage());
+        }
+    }
+
+    /**
      * 创建入库单(虚拟库)-与简版入库单类似
      *
      * @param deptId          (部门,供应商,客户)id

@@ -64,6 +64,31 @@ public interface WarehouseInCreateService {
                                    Map<String, Map<String, Object>> productByInMap) throws ApplicationException;
 
     /**
+     * 创建入库单(备件库)
+     *
+     * @param deptId          (部门,供应商,客户)id
+     * @param deptName        (部门,供应商,客户)名称
+     * @param warehouseId     仓库id
+     * @param cuser           用户id
+     * @param companyId       企业id
+     * @param inType          入库类型id
+     * @param productByInMap  货品入库Map<货品id, 货品Map>
+     *
+     * 货品入库Map<货品id, 货品Map<String, Object>>
+     * 货品Map<String, Object>
+     *     productId: 货品id
+     *     inDtlId:   入库明细id
+     *     inCount:   入库数量
+     */
+    void createWarehouseInBySpare(String deptId,
+                                  String deptName,
+                                  String warehouseId,
+                                  String cuser,
+                                  String companyId,
+                                  String inType,
+                                  Map<String, Map<String, Object>> productByInMap) throws ApplicationException;
+
+    /**
      * 创建入库单(虚拟库)-与简版入库单类似
      *
      * @param deptId          (部门,供应商,客户)id
