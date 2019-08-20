@@ -153,6 +153,8 @@ public interface BomTreeService {
                               int count);  //@
 
     ResultModel listProdLackNum(PageData pd, Pagination pg)throws Exception;
+
+    ResultModel addBomTrees(PageData pd) throws Exception;
 }
 
 

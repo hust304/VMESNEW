@@ -309,6 +309,23 @@ public class BomTreeController {
         return model;
     }
 
+    /**
+     * @author 刘威 自动创建，禁止修改
+     * @date 2018-09-20
+     */
+    @PostMapping("/base/bomTree/addBomTrees")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel addBomTrees()  throws Exception {
+
+        logger.info("################bomTree/addBomTrees 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = bomTreeService.addBomTrees(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################bomTree/addBomTrees 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
 
     /**
      * @author 刘威 自动创建，禁止修改

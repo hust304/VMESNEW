@@ -2,6 +2,7 @@ package com.xy.vmes.deecoop.base.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
+import com.xy.vmes.entity.PurchaseOrderDetail;
 import com.yvan.common.util.Common;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.common.util.TreeUtil;
@@ -496,6 +497,37 @@ public class BomTreeServiceImp implements BomTreeService {
         bomTree.setLayer(bomTree.getLayer()+1);
 
         bomTreeService.save(bomTree);
+        return model;
+    }
+
+    @Override
+    public ResultModel addBomTrees(PageData pd) throws Exception {
+        ResultModel model = new ResultModel();
+        String dtlJsonStr = pd.getString("dtlJsonStr");
+        if (dtlJsonStr == null || dtlJsonStr.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("请至少添加选择一条货品数据！");
+            return model;
+        }
+
+        List<Map<String, String>> mapList = (List<Map<String, String>>) YvanUtil.jsonToList(dtlJsonStr);
+        if (mapList == null || mapList.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("BOM明细Json字符串-转换成List错误！");
+            return model;
+        }
+
+        if(mapList!=null&&mapList.size()>0) {
+            for (int i = 0; i < mapList.size(); i++) {
+                Map<String, String> detailMap = mapList.get(i);
+                BomTree bomTree = (BomTree) HttpUtils.pageData2Entity(detailMap, new BomTree());
+                String id = Conv.createUuid();
+                bomTree.setId(id);
+                bomTree.setPathId(bomTree.getPathId()+"_"+id);
+                bomTree.setLayer(bomTree.getLayer()+1);
+                bomTreeService.save(bomTree);
+            }
+        }
         return model;
     }
 
