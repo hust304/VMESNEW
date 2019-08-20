@@ -352,6 +352,44 @@ public class EquipmentMaintainTaskDetailServiceImp implements EquipmentMaintainT
         return productByInMap;
     }
 
+    /**
+     * 获取Map结构体
+     * 遍历JsonMapList-根据货品属性(productGenre)-返回Map结构体
+     * 1.货品属性:productGenre:备件   添加到:warehouseList
+     * 2.货品属性:productGenre:非备件 添加到:spareList
+     *
+     * Map<String, List<Map<String, String>>>
+     *     warehouseList: 复杂版仓库,简版仓库
+     *     spareList:     备件库
+     *
+     * @param jsonMapList 页面JsonMapList
+     * @return
+     */
+    public Map<String, List<Map<String, String>>> findMapByProductGenre(List<Map<String, String>> jsonMapList) {
+        Map<String, List<Map<String, String>>> mapValue = new HashMap<String, List<Map<String, String>>>();
+        if (jsonMapList == null || jsonMapList.size() == 0) {return mapValue;}
+
+        List<Map<String, String>> warehouseList = new ArrayList<>();
+        List<Map<String, String>> spareList = new ArrayList<>();
+        for (Map<String, String> mapObject : jsonMapList) {
+            //productGenre 货品属性
+            String productGenre = mapObject.get("productGenre");
+
+            //备件:productGenreSpare:384cfd1329e648618b5a237ce1038bab
+            if (Common.DICTIONARY_MAP.get("productGenreSpare").equals(productGenre)) {
+                //货品属性:productGenre:备件 ==> spareList备件库
+                spareList.add(mapObject);
+            } else {
+                //货品属性:productGenre:非备件 ==> warehouseList 复杂版仓库,简版仓库
+                warehouseList.add(mapObject);
+            }
+        }
+
+        mapValue.put("warehouseList", warehouseList);
+        mapValue.put("spareList", spareList);
+        return mapValue;
+    }
+
     public void addMaintainTaskDetail(String cuser,
                                     List<EquipmentMaintainTaskDetail> objectList,
                                     Map<String, Map<String, Object>> productByOutMap) throws Exception {
@@ -361,18 +399,21 @@ public class EquipmentMaintainTaskDetailServiceImp implements EquipmentMaintainT
             String productId = detail.getProductId();
             detail.setCuser(cuser);
 
-            Map<String, Object> productMap = productByOutMap.get(productId);
-            //outDtlId:  出库明细id
-            String outDtlId = new String();
-            if (productMap != null && productMap.get("outDtlId") != null) {
-                outDtlId = (String)productMap.get("outDtlId");
-            }
-            detail.setOutDtlId(outDtlId);
+            if (productByOutMap != null && productByOutMap.get(productId) != null) {
+                Map<String, Object> productMap = productByOutMap.get(productId);
 
-            //outCount:  出库数量
-            if (productMap != null && productMap.get("outCount") != null) {
-                BigDecimal outCount = (BigDecimal)productMap.get("outCount");
-                detail.setOutCount(outCount);
+                //outDtlId:  出库明细id
+                String outDtlId = new String();
+                if (productMap != null && productMap.get("outDtlId") != null) {
+                    outDtlId = (String)productMap.get("outDtlId");
+                }
+                detail.setOutDtlId(outDtlId);
+
+                //outCount:  出库数量
+                if (productMap != null && productMap.get("outCount") != null) {
+                    BigDecimal outCount = (BigDecimal)productMap.get("outCount");
+                    detail.setOutCount(outCount);
+                }
             }
 
             this.save(detail);

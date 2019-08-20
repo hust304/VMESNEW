@@ -131,6 +131,21 @@ public interface EquipmentMaintainTaskDetailService {
      */
     Map<String, Map<String, Object>> findProductMapByIn(List<Map<String, String>> jsonMapList);
 
+    /**
+     * 获取Map结构体
+     * 遍历JsonMapList-根据货品属性(productGenre)-返回Map结构体
+     * 1.货品属性:productGenre:备件   添加到:warehouseList
+     * 2.货品属性:productGenre:非备件 添加到:spareList
+     *
+     * Map<String, List<Map<String, String>>>
+     *     warehouseList: 复杂版仓库,简版仓库
+     *     spareList:     备件库
+     *
+     * @param jsonMapList 页面JsonMapList
+     * @return
+     */
+    Map<String, List<Map<String, String>>> findMapByProductGenre(List<Map<String, String>> jsonMapList);
+
 
     void addMaintainTaskDetail(String cuser,
                              List<EquipmentMaintainTaskDetail> objectList,

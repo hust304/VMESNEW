@@ -17,10 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
 * 说明：vmes_equipment_maintainTask_detail:设备保养任务明细表Controller
@@ -45,6 +42,8 @@ public class EquipmentMaintainTaskDetailController {
     @Autowired
     private EquipmentMaintainTaskOutDetailService maintainTaskOutDetailService;
 
+    @Autowired
+    private WarehouseService warehouseService;
     @Autowired
     private WarehouseOutCreateService warehouseOutCreateService;
     @Autowired
@@ -179,6 +178,47 @@ public class EquipmentMaintainTaskDetailController {
             return model;
         }
 
+        //遍历JsonMapList-根据货品属性(productGenre)-返回Map结构体
+        //warehouseList: 复杂版仓库,简版仓库
+        //spareList:     备件库
+        Map<String, List<Map<String, String>>> valueMap = maintainTaskDetailService.findMapByProductGenre(jsonMapList);
+        if (valueMap == null || valueMap.size() == 0) {return model;}
+
+        List<Map<String, String>> warehouseList = new ArrayList<>();
+        if (valueMap != null && valueMap.get("warehouseList") != null) {
+            warehouseList = valueMap.get("warehouseList");
+        }
+
+        //备件库-表对象
+        Warehouse warehouseSpare = null;
+        List<Map<String, String>> spareList = new ArrayList<>();
+        if (valueMap != null && valueMap.get("spareList") != null) {
+            spareList = valueMap.get("spareList");
+        }
+
+        //系统备件库是否存在
+        if (spareList != null && spareList.size() > 0) {
+            try {
+                //获取备件库
+                PageData findMap = new PageData();
+                findMap.put("companyId", companyId);
+                findMap.put("name", "备件库");
+                findMap.put("layer", Integer.valueOf(2));
+                //是否启用(0:已禁用 1:启用)
+                findMap.put("isdisable", "1");
+                findMap.put("mapSize", Integer.valueOf(findMap.size()));
+                warehouseSpare = warehouseService.findWarehouse(findMap);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            if (warehouseSpare == null) {
+                model.putCode(Integer.valueOf(1));
+                model.putMsg("您所在的企业不存在(备件库)，请与管理员联系！");
+                return model;
+            }
+        }
+
         //根据(用户角色id)获取仓库属性(复杂版仓库,简版仓库)
         String warehouse = roleMenuService.findWarehouseAttribute(roleId);
         if (warehouse == null || warehouse.trim().length() == 0) {
@@ -194,38 +234,76 @@ public class EquipmentMaintainTaskDetailController {
             deptName = department.getName().trim();
         }
 
-        String msgStr = new String();
-        Map<String, Map<String, Object>> productByOutMap = maintainTaskDetailService.findProductMapByOut(jsonMapList);
-        if (Common.SYS_WAREHOUSE_COMPLEX.equals(warehouse)) {
-            //复杂版仓库:warehouseByComplex:Common.SYS_WAREHOUSE_COMPLEX
-            warehouseOutCreateService.createWarehouseOutByComplex(deptId,
+        Map<String, Map<String, Object>> prodOutMapByAddDetail = new HashMap<String, Map<String, Object>>();
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //(复杂版,简版)仓库
+        if (warehouseList != null && warehouseList.size() > 0) {
+            Map<String, Map<String, Object>> productByOutMap = maintainTaskDetailService.findProductMapByOut(warehouseList);
+
+            if (Common.SYS_WAREHOUSE_COMPLEX.equals(warehouse)) {
+                //复杂版仓库:warehouseByComplex:Common.SYS_WAREHOUSE_COMPLEX
+                warehouseOutCreateService.createWarehouseOutByComplex(deptId,
+                        deptName,
+                        //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
+                        Common.DICTIONARY_MAP.get("warehouseEntity"),
+                        cuser,
+                        companyId,
+                        //8bcbc84893cf46daabbd2522bee482ad 保养领料出库:maintainReceiveOut
+                        Common.DICTIONARY_MAP.get("maintainReceiveOut"),
+                        productByOutMap);
+
+            } else if (Common.SYS_WAREHOUSE_SIMPLE.equals(warehouse)) {
+                //简版仓库:warehouseBySimple:Common.SYS_WAREHOUSE_SIMPLE
+                warehouseOutCreateService.createWarehouseOutBySimple(deptId,
+                        deptName,
+                        //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
+                        Common.DICTIONARY_MAP.get("warehouseEntity"),
+                        cuser,
+                        companyId,
+                        //8bcbc84893cf46daabbd2522bee482ad 保养领料出库:maintainReceiveOut
+                        Common.DICTIONARY_MAP.get("maintainReceiveOut"),
+                        productByOutMap);
+            }
+
+            if (productByOutMap != null) {
+                for (Iterator iterator = productByOutMap.keySet().iterator(); iterator.hasNext();) {
+                    String mapKey = (String) iterator.next();
+                    Map<String, Object> mapValue = productByOutMap.get(mapKey);
+                    prodOutMapByAddDetail.put(mapKey, mapValue);
+                }
+            }
+        }
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //(备件)仓库
+        if (spareList != null && spareList.size() > 0) {
+            Map<String, Map<String, Object>> productByOutMap = maintainTaskDetailService.findProductMapByOut(spareList);
+
+            warehouseOutCreateService.createWarehouseOutByBySpare(deptId,
                     deptName,
-                    //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
-                    Common.DICTIONARY_MAP.get("warehouseEntity"),
+                    //备件库
+                    warehouseSpare.getId(),
                     cuser,
                     companyId,
                     //8bcbc84893cf46daabbd2522bee482ad 保养领料出库:maintainReceiveOut
                     Common.DICTIONARY_MAP.get("maintainReceiveOut"),
                     productByOutMap);
 
-        } else if (Common.SYS_WAREHOUSE_SIMPLE.equals(warehouse)) {
-            //简版仓库:warehouseBySimple:Common.SYS_WAREHOUSE_SIMPLE
-            warehouseOutCreateService.createWarehouseOutBySimple(deptId,
-                    deptName,
-                    //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
-                    Common.DICTIONARY_MAP.get("warehouseEntity"),
-                    cuser,
-                    companyId,
-                    //8bcbc84893cf46daabbd2522bee482ad 保养领料出库:maintainReceiveOut
-                    Common.DICTIONARY_MAP.get("maintainReceiveOut"),
-                    productByOutMap);
+            if (productByOutMap != null) {
+                for (Iterator iterator = productByOutMap.keySet().iterator(); iterator.hasNext();) {
+                    String mapKey = (String) iterator.next();
+                    Map<String, Object> mapValue = productByOutMap.get(mapKey);
+                    prodOutMapByAddDetail.put(mapKey, mapValue);
+                }
+            }
         }
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         //添加-vmes_equipment_maintainTask_detail:设备保养任务明细表
         List<EquipmentMaintainTaskDetail> taskDetailList = maintainTaskDetailService.jsonMapList2DetailList(jsonMapList, null);
         maintainTaskDetailService.addMaintainTaskDetail(cuser,
                 taskDetailList,
-                productByOutMap);
+                prodOutMapByAddDetail);
 
         //修改设备保养任务状态 (0:未领取任务 1:已领取任务 2:已领料 3:已报工 4:已退单 )
         EquipmentMaintainTask maintainTaskEdit = new EquipmentMaintainTask();
@@ -375,39 +453,122 @@ public class EquipmentMaintainTaskDetailController {
             ///////////////////////////////////////////////////////////////////////////////
             //修改保养任务明细-生成入库单 editJsonMapList
             Map<String, List<Map<String, String>>> newEditJsonMap = maintainTaskDetailService.findNewEditJsonMap(editJsonMapList);
+
             //notEqualZeroList: 退回数量(不等于零)List
             List<Map<String, String>> notEqualZeroList = newEditJsonMap.get("notEqualZeroList");
             if (notEqualZeroList != null && notEqualZeroList.size() > 0) {
-                Map<String, Map<String, Object>> productByInMap = maintainTaskDetailService.findProductMapByIn(notEqualZeroList);
+                Map<String, Map<String, Object>> prodOutMapByEditDetail = new HashMap<String, Map<String, Object>>();
 
+                //遍历JsonMapList-根据货品属性(productGenre)-返回Map结构体
+                //warehouseList: 复杂版仓库,简版仓库
+                //spareList:     备件库
+                Map<String, List<Map<String, String>>> valueMap = maintainTaskDetailService.findMapByProductGenre(notEqualZeroList);
+
+                List<Map<String, String>> warehouseList = new ArrayList<>();
+                if (valueMap != null && valueMap.get("warehouseList") != null) {
+                    warehouseList = valueMap.get("warehouseList");
+                }
+
+                //备件库-表对象
+                List<Map<String, String>> spareList = new ArrayList<>();
+                if (valueMap != null && valueMap.get("spareList") != null) {
+                    spareList = valueMap.get("spareList");
+                }
+
+                //复杂版仓库,简版仓库////////////////////////////////////////////////////////////////////////////////////////////////
                 //retreatType 退库方式(1:生成退库单 2:退回虚拟库)
-                if ("1".equals(retreatType) && Common.SYS_WAREHOUSE_COMPLEX.equals(warehouse)) {
-                    //退库方式:1:生成退库单: (生成复杂版入库单)
-                    //复杂版仓库:warehouseByComplex:Common.SYS_WAREHOUSE_COMPLEX
-                    warehouseInCreateService.createWarehouseInByComplex(deptId,
-                            deptName,
-                            //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
-                            Common.DICTIONARY_MAP.get("warehouseEntity"),
-                            cuser,
-                            companyId,
-                            //d9c9eb85db0d4c8faa09ddc2b8173859 保养领料退回入库:maintainRetreatIn
-                            Common.DICTIONARY_MAP.get("maintainRetreatIn"),
-                            productByInMap);
+                if ("1".equals(retreatType)) {
+                    if (warehouseList.size() > 0 && Common.SYS_WAREHOUSE_COMPLEX.equals(warehouse)) {
+                        Map<String, Map<String, Object>> productByInMap = maintainTaskDetailService.findProductMapByIn(warehouseList);
 
-                } else if ("1".equals(retreatType) && Common.SYS_WAREHOUSE_SIMPLE.equals(warehouse)) {
-                    //退库方式:1:生成退库单: (生成简版入库单)
-                    //简版仓库:warehouseBySimple:Common.SYS_WAREHOUSE_SIMPLE
-                    warehouseInCreateService.createWarehouseInBySimple(deptId,
-                            deptName,
-                            //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
-                            Common.DICTIONARY_MAP.get("warehouseEntity"),
-                            cuser,
-                            companyId,
-                            //d9c9eb85db0d4c8faa09ddc2b8173859 保养领料退回入库:maintainRetreatIn
-                            Common.DICTIONARY_MAP.get("maintainRetreatIn"),
-                            productByInMap);
+                        //退库方式:1:生成退库单: (生成复杂版入库单)
+                        //复杂版仓库:warehouseByComplex:Common.SYS_WAREHOUSE_COMPLEX
+                        warehouseInCreateService.createWarehouseInByComplex(deptId,
+                                deptName,
+                                //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
+                                Common.DICTIONARY_MAP.get("warehouseEntity"),
+                                cuser,
+                                companyId,
+                                //d9c9eb85db0d4c8faa09ddc2b8173859 保养领料退回入库:maintainRetreatIn
+                                Common.DICTIONARY_MAP.get("maintainRetreatIn"),
+                                productByInMap);
 
+                        if (productByInMap != null) {
+                            for (Iterator iterator = productByInMap.keySet().iterator(); iterator.hasNext();) {
+                                String mapKey = (String) iterator.next();
+                                Map<String, Object> mapValue = productByInMap.get(mapKey);
+                                prodOutMapByEditDetail.put(mapKey, mapValue);
+                            }
+                        }
+                    } else if (warehouseList.size() > 0 && Common.SYS_WAREHOUSE_SIMPLE.equals(warehouse)) {
+                        Map<String, Map<String, Object>> productByInMap = maintainTaskDetailService.findProductMapByIn(warehouseList);
+
+                        //退库方式:1:生成退库单: (生成简版入库单)
+                        //简版仓库:warehouseBySimple:Common.SYS_WAREHOUSE_SIMPLE
+                        warehouseInCreateService.createWarehouseInBySimple(deptId,
+                                deptName,
+                                //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
+                                Common.DICTIONARY_MAP.get("warehouseEntity"),
+                                cuser,
+                                companyId,
+                                //d9c9eb85db0d4c8faa09ddc2b8173859 保养领料退回入库:maintainRetreatIn
+                                Common.DICTIONARY_MAP.get("maintainRetreatIn"),
+                                productByInMap);
+
+                        if (productByInMap != null) {
+                            for (Iterator iterator = productByInMap.keySet().iterator(); iterator.hasNext();) {
+                                String mapKey = (String) iterator.next();
+                                Map<String, Object> mapValue = productByInMap.get(mapKey);
+                                prodOutMapByEditDetail.put(mapKey, mapValue);
+                            }
+                        }
+                    }
+
+                    //备件库////////////////////////////////////////////////////////////////////////////////////////////////
+                    if (spareList.size() > 0) {
+                        Warehouse warehouseSpare = null;
+                        try {
+                            //获取备件库
+                            PageData findMap = new PageData();
+                            findMap.put("companyId", companyId);
+                            findMap.put("name", "备件库");
+                            findMap.put("layer", Integer.valueOf(2));
+                            //是否启用(0:已禁用 1:启用)
+                            findMap.put("isdisable", "1");
+                            findMap.put("mapSize", Integer.valueOf(findMap.size()));
+                            warehouseSpare = warehouseService.findWarehouse(findMap);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        if (warehouseSpare == null) {
+                            throw new ApplicationException("您所在的企业不存在(备件库)，请与管理员联系！");
+                        }
+
+                        Map<String, Map<String, Object>> productByInMap = maintainTaskDetailService.findProductMapByIn(spareList);
+
+                        //(备件库)入库单
+                        warehouseInCreateService.createWarehouseInBySpare(deptId,
+                                deptName,
+                                //备件库
+                                warehouseSpare.getId(),
+                                cuser,
+                                companyId,
+                                //d9c9eb85db0d4c8faa09ddc2b8173859 保养领料退回入库:maintainRetreatIn
+                                Common.DICTIONARY_MAP.get("maintainRetreatIn"),
+                                productByInMap);
+
+                        if (productByInMap != null) {
+                            for (Iterator iterator = productByInMap.keySet().iterator(); iterator.hasNext();) {
+                                String mapKey = (String) iterator.next();
+                                Map<String, Object> mapValue = productByInMap.get(mapKey);
+                                prodOutMapByEditDetail.put(mapKey, mapValue);
+                            }
+                        }
+                    }
+                //虚拟库////////////////////////////////////////////////////////////////////////////////////////////////
                 } else if ("2".equals(retreatType)) {
+                    Map<String, Map<String, Object>> productByInMap = maintainTaskDetailService.findProductMapByIn(notEqualZeroList);
+
                     //退库方式:2:退回虚拟库-(生成虚拟库入库单)
                     warehouseInCreateService.createWarehouseInByVirtual(deptId,
                             deptName,
@@ -419,6 +580,14 @@ public class EquipmentMaintainTaskDetailController {
                             //d9c9eb85db0d4c8faa09ddc2b8173859 保养领料退回入库:maintainRetreatIn
                             Common.DICTIONARY_MAP.get("maintainRetreatIn"),
                             productByInMap);
+
+                    if (productByInMap != null) {
+                        for (Iterator iterator = productByInMap.keySet().iterator(); iterator.hasNext();) {
+                            String mapKey = (String) iterator.next();
+                            Map<String, Object> mapValue = productByInMap.get(mapKey);
+                            prodOutMapByEditDetail.put(mapKey, mapValue);
+                        }
+                    }
                 }
 
                 //(保养任务id)-保养任务明细(领料货品明细)
@@ -455,13 +624,16 @@ public class EquipmentMaintainTaskDetailController {
                     detailEdit.setRetreatCount(retreatCount);
 
                     String productId = objectMap.get("productId");
-                    Map<String, Object> producValueMap = productByInMap.get(productId);
-                    //inDtlId:   入库明细id
-                    String inDtlId = (String)producValueMap.get("inDtlId");
-                    detailEdit.setInDtlId(inDtlId);
-                    //inCount:   入库数量
-                    BigDecimal inCount = (BigDecimal)producValueMap.get("inCount");
-                    detailEdit.setInCount(inCount);
+                    if (prodOutMapByEditDetail != null && prodOutMapByEditDetail.get(productId) != null) {
+                        Map<String, Object> producValueMap = prodOutMapByEditDetail.get(productId);
+
+                        //inDtlId:   入库明细id
+                        String inDtlId = (String)producValueMap.get("inDtlId");
+                        detailEdit.setInDtlId(inDtlId);
+                        //inCount:   入库数量
+                        BigDecimal inCount = (BigDecimal)producValueMap.get("inCount");
+                        detailEdit.setInCount(inCount);
+                    }
 
                     //retreatType 退库方式(1:生成退库单 2:退回虚拟库)
                     detailEdit.setRetreatType(retreatType);
@@ -508,8 +680,8 @@ public class EquipmentMaintainTaskDetailController {
                     maintainTaskDetailService.update(detailEdit);
                 }
             }
-
             ///////////////////////////////////////////////////////////////////////////////
+
             //修改保养任务单状态
             EquipmentMaintainTask maintainTaskEidt = new EquipmentMaintainTask();
             maintainTaskEidt.setId(maintainTaskId);
@@ -523,7 +695,6 @@ public class EquipmentMaintainTaskDetailController {
             //endTime 任务结束时间
             maintainTaskEidt.setEndTime(new Date());
             maintainTaskService.update(maintainTaskEidt);
-
 
             //当前保养单对象
             //设定:当前保养单-下一个保养单(保养单有效状态:1:有效)
@@ -586,6 +757,4 @@ public class EquipmentMaintainTaskDetailController {
         return model;
     }
 }
-
-
 
