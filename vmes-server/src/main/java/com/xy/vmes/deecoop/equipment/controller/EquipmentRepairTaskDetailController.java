@@ -464,57 +464,55 @@ public class EquipmentRepairTaskDetailController {
                     spareList = valueMap.get("spareList");
                 }
 
+                //复杂版仓库,简版仓库////////////////////////////////////////////////////////////////////////////////////////////////
                 //retreatType 退库方式(1:生成退库单 2:退回虚拟库)
-                if ("1".equals(retreatType)
-                    && Common.SYS_WAREHOUSE_COMPLEX.equals(warehouse)
-                    && warehouseList.size() > 0
-                ) {
-                    Map<String, Map<String, Object>> productByInMap = repairTaskDetailService.findProductMapByIn(warehouseList);
+                if ("1".equals(retreatType) && warehouseList.size() > 0) {
+                    if (Common.SYS_WAREHOUSE_COMPLEX.equals(warehouse)) {
+                        Map<String, Map<String, Object>> productByInMap = repairTaskDetailService.findProductMapByIn(warehouseList);
 
-                    //退库方式:1:生成退库单: (生成复杂版入库单)
-                    //复杂版仓库:warehouseByComplex:Common.SYS_WAREHOUSE_COMPLEX
-                    warehouseInCreateService.createWarehouseInByComplex(deptId,
-                            deptName,
-                            //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
-                            Common.DICTIONARY_MAP.get("warehouseEntity"),
-                            cuser,
-                            companyId,
-                            //维保领料退回入库:repairRetreatIn:c396683796d54b8693b522a2c0ad2793 Common.DICTIONARY_MAP
-                            Common.DICTIONARY_MAP.get("repairRetreatIn"),
-                            productByInMap);
+                        //退库方式:1:生成退库单: (生成复杂版入库单)
+                        //复杂版仓库:warehouseByComplex:Common.SYS_WAREHOUSE_COMPLEX
+                        warehouseInCreateService.createWarehouseInByComplex(deptId,
+                                deptName,
+                                //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
+                                Common.DICTIONARY_MAP.get("warehouseEntity"),
+                                cuser,
+                                companyId,
+                                //维保领料退回入库:repairRetreatIn:c396683796d54b8693b522a2c0ad2793 Common.DICTIONARY_MAP
+                                Common.DICTIONARY_MAP.get("repairRetreatIn"),
+                                productByInMap);
 
-                    if (productByInMap != null) {
-                        for (Iterator iterator = productByInMap.keySet().iterator(); iterator.hasNext();) {
-                            String mapKey = (String) iterator.next();
-                            Map<String, Object> mapValue = productByInMap.get(mapKey);
-                            prodOutMapByEditDetail.put(mapKey, mapValue);
+                        if (productByInMap != null) {
+                            for (Iterator iterator = productByInMap.keySet().iterator(); iterator.hasNext();) {
+                                String mapKey = (String) iterator.next();
+                                Map<String, Object> mapValue = productByInMap.get(mapKey);
+                                prodOutMapByEditDetail.put(mapKey, mapValue);
+                            }
+                        }
+                    } else if (Common.SYS_WAREHOUSE_SIMPLE.equals(warehouse)) {
+                        Map<String, Map<String, Object>> productByInMap = repairTaskDetailService.findProductMapByIn(warehouseList);
+
+                        //退库方式:1:生成退库单: (生成简版入库单)
+                        //简版仓库:warehouseBySimple:Common.SYS_WAREHOUSE_SIMPLE
+                        warehouseInCreateService.createWarehouseInBySimple(deptId,
+                                deptName,
+                                //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
+                                Common.DICTIONARY_MAP.get("warehouseEntity"),
+                                cuser,
+                                companyId,
+                                //维保领料退回入库:repairRetreatIn:c396683796d54b8693b522a2c0ad2793 Common.DICTIONARY_MAP
+                                Common.DICTIONARY_MAP.get("repairRetreatIn"),
+                                productByInMap);
+
+                        if (productByInMap != null) {
+                            for (Iterator iterator = productByInMap.keySet().iterator(); iterator.hasNext();) {
+                                String mapKey = (String) iterator.next();
+                                Map<String, Object> mapValue = productByInMap.get(mapKey);
+                                prodOutMapByEditDetail.put(mapKey, mapValue);
+                            }
                         }
                     }
-                } else if ("1".equals(retreatType)
-                    && Common.SYS_WAREHOUSE_SIMPLE.equals(warehouse)
-                    && warehouseList.size() > 0
-                ) {
-                    Map<String, Map<String, Object>> productByInMap = repairTaskDetailService.findProductMapByIn(warehouseList);
-
-                    //退库方式:1:生成退库单: (生成简版入库单)
-                    //简版仓库:warehouseBySimple:Common.SYS_WAREHOUSE_SIMPLE
-                    warehouseInCreateService.createWarehouseInBySimple(deptId,
-                            deptName,
-                            //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
-                            Common.DICTIONARY_MAP.get("warehouseEntity"),
-                            cuser,
-                            companyId,
-                            //维保领料退回入库:repairRetreatIn:c396683796d54b8693b522a2c0ad2793 Common.DICTIONARY_MAP
-                            Common.DICTIONARY_MAP.get("repairRetreatIn"),
-                            productByInMap);
-
-                    if (productByInMap != null) {
-                        for (Iterator iterator = productByInMap.keySet().iterator(); iterator.hasNext();) {
-                            String mapKey = (String) iterator.next();
-                            Map<String, Object> mapValue = productByInMap.get(mapKey);
-                            prodOutMapByEditDetail.put(mapKey, mapValue);
-                        }
-                    }
+                //备件库////////////////////////////////////////////////////////////////////////////////////////////////
                 } else if ("1".equals(retreatType) && spareList.size() > 0) {
                     Warehouse warehouseSpare = null;
                     try {
@@ -547,7 +545,6 @@ public class EquipmentRepairTaskDetailController {
                             Common.DICTIONARY_MAP.get("repairRetreatIn"),
                             productByInMap);
 
-
                     if (productByInMap != null) {
                         for (Iterator iterator = productByInMap.keySet().iterator(); iterator.hasNext();) {
                             String mapKey = (String) iterator.next();
@@ -555,7 +552,6 @@ public class EquipmentRepairTaskDetailController {
                             prodOutMapByEditDetail.put(mapKey, mapValue);
                         }
                     }
-
                 } else if ("2".equals(retreatType)) {
                     Map<String, Map<String, Object>> productByInMap = repairTaskDetailService.findProductMapByIn(notEqualZeroList);
 
@@ -579,6 +575,7 @@ public class EquipmentRepairTaskDetailController {
                         }
                     }
                 }
+                ///////////////////////////////////////////////////////////////////////////////
 
                 //(维修任务id)-维修任务明细(领料货品明细)
                 for (Map<String, String> objectMap : notEqualZeroList) {
