@@ -320,6 +320,8 @@ public class WarehouseOutCreateServiceImp implements WarehouseOutCreateService {
 
         //虚拟库:warehouseVirtual:56f5e83dcb9911e884ad00163e105f05
         warehouseOut.setWarehouseId(Common.DICTIONARY_MAP.get("warehouseVirtual"));
+        //warehouseAttribute 仓库属性(warehouse:(简版,复杂版)仓库 spare:备件库)
+        warehouseOut.setWarehouseAttribute("warehouse");
         warehouseOutService.save(warehouseOut);
 
         //2.添加出库单明细

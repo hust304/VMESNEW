@@ -281,8 +281,8 @@ public class EquipmentRepairTaskDetailController {
                     warehouseSpare.getId(),
                     cuser,
                     companyId,
-                    //spareOut:备件出库 12e84fefddc449a78cc3bf8075475823
-                    Common.DICTIONARY_MAP.get("spareOut"),
+                    //fa51ae2e17a9409d822fc4c9192d652c 维保领料出库:repairReceiveOut
+                    Common.DICTIONARY_MAP.get("repairReceiveOut"),
                     productByOutMap);
 
             if (productByOutMap != null) {
@@ -537,9 +537,7 @@ public class EquipmentRepairTaskDetailController {
                         e.printStackTrace();
                     }
                     if (warehouseSpare == null) {
-                        model.putCode(Integer.valueOf(1));
-                        model.putMsg("您所在的企业不存在(备件库)，请与管理员联系！");
-                        return model;
+                        throw new ApplicationException("您所在的企业不存在(备件库)，请与管理员联系！");
                     }
 
                     Map<String, Map<String, Object>> productByInMap = repairTaskDetailService.findProductMapByIn(spareList);
@@ -551,8 +549,8 @@ public class EquipmentRepairTaskDetailController {
                             warehouseSpare.getId(),
                             cuser,
                             companyId,
-                            //spareIn:备件入库 4ac4616c7b254950af24e0c8eda0c6f7
-                            Common.DICTIONARY_MAP.get("spareIn"),
+                            //维保领料退回入库:repairRetreatIn:c396683796d54b8693b522a2c0ad2793 Common.DICTIONARY_MAP
+                            Common.DICTIONARY_MAP.get("repairRetreatIn"),
                             productByInMap);
 
 

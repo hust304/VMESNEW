@@ -81,6 +81,8 @@ public class WarehouseInCreateServiceImp implements WarehouseInCreateService {
                     companyId,
                     inType);
             warehouseIn.setWarehouseId(warehouseId);
+            //warehouseAttribute 仓库属性(warehouse:(简版,复杂版)仓库 spare:备件库)
+            warehouseIn.setWarehouseAttribute("warehouse");
             warehouseInService.save(warehouseIn);
 
             //创建入库单明细
@@ -144,10 +146,9 @@ public class WarehouseInCreateServiceImp implements WarehouseInCreateService {
                     cuser,
                     companyId,
                     inType);
-
-            //isSimple 是否简版仓库 Y:是简版 N:非简版 is null:非简版
-            //warehouseIn.setIsSimple("Y");
             warehouseIn.setWarehouseId(warehouseId);
+            //warehouseAttribute 仓库属性(warehouse:(简版,复杂版)仓库 spare:备件库)
+            warehouseIn.setWarehouseAttribute("warehouse");
             warehouseInService.save(warehouseIn);
 
             //创建入库单明细
@@ -212,10 +213,9 @@ public class WarehouseInCreateServiceImp implements WarehouseInCreateService {
                     cuser,
                     companyId,
                     inType);
-
+            warehouseIn.setWarehouseId(warehouseId);
             //warehouseAttribute 仓库属性(warehouse:(简版,复杂版)仓库 spare:备件库)
             warehouseIn.setWarehouseAttribute("spare");
-            warehouseIn.setWarehouseId(warehouseId);
             warehouseInService.save(warehouseIn);
 
             //创建入库单明细
@@ -294,6 +294,8 @@ public class WarehouseInCreateServiceImp implements WarehouseInCreateService {
 
             //虚拟库:warehouseVirtual:56f5e83dcb9911e884ad00163e105f05
             warehouseIn.setWarehouseId(Common.DICTIONARY_MAP.get("warehouseVirtual"));
+            //warehouseAttribute 仓库属性(warehouse:(简版,复杂版)仓库 spare:备件库)
+            warehouseIn.setWarehouseAttribute("warehouse");
             warehouseInService.save(warehouseIn);
 
             //创建入库单明细
