@@ -134,6 +134,18 @@ public interface SaleRetreatDetailService {
     void updateStateByDetail(String state, String parentIds) throws Exception;
     void updateOrderByRetreat(Map<String, Map<String, BigDecimal>> orderDtlRetreatMap, List<SaleOrderDetail> orderDtlList) throws Exception;
 
+    /**
+     * 返回货品入库Map
+     * 货品入库Map<货品id, 货品Map<String, Object>>
+     * 货品Map<String, Object>
+     *     productId: 货品id
+     *     inDtlId:   入库明细id
+     *     inCount:   入库数量
+     *
+     * @param detailList
+     * @return
+     */
+    Map<String, Map<String, Object>> findProductMapByIn(List<SaleRetreatDetail> detailList);
     ///////////////////////////////////////////////////////////////////////////////////////////
     /**
     * 分页查询

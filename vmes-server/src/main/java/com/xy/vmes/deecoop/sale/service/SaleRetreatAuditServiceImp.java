@@ -36,12 +36,11 @@ public class SaleRetreatAuditServiceImp implements SaleRetreatAuditService {
     private SaleReceiveRecordService saleReceiveRecordService;
 
     @Autowired
-    private WarehouseInService warehouseInService;
-    @Autowired
-    private WarehouseInDetailService warehouseInDetailService;
-
+    private WarehouseInCreateService warehouseInCreateService;
     @Autowired
     private SaleDeliverDetailByCollectService saleDeliverDetailByCollectService;
+    @Autowired
+    private RoleMenuService roleMenuService;
 
     /**
      * 退货单审核(创建入库单,退货单明细)
@@ -58,8 +57,31 @@ public class SaleRetreatAuditServiceImp implements SaleRetreatAuditService {
      */
     public ResultModel auditPassSaleRetreat(PageData pageData) throws Exception {
         ResultModel model = new ResultModel();
-        String companyId = pageData.getString("currentCompanyId");
+
+        //创建(复杂版,简版)仓库-出库单-需要的参数///////////////////////////////////////////////////////////////////////////////////
         String cuser = pageData.getString("cuser");
+
+        String companyId = pageData.getString("currentCompanyId");
+        if (companyId == null || companyId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("企业id为空或空字符串！");
+            return model;
+        }
+
+        String roleId = pageData.getString("roleId");
+        if (roleId == null || roleId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("当前用户角色id为空或空字符串！");
+            return model;
+        }
+
+        //根据(用户角色id)获取仓库属性(复杂版仓库,简版仓库)
+        String warehouse = roleMenuService.findWarehouseAttribute(roleId);
+        if (warehouse == null || warehouse.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("当前用户角色无(复杂版仓库，简版仓库)菜单，请与管理员联系！");
+            return model;
+        }
 
         //退货单id
         String parentId = pageData.getString("parentId");
@@ -90,27 +112,35 @@ public class SaleRetreatAuditServiceImp implements SaleRetreatAuditService {
         if (retreatDtlList == null || retreatDtlList.size() == 0) {return model;}
 
         //创建入库单
-        WarehouseIn warehouseIn = warehouseInService.createWarehouseIn(customerId,
-                customerName,
-                cuser,
-                companyId,
-                Common.DICTIONARY_MAP.get("saleRetreatIn"));
+        Map<String, Map<String, Object>> productByInMap = saleRetreatDetailService.findProductMapByIn(retreatDtlList);
+        if (Common.SYS_WAREHOUSE_COMPLEX.equals(warehouse)) {
+            //退库方式:1:生成退库单: (生成复杂版入库单)
+            //复杂版仓库:warehouseByComplex:Common.SYS_WAREHOUSE_COMPLEX
+            warehouseInCreateService.createWarehouseInByComplex(customerId,
+                    customerName,
+                    //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
+                    Common.DICTIONARY_MAP.get("warehouseEntity"),
+                    cuser,
+                    companyId,
+                    //销售退货入库:81907167d5c8498692e6c4f3694c5cfa:saleRetreatIn:
+                    Common.DICTIONARY_MAP.get("saleRetreatIn"),
+                    productByInMap);
 
-        //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
-        warehouseIn.setWarehouseId(Common.DICTIONARY_MAP.get("warehouseEntity"));
-        warehouseInService.save(warehouseIn);
-
-        //创建入库单明细
-        List<WarehouseInDetail> inDtlList = saleRetreatDetailService.retreatDtlList2InDtlList(retreatDtlList, null);
-        warehouseInDetailService.addWarehouseInDetail(warehouseIn.getId(),warehouseIn.getCuser(),warehouseIn.getCompanyId(), inDtlList);
-
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //<退货单明细id, 入库明细id>Map
-        Map<String, String> retreatDtl2InDtlMap = new HashMap<String, String>();
-        for (WarehouseInDetail inDtl : inDtlList) {
-            retreatDtl2InDtlMap.put(inDtl.getBusinessId(), inDtl.getId());
+        } else if (Common.SYS_WAREHOUSE_SIMPLE.equals(warehouse)) {
+            //退库方式:1:生成退库单: (生成简版入库单)
+            //简版仓库:warehouseBySimple:Common.SYS_WAREHOUSE_SIMPLE
+            warehouseInCreateService.createWarehouseInBySimple(customerId,
+                    customerName,
+                    //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
+                    Common.DICTIONARY_MAP.get("warehouseEntity"),
+                    cuser,
+                    companyId,
+                    //销售退货入库:81907167d5c8498692e6c4f3694c5cfa:saleRetreatIn:
+                    Common.DICTIONARY_MAP.get("saleRetreatIn"),
+                    productByInMap);
         }
 
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //3. 修改退货单明细(退货单明细(关联)入库单明细)
         for (Map<String, String> mapObject : retreatDtlMapList) {
             SaleRetreatDetail detailEdit = new SaleRetreatDetail();
@@ -132,11 +162,13 @@ public class SaleRetreatAuditServiceImp implements SaleRetreatAuditService {
             }
             detailEdit.setOrderSum(orderSum);
 
-            if (retreatDtl2InDtlMap != null
-                    && retreatDtl2InDtlMap.get(retreatDtl_id) != null
-                    && retreatDtl2InDtlMap.get(retreatDtl_id).trim().length() > 0
-                    ) {
-                detailEdit.setInDetailId(retreatDtl2InDtlMap.get(retreatDtl_id).trim());
+            String productId = mapObject.get("productId");
+            if (productByInMap != null && productByInMap.get(productId) != null) {
+                Map<String, Object> producValueMap = productByInMap.get(productId);
+
+                //inDtlId:   入库明细id
+                String inDtlId = (String)producValueMap.get("inDtlId");
+                detailEdit.setInDetailId(inDtlId);
             }
 
             //退货单明细状态(0:待提交 1:待审核 2:待退款 3:已完成 -1:已取消)
