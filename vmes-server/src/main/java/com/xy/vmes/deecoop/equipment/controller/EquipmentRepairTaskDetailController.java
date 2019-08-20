@@ -419,7 +419,6 @@ public class EquipmentRepairTaskDetailController {
         try {
             //维修任务明细追加货品(虚拟库中追加货品)-货品从虚拟库中(出库) addJsonMapList
             if (addJsonMapList.size() > 0) {
-                String msgStr = new String();
                 Map<String, Map<String, Object>> productByOutMap = repairTaskDetailService.findProductMapByOut(addJsonMapList);
 
                 //虚拟库:warehouseBySimple:Common.SYS_WAREHOUSE_SIMPLE
@@ -432,11 +431,6 @@ public class EquipmentRepairTaskDetailController {
                         //fa51ae2e17a9409d822fc4c9192d652c 维保领料出库:repairReceiveOut
                         Common.DICTIONARY_MAP.get("repairReceiveOut"),
                         productByOutMap);
-                if (msgStr.trim().length() > 0) {
-                    model.putCode(Integer.valueOf(1));
-                    model.putMsg(msgStr);
-                    return model;
-                }
 
                 //添加-vmes_equipment_repairTask_detail:设备维修任务明细表
                 List<EquipmentRepairTaskDetail> taskDetailList = repairTaskDetailService.jsonMapList2DetailList(addJsonMapList, null);
