@@ -536,7 +536,7 @@ public class EquipmentRepairTaskDetailController {
                         Map<String, Map<String, Object>> productByInMap = repairTaskDetailService.findProductMapByIn(spareList);
 
                         //(备件库)入库单
-                        warehouseInCreateService.createWarehouseInBySimple(deptId,
+                        warehouseInCreateService.createWarehouseInBySpare(deptId,
                                 deptName,
                                 //备件库
                                 warehouseSpare.getId(),
