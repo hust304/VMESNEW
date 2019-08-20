@@ -120,9 +120,23 @@ public interface SaleDeliverDetailService {
      * @return
      */
     List<SaleOrderDetailEntity> mapList2OrderDetailList(List<Map<String, String>> mapList, List<SaleOrderDetailEntity> objectList);
+
+    /**
+     * 返回货品出库Map
+     * 货品出库Map<货品id, 货品Map<String, Object>>
+     * 货品Map<String, Object>
+     *     productId: 货品id
+     *     outDtlId:  出库明细id
+     *     outCount:  出库数量
+     *
+     * @param orderDtlList
+     * @return
+     */
+    Map<String, Map<String, Object>> findProductMapByOut(List<SaleOrderDetailEntity> orderDtlList);
+
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     BigDecimal findTotalSumByDetailList(List<SaleDeliverDetail> objectList);
-    void addDeliverDetail(SaleDeliver parentObj, List<SaleDeliverDetail> detailList, Map<String, String> orderDtl2OutDtlMap) throws Exception;
+    void addDeliverDetail(SaleDeliver parentObj, List<SaleDeliverDetail> detailList, Map<String, Map<String, Object>> productByOutMap) throws Exception;
     void updateStateByDetail(String state, String parentIds) throws Exception;
 
     /**

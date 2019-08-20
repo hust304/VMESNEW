@@ -24,10 +24,10 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
 
 /**
-* 说明：vmes_sale_deliver:发货表 实现类
-* 创建人：陈刚 自动创建
-* 创建时间：2018-12-15
-*/
+ * 说明：vmes_sale_deliver:发货表 实现类
+ * 创建人：陈刚 自动创建
+ * 创建时间：2018-12-15
+ */
 @Service
 @Transactional(readOnly = false)
 public class SaleDeliverServiceImp implements SaleDeliverService {
@@ -50,6 +50,8 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
     private WarehouseOutDetailService warehouseOutDetailService;
     @Autowired
     private WarehouseService warehouseService;
+    @Autowired
+    private WarehouseOutCreateService warehouseOutCreateService;
 
     @Autowired
     SaleReceiveDetailService saleReceiveDetailService;
@@ -58,11 +60,13 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
     private ColumnService columnService;
     @Autowired
     private CoderuleService coderuleService;
+    @Autowired
+    private RoleMenuService roleMenuService;
 
     /**
-    * 创建人：陈刚 自动创建，禁止修改
-    * 创建时间：2018-12-15
-    */
+     * 创建人：陈刚 自动创建，禁止修改
+     * 创建时间：2018-12-15
+     */
     @Override
     public void save(SaleDeliver saleDeliver) throws Exception{
         saleDeliver.setId(Conv.createUuid());
@@ -183,15 +187,15 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
     }
 
     /**
-    *
-    * @param pageData    查询参数对象<HashMap>
-    * @param isQueryAll  是否查询全部
-    *   true: 无查询条件返回表全部结果集
-    *   false: (false or is null)无查询条件-查询结果集返回空或
-    *
-    * @return
-    * @throws Exception
-    */
+     *
+     * @param pageData    查询参数对象<HashMap>
+     * @param isQueryAll  是否查询全部
+     *   true: 无查询条件返回表全部结果集
+     *   false: (false or is null)无查询条件-查询结果集返回空或
+     *
+     * @return
+     * @throws Exception
+     */
     public List<SaleDeliver> findDataList(PageData pageData, Boolean isQueryAll) throws Exception {
         int pageDataSize = 0;
         if (pageData != null && pageData.size() > 0) {
@@ -332,15 +336,38 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
     public ResultModel addSaleDeliver(PageData pageData) throws Exception {
         ResultModel model = new ResultModel();
 
+        //创建(复杂版,简版)仓库-出库单-需要的参数///////////////////////////////////////////////////////////////////////////////////
+        String cuser = pageData.getString("cuser");
+
+        String companyId = pageData.getString("currentCompanyId");
+        if (companyId == null || companyId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("企业id为空或空字符串！");
+            return model;
+        }
+
+        String roleId = pageData.getString("roleId");
+        if (roleId == null || roleId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("当前用户角色id为空或空字符串！");
+            return model;
+        }
+
+        //根据(用户角色id)获取仓库属性(复杂版仓库,简版仓库)
+        String warehouse = roleMenuService.findWarehouseAttribute(roleId);
+        if (warehouse == null || warehouse.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("当前用户角色无(复杂版仓库，简版仓库)菜单，请与管理员联系！");
+            return model;
+        }
+
+        //业务相关参数////////////////////////////////////////////////////////////////////////////////////////////////////////
         String priceType = pageData.getString("priceType");
         if (priceType == null || priceType.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("计价类型(priceType)为空或空字符串！");
             return model;
         }
-
-        String companyId = pageData.getString("currentCompanyId");
-        String cuser = pageData.getString("cuser");
 
         String dtlJsonStr = pageData.getString("dtlJsonStr");
         if (dtlJsonStr == null || dtlJsonStr.trim().length() == 0) {
@@ -371,9 +398,6 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
             return model;
         }
 
-        String customerId = mapList.get(0).get("customerId");
-        String customerName = mapList.get(0).get("customerName");
-
         //获取订单明细
         //1. 本次发货数量(计价单位)
         //2. 公式:P(计价单位) 转换 N(计量单位)
@@ -381,32 +405,33 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
         //   productCount:货品数量(计量数量) --本次发货数量(计量单位)
         List<SaleOrderDetailEntity> orderDtlList = saleDeliverDetailService.mapList2OrderDetailList(mapList, null);
 
-        //1. 创建出库单
-        WarehouseOut warehouseOut = warehouseOutService.createWarehouseOut(customerId,
-                customerName,
-                cuser,
-                companyId,
-                Common.DICTIONARY_MAP.get("saleOut"));
+        //生成出库单//////////////////////////////////////////////////////////////////////////////////////////////////
+        String customerId = mapList.get(0).get("customerId");
+        String customerName = mapList.get(0).get("customerName");
 
-//        //获取实体仓库id
-//        PageData findMap = new PageData();
-//        findMap.put("companyId", companyId);
-//        findMap.put("layer", "2");
-//        findMap.put("isEntity", "true");
-//        findMap.put("isdisable", "1");
-//        findMap.put("mapSize", Integer.valueOf(findMap.size()));
-//        List<Warehouse> warehouseList = warehouseService.findWarehouseList(findMap);
-
-        //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
-        warehouseOut.setWarehouseId(Common.DICTIONARY_MAP.get("warehouseEntity"));
-        warehouseOutService.save(warehouseOut);
-
-        List<WarehouseOutDetail> outDtlList = saleOrderDetailService.orderDtlList2OutDtlList(orderDtlList, null);
-        warehouseOutDetailService.addWarehouseOutDetail(warehouseOut.getId(),warehouseOut.getCuser(), outDtlList);
-        //订单明细id --> 出库明细id -- <订单明细id, 出库明细id>Map
-        Map<String, String> orderDtl2OutDtlMap = new HashMap<String, String>();
-        for (WarehouseOutDetail outDtl : outDtlList) {
-            orderDtl2OutDtlMap.put(outDtl.getBusinessId(), outDtl.getId());
+        Map<String, Map<String, Object>> productByOutMap = saleDeliverDetailService.findProductMapByOut(orderDtlList);
+        if (Common.SYS_WAREHOUSE_COMPLEX.equals(warehouse)) {
+            //复杂版仓库:warehouseByComplex:Common.SYS_WAREHOUSE_COMPLEX
+            warehouseOutCreateService.createWarehouseOutByComplex(customerId,
+                    customerName,
+                    //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
+                    Common.DICTIONARY_MAP.get("warehouseEntity"),
+                    cuser,
+                    companyId,
+                    //9459be975cd94ada8443cdf32f52c2be 销售发货出库:saleOut
+                    Common.DICTIONARY_MAP.get("saleOut"),
+                    productByOutMap);
+        } else if (Common.SYS_WAREHOUSE_SIMPLE.equals(warehouse)) {
+            //简版仓库:warehouseBySimple:Common.SYS_WAREHOUSE_SIMPLE
+            warehouseOutCreateService.createWarehouseOutBySimple(customerId,
+                    customerName,
+                    //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
+                    Common.DICTIONARY_MAP.get("warehouseEntity"),
+                    cuser,
+                    companyId,
+                    //9459be975cd94ada8443cdf32f52c2be 销售发货出库:saleOut
+                    Common.DICTIONARY_MAP.get("saleOut"),
+                    productByOutMap);
         }
 
         //2. 创建发货单
@@ -425,7 +450,7 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
         saleDeliver.setCuser(cuser);
 
         List<SaleDeliverDetail> deliverDtlList = saleOrderDetailService.orderDtlList2DeliverDtllList(orderDtlList, null);
-        saleDeliverDetailService.addDeliverDetail(saleDeliver, deliverDtlList, orderDtl2OutDtlMap);
+        saleDeliverDetailService.addDeliverDetail(saleDeliver, deliverDtlList, productByOutMap);
 
         BigDecimal totalSum = saleDeliverDetailService.findTotalSumByDetailList(deliverDtlList);
         saleDeliver.setTotalSum(totalSum);
@@ -886,6 +911,4 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
         return model;
     }
 }
-
-
 
