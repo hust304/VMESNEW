@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.MessageFormat;
 import java.util.*;
 
 /**
@@ -50,6 +51,90 @@ public class EquipmentMaintainPlanController {
         ResultModel model = maintainPlanService.listPageEquipmentMaintainPlan(pd);
         Long endTime = System.currentTimeMillis();
         logger.info("################/equipment/equipmentMaintainPlan/listPageEquipmentMaintainPlan 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    //获取设备保养计划-系统计划
+    @PostMapping("/equipment/equipmentMaintainPlan/findSysPeriodTypeOption")
+    public ResultModel findSysPeriodTypeOption() throws Exception {
+        logger.info("################/equipment/equipmentMaintainPlan/findSysPeriodTypeOption 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+
+        //计划开始日期 beginPlan (yyyy-MM-dd)
+        String beginPlanStr = pd.getString("beginPlan");
+        if (beginPlanStr == null || beginPlanStr.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("计划开始日期为空或空字符串！");
+            return model;
+        }
+        Date beginPlan = DateFormat.dateString2Date(beginPlanStr, DateFormat.DEFAULT_DATE_FORMAT);
+
+        Calendar calendar = Calendar.getInstance();
+        List<Map<String, String>> optionList = new ArrayList<>();
+
+        //{label:'每天', value:'everDay'}
+        Map<String, String> optionMap_1 = new HashMap<>();
+        optionMap_1.put("label", "每天");
+        optionMap_1.put("value", "everDay");
+        optionList.add(optionMap_1);
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        //{label:'每周星期几', value:'dayOfWeek'},
+        calendar.setTime(beginPlan);
+        int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+        String dayOfWeekStr = Common.SYS_DAYOFWEEK_TO_WEEKNAME.get(Integer.valueOf(dayOfWeek));
+        Map<String, String> optionMap_2 = new HashMap<>();
+        optionMap_2.put("label", "每周"+dayOfWeekStr);
+        optionMap_2.put("value", "dayOfWeek");
+        optionList.add(optionMap_2);
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        //{label:'每月第几个星期几', value:'weekOfMonth'},
+        calendar = Calendar.getInstance();
+        calendar.setTime(beginPlan);
+
+        //当前月第几周
+        int weekInMonth = calendar.get(Calendar.DAY_OF_WEEK_IN_MONTH);
+        //当前日期星期几
+        dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+
+        String tempStr = "每月{0}个{1}";
+        String sysPeriodTypeName = MessageFormat.format(tempStr,
+                Common.SYS_WEEK_WEEKINMONTH.get(Integer.valueOf(weekInMonth)),
+                Common.SYS_DAYOFWEEK_TO_WEEKNAME.get(Integer.valueOf(dayOfWeek)));
+        Map<String, String> optionMap_3 = new HashMap<>();
+        optionMap_3.put("label", sysPeriodTypeName);
+        optionMap_3.put("value", "weekOfMonth");
+        optionList.add(optionMap_3);
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        //{label:'每年某月某日', value:'dayOfYear'},
+        String dayOfYearStr = DateFormat.date2String(beginPlan, "MM月dd日");
+        Map<String, String> optionMap_4 = new HashMap<>();
+        optionMap_4.put("label", "每年" + dayOfYearStr);
+        optionMap_4.put("value", "dayOfYear");
+        optionList.add(optionMap_4);
+
+        //{label:'工作日[周1-周5]', value:'workDay'},
+        Map<String, String> optionMap_5 = new HashMap<>();
+        optionMap_5.put("label", "工作日[周1-周5]");
+        optionMap_5.put("value", "workDay");
+        optionList.add(optionMap_5);
+
+        //{label:'自定义周期', value:'customPeriod'},
+        Map<String, String> optionMap_6 = new HashMap<>();
+        optionMap_6.put("label", "自定义周期");
+        optionMap_6.put("value", "customPeriod");
+        optionList.add(optionMap_6);
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        model.put("options", optionList);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/equipment/equipmentMaintainPlan/findSysPeriodTypeOption 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
