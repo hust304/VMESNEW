@@ -14,6 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 /**
 * 说明：vmes_equipment_maintain_content:设备保养内容Controller
 * @author 陈刚 自动生成
@@ -71,6 +75,57 @@ public class EquipmentMaintainContentController {
         return model;
     }
 
+    /**
+     * 获取下拉控件-设备保养内容
+     * @author 陈刚
+     * @date 2019-07-24
+     */
+    @PostMapping("/equipment/equipmentMaintainContent/selectListMaintainContent")
+    public ResultModel selectListMaintainContent() throws Exception {
+        logger.info("################/equipment/equipmentMaintainContent/selectListMaintainContent 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+
+        String equipmentId = pd.getString("equipmentId");
+        if (equipmentId == null || equipmentId.trim().length() == 0) {
+            model.putCode("1");
+            model.putMsg("设备id为空或空字符串！");
+            return model;
+        }
+
+        List<EquipmentMaintainContent> objectList = new ArrayList<>();
+        try {
+            PageData findMap = new PageData();
+            findMap.put("equipmentId", equipmentId);
+            //isdisable 是否启用(0:已禁用 1:启用)
+            findMap.put("isdisable", "1");
+            objectList = maintainContentService.findMaintainContentList(findMap);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        List<HashMap<String, String>> selectList = new ArrayList<>();
+        if (objectList != null && objectList.size() > 0) {
+            for (EquipmentMaintainContent object : objectList) {
+                HashMap<String, String> mapObject = new HashMap<>();
+                String id = object.getId();
+                String content = object.getContent();
+                if (content != null && content.trim().length() > 0) {
+                    //{id:'1', label:'用户1'}
+                    mapObject.put("id", id);
+                    mapObject.put("label", content.trim());
+                }
+                selectList.add(mapObject);
+            }
+        }
+
+        model.put("options", selectList);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/equipment/equipmentMaintainContent/selectListMaintainContent 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
 
     /**
      * 新增-设备保养内容
