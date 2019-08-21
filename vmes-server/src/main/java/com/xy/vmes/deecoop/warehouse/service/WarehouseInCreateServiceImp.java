@@ -293,7 +293,9 @@ public class WarehouseInCreateServiceImp implements WarehouseInCreateService {
                     inType);
 
             //虚拟库:warehouseVirtual:56f5e83dcb9911e884ad00163e105f05
-            warehouseIn.setWarehouseId(Common.DICTIONARY_MAP.get("warehouseVirtual"));
+            //warehouseIn.setWarehouseId(Common.DICTIONARY_MAP.get("warehouseVirtual"));
+
+            warehouseIn.setWarehouseId(warehouse.getId());
             //warehouseAttribute 仓库属性(warehouse:(简版,复杂版)仓库 spare:备件库)
             warehouseIn.setWarehouseAttribute("warehouse");
             warehouseInService.save(warehouseIn);
