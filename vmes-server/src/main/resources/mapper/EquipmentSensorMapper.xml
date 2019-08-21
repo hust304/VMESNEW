@@ -297,6 +297,12 @@
             <if test="equipmentIsdisable!= null and equipmentIsdisable != ''">
                 and equipment.isdisable = #{equipmentIsdisable}
             </if>
+            <if test='isBindSensor!= null and isBindSensor != "" and isBindSensor == "Y"'>
+                and equipmentSensor.sensorTargetCount is not null
+            </if>
+            <if test='isBindSensor!= null and isBindSensor != "" and isBindSensor == "N"'>
+                and equipmentSensor.sensorTargetCount is  null
+            </if>
 
             <if test="code != null and code != ''">
                 and equipment.code = #{code}

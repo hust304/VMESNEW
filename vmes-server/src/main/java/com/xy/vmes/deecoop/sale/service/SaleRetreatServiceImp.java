@@ -633,6 +633,8 @@ public class SaleRetreatServiceImp implements SaleRetreatService {
             return model;
         }
 
+        String remark = pageData.getString("remark");
+
         String dtlJsonStr = pageData.getString("dtlJsonStr");
         if (dtlJsonStr == null || dtlJsonStr.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
@@ -667,7 +669,7 @@ public class SaleRetreatServiceImp implements SaleRetreatService {
 
         String companyID = pageData.getString("currentCompanyId");
         retreat.setCompanyId(companyID);
-
+        retreat.setRemark(remark);
         String cuser = pageData.getString("cuser");
         retreat.setCuser(cuser);
 
@@ -726,6 +728,8 @@ public class SaleRetreatServiceImp implements SaleRetreatService {
             return model;
         }
 
+        String remark = pageData.getString("remark");
+
         String dtlJsonStr = pageData.getString("dtlJsonStr");
         if (dtlJsonStr == null || dtlJsonStr.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
@@ -756,7 +760,7 @@ public class SaleRetreatServiceImp implements SaleRetreatService {
         retreatEdit.setType(type);
         BigDecimal totalSum = saleRetreatDetailService.findTotalSumByDetailList(retreatDtlList);
         retreatEdit.setTotalSum(totalSum);
-
+        retreatEdit.setRemark(remark);
         //状态状态(0:待提交 1:待审核 2:待退款 3:已完成 -1:已取消)
         //isAutoCommit true:自动提交 false:手动提交
         String isAutoCommit = pageData.getString("isAutoCommit");
@@ -769,13 +773,8 @@ public class SaleRetreatServiceImp implements SaleRetreatService {
         columnMap.put("parent_id", parentId);
         saleRetreatDetailService.deleteByColumnMap(columnMap);
 
-        SaleRetreat retreat = new SaleRetreat();
-        retreat.setId(parentId);
-        String cuser = pageData.getString("cuser");
-        retreat.setCuser(cuser);
-
         //saleRetreatDetailService.addSaleRetreatDetail(retreat, retreatDtlList);
-        if (retreatDtlList == null || retreatDtlList.size() == 0) {
+        if (retreatDtlList != null && retreatDtlList.size() > 0) {
             for (SaleRetreatDetail detail : retreatDtlList) {
                 //退货明细状态 (0:待提交 1:待审核 2:待退款 3:已完成 -1:已取消)
                 detail.setState("0");
@@ -783,8 +782,8 @@ public class SaleRetreatServiceImp implements SaleRetreatService {
                     detail.setState("1");
                 }
 
-                detail.setParentId(retreat.getId());
-                detail.setCuser(retreat.getCuser());
+                detail.setParentId(retreatEdit.getId());
+                detail.setCuser(retreatEdit.getCuser());
                 saleRetreatDetailService.save(detail);
             }
         }

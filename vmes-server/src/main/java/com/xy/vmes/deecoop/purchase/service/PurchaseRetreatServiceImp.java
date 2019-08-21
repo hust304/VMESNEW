@@ -453,6 +453,8 @@ public class PurchaseRetreatServiceImp implements PurchaseRetreatService {
             return model;
         }
 
+        String remark = pageData.getString("remark");
+
         String dtlJsonStr = pageData.getString("dtlJsonStr");
         if (dtlJsonStr == null || dtlJsonStr.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
@@ -475,6 +477,7 @@ public class PurchaseRetreatServiceImp implements PurchaseRetreatService {
         retreat.setType(type);
         retreat.setSupplierId(supplierId);
         retreat.setOrderId(orderId);
+        retreat.setRemark(remark);
         //获取退货总金额
         BigDecimal totalSum = purchaseRetreatDetailService.findTotalSumByDetailList(retreatDtlList);
         retreat.setTotalSum(totalSum);
