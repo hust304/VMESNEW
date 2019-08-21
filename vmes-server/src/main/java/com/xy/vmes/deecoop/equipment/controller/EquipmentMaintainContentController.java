@@ -14,9 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 /**
 * 说明：vmes_equipment_maintain_content:设备保养内容Controller
@@ -88,7 +86,7 @@ public class EquipmentMaintainContentController {
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
 
-        String equipmentId = pd.getString("equipmentId");
+        String equipmentId = pd.getString("id");
         if (equipmentId == null || equipmentId.trim().length() == 0) {
             model.putCode("1");
             model.putMsg("设备id为空或空字符串！");
@@ -101,15 +99,16 @@ public class EquipmentMaintainContentController {
             findMap.put("equipmentId", equipmentId);
             //isdisable 是否启用(0:已禁用 1:启用)
             findMap.put("isdisable", "1");
+            findMap.put("orderStr", "cdate asc");
             objectList = maintainContentService.findMaintainContentList(findMap);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        List<HashMap<String, String>> selectList = new ArrayList<>();
+        List<LinkedHashMap<String, String>> selectList = new ArrayList<>();
         if (objectList != null && objectList.size() > 0) {
             for (EquipmentMaintainContent object : objectList) {
-                HashMap<String, String> mapObject = new HashMap<>();
+                LinkedHashMap<String, String> mapObject = new LinkedHashMap<>();
                 String id = object.getId();
                 String content = object.getContent();
                 if (content != null && content.trim().length() > 0) {
@@ -121,7 +120,10 @@ public class EquipmentMaintainContentController {
             }
         }
 
-        model.put("options", selectList);
+        Map result = new HashMap();
+        result.put("options", selectList);
+        model.putResult(result);
+
         Long endTime = System.currentTimeMillis();
         logger.info("################/equipment/equipmentMaintainContent/selectListMaintainContent 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;

@@ -68,7 +68,9 @@
             (replace(uuid(), '-', ''),'equipmentMaintainPlan','spec','设备型号',25, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentMaintainPlan','deptName','所属部门',26, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'equipmentMaintainPlan','deptPathName','部门名称',27, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'equipmentMaintainPlan','cycleName','保养周期',28, '1','1','1','0',now(), 'admin')
+            (replace(uuid(), '-', ''),'equipmentMaintainPlan','cycleName','保养周期',28, '1','1','1','0',now(), 'admin'),
+
+            (replace(uuid(), '-', ''),'equipmentMaintainPlan','isStop','是否停机',29, '1','1','1','0',now(), 'admin'),
     </insert>
 
 
