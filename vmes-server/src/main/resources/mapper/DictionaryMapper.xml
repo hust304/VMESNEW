@@ -330,11 +330,11 @@
                 <![CDATA[ and name <> #{nameValue} ]]>
             </if>
 
-            <if test="selfQueryStr != null and selfQueryStr != ''" >
-                or ${selfQueryStr}
-            </if>
             <if test="queryStr != null and queryStr!=''" >
                 ${queryStr}
+            </if>
+            <if test="selfQueryStr != null and selfQueryStr != ''" >
+                or ${selfQueryStr}
             </if>
         </where>
         <if test="orderStr != null and orderStr != ''" >

@@ -891,7 +891,9 @@ public class DictionaryServiceImp implements DictionaryService {
 
         } else if (!"true".equals(isNeetOneLayer)) {
             if(StringUtils.isEmpty(isglobal)||"0".equals(isglobal)){
-                pd.put("queryStr", "  and company_id = '"+pd.get("currentCompanyId")+"'  and ( id = '"+id+"' or id_1 = '"+id+"'  )  " + queryStr);
+                String companyId = pd.getString("currentCompanyId");
+                pd.put("companyId", companyId);
+                pd.put("queryStr", " and ( id = '"+id+"' or id_1 = '"+id+"'  )  " + queryStr);
             }else if("1".equals(isglobal)){
                 pd.put("queryStr", "  and isglobal = '"+pd.get("isglobal")+"'  and ( id = '"+id+"' or id_1 = '"+id+"'  ) " + queryStr);
             }
