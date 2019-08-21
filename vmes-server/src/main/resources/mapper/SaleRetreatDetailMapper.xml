@@ -166,6 +166,9 @@
             detail.remark remark,
             detail.isdisable isdisable,
 
+            deliver.deliver_code deliverCode,
+            saleOrder.sys_code orderCode,
+
             <!--货品表-->
             product.code productCode,
             product.name productName,
@@ -176,6 +179,9 @@
 
             orderUnit.name orderUnitName
         from vmes_sale_retreat_detail detail
+            left join vmes_sale_deliver_detail deliverDetail on detail.deliver_detail_id = deliverDetail.id
+            left join vmes_sale_deliver deliver on deliverDetail.parent_id = deliver.id
+            left join vmes_sale_order saleOrder on deliverDetail.order_id = saleOrder.id
             left join vmes_dictionary orderUnit on detail.order_unit = orderUnit.id
             left join vmes_product product on detail.product_id = product.id
             left join vmes_dictionary genre on product.genre = genre.id

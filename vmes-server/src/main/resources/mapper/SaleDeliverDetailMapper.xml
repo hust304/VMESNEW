@@ -269,13 +269,13 @@
                 <!--(订单明细id)-退货完成数量-退货明细汇总-->
                 left join (
                     select
-                        order_detail_id,
+                        deliver_detail_id,
                         sum(order_count) orderCount,
                         sum(order_sum) orderSum
                     from vmes_sale_retreat_detail
                     where <![CDATA[ state <> '-1' ]]>
-                    group by order_detail_id
-                ) retreatDtl on detail.order_detai_id = retreatDtl.order_detail_id
+                    group by deliver_detail_id
+                ) retreatDtl on detail.id = retreatDtl.deliver_detail_id
 
             </if>
         <where>
