@@ -358,6 +358,13 @@ public class EquipmentMaintainPlanServiceImp implements EquipmentMaintainPlanSer
             String maintainContentId = mapObject.get("maintainContentId");
             addMaintainPlan.setMaintainContentId(maintainContentId);
 
+            //isStop 是否停机 (1:停机保养 0:非停机保养)
+            String isStop = "0";
+            if (mapObject.get("isStop") != null && mapObject.get("isStop").trim().length() > 0) {
+                isStop = mapObject.get("isStop").trim();
+            }
+            addMaintainPlan.setIsStop(isStop);
+
             String companyId = planObject.getCompanyId();
             //sysCode 保养计划单编号(系统生成)
             //MP+yyyyMMdd+00001 = 15位
@@ -392,6 +399,13 @@ public class EquipmentMaintainPlanServiceImp implements EquipmentMaintainPlanSer
             addMaintainPlan.setEquipmentId(equipmentId);
             String maintainContentId = mapObject.get("maintainContentId");
             addMaintainPlan.setMaintainContentId(maintainContentId);
+
+            //isStop 是否停机 (1:停机保养 0:非停机保养)
+            String isStop = "0";
+            if (mapObject.get("isStop") != null && mapObject.get("isStop").trim().length() > 0) {
+                isStop = mapObject.get("isStop").trim();
+            }
+            addMaintainPlan.setIsStop(isStop);
 
             //maintainDate 计划保养时间
             String maintainDateStr = mapObject.get("maintainDateStr");
