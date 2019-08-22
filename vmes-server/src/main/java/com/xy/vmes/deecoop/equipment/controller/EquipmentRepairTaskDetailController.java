@@ -446,7 +446,7 @@ public class EquipmentRepairTaskDetailController {
             //notEqualZeroList: 退回数量(不等于零)List
             List<Map<String, String>> notEqualZeroList = newEditJsonMap.get("notEqualZeroList");
             if (notEqualZeroList != null && notEqualZeroList.size() > 0) {
-                Map<String, Map<String, Object>> prodOutMapByEditDetail = new HashMap<String, Map<String, Object>>();
+                Map<String, Map<String, Object>> businessProdOutMapByEditDetail = new HashMap<String, Map<String, Object>>();
 
                 //遍历JsonMapList-根据货品属性(productGenre)-返回Map结构体
                 //warehouseList: 复杂版仓库,简版仓库
@@ -468,11 +468,11 @@ public class EquipmentRepairTaskDetailController {
                 //retreatType 退库方式(1:生成退库单 2:退回虚拟库)
                 if ("1".equals(retreatType)) {
                     if (warehouseList.size() > 0 && Common.SYS_WAREHOUSE_COMPLEX.equals(warehouse)) {
-                        Map<String, Map<String, Object>> productByInMap = repairTaskDetailService.findProductMapByIn(warehouseList);
+                        Map<String, Map<String, Object>> businessByInMap = repairTaskDetailService.findBusinessProducMapByIn(warehouseList);
 
                         //退库方式:1:生成退库单: (生成复杂版入库单)
                         //复杂版仓库:warehouseByComplex:Common.SYS_WAREHOUSE_COMPLEX
-                        warehouseInCreateService.createWarehouseInByComplex(deptId,
+                        warehouseInCreateService.createWarehouseInBusinessByComplex(deptId,
                                 deptName,
                                 //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
                                 Common.DICTIONARY_MAP.get("warehouseEntity"),
@@ -480,21 +480,21 @@ public class EquipmentRepairTaskDetailController {
                                 companyId,
                                 //维保领料退回入库:repairRetreatIn:c396683796d54b8693b522a2c0ad2793 Common.DICTIONARY_MAP
                                 Common.DICTIONARY_MAP.get("repairRetreatIn"),
-                                productByInMap);
+                                businessByInMap);
 
-                        if (productByInMap != null) {
-                            for (Iterator iterator = productByInMap.keySet().iterator(); iterator.hasNext();) {
+                        if (businessByInMap != null) {
+                            for (Iterator iterator = businessByInMap.keySet().iterator(); iterator.hasNext();) {
                                 String mapKey = (String) iterator.next();
-                                Map<String, Object> mapValue = productByInMap.get(mapKey);
-                                prodOutMapByEditDetail.put(mapKey, mapValue);
+                                Map<String, Object> mapValue = businessByInMap.get(mapKey);
+                                businessProdOutMapByEditDetail.put(mapKey, mapValue);
                             }
                         }
                     } else if (warehouseList.size() > 0 && Common.SYS_WAREHOUSE_SIMPLE.equals(warehouse)) {
-                        Map<String, Map<String, Object>> productByInMap = repairTaskDetailService.findProductMapByIn(warehouseList);
+                        Map<String, Map<String, Object>> businessByInMap = repairTaskDetailService.findBusinessProducMapByIn(warehouseList);
 
                         //退库方式:1:生成退库单: (生成简版入库单)
                         //简版仓库:warehouseBySimple:Common.SYS_WAREHOUSE_SIMPLE
-                        warehouseInCreateService.createWarehouseInBySimple(deptId,
+                        warehouseInCreateService.createWarehouseInBusinessBySimple(deptId,
                                 deptName,
                                 //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
                                 Common.DICTIONARY_MAP.get("warehouseEntity"),
@@ -502,13 +502,13 @@ public class EquipmentRepairTaskDetailController {
                                 companyId,
                                 //维保领料退回入库:repairRetreatIn:c396683796d54b8693b522a2c0ad2793 Common.DICTIONARY_MAP
                                 Common.DICTIONARY_MAP.get("repairRetreatIn"),
-                                productByInMap);
+                                businessByInMap);
 
-                        if (productByInMap != null) {
-                            for (Iterator iterator = productByInMap.keySet().iterator(); iterator.hasNext();) {
+                        if (businessByInMap != null) {
+                            for (Iterator iterator = businessByInMap.keySet().iterator(); iterator.hasNext();) {
                                 String mapKey = (String) iterator.next();
-                                Map<String, Object> mapValue = productByInMap.get(mapKey);
-                                prodOutMapByEditDetail.put(mapKey, mapValue);
+                                Map<String, Object> mapValue = businessByInMap.get(mapKey);
+                                businessProdOutMapByEditDetail.put(mapKey, mapValue);
                             }
                         }
                     }
@@ -533,10 +533,10 @@ public class EquipmentRepairTaskDetailController {
                             throw new ApplicationException("您所在的企业不存在(备件库)，请与管理员联系！");
                         }
 
-                        Map<String, Map<String, Object>> productByInMap = repairTaskDetailService.findProductMapByIn(spareList);
+                        Map<String, Map<String, Object>> businessByInMap = repairTaskDetailService.findBusinessProducMapByIn(spareList);
 
                         //(备件库)入库单
-                        warehouseInCreateService.createWarehouseInBySpare(deptId,
+                        warehouseInCreateService.createWarehouseInBusinessBySpare(deptId,
                                 deptName,
                                 //备件库
                                 warehouseSpare.getId(),
@@ -544,22 +544,22 @@ public class EquipmentRepairTaskDetailController {
                                 companyId,
                                 //维保领料退回入库:repairRetreatIn:c396683796d54b8693b522a2c0ad2793 Common.DICTIONARY_MAP
                                 Common.DICTIONARY_MAP.get("repairRetreatIn"),
-                                productByInMap);
+                                businessByInMap);
 
-                        if (productByInMap != null) {
-                            for (Iterator iterator = productByInMap.keySet().iterator(); iterator.hasNext();) {
+                        if (businessByInMap != null) {
+                            for (Iterator iterator = businessByInMap.keySet().iterator(); iterator.hasNext();) {
                                 String mapKey = (String) iterator.next();
-                                Map<String, Object> mapValue = productByInMap.get(mapKey);
-                                prodOutMapByEditDetail.put(mapKey, mapValue);
+                                Map<String, Object> mapValue = businessByInMap.get(mapKey);
+                                businessProdOutMapByEditDetail.put(mapKey, mapValue);
                             }
                         }
                     }
                 //虚拟库////////////////////////////////////////////////////////////////////////////////////////////////
                 } else if ("2".equals(retreatType)) {
-                    Map<String, Map<String, Object>> productByInMap = repairTaskDetailService.findProductMapByIn(notEqualZeroList);
+                    Map<String, Map<String, Object>> businessByInMap = repairTaskDetailService.findBusinessProducMapByIn(notEqualZeroList);
 
                     //退库方式:2:退回虚拟库-(生成虚拟库入库单)
-                    warehouseInCreateService.createWarehouseInByVirtual(deptId,
+                    warehouseInCreateService.createWarehouseInBusinessByVirtual(deptId,
                             deptName,
                             //其他:deptOther:a42f32ef9d39476e932e1e30b77fefbb Common.DICTIONARY_MAP
                             Common.DICTIONARY_MAP.get("deptOther"),
@@ -568,13 +568,13 @@ public class EquipmentRepairTaskDetailController {
                             companyId,
                             //维保领料退回入库:repairRetreatIn:c396683796d54b8693b522a2c0ad2793 Common.DICTIONARY_MAP
                             Common.DICTIONARY_MAP.get("repairRetreatIn"),
-                            productByInMap);
+                            businessByInMap);
 
-                    if (productByInMap != null) {
-                        for (Iterator iterator = productByInMap.keySet().iterator(); iterator.hasNext();) {
+                    if (businessByInMap != null) {
+                        for (Iterator iterator = businessByInMap.keySet().iterator(); iterator.hasNext();) {
                             String mapKey = (String) iterator.next();
-                            Map<String, Object> mapValue = productByInMap.get(mapKey);
-                            prodOutMapByEditDetail.put(mapKey, mapValue);
+                            Map<String, Object> mapValue = businessByInMap.get(mapKey);
+                            businessProdOutMapByEditDetail.put(mapKey, mapValue);
                         }
                     }
                 }
@@ -613,9 +613,8 @@ public class EquipmentRepairTaskDetailController {
                     }
                     detailEdit.setRetreatCount(retreatCount);
 
-                    String productId = objectMap.get("productId");
-                    if (prodOutMapByEditDetail != null && prodOutMapByEditDetail.get(productId) != null) {
-                        Map<String, Object> producValueMap = prodOutMapByEditDetail.get(productId);
+                    if (businessProdOutMapByEditDetail != null && businessProdOutMapByEditDetail.get(id) != null) {
+                        Map<String, Object> producValueMap = businessProdOutMapByEditDetail.get(id);
 
                         //inDtlId:   入库明细id
                         String inDtlId = (String)producValueMap.get("inDtlId");

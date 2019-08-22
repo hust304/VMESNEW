@@ -408,6 +408,51 @@ public class EquipmentRepairTaskDetailServiceImp implements EquipmentRepairTaskD
     }
 
     /**
+     * 返回业务货品出库Map
+     * 业务货品出库Map<业务单id, 货品Map<String, Object>> 业务单id-业务明细id (订单明细id,发货单明细id)
+     * 货品Map<String, Object>
+     *     productId: 货品id
+     *     outDtlId:  出库明细id
+     *     outCount:  出库数量
+     *
+     * @param jsonMapList
+     * @return
+     */
+    public Map<String, Map<String, Object>> findBusinessProducMapByOut(List<Map<String, String>> jsonMapList) {
+        Map<String, Map<String, Object>> productByOutMap = new HashMap<String, Map<String, Object>>();
+        if (jsonMapList == null || jsonMapList.size() == 0) {return productByOutMap;}
+
+        for (Map<String, String> mapObject : jsonMapList) {
+            //id 维修任务明细id
+            String taskDtlId = mapObject.get("id");
+            //productId 货品id
+            String productId = mapObject.get("productId");
+
+            //receiveCount 领取数量 := outCount 出库数量
+            BigDecimal receiveCount = BigDecimal.valueOf(0D);
+            String receiveCountStr = mapObject.get("receiveCount");
+            if (receiveCountStr != null && receiveCountStr.trim().length() > 0) {
+                try {
+                    receiveCount = new BigDecimal(receiveCountStr);
+                    //四舍五入到2位小数
+                    receiveCount = receiveCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            Map<String, Object> productMap = new HashMap<String, Object>();
+            productMap.put("productId", productId);
+            productMap.put("outDtlId", null);
+            productMap.put("outCount", receiveCount);
+
+            productByOutMap.put(taskDtlId, productMap);
+        }
+
+        return productByOutMap;
+    }
+
+    /**
      * 返回货品入库Map
      * 货品入库Map<货品id, 货品Map<String, Object>>
      * 货品Map<String, Object>
@@ -444,6 +489,50 @@ public class EquipmentRepairTaskDetailServiceImp implements EquipmentRepairTaskD
             productMap.put("inCount", retreatCount);
 
             productByInMap.put(productId, productMap);
+        }
+
+        return productByInMap;
+    }
+    /**
+     * 返回业务货品入库Map
+     * 业务货品入库Map<业务单id, 货品Map<String, Object>> 业务单id-业务明细id (订单明细id,发货单明细id)
+     * 货品Map<String, Object>
+     *     productId: 货品id
+     *     inDtlId:   入库明细id
+     *     inCount:   入库数量
+     *
+     * @param jsonMapList
+     * @return
+     */
+    public Map<String, Map<String, Object>> findBusinessProducMapByIn(List<Map<String, String>> jsonMapList) {
+        Map<String, Map<String, Object>> productByInMap = new HashMap<String, Map<String, Object>>();
+        if (jsonMapList == null || jsonMapList.size() == 0) {return productByInMap;}
+
+        for (Map<String, String> mapObject : jsonMapList) {
+            //id 维修任务明细id
+            String taskDtlId = mapObject.get("id");
+            //productId 货品id
+            String productId = mapObject.get("productId");
+
+            //退回数量 retreatCount := inCount 入库数量
+            BigDecimal retreatCount = BigDecimal.valueOf(0D);
+            String retreatCountStr = mapObject.get("retreatCount");
+            if (retreatCountStr != null && retreatCountStr.trim().length() > 0) {
+                try {
+                    retreatCount = new BigDecimal(retreatCountStr);
+                    //四舍五入到2位小数
+                    retreatCount = retreatCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            Map<String, Object> productMap = new HashMap<String, Object>();
+            productMap.put("productId", productId);
+            productMap.put("inDtlId", null);
+            productMap.put("inCount", retreatCount);
+
+            productByInMap.put(taskDtlId, productMap);
         }
 
         return productByInMap;
