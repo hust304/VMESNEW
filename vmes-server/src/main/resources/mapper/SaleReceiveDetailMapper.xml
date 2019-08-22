@@ -378,7 +378,7 @@
             from vmes_sale_order saleOrder
             left join vmes_sale_receive_detail receiveDetail on receiveDetail.order_id = saleOrder.id
             <where>
-                and receiveDetail.state = '1'
+                and receiveDetail.state in ('0','1')
                 <if test="currentCompanyId != null and currentCompanyId != ''">
                     and saleOrder.company_id = #{currentCompanyId}
                 </if>

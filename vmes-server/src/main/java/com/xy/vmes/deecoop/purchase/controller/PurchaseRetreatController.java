@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -272,6 +273,8 @@ public class PurchaseRetreatController {
         retreatEdit.setAuditId(cuser);
         //状态(1:待审核 2:待退货 3:已完成 -1:已取消)
         retreatEdit.setState("3");
+        //设置退货完成时间
+        retreatEdit.setRetreatDate(new Date());
 //        //退货总额:实际退货金额
 //        if (realityTotal_big.doubleValue() != 0) {
 //            //四舍五入到2位小数

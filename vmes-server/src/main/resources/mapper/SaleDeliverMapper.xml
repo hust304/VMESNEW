@@ -235,7 +235,33 @@
             </if>
             left join vmes_product product on detail.product_id = product.id
 
+
+            <if test="'true' == isCanRetreat" >
+                left join (
+                    select
+                        tab.parent_id deliverId,
+                        sum(nowDeliverCount) nowDeliverCount
+                    from (
+                        select
+                            retreatDetail.deliver_detail_id,
+                            deliverDetail.parent_id,
+                            IFNULL(deliverDetail.order_count,0)-sum(IFNULL(retreatDetail.order_count,0)) nowDeliverCount,
+                            IFNULL(deliverDetail.order_count,0) deliverCount,
+                            sum(IFNULL(retreatDetail.order_count,0)) retreatCount
+                        from vmes_sale_retreat_detail retreatDetail
+                        left join vmes_sale_deliver_detail deliverDetail on deliverDetail.id = retreatDetail.deliver_detail_id
+                        where  <![CDATA[ retreatDetail.state <> '-1' ]]>
+                        group by retreatDetail.deliver_detail_id
+                    ) tab
+                    group by tab.parent_id
+                ) deliverDtl on deliver.id = deliverDtl.deliverId
+            </if>
+
         <where>
+
+            <if test="'true' == isCanRetreat" >
+                and <![CDATA[ deliverDtl.nowDeliverCount > 0  ]]>
+            </if>
             <if test="customerId != null and customerId != ''" >
                 and deliver.customer_id = #{customerId}
             </if>

@@ -514,6 +514,7 @@ public class PurchaseOrderController {
                     PurchaseOrderDetail detailEdit = new PurchaseOrderDetail();
                     detailEdit.setId(orderDetailId);
                     if (arriveCount.doubleValue() >= detailCount.doubleValue()) {
+                        detailEdit.setAdate(new Date());//设置实际到货时间
                         detailEdit.setState("4");
                     } else {
                         detailEdit.setState("3");
