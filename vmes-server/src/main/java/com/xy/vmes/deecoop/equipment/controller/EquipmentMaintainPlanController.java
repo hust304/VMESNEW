@@ -138,6 +138,36 @@ public class EquipmentMaintainPlanController {
         return model;
     }
 
+    //(保养计划id,设备id,保养内容id) 是否存在计划
+    @PostMapping("/equipment/equipmentMaintainPlan/findIsExistByEquipmentConten")
+    public ResultModel findIsExistByEquipmentConten() throws Exception {
+        logger.info("################/equipment/equipmentMaintainPlan/findIsExistByEquipmentConten 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+
+        String id = pd.getString("id");
+        String equipmentId = pd.getString("equipmentId");
+        String code = pd.getString("code");
+        String name = pd.getString("name");
+        String maintainContentId = pd.getString("maintainContentId");
+        String maintainContent = pd.getString("maintainContent");
+
+        if (maintainPlanService.isExistByEquipmentConten(id, equipmentId, maintainContentId)) {
+            String msgTemp = "设备编码:{0} 设备名称:{1} 保养内容:{2} 该设备保养计划系统已经存在！";
+            String msgStr = MessageFormat.format(msgTemp,
+                    code,
+                    name,
+                    maintainContent);
+            model.put("existEquipmentConten", msgStr);
+        }
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/equipment/equipmentMaintainPlan/findIsExistByEquipmentConten 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
     /**
      * 新增-设备保养计划(自定义计划)
      * @author 陈刚

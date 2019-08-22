@@ -222,8 +222,37 @@ public class EquipmentMaintainPlanServiceImp implements EquipmentMaintainPlanSer
         } else if (Common.DICTIONARY_MAP.get("maintainModeCustom").equals(modeId)) {
             this.addMaintainPlanByCustom(planObject, jsonMapList);
         }
+    }
 
+    /**
+     * 当前设备保养计划是否存在
+     * @param id                 保养计划id
+     * @param equipmentId        设备id
+     * @param maintainContentId  保养内容id
+     * @return
+     */
+    public boolean isExistByEquipmentConten(String id, String equipmentId, String maintainContentId) {
+        if (equipmentId == null || equipmentId.trim().length() == 0) {return false;}
+        if (maintainContentId == null || maintainContentId.trim().length() == 0) {return false;}
 
+        List<EquipmentMaintainPlan> objectList = null;
+        try {
+            PageData findMap = new PageData();
+            findMap.put("equipmentId", equipmentId);
+            findMap.put("maintainContentId", maintainContentId);
+            if (id != null && id.trim().length() > 0) {
+                findMap.put("id", id);
+                findMap.put("isSelfExist", "true");
+            }
+
+            objectList = this.findMaintainPlanList(findMap);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if (objectList != null && objectList.size() > 0) {return true;}
+
+        return false;
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -365,11 +394,11 @@ public class EquipmentMaintainPlanServiceImp implements EquipmentMaintainPlanSer
             addMaintainPlan.setMaintainContentId(maintainContentId);
 
             //maintainDate 计划保养时间
-            String maintainDateStr = mapObject.get("maintainDate");
+            String maintainDateStr = mapObject.get("maintainDateStr");
             Date maintainDate = DateFormat.dateString2Date(maintainDateStr, DateFormat.DEFAULT_DATE_FORMAT);
             addMaintainPlan.setMaintainDate(maintainDate);
-            //addMaintainPlan.setBeginPlan(maintainDate);
-            //addMaintainPlan.setEndPlan(maintainDate);
+            addMaintainPlan.setBeginPlan(maintainDate);
+            addMaintainPlan.setEndPlan(maintainDate);
 
             String companyId = planObject.getCompanyId();
             //sysCode 保养计划单编号(系统生成)

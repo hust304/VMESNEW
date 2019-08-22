@@ -109,7 +109,14 @@ public interface EquipmentMaintainPlanService {
      */
     void addMaintainPlan(Map<String, Object> valueMap);
 
-
+    /**
+     * 当前设备保养计划是否存在
+     * @param id                 保养计划id
+     * @param equipmentId        设备id
+     * @param maintainContentId  保养内容id
+     * @return
+     */
+    boolean isExistByEquipmentConten(String id, String equipmentId, String maintainContentId);
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**
     * 分页查询
