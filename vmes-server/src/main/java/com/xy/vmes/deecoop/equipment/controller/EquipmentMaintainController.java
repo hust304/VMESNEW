@@ -123,6 +123,21 @@ public class EquipmentMaintainController {
      * 逻辑删除-设备保养单
      * 修改-设备保养单(是否禁用状态)-(禁用)
      *
+     * 表字段说明(vmes_equipment_maintain):
+     * 1. isdisable: 是否启用(0:已禁用 1:启用)-该字段仅用于逻辑删除
+     *    该字段维护场景: 保养计划删除, 保养计划修改 (设置:0:已禁用)
+     *                  定时器中生成保养单 (设置:1:启用)
+     *
+     * 2. is_valid_state: 保养单有效状态(1:有效 0:无效 is null 无效)-保养单队列游标(整个保养周期有且只有一行是1-任务执行完成设置0)
+     *    0:无效: 当前保养任务执行完成(报工并且已解决)设置为'0'--寻找下一个最近的保养单设置为'1'
+     *           当前保养任务删除设置为'0'--寻找下一个最近的保养单设置为'1'
+     *    1:有效: 定时器中保养计划无保养单时默认设置'1'--当前保养任务执行完成寻找下一个最近的保养单设置为'1'
+     *    该字段维护场景:
+     *      0:无效: 保养任务执行完成, 当前保养任务删除
+     *      1:有效: 定时器中保养计划无保养单时默认设置'1'
+     *              当前保养任务执行完成寻找下一个最近的保养单设置为'1'
+     *              当前保养任务删除寻找下一个最近的保养单设置为'1'
+     *
      * @author 陈刚
      * @date 2019-08-05
      * @throws Exception
@@ -136,35 +151,23 @@ public class EquipmentMaintainController {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
+        //保养单id
         String maintainId = pageData.getString("maintainId");
         if (maintainId == null || maintainId.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("保养id为空或空字符串！");
+            model.putMsg("保养单id为空或空字符串！");
             return model;
         }
 
         //保养计划id
         String planId = pageData.getString("planId");
-        if (planId != null && planId.trim().length() > 0) {
-            //获取当前保养单对象
-            EquipmentMaintain maintain = maintainService.findMaintainById(maintainId);
-            EquipmentMaintainPlan maintainPlan = maintainPlanService.findMaintainPlanById(planId);
-
-            //modeId 保养方式(自定义 按周期 数据字典-vmes_dictionary.id)
-            //maintainModeCustom ee66976e1b3d453bae8839e6e9458b2f 自定义
-            //maintainModePeriod 9a05a30aa81e4637b498703b14cde8b1 按周期
-            String modeId = maintainPlan.getModeId();
-            if (Common.DICTIONARY_MAP.get("maintainModePeriod").equals(modeId)) {
-                //获取下一个保养单对象
-                EquipmentMaintain nextMaintain = maintainService.findNextMaintainByPeriod(maintain);
-                if (nextMaintain != null) {
-                    //isValidState 保养单有效状态(1:有效 0:无效 is null 无效)
-                    nextMaintain.setIsValidState("1");
-                    maintainService.update(nextMaintain);
-                }
-            }
+        if (maintainId == null || maintainId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("保养计划id为空或空字符串！");
+            return model;
         }
 
+        //1. 修改当前保养单(isdisable, is_valid_state)
         EquipmentMaintain maintainEdit = new EquipmentMaintain();
         maintainEdit.setId(maintainId);
         //isdisable 是否启用(0:已禁用 1:启用)
@@ -172,6 +175,14 @@ public class EquipmentMaintainController {
         //isValidState 保养单有效状态(1:有效 0:无效 is null 无效)
         maintainEdit.setIsValidState("0");
         maintainService.update(maintainEdit);
+
+        //根据保养计划id-查询该保养计划保养单-获取下一个保养单(周期保养计划)
+        EquipmentMaintain nextMaintain = maintainService.findNextMaintainByPeriod(planId);
+        if (nextMaintain != null) {
+            //isValidState 保养单有效状态(1:有效 0:无效 is null 无效)
+            maintainEdit.setIsValidState("1");
+            maintainService.update(nextMaintain);
+        }
 
         Long endTime = System.currentTimeMillis();
         logger.info("################/equipment/equipmentMaintain/updateDisableMaintain 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");

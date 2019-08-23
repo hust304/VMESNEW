@@ -101,12 +101,27 @@ public interface EquipmentMaintainService {
     List<EquipmentMaintain> findMaintainList(PageData object) throws Exception;
 
     /**
-     * 获取下一个保养计划(周期保养计划)
+     * 根据保养计划id-查询该保养计划保养单-获取下一个保养单(周期保养计划)
      *
-     * @param @param maintain  保养单对象<EquipmentMaintain>
+     * 表字段说明(vmes_equipment_maintain):
+     * 1. isdisable: 是否启用(0:已禁用 1:启用)-该字段仅用于逻辑删除
+     *    该字段维护场景: 保养计划删除, 保养计划修改 (设置:0:已禁用)
+     *                  定时器中生成保养单 (设置:1:启用)
+     *
+     * 2. is_valid_state: 保养单有效状态(1:有效 0:无效 is null 无效)-保养单队列游标(整个保养周期有且只有一行是1-任务执行完成设置0)
+     *    0:无效: 当前保养任务执行完成(报工并且已解决)设置为'0'--寻找下一个最近的保养单设置为'1'
+     *           当前保养任务删除设置为'0'--寻找下一个最近的保养单设置为'1'
+     *    1:有效: 定时器中保养计划无保养单时默认设置'1'--当前保养任务执行完成寻找下一个最近的保养单设置为'1'
+     *    该字段维护场景:
+     *      0:无效: 保养任务执行完成, 当前保养任务删除
+     *      1:有效: 定时器中保养计划无保养单时默认设置'1'
+     *              当前保养任务执行完成寻找下一个最近的保养单设置为'1'
+     *              当前保养任务删除寻找下一个最近的保养单设置为'1'
+     *
+     * @param @param maintainPlanId  保养计划id
      * @return
      */
-    EquipmentMaintain findNextMaintainByPeriod(EquipmentMaintain maintain);
+    EquipmentMaintain findNextMaintainByPeriod(String maintainPlanId);
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
