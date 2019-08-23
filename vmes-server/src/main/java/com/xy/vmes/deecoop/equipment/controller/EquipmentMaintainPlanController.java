@@ -446,6 +446,20 @@ public class EquipmentMaintainPlanController {
      * 逻辑删除-设备保养计划
      * 修改-设备保养计划(是否禁用状态)-(禁用)
      *
+     * 表字段说明(vmes_equipment_maintain):
+     * 1. isdisable: 是否启用(0:已禁用 1:启用)-该字段仅用于逻辑删除
+     *    该字段维护场景: 保养计划删除, 保养计划修改
+     *
+     * 2. is_valid_state: 保养单有效状态(1:有效 0:无效 is null 无效)-保养单队列游标(整个保养周期有且只有一行是1-任务执行完成设置0)
+     *    0:无效: 当前保养任务执行完成(报工并且已解决)设置为'0'--寻找下一个最近的保养单设置为'1'
+     *           当前保养任务删除设置为'0'--寻找下一个最近的保养单设置为'1'
+     *    1:有效: 定时器中保养计划无保养单时默认设置'1'--当前保养任务执行完成寻找下一个最近的保养单设置为'1'
+     *    该字段维护场景:
+     *      0:无效: 保养任务执行完成, 当前保养任务删除
+     *      1:有效: 定时器中保养计划无保养单时默认设置'1'
+     *              当前保养任务执行完成寻找下一个最近的保养单设置为'1'
+     *              当前保养任务删除寻找下一个最近的保养单设置为'1'
+     *
      * @author 陈刚
      * @date 2019-08-05
      * @throws Exception
@@ -466,12 +480,14 @@ public class EquipmentMaintainPlanController {
             return model;
         }
 
+        //1. 逻辑删除设备保养计划
         EquipmentMaintainPlan maintainPlanEdit = new EquipmentMaintainPlan();
         maintainPlanEdit.setId(planId);
         //isdisable 是否启用(0:已禁用 1:启用)
         maintainPlanEdit.setIsdisable("0");
         maintainPlanService.update(maintainPlanEdit);
 
+        //2. 逻辑删除保养单-当前计划下全部保养单
         //isdisable 是否启用(0:已禁用 1:启用)
         maintainService.updateIsdisableByPlan(planId, "0");
 

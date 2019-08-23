@@ -208,6 +208,9 @@
             <if test="companyId != null and companyId != ''">
                 and plan.company_id = #{companyId}
             </if>
+            <if test="isdisable != null and isdisable != ''">
+                and plan.isdisable = #{isdisable}
+            </if>
 
             <if test="content != null and content != ''">
                 and maintainContent.content LIKE CONCAT(CONCAT('%', #{content}),'%')

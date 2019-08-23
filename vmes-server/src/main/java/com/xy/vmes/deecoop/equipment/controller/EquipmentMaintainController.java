@@ -1,9 +1,11 @@
 package com.xy.vmes.deecoop.equipment.controller;
 
+import com.xy.vmes.common.util.DateFormat;
 import com.xy.vmes.entity.EquipmentMaintain;
 import com.xy.vmes.entity.EquipmentMaintainPlan;
 import com.xy.vmes.entity.EquipmentMaintainTask;
 import com.xy.vmes.service.EquipmentMaintainPlanService;
+import com.xy.vmes.service.EquipmentMaintainPlanToolsService;
 import com.xy.vmes.service.EquipmentMaintainService;
 
 import com.xy.vmes.service.EquipmentMaintainTaskService;
@@ -19,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
+import java.util.Map;
 
 /**
 * 说明：vmes_equipment_maintain:设备保养单Controller
@@ -32,6 +35,9 @@ public class EquipmentMaintainController {
 
     @Autowired
     private EquipmentMaintainPlanService maintainPlanService;
+    @Autowired
+    private EquipmentMaintainPlanToolsService maintainPlanToolsService;
+
     @Autowired
     private EquipmentMaintainService maintainService;
     @Autowired
@@ -169,6 +175,99 @@ public class EquipmentMaintainController {
 
         Long endTime = System.currentTimeMillis();
         logger.info("################/equipment/equipmentMaintain/updateDisableMaintain 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 新增-根据计划执行日期-维修保养单
+     * @author 陈刚
+     * @date 2019-07-01
+     * @throws Exception
+     */
+    @PostMapping("/equipment/equipmentMaintain/addEquipmentMaintain")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel addEquipmentMaintain() throws Exception {
+        logger.info("################/equipment/equipmentMaintain/addEquipmentMaintain 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        //保养计划id
+        String maintainPlanId = pageData.getString("maintainPlanId");
+        if (maintainPlanId == null || maintainPlanId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("保养计划id为空或空字符串！");
+            return model;
+        }
+
+        //计划执行日期
+        String maintainPlanDateStr = pageData.getString("maintainPlanDateStr");
+        if (maintainPlanDateStr == null || maintainPlanDateStr.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("计划执行日期为空或空字符串！");
+            return model;
+        }
+        Date nowDate = DateFormat.dateString2Date(maintainPlanDateStr, DateFormat.DEFAULT_DATE_FORMAT);
+
+
+        EquipmentMaintainPlan planObject = maintainPlanService.findMaintainPlanById(maintainPlanId);
+        if (planObject == null) {return model;}
+
+        //modeId 保养方式(自定义 按周期 数据字典-vmes_dictionary.id)
+        //maintainModeCustom ee66976e1b3d453bae8839e6e9458b2f 自定义
+        //maintainModePeriod 9a05a30aa81e4637b498703b14cde8b1 按周期
+        String modeId = planObject.getModeId();
+        if (Common.DICTIONARY_MAP.get("maintainModeCustom").equals(modeId)) {
+            //创建-自定义计划-保养单
+            try {
+                maintainService.addMaintainCustomByTimer(planObject);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else if (Common.DICTIONARY_MAP.get("maintainModePeriod").equals(modeId)) {
+            //sysPeriodType 重复类型 (everDay:每天 dayOfWeek:每周星期几 weekOfMonth:每月第几个星期几 dayOfYear:每年某月某日 workDay:工作日[周1-周5] customPeriod:自定义周期)
+            String sysPeriodType = planObject.getSysPeriodType();
+            if (sysPeriodType != null && sysPeriodType.trim().length() > 0) {
+
+                /**
+                 * 返回值参数说明
+                 * Map<重复类型Key, 周期起止日期时间Map>
+                 * 重复类型Key:
+                 *   everDay:每天
+                 *   dayOfWeek:每周星期几
+                 *   weekOfMonth:每月第几个星期几
+                 *   dayOfYear:每年某月某日
+                 *   workDay:工作日[周1-周5]
+                 *   customPeriod:自定义周期
+                 *
+                 *  周期起止日期时间Map:
+                 *  Map<String, Date>>
+                 *      beginDateTime: 周期起始日期时间(yyyy-MM-dd HH:mm:ss)
+                 *      endDateTime:   周期结束日期时间(yyyy-MM-dd HH:mm:ss)
+                 *      nextMaintainDate: 下一保养日期(yyyy-MM-dd)
+                 */
+                Map<String, Map<String, Date>> valueMap = null;
+                try {
+                    valueMap = maintainPlanToolsService.findPlanPeriod(nowDate, planObject);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                if (valueMap != null && valueMap.get(sysPeriodType) != null) {
+                    Map<String, Date> dateMap = valueMap.get(sysPeriodType);
+                    //创建-周期计划-保养单
+                    try {
+                        maintainService.addMaintainPeriodByTimer(dateMap, planObject);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/equipment/equipmentMaintain/addEquipmentMaintain 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 

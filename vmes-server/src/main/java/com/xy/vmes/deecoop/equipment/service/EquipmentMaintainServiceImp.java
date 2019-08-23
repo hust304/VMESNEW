@@ -377,7 +377,7 @@ public class EquipmentMaintainServiceImp implements EquipmentMaintainService {
         parentIds = "'" + parentIds.replace(",", "','") + "'";
         columnMap.put("parentIds", parentIds);
         columnMap.put("isdisable", isdisable);
-        equipmentMaintainMapper. updateIsdisableByPlan(columnMap);
+        equipmentMaintainMapper.updateIsdisableByPlan(columnMap);
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
