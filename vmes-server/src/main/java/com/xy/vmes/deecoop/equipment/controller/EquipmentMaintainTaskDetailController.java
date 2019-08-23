@@ -736,6 +736,8 @@ public class EquipmentMaintainTaskDetailController {
                     //完成维修时间 endTime
                     maintainEdit.setEndTime(new Date());
 
+                    //isdisable 是否启用(0:已禁用 1:启用)
+                    maintainEdit.setIsdisable("0");
                     //isValidState 保养单有效状态(1:有效 0:无效 is null 无效)
                     maintainEdit.setIsValidState("0");
                     maintainService.update(maintainEdit);
