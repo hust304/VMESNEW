@@ -180,7 +180,7 @@ public class EquipmentMaintainController {
         EquipmentMaintain nextMaintain = maintainService.findNextMaintainByPeriod(planId);
         if (nextMaintain != null) {
             //isValidState 保养单有效状态(1:有效 0:无效 is null 无效)
-            maintainEdit.setIsValidState("1");
+            nextMaintain.setIsValidState("1");
             maintainService.update(nextMaintain);
         }
 
