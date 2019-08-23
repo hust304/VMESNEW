@@ -318,6 +318,24 @@ public class EquipmentMaintainTaskDetailController {
 
     /**
      * 修改-设备保养单-保养任务明细
+     *
+     * 表字段说明(vmes_equipment_maintain):
+     * 1. isdisable: 是否启用(0:已禁用 1:启用)-该字段仅用于逻辑删除
+     *    该字段维护场景: 保养计划删除, 保养计划修改 (设置:0:已禁用)
+     *                  保养单删除 (设置:0:已禁用)
+     *                  保养单完成(报工并且已解决) (设置:0:已禁用)
+     *                  定时器中生成保养单 (设置:1:启用)
+     *
+     * 2. is_valid_state: 保养单有效状态(1:有效 0:无效 is null 无效)-保养单队列游标(整个保养周期有且只有一行是1-任务执行完成设置0)
+     *    0:无效: 当前保养任务执行完成(报工并且已解决)设置为'0'--寻找下一个最近的保养单设置为'1'
+     *           当前保养任务删除设置为'0'--寻找下一个最近的保养单设置为'1'
+     *    1:有效: 定时器中保养计划无保养单时默认设置'1'--当前保养任务执行完成寻找下一个最近的保养单设置为'1'
+     *    该字段维护场景:
+     *      0:无效: 保养任务执行完成, 当前保养任务删除
+     *      1:有效: 定时器中保养计划无保养单时默认设置'1'
+     *              当前保养任务执行完成寻找下一个最近的保养单设置为'1'
+     *              当前保养任务删除寻找下一个最近的保养单设置为'1'
+     *
      * @author 陈刚
      * @date 2019-07-01
      */
@@ -680,7 +698,6 @@ public class EquipmentMaintainTaskDetailController {
                 }
             }
             ///////////////////////////////////////////////////////////////////////////////
-
             //修改保养任务单状态
             EquipmentMaintainTask maintainTaskEidt = new EquipmentMaintainTask();
             maintainTaskEidt.setId(maintainTaskId);
@@ -695,50 +712,47 @@ public class EquipmentMaintainTaskDetailController {
             maintainTaskEidt.setEndTime(new Date());
             maintainTaskService.update(maintainTaskEidt);
 
-            //当前保养单对象
-            //设定:当前保养单-下一个保养单(保养单有效状态:1:有效)
+            //修改设备保养单状态
             EquipmentMaintainTask maintainTask = maintainTaskService.findMaintainTaskById(maintainTaskId);
-            EquipmentMaintain maintain = maintainService.findMaintainById(maintainTask.getMaintainId());
-            //planId:保养计划ID
-            String planId = maintain.getPlanId();
-            EquipmentMaintainPlan maintainPlan = maintainPlanService.findMaintainPlanById(planId);
-            if (maintainPlan != null) {
-                //modeId 保养方式(自定义 按周期 数据字典-vmes_dictionary.id)
-                //maintainModeCustom ee66976e1b3d453bae8839e6e9458b2f 自定义
-                //maintainModePeriod 9a05a30aa81e4637b498703b14cde8b1 按周期
-                String modeId = maintainPlan.getModeId();
-                if (Common.DICTIONARY_MAP.get("maintainModePeriod").equals(modeId)) {
-                    //获取下一个保养单对象
-                    EquipmentMaintain nextMaintain = maintainService.findNextMaintainByPeriod(planId);
-                    if (nextMaintain != null) {
-                        //isValidState 保养单有效状态(1:有效 0:无效 is null 无效)
-                        nextMaintain.setIsValidState("1");
-                        maintainService.update(nextMaintain);
-                    }
+
+            //获取当前保养单-保养计划id
+            String planId = null;
+            String maintainId = null;
+            if (maintainTask != null) {
+                EquipmentMaintain maintain = maintainService.findMaintainById(maintainTask.getMaintainId());
+                if (maintain != null) {maintainId = maintain.getId();}
+                if (maintain != null && maintain.getPlanId() != null && maintain.getPlanId().trim().length() > 0) {
+                    planId = maintain.getPlanId().trim();
                 }
             }
 
-            //修改设备保养单状态
-            EquipmentMaintain maintainEdit = new EquipmentMaintain();
             //taskResult:报工结果:任务执行结果(0:未解决 1:已解决)
-            if ("1".equals(taskResult)) {
+            if ("1".equals(taskResult) && maintainId != null && maintainId.trim().length() > 0) {
                 //报工结果:任务执行结果:1:已解决
-                maintainEdit.setId(maintainTask.getMaintainId());
-                //equipmentState 设备状态(1:待保养 2:保养中 3:已完成)
-                maintainEdit.setEquipmentState("3");
-                //完成维修时间 endTime
-                maintainEdit.setEndTime(new Date());
-                //isdisable 是否启用(0:已禁用 1:启用)
-                //maintainEdit.setIsdisable("0");
+                    EquipmentMaintain maintainEdit = new EquipmentMaintain();
+                    maintainEdit.setId(maintainId);
+                    //equipmentState 设备状态(1:待保养 2:保养中 3:已完成)
+                    maintainEdit.setEquipmentState("3");
+                    //完成维修时间 endTime
+                    maintainEdit.setEndTime(new Date());
 
-                //isValidState 保养单有效状态(1:有效 0:无效 is null 无效)
-                maintainEdit.setIsValidState("0");
-                maintainService.update(maintainEdit);
+                    //isValidState 保养单有效状态(1:有效 0:无效 is null 无效)
+                    maintainEdit.setIsValidState("0");
+                    maintainService.update(maintainEdit);
 
-                //查询下一个保养单
-            } else if ("0".equals(taskResult)) {
+                    //查询下一个保养单-根据该保养单得到保养计划
+                    if (planId != null && planId.trim().length() > 0) {
+                        EquipmentMaintain nextMaintain = maintainService.findNextMaintainByPeriod(planId);
+                        if (nextMaintain != null) {
+                            //isValidState 保养单有效状态(1:有效 0:无效 is null 无效)
+                            nextMaintain.setIsValidState("1");
+                            maintainService.update(nextMaintain);
+                        }
+                    }
+            } else if ("0".equals(taskResult) && maintainId != null && maintainId.trim().length() > 0) {
                 //报工结果:任务执行结果:0:未解决
-                maintainEdit.setId(maintainTask.getMaintainId());
+                EquipmentMaintain maintainEdit = new EquipmentMaintain();
+                maintainEdit.setId(maintainId);
                 //equipmentState 设备状态(1:待保养 2:保养中 3:已完成)
                 maintainEdit.setEquipmentState("1");
                 maintainService.update(maintainEdit);

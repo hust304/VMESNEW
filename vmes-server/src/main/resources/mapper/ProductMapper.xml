@@ -406,10 +406,11 @@
             <if test="'true' == isNeedNotInGenreSpare">
                 <![CDATA[ and prod.genre <> '384cfd1329e648618b5a237ce1038bab' ]]>
             </if>
-
+            <!--字典表:4c4bd1b59954438c8bf56facd97a0c7e:货品-->
             <if test="pid != null and pid != ''and pid != '4c4bd1b59954438c8bf56facd97a0c7e'" >
                 and prod.genre=#{pid}
             </if>
+
             <if test="isdisable != null and isdisable != ''" >
                 and prod.isdisable=#{isdisable}
             </if>
