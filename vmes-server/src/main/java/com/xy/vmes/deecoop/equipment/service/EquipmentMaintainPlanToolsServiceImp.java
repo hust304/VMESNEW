@@ -347,6 +347,36 @@ public class EquipmentMaintainPlanToolsServiceImp implements EquipmentMaintainPl
 
         return valueMap;
     }
+
+    /**
+     * 清除保养周期设定
+     *
+     * @param plan
+     * @return
+     */
+    public EquipmentMaintainPlan cleanMaintainPlanByPeriod(EquipmentMaintainPlan plan) {
+        if (plan == null) {plan = new EquipmentMaintainPlan();}
+
+        //periodType 重复频率类型(day:天 week:周 month:月)
+        plan.setPeriodType(null);
+        //periodCount 重复频率数字(间隔数字)
+        plan.setPeriodCount(null);
+        //periodDayofweek 重复时间(周)-(SUNDAY:周日 MONDAY:周1 TUESDAY:周2 WEDNESDAY:周3 THURSDAY:周4 FRIDAY:周5 SATURDAY:周6)
+        plan.setPeriodDayofweek(null);
+        //periodDayofmonth 重复时间(月)-(01-31)
+        plan.setPeriodDayofmonth(null);
+        //periodHourofday 重复时间(天)-(01-24)
+        plan.setPeriodHourofday(null);
+        //periodName 自定义重复名称
+        plan.setPeriodName(null);
+
+        //sysPeriodType 重复类型 (everDay:每天 dayOfWeek:每周星期几 weekOfMonth:每月第几个星期几 dayOfYear:每年某月某日 workDay:工作日[周1-周5] customPeriod:自定义周期)
+        plan.setSysPeriodType(null);
+        //sysPeriodTypeName 重复类型名称
+        plan.setSysPeriodTypeName(null);
+
+        return plan;
+    }
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**

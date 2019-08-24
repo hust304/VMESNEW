@@ -45,4 +45,12 @@ public interface EquipmentMaintainPlanToolsService {
     Map<String, Map<String, Date>> findPlanPeriod(Date nowDate, EquipmentMaintainPlan plan);
 
 
+    /**
+     * 清除保养周期设定
+     *
+     * @param plan
+     * @return
+     */
+    EquipmentMaintainPlan cleanMaintainPlanByPeriod(EquipmentMaintainPlan plan);
+
 }

@@ -381,36 +381,20 @@ public class EquipmentMaintainServiceImp implements EquipmentMaintainService {
 
         //(企业id,保养计划id,保养单有效状态) 查询(vmes_equipment_maintain:设备保养表)
         //查询(vmes_equipment_maintain:设备保养表)-(企业id,保养计划id,有效)设备保养表单
-        List<EquipmentMaintain> maintainList_1 = null;
         try {
             findMap = new PageData();
             findMap.put("companyId", plan.getCompanyId());
             findMap.put("planId", plan.getId());
-            maintainList_1 = this.findMaintainList(findMap);
+            //保养单有效状态(1:有效 0:无效 is null 无效)
+            findMap.put("isValidState", "1");
+            List<EquipmentMaintain> maintainList = this.findMaintainList(findMap);
+
+            if (maintainList == null || maintainList.size() == 0) {
+                //isValidState 保养单有效状态(1:有效 0:无效 is null 无效)
+                addMaintain.setIsValidState("1");
+            }
         } catch (Exception e) {
             e.printStackTrace();
-        }
-
-        if (maintainList_1 == null || maintainList_1.size() == 0) {
-            //isValidState 保养单有效状态(1:有效 0:无效 is null 无效)
-            addMaintain.setIsValidState("1");
-        } else if (maintainList_1 != null && maintainList_1.size() > 0) {
-            try {
-                findMap = new PageData();
-                findMap.put("companyId", plan.getCompanyId());
-                findMap.put("planId", plan.getId());
-                //保养单有效状态(1:有效 0:无效 is null 无效)
-                findMap.put("isValidState", "0");
-                //是否启用(0:已禁用 1:启用)
-                findMap.put("isdisable", "0");
-                List<EquipmentMaintain> maintainList_2 = this.findMaintainList(findMap);
-                if (maintainList_2 != null && maintainList_2.size() > 0) {
-                    //isValidState 保养单有效状态(1:有效 0:无效 is null 无效)
-                    addMaintain.setIsValidState("1");
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
         }
 
         this.save(addMaintain);
