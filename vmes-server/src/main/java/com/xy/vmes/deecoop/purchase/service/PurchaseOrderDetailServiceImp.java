@@ -1,6 +1,7 @@
 package com.xy.vmes.deecoop.purchase.service;
 
 
+import com.xy.vmes.common.util.EvaluateUtil;
 import com.yvan.common.util.Common;
 import com.xy.vmes.deecoop.purchase.dao.PurchaseOrderDetailMapper;
 import com.xy.vmes.entity.PurchaseOrderDetail;
@@ -727,30 +728,45 @@ public class PurchaseOrderDetailServiceImp implements PurchaseOrderDetailService
         if (jsonMapList == null || jsonMapList.size() == 0) {return productByInMap;}
 
         for (Map<String, String> mapObject : jsonMapList) {
-            //id 采购订单明细id
-            String taskDtlId = mapObject.get("orderDetailId");
-            //productId 货品id
+            //orderDetailId 订单明细id
+            String orderDetailId = mapObject.get("orderDetailId");
+
             String productId = mapObject.get("productId");
 
-            //退回数量 retreatCount := inCount 入库数量
-            BigDecimal retreatCount = BigDecimal.valueOf(0D);
-            String retreatCountStr = mapObject.get("retreatCount");
-            if (retreatCountStr != null && retreatCountStr.trim().length() > 0) {
+            //到货数量 count := inCount 入库数量
+            BigDecimal count = BigDecimal.valueOf(0D);
+            String countStr = mapObject.get("count");
+            if (countStr != null && countStr.trim().length() > 0) {
                 try {
-                    retreatCount = new BigDecimal(retreatCountStr);
+                    count = new BigDecimal(countStr);
                     //四舍五入到2位小数
-                    retreatCount = retreatCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                    count = count.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
                 } catch (NumberFormatException e) {
                     e.printStackTrace();
                 }
             }
 
+            //p2nFormula (计价单位转换计量单位公式)
+            String p2nFormula = "";
+            if (mapObject.get("p2nFormula") != null && mapObject.get("p2nFormula").toString().trim().length() > 0) {
+                p2nFormula = mapObject.get("p2nFormula").toString().trim();
+            }
+
+            //采购数量 - 转换计量单位 - 单位换算公式(p2nFormula)
+            BigDecimal prodCount = BigDecimal.valueOf(0D);
+            try {
+                BigDecimal bigDecimal = EvaluateUtil.countFormulaP2N(count, p2nFormula);
+                if (bigDecimal != null) {prodCount = bigDecimal;}
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
             Map<String, Object> productMap = new HashMap<String, Object>();
             productMap.put("productId", productId);
             productMap.put("inDtlId", null);
-            productMap.put("inCount", retreatCount);
+            productMap.put("inCount", prodCount);
 
-            productByInMap.put(taskDtlId, productMap);
+            productByInMap.put(orderDetailId, productMap);
         }
 
         return productByInMap;
