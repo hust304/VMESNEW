@@ -154,6 +154,18 @@
         </foreach>
     </update>
 
+    <!-- 自动创建，禁止修改 -->
+    <select id="isExistBom"  parameterType="java.lang.String"  resultType="java.util.Map">
+        select
+        id,prod_id,bom_id
+        from
+        vmes_bom_tree
+        where
+        prod_id in
+        <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
 
 
     <!-- ***************************************************以上为自动生成代码禁止修改，请在下面添加业务代码************************************************* -->

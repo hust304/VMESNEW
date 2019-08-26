@@ -484,6 +484,8 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
 
         String priceType = pageData.getString("priceType");
         String deliverId = pageData.getString("deliverId");
+        String linkName = pageData.getString("custAddressName");
+        String mobile = pageData.getString("custMobile");
         if (deliverId == null || deliverId.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("发货单id为空或空字符串！");
@@ -506,6 +508,8 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
 
         SaleDeliver saleDeliver = (SaleDeliver)HttpUtils.pageData2Entity(pageData, new SaleDeliver());
         saleDeliver.setId(deliverId);
+        saleDeliver.setLinkName(linkName);
+        saleDeliver.setMobile(mobile);
         //状态(0:待发货 1:已发货 -1:已取消)
         saleDeliver.setState("1");
         this.update(saleDeliver);

@@ -558,8 +558,10 @@
             <if test="'true' == isNotNeedSpare">
                 <![CDATA[ and warehouse.name <> '备件库' ]]>
             </if>
+            <if test="'true' == isStockCountGreaterThanZero">
+                <![CDATA[ and product.stock_count > 0 ]]>
+            </if>
 
-            <![CDATA[ and product.stock_count > 0 ]]>
         </where>
         <if test="orderStr != null and orderStr != ''" >
             order by ${orderStr}

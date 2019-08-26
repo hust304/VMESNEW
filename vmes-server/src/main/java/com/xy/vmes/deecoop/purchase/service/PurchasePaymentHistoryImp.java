@@ -291,8 +291,7 @@ public class PurchasePaymentHistoryImp implements PurchasePaymentHistoryService 
                         mapObject.put("beginPlus", buildBeginValue_Big.toString());
                     } else if (buildBeginValue_Big.doubleValue() < 0) {
                         //beginMinus 预付款(期初)
-                        buildBeginValue_Big = BigDecimal.valueOf(buildBeginValue_Big.doubleValue() * -1);
-                        mapObject.put("beginMinus", buildBeginValue_Big.toString());
+                        mapObject.put("beginMinus", BigDecimal.valueOf(buildBeginValue_Big.doubleValue() * -1).toString());
                     }
                 }
 

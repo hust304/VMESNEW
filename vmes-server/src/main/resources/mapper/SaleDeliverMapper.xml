@@ -188,8 +188,8 @@
         customer.name customerName,
         custType.name customerTypeName,
 
-        address.name custAddressName,
-        address.phone custMobile,
+        deliver.linkName custAddressName,
+        deliver.mobile custMobile,
 
         <!--获取出库单id-->
         <if test="'true' == isNeedOutId" >

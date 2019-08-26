@@ -78,6 +78,8 @@ public interface ProductMapper extends BaseMapper<Product> {
 
     Integer updateStockCount(PageData pd);
 
+    List<Map> isExistBom(String[] ids);
+
 //    //////////////////////////////////////////////////////////////////////////////////
 //    //手机端功能
 //    List<Map> findListPageProduct(PageData pd, Pagination pg);

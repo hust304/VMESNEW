@@ -80,6 +80,29 @@ public class SaleDeliver implements Serializable {
 	private String isdisable;
 
 
+	@TableField("mobile")
+	private String mobile;
+
+	@TableField("linkName")
+	private String linkName;
+
+
+	public String getMobile() {
+		return mobile;
+	}
+
+	public void setMobile(String mobile) {
+		this.mobile = mobile;
+	}
+
+	public String getLinkName() {
+		return linkName;
+	}
+
+	public void setLinkName(String linkName) {
+		this.linkName = linkName;
+	}
+
 	public void setId(String id) {
 		this.id = id;
 	}

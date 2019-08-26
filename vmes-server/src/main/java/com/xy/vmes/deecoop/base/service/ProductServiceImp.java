@@ -837,7 +837,14 @@ public class ProductServiceImp implements ProductService {
 
         //2. 删除产品物料
         ids = StringUtil.stringTrimSpace(ids);
-        this.deleteByIds(ids.split(","));
+        String[] idsStr = ids.split(",");
+        if(isExistBom(idsStr)){
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("选中的产品已在BOM中引用，不能直接删除！");
+            return model;
+        }
+
+        this.deleteByIds(idsStr);
 
         //3. 删除产品物料属性表(vmes_product_property)
         String[] id_arry = ids.split(",");
@@ -847,6 +854,15 @@ public class ProductServiceImp implements ProductService {
         }
 
         return model;
+    }
+
+    private boolean isExistBom(String[] idsStr) {
+        List<Map> productMap = productMapper.isExistBom(idsStr);
+        if(productMap!=null&&productMap.size()>0){
+            return  true;
+        }else {
+            return  false;
+        }
     }
 
     @Override

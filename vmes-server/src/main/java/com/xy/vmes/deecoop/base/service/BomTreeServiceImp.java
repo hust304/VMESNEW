@@ -2,14 +2,12 @@ package com.xy.vmes.deecoop.base.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
-import com.xy.vmes.entity.PurchaseOrderDetail;
+import com.xy.vmes.entity.*;
+import com.xy.vmes.service.ProductService;
 import com.yvan.common.util.Common;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.common.util.TreeUtil;
 import com.xy.vmes.deecoop.base.dao.BomTreeMapper;
-import com.xy.vmes.entity.BomTree;
-import com.xy.vmes.entity.Column;
-import com.xy.vmes.entity.TreeEntity;
 import com.xy.vmes.service.BomTreeService;
 import com.xy.vmes.service.ColumnService;
 import com.yvan.*;
@@ -41,7 +39,8 @@ public class BomTreeServiceImp implements BomTreeService {
     private BomTreeMapper bomTreeMapper;
     @Autowired
     private BomTreeService bomTreeService;
-
+    @Autowired
+    private ProductService productService;
     @Autowired
     private ColumnService columnService;
 
@@ -495,9 +494,55 @@ public class BomTreeServiceImp implements BomTreeService {
         bomTree.setId(id);
         bomTree.setPathId(bomTree.getPathId()+"_"+id);
         bomTree.setLayer(bomTree.getLayer()+1);
-
+        Set linkProdIds  = this.getLinkProdIds(bomTree.getPathId(),bomTree.getBomId(),bomTree.getParentProdId());
+        if(linkProdIds!=null&&linkProdIds.contains(bomTree.getProdId())){
+            Product product = productService.selectById(bomTree.getProdId());
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("货品("+product.getName()+")已被使用，请重新选择！");
+            return model;
+        }
         bomTreeService.save(bomTree);
         return model;
+    }
+
+    private Set getLinkProdIds(String pathId, String bomId, String parentProdId) throws Exception {
+        Set linkProdIds = new HashSet();
+
+        String[] pathIds = pathId.split("_");
+        String ids = null;
+        if(pathIds!=null&&pathIds.length>0){
+            for(int i=0;i<pathIds.length;i++){
+                if(ids == null){
+                    ids = "'"+pathIds[i]+"'";
+                }else{
+                    ids = ids +  " , '"+pathIds[i]+"'";
+                }
+            }
+        }
+        PageData pageData = new PageData();
+        pageData.put("queryStr"," id in ("+ids+") ");
+        pageData.put("isQueryAll","true");
+        List<BomTree>  bomTrees1 = bomTreeService.dataList(pageData);
+        if(bomTrees1!=null&&bomTrees1.size()>0){
+            for(int i=0;i<bomTrees1.size();i++){
+                BomTree bomTree =  bomTrees1.get(i);
+                linkProdIds.add(bomTree.getProdId());
+            }
+        }
+
+        pageData = new PageData();
+        pageData.put("queryStr"," bom_id = '"+bomId+"' and parent_prod_id = '"+parentProdId+"' ");
+        pageData.put("isQueryAll","true");
+        List<BomTree>  bomTrees2 = bomTreeService.dataList(pageData);
+        if(bomTrees2!=null&&bomTrees2.size()>0){
+            for(int i=0;i<bomTrees2.size();i++){
+                BomTree bomTree =  bomTrees2.get(i);
+                linkProdIds.add(bomTree.getProdId());
+            }
+        }
+
+        return  linkProdIds;
+
     }
 
     @Override
@@ -517,10 +562,23 @@ public class BomTreeServiceImp implements BomTreeService {
             return model;
         }
 
+        Set linkProdIds  = new HashSet();
+
+
         if(mapList!=null&&mapList.size()>0) {
             for (int i = 0; i < mapList.size(); i++) {
                 Map<String, String> detailMap = mapList.get(i);
                 BomTree bomTree = (BomTree) HttpUtils.pageData2Entity(detailMap, new BomTree());
+                if(linkProdIds==null||linkProdIds.size()==0){
+                    linkProdIds = this.getLinkProdIds(bomTree.getPathId(),bomTree.getBomId(),bomTree.getParentProdId());
+                    if(linkProdIds!=null&&linkProdIds.contains(bomTree.getProdId())){
+                        Product product = productService.selectById(bomTree.getProdId());
+                        model.putCode(Integer.valueOf(1));
+                        model.putMsg("货品("+product.getName()+")已被使用，请重新选择！");
+                        return model;
+                    }
+                }
+
                 String id = Conv.createUuid();
                 bomTree.setId(id);
                 bomTree.setPathId(bomTree.getPathId()+"_"+id);
