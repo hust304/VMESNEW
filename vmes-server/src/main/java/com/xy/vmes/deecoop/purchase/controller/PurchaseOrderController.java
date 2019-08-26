@@ -517,7 +517,7 @@ public class PurchaseOrderController {
                     }
                 }
 
-            } else if (Common.SYS_WAREHOUSE_SIMPLE.equals(warehouse)) {
+            } else if (warehouseList.size() > 0 && Common.SYS_WAREHOUSE_SIMPLE.equals(warehouse)) {
                 //简版仓库:warehouseBySimple:Common.SYS_WAREHOUSE_SIMPLE
 
                 Map<String, Map<String, Object>> businessByInMap = purchaseOrderDetailService.findBusinessProducMapByIn(warehouseList);
