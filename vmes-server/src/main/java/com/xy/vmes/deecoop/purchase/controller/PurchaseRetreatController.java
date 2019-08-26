@@ -1,9 +1,6 @@
 package com.xy.vmes.deecoop.purchase.controller;
 
-import com.xy.vmes.entity.PurchaseOrderDetail;
-import com.xy.vmes.entity.PurchasePlanDetail;
-import com.xy.vmes.entity.PurchaseRetreat;
-import com.xy.vmes.entity.PurchaseRetreatDetail;
+import com.xy.vmes.entity.*;
 import com.xy.vmes.service.*;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
@@ -20,10 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -53,11 +47,14 @@ public class PurchaseRetreatController {
     private PurchaseRetreatDetailService purchaseRetreatDetailService;
 
     @Autowired
-    private RoleMenuService roleMenuService;
+    private WarehouseService warehouseService;
     @Autowired
     private WarehouseOutCreateService warehouseOutCreateService;
     @Autowired
     private PurchaseOrderDetailToolService purchaseOrderDetailToolService;
+
+    @Autowired
+    private RoleMenuService roleMenuService;
 
     /**
     * @author 陈刚 自动创建，可以修改
@@ -181,15 +178,59 @@ public class PurchaseRetreatController {
             return model;
         }
 
-        //1. 创建出库单////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //遍历JsonMapList-根据货品属性(productGenre)-返回Map结构体
+        //warehouseList: 复杂版仓库,简版仓库
+        //spareList:     备件库
+        Map<String, List<Map<String, String>>> listMap = purchaseOrderDetailService.findMapByProductGenre(jsonMapList);
+        if (listMap == null || listMap.size() == 0) {return model;}
+
+        List<Map<String, String>> warehouseList = new ArrayList<>();
+        if (listMap != null && listMap.get("warehouseList") != null) {
+            warehouseList = listMap.get("warehouseList");
+        }
+
+        //备件库-表对象
+        Warehouse warehouseSpare = null;
+        List<Map<String, String>> spareList = new ArrayList<>();
+        if (listMap != null && listMap.get("spareList") != null) {
+            spareList = listMap.get("spareList");
+        }
+
+        //系统备件库是否存在
+        if (spareList != null && spareList.size() > 0) {
+            try {
+                //获取备件库
+                PageData findMap = new PageData();
+                findMap.put("companyId", companyId);
+                findMap.put("name", "备件库");
+                findMap.put("layer", Integer.valueOf(2));
+                //是否启用(0:已禁用 1:启用)
+                findMap.put("isdisable", "1");
+                findMap.put("mapSize", Integer.valueOf(findMap.size()));
+                warehouseSpare = warehouseService.findWarehouse(findMap);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            if (warehouseSpare == null) {
+                model.putCode(Integer.valueOf(1));
+                model.putMsg("您所在的企业不存在(备件库)，请与管理员联系！");
+                return model;
+            }
+        }
+
         // 货品入库Map<货品id, 货品Map<String, Object>>
         // 货品Map<String, Object>
         //     productId: 货品id
         //     outDtlId:   出库明细id
         //     outCount:   出库数量
-        Map<String, Map<String, Object>> productByOutMap = purchaseRetreatService.findProductMapByOut(jsonMapList);
-        if (Common.SYS_WAREHOUSE_COMPLEX.equals(warehouse)) {
+        Map<String, Map<String, Object>> businessProdOutMapByEditDetail = new HashMap<String, Map<String, Object>>();
+
+        //1. 创建出库单////////////////////////////////////////////////////////////////////////////////////////////////////////
+        if (warehouseList.size() > 0 && Common.SYS_WAREHOUSE_COMPLEX.equals(warehouse)) {
             //复杂版仓库:warehouseByComplex:Common.SYS_WAREHOUSE_COMPLEX
+
+            Map<String, Map<String, Object>> productByOutMap = purchaseRetreatService.findProductMapByOut(jsonMapList);
             warehouseOutCreateService.createWarehouseOutByComplex(supplierId,
                     supplierName,
                     //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
@@ -200,8 +241,18 @@ public class PurchaseRetreatController {
                     Common.DICTIONARY_MAP.get("purchaseOut"),
                     productByOutMap);
 
-        } else if (Common.SYS_WAREHOUSE_SIMPLE.equals(warehouse)) {
+            if (productByOutMap != null) {
+                for (Iterator iterator = productByOutMap.keySet().iterator(); iterator.hasNext();) {
+                    String mapKey = (String) iterator.next();
+                    Map<String, Object> mapValue = productByOutMap.get(mapKey);
+                    businessProdOutMapByEditDetail.put(mapKey, mapValue);
+                }
+            }
+
+        } else if (warehouseList.size() > 0 && Common.SYS_WAREHOUSE_SIMPLE.equals(warehouse)) {
             //简版仓库:warehouseBySimple:Common.SYS_WAREHOUSE_SIMPLE
+
+            Map<String, Map<String, Object>> productByOutMap = purchaseRetreatService.findProductMapByOut(jsonMapList);
             warehouseOutCreateService.createWarehouseOutBySimple(supplierId,
                     supplierName,
                     //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
@@ -211,6 +262,36 @@ public class PurchaseRetreatController {
                     //4cba5d3815644b26920777512a20474b 采购退货出库:purchaseOut
                     Common.DICTIONARY_MAP.get("purchaseOut"),
                     productByOutMap);
+
+            if (productByOutMap != null) {
+                for (Iterator iterator = productByOutMap.keySet().iterator(); iterator.hasNext();) {
+                    String mapKey = (String) iterator.next();
+                    Map<String, Object> mapValue = productByOutMap.get(mapKey);
+                    businessProdOutMapByEditDetail.put(mapKey, mapValue);
+                }
+            }
+        }
+
+        //备件库////////////////////////////////////////////////////////////////////////////////////////////////
+        if (spareList.size() > 0) {
+            Map<String, Map<String, Object>> productByOutMap = purchaseOrderDetailService.findBusinessProducMapByIn(spareList);
+            warehouseOutCreateService.createWarehouseOutByBySpare(supplierId,
+                    supplierName,
+                    //备件库
+                    warehouseSpare.getId(),
+                    cuser,
+                    companyId,
+                    //4cba5d3815644b26920777512a20474b 采购退货出库:purchaseOut
+                    Common.DICTIONARY_MAP.get("purchaseOut"),
+                    productByOutMap);
+
+            if (productByOutMap != null) {
+                for (Iterator iterator = productByOutMap.keySet().iterator(); iterator.hasNext();) {
+                    String mapKey = (String) iterator.next();
+                    Map<String, Object> mapValue = productByOutMap.get(mapKey);
+                    businessProdOutMapByEditDetail.put(mapKey, mapValue);
+                }
+            }
         }
 
         //2. 修改退货单明细 (退货单明细(关联)出库单明细)/////////////////////////////////////////////////////////////////////////////////
@@ -256,8 +337,8 @@ public class PurchaseRetreatController {
 
             //(关联)出库单明细
             String productId = jsonObject.get("productId");
-            if (productByOutMap != null && productByOutMap.get(productId) != null) {
-                Map<String, Object> productOutMap = productByOutMap.get(productId);
+            if (businessProdOutMapByEditDetail != null && businessProdOutMapByEditDetail.get(productId) != null) {
+                Map<String, Object> productOutMap = businessProdOutMapByEditDetail.get(productId);
                 detailEdit.setOutDetailId((String)productOutMap.get("outDtlId"));
             }
 

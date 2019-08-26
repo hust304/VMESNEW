@@ -551,8 +551,8 @@ public class PurchaseOrderController {
                         warehouseSpare.getId(),
                         cuser,
                         companyId,
-                        //维保领料退回入库:repairRetreatIn:c396683796d54b8693b522a2c0ad2793 Common.DICTIONARY_MAP
-                        Common.DICTIONARY_MAP.get("repairRetreatIn"),
+                        //d78ceba5beef41f5be16f0ceee775399 采购入库:purchaseIn
+                        Common.DICTIONARY_MAP.get("purchaseIn"),
                         businessByInMap);
 
                 if (businessByInMap != null) {
