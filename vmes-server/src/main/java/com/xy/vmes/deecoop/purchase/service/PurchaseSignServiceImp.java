@@ -357,7 +357,7 @@ public class PurchaseSignServiceImp implements PurchaseSignService {
      * @param companyId  企业id
      * @param orderId    采购订单id
      * @param valueMap   参数Map<String, Object>
-     *   productByInMap: 入库货品数据Map
+     *   businessByInMap: 入库货品数据Map
      *   jsonMapList：    签收界面传回json数据
      * @throws Exception
      */
@@ -374,12 +374,12 @@ public class PurchaseSignServiceImp implements PurchaseSignService {
         purchaseSign.setOrderId(orderId);
         this.save(purchaseSign);
 
-        // 货品入库Map<货品id, 货品Map<String, Object>>
+        //业务货品入库Map<业务单id, 货品Map<String, Object>> 业务单id-业务明细id (订单明细id,发货单明细id)
         // 货品Map<String, Object>
         //     productId: 货品id
         //     inDtlId:   入库明细id
         //     inCount:   入库数量
-        Map<String, Map<String, Object>> productByInMap = (Map<String, Map<String, Object>>)valueMap.get("productByInMap");
+        Map<String, Map<String, Object>> businessByInMap = (Map<String, Map<String, Object>>)valueMap.get("businessByInMap");
 
         List<Map<String, String>> jsonMapList = (List<Map<String, String>>)valueMap.get("jsonMapList");
         if (jsonMapList != null && jsonMapList.size() > 0) {
@@ -392,8 +392,8 @@ public class PurchaseSignServiceImp implements PurchaseSignService {
                 String productId = jsonObject.get("productId");
                 purchaseSignDetail.setProductId(productId);
 
-                if (productByInMap != null && productByInMap.get(productId) != null) {
-                    Map<String, Object> productInMap = productByInMap.get(productId);
+                if (businessByInMap != null && businessByInMap.get(productId) != null) {
+                    Map<String, Object> productInMap = businessByInMap.get(orderDetailId);
                     purchaseSignDetail.setInDetailId((String)productInMap.get("inDtlId"));
                 }
 

@@ -56,10 +56,14 @@ public class PurchaseOrderController {
     @Autowired
     private PurchaseRetreatService purchaseRetreatService;
 
+
     @Autowired
-    private RoleMenuService roleMenuService;
+    private WarehouseService warehouseService;
     @Autowired
     private WarehouseInCreateService warehouseInCreateService;
+
+    @Autowired
+    private RoleMenuService roleMenuService;
 
     /**
     * @author 刘威 自动创建，禁止修改
@@ -399,13 +403,13 @@ public class PurchaseOrderController {
             return model;
         }
 
-        //仓库id
-        String warehouseId = pageData.getString("warehouseId");
-        if (warehouseId == null || warehouseId.trim().length() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("仓库id为空或空字符串！");
-            return model;
-        }
+//        //仓库id
+//        String warehouseId = pageData.getString("warehouseId");
+//        if (warehouseId == null || warehouseId.trim().length() == 0) {
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg("仓库id为空或空字符串！");
+//            return model;
+//        }
 
         String companyId = pageData.getString("currentCompanyId");
         if (companyId == null || companyId.trim().length() == 0) {
@@ -445,40 +449,130 @@ public class PurchaseOrderController {
             return model;
         }
 
+        //遍历JsonMapList-根据货品属性(productGenre)-返回Map结构体
+        //warehouseList: 复杂版仓库,简版仓库
+        //spareList:     备件库
+        Map<String, List<Map<String, String>>> valueMap = purchaseOrderDetailService.findMapByProductGenre(jsonMapList);
+        if (valueMap == null || valueMap.size() == 0) {return model;}
+
+        List<Map<String, String>> warehouseList = new ArrayList<>();
+        if (valueMap != null && valueMap.get("warehouseList") != null) {
+            warehouseList = valueMap.get("warehouseList");
+        }
+
+        //备件库-表对象
+        Warehouse warehouseSpare = null;
+        List<Map<String, String>> spareList = new ArrayList<>();
+        if (valueMap != null && valueMap.get("spareList") != null) {
+            spareList = valueMap.get("spareList");
+        }
+
+        //系统备件库是否存在
+        if (spareList != null && spareList.size() > 0) {
+            try {
+                //获取备件库
+                PageData findMap = new PageData();
+                findMap.put("companyId", companyId);
+                findMap.put("name", "备件库");
+                findMap.put("layer", Integer.valueOf(2));
+                //是否启用(0:已禁用 1:启用)
+                findMap.put("isdisable", "1");
+                findMap.put("mapSize", Integer.valueOf(findMap.size()));
+                warehouseSpare = warehouseService.findWarehouse(findMap);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            if (warehouseSpare == null) {
+                model.putCode(Integer.valueOf(1));
+                model.putMsg("您所在的企业不存在(备件库)，请与管理员联系！");
+                return model;
+            }
+        }
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
         try {
             //1. 创建入库单////////////////////////////////////////////////////////////////////////////////////////////////////////
-            Map<String, Map<String, Object>> productByInMap = purchaseOrderService.findProductMapByIn(jsonMapList);
-            if (Common.SYS_WAREHOUSE_COMPLEX.equals(warehouse)) {
+            Map<String, Map<String, Object>> businessProdOutMapByEditDetail = new HashMap<String, Map<String, Object>>();
+
+            if (warehouseList.size() > 0 && Common.SYS_WAREHOUSE_COMPLEX.equals(warehouse)) {
                 //复杂版仓库:warehouseByComplex:Common.SYS_WAREHOUSE_COMPLEX
-                warehouseInCreateService.createWarehouseInByComplex(supplierId,
+
+                Map<String, Map<String, Object>> businessByInMap = purchaseOrderDetailService.findBusinessProducMapByIn(warehouseList);
+                warehouseInCreateService.createWarehouseInBusinessByComplex(supplierId,
                         supplierName,
-                        warehouseId,
+                        //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
+                        Common.DICTIONARY_MAP.get("warehouseEntity"),
                         cuser,
                         companyId,
                         //d78ceba5beef41f5be16f0ceee775399 采购入库:purchaseIn
                         Common.DICTIONARY_MAP.get("purchaseIn"),
-                        productByInMap);
+                        businessByInMap);
+
+                if (businessByInMap != null) {
+                    for (Iterator iterator = businessByInMap.keySet().iterator(); iterator.hasNext();) {
+                        String mapKey = (String) iterator.next();
+                        Map<String, Object> mapValue = businessByInMap.get(mapKey);
+                        businessProdOutMapByEditDetail.put(mapKey, mapValue);
+                    }
+                }
 
             } else if (Common.SYS_WAREHOUSE_SIMPLE.equals(warehouse)) {
                 //简版仓库:warehouseBySimple:Common.SYS_WAREHOUSE_SIMPLE
-                warehouseInCreateService.createWarehouseInBySimple(supplierId,
+
+                Map<String, Map<String, Object>> businessByInMap = purchaseOrderDetailService.findBusinessProducMapByIn(warehouseList);
+                warehouseInCreateService.createWarehouseInBusinessBySimple(supplierId,
                         supplierName,
-                        warehouseId,
+                        //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
+                        Common.DICTIONARY_MAP.get("warehouseEntity"),
                         cuser,
                         companyId,
                         //d78ceba5beef41f5be16f0ceee775399 采购入库:purchaseIn
                         Common.DICTIONARY_MAP.get("purchaseIn"),
-                        productByInMap);
+                        businessByInMap);
+
+                if (businessByInMap != null) {
+                    for (Iterator iterator = businessByInMap.keySet().iterator(); iterator.hasNext();) {
+                        String mapKey = (String) iterator.next();
+                        Map<String, Object> mapValue = businessByInMap.get(mapKey);
+                        businessProdOutMapByEditDetail.put(mapKey, mapValue);
+                    }
+                }
             }
 
+            //备件库////////////////////////////////////////////////////////////////////////////////////////////////
+            if (spareList.size() > 0) {
+                Map<String, Map<String, Object>> businessByInMap = purchaseOrderDetailService.findBusinessProducMapByIn(spareList);
+
+                //(备件库)入库单
+                warehouseInCreateService.createWarehouseInBusinessBySpare(supplierId,
+                        supplierName,
+                        //备件库
+                        warehouseSpare.getId(),
+                        cuser,
+                        companyId,
+                        //维保领料退回入库:repairRetreatIn:c396683796d54b8693b522a2c0ad2793 Common.DICTIONARY_MAP
+                        Common.DICTIONARY_MAP.get("repairRetreatIn"),
+                        businessByInMap);
+
+                if (businessByInMap != null) {
+                    for (Iterator iterator = businessByInMap.keySet().iterator(); iterator.hasNext();) {
+                        String mapKey = (String) iterator.next();
+                        Map<String, Object> mapValue = businessByInMap.get(mapKey);
+                        businessProdOutMapByEditDetail.put(mapKey, mapValue);
+                    }
+                }
+            }
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
             //2. 创建采购签收单
-            Map<String, Object> valueMap = new HashMap<String, Object>();
-            valueMap.put("productByInMap", productByInMap);
-            valueMap.put("jsonMapList", jsonMapList);
+            Map<String, Object> businessMap = new HashMap<String, Object>();
+            businessMap.put("businessByInMap", businessProdOutMapByEditDetail);
+            businessMap.put("jsonMapList", jsonMapList);
             purchaseSignService.createPurchaseSign(cuser,
                     companyId,
                     purchaseOrderId,
-                    valueMap);
+                    businessMap);
 
             //3. 修改采购订单明细状态-根据(采购订单明细id,采购数量,到货数量)
 

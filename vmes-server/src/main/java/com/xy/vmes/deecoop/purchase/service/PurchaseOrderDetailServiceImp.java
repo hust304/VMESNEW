@@ -630,6 +630,133 @@ public class PurchaseOrderDetailServiceImp implements PurchaseOrderDetailService
 
         return true;
     }
+
+    /**
+     * 获取Map结构体
+     * 遍历JsonMapList-根据货品属性(productGenre)-返回Map结构体
+     * 1.货品属性:productGenre:备件   添加到:warehouseList
+     * 2.货品属性:productGenre:非备件 添加到:spareList
+     *
+     * Map<String, List<Map<String, String>>>
+     *     warehouseList: 复杂版仓库,简版仓库
+     *     spareList:     备件库
+     *
+     * @param jsonMapList 页面JsonMapList
+     * @return
+     */
+    public Map<String, List<Map<String, String>>> findMapByProductGenre(List<Map<String, String>> jsonMapList) {
+        Map<String, List<Map<String, String>>> mapValue = new HashMap<String, List<Map<String, String>>>();
+        if (jsonMapList == null || jsonMapList.size() == 0) {return mapValue;}
+
+        List<Map<String, String>> warehouseList = new ArrayList<>();
+        List<Map<String, String>> spareList = new ArrayList<>();
+        for (Map<String, String> mapObject : jsonMapList) {
+            //productGenre 货品属性
+            String productGenre = mapObject.get("productGenre");
+
+            //备件:productGenreSpare:384cfd1329e648618b5a237ce1038bab
+            if (Common.DICTIONARY_MAP.get("productGenreSpare").equals(productGenre)) {
+                //货品属性:productGenre:备件 ==> spareList备件库
+                spareList.add(mapObject);
+            } else {
+                //货品属性:productGenre:非备件 ==> warehouseList 复杂版仓库,简版仓库
+                warehouseList.add(mapObject);
+            }
+        }
+
+        mapValue.put("warehouseList", warehouseList);
+        mapValue.put("spareList", spareList);
+        return mapValue;
+    }
+
+    /**
+     * 返回货品入库Map
+     * 货品入库Map<货品id, 货品Map<String, Object>>
+     * 货品Map<String, Object>
+     *     productId: 货品id
+     *     inDtlId:   入库明细id
+     *     inCount:   入库数量
+     *
+     * @param jsonMapList
+     * @return
+     */
+    public Map<String, Map<String, Object>> findProductMapByIn(List<Map<String, String>> jsonMapList) {
+        Map<String, Map<String, Object>> productByInMap = new HashMap<String, Map<String, Object>>();
+        if (jsonMapList == null || jsonMapList.size() == 0) {return productByInMap;}
+
+        for (Map<String, String> mapObject : jsonMapList) {
+            String productId = mapObject.get("productId");
+
+            //退回数量 retreatCount := inCount 入库数量
+            BigDecimal retreatCount = BigDecimal.valueOf(0D);
+            String retreatCountStr = mapObject.get("retreatCount");
+            if (retreatCountStr != null && retreatCountStr.trim().length() > 0) {
+                try {
+                    retreatCount = new BigDecimal(retreatCountStr);
+                    //四舍五入到2位小数
+                    retreatCount = retreatCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            Map<String, Object> productMap = new HashMap<String, Object>();
+            productMap.put("productId", productId);
+            productMap.put("inDtlId", null);
+            productMap.put("inCount", retreatCount);
+
+            productByInMap.put(productId, productMap);
+        }
+
+        return productByInMap;
+    }
+
+    /**
+     * 返回业务货品入库Map
+     * 业务货品入库Map<业务单id, 货品Map<String, Object>> 业务单id-业务明细id (订单明细id,发货单明细id)
+     * 货品Map<String, Object>
+     *     productId: 货品id
+     *     inDtlId:   入库明细id
+     *     inCount:   入库数量
+     *
+     * @param jsonMapList
+     * @return
+     */
+    public Map<String, Map<String, Object>> findBusinessProducMapByIn(List<Map<String, String>> jsonMapList) {
+        Map<String, Map<String, Object>> productByInMap = new HashMap<String, Map<String, Object>>();
+        if (jsonMapList == null || jsonMapList.size() == 0) {return productByInMap;}
+
+        for (Map<String, String> mapObject : jsonMapList) {
+            //id 采购订单明细id
+            String taskDtlId = mapObject.get("orderDetailId");
+            //productId 货品id
+            String productId = mapObject.get("productId");
+
+            //退回数量 retreatCount := inCount 入库数量
+            BigDecimal retreatCount = BigDecimal.valueOf(0D);
+            String retreatCountStr = mapObject.get("retreatCount");
+            if (retreatCountStr != null && retreatCountStr.trim().length() > 0) {
+                try {
+                    retreatCount = new BigDecimal(retreatCountStr);
+                    //四舍五入到2位小数
+                    retreatCount = retreatCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            Map<String, Object> productMap = new HashMap<String, Object>();
+            productMap.put("productId", productId);
+            productMap.put("inDtlId", null);
+            productMap.put("inCount", retreatCount);
+
+            productByInMap.put(taskDtlId, productMap);
+        }
+
+        return productByInMap;
+    }
+
+
 }
 
 

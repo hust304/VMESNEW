@@ -203,6 +203,46 @@ public interface PurchaseOrderDetailService {
      */
     boolean isAllExistStateByDetailList(String state, List<PurchaseOrderDetail> objectList);
 
+    /**
+     * 获取Map结构体
+     * 遍历JsonMapList-根据货品属性(productGenre)-返回Map结构体
+     * 1.货品属性:productGenre:备件   添加到:warehouseList
+     * 2.货品属性:productGenre:非备件 添加到:spareList
+     *
+     * Map<String, List<Map<String, String>>>
+     *     warehouseList: 复杂版仓库,简版仓库
+     *     spareList:     备件库
+     *
+     * @param jsonMapList 页面JsonMapList
+     * @return
+     */
+    Map<String, List<Map<String, String>>> findMapByProductGenre(List<Map<String, String>> jsonMapList);
+
+    /**
+     * 返回货品入库Map
+     * 货品入库Map<货品id, 货品Map<String, Object>>
+     * 货品Map<String, Object>
+     *     productId: 货品id
+     *     inDtlId:   入库明细id
+     *     inCount:   入库数量
+     *
+     * @param jsonMapList
+     * @return
+     */
+    Map<String, Map<String, Object>> findProductMapByIn(List<Map<String, String>> jsonMapList);
+    /**
+     * 返回业务货品入库Map
+     * 业务货品入库Map<业务单id, 货品Map<String, Object>> 业务单id-业务明细id (订单明细id,发货单明细id)
+     * 货品Map<String, Object>
+     *     productId: 货品id
+     *     inDtlId:   入库明细id
+     *     inCount:   入库数量
+     *
+     * @param jsonMapList
+     * @return
+     */
+    Map<String, Map<String, Object>> findBusinessProducMapByIn(List<Map<String, String>> jsonMapList);
+
 
 }
 
