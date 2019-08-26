@@ -234,78 +234,84 @@ public class EquipmentRepairTaskDetailController {
 
         Map<String, Map<String, Object>> prodOutMapByAddDetail = new HashMap<String, Map<String, Object>>();
         //////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //(复杂版,简版)仓库
-        if (warehouseList != null && warehouseList.size() > 0) {
-            Map<String, Map<String, Object>> productByOutMap = repairTaskDetailService.findProductMapByOut(warehouseList);
-            if (Common.SYS_WAREHOUSE_COMPLEX.equals(warehouse)) {
-                //复杂版仓库:warehouseByComplex:Common.SYS_WAREHOUSE_COMPLEX
-                warehouseOutCreateService.createWarehouseOutByComplex(deptId,
+
+        try {
+            //(复杂版,简版)仓库
+            if (warehouseList != null && warehouseList.size() > 0) {
+                Map<String, Map<String, Object>> productByOutMap = repairTaskDetailService.findProductMapByOut(warehouseList);
+                if (Common.SYS_WAREHOUSE_COMPLEX.equals(warehouse)) {
+                    //复杂版仓库:warehouseByComplex:Common.SYS_WAREHOUSE_COMPLEX
+                    warehouseOutCreateService.createWarehouseOutByComplex(deptId,
+                            deptName,
+                            //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
+                            Common.DICTIONARY_MAP.get("warehouseEntity"),
+                            cuser,
+                            companyId,
+                            //fa51ae2e17a9409d822fc4c9192d652c 维保领料出库:repairReceiveOut
+                            Common.DICTIONARY_MAP.get("repairReceiveOut"),
+                            productByOutMap);
+
+
+                } else if (Common.SYS_WAREHOUSE_SIMPLE.equals(warehouse)) {
+                    //简版仓库:warehouseBySimple:Common.SYS_WAREHOUSE_SIMPLE
+                    warehouseOutCreateService.createWarehouseOutBySimple(deptId,
+                            deptName,
+                            //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
+                            Common.DICTIONARY_MAP.get("warehouseEntity"),
+                            cuser,
+                            companyId,
+                            //fa51ae2e17a9409d822fc4c9192d652c 维保领料出库:repairReceiveOut
+                            Common.DICTIONARY_MAP.get("repairReceiveOut"),
+                            productByOutMap);
+                }
+
+                if (productByOutMap != null) {
+                    for (Iterator iterator = productByOutMap.keySet().iterator(); iterator.hasNext();) {
+                        String mapKey = (String) iterator.next();
+                        Map<String, Object> mapValue = productByOutMap.get(mapKey);
+                        prodOutMapByAddDetail.put(mapKey, mapValue);
+                    }
+                }
+            }
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////
+            //(备件)仓库
+            if (spareList != null && spareList.size() > 0) {
+                Map<String, Map<String, Object>> productByOutMap = repairTaskDetailService.findProductMapByOut(spareList);
+                warehouseOutCreateService.createWarehouseOutByBySpare(deptId,
                         deptName,
-                        //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
-                        Common.DICTIONARY_MAP.get("warehouseEntity"),
+                        //备件库
+                        warehouseSpare.getId(),
                         cuser,
                         companyId,
                         //fa51ae2e17a9409d822fc4c9192d652c 维保领料出库:repairReceiveOut
                         Common.DICTIONARY_MAP.get("repairReceiveOut"),
                         productByOutMap);
 
-
-            } else if (Common.SYS_WAREHOUSE_SIMPLE.equals(warehouse)) {
-                //简版仓库:warehouseBySimple:Common.SYS_WAREHOUSE_SIMPLE
-                warehouseOutCreateService.createWarehouseOutBySimple(deptId,
-                        deptName,
-                        //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
-                        Common.DICTIONARY_MAP.get("warehouseEntity"),
-                        cuser,
-                        companyId,
-                        //fa51ae2e17a9409d822fc4c9192d652c 维保领料出库:repairReceiveOut
-                        Common.DICTIONARY_MAP.get("repairReceiveOut"),
-                        productByOutMap);
-            }
-
-            if (productByOutMap != null) {
-                for (Iterator iterator = productByOutMap.keySet().iterator(); iterator.hasNext();) {
-                    String mapKey = (String) iterator.next();
-                    Map<String, Object> mapValue = productByOutMap.get(mapKey);
-                    prodOutMapByAddDetail.put(mapKey, mapValue);
+                if (productByOutMap != null) {
+                    for (Iterator iterator = productByOutMap.keySet().iterator(); iterator.hasNext();) {
+                        String mapKey = (String) iterator.next();
+                        Map<String, Object> mapValue = productByOutMap.get(mapKey);
+                        prodOutMapByAddDetail.put(mapKey, mapValue);
+                    }
                 }
             }
+
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////
+            //添加-vmes_equipment_repairTask_detail:设备维修任务明细表
+            List<EquipmentRepairTaskDetail> taskDetailList = repairTaskDetailService.jsonMapList2DetailList(jsonMapList, null);
+            repairTaskDetailService.addRepairTaskDetail(cuser,
+                    taskDetailList,
+                    prodOutMapByAddDetail);
+
+            //修改设备维修任务状态 (0:未领取任务 1:已领取任务 2:已领料 3:已报工 4:已退单 )
+            EquipmentRepairTask repairTaskEdit = new EquipmentRepairTask();
+            repairTaskEdit.setId(repairTaskId);
+            repairTaskEdit.setTaskState("2");
+            repairTaskService.update(repairTaskEdit);
+        } catch (Exception exc) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(exc.getMessage());
         }
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //(备件)仓库
-        if (spareList != null && spareList.size() > 0) {
-            Map<String, Map<String, Object>> productByOutMap = repairTaskDetailService.findProductMapByOut(spareList);
-            warehouseOutCreateService.createWarehouseOutByBySpare(deptId,
-                    deptName,
-                    //备件库
-                    warehouseSpare.getId(),
-                    cuser,
-                    companyId,
-                    //fa51ae2e17a9409d822fc4c9192d652c 维保领料出库:repairReceiveOut
-                    Common.DICTIONARY_MAP.get("repairReceiveOut"),
-                    productByOutMap);
-
-            if (productByOutMap != null) {
-                for (Iterator iterator = productByOutMap.keySet().iterator(); iterator.hasNext();) {
-                    String mapKey = (String) iterator.next();
-                    Map<String, Object> mapValue = productByOutMap.get(mapKey);
-                    prodOutMapByAddDetail.put(mapKey, mapValue);
-                }
-            }
-        }
-
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //添加-vmes_equipment_repairTask_detail:设备维修任务明细表
-        List<EquipmentRepairTaskDetail> taskDetailList = repairTaskDetailService.jsonMapList2DetailList(jsonMapList, null);
-        repairTaskDetailService.addRepairTaskDetail(cuser,
-                taskDetailList,
-                prodOutMapByAddDetail);
-
-        //修改设备维修任务状态 (0:未领取任务 1:已领取任务 2:已领料 3:已报工 4:已退单 )
-        EquipmentRepairTask repairTaskEdit = new EquipmentRepairTask();
-        repairTaskEdit.setId(repairTaskId);
-        repairTaskEdit.setTaskState("2");
-        repairTaskService.update(repairTaskEdit);
 
         Long endTime = System.currentTimeMillis();
         logger.info("################/equipment/equipmentRepairTaskDetail/addRepairTaskDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
