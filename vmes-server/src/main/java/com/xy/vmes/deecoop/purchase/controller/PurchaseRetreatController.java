@@ -230,7 +230,7 @@ public class PurchaseRetreatController {
         if (warehouseList.size() > 0 && Common.SYS_WAREHOUSE_COMPLEX.equals(warehouse)) {
             //复杂版仓库:warehouseByComplex:Common.SYS_WAREHOUSE_COMPLEX
 
-            Map<String, Map<String, Object>> productByOutMap = purchaseRetreatService.findProductMapByOut(jsonMapList);
+            Map<String, Map<String, Object>> productByOutMap = purchaseRetreatService.findProductMapByOut(warehouseList);
             warehouseOutCreateService.createWarehouseOutByComplex(supplierId,
                     supplierName,
                     //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
@@ -252,7 +252,7 @@ public class PurchaseRetreatController {
         } else if (warehouseList.size() > 0 && Common.SYS_WAREHOUSE_SIMPLE.equals(warehouse)) {
             //简版仓库:warehouseBySimple:Common.SYS_WAREHOUSE_SIMPLE
 
-            Map<String, Map<String, Object>> productByOutMap = purchaseRetreatService.findProductMapByOut(jsonMapList);
+            Map<String, Map<String, Object>> productByOutMap = purchaseRetreatService.findProductMapByOut(warehouseList);
             warehouseOutCreateService.createWarehouseOutBySimple(supplierId,
                     supplierName,
                     //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
@@ -274,7 +274,7 @@ public class PurchaseRetreatController {
 
         //备件库////////////////////////////////////////////////////////////////////////////////////////////////
         if (spareList.size() > 0) {
-            Map<String, Map<String, Object>> productByOutMap = purchaseOrderDetailService.findBusinessProducMapByIn(spareList);
+            Map<String, Map<String, Object>> productByOutMap = purchaseRetreatService.findProductMapByOut(spareList);
             warehouseOutCreateService.createWarehouseOutByBySpare(supplierId,
                     supplierName,
                     //备件库
