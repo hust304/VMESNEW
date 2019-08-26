@@ -372,7 +372,7 @@ public class PurchaseSignServiceImp implements PurchaseSignService {
         purchaseSign.setCuser(cuser);
         purchaseSign.setCompanyId(companyId);
         purchaseSign.setOrderId(orderId);
-        this.save(purchaseSign);
+        //this.save(purchaseSign);
 
         //业务货品入库Map<业务单id, 货品Map<String, Object>> 业务单id-业务明细id (订单明细id,发货单明细id)
         // 货品Map<String, Object>
@@ -392,7 +392,7 @@ public class PurchaseSignServiceImp implements PurchaseSignService {
                 String productId = jsonObject.get("productId");
                 purchaseSignDetail.setProductId(productId);
 
-                if (businessByInMap != null && businessByInMap.get(productId) != null) {
+                if (businessByInMap != null && businessByInMap.get(orderDetailId) != null) {
                     Map<String, Object> productInMap = businessByInMap.get(orderDetailId);
                     purchaseSignDetail.setInDetailId((String)productInMap.get("inDtlId"));
                 }
@@ -413,7 +413,7 @@ public class PurchaseSignServiceImp implements PurchaseSignService {
 
                 purchaseSignDetail.setParentId(purchaseSign.getId());
                 purchaseSignDetail.setCuser(purchaseSign.getCuser());
-                purchaseSignDetailService.save(purchaseSignDetail);
+                //purchaseSignDetailService.save(purchaseSignDetail);
             }
         }
     }
