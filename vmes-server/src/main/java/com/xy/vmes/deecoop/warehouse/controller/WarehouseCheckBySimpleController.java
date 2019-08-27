@@ -243,6 +243,7 @@ public class WarehouseCheckBySimpleController {
             return model;
         }
 
+        String cuser = pageData.getString("cuser");
         String companyId = pageData.getString("currentCompanyId");
         if (companyId == null || companyId.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
@@ -250,12 +251,21 @@ public class WarehouseCheckBySimpleController {
             return model;
         }
 
-        String cuser = pageData.getString("cuser");
-
-        List<WarehouseCheckDetail> detailList = warehouseCheckDetailService.findWarehouseCheckDetailListByParentId(parentId);
-        if (detailList == null || detailList.size() == 0) {
+        String dtlJsonStr = pageData.getString("dtlJsonStr");
+        if (dtlJsonStr == null || dtlJsonStr.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("请至少添加选择一条货品数据！");
             return model;
         }
+
+        List<Map<String, String>> mapList = (List<Map<String, String>>) YvanUtil.jsonToList(dtlJsonStr);
+        if (mapList == null || mapList.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("盘点单明细Json字符串-转换成List错误！");
+            return model;
+        }
+
+        List<WarehouseCheckDetail> detailList = warehouseCheckDetailService.mapList2DetailList(mapList);
 
         try {
             for (int i = 0; i < detailList.size(); i++) {
