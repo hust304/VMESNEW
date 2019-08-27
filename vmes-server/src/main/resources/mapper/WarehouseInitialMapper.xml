@@ -265,6 +265,7 @@
         isdisable,ishide,isedit,ismust,cdate,
         cuser
         ) VALUES
+        (replace(uuid(), '-', ''),'warehouseInitialBySimple','id','id',0, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'warehouseInitialBySimple','companyId','companyId',0, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'warehouseInitialBySimple','warehouseId','仓库货位ID',1, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'warehouseInitialBySimple','productId','货品id',2, '1','1','1','0',now(), 'admin'),
@@ -291,6 +292,7 @@
     <!-- warehouseEdition(仓库版本): warehouseBySimple(简版仓库)-对应实体库(简版仓库)********************************************* -->
     <select id="findWarehouseProductBySimple" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
+            concat(warehouseProduct.warehouse_id,'-',warehouseProduct.product_id,'-',warehouseProduct.company_id) id,
             warehouseProduct.company_id companyId,
             warehouseProduct.warehouse_id warehouseId,
             warehouseProduct.product_id productId,
@@ -343,6 +345,9 @@
                         <if test="currentCompanyId != null and currentCompanyId != ''" >
                             and company_id = #{currentCompanyId}
                         </if>
+                        <if test="warehouseNodeId != null and warehouseNodeId != ''" >
+                            and path_id LIKE CONCAT(CONCAT('%', #{warehouseNodeId}),'%')
+                        </if>
 
                         <!--过滤出 (备件库)-->
                         <if test="'true' == isNeedWarehouseSpare">
@@ -387,6 +392,14 @@
             </if>
             <if test="productSpec != null and productSpec != ''">
                 and product.spec LIKE CONCAT(CONCAT(#{productSpec}),'%')
+            </if>
+            <!--过滤出 货品属性(备件)-->
+            <if test="'true' == isNeedGenreSpare">
+                and product.genre = '384cfd1329e648618b5a237ce1038bab'
+            </if>
+            <!--过滤出 货品属性(非备件)-->
+            <if test="'true' == isNeedNotInGenreSpare">
+                <![CDATA[ and product.genre <> '384cfd1329e648618b5a237ce1038bab' ]]>
             </if>
             <if test="productGenreName != null and productGenreName != ''">
                 and genre.name LIKE CONCAT(CONCAT(#{productGenreName}),'%')
