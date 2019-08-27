@@ -66,7 +66,7 @@ public interface WarehouseOutCreateService {
      *
      * @param deptId          (部门,供应商,客户)id
      * @param deptName        (部门,供应商,客户)名称
-     * @param warehouseId     仓库id
+     * @param warehouseId     仓库id(备件库id)
      * @param cuser           用户id
      * @param companyId       企业id
      * @param outType         出库类型id

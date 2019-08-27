@@ -167,10 +167,10 @@ public class WarehouseOutCreateServiceImp implements WarehouseOutCreateService {
             String productId = outDetail.getProductId();
             BigDecimal count = outDetail.getCount();
 
-            //仓库版本 (warehouseByComplex:复杂版仓库 warehouseBySimple:简版仓库)
+            //按(货品id,企业id) 查询(vmes_warehouse_product)
             List<Map<String, Object>> outMapList = warehouseProductToolService.findWarehouseProductOutMapList(productId,
                     companyId,
-                    Common.SYS_WAREHOUSE_SIMPLE,
+                    null,
                     count);
             if (outMapList != null && outMapList.size() > 0) {
                 executeList = warehouseOutExecuteService.outMapList2ExecuteList(outDetail, outMapList, executeList);
@@ -192,7 +192,7 @@ public class WarehouseOutCreateServiceImp implements WarehouseOutCreateService {
      *
      * @param deptId          (部门,供应商,客户)id
      * @param deptName        (部门,供应商,客户)名称
-     * @param warehouseId     仓库id
+     * @param warehouseId     仓库id(备件库id)
      * @param cuser           用户id
      * @param companyId       企业id
      * @param outType         出库类型id
@@ -250,10 +250,11 @@ public class WarehouseOutCreateServiceImp implements WarehouseOutCreateService {
             String productId = outDetail.getProductId();
             BigDecimal count = outDetail.getCount();
 
-            //仓库版本 (warehouseByComplex:复杂版仓库 warehouseBySimple:简版仓库)
+            //按(备件库id,货品id,企业id) 查询(vmes_warehouse_product)
             List<Map<String, Object>> outMapList = warehouseProductToolService.findWarehouseProductOutMapList(productId,
                     companyId,
-                    Common.SYS_WAREHOUSE_SIMPLE,
+                    //仓库id(备件库id)
+                    warehouseId,
                     count);
             if (outMapList != null && outMapList.size() > 0) {
                 executeList = warehouseOutExecuteService.outMapList2ExecuteList(outDetail, outMapList, executeList);

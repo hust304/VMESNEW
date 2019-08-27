@@ -156,31 +156,15 @@
                         and company_id = #{companyId}
                     </if>
 
-                    <!--warehouseEdition(仓库版本): warehouseByComplex(复杂版仓库)-对应实体库(简版仓库过滤出) -->
-                    <!--实体库 2d75e49bcb9911e884ad00163e105f05-->
-                    <if test="'warehouseByComplex' == warehouseEdition">
+                    <!--指定仓库id 如(实体库,虚拟库,备件库,虚拟库)-->
+                    <if test="warehouseNodeId != null and warehouseNodeId != ''">
                         and warehouse_id in (
                             select id from vmes_warehouse
                             <where>
                                 <if test="companyId != null and companyId != ''" >
                                     and company_id = #{companyId}
                                 </if>
-                                and path_id like '%2d75e49bcb9911e884ad00163e105f05%'
-                                and isdisable = '1'
-                            </where>
-                        )
-                    </if>
-
-                    <!--warehouseEdition(仓库版本): warehouseBySimple(简版仓库)-对应实体库(简版仓库) -->
-                    <!--实体库 2d75e49bcb9911e884ad00163e105f05-->
-                    <if test="'warehouseBySimple' == warehouseEdition">
-                        and warehouse_id in (
-                            select id from vmes_warehouse
-                            <where>
-                                <if test="companyId != null and companyId != ''" >
-                                    and company_id = #{companyId}
-                                </if>
-                                and path_id like '%2d75e49bcb9911e884ad00163e105f05%'
+                                and path_id LIKE CONCAT(CONCAT('%', #{warehouseNodeId}),'%')
                                 and isdisable = '1'
                             </where>
                         )
