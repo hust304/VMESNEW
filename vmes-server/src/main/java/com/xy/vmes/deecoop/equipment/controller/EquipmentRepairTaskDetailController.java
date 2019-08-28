@@ -39,6 +39,8 @@ public class EquipmentRepairTaskDetailController {
     private EquipmentRepairTaskDetailInfoService repairTaskDetailInfoService;
     @Autowired
     private EquipmentRepairTaskOutDetailService repairTaskOutDetailService;
+    @Autowired
+    private EquipmentRepairTaskDetailOnOutService repairTaskDetailOnOutService;
 
     @Autowired
     private WarehouseService warehouseService;
@@ -64,6 +66,18 @@ public class EquipmentRepairTaskDetailController {
         ResultModel model = repairTaskDetailService.listPageRepairTaskDetail(pd);
         Long endTime = System.currentTimeMillis();
         logger.info("################/equipment/equipmentRepairTaskDetail/listPageRepairTaskDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    //根据出库单id-获取维修保养任务明细
+    @PostMapping("/equipment/equipmentRepairTaskDetail/listPageRepairTaskDetailByOut")
+    public ResultModel listPageRepairTaskDetailByOut() throws Exception {
+        logger.info("################/equipment/equipmentRepairTaskDetail/listPageRepairTaskDetailByOut 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = repairTaskDetailOnOutService.listPageRepairTaskDetailByOut(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/equipment/equipmentRepairTaskDetail/listPageRepairTaskDetailByOut 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
