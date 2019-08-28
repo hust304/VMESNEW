@@ -82,19 +82,19 @@ public class Common {
         put("4", "已完成");
         put("-1", "已取消");
     }};
-    //订单明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已发货 6:已完成 -1:已取消)
-    public static final Map<String, String> SYS_SALE_ORDER_DETAIL_STATE = new HashMap<String, String>() {{
-        put("0", "待提交");
-        put("1", "待审核");
-        put("2", "待生产");
-        put("3", "待出库");
-        put("4", "待发货");
-        put("5", "已发货");
-        put("6", "已完成");
-        put("-1", "已取消");
-    }};
+//    //订单明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已发货 6:已完成 -1:已取消)
+//    public static final Map<String, String> SYS_SALE_ORDER_DETAIL_STATE = new HashMap<String, String>() {{
+//        put("0", "待提交");
+//        put("1", "待审核");
+//        put("2", "待生产");
+//        put("3", "待出库");
+//        put("4", "待发货");
+//        put("5", "已发货");
+//        put("6", "已完成");
+//        put("-1", "已取消");
+//    }};
 
-    //
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
     public static final List<Integer> SYS_DAYOFWEEK_LIST = new ArrayList<Integer>() {{
         add(Integer.valueOf(Calendar.SUNDAY));
         add(Integer.valueOf(Calendar.MONDAY));
@@ -509,6 +509,19 @@ public class Common {
     public static final Map<String, String> SYS_WAREHOUSE_NAMEKEY_MAP = new HashMap<String, String>() {{
         put(SYS_WAREHOUSE_COMPLEX, SYS_MENU_MAP.get("warehouseByComplex"));
         put(SYS_WAREHOUSE_SIMPLE, SYS_MENU_MAP.get("warehouseBySimple"));
+    }};
+
+    //关于仓库(出库,入库)反查业务数据(发货单,采购单)
+    public static final Map<String, String> SYS_WAREHOUSE_MENU_MAP = new HashMap<String, String>() {{
+        //sale:94caec1bca7e4131b16bfcee9b1351e2: 销售
+        put("94caec1bca7e4131b16bfcee9b1351e2", "销售");
+
+        //purchase:3f5e1bcd2d3745998773413ccbded554: 采购
+        put("3f5e1bcd2d3745998773413ccbded554", "采购");
+
+        //equipment:77692fa6a7ae4b4aabcef8d10d7671f4 设备
+        put("77692fa6a7ae4b4aabcef8d10d7671f4", "设备");
+
     }};
 
 //    //收费菜单项目

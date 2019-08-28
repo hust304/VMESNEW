@@ -2,9 +2,11 @@ package com.xy.vmes.deecoop.system.controller;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.entity.Menu;
+import com.xy.vmes.entity.RoleMenu;
+import com.xy.vmes.entity.User;
 import com.xy.vmes.service.*;
 import com.yvan.*;
-//import com.yvan.cache.RedisClient;
+import com.yvan.common.util.Common;
 import com.yvan.springmvc.ResultModel;
 import com.yvan.template.ExcelAjaxTemplate;
 import lombok.extern.slf4j.Slf4j;
@@ -18,8 +20,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.text.MessageFormat;
 import java.util.*;
-
 
 /**
 * 说明：vmes_menu:系统功能菜单Controller
@@ -34,6 +36,13 @@ public class MenuController {
 
     @Autowired
     private MenuService menuService;
+
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private UserRoleService userRoleService;
+    @Autowired
+    RoleMenuService roleMenuService;
 
     /**
     * @author 陈刚 自动创建，禁止修改
@@ -203,6 +212,105 @@ public class MenuController {
         return model;
     }
 
+    /**
+     * 根据给定的菜单Url(菜单路由名称)与当前企业管理员角色配置的系统菜单-是否匹配
+     * 返回值:
+     * isExist:
+     *     true:  与当前企业管理员角色配置的系统菜单匹配
+     *     false: 与当前企业管理员角色配置的系统菜单不匹配
+     * message:
+     *
+     * @author 陈刚
+     * @date 2018-08-01
+     */
+    @PostMapping("/system/menu/findIsExistMenu")
+    public ResultModel findIsExistMenu() throws Exception {
+        logger.info("################menu/listPageMenus 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+
+        String companyId = pd.getString("currentCompanyId");
+        if (companyId == null || companyId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("企业id为空或空字符串！");
+            return model;
+        }
+
+        String menuUrl = pd.getString("menuUrl");
+        if (menuUrl == null || menuUrl.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("菜单Url为空或空字符串！");
+            return model;
+        }
+        String menuId = Common.SYS_MENU_MAP.get(menuUrl);
+        String menuName = Common.SYS_WAREHOUSE_MENU_MAP.get(menuId);
+
+        try {
+            //获取当前企业管理员
+            String companyUserId = new String();
+            PageData findMap = new PageData();
+            findMap.put("companyId", companyId);
+            //企业管理员:userType_company:2fb9bbee46ca4ce1913f3a673a7dd68f  数据字典:pid:744f2d88c9f647d0a4d967a714193850
+            findMap.put("userType", Common.DICTIONARY_MAP.get("userType_company"));
+            findMap.put("mapSize", Integer.valueOf(findMap.size()));
+            List<User> userList = userService.findUserList(findMap);
+            if (userList != null && userList.size() > 0) {
+                companyUserId = userList.get(0).getId();
+            }
+            if (companyUserId == null || companyUserId.trim().length() == 0) {
+                model.putCode(Integer.valueOf(1));
+                model.putMsg("您所在的企业无企业管理员，请于管理员联系！");
+                return model;
+            }
+
+            //获取当前企业管理员-全部角色id(','分隔的字符串)
+            String roleIds = userRoleService.findRoleIdsByByUserID(companyUserId);
+            if (roleIds == null || roleIds.trim().length() == 0) {
+                model.putCode(Integer.valueOf(1));
+                model.putMsg("您所在的企业管理员未分配角色，请于管理员联系！");
+                return model;
+            }
+
+            //获取当前企业管理员-全部菜单
+            findMap = new PageData();
+            findMap.put("roleId", roleIds);
+            //是否禁用(0:已禁用 1:启用)
+            findMap.put("isdisable", "1");
+            findMap.put("mapSize", Integer.valueOf(findMap.size()).toString());
+            List<RoleMenu> roleMenuList = roleMenuService.findRoleMenuList(findMap);
+
+            //获取当前企业管理员-全部系统菜单Map
+            Map<String, String> sysMenuMap = new HashMap<String, String>();
+            if (roleMenuList != null && roleMenuList.size() > 0) {
+                for (RoleMenu roleMenu : roleMenuList) {
+                    String sysMenuId = roleMenu.getMenuId();
+                    if (menuId != null && menuId.trim().length() > 0) {
+                        sysMenuMap.put(sysMenuId, sysMenuId);
+                    }
+                }
+            }
+
+            //判断菜单id 与 获取当前企业管理员角色配置菜单是否匹配
+            if (sysMenuMap.get(menuId) != null) {
+                model.put("isExist", "true");
+            } else {
+                String msgTemp = "您所在的企业无({0})模块";
+                String message = MessageFormat.format(msgTemp, menuName);
+
+                model.put("isExist", "false");
+                model.put("message", message);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################menu/listPageMenus 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
 
     /**
      * Excel导出功能：
