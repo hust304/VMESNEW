@@ -156,6 +156,10 @@
         invoiceDtl.remark remark,
         invoiceDtl.isdisable isdisable,
 
+        round(ifnull(orderDetail.product_sum, 0),2) productSum,
+        round(ifnull(orderDetail.order_count, 0),2) orderCount,
+
+
         <!--货品表-->
         priceUnit.name priceUnitName,
         product.code productCode,
@@ -165,19 +169,20 @@
         genre.name productGenreName
 
         from vmes_sale_invoice_detail invoiceDtl
+        left join vmes_sale_order_detail orderDetail on invoiceDtl.order_detail_id = orderDetail.id
         left join vmes_product product on invoiceDtl.product_id = product.id
         left join vmes_dictionary priceUnit on invoiceDtl.price_unit = priceUnit.id
         left join vmes_dictionary genre on product.genre = genre.id
 
         <where>
             <if test="ids != null and ids != ''" >
-                and id in (${ids})
+                and invoiceDtl.id in (${ids})
             </if>
             <if test="parentId != null and parentId != ''" >
-                and parent_id = #{parentId}
+                and invoiceDtl.parent_id = #{parentId}
             </if>
             <if test="state != null and state != ''" >
-                and state = #{state}
+                and invoiceDtl.state = #{state}
             </if>
 
             <!--queryStr 自定义sql查询语句-->

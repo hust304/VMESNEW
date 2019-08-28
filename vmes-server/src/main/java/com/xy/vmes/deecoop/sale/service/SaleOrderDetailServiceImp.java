@@ -235,6 +235,10 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
         for (Map<String, String> mapObject : mapList) {
             SaleOrderDetail detail = (SaleOrderDetail) HttpUtils.pageData2Entity(mapObject, new SaleOrderDetail());
 
+            if(mapObject.get("orderDetaiId")!=null){
+                detail.setId(mapObject.get("orderDetaiId"));
+            }
+
             //orderCount 订单订购数量 := 货品数量(计价数量)
             BigDecimal orderCount = BigDecimal.valueOf(0D);
             if (detail.getOrderCount() != null) {
