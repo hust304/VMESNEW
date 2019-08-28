@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+说明：设备维修任务明细关联出库明细 Mapper.xml
+创建人：陈刚
+创建时间：2019-08-28
+ -->
+<mapper namespace="com.xy.vmes.deecoop.equipment.dao.EquipmentMaintainTaskDetailOnOutMapper">
+
+    <insert id="equipmentMaintainTaskDetailOnOutDetail" >
+        delete from vmes_column where model_code = 'equipmentMaintainTaskDetailOnOutDetail' ;
+
+        insert into vmes_column (
+        id,model_code,title_key,title_name,serial_number,
+        isdisable,ishide,isedit,ismust,cdate,
+        cuser
+        ) VALUES
+        (replace(uuid(), '-', ''),'equipmentMaintainTaskDetailOnOutDetail','id','id',0, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'equipmentMaintainTaskDetailOnOutDetail','taskId','保养任务ID',1, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'equipmentMaintainTaskDetailOnOutDetail','productId','备件ID(货品)ID',2, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'equipmentMaintainTaskDetailOnOutDetail','warehouseGenre','仓库属性(entity:实体库 virtual:虚拟库)',3, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'equipmentMaintainTaskDetailOnOutDetail','receiveCount','领取数量',4, '1','1','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'equipmentMaintainTaskDetailOnOutDetail','applyCount','实际使用数量',5, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'equipmentMaintainTaskDetailOnOutDetail','retreatType','退回方式(1:退回仓库, 2:退回虚拟库)',6, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'equipmentMaintainTaskDetailOnOutDetail','retreatCount','退回数量',7, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'equipmentMaintainTaskDetailOnOutDetail','outDtlId','出库明细ID(领取)',8, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'equipmentMaintainTaskDetailOnOutDetail','outCount','出库数量(领取)',9, '1','1','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'equipmentMaintainTaskDetailOnOutDetail','inDtlId','入库明细ID(退还)',10, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'equipmentMaintainTaskDetailOnOutDetail','inCount','入库数量(退还)',11, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'equipmentMaintainTaskDetailOnOutDetail','cuser','创建用户id',12, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'equipmentMaintainTaskDetailOnOutDetail','cdate','创建时间',13, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'equipmentMaintainTaskDetailOnOutDetail','uuser','修改用户id',14, '1','1','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'equipmentMaintainTaskDetailOnOutDetail','udate','修改时间',15, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'equipmentMaintainTaskDetailOnOutDetail','remark','备注',16, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'equipmentMaintainTaskDetailOnOutDetail','isdisable','是否启用(0:已禁用 1:启用)',17, '1','1','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'equipmentMaintainTaskDetailOnOutDetail','sysCode','维修单编号',18, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''), 'equipmentMaintainTaskDetailOnOutDetail', 'productCode', '货品编码', 19, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'equipmentMaintainTaskDetailOnOutDetail', 'productName', '货品名称', 20, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'equipmentMaintainTaskDetailOnOutDetail', 'productSpec', '规格型号', 21, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'equipmentMaintainTaskDetailOnOutDetail', 'productGenre', '货品属性id', 22, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'equipmentMaintainTaskDetailOnOutDetail', 'productGenreName', '货品属性', 23, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'equipmentMaintainTaskDetailOnOutDetail', 'productUnitName', '单位', 24, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+    </insert>
+
+    <select id="findMaintainTaskDetailOnOutDetail" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+            taskDtl.id id,
+            taskDtl.task_id taskId,
+            taskDtl.product_id productId,
+            taskDtl.warehouse_genre warehouseGenre,
+            round(taskDtl.receive_count, 2) receiveCount,
+
+            round(taskDtl.apply_count, 2) applyCount,
+            taskDtl.retreat_type retreatType,
+            round(taskDtl.retreat_count, 2) retreatCount,
+            taskDtl.out_dtl_id outDtlId,
+            round(taskDtl.out_count, 2) outCount,
+
+            taskDtl.in_dtl_id inDtlId,
+            round(taskDtl.in_count, 2) inCount,
+            taskDtl.cuser cuser,
+            taskDtl.cdate cdate,
+            taskDtl.uuser uuser,
+
+            taskDtl.udate udate,
+            taskDtl.remark remark,
+            taskDtl.isdisable isdisable,
+
+            maintain.sys_code sysCode,
+
+            <!--货品信息(备件)-->
+            product.code productCode,
+            product.name productName,
+            product.spec productSpec,
+            product.genre productGenre,
+            genre.name productGenreName,
+            prodUnitName.name productUnitName
+
+        from vmes_equipment_maintainTask_detail taskDtl
+        left join vmes_equipment_maintainTask task on taskDtl.task_id = task.id
+        left join vmes_equipment_maintain maintain on task.maintain_id = maintain.id
+
+        left join vmes_product product on taskDtl.product_id = product.id
+        left join vmes_product_unit prodUnit on taskDtl.product_id = prodUnit.product_id and prodUnit.type = 1
+        left join vmes_dictionary genre on product.genre = genre.id
+        left join vmes_dictionary prodUnitName on prodUnit.unit = prodUnitName.id
+
+        <where>
+            <!--出库单id-->
+            <if test="outParentId != null and outParentId != ''" >
+                and taskDtl.out_dtl_id in (
+                select id from vmes_warehouse_out_detail
+                where parent_id = #{outParentId}
+                )
+            </if>
+
+        </where>
+
+        <if test="orderStr != null and orderStr != ''" >
+            order by ${orderStr}
+        </if>
+
+    </select>
+
+</mapper>
