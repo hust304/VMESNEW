@@ -80,7 +80,7 @@ public class SaleDeliverDetailController {
     }
 
     /**
-     * 获取采购发货单明细信息-根据出库单信息(出库单id)
+     * 获取销售发货单明细信息-根据出库单信息(出库单id)
      * @return
      * @throws Exception
      */

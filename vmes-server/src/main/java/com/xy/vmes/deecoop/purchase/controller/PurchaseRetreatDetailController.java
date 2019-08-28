@@ -1,5 +1,6 @@
 package com.xy.vmes.deecoop.purchase.controller;
 
+import com.xy.vmes.service.PurchaseRetreatDetailOnOutService;
 import com.xy.vmes.service.PurchaseRetreatDetailService;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
@@ -25,6 +26,8 @@ public class PurchaseRetreatDetailController {
 
     @Autowired
     private PurchaseRetreatDetailService purchaseRetreatDetailService;
+    @Autowired
+    private PurchaseRetreatDetailOnOutService retreatDetailOnOutService;
 
     /**
     * @author 陈刚 自动创建，可以修改
@@ -39,6 +42,24 @@ public class PurchaseRetreatDetailController {
         ResultModel model = purchaseRetreatDetailService.listPageRetreatDetail(pd,pg);
         Long endTime = System.currentTimeMillis();
         logger.info("################/purchase/purchaseRetreatDetail/listPageRetreatDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 获取采购退货单明细信息-根据出库单信息(出库单id)
+     * @return
+     * @throws Exception
+     */
+    @PostMapping("/purchase/purchaseRetreatDetail/listPageRetreatDetailByOut")
+    public ResultModel listPageRetreatDetailByOut() throws Exception {
+        logger.info("################/purchase/purchaseRetreatDetail/listPageRetreatDetailByOut 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = retreatDetailOnOutService.listPageRetreatDetailByOut(pd);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/purchase/purchaseRetreatDetail/listPageRetreatDetailByOut 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
