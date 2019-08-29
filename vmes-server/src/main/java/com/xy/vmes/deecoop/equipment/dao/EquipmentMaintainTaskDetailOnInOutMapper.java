@@ -15,7 +15,7 @@ import java.util.Map;
  */
 @Mapper
 @Repository
-public interface EquipmentMaintainTaskDetailOnOutMapper {
-    List<Map> findMaintainTaskDetailOnOutDetail(PageData pd, Pagination pg);
-    List<Map> findMaintainTaskDetailOnOutDetail(PageData pd);
+public interface EquipmentMaintainTaskDetailOnInOutMapper {
+    List<Map> findMaintainTaskDetailOnInOutDetail(PageData pd, Pagination pg);
+    List<Map> findMaintainTaskDetailOnInOutDetail(PageData pd);
 }

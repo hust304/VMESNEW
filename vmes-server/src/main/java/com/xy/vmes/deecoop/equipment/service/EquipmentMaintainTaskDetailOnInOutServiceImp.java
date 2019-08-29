@@ -2,10 +2,10 @@ package com.xy.vmes.deecoop.equipment.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
-import com.xy.vmes.deecoop.equipment.dao.EquipmentMaintainTaskDetailOnOutMapper;
+import com.xy.vmes.deecoop.equipment.dao.EquipmentMaintainTaskDetailOnInOutMapper;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.service.ColumnService;
-import com.xy.vmes.service.EquipmentMaintainTaskDetailOnOutService;
+import com.xy.vmes.service.EquipmentMaintainTaskDetailOnInOutService;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
@@ -25,21 +25,21 @@ import java.util.Map;
  */
 @Service
 @Transactional(readOnly = false)
-public class EquipmentMaintainTaskDetailOnOutServiceImp implements EquipmentMaintainTaskDetailOnOutService {
+public class EquipmentMaintainTaskDetailOnInOutServiceImp implements EquipmentMaintainTaskDetailOnInOutService {
     @Autowired
-    private EquipmentMaintainTaskDetailOnOutMapper taskDetailOnOutMapper;
+    private EquipmentMaintainTaskDetailOnInOutMapper taskDetailOnInOutMapper;
 
     @Autowired
     private ColumnService columnService;
 
-    public List<Map> findMaintainTaskDetailOnOutDetail(PageData pd, Pagination pg) throws Exception {
+    public List<Map> findMaintainTaskDetailOnInOutDetail(PageData pd, Pagination pg) throws Exception {
         List<Map> mapList = new ArrayList<Map>();
         if (pd == null) {return mapList;}
 
         if (pg == null) {
-            return taskDetailOnOutMapper.findMaintainTaskDetailOnOutDetail(pd);
+            return taskDetailOnInOutMapper.findMaintainTaskDetailOnInOutDetail(pd);
         } else if (pg != null) {
-            return taskDetailOnOutMapper.findMaintainTaskDetailOnOutDetail(pd, pg);
+            return taskDetailOnInOutMapper.findMaintainTaskDetailOnInOutDetail(pd, pg);
         }
 
         return mapList;
@@ -49,7 +49,7 @@ public class EquipmentMaintainTaskDetailOnOutServiceImp implements EquipmentMain
         ResultModel model = new ResultModel();
         Pagination pg = HttpUtils.parsePagination(pd);
 
-        List<Column> columnList = columnService.findColumnList("equipmentMaintainTaskDetailOnOutDetail");
+        List<Column> columnList = columnService.findColumnList("equipmentMaintainTaskDetailOnInOutDetail");
         if (columnList == null || columnList.size() == 0) {
             model.putCode("1");
             model.putMsg("数据库没有生成TabCol，请联系管理员！");
@@ -87,7 +87,60 @@ public class EquipmentMaintainTaskDetailOnOutServiceImp implements EquipmentMain
             result.put("pageData", pg);
         }
 
-        List<Map> varList = this.findMaintainTaskDetailOnOutDetail(pd, pg);
+        List<Map> varList = this.findMaintainTaskDetailOnInOutDetail(pd, pg);
+        List<Map> varMapList = ColumnUtil.getVarMapList(varList, titleMap);
+
+        result.put("hideTitles",titleMap.get("hideTitles"));
+        result.put("titles",titleMap.get("titles"));
+        result.put("varList",varMapList);
+
+        model.putResult(result);
+        return model;
+    }
+
+    public ResultModel listPageMaintainTaskDetailByIn(PageData pd) throws Exception {
+        ResultModel model = new ResultModel();
+        Pagination pg = HttpUtils.parsePagination(pd);
+
+        List<Column> columnList = columnService.findColumnList("equipmentMaintainTaskDetailOnInOutDetail");
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
+        }
+
+        //获取指定栏位字符串-重新调整List<Column>
+        String fieldCode = pd.getString("fieldCode");
+        if (fieldCode != null && fieldCode.trim().length() > 0) {
+            columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
+        }
+        Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
+
+        //inId 入库单id
+        String inId = pd.getString("inId");
+        if (inId == null || inId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("入库单id为空或空字符串！");
+            return model;
+        }
+        pd.put("inParentId", inId);
+
+        //设置查询排序方式
+        String orderStr = pd.getString("orderStr");
+        if (orderStr != null && orderStr.trim().length() > 0) {
+            pd.put("orderStr", orderStr);
+        }
+
+        //是否需要分页 true:需要分页 false:不需要分页
+        Map result = new HashMap();
+        String isNeedPage = pd.getString("isNeedPage");
+        if ("false".equals(isNeedPage)) {
+            pg = null;
+        } else {
+            result.put("pageData", pg);
+        }
+
+        List<Map> varList = this.findMaintainTaskDetailOnInOutDetail(pd, pg);
         List<Map> varMapList = ColumnUtil.getVarMapList(varList, titleMap);
 
         result.put("hideTitles",titleMap.get("hideTitles"));
