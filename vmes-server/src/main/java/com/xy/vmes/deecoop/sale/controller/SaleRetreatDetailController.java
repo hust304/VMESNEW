@@ -1,6 +1,7 @@
 package com.xy.vmes.deecoop.sale.controller;
 
 import com.xy.vmes.service.SaleRetreatDetailByEditService;
+import com.xy.vmes.service.SaleRetreatDetailOnInService;
 import com.xy.vmes.service.SaleRetreatDetailService;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
@@ -29,6 +30,8 @@ public class SaleRetreatDetailController {
     private SaleRetreatDetailService saleRetreatDetailService;
     @Autowired
     private SaleRetreatDetailByEditService saleRetreatDetailByEditService;
+    @Autowired
+    private SaleRetreatDetailOnInService retreatDetailOnInService;
 
     /**
     * @author 陈刚 自动创建，可以修改
@@ -54,6 +57,18 @@ public class SaleRetreatDetailController {
         ResultModel model = saleRetreatDetailByEditService.listPageRetreatDetailByEdit(pd);
         Long endTime = System.currentTimeMillis();
         logger.info("################/sale/saleRetreatDetail/listPageRetreatDetailByEdit 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    //获取销售退货明细-根据入库单id
+    @PostMapping("/sale/saleRetreatDetail/listPageSaleRetreatDetailByIn")
+    public ResultModel listPageSaleRetreatDetailByIn() throws Exception {
+        logger.info("################/sale/saleRetreatDetail/listPageSaleRetreatDetailByIn 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = retreatDetailOnInService.listPageRetreatDetailByIn(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleRetreatDetail/listPageSaleRetreatDetailByIn 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
