@@ -12,8 +12,9 @@ import java.util.Map;
  * 创建人：陈刚
  * 创建时间：2019-08-28
  */
-public interface EquipmentRepairTaskDetailOnOutService {
-    List<Map> findRepairTaskDetailOnOutDetail(PageData pd, Pagination pg) throws Exception;
+public interface EquipmentRepairTaskDetailOnInOutService {
+    List<Map> findRepairTaskDetailOnInOutDetail(PageData pd, Pagination pg) throws Exception;
 
     ResultModel listPageRepairTaskDetailByOut(PageData pd) throws Exception;
+    ResultModel listPageRepairTaskDetailByIn(PageData pd) throws Exception;
 }

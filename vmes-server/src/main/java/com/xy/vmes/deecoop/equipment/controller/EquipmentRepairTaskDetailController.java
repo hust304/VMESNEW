@@ -40,7 +40,7 @@ public class EquipmentRepairTaskDetailController {
     @Autowired
     private EquipmentRepairTaskOutDetailService repairTaskOutDetailService;
     @Autowired
-    private EquipmentRepairTaskDetailOnOutService repairTaskDetailOnOutService;
+    private EquipmentRepairTaskDetailOnInOutService repairTaskDetailOnInOutService;
 
     @Autowired
     private WarehouseService warehouseService;
@@ -75,9 +75,21 @@ public class EquipmentRepairTaskDetailController {
         logger.info("################/equipment/equipmentRepairTaskDetail/listPageRepairTaskDetailByOut 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         PageData pd = HttpUtils.parsePageData();
-        ResultModel model = repairTaskDetailOnOutService.listPageRepairTaskDetailByOut(pd);
+        ResultModel model = repairTaskDetailOnInOutService.listPageRepairTaskDetailByOut(pd);
         Long endTime = System.currentTimeMillis();
         logger.info("################/equipment/equipmentRepairTaskDetail/listPageRepairTaskDetailByOut 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    //根据入库单id-获取维修保养任务明细
+    @PostMapping("/equipment/equipmentRepairTaskDetail/listPageRepairTaskDetailByIn")
+    public ResultModel listPageRepairTaskDetailByIn() throws Exception {
+        logger.info("################/equipment/equipmentRepairTaskDetail/listPageRepairTaskDetailByIn 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = repairTaskDetailOnInOutService.listPageRepairTaskDetailByIn(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/equipment/equipmentRepairTaskDetail/listPageRepairTaskDetailByIn 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 

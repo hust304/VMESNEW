@@ -15,7 +15,7 @@ import java.util.Map;
  */
 @Mapper
 @Repository
-public interface EquipmentRepairTaskDetailOnOutMapper {
-    List<Map> findRepairTaskDetailOnOutDetail(PageData pd, Pagination pg);
-    List<Map> findRepairTaskDetailOnOutDetail(PageData pd);
+public interface EquipmentRepairTaskDetailOnInOutMapper {
+    List<Map> findRepairTaskDetailOnInOutDetail(PageData pd, Pagination pg);
+    List<Map> findRepairTaskDetailOnInOutDetail(PageData pd);
 }
