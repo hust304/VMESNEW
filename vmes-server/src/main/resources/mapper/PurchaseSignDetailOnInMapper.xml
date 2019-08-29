@@ -54,7 +54,7 @@
             signDtl.in_detail_id inDetailId,
             signDtl.product_id productId,
 
-            signDtl.arrive_count arriveCount,
+            round(ifnull(signDtl.arrive_count, 0), 2) arriveCount,
             signDtl.cuser cuser,
             signDtl.cdate cdate,
             signDtl.uuser uuser,

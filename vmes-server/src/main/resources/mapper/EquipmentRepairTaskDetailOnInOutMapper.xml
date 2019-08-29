@@ -45,6 +45,17 @@
         (replace(uuid(), '-', ''), 'equipmentRepairTaskDetailOnInOutDetail', 'productGenreName', '货品属性', 24, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
         (replace(uuid(), '-', ''), 'equipmentRepairTaskDetailOnInOutDetail', 'productUnitName', '单位', 25, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
 
+        (replace(uuid(), '-', ''),'equipmentRepairTaskDetailOnInOutDetail','repairUser','维修人id',26, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'equipmentRepairTaskDetailOnInOutDetail','repairUserCode','维修人账号',27, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'equipmentRepairTaskDetailOnInOutDetail','repairUserName','维修人',28, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'equipmentRepairTaskDetailOnInOutDetail','taskResult','执行结果id',29, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'equipmentRepairTaskDetailOnInOutDetail','taskResultName','执行结果',29, '1','1','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'equipmentRepairTaskDetailOnInOutDetail','beginTime','任务开始时间',30, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'equipmentRepairTaskDetailOnInOutDetail','beginTimeStr','任务开始时间',30, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'equipmentRepairTaskDetailOnInOutDetail','endTime','任务结束时间',31, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'equipmentRepairTaskDetailOnInOutDetail','endTimeStr','任务结束时间',31, '1','1','1','0',now(), 'admin'),
+
     </insert>
 
     <select id="findRepairTaskDetailOnInOutDetail" parameterType="com.yvan.PageData" resultType="java.util.Map">
@@ -73,6 +84,21 @@
             taskDtl.isdisable isdisable,
 
             repair.sys_code sysCode,
+            task.repair_user repairUser,
+            repairUser.user_code repairUserCode,
+            repairUser.user_name repairUserName,
+
+            task.begin_time beginTime,
+            DATE_FORMAT(task.begin_time,'%Y-%m-%d %T') beginTimeStr,
+            task.end_time endTime,
+            DATE_FORMAT(task.end_time,'%Y-%m-%d %T') endTimeStr,
+
+            task.task_result taskResult,
+            CASE
+                WHEN task.task_result = '0' THEN '未解决'
+                WHEN task.task_result = '1' THEN '已解决'
+            ELSE null
+            END taskResultName,
 
             <!--货品信息(备件)-->
             product.code productCode,
@@ -84,6 +110,7 @@
 
         from vmes_equipment_repairTask_detail taskDtl
             left join vmes_equipment_repairTask task on taskDtl.task_id = task.id
+            left join vmes_user repairUser on task.repair_user = repairUser.id
             left join vmes_equipment_repair repair on task.repair_id = repair.id
 
             left join vmes_product product on taskDtl.product_id = product.id
