@@ -1,5 +1,6 @@
 package com.xy.vmes.deecoop.purchase.controller;
 
+import com.xy.vmes.service.PurchaseSignDetailOnInService;
 import com.xy.vmes.service.PurchaseSignDetailService;
 import com.xy.vmes.entity.PurchaseSignDetail;
 
@@ -29,6 +30,8 @@ public class PurchaseSignDetailController {
 
     @Autowired
     private PurchaseSignDetailService purchaseSignDetailService;
+    @Autowired
+    private PurchaseSignDetailOnInService signDetailOnInService;
 
     /**
     * @author 刘威 自动创建，禁止修改
@@ -124,6 +127,17 @@ public class PurchaseSignDetailController {
         return model;
     }
 
+    //获取采购签收单明细-根据入库单id
+    @PostMapping("/purchase/purchaseSignDetail/listPagePurchaseSignDetailByIn")
+    public ResultModel listPagePurchaseSignDetailByIn() throws Exception {
+        logger.info("################/purchase/purchaseSignDetail/listPagePurchaseSignDetailByIn 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = signDetailOnInService.listPagePurchaseSignDetailByIn(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/purchase/purchaseSignDetail/listPagePurchaseSignDetailByIn 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
 
     /**
     * Excel导出

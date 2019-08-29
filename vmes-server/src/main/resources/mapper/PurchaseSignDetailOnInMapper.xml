@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+说明：采购签收明细关联入库明细 Mapper.xml
+创建人：陈刚
+创建时间：2019-08-29
+ -->
+<mapper namespace="com.xy.vmes.deecoop.purchase.dao.PurchaseSignDetailOnInMapper">
+    <insert id="purchaseSignDetailOnInDetail" >
+    delete from vmes_column where model_code = 'purchaseSignDetailOnInDetail';
+    insert into vmes_column (
+    id,model_code,title_key,title_name,serial_number,
+    isdisable,ishide,isedit,ismust,cdate,
+    cuser
+    ) VALUES
+        (replace(uuid(), '-', ''),'purchaseSignDetailOnInDetail','id','id',0, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'purchaseSignDetailOnInDetail','parentId','采购签收单ID',1, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'purchaseSignDetailOnInDetail','orderDetailId','采购订单明细ID',2, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'purchaseSignDetailOnInDetail','inDetailId','入库单明细id',3, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'purchaseSignDetailOnInDetail','productId','产品ID',4, '1','0','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'purchaseSignDetailOnInDetail','arriveCount','到货数量',5, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'purchaseSignDetailOnInDetail','cuser','创建用户id',6, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'purchaseSignDetailOnInDetail','cdate','创建时间',7, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'purchaseSignDetailOnInDetail','uuser','修改用户id',8, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'purchaseSignDetailOnInDetail','udate','修改时间',9, '1','0','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'purchaseSignDetailOnInDetail','remark','备注',10, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'purchaseSignDetailOnInDetail','isdisable','是否启用(0:已禁用 1:启用)',11, '1','0','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'purchaseSignDetailOnInDetail','signName','签收人',12, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'purchaseSignDetailOnInDetail','signDateTiemStr','签收时间',13, '1','1','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'purchaseSignDetailOnInDetail','orderCode','采购单号',14, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'purchaseSignDetailOnInDetail','supplierId','供应商id',15, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'purchaseSignDetailOnInDetail','supplierCode','供应商编号',16, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'purchaseSignDetailOnInDetail','supplierName','供应商名称',17, '1','1','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''), 'purchaseSignDetailOnInDetail', 'productCode', '货品编码', 18, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'purchaseSignDetailOnInDetail', 'productName', '货品名称', 19, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'purchaseSignDetailOnInDetail', 'productSpec', '规格型号', 20, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'purchaseSignDetailOnInDetail', 'productGenre', '货品属性id', 21, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'purchaseSignDetailOnInDetail', 'productGenreName', '货品属性', 22, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'purchaseSignDetailOnInDetail', 'productUnit', '单位id', 23, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'purchaseSignDetailOnInDetail', 'productUnitName', '单位', 24, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+
+    </insert>
+
+    <select id="findPurchaseSignDetailOnInDetail" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+            signDtl.id id,
+            signDtl.parent_id parentId,
+            signDtl.order_detail_id orderDetailId,
+            signDtl.in_detail_id inDetailId,
+            signDtl.product_id productId,
+
+            signDtl.arrive_count arriveCount,
+            signDtl.cuser cuser,
+            signDtl.cdate cdate,
+            signDtl.uuser uuser,
+            signDtl.udate udate,
+
+            signDtl.remark remark,
+            signDtl.isdisable isdisable,
+
+            signUser.user_name signName,
+            DATE_FORMAT(sign.sdate,'%Y-%m-%d %T') signDateTiemStr,
+
+            purchaseOrder.code orderCode,
+            purchaseOrder.supplier_id supplierId,
+            supplier.code supplierCode,
+            supplier.name supplierName,
+
+            <!--货品表-->
+            product.code productCode,
+            product.name productName,
+            product.spec productSpec,
+            product.genre productGenre,
+            genre.name productGenreName,
+            prodUnit.unit productUnit,
+            prodUnitName.name productUnitName
+
+        from vmes_purchase_sign_detail signDtl
+            left join vmes_purchase_sign sign on signDtl.parent_id = sign.id
+            left join vmes_user signUser on sign.sign_id = signUser.id
+
+            left join vmes_purchase_order purchaseOrder on sign.order_id = purchaseOrder.id
+            left join vmes_customer supplier on purchaseOrder.supplier_id = supplier.id
+
+            left join vmes_product product on signDtl.product_id = product.id
+            left join vmes_dictionary genre on product.genre = genre.id
+
+            <!--货品计量单位 type:单位类型 (1:计量单位 0:计价单位)-->
+            left join vmes_product_unit prodUnit on (signDtl.product_id = prodUnit.product_id and prodUnit.type = '1')
+            left join vmes_dictionary prodUnitName on prodUnit.unit = prodUnitName.id
+
+        <where>
+            <!--入库单id-->
+            <if test="inParentId != null and inParentId != ''" >
+                and signDtl.in_detail_id in (
+                select id from vmes_warehouse_in_detail
+                where parent_id = #{inParentId}
+                )
+            </if>
+
+        </where>
+
+        <if test="orderStr != null and orderStr != ''" >
+            order by ${orderStr}
+        </if>
+
+    </select>
+
+</mapper>
