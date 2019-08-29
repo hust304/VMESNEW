@@ -1,4 +1,4 @@
-package com.xy.vmes.deecoop.sale.service;
+package com.xy.vmes.deecoop.purchase.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
