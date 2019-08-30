@@ -410,28 +410,29 @@ public class WarehouseInitialController {
         WarehouseInitial warehouseInitial = null;
         try {
             model = warehouseInitialService.importExcelWarehouseInitial(file);
+            if (model != null && model.getCode() != null && 0 == ((Integer)model.getCode()).intValue()) {
+                PageData findMap = new PageData();
+                findMap.put("companyId", companyId);
+                findMap.put("warehouseAttribute", warehouseGenre);
+                findMap.put("mapSize", Integer.valueOf(findMap.size()));
+                warehouseInitial = warehouseInitialService.findWarehouseInitial(findMap);
 
-            PageData findMap = new PageData();
-            findMap.put("companyId", companyId);
-            findMap.put("warehouseAttribute", warehouseGenre);
-            findMap.put("mapSize", Integer.valueOf(findMap.size()));
-            warehouseInitial = warehouseInitialService.findWarehouseInitial(findMap);
+                //是否禁用按钮(0:已禁用 1:启用) (0和1字符串,初始化按钮,导入按钮,禁用初始化按钮)
+                //0和1字符串 第一位:初始化按钮 第二位:导入按钮 第三位:禁用初始化按钮
+                String isDisableButton = "101";
 
-            //是否禁用按钮(0:已禁用 1:启用) (0和1字符串,初始化按钮,导入按钮,禁用初始化按钮)
-            //0和1字符串 第一位:初始化按钮 第二位:导入按钮 第三位:禁用初始化按钮
-            String isDisableButton = "101";
-
-            if (warehouseInitial == null) {
-                WarehouseInitial addObject = new WarehouseInitial();
-                addObject.setCuser(userId);
-                addObject.setCompanyId(companyId);
-                addObject.setIsDisableButton(isDisableButton);
-                //warehouseAttribute 仓库属性(warehouse:(简版,复杂版)仓库 spare:备件库)
-                addObject.setWarehouseAttribute(warehouseGenre);
-                warehouseInitialService.save(addObject);
-            } else if (warehouseInitial != null) {
-                warehouseInitial.setIsDisableButton(isDisableButton);
-                warehouseInitialService.update(warehouseInitial);
+                if (warehouseInitial == null) {
+                    WarehouseInitial addObject = new WarehouseInitial();
+                    addObject.setCuser(userId);
+                    addObject.setCompanyId(companyId);
+                    addObject.setIsDisableButton(isDisableButton);
+                    //warehouseAttribute 仓库属性(warehouse:(简版,复杂版)仓库 spare:备件库)
+                    addObject.setWarehouseAttribute(warehouseGenre);
+                    warehouseInitialService.save(addObject);
+                } else if (warehouseInitial != null) {
+                    warehouseInitial.setIsDisableButton(isDisableButton);
+                    warehouseInitialService.update(warehouseInitial);
+                }
             }
 
         } catch (Exception e) {
