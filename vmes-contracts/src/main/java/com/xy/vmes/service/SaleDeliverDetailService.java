@@ -134,9 +134,24 @@ public interface SaleDeliverDetailService {
      */
     Map<String, Map<String, Object>> findProductMapByOut(List<SaleOrderDetailEntity> orderDtlList);
 
+    /**
+     * 返回货品出库Map
+     * 业务货品出库Map<业务单id, 货品Map<String, Object>> 业务单id-业务明细id (订单明细id,发货单明细id)
+     * 货品Map<String, Object>
+     *     productId: 货品id
+     *     outDtlId:  出库明细id
+     *     outCount:  出库数量
+     *
+     * @param orderDtlList
+     * @return
+     */
+    Map<String, Map<String, Object>> findProductBusinessMapByOut(List<SaleOrderDetailEntity> orderDtlList);
+
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     BigDecimal findTotalSumByDetailList(List<SaleDeliverDetail> objectList);
-    void addDeliverDetail(SaleDeliver parentObj, List<SaleDeliverDetail> detailList, Map<String, Map<String, Object>> productByOutMap) throws Exception;
+    //void addDeliverDetail(SaleDeliver parentObj, List<SaleDeliverDetail> detailList, Map<String, Map<String, Object>> productByOutMap) throws Exception;
+    void addDeliverDetailByBusinessMap(SaleDeliver parentObj, List<SaleDeliverDetail> detailList, Map<String, Map<String, Object>> productBusinessByOutMap) throws Exception;
+
     void updateStateByDetail(String state, String parentIds) throws Exception;
 
     /**

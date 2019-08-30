@@ -409,10 +409,10 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
         String customerId = mapList.get(0).get("customerId");
         String customerName = mapList.get(0).get("customerName");
 
-        Map<String, Map<String, Object>> productByOutMap = saleDeliverDetailService.findProductMapByOut(orderDtlList);
+        Map<String, Map<String, Object>> businessByOutMap = saleDeliverDetailService.findProductBusinessMapByOut(orderDtlList);
         if (Common.SYS_WAREHOUSE_COMPLEX.equals(warehouse)) {
             //复杂版仓库:warehouseByComplex:Common.SYS_WAREHOUSE_COMPLEX
-            warehouseOutCreateService.createWarehouseOutByComplex(customerId,
+            warehouseOutCreateService.createWarehouseOutBusinessByComplex(customerId,
                     customerName,
                     //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
                     Common.DICTIONARY_MAP.get("warehouseEntity"),
@@ -420,10 +420,10 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
                     companyId,
                     //9459be975cd94ada8443cdf32f52c2be 销售发货出库:saleOut
                     Common.DICTIONARY_MAP.get("saleOut"),
-                    productByOutMap);
+                    businessByOutMap);
         } else if (Common.SYS_WAREHOUSE_SIMPLE.equals(warehouse)) {
             //简版仓库:warehouseBySimple:Common.SYS_WAREHOUSE_SIMPLE
-            warehouseOutCreateService.createWarehouseOutBySimple(customerId,
+            warehouseOutCreateService.createWarehouseOutBusinessBySimple(customerId,
                     customerName,
                     //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
                     Common.DICTIONARY_MAP.get("warehouseEntity"),
@@ -431,7 +431,7 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
                     companyId,
                     //9459be975cd94ada8443cdf32f52c2be 销售发货出库:saleOut
                     Common.DICTIONARY_MAP.get("saleOut"),
-                    productByOutMap);
+                    businessByOutMap);
         }
 
         //2. 创建发货单
@@ -450,7 +450,7 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
         saleDeliver.setCuser(cuser);
 
         List<SaleDeliverDetail> deliverDtlList = saleOrderDetailService.orderDtlList2DeliverDtllList(orderDtlList, null);
-        saleDeliverDetailService.addDeliverDetail(saleDeliver, deliverDtlList, productByOutMap);
+        saleDeliverDetailService.addDeliverDetailByBusinessMap(saleDeliver, deliverDtlList, businessByOutMap);
 
         BigDecimal totalSum = saleDeliverDetailService.findTotalSumByDetailList(deliverDtlList);
         saleDeliver.setTotalSum(totalSum);

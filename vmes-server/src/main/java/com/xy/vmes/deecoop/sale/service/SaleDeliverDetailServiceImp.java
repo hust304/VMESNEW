@@ -305,6 +305,45 @@ public class SaleDeliverDetailServiceImp implements SaleDeliverDetailService {
         return productByOutMap;
     }
 
+    /**
+     * 返回货品出库Map
+     * 业务货品出库Map<业务单id, 货品Map<String, Object>> 业务单id-业务明细id (订单明细id,发货单明细id)
+     * 货品Map<String, Object>
+     *     productId: 货品id
+     *     outDtlId:  出库明细id
+     *     outCount:  出库数量
+     *
+     * @param dtlEntityList
+     * @return
+     */
+    public Map<String, Map<String, Object>> findProductBusinessMapByOut(List<SaleOrderDetailEntity> dtlEntityList) {
+        Map<String, Map<String, Object>> prodBusinessByOutMap = new HashMap<String, Map<String, Object>>();
+        if (dtlEntityList == null || dtlEntityList.size() == 0) {return prodBusinessByOutMap;}
+
+        for (SaleOrderDetailEntity dtlObject : dtlEntityList) {
+            //id:销售订单明细id
+            String id = dtlObject.getId();
+            String productId = dtlObject.getProductId();
+
+            //productCount:货品数量(计量数量) := outCount 出库数量
+            BigDecimal productCount = BigDecimal.valueOf(0D);
+            if (dtlObject.getProductCount() != null) {
+                productCount = dtlObject.getProductCount();
+            }
+            //四舍五入到2位小数
+            productCount = productCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+
+            Map<String, Object> productMap = new HashMap<String, Object>();
+            productMap.put("productId", productId);
+            productMap.put("outDtlId", null);
+            productMap.put("outCount", productCount);
+
+            prodBusinessByOutMap.put(id, productMap);
+        }
+
+        return prodBusinessByOutMap;
+    }
+
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public BigDecimal findTotalSumByDetailList(List<SaleDeliverDetail> objectList) {
         double totalSum_double = 0D;
@@ -330,7 +369,40 @@ public class SaleDeliverDetailServiceImp implements SaleDeliverDetailService {
         return BigDecimal.valueOf(totalSum_double).setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
     }
 
-    public void addDeliverDetail(SaleDeliver parentObj, List<SaleDeliverDetail> detailList, Map<String, Map<String, Object>> productByOutMap) throws Exception {
+//    public void addDeliverDetail(SaleDeliver parentObj, List<SaleDeliverDetail> detailList, Map<String, Map<String, Object>> productByOutMap) throws Exception {
+//        if (parentObj == null) {return;}
+//        if (detailList == null || detailList.size() == 0) {return;}
+//
+//        for (SaleDeliverDetail detail : detailList) {
+//            //state:状态(0:待发货 1:已发货 -1:已取消)
+//            detail.setState("0");
+//            detail.setParentId(parentObj.getId());
+//            detail.setCuser(parentObj.getCuser());
+//
+//            //productId 货品id
+//            String productId = detail.getProductId();
+//            if (productByOutMap != null && productByOutMap.get(productId) != null) {
+//                Map<String, Object> productMap = productByOutMap.get(productId);
+//                //outDtlId:  出库明细id
+//                String outDtlId = new String();
+//                if (productMap != null && productMap.get("outDtlId") != null) {
+//                    outDtlId = (String)productMap.get("outDtlId");
+//                }
+//                detail.setOutDetailId(outDtlId);
+//            }
+//
+//            //priceType 计价类型(1:先计价 2:后计价)
+//            if ("2".equals(parentObj.getPriceType())) {
+//                detail.setPriceUnit(null);
+//                detail.setPriceCount(BigDecimal.valueOf(0D));
+//                detail.setProductPrice(BigDecimal.valueOf(0D));
+//                detail.setSum(BigDecimal.valueOf(0D));
+//            }
+//
+//            this.save(detail);
+//        }
+//    }
+    public void addDeliverDetailByBusinessMap(SaleDeliver parentObj, List<SaleDeliverDetail> detailList, Map<String, Map<String, Object>> productBusinessByOutMap) throws Exception {
         if (parentObj == null) {return;}
         if (detailList == null || detailList.size() == 0) {return;}
 
@@ -342,8 +414,12 @@ public class SaleDeliverDetailServiceImp implements SaleDeliverDetailService {
 
             //productId 货品id
             String productId = detail.getProductId();
-            if (productByOutMap != null && productByOutMap.get(productId) != null) {
-                Map<String, Object> productMap = productByOutMap.get(productId);
+
+            //orderDetaiId 订单明细ID
+            String orderDetaiId = detail.getOrderDetaiId();
+
+            if (productBusinessByOutMap != null && productBusinessByOutMap.get(orderDetaiId) != null) {
+                Map<String, Object> productMap = productBusinessByOutMap.get(orderDetaiId);
                 //outDtlId:  出库明细id
                 String outDtlId = new String();
                 if (productMap != null && productMap.get("outDtlId") != null) {
