@@ -35,6 +35,31 @@ public interface WarehouseOutCreateService {
                                      String companyId,
                                      String outType,
                                      Map<String, Map<String, Object>> productByOutMap) throws Exception;
+    /**
+     * 创建出库单(复杂版仓库)
+     *
+     * @param deptId           (部门,供应商,客户)id
+     * @param deptName         (部门,供应商,客户)名称
+     * @param warehouseId      仓库id
+     * @param cuser            用户id
+     * @param companyId        企业id
+     * @param outType          出库类型id
+     * @param businessByOutMap 业务货品出库Map<货品id, 货品Map>
+     *
+     * 业务货品出库Map<业务单id, 货品Map<String, Object>> 业务单id-业务明细id (订单明细id,发货单明细id)
+     * 货品Map<String, Object>
+     *     productId: 货品id
+     *     outDtlId:  出库明细id
+     *     outCount:  出库数量
+     */
+    void createWarehouseOutBusinessByComplex(String deptId,
+                                             String deptName,
+                                             String warehouseId,
+                                             String cuser,
+                                             String companyId,
+                                             String outType,
+                                             Map<String, Map<String, Object>> businessByOutMap) throws Exception;
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * 创建出库单(简版仓库)
@@ -60,6 +85,31 @@ public interface WarehouseOutCreateService {
                                     String companyId,
                                     String outType,
                                     Map<String, Map<String, Object>> productByOutMap) throws Exception;
+    /**
+     * 创建出库单(简版仓库)
+     *
+     * @param deptId          (部门,供应商,客户)id
+     * @param deptName        (部门,供应商,客户)名称
+     * @param warehouseId     仓库id
+     * @param cuser           用户id
+     * @param companyId       企业id
+     * @param outType         出库类型id
+     * @param businessByOutMap 业务货品出库Map<货品id, 货品Map>
+     *
+     * 业务货品出库Map<业务单id, 货品Map<String, Object>> 业务单id-业务明细id (订单明细id,发货单明细id)
+     * 货品Map<String, Object>
+     *     productId: 货品id
+     *     outDtlId:  出库明细id
+     *     outCount:  出库数量
+     */
+     void createWarehouseOutBusinessBySimple(String deptId,
+                                             String deptName,
+                                             String warehouseId,
+                                             String cuser,
+                                             String companyId,
+                                             String outType,
+                                             Map<String, Map<String, Object>> businessByOutMap) throws Exception;
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * 创建出库单(备件库)
@@ -85,6 +135,31 @@ public interface WarehouseOutCreateService {
                                      String companyId,
                                      String outType,
                                      Map<String, Map<String, Object>> productByOutMap) throws Exception;
+    /**
+     * 创建出库单(备件库)
+     *
+     * @param deptId          (部门,供应商,客户)id
+     * @param deptName        (部门,供应商,客户)名称
+     * @param warehouseId     仓库id(备件库id)
+     * @param cuser           用户id
+     * @param companyId       企业id
+     * @param outType         出库类型id
+     * @param businessByOutMap 业务货品出库Map<货品id, 货品Map>
+     *
+     * 业务货品出库Map<业务单id, 货品Map<String, Object>> 业务单id-业务明细id (订单明细id,发货单明细id)
+     * 货品Map<String, Object>
+     *     productId: 货品id
+     *     outDtlId:  出库明细id
+     *     outCount:  出库数量
+     */
+    void createWarehouseOutBusinessByBySpare(String deptId,
+                                             String deptName,
+                                             String warehouseId,
+                                             String cuser,
+                                             String companyId,
+                                             String outType,
+                                             Map<String, Map<String, Object>> businessByOutMap) throws Exception;
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * 创建出库单(虚拟库)-与简版出库单类似
@@ -110,4 +185,28 @@ public interface WarehouseOutCreateService {
                                      String companyId,
                                      String outType,
                                      Map<String, Map<String, Object>> productByOutMap) throws Exception;
+    /**
+     * 创建出库单(虚拟库)-与简版出库单类似
+     *
+     * @param deptId           (部门,供应商,客户)id
+     * @param deptName         (部门,供应商,客户)名称
+     * @param deptPlaceKey     部门库位key
+     * @param cuser            用户id
+     * @param companyId        企业id
+     * @param outType          出库类型id
+     * @param businessByOutMap 业务货品出库Map<货品id, 货品Map>
+     *
+     * 业务货品出库Map<业务单id, 货品Map<String, Object>> 业务单id-业务明细id (订单明细id,发货单明细id)
+     * 货品Map<String, Object>
+     *     productId: 货品id
+     *     outDtlId:  出库明细id
+     *     outCount:  出库数量
+     */
+    void createWarehouseOutBusinessByVirtual(String deptId,
+                                             String deptName,
+                                             String deptPlaceKey,
+                                             String cuser,
+                                             String companyId,
+                                             String outType,
+                                             Map<String, Map<String, Object>> businessByOutMap) throws Exception;
 }
