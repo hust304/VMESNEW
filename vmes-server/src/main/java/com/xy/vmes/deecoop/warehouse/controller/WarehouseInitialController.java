@@ -410,7 +410,7 @@ public class WarehouseInitialController {
         WarehouseInitial warehouseInitial = null;
         try {
             model = warehouseInitialService.importExcelWarehouseInitial(file);
-            if (model != null && model.getCode() != null && 0 == ((Integer)model.getCode()).intValue()) {
+            if (model != null && model.get("code") != null && 0 == ((Integer)model.get("code")).intValue()) {
                 PageData findMap = new PageData();
                 findMap.put("companyId", companyId);
                 findMap.put("warehouseAttribute", warehouseGenre);
