@@ -560,7 +560,7 @@ public class SaleOrderByChangeServiceImp implements SaleOrderByChangeService {
                 pageData.put("id", outDtlId);
                 pageData.put("cuser", cuser);
                 pageData.put("currentCompanyId", companyId);
-                pageData.put("rebackBillReason", "rebackBillReason");
+                pageData.put("rebackBillReason", remark);
                 warehouseOutDetailService.rebackWarehouseOutDetail(pageData);
 
                 WarehouseOutDetail outDetail = new WarehouseOutDetail();
