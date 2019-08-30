@@ -24,7 +24,7 @@
             <!--checkCount:=(发货数量-退货数量)-->
             round((ifnull(deliverOrderDtl.orderCount, 0) - ifnull(retreatOrderDtl.orderCount, 0)), 2) checkCount,
             <!--checkSum:=(发货金额-退货金额)-->
-            round((ifnull(deliverOrderDtl.orderSum, 0) - ifnull(retreatOrderDtl.orderCount, 0)*ifnull(orderDetail.product_price, 0)), 2) checkSum
+            round((ifnull(deliverOrderDtl.orderSum, 0) - ifnull(retreatOrderDtl.orderSum, 0)), 2) checkSum
 
         from vmes_sale_order_detail orderDetail
             left join (
@@ -75,7 +75,7 @@
             <!--checkCount:=(发货数量-退货数量)-->
             round((ifnull(deliverOrderDtl.orderCount, 0) - ifnull(retreatOrderDtl.orderCount, 0)), 2) checkCount,
             <!--checkSum:=(发货金额-退货金额)-->
-            round((ifnull(deliverOrderDtl.orderSum, 0) - ifnull(retreatOrderDtl.orderCount, 0)*ifnull(orderDtl.product_price,0)), 2) checkSum
+            round((ifnull(deliverOrderDtl.orderSum, 0) - ifnull(retreatOrderDtl.orderSum, 0)), 2) checkSum
         from (
             select order_detai_id
             from vmes_sale_deliver_detail
