@@ -99,6 +99,9 @@
             <if test="parentId != null and parentId != ''" >
                 and orderDtl.parent_id = #{parentId}
             </if>
+            <if test="orderDtlId != null and orderDtlId != ''" >
+                and orderDtl.id = #{orderDtlId}
+            </if>
             <if test="queryState != null and queryState != ''" >
                 and orderDtl.state in (${queryState})
             </if>

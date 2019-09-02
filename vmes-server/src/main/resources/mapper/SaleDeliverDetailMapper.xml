@@ -187,8 +187,16 @@
             <if test="orderId != null and orderId != ''" >
                 and order_id = #{orderId}
             </if>
+            <if test="orderDtlId != null and orderDtlId != ''" >
+                and order_detai_id = #{orderDtlId}
+            </if>
+
             <if test="state != null and state != ''" >
                 and state = #{state}
+            </if>
+            <!--查询结果集(不需要 发货状态:-1) 发货状态(0:待发货 1:已发货 -1:已取消)-->
+            <if test="'true' == isNotNeed_dtlState_cancel">
+                <![CDATA[and state <> '-1' ]]>
             </if>
 
             <!--queryStr 自定义sql查询语句-->
