@@ -2,16 +2,13 @@ package com.xy.vmes.deecoop.sale.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
+import com.xy.vmes.service.*;
 import com.yvan.common.util.Common;
 import com.xy.vmes.common.util.EvaluateUtil;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.sale.dao.SaleDeliverDetailMapper;
 import com.xy.vmes.entity.*;
 import com.xy.vmes.exception.ApplicationException;
-import com.xy.vmes.service.ColumnService;
-import com.xy.vmes.service.SaleDeliverDetailService;
-import com.xy.vmes.service.SaleDeliverService;
-import com.xy.vmes.service.WarehouseOutDetailService;
 import com.yvan.*;
 import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
@@ -40,8 +37,15 @@ public class SaleDeliverDetailServiceImp implements SaleDeliverDetailService {
     @Autowired
     private SaleDeliverDetailMapper saleDeliverDetailMapper;
     @Autowired
-    private WarehouseOutDetailService warehouseOutDetailService;
+    private SaleDeliverDetailByCollectService saleDeliverDetailByCollectService;
 
+    @Autowired
+    private SaleOrderService saleOrderService;
+    @Autowired
+    private SaleOrderDetailService saleOrderDetailService;
+
+    @Autowired
+    private WarehouseOutDetailService warehouseOutDetailService;
     @Autowired
     private ColumnService columnService;
 
@@ -798,6 +802,67 @@ public class SaleDeliverDetailServiceImp implements SaleDeliverDetailService {
         saleDeliver.setId(deliverId);
         saleDeliver.setTotalSum(totalSum);
         saleDeliverService.update(saleDeliver);
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //3. 销售订单明细(计价单位,货品金额,货品单价)
+        Map<String, String> orderIdMap = new HashMap<String, String>();
+        for (SaleDeliverDetail deliverDetail : deliverDtlList) {
+            String orderId = deliverDetail.getOrderId();
+            orderIdMap.put(orderId, orderId);
+
+            SaleOrderDetail orderDetail = new SaleOrderDetail();
+            String orderDetaiId = deliverDetail.getOrderDetaiId();
+            orderDetail.setId(orderDetaiId);
+
+            //计价单位id priceUnit --> 发货单明细:priceUnit 计价单位id
+            orderDetail.setPriceUnit(deliverDetail.getPriceUnit());
+
+            //订单明细货品金额 productSum --> 发货单明细:sum 结算金额
+            BigDecimal productSum = BigDecimal.valueOf(0D);
+            if (deliverDetail.getSum() != null) {
+                productSum = deliverDetail.getSum();
+                //四舍五入到2位小数
+                productSum = productSum.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+            }
+            orderDetail.setProductSum(productSum);
+
+            //货品单价 productPrice --> 发货单明细:productPrice 结算单价
+            BigDecimal productPrice = BigDecimal.valueOf(0D);
+            if (deliverDetail.getProductPrice() != null) {
+                productPrice = deliverDetail.getProductPrice();
+                //四舍五入到2位小数
+                productPrice = productPrice.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+            }
+            orderDetail.setProductPrice(productPrice);
+
+            saleOrderDetailService.update(orderDetail);
+        }
+
+        //4. 反写订单金额
+        if (orderIdMap.size() > 0) {
+            for (Iterator iterator = orderIdMap.keySet().iterator(); iterator.hasNext();) {
+                String orderId = (String)iterator.next();
+
+                SaleOrder orderDB = saleOrderService.findSaleOrderById(orderId);
+                List<SaleOrderDetail> detailList = saleOrderDetailService.findSaleOrderDetailListByParentId(orderId);
+
+                //price_type:计价类型(1:先计价 2:后计价)
+                if ("2".equals(orderDB.getPriceType())) {
+                    //totalSum 合计金额
+                    BigDecimal orderTotalSum = saleOrderDetailService.findTotalSumByPrice(detailList);
+
+                    SaleOrder editOrder = new SaleOrder();
+                    editOrder.setId(orderId);
+                    //四舍五入到2位小数
+                    orderTotalSum = orderTotalSum.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                    editOrder.setTotalSum(orderTotalSum);
+                    editOrder.setOrderSum(orderTotalSum);
+                    //discountSum 折扣金额
+                    editOrder.setDiscountSum(BigDecimal.valueOf(0D));
+                    saleOrderService.update(editOrder);
+                }
+            }
+        }
 
         return model;
     }
