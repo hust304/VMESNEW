@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+说明：(出库单明细id)关联查询(出库明细表,出库执行表) Mapper.xml
+创建人：陈刚
+创建时间：2019-09-02
+ -->
+<mapper namespace="com.xy.vmes.deecoop.warehouse.dao.WarehouseOutDetailExecuteMapper">
+
+    <select id="findOutDetailExecute" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+            outDetail.parent_id outParentId,
+            outDetail.id outDtlId,
+            round(ifnull(outDetail.count,0), 2) outDtlCount,
+            round(ifnull(outExecute.executeCount,0), 2) outDtlExecuteCount
+        from vmes_warehouse_out_detail outDetail
+        left join (
+            <!--出库任务结束时间 (出库明细id)出库执行表汇总-->
+            select detail_id, sum(count) executeCount
+            from vmes_warehouse_out_execute
+            group by detail_id
+        ) outExecute on outDetail.id = outExecute.detail_id
+
+        <where>
+            <if test="outDtlIds != null and outDtlIds != ''" >
+                and outDetail.id in (${outDtlIds})
+            </if>
+        </where>
+    </select>
+
+</mapper>
