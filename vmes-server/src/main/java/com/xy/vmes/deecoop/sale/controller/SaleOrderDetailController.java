@@ -1,10 +1,7 @@
 package com.xy.vmes.deecoop.sale.controller;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
-import com.xy.vmes.entity.Product;
-import com.xy.vmes.entity.SaleDeliverDetail;
-import com.xy.vmes.entity.SaleOrderDetail;
-import com.xy.vmes.entity.WarehouseOut;
+import com.xy.vmes.entity.*;
 import com.xy.vmes.service.*;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
@@ -40,6 +37,8 @@ public class SaleOrderDetailController {
     @Autowired
     private SaleOrderDetailByChangeService saleOrderDetailByChangeService;
 
+    @Autowired
+    private SaleDeliverService saleDeliverService;
     @Autowired
     private SaleDeliverDetailService saleDeliverDetailService;
 
@@ -209,8 +208,9 @@ public class SaleOrderDetailController {
      * 获取当前订单明细-不可做(订单变更)-对界面提示信息
      * 验证(订单明细id)-对应的出库单明细(出库数量, 出库执行数量)-比较(出库数量, 出库执行数量)
      *
-     * 不可做(订单变更)满足一下条件:
+     * 不可做(订单变更)满足以下条件:
      * 1. 出库单明细(出库已经执行 and 出库没有执行完成)
+     * 2. 出库单明细(出库执行完成 and 未执行退库操作) 退库: 发货管理-发货单列表-发货单明细-操作-退库
      *
      * @author 陈刚
      * @date 2019-03-05
@@ -266,6 +266,10 @@ public class SaleOrderDetailController {
                 //获取当前订单明细不可做(订单变更)-出库单明细id
                 // 出库单明细id-该出库单明细(出库数量,出库执行数量)比较-
                 List<String> outIdListByNotChange = new ArrayList<String>();
+
+                //获取出库单明细-出库执行完成
+                List<String> outDtlIdListByOutEnd = new ArrayList<String>();
+
                 for (String outDtlId : outDtlIdArry) {
                     Map<String, Object> outDtlExecuteMap = outDtlMap.get(outDtlId);
                     if (outDtlExecuteMap != null) {
@@ -284,16 +288,37 @@ public class SaleOrderDetailController {
                             if (outParentId != null && outParentId.trim().length() > 0) {
                                 outIdListByNotChange.add(outParentId);
                             }
+                        } else if (outDtlCount != null && outDtlExecuteCount != null
+                            && outDtlCount.doubleValue() > 0
+                            && outDtlExecuteCount.doubleValue() > 0
+                            && outDtlExecuteCount.doubleValue() >= outDtlCount.doubleValue()
+                        ) {
+                            //出库单明细id
+                            outDtlIdListByOutEnd.add(outDtlId);
                         }
                     }
                 }
 
                 //当前订单明细-不可做(订单变更)-对界面提示信息:
-                StringBuffer outNotChange = this.findOutMessageByOutIdList(outIdListByNotChange, productInfo);
-                if (outNotChange != null && outNotChange.toString().trim().length() > 0) {
-                    msgNotChangeOrder = "该订单明细已经开始执行出库，不可直接变更。" + Common.SYS_ENDLINE_DEFAULT
-                                        + "请将以下出库单信息执行完成后允许(订单变更)操作！" + Common.SYS_ENDLINE_DEFAULT
-                                        + " 出库信息：" + outNotChange.toString();
+                if (outIdListByNotChange.size() > 0) {
+                    StringBuffer outNotChange = this.findOutMessageByOutIdList(outIdListByNotChange, productInfo);
+                    if (outNotChange != null && outNotChange.toString().trim().length() > 0) {
+                        msgNotChangeOrder = "该订单明细已经开始执行出库，不可直接变更。" + Common.SYS_ENDLINE_DEFAULT
+                                            + "请将以下出库单信息执行完成后允许(订单变更)操作！" + Common.SYS_ENDLINE_DEFAULT
+                                            + " 出库信息：" + outNotChange.toString();
+                    }
+                }
+
+                if (outDtlIdListByOutEnd.size() > 0) {
+                    StringBuffer outNotChange = this.findDeliverMessageByOutDtlIdList(deliverDtlList,
+                            outDtlIdListByOutEnd,
+                            productInfo);
+                    if (outNotChange != null && outNotChange.toString().trim().length() > 0) {
+                        msgNotChangeOrder = "该订单明细发货单已经出库完成，不可直接变更。" + Common.SYS_ENDLINE_DEFAULT
+                                            + "请按以下发货单信息执行(退库)操作！" + Common.SYS_ENDLINE_DEFAULT
+                                            + " 发货信息：" + outNotChange.toString()
+                                            + " (发货管理-发货单列表-发货单明细-操作-退库)";
+                    }
                 }
             }
         }
@@ -343,6 +368,54 @@ public class SaleOrderDetailController {
                 if (outObject != null) {
                     String msgStr = MessageFormat.format(msgTemp,
                             outObject.getCode(),
+                            productInfo);
+                    msgBuf.append(msgStr);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return msgBuf;
+    }
+
+    //获取出库单明细(出库执行完成 and 未执行退库操作)-对应的发货单
+    //(出库单明细)查询发货单明细表(入库单明细id)--判断(入库单明细id)是否为空
+    private StringBuffer findDeliverMessageByOutDtlIdList(List<SaleDeliverDetail> deliverDtlList,
+                                                       List<String> outDtlIdList,
+                                                       String productInfo) {
+        StringBuffer msgBuf = new StringBuffer();
+        if (deliverDtlList == null || deliverDtlList.size() == 0) {return msgBuf;}
+        if (outDtlIdList == null || outDtlIdList.size() == 0) {return msgBuf;}
+
+        Map<String, String> deliverMap = new LinkedHashMap<String, String>();
+        for (String outDtlId : outDtlIdList) {
+            for (SaleDeliverDetail deliverDetail : deliverDtlList) {
+                //inDetailId 入库单明细id
+                String inDetailId = deliverDetail.getInDetailId();
+                if (inDetailId != null && inDetailId.trim().length() > 0) {continue;}
+
+                //outDetailId 出单明细id
+                String outDetailId = deliverDetail.getOutDetailId();
+                //parentId 发货单id
+                String deliverId = deliverDetail.getParentId();
+
+                if (outDtlId.equals(outDetailId)) {
+                    deliverMap.put(deliverId, deliverId);
+                }
+            }
+        }
+
+        //发货单号:发货单号 货品编码:货品编码
+        String msgTemp = "发货单号:{0} {1} " + Common.SYS_ENDLINE_DEFAULT;
+        for (Iterator iterator = deliverMap.keySet().iterator(); iterator.hasNext();) {
+            String deliverId = iterator.next().toString().trim();
+
+            try {
+                SaleDeliver deliver = saleDeliverService.findSaleDeliverById(deliverId);
+                if (deliver != null) {
+                    String msgStr = MessageFormat.format(msgTemp,
+                            deliver.getDeliverCode(),
                             productInfo);
                     msgBuf.append(msgStr);
                 }
