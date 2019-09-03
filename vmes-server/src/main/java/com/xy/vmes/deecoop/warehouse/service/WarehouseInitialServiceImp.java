@@ -340,24 +340,24 @@ public class WarehouseInitialServiceImp implements WarehouseInitialService {
 
         }
 
-//        //销售业务表
-//        if ("warehouse".equals(warehouseGenre)) {
-//            if(saleOrderService != null) {
-//                saleOrderService.deleteTableByOrder(companyId);
-//            }
-//            if(saleDeliverService != null) {
-//                saleDeliverService.deleteTableByDeliver(companyId);
-//            }
-//            if (saleInvoiceService != null) {
-//                saleInvoiceService.deleteTableByInvoice(companyId);
-//            }
-//            if (saleRetreatService != null) {
-//                saleRetreatService.deleteTableBySaleRetreat(companyId);
-//            }
-//            if (saleReceiveService != null) {
-//                saleReceiveService.deleteTableByReceive(companyId);
-//            }
-//        }
+        //销售业务表
+        if ("warehouse".equals(warehouseGenre)) {
+            if(saleOrderService != null) {
+                saleOrderService.deleteTableByOrder(companyId);
+            }
+            if(saleDeliverService != null) {
+                saleDeliverService.deleteTableByDeliver(companyId);
+            }
+            if (saleInvoiceService != null) {
+                saleInvoiceService.deleteTableByInvoice(companyId);
+            }
+            if (saleRetreatService != null) {
+                saleRetreatService.deleteTableBySaleRetreat(companyId);
+            }
+            if (saleReceiveService != null) {
+                saleReceiveService.deleteTableByReceive(companyId);
+            }
+        }
 
         //删除仓库货品表(库存表)
         //isSpare:true: 删除的是备件库 warehouseGenre:= spare:备件库

@@ -15,7 +15,6 @@
             round(ifnull(outExecute.executeCount,0), 2) outDtlExecuteCount
         from vmes_warehouse_out_detail outDetail
         left join (
-            <!--出库任务结束时间 (出库明细id)出库执行表汇总-->
             select detail_id, sum(count) executeCount
             from vmes_warehouse_out_execute
             group by detail_id

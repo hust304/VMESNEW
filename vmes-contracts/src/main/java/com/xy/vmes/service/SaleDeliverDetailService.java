@@ -203,6 +203,7 @@ public interface SaleDeliverDetailService {
     String findOutIdsByDeliverId(String deliverId);
 
     String findOrderDtlIdsByDeliverDtlList(List<SaleDeliverDetail> detailList);
+    String findOutDetailIdsByDeliverDtlList(List<SaleDeliverDetail> detailList);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     ResultModel listPageSaleDeliverDetail(PageData pd, Pagination pg) throws Exception;

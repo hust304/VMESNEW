@@ -218,23 +218,24 @@ public class SaleOrderController {
         return model;
     }
 
-    /**
-     * 变更订单-变更订单明细(订购数量,锁定货品数量)
-     * @author 陈刚
-     * @date 2019-03-05
-     * @throws Exception
-     */
-    @PostMapping("/sale/saleOrder/updateSaleOrderByChange")
-    @Transactional(rollbackFor=Exception.class)
-    public ResultModel updateSaleOrderByChange() throws Exception {
-        logger.info("################/sale/saleOrder/updateSaleOrderByChange 执行开始 ################# ");
-        Long startTime = System.currentTimeMillis();
-        PageData pageData = HttpUtils.parsePageData();
-        ResultModel model = saleOrderByChangeService.updateSaleOrderByChange(pageData);
-        Long endTime = System.currentTimeMillis();
-        logger.info("################/sale/saleOrder/updateSaleOrderByChange 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
-        return model;
-    }
+//2019-09-02 订单变更功能(按订单维度变更)方法注销：
+//    /**
+//     * 变更订单-变更订单明细(订购数量,锁定货品数量)
+//     * @author 陈刚
+//     * @date 2019-03-05
+//     * @throws Exception
+//     */
+//    @PostMapping("/sale/saleOrder/updateSaleOrderByChange")
+//    @Transactional(rollbackFor=Exception.class)
+//    public ResultModel updateSaleOrderByChange() throws Exception {
+//        logger.info("################/sale/saleOrder/updateSaleOrderByChange 执行开始 ################# ");
+//        Long startTime = System.currentTimeMillis();
+//        PageData pageData = HttpUtils.parsePageData();
+//        ResultModel model = saleOrderByChangeService.updateSaleOrderByChange(pageData);
+//        Long endTime = System.currentTimeMillis();
+//        logger.info("################/sale/saleOrder/updateSaleOrderByChange 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+//        return model;
+//    }
 
 
     /**

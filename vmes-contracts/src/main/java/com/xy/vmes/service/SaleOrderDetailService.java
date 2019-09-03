@@ -198,9 +198,12 @@ public interface SaleOrderDetailService {
 
     ResultModel rebackSaleOrderDetailByLockCount(PageData pageData) throws Exception;
 
-    void exportExcelSaleOrderDetails(PageData pd, Pagination pg) throws Exception;
+    //void exportExcelSaleOrderDetails(PageData pd, Pagination pg) throws Exception;
 
-    ResultModel importExcelSaleOrderDetails(MultipartFile file) throws Exception;
+    //ResultModel importExcelSaleOrderDetails(MultipartFile file) throws Exception;
+
+    //订单变更-按变更订单明细变更
+    ResultModel changeSaleOrderByDetail(PageData pageData) throws Exception;
 }
 
 

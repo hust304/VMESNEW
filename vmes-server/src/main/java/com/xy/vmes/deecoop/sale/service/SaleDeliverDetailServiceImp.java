@@ -630,6 +630,19 @@ public class SaleDeliverDetailServiceImp implements SaleDeliverDetailService {
         return orderDtlIds.toString();
     }
 
+    public String findOutDetailIdsByDeliverDtlList(List<SaleDeliverDetail> detailList) {
+        if (detailList == null || detailList.size() == 0) {return new String();}
+
+        StringBuffer outDtlIds = new StringBuffer();
+        for (SaleDeliverDetail detail : detailList) {
+            if (detail.getOutDetailId() != null && detail.getOutDetailId().trim().length() > 0) {
+                outDtlIds.append(detail.getOutDetailId().trim() + ",");
+            }
+
+        }
+        return outDtlIds.toString();
+    }
+
     //////////////////////////////////////////////////////////////////////////////////////////
     public ResultModel listPageSaleDeliverDetail(PageData pd, Pagination pg) throws Exception {
         ResultModel model = new ResultModel();
