@@ -229,16 +229,26 @@ public class SaleOrderDetailController {
             return model;
         }
 
-        SaleOrderDetail orderDetail = saleOrderDetailService.findSaleOrderDetailById(orderDtlId);
-
-        String productId = orderDetail.getProductId();
+        String productInfo = new String();
+        String productId = pageData.getString("productId");
         Product product = productService.findProductById(productId);
+        if (productId != null && product != null) {
+            //货品信息(货品编码:{0} 货品名称:{1})
+            String prodInfoTemp = "货品编码:{0} 货品名称:{1}";
 
-        //货品信息(货品编码:{0} 货品名称:{1})
-        String prodInfoTemp = "货品编码:{0} 货品名称:{1}";
-        String productInfo = MessageFormat.format(prodInfoTemp,
-                product.getCode(),
-                product.getName());
+            String productCode = new String();
+            if (product.getCode() != null) {
+                productCode = product.getCode();
+            }
+
+            String productName = new String();
+            if (product.getName() != null) {
+                productName = product.getName();
+            }
+            productInfo = MessageFormat.format(prodInfoTemp,
+                    productCode,
+                    productName);
+        }
         /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         //根据订单明细id 查询(vmes_warehouse_out_detail) 获取出库单明细id
@@ -324,7 +334,6 @@ public class SaleOrderDetailController {
         }
 
         model.put("notChangeOrder", msgNotChangeOrder);
-
         return model;
     }
 
