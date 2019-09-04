@@ -4,7 +4,7 @@ import java.util.*;
 
 public class Common {
     //linux系统:文件系统根路径
-    public final static String SYS_LINUX_FILE_ROOT = "/home/vmes/htdocs/vmes.deecoop.cn/";
+    public final static String SYS_LINUX_FILE_ROOT = "/home/vmes/htdocs/web.ouhaicloud.com/";
 
     //系统应用自定义异常-错误码(ErrorCode)
     //系统通用编码规则 version 锁
