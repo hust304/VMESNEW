@@ -505,6 +505,11 @@ public class EquipmentMaintainTaskDetailServiceImp implements EquipmentMaintainT
             result.put("pageData", pg);
         }
 
+        String type = pd.getString("type");
+        if ("add".equals(type)) {
+            pd.put("queryStr", "1=2");
+        }
+
         List<Map> varList = this.getDataListPage(pd,pg);
         List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
 
