@@ -66,7 +66,7 @@ public class PurchasePaymentTask {
      *
      */
     @Scheduled(cron = "0 0 1 1 * ?")
-    public void initTimer() {
+    public void initTimer() throws Exception {
         Long startTime = System.currentTimeMillis();
         String dateTimeStr = DateFormat.date2String(new Date(), DateFormat.DEFAULT_DATETIME_FORMAT);
         String begin_logger_msg = MessageFormat.format(begin_logger_msg_temp,
@@ -191,10 +191,11 @@ public class PurchasePaymentTask {
             for (Map mapObj : supplierMapList) {
                 //supplierId 供应商id
                 String supplierId = (String)mapObj.get("supplierId");
+                findMap = new PageData();
+                findMap.put("supplier_id",supplierId);
+                List<PurchasePaymentBuild> purchasePaymentBuildList = purchasePaymentBuildService.selectByColumnMap(findMap);
 
-                //isBuild Y:已设定 N:未设定
-                String isBuild = (String)mapObj.get("isBuild");
-                if (isBuild != null && "N".equals(isBuild.trim())) {
+                if(purchasePaymentBuildList==null||purchasePaymentBuildList.size()==0){
                     PurchasePaymentBuild supplierPaymentBuild = new PurchasePaymentBuild();
                     supplierPaymentBuild.setSupplierId(supplierId);
                     supplierPaymentBuild.setPaymentPeriod(initialPeriodDate_str);
@@ -203,12 +204,26 @@ public class PurchasePaymentTask {
                     supplierPaymentBuild.setBeginMinus(BigDecimal.valueOf(0D));
                     supplierPaymentBuild.setBeginValue(BigDecimal.valueOf(0D));
                     supplierPaymentBuild.setCuser("admin");
-                    try {
-                        purchasePaymentBuildService.save(supplierPaymentBuild);
-                    } catch (Exception e){
-                        e.printStackTrace();
-                    }
+                    purchasePaymentBuildService.save(supplierPaymentBuild);
                 }
+
+                //isBuild Y:已设定 N:未设定
+//                String isBuild = (String)mapObj.get("isBuild");
+//                if (isBuild != null && "N".equals(isBuild.trim())) {
+//                    PurchasePaymentBuild supplierPaymentBuild = new PurchasePaymentBuild();
+//                    supplierPaymentBuild.setSupplierId(supplierId);
+//                    supplierPaymentBuild.setPaymentPeriod(initialPeriodDate_str);
+//                    supplierPaymentBuild.setPaymentPeriodDate(initialPeriodDate);
+//                    supplierPaymentBuild.setBeginPlus(BigDecimal.valueOf(0D));
+//                    supplierPaymentBuild.setBeginMinus(BigDecimal.valueOf(0D));
+//                    supplierPaymentBuild.setBeginValue(BigDecimal.valueOf(0D));
+//                    supplierPaymentBuild.setCuser("admin");
+//                    try {
+//                        purchasePaymentBuildService.save(supplierPaymentBuild);
+//                    } catch (Exception e){
+//                        e.printStackTrace();
+//                    }
+//                }
             }
         }
 

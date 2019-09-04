@@ -182,6 +182,7 @@ public class SaleRetreatAuditServiceImp implements SaleRetreatAuditService {
         retreatEdit.setAuditId(cuser);
         //状态(0:待提交 1:待审核 2:待退款 3:已完成 -1:已取消)
         retreatEdit.setState("3");
+        retreatEdit.setRetreatDate(new Date());
         saleRetreatService.update(retreatEdit);
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
