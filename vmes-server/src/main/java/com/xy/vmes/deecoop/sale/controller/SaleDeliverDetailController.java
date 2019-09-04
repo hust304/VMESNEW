@@ -213,10 +213,14 @@ public class SaleDeliverDetailController {
                 Map<String, Map<String, Object>> outDtlMap = outDetailExecuteService.findOutDetailExecuteMapByOutDtlIds(outDtlIds);
 
                 //获取当前订单明细不可做(订单变更)-出库单明细id
-                // 出库单明细id-该出库单明细(出库数量,出库执行数量)比较-
+
+                // 出库单明细id-该出库单明细-出库未执行(出库执行数量:=0)
+                List<String> outIdListByNotExecute = new ArrayList<String>();
+
+                // 出库单明细id-该出库单明细(出库数量,出库执行数量)比较-出库开始执行并且未执行完成-(出库执行数量 > 0 and 出库执行数量 < 出库数量)
                 List<String> outIdListByNotCancel = new ArrayList<String>();
 
-                //获取出库单明细-出库执行完成
+                //获取出库单明细-出库执行完成-(出库数量 <= 出库执行数量)
                 List<String> outDtlIdListByOutEnd = new ArrayList<String>();
 
                 for (String outDtlId : outDtlIdArry) {
@@ -226,8 +230,13 @@ public class SaleDeliverDetailController {
                         BigDecimal outDtlCount = (BigDecimal)outDtlExecuteMap.get("outDtlCount");
                         //出库单明细出库执行数量
                         BigDecimal outDtlExecuteCount = (BigDecimal)outDtlExecuteMap.get("outDtlExecuteCount");
-                        //出库数量 > 0 and 出库执行数量 > 0 and 出库执行数量 < 出库数量
                         if (outDtlCount != null && outDtlExecuteCount != null
+                            && outDtlCount.doubleValue() > 0
+                            && outDtlExecuteCount.doubleValue() == 0
+                        ) {
+                            outIdListByNotExecute.add(outDtlId);
+                            //出库数量 > 0 and 出库执行数量 > 0 and 出库执行数量 < 出库数量
+                        } else if (outDtlCount != null && outDtlExecuteCount != null
                                 && outDtlCount.doubleValue() > 0
                                 && outDtlExecuteCount.doubleValue() > 0
                                 && outDtlExecuteCount.doubleValue() < outDtlCount.doubleValue()
@@ -246,6 +255,10 @@ public class SaleDeliverDetailController {
                             outDtlIdListByOutEnd.add(outDtlId);
                         }
                     }
+                }
+
+                if (outIdListByNotExecute.size() > 0) {
+                    msgNotCancelDeliver = "该发货单明细未执行出库操作，无需执行(退库)操作！" + Common.SYS_ENDLINE_DEFAULT;
                 }
 
                 //当前发货单明细-不可做(退库)-对界面提示信息:

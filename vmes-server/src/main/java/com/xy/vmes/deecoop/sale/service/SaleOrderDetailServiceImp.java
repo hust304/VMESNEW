@@ -1195,16 +1195,19 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
             Map<String, String> deliverDtlMap = new LinkedHashMap<String, String>();
             for (SaleDeliverDetail deliverDtl : deliverDtlList) {
                 String detailId = deliverDtl.getId();
-                String parentId = deliverDtl.getParentId();
+                deliverDtlMap.put(detailId, detailId);
 
-                String inDetailId = deliverDtl.getInDetailId();
-                if (inDetailId != null && inDetailId.trim().length() > 0
-                    && detailId != null && detailId.trim().length() > 0
-                    && parentId != null && parentId.trim().length() > 0
-                ) {
-                    deliverDtlMap.put(detailId, detailId);
-                    deliverMap.put(parentId, parentId);
-                }
+                String parentId = deliverDtl.getParentId();
+                deliverMap.put(parentId, parentId);
+
+//                String inDetailId = deliverDtl.getInDetailId();
+//                if (inDetailId != null && inDetailId.trim().length() > 0
+//                    && detailId != null && detailId.trim().length() > 0
+//                    && parentId != null && parentId.trim().length() > 0
+//                ) {
+//                    deliverDtlMap.put(detailId, detailId);
+//                    deliverMap.put(parentId, parentId);
+//                }
             }
 
             //取消发货单明细
