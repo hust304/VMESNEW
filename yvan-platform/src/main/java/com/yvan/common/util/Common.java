@@ -335,6 +335,9 @@ public class Common {
 
             //销售退货入库 81907167d5c8498692e6c4f3694c5cfa
             put("saleRetreatIn", "81907167d5c8498692e6c4f3694c5cfa");
+            //销售变更退货入库 d1c6dc9aa3b045dbabff2d5e1e253c22
+            put("saleChangeRetreatIn", "d1c6dc9aa3b045dbabff2d5e1e253c22");
+
             //采购入库 d78ceba5beef41f5be16f0ceee775399
             put("purchaseIn", "d78ceba5beef41f5be16f0ceee775399");
 
