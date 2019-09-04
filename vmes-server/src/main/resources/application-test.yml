@@ -26,4 +26,4 @@ spring:
     timeout: 0
     expire: 18000
 
-ui-path: file:/home/vmes/htdocs/vmes.deecoop.cn
+#ui-path: file:/home/vmes/htdocs/vmes.deecoop.cn
