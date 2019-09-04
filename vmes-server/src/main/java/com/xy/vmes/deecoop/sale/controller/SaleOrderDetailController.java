@@ -339,6 +339,9 @@ public class SaleOrderDetailController {
 
     /**
      * 订单变更-按变更订单明细变更
+     * 该订单明细id: 是否允许(订单变更)已经验证
+     * 验证方法: (/sale/saleOrderDetail/checkOrderDetailOnOutExecuteByNotChangeOrder)
+     *
      * @author 陈刚
      * @date 2019-03-05
      * @throws Exception
