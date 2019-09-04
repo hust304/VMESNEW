@@ -1,9 +1,7 @@
 package com.xy.vmes.deecoop.sale.controller;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
-import com.xy.vmes.entity.Product;
-import com.xy.vmes.entity.SaleDeliverDetail;
-import com.xy.vmes.entity.WarehouseOut;
+import com.xy.vmes.entity.*;
 import com.xy.vmes.service.*;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
@@ -31,8 +29,8 @@ import java.util.*;
 public class SaleDeliverDetailController {
     private Logger logger = LoggerFactory.getLogger(SaleDeliverDetailController.class);
 
-    //@Autowired
-    //private SaleDeliverService saleDeliverService;
+    @Autowired
+    private SaleDeliverService saleDeliverService;
     @Autowired
     private SaleDeliverDetailService saleDeliverDetailService;
     @Autowired
@@ -43,10 +41,17 @@ public class SaleDeliverDetailController {
     @Autowired
     private WarehouseOutService outService;
     @Autowired
+    private WarehouseOutDetailService outDetailService;
+    @Autowired
     private WarehouseOutDetailExecuteService outDetailExecuteService;
 
     @Autowired
+    private WarehouseInCreateService warehouseInCreateService;
+
+    @Autowired
     private ProductService productService;
+    @Autowired
+    private RoleMenuService roleMenuService;
 
     /**
     * @author 陈刚 自动创建，可以修改
@@ -266,6 +271,140 @@ public class SaleDeliverDetailController {
         return model;
     }
 
+    /**
+     * 退库
+     * 1. 获取出库单明细-(发货订单明细-对应的出库单明细id
+     * 2. 生成入库单-(出库单明细)
+     *
+     * @author 陈刚
+     * @date 2019-03-05
+     * @throws Exception
+     */
+    @PostMapping("/sale/saleDeliverDetail/cancelDeliverDetail")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel cancelDeliverDetail() throws Exception {
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        //创建(复杂版,简版)仓库-出库单-需要的参数///////////////////////////////////////////////////////////////////////////////////
+        String cuser = pageData.getString("cuser");
+
+        String companyId = pageData.getString("currentCompanyId");
+        if (companyId == null || companyId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("企业id为空或空字符串！");
+            return model;
+        }
+
+        String roleId = pageData.getString("roleId");
+        if (roleId == null || roleId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("当前用户角色id为空或空字符串！");
+            return model;
+        }
+
+        //根据(用户角色id)获取仓库属性(复杂版仓库,简版仓库)
+        String warehouse = roleMenuService.findWarehouseAttribute(roleId);
+        if (warehouse == null || warehouse.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("当前用户角色无(复杂版仓库，简版仓库)菜单，请与管理员联系！");
+            return model;
+        }
+
+        String customerId = pageData.getString("customerId");
+        String customerName = pageData.getString("customerName");
+
+        String deliverId = pageData.getString("deliverId");
+        if (deliverId == null || deliverId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("发货单id为空或空字符串！");
+            return model;
+        }
+        String deliverDtlId = pageData.getString("deliverDtlId");
+        if (deliverDtlId == null || deliverDtlId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("发货单明细id为空或空字符串！");
+            return model;
+        }
+        String outDetailId = pageData.getString("outDetailId");
+        if (outDetailId == null || outDetailId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("出库单明细id为空或空字符串！");
+            return model;
+        }
+
+        WarehouseOutDetail outDetail = outDetailService.findWarehouseOutDetailById(outDetailId);
+
+        //生成入库单
+        //货品入库Map<货品id, 货品Map<String, Object>>
+        // 货品Map<String, Object>
+        //     productId: 货品id
+        //     inDtlId:   入库明细id
+        //     inCount:   入库数量
+        Map<String, Map<String, Object>> productByInMap = new HashMap<String, Map<String, Object>>();
+        Map<String, Object> productInMap = new HashMap<String, Object>();
+        productInMap.put("productId", outDetail.getProductId());
+        productInMap.put("inCount", outDetail.getCount());
+        productInMap.put("inDtlId", null);
+        productByInMap.put(outDetail.getProductId(), productInMap);
+
+        if (Common.SYS_WAREHOUSE_COMPLEX.equals(warehouse)) {
+            //退库方式:1:生成退库单: (生成复杂版入库单)
+            //复杂版仓库:warehouseByComplex:Common.SYS_WAREHOUSE_COMPLEX
+            warehouseInCreateService.createWarehouseInByComplex(customerId,
+                    customerName,
+                    //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
+                    Common.DICTIONARY_MAP.get("warehouseEntity"),
+                    cuser,
+                    companyId,
+                    //销售变更退货入库 d1c6dc9aa3b045dbabff2d5e1e253c22:saleChangeRetreatIn:
+                    Common.DICTIONARY_MAP.get("saleChangeRetreatIn"),
+                    productByInMap);
+
+        } else if (Common.SYS_WAREHOUSE_SIMPLE.equals(warehouse)) {
+            //退库方式:1:生成退库单: (生成简版入库单)
+            //简版仓库:warehouseBySimple:Common.SYS_WAREHOUSE_SIMPLE
+            warehouseInCreateService.createWarehouseInBySimple(customerId,
+                    customerName,
+                    //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
+                    Common.DICTIONARY_MAP.get("warehouseEntity"),
+                    cuser,
+                    companyId,
+                    //销售变更退货入库 d1c6dc9aa3b045dbabff2d5e1e253c22:saleChangeRetreatIn:
+                    Common.DICTIONARY_MAP.get("saleChangeRetreatIn"),
+                    productByInMap);
+        }
+
+        //修改发货单明细
+        SaleDeliverDetail editDeliverDtl = new SaleDeliverDetail();
+        editDeliverDtl.setId(deliverDtlId);
+
+        String productId = outDetail.getProductId();
+        if (productByInMap != null && productByInMap.get(productId) != null) {
+            Map<String, Object> producValueMap = productByInMap.get(productId);
+
+            //inDtlId:   入库明细id
+            String inDtlId = (String)producValueMap.get("inDtlId");
+            editDeliverDtl.setInDetailId(inDtlId);
+        }
+
+        //发货状态(0:待发货 1:已发货 -1:已取消)
+        //editDeliverDtl.setState("-1");
+        saleDeliverDetailService.update(editDeliverDtl);
+
+//        //修改发货单状态
+//        List<SaleDeliverDetail> deliverDtlList = saleDeliverDetailService.findSaleDeliverDetailListByParentId(deliverId);
+//        String deliverState = saleDeliverDetailService.findParentStateByDetailList(deliverDtlList);
+//        if (deliverState != null) {
+//            SaleDeliver editDeliver = new SaleDeliver();
+//            editDeliver.setId(deliverId);
+//            editDeliver.setState(deliverState);
+//            saleDeliverService.update(editDeliver);
+//        }
+
+        return model;
+    }
+
 
 //    /**
 //    * Excel导出
@@ -367,6 +506,4 @@ public class SaleDeliverDetailController {
     }
 
 }
-
-
 

@@ -7,7 +7,6 @@ import com.xy.vmes.entity.SaleOrderDetailEntity;
 import com.xy.vmes.exception.ApplicationException;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -189,7 +188,7 @@ public interface SaleDeliverDetailService {
     /**
      * 验证出库单明细状态(状态(0:待派单 1:执行中 2:已完成 -1.已取消)
      *
-     * @param deliverId 发货单id
+     * @param pageData 发货单id
      * @return
      */
     String checkOutDetailStateByCancelDeliver(PageData pageData) throws Exception;
@@ -205,13 +204,45 @@ public interface SaleDeliverDetailService {
     String findOrderDtlIdsByDeliverDtlList(List<SaleDeliverDetail> detailList);
     String findOutDetailIdsByDeliverDtlList(List<SaleDeliverDetail> detailList);
 
+//    /**
+//     * 发货明细状态，在发货明细List<SaleDeliverDetail>中是否全部相同
+//     *   true : 全部相同，在发货明细List
+//     *   false: 一条或多条不同，在发货明细List
+//     *
+//     * @param state       明细状态(0:待发货 1:已发货 -1:已取消)
+//     * @param objectList  发货明细List<SaleDeliverDetail>
+//     * @return
+//     */
+//    boolean isAllExistStateByDetailList(String state, List<SaleDeliverDetail> objectList);
+//
+//    /**
+//     * 发货明细状态，在发货明细List<SaleDeliverDetail>中是否存在
+//     *   true : 一条或多条相同，在发货明细List
+//     *   false: 全部不同，在发货明细List
+//     *
+//     * @param state       明细状态(0:待发货 1:已发货 -1:已取消)
+//     * @param objectList  发货明细List<SaleDeliverDetail>
+//     * @return
+//     */
+//    boolean isExistStateByDetailList(String state, List<SaleDeliverDetail> objectList);
+
+    /**
+     * 获取发货状态-根据发货明细状态
+     * 发货单状态(0:待发货 1:已发货 -1:已取消)
+     * 发货明细状态(0:待发货 1:已发货 -1:已取消)
+     *
+     * @param dtlList      订单明细List<SaleDeliverDetail>
+     * @return
+     */
+    String findParentStateByDetailList(List<SaleDeliverDetail> dtlList);
+
     //////////////////////////////////////////////////////////////////////////////////////////
     ResultModel listPageSaleDeliverDetail(PageData pd, Pagination pg) throws Exception;
     ResultModel listPageSaleDeliverDetailByPrice(PageData pd, Pagination pg) throws Exception;
     ResultModel updateSaleDeliverDetailByPrice(PageData pd) throws Exception;
 
-    void exportExcelSaleDeliverDetails(PageData pd, Pagination pg) throws Exception;
-    ResultModel importExcelSaleDeliverDetails(MultipartFile file) throws Exception;
+    //void exportExcelSaleDeliverDetails(PageData pd, Pagination pg) throws Exception;
+    //ResultModel importExcelSaleDeliverDetails(MultipartFile file) throws Exception;
 
 }
 
