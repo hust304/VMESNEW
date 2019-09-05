@@ -119,10 +119,16 @@ public class WarehouseServiceImp implements WarehouseService {
      */
     @Override
     public List<Map> getDataListPage(PageData pd, Pagination pg) throws Exception{
-        if(pg==null){
-            pg =  HttpUtils.parsePagination(pd);
+        List<Map> mapList = new ArrayList<Map>();
+        if (pd == null) {return mapList;}
+
+        if (pg == null) {
+            return warehouseMapper.getDataListPage(pd);
+        } else if (pg != null) {
+            return warehouseMapper.getDataListPage(pd,pg);
         }
-        return warehouseMapper.getDataListPage(pd,pg);
+
+        return mapList;
     }
 
     /**
@@ -843,7 +849,6 @@ public class WarehouseServiceImp implements WarehouseService {
         return model;
     }
 
-
     @Override
     public ResultModel listPageWarehouse(PageData pd, Pagination pg) throws Exception {
         if(pg==null){
@@ -858,45 +863,62 @@ public class WarehouseServiceImp implements WarehouseService {
             return model;
         }
 
-        List<LinkedHashMap> titlesList = new ArrayList<LinkedHashMap>();
-        List<String> titlesHideList = new ArrayList<String>();
-        Map<String, String> varModelMap = new HashMap<String, String>();
-        if(columnList!=null&&columnList.size()>0){
-            for (Column column : columnList) {
-                if(column!=null){
-                    if("0".equals(column.getIshide())){
-                        titlesHideList.add(column.getTitleKey());
-                    }
-                    LinkedHashMap titlesLinkedMap = new LinkedHashMap();
-                    titlesLinkedMap.put(column.getTitleKey(),column.getTitleName());
-                    varModelMap.put(column.getTitleKey(),"");
-                    titlesList.add(titlesLinkedMap);
-                }
-            }
+        //获取指定栏位字符串-重新调整List<Column>
+        String fieldCode = pd.getString("fieldCode");
+        if (fieldCode != null && fieldCode.trim().length() > 0) {
+            columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
         }
-        Map result = new HashMap();
-        result.put("hideTitles",titlesHideList);
-        result.put("titles",titlesList);
+        Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
+
+
+        //isNeedwarehouseGenre 是否需要仓库属性
+        String isNeedwarehouseGenre = pd.getString("isNeedwarehouseGenre");
 
         //是否启用(0:已禁用 1:启用)
         pd.put("isdisable", "1");
-        pd.put("orderStr", "a.layer,a.serial_number asc");
+        pd.put("orderStr", "a.pid,a.layer,a.serial_number asc");
 
-        List<Map> varMapList = new ArrayList();
+        //是否需要分页 true:需要分页 false:不需要分页
+        Map result = new HashMap();
+        String isNeedPage = pd.getString("isNeedPage");
+        if ("false".equals(isNeedPage)) {
+            pg = null;
+        } else {
+            result.put("pageData", pg);
+        }
+
+        List<Map> newList = new ArrayList<Map>();
         List<Map> varList = this.getDataListPage(pd, pg);
-        if(varList!=null&&varList.size()>0){
-            for(int i=0;i<varList.size();i++){
-                Map map = varList.get(i);
-                Map<String, String> varMap = new HashMap<String, String>();
-                varMap.putAll(varModelMap);
-                for (Map.Entry<String, String> entry : varMap.entrySet()) {
-                    varMap.put(entry.getKey(),map.get(entry.getKey())!=null?map.get(entry.getKey()).toString():"");
+        if (varList != null && varList.size() > 0) {
+            for (Map<String, Object> mapObject : varList) {
+                String pathId = (String)mapObject.get("pathId");
+
+                //layer 当前节点级别
+                Integer layer = Integer.valueOf(0);
+                if (mapObject.get("layer") != null) {
+                    layer = (Integer)mapObject.get("layer");
                 }
-                varMapList.add(varMap);
+
+                //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
+                //虚拟库:warehouseVirtual:56f5e83dcb9911e884ad00163e105f05
+                //实体库: 只获取(仓库)这一层级 (layer:2 的这一层-layer大于2的节点筛选出去)
+                if ("true".equals(isNeedwarehouseGenre)
+                        && pathId != null && pathId.trim().length() > 0
+                        && pathId.indexOf(Common.DICTIONARY_MAP.get("warehouseEntity")) != -1
+                        && layer.intValue() != 2
+                        ) {
+                    continue;
+                }
+
+                newList.add(mapObject);
             }
         }
+
+        List<Map> varMapList = ColumnUtil.getVarMapList(varList, titleMap);
+
+        result.put("hideTitles",titleMap.get("hideTitles"));
+        result.put("titles",titleMap.get("titles"));
         result.put("varList",varMapList);
-        result.put("pageData", pg);
 
         model.putResult(result);
         return model;
