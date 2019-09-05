@@ -54,6 +54,8 @@
         (replace(uuid(), '-', ''), 'equipmentRepairTaskDetailByInfo', 'inDtlState', '入库执行状态', 28, '1', '1', '1', '0', '2018-12-6 09:16:39', 'admin'),
         (replace(uuid(), '-', ''), 'equipmentRepairTaskDetailByInfo', 'inDtlStateName', '退还货品状态', 27, '1', '1', '1', '0', '2018-12-6 09:16:39', 'admin'),
         (replace(uuid(), '-', ''), 'equipmentRepairTaskDetailByInfo', 'inOutDtlStateName', '仓库执行状态', 29, '1', '1', '1', '0', '2018-12-6 09:16:39', 'admin'),
+
+        (replace(uuid(), '-', ''), 'equipmentRepairTaskDetailByInfo', 'outCode', '出库单号', 30, '1', '1', '1', '0', '2018-12-6 09:16:39', 'admin'),
     </insert>
 
     <select id="findRepairTaskDetailByInfo" parameterType="com.yvan.PageData" resultType="java.util.Map">
@@ -105,6 +107,7 @@
         round(ifnull(product.stock_count, 0), 2) stockCount,
         round((ifnull(product.stock_count, 0) - ifnull(product.lock_count, 0)), 2) productStockCount,
 
+        whout.code outCode,
         outDtl.state outDtlState,
         CASE
             WHEN outDtl.state = '0' THEN '待派单'
@@ -143,6 +146,8 @@
             left join vmes_dictionary unit on produnit.unit = unit.id
 
             left join vmes_warehouse_out_detail outDtl on taskDtl.out_dtl_id = outDtl.id
+            left join vmes_warehouse_out whout on outDtl.parent_id = whout.id
+
             left join vmes_warehouse_in_detail inDtl on taskDtl.in_dtl_id = inDtl.id
 
         <where>
