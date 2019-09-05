@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.MessageFormat;
 import java.util.Date;
 import java.util.Map;
 
@@ -223,6 +224,19 @@ public class EquipmentMaintainController {
         }
         Date nowDate = DateFormat.dateString2Date(maintainPlanDateStr, DateFormat.DEFAULT_DATE_FORMAT);
 
+        //(计划执行日期:保养时间,保养计划id) 查询(vmes_equipment_maintain)
+        PageData findMap = new PageData();
+        findMap.put("planId", maintainPlanId);
+        findMap.put("maintainDate",  maintainPlanDateStr);
+        EquipmentMaintain maintain = maintainService.findMaintain(findMap);
+        if (maintain != null) {
+            String msgTemp = "计划执行日期({0}) 已经生成保养单，请选择其它执行日期！";
+            String msgStr = MessageFormat.format(msgTemp, maintainPlanDateStr);
+
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
 
         EquipmentMaintainPlan planObject = maintainPlanService.findMaintainPlanById(maintainPlanId);
         if (planObject == null) {return model;}
@@ -285,6 +299,4 @@ public class EquipmentMaintainController {
     }
 
 }
-
-
 

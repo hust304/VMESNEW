@@ -165,6 +165,9 @@
             <if test="sysEndTime != null and sysEndTime != ''">
                 and sys_end_time = #{sysEndTime}
             </if>
+            <if test="maintainDate != null and maintainDate != ''">
+                and maintain_date = #{maintainDate}
+            </if>
 
             <if test="isValidState != null and isValidState != ''">
                 and is_valid_state = #{isValidState}
@@ -299,8 +302,6 @@
             order by ${orderStr}
         </if>
     </select>
-
-
 
 
 </mapper>
