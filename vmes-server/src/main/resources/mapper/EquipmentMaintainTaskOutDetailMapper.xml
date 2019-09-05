@@ -92,7 +92,7 @@
 
         <where>
             <if test="taskId != null and taskId != ''">
-                and task_id = #{taskId}
+                and taskDtl.task_id = #{taskId}
             </if>
             <if test="outDtlState != null and outDtlState != ''" >
                 and outDetail.state = #{outDtlState}

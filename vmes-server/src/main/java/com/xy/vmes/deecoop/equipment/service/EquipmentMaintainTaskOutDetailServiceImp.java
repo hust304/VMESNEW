@@ -47,6 +47,7 @@ public class EquipmentMaintainTaskOutDetailServiceImp implements EquipmentMainta
         List<Map> mapList = null;
         try {
             PageData findMap = new PageData();
+            findMap.put("taskId", maintainTaskId);
             mapList = this.findTaskDetailByOutDetail(findMap, null);
         } catch (Exception e) {
             e.printStackTrace();
