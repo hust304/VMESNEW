@@ -67,6 +67,10 @@ public class ProductUnitController {
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         ProductUnit productUnit = (ProductUnit)HttpUtils.pageData2Entity(pd, new ProductUnit());
+        if(!StringUtils.isEmpty(productUnit.getProductId())) {
+            productUnitService.updateToNotDefaultByPorId(productUnit.getProductId());
+        }
+        productUnit.setIsdefault("1");
         productUnitService.save(productUnit);
         Long endTime = System.currentTimeMillis();
         logger.info("################productUnit/save 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");

@@ -37,6 +37,7 @@
         safety_count safetyCount,
         version version,
         lock_count lockCount,
+        source_code sourceCode,
 		id id <!-- id -->
     </sql>
 
@@ -45,6 +46,7 @@
 		#{companyId},<!-- 公司ID-组织架构 -->
 		#{qrcode},<!-- 二维码-(图片相对路径) -->
 		#{code},<!-- 产品编码 -->
+        #{sourceCode},
 		#{name},<!-- 产品名称 -->
 		#{nameEn},<!-- 英文名称 -->
 		#{spec},<!-- 规格型号 -->
@@ -70,7 +72,8 @@
     <sql id="Column">
         '公司ID-组织架构'  companyId,
         '二维码-(图片相对路径)'  qrcode,
-        '产品编码'  code,
+        '系统货品编码'  code,
+        '企业货品编码' sourceCode,
         '产品名称'  name,
         '英文名称'  nameEn,
         '规格型号'  spec,
@@ -259,6 +262,9 @@
                     <if test="code != null and code != ''" >
                         and code LIKE CONCAT('%',CONCAT(#{code}),'%')
                     </if>
+                    <if test="sourceCode != null and sourceCode != ''" >
+                        and source_code LIKE CONCAT('%',CONCAT(#{sourceCode}),'%')
+                    </if>
                     <if test="name != null and name != ''" >
                         and name LIKE CONCAT('%',CONCAT(#{name}),'%')
                     </if>
@@ -301,8 +307,8 @@
             prod.company_id companyId,
             prod.qrcode qrcode,
             prod.photo photo,
-            prod.code code,
-
+            case when prod.source_code is null then prod.code else prod.source_code end code,
+            prod.source_code sourceCode,
             prod.name name,
             prod.name_en nameEn,
             prod.spec spec,
@@ -385,9 +391,11 @@
             <if test="notInProductIds != null and notInProductIds != ''">
                 and prod.id not in (${notInProductIds})
             </if>
-
+            <if test="sourceCode != null and sourceCode != ''" >
+                and prod.source_code LIKE CONCAT('%',CONCAT(#{sourceCode}),'%')
+            </if>
             <if test="code != null and code != ''">
-                and prod.code LIKE CONCAT('%',CONCAT(#{code}),'%')
+                and ( case when prod.source_code is null then prod.code else prod.source_code end  ) LIKE CONCAT('%',CONCAT(#{code}),'%')
             </if>
             <if test="name != null and name != ''">
                 and prod.name LIKE CONCAT('%',CONCAT(#{name}),'%')

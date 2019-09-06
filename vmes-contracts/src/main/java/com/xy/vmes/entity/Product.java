@@ -100,6 +100,17 @@ public class Product implements Serializable {
 	@TableField("lock_count")
 	private BigDecimal lockCount;
 
+	@TableField("source_code")
+	private String sourceCode;
+
+	public String getSourceCode() {
+		return sourceCode;
+	}
+
+	public void setSourceCode(String sourceCode) {
+		this.sourceCode = sourceCode;
+	}
+
 	public void setId(String id) {
 		this.id = id;
 	}
