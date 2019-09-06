@@ -128,8 +128,8 @@ public class WarehouseOutBySimpleController {
             BigDecimal count = outDetail.getCount();
             List<Map<String, Object>> outMapList = warehouseProductToolService.findWarehouseProductOutMapList(productId,
                     companyID,
-                    //仓库id
-                    warehouseOut.getWarehouseId(),
+                    //仓库id 允许为空(null:该企业仓库出库 not null:指定的仓库出库)
+                    null,
                     count);
             if (outMapList != null && outMapList.size() > 0) {
                 executeList = warehouseOutExecuteService.outMapList2ExecuteList(outDetail, outMapList, executeList);
