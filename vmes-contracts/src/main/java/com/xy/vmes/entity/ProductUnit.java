@@ -60,13 +60,19 @@ public class ProductUnit implements Serializable {
 	//货品单价
 	@TableField("product_price")
 	private BigDecimal productPrice;
-
-
 	@TableField("isdefault")
 	private String isdefault;
 
 	@TableField("type")
 	private String type;
+
+	//是否需要四舍五入(Y:需要四舍五入 N:无需四舍五入)
+	@TableField("isScale")
+	private String isScale;
+	//小数位数 (最小:0位 最大:4位)
+	@TableField("decimal_count")
+	private Integer decimalCount;
+
 
 	public String getIsdefault() {
 		return isdefault;
@@ -168,7 +174,19 @@ public class ProductUnit implements Serializable {
 	public void setProductPrice(BigDecimal productPrice) {
 		this.productPrice = productPrice;
 	}
-/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+	public String getIsScale() {
+		return isScale;
+	}
+	public void setIsScale(String isScale) {
+		this.isScale = isScale;
+	}
+	public Integer getDecimalCount() {
+		return decimalCount;
+	}
+	public void setDecimalCount(Integer decimalCount) {
+		this.decimalCount = decimalCount;
+	}
+	/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 
 }

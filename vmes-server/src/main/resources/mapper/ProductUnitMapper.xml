@@ -14,43 +14,48 @@
 
     <!-- 字段 自动创建，禁止修改-->
     <sql id="Field">
-		product_id productId,<!-- 产品(vmes_product.id) -->
-		unit unit,<!-- 计价单位(字典表-vmes_dictionary.id) -->
-		code code,<!-- 编码 -->
-		name name,<!-- 名称 -->
-		np_formula npFormula,<!-- 计量单位转换计价单位 -->
+        id id, <!-- id -->
+        product_id productId,<!-- 产品(vmes_product.id) -->
+        unit unit,<!-- 计价单位(字典表-vmes_dictionary.id) -->
+        code code,<!-- 编码 -->
+        name name,<!-- 名称 -->
 
+        np_formula npFormula,<!-- 计量单位转换计价单位 -->
         pn_formula pnFormula,<!-- 计价单位转换计量单位 -->
-		isdisable isdisable,<!-- 是否禁用(0:已禁用 1:启用) -->
-		cdate cdate,<!-- 创建时间 -->
-		cuser cuser,<!-- 创建人账号 -->
-		udate udate,<!-- 修改时间 -->
+        isdisable isdisable,<!-- 是否禁用(0:已禁用 1:启用) -->
+        cdate cdate,<!-- 创建时间 -->
+        cuser cuser,<!-- 创建人账号 -->
 
+        udate udate,<!-- 修改时间 -->
         uuser uuser,<!-- 修改人账号 -->
-		remark remark,<!-- 备注 -->
-		id id, <!-- id -->
-        isdefault isdefault,
-        type type,
+        remark remark,<!-- 备注 -->
         product_price productPrice
+        type type,
+
+        isdefault isdefault,
+        isScale isScale,
+        decimal_count decimalCount
     </sql>
 
     <!-- 字段值 自动创建，禁止修改-->
     <sql id="FieldValue">
-		#{productId},<!-- 产品(vmes_product.id) -->
-		#{unit},<!-- 计价单位(字典表-vmes_dictionary.id) -->
-		#{code},<!-- 编码 -->
-		#{name},<!-- 名称 -->
-		#{npFormula},<!-- 计量单位转换计价单位 -->
-		#{pnFormula},<!-- 计价单位转换计量单位 -->
-		#{isdisable},<!-- 是否禁用(0:已禁用 1:启用) -->
-		#{cdate},<!-- 创建时间 -->
-		#{cuser},<!-- 创建人账号 -->
-		#{udate},<!-- 修改时间 -->
-		#{uuser},<!-- 修改人账号 -->
-		#{remark},<!-- 备注 -->
+        #{id}, <!-- id -->
+        #{productId},<!-- 产品(vmes_product.id) -->
+        #{unit},<!-- 计价单位(字典表-vmes_dictionary.id) -->
+        #{code},<!-- 编码 -->
+        #{name},<!-- 名称 -->
+
+        #{npFormula},<!-- 计量单位转换计价单位 -->
+        #{pnFormula},<!-- 计价单位转换计量单位 -->
+        #{isdisable},<!-- 是否禁用(0:已禁用 1:启用) -->
+        #{cdate},<!-- 创建时间 -->
+        #{cuser},<!-- 创建人账号 -->
+
+        #{udate},<!-- 修改时间 -->
+        #{uuser},<!-- 修改人账号 -->
+        #{remark},<!-- 备注 -->
         #{isdefault},
         #{type},
-		#{id} <!-- id -->
     </sql>
 
 
