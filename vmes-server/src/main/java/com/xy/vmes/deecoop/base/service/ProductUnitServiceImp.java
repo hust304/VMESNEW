@@ -446,6 +446,20 @@ public class ProductUnitServiceImp implements ProductUnitService {
             }
             priceUnitMap.put("p2nFormula", p2nFormula);
 
+            // isScale isScale 是否需要四舍五入(Y:需要四舍五入 N:无需四舍五入)
+            String isScale = new String();
+            if (mapObject.get("isScale") != null) {
+                isScale = mapObject.get("isScale").toString().trim();
+            }
+            priceUnitMap.put("isScale", isScale);
+
+            //小数位数 (最小:0位 最大:4位)
+            Integer decimalCount = Integer.valueOf(2);
+            if (mapObject.get("decimalCount") != null) {
+                decimalCount = (Integer)mapObject.get("decimalCount");
+            }
+            priceUnitMap.put("decimalCount", decimalCount.toString());
+
             unitPriceMapList.add(priceUnitMap);
         }
 
@@ -585,10 +599,29 @@ public class ProductUnitServiceImp implements ProductUnitService {
         ResultModel model = new ResultModel();
         //公式 formula (计量转换计价单位 公式计算)
         //P=8*N  N(计量单位数量) P(计价单位数量)
-        String formula = pd.getString("formula");
+        String formula = pd.getString("formula"); //formula_N2P
 
         //N(计量单位数量) P(计价单位数量)
         String parmKey = pd.getString("parmKey");
+
+
+        //是否需要四舍五入(Y:需要四舍五入 N:无需四舍五入) isScale
+        String isScale = new String();
+        if (pd.getString("isScale") != null) {
+            isScale = pd.getString("isScale");
+        }
+
+        //小数位数 (最小:0位 最大:4位)
+        Integer decimalCount = Integer.valueOf("2");
+        String decimalCountStr = pd.getString("decimalCount");
+        if (decimalCountStr != null) {
+            decimalCountStr = pd.getString("decimalCount").trim();
+            try {
+                decimalCount = Integer.valueOf(decimalCountStr);
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+        }
 
         Map<String, Object> parmMap = new HashMap<String, Object>();
         BigDecimal valueBig = null;
@@ -604,8 +637,12 @@ public class ProductUnitServiceImp implements ProductUnitService {
             if (valueBig != null) {
                 stockCountBig = valueBig;
             }
-            //四舍五入到2位小数
-            stockCountBig = stockCountBig.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+//            //四舍五入到2位小数
+//            stockCountBig = stockCountBig.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+//            model.set("stockCount_n2p", stockCountBig.toString());
+
+            //指定是否四舍五入-指定保留小数位数-(系统默认四舍五入 保留小数2位)
+            stockCountBig = StringUtil.scaleDecimal(stockCountBig, isScale, decimalCount);
             model.set("stockCount_n2p", stockCountBig.toString());
         }
 
@@ -619,25 +656,29 @@ public class ProductUnitServiceImp implements ProductUnitService {
             if (valueBig != null) {
                 productStockCountBig = valueBig;
             }
-            //四舍五入到2位小数
-            productStockCountBig = productStockCountBig.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+//            //四舍五入到2位小数
+//            productStockCountBig = productStockCountBig.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+//            model.set("productStockCount_n2p", productStockCountBig.toString());
+
+            //指定是否四舍五入-指定保留小数位数-(系统默认四舍五入 保留小数2位)
+            productStockCountBig = StringUtil.scaleDecimal(productStockCountBig, isScale, decimalCount);
             model.set("productStockCount_n2p", productStockCountBig.toString());
         }
 
-        //3. (计价单位数量)订购数量 count  计价转换计量 (单位换算)
-        BigDecimal countBig = BigDecimal.valueOf(0D);
-        String count = pd.getString("count");
-        if (count != null && count.trim().length() > 0) {
-            parmMap.put(parmKey, count);
-            //(订购数量) 计价转换计量 通过公式 单位换算
-            valueBig = EvaluateUtil.formulaReckon(parmMap, formula);
-            if (valueBig != null) {
-                countBig = valueBig;
-            }
-            //四舍五入到2位小数
-            countBig = countBig.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-            model.set("count_p2n", countBig.toString());
-        }
+//        //3. (计价单位数量)订购数量 count  计价转换计量 (单位换算)
+//        BigDecimal countBig = BigDecimal.valueOf(0D);
+//        String count = pd.getString("count");
+//        if (count != null && count.trim().length() > 0) {
+//            parmMap.put(parmKey, count);
+//            //(订购数量) 计价转换计量 通过公式 单位换算
+//            valueBig = EvaluateUtil.formulaReckon(parmMap, formula);
+//            if (valueBig != null) {
+//                countBig = valueBig;
+//            }
+//            //四舍五入到2位小数
+//            countBig = countBig.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+//            model.set("count_p2n", countBig.toString());
+//        }
         return model;
     }
 

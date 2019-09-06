@@ -85,6 +85,9 @@
             (replace(uuid(), '-', ''), 'saleOrderDetail', 'endDeliverCount', '已发货数量', 37, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
             (replace(uuid(), '-', ''), 'saleOrderDetail', 'endRetreatCount', '已退货数量', 38, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
             (replace(uuid(), '-', ''), 'saleOrderDetail', 'lockCountN2P', '锁定货品数量', 27, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+
+            (replace(uuid(), '-', ''), 'saleOrderDetail', 'isScale', '是否需要四舍五入', 39, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetail', 'decimalCount', '保留小数位数', 40, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
     </insert>
 
     <update id="updateStateByDetail" parameterType="com.yvan.PageData" >
@@ -280,7 +283,10 @@
 
             <!--货品计量单位-->
             prodUnitPrice.np_formula n2pFormula,
-            prodUnitPrice.pn_formula p2nFormula
+            prodUnitPrice.pn_formula p2nFormula,
+            prodUnitPrice.isScale isScale,
+            prodUnitPrice.decimal_count decimalCount
+
         from vmes_sale_order_detail detail
             left join vmes_sale_order saleOrder on detail.parent_id = saleOrder.id
             left join vmes_customer customer on saleOrder.customer_id = customer.id

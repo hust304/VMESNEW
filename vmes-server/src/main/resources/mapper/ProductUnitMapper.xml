@@ -293,7 +293,26 @@
     <!-- 自动创建，可以修改 -->
     <select id="getDataListPage"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
         select
-        <include refid="Field1"></include>
+            pu.product_id productId,
+            pu.unit punit,
+            punit.name punitName,
+            product.code code,
+            product.name name,
+            pu.np_formula npFormula,
+            pu.pn_formula pnFormula,
+            pu.isdisable isdisable,
+            pu.cdate cdate,
+            pu.cuser cuser,
+            pu.udate udate,
+            pu.uuser uuser,
+            pu.remark remark,
+            pu.id id,
+            pu.isdefault isdefault,
+
+            case when pu.type=0 then '计价单位' when pu.type=1 then '计量单位' else null end type,
+            round(ifnull(pu.product_price, 0), 2) productPrice,
+            isScale isScale,
+            decimal_count decimalCount
         from
         vmes_product_unit pu
         left join vmes_product product on product.id = pu.product_id
