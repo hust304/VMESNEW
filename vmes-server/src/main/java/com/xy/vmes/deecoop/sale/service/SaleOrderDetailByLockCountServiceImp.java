@@ -124,15 +124,19 @@ public class SaleOrderDetailByLockCountServiceImp implements SaleOrderDetailByLo
 //            }
 
             //productStockCount (计量单位)库存可用数量
+            BigDecimal productStockCount = BigDecimal.valueOf(0D);
             String productStockCount_str = (String)mapObject.get("productStockCount");
-            //productStockCountByPrice (计价单位)库存可用数量
-            if (n2pFormula != null && productStockCount_str != null) {
-                Map<String, Object> formulaParmMap = new HashMap<String, Object>();
-                formulaParmMap.put("N", new BigDecimal(productStockCount_str));
-
-                BigDecimal valueBig = EvaluateUtil.formulaReckon(formulaParmMap, n2pFormula);
-                mapObject.put("productStockCountByPrice", valueBig);
+            if (productStockCount_str != null && productStockCount_str.trim().length() > 0) {
+                try {
+                    productStockCount = new BigDecimal(productStockCount_str);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
             }
+
+            //productStockCountByPrice (计价单位)库存可用数量
+            BigDecimal valueBig = EvaluateUtil.countFormulaN2P(productStockCount, n2pFormula);
+            mapObject.put("productStockCountByPrice", valueBig);
 
             //orderCount 订购数量
             BigDecimal orderCount = BigDecimal.valueOf(0D);

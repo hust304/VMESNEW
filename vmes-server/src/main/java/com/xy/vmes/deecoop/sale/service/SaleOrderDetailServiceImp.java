@@ -267,13 +267,8 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
 
             //计价转换计量单位 数量转换公式 p2nFormula
             String p2nFormula = mapObject.get("p2nFormula");
-            BigDecimal valueBig = BigDecimal.valueOf(0D);
             //P(计价单位) --> N(计量单位)
-            if (p2nFormula != null && p2nFormula.trim().length() > 0) {
-                Map<String, Object> parmMap = new HashMap<String, Object>();
-                parmMap.put("P", orderCount);
-                valueBig = EvaluateUtil.formulaReckon(parmMap, p2nFormula);
-            }
+            BigDecimal valueBig = EvaluateUtil.countFormulaP2N(orderCount, p2nFormula);
             //productCount:货品数量(计量数量)
             detail.setProductCount(valueBig);
 
@@ -943,26 +938,34 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
             String n2pFormula = (String)mapObject.get("n2pFormula");
 
             //stockCount (计量单位)库存数量
-            String stockCount_str = (String)mapObject.get("stockCount");
-            //stockCountByPrice        (计价单位)库存数量
-            if (n2pFormula != null && stockCount_str != null) {
-                Map<String, Object> formulaParmMap = new HashMap<String, Object>();
-                formulaParmMap.put("N", new BigDecimal(stockCount_str));
+            BigDecimal stockCount = BigDecimal.valueOf(0D);
+//            String stockCount_str = (String)mapObject.get("stockCount");
+//            if (stockCount_str != null && stockCount_str.trim().length() > 0) {
+//                try {
+//                    stockCount = new BigDecimal(stockCount_str);
+//                } catch (NumberFormatException e) {
+//                    e.printStackTrace();
+//                }
+//            }
 
-                BigDecimal valueBig = EvaluateUtil.formulaReckon(formulaParmMap, n2pFormula);
-                mapObject.put("stockCountByPrice", valueBig);
-            }
+            //stockCountByPrice        (计价单位)库存数量
+            BigDecimal valueBig = EvaluateUtil.countFormulaN2P(stockCount, n2pFormula);
+            mapObject.put("stockCountByPrice", valueBig);
 
             //productStockCount (计量单位)库存可用数量
+            BigDecimal productStockCount = BigDecimal.valueOf(0D);
             String productStockCount_str = (String)mapObject.get("productStockCount");
-            //productStockCountByPrice (计价单位)库存可用数量
-            if (n2pFormula != null && productStockCount_str != null) {
-                Map<String, Object> formulaParmMap = new HashMap<String, Object>();
-                formulaParmMap.put("N", new BigDecimal(productStockCount_str));
-
-                BigDecimal valueBig = EvaluateUtil.formulaReckon(formulaParmMap, n2pFormula);
-                mapObject.put("productStockCountByPrice", valueBig);
+            if (productStockCount_str != null && productStockCount_str.trim().length() > 0) {
+                try {
+                    productStockCount = new BigDecimal(productStockCount_str);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
             }
+
+            //productStockCountByPrice (计价单位)库存可用数量
+            valueBig = EvaluateUtil.countFormulaN2P(productStockCount, n2pFormula);
+            mapObject.put("productStockCountByPrice", valueBig);
 
             //lockCount:锁定货品数量(计量单位)
             BigDecimal lockCount = BigDecimal.valueOf(0D);
@@ -977,7 +980,7 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
 
             mapObject.put("lockCountN2P", "0.00");
             if (n2pFormula != null && lockCount != null) {
-                BigDecimal valueBig = EvaluateUtil.countFormulaN2P(lockCount, n2pFormula);
+                valueBig = EvaluateUtil.countFormulaN2P(lockCount, n2pFormula);
                 mapObject.put("lockCountN2P", valueBig);
             }
         }
