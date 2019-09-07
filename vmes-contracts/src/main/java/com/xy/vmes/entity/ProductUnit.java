@@ -66,12 +66,19 @@ public class ProductUnit implements Serializable {
 	@TableField("type")
 	private String type;
 
-	//是否需要四舍五入(Y:需要四舍五入 N:无需四舍五入)
-	@TableField("isScale")
-	private String isScale;
+	//n2p:计量单位转换计价单位 是否需要四舍五入(Y:需要四舍五入 N:无需四舍五入)
+	@TableField("n2p_is_scale")
+	private String n2pIsScale;
+	//n2p:计量单位转换计价单位 小数位数 (最小:0位 最大:4位)
+	@TableField("n2p_decimal_count")
+	private Integer n2pDecimalCount;
+
+	//'p2n:计价单位转换计量单位 是否需要四舍五入(Y:需要四舍五入 N:无需四舍五入)
+	@TableField("p2n_is_scale")
+	private String p2nIsScale;
 	//小数位数 (最小:0位 最大:4位)
-	@TableField("decimal_count")
-	private Integer decimalCount;
+	@TableField("p2n_decimal_count")
+	private Integer p2nDecimalCount;
 
 
 	public String getIsdefault() {
@@ -174,19 +181,39 @@ public class ProductUnit implements Serializable {
 	public void setProductPrice(BigDecimal productPrice) {
 		this.productPrice = productPrice;
 	}
-	public String getIsScale() {
-		return isScale;
+
+	public String getN2pIsScale() {
+		return n2pIsScale;
 	}
-	public void setIsScale(String isScale) {
-		this.isScale = isScale;
+
+	public void setN2pIsScale(String n2pIsScale) {
+		this.n2pIsScale = n2pIsScale;
 	}
-	public Integer getDecimalCount() {
-		return decimalCount;
+
+	public Integer getN2pDecimalCount() {
+		return n2pDecimalCount;
 	}
-	public void setDecimalCount(Integer decimalCount) {
-		this.decimalCount = decimalCount;
+
+	public void setN2pDecimalCount(Integer n2pDecimalCount) {
+		this.n2pDecimalCount = n2pDecimalCount;
 	}
-	/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+
+	public String getP2nIsScale() {
+		return p2nIsScale;
+	}
+
+	public void setP2nIsScale(String p2nIsScale) {
+		this.p2nIsScale = p2nIsScale;
+	}
+
+	public Integer getP2nDecimalCount() {
+		return p2nDecimalCount;
+	}
+
+	public void setP2nDecimalCount(Integer p2nDecimalCount) {
+		this.p2nDecimalCount = p2nDecimalCount;
+	}
+/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 
 }

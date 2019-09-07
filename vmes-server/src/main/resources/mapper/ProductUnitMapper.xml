@@ -33,8 +33,12 @@
         type type,
 
         isdefault isdefault,
-        isScale isScale,
-        decimal_count decimalCount
+        n2p_is_scale n2pIsScale,
+        n2p_decimal_count n2pDecimalCount,
+
+        p2n_is_scale p2nIsScale,
+        p2n_decimal_count p2nDecimalCount
+
     </sql>
 
     <!-- 字段值 自动创建，禁止修改-->
@@ -311,8 +315,12 @@
 
             case when pu.type=0 then '计价单位' when pu.type=1 then '计量单位' else null end type,
             round(ifnull(pu.product_price, 0), 2) productPrice,
-            isScale isScale,
-            decimal_count decimalCount
+
+            pu.n2p_is_scale n2pIsScale,
+            pu.n2p_decimal_count n2pDecimalCount,
+
+            pu.p2n_is_scale p2nIsScale,
+            pu.p2n_decimal_count p2nDecimalCount
         from
         vmes_product_unit pu
         left join vmes_product product on product.id = pu.product_id

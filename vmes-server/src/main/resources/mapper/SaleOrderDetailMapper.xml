@@ -86,8 +86,11 @@
             (replace(uuid(), '-', ''), 'saleOrderDetail', 'endRetreatCount', '已退货数量', 38, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
             (replace(uuid(), '-', ''), 'saleOrderDetail', 'lockCountN2P', '锁定货品数量', 27, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
 
-            (replace(uuid(), '-', ''), 'saleOrderDetail', 'isScale', '是否需要四舍五入', 39, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
-            (replace(uuid(), '-', ''), 'saleOrderDetail', 'decimalCount', '保留小数位数', 40, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetail', 'n2pIsScale', 'n2p:是否需要四舍五入', 39, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetail', 'n2pDecimalCount', 'n2p:保留小数位数', 40, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+
+            (replace(uuid(), '-', ''), 'saleOrderDetail', 'p2nIsScale', 'p2n:是否需要四舍五入', 41, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetail', 'p2nDecimalCount', 'p2n:保留小数位数', 42, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
     </insert>
 
     <update id="updateStateByDetail" parameterType="com.yvan.PageData" >
@@ -284,8 +287,12 @@
             <!--货品计量单位-->
             prodUnitPrice.np_formula n2pFormula,
             prodUnitPrice.pn_formula p2nFormula,
-            prodUnitPrice.isScale isScale,
-            prodUnitPrice.decimal_count decimalCount
+
+            prodUnitPrice.n2p_is_scale n2pIsScale,
+            prodUnitPrice.n2p_decimal_count n2pDecimalCount,
+
+            prodUnitPrice.p2n_is_scale p2nIsScale,
+            prodUnitPrice.p2n_decimal_count p2nDecimalCount
 
         from vmes_sale_order_detail detail
             left join vmes_sale_order saleOrder on detail.parent_id = saleOrder.id
