@@ -446,19 +446,35 @@ public class ProductUnitServiceImp implements ProductUnitService {
             }
             priceUnitMap.put("p2nFormula", p2nFormula);
 
-            // isScale isScale 是否需要四舍五入(Y:需要四舍五入 N:无需四舍五入)
-            String isScale = new String();
-            if (mapObject.get("isScale") != null) {
-                isScale = mapObject.get("isScale").toString().trim();
+            //n2p 计量转计价 ///////////////////////////////////////////////////////////////////////////////////////
+            //n2pIsScale 是否需要四舍五入(Y:需要四舍五入 N:无需四舍五入)
+            String n2pIsScale = new String();
+            if (mapObject.get("n2pIsScale") != null) {
+                n2pIsScale = mapObject.get("n2pIsScale").toString().trim();
             }
-            priceUnitMap.put("isScale", isScale);
+            priceUnitMap.put("n2pIsScale", n2pIsScale);
+
+            //n2pDecimalCount 小数位数 (最小:0位 最大:4位)
+            Integer n2pDecimalCount = Integer.valueOf(2);
+            if (mapObject.get("n2pDecimalCount") != null) {
+                n2pDecimalCount = (Integer)mapObject.get("n2pDecimalCount");
+            }
+            priceUnitMap.put("n2pDecimalCount", n2pDecimalCount.toString());
+
+            //p2n 计价转计量 ///////////////////////////////////////////////////////////////////////////////////////
+            //p2nIsScale 是否需要四舍五入(Y:需要四舍五入 N:无需四舍五入)
+            String p2nIsScale = new String();
+            if (mapObject.get("p2nIsScale") != null) {
+                p2nIsScale = mapObject.get("p2nIsScale").toString().trim();
+            }
+            priceUnitMap.put("p2nIsScale", p2nIsScale);
 
             //小数位数 (最小:0位 最大:4位)
-            Integer decimalCount = Integer.valueOf(2);
-            if (mapObject.get("decimalCount") != null) {
-                decimalCount = (Integer)mapObject.get("decimalCount");
+            Integer p2nDecimalCount = Integer.valueOf(2);
+            if (mapObject.get("p2nDecimalCount") != null) {
+                p2nDecimalCount = (Integer)mapObject.get("p2nDecimalCount");
             }
-            priceUnitMap.put("decimalCount", decimalCount.toString());
+            priceUnitMap.put("p2nDecimalCount", p2nDecimalCount.toString());
 
             unitPriceMapList.add(priceUnitMap);
         }
