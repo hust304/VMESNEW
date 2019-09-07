@@ -330,17 +330,23 @@
             prod.uuser uuser,
             DATE_FORMAT(prod.udate,'%Y-%m-%d %T') udate,
 
-            round(ifnull(prod.safety_count, 0), 2) safetyCount,
-            round(ifnull(prod.stock_count, 0), 2) stockCount,
-            round(ifnull(prod.lock_count, 0), 2) lockCount,
-            round((ifnull(prod.stock_count, 0) - ifnull(prod.lock_count, 0)), 2) productStockCount,
+            ifnull(prod.safety_count, 0) safetyCount,
+            ifnull(prod.stock_count, 0) stockCount,
+            ifnull(prod.lock_count, 0) lockCount,
+            ifnull(prod.stock_count, 0) - ifnull(prod.lock_count, 0) productStockCount,
 
             prod.version version,
             prod.isdisable isdisable,
 
             <!--货品计量单位-->
             produnit.np_formula n2pFormula,
-            produnit.pn_formula p2nFormula
+            produnit.pn_formula p2nFormula,
+
+            produnit.n2p_is_scale n2pIsScale,
+            produnit.n2p_decimal_count n2pDecimalCount,
+
+            produnit.p2n_is_scale p2nIsScale,
+            produnit.p2n_decimal_count p2nDecimalCount
 
             <if test="'true' == isNeedCustomerPrice">
                 ,round(ifnull(customerPrice.product_price, 0), 2) customerPrice
