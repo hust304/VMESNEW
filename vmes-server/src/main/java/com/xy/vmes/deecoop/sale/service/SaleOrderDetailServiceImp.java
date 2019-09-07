@@ -269,6 +269,24 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
             String p2nFormula = mapObject.get("p2nFormula");
             //P(计价单位) --> N(计量单位)
             BigDecimal valueBig = EvaluateUtil.countFormulaP2N(orderCount, p2nFormula);
+
+            String p2nIsScale = new String();
+            if (mapObject.get("p2nIsScale") != null) {
+                p2nIsScale = mapObject.get("p2nIsScale").toString().trim();
+            }
+
+            //小数位数 (最小:0位 最大:4位)
+            Integer p2nDecimalCount = Integer.valueOf(2);
+            String p2nDecimalCountStr = mapObject.get("p2nDecimalCount");
+            if (p2nDecimalCountStr != null) {
+                try {
+                    p2nDecimalCount = Integer.valueOf(p2nDecimalCountStr);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            valueBig = StringUtil.scaleDecimal(valueBig, p2nIsScale, p2nDecimalCount);
+
             //productCount:货品数量(计量数量)
             detail.setProductCount(valueBig);
 
