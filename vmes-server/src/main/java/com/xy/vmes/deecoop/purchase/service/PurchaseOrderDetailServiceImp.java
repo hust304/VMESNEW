@@ -739,8 +739,6 @@ public class PurchaseOrderDetailServiceImp implements PurchaseOrderDetailService
             if (countStr != null && countStr.trim().length() > 0) {
                 try {
                     count = new BigDecimal(countStr);
-                    //四舍五入到2位小数
-                    count = count.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
                 } catch (NumberFormatException e) {
                     e.printStackTrace();
                 }
@@ -753,13 +751,25 @@ public class PurchaseOrderDetailServiceImp implements PurchaseOrderDetailService
             }
 
             //采购数量 - 转换计量单位 - 单位换算公式(p2nFormula)
-            BigDecimal prodCount = BigDecimal.valueOf(0D);
-            try {
-                BigDecimal bigDecimal = EvaluateUtil.countFormulaP2N(count, p2nFormula);
-                if (bigDecimal != null) {prodCount = bigDecimal;}
-            } catch (Exception e) {
-                e.printStackTrace();
+            BigDecimal prodCount = EvaluateUtil.countFormulaP2N(count, p2nFormula);
+
+            //p2nIsScale 是否需要四舍五入(Y:需要四舍五入 N:无需四舍五入)
+            String p2nIsScale = new String();
+            if (mapObject.get("p2nIsScale") != null) {
+                p2nIsScale = mapObject.get("p2nIsScale").toString().trim();
             }
+
+            //小数位数 (最小:0位 最大:4位)
+            Integer p2nDecimalCount = Integer.valueOf(2);
+            String p2nDecimalCountStr = mapObject.get("p2nDecimalCount");
+            if (p2nDecimalCountStr != null) {
+                try {
+                    p2nDecimalCount = Integer.valueOf(p2nDecimalCountStr);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            prodCount = StringUtil.scaleDecimal(prodCount, p2nIsScale, p2nDecimalCount);
 
             Map<String, Object> productMap = new HashMap<String, Object>();
             productMap.put("productId", productId);

@@ -196,7 +196,13 @@
             (replace(uuid(), '-', ''),'PurchaseOrderDetail','signDate','到货日期',27, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'PurchaseOrderDetail','n2pFormula','n2pFormula',28, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'PurchaseOrderDetail','p2nFormula','p2nFormula',29, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'PurchaseOrderDetail','planParentId','planParentId',30, '1','0','1','0',now(), 'admin')
+            (replace(uuid(), '-', ''),'PurchaseOrderDetail','planParentId','planParentId',30, '1','0','1','0',now(), 'admin'),
+
+            (replace(uuid(), '-', ''), 'PurchaseOrderDetail', 'n2pIsScale', 'n2p:是否需要四舍五入', 31, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'PurchaseOrderDetail', 'n2pDecimalCount', 'n2p:保留小数位数', 32, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+
+            (replace(uuid(), '-', ''), 'PurchaseOrderDetail', 'p2nIsScale', 'p2n:是否需要四舍五入', 33, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'PurchaseOrderDetail', 'p2nDecimalCount', 'p2n:保留小数位数', 34, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
     </insert>
 
 
@@ -396,6 +402,12 @@
         <!--货品计量单位-->
         prodUnit.np_formula n2pFormula,
         prodUnit.pn_formula p2nFormula,
+
+        prodUnit.n2p_is_scale n2pIsScale,
+        prodUnit.n2p_decimal_count n2pDecimalCount,
+
+        prodUnit.p2n_is_scale p2nIsScale,
+        prodUnit.p2n_decimal_count p2nDecimalCount,
 
         CASE
         WHEN signDetail.cdate is not null THEN DATE_FORMAT(signDetail.cdate,'%Y-%m-%d')
