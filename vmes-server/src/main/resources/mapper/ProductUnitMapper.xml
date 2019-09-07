@@ -171,7 +171,13 @@
             (replace(uuid(), '-', ''),'ProductUnit','udate','修改时间',15, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'ProductUnit','uuser','修改人账号',16, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'ProductUnit','remark','备注',17, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'ProductUnit','id','id',0, '1','0','1','0',now(), 'admin')
+            (replace(uuid(), '-', ''),'ProductUnit','id','id',0, '1','0','1','0',now(), 'admin'),
+
+            (replace(uuid(), '-', ''),'ProductUnit','n2pIsScale','计量转计价-是否需要四舍五入',18, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'ProductUnit','n2pDecimalCount','计量转计价-保留小数位数',19, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'ProductUnit','p2nIsScale','计价转计量-是否需要四舍五入',20, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'ProductUnit','p2nDecimalCount','计价转计量-保留小数位数',21, '1','0','1','0',now(), 'admin'),
+
     </insert>
 
 

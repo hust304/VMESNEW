@@ -310,10 +310,17 @@ public class ProductServiceImp implements ProductService {
         productUnit.setProductId(product.getId());
         //计价单位 unit
         productUnit.setUnit(unit);
+
         //计量转换计价单位 单位换算公式 np_formula
         productUnit.setNpFormula("P=N");
+        productUnit.setN2pIsScale(Common.SYS_ISSCALE_TRUE);
+        productUnit.setN2pDecimalCount(Integer.valueOf(Common.SYS_NUMBER_FORMAT_2));
+
         //计价转换计量单位 单位换算公式 pn_formula
         productUnit.setPnFormula("N=P");
+        productUnit.setP2nIsScale(Common.SYS_ISSCALE_TRUE);
+        productUnit.setP2nDecimalCount(Integer.valueOf(Common.SYS_NUMBER_FORMAT_2));
+
         productUnit.setIsdefault("1");
         productUnit.setType("1");
         //创建人id
