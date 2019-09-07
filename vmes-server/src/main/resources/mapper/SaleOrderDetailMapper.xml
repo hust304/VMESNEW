@@ -230,7 +230,7 @@
 
             round(ifnull(detail.order_count, 0),2) orderCount,
             detail.order_unit orderUnit,
-            round(ifnull(detail.product_count, 0),2) productCount,
+            ifnull(detail.product_count, 0) productCount,
             detail.product_unit productUnit,
             detail.price_count priceCount,
 
@@ -266,13 +266,13 @@
             product.genre productGenre,
 
             product.type productType,
-            round(ifnull(product.stock_count, 0), 2) stockCount,
+            ifnull(product.stock_count, 0) stockCount,
             '' stockCountByPrice,
 
-            round(ifnull(product.lock_count, 0), 2) productLockCount,
+            ifnull(product.lock_count, 0) productLockCount,
             round(ifnull(detail.need_deliver_count, 0), 2) needDeliverCount,
 
-            round((ifnull(product.stock_count, 0) - ifnull(product.lock_count, 0)), 2) productStockCount,
+            ifnull(product.stock_count, 0) - ifnull(product.lock_count, 0) productStockCount,
             '' productStockCountByPrice,
 
             productUnit.name productUnitName,
