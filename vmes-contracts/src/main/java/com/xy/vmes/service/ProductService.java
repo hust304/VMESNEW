@@ -145,7 +145,7 @@ public interface ProductService {
      */
     void updateLockCount(String productId, Product oldProduct, BigDecimal lockCount, String uuser) throws Exception;
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ResultModel listPageProducts(PageData pd, Pagination pg) throws Exception;
+    ResultModel listPageProducts(PageData pd) throws Exception;
 
     ResultModel listPageProductPropertys(PageData pd, Pagination pg)  throws Exception;
 

@@ -202,8 +202,7 @@ public class ProductController {
         logger.info("################product/listPageProducts 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         PageData pd = HttpUtils.parsePageData();
-        Pagination pg = HttpUtils.parsePagination(pd);
-        ResultModel model = productService.listPageProducts(pd,pg);
+        ResultModel model = productService.listPageProducts(pd);
         Long endTime = System.currentTimeMillis();
         logger.info("################product/listPageProducts 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;

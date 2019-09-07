@@ -61,7 +61,7 @@ public class StringUtil {
      * @param decimalCount  (允许为空)保留小数位数
      * @return
      */
-    public static BigDecimal scaleDecimal (BigDecimal bigValue, String isScale, Integer decimalCount) {
+    public static BigDecimal scaleDecimal(BigDecimal bigValue, String isScale, Integer decimalCount) {
         if (bigValue == null) {bigValue = BigDecimal.valueOf(0D);}
 
         // 当(isScale is null 或 isScale is not in (Y,N) )设定 系统设定为需要四舍五入

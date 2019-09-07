@@ -454,11 +454,9 @@ public class ProductServiceImp implements ProductService {
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     @Override
-    public ResultModel listPageProducts(PageData pd, Pagination pg) throws Exception {
-        if(pg==null){
-            pg =  HttpUtils.parsePagination(pd);
-        }
+    public ResultModel listPageProducts(PageData pd) throws Exception {
         ResultModel model = new ResultModel();
+        Pagination pg = HttpUtils.parsePagination(pd);
 
         List<Column> columnList = columnService.findColumnList("product");
         if (columnList == null || columnList.size() == 0) {
@@ -489,10 +487,18 @@ public class ProductServiceImp implements ProductService {
                 }
             }
         }
+
+        //是否需要分页 true:需要分页 false:不需要分页
         Map result = new HashMap();
+        String isNeedPage = pd.getString("isNeedPage");
+        if ("false".equals(isNeedPage)) {
+            pg = null;
+        } else {
+            result.put("pageData", pg);
+        }
+
         result.put("hideTitles",titlesHideList);
         result.put("titles",titlesList);
-
 
         String orderStr = pd.getString("orderStr");
         if (orderStr != null && orderStr.trim().length() > 0) {
@@ -528,15 +534,65 @@ public class ProductServiceImp implements ProductService {
             }
         }
 
-
         //isNeedCustomerPrice 是否需要客户货品单价 (true:需要客户单价 false:无需客户单价 is null 无需客户单价)
         String isNeedCustomerPrice = pd.getString("isNeedCustomerPrice");
         String customerId = pd.getString("customerId");
 
         List<Map> varMapList = new ArrayList();
         List<Map> varList = this.getDataListPage(pd, pg);
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //设定指定(是否需要四舍五入, 小数位数)
+        if(varList != null && varList.size() > 0) {
+            for (Map<String, Object> mapObject : varList) {
+                //货品(计量单位)
 
+                //是否需要四舍五入
+                String n2pIsScale = new String();
+                if (mapObject.get("n2pIsScale") != null) {
+                    n2pIsScale = (String)mapObject.get("n2pIsScale");
+                }
 
+                //小数位数 (最小:0位 最大:4位)
+                Integer n2pDecimalCount = Integer.valueOf("2");
+                if (mapObject.get("n2pDecimalCount") != null) {
+                    n2pDecimalCount = (Integer)mapObject.get("n2pDecimalCount");
+                }
+
+                //stockCount 库存数量
+                BigDecimal stockCount = BigDecimal.valueOf(0D);
+                if (mapObject.get("stockCount") != null) {
+                    stockCount = (BigDecimal)mapObject.get("stockCount");
+                }
+                stockCount = StringUtil.scaleDecimal(stockCount, n2pIsScale, n2pDecimalCount);
+                mapObject.put("stockCount", stockCount.toString());
+
+                //safetyCount 安全库存
+                BigDecimal safetyCount = BigDecimal.valueOf(0D);
+                if (mapObject.get("safetyCount") != null) {
+                    safetyCount = (BigDecimal)mapObject.get("safetyCount");
+                }
+                safetyCount = StringUtil.scaleDecimal(safetyCount, n2pIsScale, n2pDecimalCount);
+                mapObject.put("safetyCount", safetyCount.toString());
+
+                //lockCount 锁定数量
+                BigDecimal lockCount = BigDecimal.valueOf(0D);
+                if (mapObject.get("lockCount") != null) {
+                    lockCount = (BigDecimal)mapObject.get("lockCount");
+                }
+                lockCount = StringUtil.scaleDecimal(lockCount, n2pIsScale, n2pDecimalCount);
+                mapObject.put("lockCount", lockCount.toString());
+
+                //productStockCount 可用数量
+                BigDecimal productStockCount = BigDecimal.valueOf(0D);
+                if (mapObject.get("productStockCount") != null) {
+                    productStockCount = (BigDecimal)mapObject.get("productStockCount");
+                }
+                productStockCount = StringUtil.scaleDecimal(productStockCount, n2pIsScale, n2pDecimalCount);
+                mapObject.put("productStockCount", productStockCount.toString());
+            }
+        }
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //当前查询页数据-获取货品id字符串(','逗号分隔的字符串)
         String ids = this.findIdsByPageMapList(varList);
         String queryStr = "";
@@ -551,9 +607,7 @@ public class ProductServiceImp implements ProductService {
         findMap.put("orderStr", "prod_id,cdate");
         findMap.put("mapSize", Integer.valueOf(findMap.size()));
         List<ProductProperty> productPropertyList = productPropertyService.findProductPropertyList(findMap);
-
         Map<String, String> mapObject = productPropertyService.findProdPropertyJsonByProductPropertyList(productPropertyList);
-//        Map<String, String> nameMap = productPropertyService.findProdPropertyNameByProductPropertyList(productPropertyList);
 
         if(varList!=null&&varList.size()>0){
             for(int i=0;i<varList.size();i++){
