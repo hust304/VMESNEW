@@ -2,6 +2,8 @@ package com.xy.vmes.deecoop.warehouse.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
+import com.xy.vmes.common.util.EvaluateUtil;
+import com.xy.vmes.common.util.StringUtil;
 import com.yvan.common.util.Common;
 import com.xy.vmes.deecoop.warehouse.dao.WarehouseInDetailMapper;
 import com.xy.vmes.entity.*;
@@ -35,6 +37,9 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
     private WarehouseInService warehouseInService;
     //@Autowired
     //private WarehouseInExecuteService warehouseInExecuteService;
+
+    @Autowired
+    private ProductUnitService productUnitService;
     @Autowired
     private ProductService productService;
     @Autowired
@@ -201,6 +206,66 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
 
         for (Map<String, String> mapObject : mapList) {
             WarehouseInDetail detail = (WarehouseInDetail)HttpUtils.pageData2Entity(mapObject, new WarehouseInDetail());
+
+            try {
+                //获取当前货品id的计量单位
+                PageData findMap = new PageData();
+                findMap.put("productId", detail.getProductId());
+                //单位类型 (1:计量单位 0:计价单位)
+                findMap.put("type", "1");
+                //是否禁用(0:已禁用 1:启用)
+                findMap.put("isdisable", "1");
+                ProductUnit productUnit = productUnitService.findProductUnit(findMap);
+                if (productUnit != null && productUnit.getUnit() != null) {
+                    detail.setProductUnit(productUnit.getUnit().trim());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+
+            //计价单位转换计量单位
+            //p2nFormula 计价转换计量单位 数量转换公式 pn_formula
+            String p2nFormula = "";
+            if (mapObject.get("pnFormula") != null && mapObject.get("pnFormula").toString().trim().length() > 0) {
+                p2nFormula = mapObject.get("pnFormula").toString().trim();
+            }
+
+            //p2nIsScale 是否需要四舍五入(Y:需要四舍五入 N:无需四舍五入)
+            String p2nIsScale = new String();
+            if (mapObject.get("p2nIsScale") != null) {
+                p2nIsScale = mapObject.get("p2nIsScale").toString().trim();
+            }
+
+            //小数位数 (最小:0位 最大:4位)
+            Integer p2nDecimalCount = Integer.valueOf(2);
+            String p2nDecimalCountStr = mapObject.get("p2nDecimalCount");
+            if (p2nDecimalCountStr != null) {
+                try {
+                    p2nDecimalCount = Integer.valueOf(p2nDecimalCountStr);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            //货品(计价单位)数量
+            BigDecimal priceCount = BigDecimal.valueOf(0D);
+            String priceCountStr = mapObject.get("priceCountStr");
+            if (priceCountStr != null) {
+                try {
+                    priceCount = new BigDecimal(priceCountStr);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+            detail.setPriceCount(priceCount);
+
+            //货品(计量单位)数量
+            BigDecimal productCount = EvaluateUtil.countFormulaP2N(priceCount, p2nFormula);
+            productCount = StringUtil.scaleDecimal(productCount, p2nIsScale, p2nDecimalCount);
+            detail.setProductCount(productCount);
+            detail.setCount(productCount);
+
             objectList.add(detail);
         }
 

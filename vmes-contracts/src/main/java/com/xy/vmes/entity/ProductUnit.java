@@ -63,6 +63,7 @@ public class ProductUnit implements Serializable {
 	@TableField("isdefault")
 	private String isdefault;
 
+	//单位类型 (1:计量单位 0:计价单位)
 	@TableField("type")
 	private String type;
 

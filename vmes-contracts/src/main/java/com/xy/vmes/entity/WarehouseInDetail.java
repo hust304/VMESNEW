@@ -40,7 +40,7 @@ public class WarehouseInDetail implements Serializable {
 	//货位批次号
 	@TableField("code")
 	private String code;
-	//入库数量
+	//入库数量(货品计量单位数量)
 	@TableField("count")
 	private BigDecimal count;
 	//状态(0:待派单 1:执行中 2:已完成 -1.已取消)

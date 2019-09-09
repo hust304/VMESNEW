@@ -79,7 +79,21 @@
         (replace(uuid(), '-', ''), 'warehouseInDetailProduct', 'cdate', '创建时间', 16, '1', '0', '1', '0', '2018-10-22 10:51:42', 'admin'),
         (replace(uuid(), '-', ''), 'warehouseInDetailProduct', 'uuser', '修改用户id', 17, '1', '0', '1', '0', '2018-10-22 10:51:42', 'admin'),
         (replace(uuid(), '-', ''), 'warehouseInDetailProduct', 'udate', '修改时间', 18, '1', '0', '1', '0', '2018-10-22 10:51:42', 'admin'),
-        (replace(uuid(), '-', ''), 'warehouseInDetailProduct', 'isdisable', '是否启用', 19, '1', '0', '1', '0', '2018-10-22 10:51:42', 'admin')
+        (replace(uuid(), '-', ''), 'warehouseInDetailProduct', 'isdisable', '是否启用', 19, '1', '0', '1', '0', '2018-10-22 10:51:42', 'admin'),
+
+        (replace(uuid(), '-', ''), 'warehouseInDetailProduct', 'priceUnit', '计价单位id', 21, '1', '0', '1', '0', '2018-10-22 10:51:42', 'admin'),
+        (replace(uuid(), '-', ''), 'warehouseInDetailProduct', 'priceUnitName', '计价单位', 22, '1', '0', '1', '0', '2018-10-22 10:51:42', 'admin'),
+        (replace(uuid(), '-', ''), 'warehouseInDetailProduct', 'priceCount', '计价数量', 23, '1', '0', '1', '0', '2018-10-22 10:51:42', 'admin'),
+
+        (replace(uuid(), '-', ''), 'warehouseInDetailProduct', 'productCount', '入库数量', 24, '1', '0', '1', '0', '2018-10-22 10:51:42', 'admin'),
+
+        (replace(uuid(), '-', ''), 'warehouseInDetailProduct', 'n2pIsScale', 'n2p:是否需要四舍五入', 25, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'warehouseInDetailProduct', 'n2pDecimalCount', 'n2p:保留小数位数', 26, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+
+        (replace(uuid(), '-', ''), 'warehouseInDetailProduct', 'p2nIsScale', 'p2n:是否需要四舍五入', 27, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'warehouseInDetailProduct', 'p2nDecimalCount', 'p2n:保留小数位数', 28, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+
+
     </insert>
 
     <update id="updateStateByDetail" parameterType="com.yvan.PageData" >
@@ -222,8 +236,9 @@
             prod.code productCode,
             prod.name productName,
             prod.spec productSpec,
-            produnit.unit productUnit,
-            unit.name productUnitName,
+            productUnit.name productUnitName,
+            priceUnit.name priceUnitName,
+
             prod.genre productGenre,
             genre.name productGenreName,
             prod.type productType,
@@ -240,10 +255,14 @@
             left join vmes_warehouse warehouse on a.warehouse_id = warehouse.id
             left join vmes_warehouse_in parent on a.parent_id = parent.id
             left join vmes_product prod on a.product_id = prod.id
-            left join vmes_product_unit produnit on produnit.product_id = prod.id and produnit.type = 1
-            left join vmes_dictionary unit on produnit.unit = unit.id
+
+            left join vmes_dictionary productUnit on a.product_unit = productUnit.id
+            left join vmes_dictionary priceUnit on a.price_unit = priceUnit.id
+
+
+
             left join vmes_dictionary genre on prod.genre = genre.id
-            <!--入库执行表汇总-->
+            <!--入库执行表汇总 vmes_product_unit-->
             left join (
                 select detail_id, sum(count) executeCount
                 from vmes_warehouse_in_execute
