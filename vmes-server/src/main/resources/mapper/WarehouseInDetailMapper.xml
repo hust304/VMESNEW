@@ -46,8 +46,21 @@
             ('67cf4139d5a511e884ad00163e105f05', 'warehouseInDetail', 'uuser', '修改用户id', 17, '1', '0', '1', '0', '2018-10-22 10:51:42', 'admin'),
             ('67cf4189d5a511e884ad00163e105f05', 'warehouseInDetail', 'udate', '修改时间', 18, '1', '0', '1', '0', '2018-10-22 10:51:42', 'admin'),
             ('67cf4233d5a511e884ad00163e105f05', 'warehouseInDetail', 'isdisable', '是否启用', 19, '1', '0', '1', '0', '2018-10-22 10:51:42', 'admin'),
+            (replace(uuid(), '-', ''), 'warehouseInDetail', 'qrcode', 'qrcode', 0, '1', '0', '1', '0', '2018-10-22 10:51:42', 'admin'),
 
-            (replace(uuid(), '-', ''), 'warehouseInDetail', 'qrcode', 'qrcode', 0, '1', '0', '1', '0', '2018-10-22 10:51:42', 'admin')
+            (replace(uuid(), '-', ''), 'warehouseInDetail', 'productCount', '计量单位数量', 21, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'warehouseInDetail', 'priceCount', '计价单位数量', 22, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'warehouseInDetail', 'priceUnit', '计价单位id', 23, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'warehouseInDetail', 'priceUnitName', '计价单位', 24, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+
+            (replace(uuid(), '-', ''), 'warehouseInDetail', 'n2pFormula', 'n2p:公式', 25, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'warehouseInDetail', 'n2pIsScale', 'n2p:是否需要四舍五入', 26, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'warehouseInDetail', 'n2pDecimalCount', 'n2p:保留小数位数', 27, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+
+            (replace(uuid(), '-', ''), 'warehouseInDetail', 'p2nFormula', 'p2n:公式', 28, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'warehouseInDetail', 'p2nIsScale', 'p2n:是否需要四舍五入', 29, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'warehouseInDetail', 'p2nDecimalCount', 'p2n:保留小数位数', 30, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+
     </insert>
 
     <insert id="insertColumn1" >
@@ -209,7 +222,7 @@
             warehouse.path_name warehouseName,
             a.product_id productId,
             a.code code,
-            round(ifnull(a.count,0),2) count,
+            ifnull(a.count, 0) count,
 
             a.state state,
             CASE
@@ -228,9 +241,9 @@
 
             a.isdisable isdisable,
             a.product_unit productUnit,
-            a.product_count productCount,
+            ifnull(a.product_count, 0) productCount,
             a.price_unit priceUnit,
-            a.price_count priceCount,
+            ifnull(a.price_count, 0) priceCount,
 
             <!--货品表-->
             prod.code productCode,
@@ -243,13 +256,21 @@
             genre.name productGenreName,
             prod.type productType,
 
+            priceUnitFormula.np_formula n2pFormula,
+            priceUnitFormula.n2p_is_scale n2pIsScale,
+            priceUnitFormula.n2p_decimal_count n2pDecimalCount,
+
+            priceUnitFormula.pn_formula p2nFormula,
+            priceUnitFormula.p2n_is_scale p2nIsScale,
+            priceUnitFormula.p2n_decimal_count p2nDecimalCount,
+
             <!--入库单表-->
             parent.code parentCode,
             parent.make_id makeId,
             <!--获取已执行数量-入库执行表-->
-            round(ifnull(inDtlExecute.executeCount,0),2) executeCount,
+            ifnull(inDtlExecute.executeCount,0) executeCount,
             <!--剩余数量-->
-            round((ifnull(a.count,0) - ifnull(inDtlExecute.executeCount,0)), 2) surplusCount
+            (ifnull(a.count,0) - ifnull(inDtlExecute.executeCount,0)) surplusCount
 
         from vmes_warehouse_in_detail a
             left join vmes_warehouse warehouse on a.warehouse_id = warehouse.id
@@ -258,8 +279,8 @@
 
             left join vmes_dictionary productUnit on a.product_unit = productUnit.id
             left join vmes_dictionary priceUnit on a.price_unit = priceUnit.id
-
-
+            <!--货品计价单位公式-->
+            left join vmes_product_unit priceUnitFormula on a.product_id = priceUnitFormula.product_id and a.price_unit = priceUnitFormula.unit and priceUnitFormula.isdisable = '1'
 
             left join vmes_dictionary genre on prod.genre = genre.id
             <!--入库执行表汇总 vmes_product_unit-->
