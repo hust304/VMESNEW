@@ -227,8 +227,8 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
             //计价单位转换计量单位
             //p2nFormula 计价转换计量单位 数量转换公式 pn_formula
             String p2nFormula = "";
-            if (mapObject.get("pnFormula") != null && mapObject.get("pnFormula").toString().trim().length() > 0) {
-                p2nFormula = mapObject.get("pnFormula").toString().trim();
+            if (mapObject.get("p2nFormula") != null && mapObject.get("p2nFormula").toString().trim().length() > 0) {
+                p2nFormula = mapObject.get("p2nFormula").toString().trim();
             }
 
             //p2nIsScale 是否需要四舍五入(Y:需要四舍五入 N:无需四舍五入)
@@ -250,7 +250,7 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
 
             //货品(计价单位)数量
             BigDecimal priceCount = BigDecimal.valueOf(0D);
-            String priceCountStr = mapObject.get("priceCountStr");
+            String priceCountStr = mapObject.get("priceCount");
             if (priceCountStr != null) {
                 try {
                     priceCount = new BigDecimal(priceCountStr);

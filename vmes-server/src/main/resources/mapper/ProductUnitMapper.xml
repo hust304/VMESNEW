@@ -29,7 +29,7 @@
         udate udate,<!-- 修改时间 -->
         uuser uuser,<!-- 修改人账号 -->
         remark remark,<!-- 备注 -->
-        product_price productPrice
+        product_price productPrice,
         type type,
 
         isdefault isdefault,
