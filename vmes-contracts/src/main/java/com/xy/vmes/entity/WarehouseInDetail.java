@@ -65,6 +65,20 @@ public class WarehouseInDetail implements Serializable {
 	@TableField("isdisable")
 	private String isdisable;
 
+	//(货品)计量单位id
+	@TableField("product_unit")
+	private String productUnit;
+	//(货品)计量单位-入库数量
+	@TableField("product_count")
+	private BigDecimal productCount;
+
+	//(货品)计价单位id
+	@TableField("price_unit")
+	private String priceUnit;
+	//(货品)计价单位-入库数量
+	@TableField("price_count")
+	private BigDecimal priceCount;
+
 
 	public void setId(String id) {
 		this.id = id;
@@ -162,8 +176,31 @@ public class WarehouseInDetail implements Serializable {
 	public String getIsdisable() {
 		return isdisable;
 	}
-
-/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+	public String getProductUnit() {
+		return productUnit;
+	}
+	public void setProductUnit(String productUnit) {
+		this.productUnit = productUnit;
+	}
+	public BigDecimal getProductCount() {
+		return productCount;
+	}
+	public void setProductCount(BigDecimal productCount) {
+		this.productCount = productCount;
+	}
+	public String getPriceUnit() {
+		return priceUnit;
+	}
+	public void setPriceUnit(String priceUnit) {
+		this.priceUnit = priceUnit;
+	}
+	public BigDecimal getPriceCount() {
+		return priceCount;
+	}
+	public void setPriceCount(BigDecimal priceCount) {
+		this.priceCount = priceCount;
+	}
+	/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 
 }

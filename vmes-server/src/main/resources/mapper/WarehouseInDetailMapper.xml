@@ -98,23 +98,28 @@
         select
             id id,
             parent_id parentId,
-            qrcode qrcode,
-            business_id businessId,
             execute_id executeId,
-
             warehouse_id warehouseId,
             product_id productId,
+
             code code,
             count count,
             state state,
-
             cuser cuser,
             cdate cdate,
+
             uuser uuser,
             udate udate,
             remark remark,
+            isdisable isdisable,
+            business_id businessId,
 
-            isdisable isdisable
+            qrcode qrcode,
+            product_unit productUnit,
+            product_count productCount,
+            price_unit priceUnit,
+            price_count priceCount
+
         from vmes_warehouse_in_detail
         <choose>
             <!--
@@ -208,6 +213,10 @@
             a.remark remark,
 
             a.isdisable isdisable,
+            a.product_unit productUnit,
+            a.product_count productCount,
+            a.price_unit priceUnit,
+            a.price_count priceCount,
 
             <!--货品表-->
             prod.code productCode,
