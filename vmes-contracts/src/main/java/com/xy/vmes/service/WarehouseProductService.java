@@ -249,6 +249,8 @@ public interface WarehouseProductService {
 
     List<Map> getWarehouseDetailView(PageData pd,Pagination pg) throws Exception;
 
+
+
     List<Map> getWarehouseProductMove(PageData pd,Pagination pg) throws Exception;
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -265,6 +267,8 @@ public interface WarehouseProductService {
     ResultModel listPageWarehouseProductMove(PageData pd, Pagination pg) throws Exception;
 
     ResultModel listPageWarehouseDetailView(PageData pd, Pagination pg) throws Exception;
+
+    ResultModel listPageSimpleWarehouseDetailView(PageData pd) throws Exception;
 
     ResultModel listPageWarehouseProductsDispatch(PageData pd, Pagination pg) throws Exception;
 

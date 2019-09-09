@@ -355,6 +355,11 @@
             and a.warehouse_attribute = 'spare'
         </if>
 
+        <!--过滤出 (虚拟库)-入库单-->
+        <if test="'true' == isNeedWarehouseVirtual">
+            and a.warehouse_attribute = 'virtual'
+        </if>
+
         <!--过滤出(复杂版,简版)仓库-入库单(非备件库) 自定义sql查询语句-->
         <if test="'true' == isNeedWarehouseWarehouse">
             and a.warehouse_attribute = 'warehouse'

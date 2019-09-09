@@ -68,6 +68,8 @@ public interface WarehouseProductMapper extends BaseMapper<WarehouseProduct> {
 
     List<Map> warehouseDetailView(PageData pd, Pagination pg);
 
+    List<Map> simpleWarehouseDetailView(PageData pd, Pagination pg);
+
     /**
      * 查询(仓库id或仓库货位id)下面所有仓库或货位，货位货品表(vmes_warehouse_product)
      * 查询参数(企业id, 仓库id或仓库货位id)

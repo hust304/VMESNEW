@@ -574,10 +574,15 @@
                 and detail.state =  #{detailState}
             </if>
 
-            <!--warehouse_attribute:仓库属性(warehouse:(简版,复杂版)仓库 spare:备件库)-->
+            <!--warehouse_attribute:仓库属性(warehouse:(简版,复杂版)仓库 spare:备件库 virtual:虚拟库)-->
             <!--过滤出 (备件库)-出库单-->
             <if test="'true' == isNeedWarehouseSpare">
                 and warehouseout.warehouse_attribute = 'spare'
+            </if>
+
+            <!--过滤出 (虚拟库)-入库单-->
+            <if test="'true' == isNeedWarehouseVirtual">
+                and a.warehouse_attribute = 'virtual'
             </if>
 
             <!--过滤出(复杂版,简版)仓库-出库单(非备件库) 自定义sql查询语句-->
