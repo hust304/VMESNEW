@@ -117,22 +117,22 @@ public interface ProductUnitService {
     void updateToDisableByIds(String[] ids)throws Exception;
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
-//    /**
-//     *
-//     * @param pageData    查询参数对象<HashMap>
-//     * @param isQueryAll  是否查询全部
-//     *   true: 无查询条件返回表全部结果集
-//     *   false: (false or is null)无查询条件-查询结果集返回空或
-//     *
-//     * @return
-//     * @throws Exception
-//     */
-//    List<ProductUnit> findDataList(PageData pageData, Boolean isQueryAll) throws Exception;
+    /**
+     *
+     * @param pageData    查询参数对象<HashMap>
+     * @param isQueryAll  是否查询全部
+     *   true: 无查询条件返回表全部结果集
+     *   false: (false or is null)无查询条件-查询结果集返回空或
+     *
+     * @return
+     * @throws Exception
+     */
+    List<ProductUnit> findDataList(PageData pageData, Boolean isQueryAll) throws Exception;
 
-//    ProductUnit findProductUnit(PageData object) throws Exception;
-//    ProductUnit findProductUnitById(String id) throws Exception;
+    ProductUnit findProductUnit(PageData object) throws Exception;
+    ProductUnit findProductUnitById(String id) throws Exception;
 
-//    List<ProductUnit> findProductUnitList(PageData object) throws Exception;
+    List<ProductUnit> findProductUnitList(PageData object) throws Exception;
 
     void updateToNotDefaultByPorId(String productId) throws Exception;
 
