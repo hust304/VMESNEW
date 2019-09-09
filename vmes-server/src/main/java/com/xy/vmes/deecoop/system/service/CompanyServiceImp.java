@@ -662,6 +662,11 @@ public class CompanyServiceImp implements CompanyService {
             if (userRole != null) {
                 userRole.setRoleId(roleId);
                 userRoleService.update(userRole);
+            } else {
+                UserRole addUserRole = new UserRole();
+                addUserRole.setUserId(user.getId());
+                addUserRole.setRoleId(roleId);
+                userRoleService.save(addUserRole);
             }
         }
         return model;
