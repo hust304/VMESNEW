@@ -14,22 +14,29 @@
 
     <!-- 字段 自动创建，禁止修改-->
     <sql id="Field">
+        id id, <!-- id -->
         parent_id parentId,<!-- 入库单ID -->
         execute_id executeId,<!-- 执行人ID -->
         warehouse_id warehouseId,<!--  (推荐)货位ID -->
         product_id productId,<!-- 产品ID -->
+
         code code,<!-- 货位批次号 -->
         count count,<!-- 入库数量 -->
         state state,<!-- 状态(0:待派单 1:执行中 2:已完成) -->
         cuser cuser,<!-- 创建用户id -->
         cdate cdate,<!-- 创建时间 -->
+
         uuser uuser,<!-- 修改用户id -->
         udate udate,<!-- 修改时间 -->
         remark remark,<!-- 备注 -->
         isdisable isdisable,<!-- 是否启用(0:已禁用 1:启用) -->
         qrcode qrcode,
+
         business_id businessId,
-        id id <!-- id -->
+        product_unit productUnit,
+        product_count productCount,
+        price_unit priceUnit,
+        price_count priceCount
     </sql>
 
     <!-- 字段值 自动创建，禁止修改-->
