@@ -468,10 +468,10 @@
         group by wp.product_id
 
         <if test="orderByStock == 0"><!-- 由多到少 -->
-            order by (round(sum(ifnull(wp.stock_count,0)),2) desc
+            order by stockCount desc
         </if>
         <if test="orderByStock == 1"><!-- 由少到多 -->
-            order by (round(sum(ifnull(wp.stock_count,0)),2) asc
+            order by stockCount asc
         </if>
     </select>
 
