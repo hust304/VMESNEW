@@ -846,6 +846,30 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
         }
 
         List<Map> varList = this.getDataListPage(findMap, pg);
+        if (varList != null && varList.size() > 0) {
+            for (Map<String, Object> mapObject : varList) {
+                //priceCount 计价单位数量
+                BigDecimal priceCount = BigDecimal.valueOf(0D);
+                if (mapObject.get("priceCount") != null) {
+                    priceCount = (BigDecimal)mapObject.get("priceCount");
+                }
+
+                //n2pIsScale 是否需要四舍五入(Y:需要四舍五入 N:无需四舍五入)
+                String n2pIsScale = new String();
+                if (mapObject.get("n2pIsScale") != null) {
+                    n2pIsScale = mapObject.get("n2pIsScale").toString().trim();
+                }
+
+                //小数位数 (最小:0位 最大:4位)
+                Integer n2pDecimalCount = Integer.valueOf(2);
+                if (mapObject.get("n2pDecimalCount") != null) {
+                    n2pDecimalCount = (Integer)mapObject.get("n2pDecimalCount");
+                }
+                priceCount = StringUtil.scaleDecimal(priceCount, n2pIsScale, n2pDecimalCount);
+                mapObject.put("priceCount", priceCount.toString());
+            }
+        }
+
         List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
 
         Map result = new HashMap();
