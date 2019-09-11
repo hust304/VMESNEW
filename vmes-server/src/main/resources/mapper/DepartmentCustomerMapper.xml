@@ -63,6 +63,22 @@
             <if test="currentCompanyId != null and currentCompanyId != ''">
                 and cust.company_id=#{currentCompanyId}
             </if>
+            UNION ALL
+            <!--仓库表(实体库-组装区)-->
+            select
+            id,
+            code,
+            name,
+            name_en,
+            DATE_FORMAT(cdate,'%Y-%m-%d %T') cdate,
+            cuser,
+            '5' type,
+            '部门' typeName
+            from vmes_department
+            where  layer = 2
+            <if test="currentCompanyId != null and currentCompanyId != ''">
+                and id_1=#{currentCompanyId}
+            </if>
         ) a
         <where>
             <if test="code != null and code != ''">
