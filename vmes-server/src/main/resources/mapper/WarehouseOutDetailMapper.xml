@@ -463,7 +463,7 @@
             priceUnit,priceUnitName,priceCount,productCount,
             n2pFormula,n2pIsScale,n2pDecimalCount,
             p2nFormula,p2nIsScale,p2nDecimalCount,
-            round(sum(ifnull(executeCount,0)),2) executeCount
+            sum(ifnull(executeCount,0)) executeCount
         from (
             select
                 detail.id id,
@@ -471,7 +471,7 @@
                 detail.warehouse_id warehouseId,
                 detail.product_id productId,
                 detail.code code,
-                round(detail.count,2) count,
+                detail.count count,
                 detail.state state,
                 case when detail.state=-1 then '已取消' when detail.state=0 then '待派单' when detail.state=1 then '执行中' when detail.state=2 then '已完成' else null end stateName,
                 detail.cuser cuser,
@@ -506,7 +506,7 @@
 
                 whout.code warehouseOutCode,
                 whout.warehouse_id parentWarehouseId,
-                round(outexecute.count,2) executeCount
+                outexecute.count executeCount
             from
             vmes_warehouse_out_detail detail
                 left join vmes_warehouse_out whout on whout.id = detail.parent_id

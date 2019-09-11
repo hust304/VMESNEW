@@ -751,7 +751,57 @@ public class WarehouseOutDetailServiceImp implements WarehouseOutDetailService {
             result.put("pageData", pg);
         }
 
-        List<Map> varList = this.getDataListPage(pd,pg);
+        List<Map> varList = this.getDataListPage(pd, pg);
+        if (varList != null && varList.size() > 0) {
+            for (Map<String, Object> mapObject : varList) {
+                //priceCount 计价单位数量
+                BigDecimal priceCount = BigDecimal.valueOf(0D);
+                if (mapObject.get("priceCount") != null) {
+                    priceCount = (BigDecimal)mapObject.get("priceCount");
+                }
+
+                //n2pIsScale 是否需要四舍五入(Y:需要四舍五入 N:无需四舍五入)
+                String n2pIsScale = new String();
+                if (mapObject.get("n2pIsScale") != null) {
+                    n2pIsScale = mapObject.get("n2pIsScale").toString().trim();
+                }
+
+                //小数位数 (最小:0位 最大:4位)
+                Integer n2pDecimalCount = Integer.valueOf(2);
+                if (mapObject.get("n2pDecimalCount") != null) {
+                    n2pDecimalCount = (Integer)mapObject.get("n2pDecimalCount");
+                }
+                priceCount = StringUtil.scaleDecimal(priceCount, n2pIsScale, n2pDecimalCount);
+                mapObject.put("priceCount", priceCount.toString());
+
+                //count 出库数量(计量单位)
+                BigDecimal count = BigDecimal.valueOf(0D);
+                if (mapObject.get("count") != null) {
+                    count = (BigDecimal)mapObject.get("count");
+                }
+                //p2nIsScale 是否需要四舍五入(Y:需要四舍五入 N:无需四舍五入)
+                String p2nIsScale = new String();
+                if (mapObject.get("p2nIsScale") != null) {
+                    p2nIsScale = mapObject.get("p2nIsScale").toString().trim();
+                }
+
+                //小数位数 (最小:0位 最大:4位)
+                Integer p2nDecimalCount = Integer.valueOf(2);
+                if (mapObject.get("p2nDecimalCount") != null) {
+                    p2nDecimalCount = (Integer)mapObject.get("p2nDecimalCount");
+                }
+                count = StringUtil.scaleDecimal(count, p2nIsScale, p2nDecimalCount);
+                mapObject.put("count", count.toString());
+
+                //executeCount 已完成数量(计量单位)
+                BigDecimal executeCount = BigDecimal.valueOf(0D);
+                if (mapObject.get("executeCount") != null) {
+                    executeCount = (BigDecimal)mapObject.get("executeCount");
+                }
+                executeCount = StringUtil.scaleDecimal(executeCount, p2nIsScale, p2nDecimalCount);
+                mapObject.put("executeCount", executeCount.toString());
+            }
+        }
         List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
         result.put("hideTitles",titleMap.get("hideTitles"));
         result.put("titles",titleMap.get("titles"));
