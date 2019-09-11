@@ -118,24 +118,24 @@ public class WarehouseOutBySimpleController {
         List<WarehouseOutDetail> detailList = warehouseOutDetailService.mapList2DetailList(mapList, null);
         warehouseOutDetailService.addWarehouseOutDetailBySimple(warehouseOut, detailList);
 
-        //3.添加出库单派单表
-        warehouseOutExecutorService.addWarehouseOutExecutorBySimple(detailList);
-
-        //4.添加出库单执行表
-        List<WarehouseOutExecute> executeList = new ArrayList<WarehouseOutExecute>();
-        for (WarehouseOutDetail outDetail : detailList) {
-            String productId = outDetail.getProductId();
-            BigDecimal count = outDetail.getCount();
-            List<Map<String, Object>> outMapList = warehouseProductToolService.findWarehouseProductOutMapList(productId,
-                    companyID,
-                    //仓库id 允许为空(null:该企业仓库出库 not null:指定的仓库出库)
-                    null,
-                    count);
-            if (outMapList != null && outMapList.size() > 0) {
-                executeList = warehouseOutExecuteService.outMapList2ExecuteList(outDetail, outMapList, executeList);
-            }
-        }
-        warehouseOutExecuteService.addWarehouseOutExecuteBySimple(executeList);
+//        //3.添加出库单派单表
+//        warehouseOutExecutorService.addWarehouseOutExecutorBySimple(detailList);
+//
+//        //4.添加出库单执行表
+//        List<WarehouseOutExecute> executeList = new ArrayList<WarehouseOutExecute>();
+//        for (WarehouseOutDetail outDetail : detailList) {
+//            String productId = outDetail.getProductId();
+//            BigDecimal count = outDetail.getCount();
+//            List<Map<String, Object>> outMapList = warehouseProductToolService.findWarehouseProductOutMapList(productId,
+//                    companyID,
+//                    //仓库id 允许为空(null:该企业仓库出库 not null:指定的仓库出库)
+//                    null,
+//                    count);
+//            if (outMapList != null && outMapList.size() > 0) {
+//                executeList = warehouseOutExecuteService.outMapList2ExecuteList(outDetail, outMapList, executeList);
+//            }
+//        }
+//        warehouseOutExecuteService.addWarehouseOutExecuteBySimple(executeList);
 
         Long endTime = System.currentTimeMillis();
         logger.info("################/warehouse/warehouseOutBySimple/addWarehouseOutBySimple 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
