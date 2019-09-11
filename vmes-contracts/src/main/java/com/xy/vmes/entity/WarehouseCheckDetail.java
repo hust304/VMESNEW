@@ -71,6 +71,13 @@ public class WarehouseCheckDetail implements Serializable {
 	@TableField("check_stock_count")
 	private BigDecimal checkStockCount;
 
+	//入库单明细id
+	@TableField("in_dtl_id")
+	private String inDtlId;
+	//出库单明细id
+	@TableField("out_dtl_id")
+	private String outDtlId;
+
 
 	public void setId(String id) {
 		this.id = id;
@@ -174,7 +181,19 @@ public class WarehouseCheckDetail implements Serializable {
 	public void setCheckStockCount(BigDecimal checkStockCount) {
 		this.checkStockCount = checkStockCount;
 	}
-/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+	public String getInDtlId() {
+		return inDtlId;
+	}
+	public void setInDtlId(String inDtlId) {
+		this.inDtlId = inDtlId;
+	}
+	public String getOutDtlId() {
+		return outDtlId;
+	}
+	public void setOutDtlId(String outDtlId) {
+		this.outDtlId = outDtlId;
+	}
+	/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 
 }
