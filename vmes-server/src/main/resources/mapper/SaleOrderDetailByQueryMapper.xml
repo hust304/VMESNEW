@@ -68,6 +68,14 @@
             orderDetaiQuery.deliverCount,
             orderDetaiQuery.endDeliverCount,
             orderDetaiQuery.endRetreatCount,
+
+            CASE
+            WHEN orderDetaiQuery.orderCount = 0 THEN 0
+            WHEN <![CDATA[orderDetaiQuery.orderCount <> 0 and round(((orderDetaiQuery.endDeliverCount - orderDetaiQuery.endRetreatCount) / orderDetaiQuery.orderCount) * 100, 0) < 100 ]]> then 0
+            ELSE 1
+            END deliverComplete,
+
+
             <!--已发货百分比 (发货完成数-退货完成数) / 订单明细订购数量 * 100) %-->
             CASE
             WHEN orderDetaiQuery.orderCount = 0 THEN 0
