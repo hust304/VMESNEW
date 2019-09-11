@@ -221,8 +221,13 @@
             (replace(uuid(), '-', ''),'product','lockCount','lockCount',0, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'product','productStockCount','productStockCount',0, '1','1','1','0',now(), 'admin'),
 
-            (replace(uuid(), '-', ''),'product','n2pFormula','n2pFormula',0, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'product','p2nFormula','p2nFormula',0, '1','1','1','0',now(), 'admin')
+            (replace(uuid(), '-', ''),'product','n2pFormula','n2pFormula',25, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''), 'product', 'n2pIsScale', 'n2p:是否需要四舍五入', 26, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'product', 'n2pDecimalCount', 'n2p:保留小数位数', 27, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+
+            (replace(uuid(), '-', ''),'product','p2nFormula','p2nFormula',28, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''), 'product', 'p2nIsScale', 'p2n:是否需要四舍五入', 29, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'product', 'p2nDecimalCount', 'p2n:保留小数位数', 30, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
     </insert>
 
 
