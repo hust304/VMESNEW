@@ -42,6 +42,8 @@ public class WarehouseCheckBySimpleController {
 
     @Autowired
     private CoderuleService coderuleService;
+    @Autowired
+    private DepartmentService departmentService;
 
     /**
      * 新增盘点单(简版仓库盘点)
@@ -239,8 +241,14 @@ public class WarehouseCheckBySimpleController {
         }
 
         //当前部门id
-        String deptId = pageData.getString("deptId");
         String deptName = new String();
+        String deptId = pageData.getString("deptId");
+        if (deptId != null && deptId.trim().length() > 0) {
+            Department dept = departmentService.findDepartmentById(deptId);
+            if (dept != null && dept.getName() != null) {
+                deptName = dept.getName().trim();
+            }
+        }
 
         String cuser = pageData.getString("cuser");
         String companyId = pageData.getString("currentCompanyId");
