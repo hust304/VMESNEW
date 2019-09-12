@@ -1078,6 +1078,7 @@ public class WarehouseOutDetailServiceImp implements WarehouseOutDetailService {
         pd.put("productId",rootMap.get("productId"));
         pd.put("isNotNeedSpare","true");
         pd.put("isNeedEntity","true");
+        pd.put("isStockCountGreaterThanZero","true");
 
 
         DecimalFormat df = new DecimalFormat("0.00");

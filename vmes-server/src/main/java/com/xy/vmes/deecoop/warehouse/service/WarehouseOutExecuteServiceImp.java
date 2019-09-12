@@ -476,18 +476,24 @@ public class WarehouseOutExecuteServiceImp implements WarehouseOutExecuteService
         //明细状态(0:待派单 1:执行中 2:已完成 -1.已取消)
         if(detail.getCount().compareTo(totalCount)>0){
             //执行状态(0:待执行 1:已完成 -1:已取消)
-            task.setState("0");
+            if(task!=null){
+                task.setState("0");
+            }
             detail.setState("1");
             countResult.put("unCompleteCount",(detail.getCount().subtract(totalCount).setScale(2,BigDecimal.ROUND_HALF_UP)).doubleValue());
         }else {
             //执行状态(0:待执行 1:已完成 -1:已取消)
-            task.setState("1");
+            if(task!=null){
+                task.setState("1");
+            }
             detail.setState("2");
             countResult.put("unCompleteCount",0.00);
         }
         model.putResult(countResult);
         warehouseOutDetailService.update(detail);
-        taskService.update(task);
+        if(task!=null){
+            taskService.update(task);
+        }
         warehouseOutService.updateState(detail.getParentId());
 
         if(saleDeliverOutDetailService!=null){
@@ -506,10 +512,8 @@ public class WarehouseOutExecuteServiceImp implements WarehouseOutExecuteService
         List<Map<String, Object>> mapList = (List<Map<String, Object>>) YvanUtil.jsonToList(jsonDataStr);
 
 
-        DecimalFormat df = new DecimalFormat("0.00");
         if(mapList!=null&&mapList.size()>0){
             for (Map<String, Object> outDetailMap : mapList) {
-                String detailId = (String) outDetailMap.get("id");
                 double count = Double.parseDouble((String)outDetailMap.get("count"));
                 double executeCount = Double.parseDouble((String)outDetailMap.get("executeCount"));
                 double lackCount = count - executeCount;
@@ -543,38 +547,115 @@ public class WarehouseOutExecuteServiceImp implements WarehouseOutExecuteService
         }
 
 
-        List<WarehouseOutExecute> outExecuteList = new ArrayList<WarehouseOutExecute>();
+
         if(mapList!=null&&mapList.size()>0){
             for (Map<String, Object> outDetailMap : mapList) {
-                String id = (String) outDetailMap.get("id");
+                List<WarehouseOutExecute> outExecuteList = new ArrayList<WarehouseOutExecute>();
+                String detailId = (String) outDetailMap.get("id");
+                String parentId = (String) outDetailMap.get("parentId");
                 WarehouseOutDetail outDetail = new WarehouseOutDetail();
-                outDetail.setId(id);
+                outDetail.setId(detailId);
                 outDetail.setCuser(currentUserId);
                 WarehouseOutExecutor outExecutor = new WarehouseOutExecutor();
-                outExecutor.setDetailId(id);
+                outExecutor.setDetailId(detailId);
                 outExecutor.setExecutorId(currentUserId);
                 outExecutor.setCuser(currentUserId);
+
+                Map columnMap = new HashMap();
+                columnMap.put("detail_id",detailId);
+                List<WarehouseOutExecutor> warehouseOutExecutorList = warehouseOutExecutorService.selectByColumnMap(columnMap);
+                if(warehouseOutExecutorList!=null&&warehouseOutExecutorList.size()>0){
+                    for(int i=0;i<warehouseOutExecutorList.size();i++){
+                        WarehouseOutExecutor warehouseOutExecutor = warehouseOutExecutorList.get(i);
+                        warehouseOutExecutor.setIsdisable("0");
+                        warehouseOutExecutor.setRemark("执行人变更");
+                        warehouseOutExecutorService.update(warehouseOutExecutor);
+                    }
+                }
+
                 warehouseOutExecutorService.save(outExecutor);
                 if(outDetailMap.get("children")!=null){
                     List executeList = (List)outDetailMap.get("children");
                     if(executeList!=null&&executeList.size()>0){
                         for (int i = 0; i < executeList.size(); i++) {
                             Map<String, Object> executeMap = (Map<String, Object>) executeList.get(i);
-                            BigDecimal suggestCount = (BigDecimal)executeMap.get("suggestCount");
-                            String productId = (String)executeMap.get("id");
+                            BigDecimal suggestCount = BigDecimal.valueOf(Double.parseDouble((String)executeMap.get("suggestCount")));
+                            String productId = (String)executeMap.get("productId");
                             String warehouseId = (String)executeMap.get("warehouseId");
                             List<Map<String, Object>> outMapList = warehouseProductToolService.findWarehouseProductOutMapList(productId,currentCompanyId,warehouseId,suggestCount);
                             if (outMapList != null && outMapList.size() > 0) {
-                                executeList = this.outMapList2ExecuteList(outDetail, outMapList, executeList);
+                                outExecuteList = this.outMapList2ExecuteList(outDetail, outMapList, outExecuteList);
                             }
                         }
                     }
                 }
+                this.addWarehouseOutExecuteBySimple(outExecuteList);
+                this.executeWarehouseOutExecuteBySimple(parentId,detailId,currentUserId,currentCompanyId);
+                this.updateWarehouseOutState(detailId);
             }
         }
-        this.addWarehouseOutExecuteBySimple(outExecuteList);
+
 
         return model;
+    }
+
+
+    public void executeWarehouseOutExecuteBySimple(String parentId,String detailId,String cuser,String companyId) throws Exception {
+        PageData findMap = new PageData();
+        findMap.put("detailId", detailId);
+        List<Map> executeList = warehouseOutExecuteMapper.getDataList(findMap);
+
+        if (executeList != null && executeList.size() > 0) {
+            for (int i = 0; i < executeList.size(); i++) {
+                Map object = executeList.get(i);
+                ;
+                BigDecimal count = (BigDecimal)object.get("actualCount");
+                String warehouseId = (String)object.get("warehouseId");
+                String productId = (String)object.get("productId");
+                String code = (String)object.get("code");
+
+                //(简版仓库)出库操作
+                WarehouseProduct outObject = new WarehouseProduct();
+                //产品ID
+                outObject.setProductId(productId);
+                //(实际)货位ID
+                outObject.setWarehouseId(warehouseId);
+                //货位批次号
+                outObject.setCode(code);
+
+                //库存变更日志
+                String executeId = Conv.createUuid();
+
+                WarehouseLoginfo loginfo = new WarehouseLoginfo();
+                loginfo.setParentId(parentId);
+                loginfo.setDetailId(detailId);
+                loginfo.setExecuteId(executeId);
+                loginfo.setCompanyId(companyId);
+                loginfo.setCuser(cuser);
+                //operation 操作类型(add:添加 modify:修改 delete:删除:)
+                loginfo.setOperation("add");
+
+                //beforeCount 操作变更前数量(业务相关)
+                loginfo.setBeforeCount(BigDecimal.valueOf(0D));
+                //afterCount 操作变更后数量(业务相关)
+                loginfo.setAfterCount(count);
+
+                String msgStr = warehouseProductService.outStockCount(outObject, count, loginfo);
+                if (msgStr != null && msgStr.trim().length() > 0) {
+                    throw new Exception(msgStr);
+                } else {
+                    Product product = productService.findProductById(productId);
+                    BigDecimal prodCount = BigDecimal.valueOf(0D);
+                    if (product.getStockCount() != null) {
+                        prodCount = product.getStockCount();
+                    }
+
+                    BigDecimal prodStockCount = BigDecimal.valueOf(prodCount.doubleValue() - count.doubleValue());
+                    productService.updateStockCount(product, prodStockCount, cuser);
+                }
+            }
+        }
+
     }
 
     @Override
