@@ -41,7 +41,7 @@ public class WarehouseCheckDetail implements Serializable {
 	//货位批次号(系统生成)
 	@TableField("code")
 	private String code;
-	//库存数量
+	//盘点数量
 	@TableField("stock_count")
 	private BigDecimal stockCount;
 	//状态(0:待派单 1:执行中 2:审核中 3:已完成 -1:已取消)

@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 /**
@@ -323,6 +324,16 @@ public class WarehouseCheckBySimpleController {
                     String detailId = detailObj.getId();
                     editDetail.setId(detailObj.getId());
 
+                    //盘点数量 stockCount
+                    BigDecimal stockCount = new BigDecimal(0D);
+                    if (detailObj.getStockCount() != null) {
+                        stockCount = detailObj.getStockCount();
+                        //四舍五入到2位小数
+                        stockCount = stockCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+
+                    }
+                    editDetail.setStockCount(stockCount);
+
                     if (businessProdInMapByEditDetail != null && businessProdInMapByEditDetail.get(detailId) != null) {
                         Map<String, Object> producValueMap = businessProdInMapByEditDetail.get(detailId);
 
@@ -367,6 +378,16 @@ public class WarehouseCheckBySimpleController {
                     WarehouseCheckDetail editDetail = new WarehouseCheckDetail();
                     String detailId = detailObj.getId();
                     editDetail.setId(detailObj.getId());
+
+                    //盘点数量 stockCount
+                    BigDecimal stockCount = new BigDecimal(0D);
+                    if (detailObj.getStockCount() != null) {
+                        stockCount = detailObj.getStockCount();
+                        //四舍五入到2位小数
+                        stockCount = stockCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+
+                    }
+                    editDetail.setStockCount(stockCount);
 
                     if (businessProdOutMapByEditDetail != null && businessProdOutMapByEditDetail.get(detailId) != null) {
                         Map<String, Object> producValueMap = businessProdOutMapByEditDetail.get(detailId);
