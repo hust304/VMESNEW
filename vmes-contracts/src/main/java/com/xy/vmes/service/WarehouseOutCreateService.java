@@ -1,5 +1,7 @@
 package com.xy.vmes.service;
 
+import com.xy.vmes.exception.ApplicationException;
+
 import java.util.Map;
 
 /**
@@ -86,7 +88,7 @@ public interface WarehouseOutCreateService {
                                     String outType,
                                     Map<String, Map<String, Object>> productByOutMap) throws Exception;
     /**
-     * 创建出库单(简版仓库)
+     * 创建出库单(简版仓库)-执行时需要人工干预-系统非自动执行
      *
      * @param deptId          (部门,供应商,客户)id
      * @param deptName        (部门,供应商,客户)名称
@@ -109,6 +111,32 @@ public interface WarehouseOutCreateService {
                                              String companyId,
                                              String outType,
                                              Map<String, Map<String, Object>> businessByOutMap) throws Exception;
+
+    /**
+     * 创建出库单(简版仓库)-执行时无需人工干预-系统自动执行
+     *
+     * @param deptId          (部门,供应商,客户)id
+     * @param deptName        (部门,供应商,客户)名称
+     * @param warehouseId     仓库id
+     * @param cuser           用户id
+     * @param companyId       企业id
+     * @param outType         出库类型id
+     * @param businessByOutMap 业务货品出库Map<货品id, 货品Map>
+     *
+     * 业务货品出库Map<业务单id, 货品Map<String, Object>> 业务单id-业务明细id (订单明细id,发货单明细id)
+     * 货品Map<String, Object>
+     *     warehouseId: 入库货位id(仓库id)
+     *     productId: 货品id
+     *     outDtlId:  出库明细id
+     *     outCount:  出库数量
+     */
+    void createWarehouseOutExecuteBusinessBySimple(String deptId,
+                                                   String deptName,
+                                                   String warehouseId,
+                                                   String cuser,
+                                                   String companyId,
+                                                   String outType,
+                                                   Map<String, Map<String, Object>> businessByOutMap) throws ApplicationException;
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**

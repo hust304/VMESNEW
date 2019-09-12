@@ -129,6 +129,7 @@ public interface WarehouseOutDetailService {
     void addWarehouseOutDetail(String parentId,String cuser, List<WarehouseOutDetail> objectList) throws Exception;
 
     void addWarehouseOutDetailBySimple(WarehouseOut parentObj, List<WarehouseOutDetail> objectList) throws Exception;
+    void addWarehouseOutDetailExecuteBySimple(WarehouseOut parentObj, List<WarehouseOutDetail> objectList) throws Exception;
 
     void addWarehouseOutDetail(WarehouseOut parentObj, WarehouseOutDetail detail) throws Exception;
 

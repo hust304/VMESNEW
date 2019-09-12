@@ -341,6 +341,19 @@ public class WarehouseOutDetailServiceImp implements WarehouseOutDetailService {
             this.save(detail);
         }
     }
+    public void addWarehouseOutDetailExecuteBySimple(WarehouseOut parentObj, List<WarehouseOutDetail> objectList) throws Exception {
+        if (parentObj == null) {return;}
+        if (objectList == null || objectList.size() == 0) {return;}
+
+        for (WarehouseOutDetail detail : objectList) {
+            //detail.setWarehouseId(parentObj.getWarehouseId());
+            //状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+            detail.setState("2");
+            detail.setParentId(parentObj.getId());
+            detail.setCuser(parentObj.getCuser());
+            this.save(detail);
+        }
+    }
 
     @Override
     public void addWarehouseOutDetail(WarehouseOut parentObj, WarehouseOutDetail detail) throws Exception {

@@ -1,10 +1,9 @@
 package com.xy.vmes.deecoop.warehouse.service;
 
-import com.xy.vmes.entity.WarehouseOut;
-import com.xy.vmes.entity.WarehouseOutDetail;
-import com.xy.vmes.entity.WarehouseOutExecute;
+import com.xy.vmes.entity.*;
 import com.xy.vmes.exception.ApplicationException;
 import com.xy.vmes.service.*;
+import com.yvan.Conv;
 import com.yvan.common.util.Common;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,7 +36,11 @@ public class WarehouseOutCreateServiceImp implements WarehouseOutCreateService {
     private WarehouseOutExecuteService warehouseOutExecuteService;
 
     @Autowired
+    private WarehouseProductService warehouseProductService;
+    @Autowired
     private WarehouseProductToolService warehouseProductToolService;
+    @Autowired
+    private ProductService productService;
 
     /**
      * 创建出库单(复杂版仓库)
@@ -261,9 +264,10 @@ public class WarehouseOutCreateServiceImp implements WarehouseOutCreateService {
      *
      * 业务货品出库Map<业务单id, 货品Map<String, Object>> 业务单id-业务明细id (订单明细id,发货单明细id)
      * 货品Map<String, Object>
-     *     productId: 货品id
-     *     outDtlId:  出库明细id
-     *     outCount:  出库数量
+     *     warehouseId: 出库货位id(仓库id)
+     *     productId:   货品id
+     *     outDtlId:    出库明细id
+     *     outCount:    出库数量
      */
     public void createWarehouseOutBusinessBySimple(String deptId,
                                                    String deptName,
@@ -304,25 +308,25 @@ public class WarehouseOutCreateServiceImp implements WarehouseOutCreateService {
         List<WarehouseOutDetail> outDtlList = this.businessMap2OutDetailList(businessByOutMap, null);
         warehouseOutDetailService.addWarehouseOutDetailBySimple(warehouseOut, outDtlList);
 
-        //3.添加出库单派单表
-        warehouseOutExecutorService.addWarehouseOutExecutorBySimple(outDtlList);
+//        //3.添加出库单派单表
+//        warehouseOutExecutorService.addWarehouseOutExecutorBySimple(outDtlList);
 
-        //4.添加出库单执行表
-        List<WarehouseOutExecute> executeList = new ArrayList<WarehouseOutExecute>();
-        for (WarehouseOutDetail outDetail : outDtlList) {
-            String productId = outDetail.getProductId();
-            BigDecimal count = outDetail.getCount();
-
-            //按(货品id,企业id) 查询(vmes_warehouse_product)
-            List<Map<String, Object>> outMapList = warehouseProductToolService.findWarehouseProductOutMapList(productId,
-                    companyId,
-                    null,
-                    count);
-            if (outMapList != null && outMapList.size() > 0) {
-                executeList = warehouseOutExecuteService.outMapList2ExecuteList(outDetail, outMapList, executeList);
-            }
-        }
-        warehouseOutExecuteService.addWarehouseOutExecuteBySimple(executeList);
+//        //4.添加出库单执行表
+//        List<WarehouseOutExecute> executeList = new ArrayList<WarehouseOutExecute>();
+//        for (WarehouseOutDetail outDetail : outDtlList) {
+//            String productId = outDetail.getProductId();
+//            BigDecimal count = outDetail.getCount();
+//
+//            //按(货品id,企业id) 查询(vmes_warehouse_product)
+//            List<Map<String, Object>> outMapList = warehouseProductToolService.findWarehouseProductOutMapList(productId,
+//                    companyId,
+//                    null,
+//                    count);
+//            if (outMapList != null && outMapList.size() > 0) {
+//                executeList = warehouseOutExecuteService.outMapList2ExecuteList(outDetail, outMapList, executeList);
+//            }
+//        }
+//        warehouseOutExecuteService.addWarehouseOutExecuteBySimple(executeList);
 
         for (WarehouseOutDetail detail : outDtlList) {
             String businessId = detail.getBusinessId();
@@ -330,6 +334,156 @@ public class WarehouseOutCreateServiceImp implements WarehouseOutCreateService {
 
             Map<String, Object> productMap = businessByOutMap.get(businessId);
             productMap.put("outDtlId", outDtlId);
+        }
+    }
+
+    /**
+     * 创建出库单(简版仓库)-执行时无需人工干预-系统自动执行
+     *
+     * @param deptId          (部门,供应商,客户)id
+     * @param deptName        (部门,供应商,客户)名称
+     * @param warehouseId     仓库id
+     * @param cuser           用户id
+     * @param companyId       企业id
+     * @param outType         出库类型id
+     * @param businessByOutMap 业务货品出库Map<货品id, 货品Map>
+     *
+     * 业务货品出库Map<业务单id, 货品Map<String, Object>> 业务单id-业务明细id (订单明细id,发货单明细id)
+     * 货品Map<String, Object>
+     *     warehouseId: 入库货位id(仓库id)
+     *     productId: 货品id
+     *     outDtlId:  出库明细id
+     *     outCount:  出库数量
+     */
+    public void createWarehouseOutExecuteBusinessBySimple(String deptId,
+                                                   String deptName,
+                                                   String warehouseId,
+                                                   String cuser,
+                                                   String companyId,
+                                                   String outType,
+                                                   Map<String, Map<String, Object>> businessByOutMap) throws ApplicationException {
+        StringBuffer msgStr = new StringBuffer();
+        if (deptId == null || deptId.trim().length() == 0) {
+            msgStr.append("部门id为空或空字符串" + Common.SYS_ENDLINE_DEFAULT);
+        }
+        if (companyId == null || companyId.trim().length() == 0) {
+            msgStr.append("企业id为空或空字符串" + Common.SYS_ENDLINE_DEFAULT);
+        }
+        if (outType == null || outType.trim().length() == 0) {
+            msgStr.append("出库类型id为空或空字符串" + Common.SYS_ENDLINE_DEFAULT);
+        }
+        if (msgStr.toString().trim().length() > 0) {
+            throw new ApplicationException(msgStr.toString());
+        }
+
+        try {
+            //1.添加出库单
+            WarehouseOut warehouseOut = warehouseOutService.createWarehouseOut(deptId,
+                    deptName,
+                    cuser,
+                    companyId,
+                    outType);
+
+            //isSimple 是否简版仓库 Y:是简版 N:非简版 is null:非简版
+            //warehouseOut.setIsSimple("Y");
+            warehouseOut.setWarehouseId(warehouseId);
+            //warehouseAttribute 仓库属性(warehouse:(简版,复杂版)仓库 spare:备件库)
+            warehouseOut.setWarehouseAttribute("warehouse");
+            //状态(0:未完成 1:已完成 -1:已取消)
+            warehouseOut.setState("1");
+            warehouseOutService.save(warehouseOut);
+            String parentId = warehouseOut.getId();
+
+            //2.添加出库单明细
+            List<WarehouseOutDetail> outDtlList = this.businessMap2OutDetailList(businessByOutMap, null);
+            warehouseOutDetailService.addWarehouseOutDetailExecuteBySimple(warehouseOut, outDtlList);
+
+            //3.添加出库单派单表
+            warehouseOutExecutorService.addWarehouseOutExecutorBySimple(outDtlList);
+
+            //4.添加出库单执行表
+            List<WarehouseOutExecute> executeList = new ArrayList<WarehouseOutExecute>();
+            for (WarehouseOutDetail outDetail : outDtlList) {
+                //货位id(仓库id)
+                String dtl_warehouseId = outDetail.getWarehouseId();
+                String productId = outDetail.getProductId();
+                BigDecimal count = outDetail.getCount();
+
+                //按(货品id,企业id) 查询(vmes_warehouse_product)
+                List<Map<String, Object>> outMapList = warehouseProductToolService.findWarehouseProductOutMapList(productId,
+                        companyId,
+                        dtl_warehouseId,
+                        count);
+                if (outMapList != null && outMapList.size() > 0) {
+                    executeList = warehouseOutExecuteService.outMapList2ExecuteList(outDetail, outMapList, executeList);
+                }
+            }
+            warehouseOutExecuteService.addWarehouseOutExecuteBySimple(executeList);
+
+            //5.出库单执行
+            List<Map> executeMapList = warehouseOutExecuteService.findExecuteListByParentId(parentId);
+            if (executeMapList != null && executeMapList.size() > 0) {
+                for (int i = 0; i < executeMapList.size(); i++) {
+                    Map object = executeMapList.get(i);
+
+                    String detailId = (String)object.get("detailId");
+                    BigDecimal count = (BigDecimal)object.get("actualCount");
+                    String dtl_warehouseId = (String)object.get("warehouseId");
+                    String productId = (String)object.get("productId");
+                    String code = (String)object.get("code");
+
+                    //(简版仓库)出库操作
+                    WarehouseProduct outObject = new WarehouseProduct();
+                    //产品ID
+                    outObject.setProductId(productId);
+                    //(实际)货位ID
+                    outObject.setWarehouseId(dtl_warehouseId);
+                    //货位批次号
+                    outObject.setCode(code);
+
+                    //库存变更日志
+                    String executeId = Conv.createUuid();
+
+                    WarehouseLoginfo loginfo = new WarehouseLoginfo();
+                    loginfo.setParentId(parentId);
+                    loginfo.setDetailId(detailId);
+                    loginfo.setExecuteId(executeId);
+                    loginfo.setCompanyId(companyId);
+                    loginfo.setCuser(cuser);
+                    //operation 操作类型(add:添加 modify:修改 delete:删除:)
+                    loginfo.setOperation("add");
+
+                    //beforeCount 操作变更前数量(业务相关)
+                    loginfo.setBeforeCount(BigDecimal.valueOf(0D));
+                    //afterCount 操作变更后数量(业务相关)
+                    loginfo.setAfterCount(count);
+
+                    String msg = warehouseProductService.outStockCount(outObject, count, loginfo);
+                    if (msg != null && msg.trim().length() > 0) {
+                        throw new ApplicationException(msg);
+                    } else {
+                        Product product = productService.findProductById(productId);
+                        BigDecimal prodCount = BigDecimal.valueOf(0D);
+                        if (product.getStockCount() != null) {
+                            prodCount = product.getStockCount();
+                        }
+
+                        BigDecimal prodStockCount = BigDecimal.valueOf(prodCount.doubleValue() - count.doubleValue());
+                        productService.updateStockCount(product, prodStockCount, cuser);
+                    }
+                }
+            }
+
+            for (WarehouseOutDetail detail : outDtlList) {
+                String businessId = detail.getBusinessId();
+                String outDtlId = detail.getId();
+
+                Map<String, Object> productMap = businessByOutMap.get(businessId);
+                productMap.put("outDtlId", outDtlId);
+            }
+
+        } catch (Exception e) {
+            throw new ApplicationException(e.getMessage());
         }
     }
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -725,6 +879,13 @@ public class WarehouseOutCreateServiceImp implements WarehouseOutCreateService {
             //productId: 货品id
             String productId = (String)productMap.get("productId");
             detail.setProductId(productId);
+
+            //warehouseId 入库货位id(仓库id)
+            String warehouseId = new String();
+            if (productMap.get("warehouseId") != null) {
+                warehouseId = (String)productMap.get("warehouseId");
+            }
+            detail.setWarehouseId(warehouseId);
 
             //outCount:  出库数量
             BigDecimal outCount = BigDecimal.valueOf(0D);
