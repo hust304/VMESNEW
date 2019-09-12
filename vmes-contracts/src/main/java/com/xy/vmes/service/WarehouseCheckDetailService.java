@@ -156,7 +156,43 @@ public interface WarehouseCheckDetailService {
      */
     String findParentStateByDetailList(String ignoreState, List<WarehouseCheckDetail> dtlList);//@
 
+    /**
+     * 获取(盘点数量减台账数量)-遍历盘点明细List<WarehouseCheckDetail>
+     *
+     * 返回值Map<String, List>
+     *     negativeList: 负数结果集 List<WarehouseCheckDetail>
+     *     positiveList: 正数结果集 List<WarehouseCheckDetail>
+     * @param dtlList
+     * @return
+     */
+    Map<String, List> findValueMapByDetailList(List<WarehouseCheckDetail> dtlList);
 
+    /**
+     * 返回货品入库Map
+     * 业务货品入库Map<业务单id, 货品Map<String, Object>> 业务单id-业务明细id (订单明细id,发货单明细id)
+     * 货品Map<String, Object>
+     *     warehouseId: 入库货位id(仓库id)
+     *     productId:   货品id
+     *     inDtlId:     入库明细id
+     *     inCount:     入库数量
+     *
+     * @param objecList
+     * @return
+     */
+    Map<String, Map<String, Object>> findBusinessProducMapByIn(List<WarehouseCheckDetail> objecList);
+    /**
+     * 返回货品出库Map
+     * 业务货品出库Map<业务单id, 货品Map<String, Object>> 业务单id-业务明细id (订单明细id,发货单明细id)
+     * 货品Map<String, Object>
+     *     warehouseId: 货位id(仓库id)
+     *     productId:   货品id
+     *     outDtlId:    出库明细id
+     *     outCount:    出库数量
+     *
+     * @param objecList
+     * @return
+     */
+    Map<String, Map<String, Object>> findBusinessProducMapByOut(List<WarehouseCheckDetail> objecList);
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     boolean isAllAuditStateByDetailExecuteList(String state, List<Map<String, Object>> mapList);//@
 

@@ -446,6 +446,112 @@ public class WarehouseCheckDetailServiceImp implements WarehouseCheckDetailServi
         return parentState;
     }
 
+    /**
+     * 获取(盘点数量减台账数量)-遍历盘点明细List<WarehouseCheckDetail>
+     *
+     * 返回值Map<String, List>
+     *     negativeList: 负数结果集 List<WarehouseCheckDetail>
+     *     positiveList: 正数结果集 List<WarehouseCheckDetail>
+     * @param dtlList
+     * @return
+     */
+    public Map<String, List> findValueMapByDetailList(List<WarehouseCheckDetail> dtlList) {
+        Map<String, List> valueMap = new HashMap<>();
+        if (dtlList == null || dtlList.size() == 0) {return valueMap;}
+
+        //负数结果集 (盘点数量 - 台账数量)
+        List<WarehouseCheckDetail> negativeList = this.findNegativeByDetailList(dtlList);
+        //正数结果集 (盘点数量 - 台账数量)
+        List<WarehouseCheckDetail> positiveList = this.findPositiveByDetailList(dtlList);
+
+        valueMap.put("negativeList", negativeList);
+        valueMap.put("positiveList", positiveList);
+
+        return valueMap;
+    }
+
+    /**
+     * 返回货品入库Map
+     * 业务货品入库Map<业务单id, 货品Map<String, Object>> 业务单id-业务明细id (订单明细id,发货单明细id)
+     * 货品Map<String, Object>
+     *     warehouseId: 入库货位id(仓库id)
+     *     productId:   货品id
+     *     inDtlId:     入库明细id
+     *     inCount:     入库数量
+     *
+     * @param objecList
+     * @return
+     */
+    public Map<String, Map<String, Object>> findBusinessProducMapByIn(List<WarehouseCheckDetail> objecList) {
+        Map<String, Map<String, Object>> productByInMap = new HashMap<String, Map<String, Object>>();
+        if (objecList == null || objecList.size() == 0) {return productByInMap;}
+
+        for (WarehouseCheckDetail object : objecList) {
+            String checkDtlid = object.getId();
+            String productId = object.getProductId();
+            String warehouseId = object.getWarehouseId();
+
+            //changeCount 变更数量
+            BigDecimal changeCount = BigDecimal.valueOf(0D);
+            if (object.getChangeCount() != null) {
+                changeCount = object.getChangeCount();
+                if (changeCount.doubleValue() < 0) {changeCount = BigDecimal.valueOf(changeCount.doubleValue() * -1);}
+                //四舍五入到2位小数
+                changeCount = changeCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+            }
+
+            Map<String, Object> productMap = new HashMap<String, Object>();
+            productMap.put("warehouseId", warehouseId);
+            productMap.put("productId", productId);
+            productMap.put("inDtlId", null);
+            productMap.put("inCount", changeCount);
+
+            productByInMap.put(checkDtlid, productMap);
+        }
+
+        return productByInMap;
+    }
+    /**
+     * 返回货品出库Map
+     * 业务货品出库Map<业务单id, 货品Map<String, Object>> 业务单id-业务明细id (订单明细id,发货单明细id)
+     * 货品Map<String, Object>
+     *     warehouseId: 货位id(仓库id)
+     *     productId:   货品id
+     *     outDtlId:    出库明细id
+     *     outCount:    出库数量
+     *
+     * @param objecList
+     * @return
+     */
+    public Map<String, Map<String, Object>> findBusinessProducMapByOut(List<WarehouseCheckDetail> objecList) {
+        Map<String, Map<String, Object>> productByOutMap = new HashMap<String, Map<String, Object>>();
+        if (objecList == null || objecList.size() == 0) {return productByOutMap;}
+
+        for (WarehouseCheckDetail object : objecList) {
+            String checkDtlid = object.getId();
+            String productId = object.getProductId();
+            String warehouseId = object.getWarehouseId();
+
+            //changeCount 变更数量
+            BigDecimal changeCount = BigDecimal.valueOf(0D);
+            if (object.getChangeCount() != null) {
+                changeCount = object.getChangeCount();
+                if (changeCount.doubleValue() < 0) {changeCount = BigDecimal.valueOf(changeCount.doubleValue() * -1);}
+                //四舍五入到2位小数
+                changeCount = changeCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+            }
+
+            Map<String, Object> productMap = new HashMap<String, Object>();
+            productMap.put("warehouseId", warehouseId);
+            productMap.put("productId", productId);
+            productMap.put("outDtlId", null);
+            productMap.put("outCount", changeCount);
+
+            productByOutMap.put(checkDtlid, productMap);
+        }
+
+        return productByOutMap;
+    }
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     public boolean isAllAuditStateByDetailExecuteList(String state, List<Map<String, Object>> mapList) {
         if (state == null || state.trim().length() == 0) {return false;}
@@ -582,6 +688,54 @@ public class WarehouseCheckDetailServiceImp implements WarehouseCheckDetailServi
         return model;
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    //负数结果集 (盘点数量 - 台账数量)
+    private List<WarehouseCheckDetail> findNegativeByDetailList(List<WarehouseCheckDetail> dtlList) {
+        List<WarehouseCheckDetail> objectList = new ArrayList<>();
+        if (dtlList == null || dtlList.size() == 0) {return objectList;}
+
+        for (WarehouseCheckDetail object : dtlList) {
+            //台账数量 checkStockCount
+            BigDecimal checkStockCount = object.getCheckStockCount();
+
+            //盘点数量 stockCount
+            BigDecimal stockCount = object.getStockCount();
+
+            //变更库存数量 := (盘点数量 - 台账数量)
+            BigDecimal changeCount = BigDecimal.valueOf(stockCount.doubleValue() - checkStockCount.doubleValue());
+            object.setChangeCount(changeCount);
+
+            if (changeCount.doubleValue() < 0D) {
+                objectList.add(object);
+            }
+        }
+
+        return objectList;
+    }
+    //正数结果集 (盘点数量 - 台账数量)
+    private List<WarehouseCheckDetail> findPositiveByDetailList(List<WarehouseCheckDetail> dtlList) {
+        List<WarehouseCheckDetail> objectList = new ArrayList<>();
+        if (dtlList == null || dtlList.size() == 0) {return objectList;}
+
+        for (WarehouseCheckDetail object : dtlList) {
+            //台账数量 checkStockCount
+            BigDecimal checkStockCount = object.getCheckStockCount();
+
+            //盘点数量 stockCount
+            BigDecimal stockCount = object.getStockCount();
+
+            //变更库存数量 := (盘点数量 - 台账数量)
+            BigDecimal changeCount = BigDecimal.valueOf(stockCount.doubleValue() - checkStockCount.doubleValue());
+            object.setChangeCount(changeCount);
+
+            if (changeCount.doubleValue() > 0D) {
+                objectList.add(object);
+            }
+        }
+
+        return objectList;
+    }
 
 }
 

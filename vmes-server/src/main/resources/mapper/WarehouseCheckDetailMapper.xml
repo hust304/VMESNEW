@@ -55,20 +55,27 @@
 
         (replace(uuid(), '-', ''),'warehouseCheckDetail','auditUserName','审核人',15, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'warehouseCheckDetail','auditDate','审核时间',16, '1','1','1','0',now(), 'admin'),
-    </insert>
 
-    <update id="updateStateByDetail" parameterType="com.yvan.PageData" >
-        update vmes_warehouse_check_detail set
-        state = #{state},
-        udate = now()
-        <where>
-            <if test="parentId != null and parentId != ''" >
-                and parent_id = #{parentId}
-            </if>
-        </where>
-    </update>
+        <!-- :changeCount:(台账数量 - 盘点数量): 系统计算得到 -->
+        (replace(uuid(), '-', ''),'warehouseCheckDetail','changeCount','盘盈/盘亏',17, '1','1','1','0',now(), 'admin'),
+        <!-- :editChangeCount:(台账数量 - 盘点数量): 界面js页面使用字段 -->
+        (replace(uuid(), '-', ''),'warehouseCheckDetail','editChangeCount','盘盈/盘亏',18, '1','1','1','0',now(), 'admin'),
 
-    <!-- 列表(全部) 自动创建，禁止修改-->
+
+        </insert>
+
+        <update id="updateStateByDetail" parameterType="com.yvan.PageData" >
+            update vmes_warehouse_check_detail set
+            state = #{state},
+            udate = now()
+            <where>
+                <if test="parentId != null and parentId != ''" >
+                    and parent_id = #{parentId}
+                </if>
+            </where>
+        </update>
+
+        <!-- 列表(全部) 自动创建，禁止修改-->
     <select id="dataList" parameterType="com.yvan.PageData" resultType="com.xy.vmes.entity.WarehouseCheckDetail">
         select
             id id,
@@ -203,6 +210,10 @@
 
             warehouse.path_name pathName,
             warehouse.code warehouseCode,
+
+            <!--台账数量 - 盘点数量-->
+            round((ifnull(detail.check_stock_count, 0) - ifnull(detail.stock_count, 0)), 2) changeCount,
+            '' editChangeCount,
 
             <!--货品表-->
             product.code productCode,

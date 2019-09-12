@@ -78,6 +78,10 @@ public class WarehouseCheckDetail implements Serializable {
 	@TableField("out_dtl_id")
 	private String outDtlId;
 
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//非表字段属性
+	private BigDecimal changeCount;
+
 
 	public void setId(String id) {
 		this.id = id;
@@ -192,6 +196,14 @@ public class WarehouseCheckDetail implements Serializable {
 	}
 	public void setOutDtlId(String outDtlId) {
 		this.outDtlId = outDtlId;
+	}
+
+	public BigDecimal getChangeCount() {
+		return changeCount;
+	}
+
+	public void setChangeCount(BigDecimal changeCount) {
+		this.changeCount = changeCount;
 	}
 	/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
