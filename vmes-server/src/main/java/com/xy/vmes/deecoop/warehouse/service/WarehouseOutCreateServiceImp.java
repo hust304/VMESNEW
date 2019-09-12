@@ -4,6 +4,7 @@ import com.xy.vmes.entity.*;
 import com.xy.vmes.exception.ApplicationException;
 import com.xy.vmes.service.*;
 import com.yvan.Conv;
+import com.yvan.PageData;
 import com.yvan.common.util.Common;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,8 +40,11 @@ public class WarehouseOutCreateServiceImp implements WarehouseOutCreateService {
     private WarehouseProductService warehouseProductService;
     @Autowired
     private WarehouseProductToolService warehouseProductToolService;
+
     @Autowired
     private ProductService productService;
+    @Autowired
+    private ProductUnitService productUnitService;
 
     /**
      * 创建出库单(复杂版仓库)
@@ -849,6 +853,24 @@ public class WarehouseOutCreateServiceImp implements WarehouseOutCreateService {
             String productId = (String)productMap.get("productId");
             detail.setProductId(productId);
 
+            try {
+                //获取货品计量单位
+                PageData findMap = new PageData();
+                findMap.put("productId", productId);
+                //单位类型 (1:计量单位 0:计价单位)
+                findMap.put("type", "1");
+                ///是否禁用(0:已禁用 1:启用)
+                findMap.put("isdisable", "1");
+                ProductUnit prodUnit = productUnitService.findProductUnit(findMap);
+
+                if (prodUnit != null && prodUnit.getUnit() != null) {
+                    detail.setProductUnit(prodUnit.getUnit());
+                    detail.setPriceUnit(prodUnit.getUnit());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
             //outCount:  出库数量
             BigDecimal outCount = BigDecimal.valueOf(0D);
             if (productMap.get("outCount") != null) {
@@ -857,6 +879,8 @@ public class WarehouseOutCreateServiceImp implements WarehouseOutCreateService {
             //四舍五入到2位小数
             outCount = outCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
             detail.setCount(outCount);
+            detail.setProductCount(outCount);
+            detail.setPriceCount(outCount);
 
             detailList.add(detail);
         }
@@ -880,6 +904,24 @@ public class WarehouseOutCreateServiceImp implements WarehouseOutCreateService {
             String productId = (String)productMap.get("productId");
             detail.setProductId(productId);
 
+            try {
+                //获取货品计量单位
+                PageData findMap = new PageData();
+                findMap.put("productId", productId);
+                //单位类型 (1:计量单位 0:计价单位)
+                findMap.put("type", "1");
+                ///是否禁用(0:已禁用 1:启用)
+                findMap.put("isdisable", "1");
+                ProductUnit prodUnit = productUnitService.findProductUnit(findMap);
+
+                if (prodUnit != null && prodUnit.getUnit() != null) {
+                    detail.setProductUnit(prodUnit.getUnit());
+                    detail.setPriceUnit(prodUnit.getUnit());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
             //warehouseId 入库货位id(仓库id)
             String warehouseId = new String();
             if (productMap.get("warehouseId") != null) {
@@ -895,6 +937,8 @@ public class WarehouseOutCreateServiceImp implements WarehouseOutCreateService {
             //四舍五入到2位小数
             outCount = outCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
             detail.setCount(outCount);
+            detail.setProductCount(outCount);
+            detail.setPriceCount(outCount);
 
             detailList.add(detail);
         }
