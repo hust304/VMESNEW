@@ -76,6 +76,7 @@ public interface WarehouseProductService {
      */
     List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception;
 
+    List<Map> getDataListPageDispatchBySimple(PageData pd) throws Exception;
     List<Map> getDataListPageDispatch(PageData pd,Pagination pg) throws Exception;
     List<Map> getDataListPageDispatch(PageData pd) throws Exception;
     /**
@@ -274,11 +275,15 @@ public interface WarehouseProductService {
 
     ResultModel listPageWarehouseProductsDispatchOption(PageData pd, Pagination pg) throws Exception;
 
+    ResultModel listPageWarehouseProductsDispatchOptionBySimple(PageData pd) throws Exception;
+
     void exportExcelWarehouseProducts(PageData pd, Pagination pg) throws Exception;
 
     ResultModel importExcelWarehouseProducts(MultipartFile file) throws Exception;
 
     ResultModel updateSynStockCount(PageData pd) throws Exception;
+
+
 }
 
 

@@ -163,6 +163,8 @@ public interface WarehouseOutDetailService {
 
     ResultModel listPageWarehouseOutDetailsExecute(PageData pd, Pagination pg) throws Exception;
 
+    ResultModel listPageWarehouseOutDetailsExecuteBySimple(PageData pd) throws Exception;
+
     ResultModel listPageWarehouseOutDetailsDispatch(PageData pd, Pagination pg) throws Exception;
 
     void exportExcelWarehouseOutDetails(PageData pd, Pagination pg) throws Exception;

@@ -1071,6 +1071,110 @@ public class WarehouseOutDetailServiceImp implements WarehouseOutDetailService {
         return model;
     }
 
+
+
+    public List<Map> getExecuteChildrenListBySimple(Map rootMap,Map childrenTitleMap)  throws Exception {
+        PageData pd = new PageData();
+        pd.put("productId",rootMap.get("productId"));
+        pd.put("isNotNeedSpare","true");
+        pd.put("isNeedEntity","true");
+
+
+        DecimalFormat df = new DecimalFormat("0.00");
+        double count = 0.00;
+        double executeCount = 0.00;
+        if(rootMap.get("count")!=null){
+            count = ((BigDecimal) rootMap.get("count")).doubleValue();
+            executeCount = ((BigDecimal) rootMap.get("executeCount")).doubleValue();
+
+        }
+
+        List<Map> childrenMapList = new ArrayList();
+        List<Map> varList = warehouseProductService.getDataListPageDispatchBySimple(pd);
+        if(varList!=null&&varList.size()>0){
+            for(int i=0;i<varList.size();i++){
+                Map map = varList.get(i);
+                Map<String, String> varMap = new HashMap<String, String>();
+                varMap.putAll((Map<String, String>)childrenTitleMap.get("varModel"));
+                for (Map.Entry<String, String> entry : varMap.entrySet()) {
+                    varMap.put(entry.getKey(),map.get(entry.getKey())!=null?map.get(entry.getKey()).toString():"");
+                }
+                varMap.put("pid",rootMap.get("id").toString());
+                double stockCount = Double.parseDouble((String)varMap.get("stockCount"));
+
+                if(stockCount<=(count-executeCount)){
+                    varMap.put("suggestCount",df.format(stockCount));
+                    childrenMapList.add(varMap);
+                    executeCount = executeCount + stockCount;
+                }else if(stockCount>(count-executeCount)){
+                    varMap.put("suggestCount",df.format(count-executeCount));
+                    childrenMapList.add(varMap);
+                    break;
+                }
+            }
+        }
+        return childrenMapList;
+    }
+
+
+    @Override
+    public ResultModel listPageWarehouseOutDetailsExecuteBySimple(PageData pd) throws Exception {
+        Pagination pg =  HttpUtils.parsePagination(pd);
+
+        ResultModel model = new ResultModel();
+
+        Map result = new HashMap();
+
+        List<Column> columnList = columnService.findColumnList("WarehouseOutDetailDispatch");
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
+        }
+        //获取根节点表头
+        Map rootTitleMap = ColumnUtil.getTitleList(columnList);
+
+        result.put("hideTitles",rootTitleMap.get("hideTitles"));
+        result.put("titles",rootTitleMap.get("titles"));
+
+        columnList = columnService.findColumnList("WarehouseOutRecommendBySimple");
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
+        }
+        //获取子节点表头
+        Map childrenTitleMap = ColumnUtil.getTitleList(columnList);
+
+
+
+        List<Map> varMapList = new ArrayList();
+        List<Map> varList = this.getDataListPage(pd,pg);
+        if(varList!=null&&varList.size()>0){
+            for(int i=0;i<varList.size();i++){
+                Map map = varList.get(i);
+                Map<String, Object> varMap = new HashMap<String, Object>();
+                varMap.putAll((Map<String, String>)rootTitleMap.get("varModel"));
+                for (Map.Entry<String, Object> entry : varMap.entrySet()) {
+                    varMap.put(entry.getKey(),map.get(entry.getKey())!=null?map.get(entry.getKey()).toString():"");
+                }
+                varMap.put("hideTitles",childrenTitleMap.get("hideTitles"));
+                varMap.put("titles",childrenTitleMap.get("titles"));
+                varMap.put("pid",null);
+                varMap.put("children",getExecuteChildrenListBySimple(map,childrenTitleMap));
+                varMapList.add(varMap);
+            }
+        }
+        result.put("varList",varMapList);
+        result.put("pageData", pg);
+
+        model.putResult(result);
+        return model;
+    }
+
+
+
+
     @Override
     public ResultModel listPageWarehouseOutDetailsDispatch(PageData pd, Pagination pg) throws Exception {
         if(pg==null){

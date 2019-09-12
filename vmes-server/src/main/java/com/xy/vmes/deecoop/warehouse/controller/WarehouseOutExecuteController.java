@@ -244,6 +244,23 @@ public class WarehouseOutExecuteController {
 
 
 
+    /**
+     * 出库执行
+     * @author 刘威
+     * @date 2018-10-16
+     * @throws Exception
+     */
+    @PostMapping("/warehouse/warehouseOutExecute/executeWarehouseOutExecuteBySimple")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel executeWarehouseOutExecuteBySimple() throws Exception {
+        logger.info("################/warehouseOutExecute/executeWarehouseOutExecuteBySimple 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pageData = HttpUtils.parsePageData();
+        ResultModel model = warehouseOutExecuteService.executeWarehouseOutExecuteBySimple(pageData);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/warehouseOutExecute/executeWarehouseOutExecuteBySimple 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
 
 
 

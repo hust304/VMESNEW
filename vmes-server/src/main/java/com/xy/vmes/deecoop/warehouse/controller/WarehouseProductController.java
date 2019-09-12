@@ -276,6 +276,19 @@ public class WarehouseProductController {
         return model;
     }
 
+
+    @PostMapping("/warehouse/warehouseProduct/listPageWarehouseProductsDispatchOptionBySimple")
+    public ResultModel listPageWarehouseProductsDispatchOptionBySimple()  throws Exception {
+
+        logger.info("################warehouseProduct/listPageWarehouseProductsDispatchOptionBySimple 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = warehouseProductService.listPageWarehouseProductsDispatchOptionBySimple(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################warehouseProduct/listPageWarehouseProductsDispatchOptionBySimple 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
     //获取仓库货品信息(虚拟库)-根据(货品id)汇总
     @PostMapping("/warehouse/warehouseProduct/findListProductByWarehouseVirtual")
     public ResultModel findListProductByWarehouseVirtual() throws Exception {

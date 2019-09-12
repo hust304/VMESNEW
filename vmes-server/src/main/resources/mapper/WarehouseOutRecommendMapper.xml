@@ -122,22 +122,39 @@
 
     <!-- ***************************************************以上为自动生成代码禁止修改，请在下面添加业务代码************************************************* -->
     <insert id="insertColumn" >
-        delete from vmes_column where model_code = 'WarehouseOutRecommend' ;
-        insert into vmes_column (
-        id,model_code,title_key,title_name,serial_number,
-        isdisable,ishide,isedit,ismust,cdate,
-        cuser
-        ) VALUES
-        (replace(uuid(), '-', ''),'WarehouseOutRecommend','name','货位名称',1, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'WarehouseOutRecommend','code','批次号',2, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'WarehouseOutRecommend','stockCount','库存数量',3, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'WarehouseOutRecommend','suggestCount','建议取货数量',4, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'WarehouseOutRecommend','warehouseId','仓库货位ID',4, '1','0','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'WarehouseOutRecommend','productId','产品ID',5, '1','0','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'WarehouseOutRecommend','isdisable','是否启用',6, '1','0','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'WarehouseOutRecommend','companyId','公司ID',7, '1','0','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'WarehouseOutRecommend','id','id',0, '1','0','1','0',now(), 'admin')
-    </insert>
+    delete from vmes_column where model_code = 'WarehouseOutRecommend' ;
+    insert into vmes_column (
+    id,model_code,title_key,title_name,serial_number,
+    isdisable,ishide,isedit,ismust,cdate,
+    cuser
+    ) VALUES
+    (replace(uuid(), '-', ''),'WarehouseOutRecommend','name','货位名称',1, '1','1','1','0',now(), 'admin'),
+    (replace(uuid(), '-', ''),'WarehouseOutRecommend','code','批次号',2, '1','1','1','0',now(), 'admin'),
+    (replace(uuid(), '-', ''),'WarehouseOutRecommend','stockCount','库存数量',3, '1','1','1','0',now(), 'admin'),
+    (replace(uuid(), '-', ''),'WarehouseOutRecommend','suggestCount','建议取货数量',4, '1','1','1','0',now(), 'admin'),
+    (replace(uuid(), '-', ''),'WarehouseOutRecommend','warehouseId','仓库货位ID',4, '1','0','1','0',now(), 'admin'),
+    (replace(uuid(), '-', ''),'WarehouseOutRecommend','productId','产品ID',5, '1','0','1','0',now(), 'admin'),
+    (replace(uuid(), '-', ''),'WarehouseOutRecommend','isdisable','是否启用',6, '1','0','1','0',now(), 'admin'),
+    (replace(uuid(), '-', ''),'WarehouseOutRecommend','companyId','公司ID',7, '1','0','1','0',now(), 'admin'),
+    (replace(uuid(), '-', ''),'WarehouseOutRecommend','id','id',0, '1','0','1','0',now(), 'admin')
+
+
+    delete from vmes_column where model_code = 'WarehouseOutRecommendBySimple' ;
+    insert into vmes_column (
+    id,model_code,title_key,title_name,serial_number,
+    isdisable,ishide,isedit,ismust,cdate,
+    cuser
+    ) VALUES
+    (replace(uuid(), '-', ''),'WarehouseOutRecommendBySimple','name','货位名称',1, '1','1','1','0',now(), 'admin'),
+    (replace(uuid(), '-', ''),'WarehouseOutRecommendBySimple','code','批次号',2, '1','0','1','0',now(), 'admin'),
+    (replace(uuid(), '-', ''),'WarehouseOutRecommendBySimple','stockCount','库存数量',3, '1','1','1','0',now(), 'admin'),
+    (replace(uuid(), '-', ''),'WarehouseOutRecommendBySimple','suggestCount','建议取货数量',4, '1','1','1','0',now(), 'admin'),
+    (replace(uuid(), '-', ''),'WarehouseOutRecommendBySimple','warehouseId','仓库货位ID',4, '1','0','1','0',now(), 'admin'),
+    (replace(uuid(), '-', ''),'WarehouseOutRecommendBySimple','productId','产品ID',5, '1','0','1','0',now(), 'admin'),
+    (replace(uuid(), '-', ''),'WarehouseOutRecommendBySimple','isdisable','是否启用',6, '1','0','1','0',now(), 'admin'),
+    (replace(uuid(), '-', ''),'WarehouseOutRecommendBySimple','companyId','公司ID',7, '1','0','1','0',now(), 'admin'),
+    (replace(uuid(), '-', ''),'WarehouseOutRecommendBySimple','id','id',0, '1','0','1','0',now(), 'admin')
+</insert>
 
 
     <!-- 列表(全部) 自动创建，禁止修改-->

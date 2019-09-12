@@ -62,6 +62,11 @@ public interface WarehouseProductMapper extends BaseMapper<WarehouseProduct> {
     List<Map> getDataListPageDispatch(PageData pd, Pagination pg);
     List<Map> getDataListPageDispatch(PageData pd);
 
+
+    List<Map> getDataListPageDispatchBySimple(PageData pd, Pagination pg);
+
+    List<Map> getDataListPageDispatchBySimple(PageData pd);
+
     List<Map> warehouseProductView(PageData pd, Pagination pg);
 
     List<Map> warehouseProductMove(PageData pd, Pagination pg);
@@ -85,6 +90,7 @@ public interface WarehouseProductMapper extends BaseMapper<WarehouseProduct> {
 
 
     void updateSynStockCount(PageData pd);
+
 }
 
 

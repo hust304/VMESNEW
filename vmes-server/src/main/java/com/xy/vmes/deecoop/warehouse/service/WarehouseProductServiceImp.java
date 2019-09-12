@@ -153,6 +153,13 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
         return warehouseProductMapper.getDataListPage(pd, pg);
     }
 
+
+
+    public List<Map> getDataListPageDispatchBySimple(PageData pd) throws Exception{
+        return warehouseProductMapper.getDataListPageDispatchBySimple(pd);
+    }
+
+
     @Override
     public List<Map> getDataListPageDispatch(PageData pd, Pagination pg) throws Exception{
         if(pg==null){
@@ -1726,6 +1733,39 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
         result.put("varList",varMapList);
         result.put("pageData", pg);
 
+        model.putResult(result);
+        return model;
+    }
+
+    @Override
+    public ResultModel listPageWarehouseProductsDispatchOptionBySimple(PageData pd) throws Exception {
+        Pagination pg =  HttpUtils.parsePagination(pd);
+
+        ResultModel model = new ResultModel();
+
+        Map result = new HashMap();
+
+        List<Column> columnList = columnService.findColumnList("WarehouseProductDispatchOption");
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
+        }
+
+        //获取指定栏位字符串-重新调整List<Column>
+        String fieldCode = pd.getString("fieldCode");
+        if (fieldCode != null && fieldCode.trim().length() > 0) {
+            columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
+        }
+
+        Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
+        List<Map> varList = warehouseProductMapper.getDataListPageDispatchBySimple(pd,pg);
+        List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
+
+        result.put("hideTitles",titleMap.get("hideTitles"));
+        result.put("titles",titleMap.get("titles"));
+        result.put("varList",varMapList);
+        result.put("pageData", pg);
         model.putResult(result);
         return model;
     }
