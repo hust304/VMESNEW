@@ -484,7 +484,40 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
             detail.setState("1");
             detail.setParentId(parentObj.getId());
             detail.setCuser(parentObj.getCuser());
-            detail.setWarehouseId(parentObj.getWarehouseId());
+            //detail.setWarehouseId(parentObj.getWarehouseId());
+
+            //获取批次号
+            //PC+yyyyMMdd+00001 = 15位
+            String code = coderuleService.createCoderCdateByDate(parentObj.getCompanyId(),
+                    "vmes_product_pc",
+                    "yyyyMMdd",
+                    "PC");
+            detail.setCode(code);
+
+            //生成批次号二维码(批次号,产品ID,产品名称)
+            String QRCodeJson = this.warehouseInDtl2QRCode(detail);
+            String qrcode = fileService.createQRCode("warehouseIn", QRCodeJson);
+            if (qrcode != null && qrcode.trim().length() > 0) {
+                detail.setQrcode(qrcode);
+            }
+
+            this.save(detail);
+        }
+    }
+
+    //创建入库单(简版仓库)--执行时无需人工干预-系统自动执行
+    public void addWarehouseInDetailExecuteBySimple(WarehouseIn parentObj, List<WarehouseInDetail> objectList) throws Exception {
+        if (parentObj == null) {return;}
+        if (objectList == null || objectList.size() == 0) {return;}
+
+        for (WarehouseInDetail detail : objectList) {
+            detail.setId(Conv.createUuid());
+
+            //状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+            detail.setState("2");
+            detail.setParentId(parentObj.getId());
+            detail.setCuser(parentObj.getCuser());
+            //detail.setWarehouseId(parentObj.getWarehouseId());
 
             //获取批次号
             //PC+yyyyMMdd+00001 = 15位

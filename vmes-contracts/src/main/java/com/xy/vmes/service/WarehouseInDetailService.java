@@ -95,7 +95,10 @@ public interface WarehouseInDetailService {
 
     void addWarehouseInDetail(String parentId,String cuser,String companyId, List<WarehouseInDetail> objectList) throws Exception;
 
+    //创建入库单(简版仓库)-执行时需要人工干预-系统非自动执行
     void addWarehouseInDetailBySimple(WarehouseIn parentObj, List<WarehouseInDetail> objectList) throws Exception;
+    //创建入库单(简版仓库)--执行时无需人工干预-系统自动执行
+    void addWarehouseInDetailExecuteBySimple(WarehouseIn parentObj, List<WarehouseInDetail> objectList) throws Exception;
     void executeWarehouseInDetailBySimple(WarehouseIn warehouseIn, List<WarehouseInDetail> detailList) throws Exception;
 
     /**
