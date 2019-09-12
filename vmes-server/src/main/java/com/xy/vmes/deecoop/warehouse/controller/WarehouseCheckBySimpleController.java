@@ -320,7 +320,7 @@ public class WarehouseCheckBySimpleController {
 
                 for (WarehouseCheckDetail detailObj : positiveList) {
                     WarehouseCheckDetail editDetail = new WarehouseCheckDetail();
-                    String detailId = editDetail.getId();
+                    String detailId = detailObj.getId();
                     editDetail.setId(detailObj.getId());
 
                     if (businessProdInMapByEditDetail != null && businessProdInMapByEditDetail.get(detailId) != null) {
@@ -365,7 +365,7 @@ public class WarehouseCheckBySimpleController {
 
                 for (WarehouseCheckDetail detailObj : negativeList) {
                     WarehouseCheckDetail editDetail = new WarehouseCheckDetail();
-                    String detailId = editDetail.getId();
+                    String detailId = detailObj.getId();
                     editDetail.setId(detailObj.getId());
 
                     if (businessProdOutMapByEditDetail != null && businessProdOutMapByEditDetail.get(detailId) != null) {
