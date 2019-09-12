@@ -158,17 +158,13 @@ public class WarehouseCheckDetailServiceImp implements WarehouseCheckDetailServi
      */
 
     public List<Map> getDataListPage(PageData pd, Pagination pg) throws Exception{
-        //return warehouseCheckDetailMapper.getDataListPage(pd, pg);
-        if(pg==null){
-            pg =  HttpUtils.parsePagination(pd);
-        }
         List<Map> mapList = new ArrayList<Map>();
         if (pd == null) {return mapList;}
 
         if (pg == null) {
             return warehouseCheckDetailMapper.getDataListPage(pd);
         } else if (pg != null) {
-            return warehouseCheckDetailMapper.getDataListPage(pd,pg);
+            return warehouseCheckDetailMapper.getDataListPage(pd, pg);
         }
 
         return mapList;
@@ -570,11 +566,9 @@ public class WarehouseCheckDetailServiceImp implements WarehouseCheckDetailServi
     }
 
     @Override
-    public ResultModel listPageWarehouseCheckDetails(PageData pd, Pagination pg) throws Exception {
-        if(pg==null){
-            pg =  HttpUtils.parsePagination(pd);
-        }
+    public ResultModel listPageWarehouseCheckDetails(PageData pd) throws Exception {
         ResultModel model = new ResultModel();
+        Pagination pg = HttpUtils.parsePagination(pd);
 
         List<Column> columnList = columnService.findColumnList("warehouseCheckDetail");
         if (columnList == null || columnList.size() == 0) {
@@ -606,7 +600,40 @@ public class WarehouseCheckDetailServiceImp implements WarehouseCheckDetailServi
             result.put("pageData", pg);
         }
 
-        List<Map> varList = this.getDataListPage(pd,pg);
+        List<Map> varList = this.getDataListPage(pd, pg);
+        if (varList != null && varList.size() > 0) {
+            for (Map<String, Object> mapObject : varList) {
+                //inParentCode 入库单编号
+                String inParentCode = new String();
+                if (mapObject.get("inParentCode") != null) {
+                    inParentCode = (String)mapObject.get("inParentCode");
+                }
+
+                //outParentCode 出库单编号
+                String outParentCode = new String();
+                if (mapObject.get("outParentCode") != null) {
+                    outParentCode = (String)mapObject.get("outParentCode");
+                }
+
+                //changeCount:(盘点数量-台账数量)
+                //businessCode:业务单编号:= 入库单编号(inParentCode) 条件(changeCount > 0)
+                //businessCode:业务单编号:= 出库单编号(outParentCode) 条件(changeCount < 0)
+                BigDecimal changeCount = BigDecimal.valueOf(0D);
+                if (mapObject.get("changeCount") != null) {
+                    changeCount = (BigDecimal)mapObject.get("changeCount");
+                }
+
+                //changeCount > 0:(盘点数量-台账数量):入库单编号
+                if (changeCount.doubleValue() > 0) {
+                    mapObject.put("businessCode", inParentCode);
+
+                    //changeCount < 0:(盘点数量-台账数量):出库单编号
+                } else if (changeCount.doubleValue() < 0) {
+                    mapObject.put("businessCode", outParentCode);
+                }
+            }
+        }
+
         List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
         result.put("hideTitles",titleMap.get("hideTitles"));
         result.put("titles",titleMap.get("titles"));

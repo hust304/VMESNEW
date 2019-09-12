@@ -196,7 +196,7 @@ public interface WarehouseCheckDetailService {
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     boolean isAllAuditStateByDetailExecuteList(String state, List<Map<String, Object>> mapList);//@
 
-    ResultModel listPageWarehouseCheckDetails(PageData pd, Pagination pg) throws Exception;
+    ResultModel listPageWarehouseCheckDetails(PageData pd) throws Exception;
 
     ResultModel cancelWarehouseCheckDetail(PageData pageData) throws Exception;
 

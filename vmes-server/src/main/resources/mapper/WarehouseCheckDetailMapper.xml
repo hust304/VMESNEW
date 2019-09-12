@@ -61,7 +61,9 @@
         <!-- :editChangeCount:(台账数量 - 盘点数量): 界面js页面使用字段 -->
         (replace(uuid(), '-', ''),'warehouseCheckDetail','editChangeCount','盘盈/盘亏',18, '1','1','1','0',now(), 'admin'),
 
-
+        (replace(uuid(), '-', ''),'warehouseCheckDetail','inParentCode','入库单编号',19, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseCheckDetail','outParentCode','出库单编号',20, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseCheckDetail','businessCode','业务单编号',21, '1','1','1','0',now(), 'admin'),
         </insert>
 
         <update id="updateStateByDetail" parameterType="com.yvan.PageData" >
@@ -97,7 +99,9 @@
             remark remark,
 
             isdisable isdisable,
-            check_stock_count checkStockCount
+            check_stock_count checkStockCount,
+            in_dtl_id inDtlId,
+            out_dtl_id outDtlId
         from vmes_warehouse_check_detail
         <choose>
             <!--
@@ -211,9 +215,13 @@
             warehouse.path_name pathName,
             warehouse.code warehouseCode,
 
-            <!--台账数量 - 盘点数量-->
-            round((ifnull(detail.check_stock_count, 0) - ifnull(detail.stock_count, 0)), 2) changeCount,
+            <!--盘点数量-台账数量 -->
+            round((ifnull(detail.stock_count, 0) - ifnull(detail.check_stock_count, 0)), 2) changeCount,
             '' editChangeCount,
+
+            inParent.code inParentCode,
+            outParent.code outParentCode,
+            '' businessCode,
 
             <!--货品表-->
             product.code productCode,
@@ -238,6 +246,12 @@
 
             left join vmes_warehouse_check_execute checkExecute on detail.id = checkExecute.detail_id and checkExecute.isdisable = '1'
             left join vmes_user auditUser on checkExecute.audit_id = auditUser.id
+
+            left join vmes_warehouse_in_detail inDetail on detail.in_dtl_id = inDetail.id
+            left join vmes_warehouse_in inParent on inDetail.parent_id = inParent.id
+
+            left join vmes_warehouse_out_detail outDetail on detail.out_dtl_id = outDetail.id
+            left join vmes_warehouse_out outParent on outDetail.parent_id = outParent.id
         <where>
             <if test="parentId != null and parentId != ''" >
                 and detail.parent_id = #{parentId}

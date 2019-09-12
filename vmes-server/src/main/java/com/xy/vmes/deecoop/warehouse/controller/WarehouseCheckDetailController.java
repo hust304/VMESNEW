@@ -35,8 +35,7 @@ public class WarehouseCheckDetailController {
         logger.info("################warehouseCheckDetail/listPageWarehouseCheckDetails 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         PageData pd = HttpUtils.parsePageData();
-        Pagination pg = HttpUtils.parsePagination(pd);
-        ResultModel model = warehouseCheckDetailService.listPageWarehouseCheckDetails(pd,pg);
+        ResultModel model = warehouseCheckDetailService.listPageWarehouseCheckDetails(pd);
         Long endTime = System.currentTimeMillis();
         logger.info("################warehouseCheckDetail/listPageWarehouseCheckDetails 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
