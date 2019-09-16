@@ -157,6 +157,14 @@ public interface WarehouseInDetailService {
     ResultModel recoveryWarehouseInDetail(PageData pageData) throws Exception;
 
     ResultModel deleteWarehouseInDetail(PageData pageData) throws Exception;
+
+    /**
+     * 简版仓库-入库单明细查询
+     * @param pageData
+     * @return
+     * @throws Exception
+     */
+    ResultModel listPageWarehouseInDetailExecuteBySimple(PageData pageData) throws Exception;
 }
 
 
