@@ -1136,6 +1136,19 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
         //入库单明细参数
         String id = (String)firstRowMap.get("id");
 
+        //入库单明细-入库数量
+        BigDecimal count = BigDecimal.valueOf(0D);
+        String countStr = (String)firstRowMap.get("count");
+        if (countStr != null && countStr.trim().length() > 0) {
+            try {
+                count = new BigDecimal(countStr);
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+            //四舍五入到2位小数
+            count = count.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+        }
+
         PageData findMap = new PageData();
         //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
         findMap.put("pid", Common.DICTIONARY_MAP.get("warehouseEntity"));
@@ -1157,6 +1170,7 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
             secondMap.put("warehouseId", warehouseId);
             secondMap.put("detailId", id);
             secondMap.put("pathName", pathName);
+            secondMap.put("count", count.toString());
             secondMapList.add(secondMap);
         }
 
