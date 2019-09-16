@@ -73,6 +73,7 @@ public interface WarehouseProductMapper extends BaseMapper<WarehouseProduct> {
 
     List<Map> warehouseDetailView(PageData pd, Pagination pg);
 
+    List<Map> simpleWarehouseDetailView(PageData pd);
     List<Map> simpleWarehouseDetailView(PageData pd, Pagination pg);
 
     /**

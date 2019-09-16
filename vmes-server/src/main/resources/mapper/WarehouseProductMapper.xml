@@ -341,32 +341,37 @@
     <!-- 自动创建，可以修改 -->
     <select id="simpleWarehouseDetailView"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
         select
-        warehouse.id id,
+        wp.warehouse_id id,
         wp.product_id productId,
         warehouse.path_name pathName,
         pwarehouse.name warehouseName,
         round(sum(ifnull(wp.stock_count,0)),2) stockCount
         from vmes_warehouse_product wp
-        left join vmes_warehouse warehouse on warehouse.id = wp.warehouse_id
+        left join vmes_warehouse warehouse on wp.warehouse_id = warehouse.id
         left join vmes_warehouse pwarehouse on pwarehouse.id = warehouse.warehouse_id
 
         <where>
-            <!--queryStr 自定义sql查询语句-->
-            <if test="queryStr != null and queryStr != ''" >
-                and ${queryStr}
-            </if>
             <if test="productId != null and productId != ''">
                 and wp.product_id = #{productId}
-            </if>
-            <if test="warehouseId != null and warehouseId != ''">
-                and warehouse.path_id LIKE CONCAT(CONCAT('%', #{warehouseId}),'%')
             </if>
             <if test="currentCompanyId != null and currentCompanyId != ''">
                 and wp.company_id = #{currentCompanyId}
             </if>
-            <![CDATA[ and (wp.stock_count > 0 or wp.stock_count < 0) ]]>
+            <if test="'true' == isStockCountGreaterThanZero">
+                <![CDATA[ and wp.stock_count > 0 ]]>
+            </if>
+
+            <if test="warehouseId != null and warehouseId != ''">
+                and warehouse.path_id LIKE CONCAT(CONCAT('%', #{warehouseId}),'%')
+            </if>
+
+            <!--queryStr 自定义sql查询语句-->
+            <if test="queryStr != null and queryStr != ''" >
+                and ${queryStr}
+            </if>
+
         </where>
-        group by warehouse.id,wp.product_id asc  <!-- 先入先出 按批次号的升序排列 -->
+        group by wp.warehouse_id,wp.product_id  <!-- 先入先出 按批次号的升序排列 -->
     </select>
 
 

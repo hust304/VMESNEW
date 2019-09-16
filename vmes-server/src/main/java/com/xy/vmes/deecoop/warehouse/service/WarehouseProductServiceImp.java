@@ -158,6 +158,9 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
     public List<Map> getDataListPageDispatchBySimple(PageData pd) throws Exception{
         return warehouseProductMapper.getDataListPageDispatchBySimple(pd);
     }
+    public List<Map> simpleWarehouseDetailView(PageData pd) throws Exception {
+        return warehouseProductMapper.simpleWarehouseDetailView(pd);
+    }
 
 
     @Override

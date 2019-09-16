@@ -77,6 +77,8 @@ public interface WarehouseProductService {
     List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception;
 
     List<Map> getDataListPageDispatchBySimple(PageData pd) throws Exception;
+    List<Map> simpleWarehouseDetailView(PageData pd) throws Exception;
+
     List<Map> getDataListPageDispatch(PageData pd,Pagination pg) throws Exception;
     List<Map> getDataListPageDispatch(PageData pd) throws Exception;
     /**
