@@ -37,6 +37,8 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
     private WarehouseInService warehouseInService;
     //@Autowired
     //private WarehouseInExecuteService warehouseInExecuteService;
+    @Autowired
+    private WarehouseService warehouseService;
 
     @Autowired
     private ProductUnitService productUnitService;
@@ -1040,6 +1042,13 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
         ResultModel model = new ResultModel();
         Pagination pg = HttpUtils.parsePagination(pageData);
 
+        String companyId = pageData.getString("currentCompanyId");
+        if (companyId == null || companyId.trim().length() == 0) {
+            model.putCode("1");
+            model.putMsg("企业id为空或空字符串！");
+            return model;
+        }
+
         //A. 第一级: 获取入库单明细Title列表
         List<Column> columnList = columnService.findColumnList("warehouseInDetail");
         if (columnList == null || columnList.size() == 0) {
@@ -1108,15 +1117,11 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
                 varMap.put("pid", null);
 
                 //查询第二层数据
-                List<Map> secondList = this.findSecondList(map);
+                List<Map> secondList = this.findSecondList(map, companyId);
                 if(secondList != null && secondList.size() > 0) {
                     varMap.put("children", secondList);
                     varMapList.add(varMap);
                 }
-
-//                List<Map> secondList = new ArrayList<>();
-//                varMap.put("children", secondList);
-//                varMapList.add(varMap);
 
             }
         }
@@ -1127,58 +1132,31 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
         return model;
     }
 
-    private List<Map> findSecondList(Map firstRowMap) throws Exception {
+    private List<Map> findSecondList(Map firstRowMap, String companyId) throws Exception {
         //入库单明细参数
         String id = (String)firstRowMap.get("id");
-        String productId = (String)firstRowMap.get("productId");
 
-        //入库单明细-入库数量
-        BigDecimal count = BigDecimal.valueOf(0D);
-        String countStr = (String)firstRowMap.get("count");
-        if (countStr != null && countStr.trim().length() > 0) {
-            try {
-                count = new BigDecimal(countStr);
-            } catch (NumberFormatException e) {
-                e.printStackTrace();
-            }
-            //四舍五入到2位小数
-            count = count.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-        }
-
-        //按照(企业id,货品id)-汇总查询vmes_warehouse_product 汇总字段(货位id,货品id)
-        List<Map> mapList = null;
-        try {
-            PageData findMap = new PageData();
-            findMap.put("productId", productId);
-            findMap.put("isStockCountGreaterThanZero", "true");
-            findMap.put("orderStr", "product.stock_count desc");
-            mapList = warehouseProductService.simpleWarehouseDetailView(findMap);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        PageData findMap = new PageData();
+        //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
+        findMap.put("pid", Common.DICTIONARY_MAP.get("warehouseEntity"));
+        findMap.put("companyId", companyId);
+        //是否启用(0:已禁用 1:启用)
+        findMap.put("isdisable", "1");
+        findMap.put("isNotNeedSpare", "true");
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+        List<Warehouse> warehouseList = warehouseService.findWarehouseList(findMap);
 
         List<Map> secondMapList = new ArrayList();
-        if (mapList != null && mapList.size() > 0) {
-            Map mapObject = mapList.get(0);
-            String warehouseId = (String)mapObject.get("warehouseId");
-            String pathName = (String)mapObject.get("pathName");
-
-            //stockCount 库存数量
-            BigDecimal stockCount = BigDecimal.valueOf(0D);
-            if (mapObject.get("stockCount") != null) {
-                stockCount = (BigDecimal)mapObject.get("stockCount");
-                //四舍五入到2位小数
-                stockCount = stockCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-            }
+        if (warehouseList != null && warehouseList.size() > 0) {
+            Warehouse object = warehouseList.get(0);
+            String warehouseId = object.getId();
+            String pathName = object.getPathName();
 
             //model_code = 'warehouseInExecutorByAddExecute'
             Map<String, String> secondMap = new HashMap<String, String>();
             secondMap.put("warehouseId", warehouseId);
             secondMap.put("detailId", id);
-
             secondMap.put("pathName", pathName);
-            secondMap.put("stockCount", stockCount.toString());
-            secondMap.put("count", count.toString());
             secondMapList.add(secondMap);
         }
 

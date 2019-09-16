@@ -108,6 +108,9 @@ public interface WarehouseInExecuteService {
 
     ResultModel rebackWarehouseInExecute(PageData pageData) throws Exception;
 
+    //入库单明细执行-简版仓库
+    ResultModel addWarehouseInExecuteBySimple(PageData pageData) throws Exception;
+
     ///////////////////////////////////////////////////////////////////////////////
 
     ResultModel findListWarehouseInExecuteByEdit(PageData pd, Pagination pg) throws Exception;

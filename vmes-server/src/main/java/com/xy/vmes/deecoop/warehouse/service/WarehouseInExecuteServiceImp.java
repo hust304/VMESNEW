@@ -945,6 +945,172 @@ public class WarehouseInExecuteServiceImp implements WarehouseInExecuteService {
         return model;
     }
 
+    //入库单明细执行-简版仓库
+    public ResultModel addWarehouseInExecuteBySimple(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+        String parentId = pageData.getString("parentId");
+        String companyId = pageData.getString("currentCompanyId");
+        String cuser = pageData.getString("cuser");
+
+        String jsonDataStr = pageData.getString("jsonDataStr");
+        if (jsonDataStr == null || jsonDataStr.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("请至少填写一条入库数据！");
+            return model;
+        }
+
+        List<Map<String, Object>> mapList = (List<Map<String, Object>>) YvanUtil.jsonToList(jsonDataStr);
+        if(mapList == null || mapList.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("入库单明细执行 Json字符串-转换成List错误！");
+            return model;
+        }
+
+        //1. 修改入库单明细表-简版仓库
+        if (mapList != null && mapList.size() > 0) {
+            for (Map<String, Object> warehouseInDetailMap : mapList) {
+                WarehouseInDetail editDetail = new WarehouseInDetail();
+
+                String detailId = (String)warehouseInDetailMap.get("id");
+                editDetail.setId(detailId);
+
+                String productId = (String)warehouseInDetailMap.get("productId");
+                Object executeObj = warehouseInDetailMap.get("children");
+                if (executeObj == null) {continue;}
+
+                // 界面上 model_code := 'warehouseInExecutorByAddExecute' 中获得
+                List executeList = (List)executeObj;
+                for (int i = 0; i < executeList.size(); i++) {
+                    Map<String, Object> executeMap = (Map<String, Object>)executeList.get(i);
+
+                    //入库货位id warehouseId
+                    String warehouseId = (String)executeMap.get("warehouseId");
+                    editDetail.setWarehouseId(warehouseId);
+
+                    //入库数量 count
+                    BigDecimal count = BigDecimal.valueOf(0D);
+                    String countStr = (String)executeMap.get("count");
+                    if (countStr != null && countStr.trim().length() > 0) {
+                        try {
+                            count = new BigDecimal(countStr);
+                        } catch (NumberFormatException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    editDetail.setCount(count);
+
+                    //货位批次号
+                    String code = new String();
+                    //获取入库批次号 (货品id, 货位id) 查询货位货品表(vmes_warehouse_product)
+                    List<WarehouseProduct> warehouseProductList = null;
+                    try {
+                        PageData findMap = new PageData();
+                        findMap.put("productId", productId);
+                        findMap.put("warehouseId", warehouseId);
+                        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+                        findMap.put("orderStr", "cdate desc");
+
+                        warehouseProductList = warehouseProductService.findWarehouseProductList(findMap);
+                        if (warehouseProductList == null || warehouseProductList.size() == 0) {
+
+                        } else if (warehouseProductList != null && warehouseProductList.size() > 0) {
+                            String warehouseProduct_code = warehouseProductList.get(0).getCode();
+                            if (warehouseProduct_code != null && warehouseProduct_code.trim().length() > 0) {
+                                code = warehouseProduct_code.trim();
+                            }
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    //入库批次号
+                    editDetail.setCode(code);
+                    //入库单明细状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+                    editDetail.setState("2");
+                    warehouseInDetailService.update(editDetail);
+                }
+
+                WarehouseIn editIn = new WarehouseIn();
+                editIn.setId(parentId);
+                //入库单状态(0:未完成 1:已完成 -1:已取消)
+                editIn.setState("1");
+                warehouseInService.update(editIn);
+            }
+        }
+
+        //2. 入库单明细执行
+        List<WarehouseInDetail> detailList = warehouseInDetailService.findWarehouseInDetailListByParentId(parentId);
+
+        StringBuffer msgBuf = new StringBuffer();
+        try {
+            for (int i = 0; i < detailList.size(); i++) {
+                WarehouseInDetail object = detailList.get(i);
+
+                String detailId = object.getId();
+                BigDecimal count = object.getCount();
+                String warehouseId = object.getWarehouseId();
+                String productId = object.getProductId();
+                String code = object.getCode();
+
+                //入库操作
+                WarehouseProduct inObject = new WarehouseProduct();
+                //货位批次号
+                inObject.setCode(code);
+                //产品ID
+                inObject.setProductId(productId);
+                //(实际)货位ID
+                inObject.setWarehouseId(warehouseId);
+
+                //库存变更日志
+                String executeId = Conv.createUuid();
+
+                WarehouseLoginfo loginfo = new WarehouseLoginfo();
+                loginfo.setParentId(parentId);
+                loginfo.setDetailId(detailId);
+                loginfo.setExecuteId(executeId);
+                loginfo.setCompanyId(companyId);
+                loginfo.setCuser(cuser);
+                //operation 操作类型(add:添加 modify:修改 delete:删除:)
+                loginfo.setOperation("add");
+
+                //beforeCount 操作变更前数量(业务相关)
+                loginfo.setBeforeCount(BigDecimal.valueOf(0D));
+                //afterCount 操作变更后数量(业务相关)
+                loginfo.setAfterCount(count);
+
+                String msgStr = warehouseProductService.inStockCount(inObject, count, loginfo);
+                if (msgStr != null && msgStr.trim().length() > 0) {
+                    msgBuf.append("第 " + (i+1) + " 条: " + "入库操作失败:" + msgStr);
+                } else {
+                    Product product = productService.findProductById(productId);
+                    BigDecimal prodCount = BigDecimal.valueOf(0D);
+                    if (product.getStockCount() != null) {
+                        prodCount = product.getStockCount();
+                    }
+
+                    BigDecimal prodStockCount = BigDecimal.valueOf(prodCount.doubleValue() + count.doubleValue());
+                    productService.updateStockCount(product, prodStockCount, cuser);
+                }
+            }
+        } catch (TableVersionException tabExc) {
+            //库存变更 version 锁
+            if (Common.SYS_STOCKCOUNT_ERRORCODE.equals(tabExc.getErrorCode())) {
+                model.putCode(Integer.valueOf(1));
+                model.putMsg(tabExc.getMessage());
+                return model;
+            }
+        }
+
+        if (msgBuf.toString().trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgBuf.toString());
+            return model;
+        }
+
+
+        return model;
+    }
+
     ///////////////////////////////////////////////////////////////////////////////
 
     private List<Map> findSecondList(Map firstRowMap, Map<String, Object> secondTitleMap, String companyId) throws Exception {

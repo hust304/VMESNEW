@@ -69,6 +69,24 @@ public class WarehouseInExecuteController {
     }
 
     /**
+     * 入库单明细执行-简版仓库
+     * @author 陈刚
+     * @date 2019-09-16
+     * @throws Exception
+     */
+    @PostMapping("/warehouse/warehouseInExecute/addWarehouseInExecuteBySimple")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel addWarehouseInExecuteBySimple() throws Exception {
+        logger.info("################/warehouse/warehouseInExecute/addWarehouseInExecuteBySimple 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pageData = HttpUtils.parsePageData();
+        ResultModel model = warehouseInExecuteService.addWarehouseInExecuteBySimple(pageData);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/warehouse/warehouseInExecute/addWarehouseInExecuteBySimple 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
      * (退单)取消入库单明细执行
      * @author 陈刚
      * @date 2018-10-18
