@@ -544,6 +544,10 @@
             <if test="typeName != null and typeName != ''">
                 and type.name LIKE CONCAT(CONCAT('%', #{typeName}),'%')
             </if>
+            <if test="type != null and type != ''" >
+                and warehouseout.type = #{type}
+            </if>
+
             <if test="warehouseName != null and warehouseName != ''">
                 and warehouse.name LIKE CONCAT(CONCAT('%', #{warehouseName}),'%')
             </if>
