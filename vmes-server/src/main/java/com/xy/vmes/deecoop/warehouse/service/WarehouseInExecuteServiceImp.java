@@ -49,7 +49,10 @@ public class WarehouseInExecuteServiceImp implements WarehouseInExecuteService {
     private ColumnService columnService;
     @Autowired
     private TaskService taskService;
-
+    @Autowired
+    private CoderuleService coderuleService;
+    @Autowired
+    private FileService fileService;
 
     /**
     * 创建人：陈刚 自动创建，禁止修改
@@ -966,15 +969,23 @@ public class WarehouseInExecuteServiceImp implements WarehouseInExecuteService {
             return model;
         }
 
+        Map<String, Object> columnMap = new HashMap<String, Object>();
+        columnMap.put("parent_id", parentId);
+        warehouseInDetailService.deleteByColumnMap(columnMap);
+
         //1. 修改入库单明细表-简版仓库
         if (mapList != null && mapList.size() > 0) {
             for (Map<String, Object> warehouseInDetailMap : mapList) {
-                WarehouseInDetail editDetail = new WarehouseInDetail();
 
-                String detailId = (String)warehouseInDetailMap.get("id");
-                editDetail.setId(detailId);
+                WarehouseInDetail addDetail = new WarehouseInDetail();
+                addDetail.setParentId(parentId);
 
                 String productId = (String)warehouseInDetailMap.get("productId");
+                addDetail.setProductId(productId);
+
+                addDetail.setExecuteId(cuser);
+                addDetail.setCuser(cuser);
+
                 Object executeObj = warehouseInDetailMap.get("children");
                 if (executeObj == null) {continue;}
 
@@ -985,7 +996,7 @@ public class WarehouseInExecuteServiceImp implements WarehouseInExecuteService {
 
                     //入库货位id warehouseId
                     String warehouseId = (String)executeMap.get("warehouseId");
-                    editDetail.setWarehouseId(warehouseId);
+                    addDetail.setWarehouseId(warehouseId);
 
                     //入库数量 count
                     BigDecimal count = BigDecimal.valueOf(0D);
@@ -997,11 +1008,10 @@ public class WarehouseInExecuteServiceImp implements WarehouseInExecuteService {
                             e.printStackTrace();
                         }
                     }
-                    editDetail.setCount(count);
+                    addDetail.setCount(count);
 
-                    //货位批次号
-                    String code = new String();
                     //获取入库批次号 (货品id, 货位id) 查询货位货品表(vmes_warehouse_product)
+                    String code = new String();
                     List<WarehouseProduct> warehouseProductList = null;
                     try {
                         PageData findMap = new PageData();
@@ -1012,22 +1022,33 @@ public class WarehouseInExecuteServiceImp implements WarehouseInExecuteService {
 
                         warehouseProductList = warehouseProductService.findWarehouseProductList(findMap);
                         if (warehouseProductList == null || warehouseProductList.size() == 0) {
-
+                            //获取批次号-创建新的批次号
+                            //PC+yyyyMMdd+00001 = 15位
+                            code = coderuleService.createCoderCdateByDate(companyId,
+                                    "vmes_product_pc",
+                                    "yyyyMMdd",
+                                    "PC");
                         } else if (warehouseProductList != null && warehouseProductList.size() > 0) {
                             String warehouseProduct_code = warehouseProductList.get(0).getCode();
                             if (warehouseProduct_code != null && warehouseProduct_code.trim().length() > 0) {
                                 code = warehouseProduct_code.trim();
                             }
                         }
+
+                        //生成批次号二维码(批次号,产品ID,产品名称)
+                        addDetail.setCode(code);
+                        String QRCodeJson = warehouseInDetailService.warehouseInDtl2QRCode(addDetail);
+                        String qrcode = fileService.createQRCode("warehouseIn", QRCodeJson);
+                        if (qrcode != null && qrcode.trim().length() > 0) {
+                            addDetail.setQrcode(qrcode);
+                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
 
-                    //入库批次号
-                    editDetail.setCode(code);
                     //入库单明细状态(0:待派单 1:执行中 2:已完成 -1.已取消)
-                    editDetail.setState("2");
-                    warehouseInDetailService.update(editDetail);
+                    addDetail.setState("2");
+                    warehouseInDetailService.save(addDetail);
                 }
 
                 WarehouseIn editIn = new WarehouseIn();
