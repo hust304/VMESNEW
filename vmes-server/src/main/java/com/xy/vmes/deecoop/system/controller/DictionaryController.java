@@ -481,25 +481,39 @@ public class DictionaryController {
                 String treeId = tree.getId();
 
                 //入库类型
-                //sale 销售 94caec1bca7e4131b16bfcee9b1351e2 --> (saleRetreatIn 81907167d5c8498692e6c4f3694c5cfa 销售退货入库)
-                if (userRoleMenuMap.get(Common.SYS_MENU_MAP.get("sale")) != null
-                    && Common.DICTIONARY_MAP.get("saleRetreatIn").equals(treeId)
-                ) {
+                //sale 销售 94caec1bca7e4131b16bfcee9b1351e2
+                // --> (saleRetreatIn 81907167d5c8498692e6c4f3694c5cfa 销售退货入库)
+                // -->  saleChangeRetreatIn d1c6dc9aa3b045dbabff2d5e1e253c22 销售变更退货入库
+                if (userRoleMenuMap.get(Common.SYS_MENU_MAP.get("sale")) != null  && (
+                    Common.DICTIONARY_MAP.get("saleRetreatIn").equals(treeId) || Common.DICTIONARY_MAP.get("saleChangeRetreatIn").equals(treeId)
+                )) {
                     continue;
                 } else if (userRoleMenuMap.get(Common.SYS_MENU_MAP.get("purchase")) != null
                     && Common.DICTIONARY_MAP.get("purchaseIn").equals(treeId)
-                        ) {
+                ) {
                     //purchase 采购 3f5e1bcd2d3745998773413ccbded554 --> (purchaseIn d78ceba5beef41f5be16f0ceee775399 采购入库)
                     continue;
                 } else if (userRoleMenuMap.get(Common.SYS_MENU_MAP.get("equipmentRepair")) != null
-                        && Common.DICTIONARY_MAP.get("repairRetreatIn").equals(treeId)
-                        ) {
+                    && Common.DICTIONARY_MAP.get("repairRetreatIn").equals(treeId)
+                ) {
                     //equipmentRepair 设备维修 bfbb17fb01e44c648b1938b0e131202c --> (repairRetreatIn c396683796d54b8693b522a2c0ad2793 维修领料退回入库)
                     continue;
                 } else if (userRoleMenuMap.get(Common.SYS_MENU_MAP.get("equipmentMaintain")) != null
-                        && Common.DICTIONARY_MAP.get("maintainRetreatIn").equals(treeId)
-                        ) {
+                    && Common.DICTIONARY_MAP.get("maintainRetreatIn").equals(treeId)
+                ) {
                     //equipmentMaintain 设备保养 c9d0c50536c74470b990887d939a2041 --> (maintainRetreatIn d9c9eb85db0d4c8faa09ddc2b8173859 保养领料退回入库)
+                    continue;
+                } else if (
+                    //仓库
+                        //warehouseByComplex: '仓库',(复杂版仓库)15a6c4ca92fe42a0a82320287538b727
+                        //warehouseBySimple '仓库'(简版仓库) 5abe8f434e114a87a73b85ed74bc78e7
+                    //盘点入库 4d89ccb1e64f499cbdc6409f173f5407:checkIn
+                    (userRoleMenuMap.get(Common.SYS_MENU_MAP.get("warehouseByComplex")) != null || userRoleMenuMap.get(Common.SYS_MENU_MAP.get("warehouseBySimple")) != null)
+                    && (Common.DICTIONARY_MAP.get("checkIn").equals(treeId))
+                ) {
+                    continue;
+                } else if (Common.DICTIONARY_MAP.get("virtualIn").equals(treeId)) {
+                    //virtualIn 虚拟库入库 3ba2e016ac78464eb947c727ff41faf0
                     continue;
                 }
 
@@ -523,6 +537,18 @@ public class DictionaryController {
                     && Common.DICTIONARY_MAP.get("maintainReceiveOut").equals(treeId)
                 ) {
                     //equipmentMaintain 设备保养 c9d0c50536c74470b990887d939a2041 --> (maintainReceiveOut 8bcbc84893cf46daabbd2522bee482ad 保养领料出库)
+                    continue;
+                } else if (
+                    //仓库
+                        //warehouseByComplex: '仓库',(复杂版仓库)15a6c4ca92fe42a0a82320287538b727
+                        //warehouseBySimple '仓库'(简版仓库) 5abe8f434e114a87a73b85ed74bc78e7
+                    //盘点出库 55bdf3529c3c463489670a46c2651c1e:checkOut
+                    (userRoleMenuMap.get(Common.SYS_MENU_MAP.get("warehouseByComplex")) != null || userRoleMenuMap.get(Common.SYS_MENU_MAP.get("warehouseBySimple")) != null)
+                    && (Common.DICTIONARY_MAP.get("checkOut").equals(treeId))
+                ) {
+                    continue;
+                } else if (Common.DICTIONARY_MAP.get("virtualOut").equals(treeId)) {
+                    //virtualOut 虚拟库出库 9c7be2410a0045c8963f9273fe6da067
                     continue;
                 }
 
