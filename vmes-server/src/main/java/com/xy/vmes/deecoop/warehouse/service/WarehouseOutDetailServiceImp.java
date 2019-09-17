@@ -745,10 +745,11 @@ public class WarehouseOutDetailServiceImp implements WarehouseOutDetailService {
 
         String dtlJsonStr = pd.getString("dtlJsonStr");
 
-        if (dtlJsonStr == null || dtlJsonStr.trim().length() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("请至少添加选择一条货品数据！");
-            return model;
+        if (dtlJsonStr == null || dtlJsonStr.trim().length() == 0 || "{}".equals(dtlJsonStr)) {
+            PageData pageData = new PageData();
+            pageData.put("parentId","null");
+            pageData.put("fieldCode",pd.getString("fieldCode"));
+            return this.listPageWarehouseOutDetails(pageData,null);
         }
 
         List<Map<String, String>> mapList = (List<Map<String, String>>) YvanUtil.jsonToList(dtlJsonStr);
