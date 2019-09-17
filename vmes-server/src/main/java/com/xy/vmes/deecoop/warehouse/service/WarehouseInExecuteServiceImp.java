@@ -978,6 +978,7 @@ public class WarehouseInExecuteServiceImp implements WarehouseInExecuteService {
             for (Map<String, Object> warehouseInDetailMap : mapList) {
 
                 WarehouseInDetail addDetail = new WarehouseInDetail();
+                addDetail.setId(Conv.createUuid());
                 addDetail.setParentId(parentId);
 
                 String productId = (String)warehouseInDetailMap.get("productId");
