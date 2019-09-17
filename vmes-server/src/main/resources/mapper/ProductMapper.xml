@@ -412,7 +412,7 @@
                 and prod.name LIKE CONCAT('%',CONCAT(#{name}),'%')
             </if>
             <if test="genreName != null and genreName != ''">
-                and genre.name LIKE CONCAT('%',CONCAT(#{genreName}),'%')
+                and genre.name = #{genreName}
             </if>
             <if test="typeName != null and typeName != ''">
                 and type.name LIKE CONCAT('%',CONCAT(#{typeName}),'%')

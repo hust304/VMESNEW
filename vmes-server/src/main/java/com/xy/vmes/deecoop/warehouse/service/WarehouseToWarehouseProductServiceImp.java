@@ -1,5 +1,6 @@
 package com.xy.vmes.deecoop.warehouse.service;
 
+import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.deecoop.warehouse.dao.WarehouseToWarehouseProductMapper;
 import com.xy.vmes.service.WarehouseToWarehouseProductService;
 import com.yvan.PageData;
@@ -7,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -23,5 +25,23 @@ public class WarehouseToWarehouseProductServiceImp implements WarehouseToWarehou
 
     public List<Map> findMapListWarehouseToWarehouseProduct(PageData pd) {
         return warehouseMapper.findMapListWarehouseToWarehouseProduct(pd);
+    }
+
+    /**
+     * 获取全部仓库信息-并且得到仓库的货品库存数量
+     * @param pd
+     * @return
+     */
+    public List<Map> findWarehouseToWarehouseProductByProduct(PageData pd, Pagination pg) {
+        List<Map> mapList = new ArrayList<Map>();
+        if (pd == null) {return mapList;}
+
+        if (pg == null) {
+            return warehouseMapper.findWarehouseToWarehouseProductByProduct(pd);
+        } else if (pg != null) {
+            return warehouseMapper.findWarehouseToWarehouseProductByProduct(pd, pg);
+        }
+
+        return mapList;
     }
 }

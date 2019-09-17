@@ -278,6 +278,7 @@ public interface WarehouseProductService {
     ResultModel listPageWarehouseProductsDispatchOption(PageData pd, Pagination pg) throws Exception;
 
     ResultModel listPageWarehouseProductsDispatchOptionBySimple(PageData pd) throws Exception;
+    ResultModel listPageWarehouseToWarehouseProductBySimple(PageData pd) throws Exception;
 
     void exportExcelWarehouseProducts(PageData pd, Pagination pg) throws Exception;
 

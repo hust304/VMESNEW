@@ -289,6 +289,15 @@ public class WarehouseProductController {
         return model;
     }
 
+    //仓库表(vmes_warehouse)-关联仓库货品表(vmes_warehouse_product)
+    //获取全部仓库信息-并且关联仓库货品表
+    @PostMapping("/warehouse/warehouseProduct/listPageWarehouseToWarehouseProductBySimple")
+    public ResultModel listPageWarehouseToWarehouseProductBySimple() throws Exception {
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = warehouseProductService.listPageWarehouseToWarehouseProductBySimple(pd);
+        return model;
+    }
+
     //获取仓库货品信息(虚拟库)-根据(货品id)汇总
     @PostMapping("/warehouse/warehouseProduct/findListProductByWarehouseVirtual")
     public ResultModel findListProductByWarehouseVirtual() throws Exception {

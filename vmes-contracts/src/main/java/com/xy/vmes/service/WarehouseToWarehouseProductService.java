@@ -1,5 +1,6 @@
 package com.xy.vmes.service;
 
+import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.yvan.PageData;
 
 import java.util.List;
@@ -12,4 +13,11 @@ import java.util.Map;
  */
 public interface WarehouseToWarehouseProductService {
     List<Map> findMapListWarehouseToWarehouseProduct(PageData pd);
+
+    /**
+     * 获取全部仓库信息-并且得到仓库的货品库存数量
+     * @param pd
+     * @return
+     */
+    List<Map> findWarehouseToWarehouseProductByProduct(PageData pd, Pagination pg);
 }

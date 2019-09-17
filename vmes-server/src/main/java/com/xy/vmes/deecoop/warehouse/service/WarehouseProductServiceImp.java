@@ -35,6 +35,9 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
     @Autowired
     private WarehouseProductMapper warehouseProductMapper;
     @Autowired
+    private WarehouseToWarehouseProductService warehouseToWarehouseProductService;
+
+    @Autowired
     private WarehouseService warehouseService;
     @Autowired
     private WarehouseLoginfoService warehouseLoginfoService;
@@ -1763,6 +1766,47 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
 
         Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
         List<Map> varList = warehouseProductMapper.getDataListPageDispatchBySimple(pd,pg);
+        List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
+
+        result.put("hideTitles",titleMap.get("hideTitles"));
+        result.put("titles",titleMap.get("titles"));
+        result.put("varList",varMapList);
+        result.put("pageData", pg);
+        model.putResult(result);
+        return model;
+    }
+
+    public ResultModel listPageWarehouseToWarehouseProductBySimple(PageData pd) throws Exception {
+        ResultModel model = new ResultModel();
+        Pagination pg =  HttpUtils.parsePagination(pd);
+
+        List<Column> columnList = columnService.findColumnList("warehouseToWarehouseProductByProduct");
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
+        }
+
+        //获取指定栏位字符串-重新调整List<Column>
+        String fieldCode = pd.getString("fieldCode");
+        if (fieldCode != null && fieldCode.trim().length() > 0) {
+            columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
+        }
+        Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
+
+        String companyId = pd.getString("currentCompanyId");
+        pd.put("companyId", companyId);
+
+        //是否需要分页 true:需要分页 false:不需要分页
+        Map result = new HashMap();
+        String isNeedPage = pd.getString("isNeedPage");
+        if ("false".equals(isNeedPage)) {
+            pg = null;
+        } else {
+            result.put("pageData", pg);
+        }
+
+        List<Map> varList = warehouseToWarehouseProductService.findWarehouseToWarehouseProductByProduct(pd, pg);
         List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
 
         result.put("hideTitles",titleMap.get("hideTitles"));
