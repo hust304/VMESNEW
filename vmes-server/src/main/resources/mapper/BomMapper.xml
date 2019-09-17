@@ -284,7 +284,7 @@
         bom.isdisable isdisable,<!-- 是否启用(0:已禁用 1:启用) -->
         bom.remark remark,<!-- 备注 -->
 
-
+        bom.id bomId,
         prod.id prodId,
         prod.code prodCode,
         prod.name prodName,
@@ -410,6 +410,10 @@
             <if test="queryStr != null and queryStr != ''" >
                 and ${queryStr}
             </if>
+            <if test="bomIds != null and bomIds != ''">
+                and bom.id in (${bomIds})
+            </if>
+
             <if test="code != null and code != ''">
                 and bom.code LIKE CONCAT(CONCAT('%', #{code}),'%')
             </if>

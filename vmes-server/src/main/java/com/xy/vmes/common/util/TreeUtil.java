@@ -217,12 +217,68 @@ public class TreeUtil {
                 TreeEntity materiel = findNodeById(key, materielMapList);
                 materiel.setLackCount(materielNeedCount.subtract(materielStockCount).setScale(0,BigDecimal.ROUND_DOWN));
                 materiel.setEdate(edate);
+                materiel.setPlanCount(materielNeedCount);
                 varMapList.add(materiel);
             }
         }
         return varMapList;
     }
 
+
+
+
+    public static List<TreeEntity> getMaterielNum(List<Map> treeMapList) {
+        List<TreeEntity> varMapList = new ArrayList();
+        List<TreeEntity> materielMapList = new ArrayList();
+        Map<String,BigDecimal> productStockCountMap = new HashMap<String,BigDecimal>();
+        Map<String,BigDecimal> materielStockCountMap = new HashMap<String,BigDecimal>();
+        Map<String,BigDecimal> materielNeedCountMap = new HashMap<String,BigDecimal>();
+
+        Map<String,Map<String,BigDecimal>> cacheMap = new HashMap<String,Map<String,BigDecimal>>();
+        cacheMap.put("productStockCountMap",productStockCountMap);
+        cacheMap.put("materielStockCountMap",materielStockCountMap);
+
+
+        if(treeMapList!=null&&treeMapList.size()>0){
+            for(int i=0;i<treeMapList.size();i++){
+                Map<String,BigDecimal> materielRatioMap = new HashMap<String,BigDecimal>();
+                Map<String,BigDecimal> semiFinishedRatioMap =  new HashMap<String,BigDecimal>();
+                cacheMap.put("materielRatioMap",materielRatioMap);
+                cacheMap.put("semiFinishedRatioMap",semiFinishedRatioMap);
+
+                Map treeMap = treeMapList.get(i);
+                String nodeId = (String)treeMap.get("productId");
+                BigDecimal planCount = (BigDecimal)treeMap.get("planCount");
+                List<TreeEntity> objectList = (List<TreeEntity>)treeMap.get("treeList");
+                //获得当前节点对象
+                TreeEntity nodeObject = findNodeById(nodeId, objectList);
+                nodeObject.setSumRatio(BigDecimal.ONE);
+                nodeObject.setSplitCount(BigDecimal.ZERO);
+                initCacheMap(nodeObject, objectList,cacheMap);
+
+                for(String key:materielRatioMap.keySet()){
+                    TreeEntity materiel = findNodeById(key, objectList);
+                    materielMapList.add(materiel);
+                    BigDecimal materielRatio = materielRatioMap.get(key);
+                    BigDecimal materielNeedCount = planCount.multiply(materielRatio).setScale(0,BigDecimal.ROUND_DOWN);
+
+                    if(materielNeedCountMap.get(key)!=null){
+                        materielNeedCountMap.put(key,materielNeedCountMap.get(key).add(materielNeedCount));
+                    }else{
+                        materielNeedCountMap.put(key,materielNeedCount);
+                    }
+                }
+
+            }
+        }
+        for(String key:materielNeedCountMap.keySet()){
+            BigDecimal materielNeedCount = materielNeedCountMap.get(key);
+            TreeEntity materiel = findNodeById(key, materielMapList);
+            materiel.setPlanCount(materielNeedCount);
+            varMapList.add(materiel);
+        }
+        return varMapList;
+    }
 
     /**
      * 本方法为递归调用:

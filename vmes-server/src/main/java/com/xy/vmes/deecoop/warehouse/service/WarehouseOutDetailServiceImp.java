@@ -3,6 +3,7 @@ package com.xy.vmes.deecoop.warehouse.service;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.EvaluateUtil;
+import com.xy.vmes.common.util.TreeUtil;
 import com.yvan.common.util.Common;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.warehouse.dao.WarehouseOutDetailMapper;
@@ -47,7 +48,8 @@ public class WarehouseOutDetailServiceImp implements WarehouseOutDetailService {
     private WarehouseOutExecutorService warehouseOutExecutorService;
     @Autowired
     private WarehouseOutExecuteService warehouseOutExecuteService;
-
+    @Autowired
+    private BomTreeService bomTreeService;
     @Autowired
     private ProductUnitService productUnitService;
     @Autowired
@@ -733,6 +735,121 @@ public class WarehouseOutDetailServiceImp implements WarehouseOutDetailService {
         //2.返写入库单状态
         warehouseOutService.updateState(detail.getParentId());
         return model;
+    }
+
+
+    @Override
+    public ResultModel listPageForAddFromBOM(PageData pd) throws Exception {
+        ResultModel model = new ResultModel();
+        Map result = new HashMap();
+
+        String dtlJsonStr = pd.getString("dtlJsonStr");
+
+        if (dtlJsonStr == null || dtlJsonStr.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("请至少添加选择一条货品数据！");
+            return model;
+        }
+
+        List<Map<String, String>> mapList = (List<Map<String, String>>) YvanUtil.jsonToList(dtlJsonStr);
+        if (mapList == null || mapList.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("Json字符串-转换成List错误！");
+            return model;
+        }
+
+        List<Map> treeMapList = new ArrayList();
+        if(mapList!=null&&mapList.size()>0) {
+            for (int i = 0; i < mapList.size(); i++) {
+                Map<String, String> detailMap = mapList.get(i);
+
+                if(detailMap.get("id")==null){
+                    model.putCode(Integer.valueOf(1));
+                    model.putMsg("BOM ID 不能为空！");
+                    return model;
+                }
+                if(detailMap.get("prodId")==null){
+                    model.putCode(Integer.valueOf(1));
+                    model.putMsg("产品 ID 不能为空！");
+                    return model;
+                }
+                detailMap.put("bomId",detailMap.get("id"));
+                detailMap.put("id",detailMap.get("prodId"));
+                TreeEntity treeEntity = (TreeEntity) HttpUtils.pageData2Entity(detailMap, new TreeEntity());
+                BigDecimal planCount = treeEntity.getPlanCount()==null?BigDecimal.ZERO:treeEntity.getPlanCount();
+
+                PageData pageData = new PageData();
+                pageData.put("bomId",treeEntity.getBomId());
+                List<TreeEntity> treeList = bomTreeService.getBomTreeProductList(pageData);
+
+                Map map = new HashMap();
+                map.put("productId",treeEntity.getId());
+                map.put("planCount",planCount);
+                map.put("treeList",treeList);
+                treeMapList.add(map);
+            }
+        }
+        if(treeMapList!=null&&treeMapList.size()>0){
+            String prodIds = null;
+
+            List<TreeEntity> varList = TreeUtil.getMaterielNum(treeMapList);
+            if(varList!=null&&varList.size()>0){
+                Map planCountMap = new HashMap();
+                for(int i=0;i<varList.size();i++){
+                    TreeEntity treeEntity = varList.get(i);
+                    String prodId = treeEntity.getId();
+                    planCountMap.put(prodId,treeEntity.getPlanCount());
+                    if(prodIds == null){
+                        prodIds =  "'" + prodId+"'";
+                    }else{
+                        prodIds = prodIds +",'"+prodId+"'";
+                    }
+                }
+                PageData pageData = new PageData();
+                pageData.put("prodIds",prodIds);
+                List<Map> addFromBOMList =  warehouseOutDetailMapper.getDataListPageForAddFromBOM(pageData);
+
+                if(addFromBOMList!=null&&addFromBOMList.size()>0){
+                    for(int i=0;i<addFromBOMList.size();i++){
+                        Map addFromBOMMap = addFromBOMList.get(i);
+                        String prodId = (String)addFromBOMMap.get("id");
+                        addFromBOMMap.put("priceCount",planCountMap.get(prodId));
+                    }
+                }
+
+                List<Column> columnList = columnService.findColumnList("WarehouseOutDetail");
+                if (columnList == null || columnList.size() == 0) {
+                    model.putCode("1");
+                    model.putMsg("数据库没有生成TabCol，请联系管理员！");
+                    return model;
+                }
+
+                //获取指定栏位字符串-重新调整List<Column>
+                String fieldCode = pd.getString("fieldCode");
+                if (fieldCode != null && fieldCode.trim().length() > 0) {
+                    columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
+                }
+
+                Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
+                List<Map> varMapList = ColumnUtil.getVarMapList(addFromBOMList,titleMap);
+
+                result.put("hideTitles",titleMap.get("hideTitles"));
+                result.put("titles",titleMap.get("titles"));
+                result.put("varList",varMapList);
+                model.putResult(result);
+                return model;
+
+            }else{
+                model.putCode(Integer.valueOf(1));
+                model.putMsg("无查询记录！");
+                return model;
+            }
+
+        }else {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("无查询记录！");
+            return model;
+        }
     }
 
     @Override

@@ -316,6 +316,24 @@ public class WarehouseOutDetailController {
 
 
 
+    /**
+     * @author 刘威 自动创建，可以修改
+     * @date 2018-10-23
+     */
+    @PostMapping("/warehouse/warehouseOutDetail/listPageForAddFromBOM")
+    public ResultModel listPageForAddFromBOM()  throws Exception {
+
+        logger.info("################warehouseOutDetail/listPageForAddFromBOM 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = warehouseOutDetailService.listPageForAddFromBOM(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################warehouseOutDetail/listPageForAddFromBOM 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+
 
 
     /**

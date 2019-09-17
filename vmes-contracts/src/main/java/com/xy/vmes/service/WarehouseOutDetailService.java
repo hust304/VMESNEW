@@ -170,6 +170,8 @@ public interface WarehouseOutDetailService {
     void exportExcelWarehouseOutDetails(PageData pd, Pagination pg) throws Exception;
 
     ResultModel importExcelWarehouseOutDetails(MultipartFile file) throws Exception;
+
+    ResultModel listPageForAddFromBOM(PageData pd) throws Exception;
 }
 
 
