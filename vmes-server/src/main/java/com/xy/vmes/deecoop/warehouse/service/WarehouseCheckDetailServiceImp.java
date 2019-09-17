@@ -600,6 +600,9 @@ public class WarehouseCheckDetailServiceImp implements WarehouseCheckDetailServi
             result.put("pageData", pg);
         }
 
+        //是否需要台账数量等于盘点数量 true:需要台账数量等于盘点数量
+        String isNeedEqual = pd.getString("isNeedEqual");
+
         List<Map> varList = this.getDataListPage(pd, pg);
         if (varList != null && varList.size() > 0) {
             for (Map<String, Object> mapObject : varList) {
@@ -630,6 +633,19 @@ public class WarehouseCheckDetailServiceImp implements WarehouseCheckDetailServi
                     //changeCount < 0:(盘点数量-台账数量):出库单编号
                 } else if (changeCount.doubleValue() < 0) {
                     mapObject.put("businessCode", outParentCode);
+                }
+
+                //checkStockCount 台账数量
+                BigDecimal checkStockCount = BigDecimal.valueOf(0D);
+                if (mapObject.get("checkStockCount") != null) {
+                    checkStockCount = (BigDecimal)mapObject.get("checkStockCount");
+                    //四舍五入到2位小数
+                    checkStockCount = checkStockCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                }
+                //isNeedEqual 是否需要台账数量等于盘点数量 true:需要台账数量等于盘点数量
+                if ("true".equals(isNeedEqual)) {
+                    //stockCount 盘点数量
+                    mapObject.put("stockCount", checkStockCount.toString());
                 }
             }
         }
