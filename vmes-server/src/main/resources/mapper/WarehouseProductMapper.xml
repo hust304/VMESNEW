@@ -457,7 +457,7 @@
                 and prod.spec LIKE CONCAT(CONCAT('%', #{spec}),'%')
             </if>
             <if test="genreName != null and genreName != ''">
-                and genre.name LIKE CONCAT(CONCAT('%', #{genreName}),'%')
+                and genre.name = #{genreName}
             </if>
             <if test="unitName != null and unitName != ''">
                 and unit.name LIKE CONCAT(CONCAT('%', #{unitName}),'%')
