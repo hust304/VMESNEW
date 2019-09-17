@@ -67,9 +67,32 @@ public class ProductUnitController {
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         ProductUnit productUnit = (ProductUnit)HttpUtils.pageData2Entity(pd, new ProductUnit());
-        if(!StringUtils.isEmpty(productUnit.getProductId())) {
-            productUnitService.updateToNotDefaultByPorId(productUnit.getProductId());
+
+        if(StringUtils.isEmpty(productUnit.getProductId())) {
+            model.putCode("1");
+            model.putMsg("产品不能为空！");
+            return model;
         }
+
+        if(StringUtils.isEmpty(productUnit.getUnit())) {
+            model.putCode("1");
+            model.putMsg("单位不能为空！");
+            return model;
+        }
+
+
+        pd = new PageData();
+        pd.put("productId",productUnit.getProductId());
+        pd.put("unit",productUnit.getUnit());
+        List<ProductUnit> productUnitList = productUnitService.dataList(pd);
+        if(productUnitList!=null&&productUnitList.size()>0){
+            model.putCode("1");
+            model.putMsg("该单位已被使用，不能重复添加！");
+            return model;
+        }
+
+        productUnitService.updateToNotDefaultByPorId(productUnit.getProductId());
+
         productUnit.setIsdefault("1");
         productUnitService.save(productUnit);
         Long endTime = System.currentTimeMillis();
@@ -96,6 +119,20 @@ public class ProductUnitController {
         }else{
             productUnit.setType("0");
         }
+
+        pd = new PageData();
+        pd.put("id",productUnit.getId());
+        pd.put("isSelfExist","true");
+        pd.put("productId",productUnit.getProductId());
+        pd.put("unit",productUnit.getUnit());
+        List<ProductUnit> productUnitList = productUnitService.dataList(pd);
+        if(productUnitList!=null&&productUnitList.size()>0){
+            model.putCode("1");
+            model.putMsg("该单位已被使用，不能直接修改！");
+            return model;
+        }
+
+
         productUnitService.update(productUnit);
         Long endTime = System.currentTimeMillis();
         logger.info("################productUnit/update 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
