@@ -2,6 +2,7 @@ package com.xy.vmes.deecoop.warehouse.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
+import com.xy.vmes.exception.ApplicationException;
 import com.yvan.common.util.Common;
 import com.xy.vmes.deecoop.warehouse.dao.WarehouseInExecuteMapper;
 import com.xy.vmes.entity.*;
@@ -969,35 +970,30 @@ public class WarehouseInExecuteServiceImp implements WarehouseInExecuteService {
             return model;
         }
 
-        Map<String, Object> columnMap = new HashMap<String, Object>();
-        columnMap.put("parent_id", parentId);
-        warehouseInDetailService.deleteByColumnMap(columnMap);
-
-        //1. 修改入库单明细表-简版仓库
+        //1. 获取简版入库单明细执行Map结构体<String, List<Map<String, Object>>>-遍历界面json结构体-
+        //入库单明细执行Map结构体: Map<入库单明细id, 货品执行入库List>
+        //货品执行入库Map
+        //productId:   货品id
+        //warehouseId: 货位id
+        //code:        批次号
+        //count:       入库数量
+        Map<String, List<Map<String, Object>>> inDetailExecuteMap = new LinkedHashMap<>();
         if (mapList != null && mapList.size() > 0) {
             for (Map<String, Object> warehouseInDetailMap : mapList) {
-
-                WarehouseInDetail addDetail = new WarehouseInDetail();
-                addDetail.setId(Conv.createUuid());
-                addDetail.setParentId(parentId);
-
+                String detailId = (String)warehouseInDetailMap.get("id");
                 String productId = (String)warehouseInDetailMap.get("productId");
-                addDetail.setProductId(productId);
-
-                addDetail.setExecuteId(cuser);
-                addDetail.setCuser(cuser);
+                //批次号
+                String code = (String)warehouseInDetailMap.get("code");
 
                 Object executeObj = warehouseInDetailMap.get("children");
                 if (executeObj == null) {continue;}
 
-                // 界面上 model_code := 'warehouseInExecutorByAddExecute' 中获得
+                List productExecuteList = new ArrayList();
                 List executeList = (List)executeObj;
                 for (int i = 0; i < executeList.size(); i++) {
                     Map<String, Object> executeMap = (Map<String, Object>)executeList.get(i);
-
                     //入库货位id warehouseId
                     String warehouseId = (String)executeMap.get("warehouseId");
-                    addDetail.setWarehouseId(warehouseId);
 
                     //入库数量 count
                     BigDecimal count = BigDecimal.valueOf(0D);
@@ -1009,111 +1005,116 @@ public class WarehouseInExecuteServiceImp implements WarehouseInExecuteService {
                             e.printStackTrace();
                         }
                     }
-                    addDetail.setCount(count);
+                    //四舍五入到2位小数
+                    count = count.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
 
-                    //获取入库批次号 (货品id, 货位id) 查询货位货品表(vmes_warehouse_product)
-                    String code = new String();
-                    List<WarehouseProduct> warehouseProductList = null;
-                    try {
-                        PageData findMap = new PageData();
-                        findMap.put("productId", productId);
-                        findMap.put("warehouseId", warehouseId);
-                        findMap.put("mapSize", Integer.valueOf(findMap.size()));
-                        findMap.put("orderStr", "cdate desc");
+                    Map<String, Object> productExecuteMap = new HashMap<>();
+                    productExecuteMap.put("warehouseId", warehouseId);
+                    productExecuteMap.put("productId", productId);
+                    productExecuteMap.put("code", code);
+                    productExecuteMap.put("count", count);
 
-                        warehouseProductList = warehouseProductService.findWarehouseProductList(findMap);
-                        if (warehouseProductList == null || warehouseProductList.size() == 0) {
-                            //获取批次号-创建新的批次号
-                            //PC+yyyyMMdd+00001 = 15位
-                            code = coderuleService.createCoderCdateByDate(companyId,
-                                    "vmes_product_pc",
-                                    "yyyyMMdd",
-                                    "PC");
-                        } else if (warehouseProductList != null && warehouseProductList.size() > 0) {
-                            String warehouseProduct_code = warehouseProductList.get(0).getCode();
-                            if (warehouseProduct_code != null && warehouseProduct_code.trim().length() > 0) {
-                                code = warehouseProduct_code.trim();
-                            }
-                        }
-
-                        //生成批次号二维码(批次号,产品ID,产品名称)
-                        addDetail.setCode(code);
-                        String QRCodeJson = warehouseInDetailService.warehouseInDtl2QRCode(addDetail);
-                        String qrcode = fileService.createQRCode("warehouseIn", QRCodeJson);
-                        if (qrcode != null && qrcode.trim().length() > 0) {
-                            addDetail.setQrcode(qrcode);
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-
-                    //入库单明细状态(0:待派单 1:执行中 2:已完成 -1.已取消)
-                    addDetail.setState("2");
-                    warehouseInDetailService.save(addDetail);
+                    productExecuteList.add(productExecuteMap);
+                    inDetailExecuteMap.put(detailId, productExecuteList);
                 }
-
-                WarehouseIn editIn = new WarehouseIn();
-                editIn.setId(parentId);
-                //入库单状态(0:未完成 1:已完成 -1:已取消)
-                editIn.setState("1");
-                warehouseInService.update(editIn);
             }
         }
 
-        //2. 入库单明细执行
-        List<WarehouseInDetail> detailList = warehouseInDetailService.findWarehouseInDetailListByParentId(parentId);
-
-        StringBuffer msgBuf = new StringBuffer();
         try {
-            for (int i = 0; i < detailList.size(); i++) {
-                WarehouseInDetail object = detailList.get(i);
+            List<String> inDetailList = new ArrayList<>();
+            Map<String, BigDecimal> inDetailCountMap = new HashMap<>();
 
-                String detailId = object.getId();
-                BigDecimal count = object.getCount();
-                String warehouseId = object.getWarehouseId();
-                String productId = object.getProductId();
-                String code = object.getCode();
+            //2. 遍历入库单明细执行Map结构体 inDetailExecuteMap
+            for (Iterator iterator = inDetailExecuteMap.keySet().iterator(); iterator.hasNext();) {
+                String inDetailId = iterator.next().toString().trim();
+                inDetailList.add(inDetailId);
 
-                //入库操作
-                WarehouseProduct inObject = new WarehouseProduct();
-                //货位批次号
-                inObject.setCode(code);
-                //产品ID
-                inObject.setProductId(productId);
-                //(实际)货位ID
-                inObject.setWarehouseId(warehouseId);
+                //inDetailCount:入库单明细入库执行数量
+                BigDecimal inDetailCount = BigDecimal.valueOf(0D);
+                List<Map<String, Object>> productExecuteList = inDetailExecuteMap.get(inDetailId);
+                for (Map<String, Object> mapObject : productExecuteList) {
+                    //货品执行入库Map
+                    //productId:   货品id
+                    //warehouseId: 货位id
+                    //code:        批次号
+                    //count:       入库数量
+                    BigDecimal count = (BigDecimal)mapObject.get("count");
+                    inDetailCount = BigDecimal.valueOf(count.doubleValue() + inDetailCount.doubleValue());
 
-                //库存变更日志
-                String executeId = Conv.createUuid();
+                    String warehouseId = (String)mapObject.get("warehouseId");
+                    String productId = (String)mapObject.get("productId");
+                    String code = (String)mapObject.get("code");
 
-                WarehouseLoginfo loginfo = new WarehouseLoginfo();
-                loginfo.setParentId(parentId);
-                loginfo.setDetailId(detailId);
-                loginfo.setExecuteId(executeId);
-                loginfo.setCompanyId(companyId);
-                loginfo.setCuser(cuser);
-                //operation 操作类型(add:添加 modify:修改 delete:删除:)
-                loginfo.setOperation("add");
+                    //入库操作
+                    WarehouseProduct inObject = new WarehouseProduct();
+                    //货位批次号
+                    inObject.setCode(code);
+                    //产品ID
+                    inObject.setProductId(productId);
+                    //(实际)货位ID
+                    inObject.setWarehouseId(warehouseId);
 
-                //beforeCount 操作变更前数量(业务相关)
-                loginfo.setBeforeCount(BigDecimal.valueOf(0D));
-                //afterCount 操作变更后数量(业务相关)
-                loginfo.setAfterCount(count);
+                    //库存变更日志
+                    String executeId = Conv.createUuid();
 
-                String msgStr = warehouseProductService.inStockCount(inObject, count, loginfo);
-                if (msgStr != null && msgStr.trim().length() > 0) {
-                    msgBuf.append("第 " + (i+1) + " 条: " + "入库操作失败:" + msgStr);
-                } else {
-                    Product product = productService.findProductById(productId);
-                    BigDecimal prodCount = BigDecimal.valueOf(0D);
-                    if (product.getStockCount() != null) {
-                        prodCount = product.getStockCount();
+                    WarehouseLoginfo loginfo = new WarehouseLoginfo();
+                    loginfo.setParentId(parentId);
+                    loginfo.setDetailId(inDetailId);
+                    loginfo.setExecuteId(executeId);
+                    loginfo.setCompanyId(companyId);
+                    loginfo.setCuser(cuser);
+                    //operation 操作类型(add:添加 modify:修改 delete:删除:)
+                    loginfo.setOperation("add");
+
+                    //beforeCount 操作变更前数量(业务相关)
+                    loginfo.setBeforeCount(BigDecimal.valueOf(0D));
+                    //afterCount 操作变更后数量(业务相关)
+                    loginfo.setAfterCount(count);
+
+                    String msgStr = warehouseProductService.inStockCount(inObject, count, loginfo);
+                    if (msgStr != null && msgStr.trim().length() > 0) {
+                        throw new ApplicationException(msgStr.toString());
+                    } else {
+                        Product product = productService.findProductById(productId);
+                        BigDecimal prodCount = BigDecimal.valueOf(0D);
+                        if (product.getStockCount() != null) {
+                            prodCount = product.getStockCount();
+                        }
+
+                        BigDecimal prodStockCount = BigDecimal.valueOf(prodCount.doubleValue() + count.doubleValue());
+                        productService.updateStockCount(product, prodStockCount, cuser);
                     }
-
-                    BigDecimal prodStockCount = BigDecimal.valueOf(prodCount.doubleValue() + count.doubleValue());
-                    productService.updateStockCount(product, prodStockCount, cuser);
                 }
+
+                //得到入库单明细入库执行数量
+                inDetailCountMap.put(inDetailId, inDetailCount);
             }
+
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            //3. 修改入库单状态
+            for (String inDetailId : inDetailList) {
+                WarehouseInDetail editInDetail = new WarehouseInDetail();
+                editInDetail.setId(inDetailId);
+
+                if (inDetailCountMap != null && inDetailCountMap.get(inDetailId) != null) {
+                    BigDecimal count = inDetailCountMap.get(inDetailId);
+                    //四舍五入到2位小数
+                    count = count.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                    editInDetail.setCount(count);
+                }
+
+                //入库单明细状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+                editInDetail.setState("2");
+
+                warehouseInDetailService.update(editInDetail);
+            }
+
+            WarehouseIn editIn = new WarehouseIn();
+            editIn.setId(parentId);
+            //入库单状态(0:未完成 1:已完成 -1:已取消)
+            editIn.setState("1");
+            warehouseInService.update(editIn);
+
         } catch (TableVersionException tabExc) {
             //库存变更 version 锁
             if (Common.SYS_STOCKCOUNT_ERRORCODE.equals(tabExc.getErrorCode())) {
@@ -1121,14 +1122,11 @@ public class WarehouseInExecuteServiceImp implements WarehouseInExecuteService {
                 model.putMsg(tabExc.getMessage());
                 return model;
             }
-        }
-
-        if (msgBuf.toString().trim().length() > 0) {
+        } catch (ApplicationException appExc) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg(msgBuf.toString());
+            model.putMsg(appExc.getMessage());
             return model;
         }
-
 
         return model;
     }

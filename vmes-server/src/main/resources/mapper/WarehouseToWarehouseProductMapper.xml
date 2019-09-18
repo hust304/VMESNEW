@@ -256,6 +256,10 @@
                     <if test="companyId != null and companyId != ''" >
                         and company_id = #{companyId}
                     </if>
+                    <!--该查询中的条件: 结果集中获取全部库位信息: 仓库中含有指定货品的库位 + 空库位 -->
+                    <if test="isNeedAll_productId != null and isNeedAll_productId != ''" >
+                        and product_id = #{isNeedAll_productId}
+                    </if>
                 </where>
                 group by warehouse_id,product_id
             ) wp on warehouse.id = wp.warehouse_id
@@ -302,9 +306,11 @@
                 <![CDATA[ and warehouse.name <> '备件库' ]]>
             </if>
 
+            <!--该查询中的条件: 结果集中获取库位信息:仓库中含有指定货品的库位 (空库位不在查结果集中)-->
             <if test="productId != null and productId != ''" >
                 and wp.product_id = #{productId}
             </if>
+
             <if test="pathName != null and pathName != ''" >
                 and warehouse.path_name = #{pathName}
             </if>
