@@ -25,6 +25,12 @@ public class WarehouseMoveDetail implements Serializable {
 	//当前库位产品ID
 	@TableField("warehouse_product_id")
 	private String warehouseProductId;
+	//当前产品ID
+	@TableField("product_id")
+	private String productId;
+	//当前库位ID
+	@TableField("warehouse_id")
+	private String warehouseId;
 	//移库数量
 	@TableField("count")
 	private BigDecimal count;
@@ -54,6 +60,21 @@ public class WarehouseMoveDetail implements Serializable {
 	private String qrcode;
 
 
+	public String getProductId() {
+		return productId;
+	}
+
+	public void setProductId(String productId) {
+		this.productId = productId;
+	}
+
+	public String getWarehouseId() {
+		return warehouseId;
+	}
+
+	public void setWarehouseId(String warehouseId) {
+		this.warehouseId = warehouseId;
+	}
 
 	public void setId(String id) {
 		this.id = id;

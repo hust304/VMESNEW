@@ -292,6 +292,9 @@
             <if test="warehouseId != null and warehouseId != ''" >
                 and a.id=#{warehouseId}
             </if>
+            <if test="notInWarehouseIds != null and notInWarehouseIds != ''" >
+                and a.id not in (${notInWarehouseIds})
+            </if>
             <if test="code != null and code != ''">
                 and a.code LIKE CONCAT(CONCAT(#{code}),'%')
             </if>

@@ -86,6 +86,9 @@ public interface WarehouseMoveDetailMapper extends BaseMapper<WarehouseMoveDetai
     List<Map<String, Object>> findMoveDetailByProductMapList(PageData pd);
 
 
+    List<Map> getDataListPageBySimple(PageData pd, Pagination pg);
+
+    List<Map> getDataListPageBySimple(PageData pd);
 }
 
 

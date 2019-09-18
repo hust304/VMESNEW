@@ -220,6 +220,20 @@ public class WarehouseMoveDetailServiceImp implements WarehouseMoveDetailService
         return mapList;
     }
 
+
+    public List<Map> getDataListPageBySimple(PageData pd,Pagination pg) throws Exception{
+        List<Map> mapList = new ArrayList<Map>();
+        if (pd == null) {return mapList;}
+
+        if (pg == null) {
+            return warehouseMoveDetailMapper.getDataListPageBySimple(pd);
+        } else if (pg != null) {
+            return warehouseMoveDetailMapper.getDataListPageBySimple(pd,pg);
+        }
+
+        return mapList;
+    }
+
     /**
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-11-16
@@ -812,6 +826,44 @@ public class WarehouseMoveDetailServiceImp implements WarehouseMoveDetailService
         result.put("varList",varMapList);
         result.put("pageData", pg);
 
+        model.putResult(result);
+        return model;
+    }
+
+
+    @Override
+    public ResultModel listPageWarehouseMoveDetailsBySimple(PageData pd) throws Exception {
+        Pagination pg =  HttpUtils.parsePagination(pd);
+        ResultModel model = new ResultModel();
+
+        List<Column> columnList = columnService.findColumnList("WarehouseMoveDetail");
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
+        }
+
+        //获取指定栏位字符串-重新调整List<Column>
+        String fieldCode = pd.getString("fieldCode");
+        if (fieldCode != null && fieldCode.trim().length() > 0) {
+            columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
+        }
+        Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
+
+        //是否需要分页 true:需要分页 false:不需要分页
+        Map result = new HashMap();
+        String isNeedPage = pd.getString("isNeedPage");
+        if ("false".equals(isNeedPage)) {
+            pg = null;
+        } else {
+            result.put("pageData", pg);
+        }
+
+        List<Map> varList = this.getDataListPageBySimple(pd,pg);
+        List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
+        result.put("hideTitles",titleMap.get("hideTitles"));
+        result.put("titles",titleMap.get("titles"));
+        result.put("varList",varMapList);
         model.putResult(result);
         return model;
     }

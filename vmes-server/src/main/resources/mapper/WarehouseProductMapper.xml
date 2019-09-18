@@ -376,6 +376,114 @@
 
 
 
+    <!-- 自动创建，可以修改 -->
+    <select id="simpleWarehouseProductView"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
+        select
+        warehouse.path_name pathName,
+        prod.code,
+        prod.name,
+        prod.spec,
+        prod.genre genre,
+        genre.name genreName,
+        produnit.unit unit,
+        unit.name unitName,
+        prod.type,
+        type.name typeName,
+        round(prod.safety_count,2) safetyCount,
+        round(sum(ifnull(wp.stock_count,0)),2) stockCount,
+        prod.id productId,
+        warehouse.id warehouseId,
+        CONCAT(prod.id,warehouse.id) id
+        from vmes_warehouse_product wp
+        left join vmes_product prod on wp.product_id = prod.id
+        left join vmes_product_unit produnit on produnit.product_id = prod.id and produnit.type = 1
+        left join vmes_dictionary genre on prod.genre = genre.id
+        left join vmes_dictionary unit on produnit.unit = unit.id
+        left join vmes_dictionary type on prod.type = type.id
+        left join vmes_warehouse warehouse on warehouse.id = wp.warehouse_id
+
+        <where>
+            <!--queryStr 自定义sql查询语句-->
+            <if test="queryStr != null and queryStr != ''" >
+                and ${queryStr}
+            </if>
+
+            <if test="ids != null and ids != ''" >
+                and CONCAT(prod.id,warehouse.id) in (${ids})
+            </if>
+
+            <if test="productId != null and productId != ''">
+                and wp.product_id = #{productId}
+            </if>
+            <if test="currentCompanyId != null and currentCompanyId != ''">
+                and wp.company_id = #{currentCompanyId}
+            </if>
+
+            <!--需要(备件库) 查询结果集中只含有(备件库) -->
+            <if test="'true' == isNeedSpare">
+                and warehouse.name = '备件库'
+            </if>
+            <!--不需要(备件库) 查询结果集中不含有(备件库) -->
+            <if test="'true' == isNotNeedSpare">
+                <![CDATA[ and warehouse.name <> '备件库' ]]>
+            </if>
+
+
+            <!--nodeId 实体库,虚拟库 自定义sql查询语句 查询结果集需要(实体库,虚拟库)-->
+            <if test="'true' == isNeedEntityVirtual">
+                <!--实体库:2d75e49bcb9911e884ad00163e105f05 虚拟库:56f5e83dcb9911e884ad00163e105f05 仓库表:vmes_warehouse-->
+                and (warehouse.path_id LIKE '%2d75e49bcb9911e884ad00163e105f05%' or warehouse.path_id LIKE '%56f5e83dcb9911e884ad00163e105f05%')
+            </if>
+            <!--nodeId 实体库 自定义sql查询语句 查询结果集需要(实体库)-->
+            <if test="'true' == isNeedEntity">
+                <!--实体库:2d75e49bcb9911e884ad00163e105f05 -->
+                and warehouse.path_id LIKE '%2d75e49bcb9911e884ad00163e105f05%'
+            </if>
+            <!--nodeId 虚拟库 自定义sql查询语句 查询结果集需要(虚拟库)-->
+            <if test="'true' == isNeedVirtual">
+                <!--虚拟库:56f5e83dcb9911e884ad00163e105f05 仓库表:vmes_warehouse-->
+                and warehouse.path_id LIKE '%56f5e83dcb9911e884ad00163e105f05%'
+            </if>
+
+
+            <if test="isSafeStock == 1"> <!-- 小于安全库存 -->
+                <![CDATA[ and prod.stock_count < prod.safety_count ]]>
+            </if>
+            <if test="isSafeStock == 2">  <!-- 大于等于安全库存 -->
+                <![CDATA[ and prod.stock_count >= prod.safety_count ]]>
+            </if>
+            <if test="code != null and code != ''">
+                and prod.code LIKE CONCAT(CONCAT('%', #{code}),'%')
+            </if>
+            <if test="name != null and name != ''">
+                and prod.name LIKE CONCAT(CONCAT('%', #{name}),'%')
+            </if>
+            <if test="spec != null and spec != ''">
+                and prod.spec LIKE CONCAT(CONCAT('%', #{spec}),'%')
+            </if>
+            <if test="genreName != null and genreName != ''">
+                and genre.name = #{genreName}
+            </if>
+            <if test="unitName != null and unitName != ''">
+                and unit.name LIKE CONCAT(CONCAT('%', #{unitName}),'%')
+            </if>
+            <if test="typeName != null and typeName != ''">
+                and type.name LIKE CONCAT(CONCAT('%', #{typeName}),'%')
+            </if>
+            <if test="warehouseId != null and warehouseId != ''">
+                and warehouse.path_id LIKE CONCAT(CONCAT('%', #{warehouseId}),'%')
+            </if>
+            and wp.product_id is not null
+        </where>
+        group by wp.warehouse_id,wp.product_id
+
+        <if test="orderByStock == 0"><!-- 由多到少 -->
+            order by stockCount desc
+        </if>
+        <if test="orderByStock == 1"><!-- 由少到多 -->
+            order by stockCount asc
+        </if>
+    </select>
 
 
     <!-- 自动创建，可以修改 -->

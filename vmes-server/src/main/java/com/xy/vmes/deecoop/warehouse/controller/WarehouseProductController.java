@@ -192,6 +192,24 @@ public class WarehouseProductController {
         return model;
     }
 
+
+    /**
+     * @author 刘威 自动创建，可以修改
+     * @date 2018-10-31
+     */
+    @PostMapping("/warehouse/warehouseProduct/listPageSimpleWarehouseProductView")
+    public ResultModel listPageSimpleWarehouseProductView()  throws Exception {
+
+        logger.info("################warehouseProduct/listPageSimpleWarehouseProductView 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = warehouseProductService.listPageSimpleWarehouseProductView(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################warehouseProduct/listPageSimpleWarehouseProductView 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
     /**
      * @author 刘威 自动创建，可以修改
      * @date 2018-10-31

@@ -414,6 +414,105 @@
         </if>
     </select>
 
+
+
+    <!-- 自动创建，可以修改 -->
+    <select id="getDataListPageBySimple"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
+        select parentId,warehouseId,warehouseProductId,productId,code,count,state,stateName,cuser,cdate,udate,remark,isdisable,qrcode,stockCount,pathName,
+        productCode,productName,productSpec,productGenre,productGenreName,productUnit,productUnitName,round(sum(ifnull(executeCount,0)),2) executeCount,warehouseMoveCode,id
+
+        from (
+        select
+        detail.parent_id parentId,
+        detail.warehouse_id warehouseId,
+        null warehouseProductId,
+        detail.product_id productId,
+        null code,
+        null stockCount,
+        round(detail.count,2) count,
+        detail.state,
+        case when detail.state=-1 then '已取消' when detail.state=0 then '待派单' when detail.state=1 then '执行中' when detail.state=2 then '已完成' else null end stateName,
+        detail.cuser cuser,
+        DATE_FORMAT(detail.cdate,'%Y-%m-%d %T') cdate,
+        detail.uuser uuser,
+        DATE_FORMAT(detail.udate,'%Y-%m-%d %T') udate,
+        detail.remark remark,
+        detail.isdisable isdisable,
+        detail.qrcode qrcode,
+
+        prod.code productCode,
+        prod.name productName,
+        prod.spec productSpec,
+        prod.genre productGenre,
+        genre.name productGenreName,
+        produnit.unit productUnit,
+        unit.name productUnitName,
+
+        warehouse.path_name pathName,
+        whmove.code warehouseMoveCode,
+        round(moveexecute.count,2) executeCount,
+        detail.id id
+        from
+        vmes_warehouse_move_detail detail
+        left join vmes_warehouse_move whmove on whmove.id = detail.parent_id
+        left join vmes_warehouse_move_execute moveexecute on moveexecute.detail_id = detail.id and moveexecute.isdisable = '1'
+        left join vmes_product prod on prod.id = detail.product_id
+        left join vmes_product_unit produnit on produnit.product_id = prod.id and produnit.type = 1
+        left join vmes_dictionary genre on prod.genre = genre.id
+        left join vmes_dictionary unit on produnit.unit = unit.id
+        left join vmes_dictionary lastUnit on prod.last_unit = lastUnit.id
+        left join vmes_dictionary type on prod.type = type.id
+        left join vmes_warehouse warehouse on warehouse.id = detail.warehouse_id
+        <where>
+            <!--queryStr 自定义sql查询语句-->
+            <if test="queryStr != null and queryStr != ''" >
+                and ${queryStr}
+            </if>
+            <if test="parentId != null and parentId != ''">
+                and detail.parent_id =  #{parentId}
+            </if>
+            <if test="detailId != null and detailId != ''">
+                and detail.id =  #{detailId}
+            </if>
+
+            <if test="productId != null and productId != ''">
+                and detail.product_id =  #{productId}
+            </if>
+            <!--<if test="code != null and code != ''">-->
+                <!--and whprod.code =  #{code}-->
+            <!--</if>-->
+
+            <if test="productCode != null and productCode != ''">
+                and prod.code LIKE CONCAT(CONCAT('%', #{productCode}),'%')
+            </if>
+            <if test="productName != null and productName != ''">
+                and prod.name LIKE CONCAT(CONCAT('%', #{productName}),'%')
+            </if>
+            <if test="productSpec != null and productSpec != ''">
+                and prod.spec LIKE CONCAT(CONCAT('%', #{productSpec}),'%')
+            </if>
+            <if test="productGenreName != null and productGenreName != ''">
+                and genre.name LIKE CONCAT(CONCAT('%', #{productGenreName}),'%')
+            </if>
+            <if test="productUnitName != null and productUnitName != ''">
+                and unit.name LIKE CONCAT(CONCAT('%', #{productUnitName}),'%')
+            </if>
+
+            <if test="detailState != null and detailState != ''">
+                and detail.state =  #{detailState}
+            </if>
+        </where>
+        ) tab
+        group by id
+
+        <if test="orderStr != null and orderStr != ''" >
+            order by ${orderStr}
+        </if>
+    </select>
+
+
+
+
     <!-- 自动创建，可以修改 -->
     <select id="getDataListPage"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
         select parentId,warehouseId,warehouseProductId,productId,code,count,state,stateName,cuser,cdate,udate,remark,isdisable,qrcode,stockCount,pathName,

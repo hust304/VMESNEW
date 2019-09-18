@@ -90,8 +90,8 @@ public class WarehouseMoveBySimpleController {
 
         //1. 添加移库单
         WarehouseMove warehouseMove = new WarehouseMove();
-        String parentId = Conv.createUuid();
-        warehouseMove.setId(parentId);
+//        String parentId = Conv.createUuid();
+//        warehouseMove.setId(parentId);
         warehouseMove.setWarehouseId(targetWarehouseId);
         //type 移库类型：移库
         warehouseMove.setType("b73d12669b4646e68c1a633da5b5d22d");
@@ -108,14 +108,41 @@ public class WarehouseMoveBySimpleController {
         warehouseMoveService.save(warehouseMove);
 
         //2.添加移库单明细
-        List<WarehouseMoveDetail> detailList = warehouseMoveDetailService.mapList2DetailList(mapList, null);
-        warehouseMoveDetailService.addWarehouseMoveDetail(warehouseMove, detailList);
-
+        for (Map<String, String> mapObject : mapList) {
+            WarehouseMoveDetail detail = new WarehouseMoveDetail();
+//            String id = Conv.createUuid();
+//            detail.setId(id);
+            //状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+            detail.setState("1");
+            detail.setParentId(warehouseMove.getId());
+            detail.setCuser(cuser);
+            detail.setProductId(mapObject.get("productId"));
+            detail.setWarehouseId(mapObject.get("warehouseId"));
+            BigDecimal count = BigDecimal.valueOf(Double.parseDouble(mapObject.get("moveCount")));
+            detail.setCount(count);
+            warehouseMoveDetailService.save(detail);
+        }
         Long endTime = System.currentTimeMillis();
         logger.info("################/warehouse/warehouseMoveBySimple/addWarehouseMoveBySimple 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
+
+    /**
+     * @author 刘威 自动创建，可以修改
+     * @date 2018-11-16
+     */
+    @PostMapping("/warehouse/warehouseOutBySimple/listPageWarehouseMoveDetailsBySimple")
+    public ResultModel listPageWarehouseMoveDetailsBySimple()  throws Exception {
+
+        logger.info("################warehouseOutBySimple/listPageWarehouseMoveDetails 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = warehouseMoveDetailService.listPageWarehouseMoveDetailsBySimple(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################warehouseOutBySimple/listPageWarehouseMoveDetailsBySimple 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
     /**
      * 删除移库单(简版仓库移库)
      * @author 陈刚
