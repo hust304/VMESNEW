@@ -1794,7 +1794,15 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
         }
 
         Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
-        List<Map> varList = warehouseProductMapper.getDataListPageDispatchBySimple(pd,pg);
+
+        String notInWarehouseIds = pd.getString("notInWarehouseIds");
+        if (notInWarehouseIds != null && notInWarehouseIds.trim().length() > 0) {
+            notInWarehouseIds = StringUtil.stringTrimSpace(notInWarehouseIds);
+            notInWarehouseIds = "'" + notInWarehouseIds.replace(",", "','") + "'";
+            pd.put("notInWarehouseIds", notInWarehouseIds);
+        }
+
+        List<Map> varList = warehouseProductMapper.getDataListPageDispatchBySimple(pd, pg);
         List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
 
         result.put("hideTitles",titleMap.get("hideTitles"));

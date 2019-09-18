@@ -788,6 +788,10 @@
             <if test="queryStr != null and queryStr != ''" >
                 and ${queryStr}
             </if>
+
+            <if test="notInWarehouseIds != null and notInWarehouseIds != ''" >
+                and warehouse.id not in (${notInWarehouseIds})
+            </if>
             <if test="name != null and name != ''">
                 and warehouse.path_name LIKE CONCAT(CONCAT('%', #{name}),'%')
             </if>
