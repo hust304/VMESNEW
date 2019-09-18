@@ -980,7 +980,7 @@ public class EmployeeServiceImp implements EmployeeService {
         }
 
         //默认isdisable:=1
-        pd.put("isdisable", Common.SYS_DEFAULT_ISDISABLE_1);
+        pd.put("isdisable", new String());
         String isdisableByQuery = pd.getString("isdisableByQuery");
         if (isdisableByQuery != null && isdisableByQuery.trim().length() > 0) {
             pd.put("isdisable", isdisableByQuery);

@@ -578,7 +578,7 @@
                 and employee.name LIKE CONCAT(CONCAT(#{name}),'%')
             </if>
             <if test="isdisable!= null and isdisable != ''">
-                and employpost.isdisable = #{isdisable}
+                and employee.isdisable = #{isdisable}
             </if>
             <if test="mobile!= null and mobile != ''">
                 and employee.mobile LIKE CONCAT(CONCAT('%', #{mobile}),'%')
