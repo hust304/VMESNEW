@@ -504,7 +504,7 @@ public class WarehouseOutExecuteServiceImp implements WarehouseOutExecuteService
     }
 
     @Override
-    public ResultModel executeWarehouseOutExecuteBySimple(PageData pageData) {
+    public ResultModel executeWarehouseOutExecuteBySimple(PageData pageData) throws Exception {
         ResultModel model = new ResultModel();
         String jsonDataStr = pageData.getString("jsonDataStr");
         String currentUserId = pageData.getString("currentUserId");
@@ -546,58 +546,55 @@ public class WarehouseOutExecuteServiceImp implements WarehouseOutExecuteService
             }
         }
 
-        try {
-            if(mapList!=null&&mapList.size()>0){
-                for (Map<String, Object> outDetailMap : mapList) {
-                    List<WarehouseOutExecute> outExecuteList = new ArrayList<WarehouseOutExecute>();
-                    String detailId = (String) outDetailMap.get("id");
-                    String parentId = (String) outDetailMap.get("parentId");
-                    WarehouseOutDetail outDetail = new WarehouseOutDetail();
-                    outDetail.setId(detailId);
-                    outDetail.setCuser(currentUserId);
-                    WarehouseOutExecutor outExecutor = new WarehouseOutExecutor();
-                    outExecutor.setDetailId(detailId);
-                    outExecutor.setExecutorId(currentUserId);
-                    outExecutor.setCuser(currentUserId);
 
-                    Map columnMap = new HashMap();
-                    columnMap.put("detail_id",detailId);
-                    List<WarehouseOutExecutor> warehouseOutExecutorList = warehouseOutExecutorService.selectByColumnMap(columnMap);
-                    if(warehouseOutExecutorList!=null&&warehouseOutExecutorList.size()>0){
-                        for(int i=0;i<warehouseOutExecutorList.size();i++){
-                            WarehouseOutExecutor warehouseOutExecutor = warehouseOutExecutorList.get(i);
-                            warehouseOutExecutor.setIsdisable("0");
-                            warehouseOutExecutor.setRemark("执行人变更");
-                            warehouseOutExecutorService.update(warehouseOutExecutor);
-                        }
+
+        if(mapList!=null&&mapList.size()>0){
+            for (Map<String, Object> outDetailMap : mapList) {
+                List<WarehouseOutExecute> outExecuteList = new ArrayList<WarehouseOutExecute>();
+                String detailId = (String) outDetailMap.get("id");
+                String parentId = (String) outDetailMap.get("parentId");
+                WarehouseOutDetail outDetail = new WarehouseOutDetail();
+                outDetail.setId(detailId);
+                outDetail.setCuser(currentUserId);
+                WarehouseOutExecutor outExecutor = new WarehouseOutExecutor();
+                outExecutor.setDetailId(detailId);
+                outExecutor.setExecutorId(currentUserId);
+                outExecutor.setCuser(currentUserId);
+
+                Map columnMap = new HashMap();
+                columnMap.put("detail_id",detailId);
+                List<WarehouseOutExecutor> warehouseOutExecutorList = warehouseOutExecutorService.selectByColumnMap(columnMap);
+                if(warehouseOutExecutorList!=null&&warehouseOutExecutorList.size()>0){
+                    for(int i=0;i<warehouseOutExecutorList.size();i++){
+                        WarehouseOutExecutor warehouseOutExecutor = warehouseOutExecutorList.get(i);
+                        warehouseOutExecutor.setIsdisable("0");
+                        warehouseOutExecutor.setRemark("执行人变更");
+                        warehouseOutExecutorService.update(warehouseOutExecutor);
                     }
+                }
 
-                    warehouseOutExecutorService.save(outExecutor);
-                    if(outDetailMap.get("children")!=null){
-                        List executeList = (List)outDetailMap.get("children");
-                        if(executeList!=null&&executeList.size()>0){
-                            for (int i = 0; i < executeList.size(); i++) {
-                                Map<String, Object> executeMap = (Map<String, Object>) executeList.get(i);
-                                BigDecimal suggestCount = BigDecimal.valueOf(Double.parseDouble((String)executeMap.get("suggestCount")));
-                                String productId = (String)executeMap.get("productId");
-                                String warehouseId = (String)executeMap.get("warehouseId");
-                                List<Map<String, Object>> outMapList = warehouseProductToolService.findWarehouseProductOutMapList(productId,currentCompanyId,warehouseId,suggestCount);
-                                if (outMapList != null && outMapList.size() > 0) {
-                                    outExecuteList = this.outMapList2ExecuteList(outDetail, outMapList, outExecuteList);
-                                }
+                warehouseOutExecutorService.save(outExecutor);
+                if(outDetailMap.get("children")!=null){
+                    List executeList = (List)outDetailMap.get("children");
+                    if(executeList!=null&&executeList.size()>0){
+                        for (int i = 0; i < executeList.size(); i++) {
+                            Map<String, Object> executeMap = (Map<String, Object>) executeList.get(i);
+                            BigDecimal suggestCount = BigDecimal.valueOf(Double.parseDouble((String)executeMap.get("suggestCount")));
+                            String productId = (String)executeMap.get("productId");
+                            String warehouseId = (String)executeMap.get("warehouseId");
+                            List<Map<String, Object>> outMapList = warehouseProductToolService.findWarehouseProductOutMapList(productId,currentCompanyId,warehouseId,suggestCount);
+                            if (outMapList != null && outMapList.size() > 0) {
+                                outExecuteList = this.outMapList2ExecuteList(outDetail, outMapList, outExecuteList);
                             }
                         }
                     }
-                    this.addWarehouseOutExecuteBySimple(outExecuteList);
-                    this.executeWarehouseOutExecuteBySimple(parentId,detailId,currentUserId,currentCompanyId);
-                    this.updateWarehouseOutState(detailId);
                 }
+                this.addWarehouseOutExecuteBySimple(outExecuteList);
+                this.executeWarehouseOutExecuteBySimple(parentId,detailId,currentUserId,currentCompanyId);
+                this.updateWarehouseOutState(detailId);
             }
-        } catch (Exception e) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg(e.getMessage());
-            return model;
         }
+
 
         return model;
     }
