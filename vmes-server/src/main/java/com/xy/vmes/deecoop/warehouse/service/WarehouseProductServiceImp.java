@@ -1797,6 +1797,13 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
         String companyId = pd.getString("currentCompanyId");
         pd.put("companyId", companyId);
 
+        String notInWarehouseIds = pd.getString("notInWarehouseIds");
+        if (notInWarehouseIds != null && notInWarehouseIds.trim().length() > 0) {
+            notInWarehouseIds = StringUtil.stringTrimSpace(notInWarehouseIds);
+            notInWarehouseIds = "'" + notInWarehouseIds.replace(",", "','") + "'";
+            pd.put("notInWarehouseIds", notInWarehouseIds);
+        }
+
         //是否需要分页 true:需要分页 false:不需要分页
         Map result = new HashMap();
         String isNeedPage = pd.getString("isNeedPage");
