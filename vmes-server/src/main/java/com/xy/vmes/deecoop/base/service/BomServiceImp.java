@@ -267,6 +267,15 @@ public class BomServiceImp implements BomService {
                 varMapList.add(varMap);
             }
         }
+        String isNullAlarm = pd.getString("isNullAlarm");
+        if("true".equals(isNullAlarm)){
+            if(varMapList==null || varMapList.size()<=0){
+                model.putCode("1");
+                model.putMsg("请先为产品设置Bom！");
+                return model;
+            }
+        }
+
         result.put("varList",varMapList);
         result.put("pageData", pg);
 

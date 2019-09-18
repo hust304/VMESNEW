@@ -193,6 +193,7 @@
             left join vmes_dictionary unit on produnit.unit = unit.id
             left join vmes_dictionary genre on product.genre = genre.id
         <where>
+
             <if test="productIds != null and productIds != ''" >
                 and wp.product_id in (${productIds})
             </if>

@@ -312,6 +312,7 @@
             prod.company_id companyId,
             prod.qrcode qrcode,
             prod.photo photo,
+            prod.code sysCode,
             case when prod.source_code is null then prod.code else prod.source_code end code,
             prod.source_code sourceCode,
             prod.name name,

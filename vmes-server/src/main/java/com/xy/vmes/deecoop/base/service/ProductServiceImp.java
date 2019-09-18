@@ -797,7 +797,7 @@ public class ProductServiceImp implements ProductService {
         }
 
         Product productDB = (Product)HttpUtils.pageData2Entity(pageData, new Product());
-
+        Product productOld = this.selectById(productDB.getId());
         //2. 修改产品属性表(vmes_product_property)
         //按照产品id-删除产品属性表(vmes_product_property)
         productPropertyService.deleteProdPropertyByProdId(productDB.getId());
@@ -821,7 +821,8 @@ public class ProductServiceImp implements ProductService {
 
         //3.修改产品表(vmes_product)
         productDB.setUuser(pageData.getString("cuser"));
-        this.update(productDB);
+        productDB.setCode(productOld.getCode());
+        this.updateAll(productDB);
         return model;
     }
 
