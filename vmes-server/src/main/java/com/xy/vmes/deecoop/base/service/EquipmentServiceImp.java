@@ -280,7 +280,7 @@ public class EquipmentServiceImp implements EquipmentService {
         if (ids != null && ids.trim().length() > 0) {
             ids = StringUtil.stringTrimSpace(ids);
             ids = "'" + ids.replace(",", "','") + "'";
-            queryStr = "id in (" + ids + ")";
+            queryStr = "equipment.id in (" + ids + ")";
         }
         pd.put("queryStr", queryStr);
 

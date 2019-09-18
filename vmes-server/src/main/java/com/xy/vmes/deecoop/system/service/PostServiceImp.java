@@ -425,6 +425,13 @@ public class PostServiceImp implements PostService {
     public ResultModel updatePost(PageData pd) throws Exception {
         ResultModel model = new ResultModel();
         Post post = (Post)HttpUtils.pageData2Entity(pd, new Post());
+
+        String remark = new String();
+        if (post.getRemark() != null && post.getRemark().trim().length() > 0) {
+            remark = post.getRemark().trim();
+        }
+        post.setRemark(remark);
+
         this.update(post);
         return model;
     }
@@ -603,7 +610,7 @@ public class PostServiceImp implements PostService {
         if (ids != null && ids.trim().length() > 0) {
             ids = StringUtil.stringTrimSpace(ids);
             ids = "'" + ids.replace(",", "','") + "'";
-            queryStr = "id in (" + ids + ")";
+            queryStr = "post.id in (" + ids + ")";
         }
         pd.put("queryStr", queryStr);
 

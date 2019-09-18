@@ -943,7 +943,7 @@ public class ProductServiceImp implements ProductService {
         if (ids != null && ids.trim().length() > 0) {
             ids = StringUtil.stringTrimSpace(ids);
             ids = "'" + ids.replace(",", "','") + "'";
-            queryStr = "id in (" + ids + ")";
+            queryStr = "prod.id in (" + ids + ")";
         }
         pd.put("queryStr", queryStr);
 

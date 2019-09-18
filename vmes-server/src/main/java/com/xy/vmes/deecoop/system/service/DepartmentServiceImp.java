@@ -331,7 +331,7 @@ public class DepartmentServiceImp implements DepartmentService {
 //            msgBuf.append(str_isnull);
 //        }
         if (object.getDeptType() == null || object.getDeptType().trim().length() == 0) {
-            String str_isnull = MessageFormat.format(column_isnull, "部门类型");
+            String str_isnull = MessageFormat.format(column_isnull, "组织类型");
             msgBuf.append(str_isnull);
         }
         if (object.getIsdisable() == null || object.getIsdisable().trim().length() == 0) {
@@ -1473,7 +1473,7 @@ public class DepartmentServiceImp implements DepartmentService {
         if (ids != null && ids.trim().length() > 0) {
             ids = StringUtil.stringTrimSpace(ids);
             ids = "'" + ids.replace(",", "','") + "'";
-            queryStr = "id in (" + ids + ")";
+            queryStr = "a.id in (" + ids + ")";
         }
         pd.put("queryStr", queryStr);
 
