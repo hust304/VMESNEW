@@ -2,6 +2,8 @@ package com.xy.vmes.deecoop.warehouse.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
+import com.xy.vmes.common.util.EvaluateUtil;
+import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.exception.ApplicationException;
 import com.yvan.common.util.Common;
 import com.xy.vmes.deecoop.warehouse.dao.WarehouseInExecuteMapper;
@@ -976,7 +978,8 @@ public class WarehouseInExecuteServiceImp implements WarehouseInExecuteService {
         //productId:   货品id
         //warehouseId: 货位id
         //code:        批次号
-        //count:       入库数量
+        //count:       入库数量(计量单位)
+        //priceCount:  入库数量(计价单位)
         Map<String, List<Map<String, Object>>> inDetailExecuteMap = new LinkedHashMap<>();
         if (mapList != null && mapList.size() > 0) {
             for (Map<String, Object> warehouseInDetailMap : mapList) {
@@ -995,7 +998,7 @@ public class WarehouseInExecuteServiceImp implements WarehouseInExecuteService {
                     //入库货位id warehouseId
                     String warehouseId = (String)executeMap.get("warehouseId");
 
-                    //入库数量 count
+                    //入库数量 count(计量单位)
                     BigDecimal count = BigDecimal.valueOf(0D);
                     String countStr = (String)executeMap.get("count");
                     if (countStr != null && countStr.trim().length() > 0) {
@@ -1008,11 +1011,35 @@ public class WarehouseInExecuteServiceImp implements WarehouseInExecuteService {
                     //四舍五入到2位小数
                     count = count.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
 
+                    //n2pFormula:单位换算公式-计量转换计价单位
+                    String n2pFormula = (String)warehouseInDetailMap.get("n2pFormula");
+                    //priceCount:货品数量(计价单位)-计量单位数量转换计价单位数量
+                    BigDecimal priceCount = EvaluateUtil.countFormulaN2P(count, n2pFormula);
+
+                    //n2pIsScale:是否需要四舍五入
+                    String n2pIsScale = Common.SYS_ISSCALE_TRUE;
+                    if (warehouseInDetailMap.get("n2pIsScale") != null) {
+                        n2pIsScale = (String)warehouseInDetailMap.get("n2pIsScale");
+                    }
+
+                    //n2pDecimalCount: 保留小数位数
+                    Integer n2pDecimalCount = Integer.valueOf(Common.SYS_NUMBER_FORMAT_DEFAULT);
+                    String n2pDecimalCountStr = (String)warehouseInDetailMap.get("n2pDecimalCount");
+                    if (n2pDecimalCountStr != null && n2pDecimalCountStr.trim().length() > 0) {
+                        try {
+                            n2pDecimalCount = Integer.valueOf(n2pDecimalCountStr);
+                        } catch (NumberFormatException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    priceCount = StringUtil.scaleDecimal(priceCount, n2pIsScale, n2pDecimalCount);
+
                     Map<String, Object> productExecuteMap = new HashMap<>();
                     productExecuteMap.put("warehouseId", warehouseId);
                     productExecuteMap.put("productId", productId);
                     productExecuteMap.put("code", code);
                     productExecuteMap.put("count", count);
+                    productExecuteMap.put("priceCount", priceCount);
 
                     productExecuteList.add(productExecuteMap);
                     inDetailExecuteMap.put(detailId, productExecuteList);
@@ -1022,24 +1049,40 @@ public class WarehouseInExecuteServiceImp implements WarehouseInExecuteService {
 
         try {
             List<String> inDetailList = new ArrayList<>();
-            Map<String, BigDecimal> inDetailCountMap = new HashMap<>();
+            //productCount: 计量单位数量
+            //priceCount:   计价单位数量
+            Map<String, Map<String, BigDecimal>> inDetailCountMap = new HashMap<>();
 
             //2. 遍历入库单明细执行Map结构体 inDetailExecuteMap
             for (Iterator iterator = inDetailExecuteMap.keySet().iterator(); iterator.hasNext();) {
                 String inDetailId = iterator.next().toString().trim();
                 inDetailList.add(inDetailId);
 
-                //inDetailCount:入库单明细入库执行数量
+                //inDetailCount:入库单明细入库执行数量(计量单位)
                 BigDecimal inDetailCount = BigDecimal.valueOf(0D);
+                //inDetailCount:入库单明细入库执行数量(计量单位)
+                BigDecimal inDetailPriceCount = BigDecimal.valueOf(0D);
+
                 List<Map<String, Object>> productExecuteList = inDetailExecuteMap.get(inDetailId);
                 for (Map<String, Object> mapObject : productExecuteList) {
                     //货品执行入库Map
                     //productId:   货品id
                     //warehouseId: 货位id
                     //code:        批次号
-                    //count:       入库数量
-                    BigDecimal count = (BigDecimal)mapObject.get("count");
+                    //count:       入库数量(计量单位)
+                    //priceCount:  入库数量(计价单位)
+                    BigDecimal count = BigDecimal.valueOf(0D);
+                    if (mapObject.get("count") != null) {
+                        count = (BigDecimal)mapObject.get("count");
+                    }
                     inDetailCount = BigDecimal.valueOf(count.doubleValue() + inDetailCount.doubleValue());
+
+                    BigDecimal priceCount = BigDecimal.valueOf(0D);
+                    if (mapObject.get("priceCount") != null) {
+                        priceCount = (BigDecimal)mapObject.get("priceCount");
+                    }
+                    inDetailPriceCount = BigDecimal.valueOf(priceCount.doubleValue() + inDetailPriceCount.doubleValue());
+
 
                     String warehouseId = (String)mapObject.get("warehouseId");
                     String productId = (String)mapObject.get("productId");
@@ -1087,7 +1130,10 @@ public class WarehouseInExecuteServiceImp implements WarehouseInExecuteService {
                 }
 
                 //得到入库单明细入库执行数量
-                inDetailCountMap.put(inDetailId, inDetailCount);
+                Map<String, BigDecimal> detailCountMap = new HashMap<>();
+                detailCountMap.put("productCount", inDetailCount);
+                detailCountMap.put("priceCount", inDetailPriceCount);
+                inDetailCountMap.put(inDetailId, detailCountMap);
             }
 
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1096,11 +1142,28 @@ public class WarehouseInExecuteServiceImp implements WarehouseInExecuteService {
                 WarehouseInDetail editInDetail = new WarehouseInDetail();
                 editInDetail.setId(inDetailId);
 
+                //修改入库明细入库数量
                 if (inDetailCountMap != null && inDetailCountMap.get(inDetailId) != null) {
-                    BigDecimal count = inDetailCountMap.get(inDetailId);
-                    //四舍五入到2位小数
-                    count = count.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-                    editInDetail.setCount(count);
+                    //productCount: 计量单位数量
+                    //priceCount:   计价单位数量
+                    Map<String, BigDecimal> detailCountMap = inDetailCountMap.get(inDetailId);
+
+                    //入库明细入库数量(计量单位)
+                    if (detailCountMap != null && detailCountMap.get("productCount") != null) {
+                        BigDecimal productCount = detailCountMap.get("productCount");
+                        //四舍五入到2位小数
+                        productCount = productCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                        editInDetail.setCount(productCount);
+                        editInDetail.setProductCount(productCount);
+                    }
+
+                    //入库明细入库数量(计价单位)
+                    if (detailCountMap != null && detailCountMap.get("priceCount") != null) {
+                        BigDecimal priceCount = detailCountMap.get("priceCount");
+                        //四舍五入到2位小数
+                        priceCount = priceCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                        editInDetail.setPriceCount(priceCount);
+                    }
                 }
 
                 //入库单明细状态(0:待派单 1:执行中 2:已完成 -1.已取消)
