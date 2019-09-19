@@ -123,6 +123,26 @@
                 and warehouse.company_id = #{companyId}
             </if>
 
+            <!--nodeId 树形结构指定节点id 自定义sql查询语句-->
+            <if test="nodeId != null and nodeId != ''" >
+                and warehouse.path_id LIKE CONCAT(CONCAT('%', #{nodeId}),'%')
+            </if>
+            <!--nodeId 实体库,虚拟库 自定义sql查询语句 查询结果集需要(实体库,虚拟库)-->
+            <if test="'true' == isNeedEntityVirtual">
+                <!--实体库:2d75e49bcb9911e884ad00163e105f05 虚拟库:56f5e83dcb9911e884ad00163e105f05 仓库表:vmes_warehouse-->
+                and (warehouse.path_id LIKE '%2d75e49bcb9911e884ad00163e105f05%' or warehouse.path_id LIKE '%56f5e83dcb9911e884ad00163e105f05%')
+            </if>
+            <!--nodeId 实体库 自定义sql查询语句 查询结果集需要(实体库)-->
+            <if test="'true' == isNeedEntity">
+                <!--实体库:2d75e49bcb9911e884ad00163e105f05 -->
+                and warehouse.path_id LIKE '%2d75e49bcb9911e884ad00163e105f05%'
+            </if>
+            <!--nodeId 虚拟库 自定义sql查询语句 查询结果集需要(虚拟库)-->
+            <if test="'true' == isNeedVirtual">
+                <!--虚拟库:56f5e83dcb9911e884ad00163e105f05 仓库表:vmes_warehouse-->
+                and warehouse.path_id LIKE '%56f5e83dcb9911e884ad00163e105f05%'
+            </if>
+
             <!--备件库 自定义sql查询语句-->
             <if test="'true' == isNeedSpare">
                 and warehouse.name = '备件库'

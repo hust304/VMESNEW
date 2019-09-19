@@ -1029,6 +1029,18 @@ public class EmployeeServiceImp implements EmployeeService {
 
         pg.setSize(100000);
         List<Map> dataList = employeeService.getDataListPage(pd, pg);
+        if (dataList != null && dataList.size() > 0) {
+            for (Map<String, Object> mapObject : dataList) {
+
+                //是否在职(0:已禁用 1:启用)
+                String isdisable = (String)mapObject.get("isdisable");
+                String isdisableName = "离职";
+                if ("1".equals(isdisable)) {
+                    isdisableName = "在职";
+                }
+                mapObject.put("isdisable", isdisableName);
+            }
+        }
 
         //查询数据转换成Excel导出数据
         List<LinkedHashMap<String, String>> dataMapList = ColumnUtil.modifyDataList(columnList, dataList);
