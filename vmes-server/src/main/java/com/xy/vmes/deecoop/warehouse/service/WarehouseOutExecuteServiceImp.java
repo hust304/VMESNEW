@@ -577,7 +577,7 @@ public class WarehouseOutExecuteServiceImp implements WarehouseOutExecuteService
 
         if (msgBuf.toString().trim().length() > 0) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg(msgBuf.toString() + " 请修改当前出库单货品出库数量！");
+            model.putMsg(msgBuf.toString());
             return model;
         }
 
