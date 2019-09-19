@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -29,34 +28,33 @@ import java.util.*;
 @Service
 @Transactional(readOnly = false)
 public class WarehouseOutExecuteServiceImp implements WarehouseOutExecuteService {
-
-
     @Autowired
     private WarehouseOutExecuteMapper warehouseOutExecuteMapper;
+
+    @Autowired
+    private WarehouseOutService warehouseOutService;
+    @Autowired
+    private WarehouseOutDetailService warehouseOutDetailService;
+    @Autowired
+    private WarehouseOutExecutorService warehouseOutExecutorService;
+
+    @Autowired
+    private WarehouseProductService warehouseProductService;
+    @Autowired
+    private WarehouseProductToolService warehouseProductToolService;
+    @Autowired
+    private WarehouseToWarehouseProductService warehouseToWarehouseProductService;
 
     @Autowired
     SaleDeliverOutDetailService saleDeliverOutDetailService;
 
     @Autowired
     private ColumnService columnService;
-
     @Autowired
-    private WarehouseProductService warehouseProductService;
-
-    @Autowired
-    private WarehouseOutDetailService warehouseOutDetailService;
-    @Autowired
-    private WarehouseOutService warehouseOutService;
-    @Autowired
-    private WarehouseOutExecutorService warehouseOutExecutorService;
-    @Autowired
-    private WarehouseProductToolService warehouseProductToolService;
-
+    private TaskService taskService;
     @Autowired
     private ProductService productService;
 
-    @Autowired
-    private TaskService taskService;
 
     /**
     * 创建人：刘威 自动创建，禁止修改
@@ -511,12 +509,43 @@ public class WarehouseOutExecuteServiceImp implements WarehouseOutExecuteService
         String currentCompanyId = pageData.getString("currentCompanyId");
         List<Map<String, Object>> mapList = (List<Map<String, Object>>) YvanUtil.jsonToList(jsonDataStr);
 
-
+        StringBuffer msgBuf = new StringBuffer();
         if(mapList!=null&&mapList.size()>0){
             for (Map<String, Object> outDetailMap : mapList) {
+                String productId = (String) outDetailMap.get("productId");
+                String productCode = (String) outDetailMap.get("productCode");
+                String productName = (String) outDetailMap.get("productName");
+
                 double count = Double.parseDouble((String)outDetailMap.get("count"));
+                BigDecimal countBig = BigDecimal.valueOf(count);
+                //四舍五入到2位小数
+                countBig = countBig.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+
                 double executeCount = Double.parseDouble((String)outDetailMap.get("executeCount"));
                 double lackCount = count - executeCount;
+
+                //验证当前(货品id)在库存中的数量
+                PageData findMap = new PageData();
+                findMap.put("companyId", currentCompanyId);
+                findMap.put("productId", productId);
+                //查询结果集需要(实体库)-结果集只含有(实体库)
+                findMap.put("isNeedEntity", "true");
+                //查询结果集不需要(备件库)
+                findMap.put("isNotNeedSpare", "true");
+                List<Map> warehouseProductMapList = warehouseToWarehouseProductService.findWarehouseToWarehouseProductByProduct(findMap, null);
+                BigDecimal productStockCount = this.findProductStockCount(warehouseProductMapList);
+
+                if (count > productStockCount.doubleValue()) {
+                    String msgTemp = "货品编码：{0} 货品名称：{1} 该货品出库数量：{2} 该货品库存数量：{3}";
+                    String msgStr = MessageFormat.format(msgTemp,
+                            productCode,
+                            productName,
+                            countBig.toString(),
+                            productStockCount.toString());
+                    msgBuf.append(msgStr);
+                    continue;
+                }
+
                 if(outDetailMap.get("children")!=null){
                     List executeList = (List)outDetailMap.get("children");
                     if(executeList!=null&&executeList.size()>0){
@@ -546,13 +575,18 @@ public class WarehouseOutExecuteServiceImp implements WarehouseOutExecuteService
             }
         }
 
-
+        if (msgBuf.toString().trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgBuf.toString() + " 请修改当前出库单货品出库数量！");
+            return model;
+        }
 
         if(mapList!=null&&mapList.size()>0){
             for (Map<String, Object> outDetailMap : mapList) {
                 List<WarehouseOutExecute> outExecuteList = new ArrayList<WarehouseOutExecute>();
                 String detailId = (String) outDetailMap.get("id");
                 String parentId = (String) outDetailMap.get("parentId");
+
                 WarehouseOutDetail outDetail = new WarehouseOutDetail();
                 outDetail.setId(detailId);
                 outDetail.setCuser(currentUserId);
@@ -597,65 +631,6 @@ public class WarehouseOutExecuteServiceImp implements WarehouseOutExecuteService
 
 
         return model;
-    }
-
-
-    public void executeWarehouseOutExecuteBySimple(String parentId,String detailId,String cuser,String companyId) throws Exception {
-        PageData findMap = new PageData();
-        findMap.put("detailId", detailId);
-        List<Map> executeList = warehouseOutExecuteMapper.getDataList(findMap);
-
-        if (executeList != null && executeList.size() > 0) {
-            for (int i = 0; i < executeList.size(); i++) {
-                Map object = executeList.get(i);
-                ;
-                BigDecimal count = (BigDecimal)object.get("actualCount");
-                String warehouseId = (String)object.get("warehouseId");
-                String productId = (String)object.get("productId");
-                String code = (String)object.get("code");
-
-                //(简版仓库)出库操作
-                WarehouseProduct outObject = new WarehouseProduct();
-                //产品ID
-                outObject.setProductId(productId);
-                //(实际)货位ID
-                outObject.setWarehouseId(warehouseId);
-                //货位批次号
-                outObject.setCode(code);
-
-                //库存变更日志
-                String executeId = Conv.createUuid();
-
-                WarehouseLoginfo loginfo = new WarehouseLoginfo();
-                loginfo.setParentId(parentId);
-                loginfo.setDetailId(detailId);
-                loginfo.setExecuteId(executeId);
-                loginfo.setCompanyId(companyId);
-                loginfo.setCuser(cuser);
-                //operation 操作类型(add:添加 modify:修改 delete:删除:)
-                loginfo.setOperation("add");
-
-                //beforeCount 操作变更前数量(业务相关)
-                loginfo.setBeforeCount(BigDecimal.valueOf(0D));
-                //afterCount 操作变更后数量(业务相关)
-                loginfo.setAfterCount(count);
-
-                String msgStr = warehouseProductService.outStockCount(outObject, count, loginfo);
-                if (msgStr != null && msgStr.trim().length() > 0) {
-                    throw new Exception(msgStr);
-                } else {
-                    Product product = productService.findProductById(productId);
-                    BigDecimal prodCount = BigDecimal.valueOf(0D);
-                    if (product.getStockCount() != null) {
-                        prodCount = product.getStockCount();
-                    }
-
-                    BigDecimal prodStockCount = BigDecimal.valueOf(prodCount.doubleValue() - count.doubleValue());
-                    productService.updateStockCount(product, prodStockCount, cuser);
-                }
-            }
-        }
-
     }
 
     @Override
@@ -1030,6 +1005,83 @@ public class WarehouseOutExecuteServiceImp implements WarehouseOutExecuteService
         model.putResult(result);
         return model;
     }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    private void executeWarehouseOutExecuteBySimple(String parentId,String detailId,String cuser,String companyId) throws Exception {
+        PageData findMap = new PageData();
+        findMap.put("detailId", detailId);
+        List<Map> executeList = warehouseOutExecuteMapper.getDataList(findMap);
+
+        if (executeList != null && executeList.size() > 0) {
+            for (int i = 0; i < executeList.size(); i++) {
+                Map object = executeList.get(i);
+                ;
+                BigDecimal count = (BigDecimal)object.get("actualCount");
+                String warehouseId = (String)object.get("warehouseId");
+                String productId = (String)object.get("productId");
+                String code = (String)object.get("code");
+
+                //(简版仓库)出库操作
+                WarehouseProduct outObject = new WarehouseProduct();
+                //产品ID
+                outObject.setProductId(productId);
+                //(实际)货位ID
+                outObject.setWarehouseId(warehouseId);
+                //货位批次号
+                outObject.setCode(code);
+
+                //库存变更日志
+                String executeId = Conv.createUuid();
+
+                WarehouseLoginfo loginfo = new WarehouseLoginfo();
+                loginfo.setParentId(parentId);
+                loginfo.setDetailId(detailId);
+                loginfo.setExecuteId(executeId);
+                loginfo.setCompanyId(companyId);
+                loginfo.setCuser(cuser);
+                //operation 操作类型(add:添加 modify:修改 delete:删除:)
+                loginfo.setOperation("add");
+
+                //beforeCount 操作变更前数量(业务相关)
+                loginfo.setBeforeCount(BigDecimal.valueOf(0D));
+                //afterCount 操作变更后数量(业务相关)
+                loginfo.setAfterCount(count);
+
+                String msgStr = warehouseProductService.outStockCount(outObject, count, loginfo);
+                if (msgStr != null && msgStr.trim().length() > 0) {
+                    throw new Exception(msgStr);
+                } else {
+                    Product product = productService.findProductById(productId);
+                    BigDecimal prodCount = BigDecimal.valueOf(0D);
+                    if (product.getStockCount() != null) {
+                        prodCount = product.getStockCount();
+                    }
+
+                    BigDecimal prodStockCount = BigDecimal.valueOf(prodCount.doubleValue() - count.doubleValue());
+                    productService.updateStockCount(product, prodStockCount, cuser);
+                }
+            }
+        }
+    }
+
+    //com.xy.vmes.deecoop.warehouse.dao.WarehouseToWarehouseProductMapper.findWarehouseToWarehouseProductByProduct() -- 查询结果集
+    private BigDecimal findProductStockCount(List<Map> warehouseProductMapList) {
+        BigDecimal productStockCount = BigDecimal.valueOf(0D);
+        if (warehouseProductMapList == null || warehouseProductMapList.size() == 0) {return productStockCount;}
+
+        for (Map<String, Object> mapObject : warehouseProductMapList) {
+            if (mapObject.get("stockCount") != null) {
+                BigDecimal stockCount = (BigDecimal)mapObject.get("stockCount");
+                productStockCount = BigDecimal.valueOf(productStockCount.doubleValue() + stockCount.doubleValue());
+            }
+        }
+
+        //四舍五入到2位小数
+        productStockCount = productStockCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+
+        return productStockCount;
+    }
+
 }
 
 
