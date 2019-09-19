@@ -32,6 +32,12 @@ public class ExcelUtil{
 			response.setHeader("Content-Type","application/octet-stream" );
 			response.setHeader("Connection", "close");
 			response.setHeader("Content-Disposition","attachment;filename=" + fileName + ".xls" );
+
+			response.addHeader("Access-Control-Allow-Origin", "*");
+			response.addHeader("Access-Control-Allow-Methods", "*");
+			response.addHeader("Access-Control-Max-Age", "100");
+			response.addHeader("Access-Control-Allow-Headers", "Content-Type");
+			response.addHeader("Access-Control-Allow-Credentials", "false");
 //			response.setContentType("octets/stream;charset=utf-8");
 //			response.addHeader("Content-disposition", "attachment;filename=" + fileName + ".xls");
 			outputStream = response.getOutputStream();
