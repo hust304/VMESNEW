@@ -129,6 +129,24 @@ public class WarehouseMoveBySimpleController {
         return model;
     }
 
+    /**
+     * @author 刘威 自动创建，可以修改
+     * @date 2018-11-16
+     */
+    @PostMapping("/warehouse/warehouseMoveBySimple/listPageWarehouseMoveBySimple")
+    public ResultModel listPageWarehouseMoveBySimple()  throws Exception {
+
+        logger.info("################warehouseMoveBySimple/listPageWarehouseMoveDetails 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = warehouseMoveService.listPageWarehouseMoveBySimple(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################warehouseMoveBySimple/listPageWarehouseMoveBySimple 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+
 
     /**
      * @author 刘威 自动创建，可以修改

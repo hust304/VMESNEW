@@ -205,6 +205,17 @@ public class WarehouseMoveServiceImp implements WarehouseMoveService {
         return warehouseMoveMapper.getDataListPage(pd);
     }
 
+
+    public List<Map> getDataListPageBySimple(PageData pd,Pagination pg) throws Exception{
+        if(pg==null){
+            pg =  HttpUtils.parsePagination(pd);
+        }
+        return warehouseMoveMapper.getDataListPageBySimple(pd,pg);
+    }
+    public List<Map> getDataListPageBySimple(PageData pd) throws Exception{
+        return warehouseMoveMapper.getDataListPageBySimple(pd);
+    }
+
     /**
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-11-16
@@ -462,6 +473,36 @@ public class WarehouseMoveServiceImp implements WarehouseMoveService {
                 }
             }
         }
+        return model;
+    }
+
+    @Override
+    public ResultModel listPageWarehouseMoveBySimple(PageData pd) throws Exception {
+        Pagination pg =  HttpUtils.parsePagination(pd);
+        ResultModel model = new ResultModel();
+
+        Map result = new HashMap();
+
+        List<Column> columnList = columnService.findColumnList("WarehouseMove");
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
+        }
+
+        //获取指定栏位字符串-重新调整List<Column>
+        String fieldCode = pd.getString("fieldCode");
+        if (fieldCode != null && fieldCode.trim().length() > 0) {
+            columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
+        }
+        Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
+        List<Map> varList = this.getDataListPageBySimple(pd,pg);
+        List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
+        result.put("hideTitles",titleMap.get("hideTitles"));
+        result.put("titles",titleMap.get("titles"));
+        result.put("varList",varMapList);
+        result.put("pageData", pg);
+        model.putResult(result);
         return model;
     }
 
