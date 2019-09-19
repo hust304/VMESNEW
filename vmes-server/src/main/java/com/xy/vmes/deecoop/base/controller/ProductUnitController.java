@@ -113,18 +113,19 @@ public class ProductUnitController {
         //HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
+        String id  = pd.getString("id");
         ProductUnit productUnit = (ProductUnit)HttpUtils.pageData2Entity(pd, new ProductUnit());
         if("计量单位".equals(productUnit.getType())){
             productUnit.setType("1");
         }else{
             productUnit.setType("0");
         }
-
+        ProductUnit productUnitOld = productUnitService.selectById(id);
         pd = new PageData();
-        pd.put("id",productUnit.getId());
+        pd.put("id",productUnitOld.getId());
         pd.put("isSelfExist","true");
-        pd.put("productId",productUnit.getProductId());
-        pd.put("unit",productUnit.getUnit());
+        pd.put("productId",productUnitOld.getProductId());
+        pd.put("unit",productUnitOld.getUnit());
         List<ProductUnit> productUnitList = productUnitService.dataList(pd);
         if(productUnitList!=null&&productUnitList.size()>0){
             model.putCode("1");
