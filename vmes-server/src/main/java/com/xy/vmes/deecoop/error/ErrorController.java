@@ -1,5 +1,6 @@
 package com.xy.vmes.deecoop.error;
 
+import com.yvan.BizException;
 import com.yvan.HttpUtils;
 import com.yvan.YvanUtil;
 import com.yvan.springmvc.JsonView;
@@ -93,7 +94,15 @@ public class ErrorController {
             LOGGER.error(request.getRequestURI() + " 401!");
             HttpUtils.currentResponse().setStatus(401);
 
-        } else {
+        }
+//        else if (ex instanceof BizException ) {
+//            //业务代码异常
+//            msg = ex.getMessage();
+//            LOGGER.error(ex.toString(), ex);
+//            HttpUtils.currentResponse().setStatus(500);
+//
+//        }
+        else {
             //其他异常
             LOGGER.error(ex.toString(), ex);
             HttpUtils.currentResponse().setStatus(500);

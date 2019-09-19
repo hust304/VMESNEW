@@ -16,6 +16,8 @@
     <sql id="Field">
 		parent_id parentId,<!-- 移库单ID -->
 		warehouse_product_id warehouseProductId,<!-- 当前库位产品ID -->
+        warehouse_id warehouseId,
+        product_id productId,
 		count count,<!-- 移库数量 -->
 		state state,<!-- 状态(0:待派单 1:执行中 2:已完成) -->
 		cuser cuser,<!-- 创建用户id -->
@@ -32,6 +34,8 @@
     <sql id="FieldValue">
 		#{parentId},<!-- 移库单ID -->
 		#{warehouseProductId},<!-- 当前库位产品ID -->
+        #{warehouseId},<!-- 当前库位产品ID -->
+        #{productId},<!-- 当前库位产品ID -->
 		#{count},<!-- 移库数量 -->
 		#{state},<!-- 状态(0:待派单 1:执行中 2:已完成) -->
 		#{cuser},<!-- 创建用户id -->

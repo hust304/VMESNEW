@@ -44,7 +44,7 @@ public class WarehouseProductToolServiceImp implements WarehouseProductToolServi
     public List<Map<String, Object>> findWarehouseProductOutMapList (String productId,
                                                                      String companyId,
                                                                      String warehouseNodeId,
-                                                                     BigDecimal productCount) throws ApplicationException {
+                                                                     BigDecimal productCount) throws Exception {
         if (productId == null || productId.trim().length() == 0) {
             throw new ApplicationException("货品id为空或空字符串");
         }
@@ -58,26 +58,22 @@ public class WarehouseProductToolServiceImp implements WarehouseProductToolServi
         //1. (货品id,企业id)查询仓库货位表(vmes_warehouse_product) 按(cdate) 升序
         //按照先入先出原则得到出库的(货位,批次,货品)库存信息
         List<WarehouseProduct> objectList = null;
-        try {
-            PageData findMap = new PageData();
-            findMap.put("productId", productId);
-            if (companyId != null && companyId.trim().length() > 0) {
-                findMap.put("companyId", companyId.trim());
-            }
-
-            //warehouseNodeId  指定仓库id 如:(实体库,虚拟库,备件库,虚拟库)
-            if (warehouseNodeId != null && warehouseNodeId.trim().length() > 0) {
-                findMap.put("warehouseNodeId", warehouseNodeId);
-
-            }
-            findMap.put("queryStr", "stock_count > 0 ");
-            findMap.put("orderStr", "cdate asc");
-            findMap.put("mapSize", Integer.valueOf(findMap.size()));
-
-            objectList = warehouseProductService.findWarehouseProductList(findMap);
-        } catch (Exception e) {
-            e.printStackTrace();
+        PageData findMap = new PageData();
+        findMap.put("productId", productId);
+        if (companyId != null && companyId.trim().length() > 0) {
+            findMap.put("companyId", companyId.trim());
         }
+
+        //warehouseNodeId  指定仓库id 如:(实体库,虚拟库,备件库,虚拟库)
+        if (warehouseNodeId != null && warehouseNodeId.trim().length() > 0) {
+            findMap.put("warehouseNodeId", warehouseNodeId);
+
+        }
+        findMap.put("queryStr", "stock_count > 0 ");
+        findMap.put("orderStr", "cdate asc");
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+
+        objectList = warehouseProductService.findWarehouseProductList(findMap);
         if (objectList == null || objectList.size() == 0) {return outMapList;}
 
         //addCount:累加器(库存数量)

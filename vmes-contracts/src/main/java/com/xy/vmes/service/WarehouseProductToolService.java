@@ -35,7 +35,7 @@ public interface WarehouseProductToolService {
     List<Map<String, Object>> findWarehouseProductOutMapList (String productId,
                                                               String companyId,
                                                               String warehouseNodeId,
-                                                              BigDecimal productCount) throws ApplicationException;
+                                                              BigDecimal productCount) throws Exception;
 
 
     /**

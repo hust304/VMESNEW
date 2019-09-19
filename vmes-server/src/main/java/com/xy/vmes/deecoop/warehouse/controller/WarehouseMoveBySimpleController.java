@@ -1,15 +1,14 @@
 package com.xy.vmes.deecoop.warehouse.controller;
 
+import com.xy.vmes.common.util.StringUtil;
+import com.yvan.*;
 import com.yvan.common.util.Common;
 import com.xy.vmes.entity.*;
 import com.xy.vmes.exception.TableVersionException;
 import com.xy.vmes.service.*;
-import com.yvan.Conv;
-import com.yvan.HttpUtils;
-import com.yvan.PageData;
-import com.yvan.YvanUtil;
 import com.yvan.springmvc.ResultModel;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,10 +36,12 @@ public class WarehouseMoveBySimpleController {
     private WarehouseMoveService warehouseMoveService;
     @Autowired
     private WarehouseMoveDetailService warehouseMoveDetailService;
-
+    @Autowired
+    private WarehouseProductToolService warehouseProductToolService;
     @Autowired
     private WarehouseProductService warehouseProductService;
-
+    @Autowired
+    private WarehouseMoveExecuteService warehouseMoveExecuteService;
     @Autowired
     private CoderuleService coderuleService;
 
@@ -303,82 +305,121 @@ public class WarehouseMoveBySimpleController {
         }
 
         StringBuffer msgBuf = new StringBuffer();
-        try {
-            for (int i = 0; i < detailList.size(); i++) {
-                WarehouseMoveDetail detailEdit = new WarehouseMoveDetail();
-                WarehouseMoveDetail detail = detailList.get(i);
+        for (int i = 0; i < detailList.size(); i++) {
+            WarehouseMoveDetail detail = detailList.get(i);
+            String detailId = detail.getId();
 
-                String detailId = detail.getId();
-                detailEdit.setId(detailId);
 
-                //warehouseProductId 当前库位产品ID
-                String warehouseProductId = detail.getWarehouseProductId();
-                WarehouseProduct sourceWarehouseProduct = warehouseProductService.findWarehouseProductById(warehouseProductId);
+            BigDecimal suggestCount = detail.getCount();
+            String productId = detail.getProductId();
+            String warehouseId = detail.getWarehouseId();
+            List<Map<String, Object>> outMapList = warehouseProductToolService.findWarehouseProductOutMapList(productId,companyId,warehouseId,suggestCount);
 
-                //移库数量 count
-                BigDecimal count = BigDecimal.valueOf(0D);
-                if (detail.getCount() != null) {
-                    count = detail.getCount();
+
+
+
+            if(outMapList!=null&&outMapList.size()>0){
+                for(int j=0;j<outMapList.size();j++){
+                    Map<String, Object> outMap = outMapList.get(j);
+                    String warehouseProductId = (String)outMap.get("warehouseProductId");
+                    BigDecimal count = (BigDecimal)outMap.get("outCount");
+                    if(count==null){
+                        count = BigDecimal.valueOf(0D);
+                    }
+                    if(!StringUtils.isEmpty(warehouseProductId)){
+                        if(count.compareTo(BigDecimal.ZERO)>0){
+                            WarehouseProduct sourceMove = warehouseProductService.findWarehouseProductById(warehouseProductId);
+
+
+                            PageData findMap = new PageData();
+                            findMap.put("code", sourceMove.getCode());
+                            findMap.put("productId", sourceMove.getProductId());
+                            findMap.put("warehouseId", targetWarehouseId);
+                            findMap.put("mapSize", Integer.valueOf(findMap.size()));
+                            WarehouseProduct targetMove = warehouseProductService.findWarehouseProduct(findMap);
+
+                            if(targetMove==null){
+                                targetMove = new WarehouseProduct();
+                                String id = Conv.createUuid();
+                                targetMove.setId(id);
+                                targetMove.setCompanyId(sourceMove.getCompanyId());
+                                targetMove.setCode(sourceMove.getCode());
+                                targetMove.setProductId(sourceMove.getProductId());
+                                targetMove.setWarehouseId(targetWarehouseId);
+                                targetMove.setCdate(new Date());
+                                targetMove.setQrcode(sourceMove.getQrcode());
+                                warehouseProductService.save(targetMove);
+                            }
+
+                            WarehouseMoveExecute execute = new WarehouseMoveExecute();
+                            execute.setDetailId(detailId);
+                            execute.setExecutorId(cuser);
+                            execute.setWarehouseProductId(sourceMove.getId());
+                            execute.setNewWarehouseProductId(targetMove.getId());
+                            execute.setCount(count);
+                            warehouseMoveExecuteService.save(execute);
+
+                            WarehouseLoginfo loginfo = new WarehouseLoginfo();
+                            loginfo.setParentId(parentId);
+                            loginfo.setDetailId(detailId);
+                            loginfo.setExecuteId(execute.getId());
+                            loginfo.setCompanyId(companyId);
+                            loginfo.setCuser(cuser);
+                            //operation 操作类型(add:添加 modify:修改 delete:删除 reback:退单 checkAudit:移库审核)
+                            loginfo.setOperation("modify");
+
+                            //beforeCount 操作变更前数量(业务相关)-(beforeCount 台账数量)
+                            loginfo.setBeforeCount(BigDecimal.valueOf(0D));
+                            //afterCount 操作变更后数量(业务相关)-(afterCount 移库数量)
+                            loginfo.setAfterCount(count);
+
+                            String msgStr = warehouseProductService.moveStockCountBySimple(sourceMove, targetMove, count, loginfo);
+                            if (msgStr != null && msgStr.trim().length() > 0) {
+                                msgBuf.append("第 " + (i+1) + " 条: " + "移库操作失败:" + msgStr);
+                            }
+                        }
+                    }else{
+                        model.putCode(Integer.valueOf(1));
+                        model.putMsg("移库货品信息异常！");
+                        return model;
+                    }
+
+
+
                 }
-
-                //移库操作(源)
-                WarehouseProduct sourceMove = new WarehouseProduct();
-                sourceMove.setWarehouseId(sourceWarehouseProduct.getWarehouseId());
-                sourceMove.setProductId(sourceWarehouseProduct.getProductId());
-
-                //移库操作(目标)
-                WarehouseProduct targetMove = new WarehouseProduct();
-                targetMove.setWarehouseId(targetWarehouseId);
-                targetMove.setProductId(sourceWarehouseProduct.getProductId());
-
-                //库存变更日志
-                String executeId = Conv.createUuid();
-
-                WarehouseLoginfo loginfo = new WarehouseLoginfo();
-                loginfo.setParentId(parentId);
-                loginfo.setDetailId(detailId);
-                loginfo.setExecuteId(executeId);
-                loginfo.setCompanyId(companyId);
-                loginfo.setCuser(cuser);
-                //operation 操作类型(add:添加 modify:修改 delete:删除 reback:退单 checkAudit:移库审核)
-                loginfo.setOperation("modify");
-
-                //beforeCount 操作变更前数量(业务相关)-(beforeCount 台账数量)
-                loginfo.setBeforeCount(BigDecimal.valueOf(0D));
-                //afterCount 操作变更后数量(业务相关)-(afterCount 移库数量)
-                loginfo.setAfterCount(count);
-
-                String msgStr = warehouseProductService.moveStockCountBySimple(sourceMove, targetMove, count, loginfo);
-                if (msgStr != null && msgStr.trim().length() > 0) {
-                    msgBuf.append("第 " + (i+1) + " 条: " + "移库操作失败:" + msgStr);
-                } else {
-                    //明细状态:state:状态(0:待派单 1:执行中 2:已完成 -1:已取消)
-                    detailEdit.setState("2");
-                    warehouseMoveDetailService.update(detailEdit);
-                }
-            }
-        } catch (TableVersionException tabExc) {
-            //库存变更 version 锁
-            if (Common.SYS_STOCKCOUNT_ERRORCODE.equals(tabExc.getErrorCode())) {
+            }else{
                 model.putCode(Integer.valueOf(1));
-                model.putMsg(tabExc.getMessage());
+                model.putMsg("移库货品信息异常！");
                 return model;
             }
-        }
 
+
+
+            Map columnMap = new HashMap();
+            columnMap.put("detail_id",detailId);
+            columnMap.put("isdisable","1");
+            BigDecimal totalCount = BigDecimal.ZERO;
+            List<WarehouseMoveExecute> warehouseMoveExecuteList = warehouseMoveExecuteService.selectByColumnMap(columnMap);
+            if(warehouseMoveExecuteList!=null&&warehouseMoveExecuteList.size()>0){
+                for(int k=0; k<warehouseMoveExecuteList.size(); k++){
+                    WarehouseMoveExecute warehouseMoveExecute = warehouseMoveExecuteList.get(k);
+                    if(warehouseMoveExecute!=null&&warehouseMoveExecute.getCount()!=null){
+                        totalCount = totalCount.add(warehouseMoveExecute.getCount());
+                    }
+                }
+            }
+            //明细状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+            if(detail.getCount().compareTo(totalCount)>0){
+                detail.setState("1");
+            }else {
+                detail.setState("2");
+            }
+            warehouseMoveDetailService.update(detail);
+        }
         if (msgBuf.toString().trim().length() > 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg(msgBuf.toString());
-            return model;
+            throw new BizException(msgBuf.toString());
         }
-
-        //修改移库单状态
-        WarehouseMove warehouseMoveEdit = new WarehouseMove();
-        warehouseMoveEdit.setId(parentId);
-        //state:状态(0:未完成 1:已完成 -1:已取消)
-        warehouseMoveEdit.setState("1");
-        warehouseMoveService.update(warehouseMoveEdit);
-
+        warehouseMoveService.updateState(parentId);
         Long endTime = System.currentTimeMillis();
         logger.info("################/warehouse/warehouseMoveBySimple/executeWarehouseMoveBySimple 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
