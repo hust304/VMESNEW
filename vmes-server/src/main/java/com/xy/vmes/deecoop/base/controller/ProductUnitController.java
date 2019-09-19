@@ -42,7 +42,7 @@ public class ProductUnitController {
 
         logger.info("################productUnit/selectById 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
+        //HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         ProductUnit productUnit = productUnitService.selectById(id);
         model.putResult(productUnit);
@@ -63,7 +63,7 @@ public class ProductUnitController {
 
         logger.info("################productUnit/save 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
+        //HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         ProductUnit productUnit = (ProductUnit)HttpUtils.pageData2Entity(pd, new ProductUnit());
@@ -110,7 +110,7 @@ public class ProductUnitController {
 
         logger.info("################productUnit/update 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
+        //HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         ProductUnit productUnit = (ProductUnit)HttpUtils.pageData2Entity(pd, new ProductUnit());
@@ -150,7 +150,7 @@ public class ProductUnitController {
 
         logger.info("################productUnit/deleteById 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
+        //HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         productUnitService.deleteById(id);
         Long endTime = System.currentTimeMillis();
@@ -169,7 +169,7 @@ public class ProductUnitController {
 
         logger.info("################productUnit/deleteByIds 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
+        //HttpServletResponse response  = HttpUtils.currentResponse();
         PageData pd = HttpUtils.parsePageData();
         ResultModel model = new ResultModel();
         String ids = pd.getString("ids");
@@ -198,7 +198,7 @@ public class ProductUnitController {
 
         logger.info("################productUnit/dataListPage 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
+        //HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         Pagination pg = HttpUtils.parsePagination(pd);
@@ -221,7 +221,7 @@ public class ProductUnitController {
 
         logger.info("################productUnit/dataList 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
+        //HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         List<ProductUnit> productUnitList = productUnitService.dataList(pd);
