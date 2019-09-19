@@ -536,7 +536,7 @@ public class WarehouseOutExecuteServiceImp implements WarehouseOutExecuteService
                 BigDecimal productStockCount = this.findProductStockCount(warehouseProductMapList);
 
                 if (count > productStockCount.doubleValue()) {
-                    String msgTemp = "货品编码：{0} 货品名称：{1} 该货品出库数量：{2} 该货品库存数量：{3}";
+                    String msgTemp = "货品名称：{0} 该货品库存不足，请更改出库数量";
                     String msgStr = MessageFormat.format(msgTemp,
                             productCode,
                             productName,
