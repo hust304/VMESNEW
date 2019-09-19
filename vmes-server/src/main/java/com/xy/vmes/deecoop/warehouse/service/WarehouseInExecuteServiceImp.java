@@ -1127,6 +1127,15 @@ public class WarehouseInExecuteServiceImp implements WarehouseInExecuteService {
                     BigDecimal prodStockCount = BigDecimal.valueOf(prodCount.doubleValue() + count.doubleValue());
                     productService.updateStockCount(product, prodStockCount, cuser);
                 }
+
+                //创建入库单明细执行
+                WarehouseInExecute addInExecute = new WarehouseInExecute();
+                addInExecute.setId(Conv.createUuid());
+                addInExecute.setDetailId(inDetailId);
+                addInExecute.setExecutorId(cuser);
+                addInExecute.setWarehouseId(warehouseId);
+                addInExecute.setCount(count);
+                this.save(addInExecute);
             }
 
             //得到入库单明细入库执行数量
