@@ -1047,149 +1047,136 @@ public class WarehouseInExecuteServiceImp implements WarehouseInExecuteService {
             }
         }
 
-        try {
-            List<String> inDetailList = new ArrayList<>();
-            //productCount: 计量单位数量
-            //priceCount:   计价单位数量
-            Map<String, Map<String, BigDecimal>> inDetailCountMap = new HashMap<>();
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        List<String> inDetailList = new ArrayList<>();
+        //productCount: 计量单位数量
+        //priceCount:   计价单位数量
+        Map<String, Map<String, BigDecimal>> inDetailCountMap = new HashMap<>();
 
-            //2. 遍历入库单明细执行Map结构体 inDetailExecuteMap
-            for (Iterator iterator = inDetailExecuteMap.keySet().iterator(); iterator.hasNext();) {
-                String inDetailId = iterator.next().toString().trim();
-                inDetailList.add(inDetailId);
+        //2. 遍历入库单明细执行Map结构体 inDetailExecuteMap
+        for (Iterator iterator = inDetailExecuteMap.keySet().iterator(); iterator.hasNext();) {
+            String inDetailId = iterator.next().toString().trim();
+            inDetailList.add(inDetailId);
 
-                //inDetailCount:入库单明细入库执行数量(计量单位)
-                BigDecimal inDetailCount = BigDecimal.valueOf(0D);
-                //inDetailCount:入库单明细入库执行数量(计量单位)
-                BigDecimal inDetailPriceCount = BigDecimal.valueOf(0D);
+            //inDetailCount:入库单明细入库执行数量(计量单位)
+            BigDecimal inDetailCount = BigDecimal.valueOf(0D);
+            //inDetailCount:入库单明细入库执行数量(计量单位)
+            BigDecimal inDetailPriceCount = BigDecimal.valueOf(0D);
 
-                List<Map<String, Object>> productExecuteList = inDetailExecuteMap.get(inDetailId);
-                for (Map<String, Object> mapObject : productExecuteList) {
-                    //货品执行入库Map
-                    //productId:   货品id
-                    //warehouseId: 货位id
-                    //code:        批次号
-                    //count:       入库数量(计量单位)
-                    //priceCount:  入库数量(计价单位)
-                    BigDecimal count = BigDecimal.valueOf(0D);
-                    if (mapObject.get("count") != null) {
-                        count = (BigDecimal)mapObject.get("count");
-                    }
-                    inDetailCount = BigDecimal.valueOf(count.doubleValue() + inDetailCount.doubleValue());
-
-                    BigDecimal priceCount = BigDecimal.valueOf(0D);
-                    if (mapObject.get("priceCount") != null) {
-                        priceCount = (BigDecimal)mapObject.get("priceCount");
-                    }
-                    inDetailPriceCount = BigDecimal.valueOf(priceCount.doubleValue() + inDetailPriceCount.doubleValue());
-
-
-                    String warehouseId = (String)mapObject.get("warehouseId");
-                    String productId = (String)mapObject.get("productId");
-                    String code = (String)mapObject.get("code");
-
-                    //入库操作
-                    WarehouseProduct inObject = new WarehouseProduct();
-                    //货位批次号
-                    inObject.setCode(code);
-                    //产品ID
-                    inObject.setProductId(productId);
-                    //(实际)货位ID
-                    inObject.setWarehouseId(warehouseId);
-
-                    //库存变更日志
-                    String executeId = Conv.createUuid();
-
-                    WarehouseLoginfo loginfo = new WarehouseLoginfo();
-                    loginfo.setParentId(parentId);
-                    loginfo.setDetailId(inDetailId);
-                    loginfo.setExecuteId(executeId);
-                    loginfo.setCompanyId(companyId);
-                    loginfo.setCuser(cuser);
-                    //operation 操作类型(add:添加 modify:修改 delete:删除:)
-                    loginfo.setOperation("add");
-
-                    //beforeCount 操作变更前数量(业务相关)
-                    loginfo.setBeforeCount(BigDecimal.valueOf(0D));
-                    //afterCount 操作变更后数量(业务相关)
-                    loginfo.setAfterCount(count);
-
-                    String msgStr = warehouseProductService.inStockCount(inObject, count, loginfo);
-                    if (msgStr != null && msgStr.trim().length() > 0) {
-                        throw new ApplicationException(msgStr.toString());
-                    } else {
-                        Product product = productService.findProductById(productId);
-                        BigDecimal prodCount = BigDecimal.valueOf(0D);
-                        if (product.getStockCount() != null) {
-                            prodCount = product.getStockCount();
-                        }
-
-                        BigDecimal prodStockCount = BigDecimal.valueOf(prodCount.doubleValue() + count.doubleValue());
-                        productService.updateStockCount(product, prodStockCount, cuser);
-                    }
+            List<Map<String, Object>> productExecuteList = inDetailExecuteMap.get(inDetailId);
+            for (Map<String, Object> mapObject : productExecuteList) {
+                //货品执行入库Map
+                //productId:   货品id
+                //warehouseId: 货位id
+                //code:        批次号
+                //count:       入库数量(计量单位)
+                //priceCount:  入库数量(计价单位)
+                BigDecimal count = BigDecimal.valueOf(0D);
+                if (mapObject.get("count") != null) {
+                    count = (BigDecimal)mapObject.get("count");
                 }
+                inDetailCount = BigDecimal.valueOf(count.doubleValue() + inDetailCount.doubleValue());
 
-                //得到入库单明细入库执行数量
-                Map<String, BigDecimal> detailCountMap = new HashMap<>();
-                detailCountMap.put("productCount", inDetailCount);
-                detailCountMap.put("priceCount", inDetailPriceCount);
-                inDetailCountMap.put(inDetailId, detailCountMap);
-            }
-
-            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            //3. 修改入库单状态
-            for (String inDetailId : inDetailList) {
-                WarehouseInDetail editInDetail = new WarehouseInDetail();
-                editInDetail.setId(inDetailId);
-
-                //修改入库明细入库数量
-                if (inDetailCountMap != null && inDetailCountMap.get(inDetailId) != null) {
-                    //productCount: 计量单位数量
-                    //priceCount:   计价单位数量
-                    Map<String, BigDecimal> detailCountMap = inDetailCountMap.get(inDetailId);
-
-                    //入库明细入库数量(计量单位)
-                    if (detailCountMap != null && detailCountMap.get("productCount") != null) {
-                        BigDecimal productCount = detailCountMap.get("productCount");
-                        //四舍五入到2位小数
-                        productCount = productCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-                        editInDetail.setCount(productCount);
-                        editInDetail.setProductCount(productCount);
-                    }
-
-                    //入库明细入库数量(计价单位)
-                    if (detailCountMap != null && detailCountMap.get("priceCount") != null) {
-                        BigDecimal priceCount = detailCountMap.get("priceCount");
-                        //四舍五入到2位小数
-                        priceCount = priceCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-                        editInDetail.setPriceCount(priceCount);
-                    }
+                BigDecimal priceCount = BigDecimal.valueOf(0D);
+                if (mapObject.get("priceCount") != null) {
+                    priceCount = (BigDecimal)mapObject.get("priceCount");
                 }
+                inDetailPriceCount = BigDecimal.valueOf(priceCount.doubleValue() + inDetailPriceCount.doubleValue());
 
-                //入库单明细状态(0:待派单 1:执行中 2:已完成 -1.已取消)
-                editInDetail.setState("2");
 
-                warehouseInDetailService.update(editInDetail);
+                String warehouseId = (String)mapObject.get("warehouseId");
+                String productId = (String)mapObject.get("productId");
+                String code = (String)mapObject.get("code");
+
+                //入库操作
+                WarehouseProduct inObject = new WarehouseProduct();
+                //货位批次号
+                inObject.setCode(code);
+                //产品ID
+                inObject.setProductId(productId);
+                //(实际)货位ID
+                inObject.setWarehouseId(warehouseId);
+
+                //库存变更日志
+                String executeId = Conv.createUuid();
+
+                WarehouseLoginfo loginfo = new WarehouseLoginfo();
+                loginfo.setParentId(parentId);
+                loginfo.setDetailId(inDetailId);
+                loginfo.setExecuteId(executeId);
+                loginfo.setCompanyId(companyId);
+                loginfo.setCuser(cuser);
+                //operation 操作类型(add:添加 modify:修改 delete:删除:)
+                loginfo.setOperation("add");
+
+                //beforeCount 操作变更前数量(业务相关)
+                loginfo.setBeforeCount(BigDecimal.valueOf(0D));
+                //afterCount 操作变更后数量(业务相关)
+                loginfo.setAfterCount(count);
+
+                String msgStr = warehouseProductService.inStockCount(inObject, count, loginfo);
+                if (msgStr != null && msgStr.trim().length() > 0) {
+                    throw new ApplicationException(msgStr.toString());
+                } else {
+                    Product product = productService.findProductById(productId);
+                    BigDecimal prodCount = BigDecimal.valueOf(0D);
+                    if (product.getStockCount() != null) {
+                        prodCount = product.getStockCount();
+                    }
+
+                    BigDecimal prodStockCount = BigDecimal.valueOf(prodCount.doubleValue() + count.doubleValue());
+                    productService.updateStockCount(product, prodStockCount, cuser);
+                }
             }
 
-            WarehouseIn editIn = new WarehouseIn();
-            editIn.setId(parentId);
-            //入库单状态(0:未完成 1:已完成 -1:已取消)
-            editIn.setState("1");
-            warehouseInService.update(editIn);
-
-        } catch (TableVersionException tabExc) {
-            //库存变更 version 锁
-            if (Common.SYS_STOCKCOUNT_ERRORCODE.equals(tabExc.getErrorCode())) {
-                model.putCode(Integer.valueOf(1));
-                model.putMsg(tabExc.getMessage());
-                return model;
-            }
-        } catch (ApplicationException appExc) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg(appExc.getMessage());
-            return model;
+            //得到入库单明细入库执行数量
+            Map<String, BigDecimal> detailCountMap = new HashMap<>();
+            detailCountMap.put("productCount", inDetailCount);
+            detailCountMap.put("priceCount", inDetailPriceCount);
+            inDetailCountMap.put(inDetailId, detailCountMap);
         }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //3. 修改入库单状态
+        for (String inDetailId : inDetailList) {
+            WarehouseInDetail editInDetail = new WarehouseInDetail();
+            editInDetail.setId(inDetailId);
+
+            //修改入库明细入库数量
+            if (inDetailCountMap != null && inDetailCountMap.get(inDetailId) != null) {
+                //productCount: 计量单位数量
+                //priceCount:   计价单位数量
+                Map<String, BigDecimal> detailCountMap = inDetailCountMap.get(inDetailId);
+
+                //入库明细入库数量(计量单位)
+                if (detailCountMap != null && detailCountMap.get("productCount") != null) {
+                    BigDecimal productCount = detailCountMap.get("productCount");
+                    //四舍五入到2位小数
+                    productCount = productCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                    editInDetail.setCount(productCount);
+                    editInDetail.setProductCount(productCount);
+                }
+
+                //入库明细入库数量(计价单位)
+                if (detailCountMap != null && detailCountMap.get("priceCount") != null) {
+                    BigDecimal priceCount = detailCountMap.get("priceCount");
+                    //四舍五入到2位小数
+                    priceCount = priceCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                    editInDetail.setPriceCount(priceCount);
+                }
+            }
+
+            //入库单明细状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+            editInDetail.setState("2");
+
+            warehouseInDetailService.update(editInDetail);
+        }
+
+        WarehouseIn editIn = new WarehouseIn();
+        editIn.setId(parentId);
+        //入库单状态(0:未完成 1:已完成 -1:已取消)
+        editIn.setState("1");
+        warehouseInService.update(editIn);
 
         return model;
     }
