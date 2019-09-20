@@ -42,7 +42,6 @@ public class WarehouseInController {
 
         logger.info("################warehouseIn/save 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         WarehouseIn warehouseIn = (WarehouseIn)HttpUtils.pageData2Entity(pd, new WarehouseIn());
@@ -62,7 +61,6 @@ public class WarehouseInController {
 
         logger.info("################warehouseIn/update 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         WarehouseIn warehouseIn = (WarehouseIn)HttpUtils.pageData2Entity(pd, new WarehouseIn());
@@ -83,7 +81,6 @@ public class WarehouseInController {
 
         logger.info("################warehouseIn/deleteById 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         warehouseInService.deleteById(id);
         Long endTime = System.currentTimeMillis();
@@ -102,7 +99,6 @@ public class WarehouseInController {
 
         logger.info("################warehouseIn/deleteByIds 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         PageData pd = HttpUtils.parsePageData();
         ResultModel model = new ResultModel();
         String ids = pd.getString("ids");
@@ -130,7 +126,6 @@ public class WarehouseInController {
 
         logger.info("################warehouseIn/dataList 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         List<WarehouseIn> warehouseInList = warehouseInService.dataList(pd);

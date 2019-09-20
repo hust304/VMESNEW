@@ -44,7 +44,6 @@ public class SaleUnitPriceController {
 
         logger.info("################/sale/saleUnitPrice/selectById 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         SaleUnitPrice saleUnitPrice = saleUnitPriceService.selectById(id);
         model.putResult(saleUnitPrice);
@@ -65,7 +64,6 @@ public class SaleUnitPriceController {
 
         logger.info("################/sale/saleUnitPrice/save 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         SaleUnitPrice saleUnitPrice = (SaleUnitPrice)HttpUtils.pageData2Entity(pd, new SaleUnitPrice());
@@ -85,7 +83,6 @@ public class SaleUnitPriceController {
 
         logger.info("################/sale/saleUnitPrice/update 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         SaleUnitPrice saleUnitPrice = (SaleUnitPrice)HttpUtils.pageData2Entity(pd, new SaleUnitPrice());
@@ -106,7 +103,6 @@ public class SaleUnitPriceController {
 
         logger.info("################/sale/saleUnitPrice/deleteById 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         saleUnitPriceService.deleteById(id);
         Long endTime = System.currentTimeMillis();
@@ -125,7 +121,6 @@ public class SaleUnitPriceController {
 
         logger.info("################/sale/saleUnitPrice/deleteByIds 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         PageData pd = HttpUtils.parsePageData();
         ResultModel model = new ResultModel();
         String ids = pd.getString("ids");
@@ -154,7 +149,6 @@ public class SaleUnitPriceController {
 
         logger.info("################/sale/saleUnitPrice/dataListPage 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         Pagination pg = HttpUtils.parsePagination(pd);
@@ -177,7 +171,6 @@ public class SaleUnitPriceController {
 
         logger.info("################/sale/saleUnitPrice/dataList 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         List<SaleUnitPrice> saleUnitPriceList = saleUnitPriceService.dataList(pd);

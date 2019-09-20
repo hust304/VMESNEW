@@ -58,7 +58,6 @@ public class CustomerController {
 
         logger.info("################customer/selectById 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         Customer customer = customerService.selectById(id);
         model.putResult(customer);
@@ -79,7 +78,6 @@ public class CustomerController {
 
         logger.info("################customer/save 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         Customer customer = (Customer)HttpUtils.pageData2Entity(pd, new Customer());
@@ -100,7 +98,6 @@ public class CustomerController {
 
         logger.info("################customer/update 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         Customer customer = (Customer)HttpUtils.pageData2Entity(pd, new Customer());
@@ -121,7 +118,6 @@ public class CustomerController {
 
         logger.info("################customer/deleteById 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         customerService.deleteById(id);
         Long endTime = System.currentTimeMillis();
@@ -140,7 +136,6 @@ public class CustomerController {
 
         logger.info("################customer/deleteById 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         PageData pd = HttpUtils.parsePageData();
         ResultModel model = new ResultModel();
         String ids = pd.getString("ids");
@@ -169,7 +164,6 @@ public class CustomerController {
 
         logger.info("################customer/dataListPage 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         Pagination pg = HttpUtils.parsePagination(pd);
@@ -192,7 +186,6 @@ public class CustomerController {
 
         logger.info("################customer/dataList 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         List<Customer> customerList = customerService.dataList(pd);

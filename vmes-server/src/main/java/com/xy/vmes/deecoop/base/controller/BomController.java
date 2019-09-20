@@ -56,7 +56,6 @@ public class BomController {
 
         logger.info("################bom/selectById 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         Bom bom = bomService.selectById(id);
         model.putResult(bom);
@@ -77,7 +76,6 @@ public class BomController {
 
         logger.info("################bom/save 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         Bom bom = (Bom)HttpUtils.pageData2Entity(pd, new Bom());
@@ -97,7 +95,6 @@ public class BomController {
 
         logger.info("################bom/update 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         Bom bom = (Bom)HttpUtils.pageData2Entity(pd, new Bom());
@@ -118,7 +115,6 @@ public class BomController {
 
         logger.info("################bom/deleteById 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         bomService.deleteById(id);
         Long endTime = System.currentTimeMillis();
@@ -137,7 +133,6 @@ public class BomController {
 
         logger.info("################bom/deleteByIds 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         PageData pd = HttpUtils.parsePageData();
         ResultModel model = new ResultModel();
         String ids = pd.getString("ids");
@@ -166,7 +161,6 @@ public class BomController {
 
         logger.info("################bom/dataListPage 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         Pagination pg = HttpUtils.parsePagination(pd);
@@ -189,7 +183,6 @@ public class BomController {
 
         logger.info("################bom/dataList 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         List<Bom> bomList = bomService.dataList(pd);

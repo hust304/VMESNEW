@@ -54,7 +54,6 @@ public class DictionaryController {
 
         logger.info("################dictionary/selectById 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         Dictionary dictionary = dictionaryService.selectById(id);
         model.putResult(dictionary);
@@ -75,7 +74,6 @@ public class DictionaryController {
 
         logger.info("################dictionary/save 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         Dictionary dictionary = (Dictionary)HttpUtils.pageData2Entity(pd, new Dictionary());
@@ -95,7 +93,6 @@ public class DictionaryController {
 
         logger.info("################dictionary/update 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         Dictionary dictionary = (Dictionary)HttpUtils.pageData2Entity(pd, new Dictionary());
@@ -116,7 +113,6 @@ public class DictionaryController {
 
         logger.info("################dictionary/deleteById 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         dictionaryService.deleteById(id);
         Long endTime = System.currentTimeMillis();
@@ -133,7 +129,6 @@ public class DictionaryController {
 
         logger.info("################dictionary/dataListPage 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         Pagination pg = HttpUtils.parsePagination(pd);
@@ -153,7 +148,6 @@ public class DictionaryController {
 
         logger.info("################dictionary/dataList 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         List<Dictionary> dictionaryList = dictionaryService.dataList(pd);

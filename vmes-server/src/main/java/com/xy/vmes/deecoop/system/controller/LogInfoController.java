@@ -48,7 +48,6 @@ public class LogInfoController {
 
         logger.info("################logInfo/selectById 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         LogInfo logInfo = logInfoService.selectById(id);
         model.putResult(logInfo);
@@ -69,7 +68,6 @@ public class LogInfoController {
 
         logger.info("################logInfo/save 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         LogInfo logInfo = (LogInfo)HttpUtils.pageData2Entity(pd, new LogInfo());
@@ -90,7 +88,6 @@ public class LogInfoController {
 
         logger.info("################logInfo/update 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         LogInfo logInfo = (LogInfo)HttpUtils.pageData2Entity(pd, new LogInfo());
@@ -111,7 +108,6 @@ public class LogInfoController {
 
         logger.info("################logInfo/deleteById 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         logInfoService.deleteById(id);
         Long endTime = System.currentTimeMillis();
@@ -130,7 +126,6 @@ public class LogInfoController {
 
         logger.info("################logInfo/deleteById 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         PageData pd = HttpUtils.parsePageData();
         ResultModel model = new ResultModel();
         String ids = pd.getString("ids");
@@ -159,7 +154,6 @@ public class LogInfoController {
 
         logger.info("################logInfo/dataListPage 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         Pagination pg = HttpUtils.parsePagination(pd);
@@ -182,7 +176,6 @@ public class LogInfoController {
 
         logger.info("################logInfo/dataList 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         List<LogInfo> logInfoList = logInfoService.dataList(pd);

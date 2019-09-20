@@ -53,7 +53,6 @@ public class MenuController {
 
         logger.info("################menu/selectById 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         Menu menu = menuService.selectById(id);
         model.putResult(menu);
@@ -74,7 +73,6 @@ public class MenuController {
 
         logger.info("################menu/save 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         Menu menu = (Menu)HttpUtils.pageData2Entity(pd, new Menu());
@@ -94,7 +92,6 @@ public class MenuController {
 
         logger.info("################menu/update 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         Menu menu = (Menu)HttpUtils.pageData2Entity(pd, new Menu());
@@ -115,7 +112,6 @@ public class MenuController {
 
         logger.info("################menu/deleteById 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         menuService.deleteById(id);
         Long endTime = System.currentTimeMillis();
@@ -132,7 +128,6 @@ public class MenuController {
 
         logger.info("################menu/dataListPage 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         Pagination pg = HttpUtils.parsePagination(pd);
@@ -152,7 +147,6 @@ public class MenuController {
 
         logger.info("################menu/dataList 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         List<Menu> menuList = menuService.dataList(pd);

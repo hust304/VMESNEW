@@ -44,7 +44,6 @@ public class SaleLockDateController {
 
         logger.info("################/sale/saleLockDate/selectById 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         SaleLockDate saleLockDate = saleLockDateService.selectById(id);
         model.putResult(saleLockDate);
@@ -65,7 +64,6 @@ public class SaleLockDateController {
 
         logger.info("################saleLockDate/save 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         SaleLockDate saleLockDate = (SaleLockDate)HttpUtils.pageData2Entity(pd, new SaleLockDate());
@@ -85,7 +83,6 @@ public class SaleLockDateController {
 
         logger.info("################/sale/saleLockDate/update 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         SaleLockDate saleLockDate = (SaleLockDate)HttpUtils.pageData2Entity(pd, new SaleLockDate());
@@ -106,7 +103,6 @@ public class SaleLockDateController {
 
         logger.info("################/sale/saleLockDate/deleteById 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         saleLockDateService.deleteById(id);
         Long endTime = System.currentTimeMillis();
@@ -125,7 +121,6 @@ public class SaleLockDateController {
 
         logger.info("################/sale/saleLockDate/deleteByIds 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         PageData pd = HttpUtils.parsePageData();
         ResultModel model = new ResultModel();
         String ids = pd.getString("ids");
@@ -154,7 +149,6 @@ public class SaleLockDateController {
 
         logger.info("################/sale/saleLockDate/dataListPage 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         Pagination pg = HttpUtils.parsePagination(pd);
@@ -177,7 +171,6 @@ public class SaleLockDateController {
 
         logger.info("################/sale/saleLockDate/dataList 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         List<SaleLockDate> saleLockDateList = saleLockDateService.dataList(pd);

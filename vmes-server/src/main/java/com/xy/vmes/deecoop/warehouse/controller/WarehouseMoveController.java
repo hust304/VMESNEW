@@ -44,7 +44,6 @@ public class WarehouseMoveController {
 
         logger.info("################warehouseMove/selectById 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         WarehouseMove warehouseMove = warehouseMoveService.selectById(id);
         model.putResult(warehouseMove);
@@ -65,7 +64,6 @@ public class WarehouseMoveController {
 
         logger.info("################warehouseMove/save 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         WarehouseMove warehouseMove = (WarehouseMove)HttpUtils.pageData2Entity(pd, new WarehouseMove());
@@ -85,7 +83,6 @@ public class WarehouseMoveController {
 
         logger.info("################warehouseMove/update 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         WarehouseMove warehouseMove = (WarehouseMove)HttpUtils.pageData2Entity(pd, new WarehouseMove());
@@ -106,7 +103,6 @@ public class WarehouseMoveController {
 
         logger.info("################warehouseMove/deleteById 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         warehouseMoveService.deleteById(id);
         Long endTime = System.currentTimeMillis();
@@ -125,7 +121,6 @@ public class WarehouseMoveController {
 
         logger.info("################warehouseMove/deleteByIds 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         PageData pd = HttpUtils.parsePageData();
         ResultModel model = new ResultModel();
         String ids = pd.getString("ids");
@@ -154,7 +149,6 @@ public class WarehouseMoveController {
 
         logger.info("################warehouseMove/dataListPage 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         Pagination pg = HttpUtils.parsePagination(pd);
@@ -177,7 +171,6 @@ public class WarehouseMoveController {
 
         logger.info("################warehouseMove/dataList 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         List<WarehouseMove> warehouseMoveList = warehouseMoveService.dataList(pd);

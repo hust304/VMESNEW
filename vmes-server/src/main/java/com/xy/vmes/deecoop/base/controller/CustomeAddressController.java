@@ -48,7 +48,6 @@ public class CustomeAddressController {
 
         logger.info("################customeAddress/selectById 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         CustomeAddress customeAddress = customeAddressService.selectById(id);
         model.putResult(customeAddress);
@@ -69,7 +68,6 @@ public class CustomeAddressController {
 
         logger.info("################customeAddress/save 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         CustomeAddress customeAddress = (CustomeAddress)HttpUtils.pageData2Entity(pd, new CustomeAddress());
@@ -89,7 +87,6 @@ public class CustomeAddressController {
 
         logger.info("################customeAddress/update 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         CustomeAddress customeAddress = (CustomeAddress)HttpUtils.pageData2Entity(pd, new CustomeAddress());
@@ -110,7 +107,6 @@ public class CustomeAddressController {
 
         logger.info("################customeAddress/deleteById 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         customeAddressService.deleteById(id);
         Long endTime = System.currentTimeMillis();
@@ -129,7 +125,6 @@ public class CustomeAddressController {
 
         logger.info("################customeAddress/deleteById 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         PageData pd = HttpUtils.parsePageData();
         ResultModel model = new ResultModel();
         String ids = pd.getString("ids");
@@ -158,7 +153,6 @@ public class CustomeAddressController {
 
         logger.info("################customeAddress/dataListPage 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         Pagination pg = HttpUtils.parsePagination(pd);
@@ -181,7 +175,6 @@ public class CustomeAddressController {
 
         logger.info("################customeAddress/dataList 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         List<CustomeAddress> customeAddressList = customeAddressService.dataList(pd);

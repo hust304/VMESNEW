@@ -60,7 +60,6 @@ public class EmployeeController {
 
         logger.info("################employee/selectById 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         Employee employee = employeeService.selectById(id);
         model.putResult(employee);
@@ -81,7 +80,6 @@ public class EmployeeController {
 
         logger.info("################employee/save 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         Employee employee = (Employee)HttpUtils.pageData2Entity(pd, new Employee());
@@ -101,7 +99,6 @@ public class EmployeeController {
 
         logger.info("################employee/update 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         Employee employee = (Employee)HttpUtils.pageData2Entity(pd, new Employee());
@@ -122,7 +119,6 @@ public class EmployeeController {
 
         logger.info("################employee/deleteById 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         employeeService.deleteById(id);
         Long endTime = System.currentTimeMillis();
@@ -139,7 +135,6 @@ public class EmployeeController {
 
         logger.info("################employee/dataListPage 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         Pagination pg = HttpUtils.parsePagination(pd);
@@ -159,7 +154,6 @@ public class EmployeeController {
 
         logger.info("################employee/dataList 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         List<Employee> employeeList = employeeService.dataList(pd);

@@ -51,7 +51,6 @@ public class DepartmentController {
 
         logger.info("################department/dataList 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         Department department = departmentService.selectById(id);
         model.putResult(department);
@@ -72,7 +71,6 @@ public class DepartmentController {
 
         logger.info("################department/dataList 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         Department department = (Department)HttpUtils.pageData2Entity(pd, new Department());
@@ -92,7 +90,6 @@ public class DepartmentController {
 
         logger.info("################department/dataList 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         Department department = (Department)HttpUtils.pageData2Entity(pd, new Department());
@@ -113,7 +110,6 @@ public class DepartmentController {
 
         logger.info("################department/dataList 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         departmentService.deleteById(id);
         Long endTime = System.currentTimeMillis();
@@ -130,7 +126,6 @@ public class DepartmentController {
 
         logger.info("################department/dataList 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         Pagination pg = HttpUtils.parsePagination(pd);
@@ -150,7 +145,6 @@ public class DepartmentController {
 
         logger.info("################department/dataList 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         List<Department> departmentList = departmentService.dataList(pd);

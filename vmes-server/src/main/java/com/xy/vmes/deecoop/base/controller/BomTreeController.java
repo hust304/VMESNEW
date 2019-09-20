@@ -44,7 +44,6 @@ public class BomTreeController {
 
         logger.info("################bomTree/selectById 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         BomTree bomTree = bomTreeService.selectById(id);
         model.putResult(bomTree);
@@ -65,7 +64,6 @@ public class BomTreeController {
 
         logger.info("################bomTree/save 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         BomTree bomTree = (BomTree)HttpUtils.pageData2Entity(pd, new BomTree());
@@ -85,7 +83,6 @@ public class BomTreeController {
 
         logger.info("################bomTree/update 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         BomTree bomTree = (BomTree)HttpUtils.pageData2Entity(pd, new BomTree());
@@ -106,7 +103,6 @@ public class BomTreeController {
 
         logger.info("################bomTree/deleteById 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         bomTreeService.deleteById(id);
         Long endTime = System.currentTimeMillis();
@@ -125,7 +121,6 @@ public class BomTreeController {
 
         logger.info("################bomTree/deleteByIds 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         PageData pd = HttpUtils.parsePageData();
         ResultModel model = new ResultModel();
         String ids = pd.getString("ids");
@@ -154,7 +149,6 @@ public class BomTreeController {
 
         logger.info("################bomTree/dataListPage 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         Pagination pg = HttpUtils.parsePagination(pd);
@@ -177,7 +171,6 @@ public class BomTreeController {
 
         logger.info("################bomTree/dataList 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         List<BomTree> bomTreeList = bomTreeService.dataList(pd);

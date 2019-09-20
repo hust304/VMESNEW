@@ -45,7 +45,6 @@ public class SaleReceiveRecordController {
 
         logger.info("################/sale/saleReceiveRecord/selectById 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         SaleReceiveRecord saleReceiveRecord = saleReceiveRecordService.selectById(id);
         model.putResult(saleReceiveRecord);
@@ -66,7 +65,6 @@ public class SaleReceiveRecordController {
 
         logger.info("################/sale/saleReceiveRecord/save 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         SaleReceiveRecord saleReceiveRecord = (SaleReceiveRecord)HttpUtils.pageData2Entity(pd, new SaleReceiveRecord());
@@ -86,7 +84,6 @@ public class SaleReceiveRecordController {
 
         logger.info("################/sale/saleReceiveRecord/update 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         SaleReceiveRecord saleReceiveRecord = (SaleReceiveRecord)HttpUtils.pageData2Entity(pd, new SaleReceiveRecord());
@@ -107,7 +104,6 @@ public class SaleReceiveRecordController {
 
         logger.info("################/sale/saleReceiveRecord/deleteById 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         saleReceiveRecordService.deleteById(id);
         Long endTime = System.currentTimeMillis();
@@ -126,7 +122,6 @@ public class SaleReceiveRecordController {
 
         logger.info("################/sale/saleReceiveRecord/deleteByIds 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         PageData pd = HttpUtils.parsePageData();
         ResultModel model = new ResultModel();
         String ids = pd.getString("ids");
@@ -155,7 +150,6 @@ public class SaleReceiveRecordController {
 
         logger.info("################/sale/saleReceiveRecord/dataListPage 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         Pagination pg = HttpUtils.parsePagination(pd);
@@ -178,7 +172,6 @@ public class SaleReceiveRecordController {
 
         logger.info("################/sale/saleReceiveRecord/dataList 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        HttpServletResponse response  = HttpUtils.currentResponse();
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         List<SaleReceiveRecord> saleReceiveRecordList = saleReceiveRecordService.dataList(pd);
