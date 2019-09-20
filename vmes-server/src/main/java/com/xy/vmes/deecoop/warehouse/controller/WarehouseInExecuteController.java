@@ -33,6 +33,22 @@ public class WarehouseInExecuteController {
     private ProductService productService;
 
     /**
+     * 入库单执行
+     * @author 陈刚
+     * @date 2019-09-20
+     */
+    @PostMapping("/warehouse/warehouseInExecute/listPageWarehouseInExecute")
+    public ResultModel listPageWarehouseInExecute() throws Exception {
+        logger.info("################/warehouse/warehouseInExecute/listPageWarehouseInExecute 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = warehouseInExecuteService.listPageWarehouseInExecute(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/warehouse/warehouseInExecute/listPageWarehouseInExecute 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
      * (入库管理-任务列表)获取入库单执行列表
      * @author 陈刚
      * @date 2018-10-18

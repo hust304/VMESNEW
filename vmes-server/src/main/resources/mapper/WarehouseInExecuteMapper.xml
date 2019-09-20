@@ -46,15 +46,22 @@
         isdisable,ishide,isedit,ismust,cdate,
         cuser
         ) VALUES
-            (replace(uuid(), '-', ''),'warehouseInExecute','detailId','入库明细ID',1, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'warehouseInExecute','count','当前入库数量',2, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'warehouseInExecute','cuser','创建用户id',3, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'warehouseInExecute','cdate','创建时间',4, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'warehouseInExecute','uuser','修改用户id',5, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'warehouseInExecute','udate','修改时间',6, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'warehouseInExecute','remark','备注',7, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'warehouseInExecute','isdisable','是否启用(0:已禁用 1:启用)',8, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'warehouseInExecute','id','id',0, '1','1','1','0',now(), 'admin')
+            (replace(uuid(), '-', ''),'warehouseInExecute','id','id',0, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'warehouseInExecute','detailId','入库明细id',1, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'warehouseInExecute','executorId','执行人id',2, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'warehouseInExecute','warehouseId','仓库货位id',3, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'warehouseInExecute','count','实际入库数量',4, '1','1','1','0',now(), 'admin'),
+
+            (replace(uuid(), '-', ''),'warehouseInExecute','cuser','创建用户id',5, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'warehouseInExecute','cdate','创建时间',6, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'warehouseInExecute','uuser','修改用户id',7, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'warehouseInExecute','udate','修改时间',8, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'warehouseInExecute','remark','备注',9, '1','1','1','0',now(), 'admin'),
+
+            (replace(uuid(), '-', ''),'warehouseInExecute','isdisable','是否启用(0:已禁用 1:启用)',10, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'warehouseInExecute','pathName','货位名称',11, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'warehouseInExecute','executeUserName','执行人',12, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'warehouseInExecute','executeTimeStr','执行完成时间',13, '1','1','1','0',now(), 'admin'),
     </insert>
 
     <select id="findSumcountByWarehouseInExecute" parameterType="com.yvan.PageData" resultType="java.util.Map">
@@ -144,28 +151,35 @@
     <!-- 自动创建，可以修改 -->
     <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
-            id id,
-            detail_id detailId,
-            warehouse_id warehouseId,
-            count count,
-            cuser cuser,
+            inExecute.id id,
+            inExecute.detail_id detailId,
+            inExecute.executor_id executorId,
+            inExecute.warehouse_id warehouseId,
+            round(inExecute.count,2) count,
 
-            cdate cdate,
-            uuser uuser,
-            udate udate,
-            remark remark,
-            isdisable isdisable
-        from vmes_warehouse_in_execute
+            inExecute.cuser cuser,
+            inExecute.cdate cdate,
+            inExecute.uuser uuser,
+            inExecute.udate udate,
+            inExecute.remark remark,
+
+            inExecute.isdisable isdisable,
+
+            warehouse.path_name pathName,
+            executeUser.user_name executeUserName,
+            DATE_FORMAT(inExecute.cdate,'%Y-%m-%d %T') executeTimeStr
+
+        from vmes_warehouse_in_execute inExecute
+            left join vmes_warehouse warehouse on inExecute.warehouse_id = warehouse.id
+            left join vmes_user executeUser on inExecute.executor_id = executeUser.id
         <where>
+            <if test="detailId != null and detailId != ''">
+                and inExecute.detail_id = #{detailId}
+            </if>
+
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >
                 and ${queryStr}
-            </if>
-            <if test="code != null and code != ''">
-                and code LIKE CONCAT(CONCAT('%', #{code}),'%')
-            </if>
-            <if test="name != null and name != ''">
-                and name LIKE CONCAT(CONCAT('%', #{name}),'%')
             </if>
         </where>
         <if test="orderStr != null and orderStr != ''" >

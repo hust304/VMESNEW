@@ -140,11 +140,17 @@ public class WarehouseInExecuteServiceImp implements WarehouseInExecuteService {
     * 创建时间：2018-10-16
     */
     @Override
-    public List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception{
-        if(pg==null){
-            pg =  HttpUtils.parsePagination(pd);
+    public List<Map> getDataListPage(PageData pd, Pagination pg) throws Exception{
+        List<Map> mapList = new ArrayList<Map>();
+        if (pd == null) {return mapList;}
+
+        if (pg == null) {
+            return warehouseInExecuteMapper.getDataListPage(pd);
+        } else if (pg != null) {
+            return warehouseInExecuteMapper.getDataListPage(pd,pg);
         }
-        return warehouseInExecuteMapper.getDataListPage(pd,pg);
+
+        return mapList;
     }
 
     /**
@@ -1589,6 +1595,50 @@ public class WarehouseInExecuteServiceImp implements WarehouseInExecuteService {
         warehouseIn.setState("0");
         warehouseIn.setRemark(remark);
         warehouseInService.update(warehouseIn);
+        return model;
+    }
+
+    public ResultModel listPageWarehouseInExecute(PageData pd) throws Exception {
+        ResultModel model = new ResultModel();
+        Pagination pg = HttpUtils.parsePagination(pd);
+
+        List<Column> columnList = columnService.findColumnList("warehouseInExecute");
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
+        }
+
+        //获取指定栏位字符串-重新调整List<Column>
+        String fieldCode = pd.getString("fieldCode");
+        if (fieldCode != null && fieldCode.trim().length() > 0) {
+            columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
+        }
+        Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
+
+        //设置查询排序方式
+        //pd.put("orderStr", "a.cdate asc");
+        String orderStr = pd.getString("orderStr");
+        if (orderStr != null && orderStr.trim().length() > 0) {
+            pd.put("orderStr", orderStr);
+        }
+
+        //是否需要分页 true:需要分页 false:不需要分页
+        Map result = new HashMap();
+        String isNeedPage = pd.getString("isNeedPage");
+        if ("false".equals(isNeedPage)) {
+            pg = null;
+        } else {
+            result.put("pageData", pg);
+        }
+
+        List<Map> varList = this.getDataListPage(pd, pg);
+        List<Map> varMapList = ColumnUtil.getVarMapList(varList, titleMap);
+
+        result.put("hideTitles",titleMap.get("hideTitles"));
+        result.put("titles",titleMap.get("titles"));
+        result.put("varList",varMapList);
+        model.putResult(result);
         return model;
     }
 }

@@ -70,7 +70,7 @@ public interface WarehouseInExecuteService {
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2018-10-16
      */
-    List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception;
+    List<Map> getDataListPage(PageData pd, Pagination pg) throws Exception;
 
     /**
      * 创建人：陈刚 自动创建，禁止修改
@@ -120,6 +120,8 @@ public interface WarehouseInExecuteService {
     ResultModel deleteWarehouseInExecute(PageData pageData) throws Exception;
 
     ResultModel updateCancelWarehouseInExecute(PageData pageData) throws Exception;
+
+    ResultModel listPageWarehouseInExecute(PageData pd) throws Exception;
 }
 
 
