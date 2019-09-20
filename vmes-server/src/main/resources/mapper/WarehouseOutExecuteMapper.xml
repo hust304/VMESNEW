@@ -252,7 +252,6 @@
             execut.detail_id detailId,
             round(execut.count,2) actualCount,
             execut.warehouse_product_id warehouseProductId,
-            execut.cdate endDate,
             execut.isdisable isdisable,
             execut.remark remark,
 
@@ -263,7 +262,8 @@
             round(product.stock_count,2) stockCount,
             product.qrcode qrcode,
 
-            executor.cdate startDate,
+            DATE_FORMAT(executor.cdate,'%Y-%m-%d %T') startDate,
+            DATE_FORMAT(execut.cdate,'%Y-%m-%d %T') endDate,
             vmesuser.user_name executorName,
             warehouse.path_name name
         from vmes_warehouse_out_execute execut
@@ -302,7 +302,6 @@
             execut.warehouse_product_id warehouseProductId,
             execut.remark remark,
             round(execut.count,2) actualCount,
-            execut.cdate endDate,
             unix_timestamp(execut.cdate) * 1000 executeDateLong,
 
             product.company_id companyId,
@@ -315,7 +314,8 @@
             product.code code,
             product.qrcode qrcode,
 
-            executor.cdate startDate,
+            DATE_FORMAT(executor.cdate,'%Y-%m-%d %T') startDate,
+            DATE_FORMAT(execut.cdate,'%Y-%m-%d %T') endDate,
             vmesuser.user_name executorName,
             warehouse.path_name name
 
