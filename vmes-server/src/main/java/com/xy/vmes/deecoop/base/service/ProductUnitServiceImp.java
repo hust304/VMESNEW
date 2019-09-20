@@ -404,6 +404,9 @@ public class ProductUnitServiceImp implements ProductUnitService {
         }
         pd.put("queryStr", "pu.unit is not null and punit.name is not null");
 
+        //货品单位是否启用(是否启用(0:已禁用 1:启用))--系统只需要已启用的
+        pd.put("productUnitIsdisable", "1");
+
         //设置查询排序
         pd.put("orderStr", "pu.cdate asc");
         String orderStr = pd.getString("orderStr");
