@@ -1,6 +1,5 @@
 package com.xy.vmes.deecoop.warehouse.controller;
 
-import com.xy.vmes.exception.ApplicationException;
 import com.yvan.common.util.Common;
 import com.xy.vmes.entity.*;
 import com.xy.vmes.service.*;
@@ -273,6 +272,7 @@ public class WarehouseCheckBySimpleController {
             return model;
         }
 
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         List<WarehouseCheckDetail> detailList = warehouseCheckDetailService.mapList2DetailList(mapList);
         //获取(盘点数量-台账数量)-遍历盘点明细List<WarehouseCheckDetail>
         //
@@ -292,141 +292,136 @@ public class WarehouseCheckBySimpleController {
         if (valueMap != null && valueMap.get("positiveList") != null) {
             positiveList = valueMap.get("positiveList");
         }
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        try {
-            //positiveList: 正数结果集(盘点数量-台账数量) -- 入库单
-            if (positiveList.size() > 0) {
-                Map<String, Map<String, Object>> businessProdInMapByEditDetail = new HashMap<String, Map<String, Object>>();
+        //positiveList: 正数结果集(盘点数量-台账数量) -- 入库单
+        if (positiveList.size() > 0) {
+            Map<String, Map<String, Object>> businessProdInMapByEditDetail = new HashMap<String, Map<String, Object>>();
 
-                //生成入库单
-                Map<String, Map<String, Object>> businessByInMap = warehouseCheckDetailService.findBusinessProducMapByIn(positiveList);
-                //创建入库单(简版仓库)-执行时无需人工干预-系统自动执行
-                warehouseInCreateService.createWarehouseInExecuteBusinessBySimple(deptId,
-                        deptName,
-                        //实体库:2d75e49bcb9911e884ad00163e105f05:warehouseEntity
-                        Common.DICTIONARY_MAP.get("warehouseEntity"),
-                        cuser,
-                        companyId,
-                        //盘点入库 4d89ccb1e64f499cbdc6409f173f5407:checkIn
-                        Common.DICTIONARY_MAP.get("checkIn"),
-                        businessByInMap);
+            //生成入库单
+            Map<String, Map<String, Object>> businessByInMap = warehouseCheckDetailService.findBusinessProducMapByIn(positiveList);
+            //创建入库单(简版仓库)-执行时无需人工干预-系统自动执行
+            warehouseInCreateService.createWarehouseInExecuteBusinessBySimple(deptId,
+                    deptName,
+                    //实体库:2d75e49bcb9911e884ad00163e105f05:warehouseEntity
+                    Common.DICTIONARY_MAP.get("warehouseEntity"),
+                    cuser,
+                    companyId,
+                    //盘点入库 4d89ccb1e64f499cbdc6409f173f5407:checkIn
+                    Common.DICTIONARY_MAP.get("checkIn"),
+                    businessByInMap);
 
-                if (businessByInMap != null) {
-                    for (Iterator iterator = businessByInMap.keySet().iterator(); iterator.hasNext();) {
-                        String mapKey = (String) iterator.next();
-                        Map<String, Object> mapValue = businessByInMap.get(mapKey);
-                        businessProdInMapByEditDetail.put(mapKey, mapValue);
-                    }
-                }
-
-                for (WarehouseCheckDetail detailObj : positiveList) {
-                    WarehouseCheckDetail editDetail = new WarehouseCheckDetail();
-                    String detailId = detailObj.getId();
-                    editDetail.setId(detailObj.getId());
-
-                    //盘点数量 stockCount
-                    BigDecimal stockCount = new BigDecimal(0D);
-                    if (detailObj.getStockCount() != null) {
-                        stockCount = detailObj.getStockCount();
-                        //四舍五入到2位小数
-                        stockCount = stockCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-
-                    }
-                    editDetail.setStockCount(stockCount);
-
-                    if (businessProdInMapByEditDetail != null && businessProdInMapByEditDetail.get(detailId) != null) {
-                        Map<String, Object> producValueMap = businessProdInMapByEditDetail.get(detailId);
-
-                        //inDtlId:   入库明细id
-                        String inDtlId = new String();
-                        if (producValueMap != null && producValueMap.get("inDtlId") != null) {
-                            inDtlId = (String)producValueMap.get("inDtlId");
-                        }
-                        editDetail.setInDtlId(inDtlId);
-                    }
-
-                    warehouseCheckDetailService.update(editDetail);
+            if (businessByInMap != null) {
+                for (Iterator iterator = businessByInMap.keySet().iterator(); iterator.hasNext();) {
+                    String mapKey = (String) iterator.next();
+                    Map<String, Object> mapValue = businessByInMap.get(mapKey);
+                    businessProdInMapByEditDetail.put(mapKey, mapValue);
                 }
             }
 
-            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            //negativeList: 负数结果集(盘点数量-台账数量) -- 出库单
-            if (negativeList.size() > 0) {
-                Map<String, Map<String, Object>> businessProdOutMapByEditDetail = new HashMap<String, Map<String, Object>>();
+            for (WarehouseCheckDetail detailObj : positiveList) {
+                WarehouseCheckDetail editDetail = new WarehouseCheckDetail();
+                String detailId = detailObj.getId();
+                editDetail.setId(detailObj.getId());
 
-                Map<String, Map<String, Object>> businessByOutMap = warehouseCheckDetailService.findBusinessProducMapByOut(negativeList);
-                //创建出库单(简版仓库)-执行时无需人工干预-系统自动执行
-                warehouseOutCreateService.createWarehouseOutExecuteBusinessBySimple(deptId,
-                        deptName,
-                        //实体库:2d75e49bcb9911e884ad00163e105f05:warehouseEntity
-                        Common.DICTIONARY_MAP.get("warehouseEntity"),
-                        cuser,
-                        companyId,
-                        //盘点出库 55bdf3529c3c463489670a46c2651c1e:checkIn
-                        Common.DICTIONARY_MAP.get("checkOut"),
-                        businessByOutMap);
+                //盘点数量 stockCount
+                BigDecimal stockCount = new BigDecimal(0D);
+                if (detailObj.getStockCount() != null) {
+                    stockCount = detailObj.getStockCount();
+                    //四舍五入到2位小数
+                    stockCount = stockCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
 
-                if (businessByOutMap != null) {
-                    for (Iterator iterator = businessByOutMap.keySet().iterator(); iterator.hasNext();) {
-                        String mapKey = (String) iterator.next();
-                        Map<String, Object> mapValue = businessByOutMap.get(mapKey);
-                        businessProdOutMapByEditDetail.put(mapKey, mapValue);
+                }
+                editDetail.setStockCount(stockCount);
+
+                if (businessProdInMapByEditDetail != null && businessProdInMapByEditDetail.get(detailId) != null) {
+                    Map<String, Object> producValueMap = businessProdInMapByEditDetail.get(detailId);
+
+                    //inDtlId:   入库明细id
+                    String inDtlId = new String();
+                    if (producValueMap != null && producValueMap.get("inDtlId") != null) {
+                        inDtlId = (String)producValueMap.get("inDtlId");
                     }
+                    editDetail.setInDtlId(inDtlId);
                 }
 
-                for (WarehouseCheckDetail detailObj : negativeList) {
-                    WarehouseCheckDetail editDetail = new WarehouseCheckDetail();
-                    String detailId = detailObj.getId();
-                    editDetail.setId(detailObj.getId());
-
-                    //盘点数量 stockCount
-                    BigDecimal stockCount = new BigDecimal(0D);
-                    if (detailObj.getStockCount() != null) {
-                        stockCount = detailObj.getStockCount();
-                        //四舍五入到2位小数
-                        stockCount = stockCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-
-                    }
-                    editDetail.setStockCount(stockCount);
-
-                    if (businessProdOutMapByEditDetail != null && businessProdOutMapByEditDetail.get(detailId) != null) {
-                        Map<String, Object> producValueMap = businessProdOutMapByEditDetail.get(detailId);
-
-                        //outDtlId:   出库明细id
-                        String outDtlId = new String();
-                        if (producValueMap != null && producValueMap.get("outDtlId") != null) {
-                            outDtlId = (String)producValueMap.get("outDtlId");
-                        }
-                        editDetail.setOutDtlId(outDtlId);
-                    }
-
-                    warehouseCheckDetailService.update(editDetail);
-                }
+                warehouseCheckDetailService.update(editDetail);
             }
-            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            //修改盘点单状态
-            if (detailList != null && detailList.size() > 0) {
-                for (WarehouseCheckDetail detailObj : detailList) {
-                    WarehouseCheckDetail editDetail = new WarehouseCheckDetail();
-                    editDetail.setId(detailObj.getId());
-                    //盘点明细状态(0:待派单 1:执行中 2:审核中 3:已完成 -1:已取消)
-                    editDetail.setState("3");
-                    warehouseCheckDetailService.update(editDetail);
-                }
-            }
-
-            //修改盘点单状态
-            WarehouseCheck warehouseCheckEdit = new WarehouseCheck();
-            warehouseCheckEdit.setId(parentId);
-            //state:状态(0:未完成 1:已完成 -1:已取消)
-            warehouseCheckEdit.setState("1");
-            warehouseCheckService.update(warehouseCheckEdit);
-
-        } catch (ApplicationException tabExc) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg(tabExc.getMessage());
-            return model;
         }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //negativeList: 负数结果集(盘点数量-台账数量) -- 出库单
+        if (negativeList.size() > 0) {
+            Map<String, Map<String, Object>> businessProdOutMapByEditDetail = new HashMap<String, Map<String, Object>>();
+
+            Map<String, Map<String, Object>> businessByOutMap = warehouseCheckDetailService.findBusinessProducMapByOut(negativeList);
+            //创建出库单(简版仓库)-执行时无需人工干预-系统自动执行
+            warehouseOutCreateService.createWarehouseOutExecuteBusinessBySimple(deptId,
+                    deptName,
+                    //实体库:2d75e49bcb9911e884ad00163e105f05:warehouseEntity
+                    Common.DICTIONARY_MAP.get("warehouseEntity"),
+                    cuser,
+                    companyId,
+                    //盘点出库 55bdf3529c3c463489670a46c2651c1e:checkIn
+                    Common.DICTIONARY_MAP.get("checkOut"),
+                    businessByOutMap);
+
+            if (businessByOutMap != null) {
+                for (Iterator iterator = businessByOutMap.keySet().iterator(); iterator.hasNext();) {
+                    String mapKey = (String) iterator.next();
+                    Map<String, Object> mapValue = businessByOutMap.get(mapKey);
+                    businessProdOutMapByEditDetail.put(mapKey, mapValue);
+                }
+            }
+
+            for (WarehouseCheckDetail detailObj : negativeList) {
+                WarehouseCheckDetail editDetail = new WarehouseCheckDetail();
+                String detailId = detailObj.getId();
+                editDetail.setId(detailObj.getId());
+
+                //盘点数量 stockCount
+                BigDecimal stockCount = new BigDecimal(0D);
+                if (detailObj.getStockCount() != null) {
+                    stockCount = detailObj.getStockCount();
+                    //四舍五入到2位小数
+                    stockCount = stockCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+
+                }
+                editDetail.setStockCount(stockCount);
+
+                if (businessProdOutMapByEditDetail != null && businessProdOutMapByEditDetail.get(detailId) != null) {
+                    Map<String, Object> producValueMap = businessProdOutMapByEditDetail.get(detailId);
+
+                    //outDtlId:   出库明细id
+                    String outDtlId = new String();
+                    if (producValueMap != null && producValueMap.get("outDtlId") != null) {
+                        outDtlId = (String)producValueMap.get("outDtlId");
+                    }
+                    editDetail.setOutDtlId(outDtlId);
+                }
+
+                warehouseCheckDetailService.update(editDetail);
+            }
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //修改盘点单状态
+        if (detailList != null && detailList.size() > 0) {
+            for (WarehouseCheckDetail detailObj : detailList) {
+                WarehouseCheckDetail editDetail = new WarehouseCheckDetail();
+                editDetail.setId(detailObj.getId());
+                //盘点明细状态(0:待派单 1:执行中 2:审核中 3:已完成 -1:已取消)
+                editDetail.setState("3");
+                warehouseCheckDetailService.update(editDetail);
+            }
+        }
+
+        //修改盘点单状态
+        WarehouseCheck warehouseCheckEdit = new WarehouseCheck();
+        warehouseCheckEdit.setId(parentId);
+        //state:状态(0:未完成 1:已完成 -1:已取消)
+        warehouseCheckEdit.setState("1");
+        warehouseCheckService.update(warehouseCheckEdit);
 
         Long endTime = System.currentTimeMillis();
         logger.info("################/warehouse/warehouseCheckBySimple/executeWarehouseCheckBySimple 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");

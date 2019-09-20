@@ -489,92 +489,92 @@ public class PurchaseOrderController {
                 return model;
             }
         }
+
         //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        try {
-            //1. 创建入库单////////////////////////////////////////////////////////////////////////////////////////////////////////
-            Map<String, Map<String, Object>> businessProdOutMapByEditDetail = new HashMap<String, Map<String, Object>>();
+        //1. 创建入库单////////////////////////////////////////////////////////////////////////////////////////////////////////
+        Map<String, Map<String, Object>> businessProdOutMapByEditDetail = new HashMap<String, Map<String, Object>>();
 
-            if (warehouseList.size() > 0 && Common.SYS_WAREHOUSE_COMPLEX.equals(warehouse)) {
-                //复杂版仓库:warehouseByComplex:Common.SYS_WAREHOUSE_COMPLEX
+        if (warehouseList.size() > 0 && Common.SYS_WAREHOUSE_COMPLEX.equals(warehouse)) {
+            //复杂版仓库:warehouseByComplex:Common.SYS_WAREHOUSE_COMPLEX
 
-                Map<String, Map<String, Object>> businessByInMap = purchaseOrderDetailService.findBusinessProducMapByIn(warehouseList);
-                warehouseInCreateService.createWarehouseInBusinessByComplex(supplierId,
-                        supplierName,
-                        //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
-                        Common.DICTIONARY_MAP.get("warehouseEntity"),
-                        cuser,
-                        companyId,
-                        //d78ceba5beef41f5be16f0ceee775399 采购入库:purchaseIn
-                        Common.DICTIONARY_MAP.get("purchaseIn"),
-                        businessByInMap);
-
-                if (businessByInMap != null) {
-                    for (Iterator iterator = businessByInMap.keySet().iterator(); iterator.hasNext();) {
-                        String mapKey = (String) iterator.next();
-                        Map<String, Object> mapValue = businessByInMap.get(mapKey);
-                        businessProdOutMapByEditDetail.put(mapKey, mapValue);
-                    }
-                }
-
-            } else if (warehouseList.size() > 0 && Common.SYS_WAREHOUSE_SIMPLE.equals(warehouse)) {
-                //简版仓库:warehouseBySimple:Common.SYS_WAREHOUSE_SIMPLE
-
-                Map<String, Map<String, Object>> businessByInMap = purchaseOrderDetailService.findBusinessProducMapByIn(warehouseList);
-                warehouseInCreateService.createWarehouseInBusinessBySimple(supplierId,
-                        supplierName,
-                        //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
-                        Common.DICTIONARY_MAP.get("warehouseEntity"),
-                        cuser,
-                        companyId,
-                        //d78ceba5beef41f5be16f0ceee775399 采购入库:purchaseIn
-                        Common.DICTIONARY_MAP.get("purchaseIn"),
-                        businessByInMap);
-
-                if (businessByInMap != null) {
-                    for (Iterator iterator = businessByInMap.keySet().iterator(); iterator.hasNext();) {
-                        String mapKey = (String) iterator.next();
-                        Map<String, Object> mapValue = businessByInMap.get(mapKey);
-                        businessProdOutMapByEditDetail.put(mapKey, mapValue);
-                    }
-                }
-            }
-
-            //备件库////////////////////////////////////////////////////////////////////////////////////////////////
-            if (spareList.size() > 0) {
-                Map<String, Map<String, Object>> businessByInMap = purchaseOrderDetailService.findBusinessProducMapByIn(spareList);
-
-                //(备件库)入库单
-                warehouseInCreateService.createWarehouseInBusinessBySpare(supplierId,
-                        supplierName,
-                        //备件库
-                        warehouseSpare.getId(),
-                        cuser,
-                        companyId,
-                        //d78ceba5beef41f5be16f0ceee775399 采购入库:purchaseIn
-                        Common.DICTIONARY_MAP.get("purchaseIn"),
-                        businessByInMap);
-
-                if (businessByInMap != null) {
-                    for (Iterator iterator = businessByInMap.keySet().iterator(); iterator.hasNext();) {
-                        String mapKey = (String) iterator.next();
-                        Map<String, Object> mapValue = businessByInMap.get(mapKey);
-                        businessProdOutMapByEditDetail.put(mapKey, mapValue);
-                    }
-                }
-            }
-            //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-            //2. 创建采购签收单
-            Map<String, Object> businessMap = new HashMap<String, Object>();
-            businessMap.put("businessByInMap", businessProdOutMapByEditDetail);
-            businessMap.put("jsonMapList", jsonMapList);
-            purchaseSignService.createPurchaseSign(cuser,
+            Map<String, Map<String, Object>> businessByInMap = purchaseOrderDetailService.findBusinessProducMapByIn(warehouseList);
+            warehouseInCreateService.createWarehouseInBusinessByComplex(supplierId,
+                    supplierName,
+                    //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
+                    Common.DICTIONARY_MAP.get("warehouseEntity"),
+                    cuser,
                     companyId,
-                    purchaseOrderId,
-                    businessMap);
+                    //d78ceba5beef41f5be16f0ceee775399 采购入库:purchaseIn
+                    Common.DICTIONARY_MAP.get("purchaseIn"),
+                    businessByInMap);
 
-            //3. 修改采购订单明细状态-根据(采购订单明细id,采购数量,到货数量)
+            if (businessByInMap != null) {
+                for (Iterator iterator = businessByInMap.keySet().iterator(); iterator.hasNext();) {
+                    String mapKey = (String) iterator.next();
+                    Map<String, Object> mapValue = businessByInMap.get(mapKey);
+                    businessProdOutMapByEditDetail.put(mapKey, mapValue);
+                }
+            }
+
+        } else if (warehouseList.size() > 0 && Common.SYS_WAREHOUSE_SIMPLE.equals(warehouse)) {
+            //简版仓库:warehouseBySimple:Common.SYS_WAREHOUSE_SIMPLE
+
+            Map<String, Map<String, Object>> businessByInMap = purchaseOrderDetailService.findBusinessProducMapByIn(warehouseList);
+            warehouseInCreateService.createWarehouseInBusinessBySimple(supplierId,
+                    supplierName,
+                    //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
+                    Common.DICTIONARY_MAP.get("warehouseEntity"),
+                    cuser,
+                    companyId,
+                    //d78ceba5beef41f5be16f0ceee775399 采购入库:purchaseIn
+                    Common.DICTIONARY_MAP.get("purchaseIn"),
+                    businessByInMap);
+
+            if (businessByInMap != null) {
+                for (Iterator iterator = businessByInMap.keySet().iterator(); iterator.hasNext();) {
+                    String mapKey = (String) iterator.next();
+                    Map<String, Object> mapValue = businessByInMap.get(mapKey);
+                    businessProdOutMapByEditDetail.put(mapKey, mapValue);
+                }
+            }
+        }
+
+        //备件库////////////////////////////////////////////////////////////////////////////////////////////////
+        if (spareList.size() > 0) {
+            Map<String, Map<String, Object>> businessByInMap = purchaseOrderDetailService.findBusinessProducMapByIn(spareList);
+
+            //(备件库)入库单
+            warehouseInCreateService.createWarehouseInBusinessBySpare(supplierId,
+                    supplierName,
+                    //备件库
+                    warehouseSpare.getId(),
+                    cuser,
+                    companyId,
+                    //d78ceba5beef41f5be16f0ceee775399 采购入库:purchaseIn
+                    Common.DICTIONARY_MAP.get("purchaseIn"),
+                    businessByInMap);
+
+            if (businessByInMap != null) {
+                for (Iterator iterator = businessByInMap.keySet().iterator(); iterator.hasNext();) {
+                    String mapKey = (String) iterator.next();
+                    Map<String, Object> mapValue = businessByInMap.get(mapKey);
+                    businessProdOutMapByEditDetail.put(mapKey, mapValue);
+                }
+            }
+        }
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //2. 创建采购签收单
+        Map<String, Object> businessMap = new HashMap<String, Object>();
+        businessMap.put("businessByInMap", businessProdOutMapByEditDetail);
+        businessMap.put("jsonMapList", jsonMapList);
+        purchaseSignService.createPurchaseSign(cuser,
+                companyId,
+                purchaseOrderId,
+                businessMap);
+
+        //3. 修改采购订单明细状态-根据(采购订单明细id,采购数量,到货数量)
 
 //获取(采购数量,签收数量,退货数量[已完成])
 //Map<采购订单明细id, 采购明细Map<String, Object>>
@@ -585,103 +585,96 @@ public class PurchaseOrderController {
 //    signCount: 签收数量
 //    retreatCount: 退货数量(已完成)
 //    arriveCount: 到货数量:= 签收数量 - 退货数量(已完成)
-            Map<String, Map<String, Object>> detailMap = purchaseOrderDetailToolService.findPurchaseOrderDetailMap(purchaseOrderId);
-            //修改采购订单明细
-            if (jsonMapList != null && jsonMapList.size() > 0) {
-                for (Map<String, String> jsonObject : jsonMapList) {
-                    String orderDetailId = jsonObject.get("orderDetailId");
-                    Map<String, Object> detailValue = detailMap.get(orderDetailId);
+        Map<String, Map<String, Object>> detailMap = purchaseOrderDetailToolService.findPurchaseOrderDetailMap(purchaseOrderId);
+        //修改采购订单明细
+        if (jsonMapList != null && jsonMapList.size() > 0) {
+            for (Map<String, String> jsonObject : jsonMapList) {
+                String orderDetailId = jsonObject.get("orderDetailId");
+                Map<String, Object> detailValue = detailMap.get(orderDetailId);
 
-                    //detailCount: 采购数量
-                    BigDecimal detailCount = BigDecimal.valueOf(0D);
-                    if (detailValue.get("detailCount") != null) {
-                        detailCount = (BigDecimal)detailValue.get("detailCount");
-                    }
+                //detailCount: 采购数量
+                BigDecimal detailCount = BigDecimal.valueOf(0D);
+                if (detailValue.get("detailCount") != null) {
+                    detailCount = (BigDecimal)detailValue.get("detailCount");
+                }
 
-                    //arriveCount 到货数量:= 签收数量 - 退货数量(已完成)
-                    BigDecimal arriveCount = BigDecimal.valueOf(0D);
-                    if (detailValue.get("detailCount") != null) {
-                        arriveCount = (BigDecimal)detailValue.get("arriveCount");
-                    }
+                //arriveCount 到货数量:= 签收数量 - 退货数量(已完成)
+                BigDecimal arriveCount = BigDecimal.valueOf(0D);
+                if (detailValue.get("detailCount") != null) {
+                    arriveCount = (BigDecimal)detailValue.get("arriveCount");
+                }
 
-                    //状态(0:待提交 1:待审核 2:采购中 3:部分签收 4:已完成 -1:已取消)
-                    PurchaseOrderDetail detailEdit = new PurchaseOrderDetail();
-                    detailEdit.setId(orderDetailId);
-                    if (arriveCount.doubleValue() >= detailCount.doubleValue()) {
-                        detailEdit.setAdate(new Date());//设置实际到货时间
-                        detailEdit.setState("4");
-                    } else {
-                        detailEdit.setState("3");
-                    }
-                    purchaseOrderDetailService.update(detailEdit);
+                //状态(0:待提交 1:待审核 2:采购中 3:部分签收 4:已完成 -1:已取消)
+                PurchaseOrderDetail detailEdit = new PurchaseOrderDetail();
+                detailEdit.setId(orderDetailId);
+                if (arriveCount.doubleValue() >= detailCount.doubleValue()) {
+                    detailEdit.setAdate(new Date());//设置实际到货时间
+                    detailEdit.setState("4");
+                } else {
+                    detailEdit.setState("3");
+                }
+                purchaseOrderDetailService.update(detailEdit);
 
-                    //采购计划明细id planDtlId
-                    String planDtlId = jsonObject.get("planDtlId");
-                    if (planDtlId != null && planDtlId.trim().length() > 0
-                            && "4".equals(detailEdit.getState())
-                            ) {
-                        PurchasePlanDetail planDtlEdit = new PurchasePlanDetail();
-                        planDtlEdit.setId(planDtlId);
-                        //采购计划明细状态(0:待提交 1:待审核 2:待执行 3:执行中 4:已完成 -1:已取消)
-                        planDtlEdit.setState("4");
-                        purchasePlanDetailService.update(planDtlEdit);
+                //采购计划明细id planDtlId
+                String planDtlId = jsonObject.get("planDtlId");
+                if (planDtlId != null && planDtlId.trim().length() > 0
+                        && "4".equals(detailEdit.getState())
+                        ) {
+                    PurchasePlanDetail planDtlEdit = new PurchasePlanDetail();
+                    planDtlEdit.setId(planDtlId);
+                    //采购计划明细状态(0:待提交 1:待审核 2:待执行 3:执行中 4:已完成 -1:已取消)
+                    planDtlEdit.setState("4");
+                    purchasePlanDetailService.update(planDtlEdit);
 
-                        //采购计划id planId
-                        String planId = jsonObject.get("planId");
-                        if (planId != null && planId.trim().length() > 0) {
-                            purchasePlanService.updateState(planId);
-                        }
+                    //采购计划id planId
+                    String planId = jsonObject.get("planId");
+                    if (planId != null && planId.trim().length() > 0) {
+                        purchasePlanService.updateState(planId);
                     }
                 }
             }
-
-            //修改采购订单状态
-            purchaseOrderService.updateState(purchaseOrderId);
-
-            //4. 当前采购订单签收单-创建正值的付款单
-            BigDecimal realityTotal = BigDecimal.valueOf(0D);
-            if (jsonMapList != null && jsonMapList.size() > 0) {
-                for (Map<String, String> jsonObject : jsonMapList) {
-                    //签收数量
-                    BigDecimal count = BigDecimal.valueOf(0D);
-                    String countStr = jsonObject.get("count");
-                    if (countStr != null && countStr.trim().length() > 0) {
-                        try {
-                            count = new BigDecimal(countStr);
-                        } catch (NumberFormatException e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                    //单价
-                    BigDecimal price = BigDecimal.valueOf(0D);
-                    String priceStr = jsonObject.get("price");
-                    if (priceStr != null && priceStr.trim().length() > 0) {
-                        try {
-                            price = new BigDecimal(priceStr);
-                        } catch (NumberFormatException e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                    realityTotal = BigDecimal.valueOf(realityTotal.doubleValue() + (count.doubleValue() * price.doubleValue()));
-                }
-            }
-            //四舍五入到2位小数
-            realityTotal = realityTotal.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-
-            purchaseRetreatService.createPurchasePaymentByPlus(realityTotal,
-                    supplierId,
-                    companyId,
-                    purchaseOrderId,
-                    cuser);
-        } catch (ApplicationException appExc) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg(appExc.getMessage());
-        } catch (Exception exc) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg(exc.getMessage());
         }
+
+        //修改采购订单状态
+        purchaseOrderService.updateState(purchaseOrderId);
+
+        //4. 当前采购订单签收单-创建正值的付款单
+        BigDecimal realityTotal = BigDecimal.valueOf(0D);
+        if (jsonMapList != null && jsonMapList.size() > 0) {
+            for (Map<String, String> jsonObject : jsonMapList) {
+                //签收数量
+                BigDecimal count = BigDecimal.valueOf(0D);
+                String countStr = jsonObject.get("count");
+                if (countStr != null && countStr.trim().length() > 0) {
+                    try {
+                        count = new BigDecimal(countStr);
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                //单价
+                BigDecimal price = BigDecimal.valueOf(0D);
+                String priceStr = jsonObject.get("price");
+                if (priceStr != null && priceStr.trim().length() > 0) {
+                    try {
+                        price = new BigDecimal(priceStr);
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                realityTotal = BigDecimal.valueOf(realityTotal.doubleValue() + (count.doubleValue() * price.doubleValue()));
+            }
+        }
+        //四舍五入到2位小数
+        realityTotal = realityTotal.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+
+        purchaseRetreatService.createPurchasePaymentByPlus(realityTotal,
+                supplierId,
+                companyId,
+                purchaseOrderId,
+                cuser);
 
         Long endTime = System.currentTimeMillis();
         logger.info("################/purchase/purchaseOrder/signPurchaseOrder 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
