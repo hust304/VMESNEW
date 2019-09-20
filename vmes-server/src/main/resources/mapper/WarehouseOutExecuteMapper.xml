@@ -213,8 +213,8 @@
         round(execut.count,2) actualCount,
         execut.warehouse_product_id warehouseProductId,
         execut.remark remark,
-        executor.cdate startDate,
-        execut.cdate endDate,
+        DATE_FORMAT(executor.cdate,'%Y-%m-%d %T') startDate,
+        DATE_FORMAT(execut.cdate,'%Y-%m-%d %T') endDate,
         vmesuser.user_name executorName,
         warehouse.path_name name
     </sql>

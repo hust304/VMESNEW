@@ -1,6 +1,7 @@
 package com.xy.vmes.deecoop.warehouse.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.deecoop.warehouse.dao.WarehouseOutExecuteMapper;
 import com.xy.vmes.entity.*;
 import com.xy.vmes.exception.ApplicationException;
@@ -202,7 +203,7 @@ public class WarehouseOutExecuteServiceImp implements WarehouseOutExecuteService
     @Override
     public List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception{
         if(pg==null){
-            pg =  HttpUtils.parsePagination(pd);
+            return warehouseOutExecuteMapper.getDataListPage(pd);
         }
         return warehouseOutExecuteMapper.getDataListPage(pd,pg);
     }
@@ -967,41 +968,28 @@ public class WarehouseOutExecuteServiceImp implements WarehouseOutExecuteService
             return model;
         }
 
-        List<LinkedHashMap> titlesList = new ArrayList<LinkedHashMap>();
-        List<String> titlesHideList = new ArrayList<String>();
-        Map<String, String> varModelMap = new HashMap<String, String>();
-        if(columnList!=null&&columnList.size()>0){
-            for (Column column : columnList) {
-                if(column!=null){
-                    if("0".equals(column.getIshide())){
-                        titlesHideList.add(column.getTitleKey());
-                    }
-                    LinkedHashMap titlesLinkedMap = new LinkedHashMap();
-                    titlesLinkedMap.put(column.getTitleKey(),column.getTitleName());
-                    varModelMap.put(column.getTitleKey(),"");
-                    titlesList.add(titlesLinkedMap);
-                }
-            }
+        //获取指定栏位字符串-重新调整List<Column>
+        String fieldCode = pd.getString("fieldCode");
+        if (fieldCode != null && fieldCode.trim().length() > 0) {
+            columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
         }
-        result.put("hideTitles",titlesHideList);
-        result.put("titles",titlesList);
 
-        List<Map> varMapList = new ArrayList();
-        List<Map> varList = this.getDataListPage(pd,pg);
-        if(varList!=null&&varList.size()>0){
-            for(int i=0;i<varList.size();i++){
-                Map map = varList.get(i);
-                Map<String, String> varMap = new HashMap<String, String>();
-                varMap.putAll(varModelMap);
-                for (Map.Entry<String, String> entry : varMap.entrySet()) {
-                    varMap.put(entry.getKey(),map.get(entry.getKey())!=null?map.get(entry.getKey()).toString():"");
-                }
-                varMapList.add(varMap);
-            }
+
+        String isNeedPage = pd.getString("isNeedPage");
+        if ("false".equals(isNeedPage)) {
+            pg = null;
+        } else {
+            result.put("pageData", pg);
         }
+
+
+        Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
+        List<Map> varList = this.getDataListPage(pd,pg);
+        List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
+        result.put("hideTitles",titleMap.get("hideTitles"));
+        result.put("titles",titleMap.get("titles"));
         result.put("varList",varMapList);
         result.put("pageData", pg);
-
         model.putResult(result);
         return model;
     }
@@ -1015,7 +1003,7 @@ public class WarehouseOutExecuteServiceImp implements WarehouseOutExecuteService
         if (executeList != null && executeList.size() > 0) {
             for (int i = 0; i < executeList.size(); i++) {
                 Map object = executeList.get(i);
-                ;
+                String executeId = (String)object.get("id");
                 BigDecimal count = (BigDecimal)object.get("actualCount");
                 String warehouseId = (String)object.get("warehouseId");
                 String productId = (String)object.get("productId");
@@ -1031,7 +1019,7 @@ public class WarehouseOutExecuteServiceImp implements WarehouseOutExecuteService
                 outObject.setCode(code);
 
                 //库存变更日志
-                String executeId = Conv.createUuid();
+//                String executeId = Conv.createUuid();
 
                 WarehouseLoginfo loginfo = new WarehouseLoginfo();
                 loginfo.setParentId(parentId);
