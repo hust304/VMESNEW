@@ -654,6 +654,14 @@
                 and post.id = #{pid}
             </if>
 
+            <!-- 员工合同到期日期 -->
+            <if test="contractDateBegin != null and contractDateBegin != ''">
+                <![CDATA[ and employee.contract_date >= #{contractDateBegin} ]]>
+            </if>
+            <if test="contractDateEnd != null and contractDateEnd != ''">
+                <![CDATA[ and employee.contract_date <= #{contractDateEnd} ]]>
+            </if>
+
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr!=''" >
                 and ${queryStr}
