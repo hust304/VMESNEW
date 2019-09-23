@@ -103,6 +103,9 @@ public class Employee implements Serializable {
 	//是否开通用户(0:不开通 1:开通 is null 不开通)
 	@TableField("isOpenUser")
 	private String isOpenUser;
+	//合同到期日期(yyyy-mm-dd)
+	@TableField("contract_date")
+	private Date contractDate;
 
 
 	public void setId(String id) {
@@ -279,7 +282,13 @@ public class Employee implements Serializable {
 	public void setIsOpenUser(String isOpenUser) {
 		this.isOpenUser = isOpenUser;
 	}
-	/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+	public Date getContractDate() {
+		return contractDate;
+	}
+	public void setContractDate(Date contractDate) {
+		this.contractDate = contractDate;
+	}
+/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 
 }

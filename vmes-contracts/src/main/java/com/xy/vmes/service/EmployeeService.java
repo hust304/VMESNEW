@@ -150,7 +150,7 @@ public interface EmployeeService {
 
     ResultModel addEmployeeMainPost(PageData pageData)throws Exception;
 
-    ResultModel listPageEmployees(PageData pd, Pagination pg)throws Exception;
+    ResultModel listPageEmployees(PageData pd)throws Exception;
 
     void exportExcelEmployees(PageData pd, Pagination pg)throws Exception;
 

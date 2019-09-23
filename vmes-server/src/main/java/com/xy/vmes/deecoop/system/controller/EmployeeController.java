@@ -1,6 +1,7 @@
 package com.xy.vmes.deecoop.system.controller;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.common.util.DateFormat;
 import com.xy.vmes.entity.*;
 import com.xy.vmes.service.*;
 import com.yvan.ExcelUtil;
@@ -35,22 +36,7 @@ public class EmployeeController {
 
     @Autowired
     private EmployeeService employeeService;
-    @Autowired
-    private EmployPostService employPostService;
-    @Autowired
-    private PostService postService;
 
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private UserRoleService userRoleService;
-
-    @Autowired
-    private DepartmentService departmentService;
-
-
-    @Autowired
-    private ColumnService columnService;
     /**
     * @author 刘威 自动创建，禁止修改
     * @date 2018-08-02
@@ -385,8 +371,7 @@ public class EmployeeController {
         logger.info("################employee/listPageEmployees 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         PageData pd = HttpUtils.parsePageData();
-        Pagination pg = HttpUtils.parsePagination(pd);
-        ResultModel model = employeeService.listPageEmployees(pd,pg);
+        ResultModel model = employeeService.listPageEmployees(pd);
         Long endTime = System.currentTimeMillis();
         logger.info("################employee/listPageEmployees 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
@@ -478,7 +463,83 @@ public class EmployeeController {
         return model;
     }
 
+    /**
+     * 修改员工合同到期日期
+     *
+     * @return
+     * @throws Exception
+     */
+    @PostMapping("/system/employee/updateEmployeeByContractDate")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel updateEmployeeByContractDate() throws Exception {
+        logger.info("################/system/employee/updateEmployeeByContractDate 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+
+        String employeeId = pd.getString("employeeId");
+        if (employeeId == null || employeeId.trim().length() == 0) {
+            model.putCode(1);
+            model.putMsg("员工id为空或空字符串！");
+            return model;
+        }
+        String newContractDateStr = pd.getString("newContractDateStr");
+        if (newContractDateStr == null || newContractDateStr.trim().length() == 0) {
+            model.putCode(1);
+            model.putMsg("合同到期日期为必填项不可为空！");
+            return model;
+        }
+
+        String remark = new String();
+        if (pd.getString("remark") != null && pd.getString("remark").trim().length() > 0) {
+            remark = pd.getString("remark").trim();
+        }
+
+        //原(合同到期日期)
+        Long contractDateLong = null;
+        String contractDateStr = pd.getString("contractDateStr");
+        if (contractDateStr != null && contractDateStr.trim().length() > 0) {
+            Date contractDate = DateFormat.dateString2Date(contractDateStr, DateFormat.DEFAULT_DATE_FORMAT);
+            if (contractDate != null) {
+                contractDateLong = Long.valueOf(contractDate.getTime());
+            }
+        }
+
+        //新(合同到期日期)
+        Date newContractDate = null;
+        Long newContractDateLong = null;
+        if (newContractDateStr != null && newContractDateStr.trim().length() > 0) {
+            newContractDate = DateFormat.dateString2Date(newContractDateStr, DateFormat.DEFAULT_DATE_FORMAT);
+            if (newContractDate != null) {
+                newContractDateLong = Long.valueOf(newContractDate.getTime());
+            }
+        }
+
+//        if (contractDateLong != null && newContractDateLong != null
+//            && (newContractDateLong.longValue() <= contractDateLong.longValue())
+//        ) {
+//            String msgTemp = "合同到期日期：{0} 上期合同到期日期：{1} 合同到期日期必须大于上期合同到期日期！";
+//            String msg_str = MessageFormat.format(msgTemp, newContractDateStr, contractDateStr);
+//
+//            model.putCode(1);
+//            model.putMsg(msg_str);
+//            return model;
+//        }
+
+        Employee editEmployee = new Employee();
+        editEmployee.setId(employeeId);
+        editEmployee.setRemark(remark);
+        //合同到期日期(yyyy-mm-dd)
+        if (newContractDate != null) {
+            editEmployee.setContractDate(newContractDate);
+        }
+        employeeService.update(editEmployee);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/system/employee/updateEmployeeByContractDate 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
 }
-
-
 

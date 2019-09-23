@@ -42,6 +42,7 @@
 		column_3 column3,<!-- 预留字段 -->
         remark remark,
         isOpenUser isOpenUser,
+        contract_date contractDate,
 		id id <!-- id -->
     </sql>
 
@@ -490,7 +491,11 @@
         (replace(uuid(), '-', ''), 'employee', 'photo', '员工照片', 30, '1', '0', '1', '0', '2018-8-28 09:10:24', 'admin'),
         (replace(uuid(), '-', ''), 'employee', 'udate', '修改时间', 31, '1', '0', '1', '0', '2018-8-28 09:10:24', 'admin'),
         (replace(uuid(), '-', ''), 'employee', 'uuser', '修改人id', 32, '1', '0', '1', '0', '2018-8-28 09:10:24', 'admin'),
-        (replace(uuid(), '-', ''), 'employee', 'employeeId', '员工id', 33, '1', '0', '1', '0', '2018-8-28 09:10:24', 'admin')
+        (replace(uuid(), '-', ''), 'employee', 'employeeId', '员工id', 33, '1', '0', '1', '0', '2018-8-28 09:10:24', 'admin'),
+        (replace(uuid(), '-', ''), 'employee', 'isdisableName', '是否在职', 23, '1', '0', '1', '0', '2018-8-28 09:10:24', 'admin'),
+
+        (replace(uuid(), '-', ''), 'employee', 'contractDate', '同到期日期', 34, '1', '0', '1', '0', '2018-8-28 09:10:24', 'admin'),
+        (replace(uuid(), '-', ''), 'employee', 'contractDay', '距合同到期天数', 35, '1', '0', '1', '0', '2018-8-28 09:10:24', 'admin'),
     </insert>
 
     <select id="getDataListPage"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
@@ -547,6 +552,16 @@
         employee.company_id companyId,
         employee.icon,
         employee.photo,
+
+        CASE
+        WHEN employee.isdisable = '0' THEN '离职'
+        WHEN employee.isdisable = '1' THEN '在职'
+        ELSE null
+        END isdisableName,
+
+        DATE_FORMAT(employee.contract_date, '%Y-%m-%d') contractDate,
+        employeeContract.contractDay,
+
         <!-- 获取主岗id-是否兼岗(1:兼岗0:主岗)-->
         CASE
         WHEN employpost.isplurality = '0' THEN employpost.post_id
@@ -565,6 +580,23 @@
         left join vmes_user_role userrole on userrole.user_id = vmesuser.id
         left join vmes_role role on role.id = userrole.role_id
         left join vmes_dictionary dictionary on employee.political = dictionary.id
+        left join (
+            select
+            id,
+            <!-- 合同到期天数计算: (合同到期日期 - 当前日期)-->
+            CASE
+              WHEN contract_date is null THEN 999999
+              WHEN contract_date is not null THEN datediff(DATE_FORMAT(contract_date, '%Y-%m-%d'), DATE_FORMAT(now(),'%Y-%m-%d'))
+            ELSE null
+            END contractDay
+            from vmes_employee
+            <where>
+                <if test="currentCompanyId != null and currentCompanyId != ''">
+                    and company_id = #{currentCompanyId}
+                </if>
+
+            </where>
+        ) employeeContract on employee.id = employeeContract.id
         <where>
             <if test="employeeId!= null and employeeId != ''">
                 and employee.id = #{employeeId}
@@ -622,13 +654,15 @@
                 and post.id = #{pid}
             </if>
 
-
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr!=''" >
                 and ${queryStr}
             </if>
         </where>
-        order by employee.cdate desc
+
+        <if test="orderStr != null and orderStr != ''" >
+            order by ${orderStr}
+        </if>
     </select>
 
 

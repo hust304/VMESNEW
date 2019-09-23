@@ -198,11 +198,17 @@ public class EmployeeServiceImp implements EmployeeService {
      * 创建时间：2018-08-02
      */
     @Override
-    public List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception{
-        if(pg==null){
-            pg =  HttpUtils.parsePagination(pd);
+    public List<Map> getDataListPage(PageData pd, Pagination pg) throws Exception{
+        List<Map> mapList = new ArrayList<Map>();
+        if (pd == null) {return mapList;}
+
+        if (pg == null) {
+            return employeeMapper.getDataListPage(pd);
+        } else if (pg != null) {
+            return employeeMapper.getDataListPage(pd, pg);
         }
-        return employeeMapper.getDataListPage(pd,pg);
+
+        return mapList;
     }
 
     public List<Map> getDataListPage(PageData pd) throws Exception {
@@ -925,12 +931,10 @@ public class EmployeeServiceImp implements EmployeeService {
     }
 
     @Override
-    public ResultModel listPageEmployees(PageData pd, Pagination pg) throws Exception {
-        if(pg==null){
-            pg =  HttpUtils.parsePagination(pd);
-        }
+    public ResultModel listPageEmployees(PageData pd) throws Exception {
         ResultModel model = new ResultModel();
-        Map result = new HashMap();
+        Pagination pg = HttpUtils.parsePagination(pd);
+
         List<Column> columnList = columnService.findColumnList("employee");
         if (columnList == null || columnList.size() == 0) {
             model.putCode("1");
@@ -938,24 +942,12 @@ public class EmployeeServiceImp implements EmployeeService {
             return model;
         }
 
-        List<LinkedHashMap> titlesList = new ArrayList<LinkedHashMap>();
-        List<String> titlesHideList = new ArrayList<String>();
-        Map<String, String> varModelMap = new HashMap<String, String>();
-        if(columnList!=null&&columnList.size()>0){
-            for (Column column : columnList) {
-                if(column!=null){
-                    if("0".equals(column.getIshide())){
-                        titlesHideList.add(column.getTitleKey());
-                    }
-                    LinkedHashMap titlesLinkedMap = new LinkedHashMap();
-                    titlesLinkedMap.put(column.getTitleKey(),column.getTitleName());
-                    varModelMap.put(column.getTitleKey(),"");
-                    titlesList.add(titlesLinkedMap);
-                }
-            }
+        //获取指定栏位字符串-重新调整List<Column>
+        String fieldCode = pd.getString("fieldCode");
+        if (fieldCode != null && fieldCode.trim().length() > 0) {
+            columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
         }
-        result.put("hideTitles",titlesHideList);
-        result.put("titles",titlesList);
+        Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
 
         String id = pd.getString("id");
         String type = pd.getString("type");
@@ -986,21 +978,41 @@ public class EmployeeServiceImp implements EmployeeService {
             pd.put("isdisable", isdisableByQuery);
         }
 
-        List<Map> varMapList = new ArrayList();
+        //设置查询排序方式
+        String orderStr = new String("employee.cdate desc");
+        if (pd.getString("orderStr") != null && pd.getString("orderStr").trim().length() > 0) {
+            orderStr = pd.getString("orderStr").trim();
+        }
+        pd.put("orderStr", orderStr);
+
+        //是否需要分页 true:需要分页 false:不需要分页
+        Map result = new HashMap();
+        String isNeedPage = pd.getString("isNeedPage");
+        if ("false".equals(isNeedPage)) {
+            pg = null;
+        } else {
+            result.put("pageData", pg);
+        }
+
         List<Map> varList = employeeService.getDataListPage(pd, pg);
-        if(varList!=null&&varList.size()>0){
-            for(int i=0;i<varList.size();i++){
-                Map map = varList.get(i);
-                Map<String, String> varMap = new HashMap<String, String>();
-                varMap.putAll(varModelMap);
-                for (Map.Entry<String, String> entry : varMap.entrySet()) {
-                    varMap.put(entry.getKey(),map.get(entry.getKey())!=null?map.get(entry.getKey()).toString():"");
+        if (varList != null && varList.size() > 0) {
+            for (Map<String, Object> mapObject : varList) {
+                //contractDay 距合同到期天数
+
+                //contractDate 合同到期日期
+                String contractDate = (String)mapObject.get("contractDate");
+                if (contractDate == null || contractDate.trim().length() == 0) {
+                    mapObject.put("contractDay", "");
                 }
-                varMapList.add(varMap);
             }
         }
+
+        List<Map> varMapList = ColumnUtil.getVarMapList(varList, titleMap);
+
+        result.put("hideTitles",titleMap.get("hideTitles"));
+        result.put("titles",titleMap.get("titles"));
         result.put("varList",varMapList);
-        result.put("pageData", pg);
+
         model.putResult(result);
         return model;
     }
