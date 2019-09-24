@@ -800,7 +800,7 @@ public class WarehouseCheckExecuteServiceImp implements WarehouseCheckExecuteSer
                     }
 
                     BigDecimal prodStockCount = BigDecimal.valueOf(prodCount.doubleValue() + modifyCount);
-                    productService.updateStockCount(product, prodStockCount, cuser);
+                    productService.updateStockCount(product, prodStockCount, cuser, "update");
                 }
             }
 

@@ -1506,7 +1506,10 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
 
         //添加修改产品库存的代码
         Product product = productService.selectById(productId);
-        productService.updateStockCount(product,product.getStockCount().add(afterCount.subtract(beforeCount)),uuser);
+        productService.updateStockCount(product,
+                product.getStockCount().add(afterCount.subtract(beforeCount)),
+                uuser,
+                "update");
 
         //还需添加库存操作日志代码
         return model;

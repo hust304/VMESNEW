@@ -473,7 +473,7 @@ public class WarehouseOutCreateServiceImp implements WarehouseOutCreateService {
                         }
 
                         BigDecimal prodStockCount = BigDecimal.valueOf(prodCount.doubleValue() - count.doubleValue());
-                        productService.updateStockCount(product, prodStockCount, cuser);
+                        productService.updateStockCount(product, prodStockCount, cuser, "out");
                     }
                 }
             }

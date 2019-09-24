@@ -591,7 +591,7 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
                     }
 
                     BigDecimal prodStockCount = BigDecimal.valueOf(prodCount.doubleValue() + count.doubleValue());
-                    productService.updateStockCount(product, prodStockCount, warehouseIn.getCuser());
+                    productService.updateStockCount(product, prodStockCount, warehouseIn.getCuser(), "in");
                 }
             }
         } catch (TableVersionException tabExc) {

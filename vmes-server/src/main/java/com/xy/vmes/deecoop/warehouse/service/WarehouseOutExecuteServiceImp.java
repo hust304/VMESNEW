@@ -344,7 +344,7 @@ public class WarehouseOutExecuteServiceImp implements WarehouseOutExecuteService
                     }
 
                     BigDecimal prodStockCount = BigDecimal.valueOf(prodCount.doubleValue() - count.doubleValue());
-                    productService.updateStockCount(product, prodStockCount, warehouseOut.getCuser());
+                    productService.updateStockCount(product, prodStockCount, warehouseOut.getCuser(), "out");
                 }
             }
         } catch (TableVersionException tabExc) {
@@ -430,7 +430,7 @@ public class WarehouseOutExecuteServiceImp implements WarehouseOutExecuteService
             String msgStr = warehouseProductService.outStockCount(outObject, count, loginfo);
 
             Product product = productService.selectById(outObject.getProductId());
-            productService.updateStockCount(product,product.getStockCount().subtract(count),currentUserId);
+            productService.updateStockCount(product, product.getStockCount().subtract(count), currentUserId, "out");
 
 
             if (msgStr != null && msgStr.trim().length() > 0) {
@@ -801,7 +801,10 @@ public class WarehouseOutExecuteServiceImp implements WarehouseOutExecuteService
                 String msgStr = warehouseProductService.outStockCount(outObject, after.subtract(before), loginfo);
 
                 Product product = productService.selectById(outObject.getProductId());
-                productService.updateStockCount(product,product.getStockCount().subtract(after.subtract(before)),currentUserId);
+                productService.updateStockCount(product,
+                        product.getStockCount().subtract(after.subtract(before)),
+                        currentUserId,
+                        "out");
 
                 if (msgStr != null && msgStr.trim().length() > 0) {
                     model.putCode(Integer.valueOf(1));
@@ -896,7 +899,10 @@ public class WarehouseOutExecuteServiceImp implements WarehouseOutExecuteService
             String msgStr = warehouseProductService.outStockCount(outObject, execute.getCount().negate(), loginfo);
 
             Product product = productService.selectById(outObject.getProductId());
-            productService.updateStockCount(product,product.getStockCount().add(execute.getCount()),currentUserId);
+            productService.updateStockCount(product,
+                    product.getStockCount().add(execute.getCount()),
+                    currentUserId,
+                    "out");
 
             if (msgStr != null && msgStr.trim().length() > 0) {
                 model.putCode(Integer.valueOf(1));
@@ -1042,7 +1048,7 @@ public class WarehouseOutExecuteServiceImp implements WarehouseOutExecuteService
                     }
 
                     BigDecimal prodStockCount = BigDecimal.valueOf(prodCount.doubleValue() - count.doubleValue());
-                    productService.updateStockCount(product, prodStockCount, cuser);
+                    productService.updateStockCount(product, prodStockCount, cuser, "out");
                 }
             }
         }

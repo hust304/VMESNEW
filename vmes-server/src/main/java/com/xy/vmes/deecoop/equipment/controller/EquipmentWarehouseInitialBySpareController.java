@@ -183,7 +183,7 @@ public class EquipmentWarehouseInitialBySpareController {
                 BigDecimal prodStockCount = BigDecimal.valueOf(prodCount.doubleValue() + modifyCount.doubleValue());
                 //四舍五入到2位小数
                 prodStockCount = prodStockCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-                productService.updateStockCount(product, prodStockCount, cuser);
+                productService.updateStockCount(product, prodStockCount, cuser, "out");
             }
 
         } else if (changeStockCount.doubleValue() > 0D) {
@@ -216,7 +216,7 @@ public class EquipmentWarehouseInitialBySpareController {
             BigDecimal prodStockCount = BigDecimal.valueOf(prodCount.doubleValue() + modifyCount.doubleValue());
             //四舍五入到2位小数
             prodStockCount = prodStockCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-            productService.updateStockCount(product, prodStockCount, cuser);
+            productService.updateStockCount(product, prodStockCount, cuser, "in");
         }
 
         Long endTime = System.currentTimeMillis();
@@ -267,7 +267,7 @@ public class EquipmentWarehouseInitialBySpareController {
         BigDecimal prodStockCount = BigDecimal.valueOf(prodCount.doubleValue() - stockCount.doubleValue());
         //四舍五入到2位小数
         prodStockCount = prodStockCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-        productService.updateStockCount(product, prodStockCount, cuser);
+        productService.updateStockCount(product, prodStockCount, cuser, "out");
 
         Long endTime = System.currentTimeMillis();
         logger.info("################/equipment/warehouseInitialBySpare/deleteWarehouseProductBySpare 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");

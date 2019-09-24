@@ -150,7 +150,7 @@ public class WarehouseInitialBySimpleServiceImp implements WarehouseInitialBySim
         BigDecimal prodStockCount = BigDecimal.valueOf(prodCount.doubleValue() - stockCount.doubleValue());
         //四舍五入到2位小数
         prodStockCount = prodStockCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-        productService.updateStockCount(product, prodStockCount, cuser);
+        productService.updateStockCount(product, prodStockCount, cuser, "update");
         return model;
     }
 
@@ -254,7 +254,7 @@ public class WarehouseInitialBySimpleServiceImp implements WarehouseInitialBySim
                 BigDecimal prodStockCount = BigDecimal.valueOf(prodCount.doubleValue() + modifyCount.doubleValue());
                 //四舍五入到2位小数
                 prodStockCount = prodStockCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-                productService.updateStockCount(product, prodStockCount, cuser);
+                productService.updateStockCount(product, prodStockCount, cuser, "out");
             }
 
         } else if (changeStockCount.doubleValue() > 0D) {
@@ -287,7 +287,7 @@ public class WarehouseInitialBySimpleServiceImp implements WarehouseInitialBySim
             BigDecimal prodStockCount = BigDecimal.valueOf(prodCount.doubleValue() + modifyCount.doubleValue());
             //四舍五入到2位小数
             prodStockCount = prodStockCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-            productService.updateStockCount(product, prodStockCount, cuser);
+            productService.updateStockCount(product, prodStockCount, cuser, "in");
         }
 
         return model;

@@ -178,37 +178,37 @@ public class WarehouseInExecuteController {
         return model;
     }
 
-    @GetMapping("/warehouseInExecute/updateProductStockCountTest_1")
-    public ResultModel updateProductStockCountTest_1() {
-        ResultModel model = new ResultModel();
+//    @GetMapping("/warehouseInExecute/updateProductStockCountTest_1")
+//    public ResultModel updateProductStockCountTest_1() {
+//        ResultModel model = new ResultModel();
+//
+//        Product product = productService.findProductById("04ea720992d24d61b894cb91357e9c94");
+//        BigDecimal prodStockCount = BigDecimal.valueOf(55D);
+//        try {
+//            System.out.println("in updateProductStockCountTest_1");
+//            productService.updateStockCount(product, prodStockCount, "a18260b902434bdcbe4d9bdef9288bb1");
+//            System.out.println("end updateProductStockCountTest_1");
+//        } catch (Exception e) {
+//            System.out.println("*********************");
+//        }
+//        return model;
+//    }
 
-        Product product = productService.findProductById("04ea720992d24d61b894cb91357e9c94");
-        BigDecimal prodStockCount = BigDecimal.valueOf(55D);
-        try {
-            System.out.println("in updateProductStockCountTest_1");
-            productService.updateStockCount(product, prodStockCount, "a18260b902434bdcbe4d9bdef9288bb1");
-            System.out.println("end updateProductStockCountTest_1");
-        } catch (Exception e) {
-            System.out.println("*********************");
-        }
-        return model;
-    }
-
-    @GetMapping("/warehouseInExecute/updateProductStockCountTest_2")
-    public ResultModel updateProductStockCountTest_2() {
-        ResultModel model = new ResultModel();
-
-        Product product = productService.findProductById("04ea720992d24d61b894cb91357e9c94");
-        BigDecimal prodStockCount = BigDecimal.valueOf(55D);
-        try {
-            System.out.println("in updateProductStockCountTest_2");
-            productService.updateStockCount(product, prodStockCount, "a18260b902434bdcbe4d9bdef9288bb1");
-            System.out.println("end updateProductStockCountTest_2");
-        } catch (Exception e) {
-            System.out.println("*********************");
-        }
-        return model;
-    }
+//    @GetMapping("/warehouseInExecute/updateProductStockCountTest_2")
+//    public ResultModel updateProductStockCountTest_2() {
+//        ResultModel model = new ResultModel();
+//
+//        Product product = productService.findProductById("04ea720992d24d61b894cb91357e9c94");
+//        BigDecimal prodStockCount = BigDecimal.valueOf(55D);
+//        try {
+//            System.out.println("in updateProductStockCountTest_2");
+//            productService.updateStockCount(product, prodStockCount, "a18260b902434bdcbe4d9bdef9288bb1");
+//            System.out.println("end updateProductStockCountTest_2");
+//        } catch (Exception e) {
+//            System.out.println("*********************");
+//        }
+//        return model;
+//    }
 
 
 }

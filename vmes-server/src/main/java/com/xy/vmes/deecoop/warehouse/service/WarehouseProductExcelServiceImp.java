@@ -385,7 +385,7 @@ public class WarehouseProductExcelServiceImp implements WarehouseProductExcelSer
             }
 
             BigDecimal prodStockCount = BigDecimal.valueOf(prodCount.doubleValue() + warehouseProduct.getStockCount().doubleValue());
-            productService.updateStockCount(product, prodStockCount, userId);
+            productService.updateStockCount(product, prodStockCount, userId, "in");
         }
     }
 
@@ -431,7 +431,7 @@ public class WarehouseProductExcelServiceImp implements WarehouseProductExcelSer
             }
 
             BigDecimal prodStockCount = BigDecimal.valueOf(prodCount.doubleValue() + warehouseProduct.getStockCount().doubleValue());
-            productService.updateStockCount(product, prodStockCount, userId);
+            productService.updateStockCount(product, prodStockCount, userId, "in");
         }
     }
     /////////////////////////////////////////////////////////////////////////////////////////////////////////

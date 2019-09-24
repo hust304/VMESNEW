@@ -473,7 +473,7 @@ public class WarehouseInExecuteServiceImp implements WarehouseInExecuteService {
                         }
 
                         BigDecimal prodStockCount = BigDecimal.valueOf(prodCount.doubleValue() + count_Big.doubleValue());
-                        productService.updateStockCount(product, prodStockCount, cuser);
+                        productService.updateStockCount(product, prodStockCount, cuser, "in");
                     }
                 }
 
@@ -713,7 +713,7 @@ public class WarehouseInExecuteServiceImp implements WarehouseInExecuteService {
                 }
 
                 BigDecimal prodStockCount = BigDecimal.valueOf(prodCount.doubleValue() + countBig.doubleValue());
-                productService.updateStockCount(product, prodStockCount, cuser);
+                productService.updateStockCount(product, prodStockCount, cuser, "in");
 
                 //2. 修改修改当前入库单明细状态--同时反写入库单状态
 
@@ -895,7 +895,7 @@ public class WarehouseInExecuteServiceImp implements WarehouseInExecuteService {
                     }
 
                     BigDecimal prodStockCount = BigDecimal.valueOf(prodCount.doubleValue() + count);
-                    productService.updateStockCount(product, prodStockCount, cuser);
+                    productService.updateStockCount(product, prodStockCount, cuser, "in");
                 }
 
                 //C. 入库明细执行人 vmes_warehouse_in_executor
@@ -1131,7 +1131,7 @@ public class WarehouseInExecuteServiceImp implements WarehouseInExecuteService {
                     }
 
                     BigDecimal prodStockCount = BigDecimal.valueOf(prodCount.doubleValue() + count.doubleValue());
-                    productService.updateStockCount(product, prodStockCount, cuser);
+                    productService.updateStockCount(product, prodStockCount, cuser, "in");
                 }
 
                 //创建入库单明细执行
@@ -1374,7 +1374,7 @@ public class WarehouseInExecuteServiceImp implements WarehouseInExecuteService {
             }
 
             BigDecimal prodStockCount = BigDecimal.valueOf(prodCount.doubleValue() + count.doubleValue());
-            productService.updateStockCount(product, prodStockCount, cuser);
+            productService.updateStockCount(product, prodStockCount, cuser, "in");
 
             //B. 修改入库执行明细
             execute.setCount(after);
@@ -1492,7 +1492,7 @@ public class WarehouseInExecuteServiceImp implements WarehouseInExecuteService {
             }
 
             BigDecimal prodStockCount = BigDecimal.valueOf(prodCount.doubleValue() + count.doubleValue());
-            productService.updateStockCount(product, prodStockCount, cuser);
+            productService.updateStockCount(product, prodStockCount, cuser, "in");
 
             //B. 修改入库执行明细
             //是否启用(0:已禁用 1:启用)

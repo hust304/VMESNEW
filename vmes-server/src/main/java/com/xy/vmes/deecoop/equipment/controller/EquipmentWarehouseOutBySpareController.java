@@ -451,7 +451,7 @@ public class EquipmentWarehouseOutBySpareController {
                     }
 
                     BigDecimal prodStockCount = BigDecimal.valueOf(prodCount.doubleValue() - count.doubleValue());
-                    productService.updateStockCount(product, prodStockCount, cuser);
+                    productService.updateStockCount(product, prodStockCount, cuser, "out");
                 }
             }
         } catch (TableVersionException tabExc) {
