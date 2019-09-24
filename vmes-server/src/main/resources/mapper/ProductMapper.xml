@@ -181,7 +181,7 @@
 
     <!-- ***************************************************以上为自动生成代码禁止修改，请在下面添加业务代码************************************************* -->
     <update id="updateProductInitialByStockCount" parameterType="com.yvan.PageData">
-        update vmes_product set stock_count = 0,lock_count = 0
+        update vmes_product set stock_count = 0, lock_count = 0, safety_count = 0, last_in_date = null, last_out_date = null, last_update_date = null
         <where>
             <if test="companyId != null and companyId != ''" >
                 and company_id=#{companyId}

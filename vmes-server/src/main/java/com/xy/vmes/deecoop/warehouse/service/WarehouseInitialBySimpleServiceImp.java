@@ -92,7 +92,27 @@ public class WarehouseInitialBySimpleServiceImp implements WarehouseInitialBySim
             result.put("pageData", pg);
         }
 
+        //距今(最后一次变更日期)天数 排序方式
+        String orderLast2nowDay = pd.getString("orderLast2nowDay");
+        if (orderLast2nowDay != null && orderLast2nowDay.trim().length() > 0
+            && "asc,desc".indexOf(orderLast2nowDay) != -1
+        ) {
+            pd.put("isNotNullLastUpdateDate", "true");
+            pd.put("orderStr", null);
+        }
+
         List<Map> varList = this.findWarehouseInitialBySimple(pd, pg);
+        if (varList != null && varList.size() > 0) {
+            for (Map<String, Object> mapObject : varList) {
+                //last2nowDay 距今(天数)
+                //lastUpdateDate 最后一次变更日期
+                String lastUpdateDate = (String)mapObject.get("lastUpdateDate");
+                if (lastUpdateDate == null || lastUpdateDate.trim().length() == 0) {
+                    mapObject.put("last2nowDay", new String());
+                }
+            }
+        }
+
         Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
         List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
 

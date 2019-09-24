@@ -303,7 +303,10 @@
         (replace(uuid(), '-', ''),'warehouseInitialBySimple','productSafetyCount','安全库存数量',16, '1','1','1','0',now(), 'admin'),
 
         (replace(uuid(), '-', ''),'warehouseInitialBySimple','checkStockCount','台账数量',17, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'warehouseInitialBySimple','checkCount','盘点数量',18, '1','1','1','0',now(), 'admin')
+        (replace(uuid(), '-', ''),'warehouseInitialBySimple','checkCount','盘点数量',18, '1','1','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'warehouseInitialBySimple','lastUpdateDate','最后一次变更日期',19, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseInitialBySimple','last2nowDay','距今天数',20, '1','1','1','0',now(), 'admin')
     </insert>
 
     <!-- warehouseEdition(仓库版本): warehouseBySimple(简版仓库)-对应实体库(简版仓库)********************************************* -->
@@ -330,6 +333,9 @@
             unit.name productUnitName,
             genre.name productGenreName,
             round(ifnull(product.safety_count, 0), 2) productSafetyCount,
+
+            DATE_FORMAT(prodLastDate.last_update_date,'%Y-%m-%d') lastUpdateDate,
+            prodLastDate.last2nowDay,
 
             round(warehouseProduct.stock_count, 2) checkStockCount,
             '' checkCount
@@ -414,6 +420,26 @@
             left join vmes_product_unit produnit on warehouseProduct.product_id = produnit.product_id and produnit.type = 1
             left join vmes_dictionary unit on produnit.unit = unit.id
             left join vmes_dictionary genre on product.genre = genre.id
+            left join (
+                select
+                id,
+                last_in_date,
+                last_out_date,
+                last_update_date,
+                <!-- 距今变更天数: (当前日期 - 最后一次变更日期)-->
+                CASE
+                  WHEN last_update_date is null THEN -1
+                  WHEN last_update_date is not null THEN datediff(DATE_FORMAT(now(),'%Y-%m-%d'), DATE_FORMAT(last_update_date, '%Y-%m-%d'))
+                ELSE null
+                END last2nowDay
+                from vmes_product
+                <where>
+                    <if test="currentCompanyId != null and currentCompanyId != ''" >
+                        and company_id = #{currentCompanyId}
+                    </if>
+                </where>
+            ) prodLastDate on product.id = prodLastDate.id
+
         <where>
             <!--nodeId 树形结构指定节点id 自定义sql查询语句-->
             <if test="nodeId != null and nodeId != ''" >
@@ -448,12 +474,15 @@
                 <![CDATA[ and product.genre <> '384cfd1329e648618b5a237ce1038bab' ]]>
             </if>
 
-
             <if test="productGenreName != null and productGenreName != ''">
                 and genre.name LIKE CONCAT(CONCAT('%',#{productGenreName}),'%')
             </if>
             <if test="productUnitName != null and productUnitName != ''">
                 and unit.name LIKE CONCAT(CONCAT('%',#{productUnitName}),'%')
+            </if>
+
+            <if test="'true' == isNotNullLastUpdateDate">
+                and prodLastDate.last_update_date is not null
             </if>
 
             <!--queryStr 自定义sql查询语句-->
@@ -464,6 +493,12 @@
         </where>
         <if test="orderStr != null and orderStr != ''" >
             order by ${orderStr}
+        </if>
+        <if test="'asc' == orderLast2nowDay">
+            order by prodLastDate.last2nowDay asc
+        </if>
+        <if test="'desc' == orderLast2nowDay">
+            order by prodLastDate.last2nowDay desc
         </if>
     </select>
 
