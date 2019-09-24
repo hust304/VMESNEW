@@ -413,22 +413,46 @@ public class ProductServiceImp implements ProductService {
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    @Override
-    public void updateStockCount(Product product, BigDecimal count,String uuser) throws Exception {
+    /**
+     * 修改货品库存数量
+     * 修改货品(入库,出库)操作时间
+     *
+     * @param product     货品表对象
+     * @param count       库存数量
+     * @param userId      操作人用户id
+     * @param operateType 仓库操作类型(in:入库 out:出库 update:修改库存)
+     * @throws Exception
+     */
+    public void updateStockCount(Product product,
+                                 BigDecimal count,
+                                 String userId,
+                                 String operateType) throws Exception {
         PageData pd = new PageData();
         pd.put("id",product.getId());
         pd.put("version",product.getVersion());
-        pd.put("uuser",uuser);
+        pd.put("uuser",userId);
         pd.put("stockCount",count);
 
-        Integer updateValue = null;
-        try {
-            updateValue = productMapper.updateStockCount(pd);
-        } catch (Exception e) {}
-
+        //1. 修改库存数量
+        Integer updateValue = productMapper.updateStockCount(pd);
         if (updateValue == null || 0 == updateValue.intValue()) {
             throw new Exception("当前系统繁忙，请稍后操作！");
         }
+
+        //2. 修改货品(入库,出库)操作时间
+        Product editProduct = new Product();
+        editProduct.setId(product.getId());
+        if ("in".equals(operateType)) {
+            editProduct.setLastInDate(new Date());
+            editProduct.setLastUpdateDate(new Date());
+        } else if ("out".equals(operateType)) {
+            editProduct.setLastOutDate(new Date());
+            editProduct.setLastUpdateDate(new Date());
+        } else if ("update".equals(operateType)) {
+            editProduct.setLastUpdateDate(new Date());
+        }
+
+        this.update(editProduct);
     }
 
     public void updateLockCount(String productId, Product oldProduct, BigDecimal lockCount, String uuser) throws Exception {

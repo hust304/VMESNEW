@@ -132,8 +132,23 @@ public interface ProductService {
     ProductUnit product2ProductUnit(Product product, String unit);
     ProductUnitPrice product2ProductUnitPrice(Product product,String unit);
     Map<String, String> queryMap2ProductMap(Map queryMap);
+
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    void updateStockCount(Product product, BigDecimal count, String uuser) throws Exception;
+
+    /**
+     * 修改货品库存数量
+     * 修改货品(入库,出库)操作时间
+     *
+     * @param product     货品表对象
+     * @param count       库存数量
+     * @param userId      操作人用户id
+     * @param operateType 仓库操作类型(in:入库 out:出库 update:修改库存)
+     * @throws Exception
+     */
+    void updateStockCount(Product product,
+                          BigDecimal count,
+                          String userId,
+                          String operateType) throws Exception;
 
     /**
      * 修改锁定库存数量
