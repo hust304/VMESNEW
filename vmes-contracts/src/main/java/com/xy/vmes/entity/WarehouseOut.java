@@ -70,7 +70,17 @@ public class WarehouseOut implements Serializable {
 	//仓库属性(warehouse:(简版,复杂版)仓库 spare:备件库)
 	@TableField("warehouse_attribute")
 	private String warehouseAttribute;
+	@TableField("business_code")
+	private String businessCode;
 
+
+	public String getBusinessCode() {
+		return businessCode;
+	}
+
+	public void setBusinessCode(String businessCode) {
+		this.businessCode = businessCode;
+	}
 
 	public void setId(String id) {
 		this.id = id;

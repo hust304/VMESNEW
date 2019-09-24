@@ -497,6 +497,7 @@
             warehouseout.company_id companyId,<!-- 企业ID-组织架构 -->
             warehouseout.code code,<!-- 出库单编码 -->
             warehouseout.type,<!-- 出库类型-(字典表-vmes_dictionary.id) -->
+            warehouseout.business_code businessCode,
             type.name typeName,
             warehouseout.warehouse_id warehouseId,<!-- 仓库ID(仓库表-layer:2的记录) -->
             warehouseout.dept_id deptId,<!-- 单位id(部门id或客户id) -->
