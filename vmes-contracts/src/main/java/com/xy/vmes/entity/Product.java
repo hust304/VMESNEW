@@ -25,13 +25,19 @@ public class Product implements Serializable {
 	//二维码-(图片相对路径)
 	@TableField("qrcode")
 	private String qrcode;
+	//产品图片
+	@TableField("photo")
+	private String photo;
 	//产品编码
 	@TableField("code")
 	private String code;
+
+	//企业货品编码
+	@TableField("source_code")
+	private String sourceCode;
 	//产品名称
 	@TableField("name")
 	private String name;
-
 	//英文名称
 	@TableField("name_en")
 	private String nameEn;
@@ -41,29 +47,29 @@ public class Product implements Serializable {
 	//产品属性(字典表-vmes_dictionary.id)
 	@TableField("genre")
 	private String genre;
-	//计量单位(字典表-vmes_dictionary.id)
-//	@TableField("unit")
-//	private String unit;
+
 	//结算单位(字典表-vmes_dictionary.id)
 	@TableField("last_unit")
 	private String lastUnit;
-
 	//结算比例
 	@TableField("last_ratio")
 	private BigDecimal lastRatio;
 	//单价
 	@TableField("price")
 	private BigDecimal price;
+	//库存数量
+	@TableField("stock_count")
+	private BigDecimal stockCount;
+	//安全库存数量
+	@TableField("safety_count")
+	private BigDecimal safetyCount;
+
 	//类型(字典表-vmes_dictionary.id)
 	@TableField("type")
 	private String type;
 	//保存期(yyyy-mm-dd)
 	@TableField("validity_date")
 	private Date validityDate;
-	//保质期(天)
-	@TableField("validity_days")
-	private BigDecimal validityDays;
-
 	//备注
 	@TableField("remark")
 	private String remark;
@@ -73,43 +79,36 @@ public class Product implements Serializable {
 	//创建时间
 	@TableField("cdate")
 	private Date cdate;
+
 	//修改用户id
 	@TableField("uuser")
 	private String uuser;
 	//修改时间
 	@TableField("udate")
 	private Date udate;
-
 	//是否启用(0:已禁用 1:启用)
 	@TableField("isdisable")
 	private String isdisable;
-	//产品图片
-	@TableField("photo")
-	private String photo;
-	//库存数量
-	@TableField("stock_count")
-	private BigDecimal stockCount;
-	//安全库存数量
-	@TableField("safety_count")
-	private BigDecimal safetyCount;
 	//乐观锁
 	@TableField("version")
 	private Integer version;
+	//保质期(天)
+	@TableField("validity_days")
+	private BigDecimal validityDays;
 
 	//锁定库存数量
 	@TableField("lock_count")
 	private BigDecimal lockCount;
 
-	@TableField("source_code")
-	private String sourceCode;
-
-	public String getSourceCode() {
-		return sourceCode;
-	}
-
-	public void setSourceCode(String sourceCode) {
-		this.sourceCode = sourceCode;
-	}
+	//最后一次入库时间
+	@TableField("last_in_date")
+	private Date lastInDate;
+	//最后一次出库时间
+	@TableField("last_out_date")
+	private Date lastOutDate;
+	//最后一次仓库变更时间
+	@TableField("last_update_date")
+	private Date lastUpdateDate;
 
 	public void setId(String id) {
 		this.id = id;
@@ -159,12 +158,6 @@ public class Product implements Serializable {
 	public String getGenre() {
 		return genre;
 	}
-//	public void setUnit(String unit) {
-//		this.unit = unit;
-//	}
-//	public String getUnit() {
-//		return unit;
-//	}
 	public void setLastUnit(String lastUnit) {
 		this.lastUnit = lastUnit;
 	}
@@ -255,19 +248,43 @@ public class Product implements Serializable {
 	public void setVersion(Integer version) {
 		this.version = version;
 	}
-	public BigDecimal getValidityDays() {
-		return validityDays;
-	}
 	public BigDecimal getLockCount() {
 		return lockCount;
 	}
 	public void setLockCount(BigDecimal lockCount) {
 		this.lockCount = lockCount;
 	}
-
 	public void setValidityDays(BigDecimal validityDays) {
 		this.validityDays = validityDays;
 	}
+	public BigDecimal getValidityDays() {
+		return validityDays;
+	}
+	public void setSourceCode(String sourceCode) {
+		this.sourceCode = sourceCode;
+	}
+	public String getSourceCode() {
+		return sourceCode;
+	}
+	public Date getLastInDate() {
+		return lastInDate;
+	}
+	public void setLastInDate(Date lastInDate) {
+		this.lastInDate = lastInDate;
+	}
+	public Date getLastOutDate() {
+		return lastOutDate;
+	}
+	public void setLastOutDate(Date lastOutDate) {
+		this.lastOutDate = lastOutDate;
+	}
+	public Date getLastUpdateDate() {
+		return lastUpdateDate;
+	}
+	public void setLastUpdateDate(Date lastUpdateDate) {
+		this.lastUpdateDate = lastUpdateDate;
+	}
+
 /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 

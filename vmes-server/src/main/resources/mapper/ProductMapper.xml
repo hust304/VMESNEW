@@ -13,32 +13,40 @@
     </sql>
     <!-- 字段 自动创建，禁止修改-->
     <sql id="Field">
-		company_id companyId,<!-- 公司ID-组织架构 -->
-		qrcode qrcode,<!-- 二维码-(图片相对路径) -->
-		code code,<!-- 产品编码 -->
-		name name,<!-- 产品名称 -->
-		name_en nameEn,<!-- 英文名称 -->
-		spec spec,<!-- 规格型号 -->
-		genre genre,<!-- 产品属性(字典表-vmes_dictionary.id) -->
-		last_unit lastUnit,<!-- 结算单位(字典表-vmes_dictionary.id) -->
-		last_ratio lastRatio,<!-- 结算比例 -->
-		price price,<!-- 单价 -->
-		type type,<!-- 类型(字典表-vmes_dictionary.id) -->
-		validity_date validityDate,<!-- 保存期(yyyy-mm-dd) -->
-        validity_days validityDays,
-		remark remark,<!-- 备注 -->
-		cuser cuser,<!-- 创建用户id -->
-		cdate cdate,<!-- 创建时间 -->
-		uuser uuser,<!-- 修改用户id -->
-		udate udate,<!-- 修改时间 -->
-		isdisable isdisable,<!-- 是否启用(0:已禁用 1:启用) -->
-		photo photo,<!-- 产品图片 -->
+        id id, <!-- id -->
+        company_id companyId,<!-- 公司ID-组织架构 -->
+        qrcode qrcode,<!-- 二维码-(图片相对路径) -->
+        photo photo,<!-- 产品图片 -->
+        code code,<!-- 产品编码 -->
+
+        source_code sourceCode,
+        name name,<!-- 产品名称 -->
+        name_en nameEn,<!-- 英文名称 -->
+        spec spec,<!-- 规格型号 -->
+        genre genre,<!-- 产品属性(字典表-vmes_dictionary.id) -->
+
+        last_unit lastUnit,<!-- 结算单位(字典表-vmes_dictionary.id) -->
+        last_ratio lastRatio,<!-- 结算比例 -->
+        price price,<!-- 单价 -->
         stock_count stockCount,
         safety_count safetyCount,
+
+        type type,<!-- 类型(字典表-vmes_dictionary.id) -->
+        validity_date validityDate,<!-- 保存期(yyyy-mm-dd) -->
+        remark remark,<!-- 备注 -->
+        cuser cuser,<!-- 创建用户id -->
+        cdate cdate,<!-- 创建时间 -->
+
+        uuser uuser,<!-- 修改用户id -->
+        udate udate,<!-- 修改时间 -->
+        isdisable isdisable,<!-- 是否启用(0:已禁用 1:启用) -->
         version version,
+        validity_days validityDays,
+
         lock_count lockCount,
-        source_code sourceCode,
-		id id <!-- id -->
+        last_in_date lastInDate,
+        last_out_date lastOutDate,
+        last_update_date lastUpdateDate
     </sql>
 
     <!-- 字段值 自动创建，禁止修改-->
