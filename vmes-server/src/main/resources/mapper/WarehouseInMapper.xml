@@ -242,7 +242,7 @@
             a.type type,
             type.name typeName,
             a.warehouse_id warehouseId,
-
+            a.business_code businessCode,
             a.dept_id deptId,
             a.dept_name deptName,
             a.make_id makeId,
@@ -299,6 +299,9 @@
         </if>
         <if test="type != null and type != ''" >
             and a.type = #{type}
+        </if>
+        <if test="businessCode != null and businessCode != ''" >
+            and a.business_code LIKE CONCAT(CONCAT(#{businessCode}),'%')
         </if>
         <if test="warehouseId != null and warehouseId != ''" >
             and a.warehouse_id = #{warehouseId}
