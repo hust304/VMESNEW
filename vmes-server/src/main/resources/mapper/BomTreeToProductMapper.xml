@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+说明：Bom表关联货品表 Mapper.xml
+创建人：陈刚
+创建时间：2019-09-25
+ -->
+<mapper namespace="com.xy.vmes.deecoop.base.dao.BomTreeToProductMapper">
+    <select id="findBomTreeProductList" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+            bomTree.id id,
+            bomTree.bom_id bomId,
+            bomTree.prod_id prodId,
+            bomTree.parent_prod_id parentProdId,
+            bomTree.layer layer,
+
+            bomTree.ratio ratio,
+            bomTree.cuser cuser,
+            bomTree.cdate cdate,
+            bomTree.uuser uuser,
+            bomTree.udate udate,
+
+            bomTree.isdisable isdisable,
+            bomTree.remark remark,
+            bomTree.path_id pathId,
+            bomTree.isreplaceable,
+
+            <!--货品表-->
+            product.code productCode,
+            product.name productName,
+            product.spec productSpec,
+            product.genre productGenre,
+            genre.name productGenreName,
+            productUnit.unit productUnit,
+            productUnitName.name productUnitName
+
+        from vmes_bom_tree bomTree
+            left join vmes_bom bom on bomTree.bom_id = bom.id
+            left join vmes_product product on bomTree.prod_id = product.id
+            left join vmes_dictionary genre on product.genre = genre.id
+
+            left join vmes_product_unit productUnit on bomTree.prod_id = productUnit.product_id and productUnit.type = 1
+            left join vmes_dictionary productUnitName on productUnit.unit = productUnitName.id
+        <where>
+            <if test="companyId != null and companyId != ''" >
+                and bom.company_id = #{companyId}
+            </if>
+            <if test="bomId != null and bomId != ''">
+                and bomTree.bom_id = #{bomId}
+            </if>
+            <if test="parentProdId != null and parentProdId != ''">
+                and bomTree.parent_prod_id = #{parentProdId}
+            </if>
+            <if test="prodId != null and prodId != ''">
+                and bomTree.prod_id = #{prodId}
+            </if>
+
+        </where>
+        <if test="orderStr != null and orderStr != ''" >
+            order by ${orderStr}
+        </if>
+    </select>
+
+</mapper>
