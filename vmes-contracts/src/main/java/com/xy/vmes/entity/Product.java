@@ -109,6 +109,9 @@ public class Product implements Serializable {
 	//最后一次仓库变更时间
 	@TableField("last_update_date")
 	private Date lastUpdateDate;
+	//图号
+	@TableField("picture_code")
+	private String pictureCode;
 
 	public void setId(String id) {
 		this.id = id;
@@ -284,7 +287,12 @@ public class Product implements Serializable {
 	public void setLastUpdateDate(Date lastUpdateDate) {
 		this.lastUpdateDate = lastUpdateDate;
 	}
-
+	public String getPictureCode() {
+		return pictureCode;
+	}
+	public void setPictureCode(String pictureCode) {
+		this.pictureCode = pictureCode;
+	}
 /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 

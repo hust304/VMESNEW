@@ -46,7 +46,8 @@
         lock_count lockCount,
         last_in_date lastInDate,
         last_out_date lastOutDate,
-        last_update_date lastUpdateDate
+        last_update_date lastUpdateDate,
+        picture_code pictureCode
     </sql>
 
     <!-- 字段值 自动创建，禁止修改-->
@@ -236,6 +237,7 @@
             (replace(uuid(), '-', ''),'product','p2nFormula','p2nFormula',28, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''), 'product', 'p2nIsScale', 'p2n:是否需要四舍五入', 29, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
             (replace(uuid(), '-', ''), 'product', 'p2nDecimalCount', 'p2n:保留小数位数', 30, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'product', 'pictureCode', '图号', 32, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
     </insert>
 
 
@@ -351,6 +353,7 @@
 
             prod.version version,
             prod.isdisable isdisable,
+            prod.picture_code pictureCode,
 
             <!--货品计量单位-->
             produnit.np_formula n2pFormula,
