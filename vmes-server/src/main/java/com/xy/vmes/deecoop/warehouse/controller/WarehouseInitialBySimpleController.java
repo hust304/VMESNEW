@@ -92,12 +92,7 @@ public class WarehouseInitialBySimpleController {
 
         //初始化仓库属性
         //warehouse:(简版,复杂版)仓库 spare:备件库
-        String warehouseGenre = httpRequest.getParameter("warehouseGenre");
-        if (warehouseGenre == null || warehouseGenre.trim().length() == 0) {
-            model.putCode("1");
-            model.putMsg("初始化仓库属性为空或空字符串！");
-            return model;
-        }
+        String warehouseGenre = "warehouse";
 
         //(企业id)查询 vmes_warehouse_initial
         model = warehouseInitialBySimpleService.importExcelWarehouseInitialBySimple(file);
