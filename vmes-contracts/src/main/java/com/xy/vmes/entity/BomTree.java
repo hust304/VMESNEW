@@ -56,7 +56,17 @@ public class BomTree implements Serializable {
 	@TableField("path_id")
 	private String pathId;
 
+	@TableField("isreplaceable")
+	private String isreplaceable;
 
+
+	public String getIsreplaceable() {
+		return isreplaceable;
+	}
+
+	public void setIsreplaceable(String isreplaceable) {
+		this.isreplaceable = isreplaceable;
+	}
 
 	public void setId(String id) {
 		this.id = id;

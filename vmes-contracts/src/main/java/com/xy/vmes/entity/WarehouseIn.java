@@ -71,7 +71,16 @@ public class WarehouseIn implements Serializable {
 	@TableField("warehouse_attribute")
 	private String warehouseAttribute;
 
+	@TableField("business_code")
+	private String businessCode;
 
+
+	public String getBusinessCode() {
+		return businessCode;
+	}
+	public void setBusinessCode(String businessCode) {
+		this.businessCode = businessCode;
+	}
 	public void setId(String id) {
 		this.id = id;
 	}

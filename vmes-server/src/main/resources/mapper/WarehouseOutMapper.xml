@@ -459,6 +459,9 @@
             <if test="deptName != null and deptName != ''">
                 and warehouseout.dept_name LIKE CONCAT(CONCAT('%', #{deptName}),'%')
             </if>
+            <if test="businessCode != null and businessCode != ''" >
+                and warehouseout.business_code LIKE CONCAT(CONCAT(#{businessCode}),'%')
+            </if>
             <if test="state != null and state != ''">
                 and warehouseout.state =  #{state}
             </if>
@@ -547,6 +550,9 @@
             </if>
             <if test="type != null and type != ''" >
                 and warehouseout.type = #{type}
+            </if>
+            <if test="businessCode != null and businessCode != ''" >
+                and warehouseout.business_code LIKE CONCAT(CONCAT(#{businessCode}),'%')
             </if>
 
             <if test="warehouseName != null and warehouseName != ''">
