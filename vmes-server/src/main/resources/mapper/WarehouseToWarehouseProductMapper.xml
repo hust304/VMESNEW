@@ -58,6 +58,8 @@
         (replace(uuid(), '-', ''),'warehouseToWarehouseProduct','productType','productType',34, '1','1','1','0',now(), 'admin'),
 
         (replace(uuid(), '-', ''),'warehouseToWarehouseProduct','stockCount','库存数量',35, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseToWarehouseProduct','productPictureCode','图号',36, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseToWarehouseProduct','warehouseTypeName','仓库类型',37, '1','1','1','0',now(), 'admin')
 
     </insert>
 
@@ -98,6 +100,7 @@
             warehouse.is_simple isSimple,
             warehouse.serial_number serialNumber,
             warehouse.isLeaf,
+            warehouseType.name warehouseTypeName,
 
             round(ifnull(wp.stock_count, 0), 2) stockCount,
 
@@ -109,7 +112,8 @@
             unit.name productUnitName,
             product.genre productGenre,
             genre.name productGenreName,
-            product.type productType
+            product.type productType,
+            product.picture_code productPictureCode
 
         from vmes_warehouse warehouse
             left join vmes_warehouse_product wp on warehouse.id = wp.warehouse_id and warehouse.isdisable = '1' and wp.isdisable = '1'
@@ -117,6 +121,7 @@
             left join vmes_product_unit produnit on produnit.product_id = product.id and produnit.type = 1
             left join vmes_dictionary unit on produnit.unit = unit.id
             left join vmes_dictionary genre on product.genre = genre.id
+            left join vmes_dictionary warehouseType on warehouse.entity_type = warehouseType.id
 
         <where>
             <if test="companyId != null and companyId != ''" >

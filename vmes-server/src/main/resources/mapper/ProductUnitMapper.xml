@@ -205,11 +205,11 @@
                 <if test="productId != null and productId != ''" >
                     and product_id = #{productId}
                 </if>
-                <if test="type != null and type != ''" >
-                    and type = #{type}
-                </if>
                 <if test="unit != null and unit != ''" >
                     and unit = #{unit}
+                </if>
+                <if test="type != null and type != ''" >
+                    and type = #{type}
                 </if>
                 <if test="productPrice != null and productPrice != ''" >
                     and product_price = ${productPrice}

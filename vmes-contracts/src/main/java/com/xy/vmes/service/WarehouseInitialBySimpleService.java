@@ -3,6 +3,7 @@ package com.xy.vmes.service;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -19,4 +20,6 @@ public interface WarehouseInitialBySimpleService {
     ResultModel findWarehouseInitialBySimple(PageData pd) throws Exception;
     ResultModel deleteWarehouseProductBySimple(PageData pageData) throws Exception;
     ResultModel updateWarehouseProductBySimple(PageData pageData) throws Exception;
+
+    ResultModel importExcelWarehouseInitialBySimple(MultipartFile file) throws Exception;
 }
