@@ -601,6 +601,9 @@
             <if test="employeeId!= null and employeeId != ''">
                 and employee.id = #{employeeId}
             </if>
+            <if test="currentCompanyId != null and currentCompanyId != ''">
+                and employee.company_id = #{currentCompanyId}
+            </if>
 
             <!-- 员工表查询 (code,name) 必须在最前面-创建有索引 -->
             <if test="code!= null and code != ''">
@@ -623,9 +626,6 @@
             </if>
             <if test="entryDateStart!= null and entryDateStart != ''">
                 <![CDATA[ and  employee.entry_date >= #{entryDateStart} ]]>
-            </if>
-            <if test="currentCompanyId != null and currentCompanyId != ''">
-                and employee.company_id = #{currentCompanyId}
             </if>
 
             <!--岗位表 -->
