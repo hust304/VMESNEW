@@ -426,6 +426,10 @@
             <if test="genreName != null and genreName != ''">
                 and genre.name = #{genreName}
             </if>
+            <if test="genreNames != null and genreNames != ''">
+                and genre.name in (${genreNames})
+            </if>
+
             <if test="typeName != null and typeName != ''">
                 and type.name LIKE CONCAT('%',CONCAT(#{typeName}),'%')
             </if>
