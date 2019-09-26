@@ -64,7 +64,7 @@ public class WarehouseProductExcelBySimpleServiceImp implements WarehouseProduct
         this.dictionaryMap.put("genreNameKeyMap", dictionaryService.getNameKeyMap());
 
         //获取 仓库类型 字典Map warehouseType
-        dictionaryService.implementBusinessMapByParentID(Common.DICTIONARY_MAP.get("warehouseType"), companyId);
+        dictionaryService.implementBusinessMapByParentID(Common.DICTIONARY_MAP.get("warehouseType"), null);
         this.dictionaryMap.put("warehouseTypeKeyNameMap", dictionaryService.getKeyNameMap());
         this.dictionaryMap.put("warehouseTypeNameKeyMap", dictionaryService.getNameKeyMap());
 
