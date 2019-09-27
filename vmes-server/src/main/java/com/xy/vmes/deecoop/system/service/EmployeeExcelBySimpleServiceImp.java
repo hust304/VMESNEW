@@ -57,8 +57,8 @@ public class EmployeeExcelBySimpleServiceImp implements EmployeeExcelBySimpleSer
         //Map<String, String> deptNameKeyMap = departmentService.getDeptNameKeyMap();
 
         //获取全部 政治面貌
-        dictionaryService.implementBusinessMapByParentID(Common.DICTIONARY_MAP.get("political"), companyId);
-        Map<String, String> politicalNameKeyMap = dictionaryService.getNameKeyMap();
+        //dictionaryService.implementBusinessMapByParentID(Common.DICTIONARY_MAP.get("political"), companyId);
+        //Map<String, String> politicalNameKeyMap = dictionaryService.getNameKeyMap();
 
         String msg_column_isnull = "第 {0} 行: ({1})输入为空或空字符串，({1})是必填字段不可为空！" + Common.SYS_ENDLINE_DEFAULT;
         String msg_column_error = "第 {0} 行: {1}:{2} 输入错误，输入范围({3})！" + Common.SYS_ENDLINE_DEFAULT;
