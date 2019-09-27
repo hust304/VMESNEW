@@ -224,6 +224,15 @@ public class WarehouseProductExcelBySimpleServiceImp implements WarehouseProduct
     public void addSystemBaseTableImportExcel(List<LinkedHashMap<String, String>> objectList,
                                               String companyId,
                                               String userId) throws Exception {
+
+        // productUnitName 计量单位
+        dictionaryService.implementBusinessMapByParentID(Common.DICTIONARY_MAP.get("productUnit"), companyId);
+        Map<String, String> sysUnitMap = dictionaryService.getNameKeyMap();
+
+        //typeName 货品类型
+        dictionaryService.implementBusinessMapByParentID(Common.DICTIONARY_MAP.get("productType"), companyId);
+        Map<String, String> sysProductTypeMap = dictionaryService.getNameKeyMap();
+
         for (int i = 0; i < objectList.size(); i++) {
             LinkedHashMap<String, String> mapObject = objectList.get(i);
 
@@ -233,18 +242,19 @@ public class WarehouseProductExcelBySimpleServiceImp implements WarehouseProduct
             this.addWarehouse(excelWarehouseMap, sysWarehouseMap, companyId, userId);
 
             //2. 查询字典表(货品单位)-系统中已经存在的单位比较-不存在添加字典表(货品单位)
-            // productUnitName 计量单位
-            dictionaryService.implementBusinessMapByParentID(Common.DICTIONARY_MAP.get("productUnit"), companyId);
-            Map<String, String> sysUnitMap = dictionaryService.getNameKeyMap();
             Map<String, String> excelUnitMap = this.findUnitMapByExcel(objectList);
             this.addUnit(excelUnitMap, sysUnitMap, companyId, userId);
 
-            //3. 查询货品表(货品名称_规格型号)-系统中已经存在的货品比较-不存在添加货品表(货品单位)
+            //3. 查询字典表(货品类型)-系统中已经存在的单位比较-不存在添加字典表(货品类型)
+            Map<String, String> excelProductTypeMap = this.findProductTypeMapByExcel(objectList);
+            this.addProductType(excelProductTypeMap, sysProductTypeMap, companyId, userId);
+
+            //4. 查询货品表(货品名称_规格型号)-系统中已经存在的货品比较-不存在添加货品表(货品单位)
             Map<String, String> sysProductMap = this.findProductMapBySystem(companyId);
             Map<String, Map<String, String>> excelProductMap = this.findProductMapByExcel(objectList, companyId);
             this.addProduct(excelProductMap, sysProductMap, companyId, userId);
 
-            //4. 货品计量单位绑定
+            //5. 货品计量单位绑定
             this.addProductUnit(excelProductMap, companyId, userId);
         }
     }
@@ -527,6 +537,69 @@ public class WarehouseProductExcelBySimpleServiceImp implements WarehouseProduct
         }
     }
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    private Map<String, String> findProductTypeMapByExcel(List<LinkedHashMap<String, String>> objectList) {
+        Map<String, String> productTypeMap = new LinkedHashMap<>();
+        if (objectList == null || objectList.size() == 0) {return productTypeMap;}
+
+        for (Map<String, String> mapObject : objectList) {
+            //typeName 货品类型(允许为空)
+            String typeName = mapObject.get("typeName");
+            if (typeName != null && typeName.trim().length() > 0) {
+                productTypeMap.put(typeName, typeName);
+            }
+        }
+
+        return productTypeMap;
+    }
+
+    private void addProductType(Map<String, String> excelProductTypeMap,
+                                Map<String, String> sysProductTypeMap,
+                                String companyId,
+                                String userId) throws Exception {
+        if (excelProductTypeMap == null) {return;}
+
+        //1.(货品类型名称) 与系统字典表结构体比较 是否存在
+        List<String> addProductTypeList = new ArrayList();
+        for (Iterator iterator = excelProductTypeMap.keySet().iterator(); iterator.hasNext();) {
+            //货品类型名称
+            String mapKey = iterator.next().toString().trim();
+            if (sysProductTypeMap.get(mapKey) == null) {
+                addProductTypeList.add(mapKey);
+            }
+        }
+
+        if (addProductTypeList.size() > 0) {
+            //货品类型:productType: a39ac4c1e02e45788eb03a52a5e9a972
+            String pid = Common.DICTIONARY_MAP.get("productType");
+            Dictionary paterObj = dictionaryService.findDictionaryById(pid);
+
+            for (String productUnitName : addProductTypeList) {
+                //创建字典信息
+                Dictionary addDictionary = new Dictionary();
+                addDictionary.setId(Conv.createUuid());
+                addDictionary.setCompanyId(companyId);
+                addDictionary.setCuser(userId);
+                addDictionary.setName(productUnitName);
+
+                //isglobal: 0：否  1：是
+                //0:非全局设置 1:是全局(超级管理员创建的数据字典都是全局设置)
+                addDictionary.setIsglobal("0");
+
+                addDictionary = dictionaryService.id2DictionaryByLayer(addDictionary.getId(),
+                        Integer.valueOf(paterObj.getLayer().intValue() + 1),
+                        addDictionary);
+                addDictionary = dictionaryService.paterObject2ObjectDB(paterObj, addDictionary);
+
+                //设置默认部门顺序
+                if (addDictionary.getSerialNumber() == null) {
+                    Integer maxCount = dictionaryService.findMaxSerialNumber(addDictionary.getPid());
+                    addDictionary.setSerialNumber(Integer.valueOf(maxCount.intValue() + 1));
+                }
+                dictionaryService.save(addDictionary);
+            }
+        }
+    }
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**
      * 获取货品Map结构体
      * 货品Map结构体: <货品名称_规格型号, 货品id>
@@ -562,32 +635,32 @@ public class WarehouseProductExcelBySimpleServiceImp implements WarehouseProduct
         return productMap;
     }
 
-    private Map<String, String> findProductNameMapBySystem(String companyId) throws Exception {
-        Map<String, String> productMap = new LinkedHashMap<>();
-        if (companyId == null || companyId.trim().length() == 0) {return productMap;}
-
-        //查询货品表 vmes_product
-        PageData findMap = new PageData();
-        findMap.put("companyId", companyId);
-        //是否启用(0:已禁用 1:启用)
-        findMap.put("isdisable", "1");
-        findMap.put("mapSize", Integer.valueOf(findMap.size()));
-        List<Product> productList = productService.findProductList(findMap);
-        if (productList == null || productList.size() == 0) {return productMap;}
-
-        for (Product product : productList) {
-            //name 货品名称
-            String name = product.getName();
-            //spec 规格型号
-            //String spec = product.getSpec();
-            //id 货品id
-            String id = product.getId();
-
-            productMap.put(name, id);
-        }
-
-        return productMap;
-    }
+//    private Map<String, String> findProductNameMapBySystem(String companyId) throws Exception {
+//        Map<String, String> productMap = new LinkedHashMap<>();
+//        if (companyId == null || companyId.trim().length() == 0) {return productMap;}
+//
+//        //查询货品表 vmes_product
+//        PageData findMap = new PageData();
+//        findMap.put("companyId", companyId);
+//        //是否启用(0:已禁用 1:启用)
+//        findMap.put("isdisable", "1");
+//        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+//        List<Product> productList = productService.findProductList(findMap);
+//        if (productList == null || productList.size() == 0) {return productMap;}
+//
+//        for (Product product : productList) {
+//            //name 货品名称
+//            String name = product.getName();
+//            //spec 规格型号
+//            //String spec = product.getSpec();
+//            //id 货品id
+//            String id = product.getId();
+//
+//            productMap.put(name, id);
+//        }
+//
+//        return productMap;
+//    }
 
     private Map<String, Map<String, String>> findProductMapByExcel(List<LinkedHashMap<String, String>> objectList, String companyId) {
         Map<String, Map<String, String>> productMap = new LinkedHashMap<>();
@@ -596,6 +669,10 @@ public class WarehouseProductExcelBySimpleServiceImp implements WarehouseProduct
         //获取当前企业-货品单位
         dictionaryService.implementBusinessMapByParentID(Common.DICTIONARY_MAP.get("productUnit"), companyId);
         Map<String, String> sysUnitMap = dictionaryService.getNameKeyMap();
+
+        //typeName 货品类型
+        dictionaryService.implementBusinessMapByParentID(Common.DICTIONARY_MAP.get("productType"), companyId);
+        Map<String, String> sysProductTypeMap = dictionaryService.getNameKeyMap();
 
         for (Map<String, String> mapObject : objectList) {
             Map<String, String> productValueMap = new HashMap();
@@ -626,6 +703,21 @@ public class WarehouseProductExcelBySimpleServiceImp implements WarehouseProduct
                 productUnit = sysUnitMap.get(productUnitName);
             }
             productValueMap.put("productUnit", productUnit);
+
+            //typeName 货品类型(允许为空)
+            String typeName = mapObject.get("typeName");
+            productValueMap.put("typeName", typeName);
+
+            //type 货品类型id
+            String type = new String();
+            if (sysProductTypeMap != null && sysProductTypeMap.get(typeName) != null) {
+                type = sysProductTypeMap.get(typeName);
+            }
+            productValueMap.put("type", type);
+
+            //sourceCode 企业货品编码(允许为空)
+            String sourceCode = mapObject.get("sourceCode");
+            productValueMap.put("sourceCode", sourceCode);
 
             //mapKey := 货品名称_规格型号
             String mapKey = productName + "_" + productSpec;
@@ -686,6 +778,19 @@ public class WarehouseProductExcelBySimpleServiceImp implements WarehouseProduct
                     }
                 }
 
+                //sourceCode 企业货品编码(允许为空)
+                String sourceCode = productMap.get("sourceCode");
+                if (sourceCode != null && sourceCode.trim().length() > 0) {
+                    addProduct.setSourceCode(sourceCode.trim());
+                }
+
+                //typeName 货品类型(允许为空)
+                //type 货品类型id
+                String type = productMap.get("typeName");
+                if (type != null && type.trim().length() > 0) {
+                    addProduct.setType(type);
+                }
+
                 //创建货品编码
                 String code = coderuleService.createCoder(companyId,"vmes_product","P");
                 addProduct.setCode(code);
@@ -704,18 +809,23 @@ public class WarehouseProductExcelBySimpleServiceImp implements WarehouseProduct
         if (excelProductMap == null) {return;}
 
         Map<String, Map<String, String>> productUnitMap = new LinkedHashMap<>();
-        Map<String, String> prodNameKeyMap = this.findProductNameMapBySystem(companyId);
+        //货品Map结构体: <货品名称_规格型号, 货品id>
+        Map<String, String> prodNameKeyMap = this.findProductMapBySystem(companyId);
         for (Iterator iterator = excelProductMap.keySet().iterator(); iterator.hasNext();) {
             //mapKey:货品名称_规格型号
             String mapKey = iterator.next().toString().trim();
             Map<String, String> productMap = excelProductMap.get(mapKey);
 
             //productName 货品名称
-            String productName = productMap.get("productName");
+            //String productName = productMap.get("productName");
+            //productSpec 规格型号
+            //String productSpec = productMap.get("productSpec");
+            //mapKey:货品名称_规格型号
+            //String productMapKey = productName + "_" + productSpec;
 
             String productId = new String();
-            if (prodNameKeyMap != null && prodNameKeyMap.get(productName) != null) {
-                productId = prodNameKeyMap.get(productName).trim();
+            if (prodNameKeyMap != null && prodNameKeyMap.get(mapKey) != null) {
+                productId = prodNameKeyMap.get(mapKey).trim();
             }
 
             //productUnitName 计量单位
