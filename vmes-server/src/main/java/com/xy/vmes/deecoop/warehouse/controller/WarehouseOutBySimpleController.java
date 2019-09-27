@@ -226,20 +226,20 @@ public class WarehouseOutBySimpleController {
             for (WarehouseOutDetail detail : detailList) {
                 String detailId = detail.getId();
                 if (detailId == null || detailId.trim().length() == 0) {
-                    String id = Conv.createUuid();
-                    detail.setId(id);
+//                    String id = Conv.createUuid();
+//                    detail.setId(id);
                     //状态(0:待派单 1:执行中 2:已完成 -1.已取消)
                     detail.setState("1");
                     detail.setParentId(warehouseOut.getId());
                     detail.setCuser(warehouseOut.getCuser());
-                    detail.setWarehouseId(warehouseOut.getWarehouseId());
+//                    detail.setWarehouseId(warehouseOut.getWarehouseId());
                     warehouseOutDetailService.save(detail);
                 }
                 else {
                     if (detail.getRemark() == null || detail.getRemark().trim().length() == 0) {
                         detail.setRemark("");
                     }
-                    detail.setWarehouseId(warehouseOut.getWarehouseId());
+//                    detail.setWarehouseId(warehouseOut.getWarehouseId());
                     warehouseOutDetailService.update(detail);
                 }
             }
@@ -366,6 +366,24 @@ public class WarehouseOutBySimpleController {
         ResultModel model = warehouseOutExecuteService.executeWarehouseOutExecuteBySimple(pageData);
         Long endTime = System.currentTimeMillis();
         logger.info("################/warehouseOutBySimple/executeWarehouseOutExecuteBySimple 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 报废审核
+     * @author 刘威
+     * @date 2018-10-16
+     * @throws Exception
+     */
+    @PostMapping("/warehouse/warehouseOutBySimple/auditWarehouseOutExecuteBySimple")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel auditWarehouseOutExecuteBySimple() throws Exception {
+        logger.info("################/warehouseOutBySimple/auditWarehouseOutExecuteBySimple 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pageData = HttpUtils.parsePageData();
+        ResultModel model = warehouseOutExecuteService.auditWarehouseOutExecuteBySimple(pageData);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/warehouseOutBySimple/auditWarehouseOutExecuteBySimple 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 

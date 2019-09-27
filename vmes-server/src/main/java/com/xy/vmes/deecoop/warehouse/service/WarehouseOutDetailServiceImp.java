@@ -861,6 +861,10 @@ public class WarehouseOutDetailServiceImp implements WarehouseOutDetailService {
         ResultModel model = new ResultModel();
 
         List<Column> columnList = columnService.findColumnList("WarehouseOutDetail");
+        String typeName = pd.getString("typeName");
+        if(!StringUtils.isEmpty(typeName)&&"报废处理".equals(typeName)){
+            columnList = columnService.findColumnList("WarehouseScrapDetail");
+        }
         if (columnList == null || columnList.size() == 0) {
             model.putCode("1");
             model.putMsg("数据库没有生成TabCol，请联系管理员！");

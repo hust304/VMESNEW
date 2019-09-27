@@ -449,7 +449,12 @@
             <if test="currentCompanyId != null and currentCompanyId != ''">
                 and warehouseout.company_id = #{currentCompanyId}
             </if>
-
+            <if test="inTypeNames != null and inTypeNames != ''">
+                and type.name in (${inTypeNames})
+            </if>
+            <if test="notInTypeNames != null and notInTypeNames != ''">
+                and type.name not in (${notInTypeNames})
+            </if>
             <if test="typeName != null and typeName != ''">
                 and type.name LIKE CONCAT(CONCAT('%', #{typeName}),'%')
             </if>
@@ -544,7 +549,12 @@
             <if test="currentCompanyId != null and currentCompanyId != ''">
                 and warehouseout.company_id = #{currentCompanyId}
             </if>
-
+            <if test="inTypeNames != null and inTypeNames != ''">
+                and type.name in (${inTypeNames})
+            </if>
+            <if test="notInTypeNames != null and notInTypeNames != ''">
+                and type.name not in (${notInTypeNames})
+            </if>
             <if test="typeName != null and typeName != ''">
                 and type.name LIKE CONCAT(CONCAT('%', #{typeName}),'%')
             </if>

@@ -129,7 +129,7 @@ public class EvaluateUtil {
      */
     public static BigDecimal countFormulaP2N(BigDecimal count, String formula) {
         if (count == null) {return BigDecimal.valueOf(0D);}
-        if (formula == null || formula.trim().length() == 0) {return BigDecimal.valueOf(0D);}
+        if (formula == null || formula.trim().length() == 0) {return count;}
 
         Map<String, Object> parmMap = new HashMap<String, Object>();
         parmMap.put("P", count);

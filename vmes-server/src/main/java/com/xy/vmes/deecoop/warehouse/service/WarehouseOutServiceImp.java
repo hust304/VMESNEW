@@ -625,6 +625,13 @@ public class WarehouseOutServiceImp implements WarehouseOutService {
         Map result = new HashMap();
 
         List<Column> columnList = columnService.findColumnList("WarehouseOut");
+
+        String typeName = pd.getString("typeName");
+        if(!StringUtils.isEmpty(typeName)&&"报废处理".equals(typeName)){
+            columnList = columnService.findColumnList("WarehouseScrap");
+        }
+
+
         if (columnList == null || columnList.size() == 0) {
             model.putCode("1");
             model.putMsg("数据库没有生成TabCol，请联系管理员！");
