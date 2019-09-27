@@ -1,10 +1,8 @@
 package com.xy.vmes.deecoop.system.service;
 
 import com.xy.vmes.common.util.DateFormat;
-import com.xy.vmes.entity.Department;
+import com.xy.vmes.entity.*;
 import com.xy.vmes.entity.Dictionary;
-import com.xy.vmes.entity.Post;
-import com.xy.vmes.entity.Warehouse;
 import com.xy.vmes.service.*;
 import com.yvan.Conv;
 import com.yvan.PageData;
@@ -263,28 +261,28 @@ public class EmployeeExcelBySimpleServiceImp implements EmployeeExcelBySimpleSer
                 }
             }
 
-//            //entryDate 入职日期
-//            String entryDate = mapObject.get("entryDate");
-//            if (entryDate != null && entryDate.trim().length() > 0) {
-//                try {
-//                    SimpleDateFormat dateFormat = new SimpleDateFormat(DateFormat.DEFAULT_DATE_FORMAT);
-//                    dateFormat.parse(entryDate);
-//                    //entryDate 入职日期
-//                    mapObject.put("entryDate", entryDate);
-//                } catch (ParseException e) {
-//                    //String msg_column_date_error = "第 {0} 行: {1}:{2} 输入错误，请输入正确的日期格式(yyyy-MM-dd)！"
-//                    String str_error = MessageFormat.format(msg_column_date_error,
-//                            (i + index_int),
-//                            "入职日期",
-//                            entryDate);
-//                    strBuf.append(str_error);
-//
-//                    maxRow = maxRow + 1;
-//                    if (maxShowRow_int <= maxRow) {
-//                        return strBuf.toString();
-//                    }
-//                }
-//            }
+            //entryDate 入职日期
+            String entryDate = mapObject.get("entryDate");
+            if (entryDate != null && entryDate.trim().length() > 0) {
+                try {
+                    SimpleDateFormat dateFormat = new SimpleDateFormat(DateFormat.DEFAULT_DATE_FORMAT);
+                    dateFormat.parse(entryDate);
+                    //entryDate 入职日期
+                    mapObject.put("entryDate", entryDate);
+                } catch (ParseException e) {
+                    //String msg_column_date_error = "第 {0} 行: {1}:{2} 输入错误，请输入正确的日期格式(yyyy-MM-dd)！"
+                    String str_error = MessageFormat.format(msg_column_date_error,
+                            (i + index_int),
+                            "入职日期",
+                            entryDate);
+                    strBuf.append(str_error);
+
+                    maxRow = maxRow + 1;
+                    if (maxShowRow_int <= maxRow) {
+                        return strBuf.toString();
+                    }
+                }
+            }
 
             //contractDate 合同到期
             String contractDate = mapObject.get("contractDate");
@@ -340,21 +338,38 @@ public class EmployeeExcelBySimpleServiceImp implements EmployeeExcelBySimpleSer
      * 1. 添加部门
      * 2. 添加部门岗位
      * 3. 字典表(政治面貌)
+     *
+     * deptPostMap:参数说明
+     * deptPostMap:部门岗位结构体:<部门名称_岗位名称, 部门岗位Map>
+     *   部门岗位Map:
+     *     deptName 部门名称
+     *     postName 岗位名称
+     *     postId   岗位id
+     *
      * @param objectList
+     * @param deptPostMap 按引用传入,方法调用后值方式改变
      * @param companyId
+     * @param userId
      */
     public void addSystemBaseTableImportExcel(List<LinkedHashMap<String, String>> objectList,
+                                              Map<String, Map<String, String>> deptPostMap,
                                               String companyId,
                                               String userId) throws Exception {
         if (objectList == null || objectList.size() == 0) {return;}
 
         //1. 添加部门
+        //部门Map结构体: <部门名称, 部门id>
         Map<String, String> sysDepartmentMap = this.findDepartmentMapBySystem(companyId);
         Map<String, String> excelDepartmentMap = this.findDepartmentMapByExcel(objectList);
         this.addDepartment(excelDepartmentMap, sysDepartmentMap, companyId, userId);
 
         //2. 添加部门岗位
-
+        //部门岗位结构体:<部门名称_岗位名称, 部门岗位Map>
+        //部门岗位Map:
+        //  deptName 部门名称
+        //  postName 岗位名称
+        //  postId   岗位id
+        this.addDepartmentPost(objectList, deptPostMap, companyId, userId);
 
         //3. 字典表(政治面貌)
         //政治面貌:political:pid:015cecdb7fdd450c8a21c7c97d406aa4
@@ -362,6 +377,127 @@ public class EmployeeExcelBySimpleServiceImp implements EmployeeExcelBySimpleSer
         Map<String, String> sysPoliticalMap = dictionaryService.getNameKeyMap();
         Map<String, String> excelPoliticalMap = this.findPoliticalMapByExcel(objectList);
         this.addPolitical(excelPoliticalMap, sysPoliticalMap, companyId, userId);
+
+    }
+
+    public void addImportExcelByList(List<LinkedHashMap<String, String>> objectList,
+                                     Map<String, Map<String, String>> deptPostMap,
+                                     String companyId) {
+        if (objectList == null || objectList.size() == 0) {return;}
+
+        //政治面貌:political:pid:015cecdb7fdd450c8a21c7c97d406aa4
+        dictionaryService.implementBusinessMapByParentID(Common.DICTIONARY_MAP.get("political"), companyId);
+        Map<String, String> sysPoliticalMap = dictionaryService.getNameKeyMap();
+
+        for (int i = 0; i < objectList.size(); i++) {
+            LinkedHashMap<String, String> mapObject = objectList.get(i);
+
+            Employee employee = new Employee();
+            employee.setCompanyId(companyId);
+            String userId = mapObject.get("userId");
+            employee.setCuser(userId);
+
+            //必填项验证
+            //code 员工编号
+            String code = mapObject.get("code");
+            employee.setCode(code);
+            //name 员工姓名
+            String name = mapObject.get("name");
+            employee.setName(name);
+            //mobile 手机号
+            String mobile = mapObject.get("mobile");
+            employee.setMobile(mobile);
+
+            //deptName 部门名称
+            String deptName = mapObject.get("deptName");
+            //postName 岗位名称
+            String postName = mapObject.get("postName");
+            String postId = new String();
+
+            //mapKey:部门名称_岗位名称
+            String mapKey = deptName + "_" + postName;
+            Map<String, String> deptPostValueMap = deptPostMap.get(mapKey);
+            if (deptPostValueMap != null && deptPostValueMap.get(mapKey) != null) {
+                postId = deptPostValueMap.get(mapKey).trim();
+            }
+
+            /////////////////////////////////////////////////
+            //非必填项验证
+            //email 邮箱
+            String email = mapObject.get("email");
+            if (email != null && email.trim().length() > 0) {
+                employee.setMobile(email);
+            }
+            //identityNumber 身份证号
+            String identityNumber = mapObject.get("identityNumber");
+            employee.setIdentityNumber(identityNumber);
+            //maritalName 婚姻状况 marital 婚姻状况id
+            String marital = mapObject.get("marital");
+            employee.setMarital(marital);
+            //sexName 性别 sex 性别id
+            String sex = mapObject.get("sex");
+            employee.setSex(sex);
+
+            //birthday 出生日期
+            String birthday = mapObject.get("birthday");
+            if (birthday != null && birthday.trim().length() > 0) {
+                Date date = DateFormat.dateString2Date(birthday, DateFormat.DEFAULT_DATE_FORMAT);
+                if (date != null) {
+                    employee.setBirthday(date);
+                }
+            }
+
+            //entryDate 入职日期
+            String entryDate = mapObject.get("entryDate");
+            if (entryDate != null && entryDate.trim().length() > 0) {
+                Date date = DateFormat.dateString2Date(entryDate, DateFormat.DEFAULT_DATE_FORMAT);
+                if (date != null) {
+                    employee.setEntryDate(date);
+                }
+            }
+
+            //contractDate 合同到期
+            String contractDate = mapObject.get("contractDate");
+            if (contractDate != null && contractDate.trim().length() > 0) {
+                Date date = DateFormat.dateString2Date(contractDate, DateFormat.DEFAULT_DATE_FORMAT);
+                if (date != null) {
+                    employee.setContractDate(date);
+                }
+            }
+
+            //nativePlace 籍贯
+            String nativePlace = mapObject.get("nativePlace");
+            employee.setNativePlace(nativePlace);
+
+            //politicalName 政治面貌 political 政治面貌id
+            String political = new String();
+            String politicalName = mapObject.get("politicalName");
+            if (sysPoliticalMap != null && sysPoliticalMap.get(politicalName) != null) {
+                political = sysPoliticalMap.get(politicalName).trim();
+            }
+            employee.setPolitical(political);
+
+            //remark 备注
+            String remark = mapObject.get("remark");
+            employee.setRemark(remark);
+
+            try {
+                employeeService.save(employee);
+
+                //新增员工主岗信息
+                EmployPost employPost = new EmployPost();
+                employPost.setEmployId(employee.getId());
+                employPost.setPostId(postId);
+                employPost.setCuser(employee.getCuser());
+                employPost.setIsplurality("0");//主岗
+                employPostService.save(employPost);
+
+                //System.out.println("第" + (i+1) + "行：添加成功！");
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -488,10 +624,83 @@ public class EmployeeExcelBySimpleServiceImp implements EmployeeExcelBySimpleSer
         }
     }
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //部门岗位结构体:<部门名称_岗位名称, 部门岗位Map>
+    //部门岗位Map:
+    //  deptName 部门名称
+    //  postName 岗位名称
+    //  postId   岗位id
     private void addDepartmentPost(List<LinkedHashMap<String, String>> objectList,
-                                   String companyId,
-                                   String userId) {
+                                                               Map<String, Map<String, String>> deptPostMap,
+                                                               String companyId,
+                                                               String userId) throws Exception {
+        if (objectList == null || objectList.size() == 0) {return;}
 
+        for (Map<String, String> mapObject : objectList) {
+            Map<String, String> deptPostValueMap = new HashMap();
+
+            //deptName 部门名称
+            String deptName = mapObject.get("deptName");
+            deptPostValueMap.put("deptName", deptName);
+
+            //postName 岗位
+            String postName = mapObject.get("postName");
+            deptPostValueMap.put("postName", postName);
+
+            //mapKey:部门名称_岗位
+            String mapKey = deptName + "_" + postName;
+
+            deptPostMap.put(mapKey, deptPostValueMap);
+        }
+
+        if (deptPostMap.size() > 0) {
+            //部门Map结构体: <部门名称, 部门id>
+            Map<String, String> sysDepartmentMap = this.findDepartmentMapBySystem(companyId);
+
+            for (Iterator iterator = deptPostMap.keySet().iterator(); iterator.hasNext();) {
+                //mapKey:部门名称_岗位
+                String mapKey = (String)iterator.next();
+                Map<String, String> deptPostValueMap = deptPostMap.get(mapKey);
+
+                //deptName 部门名称
+                String deptName = deptPostValueMap.get("deptName");
+                //deptId 部门id
+                String deptId = new String();
+                if (sysDepartmentMap != null && sysDepartmentMap.get(deptName) != null) {
+                    deptId = sysDepartmentMap.get(deptName).trim();
+                }
+
+                //postName 岗位
+                String postName = deptPostValueMap.get("postName");
+
+                if (deptId != null && deptId.trim().length() > 0
+                    && postName != null && postName.trim().length() > 0
+                ) {
+                    //(部门id,岗位名称)查询岗位表(vmes_post)
+                    PageData findMap = new PageData();
+                    findMap.put("deptId", deptId);
+                    findMap.put("name", postName);
+                    //是否禁用(0:已禁用 1:启用)
+                    findMap.put("isdisable", "1");
+                    findMap.put("mapSize", Integer.valueOf(findMap.size()));
+                    Post postDB = postService.findPost(findMap);
+                    if (postDB != null) {
+                        deptPostValueMap.put("postId", postDB.getId());
+                    } else if (postDB == null) {
+                        Post addPost = new Post();
+                        addPost.setName(postName);
+                        addPost.setDeptId(deptId);
+                        //获取岗位编号
+                        String code = coderuleService.createCoder(companyId,"vmes_post","P");
+                        addPost.setCode(code);
+                        addPost.setCompanyId(companyId);
+                        addPost.setCuser(userId);
+                        postService.save(addPost);
+
+                        deptPostValueMap.put("postId", addPost.getId());
+                    }
+                }
+            }
+        }
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

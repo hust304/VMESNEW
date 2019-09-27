@@ -1230,28 +1230,24 @@ public class EmployeeServiceImp implements EmployeeService {
             return model;
         }
 
-//        //2. Excel导入字段唯一性判断-在Excel文件中
-//        msgStr = employeeExcelService.checkExistImportExcelBySelf(dataMapLst,
-//                Integer.valueOf(3),
-//                Common.SYS_IMPORTEXCEL_MESSAGE_MAXROW);
-//        if (msgStr != null && msgStr.trim().length() > 0) {
-//            model.putCode(Integer.valueOf(1));
-//            model.putMsg(this.exportExcelError(msgStr).toString());
-//            return model;
-//        }
-//
-//        //3. Excel导入字段唯一性判断-在业务表中判断
-//        msgStr = employeeExcelService.checkExistImportExcelByDatabase(dataMapLst,
-//                Integer.valueOf(3),
-//                Common.SYS_IMPORTEXCEL_MESSAGE_MAXROW);
-//        if (msgStr != null && msgStr.trim().length() > 0) {
-//            model.putCode(Integer.valueOf(1));
-//            model.putMsg(this.exportExcelError(msgStr).toString());
-//            return model;
-//        }
-//
-//        //4. Excel数据添加到货品表
-//        employeeExcelService.addImportExcelByList(dataMapLst);
+        //2. 添加系统基础表
+        // 1. 添加部门
+        // 2. 添加部门岗位
+        // 3. 字典表(政治面貌)
+
+        //部门岗位结构体:<部门名称_岗位名称, 部门岗位Map>
+        //部门岗位Map:
+        //  deptName 部门名称
+        //  postName 岗位名称
+        //  postId   岗位id
+        Map<String, Map<String, String>> deptPostMap = new HashMap<>();
+        employeeExcelBySimpleService.addSystemBaseTableImportExcel(dataMapLst,
+                deptPostMap,
+                companyId,
+                userId);
+
+        //3. Excel数据添加到货品表
+        employeeExcelBySimpleService.addImportExcelByList(dataMapLst, deptPostMap, companyId);
 
         return model;
     }
