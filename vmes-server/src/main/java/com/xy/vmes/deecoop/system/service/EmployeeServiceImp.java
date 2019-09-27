@@ -44,15 +44,15 @@ public class EmployeeServiceImp implements EmployeeService {
     private UserService userService;
     @Autowired
     private UserRoleService userRoleService;
-
     @Autowired
     private DepartmentService departmentService;
-
 
     @Autowired
     private ColumnService columnService;
     @Autowired
     private EmployeeExcelService employeeExcelService;
+    @Autowired
+    private EmployeeExcelBySimpleService employeeExcelBySimpleService;
 
     /**
     * 创建人：刘威 自动创建，禁止修改
@@ -1171,6 +1171,87 @@ public class EmployeeServiceImp implements EmployeeService {
 
         //4. Excel数据添加到货品表
         employeeExcelService.addImportExcelByList(dataMapLst);
+
+        return model;
+    }
+
+    public ResultModel importExcelEmployeeBySimple(MultipartFile file) throws Exception {
+        ResultModel model = new ResultModel();
+
+        if (file == null) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("请上传Excel文件！");
+            return model;
+        }
+
+        // 验证文件是否合法
+        // 获取上传的文件名(文件名.后缀)
+        String fileName = file.getOriginalFilename();
+        if (fileName == null
+                || !(fileName.matches("^.+\\.(?i)(xlsx)$")
+                || fileName.matches("^.+\\.(?i)(xls)$"))
+                ) {
+            String failMesg = "不是excel格式文件,请重新选择！";
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(failMesg);
+            return model;
+        }
+
+        // 判断文件的类型，是2003还是2007
+        boolean isExcel2003 = true;
+        if (fileName.matches("^.+\\.(?i)(xlsx)$")) {
+            isExcel2003 = false;
+        }
+
+        List<List<String>> dataLst = ExcelUtil.readExcel(file.getInputStream(), isExcel2003);
+        List<LinkedHashMap<String, String>> dataMapLst = ExcelUtil.reflectMapList(dataLst);
+
+        HttpServletRequest httpRequest = HttpUtils.currentRequest();
+        String companyId = httpRequest.getParameter("companyId");
+        String userId = httpRequest.getParameter("userId");
+
+        if (dataMapLst == null || dataMapLst.size() == 1) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("导入文件数据为空，请至少填写一行导入数据！");
+            return model;
+        }
+        //去掉列表名称行
+        dataMapLst.remove(0);
+
+        //1. Excel导入字段(非空,数据有效性验证[数字类型,字典表(大小)类是否匹配])
+        String msgStr = employeeExcelBySimpleService.checkColumnImportExcel(dataMapLst,
+                companyId,
+                userId,
+                Integer.valueOf(3),
+                Common.SYS_IMPORTEXCEL_MESSAGE_MAXROW);
+        if (msgStr != null && msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(this.exportExcelError(msgStr).toString());
+            return model;
+        }
+
+//        //2. Excel导入字段唯一性判断-在Excel文件中
+//        msgStr = employeeExcelService.checkExistImportExcelBySelf(dataMapLst,
+//                Integer.valueOf(3),
+//                Common.SYS_IMPORTEXCEL_MESSAGE_MAXROW);
+//        if (msgStr != null && msgStr.trim().length() > 0) {
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg(this.exportExcelError(msgStr).toString());
+//            return model;
+//        }
+//
+//        //3. Excel导入字段唯一性判断-在业务表中判断
+//        msgStr = employeeExcelService.checkExistImportExcelByDatabase(dataMapLst,
+//                Integer.valueOf(3),
+//                Common.SYS_IMPORTEXCEL_MESSAGE_MAXROW);
+//        if (msgStr != null && msgStr.trim().length() > 0) {
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg(this.exportExcelError(msgStr).toString());
+//            return model;
+//        }
+//
+//        //4. Excel数据添加到货品表
+//        employeeExcelService.addImportExcelByList(dataMapLst);
 
         return model;
     }

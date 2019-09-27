@@ -464,6 +464,24 @@ public class EmployeeController {
     }
 
     /**
+     * 员工Excel导入(简版)
+     *
+     * @author 陈刚
+     * @date 2018-11-20
+     */
+    @PostMapping("/system/employee/importExcelEmployeeBySimple")
+    public ResultModel importExcelEmployeeBySimple(@RequestParam(value="excelFile") MultipartFile file) throws Exception  {
+        logger.info("################/system/employee/importExcelEmployeeBySimple 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        ResultModel model = employeeService.importExcelEmployeeBySimple(file);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/system/employee/importExcelEmployeeBySimple 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+
+    /**
      * 修改员工合同到期日期
      *
      * @return

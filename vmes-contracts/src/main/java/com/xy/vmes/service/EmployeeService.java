@@ -157,6 +157,8 @@ public interface EmployeeService {
     ResultModel selectEmployeeAndUserById(String employPostId) throws Exception;
 
     ResultModel importExcelEmployee(MultipartFile file) throws Exception;
+    //员工Excel导入(简版)
+    ResultModel importExcelEmployeeBySimple(MultipartFile file) throws Exception;
 }
 
 
