@@ -10,6 +10,7 @@ import com.yvan.common.util.Common;
 import com.yvan.springmvc.ResultModel;
 import com.yvan.template.ExcelAjaxTemplate;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -409,6 +410,10 @@ public class DictionaryController {
         if ("true".equals(isNeedName) && nameValue != null && nameValue.trim().length() > 0) {
             findMap.put("isNeedName", isNeedName);
             findMap.put("nameValue", nameValue.trim());
+        }
+        String notInids = pd.getString("notInids");
+        if(!StringUtils.isEmpty(notInids)){
+            findMap.put("notInids", notInids);
         }
 
         findMap.put("orderStr", "serial_number asc");

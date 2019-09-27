@@ -502,6 +502,98 @@ public class WarehouseOutExecuteServiceImp implements WarehouseOutExecuteService
         return model;
     }
 
+
+
+    @Override
+    public ResultModel auditWarehouseOutExecuteBySimple(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+        String parentId = pageData.getString("id");
+        String currentUserId = pageData.getString("currentUserId");
+        String currentCompanyId = pageData.getString("currentCompanyId");
+        PageData pd = new PageData();
+        pd.put("parentId",parentId);
+        List<Map> mapList = warehouseOutDetailService.getDataListPage(pd);
+
+        StringBuffer msgBuf = new StringBuffer();
+        if(mapList!=null&&mapList.size()>0){
+            for (Map outDetailMap : mapList) {
+                String productId = (String) outDetailMap.get("productId");
+                String productName = (String) outDetailMap.get("productName");
+                BigDecimal count = (BigDecimal)outDetailMap.get("count");
+
+                //验证当前(货品id)在库存中的数量
+                PageData findMap = new PageData();
+                findMap.put("companyId", currentCompanyId);
+                findMap.put("productId", productId);
+                //查询结果集需要(实体库)-结果集只含有(实体库)
+                findMap.put("isNeedEntity", "true");
+                //查询结果集不需要(备件库)
+                findMap.put("isNotNeedSpare", "true");
+                List<Map> warehouseProductMapList = warehouseToWarehouseProductService.findWarehouseToWarehouseProductByProduct(findMap, null);
+                BigDecimal productStockCount = this.findProductStockCount(warehouseProductMapList);
+
+                if (count.doubleValue() > productStockCount.doubleValue()) {
+                    String msgTemp = "货品名称：{0} 该货品库存不足，请更改报废数量";
+                    String msgStr = MessageFormat.format(msgTemp, productName);
+                    msgBuf.append(msgStr);
+                    continue;
+                }
+
+            }
+        }
+
+        if (msgBuf.toString().trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgBuf.toString());
+            return model;
+        }
+
+        if(mapList!=null&&mapList.size()>0){
+            for (Map outDetailMap : mapList) {
+                String detailId = (String) outDetailMap.get("id");
+                String productId = (String) outDetailMap.get("productId");
+                String warehouseId = (String)outDetailMap.get("warehouseId");
+                BigDecimal count = (BigDecimal)outDetailMap.get("count");
+
+                WarehouseOutExecutor outExecutor = new WarehouseOutExecutor();
+                outExecutor.setDetailId(detailId);
+                outExecutor.setExecutorId(currentUserId);
+                outExecutor.setCuser(currentUserId);
+
+                Map columnMap = new HashMap();
+                columnMap.put("detail_id",detailId);
+                List<WarehouseOutExecutor> warehouseOutExecutorList = warehouseOutExecutorService.selectByColumnMap(columnMap);
+                if(warehouseOutExecutorList!=null&&warehouseOutExecutorList.size()>0){
+                    for(int i=0;i<warehouseOutExecutorList.size();i++){
+                        WarehouseOutExecutor warehouseOutExecutor = warehouseOutExecutorList.get(i);
+                        warehouseOutExecutor.setIsdisable("0");
+                        warehouseOutExecutor.setRemark("执行人变更");
+                        warehouseOutExecutorService.update(warehouseOutExecutor);
+                    }
+                }
+                warehouseOutExecutorService.save(outExecutor);
+
+                WarehouseOutDetail outDetail = new WarehouseOutDetail();
+                outDetail.setId(detailId);
+                outDetail.setCuser(currentUserId);
+
+                List<WarehouseOutExecute> outExecuteList = new ArrayList<WarehouseOutExecute>();
+                List<Map<String, Object>> outMapList = warehouseProductToolService.findWarehouseProductOutMapList(productId,currentCompanyId,warehouseId,count);
+                if (outMapList != null && outMapList.size() > 0) {
+                    outExecuteList = this.outMapList2ExecuteList(outDetail, outMapList, outExecuteList);
+                }
+                this.addWarehouseOutExecuteBySimple(outExecuteList);
+                this.executeWarehouseOutExecuteBySimple(parentId,detailId,currentUserId,currentCompanyId);
+                this.updateWarehouseOutState(detailId);
+            }
+        }
+
+
+        return model;
+    }
+
+
+
     @Override
     public ResultModel executeWarehouseOutExecuteBySimple(PageData pageData) throws Exception {
         ResultModel model = new ResultModel();

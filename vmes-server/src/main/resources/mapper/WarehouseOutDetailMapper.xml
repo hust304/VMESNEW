@@ -520,7 +520,7 @@
     <!-- 自动创建，可以修改 -->
     <select id="getDataListPage"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
         select
-            parentId,warehouseId,productId,code,round(ifnull(count,0),2) count,state,stateName,cuser,cdate,udate,remark,isdisable,qrcode,
+            parentId,warehouseId,productId,code,round(ifnull(count,0),2) count,state,stateName,cuser,cdate,udate,remark,isdisable,qrcode,pathName,
             businessId,productCode,productName,productSpec,productGenre,productGenreName,productUnit,productUnitName,warehouseOutCode,parentWarehouseId,id,
             priceUnit,priceUnitName,round(ifnull(priceCount,0),2) priceCount,round(ifnull(productCount,0),2) productCount,
             n2pFormula,n2pIsScale,n2pDecimalCount,
@@ -531,6 +531,7 @@
                 detail.id id,
                 detail.parent_id parentId,
                 detail.warehouse_id warehouseId,
+                warehouse.path_name pathName,
                 detail.product_id productId,
                 detail.code code,
                 detail.count count,
@@ -573,7 +574,7 @@
             vmes_warehouse_out_detail detail
                 left join vmes_warehouse_out whout on whout.id = detail.parent_id
                 left join vmes_warehouse_out_execute outexecute on outexecute.detail_id = detail.id and outexecute.isdisable = '1'
-
+                left join vmes_warehouse warehouse on warehouse.id = detail.warehouse_id
                 left join vmes_product prod on prod.id = detail.product_id
                 left join vmes_dictionary genre on prod.genre = genre.id
                 left join vmes_dictionary productUnit on detail.product_unit = productUnit.id
