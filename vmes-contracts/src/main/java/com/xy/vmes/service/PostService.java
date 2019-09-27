@@ -134,9 +134,9 @@ public interface PostService {
 //     */
 //    String createCoder(String companyID);
 
-//    Post findPost(PageData object);
-//    Post findPostById(String id);
-//    List<Post> findPostList(PageData object);
+    Post findPost(PageData object);
+    Post findPostById(String id);
+    List<Post> findPostList(PageData object);
     List<Post> findPostListByDeptId(String deptId);//@
 
     /**

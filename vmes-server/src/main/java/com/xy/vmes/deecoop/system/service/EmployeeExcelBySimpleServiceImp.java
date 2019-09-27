@@ -3,6 +3,8 @@ package com.xy.vmes.deecoop.system.service;
 import com.xy.vmes.common.util.DateFormat;
 import com.xy.vmes.entity.Department;
 import com.xy.vmes.entity.Dictionary;
+import com.xy.vmes.entity.Post;
+import com.xy.vmes.entity.Warehouse;
 import com.xy.vmes.service.*;
 import com.yvan.Conv;
 import com.yvan.PageData;
@@ -30,6 +32,9 @@ public class EmployeeExcelBySimpleServiceImp implements EmployeeExcelBySimpleSer
     private EmployeeService employeeService;
     @Autowired
     private EmployPostService employPostService;
+
+    @Autowired
+    private CoderuleService coderuleService;
 
     public String checkColumnImportExcel(List<LinkedHashMap<String, String>> objectList,
                                          String companyId,
@@ -343,20 +348,20 @@ public class EmployeeExcelBySimpleServiceImp implements EmployeeExcelBySimpleSer
                                               String userId) throws Exception {
         if (objectList == null || objectList.size() == 0) {return;}
 
-        for (int i = 0; i < objectList.size(); i++) {
-            LinkedHashMap<String, String> mapObject = objectList.get(i);
+        //1. 添加部门
+        Map<String, String> sysDepartmentMap = this.findDepartmentMapBySystem(companyId);
+        Map<String, String> excelDepartmentMap = this.findDepartmentMapByExcel(objectList);
+        this.addDepartment(excelDepartmentMap, sysDepartmentMap, companyId, userId);
 
-            //1. 添加部门
+        //2. 添加部门岗位
 
 
-            //2. 添加部门岗位
-            //3. 字典表(政治面貌)
-            //政治面貌:political:pid:015cecdb7fdd450c8a21c7c97d406aa4
-            dictionaryService.implementBusinessMapByParentID(Common.DICTIONARY_MAP.get("political"), companyId);
-            Map<String, String> sysPoliticalMap = dictionaryService.getNameKeyMap();
-            Map<String, String> excelPoliticalMap = this.findPoliticalMapByExcel(objectList);
-            this.addPolitical(excelPoliticalMap, sysPoliticalMap, companyId, userId);
-        }
+        //3. 字典表(政治面貌)
+        //政治面貌:political:pid:015cecdb7fdd450c8a21c7c97d406aa4
+        dictionaryService.implementBusinessMapByParentID(Common.DICTIONARY_MAP.get("political"), companyId);
+        Map<String, String> sysPoliticalMap = dictionaryService.getNameKeyMap();
+        Map<String, String> excelPoliticalMap = this.findPoliticalMapByExcel(objectList);
+        this.addPolitical(excelPoliticalMap, sysPoliticalMap, companyId, userId);
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -373,8 +378,8 @@ public class EmployeeExcelBySimpleServiceImp implements EmployeeExcelBySimpleSer
 
         //查询部门表 vmes_warehouse
         PageData findMap = new PageData();
-        //id1:企业id
-        findMap.put("id1", companyId);
+        //pid:企业id
+        findMap.put("pid", companyId);
         //organizeType 组织类型(1:公司 2:部门)
         findMap.put("organizeType", "2");
         //layer:2: 一级部门
@@ -411,13 +416,84 @@ public class EmployeeExcelBySimpleServiceImp implements EmployeeExcelBySimpleSer
         return departmentMap;
     }
 
-    private void addDepartment(Map<String, String> excelWarehouseMap,
-                               Map<String, String> sysWarehouseMap,
+    private void addDepartment(Map<String, String> excelDepartmentMap,
+                               Map<String, String> sysDepartmentMap,
                                String companyId, String userId) throws Exception {
+        if (excelDepartmentMap == null) {return;}
+
+        //1.(部门名称,一级部门名称) 与系统仓库表结构体比较 是否存在
+        List<String> addDepartmentList = new ArrayList();
+        for (Iterator iterator = excelDepartmentMap.keySet().iterator(); iterator.hasNext();) {
+            //(部门名称,一级部门名称)
+            String mapKey = iterator.next().toString().trim();
+            if (sysDepartmentMap.get(mapKey) == null) {
+                addDepartmentList.add(mapKey);
+            }
+        }
+
+        if (addDepartmentList.size() > 0) {
+            String pid = companyId;
+            Department paterObj = departmentService.findDepartmentById(pid);
+
+            for (String departmentValue : addDepartmentList) {
+                Department addDepartment = new Department();
+
+                //创建部门信息
+                addDepartment.setId(Conv.createUuid());
+                addDepartment.setPid(pid);
+                //组织类型(1:公司 2:部门)
+                addDepartment.setOrganizeType("2");
+                addDepartment.setCuser(userId);
+                addDepartment.setName(departmentValue);
+
+                //获取部门编码
+                String code = departmentService.createCoder(companyId);
+                addDepartment.setCode(code);
+
+                addDepartment = departmentService.id2DepartmentByLayer(addDepartment.getId(),
+                        Integer.valueOf(paterObj.getLayer().intValue() + 1),
+                        addDepartment);
+                addDepartment = departmentService.paterObject2ObjectDB(paterObj, addDepartment);
+
+                //设置默认部门顺序
+                if (addDepartment.getSerialNumber() == null) {
+                    Integer maxCount = departmentService.findMaxSerialNumber(addDepartment.getPid());
+                    addDepartment.setSerialNumber(Integer.valueOf(maxCount.intValue() + 1));
+                }
+                departmentService.save(addDepartment);
+
+                //创建部门岗位信息
+                //负责人(岗位)
+                String code_1 = coderuleService.createCoder(companyId,"vmes_post","P");
+                Post post_1 = new Post();
+                post_1.setDeptId(addDepartment.getId());
+                post_1.setName("负责人");
+                post_1.setCompanyId(companyId);
+                post_1.setCode(code_1);
+                post_1.setCuser(userId);
+                post_1.setRemark("负责人(岗位)-创建部门-系统自动创建");
+                postService.save(post_1);
+
+                //员工(岗位)
+                String code_2 = coderuleService.createCoder(companyId,"vmes_post","P");
+                Post post_2 = new Post();
+                post_2.setDeptId(addDepartment.getId());
+                post_2.setName("员工");
+                post_2.setCompanyId(companyId);
+                post_2.setCode(code_2);
+                post_2.setCuser(userId);
+                post_2.setRemark("员工(岗位)-创建部门-系统自动创建");
+                postService.save(post_2);
+            }
+        }
+    }
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    private void addDepartmentPost(List<LinkedHashMap<String, String>> objectList,
+                                   String companyId,
+                                   String userId) {
 
     }
 
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     private Map<String, String> findPoliticalMapByExcel(List<LinkedHashMap<String, String>> objectList) {
         Map<String, String> politicalMap = new LinkedHashMap<>();

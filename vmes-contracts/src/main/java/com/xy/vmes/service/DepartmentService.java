@@ -118,7 +118,7 @@ public interface DepartmentService {
      * @param companyID  公司ID-组织架构ID
      * @return
      */
-//    String createCoder(String companyID);
+    String createCoder(String companyID);
 
     /**
      * 创建人：陈刚

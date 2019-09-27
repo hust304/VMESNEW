@@ -225,38 +225,61 @@ public class WarehouseProductExcelBySimpleServiceImp implements WarehouseProduct
                                               String companyId,
                                               String userId) throws Exception {
 
+
+
+//        for (int i = 0; i < objectList.size(); i++) {
+//            LinkedHashMap<String, String> mapObject = objectList.get(i);
+//
+//            //1. 查询仓库表-系统中已经存在的仓库比较-不存在添加仓库表
+//            Map<String, String> sysWarehouseMap = this.findWarehouseMapBySystem(companyId);
+//            Map<String, String> excelWarehouseMap = this.findWarehouseMapByExcel(objectList);
+//            this.addWarehouse(excelWarehouseMap, sysWarehouseMap, companyId, userId);
+//
+//            //2. 查询字典表(货品单位)-系统中已经存在的单位比较-不存在添加字典表(货品单位)
+//            Map<String, String> excelUnitMap = this.findUnitMapByExcel(objectList);
+//            this.addUnit(excelUnitMap, sysUnitMap, companyId, userId);
+//
+//            //3. 查询字典表(货品类型)-系统中已经存在的单位比较-不存在添加字典表(货品类型)
+//            Map<String, String> excelProductTypeMap = this.findProductTypeMapByExcel(objectList);
+//            this.addProductType(excelProductTypeMap, sysProductTypeMap, companyId, userId);
+//
+//            //4. 查询货品表(货品名称_规格型号)-系统中已经存在的货品比较-不存在添加货品表(货品单位)
+//            Map<String, String> sysProductMap = this.findProductMapBySystem(companyId);
+//            Map<String, Map<String, String>> excelProductMap = this.findProductMapByExcel(objectList, companyId);
+//            this.addProduct(excelProductMap, sysProductMap, companyId, userId);
+//
+//            //5. 货品计量单位绑定
+//            this.addProductUnit(excelProductMap, companyId, userId);
+//        }
+
+        //1. 查询仓库表-系统中已经存在的仓库比较-不存在添加仓库表
+        Map<String, String> sysWarehouseMap = this.findWarehouseMapBySystem(companyId);
+        Map<String, String> excelWarehouseMap = this.findWarehouseMapByExcel(objectList);
+        this.addWarehouse(excelWarehouseMap, sysWarehouseMap, companyId, userId);
+
+        //2. 查询字典表(货品单位)-系统中已经存在的单位比较-不存在添加字典表(货品单位)
         // productUnitName 计量单位
         dictionaryService.implementBusinessMapByParentID(Common.DICTIONARY_MAP.get("productUnit"), companyId);
         Map<String, String> sysUnitMap = dictionaryService.getNameKeyMap();
+        Map<String, String> excelUnitMap = this.findUnitMapByExcel(objectList);
+        this.addUnit(excelUnitMap, sysUnitMap, companyId, userId);
 
+        //3. 查询字典表(货品类型)-系统中已经存在的单位比较-不存在添加字典表(货品类型)
         //typeName 货品类型
         dictionaryService.implementBusinessMapByParentID(Common.DICTIONARY_MAP.get("productType"), companyId);
         Map<String, String> sysProductTypeMap = dictionaryService.getNameKeyMap();
+        Map<String, String> excelProductTypeMap = this.findProductTypeMapByExcel(objectList);
+        this.addProductType(excelProductTypeMap, sysProductTypeMap, companyId, userId);
 
-        for (int i = 0; i < objectList.size(); i++) {
-            LinkedHashMap<String, String> mapObject = objectList.get(i);
+        //4. 查询货品表(货品名称_规格型号)-系统中已经存在的货品比较-不存在添加货品表(货品单位)
+        Map<String, String> sysProductMap = this.findProductMapBySystem(companyId);
+        Map<String, Map<String, String>> excelProductMap = this.findProductMapByExcel(objectList, companyId);
+        this.addProduct(excelProductMap, sysProductMap, companyId, userId);
 
-            //1. 查询仓库表-系统中已经存在的仓库比较-不存在添加仓库表
-            Map<String, String> sysWarehouseMap = this.findWarehouseMapBySystem(companyId);
-            Map<String, String> excelWarehouseMap = this.findWarehouseMapByExcel(objectList);
-            this.addWarehouse(excelWarehouseMap, sysWarehouseMap, companyId, userId);
+        //5. 货品计量单位绑定
+        this.addProductUnit(excelProductMap, companyId, userId);
 
-            //2. 查询字典表(货品单位)-系统中已经存在的单位比较-不存在添加字典表(货品单位)
-            Map<String, String> excelUnitMap = this.findUnitMapByExcel(objectList);
-            this.addUnit(excelUnitMap, sysUnitMap, companyId, userId);
 
-            //3. 查询字典表(货品类型)-系统中已经存在的单位比较-不存在添加字典表(货品类型)
-            Map<String, String> excelProductTypeMap = this.findProductTypeMapByExcel(objectList);
-            this.addProductType(excelProductTypeMap, sysProductTypeMap, companyId, userId);
-
-            //4. 查询货品表(货品名称_规格型号)-系统中已经存在的货品比较-不存在添加货品表(货品单位)
-            Map<String, String> sysProductMap = this.findProductMapBySystem(companyId);
-            Map<String, Map<String, String>> excelProductMap = this.findProductMapByExcel(objectList, companyId);
-            this.addProduct(excelProductMap, sysProductMap, companyId, userId);
-
-            //5. 货品计量单位绑定
-            this.addProductUnit(excelProductMap, companyId, userId);
-        }
     }
 
     public void findWarehouseProductMapByExcelDataList(List<LinkedHashMap<String, String>> objectList,
