@@ -46,10 +46,11 @@ public class BomServiceImp implements BomService {
     private BomTreeService bomTreeService;
     @Autowired
     private BomExcelService bomExcelService;
+    @Autowired
+    private BomTreeToProductService bomTreeToProductService;
 
     @Autowired
     private ColumnService columnService;
-
     @Autowired
     private CoderuleService coderuleService;
 
@@ -284,43 +285,48 @@ public class BomServiceImp implements BomService {
     }
 
     @Override
-    public void exportExcelBoms(PageData pd, Pagination pg) throws Exception {
-        if(pg==null){
-            pg =  HttpUtils.parsePagination(pd);
-        }
+    public void exportExcelBoms(PageData pd) throws Exception {
         List<Column> columnList = columnService.findColumnList("Bom");
         if (columnList == null || columnList.size() == 0) {
             throw new RestException("1","数据库没有生成TabCol，请联系管理员！");
         }
 
-        //根据查询条件获取业务数据List
-
-        String ids = (String)pd.getString("ids");
-        String queryStr = "";
-        if (ids != null && ids.trim().length() > 0) {
-            ids = StringUtil.stringTrimSpace(ids);
-            ids = "'" + ids.replace(",", "','") + "'";
-            queryStr = "id in (" + ids + ")";
-        }
-        pd.put("queryStr", queryStr);
-
-
-        pg.setSize(100000);
-        List<Map> dataList = this.getDataListPage(pd, pg);
-
-        //查询数据转换成Excel导出数据
-        List<LinkedHashMap<String, String>> dataMapList = ColumnUtil.modifyDataList(columnList, dataList);
-        HttpServletResponse response = HttpUtils.currentResponse();
-
-        //查询数据-Excel文件导出
-        String fileName = pd.getString("fileName");
-        if (fileName == null || fileName.trim().length() == 0) {
-            fileName = "ExcelBom";
+        //获取指定栏位字符串-重新调整List<Column>
+        String fieldCode = pd.getString("fieldCode");
+        if (fieldCode != null && fieldCode.trim().length() > 0) {
+            columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
         }
 
-        //导出文件名-中文转码
-        fileName = new String(fileName.getBytes("utf-8"),"ISO-8859-1");
-        ExcelUtil.excelExportByDataList(response, fileName, dataMapList);
+        String bomId = pd.getString("bomId");
+        pd.put("bomId", bomId);
+
+        String companyId = pd.getString("currentCompanyId");
+        pd.put("companyId", companyId);
+
+        List<Map<String, Object>> dataList = bomTreeToProductService.findBomTreeProductList(pd);
+        //获取root节点
+        Map<String, Object> rootMap = bomTreeToProductService.findRootMap(dataList);
+
+
+        List<Map<String, Object>> bomTreeProdList = new ArrayList<>();
+        bomTreeToProductService.findMapLitBomTreeToProduct(rootMap, dataList, bomTreeProdList);
+
+        //System.out.println("bomTreeProdList: " + bomTreeProdList.size());
+
+
+//        //查询数据转换成Excel导出数据
+//        List<LinkedHashMap<String, String>> dataMapList = ColumnUtil.modifyDataList(columnList, dataList);
+//        HttpServletResponse response = HttpUtils.currentResponse();
+//
+//        //查询数据-Excel文件导出
+//        String fileName = pd.getString("fileName");
+//        if (fileName == null || fileName.trim().length() == 0) {
+//            fileName = "ExcelBom";
+//        }
+//
+//        //导出文件名-中文转码
+//        fileName = new String(fileName.getBytes("utf-8"),"ISO-8859-1");
+//        ExcelUtil.excelExportByDataList(response, fileName, dataMapList);
     }
 
     @Override

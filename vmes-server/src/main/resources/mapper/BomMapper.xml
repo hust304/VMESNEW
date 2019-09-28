@@ -185,9 +185,9 @@
                 (replace(uuid(), '-', ''),'BomProduct','remark','备注',21, '1','0','1','0',now(), 'admin'),
                 (replace(uuid(), '-', ''),'BomProduct','planCount','计划数量',22, '1','0','1','0',now(), 'admin'),
                 (replace(uuid(), '-', ''),'BomProduct','lackCount','缺料数量',23, '1','0','1','0',now(), 'admin'),
-                (replace(uuid(), '-', ''),'BomProduct','id','id',0, '1','0','1','0',now(), 'admin')
+                (replace(uuid(), '-', ''),'BomProduct','id','id',0, '1','0','1','0',now(), 'admin'),
 
-
+                (replace(uuid(), '-', ''),'BomProduct','isExistBom','isExistBom',24, '1','0','1','0',now(), 'admin'),
 
             delete from vmes_column where model_code = 'BomList' ;
             insert into vmes_column (
@@ -390,7 +390,34 @@
     <!-- 自动创建，可以修改 -->
     <select id="getDataListPage"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
         select
-        <include refid="Field1"></include>
+        bom.id id, <!-- id -->
+        bom.company_id companyId,<!-- 公司ID-组织架构 -->
+        bom.code code,<!-- bom编码 -->
+        bom.name name,<!-- bom名称 -->
+        bom.isdefault isdefault,<!-- 是否默认(0:非默认 1:默认) -->
+        bom.cuser cuser,<!-- 创建用户id -->
+        bom.cdate cdate,<!-- 创建时间 -->
+        bom.uuser uuser,<!-- 修改用户id -->
+        bom.udate udate,<!-- 修改时间 -->
+        bom.isdisable isdisable,<!-- 是否启用(0:已禁用 1:启用) -->
+        bom.remark remark,<!-- 备注 -->
+        bom.id bomId,
+        CASE
+            WHEN bom.id is not null THEN 'Y'
+            WHEN bom.id is null THEN 'N'
+        ELSE null
+        END isExistBom,
+
+        prod.id prodId,
+        prod.code prodCode,
+        prod.name prodName,
+        prod.spec prodSpec,
+        genre.name genreName,
+        genre.id genreId,
+        unit.name unitName,
+        unit.id unitId,
+        type.name typeName,
+        type.id typeId
         from
         vmes_product prod
         left join (

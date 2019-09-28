@@ -115,7 +115,7 @@ public interface BomService {
 
     ResultModel listPageBoms(PageData pd, Pagination pg)throws Exception;
 
-    void exportExcelBoms(PageData pd, Pagination pg)throws Exception;
+    void exportExcelBoms(PageData pd)throws Exception;
 
     ResultModel importExcelBoms(MultipartFile file) throws Exception;
 

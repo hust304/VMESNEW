@@ -15,5 +15,5 @@ import java.util.Map;
 @Mapper
 @Repository
 public interface BomTreeToProductMapper {
-    List<Map> findBomTreeProductList(PageData pd);
+    List<Map<String, Object>> findBomTreeProductList(PageData pd);
 }
