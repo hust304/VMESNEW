@@ -574,7 +574,7 @@ public class EmployeeExcelBySimpleServiceImp implements EmployeeExcelBySimpleSer
             //email 邮箱
             String email = mapObject.get("email");
             if (email != null && email.trim().length() > 0) {
-                employee.setMobile(email);
+                employee.setEmail(email);
             }
             //identityNumber 身份证号
             String identityNumber = mapObject.get("identityNumber");
