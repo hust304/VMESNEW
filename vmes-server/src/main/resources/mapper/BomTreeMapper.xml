@@ -158,6 +158,8 @@
             (replace(uuid(), '-', ''),'BomTree','isdisable','是否启用',20, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'BomTree','remark','备注',21, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'BomTree','pathId','路径',22, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTree','isreplaceable','是否可替代物',23, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTree','childrenNum','子节点数量',24, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'BomTree','id','id',0, '1','0','1','0',now(), 'admin')
 
 
@@ -304,6 +306,8 @@
         tree.isdisable isdisable,<!-- 是否启用(0:已禁用 1:启用) -->
         tree.remark remark,<!-- 备注 -->
         tree.path_id pathId,<!-- 路径 -->
+        tree.isreplaceable isreplaceable,
+        (select count(*) from vmes_bom_tree where INSTR(path_id,tree.path_id)>0  and isreplaceable='0') childrenNum,
         tree.id id <!-- id -->
     </sql>
 
@@ -369,6 +373,9 @@
             <if test="parentProdId != null and parentProdId != ''">
                 and tree.parent_prod_id = #{parentProdId}
             </if>
+            <if test="isreplaceable != null and isreplaceable != ''">
+                and tree.isreplaceable = #{isreplaceable}
+            </if>
         </where>
         <if test="orderStr != null and orderStr != ''" >
             order by ${orderStr}
@@ -404,6 +411,9 @@
             </if>
             <if test="bomId != null and bomId != ''">
                 and tree.bom_id = #{bomId}
+            </if>
+            <if test="isreplaceable != null and isreplaceable != ''">
+                and tree.isreplaceable = #{isreplaceable}
             </if>
         </where>
         <if test="orderStr != null and orderStr != ''" >
@@ -456,6 +466,9 @@
             </if>
             <if test="pathId != null and pathId != ''">
                 and tree.path_id LIKE CONCAT(#{pathId},'%')
+            </if>
+            <if test="isreplaceable != null and isreplaceable != ''">
+                and tree.isreplaceable = #{isreplaceable}
             </if>
             <if test="queryStr != null and queryStr!=''" ><!-- 自定义查询 -->
                 and ${queryStr}
