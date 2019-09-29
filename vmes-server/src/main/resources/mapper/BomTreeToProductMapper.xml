@@ -6,6 +6,7 @@
 创建时间：2019-09-25
  -->
 <mapper namespace="com.xy.vmes.deecoop.base.dao.BomTreeToProductMapper">
+    <!--Bom货品Excel数据导出-->
     <insert id="bomTreeToProduct" >
         delete from vmes_column where model_code = 'bomTreeToProduct';
         insert into vmes_column (
