@@ -62,6 +62,17 @@ public class BomTreeToProductServiceImp implements BomTreeToProductService {
         }
     }
 
+    public List<Map> findMapListExportExcel(List<Map<String, Object>> bomTreeProdList) {
+        List<Map> mapList = new ArrayList<>();
+        if (bomTreeProdList == null || bomTreeProdList.size() == 0) {return mapList;}
+
+        for (Map<String, Object> mapObject : bomTreeProdList) {
+            mapList.add(mapObject);
+        }
+
+        return mapList;
+    }
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //    public Map<String, Object> findMapByBomTreeId(String bomTreeId, List<Map<String, Object>> mapList) {
 //        if (bomTreeId == null || bomTreeId.trim().length() == 0) {return null;}

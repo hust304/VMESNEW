@@ -286,7 +286,7 @@ public class BomServiceImp implements BomService {
 
     @Override
     public void exportExcelBoms(PageData pd) throws Exception {
-        List<Column> columnList = columnService.findColumnList("Bom");
+        List<Column> columnList = columnService.findColumnList("bomTreeToProduct");
         if (columnList == null || columnList.size() == 0) {
             throw new RestException("1","数据库没有生成TabCol，请联系管理员！");
         }
@@ -307,26 +307,24 @@ public class BomServiceImp implements BomService {
         //获取root节点
         Map<String, Object> rootMap = bomTreeToProductService.findRootMap(dataList);
 
-
+        //BomTreeToProduct 查询结果集-生成Excel导出数据
         List<Map<String, Object>> bomTreeProdList = new ArrayList<>();
         bomTreeToProductService.findMapLitBomTreeToProduct(rootMap, dataList, bomTreeProdList);
+        List<Map> exportMapList = bomTreeToProductService.findMapListExportExcel(bomTreeProdList);
 
-        //System.out.println("bomTreeProdList: " + bomTreeProdList.size());
+        //查询数据转换成Excel导出数据
+        List<LinkedHashMap<String, String>> dataMapList = ColumnUtil.modifyDataList(columnList, exportMapList);
+        HttpServletResponse response = HttpUtils.currentResponse();
 
+        //查询数据-Excel文件导出
+        String fileName = pd.getString("fileName");
+        if (fileName == null || fileName.trim().length() == 0) {
+            fileName = "ExcelBom";
+        }
 
-//        //查询数据转换成Excel导出数据
-//        List<LinkedHashMap<String, String>> dataMapList = ColumnUtil.modifyDataList(columnList, dataList);
-//        HttpServletResponse response = HttpUtils.currentResponse();
-//
-//        //查询数据-Excel文件导出
-//        String fileName = pd.getString("fileName");
-//        if (fileName == null || fileName.trim().length() == 0) {
-//            fileName = "ExcelBom";
-//        }
-//
-//        //导出文件名-中文转码
-//        fileName = new String(fileName.getBytes("utf-8"),"ISO-8859-1");
-//        ExcelUtil.excelExportByDataList(response, fileName, dataMapList);
+        //导出文件名-中文转码
+        fileName = new String(fileName.getBytes("utf-8"),"ISO-8859-1");
+        ExcelUtil.excelExportByDataList(response, fileName, dataMapList);
     }
 
     @Override

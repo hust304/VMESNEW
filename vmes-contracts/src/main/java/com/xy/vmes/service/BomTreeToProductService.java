@@ -23,6 +23,8 @@ public interface BomTreeToProductService {
                                     List<Map<String, Object>> dataList,
                                     List<Map<String, Object>> bomTreeProdList);
 
+    List<Map> findMapListExportExcel(List<Map<String, Object>> bomTreeProdList);
+
     List<Map<String, Object>> findBomTreeProductList(PageData pd) throws Exception;
 
     //Map<String, Object> findMapByBomTreeId(String bomTreeId, List<Map<String, Object>> mapList);
