@@ -127,7 +127,9 @@ public interface EmployeeService {
     Employee findEmployee(PageData object);//@
 //    List<Employee> findEmployeeList(PageData object);
     Employee findEmployeeById(String id);//@
+
     boolean isExistByMobile(String id, String mobile);//@
+    boolean isExistByMobile(String id, String mobile, String companyId);
     boolean isExistByCode(String id, String code, String companyId);//@
 
     ResultModel addEmployeeAndUser(PageData pd) throws Exception;

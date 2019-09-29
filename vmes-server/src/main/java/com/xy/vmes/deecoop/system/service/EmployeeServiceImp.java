@@ -301,6 +301,28 @@ public class EmployeeServiceImp implements EmployeeService {
         findMap.put("mobile", mobile);
         //是否禁用(0:已禁用 1:启用)
         findMap.put("isdisable", "1");
+
+        if (id != null && id.trim().length() > 0) {
+            findMap.put("id", id);
+            findMap.put("isSelfExist", "true");
+        }
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+
+        List<Employee> objectList = this.findEmployeeList(findMap);
+        if (objectList != null && objectList.size() > 0) {return true;}
+
+        return false;
+    }
+    public boolean isExistByMobile(String id, String mobile, String companyId) {
+        if (mobile == null || mobile.trim().length() == 0) {return false;}
+
+        PageData findMap = new PageData();
+        findMap.put("id", id);
+        findMap.put("mobile", mobile);
+        findMap.put("currentCompanyId", companyId);
+        //是否禁用(0:已禁用 1:启用)
+        findMap.put("isdisable", "1");
+
         if (id != null && id.trim().length() > 0) {
             findMap.put("id", id);
             findMap.put("isSelfExist", "true");
@@ -1230,6 +1252,27 @@ public class EmployeeServiceImp implements EmployeeService {
             return model;
         }
 
+        //2. Excel导入字段唯一性判断(员工编号,手机号)-在Excel文件中
+        msgStr = employeeExcelBySimpleService.checkExistImportExcelBySelf(dataMapLst,
+                Integer.valueOf(3),
+                Common.SYS_IMPORTEXCEL_MESSAGE_MAXROW);
+        if (msgStr != null && msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(this.exportExcelError(msgStr).toString());
+            return model;
+        }
+
+        //3. Excel导入字段唯一性判断(员工编号,手机号)-在业务表中判断
+        msgStr = employeeExcelBySimpleService.checkExistImportExcelByDatabase(dataMapLst,
+                Integer.valueOf(3),
+                Common.SYS_IMPORTEXCEL_MESSAGE_MAXROW);
+        if (msgStr != null && msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(this.exportExcelError(msgStr).toString());
+            return model;
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //2. 添加系统基础表
         // 1. 添加部门
         // 2. 添加部门岗位

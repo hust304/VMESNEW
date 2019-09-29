@@ -11,6 +11,14 @@ public interface EmployeeExcelBySimpleService {
                                   Integer index,
                                   Integer maxShowRow);
 
+    String checkExistImportExcelBySelf(List<LinkedHashMap<String, String>> objectList,
+                                       Integer index,
+                                       Integer maxShowRow);
+
+    String checkExistImportExcelByDatabase(List<LinkedHashMap<String, String>> objectList,
+                                           Integer index,
+                                           Integer maxShowRow);
+
     /**
      * 添加系统基础表
      * 1. 添加部门

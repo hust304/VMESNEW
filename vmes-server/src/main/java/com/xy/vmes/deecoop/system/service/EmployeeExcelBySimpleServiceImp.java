@@ -78,6 +78,19 @@ public class EmployeeExcelBySimpleServiceImp implements EmployeeExcelBySimpleSer
             mapObject.put("userId", userId);
 
             //必填项验证
+            //code 员工编号
+            String code = mapObject.get("code");
+            if (code == null || code.trim().length() == 0) {
+                //String msg_column_isnull = "第 {0} 行: ({1})输入为空或空字符串，({1})是必填字段不可为空！"
+                String str_isnull = MessageFormat.format(msg_column_isnull,
+                        (i+index_int),
+                        "员工编号");
+                strBuf.append(str_isnull);
+
+                maxRow = maxRow + 1;
+                if (maxShowRow_int <= maxRow) {return strBuf.toString();}
+            }
+
             //name 员工姓名
             String name = mapObject.get("name");
             if (name == null || name.trim().length() == 0) {
@@ -333,6 +346,136 @@ public class EmployeeExcelBySimpleServiceImp implements EmployeeExcelBySimpleSer
         return strBuf.toString();
     }
 
+    public String checkExistImportExcelBySelf(List<LinkedHashMap<String, String>> objectList,
+                                              Integer index,
+                                              Integer maxShowRow) {
+        if (objectList == null || objectList.size() == 0) {return new String();}
+
+        int maxRow = 0;
+        int index_int = 1;
+        if (index != null) {
+            index_int = index.intValue();
+        }
+
+        int maxShowRow_int = 20;
+        if (maxShowRow != null) {
+            maxShowRow_int = maxShowRow.intValue();
+        }
+
+        String msg_column_exist_1 = "第 {0} 行: {1}:{2}输入重复，与第 {3} 行重复！" + Common.SYS_ENDLINE_DEFAULT;
+        Map<String, Integer> empMobileMap = new HashMap<String, Integer>();
+        Map<String, Integer> empCodeMap = new HashMap<String, Integer>();
+
+        StringBuffer strBuf = new StringBuffer();
+        for (int i = 0; i < objectList.size(); i++) {
+            LinkedHashMap<String, String> mapObject = objectList.get(i);
+
+            //code 员工编号
+            String code = mapObject.get("code");
+            if (code != null && code.trim().length() > 0) {
+                if (empCodeMap.get(code) != null) {
+                    //String msg_column_exist_1 = "第 {0} 行: ({1}:{2})输入重复，与(第 {3} 行)重复！"
+                    String str_error = MessageFormat.format(msg_column_exist_1,
+                            (i+index_int),
+                            "员工编号",
+                            code,
+                            empCodeMap.get(code).toString());
+                    strBuf.append(str_error);
+
+                    maxRow = maxRow + 1;
+                    if (maxShowRow_int <= maxRow) {return strBuf.toString();}
+                } else {
+                    empCodeMap.put(code, Integer.valueOf(i + index_int));
+                }
+            }
+
+            //手机号 (mobile)唯一性判断
+            String mobile = mapObject.get("mobile");
+            if (mobile != null && mobile.trim().length() > 0) {
+                if (empMobileMap.get(mobile) != null) {
+                    //String msg_column_exist_1 = "第 {0} 行: ({1}:{2})输入重复，与(第 {3} 行)重复！"
+                    String str_error = MessageFormat.format(msg_column_exist_1,
+                            (i+index_int),
+                            "手机号",
+                            mobile,
+                            empMobileMap.get(mobile).toString());
+                    strBuf.append(str_error);
+
+                    maxRow = maxRow + 1;
+                    if (maxShowRow_int <= maxRow) {return strBuf.toString();}
+                } else {
+                    empMobileMap.put(mobile, Integer.valueOf(i + index_int));
+                }
+            }
+        }
+
+        return strBuf.toString();
+    }
+
+    public String checkExistImportExcelByDatabase(List<LinkedHashMap<String, String>> objectList,
+                                                  Integer index,
+                                                  Integer maxShowRow) {
+        if (objectList == null || objectList.size() == 0) {return new String();}
+
+        int maxRow = 0;
+        int index_int = 1;
+        if (index != null) {
+            index_int = index.intValue();
+        }
+
+        int maxShowRow_int = 20;
+        if (maxShowRow != null) {
+            maxShowRow_int = maxShowRow.intValue();
+        }
+
+        String msg_column_exist_employee = "第 {0} 行: {1}:{2}在员工管理中已存在！" + Common.SYS_ENDLINE_DEFAULT;
+
+        StringBuffer strBuf = new StringBuffer();
+        for (int i = 0; i < objectList.size(); i++) {
+            LinkedHashMap<String, String> mapObject = objectList.get(i);
+
+            //companyId 企业ID
+            String companyId = mapObject.get("companyId");
+
+            //code 员工编号
+            String code = mapObject.get("code");
+            if (code != null && code.trim().length() > 0) {
+                if (employeeService.isExistByCode(null, code, companyId)) {
+                    //String msg_column_exist_employee = "第 {0} 行: ({1}:{2})在员工管理中已存在！" + Common.SYS_ENDLINE_DEFAULT;
+                    String str_error = MessageFormat.format(msg_column_exist_employee,
+                            (i+index_int),
+                            "员工编号",
+                            code);
+                    strBuf.append(str_error);
+
+                    maxRow = maxRow + 1;
+                    if (maxShowRow_int <= maxRow) {return strBuf.toString();}
+                }
+
+            }
+
+            //手机号 (mobile)唯一性判断
+            String mobile = mapObject.get("mobile");
+            if (mobile != null && mobile.trim().length() > 0) {
+                //员工表
+                if (employeeService.isExistByMobile(null, mobile, companyId)) {
+                    //String msg_column_exist_employee = "第 {0} 行: ({1}:{2})在员工管理中已存在！" + Common.SYS_ENDLINE_DEFAULT;
+                    String str_error = MessageFormat.format(msg_column_exist_employee,
+                            (i+index_int),
+                            "手机号",
+                            mobile);
+                    strBuf.append(str_error);
+
+                    maxRow = maxRow + 1;
+                    if (maxShowRow_int <= maxRow) {return strBuf.toString();}
+                }
+            }
+        }
+
+        return strBuf.toString();
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**
      * 添加系统基础表
      * 1. 添加部门
@@ -416,9 +559,14 @@ public class EmployeeExcelBySimpleServiceImp implements EmployeeExcelBySimpleSer
 
             //mapKey:部门名称_岗位名称
             String mapKey = deptName + "_" + postName;
+            //部门岗位结构体:<部门名称_岗位名称, 部门岗位Map>
+            //部门岗位Map:
+            //  deptName 部门名称
+            //  postName 岗位名称
+            //  postId   岗位id
             Map<String, String> deptPostValueMap = deptPostMap.get(mapKey);
-            if (deptPostValueMap != null && deptPostValueMap.get(mapKey) != null) {
-                postId = deptPostValueMap.get(mapKey).trim();
+            if (deptPostValueMap != null && deptPostValueMap.get("postId") != null) {
+                postId = deptPostValueMap.get("postId").trim();
             }
 
             /////////////////////////////////////////////////
@@ -522,6 +670,7 @@ public class EmployeeExcelBySimpleServiceImp implements EmployeeExcelBySimpleSer
         findMap.put("layer", "2");
         //是否启用(0:已禁用 1:启用)
         findMap.put("isdisable", "1");
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
 
         List<Department> departmentList = departmentService.findDepartmentList(findMap);
         if (departmentList == null || departmentList.size() == 0) {return departmentMap;}
