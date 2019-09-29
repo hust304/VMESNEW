@@ -1,12 +1,14 @@
 package com.yvan;
 
 import java.io.*;
+import java.text.MessageFormat;
 import java.util.*;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.yvan.common.util.Common;
 import com.yvan.platform.RestException;
 import com.yvan.template.ExcelAjaxTemplate;
 import org.apache.log4j.Logger;
@@ -21,7 +23,117 @@ public class ExcelUtil{
 	public static Logger logger = Logger.getLogger(ExcelUtil.class.getName());
 	public final static String SHEET_NAME = "sheet1";
 
+	//Bom货品Excel数据导出
+	public static void excelExportBomByDataList(HttpServletResponse response,
+	                                            String fileName,
+	                                            Map<String, Object> rootMap,
+	                                            List<LinkedHashMap<String, String>> dataMapList) throws Exception {
+		ServletOutputStream outputStream = null;
 
+		try {
+			response.reset();
+			response.setHeader("Content-Type","application/octet-stream" );
+			response.setHeader("Connection", "close");
+			response.setHeader("Content-Disposition","attachment;filename=" + fileName + ".xls" );
+
+			response.addHeader("Access-Control-Allow-Origin", "*");
+			response.addHeader("Access-Control-Allow-Methods", "*");
+			response.addHeader("Access-Control-Max-Age", "100");
+			response.addHeader("Access-Control-Allow-Headers", "Content-Type");
+			response.addHeader("Access-Control-Allow-Credentials", "false");
+//			response.setContentType("octets/stream;charset=utf-8");
+//			response.addHeader("Content-disposition", "attachment;filename=" + fileName + ".xls");
+			outputStream = response.getOutputStream();
+
+			//1. 生成Excel文件对象<HSSFWorkbook>: 业务查询数据结构体-Excel对象
+			HSSFWorkbook hssfWorkbook = ExcelUtil.loadExcelBomByDataList(rootMap, dataMapList);
+			hssfWorkbook.write(outputStream);
+		} catch (Exception e) {
+
+		} finally {
+			if (outputStream != null) {
+				outputStream.flush();
+				outputStream.close();
+			}
+		}
+	}
+
+	//Bom货品Excel数据导出
+	public static HSSFWorkbook loadExcelBomByDataList(Map<String, Object> rootMap, List<LinkedHashMap<String, String>> dataMapList) {
+		HSSFWorkbook hssfWorkbook = new HSSFWorkbook();
+		HSSFSheet sheet = hssfWorkbook.createSheet(SHEET_NAME);
+
+		//1. 设置货品名称行
+		//productCode 货品编码
+		String productCode = (String)rootMap.get("productCode");
+		//productName 货品名称
+		String productName = (String)rootMap.get("productName");
+
+		String titleTemp = "{0}/{1} Bom货品明细表";
+		String titleStr = MessageFormat.format(titleTemp, productCode, productName);
+
+		HSSFRow firstRow = sheet.createRow(0);
+		firstRow.setHeight((short) 450);
+		//创建Excel单元格
+		HSSFCell firstRowCell = firstRow.createCell(0);
+		firstRowCell.setCellValue(titleStr);
+
+		//设置列表样式(第一行,第二行)
+		CellStyle titleStyle0 = getTitleStyle(hssfWorkbook);
+		HSSFCell cell = null;
+		if (dataMapList == null || dataMapList.size() == 0) {return hssfWorkbook;}
+		for (int i = 0; i < dataMapList.size(); i++) {
+			HSSFRow row = sheet.createRow(i + 1);
+
+			//设置Excel行高度
+			row.setHeight((short) 350);
+			if (i == 0) {
+				row.setZeroHeight(true);
+			} else if (i == 1) {
+				row.setHeight((short) 450);
+			}
+
+			//获取Excel导入列数据
+			LinkedHashMap columnMap = dataMapList.get(i);
+			HSSFCellStyle twoStyle = getTwoStyle(hssfWorkbook);
+			HSSFCellStyle oneStyle = getOneStyle(hssfWorkbook);
+			int indexMap = 0;
+			for (Iterator iterator = columnMap.keySet().iterator(); iterator.hasNext();) {
+				String columnCode = iterator.next().toString().trim();
+				String columnValue = columnMap.get(columnCode).toString();
+
+				//栏位编码_hide: 该列为隐藏列
+				if (columnCode.indexOf("_hide") != -1) {
+					sheet.setColumnHidden(indexMap, true);
+				}
+
+				//创建Excel单元格
+				cell = row.createCell(indexMap);
+				//数据行
+				cell.setCellValue(columnValue);
+				//(第一行,第二行)
+				if (i == 0 || i == 1) {
+					RichTextString text = new HSSFRichTextString(columnValue);
+					cell.setCellValue(text);
+					cell.setCellStyle(titleStyle0);
+					sheet.setColumnWidth(indexMap, 5000);
+				} else if (i > 1 && i % 2 == 0) {
+					//数据行样式
+					cell.setCellStyle(twoStyle);
+				} else if (i > 1 && i % 2 != 0) {
+					cell.setCellStyle(oneStyle);
+				}
+
+				indexMap = indexMap + 1;
+			}
+		}
+
+
+
+		return hssfWorkbook;
+	}
+
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	public static void excelExportByDataList(HttpServletResponse response,
 	                                         String fileName,
 	                                         List<LinkedHashMap<String, String>> dataMapList) throws Exception {
@@ -53,7 +165,6 @@ public class ExcelUtil{
 				outputStream.close();
 			}
 		}
-
 	}
 
 	/**
