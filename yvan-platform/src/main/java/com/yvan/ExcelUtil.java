@@ -72,7 +72,7 @@ public class ExcelUtil{
 		String titleTemp = "{0}/{1} 货品明细表";
 		String titleStr = MessageFormat.format(titleTemp, productCode, productName);
 
-		//设置第一行样式：
+		//设置第一行样式-单元格(垂直,水平)居中：
 		HSSFCellStyle firstRowStyle = hssfWorkbook.createCellStyle();
 		firstRowStyle.setVerticalAlignment(VerticalAlignment.CENTER);//垂直
 		firstRowStyle.setAlignment(HorizontalAlignment.CENTER);//水平
