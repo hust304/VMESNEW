@@ -69,14 +69,20 @@ public class ExcelUtil{
 		//productName 货品名称
 		String productName = (String)rootMap.get("productName");
 
-		String titleTemp = "{0}/{1} Bom货品明细表";
+		String titleTemp = "{0}/{1} 货品明细表";
 		String titleStr = MessageFormat.format(titleTemp, productCode, productName);
 
+		//设置第一行样式：
+		HSSFCellStyle firstRowStyle = hssfWorkbook.createCellStyle();
+		firstRowStyle.setVerticalAlignment(VerticalAlignment.CENTER);//垂直
+		firstRowStyle.setAlignment(HorizontalAlignment.CENTER);//水平
+
 		HSSFRow firstRow = sheet.createRow(0);
-		firstRow.setHeight((short) 450);
+		firstRow.setHeight((short) 500);
 		//创建Excel单元格
 		HSSFCell firstRowCell = firstRow.createCell(0);
 		firstRowCell.setCellValue(titleStr);
+		firstRowCell.setCellStyle(firstRowStyle);
 
 		//设置列表样式(第一行,第二行)
 		CellStyle titleStyle0 = getTitleStyle(hssfWorkbook);
@@ -128,7 +134,11 @@ public class ExcelUtil{
 			}
 		}
 
-
+		//合并单元格
+		//Excel 第一行:第一列 到 第八列 合并单元格
+		//第一行:从0开始 第一列:从0开始
+		CellRangeAddress cra = new CellRangeAddress(0, 0, 0, 7);
+		sheet.addMergedRegion(cra);
 
 		return hssfWorkbook;
 	}
