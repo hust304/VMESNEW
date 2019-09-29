@@ -1,6 +1,5 @@
 package com.xy.vmes.service;
 
-import com.xy.vmes.entity.TreeEntity;
 import com.yvan.PageData;
 
 import java.util.List;

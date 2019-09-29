@@ -102,6 +102,9 @@
             <if test="prodId != null and prodId != ''">
                 and bomTree.prod_id = #{prodId}
             </if>
+            <if test="isreplaceable != null and isreplaceable != ''">
+                and bomTree.isreplaceable = #{isreplaceable}
+            </if>
 
         </where>
         <if test="orderStr != null and orderStr != ''" >
