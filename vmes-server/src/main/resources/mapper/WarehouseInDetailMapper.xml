@@ -127,29 +127,30 @@
     <select id="dataList" parameterType="com.yvan.PageData" resultType="com.xy.vmes.entity.WarehouseInDetail">
         select
             id id,
+            qrcode qrcode,
+            business_id businessId,
             parent_id parentId,
             execute_id executeId,
+
             warehouse_id warehouseId,
             product_id productId,
-
             code code,
             count count,
             state state,
+
             cuser cuser,
             cdate cdate,
-
             uuser uuser,
             udate udate,
             remark remark,
-            isdisable isdisable,
-            business_id businessId,
 
-            qrcode qrcode,
+            isdisable isdisable,
             product_unit productUnit,
             product_count productCount,
             price_unit priceUnit,
-            price_count priceCount
+            price_count priceCount,
 
+            price price
         from vmes_warehouse_in_detail
         <choose>
             <!--

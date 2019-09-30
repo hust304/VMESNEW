@@ -31,6 +31,7 @@ public class WarehouseInDetail implements Serializable {
 	//执行人ID
 	@TableField("execute_id")
 	private String executeId;
+
 	//(推荐)货位ID
 	@TableField("warehouse_id")
 	private String warehouseId;
@@ -46,6 +47,7 @@ public class WarehouseInDetail implements Serializable {
 	//状态(0:待派单 1:执行中 2:已完成 -1.已取消)
 	@TableField("state")
 	private String state;
+
 	//创建用户id
 	@TableField("cuser")
 	private String cuser;
@@ -61,17 +63,16 @@ public class WarehouseInDetail implements Serializable {
 	//备注
 	@TableField("remark")
 	private String remark;
+
 	//是否启用(0:已禁用 1:启用)
 	@TableField("isdisable")
 	private String isdisable;
-
 	//(货品)计量单位id
 	@TableField("product_unit")
 	private String productUnit;
 	//(货品)计量单位-入库数量
 	@TableField("product_count")
 	private BigDecimal productCount;
-
 	//(货品)计价单位id
 	@TableField("price_unit")
 	private String priceUnit;
@@ -79,6 +80,10 @@ public class WarehouseInDetail implements Serializable {
 	@TableField("price_count")
 	private BigDecimal priceCount;
 
+	//企业定制化字段///////////////////////////////////////////////////////////////////////////
+	//(货品)价格
+	@TableField("price")
+	private BigDecimal price;
 
 	public void setId(String id) {
 		this.id = id;
@@ -199,6 +204,14 @@ public class WarehouseInDetail implements Serializable {
 	}
 	public void setPriceCount(BigDecimal priceCount) {
 		this.priceCount = priceCount;
+	}
+
+	//企业定制化字段///////////////////////////////////////////////////////////////////////////
+	public BigDecimal getPrice() {
+		return price;
+	}
+	public void setPrice(BigDecimal price) {
+		this.price = price;
 	}
 	/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
