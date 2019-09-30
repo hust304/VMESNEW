@@ -7,6 +7,7 @@ import com.yvan.common.util.CommonCompanyTailor;
 import com.yvan.springmvc.ResultModel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -32,6 +33,7 @@ public class CompanyTailorController {
      * @return
      * @throws Exception
      */
+    @PostMapping("/system/companyTailor/findIsExistCompanyTailorByCompanyRole")
     public ResultModel findIsExistCompanyTailorByCompanyRole() throws Exception {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();

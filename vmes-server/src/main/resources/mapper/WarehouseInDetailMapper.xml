@@ -60,6 +60,7 @@
             (replace(uuid(), '-', ''), 'warehouseInDetail', 'p2nFormula', 'p2n:公式', 28, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
             (replace(uuid(), '-', ''), 'warehouseInDetail', 'p2nIsScale', 'p2n:是否需要四舍五入', 29, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
             (replace(uuid(), '-', ''), 'warehouseInDetail', 'p2nDecimalCount', 'p2n:保留小数位数', 30, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'warehouseInDetail', 'price', '单价', 31, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
 
     </insert>
 
@@ -108,6 +109,8 @@
 
         (replace(uuid(), '-', ''), 'warehouseInDetailProduct', 'n2pFormula', 'n2p:公式', 29, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
         (replace(uuid(), '-', ''), 'warehouseInDetailProduct', 'p2nFormula', 'p2n:公式', 30, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'warehouseInDetailProduct', 'price', '单价', 31, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'warehouseInDetailProduct', 'priceSum', '金额', 32, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
 
 
     </insert>
@@ -248,6 +251,7 @@
             ifnull(a.product_count, 0) productCount,
             a.price_unit priceUnit,
             ifnull(a.price_count, 0) priceCount,
+            round(ifnull(a.price, 0), 2) price,
 
             <!--货品表-->
             prod.code productCode,
