@@ -64,6 +64,8 @@
         (replace(uuid(), '-', ''),'warehouseCheckDetail','inParentCode','入库单编号',19, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'warehouseCheckDetail','outParentCode','出库单编号',20, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'warehouseCheckDetail','businessCode','业务单编号',21, '1','1','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'warehouseCheckDetail','warehouseName','仓库名称',22, '1','1','1','0',now(), 'admin'),
         </insert>
 
         <update id="updateStateByDetail" parameterType="com.yvan.PageData" >
@@ -213,6 +215,7 @@
             DATE_FORMAT(checkExecute.audit_date,'%Y-%m-%d %T') auditDate,
 
             warehouse.path_name pathName,
+            warehouse.name warehouseName,
             warehouse.code warehouseCode,
 
             <!--盘点数量-台账数量 -->
@@ -224,7 +227,13 @@
             '' businessCode,
 
             <!--货品表-->
-            product.code productCode,
+            product.code sysProductCode,
+            product.source_code custProductCode,
+            CASE
+              WHEN product.source_code is null THEN product.code
+              WHEN product.source_code is not null THEN product.source_code
+            ELSE null
+            END productCode,
             product.name productName,
             product.spec productSpec,
             produnit.unit productUnit,
