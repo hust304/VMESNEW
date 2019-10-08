@@ -162,6 +162,7 @@ public interface WarehouseCheckDetailService {
      * 返回值Map<String, List>
      *     negativeList: 负数结果集 List<WarehouseCheckDetail>
      *     positiveList: 正数结果集 List<WarehouseCheckDetail>
+     *     zeroList:     等于零结果集 List<WarehouseCheckDetail>
      * @param dtlList
      * @return
      */

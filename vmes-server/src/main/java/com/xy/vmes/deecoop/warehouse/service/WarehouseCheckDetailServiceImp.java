@@ -448,6 +448,7 @@ public class WarehouseCheckDetailServiceImp implements WarehouseCheckDetailServi
      * 返回值Map<String, List>
      *     negativeList: 负数结果集 List<WarehouseCheckDetail>
      *     positiveList: 正数结果集 List<WarehouseCheckDetail>
+     *     zeroList:     等于零结果集 List<WarehouseCheckDetail>
      * @param dtlList
      * @return
      */
@@ -459,9 +460,12 @@ public class WarehouseCheckDetailServiceImp implements WarehouseCheckDetailServi
         List<WarehouseCheckDetail> negativeList = this.findNegativeByDetailList(dtlList);
         //正数结果集 (盘点数量 - 台账数量)
         List<WarehouseCheckDetail> positiveList = this.findPositiveByDetailList(dtlList);
+        //等于零结果集 (盘点数量 - 台账数量)
+        List<WarehouseCheckDetail> zeroList = this.findZeroByDetailList(dtlList);
 
         valueMap.put("negativeList", negativeList);
         valueMap.put("positiveList", positiveList);
+        valueMap.put("zeroList", zeroList);
 
         return valueMap;
     }
@@ -732,6 +736,29 @@ public class WarehouseCheckDetailServiceImp implements WarehouseCheckDetailServi
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
+    //等于零结果集 (盘点数量 - 台账数量)
+    private List<WarehouseCheckDetail> findZeroByDetailList(List<WarehouseCheckDetail> dtlList) {
+        List<WarehouseCheckDetail> objectList = new ArrayList<>();
+        if (dtlList == null || dtlList.size() == 0) {return objectList;}
+
+        for (WarehouseCheckDetail object : dtlList) {
+            //台账数量 checkStockCount
+            BigDecimal checkStockCount = object.getCheckStockCount();
+
+            //盘点数量 stockCount
+            BigDecimal stockCount = object.getStockCount();
+
+            //变更库存数量 := (盘点数量 - 台账数量)
+            BigDecimal changeCount = BigDecimal.valueOf(stockCount.doubleValue() - checkStockCount.doubleValue());
+            object.setChangeCount(changeCount);
+
+            if (changeCount.doubleValue() == 0D) {
+                objectList.add(object);
+            }
+        }
+
+        return objectList;
+    }
 
     //负数结果集 (盘点数量 - 台账数量)
     private List<WarehouseCheckDetail> findNegativeByDetailList(List<WarehouseCheckDetail> dtlList) {

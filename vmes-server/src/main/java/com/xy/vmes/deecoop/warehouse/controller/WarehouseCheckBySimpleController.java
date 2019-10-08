@@ -279,6 +279,7 @@ public class WarehouseCheckBySimpleController {
         // 返回值Map<String, List>
         //     negativeList: 负数结果集 List<WarehouseCheckDetail>
         //     positiveList: 正数结果集 List<WarehouseCheckDetail>
+        //     zeroList:     等于零结果集 List<WarehouseCheckDetail>
         Map<String, List> valueMap = warehouseCheckDetailService.findValueMapByDetailList(detailList);
 
         //negativeList: 负数结果集(盘点数量-台账数量) List<WarehouseCheckDetail>
@@ -291,6 +292,12 @@ public class WarehouseCheckBySimpleController {
         List<WarehouseCheckDetail> positiveList = new ArrayList<>();
         if (valueMap != null && valueMap.get("positiveList") != null) {
             positiveList = valueMap.get("positiveList");
+        }
+
+        //zeroList: 等于零结果集(盘点数量-台账数量) List<WarehouseCheckDetail>
+        List<WarehouseCheckDetail> zeroList = new ArrayList<>();
+        if (valueMap != null && valueMap.get("zeroList") != null) {
+            zeroList = valueMap.get("zeroList");
         }
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -307,7 +314,7 @@ public class WarehouseCheckBySimpleController {
                     Common.DICTIONARY_MAP.get("warehouseEntity"),
                     cuser,
                     companyId,
-                    //盘点入库 4d89ccb1e64f499cbdc6409f173f5407:checkIn
+                    //盘盈:盘点入库 4d89ccb1e64f499cbdc6409f173f5407:checkIn
                     Common.DICTIONARY_MAP.get("checkIn"),
                     businessByInMap);
 
@@ -362,7 +369,7 @@ public class WarehouseCheckBySimpleController {
                     Common.DICTIONARY_MAP.get("warehouseEntity"),
                     cuser,
                     companyId,
-                    //盘点出库 55bdf3529c3c463489670a46c2651c1e:checkIn
+                    //盘亏:盘点出库 55bdf3529c3c463489670a46c2651c1e:checkIn
                     Common.DICTIONARY_MAP.get("checkOut"),
                     businessByOutMap);
 
@@ -399,6 +406,26 @@ public class WarehouseCheckBySimpleController {
                     }
                     editDetail.setOutDtlId(outDtlId);
                 }
+
+                warehouseCheckDetailService.update(editDetail);
+            }
+        }
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //zeroList: 等于零结果集(盘点数量-台账数量) List<WarehouseCheckDetail>
+        if (zeroList.size() > 0) {
+            for (WarehouseCheckDetail detailObj : zeroList) {
+                WarehouseCheckDetail editDetail = new WarehouseCheckDetail();
+                editDetail.setId(detailObj.getId());
+
+                //盘点数量 stockCount
+                BigDecimal stockCount = new BigDecimal(0D);
+                if (detailObj.getStockCount() != null) {
+                    stockCount = detailObj.getStockCount();
+                    //四舍五入到2位小数
+                    stockCount = stockCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+
+                }
+                editDetail.setStockCount(stockCount);
 
                 warehouseCheckDetailService.update(editDetail);
             }
