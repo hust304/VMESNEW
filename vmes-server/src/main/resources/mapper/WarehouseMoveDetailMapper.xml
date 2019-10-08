@@ -165,7 +165,9 @@
         (replace(uuid(), '-', ''),'WarehouseMoveDetail','remark','备注',22, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'WarehouseMoveDetail','isdisable','是否启用',23, '1','0','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'WarehouseMoveDetail','qrcode','二维码',24, '1','0','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'WarehouseMoveDetail','id','id',0, '1','0','1','0',now(), 'admin')
+        (replace(uuid(), '-', ''),'WarehouseMoveDetail','id','id',0, '1','0','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'WarehouseMoveDetail','warehouseName','仓库名称',25, '1','1','1','0',now(), 'admin'),
     </insert>
 
 
@@ -422,7 +424,7 @@
 
     <!-- 自动创建，可以修改 -->
     <select id="getDataListPageBySimple"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
-        select parentId,warehouseId,warehouseProductId,productId,code,count,state,stateName,cuser,cdate,udate,remark,isdisable,qrcode,stockCount,pathName,
+        select parentId,warehouseId,warehouseProductId,productId,code,count,state,stateName,cuser,cdate,udate,remark,isdisable,qrcode,stockCount,pathName,warehouseName,
         productCode,productName,productSpec,productGenre,productGenreName,productUnit,productUnitName,round(sum(ifnull(executeCount,0)),2) executeCount,warehouseMoveCode,id
 
         from (
@@ -444,7 +446,13 @@
         detail.isdisable isdisable,
         detail.qrcode qrcode,
 
-        prod.code productCode,
+        prod.code sysProductCode,
+        prod.source_code custProductCode,
+        CASE
+          WHEN prod.source_code is null THEN prod.code
+          WHEN prod.source_code is not null THEN prod.source_code
+        ELSE null
+        END productCode,
         prod.name productName,
         prod.spec productSpec,
         prod.genre productGenre,
@@ -452,6 +460,7 @@
         produnit.unit productUnit,
         unit.name productUnitName,
 
+        warehouse.name warehouseName,
         warehouse.path_name pathName,
         whmove.code warehouseMoveCode,
         round(moveexecute.count,2) executeCount,

@@ -259,7 +259,8 @@
         (replace(uuid(), '-', ''),'WarehouseProductView','stockCount','库存',12, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'WarehouseProductView','warehouseProductID','货位产品ID',13, '1','0','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'WarehouseProductView','pathName','货位路径',14, '1','0','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'WarehouseProductView','id','id',0, '1','0','1','0',now(), 'admin')
+        (replace(uuid(), '-', ''),'WarehouseProductView','id','id',0, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseProductView','warehouseName','仓库名称',14, '1','0','1','0',now(), 'admin'),
     </insert>
 
     <insert id="insertColumn4" >
@@ -381,7 +382,15 @@
     <select id="simpleWarehouseProductView"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
         select
         warehouse.path_name pathName,
-        prod.code,
+        warehouse.name warehouseName,
+
+        prod.code sysProductCode,
+        prod.source_code custProductCode,
+        CASE
+        WHEN prod.source_code is null THEN prod.code
+        WHEN prod.source_code is not null THEN prod.source_code
+        ELSE null
+        END code,
         prod.name,
         prod.spec,
         prod.genre genre,
