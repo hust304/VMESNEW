@@ -355,7 +355,7 @@ public class Common {
             put("spareIn", "4ac4616c7b254950af24e0c8eda0c6f7");
             //虚拟库入库 3ba2e016ac78464eb947c727ff41faf0
             put("virtualIn", "3ba2e016ac78464eb947c727ff41faf0");
-            //盘点入库 4d89ccb1e64f499cbdc6409f173f5407
+            //盘盈:盘点入库 4d89ccb1e64f499cbdc6409f173f5407
             put("checkIn", "4d89ccb1e64f499cbdc6409f173f5407");
 
             //外协入库 064dda15d44d4f8fa6330c5c7e46300e
@@ -380,7 +380,7 @@ public class Common {
             put("spareOut", "12e84fefddc449a78cc3bf8075475823");
             //虚拟库出库 9c7be2410a0045c8963f9273fe6da067
             put("virtualOut", "9c7be2410a0045c8963f9273fe6da067");
-            //盘点出库 55bdf3529c3c463489670a46c2651c1e
+            //盘亏:盘点出库 55bdf3529c3c463489670a46c2651c1e
             put("checkOut", "55bdf3529c3c463489670a46c2651c1e");
 
 //        //a804369b392c4035bc766cc536b29d35 备件库入库类型
