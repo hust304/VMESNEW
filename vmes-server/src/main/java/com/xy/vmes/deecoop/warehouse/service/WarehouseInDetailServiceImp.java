@@ -1176,13 +1176,14 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
         if (warehouseList != null && warehouseList.size() > 0) {
             Warehouse object = warehouseList.get(0);
             String warehouseId = object.getId();
-            String pathName = object.getPathName();
+            //String pathName = object.getPathName();
+            String name = object.getName();
 
             //model_code = 'warehouseInExecutorByAddExecute'
             Map<String, String> secondMap = new HashMap<String, String>();
             secondMap.put("warehouseId", warehouseId);
             secondMap.put("detailId", id);
-            secondMap.put("pathName", pathName);
+            secondMap.put("name", name);
             secondMap.put("count", count.toString());
             secondMapList.add(secondMap);
         }

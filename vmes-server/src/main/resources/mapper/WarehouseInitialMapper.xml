@@ -66,6 +66,7 @@
 
             (replace(uuid(), '-', ''),'warehouseInitial','warehouseCode','warehouseCode',8, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'warehouseInitial','pathName','pathName',8, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'warehouseInitial','warehouseName','仓库名称',8, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'warehouseInitial','productCode','productCode',9, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'warehouseInitial','productName','productName',10, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'warehouseInitial','productSpec','productSpec',11, '1','1','1','0',now(), 'admin'),
@@ -169,10 +170,17 @@
             <!--vmes_warehouse:仓库货位表-->
             warehouse.path_id pathId,
             warehouse.path_name pathName,
+            warehouse.name warehouseName,
             warehouse.code warehouseCode,
 
             <!--货品表-->
-            product.code productCode,
+            product.code sysProductCode,
+            product.source_code custProductCode,
+            CASE
+              WHEN product.source_code is null THEN product.code
+              WHEN product.source_code is not null THEN product.source_code
+            ELSE null
+            END productCode,
             product.name productName,
             product.spec productSpec,
             produnit.unit productUnit,
@@ -290,6 +298,7 @@
 
         (replace(uuid(), '-', ''),'warehouseInitialBySimple','warehouseCode','货位编码',8, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'warehouseInitialBySimple','pathName','货位名称',8, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseInitialBySimple','warehouseName','仓库名称',8, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'warehouseInitialBySimple','productCode','货品编码',9, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'warehouseInitialBySimple','productName','货品名称',10, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'warehouseInitialBySimple','productSpec','规格型号',11, '1','1','1','0',now(), 'admin'),
@@ -321,10 +330,18 @@
             <!--vmes_warehouse:仓库货位表-->
             warehouse.path_id pathId,
             warehouse.path_name pathName,
+            warehouse.name warehouseName,
             warehouse.code warehouseCode,
 
             <!--货品表-->
-            product.code productCode,
+            product.code sysProductCode,
+            product.source_code custProductCode,
+            CASE
+              WHEN product.source_code is null THEN product.code
+              WHEN product.source_code is not null THEN product.source_code
+            ELSE null
+            END productCode,
+
             product.name productName,
             product.spec productSpec,
             produnit.unit productUnit,

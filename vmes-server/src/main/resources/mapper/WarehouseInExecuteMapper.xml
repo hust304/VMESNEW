@@ -59,7 +59,8 @@
             (replace(uuid(), '-', ''),'warehouseInExecute','remark','备注',9, '1','1','1','0',now(), 'admin'),
 
             (replace(uuid(), '-', ''),'warehouseInExecute','isdisable','是否启用(0:已禁用 1:启用)',10, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'warehouseInExecute','pathName','货位名称',11, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'warehouseInExecute','pathName','仓库名称',11, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'warehouseInExecute','warehouseName','仓库名称',11, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'warehouseInExecute','executeUserName','执行人',12, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'warehouseInExecute','executeTimeStr','执行完成时间',13, '1','1','1','0',now(), 'admin'),
     </insert>
@@ -165,6 +166,7 @@
 
             inExecute.isdisable isdisable,
 
+            warehouse.name warehouseName,
             warehouse.path_name pathName,
             executeUser.user_name executeUserName,
             DATE_FORMAT(inExecute.cdate,'%Y-%m-%d %T') executeTimeStr
