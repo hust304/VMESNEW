@@ -516,6 +516,9 @@
             <if test="isdisable!= null and isdisable != ''"><!-- 关键词检索 -->
                 and tree.isdisable = #{isdisable}
             </if>
+            <if test="isreplaceable != null and isreplaceable != ''">
+                and tree.isreplaceable = #{isreplaceable}
+            </if>
             <if test="pathId != null and pathId != ''">
                 and tree.path_id LIKE CONCAT(#{pathId},'%')
             </if>

@@ -764,23 +764,30 @@ public class WarehouseOutDetailServiceImp implements WarehouseOutDetailService {
             for (int i = 0; i < mapList.size(); i++) {
                 Map<String, String> detailMap = mapList.get(i);
 
-                if(detailMap.get("id")==null){
+                if(detailMap.get("bomId")==null){
                     model.putCode(Integer.valueOf(1));
                     model.putMsg("BOM ID 不能为空！");
                     return model;
                 }
-                if(detailMap.get("prodId")==null){
+                if(detailMap.get("id")==null){
                     model.putCode(Integer.valueOf(1));
                     model.putMsg("产品 ID 不能为空！");
                     return model;
                 }
-                detailMap.put("bomId",detailMap.get("id"));
-                detailMap.put("id",detailMap.get("prodId"));
+//                detailMap.put("bomId",detailMap.get("bomId"));
+//                detailMap.put("id",detailMap.get("id"));
                 TreeEntity treeEntity = (TreeEntity) HttpUtils.pageData2Entity(detailMap, new TreeEntity());
                 BigDecimal planCount = treeEntity.getPlanCount()==null?BigDecimal.ZERO:treeEntity.getPlanCount();
 
                 PageData pageData = new PageData();
                 pageData.put("bomId",treeEntity.getBomId());
+
+                if(pd.get("isreplaceable")!=null && "1".equals(pd.get("isreplaceable"))){
+                    pageData.put("isreplaceable",null);
+                }else{
+                    pageData.put("isreplaceable",'0');
+                }
+
                 List<TreeEntity> treeList = bomTreeService.getBomTreeProductList(pageData);
 
                 Map map = new HashMap();
@@ -799,7 +806,7 @@ public class WarehouseOutDetailServiceImp implements WarehouseOutDetailService {
                 for(int i=0;i<varList.size();i++){
                     TreeEntity treeEntity = varList.get(i);
                     String prodId = treeEntity.getId();
-                    planCountMap.put(prodId,treeEntity.getPlanCount());
+                    planCountMap.put(prodId,treeEntity.getPlanCount().setScale(0,BigDecimal.ROUND_DOWN));
                     if(prodIds == null){
                         prodIds =  "'" + prodId+"'";
                     }else{

@@ -94,6 +94,14 @@ public class BundleAnalysisServiceImp implements BundleAnalysisService {
 
                 PageData pageData = new PageData();
                 pageData.put("bomId",treeEntity.getBomId());
+
+                if(pd.get("isreplaceable")!=null && "1".equals(pd.get("isreplaceable"))){
+                    pageData.put("isreplaceable",null);
+                }else{
+                    pageData.put("isreplaceable",'0');
+                }
+
+
                 List<TreeEntity> treeList = bomTreeService.getBomTreeProductList(pageData);
 
                 Map map = new HashMap();

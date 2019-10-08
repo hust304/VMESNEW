@@ -271,9 +271,15 @@ public class BomTreeServiceImp implements BomTreeService {
                 }
                 String productId = detailMap.get("prodId").toString();
                 String bomId = detailMap.get("id").toString();
-
                 PageData pageData = new PageData();
                 pageData.put("bomId",bomId);
+
+                if(pd.get("isreplaceable")!=null && "1".equals(pd.get("isreplaceable"))){
+                    pageData.put("isreplaceable",null);
+                }else{
+                    pageData.put("isreplaceable",'0');
+                }
+
                 List<TreeEntity> treeList = bomTreeService.getBomTreeProductList(pageData);
 
                 Map map = new HashMap();
@@ -577,6 +583,16 @@ public class BomTreeServiceImp implements BomTreeService {
                         model.putMsg("货品("+product.getName()+")已被使用，请重新选择！");
                         return model;
                     }
+                }
+                PageData pageData = new PageData();
+                pageData.put("parentProdId",bomTree.getParentProdId());
+                pageData.put("bomId",bomTree.getBomId());
+                pageData.put("isreplaceable","1");
+                List<Map> replaceableMap = bomTreeService.getDataList(pageData);
+                if(replaceableMap!=null&&replaceableMap.size()>0){
+                    model.putCode(Integer.valueOf(1));
+                    model.putMsg("请先删除当前货品下面的可替代物！");
+                    return model;
                 }
 
                 String id = Conv.createUuid();
