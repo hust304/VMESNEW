@@ -153,7 +153,8 @@
     (replace(uuid(), '-', ''),'WarehouseOutRecommendBySimple','productId','产品ID',5, '1','0','1','0',now(), 'admin'),
     (replace(uuid(), '-', ''),'WarehouseOutRecommendBySimple','isdisable','是否启用',6, '1','0','1','0',now(), 'admin'),
     (replace(uuid(), '-', ''),'WarehouseOutRecommendBySimple','companyId','公司ID',7, '1','0','1','0',now(), 'admin'),
-    (replace(uuid(), '-', ''),'WarehouseOutRecommendBySimple','id','id',0, '1','0','1','0',now(), 'admin')
+    (replace(uuid(), '-', ''),'WarehouseOutRecommendBySimple','id','id',0, '1','0','1','0',now(), 'admin'),
+    (replace(uuid(), '-', ''),'WarehouseOutRecommendBySimple','warehouseName','仓库名称',8, '1','0','1','0',now(), 'admin')
 </insert>
 
 

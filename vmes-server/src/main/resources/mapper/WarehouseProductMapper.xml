@@ -232,7 +232,8 @@
         (replace(uuid(), '-', ''),'WarehouseProductDispatchOption','productId','产品ID',5, '1','0','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'WarehouseProductDispatchOption','isdisable','是否启用',6, '1','0','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'WarehouseProductDispatchOption','companyId','公司ID',7, '1','0','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'WarehouseProductDispatchOption','id','id',0, '1','0','1','0',now(), 'admin')
+        (replace(uuid(), '-', ''),'WarehouseProductDispatchOption','id','id',0, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseProductDispatchOption','warehouseName','仓库名称',1, '1','0','1','0',now(), 'admin'),
     </insert>
 
 
@@ -779,7 +780,8 @@
         product.product_id productId,
         round(sum(ifnull(product.stock_count,0)),2) stockCount,
         product.isdisable isdisable,
-        warehouse.path_name name
+        warehouse.path_name name,
+        warehouse.name warehouseName
 
         from vmes_warehouse_product product
         left join vmes_warehouse warehouse on warehouse.id = product.warehouse_id

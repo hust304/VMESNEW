@@ -551,7 +551,13 @@
                 detail.price_unit priceUnit,
                 detail.price_count priceCount,
 
-                prod.code productCode,
+                prod.code sysProductCode,
+                prod.source_code custProductCode,
+                CASE
+                  WHEN prod.source_code is null THEN prod.code
+                  WHEN prod.source_code is not null THEN prod.source_code
+                ELSE null
+                END productCode,
                 prod.name productName,
                 prod.spec productSpec,
                 prod.genre productGenre,
