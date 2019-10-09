@@ -409,7 +409,14 @@
         END isExistBom,
 
         prod.id prodId,
-        prod.code prodCode,
+
+        prod.code sysProductCode,
+        prod.source_code custProductCode,
+        CASE
+          WHEN prod.source_code is null THEN prod.code
+          WHEN prod.source_code is not null THEN prod.source_code
+        ELSE null
+        END prodCode,
         prod.name prodName,
         prod.spec prodSpec,
         genre.name genreName,
