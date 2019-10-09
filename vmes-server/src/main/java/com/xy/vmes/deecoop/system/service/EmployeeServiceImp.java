@@ -1019,12 +1019,17 @@ public class EmployeeServiceImp implements EmployeeService {
         List<Map> varList = employeeService.getDataListPage(pd, pg);
         if (varList != null && varList.size() > 0) {
             for (Map<String, Object> mapObject : varList) {
-                //contractDay 距合同到期天数
-
                 //contractDate 合同到期日期
                 String contractDate = (String)mapObject.get("contractDate");
                 if (contractDate == null || contractDate.trim().length() == 0) {
                     mapObject.put("contractDay", "");
+                } else {
+                    //contractDay (剩余天数: 合同到期日期-当前系统日期)
+                    Integer contractDay = (Integer)mapObject.get("contractDay");
+                    if (contractDay != null && contractDay.intValue() < 0) {
+                        contractDay = Integer.valueOf(contractDay.intValue() * -1);
+                        mapObject.put("contractDay", contractDay.toString() + "(逾期)");
+                    }
                 }
             }
         }
