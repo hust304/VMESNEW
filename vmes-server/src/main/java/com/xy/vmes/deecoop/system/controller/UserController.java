@@ -333,8 +333,7 @@ public class UserController {
         logger.info("################user/listPageUsers 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         PageData pd = HttpUtils.parsePageData();
-        Pagination pg = HttpUtils.parsePagination(pd);
-        ResultModel model = userService.listPageUsers(pd,pg);
+        ResultModel model = userService.listPageUsers(pd);
         Long endTime = System.currentTimeMillis();
         logger.info("################user/listPageUsers 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;

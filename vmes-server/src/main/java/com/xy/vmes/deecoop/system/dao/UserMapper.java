@@ -97,6 +97,7 @@ public interface UserMapper extends BaseMapper<User> {
 	 * 创建人：刘威
 	 * 创建时间：2018-07-26
 	 */
+	List<Map> getDataListPage(PageData pd);
 	List<Map> getDataListPage(PageData pd,Pagination pg);
 
 	/**
