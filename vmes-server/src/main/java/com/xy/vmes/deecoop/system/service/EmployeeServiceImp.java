@@ -1025,9 +1025,9 @@ public class EmployeeServiceImp implements EmployeeService {
                     mapObject.put("contractDay", "");
                 } else {
                     //contractDay (剩余天数: 合同到期日期-当前系统日期)
-                    Integer contractDay = (Integer)mapObject.get("contractDay");
+                    Long contractDay = (Long)mapObject.get("contractDay");
                     if (contractDay != null && contractDay.intValue() < 0) {
-                        contractDay = Integer.valueOf(contractDay.intValue() * -1);
+                        contractDay = Long.valueOf(contractDay.intValue() * -1);
                         mapObject.put("contractDay", contractDay.toString() + "(逾期)");
                     }
                 }
