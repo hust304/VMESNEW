@@ -325,7 +325,9 @@
         (replace(uuid(), '-', ''),'user','employeeDeptName','部门',34, '1','0','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'user','employeePhoto','员工照片',35, '1','0','1','0',now(), 'admin'),
 
-        (replace(uuid(), '-', ''),'user','id','id',0, '1','0','1','0',now(), 'admin')
+        (replace(uuid(), '-', ''),'user','id','id',0, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'user','code','账号',0, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'user','name','姓名',0, '1','1','1','0',now(), 'admin'),
     </insert>
 
     <!-- 表格表体值 刘威-->
