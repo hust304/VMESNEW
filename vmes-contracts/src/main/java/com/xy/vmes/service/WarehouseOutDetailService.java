@@ -157,7 +157,7 @@ public interface WarehouseOutDetailService {
 
     ResultModel deleteWarehouseOutDetail(PageData pageData) throws Exception;
 
-    ResultModel listPageWarehouseOutDetails(PageData pd, Pagination pg) throws Exception;
+    ResultModel listPageWarehouseOutDetails(PageData pd) throws Exception;
 
     ResultModel listPageWarehouseOutDetailsOutRecords(PageData pd, Pagination pg) throws Exception;
 

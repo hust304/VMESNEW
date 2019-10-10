@@ -749,7 +749,8 @@ public class WarehouseOutDetailServiceImp implements WarehouseOutDetailService {
             PageData pageData = new PageData();
             pageData.put("parentId","null");
             pageData.put("fieldCode",pd.getString("fieldCode"));
-            return this.listPageWarehouseOutDetails(pageData,null);
+            pageData.put("isNeedPage","false");
+            return this.listPageWarehouseOutDetails(pageData);
         }
 
         List<Map<String, String>> mapList = (List<Map<String, String>>) YvanUtil.jsonToList(dtlJsonStr);
@@ -861,17 +862,11 @@ public class WarehouseOutDetailServiceImp implements WarehouseOutDetailService {
     }
 
     @Override
-    public ResultModel listPageWarehouseOutDetails(PageData pd, Pagination pg) throws Exception {
-        if(pg==null){
-            pg =  HttpUtils.parsePagination(pd);
-        }
+    public ResultModel listPageWarehouseOutDetails(PageData pd) throws Exception {
         ResultModel model = new ResultModel();
+        Pagination pg =  HttpUtils.parsePagination(pd);
 
         List<Column> columnList = columnService.findColumnList("WarehouseOutDetail");
-        String typeName = pd.getString("typeName");
-        if(!StringUtils.isEmpty(typeName)&&"报废处理".equals(typeName)){
-            columnList = columnService.findColumnList("WarehouseScrapDetail");
-        }
         if (columnList == null || columnList.size() == 0) {
             model.putCode("1");
             model.putMsg("数据库没有生成TabCol，请联系管理员！");

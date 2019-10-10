@@ -191,6 +191,8 @@
         (replace(uuid(), '-', ''), 'WarehouseOutDetail', 'p2nFormula', 'p2n:公式', 31, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
         (replace(uuid(), '-', ''), 'WarehouseOutDetail', 'p2nIsScale', 'p2n:是否需要四舍五入', 32, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
         (replace(uuid(), '-', ''), 'WarehouseOutDetail', 'p2nDecimalCount', 'p2n:保留小数位数', 33, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+
+        (replace(uuid(), '-', ''),'WarehouseOutDetail','warehouseName','仓库名称',35, '1','0','1','0',now(), 'admin'),
     </insert>
 
     <insert id="insertColumn1" >
@@ -520,7 +522,7 @@
     <!-- 自动创建，可以修改 -->
     <select id="getDataListPage"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
         select
-            parentId,warehouseId,productId,code,round(ifnull(count,0),2) count,state,stateName,cuser,cdate,udate,remark,isdisable,qrcode,pathName,
+            parentId,warehouseId,productId,code,round(ifnull(count,0),2) count,state,stateName,cuser,cdate,udate,remark,isdisable,qrcode,pathName,warehouseName,
             businessId,productCode,productName,productSpec,productGenre,productGenreName,productUnit,productUnitName,warehouseOutCode,parentWarehouseId,id,
             priceUnit,priceUnitName,round(ifnull(priceCount,0),2) priceCount,round(ifnull(productCount,0),2) productCount,
             n2pFormula,n2pIsScale,n2pDecimalCount,
@@ -532,6 +534,7 @@
                 detail.parent_id parentId,
                 detail.warehouse_id warehouseId,
                 warehouse.path_name pathName,
+                warehouse.name warehouseName,
                 detail.product_id productId,
                 detail.code code,
                 detail.count count,

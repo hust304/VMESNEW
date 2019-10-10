@@ -41,7 +41,8 @@ public class WarehouseOut implements Serializable {
 	//制单人ID
 	@TableField("make_id")
 	private String makeId;
-	//状态(0:未完成 1:已完成 -1:已取消)
+	//状态(0:未完成 1:已完成 -1:已取消 2:待提交 3:待审核)
+	//(2019-10-10)简版仓库报废审核功能-添加状态(2:待提交 3:待审核)
 	@TableField("state")
 	private String state;
 	//创建用户id

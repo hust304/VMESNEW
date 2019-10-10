@@ -307,8 +307,7 @@ public class WarehouseOutDetailController {
         logger.info("################warehouseOutDetail/listPageWarehouseOutDetails 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         PageData pd = HttpUtils.parsePageData();
-        Pagination pg = HttpUtils.parsePagination(pd);
-        ResultModel model = warehouseOutDetailService.listPageWarehouseOutDetails(pd,pg);
+        ResultModel model = warehouseOutDetailService.listPageWarehouseOutDetails(pd);
         Long endTime = System.currentTimeMillis();
         logger.info("################warehouseOutDetail/listPageWarehouseOutDetails 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
