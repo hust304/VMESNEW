@@ -462,6 +462,9 @@
         left join vmes_post post on post.id = employeepost.post_id
         left join vmes_department edepartment on edepartment.id = post.dept_id
         <where>
+            <if test="userId != null and userId != ''">
+                and vmesuser.id = #{userId}
+            </if>
             <if test="roleId!= null and roleId != ''">
                 and role.id = #{roleId}
             </if>
