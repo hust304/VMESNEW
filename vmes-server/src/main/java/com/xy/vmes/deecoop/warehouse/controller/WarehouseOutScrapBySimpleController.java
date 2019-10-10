@@ -98,15 +98,22 @@ public class WarehouseOutScrapBySimpleController {
         //1. 添加出库单
         String id = Conv.createUuid();
         warehouseOut.setId(id);
-        //状态(0:未完成 1:已完成 -1:已取消 2:待提交 3:待审核)
-        //(2019-10-10)简版仓库报废审核功能-添加状态(2:待提交 3:待审核)
-        warehouseOut.setState("2");
         warehouseOut.setCompanyId(companyID);
         //出库单编号
         String code = coderuleService.createCoder(companyID, "vmes_warehouse_out", "O");
         warehouseOut.setCode(code);
         //warehouseAttribute 仓库属性(warehouse:(简版,复杂版)仓库 spare:备件库)
         warehouseOut.setWarehouseAttribute("warehouse");
+
+        //状态(0:未完成 1:已完成 -1:已取消 2:待提交 3:待审核)
+        //(2019-10-10)简版仓库报废审核功能-添加状态(2:待提交 3:待审核)
+        warehouseOut.setState("2");
+
+        //isAutoCommit true:自动提交 false:手动提交
+        String isAutoCommit = pageData.getString("isAutoCommit");
+        if (isAutoCommit != null && "true".equals(isAutoCommit.trim())) {
+            warehouseOut.setState("3");
+        }
         warehouseOutService.save(warehouseOut);
 
         //2.添加出库单明细
@@ -341,6 +348,57 @@ public class WarehouseOutScrapBySimpleController {
 
         Long endTime = System.currentTimeMillis();
         logger.info("################/warehouse/warehouseOutScrapBySimple/cancelWarehouseOutScrapBySimple 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 恢复报废出库单(简版仓库出库)
+     * @author 陈刚
+     * @date 2019-10-10
+     * @throws Exception
+     */
+    @PostMapping("/warehouse/warehouseOutScrapBySimple/recoveryWarehouseOutScrapBySimple")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel recoveryWarehouseOutScrapBySimple() throws Exception {
+        logger.info("################/warehouse/warehouseOutScrapBySimple/recoveryWarehouseOutScrapBySimple 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        String parentId = pageData.getString("id");
+        if (parentId == null || parentId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("出库单id为空或空字符串！");
+            return model;
+        }
+
+        //出库单状态:state:状态(0:未完成 1:已完成 -1:已取消)
+        WarehouseOut warehouseOut = warehouseOutService.findWarehouseOutById(parentId);
+        //验证出库单是否允许取消
+        if (!"-1".equals(warehouseOut.getState())) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("当前出库单不是取消状态，不可恢复！");
+            return model;
+        }
+
+        //2. 修改明细状态
+        PageData mapDetail = new PageData();
+        mapDetail.put("parentId", parentId);
+        //明细状态:state:状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+        mapDetail.put("state", "1");
+        warehouseOutDetailService.updateStateByDetail(mapDetail);
+
+        //3. 修改抬头表状态
+        WarehouseOut warehouseOutEdit = new WarehouseOut();
+        warehouseOutEdit.setId(parentId);
+        //状态(0:未完成 1:已完成 -1:已取消 2:待提交 3:待审核)
+        //(2019-10-10)简版仓库报废审核功能-添加状态(2:待提交 3:待审核)
+        warehouseOutEdit.setState("2");
+        warehouseOutService.update(warehouseOutEdit);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/warehouse/warehouseOutScrapBySimple/recoveryWarehouseOutScrapBySimple 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
