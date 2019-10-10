@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -1025,10 +1026,23 @@ public class EmployeeServiceImp implements EmployeeService {
                     mapObject.put("contractDay", "");
                 } else {
                     //contractDay (剩余天数: 合同到期日期-当前系统日期)
-                    Long contractDay = (Long)mapObject.get("contractDay");
-                    if (contractDay != null && contractDay.intValue() < 0) {
-                        contractDay = Long.valueOf(contractDay.intValue() * -1);
-                        mapObject.put("contractDay", contractDay.toString() + "(逾期)");
+                    Long contractDay_Long = null;
+                    try {
+                        contractDay_Long = (Long)mapObject.get("contractDay");
+                    } catch (ClassCastException e) {
+                        //e.printStackTrace();
+                    }
+
+                    try {
+                        Integer contractDay_Integer = (Integer)mapObject.get("contractDay");
+                        contractDay_Long = Long.valueOf(contractDay_Integer.intValue());
+                    } catch (ClassCastException e) {
+                        //e.printStackTrace();
+                    }
+
+                    if (contractDay_Long != null && contractDay_Long.intValue() < 0) {
+                        contractDay_Long = Long.valueOf(contractDay_Long.intValue() * -1);
+                        mapObject.put("contractDay", contractDay_Long.toString() + "(逾期)");
                     }
                 }
             }
