@@ -382,6 +382,8 @@ public class Common {
             put("virtualOut", "9c7be2410a0045c8963f9273fe6da067");
             //盘亏:盘点出库 55bdf3529c3c463489670a46c2651c1e
             put("checkOut", "55bdf3529c3c463489670a46c2651c1e");
+            //报废处理:报废出库 def4b13175dc44b08d7a0315b811700e
+            put("scrapOut", "def4b13175dc44b08d7a0315b811700e");
 
 //        //a804369b392c4035bc766cc536b29d35 备件库入库类型
 //        put("warehouseInTypeBySpare", "a804369b392c4035bc766cc536b29d35");
