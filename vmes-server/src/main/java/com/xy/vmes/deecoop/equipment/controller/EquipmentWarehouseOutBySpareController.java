@@ -60,8 +60,7 @@ public class EquipmentWarehouseOutBySpareController {
         Long startTime = System.currentTimeMillis();
 
         PageData pd = HttpUtils.parsePageData();
-        Pagination pg = HttpUtils.parsePagination(pd);
-        ResultModel model = warehouseOutService.listPageWarehouseOuts(pd,pg);
+        ResultModel model = warehouseOutService.listPageWarehouseOuts(pd);
 
         Long endTime = System.currentTimeMillis();
         logger.info("################/equipment/warehouseOutBySpare/listPageWarehouseOutBySpare 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");

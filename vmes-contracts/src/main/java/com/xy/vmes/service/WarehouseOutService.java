@@ -145,7 +145,7 @@ public interface WarehouseOutService {
 
     ResultModel deleteWarehouseOut(PageData pageData) throws Exception;
 
-    ResultModel listPageWarehouseOuts(PageData pd, Pagination pg) throws Exception;
+    ResultModel listPageWarehouseOuts(PageData pd) throws Exception;
 
     void exportExcelWarehouseOuts(PageData pd, Pagination pg) throws Exception;
 

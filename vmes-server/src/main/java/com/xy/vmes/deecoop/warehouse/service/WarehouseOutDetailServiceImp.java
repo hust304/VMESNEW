@@ -866,7 +866,16 @@ public class WarehouseOutDetailServiceImp implements WarehouseOutDetailService {
         ResultModel model = new ResultModel();
         Pagination pg =  HttpUtils.parsePagination(pd);
 
-        List<Column> columnList = columnService.findColumnList("WarehouseOutDetail");
+        //出库单明细表 (出库模块与报废模块)
+        //modelCode:WarehouseOutDetail 出库模块
+        //modelCode:WarehouseScrapDetail 报废模块
+        String modelCode = "WarehouseOutDetail";
+        String typeName = pd.getString("typeName");
+        if (typeName != null && "报废处理".equals(typeName)) {
+            modelCode = "WarehouseScrapDetail";
+        }
+
+        List<Column> columnList = columnService.findColumnList(modelCode);
         if (columnList == null || columnList.size() == 0) {
             model.putCode("1");
             model.putMsg("数据库没有生成TabCol，请联系管理员！");

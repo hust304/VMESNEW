@@ -191,11 +191,17 @@ public class WarehouseOutServiceImp implements WarehouseOutService {
     * 创建时间：2018-10-22
     */
     @Override
-    public List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception{
-        if(pg==null){
-            pg =  HttpUtils.parsePagination(pd);
+    public List<Map> getDataListPage(PageData pd, Pagination pg) throws Exception{
+        List<Map> mapList = new ArrayList<Map>();
+        if (pd == null) {return mapList;}
+
+        if (pg == null) {
+            return warehouseOutMapper.getDataListPage(pd);
+        } else if (pg != null) {
+            return warehouseOutMapper.getDataListPage(pd,pg);
         }
-        return warehouseOutMapper.getDataListPage(pd,pg);
+
+        return mapList;
     }
     public List<Map> getDataListPage(PageData pd) throws Exception {
         return warehouseOutMapper.getDataListPage(pd);
@@ -617,26 +623,26 @@ public class WarehouseOutServiceImp implements WarehouseOutService {
     }
 
     @Override
-    public ResultModel listPageWarehouseOuts(PageData pd, Pagination pg) throws Exception {
-        if(pg==null){
-            pg =  HttpUtils.parsePagination(pd);
-        }
+    public ResultModel listPageWarehouseOuts(PageData pd) throws Exception {
         ResultModel model = new ResultModel();
-        Map result = new HashMap();
+        Pagination pg =  HttpUtils.parsePagination(pd);
 
-        List<Column> columnList = columnService.findColumnList("WarehouseOut");
-
+        //出库单表 (出库模块与报废模块)
+        //modelCode:WarehouseOut 出库模块
+        //modelCode:WarehouseScrap 报废模块
+        String modelCode = "WarehouseOut";
         String typeName = pd.getString("typeName");
-        if(!StringUtils.isEmpty(typeName)&&"报废处理".equals(typeName)){
-            columnList = columnService.findColumnList("WarehouseScrap");
+        if (typeName != null && "报废处理".equals(typeName)) {
+            modelCode = "WarehouseScrap";
         }
 
-
+        List<Column> columnList = columnService.findColumnList(modelCode);
         if (columnList == null || columnList.size() == 0) {
             model.putCode("1");
             model.putMsg("数据库没有生成TabCol，请联系管理员！");
             return model;
         }
+
         //获取指定栏位字符串-重新调整List<Column>
         String fieldCode = pd.getString("fieldCode");
         if (fieldCode != null && fieldCode.trim().length() > 0) {
@@ -653,12 +659,20 @@ public class WarehouseOutServiceImp implements WarehouseOutService {
             pd.put("type", type);
         } else {pd.put("type", new String());}
 
-        List<Map> varList = this.getDataListPage(pd,pg);
+        //是否需要分页 true:需要分页 false:不需要分页
+        Map result = new HashMap();
+        String isNeedPage = pd.getString("isNeedPage");
+        if ("false".equals(isNeedPage)) {
+            pg = null;
+        } else {
+            result.put("pageData", pg);
+        }
+
+        List<Map> varList = this.getDataListPage(pd, pg);
         List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
         result.put("hideTitles",titleMap.get("hideTitles"));
         result.put("titles",titleMap.get("titles"));
         result.put("varList",varMapList);
-        result.put("pageData", pg);
         model.putResult(result);
         return model;
     }
