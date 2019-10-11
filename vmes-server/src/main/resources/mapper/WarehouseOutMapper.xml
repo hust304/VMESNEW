@@ -595,6 +595,9 @@
                 and detail.state =  #{detailState}
             </if>
 
+            <if test="warehouseAttribute != null and warehouseAttribute != ''">
+                and warehouseout.warehouse_attribute = #{warehouseAttribute}
+            </if>
             <!--warehouse_attribute:仓库属性(warehouse:(简版,复杂版)仓库 spare:备件库 virtual:虚拟库)-->
             <!--过滤出 (备件库)-出库单-->
             <if test="'true' == isNeedWarehouseSpare">

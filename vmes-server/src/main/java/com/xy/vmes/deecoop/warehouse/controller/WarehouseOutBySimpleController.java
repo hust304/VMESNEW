@@ -110,8 +110,14 @@ public class WarehouseOutBySimpleController {
         //出库单编号
         String code = coderuleService.createCoder(companyID, "vmes_warehouse_out", "O");
         warehouseOut.setCode(code);
-        //warehouseAttribute 仓库属性(warehouse:(简版,复杂版)仓库 spare:备件库)
-        warehouseOut.setWarehouseAttribute("warehouse");
+
+        //warehouseAttribute 仓库属性(warehouse:(简版,复杂版)仓库 spare:备件库 office:办公出库)
+        String warehouseAttribute = "warehouse";
+        if (pageData.getString("warehouseAttribute") != null && pageData.getString("warehouseAttribute").trim().length() > 0) {
+            warehouseAttribute = pageData.getString("warehouseAttribute").trim();
+        }
+        warehouseOut.setWarehouseAttribute(warehouseAttribute);
+
         warehouseOutService.save(warehouseOut);
 
         //2.添加出库单明细
