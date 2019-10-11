@@ -336,6 +336,12 @@ public class BomTreeServiceImp implements BomTreeService {
 
         List<TreeEntity> varMapList = new ArrayList();
 
+        if(pd.get("isreplaceable")!=null && "1".equals(pd.get("isreplaceable"))){
+            pd.put("isreplaceable",null);
+        }else{
+            pd.put("isreplaceable",'0');
+        }
+
         List<TreeEntity> treeList = bomTreeService.getBomTreeProductList(pd);
         String expectCount = StringUtils.isEmpty(pd.getString("expectCount"))?"0":pd.getString("expectCount");
         TreeEntity treeObj = TreeUtil.switchBomTree(pd.getString("productId"),treeList,BigDecimal.valueOf(Double.parseDouble(expectCount)),childrenTitleMap);

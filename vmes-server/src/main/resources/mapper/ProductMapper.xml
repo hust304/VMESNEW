@@ -332,7 +332,7 @@
             genre.name genreName,
             produnit.unit unit,
             unit.name unitName,
-
+            '1' ratio,
             '' prodProperty,
 
             round(ifnull(produnit.product_price, 0), 2) price,

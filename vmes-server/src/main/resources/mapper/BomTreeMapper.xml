@@ -489,7 +489,7 @@
         tree.ratio,
         tree.isdisable,
         product.name,
-        product.code,
+        case when product.source_code is null then product.code else product.source_code end code,
         product.spec,
         genre.name genre,
         product.stock_count stockCount,

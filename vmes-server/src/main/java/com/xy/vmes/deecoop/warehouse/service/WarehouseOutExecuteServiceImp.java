@@ -628,12 +628,12 @@ public class WarehouseOutExecuteServiceImp implements WarehouseOutExecuteService
                 List<Map> warehouseProductMapList = warehouseToWarehouseProductService.findWarehouseToWarehouseProductByProduct(findMap, null);
                 BigDecimal productStockCount = this.findProductStockCount(warehouseProductMapList);
 
-                if (count > productStockCount.doubleValue()) {
-                    String msgTemp = "货品名称：{0} 该货品库存不足，请更改出库数量";
-                    String msgStr = MessageFormat.format(msgTemp, productName);
-                    msgBuf.append(msgStr);
-                    continue;
-                }
+//                if (count > productStockCount.doubleValue()) {
+//                    String msgTemp = "货品名称：{0} 该货品库存不足，请更改出库数量";
+//                    String msgStr = MessageFormat.format(msgTemp, productName);
+//                    msgBuf.append(msgStr);
+//                    continue;
+//                }
 
                 if(outDetailMap.get("children")!=null){
                     List executeList = (List)outDetailMap.get("children");
