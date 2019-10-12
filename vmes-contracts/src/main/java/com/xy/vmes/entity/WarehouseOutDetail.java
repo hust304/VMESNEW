@@ -81,6 +81,11 @@ public class WarehouseOutDetail implements Serializable {
 	@TableField("price_count")
 	private BigDecimal priceCount;
 
+	//企业定制化字段///////////////////////////////////////////////////////////////////////////
+	//(货品)价格
+	@TableField("price")
+	private BigDecimal price;
+
 	public void setId(String id) {
 		this.id = id;
 	}
@@ -201,7 +206,12 @@ public class WarehouseOutDetail implements Serializable {
 	public void setPriceCount(BigDecimal priceCount) {
 		this.priceCount = priceCount;
 	}
-
+	public BigDecimal getPrice() {
+		return price;
+	}
+	public void setPrice(BigDecimal price) {
+		this.price = price;
+	}
 /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 

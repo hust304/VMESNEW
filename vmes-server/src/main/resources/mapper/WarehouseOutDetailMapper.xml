@@ -36,7 +36,8 @@
         product_unit productUnit,
         product_count productCount,
         price_unit priceUnit,
-        price_count priceCount
+        price_count priceCount,
+        price price
     </sql>
 
     <!-- 字段值 自动创建，禁止修改-->
@@ -193,6 +194,8 @@
         (replace(uuid(), '-', ''), 'WarehouseOutDetail', 'p2nDecimalCount', 'p2n:保留小数位数', 33, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
 
         (replace(uuid(), '-', ''),'WarehouseOutDetail','warehouseName','仓库名称',35, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseOutDetail','price','单价',36, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''), 'WarehouseOutDetail', 'priceSum', '金额', 37, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
     </insert>
 
     <insert id="insertColumn1" >
@@ -526,7 +529,7 @@
             businessId,productCode,productName,productSpec,productGenre,productGenreName,productUnit,productUnitName,warehouseOutCode,parentWarehouseId,id,
             priceUnit,priceUnitName,round(ifnull(priceCount,0),2) priceCount,round(ifnull(productCount,0),2) productCount,
             n2pFormula,n2pIsScale,n2pDecimalCount,
-            p2nFormula,p2nIsScale,p2nDecimalCount,
+            p2nFormula,p2nIsScale,p2nDecimalCount,price,
             round(sum(ifnull(executeCount,0)),2) executeCount
         from (
             select
@@ -553,6 +556,7 @@
                 detail.product_count productCount,
                 detail.price_unit priceUnit,
                 detail.price_count priceCount,
+                round(ifnull(detail.price, 0), 2) price,
 
                 prod.code sysProductCode,
                 prod.source_code custProductCode,

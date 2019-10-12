@@ -297,6 +297,19 @@ public class WarehouseOutDetailServiceImp implements WarehouseOutDetailService {
             detail.setProductCount(productCount);
             detail.setCount(productCount);
 
+            //货品价格
+            String priceStr = mapObject.get("price");
+            if (priceStr != null && priceStr.trim().length() > 0) {
+                try {
+                    BigDecimal price = new BigDecimal(priceStr);
+                    //四舍五入到2位小数
+                    price = price.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                    detail.setPrice(price);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+
             objectList.add(detail);
         }
 
