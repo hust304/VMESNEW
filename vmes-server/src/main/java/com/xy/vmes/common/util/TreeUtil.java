@@ -152,34 +152,61 @@ public class TreeUtil {
                  }
 
 
+//                nodeObject.setPlanCount(planCount);
+//                if(planCount.compareTo(BigDecimal.ZERO)==0){
+//                    nodeObject.setMaxCount(maxCount);
+//                    nodeObject.setAssembledCount(maxCount.subtract(nodeObject.getStockCount()));
+//                    nodeObject.setLackCount(BigDecimal.ZERO);
+//                }else{
+//                    if(planCount.compareTo(maxCount)>0){
+//                        nodeObject.setMaxCount(maxCount);
+//                        nodeObject.setAssembledCount(maxCount.subtract(nodeObject.getStockCount()));
+//                        nodeObject.setLackCount(planCount.subtract(maxCount));
+//                    }else{
+//                        nodeObject.setMaxCount(maxCount);
+//                        nodeObject.setAssembledCount(maxCount.subtract(nodeObject.getStockCount()));
+//                        nodeObject.setLackCount(BigDecimal.ZERO);
+//                    }
+//                }
+//
+//                for(String key:materielRatioMap.keySet()){
+//                    BigDecimal materielRatio = materielRatioMap.get(key);
+//                    BigDecimal materielStockCount = materielStockCountMap.get(key);
+//                    maxCount = nodeObject.getMaxCount();
+//                    BigDecimal newMaterielStockCount = materielStockCount.subtract(materielRatio.multiply(maxCount)).setScale(0,BigDecimal.ROUND_DOWN);
+//                    materielStockCountMap.put(key,newMaterielStockCount);
+//                }
+
+
+                //Bom齐套分析：下级物料列表的Title
+                BigDecimal totalCount = maxCount==null?BigDecimal.ZERO:maxCount;
+                nodeObject.setTotalCount(totalCount);
+
+
+                createBomTree(nodeObject, objectList,cacheMap);
+
                 nodeObject.setPlanCount(planCount);
                 if(planCount.compareTo(BigDecimal.ZERO)==0){
                     nodeObject.setMaxCount(maxCount);
-                    nodeObject.setAssembledCount(maxCount.subtract(nodeObject.getStockCount()));
+//                    nodeObject.setAssembledCount(maxCount.subtract(nodeObject.getStockCount()));
                     nodeObject.setLackCount(BigDecimal.ZERO);
                 }else{
                     if(planCount.compareTo(maxCount)>0){
                         nodeObject.setMaxCount(maxCount);
-                        nodeObject.setAssembledCount(maxCount.subtract(nodeObject.getStockCount()));
+//                        nodeObject.setAssembledCount(maxCount.subtract(nodeObject.getStockCount()));
                         nodeObject.setLackCount(planCount.subtract(maxCount));
                     }else{
                         nodeObject.setMaxCount(maxCount);
-                        nodeObject.setAssembledCount(maxCount.subtract(nodeObject.getStockCount()));
+//                        nodeObject.setAssembledCount(maxCount.subtract(nodeObject.getStockCount()));
                         nodeObject.setLackCount(BigDecimal.ZERO);
                     }
                 }
 
-                for(String key:materielRatioMap.keySet()){
-                    BigDecimal materielRatio = materielRatioMap.get(key);
-                    BigDecimal materielStockCount = materielStockCountMap.get(key);
-                    maxCount = nodeObject.getMaxCount();
-                    BigDecimal newMaterielStockCount = materielStockCount.subtract(materielRatio.multiply(maxCount)).setScale(0,BigDecimal.ROUND_DOWN);
-                    materielStockCountMap.put(key,newMaterielStockCount);
-                }
-
-
                 varMapList.add(nodeObject);
             }
+
+
+
         }
         return varMapList;
     }
@@ -325,19 +352,6 @@ public class TreeUtil {
                     child.setTotalCount(pTotalCount);
 
                     child.setSplitCount(pStockCount.add(pSplitCount).multiply(ratio));
-
-
-//                if(pStockCount.compareTo(pTotalCount.multiply(pUpRatio))>0){
-//                    child.setStockCount(BigDecimal.ZERO);
-//                }else{
-//                    BigDecimal lackCount = (pTotalCount.multiply(pUpRatio).subtract(pStockCount)).multiply(ratio);
-//                    if(lackCount.compareTo(stockCount)>0){
-//                        child.setStockCount(stockCount);
-//                    }else{
-//                        child.setStockCount(lackCount);
-//                    }
-//                }
-
 
                     BigDecimal lackCount = (pTotalCount.multiply(pUpRatio).subtract(pSplitCount.add(pStockCount))).multiply(ratio);
                     if(lackCount.compareTo(stockCount)>0){
