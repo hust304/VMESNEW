@@ -39,6 +39,7 @@ dependencies {
     compile 'net.coobird:thumbnailator:0.4.8'
     compile 'org.projectlombok:lombok'
 
+    compile 'org.flowable:flowable-spring-boot-starter:6.3.0'
 
     compile 'org.apache.poi:poi:3.17'
     compile 'org.apache.poi:poi-ooxml-schemas:3.17'

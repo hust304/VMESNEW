@@ -492,7 +492,8 @@
         case when product.source_code is null then product.code else product.source_code end code,
         product.spec,
         genre.name genre,
-        product.stock_count stockCount,
+        wp.stock_count stockCount,
+        wp.stock_count count,
         unit.name unit
         from
         vmes_bom_tree tree
@@ -500,6 +501,28 @@
         left join vmes_dictionary genre on product.genre = genre.id
         left join vmes_product_unit produnit on produnit.product_id = product.id and produnit.type = 1
         left join vmes_dictionary unit on produnit.unit = unit.id
+
+        left join (
+            select
+            product_id,
+            sum(stock_count) stock_count
+            from vmes_warehouse_product warehouseProduct
+            left join vmes_warehouse warehouse on warehouse.id = warehouseProduct.warehouse_id
+            left join vmes_dictionary entityType on warehouse.entity_type = entityType.id
+            <where>
+                <if test="companyId != null and companyId != ''" >
+                    and company_id = #{companyId}
+                </if>
+                <!--
+                    <if test="notInEntityTypes != null and notInEntityTypes != ''" >
+                        and entityType.name not in (${notInEntityTypes})
+                    </if>
+                -->
+                and entityType.name not in ('不合格品')
+            </where>
+            group by product_id
+        ) wp on product.id = wp.product_id
+
         <where>
             <if test="name!= null and name != ''"><!-- 关键词检索 -->
                 and product.name LIKE CONCAT(CONCAT('%', #{name}),'%')
