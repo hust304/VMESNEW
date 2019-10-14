@@ -380,52 +380,52 @@ public class UserController {
         return model;
     }
 
-    /**
-     * 获取用户所属部门
-     * 返回值:
-     *   deptId: 部门ID
-     *   deptName: 部门名称
-     *
-     * @return
-     * @throws Exception
-     */
-    @PostMapping("/system/user/findUserDepartmentByUser")
-    public ResultModel findUserDepartmentByUser() throws Exception {
-        ResultModel model = new ResultModel();
-        PageData pd = HttpUtils.parsePageData();
-
-        String userId = pd.getString("userId");
-        if(userId == null || userId.trim().length() == 0){
-            model.putCode("1");
-            model.putMsg("用户id为空或空字符串！");
-            return model;
-        }
-
-        //deptId 部门ID
-        String deptId = new String();
-        //deptName 部门名称
-        String deptName = new String();
-
-        PageData findMap = new PageData();
-        findMap.put("userId", userId);
-        //是否禁用(0:已禁用 1:启用)
-        findMap.put("isdisable", "1");
-        List<Map> varList = userService.getDataListPage(findMap, null);
-        if (varList != null && varList.size() > 0) {
-            Map<String, Object> valueMap = varList.get(0);
-            if (valueMap != null && valueMap.get("deptId") != null) {
-                deptId = valueMap.get("deptId").toString().trim();
-            }
-
-            if (valueMap != null && valueMap.get("deptName") != null) {
-                deptName = valueMap.get("deptName").toString().trim();
-            }
-        }
-
-        model.put("deptId", deptId);
-        model.put("deptName", deptName);
-        return model;
-    }
+//    /**
+//     * 获取用户所属部门
+//     * 返回值:
+//     *   deptId: 部门ID
+//     *   deptName: 部门名称
+//     *
+//     * @return
+//     * @throws Exception
+//     */
+//    @PostMapping("/system/user/findUserDepartmentByUser")
+//    public ResultModel findUserDepartmentByUser() throws Exception {
+//        ResultModel model = new ResultModel();
+//        PageData pd = HttpUtils.parsePageData();
+//
+//        String userId = pd.getString("userId");
+//        if(userId == null || userId.trim().length() == 0){
+//            model.putCode("1");
+//            model.putMsg("用户id为空或空字符串！");
+//            return model;
+//        }
+//
+//        //deptId 部门ID
+//        String deptId = new String();
+//        //deptName 部门名称
+//        String deptName = new String();
+//
+//        PageData findMap = new PageData();
+//        findMap.put("userId", userId);
+//        //是否禁用(0:已禁用 1:启用)
+//        findMap.put("isdisable", "1");
+//        List<Map> varList = userService.getDataListPage(findMap, null);
+//        if (varList != null && varList.size() > 0) {
+//            Map<String, Object> valueMap = varList.get(0);
+//            if (valueMap != null && valueMap.get("deptId") != null) {
+//                deptId = valueMap.get("deptId").toString().trim();
+//            }
+//
+//            if (valueMap != null && valueMap.get("deptName") != null) {
+//                deptName = valueMap.get("deptName").toString().trim();
+//            }
+//        }
+//
+//        model.put("deptId", deptId);
+//        model.put("deptName", deptName);
+//        return model;
+//    }
 
 }
 

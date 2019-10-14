@@ -79,6 +79,9 @@
             <if test="currentCompanyId != null and currentCompanyId != ''">
                 and id_1=#{currentCompanyId}
             </if>
+            <if test="deptType != null and deptType!=''" >
+                and dept_type=#{deptType}
+            </if>
         ) a
         <where>
             <if test="code != null and code != ''">

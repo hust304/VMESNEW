@@ -499,7 +499,11 @@
     <!-- 自动创建，可以修改 -->
     <select id="warehouseProductView"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
         select
-        prod.code,
+        CASE
+          WHEN prod.source_code is null THEN prod.code
+          WHEN prod.source_code is not null THEN prod.source_code
+        ELSE null
+        END code,
         prod.name,
         prod.spec,
         prod.genre genre,
