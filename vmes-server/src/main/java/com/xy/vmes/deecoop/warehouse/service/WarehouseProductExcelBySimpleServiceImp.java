@@ -809,7 +809,7 @@ public class WarehouseProductExcelBySimpleServiceImp implements WarehouseProduct
 
                 //typeName 货品类型(允许为空)
                 //type 货品类型id
-                String type = productMap.get("typeName");
+                String type = productMap.get("type");
                 if (type != null && type.trim().length() > 0) {
                     addProduct.setType(type);
                 }
