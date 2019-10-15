@@ -871,8 +871,11 @@ public class WarehouseProductExcelBySimpleServiceImp implements WarehouseProduct
             String mapKey = iterator.next().toString().trim();
             Map<String, String> productUnitValue = productUnitMap.get(mapKey);
 
+            //当前(货品id)全部变更为(0:计价单位)
             //productId 货品id
             String productId = productUnitValue.get("productId");
+            //type:单位类型(1:计量单位 0:计价单位)
+            productUnitService.updateTypeByProductUnit(productId, "0");
 
             //productUnit 计量单位id
             String productUnit = productUnitValue.get("productUnit");
