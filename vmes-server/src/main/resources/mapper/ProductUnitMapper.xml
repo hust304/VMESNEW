@@ -361,5 +361,14 @@
         product_id  = #{productId}
     </update>
 
+    <update id="updateTypeByProductUnit" parameterType="com.yvan.PageData">
+        update vmes_product_unit set type = #{type}
+        <where>
+            <if test="productId != null and productId != ''" >
+                and product_id = #{productId}
+            </if>
+        </where>
+    </update>
+
 
 </mapper>

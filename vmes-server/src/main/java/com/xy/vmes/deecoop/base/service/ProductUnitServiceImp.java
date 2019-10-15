@@ -212,6 +212,20 @@ public class ProductUnitServiceImp implements ProductUnitService {
     }
 
     /**
+     * 更改货品单位表(vmes_product_unit)
+     * @param productId  货品id
+     * @param type       单位类型(1:计量单位 0:计价单位)
+     */
+    public void updateTypeByProductUnit(String productId, String type) {
+        PageData valueMap = new PageData();
+        valueMap.put("productId", productId);
+        //单位类型 (1:计量单位 0:计价单位)
+        valueMap.put("type", type);
+        productUnitMapper.updateTypeByProductUnit(valueMap);
+    }
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
      *
      * @param pageData    查询参数对象<HashMap>
      * @param isQueryAll  是否查询全部
