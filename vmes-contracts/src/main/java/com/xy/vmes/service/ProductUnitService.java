@@ -135,7 +135,13 @@ public interface ProductUnitService {
     List<ProductUnit> findProductUnitList(PageData object) throws Exception;
 
     void updateToNotDefaultByPorId(String productId) throws Exception;
-
+    /**
+     * 更改货品单位表(vmes_product_unit)
+     * @param productId  货品id
+     * @param type       单位类型(1:计量单位 0:计价单位)
+     */
+    void updateTypeByProductUnit(String productId, String type);
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////
     ResultModel updateIsDefaultProductUnit(PageData pd) throws Exception;
 
     ResultModel listPageProductUnits(PageData pd, Pagination pg) throws Exception;
