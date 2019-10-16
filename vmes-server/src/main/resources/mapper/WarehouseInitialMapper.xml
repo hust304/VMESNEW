@@ -498,8 +498,12 @@
                 and unit.name LIKE CONCAT(CONCAT('%',#{productUnitName}),'%')
             </if>
 
+            <!--呆滞货品查询条件-->
             <if test="'true' == isNotNullLastUpdateDate">
                 and prodLastDate.last_update_date is not null
+            </if>
+            <if test="last2nowDay != null and last2nowDay != ''" >
+                and prodLastDate.last2nowDay = #{last2nowDay}
             </if>
 
             <!--queryStr 自定义sql查询语句-->
