@@ -91,7 +91,7 @@ public class WarehouseInitialController {
         }
 
         //默认值(011) := 初始化按钮(禁用),导入按钮(启用),禁用初始化按钮(启用)
-        String isDisableButton = new String("011");
+        String isDisableButton = new String("111");
         WarehouseInitial warehouseInitial = null;
         try {
             PageData findMap = new PageData();
