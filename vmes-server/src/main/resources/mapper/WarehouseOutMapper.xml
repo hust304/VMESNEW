@@ -574,6 +574,13 @@
             <if test="state != null and state != ''">
                 and warehouseout.state =  #{state}
             </if>
+            <if test="createDateBegin != null and createDateBegin != ''">
+                <![CDATA[ and warehouseout.cdate >= #{createDateBegin} ]]>
+            </if>
+            <if test="createDateEnd != null and createDateEnd != ''">
+                <![CDATA[ and warehouseout.cdate <= #{createDateEnd} ]]>
+            </if>
+
 
             <if test="productCode != null and productCode != ''">
                 and prod.code LIKE CONCAT(CONCAT('%', #{productCode}),'%')

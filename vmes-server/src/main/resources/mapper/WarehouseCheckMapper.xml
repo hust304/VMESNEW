@@ -210,6 +210,12 @@
             <if test="type != null and type != ''" >
                 and parent.type = #{type}
             </if>
+            <if test="createDateBegin != null and createDateBegin != ''">
+                <![CDATA[ and parent.cdate >= #{createDateBegin} ]]>
+            </if>
+            <if test="createDateEnd != null and createDateEnd != ''">
+                <![CDATA[ and parent.cdate <= #{createDateEnd} ]]>
+            </if>
 
             <if test="detailState != null and detailState != ''" >
                 and detail.state = #{detailState}

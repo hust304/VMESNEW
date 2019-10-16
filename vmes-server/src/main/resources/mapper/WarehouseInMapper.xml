@@ -351,6 +351,12 @@
         <if test="deptName != null and deptName != ''">
             and a.dept_name LIKE CONCAT(CONCAT(#{deptName}),'%')
         </if>
+        <if test="createDateBegin != null and createDateBegin != ''">
+            <![CDATA[ and a.cdate >= #{createDateBegin} ]]>
+        </if>
+        <if test="createDateEnd != null and createDateEnd != ''">
+            <![CDATA[ and a.cdate <= #{createDateEnd} ]]>
+        </if>
 
         <!--warehouse_attribute:仓库属性(warehouse:(简版,复杂版)仓库 spare:备件库)-->
         <!--过滤出 (备件库)-入库单-->
