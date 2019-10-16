@@ -105,7 +105,7 @@ public class WarehouseInitialBySimpleController {
 
             //是否禁用按钮(0:已禁用 1:启用) (0和1字符串,初始化按钮,导入按钮,禁用初始化按钮)
             //0和1字符串 第一位:初始化按钮 第二位:导入按钮 第三位:禁用初始化按钮
-            String isDisableButton = "101";
+            String isDisableButton = "111";
 
             if (warehouseInitial == null) {
                 WarehouseInitial addObject = new WarehouseInitial();
