@@ -366,6 +366,9 @@
             <if test="genreId != null and genreId != ''">
                 and genre.id  = #{genreId}
             </if>
+            <if test="genreName != null and genreName != ''">
+                and genre.name  = #{genreName}
+            </if>
             <if test="prodName != null and prodName != ''">
                 and prod.name LIKE CONCAT(CONCAT('%', #{prodName}),'%')
             </if>
@@ -463,6 +466,13 @@
             <if test="genreId != null and genreId != ''">
                 and genre.id  = #{genreId}
             </if>
+            <if test="genreName != null and genreName != ''">
+                and genre.name  = #{genreName}
+            </if>
+            <if test="isHavingBom == 1">
+                and bom.id is not null
+            </if>
+
             <if test="prodName != null and prodName != ''">
                 and prod.name LIKE CONCAT(CONCAT('%', #{prodName}),'%')
             </if>
