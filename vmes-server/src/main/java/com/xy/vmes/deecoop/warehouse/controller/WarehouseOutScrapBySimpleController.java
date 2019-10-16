@@ -149,6 +149,8 @@ public class WarehouseOutScrapBySimpleController {
 
         WarehouseOut warehouseOutEdit = new WarehouseOut();
         warehouseOutEdit.setId(parentId);
+        //remark:备注 记录报废单审核退回原因
+        warehouseOutEdit.setRemark(null);
         //状态(0:未完成 1:已完成 -1:已取消 2:待提交 3:待审核)
         //(2019-10-10)简版仓库报废审核功能-添加状态(2:待提交 3:待审核)
         warehouseOutEdit.setState("3");
@@ -451,7 +453,8 @@ public class WarehouseOutScrapBySimpleController {
 
         WarehouseOut warehouseOutEdit = new WarehouseOut();
         warehouseOutEdit.setId(parentId);
-        warehouseOutEdit.setRemark(remark);
+        //remark:备注 记录报废单审核退回原因
+        warehouseOutEdit.setRemark("退回原因: " + remark);
         //状态(0:未完成 1:已完成 -1:已取消 2:待提交 3:待审核)
         //(2019-10-10)简版仓库报废审核功能-添加状态(2:待提交 3:待审核)
         warehouseOutEdit.setState("2");
