@@ -487,12 +487,16 @@ public class DictionaryController {
                     Common.DICTIONARY_MAP.get("saleRetreatIn").equals(treeId) || Common.DICTIONARY_MAP.get("saleChangeRetreatIn").equals(treeId)
                 )) {
                     continue;
-                } else if (userRoleMenuMap.get(Common.SYS_MENU_MAP.get("purchase")) != null
-                    && Common.DICTIONARY_MAP.get("purchaseIn").equals(treeId)
-                ) {
-                    //purchase 采购 3f5e1bcd2d3745998773413ccbded554 --> (purchaseIn d78ceba5beef41f5be16f0ceee775399 采购入库)
-                    continue;
-                } else if (userRoleMenuMap.get(Common.SYS_MENU_MAP.get("equipmentRepair")) != null
+                }
+//purchaseIn:采购入库 入库类型下拉框(显示该选项)
+//                else if (userRoleMenuMap.get(Common.SYS_MENU_MAP.get("purchase")) != null
+//                    && Common.DICTIONARY_MAP.get("purchaseIn").equals(treeId)
+//                ) {
+//                    //purchase 采购 3f5e1bcd2d3745998773413ccbded554 --> (purchaseIn d78ceba5beef41f5be16f0ceee775399 采购入库)
+//                    continue;
+//                }
+
+                else if (userRoleMenuMap.get(Common.SYS_MENU_MAP.get("equipmentRepair")) != null
                     && Common.DICTIONARY_MAP.get("repairRetreatIn").equals(treeId)
                 ) {
                     //equipmentRepair 设备维修 bfbb17fb01e44c648b1938b0e131202c --> (repairRetreatIn c396683796d54b8693b522a2c0ad2793 维修领料退回入库)
