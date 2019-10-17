@@ -427,7 +427,7 @@
                 and genre.name = #{genreName}
             </if>
             <if test="genreNames != null and genreNames != ''">
-                and genre.name in (${genreNames})
+                and prod.name LIKE CONCAT('%',CONCAT(#{genreNames}),'%')
             </if>
 
             <if test="typeName != null and typeName != ''">
@@ -440,7 +440,7 @@
                 and prod.company_id=#{currentCompanyId}
             </if>
             <if test="spec != null and spec != ''" >
-                and prod.spec=#{spec}
+                and prod.spec LIKE CONCAT('%',CONCAT(#{spec}),'%')
             </if>
             <if test="genre != null and genre != ''" >
                 and prod.genre LIKE CONCAT('%',CONCAT(#{genre}),'%')
