@@ -345,32 +345,50 @@ public class WarehouseProductExcelBySimpleServiceImp implements WarehouseProduct
         //获取Excel导入货品批次号Map<货品id, 批次号>
         Map<String, String> productPCCodeMap = this.findProductPCCodeMap(companyId, warehouseProductMap);
 
+
         for (Iterator iterator = warehouseProductMap.keySet().iterator(); iterator.hasNext();) {
             String mapKey = (String)iterator.next();
             WarehouseProduct warehouseProduct = warehouseProductMap.get(mapKey);
-            String productId = warehouseProduct.getProductId();
+            //库存数量
+            BigDecimal stockCount = warehouseProduct.getStockCount();
+            Product product = productService.findProductById(warehouseProduct.getProductId());
 
-            String code = productPCCodeMap.get(productId);
-            warehouseProduct.setCode(code);
-            warehouseProduct.setCuser(userId);
-            warehouseProduct.setCompanyId(companyId);
+            PageData findMap = new PageData();
+            findMap.put("productId", warehouseProduct.getProductId());
+            findMap.put("warehouseId", warehouseProduct.getWarehouseId());
+            findMap.put("mapSize", Integer.valueOf(findMap.size()));
+            WarehouseProduct sysObject = warehouseProductService.findWarehouseProduct(findMap);
+            if (sysObject != null) {
+                WarehouseProduct editObject = new WarehouseProduct();
+                editObject.setId(sysObject.getId());
+                editObject.setStockCount(stockCount);
+                warehouseProductService.update(editObject);
 
-            //生成二维码
-            String QRCodeJson = warehouseProductService.warehouseProduct2QRCode(warehouseProduct);
-            String qrcode = fileService.createQRCode("warehouseProduct", QRCodeJson);
-            if (qrcode != null && qrcode.trim().length() > 0) {
-                warehouseProduct.setQrcode(qrcode);
+                productService.updateStockCount(product, stockCount, userId, "update");
+            } else {
+                String productId = warehouseProduct.getProductId();
+                String code = productPCCodeMap.get(productId);
+                warehouseProduct.setCode(code);
+                warehouseProduct.setCuser(userId);
+                warehouseProduct.setCompanyId(companyId);
+
+                //生成二维码
+                String QRCodeJson = warehouseProductService.warehouseProduct2QRCode(warehouseProduct);
+                String qrcode = fileService.createQRCode("warehouseProduct", QRCodeJson);
+                if (qrcode != null && qrcode.trim().length() > 0) {
+                    warehouseProduct.setQrcode(qrcode);
+                }
+                warehouseProductService.save(warehouseProduct);
+
+
+                BigDecimal prodCount = BigDecimal.valueOf(0D);
+                if (product.getStockCount() != null) {
+                    prodCount = product.getStockCount();
+                }
+
+                BigDecimal prodStockCount = BigDecimal.valueOf(prodCount.doubleValue() + warehouseProduct.getStockCount().doubleValue());
+                productService.updateStockCount(product, prodStockCount, userId, "in");
             }
-            warehouseProductService.save(warehouseProduct);
-
-            Product product = productService.findProductById(productId);
-            BigDecimal prodCount = BigDecimal.valueOf(0D);
-            if (product.getStockCount() != null) {
-                prodCount = product.getStockCount();
-            }
-
-            BigDecimal prodStockCount = BigDecimal.valueOf(prodCount.doubleValue() + warehouseProduct.getStockCount().doubleValue());
-            productService.updateStockCount(product, prodStockCount, userId, "in");
         }
     }
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
