@@ -933,6 +933,19 @@ public class WarehouseOutDetailServiceImp implements WarehouseOutDetailService {
                 priceCount = StringUtil.scaleDecimal(priceCount, n2pIsScale, n2pDecimalCount);
                 mapObject.put("priceCount", priceCount.toString());
 
+                //n2pFormula (计量单位转换计价单位公式)
+                String n2pFormula = (String)mapObject.get("n2pFormula");
+                //stockCount (计量单位)库存数量
+                BigDecimal stockCount = BigDecimal.valueOf(0D);
+                if (mapObject.get("stockCount") != null) {
+                    stockCount = (BigDecimal)mapObject.get("stockCount");
+                }
+
+                //stockCountByPrice        (计价单位)库存数量
+                BigDecimal stockCountByPrice = EvaluateUtil.countFormulaN2P(stockCount, n2pFormula);
+                stockCountByPrice = StringUtil.scaleDecimal(stockCountByPrice, n2pIsScale, n2pDecimalCount);
+                mapObject.put("stockCountByPrice", stockCountByPrice.toString());
+
                 //count 出库数量(计量单位)
                 BigDecimal count = BigDecimal.valueOf(0D);
                 if (mapObject.get("count") != null) {

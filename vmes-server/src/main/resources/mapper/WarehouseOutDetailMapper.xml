@@ -196,6 +196,9 @@
         (replace(uuid(), '-', ''),'WarehouseOutDetail','warehouseName','仓库名称',35, '1','0','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'WarehouseOutDetail','price','单价',36, '1','0','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''), 'WarehouseOutDetail', 'priceSum', '金额', 37, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+
+        (replace(uuid(), '-', ''), 'WarehouseOutDetail', 'stockCount', '库存数量', 38, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'WarehouseOutDetail', 'stockCountByPrice', '库存数量', 39, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
     </insert>
 
     <insert id="insertColumn1" >
@@ -529,7 +532,7 @@
             businessId,productCode,productName,productSpec,productGenre,productGenreName,productUnit,productUnitName,warehouseOutCode,parentWarehouseId,id,
             priceUnit,priceUnitName,round(ifnull(priceCount,0),2) priceCount,round(ifnull(productCount,0),2) productCount,
             n2pFormula,n2pIsScale,n2pDecimalCount,
-            p2nFormula,p2nIsScale,p2nDecimalCount,price,
+            p2nFormula,p2nIsScale,p2nDecimalCount,price,stockCount,stockCountByPrice,
             round(sum(ifnull(executeCount,0)),2) executeCount
         from (
             select
@@ -571,6 +574,8 @@
                 genre.name productGenreName,
                 productUnit.name productUnitName,
                 priceUnit.name priceUnitName,
+                ifnull(prod.stock_count, 0) stockCount,
+                '' stockCountByPrice,
 
                 priceUnitFormula.np_formula n2pFormula,
                 priceUnitFormula.n2p_is_scale n2pIsScale,
