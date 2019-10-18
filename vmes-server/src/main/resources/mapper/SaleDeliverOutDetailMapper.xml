@@ -9,14 +9,14 @@
     <!--发货出库: 出库完成查询语句，(出库明细,发货明细,订单明细) -->
     <select id="findOutDetailByOrderDetail" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
+            deliverDetail.id deliverDtlId,
+            deliverDetail.parent_id deliverId,
+
             outDetail.id outDtlId,
             outDetail.parent_id outId,
             outDetail.product_id productId,
             outDetail.state outDetailState,
             round(ifnull(outDetail.count, 0), 2) outDetailCount,
-
-            deliverDetail.id deliverDtlId,
-            deliverDetail.parent_id deliverId,
 
             orderDetail.id orderDtlId,
             orderDetail.parent_id orderId,
@@ -25,6 +25,9 @@
             left join vmes_warehouse_out_detail outDetail on deliverDetail.out_detail_id = outDetail.id
             left join vmes_sale_order_detail orderDetail on deliverDetail.order_detai_id = orderDetail.id
         <where>
+            <if test="deliverId != null and deliverId != ''" >
+                and deliverDetail.parent_id = #{deliverId}
+            </if>
             <if test="orderId != null and orderId != ''" >
                 and deliverDetail.order_id = #{orderId}
             </if>
