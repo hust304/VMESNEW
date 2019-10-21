@@ -10,6 +10,7 @@ import java.util.Map;
  */
 public interface SaleDeliverOutDetailService {
     List<Map<String, Object>> findDeliverDetailListByOrderId(String orderId, String state);
+    List<Map<String, Object>> findDeliverDetailListByDeliverId(String deliverId);
 
     /**
      * 发货出库查询(出库明细,发货明细,订单明细)关联查询

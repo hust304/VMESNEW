@@ -49,6 +49,14 @@ public class SaleDeliverOutDetailServiceImp implements SaleDeliverOutDetailServi
         return list;
     }
 
+    public List<Map<String, Object>> findDeliverDetailListByDeliverId(String deliverId) {
+        PageData findMap = new PageData();
+        findMap.put("deliverId", deliverId);
+
+        return saleDeliverOutDetailMapper.findOutDetailByOrderDetail(findMap);
+
+    }
+
     /**
      * 发货出库查询(出库明细,发货明细,订单明细)关联查询
      *
