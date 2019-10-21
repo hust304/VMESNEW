@@ -934,11 +934,22 @@ public class WarehouseProductExcelBySimpleServiceImp implements WarehouseProduct
             //productUnit 计量单位id
             String productUnit = productUnitValue.get("productUnit");
 
-            if (sysProductUnitMap != null && sysProductUnitMap.get(mapKey) != null) {
-                //当前(货品id)全部变更为(0:计价单位)
-                //type:单位类型(1:计量单位 0:计价单位)
-                productUnitService.updateTypeByProductUnit(productId, "0");
-            }
+            Map columnMap = new HashMap();
+            columnMap.put("product_id", productId);
+            columnMap.put("unit", productUnit);
+            productUnitService.deleteByColumnMap(columnMap);
+
+            columnMap = new HashMap();
+            columnMap.put("product_id", productId);
+            //单位类型 (1:计量单位 0:计价单位)
+            columnMap.put("type", "1");
+            productUnitService.deleteByColumnMap(columnMap);
+
+//            if (sysProductUnitMap != null && sysProductUnitMap.get(mapKey) != null) {
+//                //当前(货品id)全部变更为(0:计价单位)
+//                //type:单位类型(1:计量单位 0:计价单位)
+//                productUnitService.updateTypeByProductUnit(productId, "0");
+//            }
 
             ProductUnit addProductUnit = new ProductUnit();
             addProductUnit.setCuser(userId);
