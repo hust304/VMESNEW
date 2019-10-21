@@ -994,6 +994,8 @@ public class WarehouseInExecuteServiceImp implements WarehouseInExecuteService {
                 //批次号
                 String code = (String)warehouseInDetailMap.get("code");
 
+
+
                 Object executeObj = warehouseInDetailMap.get("children");
                 if (executeObj == null) {continue;}
 

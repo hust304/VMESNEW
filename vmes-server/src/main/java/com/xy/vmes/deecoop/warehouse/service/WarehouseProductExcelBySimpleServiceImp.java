@@ -850,7 +850,7 @@ public class WarehouseProductExcelBySimpleServiceImp implements WarehouseProduct
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**
      * 获取货品单位Map结构体
-     * 货品单位Map结构体: <货品id_计量单位id, 货品单位Map>
+     * 货品单位Map结构体: <货品id, 货品单位Map>
      *   货品单位Map:
      *     productId: 货品id
      *     unitId:    计量单位id
@@ -864,6 +864,8 @@ public class WarehouseProductExcelBySimpleServiceImp implements WarehouseProduct
 
         PageData findMap = new PageData();
         findMap.put("companyId", companyId);
+        //productUnitType 单位类型 (1:计量单位 0:计价单位)
+        findMap.put("productUnitType", "1");
         //是否启用(0:已禁用 1:启用)
         findMap.put("productUnitIsdisable", "1");
         List<Map> mapList = productUnitService.getDataListPage(findMap);
@@ -879,8 +881,8 @@ public class WarehouseProductExcelBySimpleServiceImp implements WarehouseProduct
             productUnitValueMap.put("unitId", unitId);
 
             //mapKey := 货品id_计量单位id
-            String mapKey = productId + "_" + unitId;
-            productUnitMap.put(mapKey, productUnitValueMap);
+            //String mapKey = productId;
+            productUnitMap.put(productId, productUnitValueMap);
         }
 
         return productUnitMap;
@@ -891,7 +893,7 @@ public class WarehouseProductExcelBySimpleServiceImp implements WarehouseProduct
 
         //根据当前企业id查询(vmes_product_unit)
         // 获取货品单位Map结构体
-        // 货品单位Map结构体: <货品id_计量单位id, 货品单位Map>
+        // 货品单位Map结构体: <货品id, 货品单位Map>
         //   货品单位Map:
         //     productId: 货品id
         //     unitId:    计量单位id
@@ -918,12 +920,12 @@ public class WarehouseProductExcelBySimpleServiceImp implements WarehouseProduct
                 productUnitValue.put("productId", productId);
                 productUnitValue.put("productUnit", productUnit);
 
-                excelProductUnitMap.put((productId + "_" + productUnit), productUnitValue);
+                excelProductUnitMap.put((productId), productUnitValue);
             }
         }
 
         for (Iterator iterator = excelProductUnitMap.keySet().iterator(); iterator.hasNext();) {
-            //mapKey:货品id_计量单位id
+            //mapKey:货品id
             String mapKey = iterator.next().toString().trim();
             Map<String, String> productUnitValue = excelProductUnitMap.get(mapKey);
 
