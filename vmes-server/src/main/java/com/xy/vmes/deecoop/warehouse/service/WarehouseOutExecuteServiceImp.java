@@ -583,7 +583,7 @@ public class WarehouseOutExecuteServiceImp implements WarehouseOutExecuteService
                     outExecuteList = this.outMapList2ExecuteList(outDetail, outMapList, outExecuteList);
                 }
                 this.addWarehouseOutExecuteBySimple(outExecuteList);
-                this.executeWarehouseOutExecuteBySimple(parentId,detailId,currentUserId,currentCompanyId);
+                this.executeWarehouseOutExecuteBySimple(parentId,detailId,currentUserId,currentCompanyId,outExecuteList);
                 this.updateWarehouseOutState(detailId);
             }
         }
@@ -713,7 +713,7 @@ public class WarehouseOutExecuteServiceImp implements WarehouseOutExecuteService
                     }
                 }
                 this.addWarehouseOutExecuteBySimple(outExecuteList);
-                this.executeWarehouseOutExecuteBySimple(parentId,detailId,currentUserId,currentCompanyId);
+                this.executeWarehouseOutExecuteBySimple(parentId,detailId,currentUserId,currentCompanyId,outExecuteList);
                 this.updateWarehouseOutState(detailId);
             }
         }
@@ -1089,19 +1089,29 @@ public class WarehouseOutExecuteServiceImp implements WarehouseOutExecuteService
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    private void executeWarehouseOutExecuteBySimple(String parentId,String detailId,String cuser,String companyId) throws Exception {
-        PageData findMap = new PageData();
-        findMap.put("detailId", detailId);
-        List<Map> executeList = warehouseOutExecuteMapper.getDataList(findMap);
+    private void executeWarehouseOutExecuteBySimple(String parentId,
+                                                    String detailId,
+                                                    String cuser,
+                                                    String companyId,
+                                                    List<WarehouseOutExecute> outExecuteList) throws Exception {
+        //PageData findMap = new PageData();
+        //findMap.put("detailId", detailId);
+        //List<Map> executeList = warehouseOutExecuteMapper.getDataList(findMap);
 
-        if (executeList != null && executeList.size() > 0) {
-            for (int i = 0; i < executeList.size(); i++) {
-                Map object = executeList.get(i);
-                String executeId = (String)object.get("id");
-                BigDecimal count = (BigDecimal)object.get("actualCount");
-                String warehouseId = (String)object.get("warehouseId");
-                String productId = (String)object.get("productId");
-                String code = (String)object.get("code");
+        if (outExecuteList != null && outExecuteList.size() > 0) {
+            for (int i = 0; i < outExecuteList.size(); i++) {
+                WarehouseOutExecute OutExecute = outExecuteList.get(i);
+
+                String executeId = OutExecute.getId();
+                BigDecimal count = OutExecute.getCount();
+
+                //仓库货品Id
+                String warehouseProductId = OutExecute.getWarehouseProductId();
+                WarehouseProduct WarehouseProduct = warehouseProductService.selectById(warehouseProductId);
+
+                String warehouseId = WarehouseProduct.getWarehouseId();
+                String productId = WarehouseProduct.getProductId();
+                String code = WarehouseProduct.getCode();
 
                 //(简版仓库)出库操作
                 WarehouseProduct outObject = new WarehouseProduct();
@@ -1111,9 +1121,6 @@ public class WarehouseOutExecuteServiceImp implements WarehouseOutExecuteService
                 outObject.setWarehouseId(warehouseId);
                 //货位批次号
                 outObject.setCode(code);
-
-                //库存变更日志
-//                String executeId = Conv.createUuid();
 
                 WarehouseLoginfo loginfo = new WarehouseLoginfo();
                 loginfo.setParentId(parentId);
