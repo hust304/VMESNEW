@@ -504,12 +504,14 @@ public class TreeUtil {
                 }
 
                 if(pLackCount.compareTo(BigDecimal.ZERO)>0){
+
+                    BigDecimal planProductCount = planProductStockCountMap.get(child.getId())==null?BigDecimal.ZERO: planProductStockCountMap.get(child.getId());
                     if(pLackCount.multiply(child.getRatio()).compareTo(childStockCount)>0){
-                        planProductStockCountMap.put(child.getId(),childStockCount);
+                        planProductStockCountMap.put(child.getId(),planProductCount.add(childStockCount));
                         productStockCountMap.put(child.getId(),BigDecimal.ZERO);
                         child.setLackCount(pLackCount.multiply(child.getRatio()).subtract(childStockCount));
                     }else{
-                        planProductStockCountMap.put(child.getId(),pLackCount.multiply(child.getRatio()));
+                        planProductStockCountMap.put(child.getId(),planProductCount.add(pLackCount.multiply(child.getRatio())));
                         productStockCountMap.put(child.getId(),childStockCount.subtract(pLackCount.multiply(child.getRatio())));
                         child.setLackCount(BigDecimal.ZERO);
                     }
