@@ -79,29 +79,16 @@ public class SaleDeliver implements Serializable {
 	@TableField("isdisable")
 	private String isdisable;
 
-
+	//手机号
 	@TableField("mobile")
 	private String mobile;
-
+	//联系人
 	@TableField("linkName")
 	private String linkName;
+	//件数
+	@TableField("piece_count")
+	BigDecimal pieceCount;
 
-
-	public String getMobile() {
-		return mobile;
-	}
-
-	public void setMobile(String mobile) {
-		this.mobile = mobile;
-	}
-
-	public String getLinkName() {
-		return linkName;
-	}
-
-	public void setLinkName(String linkName) {
-		this.linkName = linkName;
-	}
 
 	public void setId(String id) {
 		this.id = id;
@@ -223,6 +210,25 @@ public class SaleDeliver implements Serializable {
 	public void setPriceType(String priceType) {
 		this.priceType = priceType;
 	}
+	public String getMobile() {
+		return mobile;
+	}
+	public void setMobile(String mobile) {
+		this.mobile = mobile;
+	}
+	public String getLinkName() {
+		return linkName;
+	}
+	public void setLinkName(String linkName) {
+		this.linkName = linkName;
+	}
+	public BigDecimal getPieceCount() {
+		return pieceCount;
+	}
+	public void setPieceCount(BigDecimal pieceCount) {
+		this.pieceCount = pieceCount;
+	}
+
 /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 
