@@ -22,6 +22,9 @@
         ) outExecute on outDetail.id = outExecute.detail_id
 
         <where>
+            <if test="parentId != null and parentId != ''" >
+                and outDetail.parent_id = #{parentId}
+            </if>
             <if test="outDtlIds != null and outDtlIds != ''" >
                 and outDetail.id in (${outDtlIds})
             </if>

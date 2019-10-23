@@ -3,6 +3,7 @@ package com.xy.vmes.deecoop.warehouse.controller;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.WarehouseOut;
+import com.xy.vmes.service.WarehouseOutDetailExecuteService;
 import com.xy.vmes.service.WarehouseOutService;
 import com.yvan.*;
 import com.yvan.springmvc.ResultModel;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.apache.commons.lang.StringUtils;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 
@@ -32,6 +34,8 @@ public class WarehouseOutController {
 
     @Autowired
     private WarehouseOutService warehouseOutService;
+    @Autowired
+    private WarehouseOutDetailExecuteService outDetailExecuteService;
 
 
     /**
@@ -303,42 +307,82 @@ public class WarehouseOutController {
         return model;
     }
 
-
     /**
-    * Excel导出
-    * @author 刘威 自动创建，可以修改
-    * @date 2018-10-22
-    */
-    @PostMapping("/warehouse/warehouseOut/exportExcelWarehouseOuts")
-    public void exportExcelWarehouseOuts() throws Exception {
-        logger.info("################warehouseOut/exportExcelWarehouseOuts 执行开始 ################# ");
-        Long startTime = System.currentTimeMillis();
+     * 根据出库单id-关联查询(vmes_warehouse_out_detail,vmes_warehouse_out_execute)
+     * 获取(出库单id)出库单明细对应的出库执行数量，是否存在执行数量大于零
+     *
+     * 返回值:
+     * isExistExecuteCount: 是否存在出库执行数量大于零
+     * false: 不存在
+     * true:  存在(一条或多条出库执行数量大于零)
+     *
+     * @return
+     * @throws Exception
+     */
+    @PostMapping("/warehouse/warehouseOut/checkExecuteCountWarehouseOut")
+    public ResultModel checkExecuteCountWarehouseOut() throws Exception {
+        ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
-        Pagination pg = HttpUtils.parsePagination(pd);
-        warehouseOutService.exportExcelWarehouseOuts(pd,pg);
-        Long endTime = System.currentTimeMillis();
-        logger.info("################warehouseOut/exportExcelWarehouseOuts 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
-    }
 
-    /**
-    * Excel导入
-    *
-    * @author 刘威 自动创建，可以修改
-    * @date 2018-10-22
-    */
-    @PostMapping("/warehouse/warehouseOut/importExcelWarehouseOuts")
-    public ResultModel importExcelWarehouseOuts(@RequestParam(value="excelFile") MultipartFile file) throws Exception  {
-        logger.info("################warehouseOut/importExcelWarehouseOuts 执行开始 ################# ");
-        Long startTime = System.currentTimeMillis();
-        ResultModel model = warehouseOutService.importExcelWarehouseOuts(file);
-        Long endTime = System.currentTimeMillis();
-        logger.info("################warehouseOut/importExcelWarehouseOuts 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        String parentId = pd.getString("parentId");
+        if (parentId == null || parentId.trim().length() == 0) {
+            model.putCode("1");
+            model.putMsg("出库单id为空或空字符串！");
+            return model;
+        }
+
+        String isExistExecuteCount = new String("false");
+
+        PageData findMap = new PageData();
+        findMap.put("parentId", parentId);
+        List<Map> mapList = outDetailExecuteService.findOutDetailExecute(findMap);
+        if (mapList != null && mapList.size() > 0) {
+            for (Map<String, Object> mapObject : mapList) {
+                //出库单明细-出库执行数量
+                BigDecimal outDtlExecuteCount = (BigDecimal)mapObject.get("outDtlExecuteCount");
+                if (outDtlExecuteCount != null && outDtlExecuteCount.doubleValue() != 0D) {
+                    isExistExecuteCount = "true";
+                    break;
+                }
+            }
+        }
+
+        model.put("isExistExecuteCount", isExistExecuteCount);
         return model;
     }
 
 
-
-
+//    /**
+//    * Excel导出
+//    * @author 刘威 自动创建，可以修改
+//    * @date 2018-10-22
+//    */
+//    @PostMapping("/warehouse/warehouseOut/exportExcelWarehouseOuts")
+//    public void exportExcelWarehouseOuts() throws Exception {
+//        logger.info("################warehouseOut/exportExcelWarehouseOuts 执行开始 ################# ");
+//        Long startTime = System.currentTimeMillis();
+//        PageData pd = HttpUtils.parsePageData();
+//        Pagination pg = HttpUtils.parsePagination(pd);
+//        warehouseOutService.exportExcelWarehouseOuts(pd,pg);
+//        Long endTime = System.currentTimeMillis();
+//        logger.info("################warehouseOut/exportExcelWarehouseOuts 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+//    }
+//
+//    /**
+//    * Excel导入
+//    *
+//    * @author 刘威 自动创建，可以修改
+//    * @date 2018-10-22
+//    */
+//    @PostMapping("/warehouse/warehouseOut/importExcelWarehouseOuts")
+//    public ResultModel importExcelWarehouseOuts(@RequestParam(value="excelFile") MultipartFile file) throws Exception  {
+//        logger.info("################warehouseOut/importExcelWarehouseOuts 执行开始 ################# ");
+//        Long startTime = System.currentTimeMillis();
+//        ResultModel model = warehouseOutService.importExcelWarehouseOuts(file);
+//        Long endTime = System.currentTimeMillis();
+//        logger.info("################warehouseOut/importExcelWarehouseOuts 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+//        return model;
+//    }
 
 }
 

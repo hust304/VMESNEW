@@ -333,15 +333,18 @@
         left join vmes_warehouse_out_executor executor on executor.detail_id = execut.detail_id and executor.executor_id = execut.executor_id and executor.isdisable = '1'
 
         <where>
-            <!--queryStr 自定义sql查询语句-->
-            <if test="queryStr != null and queryStr != ''" >
-                and ${queryStr}
-            </if>
             <if test="detailId != null and detailId != ''">
                 and execut.detail_id = #{detailId}
             </if>
+            <if test="executeIsdisable != null and executeIsdisable != ''">
+                and execut.isdisable = #{executeIsdisable}
+            </if>
             <if test="currentCompanyId != null and currentCompanyId != ''">
                 and product.company_id = #{currentCompanyId}
+            </if>
+            <!--queryStr 自定义sql查询语句-->
+            <if test="queryStr != null and queryStr != ''" >
+                and ${queryStr}
             </if>
         </where>
         order by execut.isdisable desc ,execut.cdate desc
