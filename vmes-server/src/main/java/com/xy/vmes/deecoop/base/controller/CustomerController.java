@@ -1,6 +1,8 @@
 package com.xy.vmes.deecoop.base.controller;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.common.util.TreeUtil;
+import com.xy.vmes.entity.TreeEntity;
 import com.yvan.common.util.Common;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.Customer;
@@ -17,7 +19,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.text.MessageFormat;
 import java.util.*;
 
@@ -35,8 +36,8 @@ public class CustomerController {
 
     @Autowired
     private CustomerService customerService;
-    @Autowired
-    private CustomeAddressService customeAddressService;
+    //@Autowired
+    //private CustomeAddressService customeAddressService;
 
     @Autowired
     private DictionaryService dictionaryService;
@@ -45,8 +46,8 @@ public class CustomerController {
     private FileService fileService;
     @Autowired
     private CoderuleService coderuleService;
-    @Autowired
-    private ColumnService columnService;
+    //@Autowired
+    //private ColumnService columnService;
 
 
     /**
@@ -479,7 +480,92 @@ public class CustomerController {
         return model;
     }
 
+    /**
+     * 获取当前企业客户树形结构
+     * 接口参数:
+     *   companyId: 企业id(登录用户所属企业id)
+     *   customerGenre: 客户属性(字典表 vmes_dictionary)
+     *     49c0a7ebcb4c4175bd5195837a6a9a13 供应商
+     *     df7cb67fca4148bc9632c908e4a7fdea 客户
+     *
+     * @return
+     * @throws Exception
+     */
+    @PostMapping("/base/customer/treeCustomer")
+    public ResultModel treeCustomer() throws Exception {
+        logger.info("################/base/customer/treeCustomer 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
 
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+
+        String companyId = pd.getString("currentCompanyId");
+        if (companyId == null || companyId.trim().length() == 0) {
+            model.putCode("1");
+            model.putMsg("企业id为空或空字符串！");
+            return model;
+        }
+
+        String customerGenre = new String();
+        if (pd.getString("customerGenre") != null) {
+            customerGenre = pd.getString("customerGenre");
+        }
+
+        //(企业id,客户属性)查询客户表(vmes_customer)
+        PageData findMap = new PageData();
+        findMap.put("companyId", companyId);
+        findMap.put("genre", customerGenre);
+        findMap.put("orderStr", "cdate asc");
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+        List<Customer> customerList = customerService.findCustomerList(findMap);
+
+        List<TreeEntity> treeList = new ArrayList<>();
+        if (customerList != null && customerList.size() > 0) {
+            //for (Customer object : customerList) {
+            for (int i = 0; i < customerList.size(); i++) {
+                Customer object = customerList.get(i);
+                TreeEntity treeNode = new TreeEntity();
+
+                treeNode.setId(object.getId());
+                treeNode.setValue(object.getId());
+
+                treeNode.setName(object.getName());
+                treeNode.setLabel(object.getName());
+
+                //customerSupplierGenre:b166cc9397744f0cbbea3244647305ee(字典id)
+                treeNode.setPid(Common.DICTIONARY_MAP.get("customerSupplierGenre"));
+                treeNode.setSerialNumber(Integer.valueOf(0+1));
+                treeNode.setIsdisable(object.getIsdisable());
+
+                treeList.add(treeNode);
+            }
+        }
+
+        //rootNode
+        TreeEntity rootNode = new TreeEntity();
+        rootNode.setId(Common.DICTIONARY_MAP.get("customerSupplierGenre"));
+        rootNode.setValue(Common.DICTIONARY_MAP.get("customerSupplierGenre"));
+        rootNode.setName("客户");
+        rootNode.setLabel("客户");
+        rootNode.setPid("root");
+        rootNode.setSerialNumber(Integer.valueOf(0));
+        rootNode.setIsdisable("1");
+        treeList.add(rootNode);
+
+        TreeEntity treeObj = TreeUtil.switchTree(Common.DICTIONARY_MAP.get("customerSupplierGenre"), treeList);
+        //String treeJsonStr = YvanUtil.toJson(treeObj);
+        //System.out.println("treeJsonStr: " + treeJsonStr);
+
+        Map result = new HashMap();
+        result.put("treeList", treeObj);
+
+        model.putResult(result);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/base/customer/treeCustomer 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     private StringBuffer exportExcelError(String msgStr) {
         StringBuffer msgBuf = new StringBuffer();
         msgBuf.append("Excel导入失败！" + Common.SYS_ENDLINE_DEFAULT);
@@ -490,7 +576,7 @@ public class CustomerController {
     }
 
 
-    public String checkColumnImportExcel(List<LinkedHashMap<String, String>> objectList,
+    private String checkColumnImportExcel(List<LinkedHashMap<String, String>> objectList,
                                          String companyId,
                                          String userId,
                                          Integer index,
@@ -644,8 +730,7 @@ public class CustomerController {
         return strBuf.toString();
     }
 
-
-    public void addImportExcelByList(List<LinkedHashMap<String, String>> objectList) {
+    private void addImportExcelByList(List<LinkedHashMap<String, String>> objectList) {
         if (objectList == null || objectList.size() == 0) {return;}
 
         for (int i = 0; i < objectList.size(); i++) {
@@ -698,9 +783,7 @@ public class CustomerController {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
         }
-
     }
 
 }
