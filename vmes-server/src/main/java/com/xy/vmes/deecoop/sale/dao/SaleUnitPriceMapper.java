@@ -71,8 +71,8 @@ public interface SaleUnitPriceMapper extends BaseMapper<SaleUnitPrice> {
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-12-14
     */
-    List<Map> getDataListPage(PageData pd,Pagination pg);
-
+    List<Map> getDataListPage(PageData pd, Pagination pg);
+    List<Map> getDataListPage(PageData pd);
 
     /**
     * 创建人：刘威 自动创建，禁止修改

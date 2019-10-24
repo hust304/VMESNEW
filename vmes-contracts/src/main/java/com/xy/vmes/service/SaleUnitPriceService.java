@@ -136,15 +136,15 @@ public interface SaleUnitPriceService {
     String checkColumn(SaleUnitPrice object);
     void modifySaleUnitPrice(SaleUnitPrice object) throws Exception;
 
-    List<Map> getCustomerUnitPriceListPage(PageData pd,Pagination pg) throws Exception;
+    //List<Map> getCustomerUnitPriceListPage(PageData pd,Pagination pg) throws Exception;
 
-    List<Map> getCustomerUnitPriceHisListPage(PageData pd,Pagination pg) throws Exception;
+    //List<Map> getCustomerUnitPriceHisListPage(PageData pd,Pagination pg) throws Exception;
 
-    ResultModel listPageCustomerUnitPricesHis(PageData pd, Pagination pg) throws Exception;
+    //ResultModel listPageCustomerUnitPricesHis(PageData pd, Pagination pg) throws Exception;
 
-    ResultModel listPageCustomerUnitPrices(PageData pd, Pagination pg) throws Exception;
+    //ResultModel listPageCustomerUnitPrices(PageData pd, Pagination pg) throws Exception;
 
-    ResultModel listPageSaleUnitPrices(PageData pd, Pagination pg) throws Exception;
+    ResultModel listPageSaleUnitPrices(PageData pd) throws Exception;
 
     ResultModel updateSaleUnitPriceByPrice(PageData pageData) throws Exception;
 
