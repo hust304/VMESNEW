@@ -149,8 +149,9 @@
             (replace(uuid(), '-', ''),'SaleUnitPrice','unitIsdefault','单位属性id',9, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'SaleUnitPrice','unitIsdefaultName','单位属性',9, '1','0','1','0',now(), 'admin'),
 
-            (replace(uuid(), '-', ''),'SaleUnitPrice','productPrice','单价',10, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleUnitPrice','custProdPrice','客户单价',10, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'SaleUnitPrice','remark','备注',11, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleUnitPrice','prodPrice','标准单价',12, '1','0','1','0',now(), 'admin'),
 
 
 
@@ -347,7 +348,7 @@
             sup.product_id productId,
             sup.unit unit,
             sup.customer_id customerId,
-            round(ifnull(sup.product_price, 0), 2) productPrice,
+            round(ifnull(sup.product_price, 0), 2) custProdPrice,
 
             sup.cuser cuser,
             sup.cdate cdate,
@@ -370,28 +371,29 @@
             genre.name genreName,
 
             unit.name unitName,
-            produnit.type unitType,
+            prodUnit.type unitType,
             CASE
-              WHEN produnit.type = '0' THEN '计价单位'
-              WHEN produnit.type = '1' THEN '计量单位'
+              WHEN prodUnit.type = '0' THEN '计价单位'
+              WHEN prodUnit.type = '1' THEN '计量单位'
             ELSE null
             END unitTypeName,
 
-            produnit.isdefault unitIsdefault,
+            prodUnit.isdefault unitIsdefault,
             CASE
-              WHEN produnit.isdefault = '0' THEN '默认'
-              WHEN produnit.isdefault = '1' THEN '非默认'
+              WHEN prodUnit.isdefault = '0' THEN '默认'
+              WHEN prodUnit.isdefault = '1' THEN '非默认'
             ELSE null
             END unitIsdefaultName,
+
+            round(ifnull(prodUnit.product_price, 0), 2) prodPrice,
 
             customer.name customerName
         from vmes_sale_unit_price sup
             left join vmes_product product on sup.product_id = product.id
             left join vmes_dictionary genre on product.genre = genre.id
-            left join vmes_product_unit produnit on sup.product_id = produnit.product_id and sup.unit = produnit.unit
+            left join vmes_product_unit prodUnit on sup.product_id = prodUnit.product_id and sup.unit = prodUnit.unit
             left join vmes_dictionary unit on sup.unit = unit.id
             left join vmes_customer customer on sup.customer_id = customer.id
-
         <where>
             <if test="customerId != null and customerId != ''">
                 and sup.customer_id = #{customerId}
