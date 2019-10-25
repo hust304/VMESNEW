@@ -2,6 +2,8 @@ package com.xy.vmes.deecoop.sale.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
+import com.xy.vmes.service.DictionaryService;
+import com.xy.vmes.service.SaleUnitPriceExcelService;
 import com.yvan.common.util.Common;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.sale.dao.SaleUnitPriceMapper;
@@ -25,6 +27,7 @@ import java.util.*;
 import com.yvan.Conv;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
@@ -36,9 +39,13 @@ import javax.servlet.http.HttpServletResponse;
 @Transactional(readOnly = false)
 public class SaleUnitPriceServiceImp implements SaleUnitPriceService {
 
-
     @Autowired
     private SaleUnitPriceMapper saleUnitPriceMapper;
+    @Autowired
+    private SaleUnitPriceExcelService saleUnitPriceExcelService;
+
+    @Autowired
+    private DictionaryService dictionaryService;
     @Autowired
     private ColumnService columnService;
     /**
@@ -584,9 +591,8 @@ public class SaleUnitPriceServiceImp implements SaleUnitPriceService {
     }
 
     @Override
-    public ResultModel importExcelSaleUnitPrices(MultipartFile file) throws Exception {
+    public ResultModel importExcelSaleUnitPrice(MultipartFile file) throws Exception {
         ResultModel model = new ResultModel();
-        //HttpServletRequest Request = HttpUtils.currentRequest();
 
         if (file == null) {
             model.putCode(Integer.valueOf(1));
@@ -616,15 +622,70 @@ public class SaleUnitPriceServiceImp implements SaleUnitPriceService {
         List<List<String>> dataLst = ExcelUtil.readExcel(file.getInputStream(), isExcel2003);
         List<LinkedHashMap<String, String>> dataMapLst = ExcelUtil.reflectMapList(dataLst);
 
-        //1. Excel文件数据dataMapLst -->(转换) ExcelEntity (属性为导入模板字段)
-        //2. Excel导入字段(非空,数据有效性验证[数字类型,字典表(大小)类是否匹配])
-        //3. Excel导入字段-名称唯一性判断-在Excel文件中
-        //4. Excel导入字段-名称唯一性判断-在业务表中判断
-        //5. List<ExcelEntity> --> (转换) List<业务表DB>对象
-        //6. 遍历List<业务表DB> 对业务表添加或修改
+        HttpServletRequest httpRequest = HttpUtils.currentRequest();
+        String companyId = httpRequest.getParameter("companyId");
+        String userId = httpRequest.getParameter("userId");
+
+        if (dataMapLst == null || dataMapLst.size() == 1) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("导入文件数据为空，请至少填写一行导入数据！");
+            return model;
+        }
+        dataMapLst.remove(0);
+
+        StringBuffer checkColumnMsgStr = new StringBuffer();
+        //1. Excel导入字段(非空,数据有效性验证[数字类型,字典表(大小)类是否匹配])
+        String msgStr = saleUnitPriceExcelService.checkColumnImportExcel(dataMapLst,
+                companyId,
+                Integer.valueOf(3),
+                Common.SYS_IMPORTEXCEL_MESSAGE_MAXROW);
+        if (msgStr != null && msgStr.trim().length() > 0) {
+            checkColumnMsgStr.append(msgStr);
+        }
+
+        if (checkColumnMsgStr.toString().trim().length() > 0) {
+            StringBuffer msgBuf = new StringBuffer();
+            msgBuf.append("Excel导入失败！" + Common.SYS_ENDLINE_DEFAULT);
+            msgBuf.append(checkColumnMsgStr.toString().trim());
+            msgBuf.append("请核对后再次导入" + Common.SYS_ENDLINE_DEFAULT);
+
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgBuf.toString());
+            return model;
+        }
+
+        //2. 添加系统基础表
+        // 1. 客户表
+        // 2. 货品表
+        // 3. 字典表(计量单位)
+
+        //系统客户Map结构体: <客户名称, 客户id>
+        Map<String, String> sysCustomerMap = new LinkedHashMap<>();
+        //系统货品Map结构体: <货品名称_规格型号, 货品id>
+        Map<String, String> sysProductMap = new LinkedHashMap<>();
+        //系统字典表Map<单位名称, 单位id>
+        dictionaryService.implementBusinessMapByParentID(Common.DICTIONARY_MAP.get("productUnit"), companyId);
+        Map<String, String> sysUnitMap = dictionaryService.getNameKeyMap();
+
+        saleUnitPriceExcelService.addSystemBaseTableImportExcel(dataMapLst,
+                companyId,
+                userId,
+                sysCustomerMap,
+                sysUnitMap,
+                sysProductMap);
+
+        //3. 遍历Excel导入List-Map<客户id_货品id_单位id, SaleUnitPrice>
+        Map<String, SaleUnitPrice> saleUnitPriceMap = new HashMap<>();
+        saleUnitPriceExcelService.findSaleUnitPriceMapByExcelList(dataMapLst,
+                saleUnitPriceMap,
+                sysCustomerMap,
+                sysUnitMap,
+                sysProductMap);
+
+        //4. 遍历Map<String, SaleUnitPrice> 对业务表添加
+        saleUnitPriceExcelService.addSaleUnitPrice(saleUnitPriceMap, companyId, userId);
+
         return model;
     }
 }
-
-
 

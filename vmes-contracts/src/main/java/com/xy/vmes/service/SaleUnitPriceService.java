@@ -152,7 +152,7 @@ public interface SaleUnitPriceService {
 
     void exportExcelSaleUnitPrices(PageData pd, Pagination pg) throws Exception;
 
-    ResultModel importExcelSaleUnitPrices(MultipartFile file) throws Exception;
+    ResultModel importExcelSaleUnitPrice(MultipartFile file) throws Exception;
 }
 
 
