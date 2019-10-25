@@ -417,6 +417,12 @@
             <if test="genreName != null and genreName != ''">
                 and genre.name LIKE CONCAT(CONCAT(#{genreName}),'%')
             </if>
+            <if test="customerName != null and customerName != ''">
+                and customer.name LIKE CONCAT(CONCAT(#{customerName}),'%')
+            </if>
+            <if test="unitName != null and unitName != ''">
+                and unit.name LIKE CONCAT(CONCAT(#{unitName}),'%')
+            </if>
 
             <if test="currentCompanyId != null and currentCompanyId != ''">
                 and customer.company_id = #{currentCompanyId}
