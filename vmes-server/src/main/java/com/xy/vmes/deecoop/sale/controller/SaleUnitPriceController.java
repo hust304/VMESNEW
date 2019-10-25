@@ -407,6 +407,35 @@ public class SaleUnitPriceController {
         return model;
     }
 
+    //删除客户货品单价-(根据id)支持多行删除
+    @PostMapping("/sale/saleUnitPrice/deleteSaleUnitPrice")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel deleteSaleUnitPrice() throws Exception {
+        logger.info("################/sale/saleUnitPrice/deleteSaleUnitPrice 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        String ids = pageData.getString("ids");
+        if (ids == null || ids.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("参数错误：请至少选择一行数据！");
+            return model;
+        }
+
+        ids = StringUtil.stringTrimSpace(ids);
+        String[] idArry = ids.split(",");
+
+        if (idArry != null && idArry.length > 0) {
+            saleUnitPriceService.deleteByIds(idArry);
+        }
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleUnitPrice/deleteSaleUnitPrice 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //    /**
 //    * Excel导出
