@@ -41,6 +41,7 @@ public interface SaleUnitPriceExcelService {
                                        String userId,
                                        Map<String, String> sysCustomerMap,
                                        Map<String, String> sysUnitMap,
+                                       Map<String, String> sysProductTypeMap,
                                        Map<String, String> sysProductMap) throws Exception;
 
     void findSaleUnitPriceMapByExcelList(List<LinkedHashMap<String, String>> objectList,

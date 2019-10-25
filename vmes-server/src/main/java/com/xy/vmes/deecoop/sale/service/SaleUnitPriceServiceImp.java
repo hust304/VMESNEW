@@ -663,15 +663,21 @@ public class SaleUnitPriceServiceImp implements SaleUnitPriceService {
         Map<String, String> sysCustomerMap = new LinkedHashMap<>();
         //系统货品Map结构体: <货品名称_规格型号, 货品id>
         Map<String, String> sysProductMap = new LinkedHashMap<>();
+
         //系统字典表Map<单位名称, 单位id>
         dictionaryService.implementBusinessMapByParentID(Common.DICTIONARY_MAP.get("productUnit"), companyId);
         Map<String, String> sysUnitMap = dictionaryService.getNameKeyMap();
+
+        //系统字典表Map<货品类型名称, 货品类型id>
+        dictionaryService.implementBusinessMapByParentID(Common.DICTIONARY_MAP.get("productType"), companyId);
+        Map<String, String> sysProductTypeMap = dictionaryService.getNameKeyMap();
 
         saleUnitPriceExcelService.addSystemBaseTableImportExcel(dataMapLst,
                 companyId,
                 userId,
                 sysCustomerMap,
                 sysUnitMap,
+                sysProductTypeMap,
                 sysProductMap);
 
         //3. 遍历Excel导入List-Map<客户id_货品id_单位id, SaleUnitPrice>

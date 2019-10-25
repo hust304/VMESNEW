@@ -201,6 +201,7 @@ public class SaleUnitPriceExcelServiceImp implements SaleUnitPriceExcelService {
                                               String userId,
                                               Map<String, String> sysCustomerMap,
                                               Map<String, String> sysUnitMap,
+                                              Map<String, String> sysProductTypeMap,
                                               Map<String, String> sysProductMap) throws Exception {
         //1. 查询客户表-系统中已经存在的客户比较-不存在添加客户表
         sysCustomerMap = this.findCustomerMapBySystem(companyId, sysCustomerMap);
@@ -211,10 +212,14 @@ public class SaleUnitPriceExcelServiceImp implements SaleUnitPriceExcelService {
         Map<String, String> excelUnitMap = this.findUnitMapByExcel(objectList);
         this.addUnit(excelUnitMap, sysUnitMap, companyId, userId);
 
+        //3. 查询字典表(货品类型)-系统中已经存在的单位比较-不存在添加字典表(货品类型)
+        Map<String, String> excelProductTypeMap = this.findProductTypeMapByExcel(objectList);
+        this.addProductType(excelProductTypeMap, sysProductTypeMap, companyId, userId);
+
         //4. 查询货品表(货品名称_规格型号)-系统中已经存在的货品比较-不存在添加货品表(货品单位)
         sysProductMap = this.findProductMapBySystem(companyId, sysProductMap);
         Map<String, Map<String, String>> excelProductMap = this.findProductMapByExcel(objectList);
-        this.addProduct(excelProductMap, sysProductMap, companyId, userId);
+        this.addProduct(excelProductMap, sysProductMap, sysProductTypeMap, companyId, userId);
     }
 
     public void findSaleUnitPriceMapByExcelList(List<LinkedHashMap<String, String>> objectList,
@@ -481,6 +486,80 @@ public class SaleUnitPriceExcelServiceImp implements SaleUnitPriceExcelService {
         }
     }
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    private Map<String, String> findProductTypeMapByExcel(List<LinkedHashMap<String, String>> objectList) {
+        Map<String, String> productTypeMap = new LinkedHashMap<>();
+        if (objectList == null || objectList.size() == 0) {return productTypeMap;}
+
+        for (Map<String, String> mapObject : objectList) {
+            //typeName 货品类型(允许为空)
+            String typeName = mapObject.get("typeName");
+            if (typeName != null && typeName.trim().length() > 0) {
+                productTypeMap.put(typeName, typeName);
+            }
+        }
+
+        return productTypeMap;
+    }
+
+    /**
+     *
+     * @param excelProductTypeMap Excel导入文件-货品类型列Map<货品类型名称, 货品类型id>
+     * @param sysProductTypeMap   系统字典表Map<货品类型名称, 货品类型id>
+     * @param companyId   企业id
+     * @param userId      用户id
+     * @throws Exception
+     */
+    private void addProductType(Map<String, String> excelProductTypeMap,
+                                Map<String, String> sysProductTypeMap,
+                                String companyId,
+                                String userId) throws Exception {
+        if (excelProductTypeMap == null) {return;}
+
+        //1.(货品类型名称) 与系统字典表结构体比较 是否存在
+        List<String> addProductTypeList = new ArrayList();
+        for (Iterator iterator = excelProductTypeMap.keySet().iterator(); iterator.hasNext();) {
+            //货品类型名称
+            String mapKey = iterator.next().toString().trim();
+            if (sysProductTypeMap.get(mapKey) == null) {
+                addProductTypeList.add(mapKey);
+            }
+        }
+
+        if (addProductTypeList.size() > 0) {
+            //货品类型:productType: a39ac4c1e02e45788eb03a52a5e9a972
+            String pid = Common.DICTIONARY_MAP.get("productType");
+            Dictionary paterObj = dictionaryService.findDictionaryById(pid);
+
+            for (String productTypeName : addProductTypeList) {
+                //创建字典信息
+                Dictionary addDictionary = new Dictionary();
+                addDictionary.setId(Conv.createUuid());
+                addDictionary.setCompanyId(companyId);
+                addDictionary.setCuser(userId);
+                addDictionary.setName(productTypeName);
+
+                //isglobal: 0：否  1：是
+                //0:非全局设置 1:是全局(超级管理员创建的数据字典都是全局设置)
+                addDictionary.setIsglobal("0");
+
+                addDictionary = dictionaryService.id2DictionaryByLayer(addDictionary.getId(),
+                        Integer.valueOf(paterObj.getLayer().intValue() + 1),
+                        addDictionary);
+                addDictionary = dictionaryService.paterObject2ObjectDB(paterObj, addDictionary);
+
+                //设置默认部门顺序
+                if (addDictionary.getSerialNumber() == null) {
+                    Integer maxCount = dictionaryService.findMaxSerialNumber(addDictionary.getPid());
+                    addDictionary.setSerialNumber(Integer.valueOf(maxCount.intValue() + 1));
+                }
+                dictionaryService.save(addDictionary);
+
+                //系统字典表Map<货品类型名称, 货品类型id>
+                sysProductTypeMap.put(productTypeName, addDictionary.getId());
+            }
+        }
+    }
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**
      * 获取货品Map结构体
      * 货品Map结构体: <货品名称_规格型号, 货品id>
@@ -563,6 +642,7 @@ public class SaleUnitPriceExcelServiceImp implements SaleUnitPriceExcelService {
      */
     private void addProduct(Map<String, Map<String, String>> excelProductMap,
                             Map<String, String> sysProductMap,
+                            Map<String, String> sysProductTypeMap,
                             String companyId,
                             String userId) throws Exception {
         if (excelProductMap == null) {return;}
@@ -618,12 +698,17 @@ public class SaleUnitPriceExcelServiceImp implements SaleUnitPriceExcelService {
                     addProduct.setSourceCode(sourceCode.trim());
                 }
 
-//                //typeName 货品类型(允许为空)
-//                //type 货品类型id
-//                String type = productMap.get("type");
-//                if (type != null && type.trim().length() > 0) {
-//                    addProduct.setType(type);
-//                }
+                //type 货品类型id(字典表id)
+                String type = new String();
+
+                //typeName 货品类型(允许为空)
+                String typeName = productMap.get("typeName");
+                if (typeName != null && typeName.trim().length() > 0
+                    && sysProductTypeMap != null && sysProductTypeMap.get(typeName) != null
+                ) {
+                    type = sysProductTypeMap.get(typeName).trim();
+                }
+                addProduct.setType(type);
 
                 //创建货品编码
                 String code = coderuleService.createCoder(companyId,"vmes_product","P");
