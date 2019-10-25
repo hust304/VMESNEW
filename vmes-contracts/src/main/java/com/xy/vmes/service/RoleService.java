@@ -171,6 +171,10 @@ public interface RoleService {
     void implementBusinessMapByCompanyId(String companyId);//@
 
     ResultModel listUserByRole(PageData pd)  throws Exception;
+
+    ResultModel getRoleMeunsDataType(PageData pageData) throws Exception;
+
+    ResultModel saveRoleMeunsData(PageData pageData) throws Exception;
 }
 
 

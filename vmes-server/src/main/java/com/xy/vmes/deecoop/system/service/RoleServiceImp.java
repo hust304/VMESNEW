@@ -1058,6 +1058,28 @@ public class RoleServiceImp implements RoleService {
     }
 
     @Override
+    public ResultModel saveRoleMeunsData(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+        RoleMenu roleMenu = (RoleMenu)HttpUtils.pageData2Entity(pageData, new RoleMenu());
+        roleMenuService.update(roleMenu);
+        return model;
+    }
+
+    @Override
+    public ResultModel getRoleMeunsDataType(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+        pageData.put("isQueryAll","true");
+        List<RoleMenu> roleMenuList = roleMenuService.findRoleMenuList(pageData);
+        if(roleMenuList!=null&&roleMenuList.size()>0){
+            RoleMenu roleMenu = roleMenuList.get(0);
+            Map result = new HashMap();
+            result.put("roleMenu", roleMenu);
+            model.putResult(result);
+        }
+        return model;
+    }
+
+    @Override
     public ResultModel listUserByRole(PageData pd) throws Exception {
         Pagination pg = HttpUtils.parsePagination(pd);
         ResultModel model = new ResultModel();

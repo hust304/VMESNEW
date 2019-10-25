@@ -366,6 +366,42 @@ public class RoleController {
         return model;
     }
 
+
+    /**
+     *角色对应菜单的数据权限
+     * @author 刘威
+     * @date 2018-07-30
+     */
+    @PostMapping("/system/role/getRoleMeunsDataType")
+    public ResultModel getRoleMeunsDataType() throws Exception {
+        logger.info("################role/getRoleMeunsDataType 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pageData = HttpUtils.parsePageData();
+        ResultModel model = roleService.getRoleMeunsDataType(pageData);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################role/getRoleMeunsDataType 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+    /**
+     *保存角色对应菜单的数据权限
+     * @author 刘威
+     * @date 2018-07-30
+     */
+    @PostMapping("/system/role/saveRoleMeunsData")
+    public ResultModel saveRoleMeunsData() throws Exception {
+        logger.info("################role/saveRoleMeunsData 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pageData = HttpUtils.parsePageData();
+        ResultModel model = roleService.saveRoleMeunsData(pageData);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################role/saveRoleMeunsData 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+
     /**角色对应全部菜单按钮列表
      *
      * @author 陈刚
