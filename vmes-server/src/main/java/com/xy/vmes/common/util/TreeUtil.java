@@ -396,7 +396,7 @@ public class TreeUtil {
                     //Bom齐套分析：可组装数量
                     nodeObject.setAssembledCount(pAssembledCount);
                     //Bom齐套分析：最大可生产数量
-                    nodeObject.setMaxCount(pAssembledCount.add(nodeObject.getStockCount()).setScale(0,BigDecimal.ROUND_DOWN));
+                    nodeObject.setMaxCount(pAssembledCount.add(pStockCount).setScale(0,BigDecimal.ROUND_DOWN));
                 }
                 nodeObject.setChildren(childListNew);
             }else{
@@ -404,7 +404,7 @@ public class TreeUtil {
                 //Bom齐套分析：可组装数量
                 nodeObject.setAssembledCount(BigDecimal.ZERO);
                 //Bom齐套分析：最大可生产数量
-                nodeObject.setMaxCount(nodeObject.getStockCount().setScale(0,BigDecimal.ROUND_DOWN));
+                nodeObject.setMaxCount(pStockCount.setScale(0,BigDecimal.ROUND_DOWN));
                 return;
             }
         }

@@ -14,6 +14,7 @@
 
     <!-- 字段 自动创建，禁止修改-->
     <sql id="Field">
+        data_type dataType,
 		role_id roleId,<!-- 角色ID -->
 		menu_id menuId,<!-- 菜单表ID -->
 		isdisable isdisable,<!-- 是否禁用(0:已禁用 1:启用) 数据字典:sys_isdisable -->
@@ -26,6 +27,7 @@
 
     <!-- 字段值 自动创建，禁止修改-->
     <sql id="FieldValue">
+        #{dataType},
 		#{roleId},<!-- 角色ID -->
 		#{menuId},<!-- 菜单表ID -->
 		#{isdisable},<!-- 是否禁用(0:已禁用 1:启用) 数据字典:sys_isdisable -->
@@ -211,6 +213,7 @@
 
             b.menu_id as menuId,
             b.role_id as roleId,
+            b.data_type as dataType,
             b.isdisable as isdisable
         from vmes_menu a
             left join vmes_role_menu b on a.id = b.menu_id
@@ -222,6 +225,12 @@
                 <where>
                     <if test="roleIds != null and roleIds != ''" >
                         and b.role_id in (${roleIds})
+                    </if>
+                    <if test="roleId != null and roleId != ''" >
+                        and b.role_id = #{roleId}
+                    </if>
+                    <if test="menuId != null and menuId != ''" >
+                        and b.menu_id = #{menuId}
                     </if>
                     <if test="isdisable != null and isdisable != ''" >
                         and b.isdisable = #{isdisable}
@@ -279,6 +288,7 @@
 
             b.menu_id as menuId,
             b.role_id as roleId,
+            b.data_type as dataType,
             b.isdisable as isdisable
         from vmes_menu a
             left join vmes_role_menu b on a.id = b.menu_id
@@ -290,6 +300,15 @@
             <!--queryStr 自定义sql查询语句 b.role_id in ()-->
             <if test="queryStr != null and queryStr!=''" >
                 and ${queryStr}
+            </if>
+            <if test="roleIds != null and roleIds != ''" >
+                and b.role_id in (${roleIds})
+            </if>
+            <if test="roleId != null and roleId != ''" >
+                and b.role_id = #{roleId}
+            </if>
+            <if test="menuId != null and menuId != ''" >
+                and b.menu_id = #{menuId}
             </if>
             <if test="isdisable != null and isdisable != ''" >
                 and b.isdisable = #{isdisable}

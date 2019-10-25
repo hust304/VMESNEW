@@ -40,9 +40,17 @@ public class RoleMenu implements Serializable {
 	//修改人账号
 	@TableField("uuser")
 	private String uuser;
+	//数据权限类型（0：显示个人数据  1：显示部门数据  2：显示所有数据）
+	@TableField("data_type")
+	private String dataType;
 
 
-
+	public String getDataType() {
+		return dataType;
+	}
+	public void setDataType(String dataType) {
+		this.dataType = dataType;
+	}
 	public void setId(String id) {
 		this.id = id;
 	}
