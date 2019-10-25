@@ -123,13 +123,13 @@ public class SaleUnitPriceExcelServiceImp implements SaleUnitPriceExcelService {
                 strBuf.append(str_isnull);
             }
 
-            //productUnitName 计量单位
+            //productUnitName 单位
             String productUnitName = mapObject.get("productUnitName");
             if (productUnitName == null || productUnitName.trim().length() == 0) {
                 //String msg_column_isnull = "第 {0} 行: ({1})输入为空或空字符串，({1})是必填字段不可为空！"
                 String str_isnull = MessageFormat.format(msg_column_isnull,
                         (i+index_int),
-                        "计量单位");
+                        "单位");
                 strBuf.append(str_isnull);
             }
 
@@ -602,10 +602,8 @@ public class SaleUnitPriceExcelServiceImp implements SaleUnitPriceExcelService {
             Map<String, String> productValueMap = new HashMap();
 
             //sourceCode 企业货品编码(允许为空)
-            String sourceCode = null;
             if (mapObject.get("sourceCode") != null) {
-                sourceCode = mapObject.get("sourceCode").trim();
-                productValueMap.put("sourceCode", sourceCode);
+                productValueMap.put("sourceCode", mapObject.get("sourceCode").trim());
             }
 
             //productName 货品名称
@@ -623,6 +621,11 @@ public class SaleUnitPriceExcelServiceImp implements SaleUnitPriceExcelService {
             //productGenreName 货品属性
             String productGenreName = mapObject.get("productGenreName");
             productValueMap.put("productGenreName", productGenreName);
+
+            //typeName 货品类型(允许为空)
+            if (mapObject.get("typeName") != null) {
+                productValueMap.put("typeName", mapObject.get("typeName").trim());
+            }
 
             //mapKey := 货品名称_规格型号
             String mapKey = productName + "_" + productSpec;
