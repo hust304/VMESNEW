@@ -253,23 +253,65 @@ public class SaleUnitPriceController {
         return model;
     }
 
-    /**
-     * 修改客户价格
-     * {productId:货品id unit:单位id customerId:客户id productPrice: 货品单价}
-     *
-     * @author 陈刚
-     * @date 2018-12-18
-     * @throws Exception
-     */
-    @PostMapping("/sale/saleUnitPrice/updateSaleUnitPriceByPrice")
+//    /**
+//     * 修改客户价格
+//     * {productId:货品id unit:单位id customerId:客户id productPrice: 货品单价}
+//     *
+//     * @author 陈刚
+//     * @date 2018-12-18
+//     * @throws Exception
+//     */
+//    @PostMapping("/sale/saleUnitPrice/updateSaleUnitPriceByPrice")
+//    @Transactional(rollbackFor=Exception.class)
+//    public ResultModel updateSaleUnitPriceByPrice() throws Exception {
+//        logger.info("################/sale/saleUnitPrice/updateSaleUnitPriceByPrice 执行开始 ################# ");
+//        Long startTime = System.currentTimeMillis();
+//        PageData pageData = HttpUtils.parsePageData();
+//        ResultModel model = saleUnitPriceService.updateSaleUnitPriceByPrice(pageData);
+//        Long endTime = System.currentTimeMillis();
+//        logger.info("################/sale/saleUnitPrice/updateSaleUnitPriceByPrice 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+//        return model;
+//    }
+
+    //修改客户货品单价
+    @PostMapping("/sale/saleUnitPrice/updateSaleUnitPrice")
     @Transactional(rollbackFor=Exception.class)
-    public ResultModel updateSaleUnitPriceByPrice() throws Exception {
-        logger.info("################/sale/saleUnitPrice/updateSaleUnitPriceByPrice 执行开始 ################# ");
+    public ResultModel updateSaleUnitPrice() throws Exception {
+        logger.info("################/sale/saleUnitPrice/updateSaleUnitPrice 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
+        ResultModel model = new ResultModel();
+
         PageData pageData = HttpUtils.parsePageData();
-        ResultModel model = saleUnitPriceService.updateSaleUnitPriceByPrice(pageData);
+        String id = pageData.getString("id");
+        if (id == null || id.trim().length() == 0) {
+            model.putCode("1");
+            model.putMsg("客户货品单价id为空或空字符串");
+            return model;
+        }
+
+        String productPriceStr = pageData.getString("productPrice");
+        if (productPriceStr == null || productPriceStr.trim().length() == 0) {
+            model.putCode("1");
+            model.putMsg("客户单价为必填项不可为空！");
+            return model;
+        }
+
+        BigDecimal productPrice = BigDecimal.valueOf(0D);
+        try {
+            productPrice = new BigDecimal(productPriceStr);
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
+        //四舍五入到2位小数
+        productPrice = productPrice.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+
+        SaleUnitPrice editObject = new SaleUnitPrice();
+        editObject.setId(id);
+        editObject.setProductPrice(productPrice);
+        saleUnitPriceService.update(editObject);
+
         Long endTime = System.currentTimeMillis();
-        logger.info("################/sale/saleUnitPrice/updateSaleUnitPriceByPrice 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleUnitPrice/updateSaleUnitPrice 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
