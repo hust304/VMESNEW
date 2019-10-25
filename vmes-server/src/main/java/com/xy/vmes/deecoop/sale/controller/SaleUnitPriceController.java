@@ -296,6 +296,11 @@ public class SaleUnitPriceController {
             return model;
         }
 
+        String remark = new String();
+        if (pageData.getString("remark") != null) {
+            remark = pageData.getString("remark").trim();
+        }
+
         BigDecimal productPrice = BigDecimal.valueOf(0D);
         try {
             productPrice = new BigDecimal(productPriceStr);
@@ -308,6 +313,7 @@ public class SaleUnitPriceController {
         SaleUnitPrice editObject = new SaleUnitPrice();
         editObject.setId(id);
         editObject.setProductPrice(productPrice);
+        editObject.setRemark(remark);
         saleUnitPriceService.update(editObject);
 
         Long endTime = System.currentTimeMillis();
