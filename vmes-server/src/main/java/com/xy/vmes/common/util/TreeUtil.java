@@ -335,7 +335,7 @@ public class TreeUtil {
             //Bom齐套分析：可组装数量
             nodeObject.setAssembledCount(BigDecimal.ZERO);
             //Bom齐套分析：最大可生产数量
-            nodeObject.setMaxCount(nodeObject.getStockCount().setScale(0,BigDecimal.ROUND_DOWN));
+            nodeObject.setMaxCount(pStockCount.setScale(0,BigDecimal.ROUND_DOWN));
         }else{
             if(childList.size()>0){
                 List<TreeEntity> childListNew = new ArrayList<TreeEntity>();
@@ -426,9 +426,9 @@ public class TreeUtil {
         if(childList.size()>0){
 
             if(semiFinishedRatioMap.get(nodeObject.getId())!=null){
-                semiFinishedRatioMap.put(nodeObject.getId(),semiFinishedRatioMap.get(nodeObject.getId()).add(nodeObject.getSumRatio()));
+                semiFinishedRatioMap.put(nodeObject.getId(),semiFinishedRatioMap.get(nodeObject.getId()).add(pUpRatio));
             }else{
-                semiFinishedRatioMap.put(nodeObject.getId(),nodeObject.getSumRatio());
+                semiFinishedRatioMap.put(nodeObject.getId(),pUpRatio);
             }
 
             List<TreeEntity> childListNew = new ArrayList<TreeEntity>();
@@ -452,18 +452,18 @@ public class TreeUtil {
             }
             nodeObject.setChildren(childListNew);
 
-            productStockCountMap.put(nodeObject.getId(),nodeObject.getStockCount());
+            productStockCountMap.put(nodeObject.getId(),pStockCount);
         }else{
             BigDecimal productStockCount = productStockCountMap.get(nodeObject.getId());
             if(productStockCount==null){
                 if(materielStockCountMap.get(nodeObject.getId())!=null){
-                    materielStockCountMap.put(nodeObject.getId(),materielStockCountMap.get(nodeObject.getId()).add(nodeObject.getSplitCount()).add(nodeObject.getStockCount()));
+                    materielStockCountMap.put(nodeObject.getId(),materielStockCountMap.get(nodeObject.getId()).add(pSplitCount).add(pStockCount));
                 }else{
-                    materielStockCountMap.put(nodeObject.getId(),nodeObject.getSplitCount().add(nodeObject.getStockCount()));
+                    materielStockCountMap.put(nodeObject.getId(),pSplitCount.add(pStockCount));
                 }
             }else{
                 if(materielStockCountMap.get(nodeObject.getId())!=null){
-                    materielStockCountMap.put(nodeObject.getId(),materielStockCountMap.get(nodeObject.getId()).add(nodeObject.getSplitCount()));
+                    materielStockCountMap.put(nodeObject.getId(),materielStockCountMap.get(nodeObject.getId()).add(pSplitCount));
                 }else{
                     materielStockCountMap.put(nodeObject.getId(),nodeObject.getSplitCount());
                 }
