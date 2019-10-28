@@ -269,10 +269,36 @@ public class ProductUnitExcelServiceServiceImp implements ProductUnitExcelServic
                     editObject.setProductPrice(excelObject.getProductPrice());
                     editObject.setUuser(userId);
 
-                    //判断当前货品id-是否计量单位 and 当前货品id-是否默认单位
-                    if (sysProductProdUnitMap != null && sysProductProdUnitMap.get(productId) == null
-                        && sysProductDefaultUnitMap != null && sysProductDefaultUnitMap.get(productId) == null
-                    ) {
+//                    //判断当前货品id-是否计量单位 and 当前货品id-是否默认单位
+//                    if (sysProductProdUnitMap != null && sysProductProdUnitMap.get(productId) == null
+//                        && sysProductDefaultUnitMap != null && sysProductDefaultUnitMap.get(productId) == null
+//                    ) {
+//                        //设定计量单位
+//                        //单位类型 (1:计量单位 0:计价单位)
+//                        editObject.setType("1");
+//
+//                        //npFormula 计量单位转换计价单位
+//                        editObject.setNpFormula("P=N");
+//                        editObject.setN2pIsScale(Common.SYS_ISSCALE_TRUE);
+//                        editObject.setN2pDecimalCount(Integer.valueOf(Common.SYS_NUMBER_FORMAT_2));
+//
+//                        //pnFormula 计价单位转换计量单位
+//                        editObject.setPnFormula("N=P");
+//                        editObject.setP2nIsScale(Common.SYS_ISSCALE_TRUE);
+//                        editObject.setP2nDecimalCount(Integer.valueOf(Common.SYS_NUMBER_FORMAT_2));
+//
+//                        //设定货品计量单位Map结构体: <货品id, 计量单位id>
+//                        sysProductProdUnitMap.put(productId, unit);
+//
+//                        //设定默认单位 是否默认 (1:默认 0:非默认)
+//                        editObject.setIsdefault("1");
+//                        //设定货品默认单位Map结构体: <货品id, 默认单位id>
+//                        sysProductDefaultUnitMap.put(productId, unit);
+//
+//                    } else
+
+                    //判断当前货品id-是否计量单位
+                    if (sysProductProdUnitMap != null && sysProductProdUnitMap.get(productId) == null) {
                         //设定计量单位
                         //单位类型 (1:计量单位 0:计价单位)
                         editObject.setType("1");
@@ -289,32 +315,10 @@ public class ProductUnitExcelServiceServiceImp implements ProductUnitExcelServic
 
                         //设定货品计量单位Map结构体: <货品id, 计量单位id>
                         sysProductProdUnitMap.put(productId, unit);
+                    }
 
-                        //设定默认单位 是否默认 (1:默认 0:非默认)
-                        editObject.setIsdefault("1");
-                        //设定货品默认单位Map结构体: <货品id, 默认单位id>
-                        sysProductDefaultUnitMap.put(productId, unit);
-
-                    } else if (sysProductProdUnitMap != null && sysProductProdUnitMap.get(productId) == null
-                        && sysProductDefaultUnitMap != null && sysProductDefaultUnitMap.get(productId) != null
-                    ) {
-                        //设定计量单位
-                        //单位类型 (1:计量单位 0:计价单位)
-                        editObject.setType("1");
-
-                        //npFormula 计量单位转换计价单位
-                        editObject.setNpFormula("P=N");
-                        editObject.setN2pIsScale(Common.SYS_ISSCALE_TRUE);
-                        editObject.setN2pDecimalCount(Integer.valueOf(Common.SYS_NUMBER_FORMAT_2));
-
-                        //pnFormula 计价单位转换计量单位
-                        editObject.setPnFormula("N=P");
-                        editObject.setP2nIsScale(Common.SYS_ISSCALE_TRUE);
-                        editObject.setP2nDecimalCount(Integer.valueOf(Common.SYS_NUMBER_FORMAT_2));
-
-                        //设定货品计量单位Map结构体: <货品id, 计量单位id>
-                        sysProductProdUnitMap.put(productId, unit);
-                    } else if (sysProductProdUnitMap != null && sysProductProdUnitMap.get(productId) != null
+                    //判断当前货品id-是否默认单位
+                    if (sysProductProdUnitMap != null && sysProductProdUnitMap.get(productId) != null
                         && sysProductDefaultUnitMap != null && sysProductDefaultUnitMap.get(productId) == null
                     ) {
                         //设定默认单位 是否默认 (1:默认 0:非默认)
@@ -329,56 +333,43 @@ public class ProductUnitExcelServiceServiceImp implements ProductUnitExcelServic
                     ProductUnit addObject = excelObject;
                     addObject.setUuser(userId);
 
-                    //判断当前货品id-是否计量单位 and 当前货品id-是否默认单位
-                    if (sysProductProdUnitMap != null && sysProductProdUnitMap.get(productId) == null
-                            && sysProductDefaultUnitMap != null && sysProductDefaultUnitMap.get(productId) == null
-                    ) {
+                    //npFormula 计量单位转换计价单位
+                    addObject.setNpFormula("P=N");
+                    addObject.setN2pIsScale(Common.SYS_ISSCALE_TRUE);
+                    addObject.setN2pDecimalCount(Integer.valueOf(Common.SYS_NUMBER_FORMAT_2));
+
+                    //pnFormula 计价单位转换计量单位
+                    addObject.setPnFormula("N=P");
+                    addObject.setP2nIsScale(Common.SYS_ISSCALE_TRUE);
+                    addObject.setP2nDecimalCount(Integer.valueOf(Common.SYS_NUMBER_FORMAT_2));
+
+                    //单位类型 默认计量单位 (1:计量单位 0:计价单位)
+                    addObject.setType("1");
+                    //判断当前货品id-是否计量单位
+                    if (sysProductProdUnitMap != null && sysProductProdUnitMap.get(productId) == null) {
                         //设定计量单位
                         //单位类型 (1:计量单位 0:计价单位)
                         addObject.setType("1");
 
-                        //npFormula 计量单位转换计价单位
-                        addObject.setNpFormula("P=N");
-                        addObject.setN2pIsScale(Common.SYS_ISSCALE_TRUE);
-                        addObject.setN2pDecimalCount(Integer.valueOf(Common.SYS_NUMBER_FORMAT_2));
-
-                        //pnFormula 计价单位转换计量单位
-                        addObject.setPnFormula("N=P");
-                        addObject.setP2nIsScale(Common.SYS_ISSCALE_TRUE);
-                        addObject.setP2nDecimalCount(Integer.valueOf(Common.SYS_NUMBER_FORMAT_2));
-
                         //设定货品计量单位Map结构体: <货品id, 计量单位id>
                         sysProductProdUnitMap.put(productId, unit);
-
-                        //设定默认单位 是否默认 (1:默认 0:非默认)
-                        addObject.setIsdefault("1");
-                        //设定货品默认单位Map结构体: <货品id, 默认单位id>
-                        sysProductDefaultUnitMap.put(productId, unit);
-                    } else if (sysProductProdUnitMap != null && sysProductProdUnitMap.get(productId) == null
-                        && sysProductDefaultUnitMap != null && sysProductDefaultUnitMap.get(productId) != null) {
-                        //设定计量单位
+                    } else if (sysProductProdUnitMap != null && sysProductProdUnitMap.get(productId) != null) {
+                        //设定计价单位
                         //单位类型 (1:计量单位 0:计价单位)
-                        addObject.setType("1");
+                        addObject.setType("0");
+                    }
 
-                        //npFormula 计量单位转换计价单位
-                        addObject.setNpFormula("P=N");
-                        addObject.setN2pIsScale(Common.SYS_ISSCALE_TRUE);
-                        addObject.setN2pDecimalCount(Integer.valueOf(Common.SYS_NUMBER_FORMAT_2));
-
-                        //pnFormula 计价单位转换计量单位
-                        addObject.setPnFormula("N=P");
-                        addObject.setP2nIsScale(Common.SYS_ISSCALE_TRUE);
-                        addObject.setP2nDecimalCount(Integer.valueOf(Common.SYS_NUMBER_FORMAT_2));
-
-                        //设定货品计量单位Map结构体: <货品id, 计量单位id>
-                        sysProductProdUnitMap.put(productId, unit);
-                    } else if (sysProductProdUnitMap != null && sysProductProdUnitMap.get(productId) != null
-                        && sysProductDefaultUnitMap != null && sysProductDefaultUnitMap.get(productId) == null
-                    ) {
+                    //设定默认单位 默认添加为(1:默认:属性) 是否默认 (1:默认 0:非默认)
+                    addObject.setIsdefault("1");
+                    //判断当前货品id-是否默认单位
+                    if (sysProductDefaultUnitMap != null && sysProductDefaultUnitMap.get(productId) == null) {
                         //设定默认单位 是否默认 (1:默认 0:非默认)
                         addObject.setIsdefault("1");
                         //设定货品默认单位Map结构体: <货品id, 默认单位id>
                         sysProductDefaultUnitMap.put(productId, unit);
+                    } else if (sysProductDefaultUnitMap != null && sysProductDefaultUnitMap.get(productId) != null) {
+                        //设定默认单位 是否默认 (1:默认 0:非默认)
+                        addObject.setIsdefault("0");
                     }
 
                     productUnitService.save(addObject);
