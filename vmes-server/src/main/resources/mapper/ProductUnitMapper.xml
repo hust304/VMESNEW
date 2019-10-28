@@ -211,6 +211,10 @@
                 <if test="type != null and type != ''" >
                     and type = #{type}
                 </if>
+                <if test="isdefault != null and isdefault != ''" >
+                    and isdefault = #{isdefault}
+                </if>
+
                 <if test="productPrice != null and productPrice != ''" >
                     and product_price = ${productPrice}
                 </if>
@@ -304,7 +308,7 @@
     </select>
 
     <!-- 自动创建，可以修改 -->
-    <select id="getDataListPage"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
+    <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
             pu.product_id productId,
             pu.unit punit,
@@ -342,6 +346,10 @@
             <if test="productUnitType != null and productUnitType != ''">
                 and pu.type = #{productUnitType}
             </if>
+            <if test="productUnitIsdefault != null and productUnitIsdefault != ''">
+                and pu.isdefault = #{productUnitIsdefault}
+            </if>
+
             <if test="productUnitIsdisable != null and productUnitIsdisable != ''">
                 and pu.isdisable = #{productUnitIsdisable}
             </if>

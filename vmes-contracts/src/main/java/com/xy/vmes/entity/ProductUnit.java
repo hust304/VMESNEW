@@ -60,6 +60,7 @@ public class ProductUnit implements Serializable {
 	//货品单价
 	@TableField("product_price")
 	private BigDecimal productPrice;
+	//是否默认 (1:默认 0:非默认)
 	@TableField("isdefault")
 	private String isdefault;
 

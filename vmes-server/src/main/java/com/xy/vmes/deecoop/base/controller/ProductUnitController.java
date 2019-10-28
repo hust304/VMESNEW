@@ -13,9 +13,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.apache.commons.lang.StringUtils;
 
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
 
@@ -368,21 +369,31 @@ public class ProductUnitController {
         logger.info("################productUnit/exportExcelProductUnits 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
     }
 
-//    /**
-//    * Excel导入
-//    *
-//    * @author 刘威 自动创建，可以修改
-//    * @date 2018-11-15
-//    */
-//    @PostMapping("/base/productUnit/importExcelProductUnits")
-//    public ResultModel importExcelProductUnits(@RequestParam(value="excelFile") MultipartFile file) throws Exception  {
-//        logger.info("################productUnit/importExcelProductUnits 执行开始 ################# ");
-//        Long startTime = System.currentTimeMillis();
-//        ResultModel model = productUnitService.importExcelProductUnits(file);
-//        Long endTime = System.currentTimeMillis();
-//        logger.info("################productUnit/importExcelProductUnits 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
-//        return model;
-//    }
+    /**
+    * Excel导入
+    *
+    * @author 刘威 自动创建，可以修改
+    * @date 2018-11-15
+    */
+    @PostMapping("/base/productUnit/importExcelProductUnitByProductPrice")
+    public ResultModel importExcelProductUnitByProductPrice(@RequestParam(value="excelFile") MultipartFile file) throws Exception  {
+        logger.info("################/base/productUnit/importExcelProductUnitByProductPrice 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        ResultModel model = new ResultModel();
+        HttpServletRequest httpRequest = HttpUtils.currentRequest();
+
+        String companyId = httpRequest.getParameter("companyId");
+        if (companyId == null || companyId.trim().length() == 0) {
+            model.putCode("1");
+            model.putMsg("企业id为空或空字符串！");
+            return model;
+        }
+
+        model = productUnitService.importExcelProductUnitByProductPrice(file);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/base/productUnit/importExcelProductUnitByProductPrice 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
 
 }
 
