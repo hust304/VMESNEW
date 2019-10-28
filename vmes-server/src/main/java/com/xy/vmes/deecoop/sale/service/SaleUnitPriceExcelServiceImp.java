@@ -1,9 +1,7 @@
 package com.xy.vmes.deecoop.sale.service;
 
-import com.xy.vmes.entity.Customer;
+import com.xy.vmes.entity.*;
 import com.xy.vmes.entity.Dictionary;
-import com.xy.vmes.entity.Product;
-import com.xy.vmes.entity.SaleUnitPrice;
 import com.xy.vmes.service.*;
 import com.yvan.Conv;
 import com.yvan.PageData;
@@ -24,6 +22,8 @@ import java.util.*;
 @Service
 @Transactional(readOnly = false)
 public class SaleUnitPriceExcelServiceImp implements SaleUnitPriceExcelService {
+    @Autowired
+    private ProductUnitService productUnitService;
     @Autowired
     private SaleUnitPriceService saleUnitPriceService;
 
@@ -192,7 +192,7 @@ public class SaleUnitPriceExcelServiceImp implements SaleUnitPriceExcelService {
      * 添加系统基础表
      * 1. 客户表
      * 2. 货品表
-     * 3. 字典表(计量单位)
+     * 3. 字典表(货品类型,货品单位)
      * @param objectList
      * @param companyId
      */
@@ -219,7 +219,167 @@ public class SaleUnitPriceExcelServiceImp implements SaleUnitPriceExcelService {
         //4. 查询货品表(货品名称_规格型号)-系统中已经存在的货品比较-不存在添加货品表(货品单位)
         sysProductMap = this.findProductMapBySystem(companyId, sysProductMap);
         Map<String, Map<String, String>> excelProductMap = this.findProductMapByExcel(objectList);
-        this.addProduct(excelProductMap, sysProductMap, sysProductTypeMap, companyId, userId);
+        this.addProductData(excelProductMap, sysProductMap, sysProductTypeMap, companyId, userId);
+    }
+
+    /**
+     * 添加货品单位数据(vmes_product_unit)
+     * 表(vmes_product_unit) 字段说明：
+     * product_id:    货品id
+     * unit:          单位id
+     * product_price: 货品单价
+     * type:          单位类型 (1:计量单位 0:计价单位)
+     * isdefault:     是否默认 (1:默认 0:非默认)
+     *
+     * 根据Excel导入数据
+     * @param objectList
+     * @throws Exception
+     */
+    public void addProductUnitImportExcel(List<LinkedHashMap<String, String>> objectList,
+                                          String companyId,
+                                          String userId,
+                                          Map<String, String> sysUnitMap,
+                                          Map<String, String> sysProductMap) throws Exception {
+        //获取当前企业全部货品单位Map结构体-查询货品单位表(vmes_product_unit)
+        //货品单位Map结构体: <货品id_单位id, 货品单位表id>
+        Map<String, String> sysProductUnitMap = this.findProductUnitMapBySystem(companyId);
+
+
+        //获取货品单位Map结构体-根据Excel导入数据
+        //货品单位Map结构体: <货品id_单位id, ProductUnit>
+        Map<String, ProductUnit> excelProductUnitMap = findProductUnitMapByExcelList(objectList,
+                sysUnitMap,
+                sysProductMap);
+
+        //获取当前企业全部货品计量单位
+        //货品计量单位Map结构体: <货品id, 计量单位id>
+        Map<String, String> sysProductProdUnitMap = this.findProductProdUnitMapBySystem(companyId);
+
+        //获取当前企业全部货品默认单位
+        //货品默认单位Map结构体: <货品id, 默认单位id>
+        Map<String, String> sysProductDefaultUnitMap = this.findProductDefaultUnitMapBySystem(companyId);
+
+        if (excelProductUnitMap != null) {
+            for (Iterator iterator = excelProductUnitMap.keySet().iterator(); iterator.hasNext();) {
+                //mapKey: 货品id_单位id
+                String prod_unit_mapKey = (String)iterator.next();
+                ProductUnit excelObject = excelProductUnitMap.get(prod_unit_mapKey);
+
+                //货品id
+                String productId = excelObject.getProductId();
+                //货品单位id
+                String unit = excelObject.getUnit();
+
+                //(货品id_单位id) 在(vmes_product_unit)中存在
+                if (sysProductUnitMap != null && sysProductUnitMap.get(prod_unit_mapKey) != null) {
+                    String productUnitId = sysProductUnitMap.get(prod_unit_mapKey);
+
+                    ProductUnit editObject = new ProductUnit();
+                    editObject.setId(productUnitId);
+                    editObject.setUuser(userId);
+
+                    //判断当前货品id-是否计量单位
+                    if (sysProductProdUnitMap != null && sysProductProdUnitMap.get(productId) == null) {
+                        //设定计量单位
+                        //单位类型 (1:计量单位 0:计价单位)
+                        editObject.setType("1");
+                        editObject.setProductPrice(excelObject.getProductPrice());
+
+                        //npFormula 计量单位转换计价单位
+                        editObject.setNpFormula("P=N");
+                        editObject.setN2pIsScale(Common.SYS_ISSCALE_TRUE);
+                        editObject.setN2pDecimalCount(Integer.valueOf(Common.SYS_NUMBER_FORMAT_2));
+
+                        //pnFormula 计价单位转换计量单位
+                        editObject.setPnFormula("N=P");
+                        editObject.setP2nIsScale(Common.SYS_ISSCALE_TRUE);
+                        editObject.setP2nDecimalCount(Integer.valueOf(Common.SYS_NUMBER_FORMAT_2));
+
+                        //设定货品计量单位Map结构体: <货品id, 计量单位id>
+                        sysProductProdUnitMap.put(productId, unit);
+                    } else if (sysProductProdUnitMap != null
+                            && sysProductProdUnitMap.get(productId) != null
+                            && !sysProductProdUnitMap.get(productId).equals(unit)
+                            ) {
+                        //设定计价单位
+                        //单位类型 (1:计量单位 0:计价单位)
+                        editObject.setType("0");
+                    }
+
+                    //判断当前货品id-是否默认单位
+                    if (sysProductDefaultUnitMap != null && sysProductDefaultUnitMap.get(productId) == null) {
+                        //设定默认单位 是否默认 (1:默认 0:非默认)
+                        editObject.setIsdefault("1");
+                        //设定货品默认单位Map结构体: <货品id, 默认单位id>
+                        sysProductDefaultUnitMap.put(productId, unit);
+                    } else if (sysProductDefaultUnitMap != null
+                            && sysProductDefaultUnitMap.get(productId) != null
+                            && !sysProductDefaultUnitMap.get(productId).equals(unit)
+                            ) {
+                        //设定默认单位 是否默认 (1:默认 0:非默认)
+                        editObject.setIsdefault("0");
+                    }
+
+                    productUnitService.update(editObject);
+
+                } else if (sysProductUnitMap != null && sysProductUnitMap.get(prod_unit_mapKey) == null) {
+                    ProductUnit addObject = excelObject;
+                    addObject.setUuser(userId);
+
+                    //npFormula 计量单位转换计价单位
+                    addObject.setNpFormula("P=N");
+                    addObject.setN2pIsScale(Common.SYS_ISSCALE_TRUE);
+                    addObject.setN2pDecimalCount(Integer.valueOf(Common.SYS_NUMBER_FORMAT_2));
+
+                    //pnFormula 计价单位转换计量单位
+                    addObject.setPnFormula("N=P");
+                    addObject.setP2nIsScale(Common.SYS_ISSCALE_TRUE);
+                    addObject.setP2nDecimalCount(Integer.valueOf(Common.SYS_NUMBER_FORMAT_2));
+
+                    //单位类型 默认计量单位 (1:计量单位 0:计价单位)
+                    addObject.setType("1");
+                    //判断当前货品id-是否计量单位
+                    if (sysProductProdUnitMap != null && sysProductProdUnitMap.get(productId) == null) {
+                        //设定计量单位
+                        //单位类型 (1:计量单位 0:计价单位)
+                        addObject.setType("1");
+
+                        //设定货品计量单位Map结构体: <货品id, 计量单位id>
+                        sysProductProdUnitMap.put(productId, unit);
+                    } else if (sysProductProdUnitMap != null
+                            && sysProductProdUnitMap.get(productId) != null
+                            && !sysProductProdUnitMap.get(productId).equals(unit)
+                            ) {
+                        //设定计价单位
+                        //单位类型 (1:计量单位 0:计价单位)
+                        addObject.setType("0");
+                    }
+
+                    //设定默认单位 默认添加为(1:默认:属性) 是否默认 (1:默认 0:非默认)
+                    addObject.setIsdefault("1");
+                    //判断当前货品id-是否默认单位
+                    if (sysProductDefaultUnitMap != null && sysProductDefaultUnitMap.get(productId) == null) {
+                        //设定默认单位 是否默认 (1:默认 0:非默认)
+                        addObject.setIsdefault("1");
+                        //设定货品默认单位Map结构体: <货品id, 默认单位id>
+                        sysProductDefaultUnitMap.put(productId, unit);
+                    } else if (sysProductDefaultUnitMap != null
+                            && sysProductDefaultUnitMap.get(productId) != null
+                            && !sysProductDefaultUnitMap.get(productId).equals(unit)
+                            ) {
+                        //设定默认单位 是否默认 (1:默认 0:非默认)
+                        addObject.setIsdefault("0");
+                    }
+
+                    productUnitService.save(addObject);
+
+                    //货品单位Map结构体: <货品id_单位id, 货品单位表id>
+                    //mapKey: 货品id_单位id
+                    String prod_unit = productId + "_" + unit;
+                    sysProductUnitMap.put(prod_unit, addObject.getId());
+                }
+            }
+        }
     }
 
     public void findSaleUnitPriceMapByExcelList(List<LinkedHashMap<String, String>> objectList,
@@ -643,11 +803,11 @@ public class SaleUnitPriceExcelServiceImp implements SaleUnitPriceExcelService {
      * @param userId
      * @throws Exception
      */
-    private void addProduct(Map<String, Map<String, String>> excelProductMap,
-                            Map<String, String> sysProductMap,
-                            Map<String, String> sysProductTypeMap,
-                            String companyId,
-                            String userId) throws Exception {
+    private void addProductData(Map<String, Map<String, String>> excelProductMap,
+                                Map<String, String> sysProductMap,
+                                Map<String, String> sysProductTypeMap,
+                                String companyId,
+                                String userId) throws Exception {
         if (excelProductMap == null) {return;}
 
         //1.(货品名称_规格型号) 与系统货品表结构体比较 是否存在
@@ -731,6 +891,172 @@ public class SaleUnitPriceExcelServiceImp implements SaleUnitPriceExcelService {
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /**
+     * 获取货品单位Map结构体
+     * 货品单位Map结构体: <货品id_单位id, 货品单位表id>
+     *
+     * @param companyId
+     * @return
+     */
+    private Map<String, String> findProductUnitMapBySystem(String companyId) throws Exception {
+        Map<String, String> sysProductUnitMap = new HashMap<>();
+        if (companyId == null || companyId.trim().length() == 0) {return sysProductUnitMap;}
+
+        PageData findMap = new PageData();
+        findMap.put("companyId", companyId);
+        //是否启用(0:已禁用 1:启用)
+        findMap.put("productUnitIsdisable", "1");
+        List<Map> mapList = productUnitService.getDataListPage(findMap);
+
+        if (mapList != null && mapList.size() > 0) {
+            for (Map<String, String> mapObject : mapList) {
+                String id = mapObject.get("id");
+
+                //productId 货品id
+                String productId = mapObject.get("productId");
+
+                //punit 货品单位id
+                String punit = mapObject.get("punit");
+
+                //货品id_单位id
+                String mapKey = productId + "_" + punit;
+
+                sysProductUnitMap.put(mapKey, id);
+            }
+        }
+
+        return sysProductUnitMap;
+    }
+
+    /**
+     * 获取当前企业全部货品计量单位Map结构体
+     * 货品计量单位Map结构体: <货品id, 计量单位id>
+     *
+     * @param companyId
+     * @return
+     * @throws Exception
+     */
+    private Map<String, String> findProductProdUnitMapBySystem(String companyId) throws Exception {
+        Map<String, String> sysProductProdUnitMap = new HashMap<>();
+        if (companyId == null || companyId.trim().length() == 0) {return sysProductProdUnitMap;}
+
+        PageData findMap = new PageData();
+        findMap.put("companyId", companyId);
+        //productUnitType 单位类型 (1:计量单位 0:计价单位)
+        findMap.put("productUnitType", "1");
+        //是否启用(0:已禁用 1:启用)
+        findMap.put("productUnitIsdisable", "1");
+        List<Map> mapList = productUnitService.getDataListPage(findMap);
+
+        if (mapList != null && mapList.size() > 0) {
+            for (Map<String, String> mapObject : mapList) {
+                //productId 货品id
+                String productId = mapObject.get("productId");
+
+                //punit 计量单位id
+                String punit = mapObject.get("punit");
+
+                sysProductProdUnitMap.put(productId, punit);
+            }
+        }
+
+        return sysProductProdUnitMap;
+    }
+
+    /**
+     * 获取当前企业全部货品默认单位Map结构体
+     * 货品默认单位Map结构体: <货品id, 默认单位id>
+     *
+     * @param companyId
+     * @return
+     * @throws Exception
+     */
+    private Map<String, String> findProductDefaultUnitMapBySystem(String companyId) throws Exception {
+        Map<String, String> sysProductDefaultUnitMap = new HashMap<>();
+        if (companyId == null || companyId.trim().length() == 0) {return sysProductDefaultUnitMap;}
+
+        PageData findMap = new PageData();
+        findMap.put("companyId", companyId);
+        //productUnitIsdefault 是否默认 (1:默认 0:非默认)
+        findMap.put("productUnitIsdefault", "1");
+        //是否启用(0:已禁用 1:启用)
+        findMap.put("productUnitIsdisable", "1");
+        List<Map> mapList = productUnitService.getDataListPage(findMap);
+
+        if (mapList != null && mapList.size() > 0) {
+            for (Map<String, String> mapObject : mapList) {
+                //productId 货品id
+                String productId = mapObject.get("productId");
+
+                //punit 默认单位id
+                String punit = mapObject.get("punit");
+
+                sysProductDefaultUnitMap.put(productId, punit);
+            }
+        }
+
+        return sysProductDefaultUnitMap;
+    }
+
+    /**
+     * 获取货品单位Map结构体-根据Excel导入数据
+     * 货品单位Map结构体: <货品id_单位id, ProductUnit>
+     *
+     * @return
+     */
+    public Map<String, ProductUnit> findProductUnitMapByExcelList(List<LinkedHashMap<String, String>> objectList,
+                                                                  Map<String, String> sysUnitMap,
+                                                                  Map<String, String> sysProductMap) {
+        Map<String, ProductUnit> excelProductUnitMap = new LinkedHashMap<>();
+        if (objectList == null || objectList.size() == 0) {return excelProductUnitMap;}
+
+        for (int i = 0; i < objectList.size(); i++) {
+            ProductUnit object = new ProductUnit();
+            LinkedHashMap<String, String> mapObject = objectList.get(i);
+
+            //productName 货品名称
+            String productName = mapObject.get("productName");
+            //productSpec 规格型号
+            String productSpec = mapObject.get("productSpec");
+            String productMapKey = productName + "_" + productSpec;
+
+            String productId = new String();
+            if (sysProductMap != null && sysProductMap.get(productMapKey) != null) {
+                productId = sysProductMap.get(productMapKey);
+            }
+            object.setProductId(productId);
+
+            //productUnitName 单位
+            String productUnitName = mapObject.get("productUnitName");
+            String productUnitId = new String();
+            if (sysUnitMap != null && sysUnitMap.get(productUnitName) != null) {
+                productUnitId = sysUnitMap.get(productUnitName);
+            }
+            object.setUnit(productUnitId);
+
+            //productPrice 客户单价
+            BigDecimal productPrice = BigDecimal.valueOf(0D);
+            String productPriceStr = mapObject.get("productPrice");
+            if (productPriceStr != null && productPriceStr.trim().length() > 0) {
+                try {
+                    productPrice = new BigDecimal(productPriceStr);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+                //四舍五入到2位小数
+                productPrice = productPrice.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+            }
+            object.setProductPrice(productPrice);
+
+            //客户货品单位 (货品id_单位id)
+            String prodUnitKey = productId + "_" + productUnitId;
+            excelProductUnitMap.put(prodUnitKey, object);
+        }
+
+        return excelProductUnitMap;
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //Map<客户id_货品id_单位id, 客户货品价格id> vmes_sale_unit_price.id
     private Map<String, String> findSaleUnitPriceMapBySystem(String companyId) throws Exception {
         Map<String, String> saleUnitPriceMap = new LinkedHashMap<>();
@@ -755,4 +1081,6 @@ public class SaleUnitPriceExcelServiceImp implements SaleUnitPriceExcelService {
 
         return saleUnitPriceMap;
     }
+
+
 }

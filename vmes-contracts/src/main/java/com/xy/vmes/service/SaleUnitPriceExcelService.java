@@ -32,7 +32,7 @@ public interface SaleUnitPriceExcelService {
      * 添加系统基础表
      * 1. 客户表
      * 2. 货品表
-     * 3. 字典表(计量单位)
+     * 3. 字典表(货品类型,货品单位)
      * @param objectList
      * @param companyId
      */
@@ -43,6 +43,25 @@ public interface SaleUnitPriceExcelService {
                                        Map<String, String> sysUnitMap,
                                        Map<String, String> sysProductTypeMap,
                                        Map<String, String> sysProductMap) throws Exception;
+
+    /**
+     * 添加货品单位数据(vmes_product_unit)
+     * 表(vmes_product_unit) 字段说明：
+     * product_id:    货品id
+     * unit:          单位id
+     * product_price: 货品单价
+     * type:          单位类型 (1:计量单位 0:计价单位)
+     * isdefault:     是否默认 (1:默认 0:非默认)
+     *
+     * 根据Excel导入数据
+     * @param objectList
+     * @throws Exception
+     */
+    void addProductUnitImportExcel(List<LinkedHashMap<String, String>> objectList,
+                                   String companyId,
+                                   String userId,
+                                   Map<String, String> sysUnitMap,
+                                   Map<String, String> sysProductMap) throws Exception;
 
     void findSaleUnitPriceMapByExcelList(List<LinkedHashMap<String, String>> objectList,
                                          Map<String, SaleUnitPrice> saleUnitPriceMap,

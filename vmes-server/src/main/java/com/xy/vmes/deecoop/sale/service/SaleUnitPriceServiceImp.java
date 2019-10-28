@@ -654,11 +654,6 @@ public class SaleUnitPriceServiceImp implements SaleUnitPriceService {
             return model;
         }
 
-        //2. 添加系统基础表
-        // 1. 客户表
-        // 2. 货品表
-        // 3. 字典表(计量单位)
-
         //系统客户Map结构体: <客户名称, 客户id>
         Map<String, String> sysCustomerMap = new LinkedHashMap<>();
         //系统货品Map结构体: <货品名称_规格型号, 货品id>
@@ -672,6 +667,10 @@ public class SaleUnitPriceServiceImp implements SaleUnitPriceService {
         dictionaryService.implementBusinessMapByParentID(Common.DICTIONARY_MAP.get("productType"), companyId);
         Map<String, String> sysProductTypeMap = dictionaryService.getNameKeyMap();
 
+        //2. 添加系统基础表
+        // 1. 客户表
+        // 2. 货品表
+        // 3. 字典表(货品类型,货品单位)
         saleUnitPriceExcelService.addSystemBaseTableImportExcel(dataMapLst,
                 companyId,
                 userId,
@@ -680,7 +679,14 @@ public class SaleUnitPriceServiceImp implements SaleUnitPriceService {
                 sysProductTypeMap,
                 sysProductMap);
 
-        //3. 遍历Excel导入List-Map<客户id_货品id_单位id, SaleUnitPrice>
+        //3.添加货品单位数据(vmes_product_unit)
+        saleUnitPriceExcelService.addProductUnitImportExcel(dataMapLst,
+                companyId,
+                userId,
+                sysUnitMap,
+                sysProductMap);
+
+        //4. 遍历Excel导入List-Map<客户id_货品id_单位id, SaleUnitPrice>
         Map<String, SaleUnitPrice> saleUnitPriceMap = new HashMap<>();
         saleUnitPriceExcelService.findSaleUnitPriceMapByExcelList(dataMapLst,
                 saleUnitPriceMap,
@@ -688,7 +694,7 @@ public class SaleUnitPriceServiceImp implements SaleUnitPriceService {
                 sysUnitMap,
                 sysProductMap);
 
-        //4. 遍历Map<String, SaleUnitPrice> 对业务表添加
+        //5. 遍历Map<String, SaleUnitPrice> 对业务表添加
         saleUnitPriceExcelService.addSaleUnitPrice(saleUnitPriceMap, companyId, userId);
 
         return model;
