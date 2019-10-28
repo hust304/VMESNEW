@@ -370,10 +370,10 @@ public class ProductUnitController {
     }
 
     /**
-    * Excel导入
+    * 货品单位单价 Excel导入
     *
-    * @author 刘威 自动创建，可以修改
-    * @date 2018-11-15
+    * @author 陈刚
+    * @date 2019-10-28
     */
     @PostMapping("/base/productUnit/importExcelProductUnitByProductPrice")
     public ResultModel importExcelProductUnitByProductPrice(@RequestParam(value="excelFile") MultipartFile file) throws Exception  {
