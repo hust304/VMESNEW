@@ -421,6 +421,7 @@ public class WarehouseInCreateServiceImp implements WarehouseInCreateService {
 
                     //生成入库执行记录
                     WarehouseInExecute addInExecute = new WarehouseInExecute();
+                    addInExecute.setId(Conv.createUuid());
                     addInExecute.setDetailId(detailId);
                     addInExecute.setWarehouseId(dtl_warehouseId);
                     addInExecute.setExecutorId(object.getCuser());
