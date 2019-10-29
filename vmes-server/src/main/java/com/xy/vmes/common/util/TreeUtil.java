@@ -1,6 +1,7 @@
 package com.xy.vmes.common.util;
 
 import com.xy.vmes.entity.TreeEntity;
+import org.apache.commons.lang.StringUtils;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
@@ -132,7 +133,23 @@ public class TreeUtil {
                 String nodeId = (String)treeMap.get("productId");
                 BigDecimal planCount = (BigDecimal)treeMap.get("planCount");
                 List<TreeEntity> objectList = (List<TreeEntity>)treeMap.get("treeList");
-                //获得当前节点对象
+
+
+                //由于本次操作是批量循环操作，上一次循环结束，就要减少已消耗的中间件、物料数量，得到一个实时的中间件、物料库存数量，方便本次循环的递归
+                //物料、中间件的实时库存数量
+                productStockCountMap = cacheMap.get("productStockCountMap");
+                if(productStockCountMap!=null&&productStockCountMap.size()>0){
+                    Set<String> productIdSet = productStockCountMap.keySet();
+                    if(productIdSet!=null&&productIdSet.size()>0){
+                        for(String productId:productIdSet){
+                            BigDecimal productStockCount = productStockCountMap.get(productId)!=null?productStockCountMap.get(productId):BigDecimal.ZERO;
+                            updateObjectList(productId,productStockCount,objectList);
+                        }
+                    }
+                }
+
+
+                //1、第一次递归 计算当前产品理论上的最大可生产数量   将所有产品、中间件全部转换成物料后，根据转换后物料总数除以用料比例得到一个理论最大值
                 TreeEntity nodeObject = findNodeById(nodeId, objectList);
                 nodeObject.setSumRatio(BigDecimal.ONE);
                 nodeObject.setSplitCount(BigDecimal.ZERO);
@@ -140,7 +157,9 @@ public class TreeUtil {
 
                 BigDecimal maxCount = null;
                 for(String key:materielRatioMap.keySet()){
+                    //物料与产品的用料比例
                     BigDecimal materielRatio = materielRatioMap.get(key);
+                    //所有产品、中间件全部转换成物料后的物料总数
                     BigDecimal materielStockCount = materielStockCountMap.get(key);
                     if(maxCount==null){
                         maxCount = materielStockCount.divide(materielRatio,0,BigDecimal.ROUND_DOWN);
@@ -151,56 +170,30 @@ public class TreeUtil {
                     }
                  }
 
+//                TreeEntity nodeObjectOld = nodeObject.clone();
+//                HashMap<String,Map<String,BigDecimal>> cacheMapOld = new HashMap<String,Map<String,BigDecimal>>();
+//                cacheMapOld.putAll(cacheMap);
 
-//                nodeObject.setPlanCount(planCount);
-//                if(planCount.compareTo(BigDecimal.ZERO)==0){
-//                    nodeObject.setMaxCount(maxCount);
-//                    nodeObject.setAssembledCount(maxCount.subtract(nodeObject.getStockCount()));
-//                    nodeObject.setLackCount(BigDecimal.ZERO);
-//                }else{
-//                    if(planCount.compareTo(maxCount)>0){
-//                        nodeObject.setMaxCount(maxCount);
-//                        nodeObject.setAssembledCount(maxCount.subtract(nodeObject.getStockCount()));
-//                        nodeObject.setLackCount(planCount.subtract(maxCount));
-//                    }else{
-//                        nodeObject.setMaxCount(maxCount);
-//                        nodeObject.setAssembledCount(maxCount.subtract(nodeObject.getStockCount()));
-//                        nodeObject.setLackCount(BigDecimal.ZERO);
-//                    }
-//                }
-//
-//                for(String key:materielRatioMap.keySet()){
-//                    BigDecimal materielRatio = materielRatioMap.get(key);
-//                    BigDecimal materielStockCount = materielStockCountMap.get(key);
-//                    maxCount = nodeObject.getMaxCount();
-//                    BigDecimal newMaterielStockCount = materielStockCount.subtract(materielRatio.multiply(maxCount)).setScale(0,BigDecimal.ROUND_DOWN);
-//                    materielStockCountMap.put(key,newMaterielStockCount);
-//                }
-
-
-                //Bom齐套分析：下级物料列表的Title
+                //2、第二次递归 计算当前产品的实际的最大可生产数量
                 BigDecimal totalCount = maxCount==null?BigDecimal.ZERO:maxCount;
                 nodeObject.setTotalCount(totalCount);
-
-
                 createBomTree(nodeObject, objectList,cacheMap);
-
+                nodeObject.setMaxCount(nodeObject.getStockCount().add(nodeObject.getAssembledCount()));
                 nodeObject.setPlanCount(planCount);
                 if(planCount.compareTo(BigDecimal.ZERO)==0){
-                    nodeObject.setMaxCount(maxCount);
-//                    nodeObject.setAssembledCount(maxCount.subtract(nodeObject.getStockCount()));
                     nodeObject.setLackCount(BigDecimal.ZERO);
                 }else{
-                    if(planCount.compareTo(maxCount)>0){
-                        nodeObject.setMaxCount(maxCount);
-//                        nodeObject.setAssembledCount(maxCount.subtract(nodeObject.getStockCount()));
-                        nodeObject.setLackCount(planCount.subtract(maxCount));
+                    if(planCount.compareTo(nodeObject.getMaxCount())>0){
+                        nodeObject.setLackCount(planCount.subtract(nodeObject.getMaxCount()));
                     }else{
-                        nodeObject.setMaxCount(maxCount);
-//                        nodeObject.setAssembledCount(maxCount.subtract(nodeObject.getStockCount()));
                         nodeObject.setLackCount(BigDecimal.ZERO);
                     }
                 }
+
+
+                //3、第三次递归 修正物料、中间件溢出的数量
+//                correctBomTree(nodeObject,cacheMap);
+
 
                 varMapList.add(nodeObject);
             }
@@ -209,6 +202,37 @@ public class TreeUtil {
 
         }
         return varMapList;
+    }
+
+    private static void correctBomTree(TreeEntity nodeObject, Map<String, Map<String, BigDecimal>> cacheMap) {
+        //物料、中间件的实时库存数量
+        Map<String,BigDecimal> productStockCountMap = cacheMap.get("productStockCountMap");
+        //获得当前节点id下的所有孩子
+        List<TreeEntity> childList = nodeObject.getChildren();
+
+        BigDecimal pUpRatio = nodeObject.getSumRatio()==null?BigDecimal.ZERO:nodeObject.getSumRatio();
+        BigDecimal pStockCount = nodeObject.getStockCount()==null?BigDecimal.ZERO:nodeObject.getStockCount();
+        BigDecimal pSplitCount = nodeObject.getSplitCount()==null?BigDecimal.ZERO:nodeObject.getSplitCount();
+        BigDecimal pAssembledCount = nodeObject.getAssembledCount()==null?BigDecimal.ZERO:nodeObject.getAssembledCount();
+
+        if(childList!=null&&childList.size()>0){
+            for(TreeEntity child : childList){
+
+            }
+        }
+
+    }
+
+    private static void updateObjectList(String productId, BigDecimal productStockCount, List<TreeEntity> objectList) {
+        if(!StringUtils.isEmpty(productId)){
+            if(objectList!=null&&objectList.size()>0){
+                for (TreeEntity nodeObj : objectList) {
+                    if (productId.equals(nodeObj.getId())) {
+                        nodeObj.setStockCount(productStockCount);
+                    }
+                }
+            }
+        }
     }
 
 
@@ -320,10 +344,8 @@ public class TreeUtil {
      * @return
      */
     private static void createBomTree(TreeEntity nodeObject, List<TreeEntity> objectList,Map<String,Map<String,BigDecimal>> cacheMap) {
-        Map<String,BigDecimal> materielRatioMap = cacheMap.get("materielRatioMap");
-        Map<String,BigDecimal> semiFinishedRatioMap = cacheMap.get("semiFinishedRatioMap");
+        //物料、中间件的实时库存数量
         Map<String,BigDecimal> productStockCountMap = cacheMap.get("productStockCountMap");
-        Map<String,BigDecimal> materielStockCountMap = cacheMap.get("materielStockCountMap");
         //获得当前节点id下的所有孩子
         List<TreeEntity> childList = findChildListById(nodeObject.getId(), objectList);
         BigDecimal pUpRatio = nodeObject.getSumRatio()==null?BigDecimal.ZERO:nodeObject.getSumRatio();
@@ -362,16 +384,6 @@ public class TreeUtil {
                         productStockCountMap.put(child.getId(),stockCount.subtract(lackCount));
                     }
 
-
-//                if(materielRatioMap.get(child.getId())!=null){
-//                    stockCount = stockCount.multiply(child.getSumRatio()).divide(materielRatioMap.get(child.getId()),0,BigDecimal.ROUND_DOWN);
-//                    child.setStockCount(stockCount);
-//                }
-//
-//                if(semiFinishedRatioMap.get(child.getId())!=null){
-//                    stockCount = stockCount.multiply(child.getSumRatio()).divide(semiFinishedRatioMap.get(child.getId()),0,BigDecimal.ROUND_DOWN);
-//                    child.setStockCount(stockCount);
-//                }
 
                     child.setHideTitles(nodeObject.getHideTitles());
                     child.setTitles(nodeObject.getTitles());
@@ -414,9 +426,13 @@ public class TreeUtil {
 
 
     private static void initCacheMap(TreeEntity nodeObject, List<TreeEntity> objectList,Map<String,Map<String,BigDecimal>> cacheMap) {
+        //最末级物料与产品的用料比例
         Map<String,BigDecimal> materielRatioMap = cacheMap.get("materielRatioMap");
+        //中间件与产品的用料比例
         Map<String,BigDecimal> semiFinishedRatioMap = cacheMap.get("semiFinishedRatioMap");
+        //物料、中间件的实时库存数量
         Map<String,BigDecimal> productStockCountMap = cacheMap.get("productStockCountMap");
+        //产品、中间件拆分后的总数量
         Map<String,BigDecimal> materielStockCountMap = cacheMap.get("materielStockCountMap");
         //获得当前节点id下的所有孩子
         List<TreeEntity> childList = findChildListById(nodeObject.getId(), objectList);
@@ -465,15 +481,15 @@ public class TreeUtil {
                 if(materielStockCountMap.get(nodeObject.getId())!=null){
                     materielStockCountMap.put(nodeObject.getId(),materielStockCountMap.get(nodeObject.getId()).add(pSplitCount));
                 }else{
-                    materielStockCountMap.put(nodeObject.getId(),nodeObject.getSplitCount());
+                    materielStockCountMap.put(nodeObject.getId(),pSplitCount);
                 }
             }
             if(materielRatioMap.get(nodeObject.getId())!=null){
-                materielRatioMap.put(nodeObject.getId(),materielRatioMap.get(nodeObject.getId()).add(nodeObject.getSumRatio()));
+                materielRatioMap.put(nodeObject.getId(),materielRatioMap.get(nodeObject.getId()).add(pUpRatio));
             }else{
-                materielRatioMap.put(nodeObject.getId(),nodeObject.getSumRatio());
+                materielRatioMap.put(nodeObject.getId(),pUpRatio);
             }
-            productStockCountMap.put(nodeObject.getId(),nodeObject.getStockCount());
+            productStockCountMap.put(nodeObject.getId(),pStockCount);
             return;
         }
     }
