@@ -335,7 +335,7 @@ public class Common {
         put("warehouseInType", "550e0457a3d34149ba3199d90b0ae198");
             //生产入库 2c4a104aedc046848455f5fa6e3da87c
             put("produceIn", "2c4a104aedc046848455f5fa6e3da87c");
-            //生产退库 8e35209f19804e94940f076c8d71b955
+            //生产退料 8e35209f19804e94940f076c8d71b955
             put("produceRetreatIn", "8e35209f19804e94940f076c8d71b955");
 
             //销售退货入库 81907167d5c8498692e6c4f3694c5cfa
