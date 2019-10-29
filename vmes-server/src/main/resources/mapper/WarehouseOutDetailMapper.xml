@@ -476,6 +476,7 @@
             prod.name productName,
             prod.spec productSpec,
             prod.genre productGenre,
+            round(ifnull(prod.stock_count,0),2) stockCountByPrice,
             genre.name productGenreName,
             priceUnitFormula.unit productUnit,
             priceUnitFormula.unit priceUnit,
