@@ -31,6 +31,8 @@ public class WarehouseInCreateServiceImp implements WarehouseInCreateService {
     private WarehouseInService warehouseInService;
     @Autowired
     private WarehouseInDetailService warehouseInDetailService;
+    @Autowired
+    private WarehouseInExecuteService warehouseInExecuteService;
 
     @Autowired
     private WarehouseProductService warehouseProductService;
@@ -416,6 +418,15 @@ public class WarehouseInCreateServiceImp implements WarehouseInCreateService {
                         BigDecimal prodStockCount = BigDecimal.valueOf(prodCount.doubleValue() + count.doubleValue());
                         productService.updateStockCount(product, prodStockCount, cuser, "in");
                     }
+
+                    //生成入库执行记录
+                    WarehouseInExecute addInExecute = new WarehouseInExecute();
+                    addInExecute.setDetailId(detailId);
+                    addInExecute.setWarehouseId(dtl_warehouseId);
+                    addInExecute.setExecutorId(object.getCuser());
+                    addInExecute.setCuser(object.getCuser());
+                    addInExecute.setCount(count);
+                    warehouseInExecuteService.save(addInExecute);
                 }
             }
 
