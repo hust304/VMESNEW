@@ -197,7 +197,9 @@
             (replace(uuid(), '-', ''),'WarehouseMove','udate','修改时间',12, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'WarehouseMove','remark','备注',13, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'WarehouseMove','isdisable','是否启用',14, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'WarehouseMove','id','id',0, '1','0','1','0',now(), 'admin')
+            (replace(uuid(), '-', ''),'WarehouseMove','id','id',0, '1','0','1','0',now(), 'admin'),
+
+            (replace(uuid(), '-', ''),'WarehouseMove','pathName','目标库位',15, '1','0','1','0',now(), 'admin'),
     </insert>
 
 
@@ -439,7 +441,28 @@
     <!-- 自动创建，可以修改 -->
     <select id="getDataListPageBySimple"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
         select
-        <include refid="Field1"></include>
+            distinct
+            warehousemove.company_id companyId,<!-- 企业ID-组织架构 -->
+            warehousemove.code code,<!-- 移库单编码 -->
+            type.id type,<!-- 移库类型-(字典表-vmes_dictionary.id) -->
+            type.name typeName,
+
+            warehouse.path_name pathName,
+            warehouse.name warehouseName,
+
+            warehousemove.warehouse_id warehouseId,<!-- 仓库ID(仓库表-layer:2的记录) -->
+            user.user_name makeName,
+            warehousemove.make_id makeId,<!-- 制单人ID -->
+            warehousemove.state,
+            case when warehousemove.state=-1 then '已取消' when warehousemove.state=0 then '未完成' when warehousemove.state=1 then '已完成' else null end stateName,<!-- 状态(0:未完成 1:已完成 -1:已取消) -->
+            warehousemove.cuser cuser,<!-- 创建用户id -->
+            DATE_FORMAT(warehousemove.cdate,'%Y-%m-%d') cdate,
+            warehousemove.uuser uuser,<!-- 修改用户id -->
+            DATE_FORMAT(warehousemove.udate,'%Y-%m-%d') udate,
+            warehousemove.remark remark,<!-- 备注 -->
+            warehousemove.isdisable isdisable,<!-- 是否启用(0:已禁用 1:启用) -->
+            warehousemove.id id, <!-- id -->
+            warehousemove.is_simple isSimple
         from
         vmes_warehouse_move warehousemove
         left join vmes_dictionary type on type.id = warehousemove.type
