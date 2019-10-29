@@ -156,6 +156,7 @@
                 and warehouse_attribute = 'warehouse'
             </if>
 
+
         </where>
     </delete>
 
@@ -619,6 +620,9 @@
             <!--过滤出(复杂版,简版)仓库-出库单(非备件库) 自定义sql查询语句-->
             <if test="'true' == isNeedWarehouseWarehouse">
                 and warehouseout.warehouse_attribute = 'warehouse'
+            </if>
+            <if test="warehouse_attribute_queryStr != null and warehouse_attribute_queryStr != ''">
+                and warehouseout.warehouse_attribute in (${warehouse_attribute_queryStr})
             </if>
 
             <!--queryStr 自定义sql查询语句-->
