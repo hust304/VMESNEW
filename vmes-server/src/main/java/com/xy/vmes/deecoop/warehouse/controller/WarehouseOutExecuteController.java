@@ -45,7 +45,8 @@ public class WarehouseOutExecuteController {
 
     @Autowired
     private WarehouseProductService warehouseProductService;
-
+    @Autowired
+    private ProductService productService;
 
     /**
     * @author 刘威 自动创建，禁止修改
@@ -264,15 +265,15 @@ public class WarehouseOutExecuteController {
     }
 
     /**
-     * 出库单-出库执行-退单
+     * (简版)出库单-出库执行-退单
      * @author 陈刚
      * @date 2019-10-22
      * @throws Exception
      */
-    @PostMapping("/warehouse/warehouseOutExecute/rebackWarehouseOutExecute")
+    @PostMapping("/warehouse/warehouseOutExecute/rebackWarehouseOutExecuteBySimple")
     @Transactional(rollbackFor=Exception.class)
-    public ResultModel rebackWarehouseOutExecute() throws Exception {
-        logger.info("################/warehouse/warehouseOutExecute/rebackWarehouseOutExecute 执行开始 ################# ");
+    public ResultModel rebackWarehouseOutExecuteBySimple() throws Exception {
+        logger.info("################/warehouse/warehouseOutExecute/rebackWarehouseOutExecuteBySimple 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
 
         ResultModel model = new ResultModel();
@@ -372,6 +373,15 @@ public class WarehouseOutExecuteController {
                 model.putMsg(msgStr);
                 return model;
             }
+
+            Product product = productService.findProductById(productId);
+            BigDecimal prodCount = BigDecimal.valueOf(0D);
+            if (product.getStockCount() != null) {
+                prodCount = product.getStockCount();
+            }
+
+            BigDecimal prodStockCount = BigDecimal.valueOf(prodCount.doubleValue() + count.doubleValue());
+            productService.updateStockCount(product, prodStockCount, outExecuteId, "out");
         }
 
         // 返回出库单明细Map结构体
@@ -396,11 +406,17 @@ public class WarehouseOutExecuteController {
                 outDtlExecuteCount = (BigDecimal)outDetailExecuteValue.get("outDtlExecuteCount");
             }
 
+            //outParentId:       出库单id
+            String outParentId = new String();
+            if (outDetailExecuteValue.get("outParentId") != null) {
+                outParentId = (String)outDetailExecuteValue.get("outParentId");
+            }
+
             //获取出库单明细状态
             //明细状态(0:待派单 1:执行中 2:已完成 -1.已取消)
             String delState = new String();
             if (outDtlExecuteCount.doubleValue() == 0) {
-                delState = "0";
+                delState = "1";
             } else if (outDtlExecuteCount.doubleValue() != 0
                 && (outDtlExecuteCount.doubleValue() < outDtlCount.doubleValue())
             ) {
@@ -418,12 +434,14 @@ public class WarehouseOutExecuteController {
                 editDetail.setRemark(remarkStr);
                 warehouseOutDetailService.update(editDetail);
 
-                warehouseOutService.updateState(detailId);
+                if (outParentId != null && outParentId.trim().length() > 0) {
+                    warehouseOutService.updateState(outParentId);
+                }
             }
         }
 
         Long endTime = System.currentTimeMillis();
-        logger.info("################/warehouse/warehouseOutExecute/rebackWarehouseOutExecute 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/warehouse/warehouseOutExecute/rebackWarehouseOutExecuteBySimple 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
