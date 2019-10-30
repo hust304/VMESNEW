@@ -106,6 +106,10 @@ public interface RoleMenuService {
      */
     List<Map<String, Object>> findRoleMenuMapList(PageData pd);//@
 
+    List<TreeEntity> getRoleMenuMapList(PageData pd) throws Exception;
+
+    List<TreeEntity> getNoRoleMenuMapList(PageData pd) throws Exception;
+
     /**
      * 创建人：陈刚
      * 创建时间：2018-07-31

@@ -2,6 +2,7 @@ package com.xy.vmes.deecoop.system.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
+import com.xy.vmes.common.util.TreeUtil;
 import com.yvan.common.util.Common;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.system.dao.MenuMapper;
@@ -1076,6 +1077,10 @@ public class MenuServiceImp implements MenuService {
 
     }
 
+
+
+
+
     @Override
     public ResultModel treeMeuns(PageData pageData) throws Exception {
         //1. 获取当前登录用户所有角色ID
@@ -1087,8 +1092,7 @@ public class MenuServiceImp implements MenuService {
         String userRole = "";
         String userType = (String)pageData.get("userType");
 
-        List<Menu> menuList = new ArrayList<>();
-        Integer maxLayer = Integer.valueOf(0);
+        List<TreeEntity> mapList = new ArrayList<>();
 
         //(userType_admin:超级管理员 userType_company:企业管理员 userType_employee:普通用户 userType_outer:外部用户)
         if (!Common.DICTIONARY_MAP.get("userType_admin").equals(userType) && roleIds != null && roleIds.trim().length() > 0) {
@@ -1112,7 +1116,7 @@ public class MenuServiceImp implements MenuService {
             //findMap.put("orderStr", "b.layer asc,b.serial_number asc");
             findMap.put("mapSize", Integer.valueOf(findMap.size()));
 
-            List<Map<String, Object>> mapList = roleMenuService.findRoleMenuMapList(findMap);
+            mapList = roleMenuService.getRoleMenuMapList(findMap);
             if (mapList == null || mapList.size() == 0) {
                 model.putCode(Integer.valueOf(1));
                 model.putMsg("当前登录用户id:" + pageData.getString("cuser") + Common.SYS_ENDLINE_DEFAULT +
@@ -1121,22 +1125,18 @@ public class MenuServiceImp implements MenuService {
                 return model;
             }
 
-            menuList = roleMenuService.mapList2MenuList(mapList, new ArrayList<Menu>());
         } else {
             PageData pd = new PageData();
-            pd.put("isQueryAll","true");
-            menuList = this.dataList(pd);
+            mapList = roleMenuService.getRoleMenuMapList(pd);
         }
 
-        //遍历菜单List<Menu>-获取菜单最大级别
-        if (menuList != null && menuList.size() > 0) {
-            maxLayer = this.findMaxLayerByMenuList(menuList);
-        }
+        TreeEntity nodeObject = new TreeEntity();
+        nodeObject.setId(Common.SYS_MENU_MAP.get("root"));
+        nodeObject.setPid("root");
+        TreeUtil.createMenuTree(nodeObject,mapList);
 
-        //3. 生成菜单树
-        menuTreeService.initialization();
-        menuTreeService.findMenuTreeByList(menuList, maxLayer);
-        List<TreeEntity> treeList = menuTreeService.creatMenuTree(maxLayer, null, null);
+        List<TreeEntity> treeList = nodeObject.getChildren();
+
         if (treeList == null || treeList.size() == 0) {
             String msgStr = "登录用户角色没有绑定菜单或绑定菜单异常，请与管理员联系！" + Common.SYS_ENDLINE_DEFAULT;
             if (role != null) {
@@ -1157,6 +1157,91 @@ public class MenuServiceImp implements MenuService {
 
         return model;
     }
+
+
+
+
+//    @Override
+//    public ResultModel treeMeuns(PageData pageData) throws Exception {
+//        //1. 获取当前登录用户所有角色ID
+//        // 用户角色(当前用户)-(角色ID','分隔的字符串)
+//        ResultModel model = new ResultModel();
+//        String roleIds = (String)pageData.get("roleIds");
+//        Role role = roleService.findRoleById(roleIds);
+//
+//        String userRole = "";
+//        String userType = (String)pageData.get("userType");
+//
+//        List<Menu> menuList = new ArrayList<>();
+//        Integer maxLayer = Integer.valueOf(0);
+//
+//        //(userType_admin:超级管理员 userType_company:企业管理员 userType_employee:普通用户 userType_outer:外部用户)
+//        if (!Common.DICTIONARY_MAP.get("userType_admin").equals(userType) && roleIds != null && roleIds.trim().length() > 0) {
+//            userRole = roleIds;
+//            userRole = StringUtil.stringTrimSpace(userRole);
+//
+//            //2. 获取当前用户角色所有菜单List
+//            String queryStr = "";
+//            if (userRole != null && userRole.trim().length() > 0) {
+//                String strTemp = "'" + userRole.replace(",", "','" + ",") + "'";
+//                queryStr = "b.role_id in (" + strTemp + ")";
+//            }
+//
+//            PageData findMap = new PageData();
+//            if (queryStr.trim().length() > 0) {
+//                findMap.put("queryStr", queryStr);
+//                findMap.put("isdisable", "1");
+//            }
+//            //vmes_role_menu ADD INDEX IDX_ROLE_MENU(索引)
+//            findMap.put("menuIsdisable", "1");
+//            //findMap.put("orderStr", "b.layer asc,b.serial_number asc");
+//            findMap.put("mapSize", Integer.valueOf(findMap.size()));
+//
+//            List<Map<String, Object>> mapList = roleMenuService.findRoleMenuMapList(findMap);
+//            if (mapList == null || mapList.size() == 0) {
+//                model.putCode(Integer.valueOf(1));
+//                model.putMsg("当前登录用户id:" + pageData.getString("cuser") + Common.SYS_ENDLINE_DEFAULT +
+//                        "1.没有配置角色" + Common.SYS_ENDLINE_DEFAULT +
+//                        "2.角色没有绑定菜单" + Common.SYS_ENDLINE_DEFAULT);
+//                return model;
+//            }
+//
+//            menuList = roleMenuService.mapList2MenuList(mapList, new ArrayList<Menu>());
+//        } else {
+//            PageData pd = new PageData();
+//            pd.put("isQueryAll","true");
+//            menuList = this.dataList(pd);
+//        }
+//
+//        //遍历菜单List<Menu>-获取菜单最大级别
+//        if (menuList != null && menuList.size() > 0) {
+//            maxLayer = this.findMaxLayerByMenuList(menuList);
+//        }
+//
+//        //3. 生成菜单树
+//        menuTreeService.initialization();
+//        menuTreeService.findMenuTreeByList(menuList, maxLayer);
+//        List<TreeEntity> treeList = menuTreeService.creatMenuTree(maxLayer, null, null);
+//        if (treeList == null || treeList.size() == 0) {
+//            String msgStr = "登录用户角色没有绑定菜单或绑定菜单异常，请与管理员联系！" + Common.SYS_ENDLINE_DEFAULT;
+//            if (role != null) {
+//                String msgTemp_2 = "角色编码({0})角色名称({1}) 该角色没有绑定菜单或绑定菜单异常，请与管理员联系！" + Common.SYS_ENDLINE_DEFAULT;
+//                msgStr = MessageFormat.format(msgTemp_2,
+//                        role.getCode(),
+//                        role.getName());
+//
+//                model.putCode(Integer.valueOf(1));
+//                model.putMsg(msgStr);
+//                return model;
+//            }
+//        }
+//
+//        String treeJsonStr = YvanUtil.toJson(treeList);
+//        //System.out.println("treeJsonStr: " + treeJsonStr);
+//        model.putResult(treeJsonStr);
+//
+//        return model;
+//    }
 
     public List<Map<String, Object>> listMenuKeyByApp(String roleId, String appMenuId) throws Exception{
         PageData findMap = new PageData();

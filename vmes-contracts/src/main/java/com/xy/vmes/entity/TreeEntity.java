@@ -19,6 +19,8 @@ public class TreeEntity implements Cloneable {
     private String name;
     //(必须)是否禁用(0:已禁用 1:启用)
     private String isdisable;
+    //(必须)数据权限类型(0：显示个人数据  1：显示部门数据  2：显示所有数据（默认）)
+    private String dataType;
     //当前节点级别
     private Integer layer;
     //节点顺序
@@ -82,6 +84,14 @@ public class TreeEntity implements Cloneable {
 
     //(必须)当前节点子节点
     private List<TreeEntity> children = new ArrayList<TreeEntity>();
+
+    public String getDataType() {
+        return dataType;
+    }
+
+    public void setDataType(String dataType) {
+        this.dataType = dataType;
+    }
 
     public BigDecimal getCount() {
         return count;
