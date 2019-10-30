@@ -214,6 +214,16 @@ public class RoleMenuServiceImp implements RoleMenuService {
         return roleMenuMapper.findRoleMenuMapList(pd);
     }
 
+
+    public List<TreeEntity> getRoleMenuMapList(PageData pd) throws Exception {
+        return roleMenuMapper.getRoleMenuMapList(pd);
+    }
+
+    public List<TreeEntity> getNoRoleMenuMapList(PageData pd) throws Exception {
+        return roleMenuMapper.getNoRoleMenuMapList(pd);
+    }
+
+
     /**
      * 创建人：陈刚
      * 创建时间：2018-07-31

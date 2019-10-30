@@ -3,6 +3,7 @@ package com.xy.vmes.deecoop.system.dao;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.entity.RoleMenu;
+import com.xy.vmes.entity.TreeEntity;
 import com.yvan.PageData;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
@@ -67,6 +68,10 @@ public interface RoleMenuMapper extends BaseMapper<RoleMenu> {
 	 */
 	List<Map<String, Object>> findRoleMenuMapList(PageData pd);
 
+
+	List<TreeEntity> getRoleMenuMapList(PageData pd);
+
+	List<TreeEntity> getNoRoleMenuMapList(PageData pd);
 	/**
 	 * 创建人：陈刚
 	 * 创建时间：2018-08-23

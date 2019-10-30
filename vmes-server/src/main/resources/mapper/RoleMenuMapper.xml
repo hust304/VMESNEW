@@ -181,6 +181,124 @@
         role_id = #{roleId}
     </update>
 
+
+    <select id="getNoRoleMenuMapList" parameterType="com.yvan.PageData" resultType="com.xy.vmes.entity.TreeEntity">
+        select
+        a.id,
+        a.pid as pid,
+        a.company_id as companyId,
+        a.code as code,
+        a.name as name,
+
+        a.name_en as nameEn,
+        a.serial_number as serialNumber,
+        a.icon as icon,
+        a.type as type,
+        a.url as url,
+
+        a.isleaf as isleaf,
+        a.layer as layer,
+        a.isdisable as isdisable,
+        a.cdate as cdate,
+        a.cuser as cuser,
+
+        a.udate as udate,
+        a.uuser as uuser,
+        a.id_0 as id0,
+        a.id_1 as id1,
+        a.id_2 as id2,
+
+        a.id_3 as id3,
+        a.id_4 as id4,
+        a.id_5 as id5,
+
+        '2' as dataType
+
+        from vmes_menu a
+    </select>
+
+
+
+    <select id="getRoleMenuMapList" parameterType="com.yvan.PageData" resultType="com.xy.vmes.entity.TreeEntity">
+        select
+        a.id,
+        a.pid as pid,
+        a.company_id as companyId,
+        a.code as code,
+        a.name as name,
+
+        a.name_en as nameEn,
+        a.serial_number as serialNumber,
+        a.icon as icon,
+        a.type as type,
+        a.url as url,
+
+        a.isleaf as isleaf,
+        a.layer as layer,
+        a.isdisable as isdisable,
+        a.cdate as cdate,
+        a.cuser as cuser,
+
+        a.udate as udate,
+        a.uuser as uuser,
+        a.id_0 as id0,
+        a.id_1 as id1,
+        a.id_2 as id2,
+
+        a.id_3 as id3,
+        a.id_4 as id4,
+        a.id_5 as id5,
+
+        b.menu_id as menuId,
+        b.role_id as roleId,
+        b.data_type as dataType
+
+        from vmes_menu a
+        left join vmes_role_menu b on a.id = b.menu_id
+        <choose>
+            <when test="(mapSize == null || mapSize == 0) and 'true' != isQueryAll ">
+                where 1=2
+            </when>
+            <otherwise>
+                <where>
+                    <if test="roleIds != null and roleIds != ''" >
+                        and b.role_id in (${roleIds})
+                    </if>
+                    <if test="roleId != null and roleId != ''" >
+                        and b.role_id = #{roleId}
+                    </if>
+                    <if test="menuId != null and menuId != ''" >
+                        and b.menu_id = #{menuId}
+                    </if>
+                    <if test="isdisable != null and isdisable != ''" >
+                        and b.isdisable = #{isdisable}
+                    </if>
+                    <if test="isdisable != null and isdisable != ''" >
+                        and a.isdisable = #{isdisable}
+                    </if>
+                    <!--queryStr 自定义sql查询语句 b.role_id in ()-->
+                    <if test="queryStr != null and queryStr != ''" >
+                        and ${queryStr}
+                    </if>
+
+                    <if test="rootStr != null and rootStr != ''" >
+                        or ${rootStr}
+                    </if>
+
+                </where>
+            </otherwise>
+        </choose>
+        <if test="orderStr != null and orderStr != ''" >
+            order by ${orderStr}
+        </if>
+    </select>
+
+
+
+
+
+
+
     <select id="findRoleMenuMapList" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
             a.id,

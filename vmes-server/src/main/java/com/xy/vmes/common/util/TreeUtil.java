@@ -192,7 +192,8 @@ public class TreeUtil {
 
 
                 //3、第三次递归 修正物料、中间件溢出的数量
-//                correctBomTree(nodeObject,cacheMap);
+                nodeObject.setTotalCount(nodeObject.getCount().add(nodeObject.getAssembledCount()));
+                correctBomTree(nodeObject,cacheMap);
 
 
                 varMapList.add(nodeObject);
@@ -213,11 +214,21 @@ public class TreeUtil {
         BigDecimal pUpRatio = nodeObject.getSumRatio()==null?BigDecimal.ZERO:nodeObject.getSumRatio();
         BigDecimal pStockCount = nodeObject.getStockCount()==null?BigDecimal.ZERO:nodeObject.getStockCount();
         BigDecimal pSplitCount = nodeObject.getSplitCount()==null?BigDecimal.ZERO:nodeObject.getSplitCount();
-        BigDecimal pAssembledCount = nodeObject.getAssembledCount()==null?BigDecimal.ZERO:nodeObject.getAssembledCount();
+        BigDecimal pTotalCount = nodeObject.getTotalCount()==null?BigDecimal.ZERO:nodeObject.getTotalCount();
 
         if(childList!=null&&childList.size()>0){
             for(TreeEntity child : childList){
-
+                //Bom齐套分析：用料比例
+                BigDecimal ratio = child.getRatio()==null?BigDecimal.ZERO:child.getRatio();
+                BigDecimal currentStockCount = productStockCountMap.get(child.getId());
+                BigDecimal stockCount = child.getStockCount();
+                child.setTotalCount(pTotalCount);
+                BigDecimal lackCount = (pTotalCount.multiply(pUpRatio).subtract(pSplitCount.add(pStockCount))).multiply(ratio);
+                if(lackCount.compareTo(stockCount)<0){
+                    child.setStockCount(lackCount);
+                    productStockCountMap.put(child.getId(),currentStockCount.add(stockCount).subtract(lackCount));
+                }
+                correctBomTree(child,cacheMap);
             }
         }
 
@@ -336,6 +347,19 @@ public class TreeUtil {
         }
         return varMapList;
     }
+
+
+
+    public static void createMenuTree(TreeEntity nodeObject,List<TreeEntity> objectList) {
+        List<TreeEntity> childList = findChildListById(nodeObject.getId(), objectList);
+        if(childList!=null&&childList.size()>0){
+            nodeObject.setChildren(childList);
+            for(TreeEntity child:childList){
+                createMenuTree(child,objectList);
+            }
+        }
+    }
+
 
     /**
      * 本方法为递归调用:
@@ -622,7 +646,7 @@ public class TreeUtil {
      * @param id
      * @return
      */
-    private static TreeEntity findNodeById(String id, List<TreeEntity> objectList) {
+    public static TreeEntity findNodeById(String id, List<TreeEntity> objectList) {
         if (id == null || id.trim().length() == 0) {return null;}
         for (TreeEntity nodeObj : objectList) {
             if (id.equals(nodeObj.getId())) {
@@ -746,6 +770,5 @@ public class TreeUtil {
         }
         return Boolean.TRUE;
     }
-
 
 }
