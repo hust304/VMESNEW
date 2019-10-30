@@ -1127,7 +1127,7 @@ public class MenuServiceImp implements MenuService {
 
         } else {
             PageData pd = new PageData();
-            mapList = roleMenuService.getRoleMenuMapList(pd);
+            mapList = roleMenuService.getNoRoleMenuMapList(pd);
         }
 
         TreeEntity nodeObject = new TreeEntity();
