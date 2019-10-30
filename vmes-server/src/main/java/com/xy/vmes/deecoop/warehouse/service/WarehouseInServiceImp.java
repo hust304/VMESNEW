@@ -330,14 +330,14 @@ public class WarehouseInServiceImp implements WarehouseInService {
             columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
         }
 
-        //type 入库类型
-        String type = new String();
-        if (pd.get("type") != null && ((List)pd.get("type")).size() > 0) {
-            type = ((List)pd.get("type")).get(0).toString();
-        }
-        if (type != null && type.trim().length() > 0) {
-            pd.put("type", type);
-        } else {pd.put("type", new String());}
+//        //type 入库类型
+//        String type = new String();
+//        if (pd.get("type") != null && ((List)pd.get("type")).size() > 0) {
+//            type = ((List)pd.get("type")).get(0).toString();
+//        }
+//        if (type != null && type.trim().length() > 0) {
+//            pd.put("type", type);
+//        } else {pd.put("type", new String());}
 
         pd.put("orderStr", "a.cdate desc");
         String orderStr = pd.getString("orderStr");
