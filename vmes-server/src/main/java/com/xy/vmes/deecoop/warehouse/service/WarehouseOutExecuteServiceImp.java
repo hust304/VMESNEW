@@ -604,30 +604,31 @@ public class WarehouseOutExecuteServiceImp implements WarehouseOutExecuteService
 
         StringBuffer msgBuf = new StringBuffer();
         if(mapList!=null&&mapList.size()>0){
+            //第一层: 数据遍历
             for (Map<String, Object> outDetailMap : mapList) {
-                String productId = (String) outDetailMap.get("productId");
-                String productCode = (String) outDetailMap.get("productCode");
-                String productName = (String) outDetailMap.get("productName");
+                //String productId = (String) outDetailMap.get("productId");
+                //String productCode = (String) outDetailMap.get("productCode");
+                //String productName = (String) outDetailMap.get("productName");
 
                 double count = Double.parseDouble((String)outDetailMap.get("count"));
-                BigDecimal countBig = BigDecimal.valueOf(count);
+                //BigDecimal countBig = BigDecimal.valueOf(count);
                 //四舍五入到2位小数
-                countBig = countBig.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                //countBig = countBig.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
 
                 double executeCount = Double.parseDouble((String)outDetailMap.get("executeCount"));
                 double lackCount = count - executeCount;
 
-                //验证当前(货品id)在库存中的数量
-                PageData findMap = new PageData();
-                findMap.put("companyId", currentCompanyId);
-                findMap.put("productId", productId);
-                //查询结果集需要(实体库)-结果集只含有(实体库)
-                findMap.put("isNeedEntity", "true");
-                //查询结果集不需要(备件库)
-                findMap.put("isNotNeedSpare", "true");
-                List<Map> warehouseProductMapList = warehouseToWarehouseProductService.findWarehouseToWarehouseProductByProduct(findMap, null);
-                BigDecimal productStockCount = this.findProductStockCount(warehouseProductMapList);
-
+//                //验证当前(货品id)在库存中的数量
+//                PageData findMap = new PageData();
+//                findMap.put("companyId", currentCompanyId);
+//                findMap.put("productId", productId);
+//                //查询结果集需要(实体库)-结果集只含有(实体库)
+//                findMap.put("isNeedEntity", "true");
+//                //查询结果集不需要(备件库)
+//                findMap.put("isNotNeedSpare", "true");
+//
+//                List<Map> warehouseProductMapList = warehouseToWarehouseProductService.findWarehouseToWarehouseProductByProduct(findMap, null);
+//                BigDecimal productStockCount = this.findProductStockCount(warehouseProductMapList);
 //                if (count > productStockCount.doubleValue()) {
 //                    String msgTemp = "货品名称：{0} 该货品库存不足，请更改出库数量";
 //                    String msgStr = MessageFormat.format(msgTemp, productName);
@@ -635,7 +636,8 @@ public class WarehouseOutExecuteServiceImp implements WarehouseOutExecuteService
 //                    continue;
 //                }
 
-                if(outDetailMap.get("children")!=null){
+                //第二层: 数据遍历
+                if(outDetailMap.get("children") != null) {
                     List executeList = (List)outDetailMap.get("children");
                     if(executeList!=null&&executeList.size()>0){
                         for (int i = 0; i < executeList.size(); i++) {
@@ -650,17 +652,8 @@ public class WarehouseOutExecuteServiceImp implements WarehouseOutExecuteService
                             }
 
                         }
-                    }else{
-                        model.putCode(Integer.valueOf(1));
-                        model.putMsg("出库执行明细不能为空！");
-                        return model;
                     }
-                }else{
-                    model.putCode(Integer.valueOf(1));
-                    model.putMsg("出库执行明细不能为空！");
-                    return model;
                 }
-
             }
         }
 
@@ -670,8 +663,45 @@ public class WarehouseOutExecuteServiceImp implements WarehouseOutExecuteService
             return model;
         }
 
-        if(mapList!=null&&mapList.size()>0){
-            for (Map<String, Object> outDetailMap : mapList) {
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //遍历数据集-获取(建议取货数量) 大于零的(建议取货数量)
+        List<Map<String, Object>> outExecuteMapList = new ArrayList();
+
+        //第一层: 数据遍历
+        for (Map<String, Object> firstMap : mapList) {
+
+            //第二层: 数据遍历 -- 大于零的(建议取货数量)
+            List<Map<String, Object>> outExecuteChildrenList = new ArrayList();
+            if(firstMap.get("children") != null && ((List)firstMap.get("children")).size() > 0) {
+                List<Map<String, Object>> secondList = (List)firstMap.get("children");
+                for (Map<String, Object> secondMap : secondList) {
+                    //建议取货数量 suggestCount
+                    BigDecimal suggestCount = BigDecimal.valueOf(0D);
+                    String suggestCountStr = (String)secondMap.get("suggestCount");
+                    if (suggestCountStr != null && suggestCountStr.trim().length() > 0) {
+                        try {
+                            suggestCount = new BigDecimal(suggestCountStr);
+                        } catch (NumberFormatException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    if (suggestCount.doubleValue() > 0) {
+                        outExecuteChildrenList.add(secondMap);
+                    }
+                }
+            }
+
+            if (outExecuteChildrenList.size() > 0) {
+                firstMap.put("children", outExecuteChildrenList);
+                outExecuteMapList.add(firstMap);
+            }
+        }
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //出库执行
+        if(outExecuteMapList != null && outExecuteMapList.size()>0){
+            for (Map<String, Object> outDetailMap : outExecuteMapList) {
                 List<WarehouseOutExecute> outExecuteList = new ArrayList<WarehouseOutExecute>();
                 String detailId = (String) outDetailMap.get("id");
                 String parentId = (String) outDetailMap.get("parentId");
