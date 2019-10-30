@@ -265,7 +265,7 @@ public interface WarehouseProductService {
 
     ResultModel updateWarehouseProduct(PageData pd) throws Exception;
 
-    ResultModel listPageWarehouseProductView(PageData pd, Pagination pg) throws Exception;
+    ResultModel listPageWarehouseProductView(PageData pd) throws Exception;
 
     ResultModel listPageSimpleWarehouseProductView(PageData pd) throws Exception;
 
@@ -282,9 +282,8 @@ public interface WarehouseProductService {
     ResultModel listPageWarehouseProductsDispatchOptionBySimple(PageData pd) throws Exception;
     ResultModel listPageWarehouseToWarehouseProductBySimple(PageData pd) throws Exception;
 
-    void exportExcelWarehouseProducts(PageData pd, Pagination pg) throws Exception;
-
-    ResultModel importExcelWarehouseProducts(MultipartFile file) throws Exception;
+    void exportExcelWarehouseProductByProduct(PageData pd) throws Exception;
+    //ResultModel importExcelWarehouseProducts(MultipartFile file) throws Exception;
 
     ResultModel updateSynStockCount(PageData pd) throws Exception;
 

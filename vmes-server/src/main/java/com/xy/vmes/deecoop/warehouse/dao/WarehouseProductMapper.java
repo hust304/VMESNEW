@@ -64,9 +64,9 @@ public interface WarehouseProductMapper extends BaseMapper<WarehouseProduct> {
 
 
     List<Map> getDataListPageDispatchBySimple(PageData pd, Pagination pg);
-
     List<Map> getDataListPageDispatchBySimple(PageData pd);
 
+    List<Map> warehouseProductView(PageData pd);
     List<Map> warehouseProductView(PageData pd, Pagination pg);
 
     List<Map> simpleWarehouseProductView(PageData pd);
