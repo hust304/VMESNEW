@@ -8,8 +8,10 @@ import com.xy.vmes.entity.WarehouseProduct;
 import com.xy.vmes.service.ColumnService;
 import com.xy.vmes.service.WarehouseProductByCollectService;
 import com.xy.vmes.service.WarehouseProductService;
+import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
+import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -19,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.apache.commons.lang.StringUtils;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.*;
 
 /**
@@ -371,6 +374,61 @@ public class WarehouseProductController {
         Long endTime = System.currentTimeMillis();
         logger.info("################/warehouse/warehouseProduct/findListProductByWarehouseVirtual 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
+    }
+
+    /**
+     * Excel导出
+     * @author 陈刚 自动创建，可以修改
+     * @date 2018-11-20
+     */
+    @PostMapping("/warehouse/warehouseProduct/exportExcelWarehouseProductByProduct")
+    public void exportExcelWarehouseProductByProduct() throws Exception {
+//        logger.info("################/warehouse/warehouseProduct/exportExcelWarehouseProductByProduct  执行开始 ################# ");
+//        Long startTime = System.currentTimeMillis();
+//        PageData pd = HttpUtils.parsePageData();
+//
+//
+//        if(pg==null){
+//            pg =  HttpUtils.parsePagination(pd);
+//        }
+//        List<Column> columnList = columnService.findColumnList("warehouseInitial");
+//        if (columnList == null || columnList.size() == 0) {
+//            throw new RestException("1","数据库没有生成TabCol，请联系管理员！");
+//        }
+//
+//        //获取指定栏位字符串-重新调整List<Column>
+//        String fieldCode = pd.getString("fieldCode");
+//        if (fieldCode != null && fieldCode.trim().length() > 0) {
+//            columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
+//        }
+//
+//        String ids = (String)pd.getString("ids");
+//        String queryStr = "";
+//        if (ids != null && ids.trim().length() > 0) {
+//            ids = StringUtil.stringTrimSpace(ids);
+//            ids = "'" + ids.replace(",", "','") + "'";
+//            queryStr = "wp.id in (" + ids + ")";
+//        }
+//        pd.put("queryStr", queryStr);
+//        pg.setSize(100000);
+//        List<Map> dataList = this.getDataListPage(pd, pg);
+//
+//        //查询数据转换成Excel导出数据
+//        List<LinkedHashMap<String, String>> dataMapList = ColumnUtil.modifyDataList(columnList, dataList);
+//        HttpServletResponse response = HttpUtils.currentResponse();
+//
+//        //查询数据-Excel文件导出
+//        String fileName = pd.getString("fileName");
+//        if (fileName == null || fileName.trim().length() == 0) {
+//            fileName = "ExcelWarehouseInitial";
+//        }
+//
+//        //导出文件名-中文转码
+//        fileName = new String(fileName.getBytes("utf-8"),"ISO-8859-1");
+//        ExcelUtil.excelExportByDataList(response, fileName, dataMapList);
+//
+//
+//        logger.info("################/warehouse/warehouseProduct/exportExcelWarehouseProductByProduct 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
     }
 
 
