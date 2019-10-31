@@ -590,7 +590,7 @@
             <if test="warehouseId != null and warehouseId != ''">
                 and warehouse.path_id LIKE CONCAT(CONCAT('%', #{warehouseId}),'%')
             </if>
-            and wp.product_id is not null
+            and wp.product_id is not null and prod.id is not null
         </where>
         group by wp.product_id
 
