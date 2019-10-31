@@ -101,8 +101,8 @@ public class ExcelUtil{
 
 			//获取Excel导入列数据
 			LinkedHashMap columnMap = dataMapList.get(i);
-			HSSFCellStyle twoStyle = getTwoStyle(hssfWorkbook);
-			HSSFCellStyle oneStyle = getOneStyle(hssfWorkbook);
+			//HSSFCellStyle twoStyle = getTwoStyle(hssfWorkbook);
+			//HSSFCellStyle oneStyle = getOneStyle(hssfWorkbook);
 			int indexMap = 0;
 			for (Iterator iterator = columnMap.keySet().iterator(); iterator.hasNext();) {
 				String columnCode = iterator.next().toString().trim();
@@ -125,9 +125,9 @@ public class ExcelUtil{
 					sheet.setColumnWidth(indexMap, 5000);
 				} else if (i > 1 && i % 2 == 0) {
 					//数据行样式
-					cell.setCellStyle(twoStyle);
+					cell.setCellStyle(getTwoStyle(hssfWorkbook));
 				} else if (i > 1 && i % 2 != 0) {
-					cell.setCellStyle(oneStyle);
+					cell.setCellStyle(getOneStyle(hssfWorkbook));
 				}
 
 				indexMap = indexMap + 1;
