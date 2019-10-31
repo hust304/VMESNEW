@@ -202,6 +202,9 @@
                         </otherwise>
                     </choose>
                 </if>
+                <if test="productQueryStr != null and productQueryStr != ''" >
+                    and product_id in (${productQueryStr})
+                </if>
                 <if test="productId != null and productId != ''" >
                     and product_id = #{productId}
                 </if>

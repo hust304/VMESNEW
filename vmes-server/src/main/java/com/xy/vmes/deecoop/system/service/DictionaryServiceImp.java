@@ -6,6 +6,7 @@ import com.xy.vmes.deecoop.system.dao.DictionaryMapper;
 import com.xy.vmes.entity.*;
 import com.xy.vmes.entity.Dictionary;
 import com.xy.vmes.service.ColumnService;
+import com.xy.vmes.service.DictionaryDeleteCheckService;
 import com.xy.vmes.service.DictionaryService;
 import com.xy.vmes.service.UserService;
 import com.yvan.Conv;
@@ -35,8 +36,6 @@ import java.util.*;
 @Service
 @Transactional(readOnly = false)
 public class DictionaryServiceImp implements DictionaryService {
-
-
     @Autowired
     private DictionaryMapper dictionaryMapper;
     @Autowired
@@ -45,6 +44,9 @@ public class DictionaryServiceImp implements DictionaryService {
     private UserService userService;
     @Autowired
     private RedisClient redisClient;
+
+    @Autowired
+    private DictionaryDeleteCheckService dictionaryDeleteCheckService;
 
     @Autowired
     private ColumnService columnService;
@@ -496,10 +498,11 @@ public class DictionaryServiceImp implements DictionaryService {
      * @param ids
      * @return
      */
-    public String checkDeleteDictionaryByIds(String ids) {
+    public String checkDeleteDictionaryByIds(String ids, String companyId) throws Exception {
         if (ids == null || ids.trim().length() == 0) {return new String();}
 
-        String msgTemp_1 = "勾选数据 第 {0} 行: 存在子节点不可禁用！" + Common.SYS_ENDLINE_DEFAULT;
+        String msgTemp_1 = "勾选数据 第 {0} 行：存在子节点不可删除禁用！" + Common.SYS_ENDLINE_DEFAULT;
+        String msgTemp_2 = "勾选数据 第 {0} 行：{1}不可删除禁用！" + Common.SYS_ENDLINE_DEFAULT;
 
         StringBuffer msgBuf = new StringBuffer();
         String[] id_arry = ids.split(",");
@@ -509,6 +512,13 @@ public class DictionaryServiceImp implements DictionaryService {
             //1. 查询当前字典节点下是否含有子节点
             if (childList != null && childList.size() > 0) {
                 String msg_Str = MessageFormat.format(msgTemp_1, (i+1));
+                msgBuf.append(msg_Str);
+            }
+
+            //2. 当前字典id 查询相关业务表
+            String msgStr = dictionaryDeleteCheckService.checkDeleteDictionary(id, companyId);
+            if (msgStr != null && msgStr.trim().length() > 0) {
+                String msg_Str = MessageFormat.format(msgTemp_2, (i+1), msgStr);
                 msgBuf.append(msg_Str);
             }
 
@@ -672,6 +682,13 @@ public class DictionaryServiceImp implements DictionaryService {
             return model;
         }
 
+        String companyId = pageData.getString("currentCompanyId");
+        if (companyId == null || companyId.trim().length() == 0) {
+            model.putCode("1");
+            model.putMsg("企业id为空或空字符串");
+            return model;
+        }
+
         String id = (String)pageData.get("id");
         String isdisable = (String)pageData.get("isdisable");
 
@@ -689,7 +706,7 @@ public class DictionaryServiceImp implements DictionaryService {
         }
 
         //2. 当前组织节点下是否含有(子节点-岗位)
-        msgStr = dictionaryService.checkDeleteDictionaryByIds(id);
+        msgStr = dictionaryService.checkDeleteDictionaryByIds(id, companyId);
         if (msgStr != null && msgStr.trim().length() > 0) {
             model.putCode(Integer.valueOf(1));
             model.putMsg(msgStr);
@@ -715,8 +732,15 @@ public class DictionaryServiceImp implements DictionaryService {
             return model;
         }
 
+        String companyId = pd.getString("currentCompanyId");
+        if (companyId == null || companyId.trim().length() == 0) {
+            model.putCode("1");
+            model.putMsg("企业id为空或空字符串");
+            return model;
+        }
+
         String id_str = StringUtil.stringTrimSpace(ids);
-        String msgStr = dictionaryService.checkDeleteDictionaryByIds(id_str);
+        String msgStr = dictionaryService.checkDeleteDictionaryByIds(id_str, companyId);
         if (msgStr != null && msgStr.trim().length() > 0) {
             model.putCode(Integer.valueOf(1));
             model.putMsg(msgStr);

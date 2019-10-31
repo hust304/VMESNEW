@@ -264,6 +264,10 @@
                     <if test="genre != null and genre != ''" >
                         and genre=#{genre}
                     </if>
+                    <if test="type != null and type != ''" >
+                        and type=#{type}
+                    </if>
+
                     <if test="isdisable != null and isdisable != ''" >
                         and isdisable=#{isdisable}
                     </if>

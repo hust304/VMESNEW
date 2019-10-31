@@ -165,7 +165,7 @@ public interface DictionaryService {
      * @param ids
      * @return
      */
-    String checkDeleteDictionaryByIds(String ids);//@
+    String checkDeleteDictionaryByIds(String ids, String companyId) throws Exception;//@
 
 //    String findDictionaryIdById(String id, Integer layer, String prefix);
 
