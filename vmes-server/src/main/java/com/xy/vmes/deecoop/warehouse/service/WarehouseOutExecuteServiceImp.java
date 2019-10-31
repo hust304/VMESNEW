@@ -645,7 +645,7 @@ public class WarehouseOutExecuteServiceImp implements WarehouseOutExecuteService
                             double suggestCount = Double.parseDouble((String)executeMap.get("suggestCount"));
                             if(suggestCount>lackCount){
                                 model.putCode(Integer.valueOf(1));
-                                model.putMsg("出库执行数量不能大于当前可出库数量！");
+                                model.putMsg("出库执行数量不能大于计划出库数量！");
                                 return model;
                             }else{
                                 lackCount = lackCount - suggestCount;
