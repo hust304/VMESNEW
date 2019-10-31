@@ -102,6 +102,10 @@ public class TreeUtil {
         createBomTree(nodeObject, objectList,cacheMap);
 
 
+
+        //3、第三次递归 修正物料、中间件溢出的数量
+        nodeObject.setTotalCount(nodeObject.getCount().add(nodeObject.getAssembledCount()));
+        correctBomTree(nodeObject,cacheMap);
         //Bom齐套分析：期望生产数量
 //        if(nodeObject.getMaxCount().compareTo(expectCount)<0){
 //            nodeObject.setLackCount(expectCount.subtract(nodeObject.getMaxCount()));
@@ -217,6 +221,8 @@ public class TreeUtil {
         BigDecimal pTotalCount = nodeObject.getTotalCount()==null?BigDecimal.ZERO:nodeObject.getTotalCount();
 
         if(childList!=null&&childList.size()>0){
+            //Bom齐套分析：上级可组装数量
+            BigDecimal pAssembledCount = null;
             for(TreeEntity child : childList){
                 //Bom齐套分析：用料比例
                 BigDecimal ratio = child.getRatio()==null?BigDecimal.ZERO:child.getRatio();
@@ -229,7 +235,35 @@ public class TreeUtil {
                     productStockCountMap.put(child.getId(),currentStockCount.add(stockCount).subtract(lackCount));
                 }
                 correctBomTree(child,cacheMap);
+
+                BigDecimal  assembledCount = child.getAssembledCount()==null?BigDecimal.ZERO:child.getAssembledCount();
+                if(ratio.compareTo(BigDecimal.ZERO)>0){
+                    if(pAssembledCount==null){
+                        //Bom齐套分析：上级可组装数量 = （实际库存数量 + 可组装数量）/ 用料比例
+                        pAssembledCount = child.getStockCount().add(assembledCount).divide(ratio,0,BigDecimal.ROUND_DOWN);
+                    }else{
+                        //Bom齐套分析：取物料组成中可组装成品的最小值为上级可组装数量
+                        if(child.getStockCount().add(assembledCount).divide(ratio,0,BigDecimal.ROUND_DOWN).compareTo(pAssembledCount)<0){
+                            pAssembledCount = child.getStockCount().add(assembledCount).divide(ratio,0,BigDecimal.ROUND_DOWN);
+                        }
+                    }
+                }
+
             }
+
+            if(pAssembledCount!=null){
+                //Bom齐套分析：可组装数量
+                nodeObject.setAssembledCount(pAssembledCount);
+                //Bom齐套分析：最大可生产数量
+                nodeObject.setMaxCount(pAssembledCount.add(pStockCount).setScale(0,BigDecimal.ROUND_DOWN));
+            }
+        }else{
+
+            //Bom齐套分析：可组装数量
+            nodeObject.setAssembledCount(BigDecimal.ZERO);
+            //Bom齐套分析：最大可生产数量
+            nodeObject.setMaxCount(pStockCount.setScale(0,BigDecimal.ROUND_DOWN));
+            return;
         }
 
     }
@@ -251,12 +285,12 @@ public class TreeUtil {
         List<TreeEntity> varMapList = new ArrayList();
         List<TreeEntity> materielMapList = new ArrayList();
         Map<String,BigDecimal> productStockCountMap = new HashMap<String,BigDecimal>();
-        Map<String,BigDecimal> materielStockCountMap = new HashMap<String,BigDecimal>();
+//        Map<String,BigDecimal> materielStockCountMap = new HashMap<String,BigDecimal>();
         Map<String,BigDecimal> materielNeedCountMap = new HashMap<String,BigDecimal>();
 
         Map<String,Map<String,BigDecimal>> cacheMap = new HashMap<String,Map<String,BigDecimal>>();
-        cacheMap.put("productStockCountMap",productStockCountMap);
-        cacheMap.put("materielStockCountMap",materielStockCountMap);
+        cacheMap.put("productStockCountMap",new HashMap<String,BigDecimal>());
+        cacheMap.put("materielStockCountMap",new HashMap<String,BigDecimal>());
 
 
         if(treeMapList!=null&&treeMapList.size()>0){
@@ -281,7 +315,6 @@ public class TreeUtil {
                     materielMapList.add(materiel);
                     BigDecimal materielRatio = materielRatioMap.get(key);
                     BigDecimal materielNeedCount = planCount.multiply(materielRatio).setScale(0,BigDecimal.ROUND_DOWN);
-
                     if(materielNeedCountMap.get(key)!=null){
                         materielNeedCountMap.put(key,materielNeedCountMap.get(key).add(materielNeedCount));
                     }else{
@@ -293,6 +326,7 @@ public class TreeUtil {
         }
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         String edate = format.format(new Date());
+        Map<String,BigDecimal> materielStockCountMap  = cacheMap.get("materielStockCountMap");
         for(String key:materielNeedCountMap.keySet()){
             BigDecimal materielNeedCount = materielNeedCountMap.get(key);
             BigDecimal materielStockCount = materielStockCountMap.get(key);

@@ -83,7 +83,8 @@ public class ExcelUtil{
 		HSSFCell firstRowCell = firstRow.createCell(0);
 		firstRowCell.setCellValue(titleStr);
 		firstRowCell.setCellStyle(firstRowStyle);
-
+		HSSFCellStyle twoStyle = getTwoStyle(hssfWorkbook);
+		HSSFCellStyle oneStyle = getOneStyle(hssfWorkbook);
 		//设置列表样式(第一行,第二行)
 		CellStyle titleStyle0 = getTitleStyle(hssfWorkbook);
 		HSSFCell cell = null;
@@ -101,8 +102,7 @@ public class ExcelUtil{
 
 			//获取Excel导入列数据
 			LinkedHashMap columnMap = dataMapList.get(i);
-			//HSSFCellStyle twoStyle = getTwoStyle(hssfWorkbook);
-			//HSSFCellStyle oneStyle = getOneStyle(hssfWorkbook);
+
 			int indexMap = 0;
 			for (Iterator iterator = columnMap.keySet().iterator(); iterator.hasNext();) {
 				String columnCode = iterator.next().toString().trim();
@@ -125,9 +125,9 @@ public class ExcelUtil{
 					sheet.setColumnWidth(indexMap, 5000);
 				} else if (i > 1 && i % 2 == 0) {
 					//数据行样式
-					cell.setCellStyle(getTwoStyle(hssfWorkbook));
+					cell.setCellStyle(twoStyle);
 				} else if (i > 1 && i % 2 != 0) {
-					cell.setCellStyle(getOneStyle(hssfWorkbook));
+					cell.setCellStyle(oneStyle);
 				}
 
 				indexMap = indexMap + 1;
@@ -194,6 +194,8 @@ public class ExcelUtil{
 		//设置列表样式(第一行,第二行)
 		CellStyle titleStyle0 = getTitleStyle(hssfWorkbook);
 		HSSFCell cell = null;
+		HSSFCellStyle twoStyle = getTwoStyle(hssfWorkbook);
+		HSSFCellStyle oneStyle = getOneStyle(hssfWorkbook);
 		for (int i = 0; i < dataMapList.size(); i++) {
 			HSSFRow row = sheet.createRow(i);
 
@@ -207,8 +209,7 @@ public class ExcelUtil{
 
 			//获取Excel导入列数据
 			LinkedHashMap columnMap = dataMapList.get(i);
-			HSSFCellStyle twoStyle = getTwoStyle(hssfWorkbook);
-			HSSFCellStyle oneStyle = getOneStyle(hssfWorkbook);
+
 			int indexMap = 0;
 			for (Iterator iterator = columnMap.keySet().iterator(); iterator.hasNext();) {
 				String columnCode = iterator.next().toString().trim();
