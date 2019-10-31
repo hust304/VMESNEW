@@ -451,6 +451,10 @@
                 and bom.id in (${bomIds})
             </if>
 
+            <if test="notBomIds != null and notBomIds != ''">
+                and bom.id not in (${notBomIds})
+            </if>
+
             <if test="code != null and code != ''">
                 and bom.code LIKE CONCAT(CONCAT('%', #{code}),'%')
             </if>
