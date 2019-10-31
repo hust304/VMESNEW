@@ -604,7 +604,6 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
 //            }
 
             orderDtlDB.setState("3");
-            orderDtlDB.setIsLockWarehouse("0");
             this.update(orderDtlDB);
         }
     }
@@ -957,14 +956,14 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
 
             //stockCount (计量单位)库存数量
             BigDecimal stockCount = BigDecimal.valueOf(0D);
-//            String stockCount_str = (String)mapObject.get("stockCount");
-//            if (stockCount_str != null && stockCount_str.trim().length() > 0) {
-//                try {
-//                    stockCount = new BigDecimal(stockCount_str);
-//                } catch (NumberFormatException e) {
-//                    e.printStackTrace();
-//                }
-//            }
+            String stockCount_str = (String)mapObject.get("stockCount");
+            if (stockCount_str != null && stockCount_str.trim().length() > 0) {
+                try {
+                    stockCount = new BigDecimal(stockCount_str);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
 
             //stockCountByPrice        (计价单位)库存数量
             BigDecimal valueBig = EvaluateUtil.countFormulaN2P(stockCount, n2pFormula);

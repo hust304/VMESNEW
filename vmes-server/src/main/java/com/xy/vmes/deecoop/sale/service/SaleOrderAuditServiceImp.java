@@ -278,7 +278,7 @@ public class SaleOrderAuditServiceImp implements SaleOrderAuditService {
         //根据订单id:获取需要货品锁定库存数量MapList
         List<Map<String, Object>> needLockStockList = this.checkProdStockCountByOrderId(orderId);
         if (needLockStockList != null && needLockStockList.size() > 0) {
-//            model.set("isNeedLockStock", "Y");
+            model.set("isNeedLockStock", "Y");
             String detailIds = this.findDetailIdsByMapList(needLockStockList);
             model.set("needLockStockOrderDtlIds", detailIds);
         }
@@ -473,19 +473,19 @@ public class SaleOrderAuditServiceImp implements SaleOrderAuditService {
         //2. 订单明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
         saleOrderDetailService.updateDetailStateByOrderId(orderId, null);
 
-        //3. 修改(货品id,单位id,客户id)单价
-        List<SaleOrderDetail> orderDtlList = saleOrderDetailService.findSaleOrderDetailListByParentId(orderId);
-        if (orderDtlList != null && orderDtlList.size() > 0) {
-            for (SaleOrderDetail orderDtl : orderDtlList) {
-                SaleUnitPrice customerUnitPrice = new SaleUnitPrice();
-                customerUnitPrice.setProductId(orderDtl.getProductId());
-                customerUnitPrice.setUnit(orderDtl.getOrderUnit());
-                customerUnitPrice.setCustomerId(orderDB.getCustomerId());
-                customerUnitPrice.setProductPrice(orderDtl.getProductPrice());
-                customerUnitPrice.setCuser(cuser);
-                saleUnitPriceService.modifySaleUnitPrice(customerUnitPrice);
-            }
-        }
+//        //3. 修改(货品id,单位id,客户id)单价
+//        List<SaleOrderDetail> orderDtlList = saleOrderDetailService.findSaleOrderDetailListByParentId(orderId);
+//        if (orderDtlList != null && orderDtlList.size() > 0) {
+//            for (SaleOrderDetail orderDtl : orderDtlList) {
+//                SaleUnitPrice customerUnitPrice = new SaleUnitPrice();
+//                customerUnitPrice.setProductId(orderDtl.getProductId());
+//                customerUnitPrice.setUnit(orderDtl.getOrderUnit());
+//                customerUnitPrice.setCustomerId(orderDB.getCustomerId());
+//                customerUnitPrice.setProductPrice(orderDtl.getProductPrice());
+//                customerUnitPrice.setCuser(cuser);
+//                saleUnitPriceService.modifySaleUnitPrice(customerUnitPrice);
+//            }
+//        }
 
 
         //advance_sum:预付款(定金)
