@@ -361,7 +361,7 @@
     </select>
 
     <!-- 自动创建，可以修改 -->
-    <select id="getDataListPage"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
+    <select id="getDataListPage" parameterType="com.yvan.PageData"  resultType="java.util.Map">
         select
         detail.id id,
         detail.parent_id parentId,<!-- 采购订单ID -->
@@ -386,10 +386,17 @@
         round((ifnull(signDetail.arrive_count, 0) - ifnull(retreatDetail.count, 0)), 2) arriveCount,
         <!--当前到货数量:= 采购数量 - (签收数量 - (生成退货单)退货数量)   -->
         round((ifnull(detail.count, 0) - (ifnull(signDetail.arrive_count, 0) - ifnull(retreatDetail.count, 0))), 2) arrivingCount,
-        product.code productCode,
+
+        <!--货品表-->
+        product.code sysProductCode,
+        product.source_code custProductCode,
+        CASE
+          WHEN product.source_code is null THEN product.code
+          WHEN product.source_code is not null THEN product.source_code
+        ELSE null
+        END productCode,
         product.name productName,
         product.spec,
-
         genre.name genre,
         genre.id genreId,
 

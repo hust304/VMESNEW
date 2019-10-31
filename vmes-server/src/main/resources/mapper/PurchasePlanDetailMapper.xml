@@ -223,7 +223,14 @@
 
         plan.code code,
 
-        product.code productCode,
+        <!--货品表-->
+        product.code sysProductCode,
+        product.source_code custProductCode,
+        CASE
+          WHEN product.source_code is null THEN product.code
+          WHEN product.source_code is not null THEN product.source_code
+        ELSE null
+        END productCode,
         product.name productName,
         product.spec,
         genre.name genre,
