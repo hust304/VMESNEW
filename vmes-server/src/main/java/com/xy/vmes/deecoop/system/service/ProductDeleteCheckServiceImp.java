@@ -1,6 +1,5 @@
 package com.xy.vmes.deecoop.system.service;
 
-import com.xy.vmes.entity.*;
 import com.xy.vmes.service.*;
 import com.yvan.PageData;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,7 +59,7 @@ public class ProductDeleteCheckServiceImp implements ProductDeleteCheckService {
             return "该货品在系统中正在使用";
         }
 
-        //销售模块
+        //3. 销售模块
         //发货明细
         objectList.clear();
         if (findMap != null) {findMap.clear();}
@@ -80,7 +79,7 @@ public class ProductDeleteCheckServiceImp implements ProductDeleteCheckService {
             return "该货品在系统中正在使用";
         }
 
-        //采购模块
+        //4. 采购模块
         //采购计划明细
         objectList.clear();
         if (findMap != null) {findMap.clear();}
