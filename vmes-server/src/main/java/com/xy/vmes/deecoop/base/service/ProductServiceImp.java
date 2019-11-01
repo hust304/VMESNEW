@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.text.MessageFormat;
 import java.util.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -34,6 +35,9 @@ public class ProductServiceImp implements ProductService {
     private ProductMapper productMapper;
     @Autowired
     private ProductPropertyService productPropertyService;
+    @Autowired
+    private ProductDeleteCheckService productDeleteCheckService;
+
     @Autowired
     private ColumnService columnService;
 
@@ -930,10 +934,30 @@ public class ProductServiceImp implements ProductService {
             return model;
         }
 
-        this.deleteByIds(idsStr);
-
-        //3. 删除产品物料属性表(vmes_product_property)
+        //3. 货品id查询业务表
+        StringBuffer msgBuf = new StringBuffer();
         String[] id_arry = ids.split(",");
+        for (int i = 0; i < id_arry.length; i++) {
+            String msgTemp = "第 {0} 行：{1}不可删除！ ";
+
+            String id = id_arry[i];
+            String delMsgStr = productDeleteCheckService.checkDeleteProduct(id);
+            if (delMsgStr != null && delMsgStr.trim().length() > 0) {
+                String msgStr = MessageFormat.format(msgTemp,
+                        (i+1),
+                        delMsgStr);
+                msgBuf.append(msgStr);
+            }
+        }
+        if(msgBuf != null && msgBuf.toString().trim().length() > 0){
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgBuf.toString());
+            return model;
+        }
+
+        //3. 删除货品，货品属性表(vmes_product_property)
+        this.deleteByIds(idsStr);
+        //String[] id_arry = ids.split(",");
         for (int i = 0; i < id_arry.length; i++) {
             String id = id_arry[i];
             productPropertyService.deleteProdPropertyByProdId(id);

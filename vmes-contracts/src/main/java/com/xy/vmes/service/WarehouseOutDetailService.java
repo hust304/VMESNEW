@@ -133,6 +133,7 @@ public interface WarehouseOutDetailService {
 
     void addWarehouseOutDetail(WarehouseOut parentObj, WarehouseOutDetail detail) throws Exception;
 
+    List<WarehouseOutDetail> findWarehouseOutDetailList(PageData object);
     List<WarehouseOutDetail> findWarehouseOutDetailListByParentId(String parentId) throws Exception;
 
     boolean isAllExistStateByDetailList(String state, String ignoreState, List<WarehouseOutDetail> detailList) throws Exception;

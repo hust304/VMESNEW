@@ -196,6 +196,9 @@
             <if test="orderDtlId != null and orderDtlId != ''" >
                 and order_detai_id = #{orderDtlId}
             </if>
+            <if test="productId != null and productId != ''" >
+                and product_id = #{productId}
+            </if>
 
             <!--发货状态(0:待发货 1:已发货 -1:已取消)-->
             <if test="state != null and state != ''" >

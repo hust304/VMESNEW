@@ -741,6 +741,9 @@
                     <if test="mobile != null and mobile != ''" >
                         and mobile = #{mobile}
                     </if>
+                    <if test="political != null and political != ''" >
+                        and political = #{political}
+                    </if>
 
                     <!--queryStr 自定义sql查询语句-->
                     <if test="queryStr != null and queryStr!=''" >
