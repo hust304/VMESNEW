@@ -271,7 +271,23 @@
         from
         vmes_post post
         left join vmes_department department on department.id = post.dept_id
+
+
+        left join vmes_user cuser on post.cuser = cuser.id
+        left join vmes_department dept on dept.id = cuser.dept_id
+
         <where>
+
+
+
+            <if test='dataType != null and dataType == "0"'>
+                and cuser.id = #{currentUserId}
+            </if>
+            <if test='dataType != null and dataType == "1"'>
+                and dept.id_${deptLayer} = #{deptId}
+            </if>
+
+
             <if test="code != null and code != ''">
                 and post.code LIKE CONCAT(CONCAT(#{code}),'%')
             </if>

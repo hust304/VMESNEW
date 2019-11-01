@@ -190,14 +190,25 @@
             parent.remark remark,
             parent.isdisable isdisable
         from vmes_warehouse_check parent
-            left join vmes_user user on parent.make_id = user.id
 
             left join vmes_warehouse_check_detail detail on parent.id = detail.parent_id
             left join vmes_product prod on detail.product_id = prod.id
             left join vmes_product_unit produnit on produnit.product_id = prod.id and produnit.type = 1
             left join vmes_dictionary genre on prod.genre = genre.id
             left join vmes_dictionary unit on produnit.unit = unit.id
+
+            left join vmes_user user on parent.make_id = user.id
+            left join vmes_department dept on dept.id = user.dept_id
+
         <where>
+
+            <if test='dataType != null and dataType == "0"'>
+                and user.id = #{currentUserId}
+            </if>
+            <if test='dataType != null and dataType == "1"'>
+                and dept.id_${deptLayer} = #{deptId}
+            </if>
+
             <if test="code != null and code != ''" >
                 and parent.code = #{code}
             </if>

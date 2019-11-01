@@ -288,7 +288,18 @@
         from vmes_warehouse a
             left join vmes_warehouse b on a.warehouse_id = b.id
             left join vmes_dictionary c on b.entity_type = c.id
+
+            left join vmes_user cuser on a.cuser = cuser.id
+            left join vmes_department dept on dept.id = cuser.dept_id
         <where>
+
+            <if test='dataType != null and dataType == "0"'>
+                and cuser.id = #{currentUserId}
+            </if>
+            <if test='dataType != null and dataType == "1"'>
+                and dept.id_${deptLayer} = #{deptId}
+            </if>
+
             <if test="warehouseId != null and warehouseId != ''" >
                 and a.id=#{warehouseId}
             </if>
@@ -399,7 +410,21 @@
             group by product_id,company_id,warehouse_id
         ) warehouseProduct on warehouse.id = warehouseProduct.warehouse_id
             left join vmes_product product on warehouseProduct.product_id = product.id
+
+
+
+        left join vmes_user cuser on warehouse.cuser = cuser.id
+        left join vmes_department dept on dept.id = cuser.dept_id
         <where>
+
+
+            <if test='dataType != null and dataType == "0"'>
+                and cuser.id = #{currentUserId}
+            </if>
+            <if test='dataType != null and dataType == "1"'>
+                and dept.id_${deptLayer} = #{deptId}
+            </if>
+
             <if test="companyId != null and companyId != ''" >
                 and warehouse.company_id=#{companyId}
             </if>

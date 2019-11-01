@@ -382,7 +382,19 @@
                 ) customerPrice on produnit.unit = customerPrice.unit and prod.id = customerPrice.product_id
 
             </if>
+
+
+            left join vmes_user cuser on prod.cuser = cuser.id
+            left join vmes_department dept on dept.id = cuser.dept_id
+
         <where>
+
+            <if test='dataType != null and dataType == "0"'>
+                and cuser.id = #{currentUserId}
+            </if>
+            <if test='dataType != null and dataType == "1"'>
+                and dept.id_${deptLayer} = #{deptId}
+            </if>
 
             <!-- 过滤出库存产品 -->
             <if test="'true' == isNeedWarehouseProduct">

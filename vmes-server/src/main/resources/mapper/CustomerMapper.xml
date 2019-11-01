@@ -319,7 +319,19 @@
             left join vmes_dictionary genre on cust.genre = genre.id
             left join vmes_dictionary province on cust.province = province.id
             left join vmes_dictionary type on cust.type = type.id
+
+            left join vmes_user cuser on cust.cuser = cuser.id
+            left join vmes_department dept on dept.id = cuser.dept_id
         <where>
+
+            <if test='dataType != null and dataType == "0"'>
+                and cuser.id = #{currentUserId}
+            </if>
+            <if test='dataType != null and dataType == "1"'>
+                and dept.id_${deptLayer} = #{deptId}
+            </if>
+
+
             <if test="code != null and code != ''">
                 and cust.code LIKE CONCAT(CONCAT(#{code}),'%')
             </if>

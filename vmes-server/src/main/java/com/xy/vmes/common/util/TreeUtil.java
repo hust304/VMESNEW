@@ -119,20 +119,21 @@ public class TreeUtil {
         List<TreeEntity> varMapList = new ArrayList();
 
         Map<String,BigDecimal> productStockCountMap = new HashMap<String,BigDecimal>();
-        Map<String,BigDecimal> materielStockCountMap = new HashMap<String,BigDecimal>();
+
 
 
         Map<String,Map<String,BigDecimal>> cacheMap = new HashMap<String,Map<String,BigDecimal>>();
         cacheMap.put("productStockCountMap",productStockCountMap);
-        cacheMap.put("materielStockCountMap",materielStockCountMap);
+
 
         if(treeMapList!=null&&treeMapList.size()>0){
             for(int i=0;i<treeMapList.size();i++){
                 Map<String,BigDecimal> materielRatioMap = new HashMap<String,BigDecimal>();
                 Map<String,BigDecimal> semiFinishedRatioMap =  new HashMap<String,BigDecimal>();
+                Map<String,BigDecimal> materielStockCountMap = new HashMap<String,BigDecimal>();
                 cacheMap.put("materielRatioMap",materielRatioMap);
                 cacheMap.put("semiFinishedRatioMap",semiFinishedRatioMap);
-
+                cacheMap.put("materielStockCountMap",materielStockCountMap);
                 Map treeMap = treeMapList.get(i);
                 String nodeId = (String)treeMap.get("productId");
                 BigDecimal planCount = (BigDecimal)treeMap.get("planCount");
@@ -528,20 +529,29 @@ public class TreeUtil {
 
             productStockCountMap.put(nodeObject.getId(),pStockCount);
         }else{
-            BigDecimal productStockCount = productStockCountMap.get(nodeObject.getId());
-            if(productStockCount==null){
-                if(materielStockCountMap.get(nodeObject.getId())!=null){
-                    materielStockCountMap.put(nodeObject.getId(),materielStockCountMap.get(nodeObject.getId()).add(pSplitCount).add(pStockCount));
-                }else{
-                    materielStockCountMap.put(nodeObject.getId(),pSplitCount.add(pStockCount));
-                }
+//            BigDecimal productStockCount = productStockCountMap.get(nodeObject.getId());
+//            if(productStockCount==null){
+//                if(materielStockCountMap.get(nodeObject.getId())!=null){
+//                    materielStockCountMap.put(nodeObject.getId(),materielStockCountMap.get(nodeObject.getId()).add(pSplitCount).add(pStockCount));
+//                }else{
+//                    materielStockCountMap.put(nodeObject.getId(),pSplitCount.add(pStockCount));
+//                }
+//            }else{
+//                if(materielStockCountMap.get(nodeObject.getId())!=null){
+//                    materielStockCountMap.put(nodeObject.getId(),materielStockCountMap.get(nodeObject.getId()).add(pSplitCount));
+//                }else{
+//                    materielStockCountMap.put(nodeObject.getId(),pSplitCount);
+//                }
+//            }
+
+
+            if(materielStockCountMap.get(nodeObject.getId())!=null){
+                materielStockCountMap.put(nodeObject.getId(),materielStockCountMap.get(nodeObject.getId()).add(pSplitCount));
             }else{
-                if(materielStockCountMap.get(nodeObject.getId())!=null){
-                    materielStockCountMap.put(nodeObject.getId(),materielStockCountMap.get(nodeObject.getId()).add(pSplitCount));
-                }else{
-                    materielStockCountMap.put(nodeObject.getId(),pSplitCount);
-                }
+                materielStockCountMap.put(nodeObject.getId(),pSplitCount.add(pStockCount));
             }
+
+
             if(materielRatioMap.get(nodeObject.getId())!=null){
                 materielRatioMap.put(nodeObject.getId(),materielRatioMap.get(nodeObject.getId()).add(pUpRatio));
             }else{

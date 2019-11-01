@@ -239,7 +239,11 @@ public class UserLoginServiceImp implements UserLoginService {
         RedisMap.put("employ", YvanUtil.toJson(employ));
 
         //deptId部门id-postId岗位ID
-        dataMap.put("deptId", user.getDeptId());
+        Department dept = departmentService.selectById(user.getDeptId());
+
+        dataMap.put("deptId", dept.getId());
+        dataMap.put("deptName", dept.getName());
+        dataMap.put("layer", dept.getLayer());
         dataMap.put("postId", "");
 //
         //userRole用户角色(角色ID','分隔的字符串)
@@ -308,11 +312,13 @@ public class UserLoginServiceImp implements UserLoginService {
         //userButton按钮权限()
 
         //缓存业务数据
-        //(手机端)Redis缓存Key:   (uuid:用户ID:企业ID:deecoop:userLoginMap:app)
-        //(web端)Redis缓存Key:   (uuid:用户ID:企业ID:deecoop:userLoginMap:web)
+        //(手机端)Redis缓存Key:   (uuid:用户ID:企业ID:部门ID:部门层级:deecoop:userLoginMap:app)
+        //(web端)Redis缓存Key:   (uuid:用户ID:企业ID:部门ID:部门层级:deecoop:userLoginMap:web)
         String Redis_userLogin_Key = new_uuid + ":" +
                 userID + ":" +
                 companyID + ":" +
+                dept.getId() + ":" +
+                dept.getLayer() + ":" +
                 "deecoop" + ":" +
                 Common.REDIS_USERLOGINMAP + ":" +
                 loginType;

@@ -353,7 +353,21 @@
         from vmes_department a
             left join vmes_department b on a.pid = b.id
             left join vmes_dictionary c on a.dept_type = c.id
+
+        left join vmes_user cuser on a.cuser = cuser.id
+        left join vmes_department dept on dept.id = cuser.dept_id
+
         <where>
+
+
+            <if test='dataType != null and dataType == "0"'>
+                and cuser.id = #{currentUserId}
+            </if>
+            <if test='dataType != null and dataType == "1"'>
+                and dept.id_${deptLayer} = #{deptId}
+            </if>
+
+
             <if test="code != null and code != ''"><!-- 关键词检索 -->
                 and a.code LIKE CONCAT(CONCAT('%', #{code}),'%')
             </if>

@@ -377,7 +377,6 @@
         vmes_warehouse_move warehousemove
         left join vmes_dictionary type on type.id = warehousemove.type
         left join vmes_warehouse warehouse on warehouse.id = warehousemove.warehouse_id
-        left join vmes_user user on user.id = warehousemove.make_id
 
         left join vmes_warehouse_move_detail detail on detail.parent_id = warehousemove.id
         left join vmes_warehouse_product wp on wp.id = detail.warehouse_product_id
@@ -385,7 +384,19 @@
         left join vmes_product_unit produnit on produnit.product_id = prod.id and produnit.type = 1
         left join vmes_dictionary genre on prod.genre = genre.id
         left join vmes_dictionary unit on produnit.unit = unit.id
+
+        left join vmes_user user on user.id = warehousemove.make_id
+        left join vmes_department dept on dept.id = user.dept_id
         <where>
+
+            <if test='dataType != null and dataType == "0"'>
+                and user.id = #{currentUserId}
+            </if>
+            <if test='dataType != null and dataType == "1"'>
+                and dept.id_${deptLayer} = #{deptId}
+            </if>
+
+
             <if test="parentId != null and parentId != ''">
                 and warehousemove.id = #{parentId}
             </if>
