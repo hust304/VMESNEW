@@ -562,6 +562,16 @@
                 and warehouse.path_id LIKE '%56f5e83dcb9911e884ad00163e105f05%'
             </if>
 
+            <!--stockCountQuery 库存数量查询-->
+            <!--stockCountQuery:stockCountGreaterThanZero 库存数量大于零-->
+            <if test="'stockCountGreaterThanZero' == stockCountQuery">
+                and wp.stock_count > 0
+            </if>
+            <!--stockCountQuery 库存数量查询-->
+            <!--stockCountQuery:stockCountZero 库存数量等于零-->
+            <if test="'stockCountZero' == stockCountQuery">
+                and wp.stock_count = 0
+            </if>
 
             <if test="isSafeStock == 1"> <!-- 小于安全库存 -->
                 <![CDATA[ and prod.stock_count < prod.safety_count ]]>
