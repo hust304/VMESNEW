@@ -191,6 +191,38 @@ public class EquipmentServiceImp implements EquipmentService {
     }
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+    public Equipment findEquipment(PageData object) {
+        if (object == null) {return null;}
+
+        List<Equipment> objectList = this.findEquipmentList(object);
+        if (objectList != null && objectList.size() > 0) {
+            return objectList.get(0);
+        }
+
+        return null;
+    }
+    public Equipment findEquipmentById(String id) {
+        if (id == null || id.trim().length() == 0) {return null;}
+
+        PageData findMap = new PageData();
+        findMap.put("id", id);
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+
+        return this.findEquipment(findMap);
+    }
+    public List<Equipment> findEquipmentList(PageData object) {
+        if (object == null) {return null;}
+
+        List<Equipment> objectList = null;
+        try {
+            objectList = this.dataList(object);
+        } catch (Exception e) {
+            throw new RestException("", e.getMessage());
+        }
+
+        return objectList;
+    }
+
     public List<Map> getDataListPage(PageData pd) throws Exception {
         return equipmentMapper.getDataListPage(pd);
     }

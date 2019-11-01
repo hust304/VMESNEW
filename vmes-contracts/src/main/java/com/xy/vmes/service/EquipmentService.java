@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.entity.Equipment;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -110,6 +109,11 @@ public interface EquipmentService {
 
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+    Equipment findEquipment(PageData object);
+    Equipment findEquipmentById(String id);
+    List<Equipment> findEquipmentList(PageData object);
+
+
     List<Map> getDataListPage(PageData pd) throws Exception;
 
     ResultModel listPageEquipments(PageData pd, Pagination pg) throws Exception;
