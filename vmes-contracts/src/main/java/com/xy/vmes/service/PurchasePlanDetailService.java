@@ -3,6 +3,7 @@ package com.xy.vmes.service;
 
 import com.xy.vmes.entity.PurchasePlanDetail;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.entity.SaleOrderDetail;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
 import org.springframework.web.multipart.MultipartFile;
@@ -134,6 +135,13 @@ public interface PurchasePlanDetailService {
      */
     List<PurchasePlanDetail> findDataList(PageData pageData, Boolean isQueryAll) throws Exception;
 
+    PurchasePlanDetail findPurchasePlanDetail(PageData object) throws Exception;
+    PurchasePlanDetail findPurchasePlanDetailById(String id) throws Exception;
+
+    List<PurchasePlanDetail> findPurchasePlanDetailList(PageData object) throws Exception;
+    List<PurchasePlanDetail> findPurchasePlanDetailListByParentId(String parentId) throws Exception;
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**
     * 分页查询
     * @param pd    查询参数对象PageData

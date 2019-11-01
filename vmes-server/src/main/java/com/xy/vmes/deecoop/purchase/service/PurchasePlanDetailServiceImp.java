@@ -228,6 +228,36 @@ public class PurchasePlanDetailServiceImp implements PurchasePlanDetailService {
         return this.dataList(pageData);
     }
 
+    public PurchasePlanDetail findPurchasePlanDetail(PageData object) throws Exception {
+        List<PurchasePlanDetail> objectList = this.findPurchasePlanDetailList(object);
+        if (objectList != null && objectList.size() > 0) {
+            return objectList.get(0);
+        }
+
+        return null;
+    }
+    public PurchasePlanDetail findPurchasePlanDetailById(String id) throws Exception {
+        if (id == null || id.trim().length() == 0) {return null;}
+
+        PageData findMap = new PageData();
+        findMap.put("id", id);
+
+        return this.findPurchasePlanDetail(findMap);
+    }
+
+    public List<PurchasePlanDetail> findPurchasePlanDetailList(PageData object) throws Exception {
+        return this.findDataList(object, null);
+    }
+    public List<PurchasePlanDetail> findPurchasePlanDetailListByParentId(String parentId) throws Exception {
+        if (parentId == null || parentId.trim().length() == 0) {return null;}
+
+        PageData findMap = new PageData();
+        findMap.put("parentId", parentId);
+
+        return this.findPurchasePlanDetailList(findMap);
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**
     *
     * @param pd    查询参数对象PageData

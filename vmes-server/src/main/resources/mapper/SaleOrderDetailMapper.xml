@@ -190,6 +190,9 @@
             <if test="versionLockCount != null and versionLockCount != ''" >
                 and version_lock_count = ${versionLockCount}
             </if>
+            <if test="productId != null and productId != ''" >
+                and product_id = #{productId}
+            </if>
 
             <if test="companyId != null and companyId != ''" >
                 and parent_id in (
