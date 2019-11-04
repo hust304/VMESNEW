@@ -255,6 +255,9 @@ public class WarehouseOutBySimpleController {
         }
 
         //2.更新出库单表头
+        //Service (deptId) 该参数名称已经使用 -- 更改为(warehouseDeptId)
+        String warehouseDeptId = pageData.getString("warehouseDeptId");
+        warehouseOut.setDeptId(warehouseDeptId);
         warehouseOutService.update(warehouseOut);
 
         //3.删除出库单明细
