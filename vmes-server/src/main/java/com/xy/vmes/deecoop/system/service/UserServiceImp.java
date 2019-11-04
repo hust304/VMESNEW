@@ -525,7 +525,8 @@ public class UserServiceImp implements UserService {
         }
 
         //C. 部门
-        String deptId = pd.getString("deptId");
+        //Service (deptId) 该参数名称已经使用 -- 更改为(userDeptId)
+        String deptId = pd.getString("userDeptId");
         if(StringUtils.isEmpty(deptId)){
             model.putCode(3);
             model.putMsg("所属部门不能为空！");
