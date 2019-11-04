@@ -600,8 +600,7 @@
 
 
         left join vmes_user cuser on employee.cuser = cuser.id
-        left join vmes_department dept on dept.id = cuser.dept_id
-
+        left join vmes_department udept on cuser.dept_id = udept.id
         <where>
 
 
@@ -610,9 +609,8 @@
                 and cuser.id = #{currentUserId}
             </if>
             <if test='dataType != null and dataType == "1"'>
-                and dept.id_${deptLayer} = #{deptId}
+                and udept.id_${deptLayer} = #{deptId}
             </if>
-
 
 
             <if test="employeeId!= null and employeeId != ''">
