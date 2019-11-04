@@ -141,7 +141,7 @@ public interface ${objectName}Service {
     * @return      返回对象ResultModel
     * @throws Exception
     */
-    ResultModel listPage${objectName}s(PageData pd,Pagination pg) throws Exception;
+    ResultModel listPage${objectName}s(PageData pd) throws Exception;
 
     /**
     * 导出
@@ -149,7 +149,7 @@ public interface ${objectName}Service {
     * @param pg    分页参数对象Pagination
     * @throws Exception
     */
-    void exportExcel${objectName}s(PageData pd,Pagination pg) throws Exception;
+    void exportExcel${objectName}s(PageData pd) throws Exception;
 
     /**
     * 导入

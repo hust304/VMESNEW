@@ -239,9 +239,8 @@ public class ${objectName}ServiceImp implements ${objectName}Service {
     * @return      返回对象ResultModel
     * @throws Exception
     */
-    public ResultModel listPage${objectName}s(PageData pd,Pagination pg) throws Exception{
+    public ResultModel listPage${objectName}s(PageData pd) throws Exception{
         ResultModel model = new ResultModel();
-
         List<Column> columnList = columnService.findColumnList("${modelCode}");
         if (columnList == null || columnList.size() == 0) {
             model.putCode("1");
@@ -266,6 +265,7 @@ public class ${objectName}ServiceImp implements ${objectName}Service {
         //是否需要分页 true:需要分页 false:不需要分页
         Map result = new HashMap();
         String isNeedPage = pd.getString("isNeedPage");
+        Pagination pg = HttpUtils.parsePagination(pd);
         if ("false".equals(isNeedPage)) {
             pg = null;
         } else {
@@ -288,7 +288,7 @@ public class ${objectName}ServiceImp implements ${objectName}Service {
     * @param pg    分页参数对象Pagination
     * @throws Exception
     */
-    public void exportExcel${objectName}s(PageData pd,Pagination pg) throws Exception{
+    public void exportExcel${objectName}s(PageData pd) throws Exception{
 
         List<Column> columnList = columnService.findColumnList("${modelCode}");
         if (columnList == null || columnList.size() == 0) {
@@ -304,8 +304,7 @@ public class ${objectName}ServiceImp implements ${objectName}Service {
             queryStr = "id in (" + ids + ")";
         }
         pd.put("queryStr", queryStr);
-        pg.setSize(100000);
-        List<Map> dataList = this.getDataListPage(pd, pg);
+        List<Map> dataList = this.getDataListPage(pd, null);
 
         //查询数据转换成Excel导出数据
         List<LinkedHashMap<String, String>> dataMapList = ColumnUtil.modifyDataList(columnList, dataList);
