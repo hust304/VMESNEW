@@ -117,8 +117,7 @@ public class ${objectName}Controller {
         logger.info("################/${moduleName}/${objectNameLower}/listPage${objectName}s 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         PageData pd = HttpUtils.parsePageData();
-        Pagination pg = HttpUtils.parsePagination(pd);
-        ResultModel model = ${objectNameLower}Service.listPage${objectName}s(pd,pg);
+        ResultModel model = ${objectNameLower}Service.listPage${objectName}s(pd);
         Long endTime = System.currentTimeMillis();
         logger.info("################/${moduleName}/${objectNameLower}/listPage${objectName}s 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
@@ -135,8 +134,7 @@ public class ${objectName}Controller {
         logger.info("################/${moduleName}/${objectNameLower}/exportExcel${objectName}s 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         PageData pd = HttpUtils.parsePageData();
-        Pagination pg = HttpUtils.parsePagination(pd);
-        ${objectNameLower}Service.exportExcel${objectName}s(pd,pg);
+        ${objectNameLower}Service.exportExcel${objectName}s(pd);
         Long endTime = System.currentTimeMillis();
         logger.info("################/${moduleName}/${objectNameLower}/exportExcel${objectName}s 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
     }

@@ -14,20 +14,20 @@ public class CreateCodeUtil {
 
         PageData pd = new PageData();
         //模块编码
-        String modelCode = "purchaseRetreatDetail";
-        String objectName = "PurchaseRetreatDetail";//类名
-        String tableName = "vmes_purchase_retreat_detail";//表名
-        String title = "vmes_purchase_retreat_detail:退货明细";
-        String author = "陈刚";
+        String modelCode = "VmesFinanceBill";
+        String objectName = "VmesFinanceBill";//类名
+        String tableName = "vmes_finance_bill";//表名
+        String title = "vmes_finance_bill:应收应付单";
+        String author = "刘威";
         String rootName = "deecoop";
-        String moduleName = "purchase";
+        String moduleName = "finance";
         String projectName = rootName+"."+moduleName;//项目名
 
 
         pd.put("dbtype","mysql");//数据库类型
-        pd.put("username","vmes");//用户名
-        pd.put("password","owi123Q@WE!");//密码
-        pd.put("dbAddress","47.93.44.177");//数据库连接地址
+        pd.put("username","root");//用户名
+        pd.put("password","agrvqL$D");//密码
+        pd.put("dbAddress","47.92.1.209");//数据库连接地址
         pd.put("dbport","3306");//端口
         pd.put("databaseName","deecoop");//数据库名
         pd.put("table",tableName);//表名
