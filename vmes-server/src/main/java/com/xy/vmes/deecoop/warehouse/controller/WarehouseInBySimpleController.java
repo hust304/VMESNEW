@@ -242,6 +242,9 @@ public class WarehouseInBySimpleController {
         }
 
         //2.更新入库单表头
+        //Service (deptId) 该参数名称已经使用 -- 更改为(warehouseDeptId)
+        String warehouseDeptId = pageData.getString("warehouseDeptId");
+        warehouseIn.setDeptId(warehouseDeptId);
         warehouseInService.update(warehouseIn);
 
         //3.删除入库单明细
