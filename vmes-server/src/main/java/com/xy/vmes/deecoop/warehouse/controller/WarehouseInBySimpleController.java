@@ -122,6 +122,10 @@ public class WarehouseInBySimpleController {
         warehouseIn.setCode(code);
         //warehouseAttribute 仓库属性(warehouse:(简版,复杂版)仓库 spare:备件库)
         warehouseIn.setWarehouseAttribute("warehouse");
+
+        //Service (deptId) 该参数名称已经使用 -- 更改为(warehouseDeptId)
+        String warehouseDeptId = pageData.getString("warehouseDeptId");
+        warehouseIn.setDeptId(warehouseDeptId);
         warehouseInService.save(warehouseIn);
 
         //2.添加入库单明细
