@@ -383,6 +383,10 @@
             <if test="pid!= null and pid != '' and layer != null"><!-- 关键词检索 -->
                 and a.id_${layer} = #{pid}
             </if>
+            <if test="organizeType != null and organizeType != ''"><!-- 关键词检索 -->
+                and a.organize_type = #{organizeType}
+            </if>
+
             <if test="deptTypeName != null and deptTypeName != ''" >
                 and c.name  LIKE CONCAT(CONCAT('%', #{deptTypeName}),'%')
             </if>

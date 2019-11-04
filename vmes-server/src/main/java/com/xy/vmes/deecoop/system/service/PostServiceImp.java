@@ -566,8 +566,10 @@ public class PostServiceImp implements PostService {
         if(StringUtils.isEmpty(isdisable)){
             pd.put("isdisable","1");
         }
-        if (pd.get("deptId") != null && pd.get("deptId").toString().trim().length() > 0) {
-            String deptId = ((String)pd.get("deptId")).trim();
+
+        //Service (deptId)参数已经使用 -- 更改为(userDeptId)
+        if (pd.get("userDeptId") != null && pd.get("userDeptId").toString().trim().length() > 0) {
+            String deptId = ((String)pd.get("userDeptId")).trim();
             String queryIdStr = departmentService.findDeptidById(deptId, null, "department.");
             pd.put("queryStr", queryIdStr);
         }
