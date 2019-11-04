@@ -206,6 +206,9 @@
                 </choose>
             </if>
 
+            <if test="supplierId != null and supplierId != ''" >
+                and supplier_id = #{supplierId}
+            </if>
 
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >

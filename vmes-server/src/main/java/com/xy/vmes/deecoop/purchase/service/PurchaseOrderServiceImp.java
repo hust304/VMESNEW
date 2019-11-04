@@ -251,6 +251,27 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService {
         return this.dataList(pageData);
     }
 
+    public PurchaseOrder findPurchaseOrder(PageData object) throws Exception {
+        List<PurchaseOrder> objectList = this.findPurchaseOrderList(object);
+        if (objectList != null && objectList.size() > 0) {
+            return objectList.get(0);
+        }
+
+        return null;
+    }
+    public PurchaseOrder findPurchaseOrderById(String id) throws Exception {
+        if (id == null || id.trim().length() == 0) {return null;}
+
+        PageData findMap = new PageData();
+        findMap.put("id", id);
+
+        return this.findPurchaseOrder(findMap);
+    }
+
+    public List<PurchaseOrder> findPurchaseOrderList(PageData object) throws Exception {
+        return this.findDataList(object, null);
+    }
+
     /**
     *
     * @param pd    查询参数对象PageData

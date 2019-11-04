@@ -128,6 +128,8 @@ public interface WarehouseOutService {
     String checkColumn(WarehouseOut object);
 
     WarehouseOut findWarehouseOutById(String id)throws Exception;
+    WarehouseOut findWarehouseOut(PageData object);
+    List<WarehouseOut> findWarehouseOutList(PageData object);
 
     void updateState(String id) throws Exception;
     void updateStateByOut(String state, String ids) throws Exception;

@@ -2,13 +2,11 @@ package com.xy.vmes.deecoop.base.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
+import com.xy.vmes.entity.*;
 import com.yvan.common.util.Common;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.common.util.TreeUtil;
 import com.xy.vmes.deecoop.base.dao.CustomerMapper;
-import com.xy.vmes.entity.Column;
-import com.xy.vmes.entity.Customer;
-import com.xy.vmes.entity.TreeEntity;
 import com.xy.vmes.service.*;
 import com.yvan.*;
 import com.yvan.platform.RestException;
@@ -17,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.MessageFormat;
 import java.util.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -50,6 +49,15 @@ public class CustomerServiceImp implements CustomerService {
     @Autowired
     private CustomerExcelService customerExcelService;
 
+
+    @Autowired
+    private WarehouseOutService warehouseOutService;
+    @Autowired
+    private WarehouseInService warehouseInService;
+    @Autowired
+    private SaleOrderService saleOrderService;
+    @Autowired
+    private PurchaseOrderService purchaseOrderService;
 
     /**
      * 创建人：陈刚 自动创建，禁止修改
@@ -695,16 +703,70 @@ public class CustomerServiceImp implements CustomerService {
             return model;
         }
 
-        //2. 删除客户供应商
-        ids = StringUtil.stringTrimSpace(ids);
-        customerService.deleteByIds(ids.split(","));
-
-        //3. 删除客户供应商地址
+        StringBuffer msgBuf = new StringBuffer();
         String[] id_arry = ids.split(",");
         for (int i = 0; i < id_arry.length; i++) {
             String id = id_arry[i];
-            customeAddressService.deleteCustAddrByCustId(id);
+            String msgTemp = "第 {0} 行 该数据在系统中已经使用不可删除禁用！";
+
+            //入库单
+            PageData findMap = new PageData();
+            findMap.put("deptId", id);
+            findMap.put("mapSize", Integer.valueOf(findMap.size()));
+            List objectList = warehouseInService.findWarehouseInList(findMap);
+            if (objectList != null && objectList.size() > 0) {
+                String msgStr = MessageFormat.format(msgTemp, (i+1));
+                msgBuf.append(msgStr);
+                continue;
+            }
+
+            //出库单
+            findMap.clear();
+            findMap.put("deptId", id);
+            findMap.put("mapSize", Integer.valueOf(findMap.size()));
+            objectList = warehouseOutService.findWarehouseOutList(findMap);
+            if (objectList != null && objectList.size() > 0) {
+                String msgStr = MessageFormat.format(msgTemp, (i+1));
+                msgBuf.append(msgStr);
+                continue;
+            }
+
+            //订单表
+            findMap.clear();
+            findMap.put("customerId", id);
+            objectList = saleOrderService.findSaleOrderList(findMap);
+            if (objectList != null && objectList.size() > 0) {
+                String msgStr = MessageFormat.format(msgTemp, (i+1));
+                msgBuf.append(msgStr);
+                continue;
+            }
+
+            //采购表
+            findMap.clear();
+            findMap.put("supplierId", id);
+            objectList = purchaseOrderService.findPurchaseOrderList(findMap);
+            if (objectList != null && objectList.size() > 0) {
+                String msgStr = MessageFormat.format(msgTemp, (i+1));
+                msgBuf.append(msgStr);
+                continue;
+            }
         }
+        if (msgBuf.toString().trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgBuf.toString().trim());
+            return model;
+        }
+
+//        //2. 删除客户供应商
+//        ids = StringUtil.stringTrimSpace(ids);
+//        customerService.deleteByIds(ids.split(","));
+//
+//        //3. 删除客户供应商地址
+//        //String[] id_arry = ids.split(",");
+//        for (int i = 0; i < id_arry.length; i++) {
+//            String id = id_arry[i];
+//            customeAddressService.deleteCustAddrByCustId(id);
+//        }
         return model;
     }
 

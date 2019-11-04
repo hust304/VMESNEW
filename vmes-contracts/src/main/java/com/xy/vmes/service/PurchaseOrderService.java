@@ -134,6 +134,12 @@ public interface PurchaseOrderService {
      */
     List<PurchaseOrder> findDataList(PageData pageData, Boolean isQueryAll) throws Exception;
 
+    PurchaseOrder findPurchaseOrder(PageData object) throws Exception;
+    PurchaseOrder findPurchaseOrderById(String id) throws Exception;
+
+    List<PurchaseOrder> findPurchaseOrderList(PageData object) throws Exception;
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     /**
     * 分页查询
     * @param pd    查询参数对象PageData

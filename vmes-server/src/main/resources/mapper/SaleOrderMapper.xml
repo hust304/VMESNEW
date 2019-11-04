@@ -150,6 +150,9 @@
             <if test="orderNumber != null and orderNumber != ''" >
                 and order_number = #{orderNumber}
             </if>
+            <if test="customerId != null and customerId != ''" >
+                and customer_id = #{customerId}
+            </if>
 
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >
