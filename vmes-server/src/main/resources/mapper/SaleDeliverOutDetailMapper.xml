@@ -20,7 +20,8 @@
 
             orderDetail.id orderDtlId,
             orderDetail.parent_id orderId,
-            orderDetail.lock_count lockCount
+            orderDetail.lock_count lockCount,
+            orderDetail.version_lock_count versionLockCount
         from vmes_sale_deliver_detail deliverDetail
             left join vmes_warehouse_out_detail outDetail on deliverDetail.out_detail_id = outDetail.id
             left join vmes_sale_order_detail orderDetail on deliverDetail.order_detai_id = orderDetail.id

@@ -2,6 +2,7 @@ package com.xy.vmes.deecoop.warehouse.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
+import com.xy.vmes.common.util.rabbitmq.sender.ProductStockcountLockSender;
 import com.xy.vmes.deecoop.warehouse.dao.WarehouseOutExecuteMapper;
 import com.xy.vmes.entity.*;
 import com.xy.vmes.exception.ApplicationException;
@@ -48,6 +49,13 @@ public class WarehouseOutExecuteServiceImp implements WarehouseOutExecuteService
 
     @Autowired
     SaleDeliverOutDetailService saleDeliverOutDetailService;
+    @Autowired SaleOrderDetailService saleOrderDetailService;
+
+    @Autowired
+    private SaleLockDateService saleLockDateService;
+    //消息队列
+    @Autowired
+    private ProductStockcountLockSender sirstSender;
 
     @Autowired
     private ColumnService columnService;
@@ -664,16 +672,22 @@ public class WarehouseOutExecuteServiceImp implements WarehouseOutExecuteService
         }
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //遍历数据集-获取(建议取货数量) 大于零的(建议取货数量)
+        //1.遍历数据集-获取(建议取货数量) 大于零的(建议取货数量)
+        //2.遍历数据集-获取 出库单id 出库执行数量
         List<Map<String, Object>> outExecuteMapList = new ArrayList();
+        List<Map<String, Object>> outDtlExecuteMapList = new ArrayList();
 
         //第一层: 数据遍历
         for (Map<String, Object> firstMap : mapList) {
+            String outDtlId = (String)firstMap.get("id");
 
             //第二层: 数据遍历 -- 大于零的(建议取货数量)
             List<Map<String, Object>> outExecuteChildrenList = new ArrayList();
             if(firstMap.get("children") != null && ((List)firstMap.get("children")).size() > 0) {
                 List<Map<String, Object>> secondList = (List)firstMap.get("children");
+
+                //累加器:countSum -- 获取(建议取货数量 suggestCount)总和
+                BigDecimal countSum = BigDecimal.valueOf(0D);
                 for (Map<String, Object> secondMap : secondList) {
                     //建议取货数量 suggestCount
                     BigDecimal suggestCount = BigDecimal.valueOf(0D);
@@ -688,13 +702,75 @@ public class WarehouseOutExecuteServiceImp implements WarehouseOutExecuteService
 
                     if (suggestCount.doubleValue() > 0) {
                         outExecuteChildrenList.add(secondMap);
+                        countSum = BigDecimal.valueOf(countSum.doubleValue() + suggestCount.doubleValue());
                     }
                 }
+
+                //设置 出库单id 出库执行数量
+                Map<String, Object> outDtlExecuteMap = new HashMap<>();
+                outDtlExecuteMap.put("outDtlId", outDtlId);
+                //四舍五入到2位小数
+                countSum = countSum.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                outDtlExecuteMap.put("executeCount", countSum);
+                outDtlExecuteMapList.add(outDtlExecuteMap);
             }
 
             if (outExecuteChildrenList.size() > 0) {
                 firstMap.put("children", outExecuteChildrenList);
                 outExecuteMapList.add(firstMap);
+            }
+        }
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //遍历数据集-更改销售订单明细锁定库存数量
+        if(outDtlExecuteMapList != null && outDtlExecuteMapList.size() > 0) {
+            for (Map<String, Object> outDtlExecuteMap : outDtlExecuteMapList) {
+                String outDtlId = (String)outDtlExecuteMap.get("outDtlId");
+                BigDecimal executeCount = (BigDecimal)outDtlExecuteMap.get("executeCount");
+
+                Map<String, Object> objectMap = saleDeliverOutDetailService.findOutDetailByOrderDetail(outDtlId, null);
+                String orderDtlId = (String)objectMap.get("orderDtlId");
+                BigDecimal lockCount = (BigDecimal)objectMap.get("lockCount");
+                Integer versionLockCount = (Integer)objectMap.get("versionLockCount");
+
+                BigDecimal newLockCount = BigDecimal.valueOf(0D);
+                if (lockCount.doubleValue() > executeCount.doubleValue()) {
+                    newLockCount = BigDecimal.valueOf(lockCount.doubleValue() - executeCount.doubleValue());
+                }
+
+                SaleOrderDetail editOrderDetail = new SaleOrderDetail();
+                editOrderDetail.setId(orderDtlId);
+                editOrderDetail.setLockCount(newLockCount);
+                //是否锁定仓库(0:未锁定 1:已锁定)
+                if (newLockCount.doubleValue() == 0) {
+                    editOrderDetail.setIsLockWarehouse("0");
+                } else {
+                    editOrderDetail.setIsLockWarehouse("1");
+                }
+                //锁定开始时间
+                editOrderDetail.setLockDate(new Date());
+                if (versionLockCount != null) {
+                    versionLockCount = Integer.valueOf(versionLockCount.intValue() + 1);
+                }
+                editOrderDetail.setVersionLockCount(versionLockCount);
+                saleOrderDetailService.update(editOrderDetail);
+
+                //重新发送锁库消息
+                //获取企业id对应的锁定库存时长(毫秒)
+                String companyId = pageData.getString("currentCompanyId");
+                Long lockTime = saleLockDateService.findLockDateMillisecondByCompanyId(companyId);
+                if (lockTime != null && orderDtlId != null && versionLockCount != null) {
+                    //信息队列信息:(订单明细id,锁定库存版本号)
+                    String orderDtl_activeMQ_temp = "{0},{1}";
+                    String orderDtl_activeMQ_msg = MessageFormat.format(orderDtl_activeMQ_temp,
+                            orderDtlId,
+                            versionLockCount);
+
+                    //将订单明细id作为消息体放入消息队列中，消息时长(毫秒)-根据企业id查询(vmes_sale_lock_date)
+                    if (lockTime != null && lockTime.longValue() > 0) {
+                        sirstSender.sendMsg(orderDtl_activeMQ_msg, lockTime.intValue());
+                    }
+                }
             }
         }
 
