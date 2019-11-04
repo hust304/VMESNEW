@@ -118,6 +118,9 @@ public class WarehouseOutBySimpleController {
         }
         warehouseOut.setWarehouseAttribute(warehouseAttribute);
 
+        //Service (deptId) 该参数名称已经使用 -- 更改为(warehouseDeptId)
+        String warehouseDeptId = pageData.getString("warehouseDeptId");
+        warehouseOut.setDeptId(warehouseDeptId);
         warehouseOutService.save(warehouseOut);
 
         //2.添加出库单明细
