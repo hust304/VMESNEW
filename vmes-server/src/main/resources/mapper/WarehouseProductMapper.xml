@@ -459,6 +459,14 @@
             <if test="productId != null and productId != ''">
                 and wp.product_id = #{productId}
             </if>
+            <if test="productNotIn != null and productNotIn != ''">
+                and wp.product_id not in (${productNotIn})
+            </if>
+            <if test="productIn != null and productIn != ''">
+                and wp.product_id in (${productIn})
+            </if>
+
+
             <if test="currentCompanyId != null and currentCompanyId != ''">
                 and wp.company_id = #{currentCompanyId}
             </if>
