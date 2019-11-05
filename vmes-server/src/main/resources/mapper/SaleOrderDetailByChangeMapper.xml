@@ -39,23 +39,28 @@
 
             orderDtl.is_need_produce isNeedProduce,
             orderDtl.lock_count lockCount,
-            round(ifnull(orderDtl.need_deliver_count, 0), 2) needDeliverCount,
-
             orderDtl.lock_date lockDate,
             orderDtl.plan_detail_id planDetailId,
-
             orderDtl.cuser cuser,
+
             orderDtl.cdate cdate,
             orderDtl.uuser uuser,
             orderDtl.udate udate,
             orderDtl.remark remark,
-
             orderDtl.isdisable isdisable,
+
+            round(ifnull(orderDtl.need_deliver_count, 0), 2) needDeliverCount,
             orderDtl.version_lock_count versionLockCount,
 
             saleOrder.price_type priceType,
             <!--货品表-->
-            product.code productCode,
+            product.code sysProductCode,
+            product.source_code custProductCode,
+            CASE
+              WHEN product.source_code is null THEN product.code
+              WHEN product.source_code is not null THEN product.source_code
+            ELSE null
+            END productCode,
             product.name productName,
             product.spec productSpec,
             product.genre productGenre,
@@ -63,19 +68,15 @@
             round(ifnull(product.stock_count, 0), 2) stockCount,
             orderUnit.name orderUnitName,
             genre.name productGenreName,
-            round(ifnull(prodUnitPrice.product_price, 0), 2) prod_productPrice,
             prodUnitPrice.np_formula n2pFormula,
             prodUnitPrice.pn_formula p2nFormula,
 
-            CASE
-            WHEN orderDtl.order_count is null or orderDtl.order_count = 0 THEN '0'
-            ELSE round((ifnull(orderDtl.product_sum, 0) / orderDtl.order_count), 2)
-            END price,
+            round(ifnull(deliverDtl.order_count, 0), 2) deliverCount,
+            round(ifnull(endDeliverDtl.order_count, 0), 2) endDeliverCount,
 
-            round(ifnull(deliverDtl.order_count,0)-ifnull(retreatDtl.count, 0),2) endDeliverCount,
-            '' newOrderCount,
-            '' newNeedDeliverCount,
-            '' newProductSum
+            round(ifnull(orderDtl.order_count, 0),2) newOrderCount,
+            round(ifnull(orderDtl.product_price, 0), 2) newProductPrice,
+            orderDtl.deliver_date newDeliverDate
 
         from vmes_sale_order_detail orderDtl
             left join vmes_sale_order saleOrder on orderDtl.parent_id = saleOrder.id
@@ -83,12 +84,21 @@
             left join vmes_dictionary orderUnit on orderDtl.order_unit = orderUnit.id
             left join vmes_dictionary genre on product.genre = genre.id
             left join vmes_product_unit prodUnitPrice on (orderDtl.product_id = prodUnitPrice.product_id and orderDtl.order_unit = prodUnitPrice.unit and prodUnitPrice.isdisable = '1')
+
+            <!--发货单数量-->
+            left join (
+                select order_detai_id, sum(order_count) order_count
+                from vmes_sale_deliver_detail
+                where <![CDATA[ state <> '-1' ]]>
+                group by order_detai_id
+            ) deliverDtl on orderDtl.id = deliverDtl.order_detai_id
+            <!--发货完成数量-->
             left join (
                 select order_detai_id, sum(order_count) order_count
                 from vmes_sale_deliver_detail
                 where state = '1'
                 group by order_detai_id
-            ) deliverDtl on orderDtl.id = deliverDtl.order_detai_id
+            ) endDeliverDtl on orderDtl.id = endDeliverDtl.order_detai_id
             left join (
                 select order_detail_id, sum(order_count) count
                 from vmes_sale_retreat_detail
@@ -118,53 +128,55 @@
         (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'id', 'id', 0, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'parentId', '订单id', 1, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'state', '明细状态id', 2, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'stateName', '状态', 2, '1', '0', '1', '0', '2018-12-6 09:25:40', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'fileUrl', '附件地址', 3, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
-        (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'deliverDate', '约定交期', 4, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'deliverDate', '(变更前)约定交期', 4, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
 
-        (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'orderCount', '订购数量', 5, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'orderCount', '(变更前)订购数量', 5, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'orderUnit', '单位id', 6, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
-        (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'orderUnitName', '单位', 6, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'productCount', '货品数量(计量数量)', 7, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'productUnit', '计量单位id', 8, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'priceCount', '货品数量(计价数量)', 9, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
 
         (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'priceUnit', '计价单位id', 10, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'productId', '货品id', 11, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
-        (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'productPrice', '单价', 12, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
-        (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'price', '单价', 12, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'productPrice', '(变更前)单价', 12, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'productSum', '金额', 13, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'isLockWarehouse', '是否锁定仓库(0:无锁定 1:锁定)', 14, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
 
-        (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'isneedproduce', '是否需要生产(0:无需 1:需要 库存不够)', 15, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'isNeedproduce', '是否需要生产(0:无需 1:需要 库存不够)', 15, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'lockCount', '锁定货品数量(计量单位)', 16, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
-        (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'needDeliverCount', '可发货数量', 17, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
-        (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'lockDate', '锁定开始时间', 18, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
-        (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'planDetailId', '生产计划明细ID', 19, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'lockDate', '锁定开始时间', 17, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'planDetailId', '生产计划明细ID', 18, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'cuser', '创建用户id', 19, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
 
-        (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'cuser', '创建用户id', 20, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
-        (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'cdate', '创建时间', 21, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
-        (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'uuser', '修改用户id', 22, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
-        (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'udate', '修改时间', 23, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
-        (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'remark', '订单明细备注', 24, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'cdate', '创建时间', 20, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'uuser', '修改用户id', 21, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'udate', '修改时间', 22, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'remark', '订单明细备注', 23, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'isdisable', '是否启用(0:已禁用 1:启用)', 24, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
 
-        (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'isdisable', '是否启用(0:已禁用 1:启用)', 25, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
-        (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'productCode', '货品编码', 26, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
-        (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'productName', '货品名称', 27, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
-        (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'productSpec', '规格型号', 28, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
-        (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'productGenre', '货品属性id', 29, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
-        (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'productGenreName', '货品属性', 29, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
-        (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'productType', '货品类型id', 30, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
-        (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'endDeliverCount', '发货完成数量', 31, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
-        (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'newOrderCount', '变更订购数量', 32, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
-        (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'newNeedDeliverCount', '变更锁定货品数量', 32, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
-        (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'stateName', '状态', 2, '1', '0', '1', '0', '2018-12-6 09:25:40', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'needDeliverCount', '可发货数量', 25, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'versionLockCount', 'versionLockCount', 26, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
 
-        (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'p2nFormula', 'p2nFormula', 34, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
-        (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'n2pFormula', 'n2pFormula', 35, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
-        (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'stockCount', '库存数量', 36, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
-        (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'newProductSum', '金额', 37, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'productCode', '货品编码', 27, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'productName', '货品名称', 28, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'productSpec', '规格型号', 29, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'productGenre', '货品属性id', 30, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'productType', '货品类型id', 31, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
 
-        (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'versionLockCount', 'versionLockCount', 40, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin')
+        (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'stockCount', '库存数量', 32, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'orderUnitName', '单位', 33, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'productGenreName', '货品属性', 34, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'p2nFormula', 'p2nFormula', 35, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'n2pFormula', 'n2pFormula', 36, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
+
+        (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'deliverCount', '发货单数量', 37, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'endDeliverCount', '发货完成数量', 38, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
+
+        (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'newOrderCount', '订购数量', 39, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'newProductPrice', '单价', 40, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'newDeliverDate', '约定交期', 41, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
     </insert>
 
 
