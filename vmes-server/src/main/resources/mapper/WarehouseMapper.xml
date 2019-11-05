@@ -297,7 +297,7 @@
                 and cuser.id = #{currentUserId}
             </if>
             <if test='dataType != null and dataType == "1"'>
-                and dept.id_${deptLayer} = #{deptId}
+                and dept.id_${deptLayer} = #{deptRId}
             </if>
 
             <if test="warehouseId != null and warehouseId != ''" >
@@ -422,7 +422,7 @@
                 and cuser.id = #{currentUserId}
             </if>
             <if test='dataType != null and dataType == "1"'>
-                and dept.id_${deptLayer} = #{deptId}
+                and dept.id_${deptLayer} = #{deptRId}
             </if>
 
             <if test="companyId != null and companyId != ''" >

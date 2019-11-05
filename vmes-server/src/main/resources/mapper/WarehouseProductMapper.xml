@@ -327,7 +327,7 @@
                 and cuser.id = #{currentUserId}
             </if>
             <if test='dataType != null and dataType == "1"'>
-                and dept.id_${deptLayer} = #{deptId}
+                and dept.id_${deptLayer} = #{deptRId}
             </if>
 
             <!--queryStr 自定义sql查询语句-->
@@ -373,7 +373,7 @@
                 and cuser.id = #{currentUserId}
             </if>
             <if test='dataType != null and dataType == "1"'>
-                and dept.id_${deptLayer} = #{deptId}
+                and dept.id_${deptLayer} = #{deptRId}
             </if>
 
             <if test="productId != null and productId != ''">
@@ -444,7 +444,7 @@
                 and cuser.id = #{currentUserId}
             </if>
             <if test='dataType != null and dataType == "1"'>
-                and dept.id_${deptLayer} = #{deptId}
+                and dept.id_${deptLayer} = #{deptRId}
             </if>
 
             <!--queryStr 自定义sql查询语句-->
@@ -566,7 +566,7 @@
                 and cuser.id = #{currentUserId}
             </if>
             <if test='dataType != null and dataType == "1"'>
-                and dept.id_${deptLayer} = #{deptId}
+                and dept.id_${deptLayer} = #{deptRId}
             </if>
 
 
@@ -695,7 +695,7 @@
                 and cuser.id = #{currentUserId}
             </if>
             <if test='dataType != null and dataType == "1"'>
-                and dept.id_${deptLayer} = #{deptId}
+                and dept.id_${deptLayer} = #{deptRId}
             </if>
 
             <!--queryStr 自定义sql查询语句-->
@@ -799,7 +799,7 @@
                 and cuser.id = #{currentUserId}
             </if>
             <if test='dataType != null and dataType == "1"'>
-                and dept.id_${deptLayer} = #{deptId}
+                and dept.id_${deptLayer} = #{deptRId}
             </if>
 
             <!--queryStr 自定义sql查询语句-->
@@ -891,7 +891,7 @@
                 and cuser.id = #{currentUserId}
             </if>
             <if test='dataType != null and dataType == "1"'>
-                and dept.id_${deptLayer} = #{deptId}
+                and dept.id_${deptLayer} = #{deptRId}
             </if>
 
             <!--queryStr 自定义sql查询语句-->
@@ -1141,7 +1141,7 @@
                 and cuser.id = #{currentUserId}
             </if>
             <if test='dataType != null and dataType == "1"'>
-                and dept.id_${deptLayer} = #{deptId}
+                and dept.id_${deptLayer} = #{deptRId}
             </if>
 
             <if test="companyId != null and companyId != ''" >
@@ -1178,7 +1178,7 @@
                             and cuser.id = #{currentUserId}
                         </if>
                         <if test='dataType != null and dataType == "1"'>
-                            and dept.id_${deptLayer} = #{deptId}
+                            and dept.id_${deptLayer} = #{deptRId}
                         </if>
                         <if test="warehouseId != null and warehouseId != ''" >
                             and warehouse.path_id LIKE CONCAT(CONCAT('%', #{warehouseId}),'%')
