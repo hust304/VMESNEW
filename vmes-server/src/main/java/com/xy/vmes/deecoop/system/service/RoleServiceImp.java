@@ -620,26 +620,20 @@ public class RoleServiceImp implements RoleService {
 
     @Override
     public ResultModel saveRoleUsers(PageData pageData) throws Exception {
-
         ResultModel model = new ResultModel();
-        //1. 非空判断
-        if (pageData == null || pageData.size() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("参数错误：用户登录参数(pageData)为空！");
-            return model;
-        }
 
+        //1. 非空判断
         String roleId = (String)pageData.get("roleId");
         if (roleId == null || roleId.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("roleId为空或空字符串！");
             return model;
         }
-
-//        //2. 删除角色用户(当前角色)
-//        userRoleService.deleteUserRoleByRoleId(roleId);
-
         String userIds = (String)pageData.get("userIds");
+
+        //2. 删除角色用户(当前角色)
+        userRoleService.deleteUserRoleByRoleId(roleId);
+
         //3. 添加角色用户(当前角色)
         userRoleService.addUserRoleByUserIds(roleId, userIds, (String)pageData.get("cuser"));
 
@@ -905,8 +899,8 @@ public class RoleServiceImp implements RoleService {
         //2. 查询数据List
         PageData findMap = new PageData();
 
-
-        String deptId = (String)pageData.get("deptId");
+        //Service (deptId)参数已经使用 -- 更改为(userDeptId)
+        String deptId = (String)pageData.get("userDeptId");
         if (deptId != null && deptId.trim().length() > 0) {
             String queryIdStr = departmentService.findDeptidById(deptId, null, "dept.");
             findMap.put("queryStr", queryIdStr);
