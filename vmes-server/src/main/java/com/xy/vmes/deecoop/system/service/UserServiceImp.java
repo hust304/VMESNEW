@@ -540,6 +540,7 @@ public class UserServiceImp implements UserService {
             companyId = department.getId0();
             user.setCompanyId(companyId);
         }
+        user.setDeptId(deptId);
 
         //设置用户编码
         String userCode = user.getUserCode();
