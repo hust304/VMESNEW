@@ -757,16 +757,16 @@ public class CustomerServiceImp implements CustomerService {
             return model;
         }
 
-//        //2. 删除客户供应商
-//        ids = StringUtil.stringTrimSpace(ids);
-//        customerService.deleteByIds(ids.split(","));
-//
-//        //3. 删除客户供应商地址
-//        //String[] id_arry = ids.split(",");
-//        for (int i = 0; i < id_arry.length; i++) {
-//            String id = id_arry[i];
-//            customeAddressService.deleteCustAddrByCustId(id);
-//        }
+        //2. 删除客户供应商
+        ids = StringUtil.stringTrimSpace(ids);
+        customerService.deleteByIds(ids.split(","));
+
+        //3. 删除客户供应商地址
+        //String[] id_arry = ids.split(",");
+        for (int i = 0; i < id_arry.length; i++) {
+            String id = id_arry[i];
+            customeAddressService.deleteCustAddrByCustId(id);
+        }
         return model;
     }
 
