@@ -61,7 +61,7 @@ public class PageData extends HashMap implements Map {
                 returnMap.put("uuser", userId);
                 returnMap.put("currentUserId", userId);
                 returnMap.put("currentCompanyId", companyId);
-                returnMap.put("deptId",deptId);
+                returnMap.put("deptRId",deptId);
                 returnMap.put("deptLayer",deptLayer);
                 returnMap.put("sessionID", sessionID);
             }
