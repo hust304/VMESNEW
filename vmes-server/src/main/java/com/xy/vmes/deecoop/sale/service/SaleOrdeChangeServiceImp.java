@@ -198,6 +198,7 @@ public class SaleOrdeChangeServiceImp implements SaleOrdeChangeService {
         return this.findDataList(object, null);
     }
 
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**
     *
     * @param pd    查询参数对象PageData
@@ -288,7 +289,7 @@ public class SaleOrdeChangeServiceImp implements SaleOrdeChangeService {
         addOrdeChange.setOrderId(orderId);
         //状态(0:审核中 1:完成:审核通过 2:取消:审核不通过)
         addOrdeChange.setState("0");
-                addOrdeChange.setReceiptTypeBefore(receiptTypeBefore);
+        addOrdeChange.setReceiptTypeBefore(receiptTypeBefore);
         addOrdeChange.setReceiptTypeAfter(receiptTypeAfter);
         this.save(addOrdeChange);
 
@@ -368,7 +369,7 @@ public class SaleOrdeChangeServiceImp implements SaleOrdeChangeService {
 
                 //约定交期(变更前) deliverDateBefore
                 Date deliverDateBefore = sysDate;
-                String deliverDateBeforeStr = mapObject.get("productPriceAfter");
+                String deliverDateBeforeStr = mapObject.get("deliverDateBefore");
                 if (deliverDateBeforeStr != null && deliverDateBeforeStr.trim().length() > 0) {
                     Date dateTemp = DateFormat.dateString2Date(deliverDateBeforeStr, DateFormat.DEFAULT_DATE_FORMAT);
                     if (dateTemp != null) {
