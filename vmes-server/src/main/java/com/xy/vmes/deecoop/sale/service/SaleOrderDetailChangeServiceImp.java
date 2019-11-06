@@ -205,7 +205,7 @@ public class SaleOrderDetailChangeServiceImp implements SaleOrderDetailChangeSer
     */
     public ResultModel listPageSaleOrderDetailChange(PageData pd) throws Exception{
         ResultModel model = new ResultModel();
-        List<Column> columnList = columnService.findColumnList("saleOrdeDtlChange");
+        List<Column> columnList = columnService.findColumnList("saleOrderDetailChange");
         if (columnList == null || columnList.size() == 0) {
             model.putCode("1");
             model.putMsg("数据库没有生成TabCol，请联系管理员！");

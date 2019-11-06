@@ -209,7 +209,7 @@ public class SaleOrderChangeServiceImp implements SaleOrderChangeService {
         ResultModel model = new ResultModel();
         Pagination pg = HttpUtils.parsePagination(pd);
 
-        List<Column> columnList = columnService.findColumnList("saleOrdeChange");
+        List<Column> columnList = columnService.findColumnList("saleOrderChange");
         if (columnList == null || columnList.size() == 0) {
             model.putCode("1");
             model.putMsg("数据库没有生成TabCol，请联系管理员！");

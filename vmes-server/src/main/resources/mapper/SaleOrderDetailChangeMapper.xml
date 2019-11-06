@@ -28,42 +28,42 @@
 
     <!-- ***************************************************以上为自动生成代码禁止修改，请在下面添加业务代码************************************************* -->
     <insert id="insertColumn" >
-        delete from vmes_column where model_code = 'saleOrdeDtlChange' ;
+        delete from vmes_column where model_code = 'saleOrderDetailChange' ;
         insert into vmes_column (
         id,model_code,title_key,title_name,serial_number,
         isdisable,ishide,isedit,ismust,cdate,
         cuser
         ) VALUES
-            (replace(uuid(), '-', ''),'saleOrdeDtlChange','id','id',0, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleOrdeDtlChange','parentId','订单变更id',1, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleOrdeDtlChange','orderDtlId','订单明细id',2, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleOrdeDtlChange','orderCountBefore','订单订购数量(变更前-订单单位)',3, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleOrdeDtlChange','orderCountAfter','订单订购数量(变更后-订单单位)',4, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'saleOrderDetailChange','id','id',0, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'saleOrderDetailChange','parentId','订单变更id',1, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'saleOrderDetailChange','orderDtlId','订单明细id',2, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'saleOrderDetailChange','orderCountBefore','订单订购数量(变更前-订单单位)',3, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'saleOrderDetailChange','orderCountAfter','订单订购数量(变更后-订单单位)',4, '1','1','1','0',now(), 'admin'),
 
-            (replace(uuid(), '-', ''),'saleOrdeDtlChange','productPriceBefore','货品单价(变更前)',5, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleOrdeDtlChange','productPriceAfter','货品单价(变更后)',6, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleOrdeDtlChange','deliverDateBefore','约定交期(变更前)',7, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleOrdeDtlChange','deliverDateAfter','约定交期(变更后)',8, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleOrdeDtlChange','deliverCount','发货单数量(订单单位)',9, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'saleOrderDetailChange','productPriceBefore','货品单价(变更前)',5, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'saleOrderDetailChange','productPriceAfter','货品单价(变更后)',6, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'saleOrderDetailChange','deliverDateBefore','约定交期(变更前)',7, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'saleOrderDetailChange','deliverDateAfter','约定交期(变更后)',8, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'saleOrderDetailChange','deliverCount','发货单数量(订单单位)',9, '1','1','1','0',now(), 'admin'),
 
-            (replace(uuid(), '-', ''),'saleOrdeDtlChange','endDeliverCount','完成发货数量(订单单位)',10, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleOrdeDtlChange','cuser','创建用户id',11, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleOrdeDtlChange','cdate','创建时间',12, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleOrdeDtlChange','uuser','修改用户id',13, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleOrdeDtlChange','udate','修改时间',14, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'saleOrderDetailChange','endDeliverCount','完成发货数量(订单单位)',10, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'saleOrderDetailChange','cuser','创建用户id',11, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'saleOrderDetailChange','cdate','创建时间',12, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'saleOrderDetailChange','uuser','修改用户id',13, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'saleOrderDetailChange','udate','修改时间',14, '1','1','1','0',now(), 'admin'),
 
-            (replace(uuid(), '-', ''),'saleOrdeDtlChange','remark','备注',15, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleOrdeDtlChange','isdisable','是否启用(0:已禁用 1:启用)',16, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'saleOrderDetailChange','remark','备注',15, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'saleOrderDetailChange','isdisable','是否启用(0:已禁用 1:启用)',16, '1','1','1','0',now(), 'admin'),
 
-            (replace(uuid(), '-', ''), 'saleOrdeDtlChange', 'productCode', '货品编码', 17, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
-            (replace(uuid(), '-', ''), 'saleOrdeDtlChange', 'productName', '货品名称', 18, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
-            (replace(uuid(), '-', ''), 'saleOrdeDtlChange', 'productSpec', '规格型号', 19, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
-            (replace(uuid(), '-', ''), 'saleOrdeDtlChange', 'productGenre', '货品属性id', 20, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
-            (replace(uuid(), '-', ''), 'saleOrdeDtlChange', 'productGenreName', '货品属性', 21, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
-            (replace(uuid(), '-', ''), 'saleOrdeDtlChange', 'orderUnit', '单位id', 22, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
-            (replace(uuid(), '-', ''), 'saleOrdeDtlChange', 'orderUnitName', '单位', 23, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
-            (replace(uuid(), '-', ''), 'saleOrdeDtlChange', 'p2nFormula', 'p2nFormula', 24, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
-            (replace(uuid(), '-', ''), 'saleOrdeDtlChange', 'n2pFormula', 'n2pFormula', 25, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailChange', 'productCode', '货品编码', 17, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailChange', 'productName', '货品名称', 18, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailChange', 'productSpec', '规格型号', 19, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailChange', 'productGenre', '货品属性id', 20, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailChange', 'productGenreName', '货品属性', 21, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailChange', 'orderUnit', '单位id', 22, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailChange', 'orderUnitName', '单位', 23, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailChange', 'p2nFormula', 'p2nFormula', 24, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailChange', 'n2pFormula', 'n2pFormula', 25, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
 
     </insert>
 
@@ -175,10 +175,10 @@
             left join vmes_product_unit orderProdUnit on (orderDtl.product_id = orderProdUnit.product_id and orderDtl.order_unit = orderProdUnit.unit)
         <where>
             <if test="parentId != null and parentId != ''" >
-                and parent_id = #{parentId}
+                and dtlChange.parent_id = #{parentId}
             </if>
             <if test="orderDtlId != null and orderDtlId != ''" >
-                and order_dtl_id = #{orderDtlId}
+                and dtlChange.order_dtl_id = #{orderDtlId}
             </if>
 
             <!--queryStr 自定义sql查询语句-->

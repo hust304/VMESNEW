@@ -9,7 +9,7 @@
 
     <!-- 批量删除 自动创建，禁止修改-->
     <delete id="deleteByIds" parameterType="java.lang.String">
-        delete from vmes_sale_orde_change
+        delete from vmes_sale_order_change
         where id in
         <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
 		#{item}
@@ -18,7 +18,7 @@
 
     <!-- 自动创建，禁止修改-->
     <update id="updateToDisableByIds" parameterType="java.lang.String" >
-        update vmes_sale_orde_change
+        update vmes_sale_order_change
         set isdisable = '0' ,udate = now()
         where id in
         <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
@@ -34,29 +34,30 @@
         isdisable,ishide,isedit,ismust,cdate,
         cuser
         ) VALUES
-            (replace(uuid(), '-', ''),'saleOrdeChange','id','id',0, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleOrdeChange','companyId','企业id',1, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleOrdeChange','orderId','订单id',2, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleOrdeChange','auditId','审核人id',3, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleOrdeChange','state','状态(0:审核中 1:完成:审核通过 2:取消:审核不通过)',4, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'saleOrderChange','id','id',0, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'saleOrderChange','companyId','企业id',1, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'saleOrderChange','orderId','订单id',2, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'saleOrderChange','auditId','审核人id',3, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'saleOrderChange','state','状态(0:审核中 1:完成:审核通过 2:取消:审核不通过)',4, '1','1','1','0',now(), 'admin'),
 
-            (replace(uuid(), '-', ''),'saleOrdeChange','receiptTypeBefore','发票类型(变更前-1:不开票 2:普票发票 3:增值税发票)',5, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleOrdeChange','receiptTypeAfter','发票类型(变更后-1:不开票 2:普票发票 3:增值税发票)',6, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleOrdeChange','cuser','创建用户id',7, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleOrdeChange','cdate','创建时间',8, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleOrdeChange','uuser','修改用户id',9, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'saleOrderChange','receiptTypeBefore','发票类型(变更前-1:不开票 2:普票发票 3:增值税发票)',5, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'saleOrderChange','receiptTypeAfter','发票类型(变更后-1:不开票 2:普票发票 3:增值税发票)',6, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'saleOrderChange','cuser','创建用户id',7, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'saleOrderChange','cdate','创建时间',8, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'saleOrderChange','uuser','修改用户id',9, '1','1','1','0',now(), 'admin'),
 
-            (replace(uuid(), '-', ''),'saleOrdeChange','udate','修改时间',10, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleOrdeChange','remark','备注',11, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleOrdeChange','isdisable','是否启用(0:已禁用 1:启用)',12, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'saleOrderChange','udate','修改时间',10, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'saleOrderChange','remark','备注',11, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'saleOrderChange','isdisable','是否启用(0:已禁用 1:启用)',12, '1','1','1','0',now(), 'admin'),
 
-            (replace(uuid(), '-', ''), 'saleOrdeChange', 'beforeReceiptTypeName', '发票类型(前)', 13, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
-            (replace(uuid(), '-', ''), 'saleOrdeChange', 'afterReceiptTypeName', '发票类型(后)', 14, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderChange', 'beforeReceiptTypeName', '发票类型(前)', 13, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderChange', 'afterReceiptTypeName', '发票类型(后)', 14, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
 
-            (replace(uuid(), '-', ''), 'saleOrdeChange', 'orderNumber', '订单编号', 15, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
-            (replace(uuid(), '-', ''), 'saleOrdeChange', 'sysCode', '订单编号', 16, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
-            (replace(uuid(), '-', ''), 'saleOrdeChange', 'makeName', '制单人', 17, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
-            (replace(uuid(), '-', ''), 'saleOrdeChange', 'customerName', '客户名称', 18, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderChange', 'orderNumber', '订单编号', 15, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderChange', 'sysCode', '订单编号', 16, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderChange', 'makeName', '制单人', 17, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderChange', 'customerName', '客户名称', 18, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderChange', 'orderDate', '下单日期', 19, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin')
 
     </insert>
 
@@ -78,7 +79,7 @@
             udate udate,
             remark remark,
             isdisable isdisable
-        from vmes_sale_orde_change
+        from vmes_sale_order_change
         <where>
             <!--isSelfExist 是否考虑自己在业务表中是否存在
                 false: (false or is null) 无需考虑自己在业务表中是否存在
@@ -150,21 +151,22 @@
 
         saleOrder.order_number orderNumber,
         saleOrder.sys_code sysCode,
+        DATE_FORMAT(saleOrder.order_date,'%Y-%m-%d') orderDate,
         makeUser.user_name makeName,
         customer.name customerName
-        from vmes_sale_orde_change ordeChange
+        from vmes_sale_order_change ordeChange
         left join vmes_sale_order saleOrder on ordeChange.order_id = saleOrder.id
         left join vmes_customer customer on saleOrder.customer_id = customer.id
         left join vmes_user makeUser on saleOrder.make_id = makeUser.id
         <where>
             <if test="companyId != null and companyId != ''" >
-                and company_id = #{companyId}
+                and ordeChange.company_id = #{companyId}
             </if>
             <if test="orderId != null and orderId != ''" >
-                and order_id = #{orderId}
+                and ordeChange.order_id = #{orderId}
             </if>
             <if test="state != null and state != ''" >
-                and state = #{state}
+                and ordeChange.state = #{state}
             </if>
 
             <!--queryStr 自定义sql查询语句-->
