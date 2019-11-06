@@ -3,14 +3,14 @@ package com.xy.vmes.deecoop.sale.service;
 import com.xy.vmes.common.util.DateFormat;
 import com.xy.vmes.deecoop.sale.dao.SaleOrdeChangeMapper;
 import com.xy.vmes.entity.SaleOrdeChange;
-import com.xy.vmes.entity.SaleOrdeDtlChange;
+import com.xy.vmes.entity.SaleOrdeDetailChange;
 import com.xy.vmes.service.SaleOrdeChangeService;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.service.ColumnService;
-import com.xy.vmes.service.SaleOrdeDtlChangeService;
+import com.xy.vmes.service.SaleOrdeDetailChangeService;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.YvanUtil;
@@ -36,7 +36,7 @@ public class SaleOrdeChangeServiceImp implements SaleOrdeChangeService {
     private SaleOrdeChangeMapper saleOrdeChangeMapper;
 
     @Autowired
-    private SaleOrdeDtlChangeService ordeDtlChangeService;
+    private SaleOrdeDetailChangeService ordeDtlChangeService;
 
     @Autowired
     private ColumnService columnService;
@@ -300,7 +300,7 @@ public class SaleOrdeChangeServiceImp implements SaleOrdeChangeService {
 
         if (mapList != null && mapList.size() > 0) {
             for (Map<String, String> mapObject : mapList) {
-                SaleOrdeDtlChange addDtlChange = new SaleOrdeDtlChange();
+                SaleOrdeDetailChange addDtlChange = new SaleOrdeDetailChange();
                 addDtlChange.setParentId(addOrdeChange.getId());
                 addDtlChange.setCuser(cuser);
                 addDtlChange.setUuser(cuser);

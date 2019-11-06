@@ -13,7 +13,7 @@ import java.math.BigDecimal;
  * @date 2019-11-05
  */
 @TableName("vmes_saleOrdeDtl_change")
-public class SaleOrdeDtlChange implements Serializable {
+public class SaleOrdeDetailChange implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@TableField("id")

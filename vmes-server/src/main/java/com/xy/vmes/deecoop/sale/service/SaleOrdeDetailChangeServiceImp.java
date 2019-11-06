@@ -1,27 +1,22 @@
 package com.xy.vmes.deecoop.sale.service;
 
 
-import com.xy.vmes.deecoop.sale.dao.SaleOrdeDtlChangeMapper;
-import com.xy.vmes.entity.SaleOrdeDtlChange;
-import com.xy.vmes.service.SaleOrdeDtlChangeService;
+import com.xy.vmes.deecoop.sale.dao.SaleOrdeDetailChangeMapper;
+import com.xy.vmes.entity.SaleOrdeDetailChange;
+import com.xy.vmes.service.SaleOrdeDetailChangeService;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
-import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.service.ColumnService;
-import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
-import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import com.yvan.Conv;
-import org.springframework.web.multipart.MultipartFile;
-import javax.servlet.http.HttpServletResponse;
 
 /**
 * 说明：vmes_saleOrdeDtl_change:订单明细变更记录表 实现类
@@ -30,9 +25,9 @@ import javax.servlet.http.HttpServletResponse;
 */
 @Service
 @Transactional(readOnly = false)
-public class SaleOrdeDtlChangeServiceImp implements SaleOrdeDtlChangeService {
+public class SaleOrdeDetailChangeServiceImp implements SaleOrdeDetailChangeService {
     @Autowired
-    private SaleOrdeDtlChangeMapper saleOrdeDtlChangeMapper;
+    private SaleOrdeDetailChangeMapper saleOrdeDtlChangeMapper;
     @Autowired
     private ColumnService columnService;
 
@@ -41,7 +36,7 @@ public class SaleOrdeDtlChangeServiceImp implements SaleOrdeDtlChangeService {
      * 创建时间：2019-11-05
      */
     @Override
-    public void save(SaleOrdeDtlChange object) throws Exception {
+    public void save(SaleOrdeDetailChange object) throws Exception {
         object.setId(Conv.createUuid());
         object.setCdate(new Date());
         object.setUdate(new Date());
@@ -53,7 +48,7 @@ public class SaleOrdeDtlChangeServiceImp implements SaleOrdeDtlChangeService {
      * 创建时间：2019-11-05
      */
     @Override
-    public SaleOrdeDtlChange selectById(String id) throws Exception{
+    public SaleOrdeDetailChange selectById(String id) throws Exception{
         return saleOrdeDtlChangeMapper.selectById(id);
     }
 
@@ -62,8 +57,8 @@ public class SaleOrdeDtlChangeServiceImp implements SaleOrdeDtlChangeService {
      * 创建时间：2019-11-05
      */
     @Override
-    public List<SaleOrdeDtlChange> selectByColumnMap(Map columnMap) throws Exception {
-        List<SaleOrdeDtlChange> warehouseCheckDetailList = saleOrdeDtlChangeMapper.selectByMap(columnMap);
+    public List<SaleOrdeDetailChange> selectByColumnMap(Map columnMap) throws Exception {
+        List<SaleOrdeDetailChange> warehouseCheckDetailList = saleOrdeDtlChangeMapper.selectByMap(columnMap);
         return warehouseCheckDetailList;
     }
 
@@ -72,7 +67,7 @@ public class SaleOrdeDtlChangeServiceImp implements SaleOrdeDtlChangeService {
      * 创建时间：2019-11-05
      */
     @Override
-    public void update(SaleOrdeDtlChange object) throws Exception {
+    public void update(SaleOrdeDetailChange object) throws Exception {
         object.setUdate(new Date());
         saleOrdeDtlChangeMapper.updateById(object);
     }
@@ -82,7 +77,7 @@ public class SaleOrdeDtlChangeServiceImp implements SaleOrdeDtlChangeService {
      * 创建时间：2019-11-05
      */
     @Override
-    public void updateAll(SaleOrdeDtlChange object) throws Exception {
+    public void updateAll(SaleOrdeDetailChange object) throws Exception {
         object.setUdate(new Date());
         saleOrdeDtlChangeMapper.updateAllColumnById(object);
     }
@@ -127,7 +122,7 @@ public class SaleOrdeDtlChangeServiceImp implements SaleOrdeDtlChangeService {
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2019-11-05
      */
-    public List<SaleOrdeDtlChange> dataList(PageData pd) throws Exception {
+    public List<SaleOrdeDetailChange> dataList(PageData pd) throws Exception {
         return saleOrdeDtlChangeMapper.dataList(pd);
     }
 
@@ -159,28 +154,28 @@ public class SaleOrdeDtlChangeServiceImp implements SaleOrdeDtlChangeService {
     * @return
     * @throws Exception
     */
-    public List<SaleOrdeDtlChange> findDataList(PageData pageData, Boolean isQueryAll) throws Exception {
+    public List<SaleOrdeDetailChange> findDataList(PageData pageData, Boolean isQueryAll) throws Exception {
         int pageDataSize = 0;
         if (pageData != null && pageData.size() > 0) {
             pageDataSize = pageData.size();
         }
 
         if ((isQueryAll == null || true != isQueryAll.booleanValue()) && pageDataSize == 0) {
-            return new ArrayList<SaleOrdeDtlChange>();
+            return new ArrayList<SaleOrdeDetailChange>();
         }
 
         return this.dataList(pageData);
     }
 
-    public SaleOrdeDtlChange findOrdeDtlChange(PageData object) throws Exception {
-        List<SaleOrdeDtlChange> objectList = this.findOrdeDtlChangeList(object);
+    public SaleOrdeDetailChange findOrdeDtlChange(PageData object) throws Exception {
+        List<SaleOrdeDetailChange> objectList = this.findOrdeDtlChangeList(object);
         if (objectList != null && objectList.size() > 0) {
             return objectList.get(0);
         }
 
         return null;
     }
-    public SaleOrdeDtlChange findOrdeDtlChangeById(String id) throws Exception {
+    public SaleOrdeDetailChange findOrdeDtlChangeById(String id) throws Exception {
         if (id == null || id.trim().length() == 0) {return null;}
 
         PageData findMap = new PageData();
@@ -189,11 +184,11 @@ public class SaleOrdeDtlChangeServiceImp implements SaleOrdeDtlChangeService {
         return this.findOrdeDtlChange(findMap);
     }
 
-    public List<SaleOrdeDtlChange> findOrdeDtlChangeList(PageData object) throws Exception {
+    public List<SaleOrdeDetailChange> findOrdeDtlChangeList(PageData object) throws Exception {
         return this.findDataList(object, null);
     }
 
-    public List<SaleOrdeDtlChange> findOrdeDtlChangeListByParentId(String parentId) throws Exception {
+    public List<SaleOrdeDetailChange> findOrdeDtlChangeListByParentId(String parentId) throws Exception {
         if (parentId == null || parentId.trim().length() == 0) {return null;}
 
         PageData findMap = new PageData();

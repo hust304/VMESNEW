@@ -1,12 +1,11 @@
 package com.xy.vmes.service;
 
 
-import com.xy.vmes.entity.SaleOrdeDtlChange;
+import com.xy.vmes.entity.SaleOrdeDetailChange;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
-import org.springframework.web.multipart.MultipartFile;
-import java.util.LinkedHashMap;
+
 import java.util.List;
 import java.util.Map;
 
@@ -15,24 +14,24 @@ import java.util.Map;
 * 创建人：陈刚 自动生成
 * 创建时间：2019-11-05
 */
-public interface SaleOrdeDtlChangeService {
+public interface SaleOrdeDetailChangeService {
     /**
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2019-11-05
      */
-    void save(SaleOrdeDtlChange object) throws Exception;
+    void save(SaleOrdeDetailChange object) throws Exception;
 
     /**
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2019-11-05
      */
-    void update(SaleOrdeDtlChange object) throws Exception;
+    void update(SaleOrdeDetailChange object) throws Exception;
 
     /**
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2019-11-05
      */
-    void updateAll(SaleOrdeDtlChange object) throws Exception;
+    void updateAll(SaleOrdeDetailChange object) throws Exception;
 
     /**
      * 创建人：陈刚 自动创建，禁止修改
@@ -62,19 +61,19 @@ public interface SaleOrdeDtlChangeService {
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2019-11-05
      */
-    SaleOrdeDtlChange selectById(String id) throws Exception;
+    SaleOrdeDetailChange selectById(String id) throws Exception;
 
     /**
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2019-11-05
      */
-    List<SaleOrdeDtlChange> selectByColumnMap(Map columnMap) throws Exception;
+    List<SaleOrdeDetailChange> selectByColumnMap(Map columnMap) throws Exception;
 
     /**
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2019-11-05
      */
-    List<SaleOrdeDtlChange> dataList(PageData pd) throws Exception;
+    List<SaleOrdeDetailChange> dataList(PageData pd) throws Exception;
 
     /**
      * 创建人：陈刚 自动创建，禁止修改
@@ -93,13 +92,13 @@ public interface SaleOrdeDtlChangeService {
      * @return
      * @throws Exception
      */
-    List<SaleOrdeDtlChange> findDataList(PageData pageData, Boolean isQueryAll) throws Exception;
+    List<SaleOrdeDetailChange> findDataList(PageData pageData, Boolean isQueryAll) throws Exception;
 
-    SaleOrdeDtlChange findOrdeDtlChange(PageData object) throws Exception;
-    SaleOrdeDtlChange findOrdeDtlChangeById(String id) throws Exception;
+    SaleOrdeDetailChange findOrdeDtlChange(PageData object) throws Exception;
+    SaleOrdeDetailChange findOrdeDtlChangeById(String id) throws Exception;
 
-    List<SaleOrdeDtlChange> findOrdeDtlChangeList(PageData object) throws Exception;
-    List<SaleOrdeDtlChange> findOrdeDtlChangeListByParentId(String parentId) throws Exception;
+    List<SaleOrdeDetailChange> findOrdeDtlChangeList(PageData object) throws Exception;
+    List<SaleOrdeDetailChange> findOrdeDtlChangeListByParentId(String parentId) throws Exception;
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**

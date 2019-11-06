@@ -2,7 +2,7 @@ package com.xy.vmes.deecoop.sale.dao;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
-import com.xy.vmes.entity.SaleOrdeDtlChange;
+import com.xy.vmes.entity.SaleOrdeDetailChange;
 import com.yvan.PageData;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
@@ -17,7 +17,7 @@ import java.util.Map;
 */
 @Mapper
 @Repository
-public interface SaleOrdeDtlChangeMapper extends BaseMapper<SaleOrdeDtlChange> {
+public interface SaleOrdeDetailChangeMapper extends BaseMapper<SaleOrdeDetailChange> {
 
     /**
      * 创建人：陈刚 自动创建，禁止修改
@@ -35,7 +35,7 @@ public interface SaleOrdeDtlChangeMapper extends BaseMapper<SaleOrdeDtlChange> {
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2019-11-05
      */
-    List<SaleOrdeDtlChange> dataList(PageData pd);
+    List<SaleOrdeDetailChange> dataList(PageData pd);
 
     /**
      * 创建人：陈刚 自动创建，禁止修改

@@ -9,7 +9,7 @@
 
     <!-- 批量删除 自动创建，禁止修改-->
     <delete id="deleteByIds" parameterType="java.lang.String">
-        delete from vmes_saleOrde_change
+        delete from vmes_sale_orde_change
         where id in
         <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
 		#{item}
@@ -18,7 +18,7 @@
 
     <!-- 自动创建，禁止修改-->
     <update id="updateToDisableByIds" parameterType="java.lang.String" >
-        update vmes_saleOrde_change
+        update vmes_sale_orde_change
         set isdisable = '0' ,udate = now()
         where id in
         <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
@@ -34,19 +34,30 @@
         isdisable,ishide,isedit,ismust,cdate,
         cuser
         ) VALUES
+            (replace(uuid(), '-', ''),'saleOrdeChange','id','id',0, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'saleOrdeChange','companyId','企业id',1, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'saleOrdeChange','orderId','订单id',2, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'saleOrdeChange','auditId','审核人id',3, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'saleOrdeChange','state','状态(0:审核中 1:完成:审核通过 2:取消:审核不通过)',4, '1','1','1','0',now(), 'admin'),
+
             (replace(uuid(), '-', ''),'saleOrdeChange','receiptTypeBefore','发票类型(变更前-1:不开票 2:普票发票 3:增值税发票)',5, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'saleOrdeChange','receiptTypeAfter','发票类型(变更后-1:不开票 2:普票发票 3:增值税发票)',6, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'saleOrdeChange','cuser','创建用户id',7, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'saleOrdeChange','cdate','创建时间',8, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'saleOrdeChange','uuser','修改用户id',9, '1','1','1','0',now(), 'admin'),
+
             (replace(uuid(), '-', ''),'saleOrdeChange','udate','修改时间',10, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'saleOrdeChange','remark','备注',11, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'saleOrdeChange','isdisable','是否启用(0:已禁用 1:启用)',12, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'saleOrdeChange','id','id',0, '1','1','1','0',now(), 'admin')
+
+            (replace(uuid(), '-', ''), 'saleOrdeChange', 'beforeReceiptTypeName', '发票类型(前)', 13, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrdeChange', 'afterReceiptTypeName', '发票类型(后)', 14, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+
+            (replace(uuid(), '-', ''), 'saleOrdeChange', 'orderNumber', '订单编号', 15, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrdeChange', 'sysCode', '订单编号', 16, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrdeChange', 'makeName', '制单人', 17, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrdeChange', 'customerName', '客户名称', 18, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
+
     </insert>
 
     <!-- 列表(全部) 自动创建，禁止修改-->
@@ -63,11 +74,11 @@
             cuser cuser,
             cdate cdate,
             uuser uuser,
-            udate udate,
 
+            udate udate,
             remark remark,
             isdisable isdisable
-        from vmes_saleOrde_change
+        from vmes_sale_orde_change
         <where>
             <!--isSelfExist 是否考虑自己在业务表中是否存在
                 false: (false or is null) 无需考虑自己在业务表中是否存在
@@ -108,22 +119,43 @@
     <!-- 自动创建，可以修改 -->
     <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
-        id id,
-        company_id companyId,
-        order_id orderId,
-        audit_id auditId,
-        state state,
+        ordeChange.id id,
+        ordeChange.company_id companyId,
+        ordeChange.order_id orderId,
+        ordeChange.audit_id auditId,
+        ordeChange.state state,
 
-        receipt_type_before receiptTypeBefore,
-        receipt_type_after receiptTypeAfter,
-        cuser cuser,
-        cdate cdate,
-        uuser uuser,
-        udate udate,
+        ordeChange.receipt_type_before receiptTypeBefore,
+        CASE
+            WHEN ordeChange.receipt_type_before = '1' THEN '不开票'
+            WHEN ordeChange.receipt_type_before = '2' THEN '增值税普通发票'
+            WHEN ordeChange.receipt_type_before = '3' THEN '增值税专用发票'
+        ELSE null
+        END beforeReceiptTypeName,
 
-        remark remark,
-        isdisable isdisable
-        from vmes_saleOrde_change
+        ordeChange.receipt_type_after receiptTypeAfter,
+        CASE
+            WHEN ordeChange.receipt_type_after = '1' THEN '不开票'
+            WHEN ordeChange.receipt_type_after = '2' THEN '增值税普通发票'
+            WHEN ordeChange.receipt_type_after = '3' THEN '增值税专用发票'
+        ELSE null
+        END afterReceiptTypeName,
+        ordeChange.cuser cuser,
+        ordeChange.cdate cdate,
+        ordeChange.uuser uuser,
+
+        ordeChange.udate udate,
+        ordeChange.remark remark,
+        ordeChange.isdisable isdisable,
+
+        saleOrder.order_number orderNumber,
+        saleOrder.sys_code sysCode,
+        makeUser.user_name makeName,
+        customer.name customerName
+        from vmes_sale_orde_change ordeChange
+        left join vmes_sale_order saleOrder on ordeChange.order_id = saleOrder.id
+        left join vmes_customer customer on saleOrder.customer_id = customer.id
+        left join vmes_user makeUser on saleOrder.make_id = makeUser.id
         <where>
             <if test="companyId != null and companyId != ''" >
                 and company_id = #{companyId}
