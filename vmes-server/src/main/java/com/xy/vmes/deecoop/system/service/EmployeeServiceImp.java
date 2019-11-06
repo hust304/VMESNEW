@@ -489,6 +489,20 @@ public class EmployeeServiceImp implements EmployeeService {
             employee.setRemark("");
         }
 
+        //工作位置 position
+        String position = new String();
+        if (pd.getString("position") != null) {
+            position = pd.getString("position").trim();
+        }
+        employee.setPosition(position);
+
+        //宿舍 dormitory
+        String dormitory = new String();
+        if (pd.getString("dormitory") != null) {
+            dormitory = pd.getString("dormitory").trim();
+        }
+        employee.setDormitory(dormitory);
+
         employeeService.update(employee);
 
         //获取员工主岗信息，找到当前员工所在部门

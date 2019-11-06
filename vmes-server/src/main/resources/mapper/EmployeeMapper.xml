@@ -43,6 +43,8 @@
         remark remark,
         isOpenUser isOpenUser,
         contract_date contractDate,
+        position position,
+        dormitory dormitory,
 		id id <!-- id -->
     </sql>
 
@@ -496,6 +498,9 @@
 
         (replace(uuid(), '-', ''), 'employee', 'contractDate', '同到期日期', 34, '1', '0', '1', '0', '2018-8-28 09:10:24', 'admin'),
         (replace(uuid(), '-', ''), 'employee', 'contractDay', '距合同到期天数', 35, '1', '0', '1', '0', '2018-8-28 09:10:24', 'admin'),
+
+        (replace(uuid(), '-', ''), 'employee', 'position', '工作位置', 36, '1', '0', '1', '0', '2018-8-28 09:10:24', 'admin'),
+        (replace(uuid(), '-', ''), 'employee', 'dormitory', '宿舍', 37, '1', '0', '1', '0', '2018-8-28 09:10:24', 'admin'),
     </insert>
 
     <select id="getDataListPage"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
@@ -537,6 +542,9 @@
         employee.remark,
         employee.isOpenUser,
         employee.isdisable,
+
+        employee.position position,
+        employee.dormitory dormitory,
 
         <!-- 隐藏字段 -->
         employpost.id,

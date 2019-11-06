@@ -107,6 +107,13 @@ public class Employee implements Serializable {
 	@TableField("contract_date")
 	private Date contractDate;
 
+	//工作位置
+	@TableField("position")
+	private String position;
+	//宿舍
+	@TableField("dormitory")
+	private String dormitory;
+
 
 	public void setId(String id) {
 		this.id = id;
@@ -287,6 +294,18 @@ public class Employee implements Serializable {
 	}
 	public void setContractDate(Date contractDate) {
 		this.contractDate = contractDate;
+	}
+	public String getPosition() {
+		return position;
+	}
+	public void setPosition(String position) {
+		this.position = position;
+	}
+	public String getDormitory() {
+		return dormitory;
+	}
+	public void setDormitory(String dormitory) {
+		this.dormitory = dormitory;
 	}
 /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
