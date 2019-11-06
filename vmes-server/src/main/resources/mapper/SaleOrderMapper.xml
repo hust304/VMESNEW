@@ -75,7 +75,9 @@
             (replace(uuid(), '-', ''), 'saleOrder', 'cdate', '创建时间', 19, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
             (replace(uuid(), '-', ''), 'saleOrder', 'uuser', '修改用户id', 20, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
             (replace(uuid(), '-', ''), 'saleOrder', 'udate', '修改时间', 21, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
-            (replace(uuid(), '-', ''), 'saleOrder', 'isdisable', '是否启用(0:已禁用 1:启用)', 22, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin')
+            (replace(uuid(), '-', ''), 'saleOrder', 'isdisable', '是否启用(0:已禁用 1:启用)', 22, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+
+            (replace(uuid(), '-', ''), 'saleOrder', 'isShowChange', '是否显示订单变更', 24, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
 
     </insert>
 
@@ -237,12 +239,23 @@
             saleOrder.pay_state payState,
 
             makeUser.user_name makeName,
-            customer.name customerName
+            customer.name customerName,
+
+            CASE
+              <!--无销售订单变更记录表, 该订单id变更记录审核结束-->
+              WHEN ordeChange.id is null THEN '1'
+              <!--该订单id变更记录审核中-->
+              WHEN ordeChange.id is not null THEN '0'
+            ELSE null
+            END isShowChange
 
         from vmes_sale_order saleOrder
             left join vmes_customer customer on saleOrder.customer_id = customer.id
             left join vmes_user makeUser on saleOrder.make_id = makeUser.id
             left join vmes_sale_order_detail detail on saleOrder.id = detail.parent_id
+            <!--销售订单变更记录表-->
+            <!--state:状态(0:审核中 1:完成:审核通过 2:取消:审核不通过)-->
+            left join vmes_saleOrde_change ordeChange on saleOrder.id = ordeChange.order_id and ordeChange.state = '0'
         <where>
             <if test="currentCompanyId != null and currentCompanyId != ''" >
                 and saleOrder.company_id = #{currentCompanyId}
