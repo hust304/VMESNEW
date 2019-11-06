@@ -629,6 +629,20 @@ public class EmployeeExcelBySimpleServiceImp implements EmployeeExcelBySimpleSer
             String remark = mapObject.get("remark");
             employee.setRemark(remark);
 
+            //工作位置 position
+            String position = new String();
+            if (mapObject.get("position") != null) {
+                position = mapObject.get("position").trim();
+            }
+            employee.setPosition(position);
+
+            //宿舍 dormitory
+            String dormitory = new String();
+            if (mapObject.get("dormitory") != null) {
+                dormitory = mapObject.get("dormitory").trim();
+            }
+            employee.setDormitory(dormitory);
+
             try {
                 employeeService.save(employee);
 
