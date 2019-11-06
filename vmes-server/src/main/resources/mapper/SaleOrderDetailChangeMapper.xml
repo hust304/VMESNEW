@@ -5,7 +5,7 @@
 创建人：陈刚 自动创建
 创建时间：2019-11-05
  -->
-<mapper namespace="com.xy.vmes.deecoop.sale.dao.SaleOrdeDetailChangeMapper">
+<mapper namespace="com.xy.vmes.deecoop.sale.dao.SaleOrderDetailChangeMapper">
 
     <!-- 批量删除 自动创建，禁止修改-->
     <delete id="deleteByIds" parameterType="java.lang.String">

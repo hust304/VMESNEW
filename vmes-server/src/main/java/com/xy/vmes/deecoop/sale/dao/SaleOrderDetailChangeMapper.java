@@ -17,7 +17,7 @@ import java.util.Map;
 */
 @Mapper
 @Repository
-public interface SaleOrdeDetailChangeMapper extends BaseMapper<SaleOrderDetailChange> {
+public interface SaleOrderDetailChangeMapper extends BaseMapper<SaleOrderDetailChange> {
 
     /**
      * 创建人：陈刚 自动创建，禁止修改

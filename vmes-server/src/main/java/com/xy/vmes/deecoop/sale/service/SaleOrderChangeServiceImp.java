@@ -1,7 +1,7 @@
 package com.xy.vmes.deecoop.sale.service;
 
 import com.xy.vmes.common.util.DateFormat;
-import com.xy.vmes.deecoop.sale.dao.SaleOrdeChangeMapper;
+import com.xy.vmes.deecoop.sale.dao.SaleOrderChangeMapper;
 import com.xy.vmes.entity.SaleOrderChange;
 import com.xy.vmes.entity.SaleOrderDetailChange;
 import com.xy.vmes.service.SaleOrderChangeService;
@@ -33,7 +33,7 @@ import com.yvan.Conv;
 @Transactional(readOnly = false)
 public class SaleOrderChangeServiceImp implements SaleOrderChangeService {
     @Autowired
-    private SaleOrdeChangeMapper saleOrdeChangeMapper;
+    private SaleOrderChangeMapper saleOrdeChangeMapper;
 
     @Autowired
     private SaleOrderDetailChangeService ordeDtlChangeService;

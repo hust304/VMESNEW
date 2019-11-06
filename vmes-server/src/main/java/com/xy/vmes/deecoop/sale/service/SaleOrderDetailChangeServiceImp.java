@@ -1,7 +1,7 @@
 package com.xy.vmes.deecoop.sale.service;
 
 
-import com.xy.vmes.deecoop.sale.dao.SaleOrdeDetailChangeMapper;
+import com.xy.vmes.deecoop.sale.dao.SaleOrderDetailChangeMapper;
 import com.xy.vmes.entity.SaleOrderDetailChange;
 import com.xy.vmes.service.SaleOrderDetailChangeService;
 
@@ -27,7 +27,7 @@ import com.yvan.Conv;
 @Transactional(readOnly = false)
 public class SaleOrderDetailChangeServiceImp implements SaleOrderDetailChangeService {
     @Autowired
-    private SaleOrdeDetailChangeMapper saleOrdeDtlChangeMapper;
+    private SaleOrderDetailChangeMapper saleOrdeDtlChangeMapper;
     @Autowired
     private ColumnService columnService;
 
