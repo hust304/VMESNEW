@@ -1,37 +1,35 @@
 package com.xy.vmes.service;
 
-
-import com.xy.vmes.entity.SaleOrdeDetailChange;
+import com.xy.vmes.entity.SaleOrderChange;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
-
 import java.util.List;
 import java.util.Map;
 
 /**
-* 说明：vmes_saleOrdeDtl_change:订单明细变更记录表 接口类
+* 说明：vmes_saleOrde_change:订单变更记录表 接口类
 * 创建人：陈刚 自动生成
 * 创建时间：2019-11-05
 */
-public interface SaleOrdeDetailChangeService {
+public interface SaleOrderChangeService {
     /**
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2019-11-05
      */
-    void save(SaleOrdeDetailChange object) throws Exception;
+    void save(SaleOrderChange object) throws Exception;
 
     /**
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2019-11-05
      */
-    void update(SaleOrdeDetailChange object) throws Exception;
+    void update(SaleOrderChange object) throws Exception;
 
     /**
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2019-11-05
      */
-    void updateAll(SaleOrdeDetailChange object) throws Exception;
+    void updateAll(SaleOrderChange object) throws Exception;
 
     /**
      * 创建人：陈刚 自动创建，禁止修改
@@ -61,19 +59,19 @@ public interface SaleOrdeDetailChangeService {
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2019-11-05
      */
-    SaleOrdeDetailChange selectById(String id) throws Exception;
+    SaleOrderChange selectById(String id) throws Exception;
 
     /**
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2019-11-05
      */
-    List<SaleOrdeDetailChange> selectByColumnMap(Map columnMap) throws Exception;
+    List<SaleOrderChange> selectByColumnMap(Map columnMap) throws Exception;
 
     /**
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2019-11-05
      */
-    List<SaleOrdeDetailChange> dataList(PageData pd) throws Exception;
+    List<SaleOrderChange> dataList(PageData pd) throws Exception;
 
     /**
      * 创建人：陈刚 自动创建，禁止修改
@@ -92,13 +90,11 @@ public interface SaleOrdeDetailChangeService {
      * @return
      * @throws Exception
      */
-    List<SaleOrdeDetailChange> findDataList(PageData pageData, Boolean isQueryAll) throws Exception;
+    List<SaleOrderChange> findDataList(PageData pageData, Boolean isQueryAll) throws Exception;
 
-    SaleOrdeDetailChange findOrdeDtlChange(PageData object) throws Exception;
-    SaleOrdeDetailChange findOrdeDtlChangeById(String id) throws Exception;
-
-    List<SaleOrdeDetailChange> findOrdeDtlChangeList(PageData object) throws Exception;
-    List<SaleOrdeDetailChange> findOrdeDtlChangeListByParentId(String parentId) throws Exception;
+    SaleOrderChange findOrdeChange(PageData object) throws Exception;
+    SaleOrderChange findOrdeChangeById(String id) throws Exception;
+    List<SaleOrderChange> findOrdeChangeList(PageData object) throws Exception;
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**
@@ -107,7 +103,9 @@ public interface SaleOrdeDetailChangeService {
     * @return      返回对象ResultModel
     * @throws Exception
     */
-    ResultModel listPageSaleOrdeDtlChange(PageData pd) throws Exception;
+    ResultModel listPageSaleOrdeChange(PageData pd) throws Exception;
+
+    ResultModel addSaleOrdeChange(PageData pageData) throws Exception;
 
 
 }

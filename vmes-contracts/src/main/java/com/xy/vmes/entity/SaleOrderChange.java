@@ -12,7 +12,7 @@ import java.util.*;
  * @date 2019-11-05
  */
 @TableName("vmes_saleOrde_change")
-public class SaleOrdeChange implements Serializable {
+public class SaleOrderChange implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@TableField("id")

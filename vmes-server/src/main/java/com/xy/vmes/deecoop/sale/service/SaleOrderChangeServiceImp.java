@@ -2,15 +2,15 @@ package com.xy.vmes.deecoop.sale.service;
 
 import com.xy.vmes.common.util.DateFormat;
 import com.xy.vmes.deecoop.sale.dao.SaleOrdeChangeMapper;
-import com.xy.vmes.entity.SaleOrdeChange;
-import com.xy.vmes.entity.SaleOrdeDetailChange;
-import com.xy.vmes.service.SaleOrdeChangeService;
+import com.xy.vmes.entity.SaleOrderChange;
+import com.xy.vmes.entity.SaleOrderDetailChange;
+import com.xy.vmes.service.SaleOrderChangeService;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.service.ColumnService;
-import com.xy.vmes.service.SaleOrdeDetailChangeService;
+import com.xy.vmes.service.SaleOrderDetailChangeService;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.YvanUtil;
@@ -31,12 +31,12 @@ import com.yvan.Conv;
 */
 @Service
 @Transactional(readOnly = false)
-public class SaleOrdeChangeServiceImp implements SaleOrdeChangeService {
+public class SaleOrderChangeServiceImp implements SaleOrderChangeService {
     @Autowired
     private SaleOrdeChangeMapper saleOrdeChangeMapper;
 
     @Autowired
-    private SaleOrdeDetailChangeService ordeDtlChangeService;
+    private SaleOrderDetailChangeService ordeDtlChangeService;
 
     @Autowired
     private ColumnService columnService;
@@ -46,7 +46,7 @@ public class SaleOrdeChangeServiceImp implements SaleOrdeChangeService {
      * 创建时间：2019-11-05
      */
     @Override
-    public void save(SaleOrdeChange object) throws Exception {
+    public void save(SaleOrderChange object) throws Exception {
         object.setId(Conv.createUuid());
         object.setCdate(new Date());
         object.setUdate(new Date());
@@ -58,7 +58,7 @@ public class SaleOrdeChangeServiceImp implements SaleOrdeChangeService {
      * 创建时间：2019-11-05
      */
     @Override
-    public SaleOrdeChange selectById(String id) throws Exception{
+    public SaleOrderChange selectById(String id) throws Exception{
         return saleOrdeChangeMapper.selectById(id);
     }
 
@@ -67,8 +67,8 @@ public class SaleOrdeChangeServiceImp implements SaleOrdeChangeService {
      * 创建时间：2019-11-05
      */
     @Override
-    public List<SaleOrdeChange> selectByColumnMap(Map columnMap) throws Exception {
-        List<SaleOrdeChange> warehouseCheckDetailList = saleOrdeChangeMapper.selectByMap(columnMap);
+    public List<SaleOrderChange> selectByColumnMap(Map columnMap) throws Exception {
+        List<SaleOrderChange> warehouseCheckDetailList = saleOrdeChangeMapper.selectByMap(columnMap);
         return warehouseCheckDetailList;
     }
 
@@ -77,7 +77,7 @@ public class SaleOrdeChangeServiceImp implements SaleOrdeChangeService {
      * 创建时间：2019-11-05
      */
     @Override
-    public void update(SaleOrdeChange object) throws Exception {
+    public void update(SaleOrderChange object) throws Exception {
         object.setUdate(new Date());
         saleOrdeChangeMapper.updateById(object);
     }
@@ -87,7 +87,7 @@ public class SaleOrdeChangeServiceImp implements SaleOrdeChangeService {
      * 创建时间：2019-11-05
      */
     @Override
-    public void updateAll(SaleOrdeChange object) throws Exception {
+    public void updateAll(SaleOrderChange object) throws Exception {
         object.setUdate(new Date());
         saleOrdeChangeMapper.updateAllColumnById(object);
     }
@@ -132,7 +132,7 @@ public class SaleOrdeChangeServiceImp implements SaleOrdeChangeService {
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2019-11-05
      */
-    public List<SaleOrdeChange> dataList(PageData pd) throws Exception {
+    public List<SaleOrderChange> dataList(PageData pd) throws Exception {
         return saleOrdeChangeMapper.dataList(pd);
     }
 
@@ -165,28 +165,28 @@ public class SaleOrdeChangeServiceImp implements SaleOrdeChangeService {
     * @return
     * @throws Exception
     */
-    public List<SaleOrdeChange> findDataList(PageData pageData, Boolean isQueryAll) throws Exception {
+    public List<SaleOrderChange> findDataList(PageData pageData, Boolean isQueryAll) throws Exception {
         int pageDataSize = 0;
         if (pageData != null && pageData.size() > 0) {
             pageDataSize = pageData.size();
         }
 
         if ((isQueryAll == null || true != isQueryAll.booleanValue()) && pageDataSize == 0) {
-            return new ArrayList<SaleOrdeChange>();
+            return new ArrayList<SaleOrderChange>();
         }
 
         return this.dataList(pageData);
     }
 
-    public SaleOrdeChange findOrdeChange(PageData object) throws Exception {
-        List<SaleOrdeChange> objectList = this.findOrdeChangeList(object);
+    public SaleOrderChange findOrdeChange(PageData object) throws Exception {
+        List<SaleOrderChange> objectList = this.findOrdeChangeList(object);
         if (objectList != null && objectList.size() > 0) {
             return objectList.get(0);
         }
 
         return null;
     }
-    public SaleOrdeChange findOrdeChangeById(String id) throws Exception {
+    public SaleOrderChange findOrdeChangeById(String id) throws Exception {
         if (id == null || id.trim().length() == 0) {return null;}
 
         PageData findMap = new PageData();
@@ -194,7 +194,7 @@ public class SaleOrdeChangeServiceImp implements SaleOrdeChangeService {
 
         return this.findOrdeChange(findMap);
     }
-    public List<SaleOrdeChange> findOrdeChangeList(PageData object) throws Exception {
+    public List<SaleOrderChange> findOrdeChangeList(PageData object) throws Exception {
         return this.findDataList(object, null);
     }
 
@@ -281,7 +281,7 @@ public class SaleOrdeChangeServiceImp implements SaleOrdeChangeService {
         }
 
         //1. 创建订单变更记录表
-        SaleOrdeChange addOrdeChange = new SaleOrdeChange();
+        SaleOrderChange addOrdeChange = new SaleOrderChange();
         addOrdeChange.setCompanyId(companyId);
         addOrdeChange.setCuser(cuser);
         addOrdeChange.setUuser(cuser);
@@ -300,7 +300,7 @@ public class SaleOrdeChangeServiceImp implements SaleOrdeChangeService {
 
         if (mapList != null && mapList.size() > 0) {
             for (Map<String, String> mapObject : mapList) {
-                SaleOrdeDetailChange addDtlChange = new SaleOrdeDetailChange();
+                SaleOrderDetailChange addDtlChange = new SaleOrderDetailChange();
                 addDtlChange.setParentId(addOrdeChange.getId());
                 addDtlChange.setCuser(cuser);
                 addDtlChange.setUuser(cuser);

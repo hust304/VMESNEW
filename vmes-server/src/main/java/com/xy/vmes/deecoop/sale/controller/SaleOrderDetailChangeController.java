@@ -1,6 +1,6 @@
 package com.xy.vmes.deecoop.sale.controller;
 
-import com.xy.vmes.service.SaleOrdeDetailChangeService;
+import com.xy.vmes.service.SaleOrderDetailChangeService;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
@@ -17,11 +17,11 @@ import org.springframework.web.bind.annotation.*;
 */
 @RestController
 @Slf4j
-public class SaleOrdeDetailChangeController {
-    private Logger logger = LoggerFactory.getLogger(SaleOrdeDetailChangeController.class);
+public class SaleOrderDetailChangeController {
+    private Logger logger = LoggerFactory.getLogger(SaleOrderDetailChangeController.class);
 
     @Autowired
-    private SaleOrdeDetailChangeService saleOrdeDtlChangeService;
+    private SaleOrderDetailChangeService saleOrdeDtlChangeService;
 
     /**
     * @author 陈刚 自动创建，可以修改

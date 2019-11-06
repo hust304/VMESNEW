@@ -61,7 +61,7 @@
     </insert>
 
     <!-- 列表(全部) 自动创建，禁止修改-->
-    <select id="dataList" parameterType="com.yvan.PageData" resultType="com.xy.vmes.entity.SaleOrdeChange">
+    <select id="dataList" parameterType="com.yvan.PageData" resultType="com.xy.vmes.entity.SaleOrderChange">
         select
             id id,
             company_id companyId,
