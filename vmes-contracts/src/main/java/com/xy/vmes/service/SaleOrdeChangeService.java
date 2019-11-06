@@ -105,6 +105,8 @@ public interface SaleOrdeChangeService {
     */
     ResultModel listPageSaleOrdeChange(PageData pd) throws Exception;
 
+    ResultModel addSaleOrdeChange(PageData pageData) throws Exception;
+
 
 }
 

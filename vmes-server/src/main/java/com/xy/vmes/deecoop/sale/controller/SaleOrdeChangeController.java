@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -35,6 +36,24 @@ public class SaleOrdeChangeController {
         ResultModel model = saleOrdeChangeService.listPageSaleOrdeChange(pd);
         Long endTime = System.currentTimeMillis();
         logger.info("################/sale/saleOrdeChange/listPageSaleOrdeChange 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 添加订单变更记录
+     * @author 陈刚
+     * @date 2019-11-05
+     * @throws Exception
+     */
+    @PostMapping("/sale/saleOrdeChange/addSaleOrdeChange")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel addSaleOrdeChange() throws Exception {
+        logger.info("################/sale/saleOrdeChange/addSaleOrdeChange 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pageData = HttpUtils.parsePageData();
+        ResultModel model = saleOrdeChangeService.addSaleOrdeChange(pageData);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleOrdeChange/addSaleOrdeChange 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 

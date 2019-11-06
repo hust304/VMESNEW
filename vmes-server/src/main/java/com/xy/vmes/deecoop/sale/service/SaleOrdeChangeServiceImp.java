@@ -1,19 +1,26 @@
 package com.xy.vmes.deecoop.sale.service;
 
+import com.xy.vmes.common.util.DateFormat;
 import com.xy.vmes.deecoop.sale.dao.SaleOrdeChangeMapper;
 import com.xy.vmes.entity.SaleOrdeChange;
+import com.xy.vmes.entity.SaleOrdeDtlChange;
 import com.xy.vmes.service.SaleOrdeChangeService;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.service.ColumnService;
+import com.xy.vmes.service.SaleOrdeDtlChangeService;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
+import com.yvan.YvanUtil;
+import com.yvan.common.util.Common;
 import com.yvan.springmvc.ResultModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
 import java.util.*;
 import com.yvan.Conv;
 
@@ -27,6 +34,10 @@ import com.yvan.Conv;
 public class SaleOrdeChangeServiceImp implements SaleOrdeChangeService {
     @Autowired
     private SaleOrdeChangeMapper saleOrdeChangeMapper;
+
+    @Autowired
+    private SaleOrdeDtlChangeService ordeDtlChangeService;
+
     @Autowired
     private ColumnService columnService;
 
@@ -233,6 +244,182 @@ public class SaleOrdeChangeServiceImp implements SaleOrdeChangeService {
         result.put("titles",titleMap.get("titles"));
         result.put("varList",varMapList);
         model.putResult(result);
+        return model;
+    }
+
+    public ResultModel addSaleOrdeChange(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+
+        String cuser = pageData.getString("cuser");
+        String companyId = pageData.getString("currentCompanyId");
+        if (companyId == null || companyId.trim().length() == 0) {
+            model.putCode("1");
+            model.putMsg("企业id为空或空字符串！");
+            return model;
+        }
+
+        //变更订单id
+        String orderId = pageData.getString("orderId");
+        //(变更前)发票类型
+        String receiptTypeBefore = pageData.getString("receiptTypeBefore");
+        //(变更后)发票类型
+        String receiptTypeAfter = pageData.getString("receiptTypeAfter");
+
+        String dtlJsonStr = pageData.getString("dtlJsonStr");
+        if (dtlJsonStr == null || dtlJsonStr.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("请至少选择一行数据！");
+            return model;
+        }
+
+        List<Map<String, String>> mapList = (List<Map<String, String>>) YvanUtil.jsonToList(dtlJsonStr);
+        if (mapList == null || mapList.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("Json字符串-转换成List错误！");
+            return model;
+        }
+
+        //1. 创建订单变更记录表
+        SaleOrdeChange addOrdeChange = new SaleOrdeChange();
+        addOrdeChange.setCompanyId(companyId);
+        addOrdeChange.setCuser(cuser);
+        addOrdeChange.setUuser(cuser);
+
+        addOrdeChange.setOrderId(orderId);
+        //状态(0:审核中 1:完成:审核通过 2:取消:审核不通过)
+        addOrdeChange.setState("0");
+                addOrdeChange.setReceiptTypeBefore(receiptTypeBefore);
+        addOrdeChange.setReceiptTypeAfter(receiptTypeAfter);
+        this.save(addOrdeChange);
+
+        //2. 创建订单明细变更记录表
+        //当前系统时间()
+        String sysDateStr = DateFormat.date2String(new Date(), DateFormat.DEFAULT_DATE_FORMAT);
+        Date sysDate = DateFormat.dateString2Date(sysDateStr, DateFormat.DEFAULT_DATE_FORMAT);
+
+        if (mapList != null && mapList.size() > 0) {
+            for (Map<String, String> mapObject : mapList) {
+                SaleOrdeDtlChange addDtlChange = new SaleOrdeDtlChange();
+                addDtlChange.setParentId(addOrdeChange.getId());
+                addDtlChange.setCuser(cuser);
+                addDtlChange.setUuser(cuser);
+
+                //订单明细id orderDtlId
+                String orderDtlId = mapObject.get("orderDtlId");
+                addDtlChange.setOrderDtlId(orderDtlId);
+
+                //订单订购数量(变更前-订单单位) orderCountBefore
+                BigDecimal orderCountBefore = BigDecimal.valueOf(0D);
+                String orderCountBeforeStr = mapObject.get("orderCountBefore");
+                if (orderCountBeforeStr != null && orderCountBeforeStr.trim().length() > 0) {
+                    try {
+                        orderCountBefore = new BigDecimal(orderCountBeforeStr);
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                }
+                //四舍五入到2位小数
+                orderCountBefore = orderCountBefore.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                addDtlChange.setOrderCountBefore(orderCountBefore);
+
+
+                //订单订购数量(变更后-订单单位) orderCountAfter
+                BigDecimal orderCountAfter = BigDecimal.valueOf(0D);
+                String orderCountAfterStr = mapObject.get("orderCountAfter");
+                if (orderCountAfterStr != null && orderCountAfterStr.trim().length() > 0) {
+                    try {
+                        orderCountAfter = new BigDecimal(orderCountAfterStr);
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                }
+                //四舍五入到2位小数
+                orderCountAfter = orderCountAfter.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                addDtlChange.setOrderCountAfter(orderCountAfter);
+
+
+                //货品单价(变更前) productPriceBefore
+                BigDecimal productPriceBefore = BigDecimal.valueOf(0D);
+                String productPriceBeforeStr = mapObject.get("productPriceBefore");
+                if (productPriceBeforeStr != null && productPriceBeforeStr.trim().length() > 0) {
+                    try {
+                        productPriceBefore = new BigDecimal(productPriceBeforeStr);
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                }
+                //四舍五入到2位小数
+                productPriceBefore = productPriceBefore.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                addDtlChange.setProductPriceBefore(productPriceBefore);
+
+                //货品单价(变更后) productPriceAfter
+                BigDecimal productPriceAfter = BigDecimal.valueOf(0D);
+                String productPriceAfterStr = mapObject.get("productPriceAfter");
+                if (productPriceAfterStr != null && productPriceAfterStr.trim().length() > 0) {
+                    try {
+                        productPriceAfter = new BigDecimal(productPriceAfterStr);
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                }
+                //四舍五入到2位小数
+                productPriceAfter = productPriceAfter.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                addDtlChange.setOrderCountAfter(productPriceAfter);
+
+                //约定交期(变更前) deliverDateBefore
+                Date deliverDateBefore = sysDate;
+                String deliverDateBeforeStr = mapObject.get("productPriceAfter");
+                if (deliverDateBeforeStr != null && deliverDateBeforeStr.trim().length() > 0) {
+                    Date dateTemp = DateFormat.dateString2Date(deliverDateBeforeStr, DateFormat.DEFAULT_DATE_FORMAT);
+                    if (dateTemp != null) {
+                        deliverDateBefore = dateTemp;
+                    }
+                }
+                addDtlChange.setDeliverDateBefore(deliverDateBefore);
+
+                //约定交期(变更后) deliverDateAfter
+                Date deliverDateAfter = sysDate;
+                String deliverDateAfterStr = mapObject.get("deliverDateAfter");
+                if (deliverDateAfterStr != null && deliverDateAfterStr.trim().length() > 0) {
+                    Date dateTemp = DateFormat.dateString2Date(deliverDateAfterStr, DateFormat.DEFAULT_DATE_FORMAT);
+                    if (dateTemp != null) {
+                        deliverDateAfter = dateTemp;
+                    }
+                }
+                addDtlChange.setDeliverDateAfter(deliverDateAfter);
+
+                //发货单数量(订单单位) deliverCount
+                BigDecimal deliverCount = BigDecimal.valueOf(0D);
+                String deliverCountStr = mapObject.get("deliverCount");
+                if (deliverCountStr != null && deliverCountStr.trim().length() > 0) {
+                    try {
+                        deliverCount = new BigDecimal(deliverCountStr);
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                }
+                //四舍五入到2位小数
+                deliverCount = deliverCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                addDtlChange.setDeliverCount(deliverCount);
+
+                //完成发货数量(订单单位) endDeliverCount
+                BigDecimal endDeliverCount = BigDecimal.valueOf(0D);
+                String endDeliverCountStr = mapObject.get("endDeliverCount");
+                if (endDeliverCountStr != null && endDeliverCountStr.trim().length() > 0) {
+                    try {
+                        endDeliverCount = new BigDecimal(endDeliverCountStr);
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                }
+                //四舍五入到2位小数
+                endDeliverCount = endDeliverCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                addDtlChange.setEndDeliverCount(endDeliverCount);
+
+                ordeDtlChangeService.save(addDtlChange);
+            }
+        }
+
         return model;
     }
 
