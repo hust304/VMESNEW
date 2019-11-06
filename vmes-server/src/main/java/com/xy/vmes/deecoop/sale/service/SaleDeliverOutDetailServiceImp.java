@@ -66,7 +66,7 @@ public class SaleDeliverOutDetailServiceImp implements SaleDeliverOutDetailServi
      */
     public Map<String, Object> findOutDetailByOrderDetail(String outDtlId, String state) {
         if (outDtlId == null || outDtlId.trim().length() == 0) {return new HashMap<String, Object>();}
-        if (state == null || state.trim().length() == 0) {return new HashMap<String, Object>();}
+        //if (state == null || state.trim().length() == 0) {return new HashMap<String, Object>();}
 
         PageData findMap = new PageData();
         findMap.put("outDtlId", outDtlId);
