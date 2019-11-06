@@ -203,7 +203,7 @@ public class SaleOrderDetailChangeServiceImp implements SaleOrderDetailChangeSer
     * @return      返回对象ResultModel
     * @throws Exception
     */
-    public ResultModel listPageSaleOrdeDtlChange(PageData pd) throws Exception{
+    public ResultModel listPageSaleOrderDetailChange(PageData pd) throws Exception{
         ResultModel model = new ResultModel();
         List<Column> columnList = columnService.findColumnList("saleOrdeDtlChange");
         if (columnList == null || columnList.size() == 0) {

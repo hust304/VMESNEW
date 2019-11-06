@@ -27,14 +27,14 @@ public class SaleOrderDetailChangeController {
     * @author 陈刚 自动创建，可以修改
     * @date 2019-11-05
     */
-    @PostMapping("/sale/saleOrdeDtlChange/listPageSaleOrdeDtlChange")
-    public ResultModel listPageSaleOrdeDtlChange() throws Exception {
-        logger.info("################/sale/saleOrdeDtlChange/listPageSaleOrdeDtlChange 执行开始 ################# ");
+    @PostMapping("/sale/saleOrderDetailChange/listPageSaleOrderDetailChange")
+    public ResultModel listPageSaleOrderDetailChange() throws Exception {
+        logger.info("################/sale/saleOrderDetailChange/listPageSaleOrderDetailChange 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         PageData pd = HttpUtils.parsePageData();
-        ResultModel model = saleOrdeDtlChangeService.listPageSaleOrdeDtlChange(pd);
+        ResultModel model = saleOrdeDtlChangeService.listPageSaleOrderDetailChange(pd);
         Long endTime = System.currentTimeMillis();
-        logger.info("################/sale/saleOrdeDtlChange/listPageSaleOrdeDtlChange 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleOrderDetailChange/listPageSaleOrderDetailChange 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 

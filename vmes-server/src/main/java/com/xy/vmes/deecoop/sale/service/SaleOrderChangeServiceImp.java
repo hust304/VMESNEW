@@ -205,7 +205,7 @@ public class SaleOrderChangeServiceImp implements SaleOrderChangeService {
     * @return      返回对象ResultModel
     * @throws Exception
     */
-    public ResultModel listPageSaleOrdeChange(PageData pd) throws Exception{
+    public ResultModel listPageSaleOrderChange(PageData pd) throws Exception{
         ResultModel model = new ResultModel();
         Pagination pg = HttpUtils.parsePagination(pd);
 
@@ -248,7 +248,7 @@ public class SaleOrderChangeServiceImp implements SaleOrderChangeService {
         return model;
     }
 
-    public ResultModel addSaleOrdeChange(PageData pageData) throws Exception {
+    public ResultModel addSaleOrderChange(PageData pageData) throws Exception {
         ResultModel model = new ResultModel();
 
         String cuser = pageData.getString("cuser");

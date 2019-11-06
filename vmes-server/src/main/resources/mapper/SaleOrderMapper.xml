@@ -255,7 +255,7 @@
             left join vmes_sale_order_detail detail on saleOrder.id = detail.parent_id
             <!--销售订单变更记录表-->
             <!--state:状态(0:审核中 1:完成:审核通过 2:取消:审核不通过)-->
-            left join vmes_saleOrde_change ordeChange on saleOrder.id = ordeChange.order_id and ordeChange.state = '0'
+            left join vmes_sale_order_change ordeChange on saleOrder.id = ordeChange.order_id and ordeChange.state = '0'
         <where>
             <if test="currentCompanyId != null and currentCompanyId != ''" >
                 and saleOrder.company_id = #{currentCompanyId}

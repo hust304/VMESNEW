@@ -107,7 +107,7 @@ public interface SaleOrderDetailChangeService {
     * @return      返回对象ResultModel
     * @throws Exception
     */
-    ResultModel listPageSaleOrdeDtlChange(PageData pd) throws Exception;
+    ResultModel listPageSaleOrderDetailChange(PageData pd) throws Exception;
 
 
 }

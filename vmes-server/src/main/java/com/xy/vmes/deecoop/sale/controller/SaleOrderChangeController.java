@@ -28,14 +28,14 @@ public class SaleOrderChangeController {
     * @author 陈刚 自动创建，可以修改
     * @date 2019-11-05
     */
-    @PostMapping("/sale/saleOrdeChange/listPageSaleOrdeChange")
-    public ResultModel listPageSaleOrdeChange() throws Exception {
-        logger.info("################/sale/saleOrdeChange/listPageSaleOrdeChange 执行开始 ################# ");
+    @PostMapping("/sale/saleOrderChange/listPageSaleOrderChange")
+    public ResultModel listPageSaleOrderChange() throws Exception {
+        logger.info("################/sale/saleOrderChange/listPageSaleOrderChange 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         PageData pd = HttpUtils.parsePageData();
-        ResultModel model = saleOrdeChangeService.listPageSaleOrdeChange(pd);
+        ResultModel model = saleOrdeChangeService.listPageSaleOrderChange(pd);
         Long endTime = System.currentTimeMillis();
-        logger.info("################/sale/saleOrdeChange/listPageSaleOrdeChange 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleOrderChange/listPageSaleOrderChange 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -45,15 +45,15 @@ public class SaleOrderChangeController {
      * @date 2019-11-05
      * @throws Exception
      */
-    @PostMapping("/sale/saleOrdeChange/addSaleOrdeChange")
+    @PostMapping("/sale/saleOrderChange/addSaleOrderChange")
     @Transactional(rollbackFor=Exception.class)
-    public ResultModel addSaleOrdeChange() throws Exception {
-        logger.info("################/sale/saleOrdeChange/addSaleOrdeChange 执行开始 ################# ");
+    public ResultModel addSaleOrderChange() throws Exception {
+        logger.info("################/sale/saleOrderChange/addSaleOrderChange 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         PageData pageData = HttpUtils.parsePageData();
-        ResultModel model = saleOrdeChangeService.addSaleOrdeChange(pageData);
+        ResultModel model = saleOrdeChangeService.addSaleOrderChange(pageData);
         Long endTime = System.currentTimeMillis();
-        logger.info("################/sale/saleOrdeChange/addSaleOrdeChange 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/sale/saleOrderChange/addSaleOrderChange 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
