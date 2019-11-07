@@ -3,14 +3,13 @@ package com.xy.vmes.deecoop.sale.service;
 import com.xy.vmes.common.util.DateFormat;
 import com.xy.vmes.deecoop.sale.dao.SaleOrderChangeMapper;
 import com.xy.vmes.entity.SaleOrderChange;
+import com.xy.vmes.entity.SaleOrderDetail;
 import com.xy.vmes.entity.SaleOrderDetailChange;
-import com.xy.vmes.service.SaleOrderChangeService;
+import com.xy.vmes.service.*;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.entity.Column;
-import com.xy.vmes.service.ColumnService;
-import com.xy.vmes.service.SaleOrderDetailChangeService;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.YvanUtil;
@@ -37,6 +36,11 @@ public class SaleOrderChangeServiceImp implements SaleOrderChangeService {
 
     @Autowired
     private SaleOrderDetailChangeService ordeDtlChangeService;
+
+    @Autowired
+    private SaleOrderService saleOrderService;
+    @Autowired
+    private SaleOrderDetailService saleOrderDetailService;
 
     @Autowired
     private ColumnService columnService;
@@ -365,7 +369,7 @@ public class SaleOrderChangeServiceImp implements SaleOrderChangeService {
                 }
                 //四舍五入到2位小数
                 productPriceAfter = productPriceAfter.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-                addDtlChange.setOrderCountAfter(productPriceAfter);
+                addDtlChange.setProductPriceAfter(productPriceAfter);
 
                 //约定交期(变更前) deliverDateBefore
                 Date deliverDateBefore = sysDate;
@@ -424,7 +428,119 @@ public class SaleOrderChangeServiceImp implements SaleOrderChangeService {
         return model;
     }
 
+    /**
+     * 审核通过-订单变更
+     * 接口参数:orderChangeId: 销售订单变更id
+     * @param pageData
+     * @return
+     * @throws Exception
+     */
+    public ResultModel auditPassSaleOrderChange(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
 
+        String orderChangeId = pageData.getString("orderChangeId");
+        if (orderChangeId == null || orderChangeId.trim().length() == 0) {
+            model.putCode("1");
+            model.putMsg("销售订单变更id为空或空字符串！");
+            return model;
+        }
+
+        //1. 根据(订单变更id) 查询vmes_sale_order_detail_change
+        PageData findMap = new PageData();
+        findMap.put("parentId", orderChangeId);
+        List<Map> mapList = ordeDtlChangeService.getDataListPage(findMap, null);
+
+        //遍历查询结果集
+        if (mapList != null && mapList.size() > 0) {
+            for (Map<String, Object> objectMap : mapList) {
+                SaleOrderDetail addOrderDetail = null;
+                SaleOrderDetail editOrderDetail = null;
+
+                //根据订单明细变更记录-拆分订单明细
+                ordeDtlChangeService.findSaleOrderDetailByChangeMap(objectMap, addOrderDetail, editOrderDetail);
+
+                if (addOrderDetail != null) {saleOrderDetailService.save(addOrderDetail);}
+                if (editOrderDetail != null) {saleOrderDetailService.update(editOrderDetail);}
+            }
+        }
+
+
+        return model;
+    }
+
+    public ResultModel auditDisagreeSaleOrderChange(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+        return model;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //订单变更审核 私有方法
+
+    /**
+     * 返回是否发生变更(变更前,变更后)日期
+     * true : 发生变更
+     * false: 未发生变更
+     *
+     * @param beforeDate 变更前日期
+     * @param afterDate  变更后日期
+     * @return
+     */
+    private boolean isChangeByDate(Date beforeDate, Date afterDate) {
+        long beforeDateLong = -1;
+        if (beforeDate != null) {
+            String dateStr = DateFormat.date2String(beforeDate, DateFormat.DEFAULT_DATE_FORMAT);
+            if (dateStr != null && dateStr.trim().length() > 0) {
+                Date DateTemp = DateFormat.dateString2Date(dateStr, DateFormat.DEFAULT_DATE_FORMAT);
+                if (DateTemp != null) {
+                    beforeDateLong = DateTemp.getTime();
+                }
+            }
+        }
+
+        long afterDateLong = -1;
+        if (afterDate != null) {
+            String dateStr = DateFormat.date2String(afterDate, DateFormat.DEFAULT_DATE_FORMAT);
+            if (dateStr != null && dateStr.trim().length() > 0) {
+                Date DateTemp = DateFormat.dateString2Date(dateStr, DateFormat.DEFAULT_DATE_FORMAT);
+                if (DateTemp != null) {
+                    afterDateLong = DateTemp.getTime();
+                }
+            }
+        }
+
+        if (beforeDateLong != afterDateLong) {return true;}
+
+        return false;
+    }
+
+    /**
+     * 返回是否发生变更(变更前,变更后)数值
+     * true : 发生变更
+     * false: 未发生变更
+     *
+     * @param beforeBigDecimal 变更前数值
+     * @param afterBigDecimal  变更后数值
+     * @return
+     */
+    private boolean isChangeByBigDecimal(BigDecimal beforeBigDecimal, BigDecimal afterBigDecimal) {
+        double beforeDouble = -1D;
+        if (beforeBigDecimal != null) {
+            //四舍五入到2位小数
+            beforeBigDecimal = beforeBigDecimal.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+            beforeDouble = beforeBigDecimal.doubleValue();
+        }
+
+        double afterDouble = -1D;
+        if (afterBigDecimal != null) {
+            //四舍五入到2位小数
+            afterBigDecimal = afterBigDecimal.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+            afterDouble = afterBigDecimal.doubleValue();
+        }
+
+        if (beforeDouble != afterDouble) {return true;}
+
+        return false;
+    }
 }
 
 

@@ -107,6 +107,24 @@ public interface SaleOrderChangeService {
 
     ResultModel addSaleOrderChange(PageData pageData) throws Exception;
 
+    /**
+     * 审核通过-订单变更
+     * 接口参数:orderChangeId: 销售订单变更id
+     * @param pageData
+     * @return
+     * @throws Exception
+     */
+    ResultModel auditPassSaleOrderChange(PageData pageData) throws Exception;
+
+    /**
+     * 审核不同意-订单变更
+     *
+     * @param pageData
+     * @return
+     * @throws Exception
+     */
+    ResultModel auditDisagreeSaleOrderChange(PageData pageData) throws Exception;
+
 
 }
 

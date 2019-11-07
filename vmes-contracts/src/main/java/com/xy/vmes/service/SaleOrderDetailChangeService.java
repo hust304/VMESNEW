@@ -1,6 +1,7 @@
 package com.xy.vmes.service;
 
 
+import com.xy.vmes.entity.SaleOrderDetail;
 import com.xy.vmes.entity.SaleOrderDetailChange;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.yvan.PageData;
@@ -108,6 +109,44 @@ public interface SaleOrderDetailChangeService {
     * @throws Exception
     */
     ResultModel listPageSaleOrderDetailChange(PageData pd) throws Exception;
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * 根据订单明细变更记录-拆分订单明细
+     * 订购数量变更范围: 大于等于(发货数量)-可变更(订购数量)最小值与(发货数量)相关-如果(发货数量:=0) 任意大于零的数
+     * 单价变更范围:  订购数量未发生变更-等于当前订单的订购数量-单价不允许变更
+     *              订购数量发生变更-任意大于零的数
+     *
+     * 示例订单明细: 订购数量:10 单价:1 发货数量:0
+     * 订购数量变更范围: 任意大于零的数
+     * 单价变更范围:    任意大于零的数
+     *
+     * 示例订单明细: 订购数量:10 单价:1 发货数量:5
+     * 订购数量变更范围: 大于等于5的数
+     * 单价变更范围:    任意大于零的数
+     *
+     * 示例订单明细: 订购数量:10 单价:1 发货数量:10
+     * 订购数量变更范围: 大于等于10的数
+     * 单价变更范围:    不允许变更
+     *
+     * 订购数量:10 单价:1 发货数量:5
+     * 情况1：只有价格变更 单价: 1 变更为 2
+     * 订单明细: (修改)订购数量:10 单价:1 (订购数量:10 修改为 5)
+     *        (修改后)订购数量:5 单价:1
+     *          (插入)订购数量:5  单价:2
+     *
+     * 订购数量:10 单价:1 发货数量:5
+     * 情况2：只有订购数量变更 订购数量: 10 变更为 7
+     * 订单明细: (修改)订购数量:10 单价:1 (订购数量:10 修改为 5)
+     *        (修改后)订购数量:5 单价:1
+     *          (插入)订购数量:2  单价:1
+     *
+     * @param objectMap  查询结构体(SaleOrderDetailChangeMapper.getDataListPage)
+     * @param addObject
+     * @param editObject
+     */
+    void findSaleOrderDetailByChangeMap(Map<String, Object> objectMap, SaleOrderDetail addObject, SaleOrderDetail editObject) throws Exception;
 
 
 }

@@ -57,7 +57,9 @@
             (replace(uuid(), '-', ''), 'saleOrderChange', 'sysCode', '订单编号', 16, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
             (replace(uuid(), '-', ''), 'saleOrderChange', 'makeName', '制单人', 17, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
             (replace(uuid(), '-', ''), 'saleOrderChange', 'customerName', '客户名称', 18, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
-            (replace(uuid(), '-', ''), 'saleOrderChange', 'orderDate', '下单日期', 19, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin')
+            (replace(uuid(), '-', ''), 'saleOrderChange', 'orderDate', '下单日期', 19, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
+
+            (replace(uuid(), '-', ''), 'saleOrderChange', 'changeStateName', '状态', 20, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin')
 
     </insert>
 
@@ -126,6 +128,14 @@
         ordeChange.audit_id auditId,
         ordeChange.state state,
 
+        <!--状态(0:审核中 1:完成:审核通过 2:取消:审核不通过)-->
+        CASE
+            WHEN ordeChange.state = '0' THEN '审核中'
+            WHEN ordeChange.state = '1' THEN '审核通过'
+            WHEN ordeChange.state = '2' THEN '审核不通过'
+        ELSE null
+        END changeStateName,
+
         ordeChange.receipt_type_before receiptTypeBefore,
         CASE
             WHEN ordeChange.receipt_type_before = '1' THEN '不开票'
@@ -162,11 +172,32 @@
             <if test="companyId != null and companyId != ''" >
                 and ordeChange.company_id = #{companyId}
             </if>
+            <if test="currentCompanyId != null and currentCompanyId != ''" >
+                and ordeChange.company_id = #{currentCompanyId}
+            </if>
+
             <if test="orderId != null and orderId != ''" >
                 and ordeChange.order_id = #{orderId}
             </if>
             <if test="state != null and state != ''" >
                 and ordeChange.state = #{state}
+            </if>
+
+            <if test="sysCode != null and sysCode != ''" >
+                and saleOrder.sys_code = #{sysCode}
+            </if>
+            <if test="orderNumber != null and orderNumber != ''" >
+                and saleOrder.order_number = #{orderNumber}
+            </if>
+            <if test="customerName != null and customerName != ''">
+                and customer.name LIKE CONCAT(CONCAT(#{customerName}),'%')
+            </if>
+
+            <if test="orderDateBegin != null and orderDateBegin != ''">
+                <![CDATA[ and saleOrder.order_date >= #{orderDateBegin} ]]>
+            </if>
+            <if test="orderDateEnd != null and orderDateEnd != ''">
+                <![CDATA[ and saleOrder.order_date <= #{orderDateEnd} ]]>
             </if>
 
             <!--queryStr 自定义sql查询语句-->

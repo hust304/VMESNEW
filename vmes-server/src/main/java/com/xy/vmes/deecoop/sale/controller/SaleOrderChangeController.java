@@ -57,6 +57,44 @@ public class SaleOrderChangeController {
         return model;
     }
 
+    /**
+     * 审核通过-订单变更
+     * 接口参数:orderChangeId: 销售订单变更id
+     *
+     * @author 陈刚
+     * @date 2018-12-10
+     * @throws Exception
+     */
+    @PostMapping("/sale/saleOrderChange/auditPassSaleOrderChange")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel auditPassSaleOrderChange() throws Exception {
+        logger.info("################/sale/saleOrderChange/auditPassSaleOrderChange 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pageData = HttpUtils.parsePageData();
+        ResultModel model = saleOrdeChangeService.auditPassSaleOrderChange(pageData);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleOrderChange/auditPassSaleOrderChange 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 审核不同意-订单变更
+     *
+     * @return
+     * @throws Exception
+     */
+    @PostMapping("/sale/saleOrderChange/auditDisagreeSaleOrderChange")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel auditDisagreeSaleOrderChange() throws Exception {
+        logger.info("################/sale/saleOrderChange/auditDisagreeSaleOrderChange 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pageData = HttpUtils.parsePageData();
+        ResultModel model = saleOrdeChangeService.auditDisagreeSaleOrderChange(pageData);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleOrderChange/auditDisagreeSaleOrderChange 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
 }
 
 

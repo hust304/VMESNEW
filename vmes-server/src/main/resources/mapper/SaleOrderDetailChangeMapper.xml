@@ -65,6 +65,8 @@
             (replace(uuid(), '-', ''), 'saleOrderDetailChange', 'p2nFormula', 'p2nFormula', 24, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
             (replace(uuid(), '-', ''), 'saleOrderDetailChange', 'n2pFormula', 'n2pFormula', 25, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
 
+            (replace(uuid(), '-', ''), 'saleOrderDetailChange', 'orderCount', '订单订购数量', 25, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
+
     </insert>
 
     <!-- 列表(全部) 自动创建，禁止修改-->
@@ -135,8 +137,8 @@
 
             round(ifnull(dtlChange.product_price_before, 0), 2) productPriceBefore,
             round(ifnull(dtlChange.product_price_after, 0), 2) productPriceAfter,
-            dtlChange.deliver_date_before deliverDateBefore,
-            dtlChange.deliver_date_after deliverDateAfter,
+            DATE_FORMAT(dtlChange.deliver_date_before,'%Y-%m-%d') deliverDateBefore,
+            DATE_FORMAT(dtlChange.deliver_date_after,'%Y-%m-%d') deliverDateAfter,
             round(ifnull(dtlChange.deliver_count, 0), 2) deliverCount,
 
             round(ifnull(dtlChange.end_deliver_count, 0), 2) endDeliverCount,
@@ -165,7 +167,10 @@
             orderDtl.order_unit orderUnit,
             orderUnit.name orderUnitName,
             orderProdUnit.np_formula n2pFormula,
-            orderProdUnit.pn_formula p2nFormula
+            orderProdUnit.pn_formula p2nFormula,
+
+            <!--订单明细字段-->
+            round(ifnull(detail.order_count, 0),2) orderCount
 
         from vmes_sale_order_detail_change dtlChange
             left join vmes_sale_order_detail orderDtl on dtlChange.order_dtl_id = orderDtl.id
