@@ -380,16 +380,14 @@ public class SaleOrderDetailChangeServiceImp implements SaleOrderDetailChangeSer
             //设置订单明细:修改
             if (editObject == null) {
                 this.findEditOrderDetail(objectMap, deliverCount, editObject);
-            } else {
-                this.findOrderDetailByPrice(productPriceAfter, editObject);
             }
+            this.findOrderDetailByPrice(productPriceAfter, editObject);
 
             //设置订单明细:添加
             if (addObject == null) {
                 this.findAddOrderDetail(objectMap, deliverCount, orderCountAfter, orderDetail, addObject);
-            } else {
-                this.findOrderDetailByPrice(productPriceAfter, addObject);
             }
+            this.findOrderDetailByPrice(productPriceAfter, addObject);
         }
 
         //C. 约定交期发生变更:
