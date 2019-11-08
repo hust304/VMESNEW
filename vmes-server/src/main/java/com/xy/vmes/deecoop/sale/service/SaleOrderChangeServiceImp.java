@@ -506,6 +506,28 @@ public class SaleOrderChangeServiceImp implements SaleOrderChangeService {
 
     public ResultModel auditDisagreeSaleOrderChange(PageData pageData) throws Exception {
         ResultModel model = new ResultModel();
+
+        String orderChangeId = pageData.getString("id");
+        if (orderChangeId == null || orderChangeId.trim().length() == 0) {
+            model.putCode("1");
+            model.putMsg("销售订单变更id为空或空字符串！");
+            return model;
+        }
+
+        String remark = pageData.getString("remark");
+        if (remark == null || remark.trim().length() == 0) {
+            model.putCode("1");
+            model.putMsg("退回原因为必填项不可为空！");
+            return model;
+        }
+
+        SaleOrderChange editOrderChange = new SaleOrderChange();
+        editOrderChange.setId(orderChangeId);
+        //状态(0:审核中 1:完成:审核通过 2:取消:审核不通过)
+        editOrderChange.setState("2");
+        editOrderChange.setRemark(remark);
+        this.update(editOrderChange);
+
         return model;
     }
 

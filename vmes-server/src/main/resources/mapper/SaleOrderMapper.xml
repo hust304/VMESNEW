@@ -358,6 +358,21 @@
                 )
             </if>
 
+            <!--过滤出正在(审核中)的订单-(审核中)订单变更审核中 -->
+            <if test="'true' == isNeedOrderChangeNotIn" >
+                and saleOrder.id not in (
+                    select order_id
+                    from vmes_sale_order_change
+                    <where>
+                        <if test="currentCompanyId != null and currentCompanyId != ''" >
+                            and company_id = #{currentCompanyId}
+                        </if>
+                        <!--状态(0:审核中 1:完成:审核通过 2:取消:审核不通过) -->
+                        and state = '0'
+                    </where>
+                )
+            </if>
+
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >
                 and ${queryStr}
