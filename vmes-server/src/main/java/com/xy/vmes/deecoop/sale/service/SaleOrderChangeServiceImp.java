@@ -442,19 +442,18 @@ public class SaleOrderChangeServiceImp implements SaleOrderChangeService {
             return model;
         }
 
-        //1. 根据(订单变更id) 查询vmes_sale_order_detail_change
+        //根据(订单变更id) 查询vmes_sale_order_detail_change
         PageData findMap = new PageData();
         findMap.put("parentId", orderChangeId);
         List<Map> mapList = ordeDtlChangeService.getDataListPage(findMap, null);
 
-        //2. 根据订单明细变更记录-拆分订单明细: 遍历查询结果集
+        //1.根据订单明细变更记录-拆分订单明细: 遍历查询结果集
         if (mapList != null && mapList.size() > 0) {
             for (Map<String, Object> objectMap : mapList) {
 
                 //根据订单明细变更记录-拆分订单明细
                 Map<String, SaleOrderDetail> valueMap = ordeDtlChangeService.findSaleOrderDetailByChangeMap(objectMap);
 
-                //System.out.println("******");
                 //   返回值:Map<String, SaleOrderDetail>
                 //     editOrderDetail: 修改订单明细对象
                 //     addOrderDetail:  添加订单明细对象
@@ -472,7 +471,7 @@ public class SaleOrderChangeServiceImp implements SaleOrderChangeService {
             }
         }
 
-        //3. 修改订单表(发票类型,订单金额)
+        //2. 修改订单表(发票类型,订单金额)
         SaleOrderChange orderChangeDB = this.findOrdeChangeById(orderChangeId);
         List<SaleOrderDetail> orderDetailList = saleOrderDetailService.findSaleOrderDetailListByParentId(orderChangeDB.getOrderId());
         //获取当前订单总金额:订单明细变更后
@@ -491,6 +490,13 @@ public class SaleOrderChangeServiceImp implements SaleOrderChangeService {
             }
             saleOrderService.update(editOrder);
         }
+
+        //3. 修改订单变更记录表状态
+        SaleOrderChange editOrderChange = new SaleOrderChange();
+        editOrderChange.setId(orderChangeId);
+        //状态(0:审核中 1:完成:审核通过 2:取消:审核不通过)
+        editOrderChange.setState("1");
+        this.update(editOrderChange);
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //订单明细变更后-重新获取订单明细状态,订单状态()
