@@ -78,6 +78,8 @@
             (replace(uuid(), '-', ''), 'saleOrder', 'isdisable', '是否启用(0:已禁用 1:启用)', 22, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
 
             (replace(uuid(), '-', ''), 'saleOrder', 'isShowChange', '是否显示订单变更', 24, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrder', 'changeState', '变更状态', 25, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrder', 'changeStateName', '变更审核', 26, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
 
     </insert>
 
@@ -241,6 +243,15 @@
             makeUser.user_name makeName,
             customer.name customerName,
 
+            lastOneOrderChange.state changeState,
+            <!--状态(0:审核中 1:完成:审核通过 2:取消:审核不通过)-->
+            CASE
+              WHEN lastOneOrderChange.state = '0' THEN '审核中'
+              WHEN lastOneOrderChange.state = '1' THEN '审核通过'
+              WHEN lastOneOrderChange.state = '2' THEN '审核不通过'
+            ELSE null
+            END changeStateName,
+
             CASE
               <!--无销售订单变更记录表, 该订单id变更记录审核结束-->
               WHEN ordeChange.id is null THEN '1'
@@ -256,6 +267,18 @@
             <!--销售订单变更记录表-->
             <!--state:状态(0:审核中 1:完成:审核通过 2:取消:审核不通过)-->
             left join vmes_sale_order_change ordeChange on saleOrder.id = ordeChange.order_id and ordeChange.state = '0'
+
+            <!--获取最后一次订单变更记录 -->
+            left join (
+                select order_id,state
+                from vmes_sale_order_change
+                <where>
+                    <if test="currentCompanyId != null and currentCompanyId != ''" >
+                        and company_id = #{currentCompanyId}
+                    </if>
+                </where>
+                order by cdate desc LIMIT 1
+            ) lastOneOrderChange on saleOrder.id = lastOneOrderChange.order_id
         <where>
             <if test="currentCompanyId != null and currentCompanyId != ''" >
                 and saleOrder.company_id = #{currentCompanyId}
@@ -289,6 +312,9 @@
             </if>
             <if test="orderDateEnd != null and orderDateEnd != ''">
                 <![CDATA[ and saleOrder.order_date <= #{orderDateEnd} ]]>
+            </if>
+            <if test="changeState != null and changeState != ''" >
+                and lastOneOrderChange.state = #{changeState}
             </if>
 
             <!--过滤出订单-订单明细id汇总(订购数量 > (发货数量-退货数量))-->
