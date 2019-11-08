@@ -2,14 +2,11 @@ package com.xy.vmes.deecoop.sale.service;
 
 import com.xy.vmes.common.util.DateFormat;
 import com.xy.vmes.deecoop.sale.dao.SaleOrderChangeMapper;
-import com.xy.vmes.entity.SaleOrderChange;
-import com.xy.vmes.entity.SaleOrderDetail;
-import com.xy.vmes.entity.SaleOrderDetailChange;
+import com.xy.vmes.entity.*;
 import com.xy.vmes.service.*;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
-import com.xy.vmes.entity.Column;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.YvanUtil;
@@ -450,7 +447,7 @@ public class SaleOrderChangeServiceImp implements SaleOrderChangeService {
         findMap.put("parentId", orderChangeId);
         List<Map> mapList = ordeDtlChangeService.getDataListPage(findMap, null);
 
-        //遍历查询结果集
+        //2. 根据订单明细变更记录-拆分订单明细: 遍历查询结果集
         if (mapList != null && mapList.size() > 0) {
             for (Map<String, Object> objectMap : mapList) {
                 SaleOrderDetail addOrderDetail = null;
@@ -464,6 +461,28 @@ public class SaleOrderChangeServiceImp implements SaleOrderChangeService {
             }
         }
 
+        //3. 修改订单表(发票类型,订单金额)
+        SaleOrderChange orderChangeDB = this.findOrdeChangeById(orderChangeId);
+        List<SaleOrderDetail> orderDetailList = saleOrderDetailService.findSaleOrderDetailListByParentId(orderChangeDB.getOrderId());
+        //获取当前订单总金额:订单明细变更后
+        BigDecimal orderTotalSum = saleOrderDetailService.findTotalSumByPrice(orderDetailList);
+
+        if (orderChangeDB != null
+            && orderChangeDB.getOrderId() != null
+            && orderChangeDB.getOrderId().trim().length() > 0
+            && orderChangeDB.getReceiptTypeAfter() != null
+        ) {
+            SaleOrder editOrder = new SaleOrder();
+            editOrder.setId(orderChangeDB.getOrderId().trim());
+            editOrder.setReceiptType(orderChangeDB.getReceiptTypeAfter());
+            if (orderTotalSum.doubleValue() != 0D) {
+                editOrder.setOrderSum(orderTotalSum);
+            }
+            saleOrderService.update(editOrder);
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //订单明细变更后-重新获取订单明细状态,订单状态()
 
         return model;
     }
