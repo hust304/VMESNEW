@@ -450,15 +450,25 @@ public class SaleOrderChangeServiceImp implements SaleOrderChangeService {
         //2. 根据订单明细变更记录-拆分订单明细: 遍历查询结果集
         if (mapList != null && mapList.size() > 0) {
             for (Map<String, Object> objectMap : mapList) {
-                SaleOrderDetail addOrderDetail = null;
-                SaleOrderDetail editOrderDetail = null;
 
                 //根据订单明细变更记录-拆分订单明细
-                ordeDtlChangeService.findSaleOrderDetailByChangeMap(objectMap, addOrderDetail, editOrderDetail);
+                Map<String, SaleOrderDetail> valueMap = ordeDtlChangeService.findSaleOrderDetailByChangeMap(objectMap);
 
                 //System.out.println("******");
-                if (addOrderDetail != null) {saleOrderDetailService.save(addOrderDetail);}
-                if (editOrderDetail != null) {saleOrderDetailService.update(editOrderDetail);}
+                //   返回值:Map<String, SaleOrderDetail>
+                //     editOrderDetail: 修改订单明细对象
+                //     addOrderDetail:  添加订单明细对象
+                if (valueMap != null) {
+                    SaleOrderDetail editOrderDetail = valueMap.get("editOrderDetail");
+                    if (editOrderDetail != null) {
+                        saleOrderDetailService.update(editOrderDetail);
+                    }
+
+                    SaleOrderDetail addOrderDetail = valueMap.get("addOrderDetail");
+                    if (addOrderDetail != null) {
+                        saleOrderDetailService.save(addOrderDetail);
+                    }
+                }
             }
         }
 

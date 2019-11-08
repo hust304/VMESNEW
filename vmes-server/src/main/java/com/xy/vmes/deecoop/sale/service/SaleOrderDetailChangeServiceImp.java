@@ -288,10 +288,18 @@ public class SaleOrderDetailChangeServiceImp implements SaleOrderDetailChangeSer
      *          (插入)订购数量:2  单价:1
      *
      * @param objectMap  查询结构体(SaleOrderDetailChangeMapper.getDataListPage)
-     * @param addObject
-     * @param editObject
+     * @return
+     *   返回值:Map<String, SaleOrderDetail>
+     *     editOrderDetail: 修改订单明细对象
+     *     addOrderDetail:  添加订单明细对象
+     *
+     * @throws Exception
      */
-    public void findSaleOrderDetailByChangeMap(Map<String, Object> objectMap, SaleOrderDetail addObject, SaleOrderDetail editObject) throws Exception {
+    public Map<String, SaleOrderDetail> findSaleOrderDetailByChangeMap(Map<String, Object> objectMap) throws Exception {
+        Map<String, SaleOrderDetail> valueMap = new HashMap<>();
+        valueMap.put("editOrderDetail", null);
+        valueMap.put("addOrderDetail", null);
+
         //订单明细id
         String orderDtlId = (String)objectMap.get("orderDtlId");
         SaleOrderDetail orderDetail = saleOrderDetailService.findSaleOrderDetailById(orderDtlId);
@@ -337,7 +345,7 @@ public class SaleOrderDetailChangeServiceImp implements SaleOrderDetailChangeSer
 
         //发货数量:=0 无需拆分订单明细 直接修改该订单明细
         if (0D == deliverCount.doubleValue()) {
-            editObject = new SaleOrderDetail();
+            SaleOrderDetail editObject = new SaleOrderDetail();
             editObject.setId(orderDtlId);
 
             //订单明细-订购数量(订单单位-计价单位)
@@ -361,9 +369,13 @@ public class SaleOrderDetailChangeServiceImp implements SaleOrderDetailChangeSer
             }
             editObject.setProductSum(productSumAfter);
 
-            return;
+            valueMap.put("editOrderDetail", editObject);
+            return valueMap;
         }
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        SaleOrderDetail editObject = null;
+        SaleOrderDetail addObject = null;
+
         //发货数量: 不等于零
         //A. 订购数量发生变更: 拆分订单明细
         // 订购数量:10 单价:1 发货数量:5
@@ -373,10 +385,10 @@ public class SaleOrderDetailChangeServiceImp implements SaleOrderDetailChangeSer
         //          (插入)订购数量:2  单价:1
         if (this.isChangeByBigDecimal(orderCountBefore, orderCountAfter)) {
             //设置订单明细:修改
-            this.findEditOrderDetail(objectMap, deliverCount, editObject);
+            editObject = this.findEditOrderDetail(objectMap, deliverCount, editObject);
 
             //设置订单明细:添加
-            this.findAddOrderDetail(objectMap, deliverCount, orderCountAfter, orderDetail, addObject);
+            addObject = this.findAddOrderDetail(objectMap, deliverCount, orderCountAfter, orderDetail, addObject);
             this.findOrderDetailByPrice(productPriceAfter, addObject);
         }
 
@@ -389,12 +401,12 @@ public class SaleOrderDetailChangeServiceImp implements SaleOrderDetailChangeSer
         if (this.isChangeByBigDecimal(productPriceBefore, productPriceAfter)) {
             //设置订单明细:修改
             if (editObject == null) {
-                this.findEditOrderDetail(objectMap, deliverCount, editObject);
+                editObject = this.findEditOrderDetail(objectMap, deliverCount, editObject);
             }
 
             //设置订单明细:添加
             if (addObject == null) {
-                this.findAddOrderDetail(objectMap, deliverCount, orderCountAfter, orderDetail, addObject);
+                addObject = this.findAddOrderDetail(objectMap, deliverCount, orderCountAfter, orderDetail, addObject);
             }
             this.findOrderDetailByPrice(productPriceAfter, addObject);
         }
@@ -410,6 +422,10 @@ public class SaleOrderDetailChangeServiceImp implements SaleOrderDetailChangeSer
             //约定交期 deliverDate
             editObject.setDeliverDate(deliverDateAfter);
         }
+
+        valueMap.put("editOrderDetail", editObject);
+        valueMap.put("addOrderDetail", addObject);
+        return valueMap;
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -435,7 +451,7 @@ public class SaleOrderDetailChangeServiceImp implements SaleOrderDetailChangeSer
 
     }
 
-    private void findEditOrderDetail(Map<String, Object> objectMap, BigDecimal deliverCount, SaleOrderDetail editObject) {
+    private SaleOrderDetail findEditOrderDetail(Map<String, Object> objectMap, BigDecimal deliverCount, SaleOrderDetail editObject) {
         if (editObject == null) {editObject = new SaleOrderDetail();}
 
         //订单明细id
@@ -462,9 +478,11 @@ public class SaleOrderDetailChangeServiceImp implements SaleOrderDetailChangeSer
 
         //订单明细-订购数量-货品数量:= 发货数量(计量单位)
         editObject.setProductCount(productCountDeliver);
+
+        return editObject;
     }
 
-    private void findAddOrderDetail(Map<String, Object> objectMap,
+    private SaleOrderDetail findAddOrderDetail(Map<String, Object> objectMap,
                                     BigDecimal deliverCount,
                                     BigDecimal orderCountAfter,
                                     SaleOrderDetail orderDetail,
@@ -512,6 +530,8 @@ public class SaleOrderDetailChangeServiceImp implements SaleOrderDetailChangeSer
         addObject.setProductId(orderDetail.getProductId());
         //生产计划明细ID planDetailId
         addObject.setPlanDetailId(orderDetail.getPlanDetailId());
+
+        return addObject;
     }
 
     /**

@@ -143,10 +143,14 @@ public interface SaleOrderDetailChangeService {
      *          (插入)订购数量:2  单价:1
      *
      * @param objectMap  查询结构体(SaleOrderDetailChangeMapper.getDataListPage)
-     * @param addObject
-     * @param editObject
+     * @return
+     *   返回值:Map<String, SaleOrderDetail>
+     *     editOrderDetail: 修改订单明细对象
+     *     addOrderDetail:  添加订单明细对象
+     *
+     * @throws Exception
      */
-    void findSaleOrderDetailByChangeMap(Map<String, Object> objectMap, SaleOrderDetail addObject, SaleOrderDetail editObject) throws Exception;
+    Map<String, SaleOrderDetail> findSaleOrderDetailByChangeMap(Map<String, Object> objectMap) throws Exception;
 
 
 }
