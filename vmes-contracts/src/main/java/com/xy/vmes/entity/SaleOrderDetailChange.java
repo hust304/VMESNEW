@@ -8,11 +8,11 @@ import java.util.*;
 import java.math.BigDecimal;
 
 /** 
- * 说明：vmes_saleOrdeDtl_change:订单明细变更记录表 实体类
+ * 说明：vmes_sale_order_detail_change:订单明细变更记录表 实体类
  * @author 陈刚 自动生成
  * @date 2019-11-05
  */
-@TableName("vmes_saleOrdeDtl_change")
+@TableName("vmes_sale_order_detail_change")
 public class SaleOrderDetailChange implements Serializable {
 	private static final long serialVersionUID = 1L;
 

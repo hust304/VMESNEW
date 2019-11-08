@@ -386,6 +386,7 @@ public class SaleOrderDetailChangeServiceImp implements SaleOrderDetailChangeSer
         if (this.isChangeByBigDecimal(orderCountBefore, orderCountAfter)) {
             //设置订单明细:修改
             editObject = this.findEditOrderDetail(objectMap, deliverCount, editObject);
+            this.findOrderDetailByPrice(productPriceBefore, editObject);
 
             //设置订单明细:添加
             addObject = this.findAddOrderDetail(objectMap, deliverCount, orderCountAfter, orderDetail, addObject);
@@ -402,6 +403,7 @@ public class SaleOrderDetailChangeServiceImp implements SaleOrderDetailChangeSer
             //设置订单明细:修改
             if (editObject == null) {
                 editObject = this.findEditOrderDetail(objectMap, deliverCount, editObject);
+                this.findOrderDetailByPrice(productPriceBefore, editObject);
             }
 
             //设置订单明细:添加
@@ -430,12 +432,12 @@ public class SaleOrderDetailChangeServiceImp implements SaleOrderDetailChangeSer
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //订单变更审核 私有方法
-    private void findOrderDetailByPrice(BigDecimal productPriceAfter, SaleOrderDetail orderDetail) {
-        if (productPriceAfter == null) {productPriceAfter = BigDecimal.valueOf(0D);}
+    private void findOrderDetailByPrice(BigDecimal productPrice, SaleOrderDetail orderDetail) {
+        if (productPrice == null) {productPrice = BigDecimal.valueOf(0D);}
 
         //四舍五入到2位小数
-        productPriceAfter = productPriceAfter.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-        orderDetail.setProductPrice(productPriceAfter);
+        productPrice = productPrice.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+        orderDetail.setProductPrice(productPrice);
 
         //订单订购数量 orderCount
         BigDecimal orderCount = BigDecimal.valueOf(0D);
@@ -444,7 +446,7 @@ public class SaleOrderDetailChangeServiceImp implements SaleOrderDetailChangeSer
         }
 
         //货品金额(订购数量 * 货品单价)productSum
-        BigDecimal productSum = BigDecimal.valueOf(orderCount.doubleValue() * productPriceAfter.doubleValue());
+        BigDecimal productSum = BigDecimal.valueOf(orderCount.doubleValue() * productPrice.doubleValue());
         //四舍五入到2位小数
         productSum = productSum.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
         orderDetail.setProductSum(productSum);

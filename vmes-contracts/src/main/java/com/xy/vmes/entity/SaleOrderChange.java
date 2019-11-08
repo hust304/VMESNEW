@@ -7,11 +7,11 @@ import java.io.Serializable;
 import java.util.*;
 
 /** 
- * 说明：vmes_saleOrde_change:订单变更记录表 实体类
+ * 说明：vmes_sale_order_change:订单变更记录表 实体类
  * @author 陈刚 自动生成
  * @date 2019-11-05
  */
-@TableName("vmes_saleOrde_change")
+@TableName("vmes_sale_order_change")
 public class SaleOrderChange implements Serializable {
 	private static final long serialVersionUID = 1L;
 
