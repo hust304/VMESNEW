@@ -487,6 +487,7 @@ public class SaleOrderChangeServiceImp implements SaleOrderChangeService {
             editOrder.setReceiptType(orderChangeDB.getReceiptTypeAfter());
             if (orderTotalSum.doubleValue() != 0D) {
                 editOrder.setOrderSum(orderTotalSum);
+                editOrder.setTotalSum(orderTotalSum);
             }
             saleOrderService.update(editOrder);
         }
