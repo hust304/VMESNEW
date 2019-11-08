@@ -368,6 +368,7 @@ public class SaleOrderDetailChangeServiceImp implements SaleOrderDetailChangeSer
 
             //设置订单明细:添加
             this.findAddOrderDetail(objectMap, deliverCount, orderCountAfter, orderDetail, addObject);
+            this.findOrderDetailByPrice(productPriceAfter, addObject);
         }
 
         //B. 单价发生变更: 拆分订单明细
@@ -381,7 +382,6 @@ public class SaleOrderDetailChangeServiceImp implements SaleOrderDetailChangeSer
             if (editObject == null) {
                 this.findEditOrderDetail(objectMap, deliverCount, editObject);
             }
-            this.findOrderDetailByPrice(productPriceAfter, editObject);
 
             //设置订单明细:添加
             if (addObject == null) {
