@@ -317,8 +317,17 @@ public class SaleOrderDetailChangeServiceImp implements SaleOrderDetailChangeSer
         BigDecimal productPriceAfter = (BigDecimal)objectMap.get("productPriceAfter");
 
         //订单明细-(变更前,变更后)约定交期
-        Date deliverDateBefore = (Date)objectMap.get("deliverDateBefore");
-        Date deliverDateAfter = (Date)objectMap.get("deliverDateAfter");
+        Date deliverDateBefore = null;
+        String deliverDateBeforeStr = (String)objectMap.get("deliverDateBefore");
+        if (deliverDateBeforeStr != null && deliverDateBeforeStr.trim().length() > 0) {
+            deliverDateBefore = DateFormat.dateString2Date(deliverDateBeforeStr, DateFormat.DEFAULT_DATE_FORMAT);
+        }
+
+        Date deliverDateAfter = null;
+        String deliverDateAfterStr = (String)objectMap.get("deliverDateAfter");
+        if (deliverDateAfterStr != null && deliverDateAfterStr.trim().length() > 0) {
+            deliverDateAfter = DateFormat.dateString2Date(deliverDateAfterStr, DateFormat.DEFAULT_DATE_FORMAT);
+        }
 
         //发货数量
         BigDecimal deliverCount = BigDecimal.valueOf(0D);
