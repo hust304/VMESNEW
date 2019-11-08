@@ -41,7 +41,7 @@
     </sql>
 
 
-    <!-- 字段名称  '_hide' 表示前端列表隐藏 自动创建，禁止修改-->
+    <!-- 字段名称  自动创建，禁止修改-->
     <sql id="Column">
     <#list fieldList as var>
         <#if var[7] == "否">
@@ -50,7 +50,7 @@
     </#list>
     <#list fieldList as var>
         <#if var[7] == "是">
-        '${var[1]}' ${var[1]}_hide
+        '${var[1]}' ${var[1]}
         </#if>
     </#list>
     </sql>
@@ -70,11 +70,11 @@
         <include refid="tableName"></include>
         <where>
             <!--queryStr 自定义sql查询语句-->
-            <if test="queryStr != null and queryStr!=''" >
+            <if test='queryStr != null and queryStr!=""' >
                 and ${r"${"}queryStr${r"}"}
             </if>
         </where>
-        <if test="orderStr != null and orderStr != ''" >
+        <if test='orderStr != null and orderStr != ""' >
             order by ${r"${"}orderStr${r"}"}
         </if>
     </select>
@@ -87,7 +87,7 @@
         <include refid="tableName"></include>
         <where>
             <!--queryStr 自定义sql查询语句-->
-            <if test="queryStr != null and queryStr!=''" >
+            <if test='queryStr != null and queryStr!=""' >
                 and ${r"${"}queryStr${r"}"}
             </if>
         </where>
@@ -160,7 +160,7 @@
                 false: (false or is null) 无需考虑自己在业务表中是否存在
                 true : 需要考虑自己在业务表中是否存在
             -->
-            <if test="id != null and id != ''" >
+            <if test='id != null and id != ""' >
                 <choose>
                     <when test="'true' == isSelfExist">
                         <![CDATA[ and id <> ${r"#{"}id${r"}"} ]]>
@@ -173,11 +173,11 @@
 
 
             <!--queryStr 自定义sql查询语句-->
-            <if test="queryStr != null and queryStr != ''" >
+            <if test='queryStr != null and queryStr != ""'>
                 and ${r"${"}queryStr${r"}"}
             </if>
         </where>
-        <if test="orderStr != null and orderStr != ''" >
+        <if test='orderStr != null and orderStr != ""' >
             order by ${r"${"}orderStr${r"}"}
         </if>
     </select>
@@ -215,14 +215,6 @@
     </sql>
      -->
 
-    <!-- 自动创建，可以修改 -->
-    <!--
-    <select id="getColumnList"  resultType="java.util.LinkedHashMap">
-        select
-        <include refid="Column1"></include>
-        from dual
-    </select>
-    -->
 
     <!-- 自动创建，可以修改 -->
     <select id="getDataList"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
@@ -232,20 +224,20 @@
         <include refid="tableName"></include>
         <where>
             <!--queryStr 自定义sql查询语句-->
-            <if test="queryStr != null and queryStr != ''" >
+            <if test='queryStr != null and queryStr != ""' >
                 and ${r"${"}queryStr${r"}"}
             </if>
-            <if test="currentCompanyId != null and currentCompanyId != ''">
+            <if test='currentCompanyId != null and currentCompanyId != ""'>
                 and company_id LIKE CONCAT(CONCAT('%', ${r"#{"}currentCompanyId${r"}"}),'%')
             </if>
-            <if test="code != null and code != ''">
+            <if test='code != null and code != ""'>
                 and code LIKE CONCAT(CONCAT('%', ${r"#{"}code${r"}"}),'%')
             </if>
-            <if test="name != null and name != ''">
+            <if test='name != null and name != ""'>
                 and name LIKE CONCAT(CONCAT('%', ${r"#{"}name${r"}"}),'%')
             </if>
         </where>
-        <if test="orderStr != null and orderStr != ''" >
+        <if test='orderStr != null and orderStr != ""' >
             order by ${r"${"}orderStr${r"}"}
         </if>
     </select>
@@ -258,17 +250,17 @@
         <include refid="tableName"></include>
         <where>
             <!--queryStr 自定义sql查询语句-->
-            <if test="queryStr != null and queryStr != ''" >
+            <if test='queryStr != null and queryStr != ""' >
                 and ${r"${"}queryStr${r"}"}
             </if>
-            <if test="code != null and code != ''">
+            <if test='code != null and code != ""'>
                 and code LIKE CONCAT(CONCAT('%', ${r"#{"}code${r"}"}),'%')
             </if>
-            <if test="name != null and name != ''">
+            <if test='name != null and name != ""'>
                 and name LIKE CONCAT(CONCAT('%', ${r"#{"}name${r"}"}),'%')
             </if>
         </where>
-        <if test="orderStr != null and orderStr != ''" >
+        <if test='orderStr != null and orderStr != ""' >
             order by ${r"${"}orderStr${r"}"}
         </if>
     </select>

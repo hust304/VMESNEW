@@ -508,7 +508,8 @@
             sum(stock_count) stock_count
             from vmes_warehouse_product warehouseProduct
             left join vmes_warehouse warehouse on warehouse.id = warehouseProduct.warehouse_id
-            left join vmes_dictionary entityType on warehouse.entity_type = entityType.id
+            left join vmes_warehouse wh on warehouse.warehouse_id = wh.id
+            left join vmes_dictionary entityType on wh.entity_type = entityType.id
             <where>
                 <if test="companyId != null and companyId != ''" >
                     and company_id = #{companyId}

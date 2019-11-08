@@ -14,10 +14,10 @@ public class CreateCodeUtil {
 
         PageData pd = new PageData();
         //模块编码
-        String modelCode = "VmesFinanceBill";
-        String objectName = "VmesFinanceBill";//类名
+        String modelCode = "FinanceBill";
+        String objectName = "FinanceBill";//类名
         String tableName = "vmes_finance_bill";//表名
-        String title = "vmes_finance_bill:应收应付单";
+        String title = "vmes_finance_bill:应收/应付单";
         String author = "刘威";
         String rootName = "deecoop";
         String moduleName = "finance";

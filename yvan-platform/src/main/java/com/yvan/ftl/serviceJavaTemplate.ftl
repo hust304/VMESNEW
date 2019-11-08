@@ -137,7 +137,6 @@ public interface ${objectName}Service {
     /**
     * 分页查询
     * @param pd    查询参数对象PageData
-    * @param pg    分页参数对象Pagination
     * @return      返回对象ResultModel
     * @throws Exception
     */
@@ -146,7 +145,6 @@ public interface ${objectName}Service {
     /**
     * 导出
     * @param pd    查询参数对象PageData
-    * @param pg    分页参数对象Pagination
     * @throws Exception
     */
     void exportExcel${objectName}s(PageData pd) throws Exception;
