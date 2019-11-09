@@ -253,13 +253,13 @@ public class WarehouseOutScrapBySimpleController {
             return model;
         }
 
-        //非空判断
-        String msgStr = warehouseOutService.checkColumn(warehouseOut);
-        if (msgStr.trim().length() > 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg(msgStr);
-            return model;
-        }
+//        //非空判断
+//        String msgStr = warehouseOutService.checkColumn(warehouseOut);
+//        if (msgStr.trim().length() > 0) {
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg(msgStr);
+//            return model;
+//        }
 
         String dtlJsonStr = pageData.getString("dtlJsonStr");
         if (dtlJsonStr == null || dtlJsonStr.trim().length() == 0) {
@@ -296,6 +296,14 @@ public class WarehouseOutScrapBySimpleController {
         }
 
         //2.更新出库单表头
+        //状态(0:未完成 1:已完成 -1:已取消 2:待提交 3:待审核)
+        //(2019-10-10)简版仓库报废审核功能-添加状态(2:待提交 3:待审核)
+
+        //isAutoCommit true:自动提交 false:手动提交
+        String isAutoCommit = pageData.getString("isAutoCommit");
+        if (isAutoCommit != null && "true".equals(isAutoCommit.trim())) {
+            warehouseOut.setState("3");
+        }
         warehouseOutService.update(warehouseOut);
 
         //3.删除出库单明细
