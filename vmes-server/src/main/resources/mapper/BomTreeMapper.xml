@@ -286,7 +286,15 @@
     <!-- 字段 自动创建，可以修改-->
     <sql id="Field1">
         product.name name,
-        product.code code,
+
+        product.code sysProductCode,
+        product.source_code custProductCode,
+        CASE
+        WHEN product.source_code is null THEN product.code
+        WHEN product.source_code is not null THEN product.source_code
+        ELSE null
+        END code,
+
         product.spec spec,
         product.genre genre,
         genre.name genreName,
