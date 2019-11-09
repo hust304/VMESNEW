@@ -1,9 +1,9 @@
-package ${classPath};
+package com.xy.vmes.deecoop.finance.service;
 
 
-import com.xy.vmes.${projectName}.dao.${objectName}Mapper;
-import com.xy.vmes.entity.${objectName};
-import com.xy.vmes.service.${objectName}Service;
+import com.xy.vmes.deecoop.finance.dao.FinancePeriodMapper;
+import com.xy.vmes.entity.FinancePeriod;
+import com.xy.vmes.service.FinancePeriodService;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
@@ -24,158 +24,158 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
 
 /**
-* 说明：${TITLE} 实现类
-* 创建人：${author} 自动创建
-* 创建时间：${nowDate?string("yyyy-MM-dd")}
+* 说明：vmes_finance_period:应收应付期间表 实现类
+* 创建人：刘威 自动创建
+* 创建时间：2019-11-05
 */
 @Service
 @Transactional(readOnly = false)
-public class ${objectName}ServiceImp implements ${objectName}Service {
+public class FinancePeriodServiceImp implements FinancePeriodService {
 
 
     @Autowired
-    private ${objectName}Mapper ${objectNameLower}Mapper;
+    private FinancePeriodMapper financePeriodMapper;
     @Autowired
     private ColumnService columnService;
     /**
-    * 创建人：${author} 自动创建，禁止修改
-    * 创建时间：${nowDate?string("yyyy-MM-dd")}
+    * 创建人：刘威 自动创建，禁止修改
+    * 创建时间：2019-11-05
     */
     @Override
-    public void save(${objectName} ${objectNameLower}) throws Exception{
-        ${objectNameLower}.setId(Conv.createUuid());
-        ${objectNameLower}.setCdate(new Date());
-        ${objectNameLower}.setUdate(new Date());
-        ${objectNameLower}Mapper.insert(${objectNameLower});
+    public void save(FinancePeriod financePeriod) throws Exception{
+        financePeriod.setId(Conv.createUuid());
+        financePeriod.setCdate(new Date());
+        financePeriod.setUdate(new Date());
+        financePeriodMapper.insert(financePeriod);
     }
 
 
     /**
-    * 创建人：${author} 自动创建，禁止修改
-    * 创建时间：${nowDate?string("yyyy-MM-dd")}
+    * 创建人：刘威 自动创建，禁止修改
+    * 创建时间：2019-11-05
     */
     @Override
-    public void update(${objectName} ${objectNameLower}) throws Exception{
-        ${objectNameLower}.setUdate(new Date());
-        ${objectNameLower}Mapper.updateById(${objectNameLower});
+    public void update(FinancePeriod financePeriod) throws Exception{
+        financePeriod.setUdate(new Date());
+        financePeriodMapper.updateById(financePeriod);
     }
 
     /**
-    * 创建人：${author} 自动创建，禁止修改
-    * 创建时间：${nowDate?string("yyyy-MM-dd")}
+    * 创建人：刘威 自动创建，禁止修改
+    * 创建时间：2019-11-05
     */
     @Override
-    public void updateAll(${objectName} ${objectNameLower}) throws Exception{
-        ${objectNameLower}.setUdate(new Date());
-        ${objectNameLower}Mapper.updateAllColumnById(${objectNameLower});
+    public void updateAll(FinancePeriod financePeriod) throws Exception{
+        financePeriod.setUdate(new Date());
+        financePeriodMapper.updateAllColumnById(financePeriod);
     }
 
     /**
-    * 创建人：${author} 自动创建，禁止修改
-    * 创建时间：${nowDate?string("yyyy-MM-dd")}
+    * 创建人：刘威 自动创建，禁止修改
+    * 创建时间：2019-11-05
     */
     @Override
-    //@Cacheable(cacheNames = "${objectNameLower}", key = "''+#id")
-    public ${objectName} selectById(String id) throws Exception{
-        return ${objectNameLower}Mapper.selectById(id);
+    //@Cacheable(cacheNames = "financePeriod", key = "''+#id")
+    public FinancePeriod selectById(String id) throws Exception{
+        return financePeriodMapper.selectById(id);
     }
 
     /**
-    * 创建人：${author} 自动创建，禁止修改
-    * 创建时间：${nowDate?string("yyyy-MM-dd")}
+    * 创建人：刘威 自动创建，禁止修改
+    * 创建时间：2019-11-05
     */
     @Override
     public void deleteById(String id) throws Exception{
-        ${objectNameLower}Mapper.deleteById(id);
+        financePeriodMapper.deleteById(id);
     }
 
     /**
-    * 创建人：${author} 自动创建，禁止修改
-    * 创建时间：${nowDate?string("yyyy-MM-dd")}
+    * 创建人：刘威 自动创建，禁止修改
+    * 创建时间：2019-11-05
     */
     @Override
     public void deleteByIds(String[] ids) throws Exception{
-        ${objectNameLower}Mapper.deleteByIds(ids);
+        financePeriodMapper.deleteByIds(ids);
     }
 
     /**
-    * 创建人：${author} 自动创建，禁止修改
-    * 创建时间：${nowDate?string("yyyy-MM-dd")}
+    * 创建人：刘威 自动创建，禁止修改
+    * 创建时间：2019-11-05
     */
     @Override
-    public List<${objectName}> dataListPage(PageData pd,Pagination pg) throws Exception{
-        return ${objectNameLower}Mapper.dataListPage(pd,pg);
+    public List<FinancePeriod> dataListPage(PageData pd,Pagination pg) throws Exception{
+        return financePeriodMapper.dataListPage(pd,pg);
     }
 
     /**
-    * 创建人：${author} 自动创建，禁止修改
-    * 创建时间：${nowDate?string("yyyy-MM-dd")}
+    * 创建人：刘威 自动创建，禁止修改
+    * 创建时间：2019-11-05
     */
     @Override
-    public List<${objectName}> dataList(PageData pd) throws Exception{
-        return ${objectNameLower}Mapper.dataList(pd);
+    public List<FinancePeriod> dataList(PageData pd) throws Exception{
+        return financePeriodMapper.dataList(pd);
     }
 
     /**
-    * 创建人：${author} 自动创建，禁止修改
-    * 创建时间：${nowDate?string("yyyy-MM-dd")}
+    * 创建人：刘威 自动创建，禁止修改
+    * 创建时间：2019-11-05
     */
     @Override
     public List<LinkedHashMap> findColumnList() throws Exception{
-        return ${objectNameLower}Mapper.findColumnList();
+        return financePeriodMapper.findColumnList();
     }
 
     /**
-    * 创建人：${author} 自动创建，禁止修改
-    * 创建时间：${nowDate?string("yyyy-MM-dd")}
+    * 创建人：刘威 自动创建，禁止修改
+    * 创建时间：2019-11-05
     */
     @Override
     public List<Map> findDataList(PageData pd) throws Exception{
-        return ${objectNameLower}Mapper.findDataList(pd);
+        return financePeriodMapper.findDataList(pd);
     }
 
 
     /**
-    * 创建人：${author} 自动创建，禁止修改
-    * 创建时间：${nowDate?string("yyyy-MM-dd")}
+    * 创建人：刘威 自动创建，禁止修改
+    * 创建时间：2019-11-05
     */
     @Override
     public void deleteByColumnMap(Map columnMap) throws Exception{
-        ${objectNameLower}Mapper.deleteByMap(columnMap);
+        financePeriodMapper.deleteByMap(columnMap);
     }
 
     /**
-    * 创建人：${author} 自动创建，禁止修改
-    * 创建时间：${nowDate?string("yyyy-MM-dd")}
+    * 创建人：刘威 自动创建，禁止修改
+    * 创建时间：2019-11-05
     */
     @Override
-    public List<${objectName}> selectByColumnMap(Map columnMap) throws Exception{
-    List<${objectName}> ${objectNameLower}List =  ${objectNameLower}Mapper.selectByMap(columnMap);
-        return ${objectNameLower}List;
+    public List<FinancePeriod> selectByColumnMap(Map columnMap) throws Exception{
+    List<FinancePeriod> financePeriodList =  financePeriodMapper.selectByMap(columnMap);
+        return financePeriodList;
     }
 
 
     /**
-    * 创建人：${author} 自动创建，禁止修改
-    * 创建时间：${nowDate?string("yyyy-MM-dd")}
+    * 创建人：刘威 自动创建，禁止修改
+    * 创建时间：2019-11-05
     */
     @Override
     public List<LinkedHashMap> getColumnList() throws Exception{
-        return ${objectNameLower}Mapper.getColumnList();
+        return financePeriodMapper.getColumnList();
     }
 
     /**
-    * 创建人：${author} 自动创建，禁止修改
-    * 创建时间：${nowDate?string("yyyy-MM-dd")}
+    * 创建人：刘威 自动创建，禁止修改
+    * 创建时间：2019-11-05
     */
     @Override
     public List<Map> getDataList(PageData pd) throws Exception{
-        return ${objectNameLower}Mapper.getDataList(pd);
+        return financePeriodMapper.getDataList(pd);
     }
 
     /**
-    * 创建人：${author} 自动创建，禁止修改
-    * 创建时间：${nowDate?string("yyyy-MM-dd")}
+    * 创建人：刘威 自动创建，禁止修改
+    * 创建时间：2019-11-05
     */
     @Override
     public List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception{
@@ -183,30 +183,30 @@ public class ${objectName}ServiceImp implements ${objectName}Service {
         if (pd == null) {return mapList;}
 
         if (pg == null) {
-            return ${objectNameLower}Mapper.getDataListPage(pd);
+            return financePeriodMapper.getDataListPage(pd);
         } else if (pg != null) {
-            return ${objectNameLower}Mapper.getDataListPage(pd,pg);
+            return financePeriodMapper.getDataListPage(pd,pg);
         }
 
         return mapList;
     }
 
     /**
-    * 创建人：${author} 自动创建，禁止修改
-    * 创建时间：${nowDate?string("yyyy-MM-dd")}
+    * 创建人：刘威 自动创建，禁止修改
+    * 创建时间：2019-11-05
     */
     @Override
     public void updateToDisableByIds(String[] ids)throws Exception{
-        ${objectNameLower}Mapper.updateToDisableByIds(ids);
+        financePeriodMapper.updateToDisableByIds(ids);
     }
 
     /**
-    * 创建人：${author} 自动创建，禁止修改
-    * 创建时间：${nowDate?string("yyyy-MM-dd")}
+    * 创建人：刘威 自动创建，禁止修改
+    * 创建时间：2019-11-05
     */
     @Override
     public void updateByDefined(PageData pd)throws Exception{
-        ${objectNameLower}Mapper.updateByDefined(pd);
+        financePeriodMapper.updateByDefined(pd);
     }
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
     /**
@@ -219,14 +219,14 @@ public class ${objectName}ServiceImp implements ${objectName}Service {
     * @return
     * @throws Exception
     */
-    public List<${objectName}> findDataList(PageData pageData, Boolean isQueryAll) throws Exception {
+    public List<FinancePeriod> findDataList(PageData pageData, Boolean isQueryAll) throws Exception {
         int pageDataSize = 0;
         if (pageData != null && pageData.size() > 0) {
             pageDataSize = pageData.size();
         }
 
         if ((isQueryAll == null || true != isQueryAll.booleanValue()) && pageDataSize == 0) {
-            return new ArrayList<${objectName}>();
+            return new ArrayList<FinancePeriod>();
         }
 
         return this.dataList(pageData);
@@ -235,12 +235,13 @@ public class ${objectName}ServiceImp implements ${objectName}Service {
     /**
     *
     * @param pd    查询参数对象PageData
+    * @param pg    分页参数对象Pagination
     * @return      返回对象ResultModel
     * @throws Exception
     */
-    public ResultModel listPage${objectName}s(PageData pd) throws Exception{
+    public ResultModel listPageFinancePeriods(PageData pd) throws Exception{
         ResultModel model = new ResultModel();
-        List<Column> columnList = columnService.findColumnList("${modelCode}");
+        List<Column> columnList = columnService.findColumnList("FinancePeriod");
         if (columnList == null || columnList.size() == 0) {
             model.putCode("1");
             model.putMsg("数据库没有生成TabCol，请联系管理员！");
@@ -284,18 +285,14 @@ public class ${objectName}ServiceImp implements ${objectName}Service {
     /**
     * 导出
     * @param pd    查询参数对象PageData
+    * @param pg    分页参数对象Pagination
     * @throws Exception
     */
-    public void exportExcel${objectName}s(PageData pd) throws Exception{
+    public void exportExcelFinancePeriods(PageData pd) throws Exception{
 
-        List<Column> columnList = columnService.findColumnList("${modelCode}");
+        List<Column> columnList = columnService.findColumnList("FinancePeriod");
         if (columnList == null || columnList.size() == 0) {
             throw new RestException("1","数据库没有生成TabCol，请联系管理员！");
-        }
-        //获取指定栏位字符串-重新调整List<Column>
-        String fieldCode = pd.getString("fieldCode");
-        if (fieldCode != null && fieldCode.trim().length() > 0) {
-            columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
         }
 
         //根据查询条件获取业务数据List
@@ -316,7 +313,7 @@ public class ${objectName}ServiceImp implements ${objectName}Service {
         //查询数据-Excel文件导出
         String fileName = pd.getString("fileName");
         if (fileName == null || fileName.trim().length() == 0) {
-            fileName = "Excel${objectName}";
+            fileName = "ExcelFinancePeriod";
         }
 
         //导出文件名-中文转码
@@ -330,7 +327,7 @@ public class ${objectName}ServiceImp implements ${objectName}Service {
     * @return      返回对象ResultModel
     * @throws Exception
     */
-    public ResultModel importExcel${objectName}s(MultipartFile file) throws Exception{
+    public ResultModel importExcelFinancePeriods(MultipartFile file) throws Exception{
         ResultModel model = new ResultModel();
         if (file == null) {
             model.putCode(Integer.valueOf(1));

@@ -344,9 +344,7 @@
             <if test="genre != null and genre != ''" >
                 and cust.genre=#{genre}
             </if>
-            <if test="currentCompanyId != null and currentCompanyId != ''" >
-                and cust.company_id=#{currentCompanyId}
-            </if>
+
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >
                 and ${queryStr}
@@ -526,7 +524,7 @@
             group by t.customerId
         )tab on tab.customerId = customer.id
         <where>
-            and customer.genre = 'df7cb67fca4148bc9632c908e4a7fdea'
+            and customer.genre = 'df7cb67fca4148bc9632c908e4a7fdea' <!-- 客户 -->
             <if test="currentCompanyId != null and currentCompanyId != ''">
                 and customer.company_id = #{currentCompanyId}
             </if>

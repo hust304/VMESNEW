@@ -1,0 +1,350 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+说明：vmes_finance_base:应收应付初始化 Mapper.xml
+创建人：刘威 自动创建
+创建时间：2019-11-05
+ -->
+<mapper namespace="com.xy.vmes.deecoop.finance.dao.FinanceBaseMapper">
+
+    <!--表名 自动创建，禁止修改-->
+    <sql id="tableName">
+	vmes_finance_base
+    </sql>
+
+    <!-- 字段 自动创建，禁止修改-->
+    <sql id="Field">
+		customer_id customerId,<!-- 客户ID -->
+		type type,<!-- 类型（0：应收；1：应付） -->
+		period period,<!-- 收/付款期间(yyyymm) -->
+		period_date periodDate,<!-- 收/付款期间 -->
+		begin_plus beginPlus,<!-- 应收/付款(期初) -->
+		begin_minus beginMinus,<!-- 预收/付款(期初) -->
+		begin_value beginValue,<!-- 收/付款值(期初) -->
+		cuser cuser,<!-- 创建用户id -->
+		cdate cdate,<!-- 创建时间 -->
+		uuser uuser,<!-- 修改用户id -->
+		udate udate,<!-- 修改时间 -->
+		remark remark,<!-- 备注 -->
+		isdisable isdisable,<!-- 是否启用(0:已禁用 1:启用) -->
+		id id <!-- id -->
+    </sql>
+
+    <!-- 字段值 自动创建，禁止修改-->
+    <sql id="FieldValue">
+		#{customerId},<!-- 客户ID -->
+		#{type},<!-- 类型（0：应收；1：应付） -->
+		#{period},<!-- 收/付款期间(yyyymm) -->
+		#{periodDate},<!-- 收/付款期间 -->
+		#{beginPlus},<!-- 应收/付款(期初) -->
+		#{beginMinus},<!-- 预收/付款(期初) -->
+		#{beginValue},<!-- 收/付款值(期初) -->
+		#{cuser},<!-- 创建用户id -->
+		#{cdate},<!-- 创建时间 -->
+		#{uuser},<!-- 修改用户id -->
+		#{udate},<!-- 修改时间 -->
+		#{remark},<!-- 备注 -->
+		#{isdisable},<!-- 是否启用(0:已禁用 1:启用) -->
+		#{id} <!-- id -->
+    </sql>
+
+
+    <!-- 字段名称  自动创建，禁止修改-->
+    <sql id="Column">
+        '客户ID'  customerId,
+        '类型（0：应收；1：应付）'  type,
+        '收/付款期间(yyyymm)'  period,
+        '收/付款期间'  periodDate,
+        '应收/付款(期初)'  beginPlus,
+        '预收/付款(期初)'  beginMinus,
+        '收/付款值(期初)'  beginValue,
+        '创建用户id'  cuser,
+        '创建时间'  cdate,
+        '修改用户id'  uuser,
+        '修改时间'  udate,
+        '备注'  remark,
+        '是否启用(0:已禁用 1:启用)'  isdisable,
+        'id' id
+    </sql>
+
+    <!-- 自动创建，禁止修改 -->
+    <select id="findColumnList"  resultType="java.util.LinkedHashMap">
+        select
+        <include refid="Column"></include>
+        from dual
+    </select>
+
+    <!-- 自动创建，禁止修改 -->
+    <select id="findDataList"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
+        select
+        <include refid="Field"></include>
+        from
+        <include refid="tableName"></include>
+        <where>
+            <!--queryStr 自定义sql查询语句-->
+            <if test='queryStr != null and queryStr!=""' >
+                and ${queryStr}
+            </if>
+        </where>
+        <if test='orderStr != null and orderStr != ""' >
+            order by ${orderStr}
+        </if>
+    </select>
+
+    <!-- 列表 自动创建，禁止修改-->
+    <select id="datalistPage" parameterType="com.yvan.PageData" resultType="com.xy.vmes.entity.FinanceBase">
+        select
+        <include refid="Field"></include>
+        from
+        <include refid="tableName"></include>
+        <where>
+            <!--queryStr 自定义sql查询语句-->
+            <if test='queryStr != null and queryStr!=""' >
+                and ${queryStr}
+            </if>
+        </where>
+    </select>
+
+
+    <!-- 批量删除 自动创建，禁止修改-->
+    <delete id="deleteByIds" parameterType="java.lang.String">
+        delete from
+        <include refid="tableName"></include>
+        where
+        id in
+        <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+		#{item}
+        </foreach>
+    </delete>
+
+
+    <!-- 自动创建，禁止修改-->
+    <update id="updateToDisableByIds" parameterType="java.lang.String" >
+        update
+        <include refid="tableName"></include>
+        set isdisable = '0' ,udate = now()
+        where
+        id in
+        <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+        #{item}
+        </foreach>
+    </update>
+
+    <!-- 自动创建，禁止修改-->
+    <update id="updateByDefined" parameterType="com.yvan.PageData" >
+        update
+        <include refid="tableName"></include>
+        set  ${updateStr} ,udate = now()
+        where
+        ${queryStr}
+    </update>
+
+
+    <!-- ***************************************************以上为自动生成代码禁止修改，请在下面添加业务代码************************************************* -->
+    <insert id="insertColumn" >
+        delete from vmes_column where model_code = 'FinanceBase' ;
+        insert into vmes_column (
+        id,model_code,title_key,title_name,serial_number,
+        isdisable,ishide,isedit,ismust,cdate,
+        cuser
+        ) VALUES
+            (replace(uuid(), '-', ''),'FinanceBase','customerId','客户ID',1, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'FinanceBase','customerCode','客户编码',1, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'FinanceBase','customerName','客户名称',1, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'FinanceBase','isEdit','是否可编辑',1, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'FinanceBase','type','类型',2, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'FinanceBase','period','收/付款期间(yyyymm)',3, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'FinanceBase','periodDate','收/付款日期',4, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'FinanceBase','beginPlus','应收款(期初)',5, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'FinanceBase','beginMinus','预收款(期初)',6, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'FinanceBase','beginValue','收款值(期初)',7, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'FinanceBase','cuser','创建用户id',8, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'FinanceBase','cdate','创建时间',9, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'FinanceBase','uuser','修改用户id',10, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'FinanceBase','udate','修改时间',11, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'FinanceBase','remark','备注',12, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'FinanceBase','isdisable','是否启用',13, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'FinanceBase','id','id',0, '1','0','1','0',now(), 'admin')
+    </insert>
+
+
+    <!-- 列表(全部) 自动创建，禁止修改-->
+    <select id="dataList" parameterType="com.yvan.PageData" resultType="com.xy.vmes.entity.FinanceBase">
+        select
+        <include refid="Field"></include>
+        from
+        <include refid="tableName"></include>
+        <where>
+            <!--isSelfExist 是否考虑自己在业务表中是否存在
+                false: (false or is null) 无需考虑自己在业务表中是否存在
+                true : 需要考虑自己在业务表中是否存在
+            -->
+            <if test='id != null and id != ""' >
+                <choose>
+                    <when test="'true' == isSelfExist">
+                        <![CDATA[ and id <> #{id} ]]>
+                    </when>
+                    <otherwise>
+                        and id = #{id}
+                    </otherwise>
+                </choose>
+            </if>
+
+
+            <!--queryStr 自定义sql查询语句-->
+            <if test='queryStr != null and queryStr != ""'>
+                and ${queryStr}
+            </if>
+        </where>
+        <if test='orderStr != null and orderStr != ""' >
+            order by ${orderStr}
+        </if>
+    </select>
+
+
+
+
+    <!-- 字段 自动创建，可以修改-->
+    <sql id="Field1">
+        customer_id customerId,<!-- 客户ID -->
+        type type,<!-- 类型（0：应收；1：应付） -->
+        period period,<!-- 收/付款期间(yyyymm) -->
+        period_date periodDate,<!-- 收/付款期间 -->
+        begin_plus beginPlus,<!-- 应收/付款(期初) -->
+        begin_minus beginMinus,<!-- 预收/付款(期初) -->
+        begin_value beginValue,<!-- 收/付款值(期初) -->
+        cuser cuser,<!-- 创建用户id -->
+        cdate cdate,<!-- 创建时间 -->
+        uuser uuser,<!-- 修改用户id -->
+        udate udate,<!-- 修改时间 -->
+        remark remark,<!-- 备注 -->
+        isdisable isdisable,<!-- 是否启用(0:已禁用 1:启用) -->
+        id id <!-- id -->
+    </sql>
+
+    <!-- 字段值 自动创建，可以修改-->
+    <!--
+    <sql id="Column1">
+            '客户ID'  customerId,
+            '类型（0：应收；1：应付）'  type,
+            '收/付款期间(yyyymm)'  period,
+            '收/付款期间'  periodDate,
+            '应收/付款(期初)'  beginPlus,
+            '预收/付款(期初)'  beginMinus,
+            '收/付款值(期初)'  beginValue,
+            '创建用户id'  cuser,
+            '创建时间'  cdate,
+            '修改用户id'  uuser,
+            '修改时间'  udate,
+            '备注'  remark,
+            '是否启用(0:已禁用 1:启用)'  isdisable,
+            'id' id_hide
+    </sql>
+     -->
+
+
+    <!-- 自动创建，可以修改 -->
+    <select id="getDataList"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
+        select
+        <include refid="Field1"></include>
+        from
+        <include refid="tableName"></include>
+        <where>
+            <!--queryStr 自定义sql查询语句-->
+            <if test='queryStr != null and queryStr != ""' >
+                and ${queryStr}
+            </if>
+            <if test='currentCompanyId != null and currentCompanyId != ""'>
+                and company_id LIKE CONCAT(CONCAT('%', #{currentCompanyId}),'%')
+            </if>
+            <if test='code != null and code != ""'>
+                and code LIKE CONCAT(CONCAT('%', #{code}),'%')
+            </if>
+            <if test='name != null and name != ""'>
+                and name LIKE CONCAT(CONCAT('%', #{name}),'%')
+            </if>
+        </where>
+        <if test='orderStr != null and orderStr != ""' >
+            order by ${orderStr}
+        </if>
+    </select>
+
+    <!-- 自动创建，可以修改 -->
+    <select id="getDataListPage"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
+        select
+            customer.id customerId,
+            customer.code customerCode,
+            customer.name customerName,
+            financeBase.id id,
+            case when financeBase.id is not null then 'Y' else 'N' end isEdit,
+            financeBase.type type,
+            financeBase.period period,
+            financeBase.period_date periodDate,
+            round(ifnull(financeBase.begin_minus,0),2) beginMinus,
+            round(ifnull(financeBase.begin_plus,0),2) beginPlus,
+            round(ifnull(financeBase.begin_value,0),2) beginValue,
+            financeBase.remark remark,
+            financeBase.isdisable isdisable,
+            financeBase.cdate cdate
+        from vmes_customer customer
+        left join vmes_finance_base financeBase on customer.id = financeBase.customer_id and financeBase.type = '0'
+
+        left join vmes_user cuser on customer.cuser = cuser.id
+        left join vmes_department dept on dept.id = cuser.dept_id
+
+        <where>
+            and customer.genre = 'df7cb67fca4148bc9632c908e4a7fdea' <!-- 客户 -->
+
+            <if test='dataType != null and dataType == "0"'>
+                and cuser.id = #{currentUserId}
+            </if>
+            <if test='dataType != null and dataType == "1"'>
+                and dept.id_${deptLayer} = #{deptRId}
+            </if>
+
+            <if test='currentCompanyId != null and currentCompanyId != ""'>
+                and customer.company_id = #{currentCompanyId}
+            </if>
+
+            <!--queryStr 自定义sql查询语句-->
+            <if test='queryStr != null and queryStr != ""' >
+                and ${queryStr}
+            </if>
+            <if test='customerCode != null and customerCode != ""'>
+                and customer.code LIKE CONCAT(CONCAT('%', #{customerCode}),'%')
+            </if>
+            <if test='customerName != null and customerName != ""'>
+                and customer.name LIKE CONCAT(CONCAT('%', #{customerName}),'%')
+            </if>
+        </where>
+        <if test='orderStr != null and orderStr != ""' >
+            order by ${orderStr}
+        </if>
+    </select>
+
+
+    <delete id="initialFinanceSale" parameterType="com.yvan.PageData" >
+        <if test='currentCompanyId != null and currentCompanyId != ""'>
+            DELETE FROM vmes_sale_deliver_detail WHERE parent_id in (select id from vmes_sale_deliver where company_id = #{currentCompanyId});
+            DELETE FROM vmes_sale_deliver WHERE company_id =  #{currentCompanyId};
+            DELETE FROM vmes_sale_invoice_detail WHERE parent_id in (select id from vmes_sale_invoice where company_id =  #{currentCompanyId});
+            DELETE FROM vmes_sale_invoice WHERE company_id =  #{currentCompanyId};
+            DELETE FROM vmes_sale_lock_date WHERE company_id =  #{currentCompanyId};
+            DELETE FROM vmes_sale_order_detail WHERE parent_id in (select id from vmes_sale_order where company_id =  #{currentCompanyId});
+            DELETE FROM vmes_sale_order WHERE company_id =  #{currentCompanyId};
+            DELETE FROM vmes_sale_order_detail_change WHERE parent_id in (select id from vmes_sale_order_change where company_id =  #{currentCompanyId});
+            DELETE FROM vmes_sale_order_change WHERE company_id =  #{currentCompanyId};
+            DELETE FROM vmes_sale_receive_detail WHERE parent_id in (select id from vmes_sale_receive where company_id =  #{currentCompanyId});
+            DELETE FROM vmes_sale_receive WHERE company_id =  #{currentCompanyId};
+            DELETE FROM vmes_sale_retreat_detail WHERE parent_id in (select id from vmes_sale_retreat where company_id =  #{currentCompanyId});
+            DELETE FROM vmes_sale_retreat WHERE company_id =  #{currentCompanyId};
+
+            DELETE FROM vmes_finance_period WHERE company_id =  #{currentCompanyId};
+            DELETE FROM vmes_finance_bill WHERE company_id =  #{currentCompanyId};
+            DELETE FROM vmes_finance_base WHERE company_id =  #{currentCompanyId};
+        </if>
+    </delete>
+
+
+
+</mapper>

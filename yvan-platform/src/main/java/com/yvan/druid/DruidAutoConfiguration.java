@@ -36,6 +36,8 @@ public class DruidAutoConfiguration {
         WallConfig wallConfig = new WallConfig();
         wallConfig.setCommentAllow(true);
         wallConfig.setSelectHavingAlwayTrueCheck(false);
+        wallConfig.setMultiStatementAllow(true);//允许一次执行多条语句
+//        wallConfig.setNoneBaseStatementAllow(true);//允许非基本语句的其他语句
         return wallConfig;
     }
 
@@ -80,6 +82,9 @@ public class DruidAutoConfiguration {
 
         return datasource;
     }
+
+
+
 
     @Bean
     public ServletRegistrationBean DruidStatViewServle2() {
