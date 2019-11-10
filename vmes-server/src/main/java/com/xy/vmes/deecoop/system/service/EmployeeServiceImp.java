@@ -964,6 +964,34 @@ public class EmployeeServiceImp implements EmployeeService {
         newEmployPost.setIsplurality("0");
         newEmployPost.setCuser(pageData.getString("cuser"));
         employPostService.save(newEmployPost);
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////
+        //修改该员工账号所属部门
+
+        //获取岗位所属部门id
+        String deptId = new String();
+        Post empPost = postService.findPostById(postId);
+        if (empPost != null && empPost.getDeptId() != null) {
+            deptId = empPost.getDeptId().trim();
+        }
+
+        //获取该员工系统用户id
+        String empUserId = new String();
+        Employee employeeDB = this.findEmployeeById(employeeId);
+        if (employeeDB != null && employeeDB.getUserId() != null) {
+            empUserId = employeeDB.getUserId().trim();
+        }
+
+        //修改该员工系统用户id 所属部门
+        if (empUserId != null && empUserId.trim().length() > 0
+            && deptId != null && deptId.trim().length() > 0
+        ) {
+            User editUser = new User();
+            editUser.setId(empUserId);
+            editUser.setDeptId(deptId);
+            userService.update(editUser);
+        }
+
         return model;
     }
 
