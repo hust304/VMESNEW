@@ -63,6 +63,10 @@ public class WarehouseProduct implements Serializable {
 	@TableField("version")
 	private Integer version;
 
+	//货品价格
+	@TableField("price")
+	private BigDecimal price;
+
 
 	public void setId(String id) {
 		this.id = id;
@@ -154,7 +158,14 @@ public class WarehouseProduct implements Serializable {
 	public void setAuditDate(Date auditDate) {
 		this.auditDate = auditDate;
 	}
-	/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+	public BigDecimal getPrice() {
+		return price;
+	}
+	public void setPrice(BigDecimal price) {
+		this.price = price;
+	}
+
+/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 
 }

@@ -102,11 +102,13 @@
             cdate cdate,
             uuser uuser,
 
-            audit_date auditDate,
             udate udate,
             remark remark,
             isdisable isdisable,
-            version version
+            version version,
+            audit_date auditDate,
+
+            price price
         from vmes_warehouse_product
         <choose>
             <!--
