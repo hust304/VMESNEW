@@ -153,6 +153,8 @@ public interface WarehouseService {
 
     ResultModel deleteWarehouse(PageData pageData) throws Exception;
 
+    ResultModel updateDisableWarehouse(PageData pageData) throws Exception;
+
     void exportExcelWarehouse(PageData pd, Pagination pg) throws Exception;
 
     ResultModel importExcelWarehouse(MultipartFile file) throws Exception;

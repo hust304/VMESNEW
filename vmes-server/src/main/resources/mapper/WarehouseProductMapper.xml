@@ -467,12 +467,14 @@
             <if test="productIn != null and productIn != ''">
                 and wp.product_id in (${productIn})
             </if>
-
-
             <if test="currentCompanyId != null and currentCompanyId != ''">
                 and wp.company_id = #{currentCompanyId}
             </if>
 
+
+            <if test="warehouseIsdisable != null and warehouseIsdisable != ''">
+                and warehouse.isdisable = #{warehouseIsdisable}
+            </if>
             <!--需要(备件库) 查询结果集中只含有(备件库) -->
             <if test="'true' == isNeedSpare">
                 and warehouse.name = '备件库'
@@ -498,7 +500,9 @@
                 <!--虚拟库:56f5e83dcb9911e884ad00163e105f05 仓库表:vmes_warehouse-->
                 and warehouse.path_id LIKE '%56f5e83dcb9911e884ad00163e105f05%'
             </if>
-
+            <if test="warehouseId != null and warehouseId != ''">
+                and warehouse.path_id LIKE CONCAT(CONCAT('%', #{warehouseId}),'%')
+            </if>
 
             <if test="isSafeStock == 1"> <!-- 小于安全库存 -->
                 <![CDATA[ and prod.stock_count < prod.safety_count ]]>
@@ -515,6 +519,10 @@
             <if test="spec != null and spec != ''">
                 and prod.spec LIKE CONCAT(CONCAT('%', #{spec}),'%')
             </if>
+            <if test="prodIsdisable != null and prodIsdisable != ''">
+                and prod.isdisable = #{prodIsdisable}
+            </if>
+
             <if test="genreName != null and genreName != ''">
                 and genre.name = #{genreName}
             </if>
@@ -524,9 +532,7 @@
             <if test="typeName != null and typeName != ''">
                 and type.name LIKE CONCAT(CONCAT('%', #{typeName}),'%')
             </if>
-            <if test="warehouseId != null and warehouseId != ''">
-                and warehouse.path_id LIKE CONCAT(CONCAT('%', #{warehouseId}),'%')
-            </if>
+
             and wp.product_id is not null
         </where>
         group by wp.warehouse_id,wp.product_id
@@ -591,7 +597,21 @@
             <if test="currentCompanyId != null and currentCompanyId != ''">
                 and wp.company_id = #{currentCompanyId}
             </if>
+            <!--stockCountQuery 库存数量查询-->
+            <!--stockCountQuery:stockCountGreaterThanZero 库存数量大于零-->
+            <if test="'stockCountGreaterThanZero' == stockCountQuery">
+                and wp.stock_count > 0
+            </if>
+            <!--stockCountQuery 库存数量查询-->
+            <!--stockCountQuery:stockCountZero 库存数量等于零-->
+            <if test="'stockCountZero' == stockCountQuery">
+                and wp.stock_count = 0
+            </if>
 
+
+            <if test="warehouseIsdisable != null and warehouseIsdisable != ''">
+                and warehouse.isdisable = #{warehouseIsdisable}
+            </if>
             <!--需要(备件库) 查询结果集中只含有(备件库) -->
             <if test="'true' == isNeedSpare">
                 and warehouse.name = '备件库'
@@ -617,16 +637,8 @@
                 <!--虚拟库:56f5e83dcb9911e884ad00163e105f05 仓库表:vmes_warehouse-->
                 and warehouse.path_id LIKE '%56f5e83dcb9911e884ad00163e105f05%'
             </if>
-
-            <!--stockCountQuery 库存数量查询-->
-            <!--stockCountQuery:stockCountGreaterThanZero 库存数量大于零-->
-            <if test="'stockCountGreaterThanZero' == stockCountQuery">
-                and wp.stock_count > 0
-            </if>
-            <!--stockCountQuery 库存数量查询-->
-            <!--stockCountQuery:stockCountZero 库存数量等于零-->
-            <if test="'stockCountZero' == stockCountQuery">
-                and wp.stock_count = 0
+            <if test="warehouseId != null and warehouseId != ''">
+                and warehouse.path_id LIKE CONCAT(CONCAT('%', #{warehouseId}),'%')
             </if>
 
             <if test="isSafeStock == 1"> <!-- 小于安全库存 -->
@@ -644,6 +656,10 @@
             <if test="spec != null and spec != ''">
                 and prod.spec LIKE CONCAT(CONCAT('%', #{spec}),'%')
             </if>
+            <if test="prodIsdisable != null and prodIsdisable != ''">
+                and prod.isdisable = #{prodIsdisable}
+            </if>
+
             <if test="genreName != null and genreName != ''">
                 and genre.name = #{genreName}
             </if>
@@ -653,9 +669,7 @@
             <if test="typeName != null and typeName != ''">
                 and type.name LIKE CONCAT(CONCAT('%', #{typeName}),'%')
             </if>
-            <if test="warehouseId != null and warehouseId != ''">
-                and warehouse.path_id LIKE CONCAT(CONCAT('%', #{warehouseId}),'%')
-            </if>
+
             and wp.product_id is not null and prod.id is not null
         </where>
         group by wp.product_id

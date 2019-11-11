@@ -79,4 +79,17 @@ public interface WarehouseProductToolService {
     List<Map<String, Object>> findWarehouseProductReduceMapListBySimple(List<WarehouseProduct> objectList, BigDecimal changeCount);
 
     Map<String, WarehouseProduct> warehouseProductList2Map(List<WarehouseProduct> objectList);
+
+
+    /**
+     * 获取指定仓库(仓库id)是否存在库存
+     * 按(货品id)汇总-查询(vmes_warehouse_product)
+     * Sql查询: WarehouseProductMapper.warehouseProductView
+     *
+     * @param warehouseId 仓库id
+     * @return
+     *   Boolean.TRUE : 仓库中存在货品数量大于零的货品
+     *   Boolean.FALSE: 仓库中不存在货品数量大于零的货品
+     */
+    Boolean isExistStockCountByWarehouseId(String companyId, String warehouseId) throws Exception;
 }

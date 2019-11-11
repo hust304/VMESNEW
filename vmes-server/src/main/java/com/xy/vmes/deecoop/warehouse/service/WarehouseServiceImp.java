@@ -35,7 +35,13 @@ public class WarehouseServiceImp implements WarehouseService {
     @Autowired
     private WarehouseMapper warehouseMapper;
     @Autowired
+    private WarehouseExcelService warehouseExcelService;
+
+    @Autowired
     private WarehouseProductService warehouseProductService;
+    @Autowired
+    private WarehouseProductToolService warehouseProductToolService;
+
     @Autowired
     private CoderuleService coderuleService;
     @Autowired
@@ -44,8 +50,6 @@ public class WarehouseServiceImp implements WarehouseService {
     private DictionaryService dictionaryService;
     @Autowired
     private ColumnService columnService;
-    @Autowired
-    private WarehouseExcelService warehouseExcelService;
 
     /**
      * 创建人：陈刚 自动创建，禁止修改
@@ -1458,8 +1462,28 @@ public class WarehouseServiceImp implements WarehouseService {
         String[] id_arry = id_str.split(",");
         //this.updateToDisableByIds(id_arry);
 
-        //1. 验证当前仓库id或货位id下所有子仓库或子货位是否含有货品
+
+        //遍历勾选仓库id数组
         StringBuffer msgBuf = new StringBuffer();
+        for (int i = 0; i < id_arry.length; i++) {
+            String warehouseId = id_arry[i];
+
+            //获取指定仓库(仓库id)是否存在库存
+            //   Boolean.TRUE : 仓库中存在货品数量大于零的货品
+            //   Boolean.FALSE: 仓库中不存在货品数量大于零的货品
+            Boolean isExistStockCount = warehouseProductToolService.isExistStockCountByWarehouseId(companyId, warehouseId);
+            if (isExistStockCount != null && isExistStockCount.booleanValue()) {
+                msgBuf.append("第 (" +(i+1)+") 行：该仓库存在货品不可删除禁用！");
+            }
+        }
+        if (msgBuf != null && msgBuf.toString().trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgBuf.toString());
+            return model;
+        }
+
+        //1. 验证当前仓库id或货位id下所有子仓库或子货位是否含有货品
+        msgBuf = new StringBuffer();
         for (String warehouseId : id_arry) {
             Warehouse warehouse = this.findWarehouseById(warehouseId);
 
@@ -1490,6 +1514,43 @@ public class WarehouseServiceImp implements WarehouseService {
             findMap.put("companyId", companyId);
             this.deleteWarehouseByPath(findMap);
         }
+
+        return model;
+    }
+
+    public ResultModel updateDisableWarehouse(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+        String id = pageData.getString("id");
+        String isdisable = pageData.getString("isdisable");
+        String companyId = pageData.getString("currentCompanyId");
+
+        //1. 非空判断
+        String msgStr = new String();
+        if (id == null || id.trim().length() == 0) {
+            msgStr = msgStr + "id为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT;
+        }
+        if (isdisable == null || isdisable.trim().length() == 0) {
+            msgStr = msgStr + "isdisable为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT;
+        }
+        if (msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
+
+        //1. 获取指定仓库(仓库id)是否存在库存
+        Boolean isExistStockCount = warehouseProductToolService.isExistStockCountByWarehouseId(companyId, id);
+        if (isExistStockCount != null && isExistStockCount.booleanValue()) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("该仓库存在货品不可删除禁用！");
+            return model;
+        }
+
+        //2. 修改客户供应商(禁用)状态
+        Warehouse editWarehouse = new Warehouse();
+        editWarehouse.setId(id);
+        editWarehouse.setIsdisable(isdisable);
+        this.update(editWarehouse);
 
         return model;
     }

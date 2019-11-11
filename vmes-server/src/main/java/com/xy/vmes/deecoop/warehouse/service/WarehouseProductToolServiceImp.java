@@ -1,5 +1,6 @@
 package com.xy.vmes.deecoop.warehouse.service;
 
+import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.entity.WarehouseProduct;
 import com.xy.vmes.exception.ApplicationException;
 import com.xy.vmes.service.WarehouseProductService;
@@ -267,6 +268,35 @@ public class WarehouseProductToolServiceImp implements WarehouseProductToolServi
         }
 
         return objectMap;
+    }
+
+    /**
+     * 获取指定仓库(仓库id)是否存在库存
+     * 按(货品id)汇总-查询(vmes_warehouse_product)
+     * Sql查询: WarehouseProductMapper.warehouseProductView
+     *
+     * @param warehouseId 仓库id
+     * @return
+     *   Boolean.TRUE : 仓库中存在货品数量大于零的货品
+     *   Boolean.FALSE: 仓库中不存在货品数量大于零的货品
+     */
+    public Boolean isExistStockCountByWarehouseId(String companyId, String warehouseId) throws Exception {
+        PageData findMap = new PageData();
+        findMap.put("currentCompanyId", companyId);
+        findMap.put("warehouseId", warehouseId);
+
+        //是否启用(0:已禁用 1:启用)
+        findMap.put("warehouseIsdisable", "1");
+        findMap.put("prodIsdisable", "1");
+        //stockCountQuery:stockCountZero 库存数量等于零 (wp.stock_count > 0)
+        findMap.put("stockCountQuery", "stockCountGreaterThanZero");
+
+        List<Map> mapObject = warehouseProductService.getWarehouseProductView(findMap, null);
+        if (mapObject != null && mapObject.size() > 0) {
+            return Boolean.TRUE;
+        }
+
+        return Boolean.FALSE;
     }
 
 }

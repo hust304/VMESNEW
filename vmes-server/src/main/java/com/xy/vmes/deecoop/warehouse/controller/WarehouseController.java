@@ -502,6 +502,24 @@ public class WarehouseController {
     }
 
     /**
+     * 修改仓库(禁用)状态
+     *
+     * @author 陈刚
+     * @date 2019-11-11
+     */
+    @PostMapping("/warehouse/warehouseBase/updateDisableWarehouse")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel updateDisableWarehouse() throws Exception {
+        logger.info("################/warehouse/warehouseBase/updateDisableWarehouse 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pageData = HttpUtils.parsePageData();
+        ResultModel model = warehouseService.updateDisableWarehouse(pageData);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/warehouse/warehouseBase/updateDisableWarehouse 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
     * Excel导出
     * @author 陈刚 自动创建，可以修改
     * @date 2018-10-10
