@@ -879,7 +879,7 @@ public class WarehouseServiceImp implements WarehouseService {
         String isNeedwarehouseGenre = pd.getString("isNeedwarehouseGenre");
 
         //是否启用(0:已禁用 1:启用)
-        pd.put("isdisable", "1");
+        //pd.put("isdisable", "1");
         pd.put("orderStr", "a.pid,a.layer,a.serial_number asc");
 
         //是否需要分页 true:需要分页 false:不需要分页
