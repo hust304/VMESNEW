@@ -252,7 +252,7 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
                 }
             }
 
-            //货品(计价单位)数量
+            //(货品)单据单位-入库数量
             BigDecimal priceCount = BigDecimal.valueOf(0D);
             String priceCountStr = mapObject.get("priceCount");
             if (priceCountStr != null) {
@@ -270,7 +270,7 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
             detail.setProductCount(productCount);
             detail.setCount(productCount);
 
-            //货品价格
+            //单据货品价格
             String priceStr = mapObject.get("price");
             if (priceStr != null && priceStr.trim().length() > 0) {
                 try {

@@ -73,15 +73,16 @@ public class WarehouseInDetail implements Serializable {
 	//(货品)计量单位-入库数量
 	@TableField("product_count")
 	private BigDecimal productCount;
-	//(货品)计价单位id
+
+	//(货品)单据单位id
 	@TableField("price_unit")
 	private String priceUnit;
-	//(货品)计价单位-入库数量
+	//(货品)单据单位-入库数量
 	@TableField("price_count")
 	private BigDecimal priceCount;
 
 	//企业定制化字段///////////////////////////////////////////////////////////////////////////
-	//(货品)价格
+	//单据货品价格
 	@TableField("price")
 	private BigDecimal price;
 
