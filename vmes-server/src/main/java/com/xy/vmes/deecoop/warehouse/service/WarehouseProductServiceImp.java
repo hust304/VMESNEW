@@ -156,7 +156,10 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
         return warehouseProductMapper.getDataListPage(pd, pg);
     }
 
-
+    @Override
+    public List<Map> getDataListPageDispatchByWC(PageData pd) throws Exception {
+        return warehouseProductMapper.getDataListPageDispatchByWC(pd);
+    }
 
     public List<Map> getDataListPageDispatchBySimple(PageData pd) throws Exception{
         return warehouseProductMapper.getDataListPageDispatchBySimple(pd);

@@ -155,6 +155,24 @@
     (replace(uuid(), '-', ''),'WarehouseOutRecommendBySimple','companyId','公司ID',7, '1','0','1','0',now(), 'admin'),
     (replace(uuid(), '-', ''),'WarehouseOutRecommendBySimple','id','id',0, '1','0','1','0',now(), 'admin'),
     (replace(uuid(), '-', ''),'WarehouseOutRecommendBySimple','warehouseName','仓库名称',8, '1','0','1','0',now(), 'admin')
+
+
+    delete from vmes_column where model_code = 'WarehouseOutRecommendByWC' ;
+    insert into vmes_column (
+    id,model_code,title_key,title_name,serial_number,
+    isdisable,ishide,isedit,ismust,cdate,
+    cuser
+    ) VALUES
+    (replace(uuid(), '-', ''),'WarehouseOutRecommendByWC','name','货位名称',1, '1','1','1','0',now(), 'admin'),
+    (replace(uuid(), '-', ''),'WarehouseOutRecommendByWC','code','批次号',2, '1','1','1','0',now(), 'admin'),
+    (replace(uuid(), '-', ''),'WarehouseOutRecommendByWC','stockCount','库存数量',3, '1','1','1','0',now(), 'admin'),
+    (replace(uuid(), '-', ''),'WarehouseOutRecommendByWC','suggestCount','建议取货数量',4, '1','1','1','0',now(), 'admin'),
+    (replace(uuid(), '-', ''),'WarehouseOutRecommendByWC','warehouseId','仓库货位ID',4, '1','0','1','0',now(), 'admin'),
+    (replace(uuid(), '-', ''),'WarehouseOutRecommendByWC','productId','产品ID',5, '1','0','1','0',now(), 'admin'),
+    (replace(uuid(), '-', ''),'WarehouseOutRecommendByWC','isdisable','是否启用',6, '1','0','1','0',now(), 'admin'),
+    (replace(uuid(), '-', ''),'WarehouseOutRecommendByWC','companyId','公司ID',7, '1','0','1','0',now(), 'admin'),
+    (replace(uuid(), '-', ''),'WarehouseOutRecommendByWC','id','id',0, '1','0','1','0',now(), 'admin'),
+    (replace(uuid(), '-', ''),'WarehouseOutRecommendByWC','warehouseName','仓库名称',8, '1','0','1','0',now(), 'admin')
 </insert>
 
 

@@ -394,6 +394,23 @@ public class WarehouseOutDetailController {
      * @author 刘威 自动创建，可以修改
      * @date 2018-10-23
      */
+    @PostMapping("/warehouse/warehouseOutDetail/listPageWarehouseOutDetailsExecuteByWC")
+    public ResultModel listPageWarehouseOutDetailsExecuteByWC()  throws Exception {
+
+        logger.info("################warehouseOutDetail/listPageWarehouseOutDetailsExecuteByWC 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = warehouseOutDetailService.listPageWarehouseOutDetailsExecuteByWC(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################warehouseOutDetail/listPageWarehouseOutDetailsExecuteByWC 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+    /**
+     * @author 刘威 自动创建，可以修改
+     * @date 2018-10-23
+     */
     @PostMapping("/warehouse/warehouseOutDetail/listPageWarehouseOutDetailsDispatch")
     public ResultModel listPageWarehouseOutDetailsDispatch()  throws Exception {
 
