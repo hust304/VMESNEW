@@ -148,11 +148,12 @@ public interface WarehouseOutExecuteService {
     ResultModel executeWarehouseOutExecute(PageData pageData) throws Exception;
 
     ResultModel executeWarehouseOutExecuteBySimple(PageData pageData) throws Exception;
+    ResultModel executeWarehouseOutExecuteByWC(PageData pageData) throws Exception;
+
     ResultModel auditWarehouseOutExecuteBySimple(PageData pageData) throws Exception;
     ResultModel updateWarehouseOutExecute(PageData pageData) throws Exception;
     ResultModel deleteWarehouseOutExecute(PageData pageData) throws Exception;
     ResultModel listPageWarehouseOutExecutes(PageData pd, Pagination pg) throws Exception;
-
 
 }
 

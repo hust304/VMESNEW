@@ -166,6 +166,8 @@ public interface WarehouseOutDetailService {
 
     ResultModel listPageWarehouseOutDetailsExecuteBySimple(PageData pd) throws Exception;
 
+    ResultModel listPageWarehouseOutDetailsExecuteByWC(PageData pd) throws Exception;
+
     ResultModel listPageWarehouseOutDetailsDispatch(PageData pd, Pagination pg) throws Exception;
 
     void exportExcelWarehouseOutDetails(PageData pd, Pagination pg) throws Exception;
@@ -173,6 +175,8 @@ public interface WarehouseOutDetailService {
     ResultModel importExcelWarehouseOutDetails(MultipartFile file) throws Exception;
 
     ResultModel listPageForAddFromBOM(PageData pd) throws Exception;
+
+
 }
 
 

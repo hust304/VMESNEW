@@ -60,6 +60,20 @@ public class WarehouseInitialController {
         return model;
     }
 
+
+    //仓库初始化(简版仓库)
+    @PostMapping("/warehouse/warehouseInitial/findWarehouseInitialByWC")
+    public ResultModel findWarehouseInitialBySimple() throws Exception {
+        logger.info("################/warehouse/warehouseInitial/findWarehouseInitialByWC 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = warehouseInitialService.findWarehouseInitialByWC(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/warehouse/warehouseInitial/findWarehouseInitialByWC 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
     /**
      * 获取是否禁用按钮(0:已禁用 1:启用)
      * 0和1字符串 第一位:初始化按钮 第二位:导入按钮 第三位:禁用初始化按钮

@@ -753,6 +753,88 @@ public class WarehouseInitialServiceImp implements WarehouseInitialService {
 
         return model;
     }
+
+    @Override
+    public ResultModel findWarehouseInitialByWC(PageData pd) throws Exception {
+        ResultModel model = new ResultModel();
+        Pagination pg = HttpUtils.parsePagination(pd);
+
+        List<Column> columnList = columnService.findColumnList("warehouseInitialBySimple");
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
+        }
+
+        //获取指定栏位字符串-重新调整List<Column>
+        String fieldCode = pd.getString("fieldCode");
+        if (fieldCode != null && fieldCode.trim().length() > 0) {
+            columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
+        }
+
+        String productIds = new String();
+        if (pd.getString("productIds") != null && pd.getString("productIds").trim().length() > 0) {
+            productIds = pd.getString("productIds").trim();
+            productIds = StringUtil.stringTrimSpace(productIds);
+            productIds = "'" + productIds.replace(",", "','") + "'";
+        }
+        pd.put("productIds", productIds);
+
+        //是否需要分页 true:需要分页 false:不需要分页
+        Map result = new HashMap();
+        String isNeedPage = pd.getString("isNeedPage");
+        if ("false".equals(isNeedPage)) {
+            pg = null;
+        } else {
+            result.put("pageData", pg);
+        }
+
+        //距今(最后一次变更日期)天数 排序方式
+        String orderLast2nowDay = pd.getString("orderLast2nowDay");
+        if (orderLast2nowDay != null && orderLast2nowDay.trim().length() > 0
+                && "asc,desc".indexOf(orderLast2nowDay) != -1
+                ) {
+            pd.put("isNotNullLastUpdateDate", "true");
+            pd.put("orderStr", null);
+        }
+
+        List<Map> varList = this.findWarehouseInitialByWC(pd, pg);
+        if (varList != null && varList.size() > 0) {
+            for (Map<String, Object> mapObject : varList) {
+                //last2nowDay 距今(天数)
+                //lastUpdateDate 最后一次变更日期
+                String lastUpdateDate = (String)mapObject.get("lastUpdateDate");
+                if (lastUpdateDate == null || lastUpdateDate.trim().length() == 0) {
+                    mapObject.put("last2nowDay", new String());
+                }
+            }
+        }
+
+        Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
+        List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
+
+        result.put("hideTitles", titleMap.get("hideTitles"));
+        result.put("titles",titleMap.get("titles"));
+        result.put("varList", varMapList);
+
+        model.putResult(result);
+        return model;
+    }
+
+
+    //仓库初始化(简版仓库)
+    public List<Map> findWarehouseInitialByWC(PageData pd, Pagination pg) throws Exception {
+        List<Map> mapList = new ArrayList<Map>();
+        if (pd == null) {return mapList;}
+
+        if (pg == null) {
+            return warehouseInitialMapper.findWarehouseProductByWC(pd);
+        } else if (pg != null) {
+            return warehouseInitialMapper.findWarehouseProductByWC(pd,pg);
+        }
+
+        return mapList;
+    }
 }
 
 

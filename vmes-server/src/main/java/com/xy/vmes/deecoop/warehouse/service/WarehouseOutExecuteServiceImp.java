@@ -600,7 +600,240 @@ public class WarehouseOutExecuteServiceImp implements WarehouseOutExecuteService
         return model;
     }
 
+    @Override
+    public ResultModel executeWarehouseOutExecuteByWC(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+        String jsonDataStr = pageData.getString("jsonDataStr");
+        String currentUserId = pageData.getString("currentUserId");
+        String currentCompanyId = pageData.getString("currentCompanyId");
+        List<Map<String, Object>> mapList = (List<Map<String, Object>>) YvanUtil.jsonToList(jsonDataStr);
 
+        StringBuffer msgBuf = new StringBuffer();
+        if(mapList!=null&&mapList.size()>0){
+            //第一层: 数据遍历
+            for (Map<String, Object> outDetailMap : mapList) {
+                //String productId = (String) outDetailMap.get("productId");
+                //String productCode = (String) outDetailMap.get("productCode");
+                //String productName = (String) outDetailMap.get("productName");
+
+                double count = Double.parseDouble((String)outDetailMap.get("count"));
+                //BigDecimal countBig = BigDecimal.valueOf(count);
+                //四舍五入到2位小数
+                //countBig = countBig.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+
+                double executeCount = Double.parseDouble((String)outDetailMap.get("executeCount"));
+                double lackCount = count - executeCount;
+
+//                //验证当前(货品id)在库存中的数量
+//                PageData findMap = new PageData();
+//                findMap.put("companyId", currentCompanyId);
+//                findMap.put("productId", productId);
+//                //查询结果集需要(实体库)-结果集只含有(实体库)
+//                findMap.put("isNeedEntity", "true");
+//                //查询结果集不需要(备件库)
+//                findMap.put("isNotNeedSpare", "true");
+//
+//                List<Map> warehouseProductMapList = warehouseToWarehouseProductService.findWarehouseToWarehouseProductByProduct(findMap, null);
+//                BigDecimal productStockCount = this.findProductStockCount(warehouseProductMapList);
+//                if (count > productStockCount.doubleValue()) {
+//                    String msgTemp = "货品名称：{0} 该货品库存不足，请更改出库数量";
+//                    String msgStr = MessageFormat.format(msgTemp, productName);
+//                    msgBuf.append(msgStr);
+//                    continue;
+//                }
+
+                //第二层: 数据遍历
+                if(outDetailMap.get("children") != null) {
+                    List executeList = (List)outDetailMap.get("children");
+                    if(executeList!=null&&executeList.size()>0){
+                        for (int i = 0; i < executeList.size(); i++) {
+                            Map<String, Object> executeMap = (Map<String, Object>) executeList.get(i);
+                            double suggestCount = Double.parseDouble((String)executeMap.get("suggestCount"));
+                            if(suggestCount>lackCount){
+                                model.putCode(Integer.valueOf(1));
+                                model.putMsg("出库执行数量不能大于计划出库数量！");
+                                return model;
+                            }else{
+                                lackCount = lackCount - suggestCount;
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+
+        if (msgBuf.toString().trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgBuf.toString());
+            return model;
+        }
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //1.遍历数据集-获取(建议取货数量) 大于零的(建议取货数量)
+        //2.遍历数据集-获取 出库单id 出库执行数量
+        List<Map<String, Object>> outExecuteMapList = new ArrayList();
+        List<Map<String, Object>> outDtlExecuteMapList = new ArrayList();
+
+        //第一层: 数据遍历
+        for (Map<String, Object> firstMap : mapList) {
+            String outDtlId = (String)firstMap.get("id");
+
+            //第二层: 数据遍历 -- 大于零的(建议取货数量)
+            List<Map<String, Object>> outExecuteChildrenList = new ArrayList();
+            if(firstMap.get("children") != null && ((List)firstMap.get("children")).size() > 0) {
+                List<Map<String, Object>> secondList = (List)firstMap.get("children");
+
+                //累加器:countSum -- 获取(建议取货数量 suggestCount)总和
+                BigDecimal countSum = BigDecimal.valueOf(0D);
+                for (Map<String, Object> secondMap : secondList) {
+                    //建议取货数量 suggestCount
+                    BigDecimal suggestCount = BigDecimal.valueOf(0D);
+                    String suggestCountStr = (String)secondMap.get("suggestCount");
+                    if (suggestCountStr != null && suggestCountStr.trim().length() > 0) {
+                        try {
+                            suggestCount = new BigDecimal(suggestCountStr);
+                        } catch (NumberFormatException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    if (suggestCount.doubleValue() > 0) {
+                        outExecuteChildrenList.add(secondMap);
+                        countSum = BigDecimal.valueOf(countSum.doubleValue() + suggestCount.doubleValue());
+                    }
+                }
+
+                //设置 出库单id 出库执行数量
+                Map<String, Object> outDtlExecuteMap = new HashMap<>();
+                outDtlExecuteMap.put("outDtlId", outDtlId);
+                //四舍五入到2位小数
+                countSum = countSum.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                outDtlExecuteMap.put("executeCount", countSum);
+                outDtlExecuteMapList.add(outDtlExecuteMap);
+            }
+
+            if (outExecuteChildrenList.size() > 0) {
+                firstMap.put("children", outExecuteChildrenList);
+                outExecuteMapList.add(firstMap);
+            }
+        }
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //遍历数据集-更改销售订单明细锁定库存数量
+        if(outDtlExecuteMapList != null && outDtlExecuteMapList.size() > 0) {
+            for (Map<String, Object> outDtlExecuteMap : outDtlExecuteMapList) {
+                String outDtlId = (String)outDtlExecuteMap.get("outDtlId");
+                BigDecimal executeCount = (BigDecimal)outDtlExecuteMap.get("executeCount");
+
+                Map<String, Object> objectMap = saleDeliverOutDetailService.findOutDetailByOrderDetail(outDtlId, null);
+                String orderDtlId = (String)objectMap.get("orderDtlId");
+                BigDecimal lockCount = (BigDecimal)objectMap.get("lockCount");
+                Integer versionLockCount = (Integer)objectMap.get("versionLockCount");
+
+                if (orderDtlId != null && orderDtlId.trim().length() > 0
+                        && lockCount != null && versionLockCount != null
+                        ) {
+                    BigDecimal newLockCount = BigDecimal.valueOf(0D);
+                    if (lockCount.doubleValue() > executeCount.doubleValue()) {
+                        newLockCount = BigDecimal.valueOf(lockCount.doubleValue() - executeCount.doubleValue());
+                    }
+
+                    SaleOrderDetail editOrderDetail = new SaleOrderDetail();
+                    editOrderDetail.setId(orderDtlId);
+                    editOrderDetail.setLockCount(newLockCount);
+                    //是否锁定仓库(0:未锁定 1:已锁定)
+                    if (newLockCount.doubleValue() == 0) {
+                        editOrderDetail.setIsLockWarehouse("0");
+                    } else {
+                        editOrderDetail.setIsLockWarehouse("1");
+                    }
+                    //锁定开始时间
+                    editOrderDetail.setLockDate(new Date());
+                    if (versionLockCount != null) {
+                        versionLockCount = Integer.valueOf(versionLockCount.intValue() + 1);
+                    }
+                    editOrderDetail.setVersionLockCount(versionLockCount);
+                    saleOrderDetailService.update(editOrderDetail);
+
+                    //重新发送锁库消息
+                    //获取企业id对应的锁定库存时长(毫秒)
+                    String companyId = pageData.getString("currentCompanyId");
+                    Long lockTime = saleLockDateService.findLockDateMillisecondByCompanyId(companyId);
+                    if (lockTime != null && orderDtlId != null && versionLockCount != null) {
+                        //信息队列信息:(订单明细id,锁定库存版本号)
+                        String orderDtl_activeMQ_temp = "{0},{1}";
+                        String orderDtl_activeMQ_msg = MessageFormat.format(orderDtl_activeMQ_temp,
+                                orderDtlId,
+                                versionLockCount);
+
+                        //将订单明细id作为消息体放入消息队列中，消息时长(毫秒)-根据企业id查询(vmes_sale_lock_date)
+                        if (lockTime != null && lockTime.longValue() > 0) {
+                            sirstSender.sendMsg(orderDtl_activeMQ_msg, lockTime.intValue());
+                        }
+                    }
+                }
+            }
+        }
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //出库执行
+        if(outExecuteMapList != null && outExecuteMapList.size()>0){
+            for (Map<String, Object> outDetailMap : outExecuteMapList) {
+                List<WarehouseOutExecute> outExecuteList = new ArrayList<WarehouseOutExecute>();
+                String detailId = (String) outDetailMap.get("id");
+                String parentId = (String) outDetailMap.get("parentId");
+
+                WarehouseOutDetail outDetail = new WarehouseOutDetail();
+                outDetail.setId(detailId);
+                outDetail.setCuser(currentUserId);
+                WarehouseOutExecutor outExecutor = new WarehouseOutExecutor();
+                outExecutor.setDetailId(detailId);
+                outExecutor.setExecutorId(currentUserId);
+                outExecutor.setCuser(currentUserId);
+
+                Map columnMap = new HashMap();
+                columnMap.put("detail_id",detailId);
+                List<WarehouseOutExecutor> warehouseOutExecutorList = warehouseOutExecutorService.selectByColumnMap(columnMap);
+                if(warehouseOutExecutorList!=null&&warehouseOutExecutorList.size()>0){
+                    for(int i=0;i<warehouseOutExecutorList.size();i++){
+                        WarehouseOutExecutor warehouseOutExecutor = warehouseOutExecutorList.get(i);
+                        warehouseOutExecutor.setIsdisable("0");
+                        warehouseOutExecutor.setRemark("执行人变更");
+                        warehouseOutExecutorService.update(warehouseOutExecutor);
+                    }
+                }
+
+                warehouseOutExecutorService.save(outExecutor);
+                if(outDetailMap.get("children")!=null){
+                    List executeList = (List)outDetailMap.get("children");
+                    if(executeList!=null&&executeList.size()>0){
+                        for (int i = 0; i < executeList.size(); i++) {
+                            Map<String, Object> executeMap = (Map<String, Object>) executeList.get(i);
+                            BigDecimal suggestCount = BigDecimal.valueOf(Double.parseDouble((String)executeMap.get("suggestCount")));
+                            String warehouseProductId = (String)executeMap.get("id");
+                            String warehouseId = (String)executeMap.get("warehouseId");
+                            WarehouseOutExecute outExecute = new WarehouseOutExecute();
+
+                            outExecute.setDetailId(outDetail.getId());
+                            outExecute.setExecutorId(outDetail.getCuser());
+                            outExecute.setCuser(outDetail.getCuser());
+                            outExecute.setWarehouseId(warehouseId);
+                            outExecute.setWarehouseProductId(warehouseProductId);
+                            outExecute.setCount(suggestCount);
+                            outExecuteList.add(outExecute);
+                        }
+                    }
+                }
+                this.addWarehouseOutExecuteBySimple(outExecuteList);
+                this.executeWarehouseOutExecuteBySimple(parentId,detailId,currentUserId,currentCompanyId,outExecuteList);
+                this.updateWarehouseOutState(detailId);
+            }
+        }
+
+
+        return model;
+    }
 
     @Override
     public ResultModel executeWarehouseOutExecuteBySimple(PageData pageData) throws Exception {
