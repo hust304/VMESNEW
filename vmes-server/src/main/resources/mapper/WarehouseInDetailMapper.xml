@@ -154,7 +154,8 @@
             price_unit priceUnit,
             price_count priceCount,
 
-            price price
+            price price,
+            product_price productPrice
         from vmes_warehouse_in_detail
         <choose>
             <!--

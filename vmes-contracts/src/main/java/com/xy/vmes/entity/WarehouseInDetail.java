@@ -81,10 +81,15 @@ public class WarehouseInDetail implements Serializable {
 	@TableField("price_count")
 	private BigDecimal priceCount;
 
+
 	//企业定制化字段///////////////////////////////////////////////////////////////////////////
 	//单据货品价格
 	@TableField("price")
 	private BigDecimal price;
+
+	//货品价格(计量单位)
+	@TableField("product_price")
+	private BigDecimal productPrice;
 
 	public void setId(String id) {
 		this.id = id;
@@ -213,6 +218,12 @@ public class WarehouseInDetail implements Serializable {
 	}
 	public void setPrice(BigDecimal price) {
 		this.price = price;
+	}
+	public BigDecimal getProductPrice() {
+		return productPrice;
+	}
+	public void setProductPrice(BigDecimal productPrice) {
+		this.productPrice = productPrice;
 	}
 	/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
