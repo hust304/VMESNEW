@@ -129,6 +129,8 @@ public interface WarehouseInitialService {
     void exportExcelTemplateWarehouseInitial(PageData pd) throws Exception;
 
     ResultModel importExcelWarehouseInitial(MultipartFile file) throws Exception;
+
+    ResultModel findWarehouseInitialByWC(PageData pd) throws Exception;
 }
 
 

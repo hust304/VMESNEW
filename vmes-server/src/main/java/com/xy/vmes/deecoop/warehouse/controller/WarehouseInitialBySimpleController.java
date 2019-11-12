@@ -45,6 +45,7 @@ public class WarehouseInitialBySimpleController {
         return model;
     }
 
+
     @PostMapping("/warehouse/warehouseInitialBySimple/deleteWarehouseProductBySimple")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel deleteWarehouseProductBySimple() throws Exception {

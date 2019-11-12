@@ -535,5 +535,209 @@
     </select>
 
 
+    <!-- warehouseEdition(仓库版本): warehouseBySimple(简版仓库)-对应实体库(简版仓库)********************************************* -->
+    <select id="findWarehouseProductByWC" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+        concat(warehouseProduct.warehouse_id,'-',warehouseProduct.product_id,'-',warehouseProduct.company_id) id,
+        warehouseProduct.company_id companyId,
+        warehouseProduct.warehouse_id warehouseId,
+        warehouseProduct.product_id productId,
+        round(warehouseProduct.stock_count, 2) stockCount,
+        warehouseProduct.code,
+        <!--vmes_warehouse:仓库货位表-->
+        warehouse.path_id pathId,
+        warehouse.path_name pathName,
+        warehouse.name warehouseName,
+        warehouse.code warehouseCode,
+
+        <!--货品表-->
+        product.code sysProductCode,
+        product.source_code custProductCode,
+        CASE
+        WHEN product.source_code is null THEN product.code
+        WHEN product.source_code is not null THEN product.source_code
+        ELSE null
+        END productCode,
+
+        product.name productName,
+        product.spec productSpec,
+        produnit.unit productUnit,
+        product.genre productGenre,
+        product.type productType,
+        unit.name productUnitName,
+        genre.name productGenreName,
+        round(ifnull(product.safety_count, 0), 2) productSafetyCount,
+
+        DATE_FORMAT(prodLastDate.last_update_date,'%Y-%m-%d') lastUpdateDate,
+        prodLastDate.last2nowDay,
+
+        round(warehouseProduct.stock_count, 2) checkStockCount,
+        '' checkCount
+        from (
+        select
+        warehouse_id,
+        product_id,
+        company_id,
+        code,
+        stock_count stock_count
+        from vmes_warehouse_product
+        <where>
+            <if test="productIds != null and productIds != ''" >
+                and product_id in (${productIds})
+            </if>
+
+            <if test="currentCompanyId != null and currentCompanyId != ''" >
+                and company_id = #{currentCompanyId}
+            </if>
+            and warehouse_id in (
+            select id
+            from vmes_warehouse
+            <where>
+                <if test="warehouseIds != null and warehouseIds != ''" >
+                    and id in (${warehouseIds})
+                </if>
+                <if test="notInWarehouseIds != null and notInWarehouseIds != ''" >
+                    and id not in (${notInWarehouseIds})
+                </if>
+
+                <if test="currentCompanyId != null and currentCompanyId != ''" >
+                    and company_id = #{currentCompanyId}
+                </if>
+
+                <if test="warehouseNodeId != null and warehouseNodeId != ''" >
+                    and path_id LIKE CONCAT(CONCAT('%', #{warehouseNodeId}),'%')
+                </if>
+
+
+
+                <!--需要(备件库) 查询结果集中只含有(备件库) -->
+                <if test="'true' == isNeedSpare">
+                    and name = '备件库'
+                </if>
+                <!--不需要(备件库) 查询结果集中不含有(备件库) -->
+                <if test="'true' == isNotNeedSpare">
+                    <![CDATA[ and name <> '备件库' ]]>
+                </if>
+
+
+                <!--nodeId 实体库,虚拟库 自定义sql查询语句 查询结果集需要(实体库,虚拟库)-->
+                <if test="'true' == isNeedEntityVirtual">
+                    <!--实体库:2d75e49bcb9911e884ad00163e105f05 虚拟库:56f5e83dcb9911e884ad00163e105f05 仓库表:vmes_warehouse-->
+                    and (path_id LIKE '%2d75e49bcb9911e884ad00163e105f05%' or path_id LIKE '%56f5e83dcb9911e884ad00163e105f05%')
+                </if>
+                <!--nodeId 实体库 自定义sql查询语句 查询结果集需要(实体库)-->
+                <if test="'true' == isNeedEntity">
+                    <!--实体库:2d75e49bcb9911e884ad00163e105f05 -->
+                    and path_id LIKE '%2d75e49bcb9911e884ad00163e105f05%'
+                </if>
+                <!--nodeId 虚拟库 自定义sql查询语句 查询结果集需要(虚拟库)-->
+                <if test="'true' == isNeedVirtual">
+                    <!--虚拟库:56f5e83dcb9911e884ad00163e105f05 仓库表:vmes_warehouse-->
+                    and path_id LIKE '%56f5e83dcb9911e884ad00163e105f05%'
+                </if>
+
+                <!--过滤出 (备件库)-->
+                <if test="'true' == isNeedWarehouseSpare">
+                    and name = '备件库'
+                </if>
+                <!--过滤出(非备件库) 自定义sql查询语句-->
+                <if test="'true' == isNeedNotInWarehouseSpare">
+                    <![CDATA[ and name <> '备件库' ]]>
+                </if>
+
+            </where>
+            )
+        </where>
+        ) warehouseProduct
+        left join vmes_warehouse warehouse on warehouseProduct.warehouse_id = warehouse.id and warehouse.isdisable = '1'
+        left join vmes_product product on warehouseProduct.product_id = product.id and product.isdisable = '1'
+        left join vmes_product_unit produnit on warehouseProduct.product_id = produnit.product_id and produnit.type = 1
+        left join vmes_dictionary unit on produnit.unit = unit.id
+        left join vmes_dictionary genre on product.genre = genre.id
+        left join (
+        select
+        id,
+        last_in_date,
+        last_out_date,
+        last_update_date,
+        <!-- 距今变更天数: (当前日期 - 最后一次变更日期)-->
+        CASE
+        WHEN last_update_date is null THEN -1
+        WHEN last_update_date is not null THEN datediff(DATE_FORMAT(now(),'%Y-%m-%d'), DATE_FORMAT(last_update_date, '%Y-%m-%d'))
+        ELSE null
+        END last2nowDay
+        from vmes_product
+        <where>
+            <if test="currentCompanyId != null and currentCompanyId != ''" >
+                and company_id = #{currentCompanyId}
+            </if>
+        </where>
+        ) prodLastDate on product.id = prodLastDate.id
+
+        <where>
+            <!--nodeId 树形结构指定节点id 自定义sql查询语句-->
+            <if test="nodeId != null and nodeId != ''" >
+                and warehouse.path_id LIKE CONCAT(CONCAT('%', #{nodeId}),'%')
+            </if>
+
+            <!--按货位属性 查询语句-->
+            <if test="warehouseCode != null and warehouseCode != ''">
+                and warehouse.code LIKE CONCAT(CONCAT('%', #{warehouseCode}),'%')
+            </if>
+            <if test="pathName != null and pathName != ''">
+                and warehouse.path_name LIKE CONCAT('%', CONCAT(#{pathName}),'%')
+            </if>
+
+
+            <!--按货品属性 查询语句-->
+            <if test="productCode != null and productCode != ''">
+                and product.code LIKE CONCAT(CONCAT('%', #{productCode}),'%')
+            </if>
+            <if test="productName != null and productName != ''">
+                and product.name LIKE CONCAT(CONCAT('%', #{productName}),'%')
+            </if>
+            <if test="productSpec != null and productSpec != ''">
+                and product.spec LIKE CONCAT(CONCAT('%', #{productSpec}),'%')
+            </if>
+            <!--过滤出 货品属性(备件)-->
+            <if test="'true' == isNeedGenreSpare">
+                and product.genre = '384cfd1329e648618b5a237ce1038bab'
+            </if>
+            <!--过滤出 货品属性(非备件)-->
+            <if test="'true' == isNeedNotInGenreSpare">
+                <![CDATA[ and product.genre <> '384cfd1329e648618b5a237ce1038bab' ]]>
+            </if>
+
+            <if test="productGenreName != null and productGenreName != ''">
+                and genre.name LIKE CONCAT(CONCAT('%',#{productGenreName}),'%')
+            </if>
+            <if test="productUnitName != null and productUnitName != ''">
+                and unit.name LIKE CONCAT(CONCAT('%',#{productUnitName}),'%')
+            </if>
+
+            <!--呆滞货品查询条件-->
+            <if test="'true' == isNotNullLastUpdateDate">
+                and prodLastDate.last_update_date is not null
+            </if>
+            <if test="last2nowDay != null and last2nowDay != ''" >
+                and prodLastDate.last2nowDay >= #{last2nowDay}
+            </if>
+
+            <!--queryStr 自定义sql查询语句-->
+            <if test="queryStr != null and queryStr != ''" >
+                and ${queryStr}
+            </if>
+
+        </where>
+        <if test="orderStr != null and orderStr != ''" >
+            order by ${orderStr}
+        </if>
+        <if test="'asc' == orderLast2nowDay">
+            order by prodLastDate.last2nowDay asc
+        </if>
+        <if test="'desc' == orderLast2nowDay">
+            order by prodLastDate.last2nowDay desc
+        </if>
+    </select>
 
 </mapper>

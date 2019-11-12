@@ -55,7 +55,8 @@ public interface WarehouseInitialMapper extends BaseMapper<WarehouseInitial> {
     List<Map> findWarehouseProductBySimple(PageData pd, Pagination pg);
 
 
-
+    List<Map> findWarehouseProductByWC(PageData pd);
+    List<Map> findWarehouseProductByWC(PageData pd, Pagination pg);
 }
 
 
