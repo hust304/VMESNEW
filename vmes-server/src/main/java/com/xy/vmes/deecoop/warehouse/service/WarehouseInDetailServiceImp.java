@@ -270,7 +270,7 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
             detail.setProductCount(productCount);
             detail.setCount(productCount);
 
-            //单据货品价格
+            //单据货品单价
             String priceStr = mapObject.get("price");
             if (priceStr != null && priceStr.trim().length() > 0) {
                 try {
@@ -278,6 +278,19 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
                     //四舍五入到2位小数
                     price = price.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
                     detail.setPrice(price);
+
+                    //货品金额： 单据单位(入库数量) * 单据货品单价
+                    BigDecimal sumPrice = BigDecimal.valueOf(priceCount.doubleValue() * price.doubleValue());
+
+                    //获取(计量单位：货品单价)
+                    BigDecimal productPrice = BigDecimal.valueOf(0D);
+                    if (productCount != null && productCount.doubleValue() != 0D) {
+                        productPrice = BigDecimal.valueOf(sumPrice.doubleValue() / productCount.doubleValue());
+                    }
+                    //四舍五入到2位小数
+                    productPrice = productPrice.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                    detail.setProductPrice(productPrice);
+
                 } catch (NumberFormatException e) {
                     e.printStackTrace();
                 }
