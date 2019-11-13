@@ -531,7 +531,7 @@
         select
             parentId,warehouseId,productId,code,round(ifnull(count,0),2) count,state,stateName,cuser,cdate,udate,remark,isdisable,qrcode,pathName,warehouseName,
             businessId,productCode,productName,productSpec,productGenre,productGenreName,productUnit,productUnitName,warehouseOutCode,parentWarehouseId,id,
-            priceUnit,priceUnitName,round(ifnull(priceCount,0),2) priceCount,round(ifnull(productCount,0),2) productCount,
+            priceUnit,priceUnitName,round(ifnull(priceCount,0),2) priceCount,round(ifnull(productCount,0),2) productCount,warehouseProductId,
             n2pFormula,n2pIsScale,n2pDecimalCount,
             p2nFormula,p2nIsScale,p2nDecimalCount,price,stockCount,stockCountByPrice,
             round(sum(ifnull(executeCount,0)),2) executeCount
@@ -555,6 +555,7 @@
                 detail.isdisable isdisable,
                 detail.qrcode qrcode,
                 detail.business_id businessId,
+                detail.warehouse_product_id warehouseProductId,
 
                 detail.product_unit productUnit,
                 detail.product_count productCount,
@@ -634,7 +635,7 @@
                 </if>
             </where>
         ) tab
-        group by id,parentId,warehouseId,productId,code,count,state,stateName,cuser,cdate,udate,remark,isdisable,qrcode,
+        group by id,parentId,warehouseId,productId,code,count,state,stateName,cuser,cdate,udate,remark,isdisable,qrcode,warehouseProductId,
         businessId,productCode,productName,productSpec,productGenre,productGenreName,productUnit,productUnitName,warehouseOutCode,parentWarehouseId,
         priceUnit,priceUnitName,priceCount,productCount,
         n2pFormula,n2pIsScale,n2pDecimalCount,

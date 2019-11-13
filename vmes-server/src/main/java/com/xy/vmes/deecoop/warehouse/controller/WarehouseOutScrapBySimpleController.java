@@ -430,6 +430,20 @@ public class WarehouseOutScrapBySimpleController {
         return model;
     }
 
+
+    @PostMapping("/warehouse/warehouseOutScrapBySimple/auditPassWarehouseOutScrapByWC")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel auditPassWarehouseOutScrapByWC() throws Exception {
+        logger.info("################/warehouse/warehouseOutScrapBySimple/auditPassWarehouseOutScrapByWC 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pageData = HttpUtils.parsePageData();
+        ResultModel model = warehouseOutExecuteService.auditPassWarehouseOutScrapByWC(pageData);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/warehouse/warehouseOutScrapBySimple/auditPassWarehouseOutScrapByWC 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
     /**
      * 审核不通过报废出库单(简版仓库出库)
      * @author 陈刚

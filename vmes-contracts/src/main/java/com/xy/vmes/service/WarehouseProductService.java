@@ -272,6 +272,8 @@ public interface WarehouseProductService {
 
     ResultModel listPageSimpleWarehouseProductView(PageData pd) throws Exception;
 
+    ResultModel listPageWCWarehouseProductView(PageData pd) throws Exception;
+
     ResultModel listPageWarehouseProductMove(PageData pd, Pagination pg) throws Exception;
 
     ResultModel listPageWarehouseDetailView(PageData pd, Pagination pg) throws Exception;
