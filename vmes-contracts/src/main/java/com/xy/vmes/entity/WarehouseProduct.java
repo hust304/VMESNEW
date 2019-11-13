@@ -63,7 +63,8 @@ public class WarehouseProduct implements Serializable {
 	@TableField("version")
 	private Integer version;
 
-	//货品价格
+	//企业定制化字段///////////////////////////////////////////////////////////////////////////
+	//货品单价(计量单位)
 	@TableField("price")
 	private BigDecimal price;
 

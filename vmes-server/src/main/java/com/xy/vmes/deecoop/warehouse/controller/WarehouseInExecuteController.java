@@ -103,6 +103,24 @@ public class WarehouseInExecuteController {
     }
 
     /**
+     * 入库单明细执行-文成企业定制
+     * @author 陈刚
+     * @date 2019-11-13
+     * @throws Exception
+     */
+    @PostMapping("/warehouse/warehouseInExecute/addWarehouseInExecuteByWc")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel addWarehouseInExecuteByWc() throws Exception {
+        logger.info("################/warehouse/warehouseInExecute/addWarehouseInExecuteByWc 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pageData = HttpUtils.parsePageData();
+        ResultModel model = warehouseInExecuteService.addWarehouseInExecuteByWc(pageData);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/warehouse/warehouseInExecute/addWarehouseInExecuteByWc 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
      * (退单)取消入库单明细执行
      * @author 陈刚
      * @date 2018-10-18

@@ -110,6 +110,8 @@ public interface WarehouseInExecuteService {
 
     //入库单明细执行-简版仓库
     ResultModel addWarehouseInExecuteBySimple(PageData pageData) throws Exception;
+    //入库单明细执行-文成企业定制
+    ResultModel addWarehouseInExecuteByWc(PageData pageData) throws Exception;
 
     ///////////////////////////////////////////////////////////////////////////////
 
