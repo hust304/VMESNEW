@@ -86,6 +86,17 @@ public class WarehouseOutDetail implements Serializable {
 	@TableField("price")
 	private BigDecimal price;
 
+	//业务id(订单明细id)
+	@TableField("warehouse_product_id")
+	private String warehouseProductId;
+
+
+	public String getWarehouseProductId() {
+		return warehouseProductId;
+	}
+	public void setWarehouseProductId(String warehouseProductId) {
+		this.warehouseProductId = warehouseProductId;
+	}
 	public void setId(String id) {
 		this.id = id;
 	}

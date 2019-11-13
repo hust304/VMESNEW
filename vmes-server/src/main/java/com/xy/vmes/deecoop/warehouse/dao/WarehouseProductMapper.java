@@ -99,6 +99,7 @@ public interface WarehouseProductMapper extends BaseMapper<WarehouseProduct> {
 
     void updateSynStockCount(PageData pd);
 
+    List<Map> wcWarehouseProductView(PageData pd, Pagination pg);
 }
 
 
