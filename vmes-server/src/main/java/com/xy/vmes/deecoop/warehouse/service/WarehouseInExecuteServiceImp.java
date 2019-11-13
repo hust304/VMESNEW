@@ -1228,6 +1228,7 @@ public class WarehouseInExecuteServiceImp implements WarehouseInExecuteService {
         //count:       入库数量(计量单位)
         //priceCount:  入库数量(计价单位)
         //productPrice 货品单价(计量单位)
+        //qrcode:      二维码
         Map<String, List<Map<String, Object>>> inDetailExecuteMap = new LinkedHashMap<>();
         if (mapList != null && mapList.size() > 0) {
             for (Map<String, Object> warehouseInDetailMap : mapList) {
@@ -1235,6 +1236,8 @@ public class WarehouseInExecuteServiceImp implements WarehouseInExecuteService {
                 String productId = (String)warehouseInDetailMap.get("productId");
                 //批次号
                 String code = (String)warehouseInDetailMap.get("code");
+                //二维码
+                String qrcode = (String)warehouseInDetailMap.get("qrcode");
 
                 //productPrice 货品单价(计量单位)
                 BigDecimal productPrice = BigDecimal.valueOf(0D);
@@ -1303,6 +1306,7 @@ public class WarehouseInExecuteServiceImp implements WarehouseInExecuteService {
                     productExecuteMap.put("count", count);
                     productExecuteMap.put("priceCount", priceCount);
                     productExecuteMap.put("productPrice", productPrice);
+                    productExecuteMap.put("qrcode", qrcode);
 
                     productExecuteList.add(productExecuteMap);
                     inDetailExecuteMap.put(detailId, productExecuteList);
@@ -1335,6 +1339,7 @@ public class WarehouseInExecuteServiceImp implements WarehouseInExecuteService {
                 //count:       入库数量(计量单位)
                 //priceCount:  入库数量(计价单位)
                 //productPrice 货品单价(计量单位)
+                //qrcode:      二维码
                 BigDecimal count = BigDecimal.valueOf(0D);
                 if (mapObject.get("count") != null) {
                     count = (BigDecimal)mapObject.get("count");
@@ -1357,6 +1362,7 @@ public class WarehouseInExecuteServiceImp implements WarehouseInExecuteService {
                 String warehouseId = (String)mapObject.get("warehouseId");
                 String productId = (String)mapObject.get("productId");
                 String code = (String)mapObject.get("code");
+                String qrcode = (String)mapObject.get("qrcode");
 
                 //入库操作
                 WarehouseProduct inObject = new WarehouseProduct();
@@ -1366,6 +1372,8 @@ public class WarehouseInExecuteServiceImp implements WarehouseInExecuteService {
                 inObject.setProductId(productId);
                 //(实际)货位ID
                 inObject.setWarehouseId(warehouseId);
+                //二维码
+                inObject.setQrcode(qrcode);
 
                 //货品单价(计量单位) -- 文成企业定制化
                 if (productPrice != null && productPrice.doubleValue() > 0) {

@@ -1201,6 +1201,12 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
             addObj.setCuser(object.getCuser());
             addObj.setCompanyId(object.getCompanyId());
             addObj.setQrcode(object.getQrcode());
+
+            //二维码
+            if (object.getQrcode() != null) {
+                addObj.setQrcode(object.getQrcode());
+            }
+
             //货品单价(计量单位)-文成企业定制
             if (object.getPrice() != null) {
                 addObj.setPrice(object.getPrice());
