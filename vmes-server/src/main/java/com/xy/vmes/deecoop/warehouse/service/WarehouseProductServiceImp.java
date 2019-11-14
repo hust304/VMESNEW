@@ -36,6 +36,8 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
     private WarehouseProductMapper warehouseProductMapper;
     @Autowired
     private WarehouseToWarehouseProductService warehouseToWarehouseProductService;
+    @Autowired
+    private WarehouseProductQueryService warehouseProductQueryService;
 
     @Autowired
     private WarehouseService warehouseService;
@@ -2062,6 +2064,46 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
         ResultModel model = new ResultModel();
         warehouseProductMapper.updateSynStockCount(pd);
         return model;
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    //文成企业定制
+    //库存查询-仓库货品价格 Excel导出-文成企业定制
+    public void exportExcelWarehouseProductOnPriceByWc(PageData pd) throws Exception {
+        List<Column> columnList = columnService.findColumnList("warehouseProductQuery");
+        if (columnList == null || columnList.size() == 0) {
+            throw new RestException("1","数据库没有生成TabCol，请联系管理员！");
+        }
+
+        //获取指定栏位字符串-重新调整List<Column>
+        String fieldCode = pd.getString("fieldCode");
+        if (fieldCode != null && fieldCode.trim().length() > 0) {
+            columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
+        }
+
+        //id(为货品id)
+        String productIds = pd.getString("productIds");
+        if (productIds != null && productIds.trim().length() > 0) {
+            productIds = StringUtil.stringTrimSpace(productIds);
+            productIds = "'" + productIds.replace(",", "','") + "'";
+            pd.put("inProductIds", productIds);
+        }
+
+        List<Map> dataList = warehouseProductQueryService.findWarehouseProductQuery(pd, null);
+
+        //查询数据转换成Excel导出数据
+        List<LinkedHashMap<String, String>> dataMapList = ColumnUtil.modifyDataList(columnList, dataList);
+        HttpServletResponse response = HttpUtils.currentResponse();
+
+        //查询数据-Excel文件导出
+        String fileName = pd.getString("fileName");
+        if (fileName == null || fileName.trim().length() == 0) {
+            fileName = "ExcelWarehouseInitial";
+        }
+
+        //导出文件名-中文转码
+        fileName = new String(fileName.getBytes("utf-8"),"ISO-8859-1");
+        ExcelUtil.excelExportByDataList(response, fileName, dataMapList);
     }
 }
 

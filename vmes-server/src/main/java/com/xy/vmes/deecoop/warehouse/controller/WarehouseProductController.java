@@ -460,6 +460,24 @@ public class WarehouseProductController {
     }
 
 
+    /**
+     * 库存查询-仓库货品价格 Excel导出-文成企业定制
+     * @author 陈刚
+     * @date 2019-11-14
+     */
+    @PostMapping("/warehouse/warehouseProduct/exportExcelWarehouseProductOnPriceByWc")
+    public void exportExcelWarehouseProductOnPriceByWc() throws Exception {
+        logger.info("################/warehouse/warehouseProduct/exportExcelWarehouseProductOnPriceByWc 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        PageData pd = HttpUtils.parsePageData();
+        warehouseProductService.exportExcelWarehouseProductOnPriceByWc(pd);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/warehouse/warehouseProduct/exportExcelWarehouseProductOnPriceByWc 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+
+    }
+
 
 }
 

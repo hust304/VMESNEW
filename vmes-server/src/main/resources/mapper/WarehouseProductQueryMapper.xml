@@ -107,6 +107,13 @@
 
 
         <where>
+            <if test="inProductIds != null and inProductIds != ''">
+                and wp.product_id in (${inProductIds})
+            </if>
+            <if test="notInProductIds != null and notInProductIds != ''">
+                and wp.product_id not in (${notInProductIds})
+            </if>
+
             <if test="productId != null and productId != ''">
                 and wp.product_id = #{productId}
             </if>
