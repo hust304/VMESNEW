@@ -263,6 +263,7 @@
         (replace(uuid(), '-', ''),'WarehouseProductView','pathName','货位路径',14, '1','0','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'WarehouseProductView','id','id',0, '1','0','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'WarehouseProductView','warehouseName','仓库名称',14, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseProductView','priceSum','金额',14, '1','0','1','0',now(), 'admin'),
     </insert>
 
     <insert id="insertColumn4" >
@@ -277,7 +278,10 @@
         (replace(uuid(), '-', ''),'WarehouseDetailView','pathName','库位',3, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'WarehouseDetailView','code','批次号',4, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'WarehouseDetailView','stockCount','数量',5, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'WarehouseDetailView','id','id',0, '1','0','1','0',now(), 'admin')
+        (replace(uuid(), '-', ''),'WarehouseDetailView','id','id',0, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseDetailView','price','单价',6, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'WarehouseDetailView','priceSum','金额',7, '1','0','1','0',now(), 'admin'),
+
     </insert>
 
 
@@ -314,7 +318,10 @@
         warehouse.path_name pathName,
         wp.code code,
         pwarehouse.name warehouseName,
-        round(wp.stock_count,2) stockCount
+        round(ifnull(wp.stock_count,0),2) stockCount,
+        round(ifnull(wp.price,0),2) price,
+        round((ifnull(wp.stock_count,0) * ifnull(wp.price,0)), 2) priceSum
+
         from vmes_warehouse_product wp
         left join vmes_warehouse warehouse on warehouse.id = wp.warehouse_id
         left join vmes_warehouse pwarehouse on pwarehouse.id = warehouse.warehouse_id
@@ -324,6 +331,15 @@
         left join vmes_department dept on dept.id = cuser.dept_id
 
         <where>
+            <if test="currentCompanyId != null and currentCompanyId != ''">
+                and wp.company_id = #{currentCompanyId}
+            </if>
+            <if test="productId != null and productId != ''">
+                and wp.product_id = #{productId}
+            </if>
+            <if test="'true' == isStockCountGreaterThanZero">
+                <![CDATA[ and wp.stock_count > 0 ]]>
+            </if>
 
             <if test='dataType != null and dataType == "0"'>
                 and cuser.id = #{currentUserId}
@@ -331,21 +347,15 @@
             <if test='dataType != null and dataType == "1"'>
                 and dept.id_${deptLayer} = #{deptRId}
             </if>
+            <if test="warehouseId != null and warehouseId != ''">
+                and warehouse.path_id LIKE CONCAT(CONCAT('%', #{warehouseId}),'%')
+            </if>
 
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >
                 and ${queryStr}
             </if>
-            <if test="productId != null and productId != ''">
-                and wp.product_id = #{productId}
-            </if>
-            <if test="warehouseId != null and warehouseId != ''">
-                and warehouse.path_id LIKE CONCAT(CONCAT('%', #{warehouseId}),'%')
-            </if>
-            <if test="currentCompanyId != null and currentCompanyId != ''">
-                and wp.company_id = #{currentCompanyId}
-            </if>
-            <![CDATA[ and (wp.stock_count > 0 or wp.stock_count < 0) ]]>
+
         </where>
         order by wp.code asc  <!-- 先入先出 按批次号的升序排列 -->
     </select>
@@ -709,6 +719,7 @@
         type.name typeName,
         round(prod.safety_count,2) safetyCount,
         round(sum(ifnull(wp.stock_count,0)),2) stockCount,
+        round(sum((ifnull(wp.stock_count,0) * ifnull(wp.price,0))), 2) priceSum,
         prod.id
         from vmes_warehouse_product wp
         left join vmes_product prod on wp.product_id = prod.id
@@ -742,6 +753,20 @@
             <if test="currentCompanyId != null and currentCompanyId != ''">
                 and wp.company_id = #{currentCompanyId}
             </if>
+            <!--code 批次号-->
+            <if test="pcCode != null and pcCode != ''">
+                and wp.product_id in (
+                    select product_id
+                    from vmes_warehouse_product
+                    <where>
+                        <if test="currentCompanyId != null and currentCompanyId != ''">
+                            and company_id = #{currentCompanyId}
+                        </if>
+                        and code = #{pcCode}
+                    </where>
+                )
+            </if>
+
             <!--stockCountQuery 库存数量查询-->
             <!--stockCountQuery:stockCountGreaterThanZero 库存数量大于零-->
             <if test="'stockCountGreaterThanZero' == stockCountQuery">
@@ -792,8 +817,9 @@
             <if test="isSafeStock == 2">  <!-- 大于等于安全库存 -->
                 <![CDATA[ and prod.stock_count >= prod.safety_count ]]>
             </if>
+
             <if test="code != null and code != ''">
-                and prod.code LIKE CONCAT(CONCAT('%', #{code}),'%')
+                and (prod.code LIKE CONCAT(CONCAT('%', #{code}),'%') or prod.source_code LIKE CONCAT(CONCAT('%', #{code}),'%'))
             </if>
             <if test="name != null and name != ''">
                 and prod.name LIKE CONCAT(CONCAT('%', #{name}),'%')
