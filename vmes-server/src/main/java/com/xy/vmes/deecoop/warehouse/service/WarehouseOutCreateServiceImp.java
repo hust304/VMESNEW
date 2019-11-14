@@ -409,18 +409,27 @@ public class WarehouseOutCreateServiceImp implements WarehouseOutCreateService {
             List<WarehouseOutExecute> executeList = new ArrayList<WarehouseOutExecute>();
             for (WarehouseOutDetail outDetail : outDtlList) {
                 //货位id(仓库id)
-                String dtl_warehouseId = outDetail.getWarehouseId();
-                String productId = outDetail.getProductId();
-                BigDecimal count = outDetail.getCount();
+//                String dtl_warehouseId = outDetail.getWarehouseId();
+//                String productId = outDetail.getProductId();
+//                BigDecimal count = outDetail.getCount();
 
-                //按(货品id,企业id) 查询(vmes_warehouse_product)
-                List<Map<String, Object>> outMapList = warehouseProductToolService.findWarehouseProductOutMapList(productId,
-                        companyId,
-                        dtl_warehouseId,
-                        count);
-                if (outMapList != null && outMapList.size() > 0) {
-                    executeList = warehouseOutExecuteService.outMapList2ExecuteList(outDetail, outMapList, executeList);
-                }
+//                //按(货品id,企业id) 查询(vmes_warehouse_product)
+//                List<Map<String, Object>> outMapList = warehouseProductToolService.findWarehouseProductOutMapList(productId,
+//                        companyId,
+//                        dtl_warehouseId,
+//                        count);
+//                if (outMapList != null && outMapList.size() > 0) {
+//                    executeList = warehouseOutExecuteService.outMapList2ExecuteList(outDetail, outMapList, executeList);
+//                }
+                WarehouseOutExecute outExecute = new WarehouseOutExecute();
+
+                outExecute.setDetailId(outDetail.getId());
+                outExecute.setExecutorId(outDetail.getCuser());
+                outExecute.setCuser(outDetail.getCuser());
+                outExecute.setWarehouseId(outDetail.getWarehouseId());
+                outExecute.setWarehouseProductId(outDetail.getWarehouseProductId());
+                outExecute.setCount(outDetail.getCount());
+                executeList.add(outExecute);
             }
             warehouseOutExecuteService.addWarehouseOutExecuteBySimple(executeList);
 
@@ -476,14 +485,14 @@ public class WarehouseOutCreateServiceImp implements WarehouseOutCreateService {
                         productService.updateStockCount(product, prodStockCount, cuser, "out");
                     }
 
-                    //生成出库库执行记录
-                    WarehouseOutExecute addOutExecute = new WarehouseOutExecute();
-                    addOutExecute.setDetailId(detailId);
-                    addOutExecute.setWarehouseId(dtl_warehouseId);
-                    addOutExecute.setExecutorId(cuser);
-                    addOutExecute.setCuser(cuser);
-                    addOutExecute.setCount(count);
-                    warehouseOutExecuteService.save(addOutExecute);
+//                    生成出库库执行记录
+//                    WarehouseOutExecute addOutExecute = new WarehouseOutExecute();
+//                    addOutExecute.setDetailId(detailId);
+//                    addOutExecute.setWarehouseId(dtl_warehouseId);
+//                    addOutExecute.setExecutorId(cuser);
+//                    addOutExecute.setCuser(cuser);
+//                    addOutExecute.setCount(count);
+//                    warehouseOutExecuteService.save(addOutExecute);
                 }
             }
 
@@ -912,7 +921,8 @@ public class WarehouseOutCreateServiceImp implements WarehouseOutCreateService {
             //productId: 货品id
             String productId = (String)productMap.get("productId");
             detail.setProductId(productId);
-
+            String warehouseProductId = (String)productMap.get("warehouseProductId");
+            detail.setWarehouseProductId(warehouseProductId);
             try {
                 //获取货品计量单位
                 PageData findMap = new PageData();

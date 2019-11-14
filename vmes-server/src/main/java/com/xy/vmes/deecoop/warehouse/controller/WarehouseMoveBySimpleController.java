@@ -119,6 +119,7 @@ public class WarehouseMoveBySimpleController {
             detail.setParentId(warehouseMove.getId());
             detail.setCuser(cuser);
             detail.setProductId(mapObject.get("productId"));
+            detail.setWarehouseProductId(mapObject.get("warehouseProductId"));
             detail.setWarehouseId(mapObject.get("warehouseId"));
             BigDecimal count = BigDecimal.valueOf(Double.parseDouble(mapObject.get("moveCount")));
             detail.setCount(count);
@@ -281,6 +282,9 @@ public class WarehouseMoveBySimpleController {
         return model;
     }
 
+
+
+
     /**
      * 执行移库单(简版仓库移库)
      * @author 陈刚
@@ -440,6 +444,152 @@ public class WarehouseMoveBySimpleController {
         warehouseMoveService.updateState(parentId);
         Long endTime = System.currentTimeMillis();
         logger.info("################/warehouse/warehouseMoveBySimple/executeWarehouseMoveBySimple 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+
+
+
+    /**
+     * 执行移库单(简版仓库移库)
+     * @author 陈刚
+     * @date 2019-05-23
+     * @throws Exception
+     */
+    @PostMapping("/warehouse/warehouseMoveBySimple/executeWarehouseMoveByWC")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel executeWarehouseMoveByWC() throws Exception {
+        logger.info("################/warehouse/warehouseMoveBySimple/executeWarehouseMoveByWC 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        String parentId = pageData.getString("id");
+        if (parentId == null || parentId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("移库单id为空或空字符串！");
+            return model;
+        }
+
+        String companyId = pageData.getString("currentCompanyId");
+        if (companyId == null || companyId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("企业id为空或空字符串！");
+            return model;
+        }
+
+        String cuser = pageData.getString("cuser");
+
+        //移库单id 获取移库单表对象
+        WarehouseMove parent = warehouseMoveService.selectById(parentId);
+        //获取移库目标货位id
+        String targetWarehouseId = parent.getWarehouseId();
+
+        List<WarehouseMoveDetail> detailList = warehouseMoveDetailService.findWarehouseMoveDetailListByParentId(parentId);
+        if (detailList == null || detailList.size() == 0) {
+            return model;
+        }
+
+        StringBuffer msgBuf = new StringBuffer();
+        for (int i = 0; i < detailList.size(); i++) {
+            WarehouseMoveDetail detail = detailList.get(i);
+            String detailId = detail.getId();
+            String warehouseProductId = detail.getWarehouseProductId();
+
+            BigDecimal suggestCount = detail.getCount();
+
+
+
+            if(!StringUtils.isEmpty(warehouseProductId)){
+                if(suggestCount.compareTo(BigDecimal.ZERO)>0){
+                    WarehouseProduct sourceMove = warehouseProductService.findWarehouseProductById(warehouseProductId);
+
+
+                    PageData findMap = new PageData();
+                    findMap.put("code", sourceMove.getCode());
+                    findMap.put("productId", sourceMove.getProductId());
+                    findMap.put("warehouseId", targetWarehouseId);
+                    findMap.put("mapSize", Integer.valueOf(findMap.size()));
+                    WarehouseProduct targetMove = warehouseProductService.findWarehouseProduct(findMap);
+
+                    if(targetMove==null){
+                        targetMove = new WarehouseProduct();
+                        String id = Conv.createUuid();
+                        targetMove.setId(id);
+                        targetMove.setCompanyId(sourceMove.getCompanyId());
+                        targetMove.setCode(sourceMove.getCode());
+                        targetMove.setProductId(sourceMove.getProductId());
+                        targetMove.setWarehouseId(targetWarehouseId);
+                        targetMove.setCdate(new Date());
+                        targetMove.setQrcode(sourceMove.getQrcode());
+                        warehouseProductService.save(targetMove);
+                    }
+
+                    WarehouseMoveExecute execute = new WarehouseMoveExecute();
+                    execute.setDetailId(detailId);
+                    execute.setExecutorId(cuser);
+                    execute.setWarehouseProductId(sourceMove.getId());
+                    execute.setNewWarehouseProductId(targetMove.getId());
+                    execute.setCount(suggestCount);
+                    warehouseMoveExecuteService.save(execute);
+
+                    WarehouseLoginfo loginfo = new WarehouseLoginfo();
+                    loginfo.setParentId(parentId);
+                    loginfo.setDetailId(detailId);
+                    loginfo.setExecuteId(execute.getId());
+                    loginfo.setCompanyId(companyId);
+                    loginfo.setCuser(cuser);
+                    //operation 操作类型(add:添加 modify:修改 delete:删除 reback:退单 checkAudit:移库审核)
+                    loginfo.setOperation("modify");
+
+                    //beforeCount 操作变更前数量(业务相关)-(beforeCount 台账数量)
+                    loginfo.setBeforeCount(BigDecimal.valueOf(0D));
+                    //afterCount 操作变更后数量(业务相关)-(afterCount 移库数量)
+                    loginfo.setAfterCount(suggestCount);
+
+                    String msgStr = warehouseProductService.moveStockCountBySimple(sourceMove, targetMove, suggestCount, loginfo);
+                    if (msgStr != null && msgStr.trim().length() > 0) {
+                        msgBuf.append("第 " + (i+1) + " 条: " + "移库操作失败:" + msgStr);
+                    }
+                }
+            }else{
+                model.putCode(Integer.valueOf(1));
+                model.putMsg("移库货品信息异常！");
+                return model;
+            }
+
+
+
+
+            Map columnMap = new HashMap();
+            columnMap.put("detail_id",detailId);
+            columnMap.put("isdisable","1");
+            BigDecimal totalCount = BigDecimal.ZERO;
+            List<WarehouseMoveExecute> warehouseMoveExecuteList = warehouseMoveExecuteService.selectByColumnMap(columnMap);
+            if(warehouseMoveExecuteList!=null&&warehouseMoveExecuteList.size()>0){
+                for(int k=0; k<warehouseMoveExecuteList.size(); k++){
+                    WarehouseMoveExecute warehouseMoveExecute = warehouseMoveExecuteList.get(k);
+                    if(warehouseMoveExecute!=null&&warehouseMoveExecute.getCount()!=null){
+                        totalCount = totalCount.add(warehouseMoveExecute.getCount());
+                    }
+                }
+            }
+            //明细状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+            if(detail.getCount().compareTo(totalCount)>0){
+                detail.setState("1");
+            }else {
+                detail.setState("2");
+            }
+            warehouseMoveDetailService.update(detail);
+        }
+        if (msgBuf.toString().trim().length() > 0) {
+            throw new BizException(msgBuf.toString());
+        }
+        warehouseMoveService.updateState(parentId);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/warehouse/warehouseMoveBySimple/executeWarehouseMoveByWC 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 }

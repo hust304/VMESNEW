@@ -539,6 +539,7 @@
     <select id="findWarehouseProductByWC" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
         concat(warehouseProduct.warehouse_id,'-',warehouseProduct.product_id,'-',warehouseProduct.company_id) id,
+        warehouseProduct.id warehouseProductId,
         warehouseProduct.company_id companyId,
         warehouseProduct.warehouse_id warehouseId,
         warehouseProduct.product_id productId,
@@ -579,6 +580,7 @@
         product_id,
         company_id,
         code,
+        id,
         stock_count stock_count
         from vmes_warehouse_product
         <where>

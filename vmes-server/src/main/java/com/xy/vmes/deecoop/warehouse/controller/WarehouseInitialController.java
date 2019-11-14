@@ -63,7 +63,7 @@ public class WarehouseInitialController {
 
     //仓库初始化(简版仓库)
     @PostMapping("/warehouse/warehouseInitial/findWarehouseInitialByWC")
-    public ResultModel findWarehouseInitialBySimple() throws Exception {
+    public ResultModel findWarehouseInitialByWC() throws Exception {
         logger.info("################/warehouse/warehouseInitial/findWarehouseInitialByWC 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         PageData pd = HttpUtils.parsePageData();

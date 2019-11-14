@@ -6,6 +6,7 @@ import com.xy.vmes.service.*;
 import com.yvan.Conv;
 import com.yvan.PageData;
 import com.yvan.common.util.Common;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -851,6 +852,9 @@ public class WarehouseInCreateServiceImp implements WarehouseInCreateService {
                 //productId: 货品id
                 String productId = (String)productMap.get("productId");
                 detail.setProductId(productId);
+                String code = (String)productMap.get("code");
+
+                detail.setCode(code);
 
                 try {
                     //获取货品计量单位
