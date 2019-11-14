@@ -1108,17 +1108,17 @@ public class WarehouseOutExecuteServiceImp implements WarehouseOutExecuteService
         //出库执行
         if(outExecuteMapList != null && outExecuteMapList.size()>0){
             for (Map<String, Object> outDetailMap : outExecuteMapList) {
-                List<WarehouseOutExecute> outExecuteList = new ArrayList<WarehouseOutExecute>();
-                String detailId = (String) outDetailMap.get("id");
-                String parentId = (String) outDetailMap.get("parentId");
+                    List<WarehouseOutExecute> outExecuteList = new ArrayList<WarehouseOutExecute>();
+                    String detailId = (String) outDetailMap.get("id");
+                    String parentId = (String) outDetailMap.get("parentId");
 
-                WarehouseOutDetail outDetail = new WarehouseOutDetail();
-                outDetail.setId(detailId);
-                outDetail.setCuser(currentUserId);
-                WarehouseOutExecutor outExecutor = new WarehouseOutExecutor();
-                outExecutor.setDetailId(detailId);
-                outExecutor.setExecutorId(currentUserId);
-                outExecutor.setCuser(currentUserId);
+                    WarehouseOutDetail outDetail = new WarehouseOutDetail();
+                    outDetail.setId(detailId);
+                    outDetail.setCuser(currentUserId);
+                    WarehouseOutExecutor outExecutor = new WarehouseOutExecutor();
+                    outExecutor.setDetailId(detailId);
+                    outExecutor.setExecutorId(currentUserId);
+                    outExecutor.setCuser(currentUserId);
 
                 Map columnMap = new HashMap();
                 columnMap.put("detail_id",detailId);

@@ -501,6 +501,7 @@ public class WarehouseCheckDetailServiceImp implements WarehouseCheckDetailServi
             }
 
             Map<String, Object> productMap = new HashMap<String, Object>();
+            productMap.put("code",object.getCode());
             productMap.put("warehouseId", warehouseId);
             productMap.put("productId", productId);
             productMap.put("inDtlId", null);
@@ -531,6 +532,7 @@ public class WarehouseCheckDetailServiceImp implements WarehouseCheckDetailServi
             String checkDtlid = object.getId();
             String productId = object.getProductId();
             String warehouseId = object.getWarehouseId();
+            String warehouseProductId = object.getWarehouseProductId();
 
             //changeCount 变更数量
             BigDecimal changeCount = BigDecimal.valueOf(0D);
@@ -542,6 +544,7 @@ public class WarehouseCheckDetailServiceImp implements WarehouseCheckDetailServi
             }
 
             Map<String, Object> productMap = new HashMap<String, Object>();
+            productMap.put("warehouseProductId", warehouseProductId);
             productMap.put("warehouseId", warehouseId);
             productMap.put("productId", productId);
             productMap.put("outDtlId", null);

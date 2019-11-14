@@ -14,6 +14,7 @@ import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.YvanUtil;
 import com.yvan.springmvc.ResultModel;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -548,15 +549,15 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
             detail.setParentId(parentObj.getId());
             detail.setCuser(parentObj.getCuser());
             //detail.setWarehouseId(parentObj.getWarehouseId());
-
-            //获取批次号
-            //PC+yyyyMMdd+00001 = 15位
-            String code = coderuleService.createCoderCdateByDate(parentObj.getCompanyId(),
-                    "vmes_product_pc",
-                    "yyyyMMdd",
-                    "PC");
-            detail.setCode(code);
-
+            if(StringUtils.isEmpty(detail.getCode())){
+                //获取批次号
+                //PC+yyyyMMdd+00001 = 15位
+                String code = coderuleService.createCoderCdateByDate(parentObj.getCompanyId(),
+                        "vmes_product_pc",
+                        "yyyyMMdd",
+                        "PC");
+                detail.setCode(code);
+            }
             //生成批次号二维码(批次号,产品ID,产品名称)
             String QRCodeJson = this.warehouseInDtl2QRCode(detail);
             String qrcode = fileService.createQRCode("warehouseIn", QRCodeJson);

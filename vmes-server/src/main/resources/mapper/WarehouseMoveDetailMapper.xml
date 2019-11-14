@@ -431,7 +431,7 @@
         select
         detail.parent_id parentId,
         detail.warehouse_id warehouseId,
-        null warehouseProductId,
+        detail.warehouse_product_id warehouseProductId,
         detail.product_id productId,
         null code,
         null stockCount,
