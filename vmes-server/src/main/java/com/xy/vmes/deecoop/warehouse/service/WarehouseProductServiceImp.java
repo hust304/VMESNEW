@@ -2103,7 +2103,7 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
 
         //导出文件名-中文转码
         fileName = new String(fileName.getBytes("utf-8"),"ISO-8859-1");
-        ExcelUtil.excelExportByDataList(response, fileName, dataMapList);
+        ExcelUtil.excelExportHideFirstByDataList(response, fileName, dataMapList);
     }
 }
 

@@ -243,6 +243,103 @@ public class ExcelUtil{
 
 		return hssfWorkbook;
 	}
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//第一列(id)列隐藏
+	public static void excelExportHideFirstByDataList(HttpServletResponse response,
+	                                         String fileName,
+	                                         List<LinkedHashMap<String, String>> dataMapList) throws Exception {
+		ServletOutputStream outputStream = null;
+
+		try {
+			response.reset();
+			response.setHeader("Content-Type","application/octet-stream" );
+			response.setHeader("Connection", "close");
+			response.setHeader("Content-Disposition","attachment;filename=" + fileName + ".xls" );
+
+			response.addHeader("Access-Control-Allow-Origin", "*");
+			response.addHeader("Access-Control-Allow-Methods", "*");
+			response.addHeader("Access-Control-Max-Age", "100");
+			response.addHeader("Access-Control-Allow-Headers", "Content-Type");
+			response.addHeader("Access-Control-Allow-Credentials", "false");
+//			response.setContentType("octets/stream;charset=utf-8");
+//			response.addHeader("Content-disposition", "attachment;filename=" + fileName + ".xls");
+			outputStream = response.getOutputStream();
+
+			//1. 生成Excel文件对象<HSSFWorkbook>: 业务查询数据结构体-Excel对象
+			HSSFWorkbook hssfWorkbook = loadExcelHideFirstByDataList(dataMapList);
+			hssfWorkbook.write(outputStream);
+		} catch (Exception e) {
+
+		} finally {
+			if (outputStream != null) {
+				outputStream.flush();
+				outputStream.close();
+			}
+		}
+	}
+
+	//第一列(id)列隐藏
+	public static HSSFWorkbook loadExcelHideFirstByDataList(List<LinkedHashMap<String, String>> dataMapList) {
+		HSSFWorkbook hssfWorkbook = new HSSFWorkbook();
+		HSSFSheet sheet = hssfWorkbook.createSheet(SHEET_NAME);
+		if (dataMapList == null || dataMapList.size() == 0) {return hssfWorkbook;}
+
+		//设置列表样式(第一行,第二行)
+		CellStyle titleStyle0 = getTitleStyle(hssfWorkbook);
+		HSSFCell cell = null;
+		HSSFCellStyle twoStyle = getTwoStyle(hssfWorkbook);
+		HSSFCellStyle oneStyle = getOneStyle(hssfWorkbook);
+		for (int i = 0; i < dataMapList.size(); i++) {
+			HSSFRow row = sheet.createRow(i);
+
+			//设置Excel行高度
+			row.setHeight((short) 350);
+			if (i == 0) {
+				row.setZeroHeight(true);
+			} else if (i == 1) {
+				row.setHeight((short) 450);
+			}
+
+			//获取Excel导入列数据
+			LinkedHashMap columnMap = dataMapList.get(i);
+
+			int indexMap = 0;
+			for (Iterator iterator = columnMap.keySet().iterator(); iterator.hasNext();) {
+				String columnCode = iterator.next().toString().trim();
+				String columnValue = columnMap.get(columnCode).toString();
+
+				//栏位编码_hide: 该列为隐藏列
+				if (columnCode.indexOf("_hide") != -1) {
+					sheet.setColumnHidden(indexMap, true);
+				} else if ("id".equals(columnValue)) {
+					sheet.setColumnHidden(indexMap, true);
+				}
+
+				//创建Excel单元格
+				cell = row.createCell(indexMap);
+				//数据行
+				cell.setCellValue(columnValue);
+				//(第一行,第二行)
+				if (i == 0 || i == 1) {
+					RichTextString text = new HSSFRichTextString(columnValue);
+					cell.setCellValue(text);
+					cell.setCellStyle(titleStyle0);
+					sheet.setColumnWidth(indexMap, 5000);
+				} else if (i > 1 && i % 2 == 0) {
+					//数据行样式
+					cell.setCellStyle(twoStyle);
+				} else if (i > 1 && i % 2 != 0) {
+					cell.setCellStyle(oneStyle);
+				}
+
+				indexMap = indexMap + 1;
+			}
+		}
+
+		return hssfWorkbook;
+	}
+
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	public static List<List<String>> readExcel(InputStream inputStream, boolean isExcel2003) throws Exception {
 		List<List<String>> dataLst = new ArrayList<List<String>>();
