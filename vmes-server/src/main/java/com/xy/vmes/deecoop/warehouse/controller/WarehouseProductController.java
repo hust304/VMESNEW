@@ -8,10 +8,9 @@ import com.xy.vmes.entity.WarehouseProduct;
 import com.xy.vmes.service.ColumnService;
 import com.xy.vmes.service.WarehouseProductByCollectService;
 import com.xy.vmes.service.WarehouseProductService;
-import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
-import com.yvan.platform.RestException;
+import com.yvan.common.util.Common;
 import com.yvan.springmvc.ResultModel;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -21,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.apache.commons.lang.StringUtils;
 
-import javax.servlet.http.HttpServletResponse;
+import java.math.BigDecimal;
 import java.util.*;
 
 /**
@@ -145,7 +144,6 @@ public class WarehouseProductController {
         return model;
     }
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
-
     /**
      * @author 刘威
      * @date 2018-10-31
@@ -404,6 +402,61 @@ public class WarehouseProductController {
         warehouseProductService.exportExcelWarehouseProductByProduct(pd);
         Long endTime = System.currentTimeMillis();
         logger.info("################/warehouse/warehouseProduct/exportExcelWarehouseProductByProduct 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////
+    //文成企业定制
+    /**
+     * 修改仓库货品价格-文成企业定制
+     *
+     * @date 2019-11-14
+     */
+    @PostMapping("/warehouse/warehouseProduct/updateWarehouseProductOnPriceByWc")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel updateWarehouseProductOnPriceByWc() throws Exception {
+        logger.info("################/warehouse/warehouseProduct/updateWarehouseProductOnPriceByWc 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        String id = pageData.getString("id");
+        if (id == null || id.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("仓库货品id为空或空字符串！");
+            return model;
+        }
+
+        String newProductPriceStr = pageData.getString("newProductPrice");
+        if (newProductPriceStr == null || newProductPriceStr.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("变更单价为必填项不可为空！");
+            return model;
+        }
+
+        BigDecimal price = BigDecimal.valueOf(0D);
+        try {
+            price = new BigDecimal(newProductPriceStr);
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
+        //四舍五入到2位小数
+        price = price.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+
+//        String remark = new String();
+//        if (pageData.getString("remark") != null) {
+//            remark = pageData.getString("remark").trim();
+//        }
+
+        WarehouseProduct editObject = new WarehouseProduct();
+        editObject.setId(id);
+        editObject.setPrice(price);
+        //editObject.setRemark(remark);
+        warehouseProductService.update(editObject);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/warehouse/warehouseProduct/updateWarehouseProductOnPriceByWc 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
     }
 
 

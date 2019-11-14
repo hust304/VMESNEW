@@ -193,6 +193,38 @@ public class ProductController {
     }
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+    @PostMapping("/base/product/findProduct")
+    public ResultModel findProduct() throws Exception {
+        logger.info("################/base/product/findProduct 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+
+        String productId = pd.getString("productId");
+        if (productId == null || productId.trim().length() == 0) {
+            model.putCode("1");
+            model.putMsg("货品id为空或空字符串！");
+            return model;
+        }
+
+        Map<String, Object> productMap = new HashMap<>();
+
+        PageData findMap = new PageData();
+        findMap.put("productId", productId);
+        List<Map> mapList = productService.getDataListPage(findMap);
+        if (mapList != null && mapList.size() > 0) {
+            productMap = mapList.get(0);
+        }
+
+        model.put("productMap", productMap);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/base/product/findProduct 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
     /**
     * @author 陈刚 自动创建，可以修改
     * @date 2018-09-21
