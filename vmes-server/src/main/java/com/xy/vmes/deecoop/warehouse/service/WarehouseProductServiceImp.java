@@ -21,6 +21,7 @@ import java.util.*;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
@@ -38,6 +39,8 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
     private WarehouseToWarehouseProductService warehouseToWarehouseProductService;
     @Autowired
     private WarehouseProductQueryService warehouseProductQueryService;
+    @Autowired
+    private WarehouseProductExcelByWcService warehouseProductExcelByWcService;
 
     @Autowired
     private WarehouseService warehouseService;
@@ -2104,6 +2107,113 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
         //导出文件名-中文转码
         fileName = new String(fileName.getBytes("utf-8"),"ISO-8859-1");
         ExcelUtil.excelExportHideFirstByDataList(response, fileName, dataMapList);
+    }
+
+    //仓库货品(价格) Excel导入文成企业定制
+    // 导入前置条件: 财务-库存查询-导出(按钮) 导出的Excel文件，对单价列修改
+    // 注意: 财务-库存查询-导出(按钮) 导出的Excel文件,第一列(id)是隐藏列
+    public ResultModel importExcelWarehouseProductOnPriceByWc(MultipartFile file) throws Exception {
+        ResultModel model = new ResultModel();
+
+        if (file == null) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("请上传Excel文件！");
+            return model;
+        }
+
+        // 验证文件是否合法
+        // 获取上传的文件名(文件名.后缀)
+        String fileName = file.getOriginalFilename();
+        if (fileName == null
+                || !(fileName.matches("^.+\\.(?i)(xlsx)$")
+                || fileName.matches("^.+\\.(?i)(xls)$"))
+                ) {
+            String failMesg = "不是excel格式文件,请重新选择！";
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(failMesg);
+            return model;
+        }
+
+        // 判断文件的类型，是2003还是2007
+        boolean isExcel2003 = true;
+        if (fileName.matches("^.+\\.(?i)(xlsx)$")) {
+            isExcel2003 = false;
+        }
+
+        List<List<String>> dataLst = ExcelUtil.readExcel(file.getInputStream(), isExcel2003);
+        List<LinkedHashMap<String, String>> dataMapLst = ExcelUtil.reflectMapList(dataLst);
+
+        HttpServletRequest httpRequest = HttpUtils.currentRequest();
+        String userId = httpRequest.getParameter("userId");
+
+        if (dataMapLst == null || dataMapLst.size() == 1) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("导入文件数据为空，请至少填写一行导入数据！");
+            return model;
+        }
+        dataMapLst.remove(0);
+
+        //1. 验证:第一列(id)隐藏列是否非空
+        //如果:第一列(id)为空-被视为非法行
+        String msgStr = warehouseProductExcelByWcService.checkColumnByIdImportExcel(dataMapLst);
+        if (msgStr != null && msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
+
+        //2.导入字段非空判断-(单价)非空判断-(单价)数字判断
+        msgStr = warehouseProductExcelByWcService.checkColumnImportExcel(dataMapLst,
+                Integer.valueOf(3),
+                Common.SYS_IMPORTEXCEL_MESSAGE_MAXROW);
+        if (msgStr != null && msgStr.trim().length() > 0) {
+            StringBuffer msgBuf = new StringBuffer();
+            msgBuf.append("Excel导入失败！" + Common.SYS_ENDLINE_DEFAULT);
+            msgBuf.append(msgStr);
+            msgBuf.append("请核对后再次导入" + Common.SYS_ENDLINE_DEFAULT);
+
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgBuf.toString());
+            return model;
+        }
+
+        //3.获取导入有效数据:只需要(单价)列不为空的行数据
+        // 过滤出(单价)列为空或空字符串
+        List<Map<String, String>> dataList = new ArrayList<>();
+        for (Map<String, String> mapObject : dataMapLst) {
+            //price 单价
+            String price = mapObject.get("price");
+            if (price != null && price.trim().length() > 0) {
+                dataList.add(mapObject);
+            }
+        }
+
+        //4.修改仓库货品(单价)
+        for (Map<String, String> mapObject : dataList) {
+            String id = mapObject.get("id");
+
+            //price 单价
+            BigDecimal price = BigDecimal.valueOf(0D);
+            String priceStr = mapObject.get("price");
+            if (priceStr != null && priceStr.trim().length() > 0) {
+                try {
+                    price = new BigDecimal(priceStr);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            //四舍五入到2位小数
+            price = price.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+
+            WarehouseProduct editObject = new WarehouseProduct();
+            editObject.setId(id);
+            editObject.setPrice(price);
+            editObject.setUuser(userId);
+            this.update(editObject);
+        }
+
+        return model;
     }
 }
 

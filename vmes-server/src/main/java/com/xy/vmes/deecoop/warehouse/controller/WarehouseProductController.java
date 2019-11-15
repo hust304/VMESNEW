@@ -19,7 +19,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -478,8 +480,23 @@ public class WarehouseProductController {
 
     }
 
+    /**
+     * 仓库货品(价格) Excel导入文成企业定制
+     *
+     * @author 陈刚
+     * @date 2019-11-14
+     */
+    @PostMapping("/warehouse/warehouseProduct/importExcelWarehouseProductOnPriceByWc")
+    public ResultModel importExcelWarehouseProductOnPriceByWc(@RequestParam(value="excelFile") MultipartFile file) throws Exception {
+        logger.info("################/warehouse/warehouseProduct/importExcelWarehouseProductOnPriceByWc 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = warehouseProductService.importExcelWarehouseProductOnPriceByWc(file);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/warehouse/warehouseProduct/importExcelWarehouseProductOnPriceByWc 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
 
 }
-
-
 

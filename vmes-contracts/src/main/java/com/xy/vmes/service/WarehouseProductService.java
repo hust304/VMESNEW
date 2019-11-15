@@ -296,6 +296,7 @@ public interface WarehouseProductService {
     //文成企业定制
     //库存查询-仓库货品价格 Excel导出-文成企业定制
     void exportExcelWarehouseProductOnPriceByWc(PageData pd) throws Exception;
+    ResultModel importExcelWarehouseProductOnPriceByWc(MultipartFile file) throws Exception;
 
 }
 
