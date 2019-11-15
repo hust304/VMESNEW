@@ -75,12 +75,23 @@ public class WarehouseProductExcelByWcServiceImp implements WarehouseProductExce
                 try {
                     //全数字
                     BigDecimal bigDecimal = new BigDecimal(price);
-                    //四舍五入到2位小数
-                    bigDecimal = bigDecimal.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-                    mapObject.put("price", bigDecimal.toString());
+                    if (bigDecimal != null && bigDecimal.doubleValue() < 0) {
+                        //String msg_column_error = "第 {0} 行: {1}:{2} 输入错误，请输入正确的数字(大于零的整数，或大于零的2位小数)！"
+                        String str_error = MessageFormat.format(msg_column_error,
+                                (i+index_int),
+                                "单价",
+                                price);
+                        strBuf.append(str_error);
 
+                        maxRow = maxRow + 1;
+                        if (maxShowRow_int <= maxRow) {return strBuf.toString();}
+                    } else {
+                        //四舍五入到2位小数
+                        bigDecimal = bigDecimal.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                        mapObject.put("price", bigDecimal.toString());
+                    }
                 } catch (NumberFormatException e) {
-                    //String msg_column_error = "第 {0} 行: {1}:{2} 输入错误，请输入正确的数字(大于零的整数，或大于零的(1,2)位小数)！"
+                    //String msg_column_error = "第 {0} 行: {1}:{2} 输入错误，请输入正确的数字(大于零的整数，或大于零的2位小数)！"
                     String str_error = MessageFormat.format(msg_column_error,
                             (i+index_int),
                             "单价",

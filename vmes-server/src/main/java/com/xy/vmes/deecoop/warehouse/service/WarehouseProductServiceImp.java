@@ -2181,9 +2181,19 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
         // 过滤出(单价)列为空或空字符串
         List<Map<String, String>> dataList = new ArrayList<>();
         for (Map<String, String> mapObject : dataMapLst) {
+
             //price 单价
-            String price = mapObject.get("price");
-            if (price != null && price.trim().length() > 0) {
+            BigDecimal price = BigDecimal.valueOf(0D);
+            String priceStr = mapObject.get("price");
+            if (priceStr != null && priceStr.trim().length() > 0) {
+                try {
+                    price = new BigDecimal(priceStr);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            if (price.doubleValue() > 0) {
                 dataList.add(mapObject);
             }
         }
