@@ -74,17 +74,21 @@ public class WarehouseOutDetail implements Serializable {
 	@TableField("product_count")
 	private BigDecimal productCount;
 
-	//(货品)计价单位id
+	//单据单位id
 	@TableField("price_unit")
 	private String priceUnit;
-	//(货品)计价单位-出库数量
+	//单据单位-出库数量
 	@TableField("price_count")
 	private BigDecimal priceCount;
 
 	//企业定制化字段///////////////////////////////////////////////////////////////////////////
-	//(货品)价格
+	//单据货品单价
 	@TableField("price")
 	private BigDecimal price;
+
+	//货品单价(计量单位)
+	@TableField("product_price")
+	private BigDecimal productPrice;
 
 	//业务id(订单明细id)
 	@TableField("warehouse_product_id")
@@ -222,6 +226,12 @@ public class WarehouseOutDetail implements Serializable {
 	}
 	public void setPrice(BigDecimal price) {
 		this.price = price;
+	}
+	public BigDecimal getProductPrice() {
+		return productPrice;
+	}
+	public void setProductPrice(BigDecimal productPrice) {
+		this.productPrice = productPrice;
 	}
 /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 

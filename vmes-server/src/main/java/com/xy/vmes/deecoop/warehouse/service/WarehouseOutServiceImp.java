@@ -650,15 +650,6 @@ public class WarehouseOutServiceImp implements WarehouseOutService {
         }
         Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
 
-        //type 出库类型
-        String type = new String();
-        if (pd.get("type") != null && ((List)pd.get("type")).size() > 0) {
-            type = ((List)pd.get("type")).get(0).toString();
-        }
-        if (type != null && type.trim().length() > 0) {
-            pd.put("type", type);
-        } else {pd.put("type", new String());}
-
         //是否需要分页 true:需要分页 false:不需要分页
         Map result = new HashMap();
         String isNeedPage = pd.getString("isNeedPage");

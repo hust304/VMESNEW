@@ -37,7 +37,10 @@
         product_count productCount,
         price_unit priceUnit,
         price_count priceCount,
-        price price
+
+        price price,
+        product_price productPrice,
+        warehouse_product_id warehouseProductId
     </sql>
 
     <!-- 字段值 自动创建，禁止修改-->
@@ -199,6 +202,9 @@
 
         (replace(uuid(), '-', ''), 'WarehouseOutDetail', 'stockCount', '库存数量', 38, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
         (replace(uuid(), '-', ''), 'WarehouseOutDetail', 'stockCountByPrice', '库存数量', 39, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+
+        (replace(uuid(), '-', ''), 'WarehouseOutDetail', 'productPrice', '单价(计量单位)', 40, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'WarehouseOutDetail', 'productPriceSum', '金额', 41, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
     </insert>
 
     <insert id="insertColumn1" >
@@ -533,7 +539,8 @@
             businessId,productCode,productName,productSpec,productGenre,productGenreName,productUnit,productUnitName,warehouseOutCode,parentWarehouseId,id,
             priceUnit,priceUnitName,round(ifnull(priceCount,0),2) priceCount,round(ifnull(productCount,0),2) productCount,warehouseProductId,
             n2pFormula,n2pIsScale,n2pDecimalCount,
-            p2nFormula,p2nIsScale,p2nDecimalCount,price,stockCount,stockCountByPrice,
+            p2nFormula,p2nIsScale,p2nDecimalCount,stockCount,stockCountByPrice,
+            price,productPrice,priceSum,productPriceSum,
             round(sum(ifnull(executeCount,0)),2) executeCount
         from (
             select
@@ -562,6 +569,10 @@
                 detail.price_unit priceUnit,
                 detail.price_count priceCount,
                 round(ifnull(detail.price, 0), 2) price,
+                round(ifnull(detail.product_price, 0), 2)  productPrice,
+
+                round((ifnull(detail.price_count, 0) * ifnull(detail.price, 0)), 2) priceSum,
+                round((ifnull(detail.count, 0) * ifnull(detail.product_price, 0)), 2) productPriceSum,
 
                 prod.code sysProductCode,
                 prod.source_code custProductCode,
