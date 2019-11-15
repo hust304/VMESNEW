@@ -304,6 +304,8 @@
 
             (replace(uuid(), '-', ''),'WarehouseOut','pid','仓库父节点id',15, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'WarehouseOut','pathId','当前仓库路径id',16, '1','1','1','0',now(), 'admin')
+
+            (replace(uuid(), '-', ''),'WarehouseOut','priceSum','金额',18, '1','1','1','0',now(), 'admin')
     </insert>
 
 
@@ -531,6 +533,10 @@
             warehouse.pid pid,
             warehouse.path_id pathId
 
+            <if test="'true' == isNeedPrice">
+                ,outDetail.priceSum
+            </if>
+
         from
         vmes_warehouse_out warehouseout
         left join vmes_dictionary type on type.id = warehouseout.type
@@ -543,6 +549,24 @@
 
         left join vmes_user user on user.id = warehouseout.make_id
         left join vmes_department dept on dept.id = user.dept_id
+
+        <!--文成企业定制 获取出库单金额 (出库单id)对出库单明细(vmes_warehouse_out_detail) 查询语句-->
+        <if test="'true' == isNeedPrice">
+            left join (
+                select parent_id, round(sum(ifnull(price_count, 0) * ifnull(price, 0)), 2) priceSum
+                from vmes_warehouse_out_detail
+                where parent_id in (
+                    select id
+                    from vmes_warehouse_out
+                    <where>
+                        <if test="currentCompanyId != null and currentCompanyId != ''" >
+                            and company_id = #{currentCompanyId}
+                        </if>
+                    </where>
+                )
+                group by parent_id
+            ) outDetail on warehouseout.id = outDetail.parent_id
+        </if>
 
         <where>
 
@@ -624,7 +648,7 @@
                 and warehouseout.warehouse_attribute = 'spare'
             </if>
 
-            <!--过滤出 (虚拟库)-入库单-->
+            <!--过滤出 (虚拟库)-出库单-->
             <if test="'true' == isNeedWarehouseVirtual">
                 and warehouseout.warehouse_attribute = 'virtual'
             </if>
