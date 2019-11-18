@@ -449,13 +449,13 @@ public class EmployeeServiceImp implements EmployeeService {
 
 
         //手机号唯一性判断(vmes_employee:员工表)
-        if (this.isExistByCode(employeeId, code,companyId)) {
+        if (this.isExistByCode(employeeId, code, companyId)) {
             model.putCode(2);
             model.putMsg("员工号:" + code + "在系统中已经存在，请核对后再次输入！");
             return model;
         }
         //手机号唯一性判断(vmes_employee:员工表)
-        if (this.isExistByMobile(employeeId, mobile)) {
+        if (this.isExistByMobile(employeeId, mobile, companyId)) {
             model.putCode(1);
             model.putMsg("手机号:" + mobile + "在员工管理中已经存在，请核对后再次输入！");
             return model;
