@@ -51,6 +51,9 @@ public class EmployeeServiceImp implements EmployeeService {
     @Autowired
     private ColumnService columnService;
     @Autowired
+    private CoderuleService coderuleService;
+
+    @Autowired
     private EmployeeExcelService employeeExcelService;
     @Autowired
     private EmployeeExcelBySimpleService employeeExcelBySimpleService;
@@ -353,6 +356,31 @@ public class EmployeeServiceImp implements EmployeeService {
             model.putCode(1);
             return model;
         }
+
+        //员工编号
+        String code = new String();
+        String codeStr = pd.getString("code");
+        if (codeStr != null && codeStr.trim().length() > 0) {
+            code = codeStr.trim();
+        } else if (codeStr == null && codeStr.trim().length() == 0) {
+            String empCode = coderuleService.createCoder(companyId, "vmes_employee", "E");
+            if (empCode != null && empCode.trim().length() > 0) {
+                code = empCode.trim();
+            }
+        }
+
+        if (code == null && code.trim().length() == 0) {
+            model.putMsg("员工编号为空或空字符串！");
+            model.putCode(1);
+            return model;
+        } else if (code != null && code.trim().length() > 0
+            && employeeService. isExistByCode(null, code, companyId)
+        ) {
+            model.putCode(1);
+            model.putMsg("员工编号:" + code + " 在用户管理中已经存在，请核对后再次输入！");
+            return model;
+        }
+
         String mobile = pd.getString("mobile");
         if(StringUtils.isEmpty(mobile)){
             model.putCode(1);
@@ -392,14 +420,17 @@ public class EmployeeServiceImp implements EmployeeService {
             return model;
         }
 
-        //公司内部的工号唯一性校验
-        PageData pdExist = new PageData();
-        pdExist.putQueryStr("code = '"+employee.getCode()+"' and company_id = '"+companyId+"'");
-        if(isExistColumn(pdExist)){
-            model.putCode(3);
-            model.putMsg("工号已存在，请重新输入！");
-            return model;
-        }
+//        //公司内部的工号唯一性校验
+//        PageData pdExist = new PageData();
+//        pdExist.putQueryStr("code = '"+employee.getCode()+"' and company_id = '"+companyId+"'");
+//        if(isExistColumn(pdExist)){
+//            model.putCode(3);
+//            model.putMsg("工号已存在，请重新输入！");
+//            return model;
+//        }
+
+        //设定：员工编号
+        employee.setCode(code);
         employee.setMobile(mobile);
         employee.setCompanyId(companyId);
         employeeService.save(employee);
@@ -442,7 +473,7 @@ public class EmployeeServiceImp implements EmployeeService {
         String employeeId = (String)pd.get("employeeId");
         String userId = (String)pd.get("userId");
         String mobile = pd.getString("mobile");
-        String code = pd.getString("code");
+        //String code = pd.getString("code");
         String companyId = pd.getString("companyId");
         if(StringUtils.isEmpty(mobile)){
             model.putCode(1);
@@ -455,13 +486,31 @@ public class EmployeeServiceImp implements EmployeeService {
             return model;
         }
 
+        //员工编号
+        String code = new String();
+        String codeStr = pd.getString("code");
+        if (codeStr != null && codeStr.trim().length() > 0) {
+            code = codeStr.trim();
+        } else if (codeStr == null && codeStr.trim().length() == 0) {
+            String empCode = coderuleService.createCoder(companyId, "vmes_employee", "E");
+            if (empCode != null && empCode.trim().length() > 0) {
+                code = empCode.trim();
+            }
+        }
 
-        //手机号唯一性判断(vmes_employee:员工表)
-        if (this.isExistByCode(employeeId, code, companyId)) {
-            model.putCode(2);
-            model.putMsg("员工号:" + code + "在系统中已经存在，请核对后再次输入！");
+        if (code == null && code.trim().length() == 0) {
+            model.putMsg("员工编号为空或空字符串！");
+            model.putCode(1);
+            return model;
+        } else if (code != null && code.trim().length() > 0
+            && employeeService. isExistByCode(employeeId, code, companyId)
+        ) {
+            model.putCode(1);
+            model.putMsg("员工编号:" + code + " 在用户管理中已经存在，请核对后再次输入！");
             return model;
         }
+
+
         //手机号唯一性判断(vmes_employee:员工表)
         if (this.isExistByMobile(employeeId, mobile, companyId)) {
             model.putCode(1);
@@ -492,6 +541,8 @@ public class EmployeeServiceImp implements EmployeeService {
         employee.setId(employeeId);
         mobile = mobile.trim();
         employee.setMobile(mobile);
+        //设置:员工编号
+        employee.setCode(code);
 
         if (employee.getRemark() == null || employee.getRemark().trim().length() == 0) {
             employee.setRemark("");
