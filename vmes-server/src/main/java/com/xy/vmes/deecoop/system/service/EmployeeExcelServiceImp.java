@@ -461,7 +461,7 @@ public class EmployeeExcelServiceImp implements EmployeeExcelService {
             String mobile = mapObject.get("mobile");
             if (mobile != null && mobile.trim().length() > 0) {
                 //员工表
-                if (employeeService.isExistByMobile(null, mobile)) {
+                if (employeeService.isExistByMobile(null, mobile, companyId)) {
                     //String msg_column_exist_employee = "第 {0} 行: ({1}:{2})在员工管理中已存在！" + Common.SYS_ENDLINE_DEFAULT;
                     String str_error = MessageFormat.format(msg_column_exist_employee,
                             (i+index_int),

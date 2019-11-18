@@ -339,6 +339,14 @@ public class EmployeeServiceImp implements EmployeeService {
     @Override
     public ResultModel addEmployeeAndUser(PageData pd) throws Exception {
         ResultModel model = new ResultModel();
+
+        String companyId = pd.getString("currentCompanyId");
+        if(StringUtils.isEmpty(companyId)){
+            model.putMsg("企业id为空或空字符串！");
+            model.putCode(1);
+            return model;
+        }
+
         String postId = pd.getString("postId");
         if(StringUtils.isEmpty(postId)){
             model.putMsg("岗位不能为空！！");
@@ -359,7 +367,7 @@ public class EmployeeServiceImp implements EmployeeService {
 
         mobile = mobile.trim();
         //手机号唯一性判断(vmes_employee:员工表)
-        if (employeeService.isExistByMobile(null, mobile)) {
+        if (employeeService.isExistByMobile(null, mobile, companyId)) {
             model.putCode(1);
             model.putMsg("手机号:" + mobile + "在员工管理中已经存在，请核对后再次输入！");
             return model;
@@ -373,7 +381,7 @@ public class EmployeeServiceImp implements EmployeeService {
         }
 
         Post post = postService.selectById(postId);
-        String companyId = post.getCompanyId();
+        //String companyId = post.getCompanyId();
 
         //新增员工信息
         String roleId = pd.getString("roleId");
