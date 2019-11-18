@@ -302,6 +302,9 @@
             <if test="companyId != null and companyId != ''" >
                 and warehouse.company_id = #{companyId}
             </if>
+            <if test="warehouseIsdisable != null and warehouseIsdisable != ''" >
+                and warehouse.isdisable = #{warehouseIsdisable}
+            </if>
 
             <!--nodeId 树形结构指定节点id 自定义sql查询语句-->
             <if test="nodeId != null and nodeId != ''" >
