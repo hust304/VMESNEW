@@ -257,14 +257,18 @@ public class EvaluateUtil {
 //        BigDecimal bigValue = EvaluateUtil.countFormulaN2P(count, formula);
 //        System.out.println("P=8*N:= " + bigValue.toString());
 
-        String isScale = Common.SYS_ISSCALE_TRUE;
-        //String isScale = Common.SYS_ISSCALE_FALSE;
-        Integer decimalCount = Integer.valueOf(4);
+//        String isScale = Common.SYS_ISSCALE_TRUE;
+//        //String isScale = Common.SYS_ISSCALE_FALSE;
+//        Integer decimalCount = Integer.valueOf(4);
+//
+//        BigDecimal bigValue = BigDecimal.valueOf(3.5675678D);
+//        System.out.println("bigValue:" + bigValue.toString());
+//
+//        bigValue = StringUtil.scaleDecimal (bigValue, isScale, decimalCount);
+//        System.out.println("ratio:" + bigValue.toString());
 
-        BigDecimal bigValue = BigDecimal.valueOf(3.5675678D);
-        System.out.println("bigValue:" + bigValue.toString());
-
-        bigValue = StringUtil.scaleDecimal (bigValue, isScale, decimalCount);
-        System.out.println("ratio:" + bigValue.toString());
+        String str = "2019";
+        String strTemp = str.substring(2, str.trim().length());
+        System.out.println("strTemp:" + strTemp.toString());
     }
 }

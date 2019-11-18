@@ -25,8 +25,11 @@ public class CoderuleEntity {
     Boolean isNeedCompany;
     //是否需要前缀
     Boolean isNeedPrefix;
+
     //是否需要日期
     Boolean isNeedDate;
+    //是否需要短年份 如:2019 得到:19
+    Boolean isNeedShortYear;
 
 
     public String getTableName() {
@@ -119,5 +122,18 @@ public class CoderuleEntity {
     public void setIsNeedDate(Boolean isNeedDate) {
         this.isNeedDate = isNeedDate;
     }
+
+    public Boolean getNeedShortYear() {
+        return isNeedShortYear;
+    }
+
+    public void setNeedShortYear(Boolean needShortYear) {
+        isNeedShortYear = needShortYear;
+    }
+
+
+
+
+
 
 }

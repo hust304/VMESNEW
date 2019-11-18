@@ -347,6 +347,12 @@
         <if test="detailState != null and detailState != ''" >
             and d.state = #{detailState}
         </if>
+        <if test="detailRemark != null and detailRemark != ''" >
+            and d.remark = #{detailRemark}
+        </if>
+        <if test="pcCode != null and pcCode != ''" >
+            and d.code = #{pcCode}
+        </if>
 
 
         <!--过滤出当前登录用户是(入库)执行人 (vmes_warehouse_in_executor) 查询语句-->

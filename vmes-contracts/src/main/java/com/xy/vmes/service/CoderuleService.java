@@ -168,6 +168,16 @@ public interface CoderuleService {
      * @return
      */
     String createCoderCdateByDate(String companyID, String tableName, String dateFormat, String prefix);
+
+    /**
+     * 获取流水号：前缀+短日期(yyyy 后2位) +5位流水号，如PC18080800001
+     * 例如: 短日期(2019) 短日期(19)
+     * @param companyID
+     * @param tableName
+     * @param prefix
+     * @return
+     */
+    String createCoderCdateOnShortYearByDate(String companyID, String tableName, String prefix);
 }
 
 

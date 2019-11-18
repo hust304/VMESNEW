@@ -46,6 +46,8 @@ public class WarehouseInBySimpleController {
     private ProductService productService;
 
     @Autowired
+    private FileService fileService;
+    @Autowired
     private CoderuleService coderuleService;
 
     @PostMapping("/warehouse/warehouseInBySimple/listPageWarehouseInBySimple")
@@ -188,6 +190,13 @@ public class WarehouseInBySimpleController {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
+        String companyID = pageData.getString("currentCompanyId");
+        if (companyID == null || companyID.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("企业id为空或空字符串！");
+            return model;
+        }
+
         WarehouseIn warehouseIn = (WarehouseIn)HttpUtils.pageData2Entity(pageData, new WarehouseIn());
         if (warehouseIn == null) {
             model.putCode(Integer.valueOf(1));
@@ -229,6 +238,21 @@ public class WarehouseInBySimpleController {
                     detail.setParentId(warehouseIn.getId());
                     detail.setCuser(warehouseIn.getCuser());
                     detail.setWarehouseId(warehouseIn.getWarehouseId());
+
+                    //获取批次号
+                    //PC+yyyy 最后2位+00001 = 13位
+                    String code = coderuleService.createCoderCdateOnShortYearByDate(companyID,
+                            "vmes_product_pc",
+                            "PC");
+                    detail.setCode(code);
+
+                    //生成批次号二维码(批次号,产品ID,产品名称)
+                    String QRCodeJson = warehouseInDetailService.warehouseInDtl2QRCode(detail);
+                    String qrcode = fileService.createQRCode("warehouseIn", QRCodeJson);
+                    if (qrcode != null && qrcode.trim().length() > 0) {
+                        detail.setQrcode(qrcode);
+                    }
+
                     warehouseInDetailService.save(detail);
                 }
                 else {
