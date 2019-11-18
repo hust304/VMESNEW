@@ -78,18 +78,18 @@ public class EmployeeExcelBySimpleServiceImp implements EmployeeExcelBySimpleSer
             mapObject.put("userId", userId);
 
             //必填项验证
-            //code 员工编号
-            String code = mapObject.get("code");
-            if (code == null || code.trim().length() == 0) {
-                //String msg_column_isnull = "第 {0} 行: ({1})输入为空或空字符串，({1})是必填字段不可为空！"
-                String str_isnull = MessageFormat.format(msg_column_isnull,
-                        (i+index_int),
-                        "员工编号");
-                strBuf.append(str_isnull);
-
-                maxRow = maxRow + 1;
-                if (maxShowRow_int <= maxRow) {return strBuf.toString();}
-            }
+//            //code 员工编号 非必填:允许为空
+//            String code = mapObject.get("code");
+//            if (code == null || code.trim().length() == 0) {
+//                //String msg_column_isnull = "第 {0} 行: ({1})输入为空或空字符串，({1})是必填字段不可为空！"
+//                String str_isnull = MessageFormat.format(msg_column_isnull,
+//                        (i+index_int),
+//                        "员工编号");
+//                strBuf.append(str_isnull);
+//
+//                maxRow = maxRow + 1;
+//                if (maxShowRow_int <= maxRow) {return strBuf.toString();}
+//            }
 
             //name 员工姓名
             String name = mapObject.get("name");
@@ -541,9 +541,6 @@ public class EmployeeExcelBySimpleServiceImp implements EmployeeExcelBySimpleSer
             employee.setCuser(userId);
 
             //必填项验证
-            //code 员工编号
-            String code = mapObject.get("code");
-            employee.setCode(code);
             //name 员工姓名
             String name = mapObject.get("name");
             employee.setName(name);
@@ -571,6 +568,16 @@ public class EmployeeExcelBySimpleServiceImp implements EmployeeExcelBySimpleSer
 
             /////////////////////////////////////////////////
             //非必填项验证
+            //code 员工编号
+            String code = mapObject.get("code");
+            if (code == null || code.trim().length() == 0) {
+                //系统创建员工编号
+                String empCode = coderuleService.createCoder(companyId, "vmes_employee", "E");
+                employee.setCode(empCode);
+            } else if (code != null && code.trim().length() > 0) {
+                employee.setCode(code);
+            }
+
             //email 邮箱
             String email = mapObject.get("email");
             if (email != null && email.trim().length() > 0) {
