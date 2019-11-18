@@ -227,14 +227,14 @@
         from
         <include refid="tableName"></include>
         where
-        mobile = #{mobile} and isdisable = 1  and user_type not in ('2fb9bbee46ca4ce1913f3a673a7dd68f','6839818aecfc41be8f367e62502dfde4')   <!-- 超级管理员  企业管理员-->
-        <if test="id != null and id!=''" >
-            <![CDATA[ and id <> #{id} ]]>
-        </if>
-        <!--queryStr 自定义sql查询语句-->
-        <if test="queryStr != null and queryStr!=''" >
-            and ${queryStr}
-        </if>
+            company_id = #{currentCompanyId} and mobile = #{mobile} and isdisable = 1  and user_type not in ('2fb9bbee46ca4ce1913f3a673a7dd68f','6839818aecfc41be8f367e62502dfde4')   <!-- 超级管理员  企业管理员-->
+            <if test="id != null and id!=''" >
+                <![CDATA[ and id <> #{id} ]]>
+            </if>
+            <!--queryStr 自定义sql查询语句-->
+            <if test="queryStr != null and queryStr!=''" >
+                and ${queryStr}
+            </if>
     </select>
 
     <!-- 刘威 2018-08-03-->
