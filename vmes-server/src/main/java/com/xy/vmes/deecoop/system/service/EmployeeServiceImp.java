@@ -294,26 +294,26 @@ public class EmployeeServiceImp implements EmployeeService {
         return false;
     }
 
-    public boolean isExistByMobile(String id, String mobile) {
-        if (mobile == null || mobile.trim().length() == 0) {return false;}
-
-        PageData findMap = new PageData();
-        findMap.put("id", id);
-        findMap.put("mobile", mobile);
-        //是否禁用(0:已禁用 1:启用)
-        findMap.put("isdisable", "1");
-
-        if (id != null && id.trim().length() > 0) {
-            findMap.put("id", id);
-            findMap.put("isSelfExist", "true");
-        }
-        findMap.put("mapSize", Integer.valueOf(findMap.size()));
-
-        List<Employee> objectList = this.findEmployeeList(findMap);
-        if (objectList != null && objectList.size() > 0) {return true;}
-
-        return false;
-    }
+//    public boolean isExistByMobile(String id, String mobile) {
+//        if (mobile == null || mobile.trim().length() == 0) {return false;}
+//
+//        PageData findMap = new PageData();
+//        findMap.put("id", id);
+//        findMap.put("mobile", mobile);
+//        //是否禁用(0:已禁用 1:启用)
+//        findMap.put("isdisable", "1");
+//
+//        if (id != null && id.trim().length() > 0) {
+//            findMap.put("id", id);
+//            findMap.put("isSelfExist", "true");
+//        }
+//        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+//
+//        List<Employee> objectList = this.findEmployeeList(findMap);
+//        if (objectList != null && objectList.size() > 0) {return true;}
+//
+//        return false;
+//    }
     public boolean isExistByMobile(String id, String mobile, String companyId) {
         if (mobile == null || mobile.trim().length() == 0) {return false;}
 
