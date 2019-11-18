@@ -59,7 +59,7 @@ public class HttpUtils {
 //        PageData  parser = parsePageData();
 //        PageData parser = new PageData(request);
         int pageNo = StringUtils.isEmpty(pd.getString("pageNo"))?1:Integer.parseInt(pd.getString("pageNo"));
-        int pageSize = StringUtils.isEmpty(pd.getString("pageSize"))?10:Integer.parseInt(pd.getString("pageSize"));
+        int pageSize = StringUtils.isEmpty(pd.getString("pageSize"))?20:Integer.parseInt(pd.getString("pageSize"));
 //        String orderBy = parser.getString("orderBy");
         if (pageNo <= 0) {
             pageNo = 1;
