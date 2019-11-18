@@ -362,7 +362,7 @@ public class EmployeeServiceImp implements EmployeeService {
         String codeStr = pd.getString("code");
         if (codeStr != null && codeStr.trim().length() > 0) {
             code = codeStr.trim();
-        } else if (codeStr == null && codeStr.trim().length() == 0) {
+        } else if (codeStr == null || codeStr.trim().length() == 0) {
             String empCode = coderuleService.createCoder(companyId, "vmes_employee", "E");
             if (empCode != null && empCode.trim().length() > 0) {
                 code = empCode.trim();
@@ -491,7 +491,7 @@ public class EmployeeServiceImp implements EmployeeService {
         String codeStr = pd.getString("code");
         if (codeStr != null && codeStr.trim().length() > 0) {
             code = codeStr.trim();
-        } else if (codeStr == null && codeStr.trim().length() == 0) {
+        } else if (codeStr == null || codeStr.trim().length() == 0) {
             String empCode = coderuleService.createCoder(companyId, "vmes_employee", "E");
             if (empCode != null && empCode.trim().length() > 0) {
                 code = empCode.trim();
