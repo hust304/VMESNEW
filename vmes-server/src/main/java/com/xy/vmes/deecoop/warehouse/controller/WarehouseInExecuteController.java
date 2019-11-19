@@ -108,6 +108,7 @@ public class WarehouseInExecuteController {
         result.put("hideTitles",titleMap.get("hideTitles"));
         result.put("titles",titleMap.get("titles"));
         result.put("varList",varMapList);
+        model.putResult(result);
 
         Long endTime = System.currentTimeMillis();
         logger.info("################/warehouse/warehouseInExecute/findWarehouseInExecuteByBySimple 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
