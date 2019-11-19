@@ -176,10 +176,16 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
 
     @Override
     public List<Map> getDataListPageDispatch(PageData pd, Pagination pg) throws Exception{
-        if(pg==null){
-            pg =  HttpUtils.parsePagination(pd);
+        List<Map> mapList = new ArrayList<Map>();
+        if (pd == null) {return mapList;}
+
+        if (pg == null) {
+            return warehouseProductMapper.getDataListPageDispatch(pd);
+        } else if (pg != null) {
+            return warehouseProductMapper.getDataListPageDispatch(pd, pg);
         }
-        return warehouseProductMapper.getDataListPageDispatch(pd, pg);
+
+        return mapList;
     }
     public List<Map> getDataListPageDispatch(PageData pd) throws Exception{
         return warehouseProductMapper.getDataListPageDispatch(pd);
@@ -1919,19 +1925,14 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
         result.put("hideTitles",titleMap.get("hideTitles"));
         result.put("titles",titleMap.get("titles"));
         result.put("varList",varMapList);
-        result.put("pageData", pg);
         model.putResult(result);
         return model;
     }
 
     @Override
-    public ResultModel listPageWarehouseProductsDispatchOption(PageData pd, Pagination pg) throws Exception {
-        if(pg==null){
-            pg =  HttpUtils.parsePagination(pd);
-        }
+    public ResultModel listPageWarehouseProductsDispatchOption(PageData pd) throws Exception {
         ResultModel model = new ResultModel();
-
-        Map result = new HashMap();
+        Pagination pg = HttpUtils.parsePagination(pd);
 
         List<Column> columnList = columnService.findColumnList("WarehouseProductDispatchOption");
         if (columnList == null || columnList.size() == 0) {
@@ -1940,40 +1941,35 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
             return model;
         }
 
-        List<LinkedHashMap> titlesList = new ArrayList<LinkedHashMap>();
-        List<String> titlesHideList = new ArrayList<String>();
-        Map<String, String> varModelMap = new HashMap<String, String>();
-        if(columnList!=null&&columnList.size()>0){
-            for (Column column : columnList) {
-                if(column!=null){
-                    if("0".equals(column.getIshide())){
-                        titlesHideList.add(column.getTitleKey());
-                    }
-                    LinkedHashMap titlesLinkedMap = new LinkedHashMap();
-                    titlesLinkedMap.put(column.getTitleKey(),column.getTitleName());
-                    varModelMap.put(column.getTitleKey(),"");
-                    titlesList.add(titlesLinkedMap);
-                }
-            }
+        //获取指定栏位字符串-重新调整List<Column>
+        String fieldCode = pd.getString("fieldCode");
+        if (fieldCode != null && fieldCode.trim().length() > 0) {
+            columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
         }
-        result.put("hideTitles",titlesHideList);
-        result.put("titles",titlesList);
+        Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
 
-        List<Map> varMapList = new ArrayList();
-        List<Map> varList = this.getDataListPageDispatch(pd,pg);
-        if(varList!=null&&varList.size()>0){
-            for(int i=0;i<varList.size();i++){
-                Map map = varList.get(i);
-                Map<String, String> varMap = new HashMap<String, String>();
-                varMap.putAll(varModelMap);
-                for (Map.Entry<String, String> entry : varMap.entrySet()) {
-                    varMap.put(entry.getKey(),map.get(entry.getKey())!=null?map.get(entry.getKey()).toString():"");
-                }
-                varMapList.add(varMap);
-            }
+        String notInIds = pd.getString("notInIds");
+        if (notInIds != null && notInIds.trim().length() > 0) {
+            notInIds = StringUtil.stringTrimSpace(notInIds);
+            notInIds = "'" + notInIds.replace(",", "','") + "'";
+            pd.put("notInIds", notInIds);
         }
+
+        //是否需要分页 true:需要分页 false:不需要分页
+        Map result = new HashMap();
+        String isNeedPage = pd.getString("isNeedPage");
+        if ("false".equals(isNeedPage)) {
+            pg = null;
+        } else {
+            result.put("pageData", pg);
+        }
+
+        List<Map> varList = this.getDataListPageDispatch(pd, pg);
+        List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
+
+        result.put("hideTitles",titleMap.get("hideTitles"));
+        result.put("titles",titleMap.get("titles"));
         result.put("varList",varMapList);
-        result.put("pageData", pg);
 
         model.putResult(result);
         return model;

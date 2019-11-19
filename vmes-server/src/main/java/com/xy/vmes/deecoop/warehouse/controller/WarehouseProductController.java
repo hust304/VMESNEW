@@ -305,8 +305,7 @@ public class WarehouseProductController {
         logger.info("################warehouseProduct/listPageWarehouseProductsDispatchOption 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         PageData pd = HttpUtils.parsePageData();
-        Pagination pg = HttpUtils.parsePagination(pd);
-        ResultModel model = warehouseProductService.listPageWarehouseProductsDispatchOption(pd,pg);
+        ResultModel model = warehouseProductService.listPageWarehouseProductsDispatchOption(pd);
         Long endTime = System.currentTimeMillis();
         logger.info("################warehouseProduct/listPageWarehouseProductsDispatchOption 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;

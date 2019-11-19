@@ -282,7 +282,7 @@ public interface WarehouseProductService {
 
     ResultModel listPageWarehouseProductsDispatch(PageData pd, Pagination pg) throws Exception;
 
-    ResultModel listPageWarehouseProductsDispatchOption(PageData pd, Pagination pg) throws Exception;
+    ResultModel listPageWarehouseProductsDispatchOption(PageData pd) throws Exception;
 
     ResultModel listPageWarehouseProductsDispatchOptionBySimple(PageData pd) throws Exception;
     ResultModel listPageWarehouseToWarehouseProductBySimple(PageData pd) throws Exception;
