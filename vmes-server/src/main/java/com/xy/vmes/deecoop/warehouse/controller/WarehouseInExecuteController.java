@@ -1,6 +1,7 @@
 package com.xy.vmes.deecoop.warehouse.controller;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.entity.*;
 import com.xy.vmes.service.*;
 import com.yvan.HttpUtils;
@@ -16,6 +17,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 说明：入库派单明细执行
@@ -31,6 +36,9 @@ public class WarehouseInExecuteController {
     private WarehouseInExecuteService warehouseInExecuteService;
     @Autowired
     private ProductService productService;
+
+    @Autowired
+    private ColumnService columnService;
 
     /**
      * 入库单执行
@@ -63,6 +71,46 @@ public class WarehouseInExecuteController {
         ResultModel model = warehouseInExecuteService.findListWarehouseInExecuteByEdit(pd,pg);
         Long endTime = System.currentTimeMillis();
         logger.info("################warehouseInExecute/findListWarehouseInExecuteByEdit 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * (简版)入库执行
+     * @return
+     * @throws Exception
+     */
+    @PostMapping("/warehouse/warehouseInExecute/findWarehouseInExecuteByBySimple")
+    public ResultModel findWarehouseInExecuteByBySimple() throws Exception {
+        logger.info("################/warehouse/warehouseInExecute/findWarehouseInExecuteByBySimple 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+
+        List<Column> columnList = columnService.findColumnList("warehouseInExecutorByAddExecute");
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
+        }
+
+        //获取指定栏位字符串-重新调整List<Column>
+        String fieldCode = pd.getString("fieldCode");
+        if (fieldCode != null && fieldCode.trim().length() > 0) {
+            columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
+        }
+        Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
+
+        Map result = new HashMap();
+        List<Map> varList = new ArrayList();
+        List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
+
+        result.put("hideTitles",titleMap.get("hideTitles"));
+        result.put("titles",titleMap.get("titles"));
+        result.put("varList",varMapList);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/warehouse/warehouseInExecute/findWarehouseInExecuteByBySimple 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
