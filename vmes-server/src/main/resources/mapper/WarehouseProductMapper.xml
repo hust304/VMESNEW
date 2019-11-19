@@ -481,6 +481,16 @@
                 and wp.company_id = #{currentCompanyId}
             </if>
 
+            <!--stockCountQuery 库存数量查询-->
+            <!--stockCountQuery:stockCountGreaterThanZero 库存数量大于零-->
+            <if test="'stockCountGreaterThanZero' == stockCountQuery">
+                and wp.stock_count > 0
+            </if>
+            <!--stockCountQuery 库存数量查询-->
+            <!--stockCountQuery:stockCountZero 库存数量等于零-->
+            <if test="'stockCountZero' == stockCountQuery">
+                and wp.stock_count = 0
+            </if>
 
             <if test="warehouseIsdisable != null and warehouseIsdisable != ''">
                 and warehouse.isdisable = #{warehouseIsdisable}
