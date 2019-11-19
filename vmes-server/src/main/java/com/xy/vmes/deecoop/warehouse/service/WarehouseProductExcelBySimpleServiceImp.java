@@ -1010,10 +1010,9 @@ public class WarehouseProductExcelBySimpleServiceImp implements WarehouseProduct
             String mapKey = (String)iterator_1.next();
 
             //获取批次号
-            //PC+yyyyMMdd+00001 = 15位
-            String code = coderuleService.createCoderCdateByDate(companyId,
+            //PC+yyyy最后2位+00001 = 13位
+            String code = coderuleService.createCoderCdateOnShortYearByDate(companyId,
                     "vmes_product_pc",
-                    "yyyyMMdd",
                     "PC");
 
             productPCCodeMap.put(mapKey, code);
