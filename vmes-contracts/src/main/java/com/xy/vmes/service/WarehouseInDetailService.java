@@ -150,7 +150,7 @@ public interface WarehouseInDetailService {
 
     ResultModel listPageWarehouseInDetail(PageData pd, Pagination pg) throws Exception;
 
-    ResultModel listPageDetailProduct(PageData pd, Pagination pg) throws Exception;
+    ResultModel listPageDetailProduct(PageData pd) throws Exception;
 
     ResultModel cancelWarehouseInDetail(PageData pageData) throws Exception;
 

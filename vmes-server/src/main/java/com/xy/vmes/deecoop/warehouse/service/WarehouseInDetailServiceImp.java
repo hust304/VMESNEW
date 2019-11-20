@@ -876,10 +876,8 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
 
 
     @Override
-    public ResultModel listPageDetailProduct(PageData pd, Pagination pg) throws Exception {
-        if(pg==null){
-            pg =  HttpUtils.parsePagination(pd);
-        }
+    public ResultModel listPageDetailProduct(PageData pd) throws Exception {
+        Pagination pg = HttpUtils.parsePagination(pd);
         ResultModel model = new ResultModel();
 
         List<Column> columnList = columnService.findColumnList("warehouseInDetailProduct");
@@ -906,6 +904,15 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
         } else {
             String parentId = pd.getString("parentId");
             findMap.put("parentId", parentId);
+        }
+
+        //是否需要分页 true:需要分页 false:不需要分页
+        Map result = new HashMap();
+        String isNeedPage = pd.getString("isNeedPage");
+        if ("false".equals(isNeedPage)) {
+            pg = null;
+        } else {
+            result.put("pageData", pg);
         }
 
         List<Map> varList = this.getDataListPage(findMap, pg);
@@ -935,11 +942,9 @@ public class WarehouseInDetailServiceImp implements WarehouseInDetailService {
 
         List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
 
-        Map result = new HashMap();
         result.put("hideTitles",titleMap.get("hideTitles"));
         result.put("titles",titleMap.get("titles"));
         result.put("varList",varMapList);
-        result.put("pageData", pg);
 
         model.putResult(result);
         return model;

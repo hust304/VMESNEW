@@ -60,7 +60,7 @@ public class WarehouseInDetailController {
         Long startTime = System.currentTimeMillis();
         PageData pd = HttpUtils.parsePageData();
         Pagination pg = HttpUtils.parsePagination(pd);
-        ResultModel model = warehouseInDetailService.listPageDetailProduct(pd,pg);
+        ResultModel model = warehouseInDetailService.listPageDetailProduct(pd);
         Long endTime = System.currentTimeMillis();
         logger.info("################/warehouseInDetail/listPageDetailProduct 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
