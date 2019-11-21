@@ -568,7 +568,7 @@
                 detail.product_count productCount,
                 detail.price_unit priceUnit,
                 detail.price_count priceCount,
-                round(ifnull(detail.price, 0), 2) price,
+                ifnull(detail.price, 0) price,
                 round(ifnull(detail.product_price, 0), 2)  productPrice,
 
                 round((ifnull(detail.price_count, 0) * ifnull(detail.price, 0)), 2) priceSum,

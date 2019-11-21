@@ -255,7 +255,7 @@
             ifnull(a.product_count, 0) productCount,
             a.price_unit priceUnit,
             ifnull(a.price_count, 0) priceCount,
-            round(ifnull(a.price, 0), 2) price,
+            ifnull(a.price, 0) price,
             round(ifnull(a.product_price, 0), 2)  productPrice,
 
             round((ifnull(a.price_count, 0) * ifnull(a.price, 0)), 2) priceSum,

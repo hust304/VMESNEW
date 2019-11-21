@@ -303,7 +303,7 @@ public class WarehouseOutDetailServiceImp implements WarehouseOutDetailService {
                 try {
                     BigDecimal price = new BigDecimal(priceStr);
                     //四舍五入到2位小数
-                    price = price.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                    //price = price.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
                     detail.setPrice(price);
 
                     //货品金额： 单据单位(出库数量) * 单据货品单价
