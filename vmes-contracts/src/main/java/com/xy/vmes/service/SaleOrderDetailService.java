@@ -190,6 +190,18 @@ public interface SaleOrderDetailService {
     String findParentStateByDetailList(List<SaleOrderDetail> dtlList);
     SaleOrder findParentStateByDetailList(SaleOrder parent, List<SaleOrderDetail> dtlList);
 
+
+    /**
+     * 获取订单状态-根据订单明细状态
+     * 订单状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
+     * 订单明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
+     *
+     * @param dtlList      订单明细List<SaleOrderDetail>
+     * @return
+     */
+    String findParentStateByDetail(List<SaleOrderDetail> dtlList);
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ResultModel listPageSaleOrderDetail(PageData pd, Pagination pg) throws Exception;
 
     ResultModel cancelSaleOrderDetail(PageData pageData)  throws Exception;

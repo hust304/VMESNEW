@@ -895,6 +895,67 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
         return parent;
     }
 
+    /**
+     * 获取订单状态-根据订单明细状态
+     * 订单状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
+     * 订单明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:` 5:已完成(发货) -1:已取消)
+     *
+     * @param dtlList      订单明细List<SaleOrderDetail>
+     * @return
+     */
+    public String findParentStateByDetail(List<SaleOrderDetail> dtlList) {
+        if (dtlList == null || dtlList.size() == 0) {return null;}
+
+        //订单明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成(发货) -1:已取消)
+        int dtl_dtj = 0;  //0:待提交
+        int dtl_dsh = 0;  //1:待审核
+        int dtl_dsc = 0;  //2:待生产
+        int dtl_dck = 0;  //3:待出库
+        int dtl_dfh = 0;  //4:待发货
+        int dtl_ywc = 0;  //5:已完成(发货)
+        int dtl_yqx = 0;  //-1:已取消
+        //由各自业务更改--(0:待提交 1:待审核 2:待生产 3:待出库 )
+
+        //明细变更状态(4:待发货 5:已完成 -1:已取消)
+        for (SaleOrderDetail dtlObject : dtlList) {
+            if ("-1".equals(dtlObject.getState())) {
+                dtl_yqx = dtl_yqx + 1;
+            } else if ("0".equals(dtlObject.getState())) {
+                dtl_dtj = dtl_dtj + 1;
+            } else if ("1".equals(dtlObject.getState())) {
+                dtl_dsh = dtl_dsh + 1;
+            } else if ("2".equals(dtlObject.getState())) {
+                dtl_dsc = dtl_dsc + 1;
+            } else if ("3".equals(dtlObject.getState())) {
+                dtl_dck = dtl_dck + 1;
+            } else if ("4".equals(dtlObject.getState())) {
+                dtl_dfh = dtl_dfh + 1;
+            } else if ("5".equals(dtlObject.getState())) {
+                dtl_ywc = dtl_ywc + 1;
+            }
+        }
+
+        //订单明细状态:-1:已取消 全是已取消状态  订单状态:-1:已取消
+        if (dtl_yqx > 0 && dtl_yqx == dtlList.size()) {
+            return "-1";
+
+            //订单明细状态:5:已完成(发货) 全是已完成(发货)状态  订单状态:3:已发货
+        } else if (dtl_ywc > 0 && dtl_yqx >= 0
+            && (dtl_dtj == 0 && dtl_dsh == 0 && dtl_dsc == 0 && dtl_dck == 0 && dtl_dfh == 0)
+        ) {
+            return "3";
+
+            //订单明细状态:4:待发货 订单明细中存在(一个或多个)待发货状态 订单状态:2:待发货
+            //订单明细状态:2:待生产 订单明细中存在(一个或多个)待生产状态 订单状态:2:待发货
+        } else if (dtl_dfh > 0 || dtl_dsc > 0) {
+            return "2";
+        }
+
+        return null;
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     @Override
     public ResultModel listPageSaleOrderDetail(PageData pd, Pagination pg) throws Exception {
         ResultModel model = new ResultModel();
@@ -1438,6 +1499,7 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
         return model;
     }
 
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //    @Override
 //    public void exportExcelSaleOrderDetails(PageData pd, Pagination pg) throws Exception {
 //        List<Column> columnList = columnService.findColumnList("saleOrderDetail");
