@@ -1420,6 +1420,12 @@ public class WarehouseOutDetailServiceImp implements WarehouseOutDetailService {
             model.putMsg("数据库没有生成TabCol，请联系管理员！");
             return model;
         }
+
+        String secondFieldCode = pd.getString("secondFieldCode");
+        if (secondFieldCode != null && secondFieldCode.trim().length() > 0) {
+            columnList = columnService.modifyColumnByFieldCode(secondFieldCode, columnList);
+        }
+
         //获取子节点表头
         Map childrenTitleMap = ColumnUtil.getTitleList(columnList);
 
