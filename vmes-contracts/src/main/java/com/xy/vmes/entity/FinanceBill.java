@@ -64,7 +64,15 @@ public class FinanceBill implements Serializable {
 	//审核时间
 	@TableField("sdate")
 	private Date sdate;
+	@TableField("period")
+	private String period;
 
+	public String getPeriod() {
+		return period;
+	}
+	public void setPeriod(String period) {
+		this.period = period;
+	}
 	public String getSuser() {
 		return suser;
 	}

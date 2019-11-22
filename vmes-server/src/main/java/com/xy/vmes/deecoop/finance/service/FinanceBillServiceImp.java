@@ -18,6 +18,8 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import org.springframework.web.multipart.MultipartFile;
@@ -391,12 +393,14 @@ public class FinanceBillServiceImp implements FinanceBillService {
         String currentCompanyId = pd.getString("currentCompanyId");
         String type = pd.getString("type");
 
-
+        SimpleDateFormat format = new SimpleDateFormat("yyyyMM");
+        String period = format.format(new Date());
         for (Map<String, String> mapObject : mapList) {
             String customerId = mapObject.get("id");
             FinanceBill financeBill = (FinanceBill) HttpUtils.pageData2Entity(mapObject, new FinanceBill());
             String code = coderuleService.createCoderCdateByDate(currentCompanyId,"vmes_finance_bill","yyyyMMdd","R");
             financeBill.setCode(code);
+            financeBill.setPeriod(period);
             financeBill.setCompanyId(currentCompanyId);
             financeBill.setCustomerId(customerId);
             financeBill.setType(type);
@@ -608,6 +612,132 @@ public class FinanceBillServiceImp implements FinanceBillService {
             return model;
         }
 
+        return model;
+    }
+
+
+
+    /**
+     * 创建人：刘威 自动创建，禁止修改
+     * 创建时间：2019-11-07
+     */
+    public List<Map> getFinanceReceiveView(PageData pd,Pagination pg) throws Exception{
+        List<Map> mapList = new ArrayList<Map>();
+        if (pd == null) {return mapList;}
+
+        if (pg == null) {
+            return financeBillMapper.getFinanceReceiveView(pd);
+        } else if (pg != null) {
+            return financeBillMapper.getFinanceReceiveView(pd,pg);
+        }
+
+        return mapList;
+    }
+
+    @Override
+    public ResultModel getFinanceReceiveView(PageData pd) throws Exception {
+        ResultModel model = new ResultModel();
+        List<Column> columnList = columnService.findColumnList("FinanceReceiveView");
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
+        }
+
+        //获取指定栏位字符串-重新调整List<Column>
+        String fieldCode = pd.getString("fieldCode");
+        if (fieldCode != null && fieldCode.trim().length() > 0) {
+            columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
+        }
+        Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
+
+        //设置查询排序方式
+        //pd.put("orderStr", "a.cdate asc");
+        String orderStr = pd.getString("orderStr");
+        if (orderStr != null && orderStr.trim().length() > 0) {
+            pd.put("orderStr", orderStr);
+        }
+
+        //是否需要分页 true:需要分页 false:不需要分页
+        Map result = new HashMap();
+        String isNeedPage = pd.getString("isNeedPage");
+        Pagination pg = HttpUtils.parsePagination(pd);
+        if ("false".equals(isNeedPage)) {
+            pg = null;
+        } else {
+            result.put("pageData", pg);
+        }
+
+        List<Map> varList = this.getFinanceReceiveView(pd,pg);
+        List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
+
+        result.put("hideTitles",titleMap.get("hideTitles"));
+        result.put("titles",titleMap.get("titles"));
+        result.put("varList",varMapList);
+        model.putResult(result);
+        return model;
+    }
+
+
+
+    /**
+     * 创建人：刘威 自动创建，禁止修改
+     * 创建时间：2019-11-07
+     */
+    public List<Map> getFinanceBillDetail(PageData pd,Pagination pg) throws Exception{
+        List<Map> mapList = new ArrayList<Map>();
+        if (pd == null) {return mapList;}
+
+        if (pg == null) {
+            return financeBillMapper.getFinanceBillDetail(pd);
+        } else if (pg != null) {
+            return financeBillMapper.getFinanceBillDetail(pd,pg);
+        }
+
+        return mapList;
+    }
+
+    @Override
+    public ResultModel getFinanceBillDetail(PageData pd) throws Exception {
+        ResultModel model = new ResultModel();
+        List<Column> columnList = columnService.findColumnList("FinanceBillDetail");
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
+        }
+
+        //获取指定栏位字符串-重新调整List<Column>
+        String fieldCode = pd.getString("fieldCode");
+        if (fieldCode != null && fieldCode.trim().length() > 0) {
+            columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
+        }
+        Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
+
+        //设置查询排序方式
+        //pd.put("orderStr", "a.cdate asc");
+        String orderStr = pd.getString("orderStr");
+        if (orderStr != null && orderStr.trim().length() > 0) {
+            pd.put("orderStr", orderStr);
+        }
+
+        //是否需要分页 true:需要分页 false:不需要分页
+        Map result = new HashMap();
+        String isNeedPage = pd.getString("isNeedPage");
+        Pagination pg = HttpUtils.parsePagination(pd);
+        if ("false".equals(isNeedPage)) {
+            pg = null;
+        } else {
+            result.put("pageData", pg);
+        }
+
+        List<Map> varList = this.getFinanceBillDetail(pd,pg);
+        List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
+
+        result.put("hideTitles",titleMap.get("hideTitles"));
+        result.put("titles",titleMap.get("titles"));
+        result.put("varList",varMapList);
+        model.putResult(result);
         return model;
     }
 }
