@@ -671,6 +671,12 @@ public class FinanceBillServiceImp implements FinanceBillService {
         List<Map> varList = this.getFinanceReceiveView(pd,pg);
         List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
 
+        Map<String,Object> receiveMap = financeBillMapper.getFinanceReceiveGroup(pd);
+        if(receiveMap!=null){
+            result.put("preReceiveAmount", receiveMap.get("preReceiveAmount"));
+            result.put("nowReceiveAmount", receiveMap.get("nowReceiveAmount"));
+        }
+
         result.put("hideTitles",titleMap.get("hideTitles"));
         result.put("titles",titleMap.get("titles"));
         result.put("varList",varMapList);

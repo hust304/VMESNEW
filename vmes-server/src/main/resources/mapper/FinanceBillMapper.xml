@@ -358,21 +358,19 @@
 
     <!-- 自动创建，可以修改 -->
     <select id="getFinanceBillDetail"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
+        select cdate,period,round(ifnull(receiveAmount,0),2) receiveAmount,round(ifnull(occurAmount,0),2) occurAmount,typeName,remark from
+        (
         select
-        customer.id customerId,
         DATE_FORMAT(bill.cdate,'%Y-%m-%d %T') cdate,
-        bill.id,
-        bill.type,
         bill.period,
-        case when bill.type='0' then round(ifnull(bill.amount,0),2) else null end receiveAmount ,
-        case when bill.type in ('2','3','4') then round(ifnull(bill.amount,0),2) else null end occurAmount ,
-        case  when bill.type='0' then '收款单' when bill.type='1' then '付款单' when bill.type='2' then '减免单' when bill.type='3' then '退款单'
+        case when bill.type='0' then bill.amount else null end receiveAmount ,
+        case when bill.type in ('2','3','4') then bill.amount else null end occurAmount ,
+        case when bill.type='0' then '收款单' when bill.type='1' then '付款单' when bill.type='2' then '减免单' when bill.type='3' then '退款单'
         when bill.type='4' then '发货账单' when bill.type='5' then '发退货账单' when bill.type='6' then '收货账单' when bill.type='7' then '收退货账单' else null end typeName,
         bill.remark
-        from vmes_finance_bill bill
-        left join vmes_customer customer  on customer.id = bill.customer_id
+        from vmes_customer customer
+        left join vmes_finance_bill bill on customer.id = bill.customer_id
         <where>
-
             and bill.type in ('0','2','3','4')
             and bill.state = '2'
             <if test='period != null and period != ""'>
@@ -388,7 +386,6 @@
             <if test='customerId != null and customerId != ""'>
                 and customer.id LIKE CONCAT(CONCAT('%', #{customerId}),'%')
             </if>
-
             <if test='customerCode != null and customerCode != ""'>
                 and customer.code LIKE CONCAT(CONCAT('%', #{customerCode}),'%')
             </if>
@@ -396,9 +393,40 @@
                 and customer.name LIKE CONCAT(CONCAT('%', #{customerName}),'%')
             </if>
         </where>
-        <if test='orderStr != null and orderStr != ""' >
-            order by ${orderStr}
-        </if>
+
+        union all
+
+        select
+        case when base.cdate is  null then DATE_FORMAT(NOW(),'%Y-%m-01 00:00:00') else DATE_FORMAT(base.cdate,'%Y-%m-01 00:00:00') end cdate,
+        case when base.period is  null then DATE_FORMAT(NOW(),'%Y%m') else base.period end period,
+        case when (select t.begin_plus from vmes_finance_history t where t.customer_id = customer.id and t.isdisable = '1' order by t.period desc LIMIT 1) > 0
+        then (select t.begin_plus from vmes_finance_history t where t.customer_id = customer.id and t.isdisable = '1' order by t.period desc LIMIT 1) when base.begin_plus > 0 then base.begin_plus else null end beginPlus,
+        case when (select t.begin_minus from vmes_finance_history t where t.customer_id = customer.id and t.isdisable = '1' order by t.period desc LIMIT 1) > 0
+        then (select t.begin_minus from vmes_finance_history t where t.customer_id = customer.id and t.isdisable = '1' order by t.period desc LIMIT 1) when base.begin_minus > 0 then base.begin_minus else null end beginMinus,
+        '上期结转' typeName,
+        case when base.remark is null then null else base.remark end remark
+        from vmes_customer customer
+        left join vmes_finance_base base on customer.id = base.customer_id and base.period = #{period}
+        <where>
+            <!--queryStr 自定义sql查询语句-->
+            <if test='queryStr != null and queryStr != ""' >
+                and ${queryStr}
+            </if>
+            <if test='customerId != null and customerId != ""'>
+                and customer.id LIKE CONCAT(CONCAT('%', #{customerId}),'%')
+            </if>
+            <if test='customerCode != null and customerCode != ""'>
+                and customer.code LIKE CONCAT(CONCAT('%', #{customerCode}),'%')
+            </if>
+            <if test='customerName != null and customerName != ""'>
+                and customer.name LIKE CONCAT(CONCAT('%', #{customerName}),'%')
+            </if>
+            <if test='currentCompanyId != null and currentCompanyId != ""'>
+                and customer.company_id = #{currentCompanyId}
+            </if>
+        </where>
+        ) tab
+        order by cdate asc
     </select>
 
 
@@ -410,6 +438,146 @@
         <![CDATA[ case when nowPlus-nowMinus+beginPlus-beginMinus<0 then round(ifnull(-(nowPlus-nowMinus+beginPlus-beginMinus),0),2) else 0.00 end endMinus ]]>,
         null overdue
         from (
+
+          select id,code,name,type,typeName,province,provinceName,currentPeriod,balance,accountDays,beginPlus,beginMinus,sum(nowPlus) nowPlus,sum(nowMinus) nowMinus from (
+            select
+            customer.id,
+            customer.code,
+            customer.name,
+            customer.type,
+            type.name typeName,
+            customer.province province,
+            province.name provinceName,
+            period.current_period currentPeriod,
+            round(ifnull(customer.balance,0),2) balance,
+            round(ifnull(customer.account_days,0),2) accountDays,
+
+
+            <![CDATA[
+            case when (select t.begin_plus from vmes_finance_history t where t.customer_id = customer.id and t.isdisable = '1' order by t.period desc LIMIT 1) > 0
+            then (select t.begin_plus from vmes_finance_history t where t.customer_id = customer.id and t.isdisable = '1' order by t.period desc LIMIT 1) when base.begin_plus > 0 then base.begin_plus else 0.00 end beginPlus   ,
+            case when (select t.begin_minus from vmes_finance_history t where t.customer_id = customer.id and t.isdisable = '1' order by t.period desc LIMIT 1) > 0
+            then (select t.begin_minus from vmes_finance_history t where t.customer_id = customer.id and t.isdisable = '1' order by t.period desc LIMIT 1) when base.begin_minus > 0 then base.begin_minus else 0.00 end beginMinus   ,
+            ]]>
+
+
+            0.0000 nowPlus,
+            ifnull(nowMinusBill.amount,0) nowMinus
+
+            from vmes_customer customer
+            left join vmes_dictionary type on customer.type = type.id
+            left join vmes_dictionary province on customer.province = province.id
+            left join vmes_finance_period period on period.company_id = customer.company_id
+            left join vmes_finance_base base on base.customer_id = customer.id and base.type = '0' and base.isdisable = '1' and base.period = period.current_period
+            left join vmes_finance_bill nowMinusBill on nowMinusBill.customer_id = customer.id and nowMinusBill.type in ('0') and nowMinusBill.state = '2' and nowMinusBill.isdisable = '1' and nowMinusBill.period = period.current_period
+
+
+            <where>
+                <!--客户  df7cb67fca4148bc9632c908e4a7fdea-->
+                <if test='genre != null and genre != ""'>
+                    and customer.genre LIKE CONCAT(CONCAT('%', #{genre}),'%')
+                </if>
+
+                <if test='code != null and code != ""'>
+                    and customer.code LIKE CONCAT(CONCAT('%', #{code}),'%')
+                </if>
+
+                <if test='name != null and name != ""'>
+                    and customer.name LIKE CONCAT(CONCAT('%', #{name}),'%')
+                </if>
+
+                <if test='currentPeriod != null and currentPeriod != ""'>
+                    and period.current_period LIKE CONCAT(CONCAT('%', #{currentPeriod}),'%')
+                </if>
+
+                <if test='currentCompanyId != null and currentCompanyId != ""'>
+                    and customer.company_id = #{currentCompanyId}
+                </if>
+                <!--queryStr 自定义sql查询语句-->
+                <if test='queryStr != null and queryStr != ""' >
+                    and ${queryStr}
+                </if>
+
+            </where>
+
+            union all
+
+            select
+            customer.id,
+            customer.code,
+            customer.name,
+            customer.type,
+            type.name typeName,
+            customer.province province,
+            province.name provinceName,
+            period.current_period currentPeriod,
+            round(ifnull(customer.balance,0),2) balance,
+            round(ifnull(customer.account_days,0),2) accountDays,
+
+
+            <![CDATA[
+                case when (select t.begin_plus from vmes_finance_history t where t.customer_id = customer.id and t.isdisable = '1' order by t.period desc LIMIT 1) > 0
+                then (select t.begin_plus from vmes_finance_history t where t.customer_id = customer.id and t.isdisable = '1' order by t.period desc LIMIT 1) when base.begin_plus > 0 then base.begin_plus else 0.00 end beginPlus   ,
+                case when (select t.begin_minus from vmes_finance_history t where t.customer_id = customer.id and t.isdisable = '1' order by t.period desc LIMIT 1) > 0
+                then (select t.begin_minus from vmes_finance_history t where t.customer_id = customer.id and t.isdisable = '1' order by t.period desc LIMIT 1) when base.begin_minus > 0 then base.begin_minus else 0.00 end beginMinus   ,
+                ]]>
+
+
+            ifnull(nowPlusBill.amount,0) nowPlus,
+            0.0000 nowMinus
+
+            from vmes_customer customer
+            left join vmes_dictionary type on customer.type = type.id
+            left join vmes_dictionary province on customer.province = province.id
+            left join vmes_finance_period period on period.company_id = customer.company_id
+            left join vmes_finance_base base on base.customer_id = customer.id and base.type = '0' and base.isdisable = '1' and base.period = period.current_period
+            left join vmes_finance_bill nowPlusBill on nowPlusBill.customer_id = customer.id and nowPlusBill.type in ('2','3','4') and nowPlusBill.state = '2' and nowPlusBill.isdisable = '1' and nowPlusBill.period = period.current_period
+
+
+            <where>
+                <!--客户  df7cb67fca4148bc9632c908e4a7fdea-->
+                <if test='genre != null and genre != ""'>
+                    and customer.genre LIKE CONCAT(CONCAT('%', #{genre}),'%')
+                </if>
+
+                <if test='code != null and code != ""'>
+                    and customer.code LIKE CONCAT(CONCAT('%', #{code}),'%')
+                </if>
+
+                <if test='name != null and name != ""'>
+                    and customer.name LIKE CONCAT(CONCAT('%', #{name}),'%')
+                </if>
+
+                <if test='currentPeriod != null and currentPeriod != ""'>
+                    and period.current_period LIKE CONCAT(CONCAT('%', #{currentPeriod}),'%')
+                </if>
+
+                <if test='currentCompanyId != null and currentCompanyId != ""'>
+                    and customer.company_id = #{currentCompanyId}
+                </if>
+                <!--queryStr 自定义sql查询语句-->
+                <if test='queryStr != null and queryStr != ""' >
+                    and ${queryStr}
+                </if>
+
+            </where>
+
+          ) t
+        group by t.id
+        )tab
+    </select>
+
+
+
+
+    <!-- 自动创建，可以修改 -->
+    <select id="getFinanceReceiveGroup"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
+        select
+        <![CDATA[ sum(case when nowPlus-nowMinus+beginPlus-beginMinus>0 then round(ifnull(nowPlus-nowMinus+beginPlus-beginMinus,0),2) else 0.00 end) nowReceiveAmount ]]>,
+        <![CDATA[ sum(case when nowPlus-nowMinus+beginPlus-beginMinus<0 then round(ifnull(-(nowPlus-nowMinus+beginPlus-beginMinus),0),2) else 0.00 end) preReceiveAmount ]]>
+        from (
+
+        select id,code,name,type,typeName,province,provinceName,currentPeriod,balance,accountDays,beginPlus,beginMinus,sum(nowPlus) nowPlus,sum(nowMinus) nowMinus from (
         select
         customer.id,
         customer.code,
@@ -424,23 +592,22 @@
 
 
         <![CDATA[
-        case when (select t.begin_plus from vmes_finance_history t where t.customer_id = customer.id and t.isdisable = '1' order by t.period desc LIMIT 1) > 0
-        then (select t.begin_plus from vmes_finance_history t where t.customer_id = customer.id and t.isdisable = '1' order by t.period desc LIMIT 1) when base.begin_plus > 0 then base.begin_plus else 0.00 end beginPlus   ,
-        case when (select t.begin_minus from vmes_finance_history t where t.customer_id = customer.id and t.isdisable = '1' order by t.period desc LIMIT 1) > 0
-        then (select t.begin_minus from vmes_finance_history t where t.customer_id = customer.id and t.isdisable = '1' order by t.period desc LIMIT 1) when base.begin_minus > 0 then base.begin_minus else 0.00 end beginMinus   ,
-        ]]>
+            case when (select t.begin_plus from vmes_finance_history t where t.customer_id = customer.id and t.isdisable = '1' order by t.period desc LIMIT 1) > 0
+            then (select t.begin_plus from vmes_finance_history t where t.customer_id = customer.id and t.isdisable = '1' order by t.period desc LIMIT 1) when base.begin_plus > 0 then base.begin_plus else 0.00 end beginPlus   ,
+            case when (select t.begin_minus from vmes_finance_history t where t.customer_id = customer.id and t.isdisable = '1' order by t.period desc LIMIT 1) > 0
+            then (select t.begin_minus from vmes_finance_history t where t.customer_id = customer.id and t.isdisable = '1' order by t.period desc LIMIT 1) when base.begin_minus > 0 then base.begin_minus else 0.00 end beginMinus   ,
+            ]]>
 
 
-        sum(ifnull(nowPlusBill.amount,0)) nowPlus,
-        sum(ifnull(nowMinusBill.amount,0)) nowMinus
+        0.0000 nowPlus,
+        ifnull(nowMinusBill.amount,0) nowMinus
 
         from vmes_customer customer
         left join vmes_dictionary type on customer.type = type.id
         left join vmes_dictionary province on customer.province = province.id
         left join vmes_finance_period period on period.company_id = customer.company_id
         left join vmes_finance_base base on base.customer_id = customer.id and base.type = '0' and base.isdisable = '1' and base.period = period.current_period
-        left join vmes_finance_bill nowPlusBill on nowPlusBill.customer_id = customer.id and nowPlusBill.type = '0' and nowPlusBill.state = '2' and nowPlusBill.isdisable = '1' and nowPlusBill.period = period.current_period
-        left join vmes_finance_bill nowMinusBill on nowMinusBill.customer_id = customer.id and nowMinusBill.type in ('2','3','4') and nowMinusBill.state = '2' and nowMinusBill.isdisable = '1' and nowMinusBill.period = period.current_period
+        left join vmes_finance_bill nowMinusBill on nowMinusBill.customer_id = customer.id and nowMinusBill.type in ('0') and nowMinusBill.state = '2' and nowMinusBill.isdisable = '1' and nowMinusBill.period = period.current_period
 
 
         <where>
@@ -448,19 +615,6 @@
             <if test='genre != null and genre != ""'>
                 and customer.genre LIKE CONCAT(CONCAT('%', #{genre}),'%')
             </if>
-
-            <if test='code != null and code != ""'>
-                and customer.code LIKE CONCAT(CONCAT('%', #{code}),'%')
-            </if>
-
-            <if test='name != null and name != ""'>
-                and customer.name LIKE CONCAT(CONCAT('%', #{name}),'%')
-            </if>
-
-            <if test='currentPeriod != null and currentPeriod != ""'>
-                and period.current_period LIKE CONCAT(CONCAT('%', #{currentPeriod}),'%')
-            </if>
-
             <if test='currentCompanyId != null and currentCompanyId != ""'>
                 and customer.company_id = #{currentCompanyId}
             </if>
@@ -471,10 +625,59 @@
 
         </where>
 
-        group by customer.id
+        union all
+
+        select
+        customer.id,
+        customer.code,
+        customer.name,
+        customer.type,
+        type.name typeName,
+        customer.province province,
+        province.name provinceName,
+        period.current_period currentPeriod,
+        round(ifnull(customer.balance,0),2) balance,
+        round(ifnull(customer.account_days,0),2) accountDays,
+
+
+        <![CDATA[
+                case when (select t.begin_plus from vmes_finance_history t where t.customer_id = customer.id and t.isdisable = '1' order by t.period desc LIMIT 1) > 0
+                then (select t.begin_plus from vmes_finance_history t where t.customer_id = customer.id and t.isdisable = '1' order by t.period desc LIMIT 1) when base.begin_plus > 0 then base.begin_plus else 0.00 end beginPlus   ,
+                case when (select t.begin_minus from vmes_finance_history t where t.customer_id = customer.id and t.isdisable = '1' order by t.period desc LIMIT 1) > 0
+                then (select t.begin_minus from vmes_finance_history t where t.customer_id = customer.id and t.isdisable = '1' order by t.period desc LIMIT 1) when base.begin_minus > 0 then base.begin_minus else 0.00 end beginMinus   ,
+                ]]>
+
+
+        ifnull(nowPlusBill.amount,0) nowPlus,
+        0.0000 nowMinus
+
+        from vmes_customer customer
+        left join vmes_dictionary type on customer.type = type.id
+        left join vmes_dictionary province on customer.province = province.id
+        left join vmes_finance_period period on period.company_id = customer.company_id
+        left join vmes_finance_base base on base.customer_id = customer.id and base.type = '0' and base.isdisable = '1' and base.period = period.current_period
+        left join vmes_finance_bill nowPlusBill on nowPlusBill.customer_id = customer.id and nowPlusBill.type in ('2','3','4') and nowPlusBill.state = '2' and nowPlusBill.isdisable = '1' and nowPlusBill.period = period.current_period
+
+
+        <where>
+            <!--客户  df7cb67fca4148bc9632c908e4a7fdea-->
+            <if test='genre != null and genre != ""'>
+                and customer.genre LIKE CONCAT(CONCAT('%', #{genre}),'%')
+            </if>
+            <if test='currentCompanyId != null and currentCompanyId != ""'>
+                and customer.company_id = #{currentCompanyId}
+            </if>
+            <!--queryStr 自定义sql查询语句-->
+            <if test='queryStr != null and queryStr != ""' >
+                and ${queryStr}
+            </if>
+
+        </where>
+
+        ) t
+        group by t.id
         )tab
     </select>
-
 
 
 </mapper>
