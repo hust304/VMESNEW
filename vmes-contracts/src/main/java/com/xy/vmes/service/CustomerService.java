@@ -152,6 +152,18 @@ public interface CustomerService {
 
 //    Map<String,Object> getReceiveAmount(PageData pd) throws Exception;
 
+    /**
+     * (客户,供应商)名称在表中是否存在
+     *
+     * @param id        主键id
+     * @param genre     属性id
+     * @param companyId 企业id
+     * @param name      (客户,供应商)名称
+     * @return
+     */
+    boolean isExistByName(String id, String genre, String companyId, String name);
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //    ResultModel addCustomerBalance(PageData pd)throws Exception;
 //
 //    ResultModel updateCustomerBalancee(PageData pd) throws Exception;
