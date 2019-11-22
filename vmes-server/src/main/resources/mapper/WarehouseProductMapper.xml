@@ -1151,6 +1151,11 @@
             <if test="'stockCountZero' == stockCountQuery">
                 and product.stock_count = 0
             </if>
+            <!--stockCountQuery 库存数量查询-->
+            <!--stockCountQuery:stockCountNotZero 库存数量不等于零-->
+            <if test="'stockCountNotZero' == stockCountQuery">
+                <![CDATA[ and wp.stock_count <> 0 ]]>
+            </if>
             <if test="'true' == isStockCountGreaterThanZero">
                 <![CDATA[ and product.stock_count > 0 ]]>
             </if>
