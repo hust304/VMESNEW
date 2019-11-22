@@ -87,6 +87,16 @@ public interface FinanceBillMapper extends BaseMapper<FinanceBill> {
     */
     void updateByDefined(PageData pd);
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+
+
+    List<Map> getFinanceReceiveView(PageData pd, Pagination pg);
+
+    List<Map> getFinanceReceiveView(PageData pd);
+
+
+    List<Map> getFinanceBillDetail(PageData pd, Pagination pg);
+
+    List<Map> getFinanceBillDetail(PageData pd);
 }
 
 

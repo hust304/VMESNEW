@@ -164,6 +164,30 @@
             (replace(uuid(), '-', ''),'FinanceBill','isdisable','是否启用',14, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'FinanceBill','state','状态',15, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'FinanceBill','id','id',0, '1','1','1','0',now(), 'admin')
+
+
+
+
+        delete from vmes_column where model_code = 'FinanceReceiveView' ;
+        insert into vmes_column (
+        id,model_code,title_key,title_name,serial_number,
+        isdisable,ishide,isedit,ismust,cdate,
+        cuser
+        ) VALUES
+            (replace(uuid(), '-', ''),'FinanceReceiveView','code','客户编码',1, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'FinanceReceiveView','name','客户名称',2, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'FinanceReceiveView','typeName','客户类型',3, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'FinanceReceiveView','currentPeriod','期间',4, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'FinanceReceiveView','accountDays','账期（天）',5, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'FinanceReceiveView','beginPlus','应收款（期初）',6, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'FinanceReceiveView','beginMinus','预收款（期初）',7, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'FinanceReceiveView','nowPlus','发生额（本期）',8, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'FinanceReceiveView','nowMinus','收款金额（本期）',9, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'FinanceReceiveView','endPlus','应收款（当前）',10, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'FinanceReceiveView','endMinus','预收款（当前）',11, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'FinanceReceiveView','overdue','逾期货款',12, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'FinanceReceiveView','id','id',0, '1','1','1','0',now(), 'admin')
+
     </insert>
 
 
@@ -287,7 +311,7 @@
         case when bill.state='0'then '待提交' when bill.state='1' then '待审核' when bill.state='2' then '已审核'
         when bill.state='-1' then '已取消'  else null end stateName,
         bill.type,
-        case when bill.type='0' then '收款单' when bill.type='1' then '付款单' when bill.type='2' then '减免单' when bill.type='3' then '退款单'
+        case  when bill.type='0' then '收款单' when bill.type='1' then '付款单' when bill.type='2' then '减免单' when bill.type='3' then '退款单'
         when bill.type='4' then '发货账单' when bill.type='5' then '发退货账单' when bill.type='6' then '收货账单' when bill.type='7' then '收退货账单' else null end typeName,
         bill.remark
         from vmes_finance_bill bill
@@ -329,6 +353,127 @@
         </if>
     </select>
 
+
+
+
+    <!-- 自动创建，可以修改 -->
+    <select id="getFinanceBillDetail"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
+        select
+        customer.id customerId,
+        DATE_FORMAT(bill.cdate,'%Y-%m-%d %T') cdate,
+        bill.id,
+        bill.type,
+        bill.period,
+        case when bill.type='0' then round(ifnull(bill.amount,0),2) else null end receiveAmount ,
+        case when bill.type in ('2','3','4') then round(ifnull(bill.amount,0),2) else null end occurAmount ,
+        case  when bill.type='0' then '收款单' when bill.type='1' then '付款单' when bill.type='2' then '减免单' when bill.type='3' then '退款单'
+        when bill.type='4' then '发货账单' when bill.type='5' then '发退货账单' when bill.type='6' then '收货账单' when bill.type='7' then '收退货账单' else null end typeName,
+        bill.remark
+        from vmes_finance_bill bill
+        left join vmes_customer customer  on customer.id = bill.customer_id
+        <where>
+
+            and bill.type in ('0','2','3','4')
+            and bill.state = '2'
+            <if test='period != null and period != ""'>
+                and bill.period = #{period}
+            </if>
+            <if test='currentCompanyId != null and currentCompanyId != ""'>
+                and bill.company_id = #{currentCompanyId}
+            </if>
+            <!--queryStr 自定义sql查询语句-->
+            <if test='queryStr != null and queryStr != ""' >
+                and ${queryStr}
+            </if>
+            <if test='customerId != null and customerId != ""'>
+                and customer.id LIKE CONCAT(CONCAT('%', #{customerId}),'%')
+            </if>
+
+            <if test='customerCode != null and customerCode != ""'>
+                and customer.code LIKE CONCAT(CONCAT('%', #{customerCode}),'%')
+            </if>
+            <if test='customerName != null and customerName != ""'>
+                and customer.name LIKE CONCAT(CONCAT('%', #{customerName}),'%')
+            </if>
+        </where>
+        <if test='orderStr != null and orderStr != ""' >
+            order by ${orderStr}
+        </if>
+    </select>
+
+
+
+    <!-- 自动创建，可以修改 -->
+    <select id="getFinanceReceiveView"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
+        select id,code,name,type,typeName,province,currentPeriod,balance,accountDays,round(ifnull(beginPlus,0),2) beginPlus,round(ifnull(beginMinus,0),2) beginMinus,round(ifnull(nowPlus,0),2) nowPlus,round(ifnull(nowMinus,0),2) nowMinus,
+        <![CDATA[ case when nowPlus-nowMinus+beginPlus-beginMinus>0 then round(ifnull(nowPlus-nowMinus+beginPlus-beginMinus,0),2) else 0.00 end endPlus ]]>,
+        <![CDATA[ case when nowPlus-nowMinus+beginPlus-beginMinus<0 then round(ifnull(-(nowPlus-nowMinus+beginPlus-beginMinus),0),2) else 0.00 end endMinus ]]>,
+        null overdue
+        from (
+        select
+        customer.id,
+        customer.code,
+        customer.name,
+        customer.type,
+        type.name typeName,
+        customer.province province,
+        province.name provinceName,
+        period.current_period currentPeriod,
+        round(ifnull(customer.balance,0),2) balance,
+        round(ifnull(customer.account_days,0),2) accountDays,
+
+
+        <![CDATA[
+        case when (select t.begin_plus from vmes_finance_history t where t.customer_id = customer.id and t.isdisable = '1' order by t.period desc LIMIT 1) > 0
+        then (select t.begin_plus from vmes_finance_history t where t.customer_id = customer.id and t.isdisable = '1' order by t.period desc LIMIT 1) when base.begin_plus > 0 then base.begin_plus else 0.00 end beginPlus   ,
+        case when (select t.begin_minus from vmes_finance_history t where t.customer_id = customer.id and t.isdisable = '1' order by t.period desc LIMIT 1) > 0
+        then (select t.begin_minus from vmes_finance_history t where t.customer_id = customer.id and t.isdisable = '1' order by t.period desc LIMIT 1) when base.begin_minus > 0 then base.begin_minus else 0.00 end beginMinus   ,
+        ]]>
+
+
+        sum(ifnull(nowPlusBill.amount,0)) nowPlus,
+        sum(ifnull(nowMinusBill.amount,0)) nowMinus
+
+        from vmes_customer customer
+        left join vmes_dictionary type on customer.type = type.id
+        left join vmes_dictionary province on customer.province = province.id
+        left join vmes_finance_period period on period.company_id = customer.company_id
+        left join vmes_finance_base base on base.customer_id = customer.id and base.type = '0' and base.isdisable = '1' and base.period = period.current_period
+        left join vmes_finance_bill nowPlusBill on nowPlusBill.customer_id = customer.id and nowPlusBill.type = '0' and nowPlusBill.state = '2' and nowPlusBill.isdisable = '1' and nowPlusBill.period = period.current_period
+        left join vmes_finance_bill nowMinusBill on nowMinusBill.customer_id = customer.id and nowMinusBill.type in ('2','3','4') and nowMinusBill.state = '2' and nowMinusBill.isdisable = '1' and nowMinusBill.period = period.current_period
+
+
+        <where>
+            <!--客户  df7cb67fca4148bc9632c908e4a7fdea-->
+            <if test='genre != null and genre != ""'>
+                and customer.genre LIKE CONCAT(CONCAT('%', #{genre}),'%')
+            </if>
+
+            <if test='code != null and code != ""'>
+                and customer.code LIKE CONCAT(CONCAT('%', #{code}),'%')
+            </if>
+
+            <if test='name != null and name != ""'>
+                and customer.name LIKE CONCAT(CONCAT('%', #{name}),'%')
+            </if>
+
+            <if test='currentPeriod != null and currentPeriod != ""'>
+                and period.current_period LIKE CONCAT(CONCAT('%', #{currentPeriod}),'%')
+            </if>
+
+            <if test='currentCompanyId != null and currentCompanyId != ""'>
+                and customer.company_id = #{currentCompanyId}
+            </if>
+            <!--queryStr 自定义sql查询语句-->
+            <if test='queryStr != null and queryStr != ""' >
+                and ${queryStr}
+            </if>
+
+        </where>
+
+        group by customer.id
+        )tab
+    </select>
 
 
 

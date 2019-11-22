@@ -171,6 +171,10 @@ public interface FinanceBillService {
     ResultModel eidtFinanceBill(PageData pd) throws Exception;
 
     ResultModel comfirmFinanceBill(PageData pd) throws Exception;
+
+    ResultModel getFinanceReceiveView(PageData pd) throws Exception;
+
+    ResultModel getFinanceBillDetail(PageData pd) throws Exception;
 }
 
 
