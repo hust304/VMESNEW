@@ -708,7 +708,7 @@ public class CustomerServiceImp implements CustomerService {
 
         //2. 名称是否存在
         if (customerService.isExistByName(id, genre, companyId, name)) {
-            String msgTemp = "{0}名称{1}在系统中已经存在！";
+            String msgTemp = "{0}名称({1})在系统中已经存在！";
             String msgExist = MessageFormat.format(msgTemp,
                     genreName,
                     name);
