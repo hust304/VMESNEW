@@ -362,6 +362,36 @@ public class CustomerServiceImp implements CustomerService {
         return  customerMapper.getReceiveAmount(pd);
     }
 
+    /**
+     * (客户,供应商)名称在表中是否存在
+     *
+     * @param id        主键id
+     * @param genre     属性id
+     * @param companyId 企业id
+     * @param name      (客户,供应商)名称
+     * @return
+     */
+    public boolean isExistByName(String id, String genre, String companyId, String name) {
+        if (name == null || name.trim().length() == 0) {return false;}
+
+        PageData findMap = new PageData();
+        if (id != null && id.trim().length() > 0) {
+            findMap.put("id", id);
+            findMap.put("isSelfExist", "true");
+        }
+        findMap.put("companyId", companyId);
+        findMap.put("genre", genre);
+        findMap.put("name", name);
+        //是否禁用(0:已禁用 1:启用)
+        findMap.put("isdisable", "1");
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+
+        Customer object = findCustomer(findMap);
+        if (object != null) {return true;}
+
+        return false;
+    }
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //    @Override
 //    public ResultModel addCustomerBalance(PageData pd) throws Exception {
 //        ResultModel model = new ResultModel();
@@ -648,6 +678,42 @@ public class CustomerServiceImp implements CustomerService {
         if (name == null || name.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("名称输入为空或空字符串，名称为必填不可为空！");
+            return model;
+        }
+
+        String id = pageData.getString("id");
+        if (id == null || id.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("客户供应商主键id为空或空字符串！");
+            return model;
+        }
+
+        String companyId = pageData.getString("currentCompanyId");
+        if (companyId == null || companyId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("企业id为空或空字符串！");
+            return model;
+        }
+
+        //genre:49c0a7ebcb4c4175bd5195837a6a9a13 供应商:supplierGenre
+        //genre:df7cb67fca4148bc9632c908e4a7fdea 客户:customerGenre
+        String genre = pageData.getString("genre");
+
+        String genreName = new String();
+        if (Common.DICTIONARY_MAP.get("supplierGenre").equals(genre)) {
+            genreName = "供应商";
+        } else if (Common.DICTIONARY_MAP.get("customerGenre").equals(genre)) {
+            genreName = "客户";
+        }
+
+        //2. 名称是否存在
+        if (customerService.isExistByName(id, genre, companyId, name)) {
+            String msgTemp = "{0}名称{1}在系统中已经存在！";
+            String msgExist = MessageFormat.format(msgTemp,
+                    genreName,
+                    name);
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgExist);
             return model;
         }
 

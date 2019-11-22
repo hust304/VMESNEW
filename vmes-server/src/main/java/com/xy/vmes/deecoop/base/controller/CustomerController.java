@@ -283,8 +283,10 @@ public class CustomerController {
     public ResultModel addCustomer() throws Exception {
         logger.info("################/customer/addCustomer 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
+
         PageData pageData = HttpUtils.parsePageData();
         ResultModel model = new ResultModel();
+
         //1. 非空判断
         String name = pageData.getString("name");
         if (name == null || name.trim().length() == 0) {
@@ -292,9 +294,36 @@ public class CustomerController {
             model.putMsg("名称输入为空或空字符串，名称为必填不可为空！");
             return model;
         }
+        String companyId = pageData.getString("currentCompanyId");
+        if (companyId == null || companyId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("企业id为空或空字符串！");
+            return model;
+        }
+
+        //genre:49c0a7ebcb4c4175bd5195837a6a9a13 供应商:supplierGenre
+        //genre:df7cb67fca4148bc9632c908e4a7fdea 客户:customerGenre
+        String genre = pageData.getString("genre");
+
+        String genreName = new String();
+        if (Common.DICTIONARY_MAP.get("supplierGenre").equals(genre)) {
+            genreName = "供应商";
+        } else if (Common.DICTIONARY_MAP.get("customerGenre").equals(genre)) {
+            genreName = "客户";
+        }
+
+        //2. 名称是否存在
+        if (customerService.isExistByName(null, genre, companyId, name)) {
+            String msgTemp = "{0}名称{1}在系统中已经存在！";
+            String msgExist = MessageFormat.format(msgTemp,
+                    genreName,
+                    name);
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgExist);
+            return model;
+        }
 
         //获取客户供应商编码
-        String companyId = pageData.getString("currentCompanyId");
         String code = coderuleService.createCoder(companyId,"vmes_customer","C");
         if(StringUtils.isEmpty(code)){
             model.putCode(1);
