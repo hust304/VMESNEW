@@ -86,8 +86,10 @@ public interface ProductPropertyService {
 //    ProductProperty map2ProdProperty(Map<String, Object> mapObj, ProductProperty object);
 //    List<ProductProperty> mapList2ProductPropertyList(List<Map<String, Object>> mapList);
 
-    //TODO 货品(添加,修改)时调用
+    //货品(添加,修改)时调用
     void addProductProperty(String cuser, String prodId, List<ProductProperty> objectList);
+    //获取自定义属性字符串-'_'分隔的字符串
+    String findPropertyValue(List<ProductProperty> objectList);
 
 //    Map<String, String> prodProperty2Map(ProductProperty object, Map<String, String> mapObject);
 

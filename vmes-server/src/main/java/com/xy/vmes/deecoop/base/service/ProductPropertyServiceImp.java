@@ -235,6 +235,25 @@ public class ProductPropertyServiceImp implements ProductPropertyService {
         }
     }
 
+    //获取自定义属性字符串-'_'分隔的字符串
+    public String findPropertyValue(List<ProductProperty> objectList) {
+        StringBuffer strBuf = new StringBuffer();
+        if (objectList == null || objectList.size() == 0) {return new String();}
+
+        for (int i = 0; i < objectList.size(); i++) {
+            ProductProperty object = objectList.get(i);
+
+            if (object.getValue() != null && object.getValue().trim().length() > 0) {
+                strBuf.append(object.getValue().trim());
+
+                if ((i+1) < objectList.size()) {
+                    strBuf.append("_");
+                }
+            }
+        }
+
+        return strBuf.toString();
+    }
 
     public Map<String, String> prodProperty2Map(ProductProperty object, Map<String, String> mapObject) {
         if (mapObject == null) {mapObject = new LinkedHashMap<String, String>();}
