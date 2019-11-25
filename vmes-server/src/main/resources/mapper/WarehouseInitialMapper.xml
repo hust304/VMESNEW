@@ -491,6 +491,13 @@
                 <![CDATA[ and warehouseProduct.stock_count <> 0 ]]>
             </if>
 
+            <!--isAllStockCount  -->
+            <!--isAllStockCount:true:1 显示全部  -->
+            <!--isAllStockCount 不等于 (true:1) 不显示全部  -->
+            <if test="1 != isAllStockCount" >
+                <![CDATA[ and warehouseProduct.stock_count <> 0 ]]>
+            </if>
+
 
             <!--nodeId 树形结构指定节点id 自定义sql查询语句-->
             <if test="nodeId != null and nodeId != ''" >
@@ -719,6 +726,13 @@
             <!--stockCountQuery 库存数量查询-->
             <!--stockCountQuery:stockCountNotZero 库存数量不等于零-->
             <if test="'stockCountNotZero' == stockCountQuery">
+                <![CDATA[ and warehouseProduct.stock_count <> 0 ]]>
+            </if>
+
+            <!--isAllStockCount  -->
+            <!--isAllStockCount:true:1 显示全部  -->
+            <!--isAllStockCount 不等于 (true:1) 不显示全部 (不等于零)  -->
+            <if test="1 != isAllStockCount" >
                 <![CDATA[ and warehouseProduct.stock_count <> 0 ]]>
             </if>
 
