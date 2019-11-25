@@ -79,13 +79,14 @@ public interface ProductPropertyService {
 //    ProductProperty findProductPropertyById(String id);
 
     List<ProductProperty> findProductPropertyList(PageData object);//@
-//    List<ProductProperty> findProductPropertyListByProdId(String prodId);
+    List<ProductProperty> findProductPropertyListByProdId(String prodId);
 
     void deleteProdPropertyByProdId(String prodId) throws Exception;//@
 
 //    ProductProperty map2ProdProperty(Map<String, Object> mapObj, ProductProperty object);
 //    List<ProductProperty> mapList2ProductPropertyList(List<Map<String, Object>> mapList);
 
+    //TODO 货品(添加,修改)时调用
     void addProductProperty(String cuser, String prodId, List<ProductProperty> objectList);
 
 //    Map<String, String> prodProperty2Map(ProductProperty object, Map<String, String> mapObject);
