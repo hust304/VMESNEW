@@ -324,7 +324,16 @@ public class ProductController {
             productPropertyService.addProductProperty(pageData.getString("cuser"),
                     product.getId(),
                     propertyList);
+
+            List<ProductProperty> productPropertyList = productPropertyService.findProductPropertyListByProdId(product.getId());
+            String productPropertyStr = productPropertyService.findPropertyValue(productPropertyList);
+
+            Product productEdit = new Product();
+            productEdit.setId(product.getId());
+            productEdit.setProperty(productPropertyStr);
+            productService.update(productEdit);
         }
+
         Long endTime = System.currentTimeMillis();
         logger.info("################product/addProduct 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;

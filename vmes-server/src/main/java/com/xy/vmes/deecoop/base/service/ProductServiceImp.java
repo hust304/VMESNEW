@@ -845,6 +845,10 @@ public class ProductServiceImp implements ProductService {
             productPropertyService.addProductProperty(pageData.getString("cuser"),
                     productDB.getId(),
                     propertyList);
+
+            List<ProductProperty> productPropertyList = productPropertyService.findProductPropertyListByProdId(productDB.getId());
+            String productPropertyStr = productPropertyService.findPropertyValue(productPropertyList);
+            productDB.setProperty(productPropertyStr);
         }
 
         //3.修改产品表(vmes_product)

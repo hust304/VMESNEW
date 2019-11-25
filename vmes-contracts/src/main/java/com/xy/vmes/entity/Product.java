@@ -113,6 +113,10 @@ public class Product implements Serializable {
 	@TableField("picture_code")
 	private String pictureCode;
 
+	//自定义属性 (货品自定义属性字符串:'_'分隔的字符串)
+	@TableField("property")
+	private String property;
+
 	public void setId(String id) {
 		this.id = id;
 	}
@@ -292,6 +296,12 @@ public class Product implements Serializable {
 	}
 	public void setPictureCode(String pictureCode) {
 		this.pictureCode = pictureCode;
+	}
+	public String getProperty() {
+		return property;
+	}
+	public void setProperty(String property) {
+		this.property = property;
 	}
 /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
