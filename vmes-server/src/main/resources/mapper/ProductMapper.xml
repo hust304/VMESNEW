@@ -238,6 +238,8 @@
             (replace(uuid(), '-', ''), 'product', 'p2nIsScale', 'p2n:是否需要四舍五入', 29, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
             (replace(uuid(), '-', ''), 'product', 'p2nDecimalCount', 'p2n:保留小数位数', 30, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
             (replace(uuid(), '-', ''), 'product', 'pictureCode', '图号', 32, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+
+            (replace(uuid(), '-', ''), 'product', 'property', '自定义属性', 33, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
     </insert>
 
 
@@ -329,6 +331,7 @@
             prod.name_en nameEn,
             prod.spec spec,
             prod.genre genre,
+            prod.property,
             genre.name genreName,
             produnit.unit unit,
             unit.name unitName,
@@ -435,11 +438,15 @@
             <if test="name != null and name != ''">
                 and prod.name LIKE CONCAT('%',CONCAT(#{name}),'%')
             </if>
+
             <if test="genreName != null and genreName != ''">
                 and genre.name = #{genreName}
             </if>
             <if test="genreNames != null and genreNames != ''">
                 and prod.name LIKE CONCAT('%',CONCAT(#{genreNames}),'%')
+            </if>
+            <if test="property != null and property != ''">
+                and prod.property LIKE CONCAT('%',CONCAT(#{property}),'%')
             </if>
 
             <if test="typeName != null and typeName != ''">

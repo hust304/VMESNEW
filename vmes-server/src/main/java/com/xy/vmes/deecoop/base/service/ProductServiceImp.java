@@ -854,7 +854,7 @@ public class ProductServiceImp implements ProductService {
         //3.修改产品表(vmes_product)
         productDB.setUuser(pageData.getString("cuser"));
         productDB.setCode(productOld.getCode());
-        this.updateAll(productDB);
+        this.update(productDB);
         return model;
     }
 
