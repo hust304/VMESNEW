@@ -457,11 +457,13 @@ public class FinanceBaseServiceImp implements FinanceBaseService {
         Date currentDate = new Date();
         String priod = sdf.format(currentDate);
         FinanceBase financeBase = (FinanceBase)HttpUtils.pageData2Entity(pd, new FinanceBase());
+        String currentCompanyId = pd.getString("currentCompanyId");
+        financeBase.setCompanyId(currentCompanyId);
         financeBase.setPeriod(priod);
         financeBase.setPeriodDate(currentDate);
         this.setFinanceBaseValue(pd,financeBase,model);
+        this.saveFinancePeriod(financeBase);
         this.update(financeBase);
-
         return model;
     }
 

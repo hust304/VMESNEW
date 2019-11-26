@@ -369,7 +369,10 @@ public class FinanceHistoryServiceImp implements FinanceHistoryService {
         return model;
     }
 
-
+    @Override
+    public void deleteFinanceHistory(PageData pd) throws Exception {
+        financeHistoryMapper.deleteFinanceHistory(pd);
+    }
 }
 
 

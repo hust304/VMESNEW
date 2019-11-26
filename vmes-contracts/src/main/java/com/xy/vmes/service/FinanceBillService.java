@@ -175,6 +175,16 @@ public interface FinanceBillService {
     ResultModel getFinanceReceiveView(PageData pd) throws Exception;
 
     ResultModel getFinanceBillDetail(PageData pd) throws Exception;
+
+    ResultModel unCheckOutFinanceReceive(PageData pd) throws Exception;
+
+    ResultModel checkOutFinanceReceive(PageData pd) throws Exception;
+
+    void saveFinanceHistory(Map map) throws Exception;
+
+    void saveFinancePeriod(String companyId) throws Exception;
+
+    List<Map> getFinanceReceiveView(PageData pd,Pagination pg) throws Exception;
 }
 
 

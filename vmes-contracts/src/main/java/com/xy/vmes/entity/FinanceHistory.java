@@ -64,7 +64,7 @@ public class FinanceHistory implements Serializable {
 	//是否启用(0:已禁用 1:启用)
 	@TableField("isdisable")
 	private String isdisable;
-	@TableField("companyId")
+	@TableField("company_id")
 	private String companyId;
 
 	public String getCompanyId() {

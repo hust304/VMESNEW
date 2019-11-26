@@ -399,10 +399,10 @@
         select
         case when base.cdate is  null then DATE_FORMAT(NOW(),'%Y-%m-01 00:00:00') else DATE_FORMAT(base.cdate,'%Y-%m-01 00:00:00') end cdate,
         case when base.period is  null then DATE_FORMAT(NOW(),'%Y%m') else base.period end period,
-        case when (select t.begin_plus from vmes_finance_history t where t.customer_id = customer.id and t.isdisable = '1' order by t.period desc LIMIT 1) > 0
-        then (select t.begin_plus from vmes_finance_history t where t.customer_id = customer.id and t.isdisable = '1' order by t.period desc LIMIT 1) when base.begin_plus > 0 then base.begin_plus else null end beginPlus,
-        case when (select t.begin_minus from vmes_finance_history t where t.customer_id = customer.id and t.isdisable = '1' order by t.period desc LIMIT 1) > 0
-        then (select t.begin_minus from vmes_finance_history t where t.customer_id = customer.id and t.isdisable = '1' order by t.period desc LIMIT 1) when base.begin_minus > 0 then base.begin_minus else null end beginMinus,
+        case when (select t.end_plus from vmes_finance_history t where t.customer_id = customer.id and t.isdisable = '1' order by t.period desc LIMIT 1) > 0
+        then (select t.end_plus from vmes_finance_history t where t.customer_id = customer.id and t.isdisable = '1' order by t.period desc LIMIT 1) when base.begin_plus > 0 then base.begin_plus else null end beginPlus,
+        case when (select t.end_minus from vmes_finance_history t where t.customer_id = customer.id and t.isdisable = '1' order by t.period desc LIMIT 1) > 0
+        then (select t.end_minus from vmes_finance_history t where t.customer_id = customer.id and t.isdisable = '1' order by t.period desc LIMIT 1) when base.begin_minus > 0 then base.begin_minus else null end beginMinus,
         '上期结转' typeName,
         case when base.remark is null then null else base.remark end remark
         from vmes_customer customer
@@ -436,15 +436,16 @@
         select id,code,name,type,typeName,province,currentPeriod,balance,accountDays,round(ifnull(beginPlus,0),2) beginPlus,round(ifnull(beginMinus,0),2) beginMinus,round(ifnull(nowPlus,0),2) nowPlus,round(ifnull(nowMinus,0),2) nowMinus,
         <![CDATA[ case when nowPlus-nowMinus+beginPlus-beginMinus>0 then round(ifnull(nowPlus-nowMinus+beginPlus-beginMinus,0),2) else 0.00 end endPlus ]]>,
         <![CDATA[ case when nowPlus-nowMinus+beginPlus-beginMinus<0 then round(ifnull(-(nowPlus-nowMinus+beginPlus-beginMinus),0),2) else 0.00 end endMinus ]]>,
-        null overdue
+        companyId,null overdue
         from (
 
-          select id,code,name,type,typeName,province,provinceName,currentPeriod,balance,accountDays,beginPlus,beginMinus,sum(nowPlus) nowPlus,sum(nowMinus) nowMinus from (
+          select id,code,name,type,typeName,province,provinceName,currentPeriod,balance,accountDays,beginPlus,beginMinus,sum(nowPlus) nowPlus,sum(nowMinus) nowMinus,companyId from (
             select
             customer.id,
             customer.code,
             customer.name,
             customer.type,
+            customer.company_id companyId,
             type.name typeName,
             customer.province province,
             province.name provinceName,
@@ -454,10 +455,10 @@
 
 
             <![CDATA[
-            case when (select t.begin_plus from vmes_finance_history t where t.customer_id = customer.id and t.isdisable = '1' order by t.period desc LIMIT 1) > 0
-            then (select t.begin_plus from vmes_finance_history t where t.customer_id = customer.id and t.isdisable = '1' order by t.period desc LIMIT 1) when base.begin_plus > 0 then base.begin_plus else 0.00 end beginPlus   ,
-            case when (select t.begin_minus from vmes_finance_history t where t.customer_id = customer.id and t.isdisable = '1' order by t.period desc LIMIT 1) > 0
-            then (select t.begin_minus from vmes_finance_history t where t.customer_id = customer.id and t.isdisable = '1' order by t.period desc LIMIT 1) when base.begin_minus > 0 then base.begin_minus else 0.00 end beginMinus   ,
+            case when (select t.end_plus from vmes_finance_history t where t.customer_id = customer.id and t.isdisable = '1' order by t.period desc LIMIT 1) > 0
+            then (select t.end_plus from vmes_finance_history t where t.customer_id = customer.id and t.isdisable = '1' order by t.period desc LIMIT 1) when base.begin_plus > 0 then base.begin_plus else 0.00 end beginPlus   ,
+            case when (select t.end_minus from vmes_finance_history t where t.customer_id = customer.id and t.isdisable = '1' order by t.period desc LIMIT 1) > 0
+            then (select t.end_minus from vmes_finance_history t where t.customer_id = customer.id and t.isdisable = '1' order by t.period desc LIMIT 1) when base.begin_minus > 0 then base.begin_minus else 0.00 end beginMinus   ,
             ]]>
 
 
@@ -507,6 +508,7 @@
             customer.code,
             customer.name,
             customer.type,
+            customer.company_id companyId,
             type.name typeName,
             customer.province province,
             province.name provinceName,
@@ -516,10 +518,10 @@
 
 
             <![CDATA[
-                case when (select t.begin_plus from vmes_finance_history t where t.customer_id = customer.id and t.isdisable = '1' order by t.period desc LIMIT 1) > 0
-                then (select t.begin_plus from vmes_finance_history t where t.customer_id = customer.id and t.isdisable = '1' order by t.period desc LIMIT 1) when base.begin_plus > 0 then base.begin_plus else 0.00 end beginPlus   ,
-                case when (select t.begin_minus from vmes_finance_history t where t.customer_id = customer.id and t.isdisable = '1' order by t.period desc LIMIT 1) > 0
-                then (select t.begin_minus from vmes_finance_history t where t.customer_id = customer.id and t.isdisable = '1' order by t.period desc LIMIT 1) when base.begin_minus > 0 then base.begin_minus else 0.00 end beginMinus   ,
+                case when (select t.end_plus from vmes_finance_history t where t.customer_id = customer.id and t.isdisable = '1' order by t.period desc LIMIT 1) > 0
+                then (select t.end_plus from vmes_finance_history t where t.customer_id = customer.id and t.isdisable = '1' order by t.period desc LIMIT 1) when base.begin_plus > 0 then base.begin_plus else 0.00 end beginPlus   ,
+                case when (select t.end_minus from vmes_finance_history t where t.customer_id = customer.id and t.isdisable = '1' order by t.period desc LIMIT 1) > 0
+                then (select t.end_minus from vmes_finance_history t where t.customer_id = customer.id and t.isdisable = '1' order by t.period desc LIMIT 1) when base.begin_minus > 0 then base.begin_minus else 0.00 end beginMinus   ,
                 ]]>
 
 
@@ -592,10 +594,10 @@
 
 
         <![CDATA[
-            case when (select t.begin_plus from vmes_finance_history t where t.customer_id = customer.id and t.isdisable = '1' order by t.period desc LIMIT 1) > 0
-            then (select t.begin_plus from vmes_finance_history t where t.customer_id = customer.id and t.isdisable = '1' order by t.period desc LIMIT 1) when base.begin_plus > 0 then base.begin_plus else 0.00 end beginPlus   ,
-            case when (select t.begin_minus from vmes_finance_history t where t.customer_id = customer.id and t.isdisable = '1' order by t.period desc LIMIT 1) > 0
-            then (select t.begin_minus from vmes_finance_history t where t.customer_id = customer.id and t.isdisable = '1' order by t.period desc LIMIT 1) when base.begin_minus > 0 then base.begin_minus else 0.00 end beginMinus   ,
+            case when (select t.end_plus from vmes_finance_history t where t.customer_id = customer.id and t.isdisable = '1' order by t.period desc LIMIT 1) > 0
+            then (select t.end_plus from vmes_finance_history t where t.customer_id = customer.id and t.isdisable = '1' order by t.period desc LIMIT 1) when base.begin_plus > 0 then base.begin_plus else 0.00 end beginPlus   ,
+            case when (select t.end_minus from vmes_finance_history t where t.customer_id = customer.id and t.isdisable = '1' order by t.period desc LIMIT 1) > 0
+            then (select t.end_minus from vmes_finance_history t where t.customer_id = customer.id and t.isdisable = '1' order by t.period desc LIMIT 1) when base.begin_minus > 0 then base.begin_minus else 0.00 end beginMinus   ,
             ]]>
 
 
@@ -641,10 +643,10 @@
 
 
         <![CDATA[
-                case when (select t.begin_plus from vmes_finance_history t where t.customer_id = customer.id and t.isdisable = '1' order by t.period desc LIMIT 1) > 0
-                then (select t.begin_plus from vmes_finance_history t where t.customer_id = customer.id and t.isdisable = '1' order by t.period desc LIMIT 1) when base.begin_plus > 0 then base.begin_plus else 0.00 end beginPlus   ,
-                case when (select t.begin_minus from vmes_finance_history t where t.customer_id = customer.id and t.isdisable = '1' order by t.period desc LIMIT 1) > 0
-                then (select t.begin_minus from vmes_finance_history t where t.customer_id = customer.id and t.isdisable = '1' order by t.period desc LIMIT 1) when base.begin_minus > 0 then base.begin_minus else 0.00 end beginMinus   ,
+                case when (select t.end_plus from vmes_finance_history t where t.customer_id = customer.id and t.isdisable = '1' order by t.period desc LIMIT 1) > 0
+                then (select t.end_plus from vmes_finance_history t where t.customer_id = customer.id and t.isdisable = '1' order by t.period desc LIMIT 1) when base.begin_plus > 0 then base.begin_plus else 0.00 end beginPlus   ,
+                case when (select t.end_minus from vmes_finance_history t where t.customer_id = customer.id and t.isdisable = '1' order by t.period desc LIMIT 1) > 0
+                then (select t.end_minus from vmes_finance_history t where t.customer_id = customer.id and t.isdisable = '1' order by t.period desc LIMIT 1) when base.begin_minus > 0 then base.begin_minus else 0.00 end beginMinus   ,
                 ]]>
 
 

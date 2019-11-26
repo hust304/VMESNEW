@@ -155,7 +155,8 @@ public interface FinanceHistoryService {
     * @throws Exception
     */
     ResultModel importExcelFinanceHistorys(MultipartFile file) throws Exception;
-    
+
+    void deleteFinanceHistory(PageData pageData) throws Exception;
 }
 
 

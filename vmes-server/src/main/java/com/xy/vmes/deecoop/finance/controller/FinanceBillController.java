@@ -310,6 +310,40 @@ public class FinanceBillController {
     }
 
 
+    /**
+     * @author 刘威 自动创建，可以修改
+     * @date 2019-11-07
+     */
+    @PostMapping("/finance/financeBill/unCheckOutFinanceReceive")
+    public ResultModel unCheckOutFinanceReceive()  throws Exception {
+        logger.info("################/finance/financeBill/unCheckOutFinanceReceive 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = financeBillService.unCheckOutFinanceReceive(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/finance/financeBill/unCheckOutFinanceReceive 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+    /**
+     * @author 刘威 自动创建，可以修改
+     * @date 2019-11-07
+     */
+    @PostMapping("/finance/financeBill/checkOutFinanceReceive")
+    public ResultModel checkOutFinanceReceive()  throws Exception {
+        logger.info("################/finance/financeBill/checkOutFinanceReceive 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = financeBillService.checkOutFinanceReceive(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/finance/financeBill/checkOutFinanceReceive 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+
+
 }
 
 

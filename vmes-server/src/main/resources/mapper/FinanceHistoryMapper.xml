@@ -308,5 +308,12 @@
 
 
 
+    <delete id="deleteFinanceHistory"  parameterType="com.yvan.PageData" >
+        delete from
+        vmes_finance_history
+        where
+        period = #{period} and company_id = #{companyId}
+    </delete>
+
 
 </mapper>

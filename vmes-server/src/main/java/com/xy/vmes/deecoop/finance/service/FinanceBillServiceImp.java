@@ -3,14 +3,14 @@ package com.xy.vmes.deecoop.finance.service;
 
 import com.xy.vmes.deecoop.finance.dao.FinanceBillMapper;
 import com.xy.vmes.entity.FinanceBill;
-import com.xy.vmes.service.CoderuleService;
-import com.xy.vmes.service.FinanceBillService;
+import com.xy.vmes.entity.FinanceHistory;
+import com.xy.vmes.entity.FinancePeriod;
+import com.xy.vmes.service.*;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.Column;
-import com.xy.vmes.service.ColumnService;
 import com.yvan.*;
 import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -37,6 +38,10 @@ public class FinanceBillServiceImp implements FinanceBillService {
 
     @Autowired
     private FinanceBillMapper financeBillMapper;
+    @Autowired
+    private FinanceHistoryService financeHistoryService;
+    @Autowired
+    private FinancePeriodService financePeriodService;
     @Autowired
     private ColumnService columnService;
     @Autowired
@@ -744,6 +749,141 @@ public class FinanceBillServiceImp implements FinanceBillService {
         result.put("titles",titleMap.get("titles"));
         result.put("varList",varMapList);
         model.putResult(result);
+        return model;
+    }
+
+
+    @Override
+    public ResultModel unCheckOutFinanceReceive(PageData pd) throws Exception {
+        ResultModel model = new ResultModel();
+        GregorianCalendar gc =new GregorianCalendar();
+        SimpleDateFormat sdf  =new SimpleDateFormat("yyyyMM");
+        String companyId = pd.getString("currentCompanyId");
+        PageData pageData = new PageData();
+        pageData.put("company_id",companyId);
+        List<FinancePeriod> financePeriodList = financePeriodService.selectByColumnMap(pageData);
+        if(financePeriodList!=null&&financePeriodList.size()>0){
+            for(int i=0;i<financePeriodList.size();i++){
+                FinancePeriod financePeriod = financePeriodList.get(i);
+                if(i==0){
+                    financePeriod.getCurrentPeriod();
+                    Date preDate = financePeriod.getCurrentPeriodDate();
+                    gc.setTime(preDate);
+                    gc.add(2,-1);
+                    gc.set(gc.get(Calendar.YEAR),gc.get(Calendar.MONTH),gc.get(Calendar.DATE));
+                    Date curDate = gc.getTime();
+                    String curPeriod = sdf.format(curDate);
+                    financePeriod.setCurrentPeriodDate(curDate);
+                    financePeriod.setCurrentPeriod(curPeriod);
+                    this.deleteFinanceHistory(financePeriod);
+                    financePeriodService.update(financePeriod);
+                }else if(i>=1){
+                    financePeriodService.deleteById(financePeriod.getId());
+                }
+            }
+        }else{
+            this.saveFinancePeriod(companyId);
+        }
+
+        return model;
+    }
+
+    public void deleteFinanceHistory(FinancePeriod financePeriod) throws Exception {
+        PageData pageData = new PageData();
+        pageData.put("period",financePeriod.getCurrentPeriod());
+        pageData.put("companyId",financePeriod.getCompanyId());
+        financeHistoryService.deleteFinanceHistory(pageData);
+    }
+
+    public void saveFinancePeriod(String companyId) throws Exception {
+        SimpleDateFormat sdf  =new SimpleDateFormat("yyyyMM");
+        Date nowDate = new Date();
+        String nowPeriod = sdf.format(nowDate);
+        FinancePeriod financePeriod = new FinancePeriod();
+        financePeriod.setCompanyId(companyId);
+        financePeriod.setCurrentPeriod(nowPeriod);
+        financePeriod.setCurrentPeriodDate(nowDate);
+        financePeriod.setInitialPeriod(nowPeriod);
+        financePeriod.setInitialPeriodDate(nowDate);
+        financePeriodService.save(financePeriod);
+    }
+
+    public void saveFinanceHistory(Map map) throws Exception {
+        FinanceHistory financeHistory = new FinanceHistory();
+        String customerId = map.get("id")==null?"":(String)map.get("id");
+        financeHistory.setCustomerId(customerId);
+        String companyId = map.get("companyId")==null?"":(String)map.get("companyId");
+        financeHistory.setCompanyId(companyId);
+        String period = map.get("currentPeriod")==null?"":(String)map.get("currentPeriod");
+        financeHistory.setPeriod(period);
+        BigDecimal beginPlus = map.get("beginPlus")==null? BigDecimal.ZERO:(BigDecimal)map.get("beginPlus");
+        financeHistory.setBeginPlus(beginPlus);
+        BigDecimal beginMinus = map.get("beginMinus")==null? BigDecimal.ZERO:(BigDecimal)map.get("beginMinus");
+        financeHistory.setBeginMinus(beginMinus);
+        BigDecimal nowPlus = map.get("nowPlus")==null? BigDecimal.ZERO:(BigDecimal)map.get("nowPlus");
+        financeHistory.setNowPlus(nowPlus);
+        BigDecimal nowMinus = map.get("nowMinus")==null? BigDecimal.ZERO:(BigDecimal)map.get("nowMinus");
+        financeHistory.setNowMinus(nowMinus);
+        BigDecimal endPlus = map.get("endPlus")==null? BigDecimal.ZERO:(BigDecimal)map.get("endPlus");
+        financeHistory.setEndPlus(endPlus);
+        BigDecimal endMinus = map.get("endMinus")==null? BigDecimal.ZERO:(BigDecimal)map.get("endMinus");
+        financeHistory.setEndMinus(endMinus);
+        BigDecimal overdue = map.get("overdue")==null? BigDecimal.ZERO:(BigDecimal)map.get("overdue");
+        financeHistory.setOverdue(overdue);
+        financeHistoryService.save(financeHistory);
+    }
+
+    @Override
+    public ResultModel checkOutFinanceReceive(PageData pd) throws Exception {
+        ResultModel model = new ResultModel();
+        GregorianCalendar gc =new GregorianCalendar();
+        SimpleDateFormat sdf  =new SimpleDateFormat("yyyyMM");
+        String companyId = pd.getString("currentCompanyId");
+        PageData pageData = new PageData();
+        pageData.put("company_id",companyId);
+        List<FinancePeriod> financePeriodList = financePeriodService.selectByColumnMap(pageData);
+        if(financePeriodList!=null&&financePeriodList.size()>0){
+            for(int i=0;i<financePeriodList.size();i++){
+                FinancePeriod financePeriod = financePeriodList.get(i);
+                if(i==0){
+
+                    //是否需要分页 true:需要分页 false:不需要分页
+                    Map result = new HashMap();
+                    String isNeedPage = pd.getString("isNeedPage");
+                    Pagination pg = HttpUtils.parsePagination(pd);
+                    if ("false".equals(isNeedPage)) {
+                        pg = null;
+                    } else {
+                        result.put("pageData", pg);
+                    }
+
+                    List<Map> varList = this.getFinanceReceiveView(pd,pg);
+                    if(varList!=null&&varList.size()>0){
+                        for(int j=0;j<varList.size();j++){
+                            Map map = varList.get(j);
+                            this.saveFinanceHistory(map);
+                        }
+                    }
+
+                    Date preDate = financePeriod.getCurrentPeriodDate();
+                    gc.setTime(preDate);
+                    gc.add(2,+1);
+                    gc.set(gc.get(Calendar.YEAR),gc.get(Calendar.MONTH),gc.get(Calendar.DATE));
+                    Date curDate = gc.getTime();
+                    String curPeriod = sdf.format(curDate);
+                    financePeriod.setCurrentPeriodDate(curDate);
+                    financePeriod.setCurrentPeriod(curPeriod);
+                    financePeriodService.update(financePeriod);
+
+
+                }else if(i>=1){
+                    financePeriodService.deleteById(financePeriod.getId());
+                }
+            }
+        }else{
+            this.saveFinancePeriod(companyId);
+        }
+
         return model;
     }
 }
