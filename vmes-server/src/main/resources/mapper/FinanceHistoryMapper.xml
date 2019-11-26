@@ -281,12 +281,12 @@
         select
         id,
         period,
-        begin_minus beginMinus,
-        begin_plus beginPlus,
-        now_minus nowMinus,
-        now_plus nowPlus,
-        end_minus endMinus,
-        end_plus endPlus,
+        round(ifnull(begin_minus,0),2) beginMinus,
+        round(ifnull(begin_plus,0),2) beginPlus,
+        round(ifnull(now_minus,0),2) nowMinus,
+        round(ifnull(now_plus,0),2) nowPlus,
+        round(ifnull(end_minus,0),2) endMinus,
+        round(ifnull(end_plus,0),2) endPlus,
         customer_id customerId
         from vmes_finance_history
         <where>
