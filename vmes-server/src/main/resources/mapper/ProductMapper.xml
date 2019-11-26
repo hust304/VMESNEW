@@ -464,6 +464,23 @@
             <if test="genre != null and genre != ''" >
                 and prod.genre LIKE CONCAT('%',CONCAT(#{genre}),'%')
             </if>
+
+            <!--stockCountQuery 库存数量查询-->
+            <!--stockCountQuery:stockCountGreaterThanZero 库存数量大于零-->
+            <if test="'stockCountGreaterThanZero' == stockCountQuery">
+                and prod.stock_count > 0
+            </if>
+            <!--stockCountQuery 库存数量查询-->
+            <!--stockCountQuery:stockCountZero 库存数量等于零-->
+            <if test="'stockCountZero' == stockCountQuery">
+                and prod.stock_count = 0
+            </if>
+            <!--stockCountQuery 库存数量查询-->
+            <!--stockCountQuery:stockCountNotZero 库存数量不等于零-->
+            <if test="'stockCountNotZero' == stockCountQuery">
+                <![CDATA[ and prod.stock_count <> 0 ]]>
+            </if>
+
             <!--过滤出 货品属性(备件)-->
             <if test="'true' == isNeedGenreSpare">
                 and prod.genre = '384cfd1329e648618b5a237ce1038bab'
