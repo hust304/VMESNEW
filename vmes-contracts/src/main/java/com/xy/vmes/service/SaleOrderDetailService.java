@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.entity.*;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -108,13 +107,13 @@ public interface SaleOrderDetailService {
 
     //String findProductIdsByDetailList(List<SaleOrderDetail> objectList);
     //String findDetailIdsByDetailList(List<SaleOrderDetail> objectList);
-    String findOrderIdsByDetailList(List<SaleOrderDetail> objectList);
+    //String findOrderIdsByDetailList(List<SaleOrderDetail> objectList);
 
     SaleDeliverDetail orderDetail2DeliverDetail(SaleOrderDetailEntity orderDetail, SaleDeliverDetail deliverDetail);
     List<SaleDeliverDetail> orderDtlList2DeliverDtllList(List<SaleOrderDetailEntity> orderDtlList, List<SaleDeliverDetail> deliverDtlList);
 
     WarehouseOutDetail orderDetail2OutDetail(SaleOrderDetailEntity orderDetail, WarehouseOutDetail outDetail);
-    List<WarehouseOutDetail> orderDtlList2OutDtlList(List<SaleOrderDetailEntity> orderDtlList, List<WarehouseOutDetail> outDtlList);
+    //List<WarehouseOutDetail> orderDtlList2OutDtlList(List<SaleOrderDetailEntity> orderDtlList, List<WarehouseOutDetail> outDtlList);
 
     SaleInvoiceDetail orderDetail2InvoiceDetail(SaleOrderDetail orderDetail, SaleInvoiceDetail invoiceDetail);
     List<SaleInvoiceDetail> orderDtlList2InvoiceDtlList(List<SaleOrderDetail> orderDtlList, List<SaleInvoiceDetail> invoiceDtlList);
@@ -122,7 +121,7 @@ public interface SaleOrderDetailService {
     BigDecimal findTotalSumByDetailList(List<SaleOrderDetail> objectList);
     BigDecimal findTotalSumByPrice(List<SaleOrderDetail> objectList);
 
-    void addSaleOrderDetail(SaleOrder parentObj, List<SaleOrderDetail> objectList) throws Exception;
+    //void addSaleOrderDetail(SaleOrder parentObj, List<SaleOrderDetail> objectList) throws Exception;
     void updateStateByDetail(PageData pd) throws Exception;
     void updateStateByDetail(String state, String parentIds) throws Exception;
     /**
@@ -140,7 +139,7 @@ public interface SaleOrderDetailService {
      * @throws Exception
      */
     void updateDetailStateByOrderId(String orderId, List<SaleOrderDetail> orderDetailList) throws Exception;
-    void updateLockCount(PageData pd) throws Exception;
+    //void updateLockCount(PageData pd) throws Exception;
 
     /**
      * 根据订单明细状态-反写订单状态
@@ -152,9 +151,9 @@ public interface SaleOrderDetailService {
      */
     void updateParentStateByDetailList(SaleOrder parent, List<SaleOrderDetail> dtllList) throws Exception;
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //退货单修改(订单明细,订单) 状态
-    void updateOrderState(Map<String, Map<String, Object>> orderDtlMap,
-                          Map<String, Map<String, BigDecimal>> orderReceiveMap) throws Exception;
+//    //退货单修改(订单明细,订单) 状态
+//    void updateOrderState(Map<String, Map<String, Object>> orderDtlMap,
+//                          Map<String, Map<String, BigDecimal>> orderReceiveMap) throws Exception;
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**
@@ -168,27 +167,27 @@ public interface SaleOrderDetailService {
      */
     boolean isAllExistStateByDetailList(String state, List<SaleOrderDetail> objectList);
 
-    /**
-     * 订单明细状态，在订单明细List<SaleOrderDetail>中是否全部相同
-     *   true : 一条或多条相同，在订单明细List
-     *   false: 全部不同，在订单明细List
-     *
-     * @param state       明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
-     * @param objectList  盘点单明细List<SaleOrderDetail>
-     * @return
-     */
-    boolean isExistStateByDetailList(String state, List<SaleOrderDetail> objectList);
+//    /**
+//     * 订单明细状态，在订单明细List<SaleOrderDetail>中是否全部相同
+//     *   true : 一条或多条相同，在订单明细List
+//     *   false: 全部不同，在订单明细List
+//     *
+//     * @param state       明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
+//     * @param objectList  盘点单明细List<SaleOrderDetail>
+//     * @return
+//     */
+//    boolean isExistStateByDetailList(String state, List<SaleOrderDetail> objectList);
 
-    /**
-     * 获取订单状态-根据订单明细状态
-     * 订单状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
-     * 订单明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已发货 6:已完成 -1:已取消)
-     *
-     * @param dtlList      订单明细List<SaleOrderDetail>
-     * @return
-     */
-    String findParentStateByDetailList(List<SaleOrderDetail> dtlList);
-    SaleOrder findParentStateByDetailList(SaleOrder parent, List<SaleOrderDetail> dtlList);
+//    /**
+//     * 获取订单状态-根据订单明细状态
+//     * 订单状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
+//     * 订单明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已发货 6:已完成 -1:已取消)
+//     *
+//     * @param dtlList      订单明细List<SaleOrderDetail>
+//     * @return
+//     */
+//    String findParentStateByDetailList(List<SaleOrderDetail> dtlList);
+//    SaleOrder findParentStateByDetailList(SaleOrder parent, List<SaleOrderDetail> dtlList);
 
 
     /**

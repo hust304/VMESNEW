@@ -9,7 +9,6 @@ import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.sale.dao.SaleOrderDetailMapper;
 import com.xy.vmes.entity.*;
 import com.xy.vmes.service.*;
-import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,9 +18,6 @@ import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.*;
 
-import org.springframework.web.multipart.MultipartFile;
-
-import javax.servlet.http.HttpServletResponse;
 
 /**
 * 说明：vmes_sale_order_detail:订单明细 实现类
@@ -338,32 +334,32 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
 //        return strTemp;
 //    }
 
-    public String findOrderIdsByDetailList(List<SaleOrderDetail> objectList) {
-        if (objectList == null || objectList.size() == 0) {return new String();}
-
-        Map<String, String> orderIdMap = new HashMap<String, String>();
-        for (SaleOrderDetail object : objectList) {
-            String orderId = object.getParentId();
-            orderIdMap.put(orderId, orderId);
-        }
-
-        StringBuffer strBuf = new StringBuffer();
-        for (Iterator iterator = orderIdMap.keySet().iterator(); iterator.hasNext();) {
-            String orderId = (String) iterator.next();
-            if (orderId != null && orderId.trim().length() > 0)  {
-                strBuf.append(orderId.trim());
-                strBuf.append(",");
-            }
-        }
-
-        String strTemp = strBuf.toString();
-        if (strTemp.trim().length() > 0 && strTemp.lastIndexOf(",") != -1) {
-            strTemp = strTemp.substring(0, strTemp.lastIndexOf(","));
-            return strTemp;
-        }
-
-        return strTemp;
-    }
+//    public String findOrderIdsByDetailList(List<SaleOrderDetail> objectList) {
+//        if (objectList == null || objectList.size() == 0) {return new String();}
+//
+//        Map<String, String> orderIdMap = new HashMap<String, String>();
+//        for (SaleOrderDetail object : objectList) {
+//            String orderId = object.getParentId();
+//            orderIdMap.put(orderId, orderId);
+//        }
+//
+//        StringBuffer strBuf = new StringBuffer();
+//        for (Iterator iterator = orderIdMap.keySet().iterator(); iterator.hasNext();) {
+//            String orderId = (String) iterator.next();
+//            if (orderId != null && orderId.trim().length() > 0)  {
+//                strBuf.append(orderId.trim());
+//                strBuf.append(",");
+//            }
+//        }
+//
+//        String strTemp = strBuf.toString();
+//        if (strTemp.trim().length() > 0 && strTemp.lastIndexOf(",") != -1) {
+//            strTemp = strTemp.substring(0, strTemp.lastIndexOf(","));
+//            return strTemp;
+//        }
+//
+//        return strTemp;
+//    }
 
     public SaleDeliverDetail orderDetail2DeliverDetail(SaleOrderDetailEntity orderDetail, SaleDeliverDetail deliverDetail) {
         if (deliverDetail == null) {deliverDetail = new SaleDeliverDetail();}
@@ -435,17 +431,17 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
         return outDetail;
     }
 
-    public List<WarehouseOutDetail> orderDtlList2OutDtlList(List<SaleOrderDetailEntity> orderDtlList, List<WarehouseOutDetail> outDtlList) {
-        if (outDtlList == null) {outDtlList = new ArrayList<WarehouseOutDetail>();}
-        if (orderDtlList == null || orderDtlList.size() == 0) {return outDtlList;}
-
-        for (SaleOrderDetailEntity orderDtl : orderDtlList) {
-            WarehouseOutDetail outDetail = this.orderDetail2OutDetail(orderDtl, null);
-            outDtlList.add(outDetail);
-        }
-
-        return outDtlList;
-    }
+//    public List<WarehouseOutDetail> orderDtlList2OutDtlList(List<SaleOrderDetailEntity> orderDtlList, List<WarehouseOutDetail> outDtlList) {
+//        if (outDtlList == null) {outDtlList = new ArrayList<WarehouseOutDetail>();}
+//        if (orderDtlList == null || orderDtlList.size() == 0) {return outDtlList;}
+//
+//        for (SaleOrderDetailEntity orderDtl : orderDtlList) {
+//            WarehouseOutDetail outDetail = this.orderDetail2OutDetail(orderDtl, null);
+//            outDtlList.add(outDetail);
+//        }
+//
+//        return outDtlList;
+//    }
 
     public SaleInvoiceDetail orderDetail2InvoiceDetail(SaleOrderDetail orderDetail, SaleInvoiceDetail invoiceDetail) {
         if (invoiceDetail == null) {invoiceDetail = new SaleInvoiceDetail();}
@@ -486,30 +482,30 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    public void addSaleOrderDetail(SaleOrder parentObj, List<SaleOrderDetail> objectList) throws Exception {
-        if (parentObj == null) {return;}
-        if (objectList == null || objectList.size() == 0) {return;}
-
-        for (SaleOrderDetail detail : objectList) {
-            detail.setState("0");
-            detail.setParentId(parentObj.getId());
-            detail.setCuser(parentObj.getCuser());
-
-            //计价类型(1:先计价 2:后计价)
-            if (parentObj.getPriceType() != null && "2".equals(parentObj.getPriceType().trim())) {
-                //计价单位id
-                detail.setPriceUnit(null);
-                //货品数量(计价数量)
-                detail.setPriceCount(BigDecimal.valueOf(0D));
-                //货品单价
-                detail.setProductPrice(BigDecimal.valueOf(0D));
-                //货品金额(订购数量 * 货品单价)
-                detail.setProductSum(BigDecimal.valueOf(0D));
-            }
-
-            this.save(detail);
-        }
-    }
+//    public void addSaleOrderDetail(SaleOrder parentObj, List<SaleOrderDetail> objectList) throws Exception {
+//        if (parentObj == null) {return;}
+//        if (objectList == null || objectList.size() == 0) {return;}
+//
+//        for (SaleOrderDetail detail : objectList) {
+//            detail.setState("0");
+//            detail.setParentId(parentObj.getId());
+//            detail.setCuser(parentObj.getCuser());
+//
+//            //计价类型(1:先计价 2:后计价)
+//            if (parentObj.getPriceType() != null && "2".equals(parentObj.getPriceType().trim())) {
+//                //计价单位id
+//                detail.setPriceUnit(null);
+//                //货品数量(计价数量)
+//                detail.setPriceCount(BigDecimal.valueOf(0D));
+//                //货品单价
+//                detail.setProductPrice(BigDecimal.valueOf(0D));
+//                //货品金额(订购数量 * 货品单价)
+//                detail.setProductSum(BigDecimal.valueOf(0D));
+//            }
+//
+//            this.save(detail);
+//        }
+//    }
 
     public void updateStateByDetail(PageData pd) throws Exception {
         saleOrderDetailMapper.updateStateByDetail(pd);
@@ -608,9 +604,9 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
         }
     }
 
-    public void updateLockCount(PageData pd) throws Exception {
-        saleOrderDetailMapper.updateLockCount(pd);
-    }
+//    public void updateLockCount(PageData pd) throws Exception {
+//        saleOrderDetailMapper.updateLockCount(pd);
+//    }
 
     /**
      * 根据订单明细状态-反写订单状态
@@ -632,9 +628,14 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
             saleOrderService.deleteById(parent.getId());
         } else {
             //获取订单状态-根据订单明细状态
-            //String parentState = this.findParentStateByDetailList(dtlList);
-            //parent.setState(parentState);
-            parent = this.findParentStateByDetailList(parent, dtlList);
+            String parentState = this.findParentStateByDetail(dtlList);
+            parent.setState(parentState);
+
+            //订单状态:3:已发货 设定发货日期
+            if ("3".equals(parentState)) {
+                parent.setDeliverDate(new Date());
+            }
+
             saleOrderService.update(parent);
         }
     }
@@ -689,86 +690,86 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //退货单修改(订单明细,订单) 状态
-    public void updateOrderState(Map<String, Map<String, Object>> orderDtlMap,
-                          Map<String, Map<String, BigDecimal>> orderReceiveMap) throws Exception {
-        if (orderDtlMap == null || orderDtlMap.size() == 0) {return;}
-
-        Map<String, String> orderIdMap = new HashMap<String, String>();
-        for (Iterator iterator = orderDtlMap.keySet().iterator(); iterator.hasNext();) {
-            SaleOrderDetail orderDetail = new SaleOrderDetail();
-
-            String orderDtlId = (String) iterator.next();
-            orderDetail.setId(orderDtlId);
-
-            Map<String, Object> orderDtlValueMap = orderDtlMap.get(orderDtlId);
-
-            //orderId 订单id
-            String orderId = (String)orderDtlValueMap.get("orderId");
-            orderIdMap.put(orderId, orderId);
-
-            //订单明细订购数量 orderDtlCount
-            BigDecimal orderDtlCount = BigDecimal.valueOf(0D);
-            if (orderDtlValueMap.get("orderDtlCount") != null) {
-                orderDtlCount = (BigDecimal)orderDtlValueMap.get("orderDtlCount");
-            }
-
-//            //订单明细发货数量 orderDtlDeliverCount
-//            BigDecimal orderDtlDeliverCount = BigDecimal.valueOf(0D);
-//            if (orderDtlValueMap.get("orderDtlDeliverCount") != null) {
-//                orderDtlDeliverCount = (BigDecimal)orderDtlValueMap.get("orderDtlDeliverCount");
+//    //退货单修改(订单明细,订单) 状态
+//    public void updateOrderState(Map<String, Map<String, Object>> orderDtlMap,
+//                          Map<String, Map<String, BigDecimal>> orderReceiveMap) throws Exception {
+//        if (orderDtlMap == null || orderDtlMap.size() == 0) {return;}
+//
+//        Map<String, String> orderIdMap = new HashMap<String, String>();
+//        for (Iterator iterator = orderDtlMap.keySet().iterator(); iterator.hasNext();) {
+//            SaleOrderDetail orderDetail = new SaleOrderDetail();
+//
+//            String orderDtlId = (String) iterator.next();
+//            orderDetail.setId(orderDtlId);
+//
+//            Map<String, Object> orderDtlValueMap = orderDtlMap.get(orderDtlId);
+//
+//            //orderId 订单id
+//            String orderId = (String)orderDtlValueMap.get("orderId");
+//            orderIdMap.put(orderId, orderId);
+//
+//            //订单明细订购数量 orderDtlCount
+//            BigDecimal orderDtlCount = BigDecimal.valueOf(0D);
+//            if (orderDtlValueMap.get("orderDtlCount") != null) {
+//                orderDtlCount = (BigDecimal)orderDtlValueMap.get("orderDtlCount");
 //            }
-
-            //checkCount 验证数量(发货数量-退货数量)
-            BigDecimal checkCount = BigDecimal.valueOf(0D);
-            if (orderDtlValueMap.get("checkCount") != null) {
-                checkCount = (BigDecimal)orderDtlValueMap.get("checkCount");
-            }
-
-            if (orderDtlCount.doubleValue() <= checkCount.doubleValue()) {
-                //明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
-                orderDetail.setState("5");
-            }
-
-            this.update(orderDetail);
-        }
-
-        //反写订单状态
-        if (orderIdMap.size() > 0) {
-            for (Iterator iterator = orderIdMap.keySet().iterator(); iterator.hasNext();) {
-                String orderId = (String)iterator.next();
-                List<SaleOrderDetail> detailList = this.findSaleOrderDetailListByParentId(orderId);
-
-                SaleOrder parent = new SaleOrder();
-                parent.setId(orderId);
-                this.updateParentStateByDetailList(parent, detailList);
-
-                SaleOrder orderDB = saleOrderService.findSaleOrderById(orderId);
-                //orderSum 订单金额(合计金额 - 折扣金额)
-                BigDecimal orderSum = orderDB.getOrderSum();
-                //订单明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
-                if (this.isAllExistStateByDetailList("5", detailList)) {
-                    if (orderReceiveMap.get(orderId) != null) {
-                        Map<String, BigDecimal> receiveMap = orderReceiveMap.get(orderId);
-
-                        //订单id-订单已完成付款金额
-                        BigDecimal receiveSum = BigDecimal.valueOf(0D);
-                        if (receiveMap.get("receiveSum") != null) {
-                            receiveSum = receiveMap.get("receiveSum");
-                        }
-
-                        if (receiveSum.doubleValue() >= orderSum.doubleValue()) {
-                            SaleOrder editOrder = new SaleOrder();
-                            editOrder.setId(orderId);
-                            //订单状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
-                            editOrder.setState("4");
-                            saleOrderService.update(editOrder);
-                        }
-                    }
-                }
-            }
-        }
-    }
+//
+////            //订单明细发货数量 orderDtlDeliverCount
+////            BigDecimal orderDtlDeliverCount = BigDecimal.valueOf(0D);
+////            if (orderDtlValueMap.get("orderDtlDeliverCount") != null) {
+////                orderDtlDeliverCount = (BigDecimal)orderDtlValueMap.get("orderDtlDeliverCount");
+////            }
+//
+//            //checkCount 验证数量(发货数量-退货数量)
+//            BigDecimal checkCount = BigDecimal.valueOf(0D);
+//            if (orderDtlValueMap.get("checkCount") != null) {
+//                checkCount = (BigDecimal)orderDtlValueMap.get("checkCount");
+//            }
+//
+//            if (orderDtlCount.doubleValue() <= checkCount.doubleValue()) {
+//                //明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
+//                orderDetail.setState("5");
+//            }
+//
+//            this.update(orderDetail);
+//        }
+//
+//        //反写订单状态
+//        if (orderIdMap.size() > 0) {
+//            for (Iterator iterator = orderIdMap.keySet().iterator(); iterator.hasNext();) {
+//                String orderId = (String)iterator.next();
+//                List<SaleOrderDetail> detailList = this.findSaleOrderDetailListByParentId(orderId);
+//
+//                SaleOrder parent = new SaleOrder();
+//                parent.setId(orderId);
+//                this.updateParentStateByDetailList(parent, detailList);
+//
+//                SaleOrder orderDB = saleOrderService.findSaleOrderById(orderId);
+//                //orderSum 订单金额(合计金额 - 折扣金额)
+//                BigDecimal orderSum = orderDB.getOrderSum();
+//                //订单明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
+//                if (this.isAllExistStateByDetailList("5", detailList)) {
+//                    if (orderReceiveMap.get(orderId) != null) {
+//                        Map<String, BigDecimal> receiveMap = orderReceiveMap.get(orderId);
+//
+//                        //订单id-订单已完成付款金额
+//                        BigDecimal receiveSum = BigDecimal.valueOf(0D);
+//                        if (receiveMap.get("receiveSum") != null) {
+//                            receiveSum = receiveMap.get("receiveSum");
+//                        }
+//
+//                        if (receiveSum.doubleValue() >= orderSum.doubleValue()) {
+//                            SaleOrder editOrder = new SaleOrder();
+//                            editOrder.setId(orderId);
+//                            //订单状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
+//                            editOrder.setState("4");
+//                            saleOrderService.update(editOrder);
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**
@@ -795,105 +796,105 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
         return true;
     }
 
-    /**
-     * 订单明细状态，在订单明细List<SaleOrderDetail>中是否全部相同
-     *   true : 一条或多条相同，在订单明细List
-     *   false: 全部不同，在订单明细List
-     *
-     * @param state       明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
-     * @param objectList  盘点单明细List<SaleOrderDetail>
-     * @return
-     */
-    public boolean isExistStateByDetailList(String state, List<SaleOrderDetail> objectList) {
-        if (state == null || state.trim().length() == 0) {return false;}
-        if (objectList == null || objectList.size() == 0) {return false;}
-
-        for (SaleOrderDetail detail : objectList) {
-            String dtl_state = detail.getState();
-            if (dtl_state != null && state.trim().equals(dtl_state.trim())) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * 获取订单状态-根据订单明细状态
-     * 订单状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
-     * 订单明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
-     *
-     * @param dtlList      订单明细List<SaleOrderDetail>
-     * @return
-     */
-    public String findParentStateByDetailList(List<SaleOrderDetail> dtlList) {
-        String parentState = new String("0");
-        if (dtlList == null || dtlList.size() == 0) {return parentState;}
-
-//        //1. 验证订单状态(4:已完成) --> 全部明细状态 (6:已完成) -- 忽视状态(-1:已取消)
-//        String checkDtlState = "6";
-//        if (this.isAllExistStateByDetailList(checkDtlState, dtlList)) {
-//            return "4";
+//    /**
+//     * 订单明细状态，在订单明细List<SaleOrderDetail>中是否全部相同
+//     *   true : 一条或多条相同，在订单明细List
+//     *   false: 全部不同，在订单明细List
+//     *
+//     * @param state       明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
+//     * @param objectList  盘点单明细List<SaleOrderDetail>
+//     * @return
+//     */
+//    public boolean isExistStateByDetailList(String state, List<SaleOrderDetail> objectList) {
+//        if (state == null || state.trim().length() == 0) {return false;}
+//        if (objectList == null || objectList.size() == 0) {return false;}
+//
+//        for (SaleOrderDetail detail : objectList) {
+//            String dtl_state = detail.getState();
+//            if (dtl_state != null && state.trim().equals(dtl_state.trim())) {
+//                return true;
+//            }
 //        }
+//
+//        return false;
+//    }
 
-        //2. 验证订单状态(3:已发货) --> 全部明细状态 (5:已完成) -- 忽视状态(-1:已取消)
-        String checkDtlState = "5";
-        if (this.isAllExistStateByDetailList(checkDtlState, dtlList)) {
-            return "3";
-        }
-
-        //3. 验证订单状态(-1:已取消) --> 全部明细状态 (-1:已取消) -- 忽视状态 null
-        checkDtlState = "-1";
-        if (this.isAllExistStateByDetailList(checkDtlState, dtlList)) {
-            return "-1";
-        }
-
-        return parentState;
-    }
-
-    /**
-     * 获取订单状态-根据订单明细状态
-     * 订单状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
-     * 订单明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
-     *
-     * @param dtlList      订单明细List<SaleOrderDetail>
-     * @return
-     */
-    public SaleOrder findParentStateByDetailList(SaleOrder parent, List<SaleOrderDetail> dtlList) {
-        if (parent == null) {return null;}
-        if (dtlList == null || dtlList.size() == 0) {return null;}
-
-//        //1. 验证订单状态(4:已完成) --> 全部明细状态 (6:已完成) -- 忽视状态(-1:已取消)
-//        String checkDtlState = "6";
+//    /**
+//     * 获取订单状态-根据订单明细状态
+//     * 订单状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
+//     * 订单明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
+//     *
+//     * @param dtlList      订单明细List<SaleOrderDetail>
+//     * @return
+//     */
+//    public String findParentStateByDetailList(List<SaleOrderDetail> dtlList) {
+//        String parentState = new String("0");
+//        if (dtlList == null || dtlList.size() == 0) {return parentState;}
+//
+////        //1. 验证订单状态(4:已完成) --> 全部明细状态 (6:已完成) -- 忽视状态(-1:已取消)
+////        String checkDtlState = "6";
+////        if (this.isAllExistStateByDetailList(checkDtlState, dtlList)) {
+////            return "4";
+////        }
+//
+//        //2. 验证订单状态(3:已发货) --> 全部明细状态 (5:已完成) -- 忽视状态(-1:已取消)
+//        String checkDtlState = "5";
 //        if (this.isAllExistStateByDetailList(checkDtlState, dtlList)) {
-//            parent.setState("4");
+//            return "3";
+//        }
+//
+//        //3. 验证订单状态(-1:已取消) --> 全部明细状态 (-1:已取消) -- 忽视状态 null
+//        checkDtlState = "-1";
+//        if (this.isAllExistStateByDetailList(checkDtlState, dtlList)) {
+//            return "-1";
+//        }
+//
+//        return parentState;
+//    }
+
+//    /**
+//     * 获取订单状态-根据订单明细状态
+//     * 订单状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
+//     * 订单明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
+//     *
+//     * @param dtlList      订单明细List<SaleOrderDetail>
+//     * @return
+//     */
+//    public SaleOrder findParentStateByDetailList(SaleOrder parent, List<SaleOrderDetail> dtlList) {
+//        if (parent == null) {return null;}
+//        if (dtlList == null || dtlList.size() == 0) {return null;}
+//
+////        //1. 验证订单状态(4:已完成) --> 全部明细状态 (6:已完成) -- 忽视状态(-1:已取消)
+////        String checkDtlState = "6";
+////        if (this.isAllExistStateByDetailList(checkDtlState, dtlList)) {
+////            parent.setState("4");
+////            return parent;
+////        }
+//
+//        //2. 验证订单状态(3:已发货) --> 全部明细状态 (5:已完成) -- 忽视状态(-1:已取消)
+//        String checkDtlState = "5";
+//        if (this.isAllExistStateByDetailList(checkDtlState, dtlList)) {
+//            parent.setState("3");
+//            parent.setDeliverDate(new Date());
 //            return parent;
 //        }
-
-        //2. 验证订单状态(3:已发货) --> 全部明细状态 (5:已完成) -- 忽视状态(-1:已取消)
-        String checkDtlState = "5";
-        if (this.isAllExistStateByDetailList(checkDtlState, dtlList)) {
-            parent.setState("3");
-            parent.setDeliverDate(new Date());
-            return parent;
-        }
-
-        //3. 验证订单状态(-1:已取消) --> 全部明细状态 (-1:已取消) -- 忽视状态 null
-        checkDtlState = "-1";
-        if (this.isAllExistStateByDetailList(checkDtlState, dtlList)) {
-            parent.setState("-1");
-            return parent;
-        }
-
-        //4. 验证订单状态(2:待发货) -- 明细列表中状态(4:待发货) 一条或多条
-        checkDtlState = "4";
-        if (this.isExistStateByDetailList(checkDtlState, dtlList)) {
-            parent.setState("2");
-            return parent;
-        }
-
-        return parent;
-    }
+//
+//        //3. 验证订单状态(-1:已取消) --> 全部明细状态 (-1:已取消) -- 忽视状态 null
+//        checkDtlState = "-1";
+//        if (this.isAllExistStateByDetailList(checkDtlState, dtlList)) {
+//            parent.setState("-1");
+//            return parent;
+//        }
+//
+//        //4. 验证订单状态(2:待发货) -- 明细列表中状态(4:待发货) 一条或多条
+//        checkDtlState = "4";
+//        if (this.isExistStateByDetailList(checkDtlState, dtlList)) {
+//            parent.setState("2");
+//            return parent;
+//        }
+//
+//        return parent;
+//    }
 
     /**
      * 获取订单状态-根据订单明细状态
