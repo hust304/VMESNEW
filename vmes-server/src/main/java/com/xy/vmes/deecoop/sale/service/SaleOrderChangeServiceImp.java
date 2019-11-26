@@ -447,6 +447,10 @@ public class SaleOrderChangeServiceImp implements SaleOrderChangeService {
         findMap.put("parentId", orderChangeId);
         List<Map> mapList = ordeDtlChangeService.getDataListPage(findMap, null);
 
+        //TODO 获取当前(订单id)变更金额
+        //获取当前(订单id)变更金额
+
+
         //1.根据订单明细变更记录-拆分订单明细: 遍历查询结果集
         if (mapList != null && mapList.size() > 0) {
             for (Map<String, Object> objectMap : mapList) {
@@ -500,7 +504,13 @@ public class SaleOrderChangeServiceImp implements SaleOrderChangeService {
         this.update(editOrderChange);
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //订单明细变更后-重新获取订单明细状态,订单状态()
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //修改客户账号金额
+        //变更后订单金额 变更前订单金额
 
         return model;
     }
