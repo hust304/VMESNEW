@@ -731,6 +731,12 @@ public class ProductController {
             String companyId = mapObject.get("companyId");
             product.setCompanyId(companyId);
 
+            //sourceCode 企业货品编码 (允许为空)
+            String sourceCode = mapObject.get("sourceCode");
+            if (sourceCode != null && sourceCode.trim().length() > 0) {
+                product.setSourceCode(sourceCode);
+            }
+
             //name 货品名称
             String name = mapObject.get("name");
             product.setName(name);
