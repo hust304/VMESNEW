@@ -629,7 +629,9 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
         } else {
             //获取订单状态-根据订单明细状态
             String parentState = this.findParentStateByDetail(dtlList);
-            parent.setState(parentState);
+            if (parentState != null && parentState.trim().length() > 0) {
+                parent.setState(parentState.trim());
+            }
 
             //订单状态:3:已发货 设定发货日期
             if ("3".equals(parentState)) {
