@@ -59,7 +59,7 @@
 
     <!--发货明细(按订单明细id)汇总(已发货数量)-->
     <!--用于:发货已完成后,变更(订单,订单明细)状态-->
-    <select id="findDeliverDetailByOrderDetaiCount" parameterType="com.yvan.PageData" resultType="java.util.Map">
+    <select id="findDeliverDetailOnOrderDetailByState" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
             deliverDtl.order_detai_id orderDetailId,
 

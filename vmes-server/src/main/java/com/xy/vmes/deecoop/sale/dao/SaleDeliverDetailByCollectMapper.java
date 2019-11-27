@@ -26,13 +26,12 @@ public interface SaleDeliverDetailByCollectMapper {
 //    List<Map<String, Object>> findDeliverDetailOnWarehouseOutDetailByOrder(PageData pageData);
 
     /**
-     * 关联查询(vmes_sale_deliver_detail,vmes_sale_order_detail)
-     * 获取发货出库订单(订单明细id,订购数量,发货数量)
+     * 关联查询(vmes_sale_order_detail,vmes_sale_deliver_detail,vmes_sale_retreat_detail)
      *
      * 创建人：陈刚
      * 创建时间：2019-01-18
      */
-    List<Map<String, Object>> findDeliverDetailByOrderDetaiCount(PageData pageData);
+    List<Map<String, Object>> findDeliverDetailOnOrderDetailByState(PageData pageData);
 
     /**
      * 关联查询(vmes_sale_order_detail,vmes_sale_deliver_detail,vmes_sale_retreat_detail)

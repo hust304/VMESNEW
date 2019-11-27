@@ -42,17 +42,6 @@ public class SaleDeliverDetailByCollectServiceImp implements SaleDeliverDetailBy
 //    }
 
     /**
-     * 关联查询(vmes_sale_deliver_detail,vmes_sale_order_detail)
-     * 获取发货出库订单(订单明细id,订购数量,发货数量)
-     *
-     * 创建人：陈刚
-     * 创建时间：2019-01-18
-     */
-    public List<Map<String, Object>> findDeliverDetailByOrderDetaiCount(PageData pageData) throws Exception {
-        return saleDeliverDetailByCollectMapper.findDeliverDetailByOrderDetaiCount(pageData);
-    }
-
-    /**
      * 按发货单id-获取订单明细发货信息
      * <订单明细id, 发货信息Map>
      *     发货信息Map
@@ -79,7 +68,7 @@ public class SaleDeliverDetailByCollectServiceImp implements SaleDeliverDetailBy
         if (orderDtlIds != null && orderDtlIds.trim().length() > 0) {
             findMap.put("orderDtlIds", orderDtlIds);
         }
-        List<Map<String, Object>> mapList = this.findDeliverDetailByOrderDetaiCount(findMap);
+        List<Map<String, Object>> mapList = this.findDeliverDetailOnOrderDetailByState(findMap);
         if (mapList == null || mapList.size() == 0) {return mapObject;}
 
         for (Map<String, Object> mapObj : mapList) {
@@ -197,6 +186,17 @@ public class SaleDeliverDetailByCollectServiceImp implements SaleDeliverDetailBy
      */
     private List<Map<String, Object>> findDeliverDetailCollectByOrderDetail(PageData pageData) throws Exception {
         return saleDeliverDetailByCollectMapper.findDeliverDetailByOrderDetail(pageData);
+    }
+
+    /**
+     * 关联查询(vmes_sale_deliver_detail,vmes_sale_order_detail)
+     * 获取发货出库订单(订单明细id,订购数量,发货数量)
+     *
+     * 创建人：陈刚
+     * 创建时间：2019-01-18
+     */
+    private List<Map<String, Object>> findDeliverDetailOnOrderDetailByState(PageData pageData) throws Exception {
+        return saleDeliverDetailByCollectMapper.findDeliverDetailOnOrderDetailByState(pageData);
     }
 
 }

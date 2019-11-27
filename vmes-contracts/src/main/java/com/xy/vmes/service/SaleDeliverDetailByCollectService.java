@@ -1,9 +1,6 @@
 package com.xy.vmes.service;
 
-import com.yvan.PageData;
-
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -35,15 +32,15 @@ public interface SaleDeliverDetailByCollectService {
 //     */
 //    List<Map<String, Object>> findDeliverDetailCollectByOrderDetail(PageData pageData) throws Exception;
 
-    /**
-     * 关联查询(vmes_sale_deliver_detail,vmes_sale_order_detail)
-     * 获取发货出库订单(订单明细id,订购数量,发货数量)
-     *
-     * 创建人：陈刚
-     * 创建时间：2019-01-18
-     */
-    List<Map<String, Object>> findDeliverDetailByOrderDetaiCount(PageData pageData) throws Exception;
+//    /**
+//     * 关联查询(vmes_sale_order_detail,vmes_sale_deliver_detail,vmes_sale_retreat_detail)
+//     *
+//     * 创建人：陈刚
+//     * 创建时间：2019-01-18
+//     */
+//    List<Map<String, Object>> findDeliverDetailOnOrderDetailByState(PageData pageData) throws Exception;
 
+    ///////////////////////////////////////////////////////////////////////////////////////////
     /**
      * 按发货单id-获取订单明细发货信息
      * <订单明细id, 发货信息Map>
@@ -62,7 +59,6 @@ public interface SaleDeliverDetailByCollectService {
      */
     Map<String, Map<String, BigDecimal>> findMapOrderDetaiCountByDeliverId(String deliverId, String deliveDtlState, String retreatDtlState, String orderDtlIds) throws Exception;
 
-    ///////////////////////////////////////////////////////////////////////////////////////////
     /**
      * 按订单id-获取订单明细发货信息
      * <订单明细id, 发货信息Map>
