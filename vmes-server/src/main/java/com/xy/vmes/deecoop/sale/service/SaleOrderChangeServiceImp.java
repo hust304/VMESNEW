@@ -438,6 +438,7 @@ public class SaleOrderChangeServiceImp implements SaleOrderChangeService {
     public ResultModel auditPassSaleOrderChange(PageData pageData) throws Exception {
         ResultModel model = new ResultModel();
 
+        String cuser = pageData.getString("cuser");
         String companyId = pageData.getString("currentCompanyId");
         if (companyId == null || companyId.trim().length() == 0) {
             model.putCode("1");
@@ -483,6 +484,7 @@ public class SaleOrderChangeServiceImp implements SaleOrderChangeService {
 
                     SaleOrderDetail addOrderDetail = valueMap.get("addOrderDetail");
                     if (addOrderDetail != null) {
+                        addOrderDetail.setCuser(cuser);
                         saleOrderDetailService.save(addOrderDetail);
                     }
                 }
