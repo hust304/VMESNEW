@@ -59,7 +59,8 @@
             (replace(uuid(), '-', ''), 'saleOrderChange', 'customerName', '客户名称', 18, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
             (replace(uuid(), '-', ''), 'saleOrderChange', 'orderDate', '下单日期', 19, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
 
-            (replace(uuid(), '-', ''), 'saleOrderChange', 'changeStateName', '状态', 20, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin')
+            (replace(uuid(), '-', ''), 'saleOrderChange', 'changeStateName', '状态', 20, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderChange', 'customerId', '客户id', 21, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
 
     </insert>
 
@@ -162,6 +163,8 @@
         saleOrder.order_number orderNumber,
         saleOrder.sys_code sysCode,
         DATE_FORMAT(saleOrder.order_date,'%Y-%m-%d') orderDate,
+        saleOrder.customer_id customerId,
+
         makeUser.user_name makeName,
         customer.name customerName
         from vmes_sale_order_change ordeChange
