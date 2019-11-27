@@ -18,7 +18,6 @@ import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.*;
 
-
 /**
 * 说明：vmes_sale_order_detail:订单明细 实现类
 * 创建人：陈刚 自动创建
@@ -1486,18 +1485,29 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
             saleOrderService.update(editOrderByPayState);
         }
 
-        //订单明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
-        if (this.isAllExistStateByDetailList("5", orderDtlList)) {
-            if (orderId != null) {
-                SaleOrder editOrder = new SaleOrder();
-                editOrder.setId(orderId);
-                if (receiveSum.doubleValue() >= orderSum_new.doubleValue()) {
-                    //订单状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
-                    editOrder.setState("4");
-                    saleOrderService.update(editOrder);
-                }
+        //订单状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
+        String orderState = this.findParentStateByDetail(orderDtlList);
+        if ("3".equals(orderState)) {
+            SaleOrder editOrder = new SaleOrder();
+            editOrder.setId(orderId);
+            if (receiveSum.doubleValue() >= orderSum_new.doubleValue()) {
+                //订单状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
+                editOrder.setState("4");
+                saleOrderService.update(editOrder);
             }
         }
+
+//        if (this.isAllExistStateByDetailList("5", orderDtlList)) {
+//            if (orderId != null) {
+//                SaleOrder editOrder = new SaleOrder();
+//                editOrder.setId(orderId);
+//                if (receiveSum.doubleValue() >= orderSum_new.doubleValue()) {
+//                    //订单状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
+//                    editOrder.setState("4");
+//                    saleOrderService.update(editOrder);
+//                }
+//            }
+//        }
 
         return model;
     }
