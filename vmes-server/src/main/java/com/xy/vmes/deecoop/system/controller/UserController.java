@@ -163,7 +163,6 @@ public class UserController {
         ExcelUtil.buildDefaultExcelDocument( request, response,new ExcelAjaxTemplate() {
             @Override
             public void execute(HttpServletRequest request, HSSFWorkbook workbook) throws Exception {
-                // TODO Auto-generated method stub
                 PageData pd = HttpUtils.parsePageData();
                 List<LinkedHashMap> titles = userService.findColumnList();
                 request.setAttribute("titles", titles.get(0));

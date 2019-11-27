@@ -48,7 +48,6 @@ public class WordController {
 
                 @Override
                 public void execute(HttpServletRequest request,Document document) throws Exception {
-                    // TODO Auto-generated method stub
 //					String cusName = request.getParameter("cusName");
 
                     Font FontChinese = WordUtil.font;//加入document：

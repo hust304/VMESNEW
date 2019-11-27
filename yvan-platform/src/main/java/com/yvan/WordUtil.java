@@ -37,7 +37,6 @@ public class WordUtil {
 	//      font.setStyle(Font.BOLD);//加粗  
 	        font.setColor(new Color(0,0,0)); 
         } catch (Exception e) {
-			// TODO Auto-generated catch block
         	e.printStackTrace();
 			StringWriter sw = new StringWriter();
 			e.printStackTrace(new PrintWriter(sw));

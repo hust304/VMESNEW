@@ -120,7 +120,6 @@ public class MacUtils {
 
 
     public static void main(String[] args) {
-        // TODO Auto-generated method stub
 
         //****************获取MAC地址*****************//
         System.out.println("***MAC地址***");

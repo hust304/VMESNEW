@@ -921,7 +921,7 @@ public class YvanRedisCache extends RedisCache {
 
     /**
      * @author Christoph Strobl
-     * @since 1.7 (TODO: remove when upgrading to spring 4.3)
+     * @since 1.7
      */
     private static enum CacheValueRetrievalExceptionFactory {
 

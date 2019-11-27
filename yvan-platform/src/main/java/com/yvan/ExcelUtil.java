@@ -590,7 +590,6 @@ public class ExcelUtil{
 	    
 	    
 //	public static void buildExcelDocument( HttpServletRequest request,HttpServletResponse response,ExcelAjaxTemplate callBack) throws Exception {
-//			// TODO Auto-generated method stub
 //    	ServletOutputStream out = response.getOutputStream();
 //    	try{
 //			HSSFWorkbook workbook = new HSSFWorkbook();
