@@ -25,6 +25,16 @@ public interface SaleDeliverDetailByCollectService {
      */
     //Map<String, Object> findDeliverDetailOnWarehouseOutDetailByOrder(PageData pageData) throws Exception;
 
+//    /**
+//     * 关联查询(vmes_sale_order_detail,vmes_sale_deliver_detail,vmes_sale_retreat_detail)
+//     * 发货明细状态:1:已发货  发货明细状态(0:待发货 1:已发货 -1:已取消)
+//     * 退货明细状态:3:已完成  退货明细状态(0:待提交 1:待审核 2:待退款 3:已完成 -1:已取消)
+//     *
+//     * 创建人：陈刚
+//     * 创建时间：2019-01-18
+//     */
+//    List<Map<String, Object>> findDeliverDetailCollectByOrderDetail(PageData pageData) throws Exception;
+
     /**
      * 关联查询(vmes_sale_deliver_detail,vmes_sale_order_detail)
      * 获取发货出库订单(订单明细id,订购数量,发货数量)
@@ -53,15 +63,6 @@ public interface SaleDeliverDetailByCollectService {
     Map<String, Map<String, BigDecimal>> findMapOrderDetaiCountByDeliverId(String deliverId, String deliveDtlState, String retreatDtlState, String orderDtlIds) throws Exception;
 
     ///////////////////////////////////////////////////////////////////////////////////////////
-    /**
-     * 关联查询(vmes_sale_deliver_detail,vmes_sale_order_detail)
-     * 获取发货出库订单(订单明细id,订购数量,发货数量)
-     *
-     * 创建人：陈刚
-     * 创建时间：2019-01-18
-     */
-    //List<Map<String, Object>> findDeliverDetailCollectByOrderDetaiCount(PageData pageData) throws Exception;
-
     /**
      * 按订单id-获取订单明细发货信息
      * <订单明细id, 发货信息Map>

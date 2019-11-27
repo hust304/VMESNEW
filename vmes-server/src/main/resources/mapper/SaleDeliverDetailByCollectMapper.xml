@@ -7,7 +7,7 @@
  -->
 <mapper namespace="com.xy.vmes.deecoop.sale.dao.SaleDeliverDetailByCollectMapper">
     <!--发货明细(按订单明细id)汇总-->
-    <select id="findDeliverDetailByOrderDetai" parameterType="com.yvan.PageData" resultType="java.util.Map">
+    <select id="findDeliverDetailByOrderDetail" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
             orderDetail.id orderDtlId,
             orderDetail.parent_id orderId,

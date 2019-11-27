@@ -121,18 +121,6 @@ public class SaleDeliverDetailByCollectServiceImp implements SaleDeliverDetailBy
 
     ///////////////////////////////////////////////////////////////////////////////////////////
     /**
-     * 关联查询(vmes_sale_deliver_detail,vmes_sale_order_detail)
-     * 获取发货出库订单(订单明细id,订购数量,发货数量)
-     *
-     * 创建人：陈刚
-     * 创建时间：2019-01-18
-     */
-    public List<Map<String, Object>> findDeliverDetailCollectByOrderDetaiCount(PageData pageData) throws Exception {
-        return saleDeliverDetailByCollectMapper.findDeliverDetailByOrderDetai(pageData);
-    }
-
-
-    /**
      * 按订单id-获取订单明细发货信息
      * <订单明细id, 发货信息Map>
      *     发货信息Map
@@ -156,7 +144,7 @@ public class SaleDeliverDetailByCollectServiceImp implements SaleDeliverDetailBy
         orderIds = "'" + orderIds.replace(",", "','") + "'";
         findMap.put("orderIds", orderIds);
 
-        List<Map<String, Object>> mapList = this.findDeliverDetailCollectByOrderDetaiCount(findMap);
+        List<Map<String, Object>> mapList = this.findDeliverDetailCollectByOrderDetail(findMap);
         if (mapList == null || mapList.size() == 0) {return mapObject;}
 
         for (Map<String, Object> mapObj : mapList) {
@@ -196,6 +184,19 @@ public class SaleDeliverDetailByCollectServiceImp implements SaleDeliverDetailBy
         }
 
         return mapObject;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////
+    /**
+     * 关联查询(vmes_sale_order_detail,vmes_sale_deliver_detail,vmes_sale_retreat_detail)
+     * 发货明细状态:1:已发货  发货明细状态(0:待发货 1:已发货 -1:已取消)
+     * 退货明细状态:3:已完成  退货明细状态(0:待提交 1:待审核 2:待退款 3:已完成 -1:已取消)
+     *
+     * 创建人：陈刚
+     * 创建时间：2019-01-18
+     */
+    private List<Map<String, Object>> findDeliverDetailCollectByOrderDetail(PageData pageData) throws Exception {
+        return saleDeliverDetailByCollectMapper.findDeliverDetailByOrderDetail(pageData);
     }
 
 }
