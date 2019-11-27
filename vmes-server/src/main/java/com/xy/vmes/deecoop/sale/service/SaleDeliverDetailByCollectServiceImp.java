@@ -43,6 +43,8 @@ public class SaleDeliverDetailByCollectServiceImp implements SaleDeliverDetailBy
 
     /**
      * 按发货单id-获取订单明细发货信息
+     * 查询语句: SaleDeliverDetailByCollectMapper.findDeliverDetailOnOrderDetailByState
+     *
      * <订单明细id, 发货信息Map>
      *     发货信息Map
      *     orderCount: 订单明细订购数量
@@ -52,8 +54,8 @@ public class SaleDeliverDetailByCollectServiceImp implements SaleDeliverDetailBy
      * 根据发货单id-获取(订单明细id,订购数量,发货数量)
      *
      * @param deliverId       发货单id
-     * @param deliveDtlState  发货单明细状态
-     * @param retreatDtlState 退货单明细状态
+     * @param deliveDtlState  发货单明细状态 (0:待发货 1:已发货 -1:已取消)
+     * @param retreatDtlState 退货单明细状态 (0:待提交 1:待审核 2:待退款 3:已完成 -1:已取消)
      * @param orderDtlIds     订单明细id
      * @return
      */
@@ -111,9 +113,13 @@ public class SaleDeliverDetailByCollectServiceImp implements SaleDeliverDetailBy
     ///////////////////////////////////////////////////////////////////////////////////////////
     /**
      * 按订单id-获取订单明细发货信息
+     * 查询语句: SaleDeliverDetailByCollectMapper.findDeliverDetailByOrderDetail
+     * 发货明细状态:1:已发货  发货明细状态(0:待发货 1:已发货 -1:已取消)
+     * 退货明细状态:3:已完成  退货明细状态(0:待提交 1:待审核 2:待退款 3:已完成 -1:已取消)
+     *
      * <订单明细id, 发货信息Map>
      *     发货信息Map
-     *         orderId: 订单明细id
+     *         orderId
      *         orderDtlCount:订单明细订购数量
      *         orderDtlSum: 订单明细货品金额
      *         checkCount: 验证数量(发货数量-退货数量)

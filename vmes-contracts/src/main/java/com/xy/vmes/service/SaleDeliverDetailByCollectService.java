@@ -43,6 +43,8 @@ public interface SaleDeliverDetailByCollectService {
     ///////////////////////////////////////////////////////////////////////////////////////////
     /**
      * 按发货单id-获取订单明细发货信息
+     * 查询语句: SaleDeliverDetailByCollectMapper.findDeliverDetailOnOrderDetailByState
+     *
      * <订单明细id, 发货信息Map>
      *     发货信息Map
      *     orderCount: 订单明细订购数量
@@ -61,6 +63,10 @@ public interface SaleDeliverDetailByCollectService {
 
     /**
      * 按订单id-获取订单明细发货信息
+     * 查询语句: SaleDeliverDetailByCollectMapper.findDeliverDetailByOrderDetail
+     * 发货明细状态:1:已发货  发货明细状态(0:待发货 1:已发货 -1:已取消)
+     * 退货明细状态:3:已完成  退货明细状态(0:待提交 1:待审核 2:待退款 3:已完成 -1:已取消)
+     *
      * <订单明细id, 发货信息Map>
      *     发货信息Map
      *         orderId
