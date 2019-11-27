@@ -63,29 +63,15 @@
 
         makeUser.user_name makeName,
         customer.name customerName,
-        <!--订单付款进度 付款明细表汇总 view_sale_receive_detail-->
-        round(ifnull(receive.amount, 0),2) receiveSum,
-        <!--付款进度百分比 (付款金额 / 订单金额 * 100) %-->
-        CASE
-          WHEN ifnull(saleOrder.order_sum, 0) = 0 THEN 0
-          WHEN ifnull(saleOrder.order_sum, 0) <![CDATA[<>]]> 0 THEN round((ifnull(receive.amount, 0) / ifnull(saleOrder.order_sum, 0)) * 100, 0)
-        ELSE null
-        END receiveProgress,
 
         <!--发货金额-发货明细表汇总(1:已发货)-->
         round(ifnull(deliverDtl.deliverSum, 0), 2) deliverSum,
-        round((ifnull(deliverDtl.deliverSum, 0) - ifnull(saleOrder.advance_sum, 0)), 2) receivables,
-
-        <!--开票状态(未开票,开票中,开票完成)-->
-        invoiceOrderTable.isInvoice
+        round((ifnull(deliverDtl.deliverSum, 0) - ifnull(saleOrder.advance_sum, 0)), 2) receivables
 
         from vmes_sale_order saleOrder
         left join vmes_customer customer on saleOrder.customer_id = customer.id
         left join vmes_user makeUser on saleOrder.make_id = makeUser.id
         left join vmes_sale_order_detail orderDetail on saleOrder.id = orderDetail.parent_id
-
-        <!--付款明细表汇总 view_sale_receive_detail-->
-        left join view_sale_receive_detail receive on saleOrder.id = receive.order_id
 
         <!--发货明细表汇总(1:已发货) vmes_sale_deliver_detail-->
         left join (
@@ -94,59 +80,6 @@
             where state = '1'
             group by order_id
         ) deliverDtl on saleOrder.id = deliverDtl.order_id
-
-        <!--(订单id)汇总开票数量 模块查询条件-->
-        left join (
-            select
-                orderCount.orderId,
-                <!--汇总订购数量-->
-                round(ifnull(orderCount.order_count, 0),2) orderCount,
-                <!--汇总开票数量-->
-                round(ifnull(invoiceOrder.order_count, 0),2) invoiceCount,
-                CASE
-                  <!--未开票: 开票数量 = 0 -->
-                  WHEN ifnull(invoiceOrder.order_count, 0) = 0 THEN '未开票'
-                  <!--开票中: 开票数量 > 0 and (开票数量 < 订购数量)-->
-                  WHEN ifnull(invoiceOrder.order_count, 0) <![CDATA[>]]> 0 and (ifnull(invoiceOrder.order_count, 0) <![CDATA[<]]> ifnull(orderCount.order_count, 0)) THEN '开票中'
-                  <!--开票完成: (开票数量 >= 订购数量)-->
-                  WHEN ifnull(invoiceOrder.order_count, 0) <![CDATA[>=]]> ifnull(orderCount.order_count, 0) THEN '开票完成'
-                ELSE null
-                END isInvoice
-            from (
-                <!--(订单id)汇总订购数量-->
-                select parent_id orderId, sum(order_count) order_count
-                from vmes_sale_order_detail
-                where parent_id in (
-                    select id
-                    from vmes_sale_order
-                    <where>
-                        <if test="currentCompanyId != null and currentCompanyId != ''">
-                            and company_id = #{currentCompanyId}
-                        </if>
-                        and state <![CDATA[<>]]> '-1'
-                    </where>
-                )
-                group by parent_id
-            ) orderCount
-                left join (
-                    <!--(订单id)汇总开票数量-->
-                    select orderDtl.parent_id orderId, sum(invoice.count) order_count
-                    from (
-                        select order_detail_id,count
-                        from vmes_sale_invoice_detail
-                        where parent_id in (
-                            select id
-                            from vmes_sale_invoice
-                            <where>
-                                <if test="currentCompanyId != null and currentCompanyId != ''" >
-                                    and company_id = #{currentCompanyId}
-                                </if>
-                            </where>
-                        ) and state <![CDATA[<>]]> '-1'
-                    ) invoice left join vmes_sale_order_detail orderDtl on invoice.order_detail_id = orderDtl.id
-                    group by orderDtl.parent_id
-                ) invoiceOrder on orderCount.orderId = invoiceOrder.orderId
-        ) invoiceOrderTable on saleOrder.id = invoiceOrderTable.orderId
 
         <where>
             <if test="currentCompanyId != null and currentCompanyId != ''" >
