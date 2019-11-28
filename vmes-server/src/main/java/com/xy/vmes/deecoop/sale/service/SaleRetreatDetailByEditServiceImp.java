@@ -52,34 +52,34 @@ public class SaleRetreatDetailByEditServiceImp implements SaleRetreatDetailByEdi
         }
 
         List<Map> varList = this.findRetreatDetailByEdit(pageData);
-        for (Map<String, Object> mapObj : varList) {
-            //receiveAmount 实收金额
-            BigDecimal receiveAmount = BigDecimal.valueOf(0D);
-            if (mapObj.get("receiveAmount") != null) {
-                receiveAmount = (BigDecimal)mapObj.get("receiveAmount");
-            }
-            //四舍五入到2位小数
-            receiveAmount = receiveAmount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-            mapObj.put("receiveAmount", receiveAmount.toString());
-
-            //orderSum 退货金额
-            BigDecimal orderSum = BigDecimal.valueOf(0D);
-            if (mapObj.get("orderSum") != null) {
-                orderSum = (BigDecimal)mapObj.get("orderSum");
-            }
-            //四舍五入到2位小数
-            orderSum = orderSum.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-
-            //(实收金额 <= 退货金额) 退货金额 := 实收金额
-            //(实收金额 > 退货金额) 退货金额 := 退货金额
-            if (receiveAmount.doubleValue() <= orderSum.doubleValue()) {
-                //(实收金额 <= 退货金额) 退货金额 := 实收金额
-                mapObj.put("orderSum", receiveAmount.toString());
-            } else if (receiveAmount.doubleValue() > orderSum.doubleValue()) {
-                //(实收金额 > 退货金额) 退货金额 := 退货金额
-                mapObj.put("orderSum", orderSum.toString());
-            }
-        }
+//        for (Map<String, Object> mapObj : varList) {
+//            //receiveAmount 实收金额
+//            BigDecimal receiveAmount = BigDecimal.valueOf(0D);
+//            if (mapObj.get("receiveAmount") != null) {
+//                receiveAmount = (BigDecimal)mapObj.get("receiveAmount");
+//            }
+//            //四舍五入到2位小数
+//            receiveAmount = receiveAmount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+//            mapObj.put("receiveAmount", receiveAmount.toString());
+//
+//            //orderSum 退货金额
+//            BigDecimal orderSum = BigDecimal.valueOf(0D);
+//            if (mapObj.get("orderSum") != null) {
+//                orderSum = (BigDecimal)mapObj.get("orderSum");
+//            }
+//            //四舍五入到2位小数
+//            orderSum = orderSum.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+//
+//            //(实收金额 <= 退货金额) 退货金额 := 实收金额
+//            //(实收金额 > 退货金额) 退货金额 := 退货金额
+//            if (receiveAmount.doubleValue() <= orderSum.doubleValue()) {
+//                //(实收金额 <= 退货金额) 退货金额 := 实收金额
+//                mapObj.put("orderSum", receiveAmount.toString());
+//            } else if (receiveAmount.doubleValue() > orderSum.doubleValue()) {
+//                //(实收金额 > 退货金额) 退货金额 := 退货金额
+//                mapObj.put("orderSum", orderSum.toString());
+//            }
+//        }
         List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
 
         Map result = new HashMap();

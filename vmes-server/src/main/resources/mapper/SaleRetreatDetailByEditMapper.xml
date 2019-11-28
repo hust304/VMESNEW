@@ -105,7 +105,6 @@
             saleOrder.id orderId,
             saleOrder.sys_code sysOrderCode,
             saleOrder.order_sum orderTotalSum,
-            round(ifnull(receive.receive_amount, 0), 2) receiveAmount,
 
             deliver.deliver_code deliverCode,
             round(ifnull(deliverDetail.order_count, 0), 2) deliverOrderCount
@@ -143,14 +142,6 @@
                 group by deliver_detail_id
             ) retreatDetailByEdit on detail.deliver_detail_id = retreatDetailByEdit.deliver_detail_id
         </if>
-
-            <!--收款明细汇总-->
-            left join (
-                select order_id, sum(receive_amount) receive_amount, sum(discount_amount) discount_amount
-                from vmes_sale_receive_detail
-                where state = '1'
-                group by order_id
-            ) receive on orderDetail.parent_id = receive.order_id
 
         <where>
             <if test="parentId != null and parentId != ''" >
