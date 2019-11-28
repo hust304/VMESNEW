@@ -28,12 +28,12 @@ public class SaleRetreatAuditServiceImp implements SaleRetreatAuditService {
     @Autowired
     private SaleOrderDetailService saleOrderDetailService;
 
-    @Autowired
-    private SaleReceiveService saleReceiveService;
-    @Autowired
-    private SaleReceiveDetailService saleReceiveDetailService;
-    @Autowired
-    private SaleReceiveRecordService saleReceiveRecordService;
+//    @Autowired
+//    private SaleReceiveService saleReceiveService;
+//    @Autowired
+//    private SaleReceiveDetailService saleReceiveDetailService;
+//    @Autowired
+//    private SaleReceiveRecordService saleReceiveRecordService;
 
     @Autowired
     private WarehouseInCreateService warehouseInCreateService;
@@ -41,6 +41,9 @@ public class SaleRetreatAuditServiceImp implements SaleRetreatAuditService {
     private SaleDeliverDetailByCollectService saleDeliverDetailByCollectService;
     @Autowired
     private RoleMenuService roleMenuService;
+
+    @Autowired
+    private FinanceBillService financeBillService;
 
     /**
      * 退货单审核(创建入库单,退货单明细)
@@ -611,7 +614,7 @@ public class SaleRetreatAuditServiceImp implements SaleRetreatAuditService {
             orderIdBuf.append(orderId).append(",");
 
             List<SaleOrderDetail> orderDetailList = saleOrderDetailService.findSaleOrderDetailListByParentId(orderId);
-            BigDecimal orderTotalSum =  saleOrderDetailService.findTotalSumByPrice(orderDetailList);
+            BigDecimal orderTotalSum = saleOrderDetailService.findTotalSumByPrice(orderDetailList);
 
             orderEdit.setOrderSum(orderTotalSum);
             orderEdit.setTotalSum(orderTotalSum);
@@ -632,41 +635,51 @@ public class SaleRetreatAuditServiceImp implements SaleRetreatAuditService {
             //订单id-订单退货金额(页面输入框)
             List<SaleRetreatDetail> retreatDtlListByOrderRetreatSum = orderRetreatSumMap.get(orderId);
             BigDecimal orderRetreatSum = saleRetreatDetailService.findTotalSumByDetailList(retreatDtlListByOrderRetreatSum);
-            if (orderRetreatSum != null) {
-                //退钱给客户
-                saleReceiveRecordService.editCustomerBalanceByOrder(
-                        customerId,
-                        null,
-                        //操作类型 (0:变更 1:录入收款 2:预付款 3:退货退款 4:订单变更退款 -1:费用分摊)
-                        "3",
-                        BigDecimal.valueOf(orderRetreatSum.doubleValue()),
-                        cuser,
-                        remark);
 
-                //创建收款单-负数的收款单
-                //收款单类型(0:预收款 1:普通收款 2:发货退款 3:订单退款)
-                SaleReceive receive = saleReceiveService.createReceive(customerId,
-                        cuser,
-                        companyId,
-                        "3");
-                receive.setReceiveSum(BigDecimal.valueOf(orderRetreatSum.doubleValue() * -1));
-                saleReceiveService.save(receive);
+            //创建付款单
+            financeBillService.addFinanceBillBySys(companyId,
+                    customerId,
+                    cuser,
+                    //type 单据类型 ( 0:收款单 1:付款单 2:减免单 3:退款单 4:发货账单 5:发退货账单 6:收货账单 7:收退货账单)
+                    "5",
+                    orderRetreatSum);
 
-                //2. 创建收款单明细
-                //获取 <订单id, 退货金额>
-                SaleReceiveDetail receiveDtl = new SaleReceiveDetail();
-                receiveDtl.setOrderId(orderId);
-                //收款单状态(0:待收款 1:已收款 -1:已取消)
-                receiveDtl.setState("1");
-                //receiveAmount 实收金额
-                receiveDtl.setReceiveAmount(BigDecimal.valueOf(orderRetreatSum.doubleValue() * -1));
-                //discountAmount 折扣金额
-                receiveDtl.setDiscountAmount(BigDecimal.valueOf(0D));
 
-                List<SaleReceiveDetail> receiveDtlList = new ArrayList<SaleReceiveDetail>();
-                receiveDtlList.add(receiveDtl);
-                saleReceiveDetailService.addReceiveDetail(receive, receiveDtlList);
-            }
+//            if (orderRetreatSum != null) {
+//                //退钱给客户
+//                saleReceiveRecordService.editCustomerBalanceByOrder(
+//                        customerId,
+//                        null,
+//                        //操作类型 (0:变更 1:录入收款 2:预付款 3:退货退款 4:订单变更退款 -1:费用分摊)
+//                        "3",
+//                        BigDecimal.valueOf(orderRetreatSum.doubleValue()),
+//                        cuser,
+//                        remark);
+//
+//                //创建收款单-负数的收款单
+//                //收款单类型(0:预收款 1:普通收款 2:发货退款 3:订单退款)
+//                SaleReceive receive = saleReceiveService.createReceive(customerId,
+//                        cuser,
+//                        companyId,
+//                        "3");
+//                receive.setReceiveSum(BigDecimal.valueOf(orderRetreatSum.doubleValue() * -1));
+//                saleReceiveService.save(receive);
+//
+//                //2. 创建收款单明细
+//                //获取 <订单id, 退货金额>
+//                SaleReceiveDetail receiveDtl = new SaleReceiveDetail();
+//                receiveDtl.setOrderId(orderId);
+//                //收款单状态(0:待收款 1:已收款 -1:已取消)
+//                receiveDtl.setState("1");
+//                //receiveAmount 实收金额
+//                receiveDtl.setReceiveAmount(BigDecimal.valueOf(orderRetreatSum.doubleValue() * -1));
+//                //discountAmount 折扣金额
+//                receiveDtl.setDiscountAmount(BigDecimal.valueOf(0D));
+//
+//                List<SaleReceiveDetail> receiveDtlList = new ArrayList<SaleReceiveDetail>();
+//                receiveDtlList.add(receiveDtl);
+//                saleReceiveDetailService.addReceiveDetail(receive, receiveDtlList);
+//            }
         }
     }
 
@@ -723,47 +736,11 @@ public class SaleRetreatAuditServiceImp implements SaleRetreatAuditService {
 
             //orderId:订单id
             String orderId = (String)orderObjMap.get("orderId");
-            List<SaleOrderDetail> orderDetailList = saleOrderDetailService.findSaleOrderDetailListByParentId(orderId);
 
             //修改订单状态
             SaleOrder parent = new SaleOrder();
             parent.setId(orderId);
-            saleOrderDetailService.updateParentStateByDetailList(parent, orderDetailList);
-
-            //orderTotalSum 订单金额
-            BigDecimal orderTotalSum =  saleOrderDetailService.findTotalSumByPrice(orderDetailList);
-
-            //获取订单付款信息<订单id, 订单付款信息Map> - (receiveSum: 付款金额)
-            Map<String, Map<String, BigDecimal>> orderReceiveMap = saleReceiveDetailService.findMapOrderReceiveByOrderId(orderId, "1");
-            Map<String, BigDecimal> receiveMap = orderReceiveMap.get(orderId);
-            //订单id-订单已完成付款金额
-            BigDecimal receiveSum = BigDecimal.valueOf(0D);
-            if (receiveMap != null && receiveMap.get("receiveSum") != null) {
-                receiveSum = receiveMap.get("receiveSum");
-            }
-
-            SaleOrder editOrderByPayState = new SaleOrder();
-            editOrderByPayState.setId(orderId);
-            if (receiveSum.doubleValue() >= orderTotalSum.doubleValue()) {
-                //付款完成日期 payDate
-                editOrderByPayState.setPayDate(new Date());
-                //付款状态(0:未付款 1:付款中 2:已付款) pay_state
-                editOrderByPayState.setPayState("2");
-                saleOrderService.update(editOrderByPayState);
-            }
-
-            //订单明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
-            if (saleOrderDetailService.isAllExistStateByDetailList("5", orderDetailList)) {
-                if (orderId != null) {
-                    SaleOrder editOrder = new SaleOrder();
-                    editOrder.setId(orderId);
-                    if (receiveSum.doubleValue() >= orderTotalSum.doubleValue()) {
-                        //订单状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
-                        editOrder.setState("4");
-                        saleOrderService.update(editOrder);
-                    }
-                }
-            }
+            saleOrderDetailService.updateParentStateByDetailList(parent, null);
         }
     }
 
