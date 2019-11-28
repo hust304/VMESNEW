@@ -332,7 +332,8 @@
     <!-- warehouseEdition(仓库版本): warehouseBySimple(简版仓库)-对应实体库(简版仓库)********************************************* -->
     <select id="findWarehouseProductBySimple" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
-            concat(warehouseProduct.warehouse_id,'-',warehouseProduct.product_id,'-',warehouseProduct.company_id) id,
+        <!--concat(warehouseProduct.warehouse_id,'-',warehouseProduct.product_id,'-',warehouseProduct.company_id) id,-->
+            replace(uuid(), '-', '') id,
             warehouseProduct.company_id companyId,
             warehouseProduct.warehouse_id warehouseId,
             warehouseProduct.product_id productId,
@@ -568,7 +569,8 @@
     <!-- warehouseEdition(仓库版本): warehouseBySimple(简版仓库)-对应实体库(简版仓库)********************************************* -->
     <select id="findWarehouseProductByWC" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
-            concat(warehouseProduct.warehouse_id,'-',warehouseProduct.product_id,'-',warehouseProduct.company_id) id,
+        <!--concat(warehouseProduct.warehouse_id,'-',warehouseProduct.product_id,'-',warehouseProduct.company_id) id,-->
+            replace(uuid(), '-', '') id,
             warehouseProduct.id warehouseProductId,
             warehouseProduct.company_id companyId,
             warehouseProduct.warehouse_id warehouseId,
