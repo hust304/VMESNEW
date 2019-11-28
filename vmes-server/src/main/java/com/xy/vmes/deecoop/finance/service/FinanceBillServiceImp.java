@@ -916,8 +916,8 @@ public class FinanceBillServiceImp implements FinanceBillService {
         String code = coderuleService.createCoderCdateByDate(companyId,"vmes_finance_bill","yyyyMMdd","R");
         addObject.setCode(code);
 
-        //period 收/付款期间(yyyymm)
-        String period = DateFormat.date2String(new Date(), "yyyymm");
+        //period 收/付款期间(yyyyMM)
+        String period = DateFormat.date2String(new Date(), "yyyyMM");
         addObject.setPeriod(period);
 
         this.save(addObject);
