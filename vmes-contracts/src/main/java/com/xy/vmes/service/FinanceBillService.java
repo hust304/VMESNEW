@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.math.BigDecimal;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -185,6 +187,13 @@ public interface FinanceBillService {
     void saveFinancePeriod(String companyId) throws Exception;
 
     List<Map> getFinanceReceiveView(PageData pd,Pagination pg) throws Exception;
+
+
+    void addFinanceBillBySys(String companyId,
+                             String customerId,
+                             String userId,
+                             String type,
+                             BigDecimal amount) throws Exception;
 }
 
 

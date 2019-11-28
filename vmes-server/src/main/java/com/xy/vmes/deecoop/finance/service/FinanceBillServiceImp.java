@@ -1,6 +1,7 @@
 package com.xy.vmes.deecoop.finance.service;
 
 
+import com.xy.vmes.common.util.DateFormat;
 import com.xy.vmes.deecoop.finance.dao.FinanceBillMapper;
 import com.xy.vmes.entity.FinanceBill;
 import com.xy.vmes.entity.FinanceHistory;
@@ -885,6 +886,40 @@ public class FinanceBillServiceImp implements FinanceBillService {
         }
 
         return model;
+    }
+
+    public void addFinanceBillBySys(String companyId,
+                             String customerId,
+                             String userId,
+                             String type,
+                             BigDecimal amount) throws Exception {
+        FinanceBill addObject = new FinanceBill();
+        addObject.setCompanyId(companyId);
+        addObject.setCustomerId(customerId);
+        addObject.setCuser(userId);
+        //type 单据类型 ( 0:收款单 1:付款单 2:减免单 3:退款单 4:发货账单 5:发退货账单 6:收货账单 7:收退货账单)
+        addObject.setType(type);
+        //amount 金额
+        if (amount != null) {
+            addObject.setAmount(amount);
+        }
+
+        //suser 审核用户id
+        //sdate 审核时间
+        addObject.setSdate(new Date());
+
+        //state 状态（0：待提交 1：待审核 2：已审核 -1：已取消）
+        addObject.setState("2");
+
+        //生成付款单编码
+        String code = coderuleService.createCoderCdateByDate(companyId,"vmes_finance_bill","yyyyMMdd","R");
+        addObject.setCode(code);
+
+        //period 收/付款期间(yyyymm)
+        String period = DateFormat.date2String(new Date(), "yyyymm");
+        addObject.setPeriod(period);
+
+        this.save(addObject);
     }
 }
 
