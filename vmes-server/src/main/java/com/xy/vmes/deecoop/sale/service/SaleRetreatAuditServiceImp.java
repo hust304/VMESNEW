@@ -94,6 +94,11 @@ public class SaleRetreatAuditServiceImp implements SaleRetreatAuditService {
             return model;
         }
         String customerId = pageData.getString("customerId");
+        if (customerId == null || customerId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("客户id为空或空字符串！");
+            return model;
+        }
         String customerName = pageData.getString("customerName");
 
         String dtlJsonStr = pageData.getString("dtlJsonStr");
@@ -212,22 +217,31 @@ public class SaleRetreatAuditServiceImp implements SaleRetreatAuditService {
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //退货单id parentId 退货单id(parentId) 获取退货单表对象
         SaleRetreat retreat = saleRetreatService.findSaleRetreatById(parentId);
+
         //根据退货类型
         //retreatRefund: f69839bbf2394846a65894f0da120df9 退货退款
         //retreatChange: c90c2081328c427e8d65014d98335601 退货换货
         if (Common.DICTIONARY_MAP.get("retreatRefund").equals(retreat.getType())) {
             //1. 修改销售订单明细-变更订单明细(订购数量,货品金额)
-            //2. 创建(负值)的收款单
-            this.updateSaleOrder(customerId,
-                    companyId,
-                    cuser,
-                    retreatDtlMapList,
-                    orderDtlRetreatMap,
-                    orderDtlList);
+            this.updateSaleOrder(retreatDtlMapList, orderDtlRetreatMap, orderDtlList);
         }
 
         //修改销售(订单,订单明细)状态
         this.updateSaleOrderByState(retreatDtlMapList, orderDtlList);
+
+        //生成付款单
+        BigDecimal retreatSum = BigDecimal.valueOf(0D);
+        if (retreat != null && retreat.getTotalSum() != null) {
+            retreatSum = retreat.getTotalSum();
+        }
+
+        //创建付款单
+        financeBillService.addFinanceBillBySys(companyId,
+                customerId,
+                cuser,
+                //type 单据类型 ( 0:收款单 1:付款单 2:减免单 3:退款单 4:发货账单 5:发退货账单 6:收货账单 7:收退货账单)
+                "5",
+                retreatSum);
 
         return model;
     }
@@ -576,17 +590,11 @@ public class SaleRetreatAuditServiceImp implements SaleRetreatAuditService {
      * 1. 修改销售订单明细-变更订单明细(订购数量,货品金额)
      * 2. 创建(负值)的收款单
      *
-     * @param customerId
-     * @param companyId
-     * @param cuser
      * @param retreatDtlMapList
      * @param orderDtlRetreatMap
      * @param orderDtlList
      */
-    private void updateSaleOrder(String customerId,
-                                 String companyId,
-                                 String cuser,
-                                 List<Map<String, String>> retreatDtlMapList,
+    private void updateSaleOrder(List<Map<String, String>> retreatDtlMapList,
                                  Map<String, Map<String, BigDecimal>> orderDtlRetreatMap,
                                  List<SaleOrderDetail> orderDtlList) throws Exception {
         //修改订单明细-变更订单明细(订购数量,货品金额)
@@ -632,17 +640,17 @@ public class SaleRetreatAuditServiceImp implements SaleRetreatAuditService {
             //修改订单信息(备注，订单金额)
             saleOrderService.update(orderEdit);
 
-            //订单id-订单退货金额(页面输入框)
-            List<SaleRetreatDetail> retreatDtlListByOrderRetreatSum = orderRetreatSumMap.get(orderId);
-            BigDecimal orderRetreatSum = saleRetreatDetailService.findTotalSumByDetailList(retreatDtlListByOrderRetreatSum);
-
-            //创建付款单
-            financeBillService.addFinanceBillBySys(companyId,
-                    customerId,
-                    cuser,
-                    //type 单据类型 ( 0:收款单 1:付款单 2:减免单 3:退款单 4:发货账单 5:发退货账单 6:收货账单 7:收退货账单)
-                    "5",
-                    orderRetreatSum);
+//            //订单id-订单退货金额(页面输入框)
+//            List<SaleRetreatDetail> retreatDtlListByOrderRetreatSum = orderRetreatSumMap.get(orderId);
+//            BigDecimal orderRetreatSum = saleRetreatDetailService.findTotalSumByDetailList(retreatDtlListByOrderRetreatSum);
+//
+//            //创建付款单
+//            financeBillService.addFinanceBillBySys(companyId,
+//                    customerId,
+//                    cuser,
+//                    //type 单据类型 ( 0:收款单 1:付款单 2:减免单 3:退款单 4:发货账单 5:发退货账单 6:收货账单 7:收退货账单)
+//                    "5",
+//                    orderRetreatSum);
 
 
 //            if (orderRetreatSum != null) {
