@@ -904,7 +904,8 @@ public class FinanceBillServiceImp implements FinanceBillService {
             addObject.setAmount(amount);
         }
 
-        //suser 审核用户id
+        //suser 审核用户id  系统管理员账号:admin (userId:0)
+        addObject.setSuser("0");
         //sdate 审核时间
         addObject.setSdate(new Date());
 
