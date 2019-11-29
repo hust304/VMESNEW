@@ -777,23 +777,11 @@ public class WarehouseServiceImp implements WarehouseService {
         ResultModel model = new ResultModel();
         PageData findMap = new PageData();
 
-        //树形结构-开始显示节点id
-        String treeNodeId = "";
-
         //设定查询条件
         String companyId = pageData.getString("currentCompanyId");
         if (companyId != null && companyId.trim().length() > 0) {
             findMap.put("companyId", companyId);
         }
-
-        String id = pageData.getString("id");
-        if (id == null || id.trim().length() == 0) {
-            findMap.put("layerQueryStr", "layer in (0,1)");
-            treeNodeId = Common.DICTIONARY_MAP.get("warehouseRoot");
-        } else if (id != null && id.trim().length() > 0) {
-            treeNodeId = id.trim();
-        }
-        findMap.put("nodeId", treeNodeId);
 
 //        //是否简版仓库 Y:是简版 N:非简版 is null:非简版
 //        String isSimple = pageData.getString("isSimple");
@@ -827,6 +815,25 @@ public class WarehouseServiceImp implements WarehouseService {
             findMap.put("isNotNeedSpare", "true");
         }
 
+        //树形结构-开始显示节点id
+        String treeNodeId = "";
+        String id = pageData.getString("id");
+        if (id == null || id.trim().length() == 0) {
+            findMap.put("layerQueryStr", "layer in (0,1)");
+            treeNodeId = Common.DICTIONARY_MAP.get("warehouseRoot");
+        } else if (id != null && id.trim().length() > 0) {
+            treeNodeId = id.trim();
+            findMap.put("nodeId", treeNodeId);
+
+            if (Common.DICTIONARY_MAP.get("warehouseEntity").equals(id)) {
+                findMap.put("layerQueryStr", "layer in (1)");
+                findMap.put("isNeedEntity", null);
+            } else if (Common.DICTIONARY_MAP.get("warehouseVirtual").equals(id)) {
+                findMap.put("layerQueryStr", "layer in (1)");
+                findMap.put("isNeedVirtual", null);
+            }
+        }
+
         String notInWarehouseIds = new String();
         if (pageData.getString("notInWarehouseIds") != null && pageData.getString("notInWarehouseIds").trim().length() > 0) {
             notInWarehouseIds = pageData.getString("notInWarehouseIds").trim();
@@ -844,8 +851,8 @@ public class WarehouseServiceImp implements WarehouseService {
         List<TreeEntity> treeList = this.warehouseList2TreeList(objectList, null);
 
         TreeEntity treeObj = TreeUtil.switchTree(treeNodeId, treeList);
-        String treeJsonStr = YvanUtil.toJson(treeObj);
-        System.out.println("treeJsonStr: " + treeJsonStr);
+        //String treeJsonStr = YvanUtil.toJson(treeObj);
+        //System.out.println("treeJsonStr: " + treeJsonStr);
 
         Map result = new HashMap();
         result.put("treeList", treeObj);
