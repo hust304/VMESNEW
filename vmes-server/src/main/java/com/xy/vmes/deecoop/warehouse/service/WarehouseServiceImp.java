@@ -1528,6 +1528,7 @@ public class WarehouseServiceImp implements WarehouseService {
     public ResultModel updateDisableWarehouse(PageData pageData) throws Exception {
         ResultModel model = new ResultModel();
         String id = pageData.getString("id");
+        //是否启用(0:已禁用 1:启用)
         String isdisable = pageData.getString("isdisable");
         String companyId = pageData.getString("currentCompanyId");
 
@@ -1546,11 +1547,13 @@ public class WarehouseServiceImp implements WarehouseService {
         }
 
         //1. 获取指定仓库(仓库id)是否存在库存
-        Boolean isExistStockCount = warehouseProductToolService.isExistStockCountByWarehouseId(companyId, id);
-        if (isExistStockCount != null && isExistStockCount.booleanValue()) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("该仓库存在货品不可删除禁用！");
-            return model;
+        if ("0".equals(isdisable.trim())) {
+            Boolean isExistStockCount = warehouseProductToolService.isExistStockCountByWarehouseId(companyId, id);
+            if (isExistStockCount != null && isExistStockCount.booleanValue()) {
+                model.putCode(Integer.valueOf(1));
+                model.putMsg("该仓库存在货品不可删除禁用！");
+                return model;
+            }
         }
 
         //2. 修改客户供应商(禁用)状态
