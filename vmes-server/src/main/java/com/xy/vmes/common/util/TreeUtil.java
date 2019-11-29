@@ -228,7 +228,7 @@ public class TreeUtil {
                 //Bom齐套分析：用料比例
                 BigDecimal ratio = child.getRatio()==null?BigDecimal.ZERO:child.getRatio();
                 BigDecimal currentStockCount = productStockCountMap.get(child.getId());
-                BigDecimal stockCount = child.getStockCount();
+                BigDecimal stockCount = child.getStockCount()==null?BigDecimal.ZERO:child.getStockCount();
                 child.setTotalCount(pTotalCount);
                 BigDecimal lackCount = (pTotalCount.multiply(pUpRatio).subtract(pSplitCount.add(pStockCount))).multiply(ratio);
                 if(lackCount.compareTo(stockCount)<0){
@@ -241,11 +241,11 @@ public class TreeUtil {
                 if(ratio.compareTo(BigDecimal.ZERO)>0){
                     if(pAssembledCount==null){
                         //Bom齐套分析：上级可组装数量 = （实际库存数量 + 可组装数量）/ 用料比例
-                        pAssembledCount = child.getStockCount().add(assembledCount).divide(ratio,0,BigDecimal.ROUND_DOWN);
+                        pAssembledCount = stockCount.add(assembledCount).divide(ratio,0,BigDecimal.ROUND_DOWN);
                     }else{
                         //Bom齐套分析：取物料组成中可组装成品的最小值为上级可组装数量
-                        if(child.getStockCount().add(assembledCount).divide(ratio,0,BigDecimal.ROUND_DOWN).compareTo(pAssembledCount)<0){
-                            pAssembledCount = child.getStockCount().add(assembledCount).divide(ratio,0,BigDecimal.ROUND_DOWN);
+                        if(stockCount.add(assembledCount).divide(ratio,0,BigDecimal.ROUND_DOWN).compareTo(pAssembledCount)<0){
+                            pAssembledCount = stockCount.add(assembledCount).divide(ratio,0,BigDecimal.ROUND_DOWN);
                         }
                     }
                 }
@@ -449,6 +449,9 @@ public class TreeUtil {
                     createBomTree(child, objectList,cacheMap);
 
                     BigDecimal  assembledCount = child.getAssembledCount()==null?BigDecimal.ZERO:child.getAssembledCount();
+                    if(child.getStockCount()==null){
+                        child.setStockCount(BigDecimal.ZERO);
+                    }
                     if(ratio.compareTo(BigDecimal.ZERO)>0){
                         if(pAssembledCount==null){
                             //Bom齐套分析：上级可组装数量 = （实际库存数量 + 可组装数量）/ 用料比例
