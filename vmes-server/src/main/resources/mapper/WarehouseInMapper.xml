@@ -388,6 +388,10 @@
         <if test="productGenreName != null and productGenreName != ''">
             and genre.name LIKE CONCAT(CONCAT(#{productGenreName}),'%')
         </if>
+        <if test="productGenre != null and productGenre != ''">
+            and prod.genre = #{productGenre}
+        </if>
+
         <if test="productUnitName != null and productUnitName != ''">
             and unit.name LIKE CONCAT(CONCAT(#{productUnitName}),'%')
         </if>

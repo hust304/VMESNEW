@@ -339,6 +339,13 @@ public class WarehouseInServiceImp implements WarehouseInService {
 //            pd.put("type", type);
 //        } else {pd.put("type", new String());}
 
+        //genreSelect 界面(货品属性)下拉查询框
+        String productGenre = new String();
+        if (pd.get("genreSelect") != null && ((List)pd.get("genreSelect")).size() > 0) {
+            productGenre = ((List)pd.get("genreSelect")).get(0).toString();
+        }
+        pd.put("productGenre", productGenre);
+
         pd.put("orderStr", "a.cdate desc");
         String orderStr = pd.getString("orderStr");
         if (orderStr != null && orderStr.trim().length() > 0) {
