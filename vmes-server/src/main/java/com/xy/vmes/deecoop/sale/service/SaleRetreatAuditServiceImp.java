@@ -224,24 +224,24 @@ public class SaleRetreatAuditServiceImp implements SaleRetreatAuditService {
         if (Common.DICTIONARY_MAP.get("retreatRefund").equals(retreat.getType())) {
             //1. 修改销售订单明细-变更订单明细(订购数量,货品金额)
             this.updateSaleOrder(retreatDtlMapList, orderDtlRetreatMap, orderDtlList);
+
+            //2. 生成付款单
+            BigDecimal retreatSum = BigDecimal.valueOf(0D);
+            if (retreat != null && retreat.getTotalSum() != null) {
+                retreatSum = retreat.getTotalSum();
+            }
+
+            //创建付款单
+            financeBillService.addFinanceBillBySys(companyId,
+                    customerId,
+                    cuser,
+                    //type 单据类型 ( 0:收款单 1:付款单 2:减免单 3:退款单 4:发货账单 5:发退货账单 6:收货账单 7:收退货账单)
+                    "5",
+                    retreatSum);
         }
 
         //修改销售(订单,订单明细)状态
         this.updateSaleOrderByState(retreatDtlMapList, orderDtlList);
-
-        //生成付款单
-        BigDecimal retreatSum = BigDecimal.valueOf(0D);
-        if (retreat != null && retreat.getTotalSum() != null) {
-            retreatSum = retreat.getTotalSum();
-        }
-
-        //创建付款单
-        financeBillService.addFinanceBillBySys(companyId,
-                customerId,
-                cuser,
-                //type 单据类型 ( 0:收款单 1:付款单 2:减免单 3:退款单 4:发货账单 5:发退货账单 6:收货账单 7:收退货账单)
-                "5",
-                retreatSum);
 
         return model;
     }
