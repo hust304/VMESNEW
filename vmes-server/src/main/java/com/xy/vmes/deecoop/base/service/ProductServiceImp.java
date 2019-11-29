@@ -901,6 +901,7 @@ public class ProductServiceImp implements ProductService {
     public ResultModel updateDisableProduct(PageData pageData) throws Exception {
         ResultModel model = new ResultModel();
         String id = pageData.getString("id");
+        //是否启用(0:已禁用 1:启用)
         String isdisable = pageData.getString("isdisable");
 
         //1. 非空判断
@@ -915,6 +916,15 @@ public class ProductServiceImp implements ProductService {
             model.putCode(Integer.valueOf(1));
             model.putMsg(msgStr);
             return model;
+        }
+
+        if ("0".equals(isdisable.trim())) {
+            String delMsgStr = productDeleteCheckService.checkDeleteProduct(id);
+            if (delMsgStr.trim().length() > 0) {
+                model.putCode(Integer.valueOf(1));
+                model.putMsg(delMsgStr + "不可禁用！");
+                return model;
+            }
         }
 
         //2. 修改产品物料(禁用)状态
