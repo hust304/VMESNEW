@@ -363,15 +363,15 @@
         select
         DATE_FORMAT(bill.cdate,'%Y-%m-%d %T') cdate,
         bill.period,
-        case when bill.type='0' then bill.amount else null end receiveAmount ,
-        case when bill.type in ('2','3','4') then bill.amount else null end occurAmount ,
+        case when bill.type in ('0','2','3','5') then bill.amount else null end receiveAmount ,
+        case when bill.type in ('4') then bill.amount else null end occurAmount ,
         case when bill.type='0' then '收款单' when bill.type='1' then '付款单' when bill.type='2' then '减免单' when bill.type='3' then '退款单'
         when bill.type='4' then '发货账单' when bill.type='5' then '发退货账单' when bill.type='6' then '收货账单' when bill.type='7' then '收退货账单' else null end typeName,
         bill.remark
         from vmes_customer customer
         left join vmes_finance_bill bill on customer.id = bill.customer_id
         <where>
-            and bill.type in ('0','2','3','4')
+            and bill.type in ('0','2','3','4','5')
             and bill.state = '2'
             <if test='period != null and period != ""'>
                 and bill.period = #{period}
@@ -470,7 +470,7 @@
             left join vmes_dictionary province on customer.province = province.id
             left join vmes_finance_period period on period.company_id = customer.company_id
             left join vmes_finance_base base on base.customer_id = customer.id and base.type = '0' and base.isdisable = '1' and base.period = period.current_period
-            left join vmes_finance_bill nowMinusBill on nowMinusBill.customer_id = customer.id and nowMinusBill.type in ('0') and nowMinusBill.state = '2' and nowMinusBill.isdisable = '1' and nowMinusBill.period = period.current_period
+            left join vmes_finance_bill nowMinusBill on nowMinusBill.customer_id = customer.id and nowMinusBill.type in ('0','2','3','5') and nowMinusBill.state = '2' and nowMinusBill.isdisable = '1' and nowMinusBill.period = period.current_period
 
 
             <where>
@@ -533,7 +533,7 @@
             left join vmes_dictionary province on customer.province = province.id
             left join vmes_finance_period period on period.company_id = customer.company_id
             left join vmes_finance_base base on base.customer_id = customer.id and base.type = '0' and base.isdisable = '1' and base.period = period.current_period
-            left join vmes_finance_bill nowPlusBill on nowPlusBill.customer_id = customer.id and nowPlusBill.type in ('2','3','4') and nowPlusBill.state = '2' and nowPlusBill.isdisable = '1' and nowPlusBill.period = period.current_period
+            left join vmes_finance_bill nowPlusBill on nowPlusBill.customer_id = customer.id and nowPlusBill.type in ('4') and nowPlusBill.state = '2' and nowPlusBill.isdisable = '1' and nowPlusBill.period = period.current_period
 
 
             <where>
@@ -609,7 +609,7 @@
         left join vmes_dictionary province on customer.province = province.id
         left join vmes_finance_period period on period.company_id = customer.company_id
         left join vmes_finance_base base on base.customer_id = customer.id and base.type = '0' and base.isdisable = '1' and base.period = period.current_period
-        left join vmes_finance_bill nowMinusBill on nowMinusBill.customer_id = customer.id and nowMinusBill.type in ('0') and nowMinusBill.state = '2' and nowMinusBill.isdisable = '1' and nowMinusBill.period = period.current_period
+        left join vmes_finance_bill nowMinusBill on nowMinusBill.customer_id = customer.id and nowMinusBill.type in ('0','2','3','5') and nowMinusBill.state = '2' and nowMinusBill.isdisable = '1' and nowMinusBill.period = period.current_period
 
 
         <where>
@@ -658,7 +658,7 @@
         left join vmes_dictionary province on customer.province = province.id
         left join vmes_finance_period period on period.company_id = customer.company_id
         left join vmes_finance_base base on base.customer_id = customer.id and base.type = '0' and base.isdisable = '1' and base.period = period.current_period
-        left join vmes_finance_bill nowPlusBill on nowPlusBill.customer_id = customer.id and nowPlusBill.type in ('2','3','4') and nowPlusBill.state = '2' and nowPlusBill.isdisable = '1' and nowPlusBill.period = period.current_period
+        left join vmes_finance_bill nowPlusBill on nowPlusBill.customer_id = customer.id and nowPlusBill.type in ('4') and nowPlusBill.state = '2' and nowPlusBill.isdisable = '1' and nowPlusBill.period = period.current_period
 
 
         <where>
