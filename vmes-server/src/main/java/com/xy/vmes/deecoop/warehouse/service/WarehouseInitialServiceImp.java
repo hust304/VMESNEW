@@ -405,6 +405,13 @@ public class WarehouseInitialServiceImp implements WarehouseInitialService {
         }
         pd.put("productIds", productIds);
 
+        //genreSelect 界面(货品属性)下拉查询框
+        String productGenre = new String();
+        if (pd.get("genreSelect") != null && ((List)pd.get("genreSelect")).size() > 0) {
+            productGenre = ((List)pd.get("genreSelect")).get(0).toString();
+        }
+        pd.put("productGenre", productGenre);
+
         List<Map> varList = this.getDataListPage(pd, pg);
         Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
         List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);

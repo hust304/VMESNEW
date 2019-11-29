@@ -565,7 +565,9 @@
             <if test="prodIsdisable != null and prodIsdisable != ''">
                 and prod.isdisable = #{prodIsdisable}
             </if>
-
+            <if test="productGenre != null and productGenre != ''">
+                and prod.genre = #{productGenre}
+            </if>
             <if test="genreName != null and genreName != ''">
                 and genre.name = #{genreName}
             </if>
@@ -726,6 +728,9 @@
             <if test="prodIsdisable != null and prodIsdisable != ''">
                 and prod.isdisable = #{prodIsdisable}
             </if>
+            <if test="productGenre != null and productGenre != ''">
+                and prod.genre = #{productGenre}
+            </if>
 
             <if test="genreName != null and genreName != ''">
                 and genre.name = #{genreName}
@@ -878,6 +883,9 @@
             </if>
             <if test="prodIsdisable != null and prodIsdisable != ''">
                 and prod.isdisable = #{prodIsdisable}
+            </if>
+            <if test="productGenre != null and productGenre != ''">
+                and prod.genre = #{productGenre}
             </if>
 
             <if test="genreName != null and genreName != ''">

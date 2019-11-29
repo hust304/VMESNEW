@@ -1622,6 +1622,13 @@ public class WarehouseProductServiceImp implements WarehouseProductService {
         }
         Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
 
+        //genreSelect 界面(货品属性)下拉查询框
+        String productGenre = new String();
+        if (pd.get("genreSelect") != null && ((List)pd.get("genreSelect")).size() > 0) {
+            productGenre = ((List)pd.get("genreSelect")).get(0).toString();
+        }
+        pd.put("productGenre", productGenre);
+
         //是否需要分页 true:需要分页 false:不需要分页
         Map result = new HashMap();
         String isNeedPage = pd.getString("isNeedPage");
