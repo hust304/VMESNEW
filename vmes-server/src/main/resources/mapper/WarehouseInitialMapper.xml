@@ -527,6 +527,10 @@
             <if test="productSpec != null and productSpec != ''">
                 and product.spec LIKE CONCAT(CONCAT('%', #{productSpec}),'%')
             </if>
+
+            <if test="productGenre != null and productGenre != ''">
+                and product.genre = #{productGenre}
+            </if>
             <!--过滤出 货品属性(备件)-->
             <if test="'true' == isNeedGenreSpare">
                 and product.genre = '384cfd1329e648618b5a237ce1038bab'
