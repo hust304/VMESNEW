@@ -215,6 +215,14 @@ public class WarehouseCheckServiceImp implements WarehouseCheckService {
             columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
         }
         Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
+
+        //genreSelect 界面(货品属性)下拉查询框
+        String productGenre = new String();
+        if (pd.get("genreSelect") != null && ((List)pd.get("genreSelect")).size() > 0) {
+            productGenre = ((List)pd.get("genreSelect")).get(0).toString();
+        }
+        pd.put("productGenre", productGenre);
+
         //设置查询排序
         pd.put("orderStr", "parent.cdate desc");
         String orderStr = pd.getString("orderStr");
