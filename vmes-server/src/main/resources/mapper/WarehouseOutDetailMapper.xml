@@ -205,6 +205,8 @@
 
         (replace(uuid(), '-', ''), 'WarehouseOutDetail', 'productPrice', '单价(计量单位)', 40, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
         (replace(uuid(), '-', ''), 'WarehouseOutDetail', 'productPriceSum', '金额', 41, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+
+        (replace(uuid(), '-', ''), 'WarehouseOutDetail', 'stockCount', '库存数量', 41, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
     </insert>
 
     <insert id="insertColumn1" >
@@ -540,7 +542,7 @@
             priceUnit,priceUnitName,round(ifnull(priceCount,0),2) priceCount,round(ifnull(productCount,0),2) productCount,warehouseProductId,
             n2pFormula,n2pIsScale,n2pDecimalCount,
             p2nFormula,p2nIsScale,p2nDecimalCount,stockCount,stockCountByPrice,
-            price,productPrice,priceSum,productPriceSum,
+            price,productPrice,priceSum,productPriceSum,warehouseProductStockCount,
             round(sum(ifnull(executeCount,0)),2) executeCount
         from (
             select
@@ -573,6 +575,7 @@
 
                 round((ifnull(detail.price_count, 0) * ifnull(detail.price, 0)), 2) priceSum,
                 round((ifnull(detail.count, 0) * ifnull(detail.product_price, 0)), 2) productPriceSum,
+                round(ifnull(warehouseProduct.stock_count,0),2) warehouseProductStockCount,
 
                 prod.code sysProductCode,
                 prod.source_code custProductCode,
@@ -612,7 +615,7 @@
                 left join vmes_dictionary priceUnit on detail.price_unit = priceUnit.id
                 <!--货品计价单位公式-->
                 left join vmes_product_unit priceUnitFormula on detail.product_id = priceUnitFormula.product_id and detail.price_unit = priceUnitFormula.unit and priceUnitFormula.isdisable = '1'
-
+                left join vmes_warehouse_product warehouseProduct on detail.warehouse_product_id = warehouseProduct.id
             <where>
                 <!--queryStr 自定义sql查询语句-->
                 <if test="queryStr != null and queryStr != ''" >

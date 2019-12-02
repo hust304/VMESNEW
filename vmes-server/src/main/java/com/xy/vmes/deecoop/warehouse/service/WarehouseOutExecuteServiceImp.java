@@ -524,28 +524,24 @@ public class WarehouseOutExecuteServiceImp implements WarehouseOutExecuteService
         StringBuffer msgBuf = new StringBuffer();
         if(mapList!=null&&mapList.size()>0){
             for (Map outDetailMap : mapList) {
-                String productId = (String) outDetailMap.get("productId");
                 String productName = (String) outDetailMap.get("productName");
-                BigDecimal count = (BigDecimal)outDetailMap.get("count");
 
-                //验证当前(货品id)在库存中的数量
-                PageData findMap = new PageData();
-                findMap.put("companyId", currentCompanyId);
-                findMap.put("productId", productId);
-                //查询结果集需要(实体库)-结果集只含有(实体库)
-                findMap.put("isNeedEntity", "true");
-                //查询结果集不需要(备件库)
-                findMap.put("isNotNeedSpare", "true");
-                List<Map> warehouseProductMapList = warehouseToWarehouseProductService.findWarehouseToWarehouseProductByProduct(findMap, null);
-                BigDecimal productStockCount = this.findProductStockCount(warehouseProductMapList);
+                BigDecimal warehouseProductStockCount = BigDecimal.valueOf(0D);
+                if (outDetailMap.get("warehouseProductStockCount") != null) {
+                    warehouseProductStockCount = (BigDecimal)outDetailMap.get("warehouseProductStockCount");
+                }
 
-                if (count.doubleValue() > productStockCount.doubleValue()) {
+                BigDecimal count = BigDecimal.valueOf(0D);
+                if (outDetailMap.get("count") != null) {
+                    count = (BigDecimal)outDetailMap.get("count");
+                }
+
+                if (count.doubleValue() > warehouseProductStockCount.doubleValue()) {
                     String msgTemp = "货品名称：{0} 该货品库存不足，请更改报废数量";
                     String msgStr = MessageFormat.format(msgTemp, productName);
                     msgBuf.append(msgStr);
                     continue;
                 }
-
             }
         }
 
