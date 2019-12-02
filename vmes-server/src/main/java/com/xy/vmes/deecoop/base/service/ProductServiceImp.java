@@ -542,19 +542,16 @@ public class ProductServiceImp implements ProductService {
             pd.put("orderStr", "prod.cdate desc");
         }
 
-        String genreId = pd.getString("genreId");
-        if (genreId != null && genreId.trim().length() > 0
-                && !Common.DICTIONARY_MAP.get("productGenre").equals(genreId)
-                ) {
-            pd.put("genre", genreId);
+        //genreSelect 界面(货品属性)下拉查询框
+        if (pd.get("genreSelect") != null && ((List)pd.get("genreSelect")).size() > 0) {
+            String genre = ((List)pd.get("genreSelect")).get(0).toString();
+            pd.put("genre", genre);
         }
 
-        //genreSelect 界面(货品属性)下拉查询框
-        String genre = new String();
-        if (pd.get("genreSelect") != null && ((List)pd.get("genreSelect")).size() > 0) {
-            genre = ((List)pd.get("genreSelect")).get(0).toString();
+        String genreId = pd.getString("genreId");
+        if (genreId != null && genreId.trim().length() > 0) {
+            pd.put("genre", genreId);
         }
-        pd.put("genre", genre);
 
         String pathId = pd.getString("pathId");
         if(!StringUtils.isEmpty(pathId)){
