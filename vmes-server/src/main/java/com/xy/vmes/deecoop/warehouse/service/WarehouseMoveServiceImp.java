@@ -496,6 +496,14 @@ public class WarehouseMoveServiceImp implements WarehouseMoveService {
             columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
         }
         Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
+
+        //genreSelect 界面(货品属性)下拉查询框
+        String productGenre = new String();
+        if (pd.get("genreSelect") != null && ((List)pd.get("genreSelect")).size() > 0) {
+            productGenre = ((List)pd.get("genreSelect")).get(0).toString();
+        }
+        pd.put("productGenre", productGenre);
+
         List<Map> varList = this.getDataListPageBySimple(pd,pg);
         List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
         result.put("hideTitles",titleMap.get("hideTitles"));
@@ -528,6 +536,14 @@ public class WarehouseMoveServiceImp implements WarehouseMoveService {
             columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
         }
         Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
+
+        //genreSelect 界面(货品属性)下拉查询框
+        String productGenre = new String();
+        if (pd.get("genreSelect") != null && ((List)pd.get("genreSelect")).size() > 0) {
+            productGenre = ((List)pd.get("genreSelect")).get(0).toString();
+        }
+        pd.put("productGenre", productGenre);
+
         List<Map> varList = this.getDataListPage(pd,pg);
         List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
         result.put("hideTitles",titleMap.get("hideTitles"));

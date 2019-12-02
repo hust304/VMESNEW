@@ -427,6 +427,10 @@
             <if test="productSpec != null and productSpec != ''">
                 and prod.spec LIKE CONCAT(CONCAT('%', #{productSpec}),'%')
             </if>
+            <if test="productGenre != null and productGenre != ''">
+                and prod.genre = #{productGenre}
+            </if>
+
             <if test="productGenreName != null and productGenreName != ''">
                 and genre.name LIKE CONCAT(CONCAT('%', #{productGenreName}),'%')
             </if>
@@ -521,6 +525,10 @@
             <if test="productSpec != null and productSpec != ''">
                 and prod.spec LIKE CONCAT(CONCAT('%', #{productSpec}),'%')
             </if>
+            <if test="productGenre != null and productGenre != ''">
+                and prod.genre = #{productGenre}
+            </if>
+
             <if test="productGenreName != null and productGenreName != ''">
                 and genre.name LIKE CONCAT(CONCAT('%', #{productGenreName}),'%')
             </if>
