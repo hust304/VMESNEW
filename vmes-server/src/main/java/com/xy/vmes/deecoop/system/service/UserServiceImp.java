@@ -29,16 +29,14 @@ import java.util.*;
 @Service
 @Transactional(readOnly = false)
 public class UserServiceImp implements UserService {
-
-
     @Autowired
     private UserMapper userMapper;
-    @Autowired
-    private CoderuleService coderuleService;
+
     @Autowired
     private DepartmentService departmentService;
     @Autowired
     private EmployeeService employeeService;
+
     @Autowired
     private UserEmployeeService userEmployeeService;
     @Autowired
@@ -47,6 +45,9 @@ public class UserServiceImp implements UserService {
     private UserDefinedMenuService userDefinedMenuService;
     @Autowired
     private RoleMenuService roleMenuService;
+
+    @Autowired
+    private CoderuleService coderuleService;
     @Autowired
     private ColumnService columnService;
     @Autowired
@@ -922,6 +923,20 @@ public class UserServiceImp implements UserService {
             user.setEmail(employee.getEmail());
             //user_name:姓名->name:员工姓名
             user.setUserName(employee.getName());
+
+            //获取员工主岗部门id
+            PageData findMap = new PageData();
+            findMap.put("employeeId", employeeId);
+            //是否兼岗(1:兼岗0:主岗)
+            findMap.put("isplurality", "0");
+            List<Map> varList = employeeService.getDataListPage(findMap, null);
+            if (varList != null && varList.size() > 0) {
+                Map<String, Object> mapObject = varList.get(0);
+                if (mapObject != null && mapObject.get("deptId") != null) {
+                    String deptId = (String)mapObject.get("deptId");
+                    user.setDeptId(deptId);
+                }
+            }
         }
 
         this.update(user);
