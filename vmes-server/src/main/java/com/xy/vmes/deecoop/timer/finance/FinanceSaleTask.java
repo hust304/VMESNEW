@@ -49,7 +49,7 @@ public class FinanceSaleTask {
     private FinancePeriodService financePeriodService;
 
     @Autowired
-    private FinanceBillService FinanceBillService;
+    private FinanceBillService financeBillService;
 
 
     /**
@@ -96,11 +96,11 @@ public class FinanceSaleTask {
                         FinancePeriod financePeriod = financePeriodList.get(j);
                         if(j==0){
                             pageData.put("genre",Common.DICTIONARY_MAP.get("customerGenre"));
-                            List<Map> varList = FinanceBillService.getFinanceReceiveView(pageData,null);
+                            List<Map> varList = financeBillService.getFinanceReceiveView(pageData,null);
                             if(varList!=null&&varList.size()>0){
                                 for(int k=0;k<varList.size();k++){
                                     Map map = varList.get(k);
-                                    FinanceBillService.saveFinanceHistory(map);
+                                    financeBillService.saveFinanceHistory(map);
                                 }
                             }
                             Date preDate = financePeriod.getCurrentPeriodDate();
@@ -118,7 +118,7 @@ public class FinanceSaleTask {
                         }
                     }
                 }else{
-                    FinanceBillService.saveFinancePeriod(companyId);
+                    financeBillService.saveFinancePeriod(companyId);
                 }
             }
 
