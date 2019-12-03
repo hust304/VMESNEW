@@ -454,67 +454,67 @@ public class SaleDeliverDetailController {
 //    }
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////
-    private StringBuffer findOutMessageByOutIdList(List<String> outIdList, String productInfo) {
-        StringBuffer msgBuf = new StringBuffer();
-        if (outIdList == null || outIdList.size() == 0) {return msgBuf;}
+//    private StringBuffer findOutMessageByOutIdList(List<String> outIdList, String productInfo) {
+//        StringBuffer msgBuf = new StringBuffer();
+//        if (outIdList == null || outIdList.size() == 0) {return msgBuf;}
+//
+//        Map<String, String> outMap = new LinkedHashMap<String, String>();
+//        for (String outId : outIdList) {
+//            outMap.put(outId, outId);
+//        }
+//
+//        //出库单号:出库单号 货品编码:货品编码
+//        String msgTemp = "出库单号:{0} {1} " + Common.SYS_ENDLINE_DEFAULT;
+//        for (Iterator iterator = outMap.keySet().iterator(); iterator.hasNext();) {
+//            String outId = iterator.next().toString().trim();
+//
+//            try {
+//                WarehouseOut outObject = outService.selectById(outId);
+//                if (outObject != null) {
+//                    String msgStr = MessageFormat.format(msgTemp,
+//                            outObject.getCode(),
+//                            productInfo);
+//                    msgBuf.append(msgStr);
+//                }
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        }
+//
+//        return msgBuf;
+//    }
 
-        Map<String, String> outMap = new LinkedHashMap<String, String>();
-        for (String outId : outIdList) {
-            outMap.put(outId, outId);
-        }
-
-        //出库单号:出库单号 货品编码:货品编码
-        String msgTemp = "出库单号:{0} {1} " + Common.SYS_ENDLINE_DEFAULT;
-        for (Iterator iterator = outMap.keySet().iterator(); iterator.hasNext();) {
-            String outId = iterator.next().toString().trim();
-
-            try {
-                WarehouseOut outObject = outService.selectById(outId);
-                if (outObject != null) {
-                    String msgStr = MessageFormat.format(msgTemp,
-                            outObject.getCode(),
-                            productInfo);
-                    msgBuf.append(msgStr);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        return msgBuf;
-    }
-
-    //获取出库单明细(出库执行完成 and 未执行退库操作)-对应的发货单
-    //(出库单明细)查询发货单明细表(入库单明细id)--判断(入库单明细id)是否为空
-    private StringBuffer findDeliverMessageByOutDtlIdList(List<SaleDeliverDetail> deliverDtlList,
-                                                          List<String> outDtlIdList) {
-        StringBuffer msgBuf = new StringBuffer();
-        if (deliverDtlList == null || deliverDtlList.size() == 0) {return msgBuf;}
-        if (outDtlIdList == null || outDtlIdList.size() == 0) {return msgBuf;}
-
-        Map<String, String> deliverMap = new LinkedHashMap<String, String>();
-        for (String outDtlId : outDtlIdList) {
-            for (SaleDeliverDetail deliverDetail : deliverDtlList) {
-                //outDetailId 出单明细id
-                String outDetailId = deliverDetail.getOutDetailId();
-                //parentId 发货单id
-                String deliverId = deliverDetail.getParentId();
-
-                //inDetailId 入库单明细id
-                String inDetailId = deliverDetail.getInDetailId();
-                if (outDtlId.equals(outDetailId) && (inDetailId != null && inDetailId.trim().length() > 0)) {
-                    deliverMap.put(deliverId, deliverId);
-                }
-            }
-        }
-
-        for (Iterator iterator = deliverMap.keySet().iterator(); iterator.hasNext();) {
-            String deliverId = iterator.next().toString().trim();
-            msgBuf.append(deliverId).append(",");
-        }
-
-        return msgBuf;
-    }
+//    //获取出库单明细(出库执行完成 and 未执行退库操作)-对应的发货单
+//    //(出库单明细)查询发货单明细表(入库单明细id)--判断(入库单明细id)是否为空
+//    private StringBuffer findDeliverMessageByOutDtlIdList(List<SaleDeliverDetail> deliverDtlList,
+//                                                          List<String> outDtlIdList) {
+//        StringBuffer msgBuf = new StringBuffer();
+//        if (deliverDtlList == null || deliverDtlList.size() == 0) {return msgBuf;}
+//        if (outDtlIdList == null || outDtlIdList.size() == 0) {return msgBuf;}
+//
+//        Map<String, String> deliverMap = new LinkedHashMap<String, String>();
+//        for (String outDtlId : outDtlIdList) {
+//            for (SaleDeliverDetail deliverDetail : deliverDtlList) {
+//                //outDetailId 出单明细id
+//                String outDetailId = deliverDetail.getOutDetailId();
+//                //parentId 发货单id
+//                String deliverId = deliverDetail.getParentId();
+//
+//                //inDetailId 入库单明细id
+//                String inDetailId = deliverDetail.getInDetailId();
+//                if (outDtlId.equals(outDetailId) && (inDetailId != null && inDetailId.trim().length() > 0)) {
+//                    deliverMap.put(deliverId, deliverId);
+//                }
+//            }
+//        }
+//
+//        for (Iterator iterator = deliverMap.keySet().iterator(); iterator.hasNext();) {
+//            String deliverId = iterator.next().toString().trim();
+//            msgBuf.append(deliverId).append(",");
+//        }
+//
+//        return msgBuf;
+//    }
 
 }
 
