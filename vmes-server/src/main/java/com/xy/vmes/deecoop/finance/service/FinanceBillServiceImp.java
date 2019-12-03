@@ -896,7 +896,11 @@ public class FinanceBillServiceImp implements FinanceBillService {
         FinanceBill addObject = new FinanceBill();
         addObject.setCompanyId(companyId);
         addObject.setCustomerId(customerId);
+
         addObject.setCuser(userId);
+        //suser 审核用户id
+        addObject.setSuser(userId);
+
         //type 单据类型 ( 0:收款单 1:付款单 2:减免单 3:退款单 4:发货账单 5:发退货账单 6:收货账单 7:收退货账单)
         addObject.setType(type);
         //amount 金额
@@ -904,8 +908,6 @@ public class FinanceBillServiceImp implements FinanceBillService {
             addObject.setAmount(amount);
         }
 
-        //suser 审核用户id  系统管理员账号:admin (userId:0)
-        addObject.setSuser("0");
         //sdate 审核时间
         addObject.setSdate(new Date());
 
