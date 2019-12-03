@@ -9,7 +9,6 @@ import com.xy.vmes.entity.*;
 import com.xy.vmes.exception.ApplicationException;
 import com.xy.vmes.service.*;
 import com.yvan.*;
-import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,10 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.*;
-
-import org.springframework.web.multipart.MultipartFile;
-
-import javax.servlet.http.HttpServletResponse;
 
 /**
  * 说明：vmes_sale_deliver:发货表 实现类
@@ -435,10 +430,12 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
         SaleDeliver saleDeliver = new SaleDeliver();
         String deliverId = Conv.createUuid();
         saleDeliver.setId(deliverId);
-        //发货单编号
-        String code = coderuleService.createCoder(companyId, "vmes_sale_deliver", "F");
         saleDeliver.setPriceType(priceType);
+
+        //发货单编号
+        String code = this.createDeliverCoder(companyId, "vmes_sale_deliver", "F");
         saleDeliver.setDeliverCode(code);
+
         saleDeliver.setCustomerId(customerId);
         saleDeliver.setCompanyId(companyId);
         //state:状态(0:待发货 1:已发货 -1:已取消)
@@ -884,79 +881,117 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
     }
 
 
-    public void exportExcelSaleDelivers(PageData pd, Pagination pg) throws Exception {
-        List<Column> columnList = columnService.findColumnList("saleDeliver");
-        if (columnList == null || columnList.size() == 0) {
-            throw new RestException("1","数据库没有生成TabCol，请联系管理员！");
-        }
+//    public void exportExcelSaleDelivers(PageData pd, Pagination pg) throws Exception {
+//        List<Column> columnList = columnService.findColumnList("saleDeliver");
+//        if (columnList == null || columnList.size() == 0) {
+//            throw new RestException("1","数据库没有生成TabCol，请联系管理员！");
+//        }
+//
+//        //根据查询条件获取业务数据List
+//        String ids = (String)pd.getString("ids");
+//        String queryStr = "";
+//        if (ids != null && ids.trim().length() > 0) {
+//            ids = StringUtil.stringTrimSpace(ids);
+//            ids = "'" + ids.replace(",", "','") + "'";
+//            queryStr = "id in (" + ids + ")";
+//        }
+//        pd.put("queryStr", queryStr);
+//
+//        pg.setSize(100000);
+//        List<Map> dataList = this.getDataListPage(pd, pg);
+//
+//        //查询数据转换成Excel导出数据
+//        List<LinkedHashMap<String, String>> dataMapList = ColumnUtil.modifyDataList(columnList, dataList);
+//        HttpServletResponse response = HttpUtils.currentResponse();
+//
+//        //查询数据-Excel文件导出
+//        String fileName = pd.getString("fileName");
+//        if (fileName == null || fileName.trim().length() == 0) {
+//            fileName = "ExcelSaleDeliver";
+//        }
+//
+//        //导出文件名-中文转码
+//        fileName = new String(fileName.getBytes("utf-8"),"ISO-8859-1");
+//        ExcelUtil.excelExportByDataList(response, fileName, dataMapList);
+//    }
 
-        //根据查询条件获取业务数据List
-        String ids = (String)pd.getString("ids");
-        String queryStr = "";
-        if (ids != null && ids.trim().length() > 0) {
-            ids = StringUtil.stringTrimSpace(ids);
-            ids = "'" + ids.replace(",", "','") + "'";
-            queryStr = "id in (" + ids + ")";
-        }
-        pd.put("queryStr", queryStr);
+//    public ResultModel importExcelSaleDelivers(MultipartFile file) throws Exception {
+//        ResultModel model = new ResultModel();
+//
+//        if (file == null) {
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg("请上传Excel文件！");
+//            return model;
+//        }
+//
+//        // 验证文件是否合法
+//        // 获取上传的文件名(文件名.后缀)
+//        String fileName = file.getOriginalFilename();
+//        if (fileName == null
+//                || !(fileName.matches("^.+\\.(?i)(xlsx)$")
+//                || fileName.matches("^.+\\.(?i)(xls)$"))
+//                ) {
+//            String failMesg = "不是excel格式文件,请重新选择！";
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg(failMesg);
+//            return model;
+//        }
+//
+//        // 判断文件的类型，是2003还是2007
+//        boolean isExcel2003 = true;
+//        if (fileName.matches("^.+\\.(?i)(xlsx)$")) {
+//            isExcel2003 = false;
+//        }
+//
+//        List<List<String>> dataLst = ExcelUtil.readExcel(file.getInputStream(), isExcel2003);
+//        List<LinkedHashMap<String, String>> dataMapLst = ExcelUtil.reflectMapList(dataLst);
+//
+//        //1. Excel文件数据dataMapLst -->(转换) ExcelEntity (属性为导入模板字段)
+//        //2. Excel导入字段(非空,数据有效性验证[数字类型,字典表(大小)类是否匹配])
+//        //3. Excel导入字段-名称唯一性判断-在Excel文件中
+//        //4. Excel导入字段-名称唯一性判断-在业务表中判断
+//        //5. List<ExcelEntity> --> (转换) List<业务表DB>对象
+//        //6. 遍历List<业务表DB> 对业务表添加或修改
+//
+//        return model;
+//    }
 
-        pg.setSize(100000);
-        List<Map> dataList = this.getDataListPage(pd, pg);
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /**
+     * 获取流水号：前缀+短日期(yyyy 后2位) +3位流水号，如F190808001 (10位)
+     * 例如: 短日期(2019) 短日期(19)
+     * @param companyID
+     * @param tableName
+     * @param prefix
+     * @return
+     */
+    private String createDeliverCoder(String companyID, String tableName, String prefix) {
+        //(企业编号+前缀字符+日期字符+流水号)-(company+prefix+date+code)
+        //(无需+前缀字符+日期字符+流水号)-W000142
+        CoderuleEntity object = new CoderuleEntity();
+        //tableName 业务名称(表名)
+        object.setTableName(tableName);
+        //companyID 公司ID
+        object.setCompanyID(companyID);
+        //length 指定位数(3)
+        object.setLength(Common.CODE_RULE_SALEDELIVER_LENGTH_DEFAULT);
 
-        //查询数据转换成Excel导出数据
-        List<LinkedHashMap<String, String>> dataMapList = ColumnUtil.modifyDataList(columnList, dataList);
-        HttpServletResponse response = HttpUtils.currentResponse();
+        //firstName 第一段编码为自定义前缀字符
+        object.setFirstName(Common.FIRST_NAME_PREFIX);
+        //isNeedPrefix 是否显示前缀字符
+        object.setIsNeedPrefix(Boolean.TRUE);
+        //prefix 前缀字符
+        object.setPrefix(prefix);
 
-        //查询数据-Excel文件导出
-        String fileName = pd.getString("fileName");
-        if (fileName == null || fileName.trim().length() == 0) {
-            fileName = "ExcelSaleDeliver";
-        }
+        //filling 填充字符(0)
+        object.setFilling(Common.CODE_RULE_DEFAULT_FILLING);
 
-        //导出文件名-中文转码
-        fileName = new String(fileName.getBytes("utf-8"),"ISO-8859-1");
-        ExcelUtil.excelExportByDataList(response, fileName, dataMapList);
-    }
+        //isNeedDate 是否需求日期并且设置格式
+        object.setIsNeedDate(Boolean.TRUE);
+        //isNeedShortYear 是否需要短年份 如:2019 得到:19
+        object.setNeedShortYear(Boolean.TRUE);
 
-    public ResultModel importExcelSaleDelivers(MultipartFile file) throws Exception {
-        ResultModel model = new ResultModel();
-
-        if (file == null) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("请上传Excel文件！");
-            return model;
-        }
-
-        // 验证文件是否合法
-        // 获取上传的文件名(文件名.后缀)
-        String fileName = file.getOriginalFilename();
-        if (fileName == null
-                || !(fileName.matches("^.+\\.(?i)(xlsx)$")
-                || fileName.matches("^.+\\.(?i)(xls)$"))
-                ) {
-            String failMesg = "不是excel格式文件,请重新选择！";
-            model.putCode(Integer.valueOf(1));
-            model.putMsg(failMesg);
-            return model;
-        }
-
-        // 判断文件的类型，是2003还是2007
-        boolean isExcel2003 = true;
-        if (fileName.matches("^.+\\.(?i)(xlsx)$")) {
-            isExcel2003 = false;
-        }
-
-        List<List<String>> dataLst = ExcelUtil.readExcel(file.getInputStream(), isExcel2003);
-        List<LinkedHashMap<String, String>> dataMapLst = ExcelUtil.reflectMapList(dataLst);
-
-        //1. Excel文件数据dataMapLst -->(转换) ExcelEntity (属性为导入模板字段)
-        //2. Excel导入字段(非空,数据有效性验证[数字类型,字典表(大小)类是否匹配])
-        //3. Excel导入字段-名称唯一性判断-在Excel文件中
-        //4. Excel导入字段-名称唯一性判断-在业务表中判断
-        //5. List<ExcelEntity> --> (转换) List<业务表DB>对象
-        //6. 遍历List<业务表DB> 对业务表添加或修改
-
-        return model;
+        return coderuleService.findCoderuleByDate(object);
     }
 }
 

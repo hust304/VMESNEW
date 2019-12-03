@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.entity.SaleDeliver;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -131,8 +130,8 @@ public interface SaleDeliverService {
     ResultModel checkIsNullDeliverSumByDeliverId(PageData pd) throws Exception;
     ResultModel checkIsAllNotNullDeliverSumByDeliverId(PageData pd) throws Exception;
 
-    void exportExcelSaleDelivers(PageData pd, Pagination pg) throws Exception;
-    ResultModel importExcelSaleDelivers(MultipartFile file) throws Exception;
+//    void exportExcelSaleDelivers(PageData pd, Pagination pg) throws Exception;
+//    ResultModel importExcelSaleDelivers(MultipartFile file) throws Exception;
 
 
 }
