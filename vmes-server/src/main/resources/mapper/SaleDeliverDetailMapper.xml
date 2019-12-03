@@ -272,7 +272,17 @@
             product.name productName,
             product.spec productSpec,
             product.genre productGenre,
-            genre.name productGenreName
+            genre.name productGenreName,
+
+            <!--发货单明细货品单位: 单位换算公式-->
+            prodUnitPrice.np_formula n2pFormula,
+            prodUnitPrice.pn_formula p2nFormula,
+
+            prodUnitPrice.n2p_is_scale n2pIsScale,
+            prodUnitPrice.n2p_decimal_count n2pDecimalCount,
+
+            prodUnitPrice.p2n_is_scale p2nIsScale,
+            prodUnitPrice.p2n_decimal_count p2nDecimalCount
 
         <if test="'true' == isNeedRetreat">
             ,round((ifnull(detail.order_count, 0) - ifnull(retreatDtl.orderCount, 0)), 2) nowDeliverCount
@@ -289,6 +299,9 @@
             left join vmes_dictionary genre on product.genre = genre.id
             left join vmes_dictionary orderUnit on detail.order_unit = orderUnit.id
             left join vmes_dictionary priceUnit on detail.price_unit = priceUnit.id
+
+            left join vmes_product_unit prodUnitPrice on (detail.product_id = prodUnitPrice.product_id and detail.order_unit = prodUnitPrice.unit)
+
             <if test="'true' == isNeedRetreat">
                 <!--(订单明细id)-退货完成数量-退货明细汇总-->
                 left join (
