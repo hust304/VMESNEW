@@ -567,6 +567,7 @@
           ) t
         group by t.id
         )tab
+        order by code asc
     </select>
 
 
@@ -679,6 +680,7 @@
         ) t
         group by t.id
         )tab
+        order by code asc
     </select>
 
 
