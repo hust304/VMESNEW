@@ -83,38 +83,6 @@ public class CoderuleServiceImp implements CoderuleService {
     }
 
     /**
-     * 创建人：陈刚
-     * 创建时间：2018-07-26
-     */
-    public Coderule findCoderule(PageData pd) {
-        List<Coderule> objectList = null;
-        try {
-            objectList = this.dataList(pd);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        if (objectList == null || objectList.size() == 0) {return null;}
-
-        return objectList.get(0);
-    }
-
-    /**
-     * 创建人：陈刚
-     * 创建时间：2018-07-26
-     */
-    public Map<String, Object> findCoderuleMap(PageData pd) {
-        List<Map<String, Object>> objectList = null;
-        try {
-            objectList = this.findDataList(pd);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        if (objectList == null || objectList.size() == 0) {return null;}
-
-        return objectList.get(0);
-    }
-
-    /**
      * 获取最新系统流水号
      * @param companyId  企业id
      * @param tableName  业务名称(表名)
@@ -407,24 +375,6 @@ public class CoderuleServiceImp implements CoderuleService {
         return businessCode;
     }
 
-
-    public Department findDepartment(PageData object) {
-        if (object == null) {return null;}
-
-        List<Department> objectList = null;
-        try {
-            objectList = departmentMapper.dataList(object);
-        } catch (Exception e) {
-            throw new RestException("", e.getMessage());
-        }
-
-        if (objectList != null && objectList.size() > 0) {
-            return objectList.get(0);
-        }
-
-        return null;
-    }
-
     /**
      * 获取业务编号-根据通用编码规则(企业编号+前缀字符+日期字符+流水号)
      * 按照当天日期(yyyy-MM-dd)流水号递增
@@ -621,6 +571,39 @@ public class CoderuleServiceImp implements CoderuleService {
     }
 
     //////////////////////////////////////////////////////////////////////////////////////
+    /**
+     * 创建人：陈刚
+     * 创建时间：2018-07-26
+     */
+    private Map<String, Object> findCoderuleMap(PageData pd) {
+        List<Map<String, Object>> objectList = null;
+        try {
+            objectList = this.findDataList(pd);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (objectList == null || objectList.size() == 0) {return null;}
+
+        return objectList.get(0);
+    }
+
+    private Department findDepartment(PageData object) {
+        if (object == null) {return null;}
+
+        List<Department> objectList = null;
+        try {
+            objectList = departmentMapper.dataList(object);
+        } catch (Exception e) {
+            throw new RestException("", e.getMessage());
+        }
+
+        if (objectList != null && objectList.size() > 0) {
+            return objectList.get(0);
+        }
+
+        return null;
+    }
+
     private Long findNewCode(Coderule object, int length) {
         if (object == null) {return new Long(1L);}
 
@@ -690,6 +673,7 @@ public class CoderuleServiceImp implements CoderuleService {
 
         return fill_string + code.toString();
     }
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
     /**
@@ -785,104 +769,6 @@ public class CoderuleServiceImp implements CoderuleService {
 //        object.setIsNeedDate(Boolean.TRUE);
 //        object.setDateFormat("yyyyMMdd");
 
-
-        //separator 分隔符
-        //object.setSeparator("-");
-
-
-        return findCoderule(object);
-    }
-
-
-
-
-
-    /**
-     * 获取流水号：公司编码+日期（yyyyMMdd）+3位流水号，如DEECOOP20180808001
-     * 创建人：刘威
-     * @param companyID   公司ID
-     * @param tableName   表名
-     * @param dateFormat  日期格式
-     * @return
-     */
-    public String createCoderByDate(String companyID,String tableName,String dateFormat) {
-        //(企业编号+前缀字符+日期字符+流水号)-(company+prefix+date+code)
-        //(无需+前缀字符+无需+流水号)-W000142
-        CoderuleEntity object = new CoderuleEntity();
-        //tableName 业务名称(表名)
-        object.setTableName(tableName);
-        //companyID 公司ID
-        object.setCompanyID(companyID);
-        //length 指定位数(5)
-        object.setLength(Common.CODE_RULE_LENGTH_5);
-
-
-        //firstName 第一段编码为自定义前缀字符
-//        object.setFirstName(Common.FIRST_NAME_PREFIX);
-        //isNeedPrefix 是否显示前缀字符
-//        object.setIsNeedPrefix(Boolean.TRUE);
-        //prefix 前缀字符
-//        object.setPrefix(prefix);
-
-        //firstName 第一段编码为企业编码
-        object.setFirstName(Common.FIRST_NAME_COMPANY);
-        //isNeedPrefix 是否显示企业编码
-        object.setIsNeedCompany(Boolean.TRUE);
-
-
-        //filling 填充字符(0)
-        object.setFilling(Common.CODE_RULE_DEFAULT_FILLING);
-
-        //isNeedDate 是否需求日期并且设置格式
-        object.setIsNeedDate(Boolean.TRUE);
-        object.setDateFormat(dateFormat);
-
-        //separator 分隔符
-        //object.setSeparator("-");
-
-        return findCoderule(object);
-    }
-
-
-    /**
-     * 获取流水号：前缀+日期（yyyyMMdd）+6位流水号，如P20180808001
-     * 创建人：刘威
-     * @param companyID   公司ID
-     * @param tableName   表名
-     * @param dateFormat  日期格式
-     * @param prefix      前缀名称
-     * @return
-     */
-    public String createCoderByDate(String companyID, String tableName, String dateFormat, String prefix) {
-        //(企业编号+前缀字符+日期字符+流水号)-(company+prefix+date+code)
-        //(无需+前缀字符+无需+流水号)-W000142
-        CoderuleEntity object = new CoderuleEntity();
-        //tableName 业务名称(表名)
-        object.setTableName(tableName);
-        //companyID 公司ID
-        object.setCompanyID(companyID);
-        //length 指定位数(6)
-        object.setLength(Common.CODE_RULE_LENGTH_DEFAULT);
-
-
-        //firstName 第一段编码为自定义前缀字符
-        object.setFirstName(Common.FIRST_NAME_PREFIX);
-        //isNeedPrefix 是否显示前缀字符
-        object.setIsNeedPrefix(Boolean.TRUE);
-        //prefix 前缀字符
-        object.setPrefix(prefix);
-
-        //firstName 第一段编码为企业编码
-//        object.setFirstName(Common.FIRST_NAME_COMPANY);
-        //isNeedPrefix 是否显示企业编码
-//        object.setIsNeedCompany(Boolean.TRUE);
-
-        //filling 填充字符(0)
-        object.setFilling(Common.CODE_RULE_DEFAULT_FILLING);
-
-        //isNeedDate 是否需求日期并且设置格式
-        object.setIsNeedDate(Boolean.TRUE);
-        object.setDateFormat(dateFormat);
 
         //separator 分隔符
         //object.setSeparator("-");
