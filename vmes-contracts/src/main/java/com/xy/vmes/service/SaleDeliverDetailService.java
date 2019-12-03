@@ -237,8 +237,8 @@ public interface SaleDeliverDetailService {
     String findParentStateByDetailList(List<SaleDeliverDetail> dtlList);
 
     //////////////////////////////////////////////////////////////////////////////////////////
-    ResultModel listPageSaleDeliverDetail(PageData pd, Pagination pg) throws Exception;
-    ResultModel listPageSaleDeliverDetailByPrice(PageData pd, Pagination pg) throws Exception;
+    ResultModel listPageSaleDeliverDetail(PageData pd) throws Exception;
+    ResultModel listPageSaleDeliverDetailByPrice(PageData pd) throws Exception;
     ResultModel updateSaleDeliverDetailByPrice(PageData pd) throws Exception;
 
     //void exportExcelSaleDeliverDetails(PageData pd, Pagination pg) throws Exception;

@@ -725,8 +725,9 @@ public class SaleDeliverDetailServiceImp implements SaleDeliverDetailService {
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////
-    public ResultModel listPageSaleDeliverDetail(PageData pd, Pagination pg) throws Exception {
+    public ResultModel listPageSaleDeliverDetail(PageData pd) throws Exception {
         ResultModel model = new ResultModel();
+        Pagination pg = HttpUtils.parsePagination(pd);
 
         List<Column> columnList = columnService.findColumnList("saleDeliverDetail");
         if (columnList == null || columnList.size() == 0) {
@@ -807,8 +808,9 @@ public class SaleDeliverDetailServiceImp implements SaleDeliverDetailService {
         return model;
     }
 
-    public ResultModel listPageSaleDeliverDetailByPrice(PageData pd, Pagination pg) throws Exception {
+    public ResultModel listPageSaleDeliverDetailByPrice(PageData pd) throws Exception {
         ResultModel model = new ResultModel();
+        Pagination pg = HttpUtils.parsePagination(pd);
 
         List<Column> columnList = columnService.findColumnList("saleDeliverDetailByPrice");
         if (columnList == null || columnList.size() == 0) {
@@ -830,11 +832,19 @@ public class SaleDeliverDetailServiceImp implements SaleDeliverDetailService {
             pd.put("orderStr", orderStr);
         }
 
-        List<Map> varList = this.getDataListPage(pd,pg);
+        //是否需要分页 true:需要分页 false:不需要分页
+        Map result = new HashMap();
+        String isNeedPage = pd.getString("isNeedPage");
+        if ("false".equals(isNeedPage)) {
+            pg = null;
+        } else {
+            result.put("pageData", pg);
+        }
+
+        List<Map> varList = this.getDataListPage(pd, pg);
         Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
         List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
 
-        Map result = new HashMap();
         result.put("hideTitles",titleMap.get("hideTitles"));
         result.put("titles",titleMap.get("titles"));
         result.put("varList",varMapList);

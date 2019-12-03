@@ -63,8 +63,7 @@ public class SaleDeliverDetailController {
         Long startTime = System.currentTimeMillis();
 
         PageData pd = HttpUtils.parsePageData();
-        Pagination pg = HttpUtils.parsePagination(pd);
-        ResultModel model = saleDeliverDetailService.listPageSaleDeliverDetail(pd, pg);
+        ResultModel model = saleDeliverDetailService.listPageSaleDeliverDetail(pd);
 
         Long endTime = System.currentTimeMillis();
         logger.info("################/sale/saleDeliverDetail/listPageSaleDeliverDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
@@ -77,8 +76,7 @@ public class SaleDeliverDetailController {
         Long startTime = System.currentTimeMillis();
 
         PageData pd = HttpUtils.parsePageData();
-        Pagination pg = HttpUtils.parsePagination(pd);
-        ResultModel model = saleDeliverDetailService.listPageSaleDeliverDetailByPrice(pd, pg);
+        ResultModel model = saleDeliverDetailService.listPageSaleDeliverDetailByPrice(pd);
 
         Long endTime = System.currentTimeMillis();
         logger.info("################/sale/saleDeliverDetail/listPageSaleDeliverDetailByPrice 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
