@@ -163,7 +163,11 @@ public class Common {
     public static final int CODE_RULE_LENGTH_4 = 4;
     //业务编码规则-最小业务流水号长度(3位)
     public static final int CODE_RULE_LENGTH_3 = 3;
+
     public static final int CODE_RULE_LENGTH_DEFAULT = CODE_RULE_LENGTH_5;
+
+    //业务编码规则-销售订单-最小业务流水号长度(3位)
+    public static final int CODE_RULE_SALEORDER_LENGTH_DEFAULT = CODE_RULE_LENGTH_3;
 
     //业务编码规则-前补零
     public static final String CODE_RULE_BEFORE = "before";
