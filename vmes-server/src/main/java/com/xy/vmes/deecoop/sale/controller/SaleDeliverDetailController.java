@@ -1,11 +1,9 @@
 package com.xy.vmes.deecoop.sale.controller;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
-import com.xy.vmes.entity.*;
 import com.xy.vmes.service.*;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
-import com.yvan.common.util.Common;
 import com.yvan.springmvc.ResultModel;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -13,11 +11,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-
-import java.math.BigDecimal;
-import java.text.MessageFormat;
-import java.util.*;
-
 
 /**
 * 说明：vmes_sale_deliver_detail:发货明细Controller
@@ -38,20 +31,20 @@ public class SaleDeliverDetailController {
     @Autowired
     private SaleDeliverDtlOnOutDtlService saleDeliverDtlOnOutDtlService;
 
-    @Autowired
-    private WarehouseOutService outService;
-    @Autowired
-    private WarehouseOutDetailService outDetailService;
-    @Autowired
-    private WarehouseOutDetailExecuteService outDetailExecuteService;
-
-    @Autowired
-    private WarehouseInCreateService warehouseInCreateService;
-
-    @Autowired
-    private ProductService productService;
-    @Autowired
-    private RoleMenuService roleMenuService;
+//    @Autowired
+//    private WarehouseOutService outService;
+//    @Autowired
+//    private WarehouseOutDetailService outDetailService;
+//    @Autowired
+//    private WarehouseOutDetailExecuteService outDetailExecuteService;
+//
+//    @Autowired
+//    private WarehouseInCreateService warehouseInCreateService;
+//
+//    @Autowired
+//    private ProductService productService;
+//    @Autowired
+//    private RoleMenuService roleMenuService;
 
     /**
     * @author 陈刚 自动创建，可以修改
