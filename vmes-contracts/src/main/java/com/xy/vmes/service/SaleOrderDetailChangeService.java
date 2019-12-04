@@ -152,7 +152,7 @@ public interface SaleOrderDetailChangeService {
      */
     Map<String, SaleOrderDetail> findSaleOrderDetailByChangeMap(Map<String, Object> objectMap) throws Exception;
 
-
+    Map<String, SaleOrderDetail> findSaleOrderDetailByPriceChangeMap(Map<String, Object> objectMap) throws Exception;
 }
 
 

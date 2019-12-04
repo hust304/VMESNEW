@@ -432,6 +432,130 @@ public class SaleOrderDetailChangeServiceImp implements SaleOrderDetailChangeSer
         return valueMap;
     }
 
+    //后计价订单变更(拆分订单明细)
+    public Map<String, SaleOrderDetail> findSaleOrderDetailByPriceChangeMap(Map<String, Object> objectMap) throws Exception {
+        Map<String, SaleOrderDetail> valueMap = new HashMap<>();
+        valueMap.put("editOrderDetail", null);
+        valueMap.put("addOrderDetail", null);
+
+        //订单明细id
+        String orderDtlId = (String)objectMap.get("orderDtlId");
+        SaleOrderDetail orderDetailDB = saleOrderDetailService.findSaleOrderDetailById(orderDtlId);
+
+        //订单明细-(变更前,变更后)订购数量
+        BigDecimal orderCountBefore = (BigDecimal)objectMap.get("orderCountBefore");
+        BigDecimal orderCountAfter = (BigDecimal)objectMap.get("orderCountAfter");
+
+        //单位转换公式: (计价转换计量)单位
+        String p2nFormula = (String)objectMap.get("p2nFormula");
+        //productCount 货品数量(计量数量)
+        BigDecimal productCountAfter = BigDecimal.valueOf(0D);
+
+        //订购数量:(转换计量单位) P(计价单位) --> N(计量单位)
+        if (p2nFormula != null && p2nFormula.trim().length() > 0) {
+            productCountAfter = EvaluateUtil.countFormulaP2N(orderCountAfter, p2nFormula);
+        }
+        //四舍五入到2位小数
+        productCountAfter = productCountAfter.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+
+        //订单明细-(变更前)单价
+        BigDecimal productPriceBefore = BigDecimal.valueOf(0D);
+        if (orderDetailDB != null && orderDetailDB.getProductPrice() != null) {
+            productPriceBefore = orderDetailDB.getProductPrice();
+        }
+
+        //订单明细-(变更前,变更后)约定交期
+        Date deliverDateBefore = null;
+        String deliverDateBeforeStr = (String)objectMap.get("deliverDateBefore");
+        if (deliverDateBeforeStr != null && deliverDateBeforeStr.trim().length() > 0) {
+            deliverDateBefore = DateFormat.dateString2Date(deliverDateBeforeStr, DateFormat.DEFAULT_DATE_FORMAT);
+        }
+
+        Date deliverDateAfter = null;
+        String deliverDateAfterStr = (String)objectMap.get("deliverDateAfter");
+        if (deliverDateAfterStr != null && deliverDateAfterStr.trim().length() > 0) {
+            deliverDateAfter = DateFormat.dateString2Date(deliverDateAfterStr, DateFormat.DEFAULT_DATE_FORMAT);
+        }
+
+        //发货数量
+        BigDecimal deliverCount = BigDecimal.valueOf(0D);
+        if (objectMap.get("deliverCount") != null) {
+            deliverCount = (BigDecimal)objectMap.get("deliverCount");
+        }
+
+        //发货数量:=0 无需拆分订单明细 直接修改该订单明细
+        if (0D == deliverCount.doubleValue()) {
+            SaleOrderDetail editObject = new SaleOrderDetail();
+            editObject.setId(orderDtlId);
+
+            //订单明细-订购数量(订单单位-计价单位)
+            editObject.setOrderCount(orderCountAfter);
+            //priceCount 货品数量(计价数量)
+            editObject.setPriceCount(orderCountAfter);
+            //订单明细-订购数量-货品数量(计量单位)
+            editObject.setProductCount(productCountAfter);
+
+            //订单明细-货品单价 productPrice
+            editObject.setProductPrice(productPriceBefore);
+            //订单明细-约定交期
+            editObject.setDeliverDate(deliverDateAfter);
+
+            //productSum 货品金额(订购数量 * 货品单价)
+            BigDecimal productSum = BigDecimal.valueOf(0D);
+            if (productCountAfter != null) {
+                productSum = BigDecimal.valueOf(productCountAfter.doubleValue() * productPriceBefore.doubleValue());
+                //四舍五入到2位小数
+                productSum = productSum.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+            }
+            editObject.setProductSum(productSum);
+
+            valueMap.put("editOrderDetail", editObject);
+            return valueMap;
+        }
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        SaleOrderDetail editObject = null;
+        SaleOrderDetail addObject = null;
+
+        //发货数量: 不等于零
+        //A. 订购数量发生变更: 拆分订单明细
+        // 订购数量:10 单价:1 发货数量:5
+        // 情况2：只有订购数量变更 订购数量: 10 变更为 7
+        // 订单明细: (修改)订购数量:10 单价:1 (订购数量:10 修改为 5)
+        //        (修改后)订购数量:5 单价:1
+        //          (插入)订购数量:2  单价:1
+        if (this.isChangeByBigDecimal(orderCountBefore, orderCountAfter)) {
+            //设置订单明细:修改
+            editObject = this.findEditOrderDetail(objectMap, deliverCount, editObject);
+            if (orderDetailDB != null) {
+                //priceCount 货品数量(计价数量)
+                editObject.setPriceCount(orderDetailDB.getPriceCount());
+            }
+
+            this.findOrderDetailByPrice(productPriceBefore, editObject);
+
+            //设置订单明细:添加
+            addObject = this.findAddOrderDetail(objectMap, deliverCount, orderCountAfter, orderDetailDB, addObject);
+            this.findOrderDetailByPrice(BigDecimal.valueOf(0D), addObject);
+            addObject.setDeliverDate(deliverDateAfter);
+        }
+
+        //C. 约定交期发生变更:
+        if (this.isChangeByDate(deliverDateBefore, deliverDateAfter)) {
+            //设置订单明细:修改
+            if (editObject == null) {
+                editObject = new SaleOrderDetail();
+                editObject.setId(orderDtlId);
+            }
+
+            //约定交期 deliverDate
+            editObject.setDeliverDate(deliverDateAfter);
+        }
+
+        valueMap.put("editOrderDetail", editObject);
+        valueMap.put("addOrderDetail", addObject);
+        return valueMap;
+    }
+
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //订单变更审核 私有方法
     private void findOrderDetailByPrice(BigDecimal productPrice, SaleOrderDetail orderDetail) {
@@ -452,7 +576,6 @@ public class SaleOrderDetailChangeServiceImp implements SaleOrderDetailChangeSer
         //四舍五入到2位小数
         productSum = productSum.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
         orderDetail.setProductSum(productSum);
-
     }
 
     private SaleOrderDetail findEditOrderDetail(Map<String, Object> objectMap, BigDecimal deliverCount, SaleOrderDetail editObject) {
