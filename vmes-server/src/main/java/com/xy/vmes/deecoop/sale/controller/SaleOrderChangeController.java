@@ -58,7 +58,7 @@ public class SaleOrderChangeController {
     }
 
     /**
-     * 审核通过-订单变更
+     * 审核通过-订单变更(先计价)
      * 接口参数:orderChangeId: 销售订单变更id
      *
      * @author 陈刚
@@ -74,6 +74,26 @@ public class SaleOrderChangeController {
         ResultModel model = saleOrdeChangeService.auditPassSaleOrderChange(pageData);
         Long endTime = System.currentTimeMillis();
         logger.info("################/sale/saleOrderChange/auditPassSaleOrderChange 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 审核通过-订单变更(后计价)
+     * 接口参数:orderChangeId: 销售订单变更id
+     *
+     * @author 陈刚
+     * @date 2018-12-10
+     * @throws Exception
+     */
+    @PostMapping("/sale/saleOrderChange/auditPassSaleOrderChangeByPrice")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel auditPassSaleOrderChangeByPrice() throws Exception {
+        logger.info("################/sale/saleOrderChange/auditPassSaleOrderChangeByPrice 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pageData = HttpUtils.parsePageData();
+        ResultModel model = saleOrdeChangeService.auditPassSaleOrderChangeByPrice(pageData);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleOrderChange/auditPassSaleOrderChangeByPrice 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 

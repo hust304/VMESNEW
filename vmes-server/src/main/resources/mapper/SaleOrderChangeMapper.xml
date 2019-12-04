@@ -192,8 +192,8 @@
             <if test="orderNumber != null and orderNumber != ''" >
                 and saleOrder.order_number = #{orderNumber}
             </if>
-            <if test="customerName != null and customerName != ''">
-                and customer.name LIKE CONCAT(CONCAT(#{customerName}),'%')
+            <if test="priceType != null and priceType != ''" >
+                and saleOrder.price_type = #{priceType}
             </if>
 
             <if test="orderDateBegin != null and orderDateBegin != ''">
@@ -201,6 +201,10 @@
             </if>
             <if test="orderDateEnd != null and orderDateEnd != ''">
                 <![CDATA[ and saleOrder.order_date <= #{orderDateEnd} ]]>
+            </if>
+
+            <if test="customerName != null and customerName != ''">
+                and customer.name LIKE CONCAT(CONCAT(#{customerName}),'%')
             </if>
 
             <!--queryStr 自定义sql查询语句-->

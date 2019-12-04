@@ -429,7 +429,7 @@ public class SaleOrderChangeServiceImp implements SaleOrderChangeService {
     }
 
     /**
-     * 审核通过-订单变更
+     * 审核通过-订单变更(先计价)
      * 接口参数:orderChangeId: 销售订单变更id
      * @param pageData
      * @return
@@ -501,6 +501,163 @@ public class SaleOrderChangeServiceImp implements SaleOrderChangeService {
             && orderChangeDB.getOrderId().trim().length() > 0
             && orderChangeDB.getReceiptTypeAfter() != null
         ) {
+            SaleOrder editOrder = new SaleOrder();
+            editOrder.setId(orderChangeDB.getOrderId().trim());
+            editOrder.setReceiptType(orderChangeDB.getReceiptTypeAfter());
+            if (new_orderTotalSum.doubleValue() != 0D) {
+                editOrder.setOrderSum(new_orderTotalSum);
+                editOrder.setTotalSum(new_orderTotalSum);
+            }
+            saleOrderService.update(editOrder);
+        }
+
+        //3. 修改订单变更记录表状态
+        SaleOrderChange editOrderChange = new SaleOrderChange();
+        editOrderChange.setId(orderChangeId);
+        //状态(0:审核中 1:完成:审核通过 2:取消:审核不通过)
+        editOrderChange.setState("1");
+        this.update(editOrderChange);
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //修改当前变更订单明细(锁库数量清零)
+        for (SaleOrderDetail orderDtl : new_orderDtl_list) {
+            //lockCount 锁定货品数量(计量单位)
+            BigDecimal lockCount = BigDecimal.valueOf(0D);
+            if (orderDtl.getLockCount() != null) {
+                lockCount = orderDtl.getLockCount();
+            }
+
+            if (lockCount.doubleValue() != 0D) {
+                SaleOrderDetail editDetail = new SaleOrderDetail();
+                editDetail.setId(orderDtl.getId());
+
+                //lockCount 锁定货品数量(计量单位)
+                editDetail.setLockCount(BigDecimal.valueOf(0D));
+                //isLockWarehouse 是否锁定仓库(0:未锁定 1:已锁定)
+                editDetail.setIsLockWarehouse("0");
+
+                //versionLockCount 修改锁定库存版本号
+                Integer versionLockCount = Integer.valueOf(0);
+                if (editDetail.getVersionLockCount() != null) {
+                    versionLockCount = Integer.valueOf(editDetail.getVersionLockCount().intValue() + 1);
+                }
+                editDetail.setVersionLockCount(versionLockCount);
+
+                saleOrderDetailService.update(editDetail);
+            }
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //订单明细变更后-重新获取订单明细状态-反写订单状态(订购数量与发货数量比较)
+
+        //根据(订单id) 关联查询(vmes_sale_deliver_detail,vmes_sale_order_detail,vmes_warehouse_out_detail)
+        //查询语句: SaleDeliverDetailByCollectMapper.findDeliverDetailByOrderDetail
+        Map<String, Map<String, Object>> mapObject = saleDeliverDetailByCollectService.findMapOrderDetaiCountByOrderId(orderChangeDB.getOrderId());
+        if (mapObject != null) {
+            for (Iterator iterator = mapObject.keySet().iterator(); iterator.hasNext();) {
+                String orderDtlId_mapKey = iterator.next().toString().trim();
+                Map<String, Object> mapValue = mapObject.get(orderDtlId_mapKey);
+
+                if (mapValue != null) {
+                    SaleOrderDetail editOrderDtl = new SaleOrderDetail();
+                    editOrderDtl.setId(orderDtlId_mapKey);
+
+                    //orderDtlCount 订单明细数量
+                    BigDecimal orderDtlCount = (BigDecimal)mapValue.get("orderDtlCount");
+
+                    //checkCount:=(发货数量-退货数量)
+                    BigDecimal checkCount = (BigDecimal)mapValue.get("checkCount");
+
+                    if (checkCount.doubleValue() >= orderDtlCount.doubleValue()) {
+                        //明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成(发货) -1:已取消)
+                        editOrderDtl.setState("5");
+                    }
+                    saleOrderDetailService.update(editOrderDtl);
+                }
+            }
+        }
+
+        //反写订单状态
+        SaleOrder editOrderState = new SaleOrder();
+        editOrderState.setId(orderChangeDB.getOrderId());
+        saleOrderDetailService.updateParentStateByDetailList(editOrderState, null);
+
+        return model;
+    }
+
+    /**
+     * 审核通过-订单变更(后计价)
+     * 接口参数:orderChangeId: 销售订单变更id
+     * @param pageData
+     * @return
+     * @throws Exception
+     */
+    public ResultModel auditPassSaleOrderChangeByPrice(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+
+        String cuser = pageData.getString("cuser");
+        String companyId = pageData.getString("currentCompanyId");
+        if (companyId == null || companyId.trim().length() == 0) {
+            model.putCode("1");
+            model.putMsg("企业id为空或空字符串！");
+            return model;
+        }
+        String customerId = pageData.getString("customerId");
+        if (customerId == null || customerId.trim().length() == 0) {
+            model.putCode("1");
+            model.putMsg("客户id为空或空字符串！");
+            return model;
+        }
+
+        String orderChangeId = pageData.getString("orderChangeId");
+        if (orderChangeId == null || orderChangeId.trim().length() == 0) {
+            model.putCode("1");
+            model.putMsg("销售订单变更id为空或空字符串！");
+            return model;
+        }
+        SaleOrderChange orderChangeDB = this.findOrdeChangeById(orderChangeId);
+
+
+        //根据(订单变更id) 查询vmes_sale_order_detail_change
+        PageData findMap = new PageData();
+        findMap.put("parentId", orderChangeId);
+        List<Map> mapList = ordeDtlChangeService.getDataListPage(findMap, null);
+
+        //1.根据订单明细变更记录-拆分订单明细: 遍历查询结果集
+        if (mapList != null && mapList.size() > 0) {
+            for (Map<String, Object> objectMap : mapList) {
+
+                //根据订单明细变更记录-拆分订单明细
+                Map<String, SaleOrderDetail> valueMap = ordeDtlChangeService.findSaleOrderDetailByPriceChangeMap(objectMap);
+
+                //   返回值:Map<String, SaleOrderDetail>
+                //     editOrderDetail: 修改订单明细对象
+                //     addOrderDetail:  添加订单明细对象
+                if (valueMap != null) {
+                    SaleOrderDetail editOrderDetail = valueMap.get("editOrderDetail");
+                    if (editOrderDetail != null) {
+                        saleOrderDetailService.update(editOrderDetail);
+                    }
+
+                    SaleOrderDetail addOrderDetail = valueMap.get("addOrderDetail");
+                    if (addOrderDetail != null) {
+                        addOrderDetail.setCuser(cuser);
+                        saleOrderDetailService.save(addOrderDetail);
+                    }
+                }
+            }
+        }
+
+        //2. 修改订单表(发票类型,订单金额)
+        List<SaleOrderDetail> new_orderDtl_list = saleOrderDetailService.findSaleOrderDetailListByParentId(orderChangeDB.getOrderId());
+        //获取当前订单总金额:订单明细变更后
+        BigDecimal new_orderTotalSum = saleOrderDetailService.findTotalSumByPrice(new_orderDtl_list);
+
+        if (orderChangeDB != null
+                && orderChangeDB.getOrderId() != null
+                && orderChangeDB.getOrderId().trim().length() > 0
+                && orderChangeDB.getReceiptTypeAfter() != null
+                ) {
             SaleOrder editOrder = new SaleOrder();
             editOrder.setId(orderChangeDB.getOrderId().trim());
             editOrder.setReceiptType(orderChangeDB.getReceiptTypeAfter());
