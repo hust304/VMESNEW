@@ -338,6 +338,25 @@
                 and detail.state = #{state}
             </if>
 
+            <!--isNotPrice 后计价订单明细:去除已结算的-->
+            <!--vmes_sale_order.price_type (1:先计价 2:后计价)-->
+            <!--(后计价)vmes_sale_order_detail.price_unit (后计价:结算单位id)-->
+            <!--说明:必须用 not in 语句 (兼容先计价订单明细)-->
+            <if test="'true' == isNotPrice">
+                and detail.id not in (
+                    select a.id
+                    from vmes_sale_order_detail a
+                      left join vmes_sale_order b on a.parent_id = b.id
+                    <where>
+                        <if test="parentId != null and parentId != ''" >
+                            and a.parent_id = #{parentId}
+                        </if>
+                        <!--说明: 后计价订单明细 并且 已经(结算)的订单明细-->
+                        and (b.price_type = '2' and a.price_unit is not null)
+                    </where>
+                )
+            </if>
+
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >
                 and ${queryStr}
