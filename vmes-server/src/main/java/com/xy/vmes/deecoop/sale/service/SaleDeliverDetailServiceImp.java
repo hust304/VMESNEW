@@ -1275,6 +1275,10 @@ public class SaleDeliverDetailServiceImp implements SaleDeliverDetailService {
         addObject.setProductId(orderDetailDB.getProductId());
         //生产计划明细ID planDetailId
         addObject.setPlanDetailId(orderDetailDB.getPlanDetailId());
+        //交付日期 deliverDate
+        addObject.setDeliverDate(orderDetailDB.getDeliverDate());
+        //备注 remark
+        addObject.setRemark(orderDetailDB.getRemark());
 
         return addObject;
     }
