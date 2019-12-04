@@ -41,7 +41,7 @@ public class SaleDeliverDetail implements Serializable {
 	//订单明细单位id
 	@TableField("order_unit")
 	private String orderUnit;
-	//订单订购数量
+	//发货数量(订单单位)
 	@TableField("order_count")
 	private BigDecimal orderCount;
 	//计价单位id

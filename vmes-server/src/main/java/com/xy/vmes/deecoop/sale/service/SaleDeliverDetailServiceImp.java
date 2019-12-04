@@ -857,6 +857,7 @@ public class SaleDeliverDetailServiceImp implements SaleDeliverDetailService {
     public ResultModel updateSaleDeliverDetailByPrice(PageData pageData) throws Exception {
         ResultModel model = new ResultModel();
 
+        String cuser = pageData.getString("cuser");
         String deliverId = pageData.getString("deliverId");
         if (deliverId == null || deliverId.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
@@ -908,38 +909,38 @@ public class SaleDeliverDetailServiceImp implements SaleDeliverDetailService {
         saleDeliverService.update(saleDeliver);
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //3. 销售订单明细(计价单位,货品金额,货品单价)
-        Map<String, String> orderIdMap = new HashMap<String, String>();
-        for (SaleDeliverDetail deliverDetail : deliverDtlList) {
-            String orderId = deliverDetail.getOrderId();
+        //根据发货单id 拆分订单明细
+
+        //根据(发货单id) 关联查询(vmes_sale_deliver_detail, vmes_sale_order_detail)
+        //sql查询语句: SaleDeliverDetailMapper.getDataListPage
+        PageData findMap = new PageData();
+        findMap.put("parentId", deliverId);
+
+        Map<String, String> orderIdMap = new HashMap();
+        List<Map> mapValueList = this.getDataListPage(findMap, null);
+        for (Map<String, Object> objectMap : mapValueList) {
+
+            String orderId = (String)objectMap.get("orderId");
             orderIdMap.put(orderId, orderId);
 
-            SaleOrderDetail orderDetail = new SaleOrderDetail();
-            String orderDetaiId = deliverDetail.getOrderDetaiId();
-            orderDetail.setId(orderDetaiId);
+            //根据发货单明细-拆分订单明细
+            Map<String, SaleOrderDetail> valueMap = this.findSaleOrderDetailByChangeMap(objectMap);
 
-            //计价单位id priceUnit --> 发货单明细:priceUnit 计价单位id
-            orderDetail.setPriceUnit(deliverDetail.getPriceUnit());
+            //   返回值:Map<String, SaleOrderDetail>
+            //     editOrderDetail: 修改订单明细对象
+            //     addOrderDetail:  添加订单明细对象
+            if (valueMap != null) {
+                SaleOrderDetail editOrderDetail = valueMap.get("editOrderDetail");
+                if (editOrderDetail != null) {
+                    saleOrderDetailService.update(editOrderDetail);
+                }
 
-            //订单明细货品金额 productSum --> 发货单明细:sum 结算金额
-            BigDecimal productSum = BigDecimal.valueOf(0D);
-            if (deliverDetail.getSum() != null) {
-                productSum = deliverDetail.getSum();
-                //四舍五入到2位小数
-                productSum = productSum.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                SaleOrderDetail addOrderDetail = valueMap.get("addOrderDetail");
+                if (addOrderDetail != null) {
+                    addOrderDetail.setCuser(cuser);
+                    saleOrderDetailService.save(addOrderDetail);
+                }
             }
-            orderDetail.setProductSum(productSum);
-
-            //货品单价 productPrice --> 发货单明细:productPrice 结算单价
-            BigDecimal productPrice = BigDecimal.valueOf(0D);
-            if (deliverDetail.getProductPrice() != null) {
-                productPrice = deliverDetail.getProductPrice();
-                //四舍五入到2位小数
-                productPrice = productPrice.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-            }
-            orderDetail.setProductPrice(productPrice);
-
-            saleOrderDetailService.update(orderDetail);
         }
 
         //4. 反写订单金额
@@ -967,6 +968,67 @@ public class SaleDeliverDetailServiceImp implements SaleDeliverDetailService {
                 }
             }
         }
+
+        ////////////////////////////////////////////////////////////////////////////
+//        //3. 销售订单明细(计价单位,货品金额,货品单价)
+//        Map<String, String> orderIdMap = new HashMap<String, String>();
+//        for (SaleDeliverDetail deliverDetail : deliverDtlList) {
+//            String orderId = deliverDetail.getOrderId();
+//            orderIdMap.put(orderId, orderId);
+//
+//            SaleOrderDetail orderDetail = new SaleOrderDetail();
+//            String orderDetaiId = deliverDetail.getOrderDetaiId();
+//            orderDetail.setId(orderDetaiId);
+//
+//            //计价单位id priceUnit --> 发货单明细:priceUnit 计价单位id
+//            orderDetail.setPriceUnit(deliverDetail.getPriceUnit());
+//
+//            //订单明细货品金额 productSum --> 发货单明细:sum 结算金额
+//            BigDecimal productSum = BigDecimal.valueOf(0D);
+//            if (deliverDetail.getSum() != null) {
+//                productSum = deliverDetail.getSum();
+//                //四舍五入到2位小数
+//                productSum = productSum.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+//            }
+//            orderDetail.setProductSum(productSum);
+//
+//            //货品单价 productPrice --> 发货单明细:productPrice 结算单价
+//            BigDecimal productPrice = BigDecimal.valueOf(0D);
+//            if (deliverDetail.getProductPrice() != null) {
+//                productPrice = deliverDetail.getProductPrice();
+//                //四舍五入到2位小数
+//                productPrice = productPrice.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+//            }
+//            orderDetail.setProductPrice(productPrice);
+//
+//            saleOrderDetailService.update(orderDetail);
+//        }
+//
+//        //4. 反写订单金额
+//        if (orderIdMap.size() > 0) {
+//            for (Iterator iterator = orderIdMap.keySet().iterator(); iterator.hasNext();) {
+//                String orderId = (String)iterator.next();
+//
+//                SaleOrder orderDB = saleOrderService.findSaleOrderById(orderId);
+//                List<SaleOrderDetail> detailList = saleOrderDetailService.findSaleOrderDetailListByParentId(orderId);
+//
+//                //price_type:计价类型(1:先计价 2:后计价)
+//                if ("2".equals(orderDB.getPriceType())) {
+//                    //totalSum 合计金额
+//                    BigDecimal orderTotalSum = saleOrderDetailService.findTotalSumByPrice(detailList);
+//
+//                    SaleOrder editOrder = new SaleOrder();
+//                    editOrder.setId(orderId);
+//                    //四舍五入到2位小数
+//                    orderTotalSum = orderTotalSum.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+//                    editOrder.setTotalSum(orderTotalSum);
+//                    editOrder.setOrderSum(orderTotalSum);
+//                    //discountSum 折扣金额
+//                    editOrder.setDiscountSum(BigDecimal.valueOf(0D));
+//                    saleOrderService.update(editOrder);
+//                }
+//            }
+//        }
 
         return model;
     }
@@ -1045,6 +1107,177 @@ public class SaleDeliverDetailServiceImp implements SaleDeliverDetailService {
 //
 //        return model;
 //    }
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * 根据发货单明细-拆分订单明细
+     * 该方法在后计价发货单结算时调用
+     *
+     *
+     * 订购数量:10 发货数量:4
+     * 拆分后订单:
+     *   (修改后)订购数量:4
+     *     (插入)订购数量:6
+     *
+     * @param objectMap  查询Map结构体
+     * @return
+     *   返回值:Map<String, SaleOrderDetail>
+     *     editOrderDetail: 修改订单明细对象
+     *     addOrderDetail:  添加订单明细对象
+     *
+     * @throws Exception
+     */
+    private Map<String, SaleOrderDetail> findSaleOrderDetailByChangeMap(Map<String, Object> objectMap) throws Exception {
+        Map<String, SaleOrderDetail> valueMap = new HashMap<>();
+
+        SaleOrderDetail editObject = this.findEditOrderDetail(objectMap);
+        valueMap.put("editOrderDetail", editObject);
+
+        SaleOrderDetail addObject = this.findAddOrderDetail(objectMap);
+        valueMap.put("addOrderDetail", addObject);
+
+        return valueMap;
+    }
+
+    /**
+     * 参数Map结构体:
+     * SQL查询: SaleDeliverDetailMapper.getDataListPage
+     *
+     * @param objectMap
+     * @return
+     */
+    private SaleOrderDetail findEditOrderDetail(Map<String, Object> objectMap) {
+        if (objectMap == null) {return null;}
+
+        SaleOrderDetail editObject = new SaleOrderDetail();
+
+        //订单明细id
+        String orderDtlId = (String)objectMap.get("orderDetaiId");
+        editObject.setId(orderDtlId);
+
+        //发货数量(订单单位) deliverCount --> SaleOrderDetail.orderCount
+        BigDecimal deliverCount = BigDecimal.valueOf(0D);
+        if (objectMap.get("orderCount") != null) {
+            deliverCount = (BigDecimal)objectMap.get("orderCount");
+        }
+        //订单明细-订购数量:= 发货数量(订单单位)
+        editObject.setOrderCount(deliverCount);
+
+        //单位转换公式: (计价转换计量)单位
+        String p2nFormula = (String)objectMap.get("p2nFormula");
+        //发货数量(计量数量)-productCountDeliver
+        BigDecimal productCountDeliver = BigDecimal.valueOf(0D);
+
+        //发货数量:(转换计量单位) P(计价单位) --> N(计量单位)
+        if (p2nFormula != null && p2nFormula.trim().length() > 0) {
+            productCountDeliver = EvaluateUtil.countFormulaP2N(deliverCount, p2nFormula);
+        }
+
+        //四舍五入到2位小数
+        productCountDeliver = productCountDeliver.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+        //订单明细-订购数量-货品数量:= 发货数量(计量单位)
+        editObject.setProductCount(productCountDeliver);
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////
+        //后计价:结算单位 结算数量 结算金额
+
+        //结算单位 priceUnit --> SaleOrderDetail.priceUnit
+        String priceUnit = (String)objectMap.get("priceUnit");
+        editObject.setPriceUnit(priceUnit);
+
+        //结算数量 priceCount --> SaleOrderDetail.priceCount
+        BigDecimal priceCount = BigDecimal.valueOf(0D);
+        if (objectMap.get("priceCount") != null) {
+            priceCount = (BigDecimal)objectMap.get("priceCount");
+        }
+        editObject.setPriceCount(priceCount);
+
+        //sum 结算金额 --> SaleOrderDetail.productSum
+        BigDecimal sum = BigDecimal.valueOf(0D);
+        if (objectMap.get("sum") != null) {
+            sum = (BigDecimal)objectMap.get("sum");
+        }
+        editObject.setProductSum(sum);
+
+        //计算货品单价 productPrice := 结算金额 / 订购数量
+        BigDecimal productPrice = BigDecimal.valueOf(0D);
+        if (editObject.getOrderCount() != null && editObject.getOrderCount().doubleValue() != 0D) {
+            productPrice = BigDecimal.valueOf(sum.doubleValue() / editObject.getOrderCount().doubleValue());
+        }
+        //四舍五入到2位小数
+        productPrice = productPrice.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+        editObject.setProductPrice(productPrice);
+
+        return editObject;
+    }
+
+    /**
+     * 参数Map结构体:
+     * SQL查询: SaleDeliverDetailMapper.getDataListPage
+     *
+     * @param objectMap
+     * @return
+     */
+    private SaleOrderDetail findAddOrderDetail(Map<String, Object> objectMap) throws Exception {
+        if (objectMap == null) {return null;}
+
+        //订单明细id
+        String orderDtlId = (String)objectMap.get("orderDetaiId");
+        SaleOrderDetail orderDetailDB = saleOrderDetailService.findSaleOrderDetailById(orderDtlId);
+
+        SaleOrderDetail addObject = new SaleOrderDetail();
+
+        //订单明细订购数量(订单单位) orderDetailCount
+        BigDecimal orderDetailCount = BigDecimal.valueOf(0D);
+        if (objectMap.get("orderDetailCount") != null) {
+            orderDetailCount = (BigDecimal)objectMap.get("orderDetailCount");
+        }
+
+        //发货数量(订单单位) deliverCount
+        BigDecimal deliverCount = BigDecimal.valueOf(0D);
+        if (objectMap.get("orderCount") != null) {
+            deliverCount = (BigDecimal)objectMap.get("orderCount");
+        }
+
+        //订单明细-订购数量:= 订购数量 - 发货数量
+        BigDecimal orderCountAdd = BigDecimal.valueOf(orderDetailCount.doubleValue() - deliverCount.doubleValue());
+
+        //单位转换公式: (计价转换计量)单位
+        String p2nFormula = (String)objectMap.get("p2nFormula");
+        //订购数量:(转换计量单位) P(计价单位) --> N(计量单位)
+        BigDecimal productCountAdd = BigDecimal.valueOf(0D);
+        if (p2nFormula != null && p2nFormula.trim().length() > 0) {
+            productCountAdd = EvaluateUtil.countFormulaP2N(orderCountAdd, p2nFormula);
+        }
+        //四舍五入到2位小数
+        productCountAdd = productCountAdd.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+        //订单明细-订购数量-货品数量(计量单位)
+        addObject.setProductCount(productCountAdd);
+
+        //订单明细-订购数量
+        //四舍五入到2位小数
+        orderCountAdd = orderCountAdd.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+        addObject.setOrderCount(orderCountAdd);
+
+        //订单ID parentId
+        addObject.setParentId(orderDetailDB.getParentId());
+        //state 明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
+        addObject.setState("3");
+        //附件地址 fileUrl
+        addObject.setFileUrl(orderDetailDB.getFileUrl());
+        //订单单位id orderUnit
+        addObject.setOrderUnit(orderDetailDB.getOrderUnit());
+        //计量单位id productUnit
+        addObject.setProductUnit(orderDetailDB.getProductUnit());
+        //计价单位id priceUnit
+        //货品ID productId
+        addObject.setProductId(orderDetailDB.getProductId());
+        //生产计划明细ID planDetailId
+        addObject.setPlanDetailId(orderDetailDB.getPlanDetailId());
+
+        return addObject;
+    }
 
 
 }
