@@ -551,12 +551,9 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
 
         //遍历发货单明细List-修改发货明细对应的订单明细状态
         Map<String, String> orderIdMap = new HashMap<String, String>();
-        StringBuffer orderIdsBuf = new StringBuffer();
-
         for (SaleDeliverDetail deliverDetail : deliverDtlList) {
             String orderId = deliverDetail.getOrderId();
             orderIdMap.put(orderId, orderId);
-            orderIdsBuf.append(orderId).append(",");
 
             SaleOrderDetail orderDetail = new SaleOrderDetail();
             String orderDetaiId = deliverDetail.getOrderDetaiId();
@@ -570,35 +567,36 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
 
                 //checkCount 验证数量(发货数量-退货数量)
                 BigDecimal checkCount = valueMap.get("checkCount");
-                //checkSum:=(发货金额-退货金额)
-                BigDecimal checkSum = valueMap.get("checkSum");
 
-                //price_type:计价类型(1:先计价 2:后计价)
-                //2:后计价 反写订单明细,反写订单总金额
-                if (priceType != null && "2".equals(priceType.trim())) {
-                    orderDetail.setPriceUnit(deliverDetail.getPriceUnit());
-
-                    //订单明细货品金额:=(发货金额-退货金额)
-                    BigDecimal productSum = BigDecimal.valueOf(0D);
-                    if (checkSum != null) {
-                        productSum = checkSum;
-                    }
-                    orderDetail.setProductSum(productSum);
-
-                    //货品单价 productPrice
-                    BigDecimal productPrice = BigDecimal.valueOf(0D);
-                    if (checkCount != null && checkCount.doubleValue() != 0 && checkSum != null) {
-                        productPrice = BigDecimal.valueOf(checkSum.doubleValue() / checkCount.doubleValue());
-                        //四舍五入到2位小数
-                        productPrice = productPrice.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-                        orderDetail.setProductPrice(productPrice);
-                    }
-
-//                    if (deliverDetail.getProductPrice() != null) {
-//                        productPrice = deliverDetail.getProductPrice();
+//                //checkSum:=(发货金额-退货金额)
+//                BigDecimal checkSum = valueMap.get("checkSum");
+//
+//                //price_type:计价类型(1:先计价 2:后计价)
+//                //2:后计价 反写订单明细,反写订单总金额
+//                if (priceType != null && "2".equals(priceType.trim())) {
+//                    orderDetail.setPriceUnit(deliverDetail.getPriceUnit());
+//
+//                    //订单明细货品金额:=(发货金额-退货金额)
+//                    BigDecimal productSum = BigDecimal.valueOf(0D);
+//                    if (checkSum != null) {
+//                        productSum = checkSum;
 //                    }
-//                    orderDetail.setProductPrice(productPrice);
-                }
+//                    orderDetail.setProductSum(productSum);
+//
+//                    //货品单价 productPrice
+//                    BigDecimal productPrice = BigDecimal.valueOf(0D);
+//                    if (checkCount != null && checkCount.doubleValue() != 0 && checkSum != null) {
+//                        productPrice = BigDecimal.valueOf(checkSum.doubleValue() / checkCount.doubleValue());
+//                        //四舍五入到2位小数
+//                        productPrice = productPrice.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+//                        orderDetail.setProductPrice(productPrice);
+//                    }
+//
+////                    if (deliverDetail.getProductPrice() != null) {
+////                        productPrice = deliverDetail.getProductPrice();
+////                    }
+////                    orderDetail.setProductPrice(productPrice);
+//                }
 
                 if (checkCount.doubleValue() >= orderCount.doubleValue()) {
                     //明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
