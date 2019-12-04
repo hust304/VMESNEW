@@ -496,7 +496,6 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
         }
 
         String cuser = pageData.getString("cuser");
-        String priceType = pageData.getString("priceType");
         String linkName = pageData.getString("custAddressName");
         String mobile = pageData.getString("custMobile");
 
