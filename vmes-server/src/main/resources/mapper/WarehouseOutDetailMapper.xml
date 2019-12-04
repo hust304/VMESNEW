@@ -480,7 +480,7 @@
         select
             prod.id id,
             prod.id productId,
-            prod.code productCode,
+            case when prod.source_code is null then prod.code else prod.source_code end productCode,
             prod.name productName,
             prod.spec productSpec,
             prod.genre productGenre,

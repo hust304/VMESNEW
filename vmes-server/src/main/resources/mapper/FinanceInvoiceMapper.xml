@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+说明：vmes_finance_invoice:销售开票 Mapper.xml
+创建人：刘威 自动创建
+创建时间：2019-12-03
+ -->
+<mapper namespace="com.xy.vmes.deecoop.finance.dao.FinanceInvoiceMapper">
+
+    <!--表名 自动创建，禁止修改-->
+    <sql id="tableName">
+	vmes_finance_invoice
+    </sql>
+
+    <!-- 字段 自动创建，禁止修改-->
+    <sql id="Field">
+		company_id companyId,<!-- 企业ID -->
+		customer_invoice_id customerInvoiceId,<!-- 客户开票信息ID -->
+		customer_id customerId,<!-- 客户ID -->
+		type type,<!-- 发票类型(1:普票发票 2:增值税发票) -->
+		sys_code sysCode,<!-- 编号(系统生成) -->
+		code code,<!-- 编号(用户) -->
+		amount amount,<!-- 开票金额 -->
+		state state,<!-- 发票状态(0:待开票 1:已开票 -1:已开票) -->
+		cuser cuser,<!-- 创建用户id -->
+		cdate cdate,<!-- 创建时间 -->
+		uuser uuser,<!-- 修改用户id -->
+		udate udate,<!-- 修改时间 -->
+		remark remark,<!-- 备注 -->
+		isdisable isdisable,<!-- 是否启用(0:已禁用 1:启用) -->
+		id id <!-- id -->
+    </sql>
+
+    <!-- 字段值 自动创建，禁止修改-->
+    <sql id="FieldValue">
+		#{companyId},<!-- 企业ID -->
+		#{customerInvoiceId},<!-- 客户开票信息ID -->
+		#{customerId},<!-- 客户ID -->
+		#{type},<!-- 发票类型(1:普票发票 2:增值税发票) -->
+		#{sysCode},<!-- 编号(系统生成) -->
+		#{code},<!-- 编号(用户) -->
+		#{amount},<!-- 开票金额 -->
+		#{state},<!-- 发票状态(0:待开票 1:已开票 -1:已开票) -->
+		#{cuser},<!-- 创建用户id -->
+		#{cdate},<!-- 创建时间 -->
+		#{uuser},<!-- 修改用户id -->
+		#{udate},<!-- 修改时间 -->
+		#{remark},<!-- 备注 -->
+		#{isdisable},<!-- 是否启用(0:已禁用 1:启用) -->
+		#{id} <!-- id -->
+    </sql>
+
+
+    <!-- 字段名称  自动创建，禁止修改-->
+    <sql id="Column">
+        '企业ID'  companyId,
+        '客户开票信息ID'  customerInvoiceId,
+        '客户ID'  customerId,
+        '发票类型(1:普票发票 2:增值税发票)'  type,
+        '编号(系统生成)'  sysCode,
+        '编号(用户)'  code,
+        '开票金额'  amount,
+        '发票状态(0:待开票 1:已开票 -1:已开票)'  state,
+        '创建用户id'  cuser,
+        '创建时间'  cdate,
+        '修改用户id'  uuser,
+        '修改时间'  udate,
+        '备注'  remark,
+        '是否启用(0:已禁用 1:启用)'  isdisable,
+        'id' id
+    </sql>
+
+    <!-- 自动创建，禁止修改 -->
+    <select id="findColumnList"  resultType="java.util.LinkedHashMap">
+        select
+        <include refid="Column"></include>
+        from dual
+    </select>
+
+    <!-- 自动创建，禁止修改 -->
+    <select id="findDataList"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
+        select
+        <include refid="Field"></include>
+        from
+        <include refid="tableName"></include>
+        <where>
+            <!--queryStr 自定义sql查询语句-->
+            <if test='queryStr != null and queryStr!=""' >
+                and ${queryStr}
+            </if>
+        </where>
+        <if test='orderStr != null and orderStr != ""' >
+            order by ${orderStr}
+        </if>
+    </select>
+
+    <!-- 列表 自动创建，禁止修改-->
+    <select id="datalistPage" parameterType="com.yvan.PageData" resultType="com.xy.vmes.entity.FinanceInvoice">
+        select
+        <include refid="Field"></include>
+        from
+        <include refid="tableName"></include>
+        <where>
+            <!--queryStr 自定义sql查询语句-->
+            <if test='queryStr != null and queryStr!=""' >
+                and ${queryStr}
+            </if>
+        </where>
+    </select>
+
+
+    <!-- 批量删除 自动创建，禁止修改-->
+    <delete id="deleteByIds" parameterType="java.lang.String">
+        delete from
+        <include refid="tableName"></include>
+        where
+        id in
+        <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+		#{item}
+        </foreach>
+    </delete>
+
+
+    <!-- 自动创建，禁止修改-->
+    <update id="updateToDisableByIds" parameterType="java.lang.String" >
+        update
+        <include refid="tableName"></include>
+        set isdisable = '0' ,udate = now()
+        where
+        id in
+        <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+        #{item}
+        </foreach>
+    </update>
+
+    <!-- 自动创建，禁止修改-->
+    <update id="updateByDefined" parameterType="com.yvan.PageData" >
+        update
+        <include refid="tableName"></include>
+        set  ${updateStr} ,udate = now()
+        where
+        ${queryStr}
+    </update>
+
+
+    <!-- ***************************************************以上为自动生成代码禁止修改，请在下面添加业务代码************************************************* -->
+    <insert id="insertColumn" >
+        delete from vmes_column where model_code = 'FinanceInvoice' ;
+        insert into vmes_column (
+        id,model_code,title_key,title_name,serial_number,
+        isdisable,ishide,isedit,ismust,cdate,
+        cuser
+        ) VALUES
+            (replace(uuid(), '-', ''),'FinanceInvoice','companyId','企业ID',1, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'FinanceInvoice','customerInvoiceId','客户开票信息ID',2, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'FinanceInvoice','customerId','客户ID',3, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'FinanceInvoice','type','发票类型(1:普票发票 2:增值税发票)',4, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'FinanceInvoice','sysCode','编号(系统生成)',5, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'FinanceInvoice','code','编号(用户)',6, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'FinanceInvoice','amount','开票金额',7, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'FinanceInvoice','state','发票状态(0:待开票 1:已开票 -1:已开票)',8, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'FinanceInvoice','cuser','创建用户id',9, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'FinanceInvoice','cdate','创建时间',10, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'FinanceInvoice','uuser','修改用户id',11, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'FinanceInvoice','udate','修改时间',12, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'FinanceInvoice','remark','备注',13, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'FinanceInvoice','isdisable','是否启用(0:已禁用 1:启用)',14, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'FinanceInvoice','id','id',0, '1','1','1','0',now(), 'admin')
+    </insert>
+
+
+    <!-- 列表(全部) 自动创建，禁止修改-->
+    <select id="dataList" parameterType="com.yvan.PageData" resultType="com.xy.vmes.entity.FinanceInvoice">
+        select
+        <include refid="Field"></include>
+        from
+        <include refid="tableName"></include>
+        <where>
+            <!--isSelfExist 是否考虑自己在业务表中是否存在
+                false: (false or is null) 无需考虑自己在业务表中是否存在
+                true : 需要考虑自己在业务表中是否存在
+            -->
+            <if test='id != null and id != ""' >
+                <choose>
+                    <when test="'true' == isSelfExist">
+                        <![CDATA[ and id <> #{id} ]]>
+                    </when>
+                    <otherwise>
+                        and id = #{id}
+                    </otherwise>
+                </choose>
+            </if>
+
+
+            <!--queryStr 自定义sql查询语句-->
+            <if test='queryStr != null and queryStr != ""'>
+                and ${queryStr}
+            </if>
+        </where>
+        <if test='orderStr != null and orderStr != ""' >
+            order by ${orderStr}
+        </if>
+    </select>
+
+
+
+
+    <!-- 字段 自动创建，可以修改-->
+    <sql id="Field1">
+        company_id companyId,<!-- 企业ID -->
+        customer_invoice_id customerInvoiceId,<!-- 客户开票信息ID -->
+        customer_id customerId,<!-- 客户ID -->
+        type type,<!-- 发票类型(1:普票发票 2:增值税发票) -->
+        sys_code sysCode,<!-- 编号(系统生成) -->
+        code code,<!-- 编号(用户) -->
+        amount amount,<!-- 开票金额 -->
+        state state,<!-- 发票状态(0:待开票 1:已开票 -1:已开票) -->
+        cuser cuser,<!-- 创建用户id -->
+        cdate cdate,<!-- 创建时间 -->
+        uuser uuser,<!-- 修改用户id -->
+        udate udate,<!-- 修改时间 -->
+        remark remark,<!-- 备注 -->
+        isdisable isdisable,<!-- 是否启用(0:已禁用 1:启用) -->
+        id id <!-- id -->
+    </sql>
+
+    <!-- 字段值 自动创建，可以修改-->
+    <!--
+    <sql id="Column1">
+            '企业ID'  companyId,
+            '客户开票信息ID'  customerInvoiceId,
+            '客户ID'  customerId,
+            '发票类型(1:普票发票 2:增值税发票)'  type,
+            '编号(系统生成)'  sysCode,
+            '编号(用户)'  code,
+            '开票金额'  amount,
+            '发票状态(0:待开票 1:已开票 -1:已开票)'  state,
+            '创建用户id'  cuser,
+            '创建时间'  cdate,
+            '修改用户id'  uuser,
+            '修改时间'  udate,
+            '备注'  remark,
+            '是否启用(0:已禁用 1:启用)'  isdisable,
+            'id' id_hide
+    </sql>
+     -->
+
+
+    <!-- 自动创建，可以修改 -->
+    <select id="getDataList"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
+        select
+        <include refid="Field1"></include>
+        from
+        <include refid="tableName"></include>
+        <where>
+            <!--queryStr 自定义sql查询语句-->
+            <if test='queryStr != null and queryStr != ""' >
+                and ${queryStr}
+            </if>
+            <if test='currentCompanyId != null and currentCompanyId != ""'>
+                and company_id LIKE CONCAT(CONCAT('%', #{currentCompanyId}),'%')
+            </if>
+            <if test='code != null and code != ""'>
+                and code LIKE CONCAT(CONCAT('%', #{code}),'%')
+            </if>
+            <if test='name != null and name != ""'>
+                and name LIKE CONCAT(CONCAT('%', #{name}),'%')
+            </if>
+        </where>
+        <if test='orderStr != null and orderStr != ""' >
+            order by ${orderStr}
+        </if>
+    </select>
+
+    <!-- 自动创建，可以修改 -->
+    <select id="getDataListPage"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
+        select financeInvoice.code,customer.name,customerInvoice.company_name companyName,customerInvoice.invoice_number invoiceNumber,
+        customerInvoice.bank_code bankCode,customerInvoice.bank_name bankName,customerInvoice.address,
+        customerInvoice.phone, customerInvoice.mobile,cuser.user_name userName,financeInvoice.cdate,
+        financeInvoice.amount,financeInvoice.state
+        from vmes_finance_invoice financeInvoice
+        left join vmes_customer customer on customer.id = financeInvoice.customer_id
+        left join vmes_customer_invoice customerInvoice on customerInvoice.id = financeInvoice.customer_invoice_id
+        left join vmes_user cuser on customerInvoice.cuser = cuser.id
+        <where>
+            <!--queryStr 自定义sql查询语句-->
+            <if test='queryStr != null and queryStr != ""' >
+                and ${queryStr}
+            </if>
+            <if test='code != null and code != ""'>
+                and code LIKE CONCAT(CONCAT('%', #{code}),'%')
+            </if>
+            <if test='name != null and name != ""'>
+                and name LIKE CONCAT(CONCAT('%', #{name}),'%')
+            </if>
+        </where>
+        <if test='orderStr != null and orderStr != ""' >
+            order by ${orderStr}
+        </if>
+    </select>
+
+
+
+
+</mapper>
