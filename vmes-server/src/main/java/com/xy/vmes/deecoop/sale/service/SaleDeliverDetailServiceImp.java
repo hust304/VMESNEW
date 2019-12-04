@@ -1226,8 +1226,6 @@ public class SaleDeliverDetailServiceImp implements SaleDeliverDetailService {
         String orderDtlId = (String)objectMap.get("orderDetaiId");
         SaleOrderDetail orderDetailDB = saleOrderDetailService.findSaleOrderDetailById(orderDtlId);
 
-        SaleOrderDetail addObject = new SaleOrderDetail();
-
         //订单明细订购数量(订单单位) orderDetailCount
         BigDecimal orderDetailCount = BigDecimal.valueOf(0D);
         if (objectMap.get("orderDetailCount") != null) {
@@ -1242,6 +1240,10 @@ public class SaleDeliverDetailServiceImp implements SaleDeliverDetailService {
 
         //订单明细-订购数量:= 订购数量 - 发货数量
         BigDecimal orderCountAdd = BigDecimal.valueOf(orderDetailCount.doubleValue() - deliverCount.doubleValue());
+        //(订购数量 - 发货数量) := 0 全部发完(无需拆分订单)
+        if (orderCountAdd.doubleValue() == 0D) {
+            return null;
+        }
 
         //单位转换公式: (计价转换计量)单位
         String p2nFormula = (String)objectMap.get("p2nFormula");
@@ -1252,6 +1254,8 @@ public class SaleDeliverDetailServiceImp implements SaleDeliverDetailService {
         }
         //四舍五入到2位小数
         productCountAdd = productCountAdd.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+
+        SaleOrderDetail addObject = new SaleOrderDetail();
         //订单明细-订购数量-货品数量(计量单位)
         addObject.setProductCount(productCountAdd);
 
