@@ -549,7 +549,7 @@ public class ProductServiceImp implements ProductService {
         }
 
         String genreId = pd.getString("genreId");
-        if (genreId != null && genreId.trim().length() > 0) {
+        if (genreId != null && genreId.trim().length() > 0 && !Common.DICTIONARY_MAP.get("productGenre").equals(genreId)) {
             pd.put("genre", genreId);
         }
 
