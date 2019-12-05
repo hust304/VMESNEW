@@ -527,7 +527,7 @@ public class SaleOrderDetailChangeServiceImp implements SaleOrderDetailChangeSer
             //设置订单明细:修改
             editObject = this.findEditOrderDetail(objectMap, deliverCount, editObject);
             if (orderDetailDB != null) {
-                //priceCount 货品数量(计价数量)
+                //priceCount 后计价结算数量 -- 货品数量(计价数量)
                 editObject.setPriceCount(orderDetailDB.getPriceCount());
             }
 
@@ -535,6 +535,9 @@ public class SaleOrderDetailChangeServiceImp implements SaleOrderDetailChangeSer
 
             //设置订单明细:添加
             addObject = this.findAddOrderDetail(objectMap, deliverCount, orderCountAfter, orderDetailDB, addObject);
+            //priceCount 后计价结算数量
+            addObject.setPriceCount(BigDecimal.valueOf(0D));
+
             this.findOrderDetailByPrice(BigDecimal.valueOf(0D), addObject);
             addObject.setDeliverDate(deliverDateAfter);
         }
