@@ -427,8 +427,13 @@ public class SaleOrderDetailChangeServiceImp implements SaleOrderDetailChangeSer
             editObject.setDeliverDate(deliverDateAfter);
         }
 
+        if (editObject != null) {
+            //发生订单变更记录 0:未变更(默认值) 1:已变更
+            editObject.setIsOrderChange("1");
+        }
         valueMap.put("editOrderDetail", editObject);
         valueMap.put("addOrderDetail", addObject);
+
         return valueMap;
     }
 
@@ -554,6 +559,10 @@ public class SaleOrderDetailChangeServiceImp implements SaleOrderDetailChangeSer
             editObject.setDeliverDate(deliverDateAfter);
         }
 
+        if (editObject != null) {
+            //发生订单变更记录 0:未变更(默认值) 1:已变更
+            editObject.setIsOrderChange("1");
+        }
         valueMap.put("editOrderDetail", editObject);
         valueMap.put("addOrderDetail", addObject);
         return valueMap;

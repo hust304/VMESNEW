@@ -102,6 +102,9 @@ public class SaleOrderDetail implements Serializable {
 	//修改锁定库存版本号
 	@TableField("version_lock_count")
 	private Integer versionLockCount;
+	//发生订单变更记录 0:未变更(默认值) 1:已变更
+	@TableField("isOrderChange")
+	private String isOrderChange;
 
 
 	public void setId(String id) {
@@ -266,7 +269,13 @@ public class SaleOrderDetail implements Serializable {
 	public void setVersionLockCount(Integer versionLockCount) {
 		this.versionLockCount = versionLockCount;
 	}
-/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+	public String getIsOrderChange() {
+		return isOrderChange;
+	}
+	public void setIsOrderChange(String isOrderChange) {
+		this.isOrderChange = isOrderChange;
+	}
+	/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 
 }

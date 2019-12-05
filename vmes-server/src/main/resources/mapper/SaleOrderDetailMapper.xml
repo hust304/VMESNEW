@@ -159,7 +159,8 @@
         remark remark,
 
         isdisable isdisable,
-        version_lock_count versionLockCount
+        version_lock_count versionLockCount,
+        isOrderChange isOrderChange
 
         from vmes_sale_order_detail
         <where>
