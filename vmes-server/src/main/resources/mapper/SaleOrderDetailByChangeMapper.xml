@@ -115,6 +115,9 @@
             <if test="queryState != null and queryState != ''" >
                 and orderDtl.state in (${queryState})
             </if>
+            <if test="isOrderChange != null and isOrderChange != ''" >
+                and orderDtl.isOrderChange = #{isOrderChange}
+            </if>
         </where>
     </select>
 
