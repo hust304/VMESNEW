@@ -40,7 +40,7 @@ public class SaleWaresRetreat implements Serializable {
 	//退货金额
 	@TableField("total_sum")
 	private BigDecimal totalSum;
-	//退货完成日期
+	//退货完成日期(yyyy-MM-dd)
 	@TableField("retreat_date")
 	private Date retreatDate;
 	//审核人id

@@ -210,12 +210,12 @@ public class SaleWaresRetreatServiceImp implements SaleWaresRetreatService {
         }
         Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
 
-        //设置查询排序方式
-        //pd.put("orderStr", "a.cdate asc");
-        String orderStr = pd.getString("orderStr");
-        if (orderStr != null && orderStr.trim().length() > 0) {
-            pd.put("orderStr", orderStr);
-        }
+//        //设置查询排序方式
+//        //pd.put("orderStr", "a.cdate asc");
+//        String orderStr = pd.getString("orderStr");
+//        if (orderStr != null && orderStr.trim().length() > 0) {
+//            pd.put("orderStr", orderStr);
+//        }
 
         //是否需要分页 true:需要分页 false:不需要分页
         Map result = new HashMap();

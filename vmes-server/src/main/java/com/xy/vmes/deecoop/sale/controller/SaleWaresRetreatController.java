@@ -25,9 +25,10 @@ public class SaleWaresRetreatController {
     private SaleWaresRetreatService saleWaresRetreatService;
 
     /**
-    * @author 陈刚 自动创建，可以修改
-    * @date 2019-12-05
-    */
+     * (无订单)退货单
+     * @return
+     * @throws Exception
+     */
     @PostMapping("/sale/saleWaresRetreat/listPageSaleWaresRetreat")
     public ResultModel listPageSaleWaresRetreat() throws Exception {
         logger.info("################/sale/saleWaresRetreat/listPageSaleWaresRetreat 执行开始 ################# ");
