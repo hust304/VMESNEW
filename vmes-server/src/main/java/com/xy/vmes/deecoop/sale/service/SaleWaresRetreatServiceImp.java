@@ -299,7 +299,7 @@ public class SaleWaresRetreatServiceImp implements SaleWaresRetreatService {
                 //单据单位id orderUnit(单据单位id:=计量单位)
                 String orderUnit = mapObject.get("orderUnit");
                 retreatDtl.setOrderUnit(orderUnit);
-                retreatDtl.setProductId(orderUnit);
+                retreatDtl.setProductUnit(orderUnit);
 
                 //退货数量(单据单位) orderCount
                 BigDecimal orderCount = BigDecimal.valueOf(0D);
