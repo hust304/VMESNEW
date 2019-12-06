@@ -4,6 +4,8 @@ import com.xy.vmes.entity.SaleWaresRetreatDetail;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
+
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -98,6 +100,8 @@ public interface SaleWaresRetreatDetailService {
 
     List<SaleWaresRetreatDetail> findWaresRetreatDetailList(PageData object) throws Exception;
     List<SaleWaresRetreatDetail> findWaresRetreatDetailListByParentId(String parentId) throws Exception;
+
+    BigDecimal findRetreatTotalSum(List<SaleWaresRetreatDetail> objectList);
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**

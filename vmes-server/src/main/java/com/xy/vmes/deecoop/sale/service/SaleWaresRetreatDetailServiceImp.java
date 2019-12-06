@@ -10,10 +10,13 @@ import com.xy.vmes.entity.Column;
 import com.xy.vmes.service.ColumnService;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
+import com.yvan.common.util.Common;
 import com.yvan.springmvc.ResultModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
 import java.util.*;
 import com.yvan.Conv;
 
@@ -195,6 +198,26 @@ public class SaleWaresRetreatDetailServiceImp implements SaleWaresRetreatDetailS
         return this.findWaresRetreatDetailList(findMap);
     }
 
+    public BigDecimal findRetreatTotalSum(List<SaleWaresRetreatDetail> objectList) {
+        if (objectList == null || objectList.size() == 0) {return BigDecimal.valueOf(0D);}
+
+        double totalSum_double = 0D;
+        for (SaleWaresRetreatDetail detail : objectList) {
+
+            //orderSum 退货金额(单据退货数量 * 单据 单价)
+            double orderSum_double = 0D;
+            if (detail.getOrderSum() != null) {
+                orderSum_double = detail.getOrderSum().doubleValue();
+            }
+
+            totalSum_double = totalSum_double + orderSum_double;
+        }
+
+        //四舍五入到2位小数
+        return BigDecimal.valueOf(totalSum_double).setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**
     *
     * @param pd    查询参数对象PageData
@@ -223,6 +246,12 @@ public class SaleWaresRetreatDetailServiceImp implements SaleWaresRetreatDetailS
 //        if (orderStr != null && orderStr.trim().length() > 0) {
 //            pd.put("orderStr", orderStr);
 //        }
+
+        //添加订单明细界面使用该参数
+        String type = pd.getString("type");
+        if ("add".equals(type)) {
+            pd.put("queryStr", "1=2");
+        }
 
         //是否需要分页 true:需要分页 false:不需要分页
         Map result = new HashMap();

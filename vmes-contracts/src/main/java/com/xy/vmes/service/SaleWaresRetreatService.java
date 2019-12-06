@@ -106,6 +106,8 @@ public interface SaleWaresRetreatService {
     */
     ResultModel listPageSaleWaresRetreat(PageData pd) throws Exception;
 
+    ResultModel addSaleWaresRetreat(PageData pageData) throws Exception;
+
 
 }
 

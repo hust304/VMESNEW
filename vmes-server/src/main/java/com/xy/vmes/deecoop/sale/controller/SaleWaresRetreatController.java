@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -37,6 +38,24 @@ public class SaleWaresRetreatController {
         ResultModel model = saleWaresRetreatService.listPageSaleWaresRetreat(pd);
         Long endTime = System.currentTimeMillis();
         logger.info("################/sale/saleWaresRetreat/listPageSaleWaresRetreat 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * (无订单)添加退货单
+     * @author 陈刚
+     * @date 2019-12-05
+     * @throws Exception
+     */
+    @PostMapping("/sale/saleWaresRetreat/addSaleWaresRetreat")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel addSaleWaresRetreat() throws Exception {
+        logger.info("################/sale/saleWaresRetreat/addSaleWaresRetreat 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pageData = HttpUtils.parsePageData();
+        ResultModel model = saleWaresRetreatService.addSaleWaresRetreat(pageData);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleWaresRetreat/addSaleWaresRetreat 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
