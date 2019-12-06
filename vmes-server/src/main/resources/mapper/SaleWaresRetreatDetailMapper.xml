@@ -130,10 +130,10 @@
             detail.order_unit orderUnit,
 
             detail.product_unit productUnit,
-            detail.order_count orderCount,
-            detail.product_count productCount,
+            round(ifnull(detail.order_count, 0), 2) orderCount,
+            round(ifnull(detail.product_count, 0), 2) productCount,
             detail.order_price orderPrice,
-            detail.order_sum orderSum,
+            round(ifnull(detail.order_sum, 0), 2) orderSum,
 
             detail.state state,
             detail.reason reason,
