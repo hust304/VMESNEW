@@ -855,6 +855,47 @@ public class CoderuleServiceImp implements CoderuleService {
         return findCoderuleByDate(object);
     }
 
+    /**
+     * 获取流水号：前缀+短日期(yyyy 后2位) 指定流水位数
+     * 例如: 短日期(2019) 短日期(19)
+     * @param companyID
+     * @param tableName
+     * @param prefix
+     * @param length
+     * @return
+     */
+    public String createCoderCdateOnShortYearByDate(String companyID, String tableName, String prefix, Integer length) {
+        //(企业编号+前缀字符+日期字符+流水号)-(company+prefix+date+code)
+        //(无需+前缀字符+无需+流水号)-W000142
+        CoderuleEntity object = new CoderuleEntity();
+        //tableName 业务名称(表名)
+        object.setTableName(tableName);
+        //companyID 公司ID
+        object.setCompanyID(companyID);
+
+        //filling 填充字符(0)
+        object.setFilling(Common.CODE_RULE_DEFAULT_FILLING);
+        //length 指定位数(5)
+        object.setLength(Common.CODE_RULE_LENGTH_5);
+        if (length != null) {
+            object.setLength(length);
+        }
+
+        //firstName 第一段编码为自定义前缀字符
+        object.setFirstName(Common.FIRST_NAME_PREFIX);
+        //isNeedPrefix 是否显示前缀字符
+        object.setIsNeedPrefix(Boolean.TRUE);
+        //prefix 前缀字符
+        object.setPrefix(prefix);
+
+        //isNeedDate 是否需求日期并且设置格式
+        object.setIsNeedDate(Boolean.TRUE);
+        //isNeedShortYear 是否需要短年份 如:2019 得到:19
+        object.setNeedShortYear(Boolean.TRUE);
+
+        return findCoderuleByDate(object);
+    }
+
 }
 
 

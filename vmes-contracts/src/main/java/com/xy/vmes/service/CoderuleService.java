@@ -165,6 +165,17 @@ public interface CoderuleService {
      * @return
      */
     String createCoderCdateOnShortYearByDate(String companyID, String tableName, String prefix);
+
+    /**
+     * 获取流水号：前缀+短日期(yyyy 后2位) 指定流水位数
+     * 例如: 短日期(2019) 短日期(19)
+     * @param companyID
+     * @param tableName
+     * @param prefix
+     * @param length
+     * @return
+     */
+    String createCoderCdateOnShortYearByDate(String companyID, String tableName, String prefix, Integer length);
 }
 
 
