@@ -365,6 +365,15 @@ public class SaleWaresRetreatServiceImp implements SaleWaresRetreatService {
 
         BigDecimal totalSum = waresRetreatDtlService.findRetreatTotalSum(retreatDtlList);
         addRetreat.setTotalSum(totalSum);
+
+        //状态(0:待提交 1:待审核 2:已完成:审核通过 -1:已取消)
+        addRetreat.setState("0");
+        //isAutoCommit true:自动提交 false:手动提交
+        String isAutoCommit = pageData.getString("isAutoCommit");
+        if (isAutoCommit != null && "true".equals(isAutoCommit.trim())) {
+            addRetreat.setState("1");
+        }
+
         this.save(addRetreat);
 
         //2. 创建(无订单)退货单明细
