@@ -570,7 +570,7 @@ public class SaleWaresRetreatServiceImp implements SaleWaresRetreatService {
             return model;
         }
 
-        String companyId = pageData.getString("companyId");
+        String companyId = pageData.getString("currentCompanyId");
         if (companyId == null || companyId.trim().length() == 0) {
             model.putCode("1");
             model.putMsg("企业id为空或空字符串！");
@@ -685,7 +685,6 @@ public class SaleWaresRetreatServiceImp implements SaleWaresRetreatService {
                     "5",
                     retreatSum);
         }
-
 
         return model;
     }
