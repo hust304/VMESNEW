@@ -86,6 +86,11 @@ public interface SaleWaresRetreatDetailMapper extends BaseMapper<SaleWaresRetrea
     */
     void updateByDefined(PageData pd);
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+    /**
+     * 创建人：陈刚
+     * 创建时间：2019-12-05
+     */
+    void updateStateByDetail(PageData pd);
 }
 
 

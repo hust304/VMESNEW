@@ -101,6 +101,7 @@ public interface SaleWaresRetreatDetailService {
     List<SaleWaresRetreatDetail> findWaresRetreatDetailList(PageData object) throws Exception;
     List<SaleWaresRetreatDetail> findWaresRetreatDetailListByParentId(String parentId) throws Exception;
 
+    void updateStateByDetail(String state, String parentIds) throws Exception;
     BigDecimal findRetreatTotalSum(List<SaleWaresRetreatDetail> objectList);
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

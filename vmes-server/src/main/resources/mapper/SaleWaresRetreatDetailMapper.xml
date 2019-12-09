@@ -64,6 +64,17 @@
             (replace(uuid(), '-', ''), 'saleWaresRetreatDetail', 'n2pFormula', 'n2pFormula', 25, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin')
     </insert>
 
+    <update id="updateStateByDetail" parameterType="com.yvan.PageData" >
+        update vmes_sale_wares_retreat_detail set
+        state = #{state},
+        udate = now()
+        <where>
+            <if test="parentIds != null and parentIds != ''" >
+                and parent_id in (${parentIds})
+            </if>
+        </where>
+    </update>
+
 
     <!-- 列表(全部) 自动创建，禁止修改-->
     <select id="dataList" parameterType="com.yvan.PageData" resultType="com.xy.vmes.entity.SaleWaresRetreatDetail">

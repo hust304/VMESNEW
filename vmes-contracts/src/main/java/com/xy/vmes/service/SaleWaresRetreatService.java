@@ -108,6 +108,16 @@ public interface SaleWaresRetreatService {
 
     ResultModel addSaleWaresRetreat(PageData pageData) throws Exception;
 
+    ResultModel submitSaleWaresRetreat(PageData pageData) throws Exception;
+    ResultModel rebackSubmitSaleWaresRetreat(PageData pageData) throws Exception;
+
+    ResultModel updateSaleWaresRetreat(PageData pageData) throws Exception;
+    ResultModel deleteSaleWaresRetreat(PageData pageData) throws Exception;
+
+
+    ResultModel cancelSaleWaresRetreat(PageData pageData) throws Exception;
+    ResultModel rebackCancelSaleWaresRetreat(PageData pageData) throws Exception;
+
 
 }
 

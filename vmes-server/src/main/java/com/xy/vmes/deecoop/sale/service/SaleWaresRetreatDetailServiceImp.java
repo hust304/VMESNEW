@@ -1,5 +1,6 @@
 package com.xy.vmes.deecoop.sale.service;
 
+import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.sale.dao.SaleWaresRetreatDetailMapper;
 import com.xy.vmes.entity.SaleWaresRetreatDetail;
 import com.xy.vmes.service.SaleWaresRetreatDetailService;
@@ -196,6 +197,20 @@ public class SaleWaresRetreatDetailServiceImp implements SaleWaresRetreatDetailS
         findMap.put("parentId", parentId);
 
         return this.findWaresRetreatDetailList(findMap);
+    }
+
+    public void updateStateByDetail(String state, String parentIds) throws Exception {
+        if (state == null || state.trim().length() == 0) {return;}
+        if (parentIds == null || parentIds.trim().length() == 0) {return;}
+
+        PageData pageData = new PageData();
+        pageData.put("state", state);
+
+        parentIds = StringUtil.stringTrimSpace(parentIds);
+        parentIds = "'" + parentIds.replace(",", "','") + "'";
+        pageData.put("parentIds", parentIds);
+
+        saleWaresRetreatDetailMapper.updateStateByDetail(pageData);
     }
 
     public BigDecimal findRetreatTotalSum(List<SaleWaresRetreatDetail> objectList) {

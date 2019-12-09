@@ -388,6 +388,126 @@ public class SaleWaresRetreatServiceImp implements SaleWaresRetreatService {
         return model;
     }
 
+    public ResultModel submitSaleWaresRetreat(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+
+        String parentId = pageData.getString("parentId");
+        if (parentId == null || parentId.trim().length() == 0) {
+            model.putCode("1");
+            model.putMsg("退货单id为空或空字符串！");
+            return model;
+        }
+
+        //1. 修改退货单明细状态
+        //状态(0:待提交 1:待审核 2:已完成:审核通过 -1:已取消)
+        waresRetreatDtlService.updateStateByDetail("1", parentId);
+
+        //2. 修改退货单状态
+        SaleWaresRetreat editRetreat = new SaleWaresRetreat();
+        editRetreat.setId(parentId);
+        //状态(0:待提交 1:待审核 2:已完成:审核通过 -1:已取消)
+        editRetreat.setState("1");
+        this.update(editRetreat);
+
+        return model;
+    }
+
+    public ResultModel rebackSubmitSaleWaresRetreat(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+
+        String parentId = pageData.getString("parentId");
+        if (parentId == null || parentId.trim().length() == 0) {
+            model.putCode("1");
+            model.putMsg("退货单id为空或空字符串！");
+            return model;
+        }
+
+        //1. 修改退货单明细状态
+        //状态(0:待提交 1:待审核 2:已完成:审核通过 -1:已取消)
+        waresRetreatDtlService.updateStateByDetail("0", parentId);
+
+        //2. 修改退货单状态
+        SaleWaresRetreat editRetreat = new SaleWaresRetreat();
+        editRetreat.setId(parentId);
+        //状态(0:待提交 1:待审核 2:已完成:审核通过 -1:已取消)
+        editRetreat.setState("0");
+        this.update(editRetreat);
+
+        return model;
+    }
+
+    public ResultModel updateSaleWaresRetreat(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+        return model;
+    }
+    public ResultModel deleteSaleWaresRetreat(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+
+        String parentId = pageData.getString("parentId");
+        if (parentId == null || parentId.trim().length() == 0) {
+            model.putCode("1");
+            model.putMsg("退货单id为空或空字符串！");
+            return model;
+        }
+
+        //1. (退货单id)删除退货单明细
+        Map<String, String> columnMap = new HashMap<>();
+        columnMap.put("parent_id", parentId);
+        waresRetreatDtlService.deleteByColumnMap(columnMap);
+
+        //2. (退货单id)删除退货单
+        this.deleteById(parentId);
+
+        return model;
+    }
+
+    public ResultModel cancelSaleWaresRetreat(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+
+        String parentId = pageData.getString("parentId");
+        if (parentId == null || parentId.trim().length() == 0) {
+            model.putCode("1");
+            model.putMsg("退货单id为空或空字符串！");
+            return model;
+        }
+
+        //1. 修改退货单明细状态
+        //状态(0:待提交 1:待审核 2:已完成:审核通过 -1:已取消)
+        waresRetreatDtlService.updateStateByDetail("-1", parentId);
+
+        //2. 修改退货单状态
+        SaleWaresRetreat editRetreat = new SaleWaresRetreat();
+        editRetreat.setId(parentId);
+        //状态(0:待提交 1:待审核 2:已完成:审核通过 -1:已取消)
+        editRetreat.setState("-1");
+        this.update(editRetreat);
+
+        return model;
+    }
+    public ResultModel rebackCancelSaleWaresRetreat(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+
+        String parentId = pageData.getString("parentId");
+        if (parentId == null || parentId.trim().length() == 0) {
+            model.putCode("1");
+            model.putMsg("退货单id为空或空字符串！");
+            return model;
+        }
+
+        //1. 修改退货单明细状态
+        //状态(0:待提交 1:待审核 2:已完成:审核通过 -1:已取消)
+        waresRetreatDtlService.updateStateByDetail("0", parentId);
+
+        //2. 修改退货单状态
+        SaleWaresRetreat editRetreat = new SaleWaresRetreat();
+        editRetreat.setId(parentId);
+        //状态(0:待提交 1:待审核 2:已完成:审核通过 -1:已取消)
+        editRetreat.setState("0");
+        this.update(editRetreat);
+
+        return model;
+    }
+
 }
 
 

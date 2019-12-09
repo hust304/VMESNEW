@@ -59,6 +59,114 @@ public class SaleWaresRetreatController {
         return model;
     }
 
+    /**
+     * (无订单)提交退货单
+     * @author 陈刚
+     * @date 2019-12-05
+     * @throws Exception
+     */
+    @PostMapping("/sale/saleWaresRetreat/submitSaleWaresRetreat")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel submitSaleWaresRetreat() throws Exception {
+        logger.info("################/sale/saleWaresRetreat/submitSaleWaresRetreat 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pageData = HttpUtils.parsePageData();
+        ResultModel model = saleWaresRetreatService.submitSaleWaresRetreat(pageData);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleWaresRetreat/submitSaleWaresRetreat 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * (无订单)(撤回提交)退货单
+     * @author 陈刚
+     * @date 2019-12-05
+     * @throws Exception
+     */
+    @PostMapping("/sale/saleWaresRetreat/rebackSubmitSaleWaresRetreat")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel rebackSubmitSaleWaresRetreat() throws Exception {
+        logger.info("################/sale/saleWaresRetreat/rebackSubmitSaleWaresRetreat 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pageData = HttpUtils.parsePageData();
+        ResultModel model = saleWaresRetreatService.rebackSubmitSaleWaresRetreat(pageData);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleWaresRetreat/rebackSubmitSaleWaresRetreat 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * (无订单)修改退货单
+     * @author 陈刚
+     * @date 2019-12-05
+     * @throws Exception
+     */
+    @PostMapping("/sale/saleWaresRetreat/updateSaleWaresRetreat")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel updateSaleWaresRetreat() throws Exception {
+        logger.info("################/sale/saleWaresRetreat/updateSaleWaresRetreat 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pageData = HttpUtils.parsePageData();
+        ResultModel model = saleWaresRetreatService.updateSaleWaresRetreat(pageData);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleWaresRetreat/updateSaleWaresRetreat 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * (无订单)删除退货单
+     * @author 陈刚
+     * @date 2019-12-05
+     * @throws Exception
+     */
+    @PostMapping("/sale/saleWaresRetreat/deleteSaleWaresRetreat")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel deleteSaleWaresRetreat() throws Exception {
+        logger.info("################/sale/saleWaresRetreat/deleteSaleWaresRetreat 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pageData = HttpUtils.parsePageData();
+        ResultModel model = saleWaresRetreatService.deleteSaleWaresRetreat(pageData);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleWaresRetreat/deleteSaleWaresRetreat 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * (无订单)取消退货单
+     * @author 陈刚
+     * @date 2019-12-05
+     * @throws Exception
+     */
+    @PostMapping("/sale/saleWaresRetreat/cancelSaleWaresRetreat")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel cancelSaleWaresRetreat() throws Exception {
+        logger.info("################/sale/saleWaresRetreat/cancelSaleWaresRetreat 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pageData = HttpUtils.parsePageData();
+        ResultModel model = saleWaresRetreatService.cancelSaleWaresRetreat(pageData);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleWaresRetreat/cancelSaleWaresRetreat 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * (无订单)撤回取消退货单
+     * @author 陈刚
+     * @date 2019-12-05
+     * @throws Exception
+     */
+    @PostMapping("/sale/saleWaresRetreat/rebackCancelSaleWaresRetreat")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel rebackCancelSaleWaresRetreat() throws Exception {
+        logger.info("################/sale/saleWaresRetreat/rebackCancelSaleWaresRetreat 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pageData = HttpUtils.parsePageData();
+        ResultModel model = saleWaresRetreatService.rebackCancelSaleWaresRetreat(pageData);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleWaresRetreat/rebackCancelSaleWaresRetreat 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
 
 }
 
