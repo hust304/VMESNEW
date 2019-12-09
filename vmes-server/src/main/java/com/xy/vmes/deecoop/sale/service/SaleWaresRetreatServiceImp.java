@@ -1,5 +1,6 @@
 package com.xy.vmes.deecoop.sale.service;
 
+import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.sale.dao.SaleWaresRetreatMapper;
 import com.xy.vmes.entity.SaleWaresRetreat;
 import com.xy.vmes.entity.SaleWaresRetreatDetail;
@@ -253,6 +254,8 @@ public class SaleWaresRetreatServiceImp implements SaleWaresRetreatService {
         ResultModel model = new ResultModel();
 
         String cuser = pageData.getString("cuser");
+        String remarkParent = pageData.getString("remarkParent");
+
         String companyId = pageData.getString("currentCompanyId");
         if (companyId == null || companyId.trim().length() == 0) {
             model.putCode("1");
@@ -290,61 +293,7 @@ public class SaleWaresRetreatServiceImp implements SaleWaresRetreatService {
         List<SaleWaresRetreatDetail> retreatDtlList = new ArrayList<>();
         if (mapList != null && mapList.size() > 0) {
             for (Map<String, String> mapObject : mapList) {
-                SaleWaresRetreatDetail retreatDtl = new SaleWaresRetreatDetail();
-
-                //货品id productId
-                String productId = mapObject.get("productId");
-                retreatDtl.setProductId(productId);
-
-                //单据单位id orderUnit(单据单位id:=计量单位)
-                String orderUnit = mapObject.get("orderUnit");
-                retreatDtl.setOrderUnit(orderUnit);
-                retreatDtl.setProductUnit(orderUnit);
-
-                //退货数量(单据单位) orderCount
-                BigDecimal orderCount = BigDecimal.valueOf(0D);
-                String orderCountStr = mapObject.get("orderCount");
-                if (orderCountStr != null && orderCountStr.trim().length() > 0) {
-                    try {
-                        orderCount = new BigDecimal(orderCountStr);
-                    } catch (NumberFormatException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                //四舍五入到2位小数
-                orderCount = orderCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-                retreatDtl.setOrderCount(orderCount);
-                retreatDtl.setProductCount(orderCount);
-
-                //货品单价(单据单价) orderPrice
-                BigDecimal orderPrice = BigDecimal.valueOf(0D);
-                String orderPriceStr = mapObject.get("orderPrice");
-                if (orderPriceStr != null && orderPriceStr.trim().length() > 0) {
-                    try {
-                        orderPrice = new BigDecimal(orderPriceStr);
-                    } catch (NumberFormatException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                //四舍五入到4位小数
-                orderPrice = orderPrice.setScale(Common.SYS_NUMBER_FORMAT_4, BigDecimal.ROUND_HALF_UP);
-                retreatDtl.setOrderPrice(orderPrice);
-
-                //orderSum 退货金额(单据退货数量 * 单据 单价)
-                BigDecimal orderSum = BigDecimal.valueOf(orderCount.doubleValue() * orderPrice.doubleValue());
-                //四舍五入到2位小数
-                orderSum = orderSum.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-                retreatDtl.setOrderSum(orderSum);
-
-                //remark 备注
-                String remark = new String();
-                if (mapObject.get("remark") != null) {
-                    remark = mapObject.get("remark").trim();
-                }
-                retreatDtl.setRemark(remark);
-
+                SaleWaresRetreatDetail retreatDtl = waresRetreatDtlService.jsonMap2RetreatDetail(mapObject, null);
                 retreatDtlList.add(retreatDtl);
             }
         }
@@ -355,6 +304,11 @@ public class SaleWaresRetreatServiceImp implements SaleWaresRetreatService {
         addRetreat.setCustomerId(customerId);
         addRetreat.setType(type);
         addRetreat.setCuser(cuser);
+
+        addRetreat.setRemark(new String());
+        if (remarkParent != null) {
+            addRetreat.setRemark(remarkParent.trim());
+        }
 
         //(无订单)退货编号(系统生成)
         String sysCode = coderuleService.createCoderCdateOnShortYearByDate(companyId,
@@ -439,8 +393,90 @@ public class SaleWaresRetreatServiceImp implements SaleWaresRetreatService {
 
     public ResultModel updateSaleWaresRetreat(PageData pageData) throws Exception {
         ResultModel model = new ResultModel();
+
+        String cuser = pageData.getString("cuser");
+        String remarkParent = pageData.getString("remarkParent");
+
+        String parentId = pageData.getString("parentId");
+        if (parentId == null || parentId.trim().length() == 0) {
+            model.putCode("1");
+            model.putMsg("退货单id为空或空字符串！");
+            return model;
+        }
+        String customerId = pageData.getString("customerId");
+        if (customerId == null || customerId.trim().length() == 0) {
+            model.putCode("1");
+            model.putMsg("客户名称为必填项不可为空！");
+            return model;
+        }
+        String type = pageData.getString("type");
+        if (type == null || type.trim().length() == 0) {
+            model.putCode("1");
+            model.putMsg("退货类型为必填项不可为空！");
+            return model;
+        }
+
+        String dtlJsonStr = pageData.getString("dtlJsonStr");
+        if (dtlJsonStr == null || dtlJsonStr.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("请至少选择一行数据！");
+            return model;
+        }
+
+        List<Map<String, String>> mapList = (List<Map<String, String>>) YvanUtil.jsonToList(dtlJsonStr);
+        if (mapList == null || mapList.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("Json字符串-转换成List错误！");
+            return model;
+        }
+
+        //修改退货单明细
+        if (mapList != null && mapList.size() > 0) {
+            for (Map<String, String> mapObject : mapList) {
+                String id = mapObject.get("id");
+
+                if (id == null || id.trim().length() == 0) {
+                    SaleWaresRetreatDetail addDetail = waresRetreatDtlService.jsonMap2RetreatDetail(mapObject, null);
+                    addDetail.setParentId(parentId);
+                    addDetail.setCuser(cuser);
+                    //状态(0:待提交 1:待审核 2:已完成:审核通过 -1:已取消)
+                    addDetail.setState("0");
+                    waresRetreatDtlService.save(addDetail);
+                } else if (id != null && id.trim().length() > 0) {
+                    SaleWaresRetreatDetail editDetail = new SaleWaresRetreatDetail();
+                    editDetail.setId(id.trim());
+                    editDetail = waresRetreatDtlService.jsonMap2RetreatDetail(mapObject, editDetail);
+                    waresRetreatDtlService.update(editDetail);
+                }
+            }
+        }
+
+        String deleteIds = pageData.getString("deleteIds");
+        if (deleteIds != null && deleteIds.trim().length() > 0) {
+            deleteIds = StringUtil.stringTrimSpace(deleteIds);
+            String[] delete_Ids = deleteIds.split(",");
+            waresRetreatDtlService.deleteByIds(delete_Ids);
+        }
+
+        //修改退货单
+        SaleWaresRetreat editRetreat = new SaleWaresRetreat();
+        editRetreat.setId(parentId);
+        editRetreat.setCustomerId(customerId);
+        editRetreat.setType(type);
+        editRetreat.setRemark(new String());
+        if (remarkParent != null) {
+            editRetreat.setRemark(remarkParent.trim());
+        }
+
+        List<SaleWaresRetreatDetail> retreatDtlList = waresRetreatDtlService.findWaresRetreatDetailListByParentId(parentId);
+        BigDecimal totalSum = waresRetreatDtlService.findRetreatTotalSum(retreatDtlList);
+        editRetreat.setTotalSum(totalSum);
+
+        this.update(editRetreat);
+
         return model;
     }
+
     public ResultModel deleteSaleWaresRetreat(PageData pageData) throws Exception {
         ResultModel model = new ResultModel();
 

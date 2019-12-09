@@ -232,6 +232,65 @@ public class SaleWaresRetreatDetailServiceImp implements SaleWaresRetreatDetailS
         return BigDecimal.valueOf(totalSum_double).setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
     }
 
+    public SaleWaresRetreatDetail jsonMap2RetreatDetail(Map<String, String> jsonMap, SaleWaresRetreatDetail object) {
+        if (object == null) {object = new SaleWaresRetreatDetail();}
+        if (jsonMap == null) {return object;}
+
+        //货品id productId
+        String productId = jsonMap.get("productId");
+        object.setProductId(productId);
+
+        //单据单位id orderUnit(单据单位id:=计量单位)
+        String orderUnit = jsonMap.get("orderUnit");
+        object.setOrderUnit(orderUnit);
+        object.setProductUnit(orderUnit);
+
+        //退货数量(单据单位) orderCount
+        BigDecimal orderCount = BigDecimal.valueOf(0D);
+        String orderCountStr = jsonMap.get("orderCount");
+        if (orderCountStr != null && orderCountStr.trim().length() > 0) {
+            try {
+                orderCount = new BigDecimal(orderCountStr);
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+        }
+
+        //四舍五入到2位小数
+        orderCount = orderCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+        object.setOrderCount(orderCount);
+        object.setProductCount(orderCount);
+
+        //货品单价(单据单价) orderPrice
+        BigDecimal orderPrice = BigDecimal.valueOf(0D);
+        String orderPriceStr = jsonMap.get("orderPrice");
+        if (orderPriceStr != null && orderPriceStr.trim().length() > 0) {
+            try {
+                orderPrice = new BigDecimal(orderPriceStr);
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+        }
+
+        //四舍五入到4位小数
+        orderPrice = orderPrice.setScale(Common.SYS_NUMBER_FORMAT_4, BigDecimal.ROUND_HALF_UP);
+        object.setOrderPrice(orderPrice);
+
+        //orderSum 退货金额(单据退货数量 * 单据 单价)
+        BigDecimal orderSum = BigDecimal.valueOf(orderCount.doubleValue() * orderPrice.doubleValue());
+        //四舍五入到2位小数
+        orderSum = orderSum.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+        object.setOrderSum(orderSum);
+
+        //remark 备注
+        String remark = new String();
+        if (jsonMap.get("remark") != null) {
+            remark = jsonMap.get("remark").trim();
+        }
+        object.setRemark(remark);
+
+        return object;
+    }
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**
     *

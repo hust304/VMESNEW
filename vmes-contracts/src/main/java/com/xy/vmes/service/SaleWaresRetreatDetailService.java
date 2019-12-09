@@ -104,6 +104,7 @@ public interface SaleWaresRetreatDetailService {
     void updateStateByDetail(String state, String parentIds) throws Exception;
     BigDecimal findRetreatTotalSum(List<SaleWaresRetreatDetail> objectList);
 
+    SaleWaresRetreatDetail jsonMap2RetreatDetail(Map<String, String> jsonMap, SaleWaresRetreatDetail object);
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**
     * 分页查询
