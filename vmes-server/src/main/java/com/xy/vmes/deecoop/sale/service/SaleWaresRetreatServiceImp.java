@@ -381,6 +381,7 @@ public class SaleWaresRetreatServiceImp implements SaleWaresRetreatService {
             for (SaleWaresRetreatDetail addDetail : retreatDtlList) {
                 addDetail.setParentId(addRetreat.getId());
                 addDetail.setCuser(cuser);
+                addDetail.setState(addRetreat.getState());
                 waresRetreatDtlService.save(addDetail);
             }
         }
