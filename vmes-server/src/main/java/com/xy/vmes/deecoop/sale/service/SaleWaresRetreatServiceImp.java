@@ -1,17 +1,15 @@
 package com.xy.vmes.deecoop.sale.service;
 
+import com.xy.vmes.common.util.DateFormat;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.sale.dao.SaleWaresRetreatMapper;
 import com.xy.vmes.entity.SaleWaresRetreat;
 import com.xy.vmes.entity.SaleWaresRetreatDetail;
-import com.xy.vmes.service.CoderuleService;
-import com.xy.vmes.service.SaleWaresRetreatDetailService;
-import com.xy.vmes.service.SaleWaresRetreatService;
+import com.xy.vmes.service.*;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.entity.Column;
-import com.xy.vmes.service.ColumnService;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.YvanUtil;
@@ -37,7 +35,14 @@ public class SaleWaresRetreatServiceImp implements SaleWaresRetreatService {
     private SaleWaresRetreatMapper saleWaresRetreatMapper;
     @Autowired
     private SaleWaresRetreatDetailService waresRetreatDtlService;
+    @Autowired
+    private FinanceBillService financeBillService;
 
+    @Autowired
+    private WarehouseInCreateService warehouseInCreateService;
+
+    @Autowired
+    private RoleMenuService roleMenuService;
     @Autowired
     private ColumnService columnService;
     @Autowired
@@ -549,6 +554,165 @@ public class SaleWaresRetreatServiceImp implements SaleWaresRetreatService {
         editRetreat.setId(parentId);
         //状态(0:待提交 1:待审核 2:已完成:审核通过 -1:已取消)
         editRetreat.setState("0");
+        this.update(editRetreat);
+
+        return model;
+    }
+
+    public ResultModel auditPassSaleWaresRetreat(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+
+        String cuser = pageData.getString("cuser");
+        String parentId = pageData.getString("parentId");
+        if (parentId == null || parentId.trim().length() == 0) {
+            model.putCode("1");
+            model.putMsg("退货单id为空或空字符串！");
+            return model;
+        }
+
+        String companyId = pageData.getString("companyId");
+        if (companyId == null || companyId.trim().length() == 0) {
+            model.putCode("1");
+            model.putMsg("企业id为空或空字符串！");
+            return model;
+        }
+
+        String roleId = pageData.getString("roleId");
+        if (roleId == null || roleId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("当前用户角色id为空或空字符串！");
+            return model;
+        }
+
+        //根据(用户角色id)获取仓库属性(复杂版仓库,简版仓库)
+        String warehouse = roleMenuService.findWarehouseAttribute(roleId);
+        if (warehouse == null || warehouse.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("当前用户角色无(复杂版仓库，简版仓库)菜单，请与管理员联系！");
+            return model;
+        }
+
+        String customerName = pageData.getString("customerName");
+        String customerId = pageData.getString("customerId");
+        if (customerId == null || customerId.trim().length() == 0) {
+            model.putCode("1");
+            model.putMsg("客户id为空或空字符串！");
+            return model;
+        }
+
+        SaleWaresRetreat editRetreat = new SaleWaresRetreat();
+        editRetreat.setId(parentId);
+        editRetreat.setAuditId(cuser);
+        //状态(0:待提交 1:待审核 2:已完成:审核通过 -1:已取消)
+        editRetreat.setState("2");
+
+        //retreatDate 退货完成日期(yyyy-MM-dd)
+        String dateStr = DateFormat.date2String(new Date(), DateFormat.DEFAULT_DATE_FORMAT);
+        Date retreatDate = DateFormat.dateString2Date(dateStr, DateFormat.DEFAULT_DATE_FORMAT);
+        editRetreat.setRetreatDate(retreatDate);
+
+        //状态(0:待提交 1:待审核 2:已完成:审核通过 -1:已取消)
+        waresRetreatDtlService.updateStateByDetail("2", parentId);
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        List<SaleWaresRetreatDetail> retreatDtlList = waresRetreatDtlService.findWaresRetreatDetailListByParentId(parentId);
+        if (retreatDtlList != null && retreatDtlList.size() > 0) {
+            //创建入库单
+            Map<String, Map<String, Object>> productByInMap = waresRetreatDtlService.findProductMapByIn(retreatDtlList);
+            if (Common.SYS_WAREHOUSE_COMPLEX.equals(warehouse)) {
+                //退库方式:1:生成退库单: (生成复杂版入库单)
+                //复杂版仓库:warehouseByComplex:Common.SYS_WAREHOUSE_COMPLEX
+                warehouseInCreateService.createWarehouseInBusinessByComplex(customerId,
+                        customerName,
+                        //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
+                        Common.DICTIONARY_MAP.get("warehouseEntity"),
+                        cuser,
+                        companyId,
+                        //销售退货入库:81907167d5c8498692e6c4f3694c5cfa:saleRetreatIn:
+                        Common.DICTIONARY_MAP.get("saleRetreatIn"),
+                        productByInMap);
+
+            } else if (Common.SYS_WAREHOUSE_SIMPLE.equals(warehouse)) {
+                //退库方式:1:生成退库单: (生成简版入库单)
+                //简版仓库:warehouseBySimple:Common.SYS_WAREHOUSE_SIMPLE
+                warehouseInCreateService.createWarehouseInBusinessBySimple(customerId,
+                        customerName,
+                        //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
+                        Common.DICTIONARY_MAP.get("warehouseEntity"),
+                        cuser,
+                        companyId,
+                        //销售退货入库:81907167d5c8498692e6c4f3694c5cfa:saleRetreatIn:
+                        Common.DICTIONARY_MAP.get("saleRetreatIn"),
+                        productByInMap);
+            }
+
+            //修改退货单明细(退货单明细(关联)入库单明细)
+            for (SaleWaresRetreatDetail retreatDtl : retreatDtlList) {
+                SaleWaresRetreatDetail editDetail = new SaleWaresRetreatDetail();
+                editDetail.setId(retreatDtl.getId());
+
+                String id = retreatDtl.getId();
+                if (productByInMap != null && productByInMap.get(id) != null) {
+                    Map<String, Object> producValueMap = productByInMap.get(id);
+
+                    //inDtlId:   入库明细id
+                    String inDtlId = (String)producValueMap.get("inDtlId");
+                    editDetail.setInDetailId(inDtlId);
+                }
+
+                waresRetreatDtlService.update(editDetail);
+            }
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        SaleWaresRetreat retreatDB = this.findWaresRetreatById(parentId);
+        String retreatType = retreatDB.getType();
+
+        //退货类型(1:退货退款 2:退货换货)
+        if ("1".equals(retreatType)) {
+            //生成付款单
+            BigDecimal retreatSum = BigDecimal.valueOf(0D);
+            if (retreatDB != null && retreatDB.getTotalSum() != null) {
+                retreatSum = retreatDB.getTotalSum();
+            }
+
+            //创建付款单
+            financeBillService.addFinanceBillBySys(retreatDB.getCompanyId(),
+                    retreatDB.getCustomerId(),
+                    cuser,
+                    //type 单据类型 ( 0:收款单 1:付款单 2:减免单 3:退款单 4:发货账单 5:发退货账单 6:收货账单 7:收退货账单)
+                    "5",
+                    retreatSum);
+        }
+
+
+        return model;
+    }
+
+    public ResultModel auditDisagreeSaleWaresRetreat(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+
+        String cuser = pageData.getString("cuser");
+        String parentId = pageData.getString("parentId");
+        if (parentId == null || parentId.trim().length() == 0) {
+            model.putCode("1");
+            model.putMsg("退货单id为空或空字符串！");
+            return model;
+        }
+
+        String remark = pageData.getString("remark");
+        if (remark == null || remark.trim().length() == 0) {
+            model.putCode("1");
+            model.putMsg("退回原因为必填项不可为空！");
+            return model;
+        }
+
+        SaleWaresRetreat editRetreat = new SaleWaresRetreat();
+        editRetreat.setId(parentId);
+        //状态(0:待提交 1:待审核 2:已完成:审核通过 -1:已取消)
+        editRetreat.setState("0");
+        editRetreat.setRemark(remark);
+        editRetreat.setAuditId(cuser);
         this.update(editRetreat);
 
         return model;

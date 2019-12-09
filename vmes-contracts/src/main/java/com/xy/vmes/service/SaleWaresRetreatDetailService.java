@@ -105,6 +105,19 @@ public interface SaleWaresRetreatDetailService {
     BigDecimal findRetreatTotalSum(List<SaleWaresRetreatDetail> objectList);
 
     SaleWaresRetreatDetail jsonMap2RetreatDetail(Map<String, String> jsonMap, SaleWaresRetreatDetail object);
+
+    /**
+     * 返回货品入库Map
+     * 货品入库Map<货品id, 货品Map<String, Object>>
+     * 货品Map<String, Object>
+     *     productId: 货品id
+     *     inDtlId:   入库明细id
+     *     inCount:   入库数量
+     *
+     * @param detailList
+     * @return
+     */
+    Map<String, Map<String, Object>> findProductMapByIn(List<SaleWaresRetreatDetail> detailList);
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**
     * 分页查询

@@ -168,6 +168,43 @@ public class SaleWaresRetreatController {
     }
 
 
+    /**
+     * (无订单)审核通过:退货单
+     * @author 陈刚
+     * @date 2019-12-05
+     * @throws Exception
+     */
+    @PostMapping("/sale/saleWaresRetreat/auditPassSaleWaresRetreat")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel auditPassSaleWaresRetreat() throws Exception {
+        logger.info("################/sale/saleWaresRetreat/auditPassSaleWaresRetreat 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pageData = HttpUtils.parsePageData();
+        ResultModel model = saleWaresRetreatService.auditPassSaleWaresRetreat(pageData);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleWaresRetreat/auditPassSaleWaresRetreat 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * (无订单)审核不通过:退货单
+     * @author 陈刚
+     * @date 2019-12-05
+     * @throws Exception
+     */
+    @PostMapping("/sale/saleWaresRetreat/auditDisagreeSaleWaresRetreat")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel auditDisagreeSaleWaresRetreat() throws Exception {
+        logger.info("################/sale/saleWaresRetreat/auditDisagreeSaleWaresRetreat 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pageData = HttpUtils.parsePageData();
+        ResultModel model = saleWaresRetreatService.auditDisagreeSaleWaresRetreat(pageData);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleWaresRetreat/auditDisagreeSaleWaresRetreat 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
 }
 
 

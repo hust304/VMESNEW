@@ -291,6 +291,45 @@ public class SaleWaresRetreatDetailServiceImp implements SaleWaresRetreatDetailS
 
         return object;
     }
+
+    /**
+     * 返回货品入库Map
+     * 货品入库Map<货品id, 货品Map<String, Object>>
+     * 货品Map<String, Object>
+     *     productId: 货品id
+     *     inDtlId:   入库明细id
+     *     inCount:   入库数量
+     *
+     * @param detailList
+     * @return
+     */
+    public Map<String, Map<String, Object>> findProductMapByIn(List<SaleWaresRetreatDetail> detailList) {
+        Map<String, Map<String, Object>> productByOutMap = new HashMap<String, Map<String, Object>>();
+        if (detailList == null || detailList.size() == 0) {return productByOutMap;}
+
+        for (SaleWaresRetreatDetail dtlObject : detailList) {
+            String detailId = dtlObject.getId();
+
+            String productId = dtlObject.getProductId();
+
+            //productCount:货品数量(计量数量) := inCount 入库数量
+            BigDecimal productCount = BigDecimal.valueOf(0D);
+            if (dtlObject.getProductCount() != null) {
+                productCount = dtlObject.getProductCount();
+            }
+            //四舍五入到2位小数
+            productCount = productCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+
+            Map<String, Object> productMap = new HashMap<String, Object>();
+            productMap.put("productId", productId);
+            productMap.put("inDtlId", null);
+            productMap.put("inCount", productCount);
+
+            productByOutMap.put(detailId, productMap);
+        }
+
+        return productByOutMap;
+    }
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**
     *
