@@ -430,6 +430,15 @@ public class SaleWaresRetreatServiceImp implements SaleWaresRetreatService {
             return model;
         }
 
+        //状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
+        String parentState = "0";
+
+        //isAutoCommit true:自动提交 false:手动提交
+        String isAutoCommit = pageData.getString("isAutoCommit");
+        if (isAutoCommit != null && "true".equals(isAutoCommit.trim())) {
+            parentState = "1";
+        }
+
         //修改退货单明细
         if (mapList != null && mapList.size() > 0) {
             for (Map<String, String> mapObject : mapList) {
@@ -440,7 +449,7 @@ public class SaleWaresRetreatServiceImp implements SaleWaresRetreatService {
                     addDetail.setParentId(parentId);
                     addDetail.setCuser(cuser);
                     //状态(0:待提交 1:待审核 2:已完成:审核通过 -1:已取消)
-                    addDetail.setState("0");
+                    addDetail.setState(parentState);
                     waresRetreatDtlService.save(addDetail);
                 } else if (id != null && id.trim().length() > 0) {
                     SaleWaresRetreatDetail editDetail = new SaleWaresRetreatDetail();
@@ -471,7 +480,7 @@ public class SaleWaresRetreatServiceImp implements SaleWaresRetreatService {
         List<SaleWaresRetreatDetail> retreatDtlList = waresRetreatDtlService.findWaresRetreatDetailListByParentId(parentId);
         BigDecimal totalSum = waresRetreatDtlService.findRetreatTotalSum(retreatDtlList);
         editRetreat.setTotalSum(totalSum);
-
+        editRetreat.setState(parentState);
         this.update(editRetreat);
 
         return model;
