@@ -416,6 +416,15 @@ public class SaleWaresRetreatServiceImp implements SaleWaresRetreatService {
             return model;
         }
 
+        //状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
+        String parentState = "0";
+
+        //isAutoCommit true:自动提交 false:手动提交
+        String isAutoCommit = pageData.getString("isAutoCommit");
+        if (isAutoCommit != null && "true".equals(isAutoCommit.trim())) {
+            parentState = "1";
+        }
+
         String dtlJsonStr = pageData.getString("dtlJsonStr");
         if (dtlJsonStr == null || dtlJsonStr.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
@@ -428,15 +437,6 @@ public class SaleWaresRetreatServiceImp implements SaleWaresRetreatService {
             model.putCode(Integer.valueOf(1));
             model.putMsg("Json字符串-转换成List错误！");
             return model;
-        }
-
-        //状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
-        String parentState = "0";
-
-        //isAutoCommit true:自动提交 false:手动提交
-        String isAutoCommit = pageData.getString("isAutoCommit");
-        if (isAutoCommit != null && "true".equals(isAutoCommit.trim())) {
-            parentState = "1";
         }
 
         //修改退货单明细
