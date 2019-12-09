@@ -610,6 +610,7 @@ public class SaleWaresRetreatServiceImp implements SaleWaresRetreatService {
         String dateStr = DateFormat.date2String(new Date(), DateFormat.DEFAULT_DATE_FORMAT);
         Date retreatDate = DateFormat.dateString2Date(dateStr, DateFormat.DEFAULT_DATE_FORMAT);
         editRetreat.setRetreatDate(retreatDate);
+        this.update(editRetreat);
 
         //状态(0:待提交 1:待审核 2:已完成:审核通过 -1:已取消)
         waresRetreatDtlService.updateStateByDetail("2", parentId);
