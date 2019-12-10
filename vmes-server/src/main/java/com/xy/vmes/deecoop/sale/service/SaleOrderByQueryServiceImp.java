@@ -143,6 +143,12 @@ public class SaleOrderByQueryServiceImp implements SaleOrderByQueryService {
                 mapObject.put("lockCount", lockCount_out.toString());
             }
 
+            //deliverProgress 已发货百分比 (发货完成数-退货完成数) / 订单明细订购数量 * 100)
+            String deliverProgress = "0%";
+            if (mapObject.get("deliverProgress") != null && mapObject.get("deliverProgress").trim().length() > 0) {
+                deliverProgress = mapObject.get("deliverProgress").trim() + "%";
+            }
+            mapObject.put("deliverProgress", deliverProgress);
         }
 
         return secondMapList;
