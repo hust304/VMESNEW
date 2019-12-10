@@ -38,6 +38,8 @@ public class SaleOrderServiceImp implements SaleOrderService {
     private SaleReceiveRecordService saleReceiveRecordService;
     @Autowired
     private SaleLockDateService saleLockDateService;
+    @Autowired
+    private SaleOrderChangeService orderChangeService;
 
     @Autowired
     private ProductService productService;
@@ -256,16 +258,52 @@ public class SaleOrderServiceImp implements SaleOrderService {
         if (fieldCode != null && fieldCode.trim().length() > 0) {
             columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
         }
-        Map result = new HashMap();
         Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
-        //设置查询排序
-        pd.put("orderStr", "saleOrder.cdate desc");
-        String orderStr = pd.getString("orderStr");
-        if (orderStr != null && orderStr.trim().length() > 0) {
-            pd.put("orderStr", orderStr);
+
+//        //设置查询排序
+//        pd.put("orderStr", "saleOrder.cdate desc");
+//        String orderStr = pd.getString("orderStr");
+//        if (orderStr != null && orderStr.trim().length() > 0) {
+//            pd.put("orderStr", orderStr);
+//        }
+
+        List<Map> varList = this.getDataListPage(pd, pg);
+        //遍历查询结果集:获取(changeState:订单变更状态 changeStateName:订单变更状态名称)
+        if (varList != null && varList.size() > 0) {
+            for (Map<String, Object> objectMap : varList) {
+                String orderId = (String)objectMap.get("id");
+
+                PageData findMap = new PageData();
+                findMap.put("orderId", orderId);
+                findMap.put("orderStr", "ordeChange.cdate desc");
+                List<Map> orderChangeList = orderChangeService.getDataListPage(findMap, null);
+                if (orderChangeList != null && orderChangeList.size() > 0) {
+                    Map changeMap = orderChangeList.get(0);
+
+                    String state = new String();
+                    if (changeMap.get("state") != null) {
+                        state = changeMap.get("state").toString().trim();
+                    }
+                    objectMap.put("changeState", state);
+
+                    String changeStateName = new String();
+                    if (changeMap.get("changeStateName") != null) {
+                        changeStateName = changeMap.get("changeStateName").toString().trim();
+                    }
+                    objectMap.put("changeStateName", changeStateName);
+                }
+
+                //isExistChange 是否存在变更 0:不存在变更 1:存在变更
+                objectMap.put("isExistChange", "0");
+                if (orderChangeList != null && orderChangeList.size() > 0) {
+                    objectMap.put("isExistChange", "1");
+                }
+            }
         }
-        List<Map> varList = this.getDataListPage(pd,pg);
+
         List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
+
+        Map result = new HashMap();
         result.put("hideTitles",titleMap.get("hideTitles"));
         result.put("titles",titleMap.get("titles"));
         result.put("varList",varMapList);
