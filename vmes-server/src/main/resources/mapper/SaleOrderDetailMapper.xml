@@ -352,12 +352,26 @@
                     select a.id
                     from vmes_sale_order_detail a
                       left join vmes_sale_order b on a.parent_id = b.id
+                        <!--退货数量-->
+                        left join (
+                            select order_detail_id, sum(order_count) order_count
+                            from vmes_sale_retreat_detail
+                            where state = '3'
+                            group by order_detail_id
+                        ) c on a.id = c.order_detail_id
+                        <!--发货数量-->
+                        left join (
+                            select order_detai_id, sum(order_count) order_count
+                            from vmes_sale_deliver_detail
+                            where state = '1'
+                            group by order_detai_id
+                        ) d on a.id = d.order_detai_id
                     <where>
                         <if test="parentId != null and parentId != ''" >
                             and a.parent_id = #{parentId}
                         </if>
-                        <!--说明: 后计价订单明细 并且 已经(结算)的订单明细-->
-                        and (b.price_type = '2' and a.price_unit is not null)
+                        <!--说明: 后计价订单明细 并且 已经(结算)的订单明细 并且 订购数量<=(发货数量-退货数量) -->
+                        <![CDATA[and (b.price_type = '2' and a.price_unit is not null and (a.order_count <= (d.order_count-c.order_count))) ]]>
                     </where>
                 )
             </if>
