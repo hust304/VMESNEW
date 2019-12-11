@@ -842,6 +842,32 @@ public class SaleDeliverDetailServiceImp implements SaleDeliverDetailService {
         }
 
         List<Map> varList = this.getDataListPage(pd, pg);
+        if (varList != null && varList.size() > 0) {
+            for (Map<String, Object> mapObject : varList) {
+                //orderUnit 单位id
+                String orderUnit = (String)mapObject.get("orderUnit");
+                //orderUnitName 单位名称
+                String orderUnitName = (String)mapObject.get("orderUnitName");
+
+                //priceUnit 结算单位id
+                mapObject.put("priceUnit", orderUnit);
+                //priceUnitName 结算单位名称
+                mapObject.put("priceUnitName", orderUnitName);
+
+                //orderCount 发货数量
+                BigDecimal orderCount = BigDecimal.valueOf(0D);
+                if (mapObject.get("orderCount") != null) {
+                    orderCount = (BigDecimal)mapObject.get("orderCount");
+                }
+
+                //priceCount 结算数量
+                mapObject.put("priceCount", "0.00");
+                if (0D < orderCount.doubleValue()) {
+                    mapObject.put("priceCount", orderCount.toString());
+                }
+            }
+        }
+
         Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
         List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
 
