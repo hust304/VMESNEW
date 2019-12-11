@@ -155,6 +155,10 @@ public interface FinanceInvoiceService {
     * @throws Exception
     */
     ResultModel importExcelFinanceInvoices(MultipartFile file) throws Exception;
+
+    ResultModel getInvoiceAmount(PageData pd) throws Exception;
+
+    ResultModel saveFinanceInvoice(PageData pd) throws Exception;
 }
 
 

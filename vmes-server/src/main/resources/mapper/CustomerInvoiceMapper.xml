@@ -73,7 +73,6 @@
         phone phone,
         mobile mobile,
         isdefault isdefault,
-
         remark remark,
         cuser cuser,
         cdate cdate,
@@ -120,29 +119,39 @@
     <!-- 自动创建，可以修改 -->
     <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
-        id id,
-        customer_id customerId,
-        company_name companyName,
-        invoice_number invoiceNumber,
-        address address,
+        invoice.id id,
+        invoice.customer_id customerId,
+        invoice.company_name companyName,
+        invoice.invoice_number invoiceNumber,
+        invoice.address address,
 
-        bank_name bankName,
-        bank_code bankCode,
-        phone phone,
-        mobile mobile,
-        isdefault isdefault,
+        invoice.bank_name bankName,
+        invoice.bank_code bankCode,
+        invoice.phone phone,
+        invoice.mobile mobile,
+        invoice.isdefault isdefault,
+        case when isdefault='1' then '是' when isdefault='0' then '否' else null end  isdefaultStr,
+        invoice.remark remark,
+        invoice.cuser cuser,
+        invoice.cdate cdate,
+        invoice.uuser uuser,
+        invoice.udate udate,
 
-        remark remark,
-        cuser cuser,
-        cdate cdate,
-        uuser uuser,
-        udate udate,
-
-        isdisable isdisable
-        from vmes_customer_invoice
+        invoice.isdisable isdisable
+        from vmes_customer_invoice invoice
+        left join vmes_customer customer on customer.id = invoice.customer_id
         <where>
+            <if test="name != null and name != ''" >
+                and invoice.company_name = #{name}
+            </if>
+            <if test="code != null and code != ''" >
+                and invoice.invoice_number = #{code}
+            </if>
             <if test="customerId != null and customerId != ''" >
-                and customer_id = #{customerId}
+                and invoice.customer_id = #{customerId}
+            </if>
+            <if test='currentCompanyId != null and currentCompanyId != ""'>
+                and customer.company_id LIKE CONCAT(CONCAT('%', #{currentCompanyId}),'%')
             </if>
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >

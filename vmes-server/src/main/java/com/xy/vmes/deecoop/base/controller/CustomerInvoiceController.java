@@ -72,6 +72,7 @@ public class CustomerInvoiceController {
 
             if (objectList != null && objectList.size() > 0) {
                 isExistCustomerInvoice = "true";
+                model.put("customerInvoice", objectList.get(0));
             }
         } catch (Exception e) {
             e.printStackTrace();

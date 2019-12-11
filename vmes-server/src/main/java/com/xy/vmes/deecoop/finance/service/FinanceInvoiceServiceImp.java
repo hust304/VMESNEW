@@ -2,7 +2,10 @@ package com.xy.vmes.deecoop.finance.service;
 
 
 import com.xy.vmes.deecoop.finance.dao.FinanceInvoiceMapper;
+import com.xy.vmes.entity.CustomerInvoice;
 import com.xy.vmes.entity.FinanceInvoice;
+import com.xy.vmes.service.CoderuleService;
+import com.xy.vmes.service.CustomerInvoiceService;
 import com.xy.vmes.service.FinanceInvoiceService;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
@@ -15,6 +18,7 @@ import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,6 +41,10 @@ public class FinanceInvoiceServiceImp implements FinanceInvoiceService {
     private FinanceInvoiceMapper financeInvoiceMapper;
     @Autowired
     private ColumnService columnService;
+    @Autowired
+    private CoderuleService coderuleService;
+    @Autowired
+    private CustomerInvoiceService customerInvoiceService;
     /**
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2019-12-03
@@ -369,6 +377,89 @@ public class FinanceInvoiceServiceImp implements FinanceInvoiceService {
         return model;
     }
 
+
+    @Override
+    public ResultModel saveFinanceInvoice(PageData pd) throws Exception {
+        ResultModel model = new ResultModel();
+        String companyId = pd.getString("currentCompanyId");
+        FinanceInvoice financeInvoice = (FinanceInvoice)HttpUtils.pageData2Entity(pd, new FinanceInvoice());
+        financeInvoice.setCompanyId(companyId);
+        financeInvoice.setState("0");
+        String code = coderuleService.createCoderCdateByDate(companyId,"vmes_finance_invoice","yyyyMMdd","I");
+        financeInvoice.setCode(code);
+        financeInvoice.setSysCode(code);
+
+        String customerInvoiceId = financeInvoice.getCustomerInvoiceId();
+        if(StringUtils.isEmpty(customerInvoiceId)){
+            CustomerInvoice customerInvoice = (CustomerInvoice)HttpUtils.pageData2Entity(pd, new CustomerInvoice());
+            PageData pageData = new PageData();
+            pageData.put("isdefault","0");
+            pageData.put("customerId",customerInvoice.getCustomerId());
+            customerInvoiceService.updateDefaultByCustomerId(pageData);
+            customerInvoice.setIsdefault("1");
+            customerInvoiceService.save(customerInvoice);
+            financeInvoice.setCustomerInvoiceId(customerInvoice.getId());
+        }
+        this.save(financeInvoice);
+        return model;
+    }
+
+    @Override
+    public ResultModel getInvoiceAmount(PageData pd) throws Exception {
+        ResultModel model = new ResultModel();
+        List<Column> columnList = columnService.findColumnList("InvoiceAmount");
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
+        }
+
+        //获取指定栏位字符串-重新调整List<Column>
+        String fieldCode = pd.getString("fieldCode");
+        if (fieldCode != null && fieldCode.trim().length() > 0) {
+            columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
+        }
+        Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
+
+        //设置查询排序方式
+        //pd.put("orderStr", "a.cdate asc");
+        String orderStr = pd.getString("orderStr");
+        if (orderStr != null && orderStr.trim().length() > 0) {
+            pd.put("orderStr", orderStr);
+        }
+
+        //是否需要分页 true:需要分页 false:不需要分页
+        Map result = new HashMap();
+        String isNeedPage = pd.getString("isNeedPage");
+        Pagination pg = HttpUtils.parsePagination(pd);
+        if ("false".equals(isNeedPage)) {
+            pg = null;
+        } else {
+            result.put("pageData", pg);
+        }
+
+        List<Map> varList = this.getInvoiceAmount(pd,pg);
+        List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
+
+        result.put("hideTitles",titleMap.get("hideTitles"));
+        result.put("titles",titleMap.get("titles"));
+        result.put("varList",varMapList);
+        model.putResult(result);
+        return model;
+    }
+
+    public List<Map> getInvoiceAmount(PageData pd,Pagination pg) throws Exception{
+        List<Map> mapList = new ArrayList<Map>();
+        if (pd == null) {return mapList;}
+
+        if (pg == null) {
+            return financeInvoiceMapper.getInvoiceAmount(pd);
+        } else if (pg != null) {
+            return financeInvoiceMapper.getInvoiceAmount(pd,pg);
+        }
+
+        return mapList;
+    }
 
 }
 
