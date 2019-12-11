@@ -240,7 +240,7 @@
 
             detail.price_unit priceUnit,
             detail.product_id productId,
-            round(ifnull(detail.product_price, 0),2) productPrice,
+            round(ifnull(detail.product_price, 0),4) productPrice,
             round(ifnull(detail.product_sum, 0),2) productSum,
             detail.is_lock_warehouse isLockWarehouse,
 
