@@ -166,6 +166,23 @@
             (replace(uuid(), '-', ''),'FinanceInvoice','remark','备注',13, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'FinanceInvoice','isdisable','是否启用(0:已禁用 1:启用)',14, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'FinanceInvoice','id','id',0, '1','1','1','0',now(), 'admin')
+
+
+
+
+        delete from vmes_column where model_code = 'InvoiceAmount' ;
+        insert into vmes_column (
+        id,model_code,title_key,title_name,serial_number,
+        isdisable,ishide,isedit,ismust,cdate,
+        cuser
+        ) VALUES
+            (replace(uuid(), '-', ''),'InvoiceAmount','customerId','客户ID',1, '1','1','1','0',now(), 'admin'),
+			(replace(uuid(), '-', ''),'InvoiceAmount','customerCode','客户编码',2, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'InvoiceAmount','customerName','客户名称',3, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'InvoiceAmount','allAmount','可开票金额',4, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'InvoiceAmount','invoiceAmount','已开票金额',5, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'InvoiceAmount','uninvoiceAmount','未开票金额',6, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'InvoiceAmount','id','id',0, '1','1','1','0',now(), 'admin')
     </insert>
 
 
@@ -274,10 +291,11 @@
 
     <!-- 自动创建，可以修改 -->
     <select id="getDataListPage"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
-        select financeInvoice.code,customer.name,customerInvoice.company_name companyName,customerInvoice.invoice_number invoiceNumber,
+        select financeInvoice.id ,financeInvoice.code,customer.name,customerInvoice.company_name companyName,customerInvoice.invoice_number invoiceNumber,
+        financeInvoice.type,case when financeInvoice.type='2' then '增值税普通发票' when financeInvoice.type='3' then '增值税专用发票' else null end typeName ,
         customerInvoice.bank_code bankCode,customerInvoice.bank_name bankName,customerInvoice.address,
-        customerInvoice.phone, customerInvoice.mobile,cuser.user_name userName,financeInvoice.cdate,
-        financeInvoice.amount,financeInvoice.state
+        customerInvoice.phone, customerInvoice.mobile,cuser.user_name userName,DATE_FORMAT(financeInvoice.cdate,'%Y-%m-%d %T') cdate,
+        round(ifnull(financeInvoice.amount,0),2) amount,financeInvoice.state
         from vmes_finance_invoice financeInvoice
         left join vmes_customer customer on customer.id = financeInvoice.customer_id
         left join vmes_customer_invoice customerInvoice on customerInvoice.id = financeInvoice.customer_invoice_id
@@ -287,16 +305,91 @@
             <if test='queryStr != null and queryStr != ""' >
                 and ${queryStr}
             </if>
+            <if test='currentCompanyId != null and currentCompanyId != ""'>
+                and financeInvoice.company_id LIKE CONCAT(CONCAT('%', #{currentCompanyId}),'%')
+            </if>
             <if test='code != null and code != ""'>
-                and code LIKE CONCAT(CONCAT('%', #{code}),'%')
+                and financeInvoice.code LIKE CONCAT(CONCAT('%', #{code}),'%')
+            </if>
+            <if test='state != null and state != ""'>
+                and financeInvoice.state = #{state}
+            </if>
+            <if test='customerId != null and customerId != ""'>
+                and customer.id = #{customerId}
             </if>
             <if test='name != null and name != ""'>
-                and name LIKE CONCAT(CONCAT('%', #{name}),'%')
+                and customer.name LIKE CONCAT(CONCAT('%', #{name}),'%')
+            </if>
+            <if test='companyName != null and companyName != ""'>
+                and customerInvoice.company_name LIKE CONCAT(CONCAT('%', #{companyName}),'%')
+            </if>
+            <if test='invoiceNumber != null and invoiceNumber != ""'>
+                and customerInvoice.invoice_number  LIKE CONCAT(CONCAT('%', #{invoiceNumber}),'%')
             </if>
         </where>
         <if test='orderStr != null and orderStr != ""' >
             order by ${orderStr}
         </if>
+    </select>
+
+
+    <!-- 自动创建，可以修改 -->
+    <select id="getInvoiceAmount"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
+        select customerId id,customerId,customerCode,customerName,round(sum(ifnull(allAmount,0)),2) allAmount,round(sum(ifnull(invoiceAmount,0)),2) invoiceAmount,
+        round(sum(ifnull(allAmount,0))-sum(ifnull(invoiceAmount,0)),2) uninvoiceAmount
+        from (
+        select saleOrder.customer_id customerId,customer.name customerName,customer.code customerCode,sum(ifnull(deliverDetail.sum,0)) allAmount,null invoiceAmount
+        from vmes_sale_deliver_detail deliverDetail
+        left join vmes_sale_order saleOrder on saleOrder.id = deliverDetail.order_id
+        left join vmes_customer customer on customer.id = saleOrder.customer_id
+        <where>
+            and saleOrder.customer_id is not null
+            <!--queryStr 自定义sql查询语句-->
+            <if test='queryStr != null and queryStr != ""' >
+                and ${queryStr}
+            </if>
+            <if test='currentCompanyId != null and currentCompanyId != ""'>
+                and customer.company_id LIKE CONCAT(CONCAT('%', #{currentCompanyId}),'%')
+            </if>
+            <if test='customerId != null and customerId != ""'>
+                and customer.id = #{customerId}
+            </if>
+            <if test='customerCode != null and customerCode != ""'>
+                and customer.code LIKE CONCAT(CONCAT('%', #{customerCode}),'%')
+            </if>
+            <if test='customerName != null and customerName != ""'>
+                and customer.name LIKE CONCAT(CONCAT('%', #{customerName}),'%')
+            </if>
+        </where>
+        group by saleOrder.customer_id
+
+        union all
+
+        select invoice.customer_id customerId,customer.name customerName,customer.code customerCode,null allAmount,sum(ifnull(invoice.amount,0)) invoiceAmount
+        from vmes_finance_invoice invoice
+        left join vmes_customer customer on customer.id = invoice.customer_id
+        <where>
+            and invoice.customer_id is not null
+            <!--queryStr 自定义sql查询语句-->
+            <if test='queryStr != null and queryStr != ""' >
+                and ${queryStr}
+            </if>
+            <if test='currentCompanyId != null and currentCompanyId != ""'>
+                and customer.company_id LIKE CONCAT(CONCAT('%', #{currentCompanyId}),'%')
+            </if>
+            <if test='customerId != null and customerId != ""'>
+                and customer.id = #{customerId}
+            </if>
+            <if test='customerCode != null and customerCode != ""'>
+                and customer.code LIKE CONCAT(CONCAT('%', #{customerCode}),'%')
+            </if>
+            <if test='customerName != null and customerName != ""'>
+                and customer.name LIKE CONCAT(CONCAT('%', #{customerName}),'%')
+            </if>
+        </where>
+        group by invoice.customer_id
+        )tab
+        group by customerId
     </select>
 
 

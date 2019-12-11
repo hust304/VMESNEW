@@ -87,6 +87,11 @@ public interface FinanceInvoiceMapper extends BaseMapper<FinanceInvoice> {
     */
     void updateByDefined(PageData pd);
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+
+
+    List<Map> getInvoiceAmount(PageData pd);
+
+    List<Map> getInvoiceAmount(PageData pd, Pagination pg);
 }
 
 

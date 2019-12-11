@@ -108,6 +108,74 @@ public class FinanceInvoiceController {
 
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+
+    /**
+     * @author 刘威 自动创建，禁止修改
+     * @date 2019-12-03
+     */
+    @PostMapping("/finance/financeInvoice/rebackFinanceInvoice")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel rebackFinanceInvoice()  throws Exception {
+
+        logger.info("################/finance/financeInvoice/rebackFinanceInvoice 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+        FinanceInvoice financeInvoice = (FinanceInvoice)HttpUtils.pageData2Entity(pd, new FinanceInvoice());
+        financeInvoice.setState("-1");
+        financeInvoiceService.update(financeInvoice);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/finance/financeInvoice/rebackFinanceInvoice 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+    /**
+     * @author 刘威 自动创建，禁止修改
+     * @date 2019-12-03
+     */
+    @PostMapping("/finance/financeInvoice/openFinanceInvoice")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel openFinanceInvoice()  throws Exception {
+
+        logger.info("################/finance/financeInvoice/openFinanceInvoice 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+        FinanceInvoice financeInvoice = (FinanceInvoice)HttpUtils.pageData2Entity(pd, new FinanceInvoice());
+        financeInvoice.setState("1");
+        financeInvoiceService.update(financeInvoice);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/finance/financeInvoice/openFinanceInvoice 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+
+
+    /**
+     * @author 刘威 自动创建，禁止修改
+     * @date 2019-12-03
+     */
+    @PostMapping("/finance/financeInvoice/deleteFinanceInvoice")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel deleteFinanceInvoice()  throws Exception {
+
+        logger.info("################/finance/financeInvoice/deleteFinanceInvoice 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+        FinanceInvoice financeInvoice = (FinanceInvoice)HttpUtils.pageData2Entity(pd, new FinanceInvoice());
+        financeInvoiceService.deleteById(financeInvoice.getId());
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/finance/financeInvoice/deleteFinanceInvoice 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+
+
+
     /**
     * @author 刘威 自动创建，可以修改
     * @date 2019-12-03
@@ -154,6 +222,38 @@ public class FinanceInvoiceController {
         logger.info("################/finance/financeInvoice/importExcelFinanceInvoices 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
+
+
+    /**
+     * @author 刘威 自动创建，可以修改
+     * @date 2019-12-03
+     */
+    @PostMapping("/finance/financeInvoice/getInvoiceAmount")
+    public ResultModel getInvoiceAmount()  throws Exception {
+        logger.info("################/finance/financeInvoice/getInvoiceAmount 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = financeInvoiceService.getInvoiceAmount(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/finance/financeInvoice/getInvoiceAmount 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * @author 刘威 自动创建，可以修改
+     * @date 2019-12-03
+     */
+    @PostMapping("/finance/financeInvoice/saveFinanceInvoice")
+    public ResultModel saveFinanceInvoice()  throws Exception {
+        logger.info("################/finance/financeInvoice/saveFinanceInvoice 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = financeInvoiceService.saveFinanceInvoice(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/finance/financeInvoice/saveFinanceInvoice 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
 
 }
 
