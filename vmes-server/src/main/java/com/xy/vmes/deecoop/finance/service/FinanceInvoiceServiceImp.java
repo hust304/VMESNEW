@@ -385,7 +385,8 @@ public class FinanceInvoiceServiceImp implements FinanceInvoiceService {
         FinanceInvoice financeInvoice = (FinanceInvoice)HttpUtils.pageData2Entity(pd, new FinanceInvoice());
         financeInvoice.setCompanyId(companyId);
         financeInvoice.setState("0");
-        String code = coderuleService.createCoderCdateByDate(companyId,"vmes_finance_invoice","yyyyMMdd","I");
+//        String code = coderuleService.createCoderCdateByDate(companyId,"vmes_finance_invoice","yyyyMMdd","I");
+        String code = coderuleService.createCoderCdateOnShortYearByDate(companyId,"vmes_finance_invoice","I",3);
         financeInvoice.setCode(code);
         financeInvoice.setSysCode(code);
 

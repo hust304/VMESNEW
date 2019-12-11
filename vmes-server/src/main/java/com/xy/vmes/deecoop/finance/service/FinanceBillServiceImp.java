@@ -404,7 +404,8 @@ public class FinanceBillServiceImp implements FinanceBillService {
         for (Map<String, String> mapObject : mapList) {
             String customerId = mapObject.get("id");
             FinanceBill financeBill = (FinanceBill) HttpUtils.pageData2Entity(mapObject, new FinanceBill());
-            String code = coderuleService.createCoderCdateByDate(currentCompanyId,"vmes_finance_bill","yyyyMMdd","R");
+//            String code = coderuleService.createCoderCdateByDate(currentCompanyId,"vmes_finance_bill","yyyyMMdd","R");
+            String code = coderuleService.createCoderCdateOnShortYearByDate(currentCompanyId,"vmes_finance_invoice","R",3);
             financeBill.setCode(code);
             financeBill.setPeriod(period);
             financeBill.setCompanyId(currentCompanyId);
