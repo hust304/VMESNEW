@@ -260,12 +260,12 @@ public class SaleOrderServiceImp implements SaleOrderService {
         }
         Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
 
-//        //设置查询排序
-//        pd.put("orderStr", "saleOrder.cdate desc");
-//        String orderStr = pd.getString("orderStr");
-//        if (orderStr != null && orderStr.trim().length() > 0) {
-//            pd.put("orderStr", orderStr);
-//        }
+        //设置查询排序
+        pd.put("orderStr", "saleOrder.cdate desc");
+        String orderStr = pd.getString("orderStr");
+        if (orderStr != null && orderStr.trim().length() > 0) {
+            pd.put("orderStr", orderStr);
+        }
 
         List<Map> varList = this.getDataListPage(pd, pg);
         //遍历查询结果集:获取(changeState:订单变更状态 changeStateName:订单变更状态名称)
