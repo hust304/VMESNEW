@@ -312,9 +312,6 @@
             </if>
 
             <!--模块查询条件-->
-            <if test="customerName != null and customerName != ''">
-
-            </if>
             <if test="deliverDateBegin != null and deliverDateBegin != ''">
                 <![CDATA[ and deliver.deliver_date >= #{deliverDateBegin} ]]>
             </if>
