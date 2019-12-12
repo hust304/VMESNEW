@@ -330,7 +330,7 @@
             pu.isdefault isdefault,
 
             case when pu.type=0 then '计价单位' when pu.type=1 then '计量单位' else null end type,
-            round(ifnull(pu.product_price, 0), 2) productPrice,
+            round(ifnull(pu.product_price, 0), 4) productPrice,
 
             pu.n2p_is_scale n2pIsScale,
             pu.n2p_decimal_count n2pDecimalCount,

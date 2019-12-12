@@ -370,8 +370,8 @@ public class ProductUnitServiceImp implements ProductUnitService {
         BigDecimal productPrice_big = BigDecimal.valueOf(0D);
         try {
             productPrice_big = new BigDecimal(productPrice);
-            //四舍五入到2位小数
-            productPrice_big = productPrice_big.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+            //四舍五入到4位小数
+            productPrice_big = productPrice_big.setScale(Common.SYS_PRICE_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
         } catch (NumberFormatException e) {
             e.printStackTrace();
         }
