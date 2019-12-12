@@ -191,7 +191,7 @@
 
         deliver.linkName custAddressName,
         deliver.mobile custMobile,
-        round(ifnull(deliver.piece_count, 0),2) pieceCount,
+        round(ifnull(deliver.piece_count, 0), 0) pieceCount,
 
         makeUser.user_name makeName,
         customer.code customerCode,
