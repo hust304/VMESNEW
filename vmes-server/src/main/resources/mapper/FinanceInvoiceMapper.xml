@@ -295,7 +295,7 @@
         financeInvoice.type,case when financeInvoice.type='2' then '增值税普通发票' when financeInvoice.type='3' then '增值税专用发票' else null end typeName ,
         customerInvoice.bank_code bankCode,customerInvoice.bank_name bankName,customerInvoice.address,
         customerInvoice.phone, customerInvoice.mobile,cuser.user_name userName,DATE_FORMAT(financeInvoice.cdate,'%Y-%m-%d %T') cdate,
-        round(ifnull(financeInvoice.amount,0),2) amount,financeInvoice.state
+        round(ifnull(financeInvoice.amount,0),2) amount,financeInvoice.state,customerInvoice.remark
         from vmes_finance_invoice financeInvoice
         left join vmes_customer customer on customer.id = financeInvoice.customer_id
         left join vmes_customer_invoice customerInvoice on customerInvoice.id = financeInvoice.customer_invoice_id
