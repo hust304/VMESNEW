@@ -369,7 +369,7 @@
             produnit.p2n_decimal_count p2nDecimalCount
 
             <if test="'true' == isNeedCustomerPrice">
-                ,round(ifnull(customerPrice.product_price, 0), 2) customerPrice
+                ,round(ifnull(customerPrice.product_price, 0), 4) customerPrice
             </if>
         from vmes_product prod
             left join vmes_product_unit produnit on produnit.product_id = prod.id and produnit.type = 1
