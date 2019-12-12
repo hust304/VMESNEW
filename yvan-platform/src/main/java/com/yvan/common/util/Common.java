@@ -62,6 +62,8 @@ public class Common {
     public static final int SYS_NUMBER_FORMAT_4 = 4;
     //系统小数四舍五入-默认2位小数
     public static final int SYS_NUMBER_FORMAT_DEFAULT = SYS_NUMBER_FORMAT_2;
+    //系统(价格)四舍五入-默认4位小数
+    public static final int SYS_PRICE_FORMAT_DEFAULT = SYS_NUMBER_FORMAT_4;
 
     //系统是否需要四舍五入 Y:需要四舍五入
     public static final String SYS_ISSCALE_TRUE = "Y";
