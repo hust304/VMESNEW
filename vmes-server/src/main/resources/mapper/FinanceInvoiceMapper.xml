@@ -344,6 +344,7 @@
         left join vmes_customer customer on customer.id = saleOrder.customer_id
         <where>
             and saleOrder.customer_id is not null
+            and saleOrder.receipt_type in ('2','3')
             <!--queryStr 自定义sql查询语句-->
             <if test='queryStr != null and queryStr != ""' >
                 and ${queryStr}
@@ -370,6 +371,7 @@
         left join vmes_customer customer on customer.id = invoice.customer_id
         <where>
             and invoice.customer_id is not null
+            and invoice.state in ('0','1')
             <!--queryStr 自定义sql查询语句-->
             <if test='queryStr != null and queryStr != ""' >
                 and ${queryStr}
