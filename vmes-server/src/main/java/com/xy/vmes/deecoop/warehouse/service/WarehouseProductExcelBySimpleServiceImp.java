@@ -83,6 +83,8 @@ public class WarehouseProductExcelBySimpleServiceImp implements WarehouseProduct
                         (i+index_int),
                         "货位名称");
                 strBuf.append(str_isnull);
+            } else {
+                mapObject.put("pathName", pathName.trim());
             }
 
             //warehouseTypeName 仓库类型
@@ -93,6 +95,8 @@ public class WarehouseProductExcelBySimpleServiceImp implements WarehouseProduct
                         (i+index_int),
                         "仓库类型");
                 strBuf.append(str_isnull);
+            } else {
+                mapObject.put("warehouseTypeName", warehouseTypeName.trim());
             }
 
             //productCode 货品编码
@@ -104,6 +108,8 @@ public class WarehouseProductExcelBySimpleServiceImp implements WarehouseProduct
                         (i+index_int),
                         "货品名称");
                 strBuf.append(str_isnull);
+            } else {
+                mapObject.put("productName", productName.trim());
             }
 
             //productSpec 规格型号
@@ -114,6 +120,8 @@ public class WarehouseProductExcelBySimpleServiceImp implements WarehouseProduct
                         (i+index_int),
                         "规格型号");
                 strBuf.append(str_isnull);
+            } else {
+                mapObject.put("productSpec", productSpec.trim());
             }
 
             //productPictureCode 图号 允许为空
@@ -125,6 +133,8 @@ public class WarehouseProductExcelBySimpleServiceImp implements WarehouseProduct
                         (i+index_int),
                         "货品属性");
                 strBuf.append(str_isnull);
+            } else {
+                mapObject.put("productGenreName", productGenreName.trim());
             }
 
             //productUnitName 计量单位
@@ -135,6 +145,8 @@ public class WarehouseProductExcelBySimpleServiceImp implements WarehouseProduct
                         (i+index_int),
                         "计量单位");
                 strBuf.append(str_isnull);
+            } else {
+                mapObject.put("productUnitName", productUnitName.trim());
             }
 
             //stockCount 库存数量
