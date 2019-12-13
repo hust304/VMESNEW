@@ -385,20 +385,28 @@ public class WarehouseInitialBySimpleServiceImp implements WarehouseInitialBySim
             return model;
         }
 
-        //2. 添加系统基础表
-        // 1. 仓库表
-        // 2. 货品表
-        // 3. 字典表(计量单位)
-        warehouseProductExcelBySimpleService.addSystemBaseTableImportExcel(dataMapLst, companyId, userId);
+        try {
+            //2. 添加系统基础表
+            // 1. 仓库表
+            // 2. 货品表
+            // 3. 字典表(计量单位)
+            warehouseProductExcelBySimpleService.addSystemBaseTableImportExcel(dataMapLst, companyId, userId);
 
-        //3. 遍历Excel导入List-Map<String, WarehouseProduct>
-        Map<String, WarehouseProduct> warehouseProductMap = new HashMap<String, WarehouseProduct>();
-        warehouseProductExcelBySimpleService.findWarehouseProductMapByExcelDataList(dataMapLst,
-                warehouseProductMap,
-                companyId);
+            //3. 遍历Excel导入List-Map<String, WarehouseProduct>
+            Map<String, WarehouseProduct> warehouseProductMap = new HashMap<String, WarehouseProduct>();
+            warehouseProductExcelBySimpleService.findWarehouseProductMapByExcelDataList(dataMapLst,
+                    warehouseProductMap,
+                    companyId);
 
-        //4. 遍历Map<String, WarehouseProduct> 对业务表添加
-        warehouseProductExcelBySimpleService.addWarehouseProduct(warehouseProductMap, companyId, userId);
+            //4. 遍历Map<String, WarehouseProduct> 对业务表添加
+            warehouseProductExcelBySimpleService.addWarehouseProduct(warehouseProductMap, companyId, userId);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("系统异常：导入数据失败！");
+            return model;
+        }
 
         return model;
     }
