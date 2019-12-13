@@ -658,6 +658,15 @@
             <if test="postName!= null and postName != ''">
                 and post.name LIKE CONCAT(CONCAT(#{postName}),'%')
             </if>
+            <if test="deptId!= null and deptId != ''">
+                and post.dept_id = #{deptId}
+            </if>
+            <if test="pid!= null and pid != '' and layer == '' ">
+                and post.id = #{pid}
+            </if>
+            <if test="pid!= null and pid != '' and layer != null and layer != ''">
+                and  dept.id_${layer} = #{pid}
+            </if>
 
             <!--deptQueryStr 部门表查询字符串 and id_1 = '' -->
             <if test="deptQueryStr != null and deptQueryStr!=''" >
@@ -666,15 +675,6 @@
             <!-- 员工岗位表 是否主岗或兼岗 -->
             <if test="isplurality!= null and isplurality != ''">
                 and employpost.isplurality = #{isplurality}
-            </if>
-
-
-            <if test="pid!= null and pid != '' and layer != null and layer != ''">
-                and  dept.id_${layer} = #{pid}
-            </if>
-
-            <if test="pid!= null and pid != '' and layer == '' ">
-                and post.id = #{pid}
             </if>
 
             <!-- 员工合同到期日期 -->

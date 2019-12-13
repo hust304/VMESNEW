@@ -297,6 +297,23 @@ public class DepartmentController {
         return model;
     }
 
+    /**删除组织架构(组织类型:部门)
+     *
+     * @author 陈刚
+     * @date 2018-07-27
+     */
+    @PostMapping("/system/department/deleteDepartment")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel deleteDepartment() throws Exception {
+        logger.info("################/system/department/deleteDepartment 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pageData = HttpUtils.parsePageData();
+        ResultModel model = departmentService.deleteDepartment(pageData);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/system/department/deleteDepartment 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
 //    /**组织管理分页查询List
 //     *
 //     * @author 陈刚

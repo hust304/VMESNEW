@@ -303,6 +303,7 @@ public interface DepartmentService {
     ResultModel updateDisableDept(PageData pageData) throws Exception;
 
     ResultModel deleteDepartments(PageData pageData) throws Exception;
+    ResultModel deleteDepartment(PageData pageData) throws Exception;
 
     ResultModel listPageDepartments(PageData pd, Pagination pg) throws Exception;
 

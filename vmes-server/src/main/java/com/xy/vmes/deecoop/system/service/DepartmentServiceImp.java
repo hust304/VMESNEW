@@ -44,6 +44,11 @@ public class DepartmentServiceImp implements DepartmentService {
     @Autowired
     private EmployPostService employPostService;
 
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private EmployeeService employeeService;
+
     /**
     * 创建人：陈刚 自动创建，禁止修改
     * 创建时间：2018-07-23
@@ -1404,6 +1409,59 @@ public class DepartmentServiceImp implements DepartmentService {
                 postService.updateToDisableByIds(postId_array);
             }
         }
+        return model;
+    }
+
+    //删除部门
+    public ResultModel deleteDepartment(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+
+        String id = (String)pageData.get("id");
+        if (id == null || id.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("部门id为空或空字符串！");
+            return model;
+        }
+
+        //判断该部门下是否含有子部门
+        List<Department> deptList = this.findDepartmentListByPid(id);
+        if (deptList != null && deptList.size() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("该部门含有子部门部门不允许删除，请删除所有子部门！");
+            return model;
+        }
+
+        //判断该部门下是否含有用户
+        PageData findMap = new PageData();
+        findMap.put("deptId", id);
+        //是否禁用(0:已禁用 1:启用)
+        findMap.put("isdisable", "1");
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+        List<User> userList = userService.findUserList(findMap);
+        if (userList != null && userList.size() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("该部门含有用户，请在(系统-用户管理)删除该部门的全部用户！");
+            return model;
+        }
+
+        //判断该部门下的员工
+        findMap = new PageData();
+        findMap.put("deptId", id);
+        List<Map> employeeList = employeeService.getDataListPage(findMap);
+        if (employeeList != null && employeeList.size() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("该部门含有员工，请在(人事-员工管理)删除该部门的全部员工！");
+            return model;
+        }
+
+        //删除该部门
+        this.deleteById(id);
+
+        //删除部门岗位
+        Map<String, Object> columnMap = new HashMap<String, Object>();
+        columnMap.put("dept_id", id);
+        postService.deleteByColumnMap(columnMap);
+
         return model;
     }
 
