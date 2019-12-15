@@ -329,7 +329,13 @@
         (replace(uuid(), '-', ''),'warehouseInitialBySimple','checkCount','盘点数量',18, '1','1','1','0',now(), 'admin'),
 
         (replace(uuid(), '-', ''),'warehouseInitialBySimple','lastUpdateDate','最后一次变更日期',19, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'warehouseInitialBySimple','last2nowDay','距今天数',20, '1','1','1','0',now(), 'admin')
+        (replace(uuid(), '-', ''),'warehouseInitialBySimple','last2nowDay','距今天数',20, '1','1','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'warehouseInitialBySimple','warehouseTypeName','仓库类型',21, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseInitialBySimple','sourceCode','企业货品编码',22, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseInitialBySimple','productPictureCode','图号',23, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'warehouseInitialBySimple','typeName','货品类型',24, '1','1','1','0',now(), 'admin'),
+
     </insert>
 
     <!-- warehouseEdition(仓库版本): warehouseBySimple(简版仓库)-对应实体库(简版仓库)********************************************* -->
@@ -347,10 +353,12 @@
             warehouse.path_name pathName,
             warehouse.name warehouseName,
             warehouse.code warehouseCode,
+            warehouseType.name warehouseTypeName,
 
             <!--货品表-->
             product.code sysProductCode,
-            product.source_code custProductCode,
+            product.source_code sourceCode,
+
             CASE
               WHEN product.source_code is null THEN product.code
               WHEN product.source_code is not null THEN product.source_code
@@ -362,8 +370,11 @@
             produnit.unit productUnit,
             product.genre productGenre,
             product.type productType,
+            type.name typeName,
             unit.name productUnitName,
             genre.name productGenreName,
+            product.picture_code productPictureCode,
+
             round(ifnull(product.safety_count, 0), 2) productSafetyCount,
 
             DATE_FORMAT(prodLastDate.last_update_date,'%Y-%m-%d') lastUpdateDate,
@@ -448,10 +459,13 @@
             group by warehouse_id,product_id,company_id
         ) warehouseProduct
             left join vmes_warehouse warehouse on warehouseProduct.warehouse_id = warehouse.id and warehouse.isdisable = '1'
+            left join vmes_dictionary warehouseType on warehouse.entity_type = warehouseType.id
+
             left join vmes_product product on warehouseProduct.product_id = product.id and product.isdisable = '1'
             left join vmes_product_unit produnit on warehouseProduct.product_id = produnit.product_id and produnit.type = 1
             left join vmes_dictionary unit on produnit.unit = unit.id
             left join vmes_dictionary genre on product.genre = genre.id
+            left join vmes_dictionary type on product.type = type.id
             left join (
                 select
                 id,
