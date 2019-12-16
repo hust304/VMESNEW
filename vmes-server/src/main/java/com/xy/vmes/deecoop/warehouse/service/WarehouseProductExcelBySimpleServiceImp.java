@@ -376,10 +376,47 @@ public class WarehouseProductExcelBySimpleServiceImp implements WarehouseProduct
             if (sysWarehouseProductMap != null && sysWarehouseProductMap.get(sysMapKey) != null) {
                 Map<String, Object> columnMap = new HashMap<String, Object>();
                 columnMap.put("warehouse_id", warehouseId);
-                columnMap.put("product_id", warehouseId);
+                columnMap.put("product_id", productId);
                 warehouseProductService.deleteByColumnMap(columnMap);
 
-                productService.updateStockCount(product, stockCount, userId, "update");
+                WarehouseProduct addWarehouseProduct = new WarehouseProduct();
+                addWarehouseProduct.setCuser(userId);
+                addWarehouseProduct.setCompanyId(companyId);
+
+                String code = productPCCodeMap.get(productId);
+                addWarehouseProduct.setCode(code);
+                addWarehouseProduct.setProductId(productId);
+                addWarehouseProduct.setWarehouseId(warehouseId);
+                addWarehouseProduct.setStockCount(stockCount);
+
+                //生成二维码
+                String QRCodeJson = warehouseProductService.warehouseProduct2QRCode(addWarehouseProduct);
+                String qrcode = fileService.createQRCode("warehouseProduct", QRCodeJson);
+                if (qrcode != null && qrcode.trim().length() > 0) {
+                    warehouseProduct.setQrcode(qrcode);
+                }
+                warehouseProductService.save(addWarehouseProduct);
+
+                //货品库存数量
+                PageData findMap = new PageData();
+                findMap.put("productId", productId);
+                List<Map> mapList = warehouseProductService.getWarehouseProductView(findMap, null);
+                if (mapList != null && mapList.size() > 0) {
+                    Map<String, Object> objectMap = mapList.get(0);
+                    if (objectMap != null && objectMap.get("stockCount") != null) {
+                        BigDecimal stockCount_prod = (BigDecimal)objectMap.get("stockCount");
+
+                        Product editProduct = new Product();
+                        editProduct.setId(productId);
+                        editProduct.setStockCount(stockCount_prod);
+
+                        editProduct.setVersion(Integer.valueOf(0));
+                        if (product != null && product.getVersion() != null) {
+                            editProduct.setVersion(Integer.valueOf(product.getVersion() + 1));
+                        }
+                        productService.update(editProduct);
+                    }
+                }
             } else {
                 String code = productPCCodeMap.get(productId);
                 warehouseProduct.setCode(code);
