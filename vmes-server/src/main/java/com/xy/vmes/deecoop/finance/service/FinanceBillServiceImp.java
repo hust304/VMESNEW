@@ -400,6 +400,9 @@ public class FinanceBillServiceImp implements FinanceBillService {
         String currentCompanyId = pd.getString("currentCompanyId");
         String type = pd.getString("type");
 
+        //isAutoCommit true:自动提交 false:手动提交
+        String isAutoCommit = pd.getString("isAutoCommit");
+
         SimpleDateFormat format = new SimpleDateFormat("yyyyMM");
         String period = format.format(new Date());
         for (Map<String, String> mapObject : mapList) {
@@ -412,8 +415,16 @@ public class FinanceBillServiceImp implements FinanceBillService {
             financeBill.setCompanyId(currentCompanyId);
             financeBill.setCustomerId(customerId);
             financeBill.setType(type);
+
+            //状态（0：待提交 1：待审核 2：已审核 -1：已取消）
+            financeBill.setState("0");
+            if (isAutoCommit != null && "true".equals(isAutoCommit.trim())) {
+                financeBill.setState("1");
+            }
+
             this.save(financeBill);
         }
+
         return model;
     }
 
