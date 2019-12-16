@@ -75,13 +75,13 @@ public class WarehouseProductExcelBySimpleServiceImp implements WarehouseProduct
         for (int i = 0; i < objectList.size(); i++) {
             LinkedHashMap<String, String> mapObject = objectList.get(i);
 
-            //pathName 货位名称
+            //pathName 仓库名称
             String pathName = mapObject.get("pathName");
             if (pathName == null || pathName.trim().length() == 0) {
                 //String msg_column_isnull = "第 {0} 行: ({1})输入为空或空字符串，({1})是必填字段不可为空！"
                 String str_isnull = MessageFormat.format(msg_column_isnull,
                         (i+index_int),
-                        "货位名称");
+                        "仓库名称");
                 strBuf.append(str_isnull);
             } else {
                 mapObject.put("pathName", pathName.trim());
@@ -307,7 +307,7 @@ public class WarehouseProductExcelBySimpleServiceImp implements WarehouseProduct
         for (int i = 0; i < objectList.size(); i++) {
             LinkedHashMap<String, String> mapObject = objectList.get(i);
 
-            //pathName 货位名称
+            //pathName 仓库名称
             String pathName = mapObject.get("pathName");
             String warehouseId = new String();
             if (sysWarehouseMap != null && sysWarehouseMap.get(pathName) != null) {
@@ -483,7 +483,7 @@ public class WarehouseProductExcelBySimpleServiceImp implements WarehouseProduct
         if (objectList == null || objectList.size() == 0) {return warehouseMap;}
 
         for (Map<String, String> mapObject : objectList) {
-            //pathName 货位名称
+            //pathName 仓库名称
             String pathName = mapObject.get("pathName");
 
             //warehouseTypeName 仓库类型
