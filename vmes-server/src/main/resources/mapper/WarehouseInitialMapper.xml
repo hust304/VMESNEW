@@ -80,8 +80,12 @@
             (replace(uuid(), '-', ''),'warehouseInitial','checkStockCount','台账数量',13, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'warehouseInitial','checkCount','盘点数量',14, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'warehouseInitial','moveCount','移库数量',15, '1','1','1','0',now(), 'admin')
+            (replace(uuid(), '-', ''),'warehouseInitial','productSafetyCount','安全库存数量',16, '1','1','1','0',now(), 'admin'),
 
-            (replace(uuid(), '-', ''),'warehouseInitial','productSafetyCount','安全库存数量',16, '1','1','1','0',now(), 'admin')
+            (replace(uuid(), '-', ''),'warehouseInitial','warehouseTypeName','仓库类型',17, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'warehouseInitial','sourceCode','企业货品编码',18, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'warehouseInitial','productPictureCode','图号',19, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'warehouseInitial','typeName','货品类型',20, '1','1','1','0',now(), 'admin'),
 
 </insert>
 
@@ -169,13 +173,14 @@
 
             <!--vmes_warehouse:仓库货位表-->
             warehouse.path_id pathId,
-            warehouse.path_name pathName,
+            warehouse.name pathName,
             warehouse.name warehouseName,
             warehouse.code warehouseCode,
+            warehouseType.name warehouseTypeName,
 
             <!--货品表-->
             product.code sysProductCode,
-            product.source_code custProductCode,
+            product.source_code sourceCode,
             CASE
               WHEN product.source_code is null THEN product.code
               WHEN product.source_code is not null THEN product.source_code
@@ -186,8 +191,10 @@
             produnit.unit productUnit,
             product.genre productGenre,
             product.type productType,
+            type.name typeName,
             unit.name productUnitName,
             genre.name productGenreName,
+            product.picture_code productPictureCode,
             round(ifnull(product.safety_count, 0), 2) productSafetyCount,
 
             round(ifnull(wp.stock_count, 0), 2) checkStockCount,
@@ -196,10 +203,13 @@
 
         from vmes_warehouse_product wp
             left join vmes_warehouse warehouse on wp.warehouse_id = warehouse.id and warehouse.isdisable = '1'
+            left join vmes_dictionary warehouseType on warehouse.entity_type = warehouseType.id
+
             left join vmes_product product on wp.product_id = product.id and product.isdisable = '1'
             left join vmes_product_unit produnit on produnit.product_id = product.id and produnit.type = 1
             left join vmes_dictionary unit on produnit.unit = unit.id
             left join vmes_dictionary genre on product.genre = genre.id
+            left join vmes_dictionary type on product.type = type.id
 
             left join vmes_user cuser on wp.cuser = cuser.id
             left join vmes_department dept on dept.id = cuser.dept_id
