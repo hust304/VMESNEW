@@ -583,6 +583,15 @@ public class FinanceBillServiceImp implements FinanceBillService {
         if(financeBill!=null){
             if(!StringUtils.isEmpty(financeBill.getState())){
                 if("0".equals(financeBill.getState())){
+                    //isAutoCommit true:自动提交 false:手动提交
+                    String isAutoCommit = pd.getString("isAutoCommit");
+
+                    //状态（0：待提交 1：待审核 2：已审核 -1：已取消）
+                    financeBill.setState("0");
+                    if (isAutoCommit != null && "true".equals(isAutoCommit.trim())) {
+                        financeBill.setState("1");
+                    }
+
                     this.update(financeBill);
                 }else{
                     model.putCode(Integer.valueOf(1));
