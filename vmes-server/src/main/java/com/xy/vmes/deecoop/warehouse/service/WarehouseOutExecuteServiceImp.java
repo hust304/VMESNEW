@@ -809,61 +809,61 @@ public class WarehouseOutExecuteServiceImp implements WarehouseOutExecuteService
         }
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //遍历数据集-更改销售订单明细锁定库存数量
-        if(outDtlExecuteMapList != null && outDtlExecuteMapList.size() > 0) {
-            for (Map<String, Object> outDtlExecuteMap : outDtlExecuteMapList) {
-                String outDtlId = (String)outDtlExecuteMap.get("outDtlId");
-                BigDecimal executeCount = (BigDecimal)outDtlExecuteMap.get("executeCount");
-
-                Map<String, Object> objectMap = saleDeliverOutDetailService.findOutDetailByOrderDetail(outDtlId, null);
-                String orderDtlId = (String)objectMap.get("orderDtlId");
-                BigDecimal lockCount = (BigDecimal)objectMap.get("lockCount");
-                Integer versionLockCount = (Integer)objectMap.get("versionLockCount");
-
-                if (orderDtlId != null && orderDtlId.trim().length() > 0
-                        && lockCount != null && versionLockCount != null
-                        ) {
-                    BigDecimal newLockCount = BigDecimal.valueOf(0D);
-                    if (lockCount.doubleValue() > executeCount.doubleValue()) {
-                        newLockCount = BigDecimal.valueOf(lockCount.doubleValue() - executeCount.doubleValue());
-                    }
-
-                    SaleOrderDetail editOrderDetail = new SaleOrderDetail();
-                    editOrderDetail.setId(orderDtlId);
-                    editOrderDetail.setLockCount(newLockCount);
-                    //是否锁定仓库(0:未锁定 1:已锁定)
-                    if (newLockCount.doubleValue() == 0) {
-                        editOrderDetail.setIsLockWarehouse("0");
-                    } else {
-                        editOrderDetail.setIsLockWarehouse("1");
-                    }
-                    //锁定开始时间
-                    editOrderDetail.setLockDate(new Date());
-                    if (versionLockCount != null) {
-                        versionLockCount = Integer.valueOf(versionLockCount.intValue() + 1);
-                    }
-                    editOrderDetail.setVersionLockCount(versionLockCount);
-                    saleOrderDetailService.update(editOrderDetail);
-
-                    //重新发送锁库消息
-                    //获取企业id对应的锁定库存时长(毫秒)
-                    String companyId = pageData.getString("currentCompanyId");
-                    Long lockTime = saleLockDateService.findLockDateMillisecondByCompanyId(companyId);
-                    if (lockTime != null && orderDtlId != null && versionLockCount != null) {
-                        //信息队列信息:(订单明细id,锁定库存版本号)
-                        String orderDtl_activeMQ_temp = "{0},{1}";
-                        String orderDtl_activeMQ_msg = MessageFormat.format(orderDtl_activeMQ_temp,
-                                orderDtlId,
-                                versionLockCount);
-
-                        //将订单明细id作为消息体放入消息队列中，消息时长(毫秒)-根据企业id查询(vmes_sale_lock_date)
-                        if (lockTime != null && lockTime.longValue() > 0) {
-                            sirstSender.sendMsg(orderDtl_activeMQ_msg, lockTime.intValue());
-                        }
-                    }
-                }
-            }
-        }
+//        //遍历数据集-更改销售订单明细锁定库存数量
+//        if(outDtlExecuteMapList != null && outDtlExecuteMapList.size() > 0) {
+//            for (Map<String, Object> outDtlExecuteMap : outDtlExecuteMapList) {
+//                String outDtlId = (String)outDtlExecuteMap.get("outDtlId");
+//                BigDecimal executeCount = (BigDecimal)outDtlExecuteMap.get("executeCount");
+//
+//                Map<String, Object> objectMap = saleDeliverOutDetailService.findOutDetailByOrderDetail(outDtlId, null);
+//                String orderDtlId = (String)objectMap.get("orderDtlId");
+//                BigDecimal lockCount = (BigDecimal)objectMap.get("lockCount");
+//                Integer versionLockCount = (Integer)objectMap.get("versionLockCount");
+//
+//                if (orderDtlId != null && orderDtlId.trim().length() > 0
+//                        && lockCount != null && versionLockCount != null
+//                        ) {
+//                    BigDecimal newLockCount = BigDecimal.valueOf(0D);
+//                    if (lockCount.doubleValue() > executeCount.doubleValue()) {
+//                        newLockCount = BigDecimal.valueOf(lockCount.doubleValue() - executeCount.doubleValue());
+//                    }
+//
+//                    SaleOrderDetail editOrderDetail = new SaleOrderDetail();
+//                    editOrderDetail.setId(orderDtlId);
+//                    editOrderDetail.setLockCount(newLockCount);
+//                    //是否锁定仓库(0:未锁定 1:已锁定)
+//                    if (newLockCount.doubleValue() == 0) {
+//                        editOrderDetail.setIsLockWarehouse("0");
+//                    } else {
+//                        editOrderDetail.setIsLockWarehouse("1");
+//                    }
+//                    //锁定开始时间
+//                    editOrderDetail.setLockDate(new Date());
+//                    if (versionLockCount != null) {
+//                        versionLockCount = Integer.valueOf(versionLockCount.intValue() + 1);
+//                    }
+//                    editOrderDetail.setVersionLockCount(versionLockCount);
+//                    saleOrderDetailService.update(editOrderDetail);
+//
+//                    //重新发送锁库消息
+//                    //获取企业id对应的锁定库存时长(毫秒)
+//                    String companyId = pageData.getString("currentCompanyId");
+//                    Long lockTime = saleLockDateService.findLockDateMillisecondByCompanyId(companyId);
+//                    if (lockTime != null && orderDtlId != null && versionLockCount != null) {
+//                        //信息队列信息:(订单明细id,锁定库存版本号)
+//                        String orderDtl_activeMQ_temp = "{0},{1}";
+//                        String orderDtl_activeMQ_msg = MessageFormat.format(orderDtl_activeMQ_temp,
+//                                orderDtlId,
+//                                versionLockCount);
+//
+//                        //将订单明细id作为消息体放入消息队列中，消息时长(毫秒)-根据企业id查询(vmes_sale_lock_date)
+//                        if (lockTime != null && lockTime.longValue() > 0) {
+//                            sirstSender.sendMsg(orderDtl_activeMQ_msg, lockTime.intValue());
+//                        }
+//                    }
+//                }
+//            }
+//        }
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //出库执行
@@ -1044,61 +1044,61 @@ public class WarehouseOutExecuteServiceImp implements WarehouseOutExecuteService
         }
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //遍历数据集-更改销售订单明细锁定库存数量
-        if(outDtlExecuteMapList != null && outDtlExecuteMapList.size() > 0) {
-            for (Map<String, Object> outDtlExecuteMap : outDtlExecuteMapList) {
-                String outDtlId = (String)outDtlExecuteMap.get("outDtlId");
-                BigDecimal executeCount = (BigDecimal)outDtlExecuteMap.get("executeCount");
-
-                Map<String, Object> objectMap = saleDeliverOutDetailService.findOutDetailByOrderDetail(outDtlId, null);
-                String orderDtlId = (String)objectMap.get("orderDtlId");
-                BigDecimal lockCount = (BigDecimal)objectMap.get("lockCount");
-                Integer versionLockCount = (Integer)objectMap.get("versionLockCount");
-
-                if (orderDtlId != null && orderDtlId.trim().length() > 0
-                    && lockCount != null && versionLockCount != null
-                ) {
-                    BigDecimal newLockCount = BigDecimal.valueOf(0D);
-                    if (lockCount.doubleValue() > executeCount.doubleValue()) {
-                        newLockCount = BigDecimal.valueOf(lockCount.doubleValue() - executeCount.doubleValue());
-                    }
-
-                    SaleOrderDetail editOrderDetail = new SaleOrderDetail();
-                    editOrderDetail.setId(orderDtlId);
-                    editOrderDetail.setLockCount(newLockCount);
-                    //是否锁定仓库(0:未锁定 1:已锁定)
-                    if (newLockCount.doubleValue() == 0) {
-                        editOrderDetail.setIsLockWarehouse("0");
-                    } else {
-                        editOrderDetail.setIsLockWarehouse("1");
-                    }
-                    //锁定开始时间
-                    editOrderDetail.setLockDate(new Date());
-                    if (versionLockCount != null) {
-                        versionLockCount = Integer.valueOf(versionLockCount.intValue() + 1);
-                    }
-                    editOrderDetail.setVersionLockCount(versionLockCount);
-                    saleOrderDetailService.update(editOrderDetail);
-
-                    //重新发送锁库消息
-                    //获取企业id对应的锁定库存时长(毫秒)
-                    String companyId = pageData.getString("currentCompanyId");
-                    Long lockTime = saleLockDateService.findLockDateMillisecondByCompanyId(companyId);
-                    if (lockTime != null && orderDtlId != null && versionLockCount != null) {
-                        //信息队列信息:(订单明细id,锁定库存版本号)
-                        String orderDtl_activeMQ_temp = "{0},{1}";
-                        String orderDtl_activeMQ_msg = MessageFormat.format(orderDtl_activeMQ_temp,
-                                orderDtlId,
-                                versionLockCount);
-
-                        //将订单明细id作为消息体放入消息队列中，消息时长(毫秒)-根据企业id查询(vmes_sale_lock_date)
-                        if (lockTime != null && lockTime.longValue() > 0) {
-                            sirstSender.sendMsg(orderDtl_activeMQ_msg, lockTime.intValue());
-                        }
-                    }
-                }
-            }
-        }
+//        //遍历数据集-更改销售订单明细锁定库存数量
+//        if(outDtlExecuteMapList != null && outDtlExecuteMapList.size() > 0) {
+//            for (Map<String, Object> outDtlExecuteMap : outDtlExecuteMapList) {
+//                String outDtlId = (String)outDtlExecuteMap.get("outDtlId");
+//                BigDecimal executeCount = (BigDecimal)outDtlExecuteMap.get("executeCount");
+//
+//                Map<String, Object> objectMap = saleDeliverOutDetailService.findOutDetailByOrderDetail(outDtlId, null);
+//                String orderDtlId = (String)objectMap.get("orderDtlId");
+//                BigDecimal lockCount = (BigDecimal)objectMap.get("lockCount");
+//                Integer versionLockCount = (Integer)objectMap.get("versionLockCount");
+//
+//                if (orderDtlId != null && orderDtlId.trim().length() > 0
+//                    && lockCount != null && versionLockCount != null
+//                ) {
+//                    BigDecimal newLockCount = BigDecimal.valueOf(0D);
+//                    if (lockCount.doubleValue() > executeCount.doubleValue()) {
+//                        newLockCount = BigDecimal.valueOf(lockCount.doubleValue() - executeCount.doubleValue());
+//                    }
+//
+//                    SaleOrderDetail editOrderDetail = new SaleOrderDetail();
+//                    editOrderDetail.setId(orderDtlId);
+//                    editOrderDetail.setLockCount(newLockCount);
+//                    //是否锁定仓库(0:未锁定 1:已锁定)
+//                    if (newLockCount.doubleValue() == 0) {
+//                        editOrderDetail.setIsLockWarehouse("0");
+//                    } else {
+//                        editOrderDetail.setIsLockWarehouse("1");
+//                    }
+//                    //锁定开始时间
+//                    editOrderDetail.setLockDate(new Date());
+//                    if (versionLockCount != null) {
+//                        versionLockCount = Integer.valueOf(versionLockCount.intValue() + 1);
+//                    }
+//                    editOrderDetail.setVersionLockCount(versionLockCount);
+//                    saleOrderDetailService.update(editOrderDetail);
+//
+//                    //重新发送锁库消息
+//                    //获取企业id对应的锁定库存时长(毫秒)
+//                    String companyId = pageData.getString("currentCompanyId");
+//                    Long lockTime = saleLockDateService.findLockDateMillisecondByCompanyId(companyId);
+//                    if (lockTime != null && orderDtlId != null && versionLockCount != null) {
+//                        //信息队列信息:(订单明细id,锁定库存版本号)
+//                        String orderDtl_activeMQ_temp = "{0},{1}";
+//                        String orderDtl_activeMQ_msg = MessageFormat.format(orderDtl_activeMQ_temp,
+//                                orderDtlId,
+//                                versionLockCount);
+//
+//                        //将订单明细id作为消息体放入消息队列中，消息时长(毫秒)-根据企业id查询(vmes_sale_lock_date)
+//                        if (lockTime != null && lockTime.longValue() > 0) {
+//                            sirstSender.sendMsg(orderDtl_activeMQ_msg, lockTime.intValue());
+//                        }
+//                    }
+//                }
+//            }
+//        }
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //出库执行

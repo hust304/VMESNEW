@@ -90,7 +90,7 @@ public class SaleDeliverOutDetailServiceImp implements SaleDeliverOutDetailServi
      */
     public void finishOutDetailUnlock(String outDtlId) throws Exception {
         //发货出库单-出库明细状态(0:待派单 1:执行中 2:已完成 -1.已取消)
-        Map<String, Object> mapObject = findOutDetailByOrderDetail(outDtlId, "2");
+        Map<String, Object> mapObject = findOutDetailByOrderDetail(outDtlId, null);
 
         if (mapObject != null && mapObject.size() > 0) {
             //货品id：修改该货品的库存锁定数量
