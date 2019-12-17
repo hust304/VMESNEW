@@ -467,7 +467,7 @@
             province.name provinceName,
             period.current_period currentPeriod,
             round(ifnull(customer.balance,0),2) balance,
-            round(ifnull(customer.account_days,0),2) accountDays,
+            round(ifnull(customer.account_days,0),0) accountDays,
 
 
             <![CDATA[
@@ -530,7 +530,7 @@
             province.name provinceName,
             period.current_period currentPeriod,
             round(ifnull(customer.balance,0),2) balance,
-            round(ifnull(customer.account_days,0),2) accountDays,
+            round(ifnull(customer.account_days,0),0) accountDays,
 
 
             <![CDATA[
@@ -607,7 +607,7 @@
         province.name provinceName,
         period.current_period currentPeriod,
         round(ifnull(customer.balance,0),2) balance,
-        round(ifnull(customer.account_days,0),2) accountDays,
+        round(ifnull(customer.account_days,0),0) accountDays,
 
 
         <![CDATA[
@@ -656,7 +656,7 @@
         province.name provinceName,
         period.current_period currentPeriod,
         round(ifnull(customer.balance,0),2) balance,
-        round(ifnull(customer.account_days,0),2) accountDays,
+        round(ifnull(customer.account_days,0),0) accountDays,
 
 
         <![CDATA[
