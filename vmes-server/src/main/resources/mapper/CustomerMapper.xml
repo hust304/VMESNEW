@@ -307,7 +307,7 @@
             cust.remark remark,
             cust.isdisable isdisable,
             cust.company_id companyId,
-            ROUND(cust.account_days, 2) accountDays,
+            ROUND(cust.account_days, 0) accountDays,
             cust.account_type accountType,
             ROUND(cust.balance, 2)  balance,
             cust.qrcode qrcode,
