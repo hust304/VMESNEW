@@ -631,9 +631,8 @@ public class SaleRetreatAuditServiceImp implements SaleRetreatAuditService {
             List<SaleRetreatDetail> retreatDtlListByOrder = orderRetreatDtlMap.get(orderId);
             BigDecimal orderRetreatSumByorderDtl = saleRetreatDetailService.findTotalSumByDetailList(retreatDtlListByOrder);
 
-            String remarkTemp = "订单编号:{0} 退款金额:{1}";
+            String remarkTemp = "退款:{0}";
             String remark = MessageFormat.format(remarkTemp,
-                    sysOrderCode,
                     orderRetreatSumByorderDtl.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP)
             );
             orderEdit.setRemark(remark);
