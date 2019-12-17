@@ -109,7 +109,7 @@
 
                 orderDtl.price_unit priceUnit,
                 orderDtl.product_id productId,
-                round(ifnull(orderDtl.product_price, 0),2) productPrice,
+                round(ifnull(orderDtl.product_price, 0),4) productPrice,
                 round(ifnull(orderDtl.product_sum, 0),2) productSum,
                 orderDtl.is_lock_warehouse isLockWarehouse,
 
