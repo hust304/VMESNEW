@@ -307,12 +307,28 @@
         bill.id,
         bill.code,
         round(ifnull(bill.amount,0),2) amount,
+
         bill.state,
-        case when bill.state='0'then '待提交' when bill.state='1' then '待审核' when bill.state='2' then '已审核'
-        when bill.state='-1' then '已取消'  else null end stateName,
+        case
+            when bill.state='0' then '待提交'
+            when bill.state='1' then '待审核'
+            when bill.state='2' then '已审核'
+            when bill.state='-1' then '已取消'
+        else null
+        end stateName,
+
         bill.type,
-        case  when bill.type='0' then '收款单' when bill.type='1' then '付款单' when bill.type='2' then '减免单' when bill.type='3' then '退款单'
-        when bill.type='4' then '发货账单' when bill.type='5' then '发退货账单' when bill.type='6' then '收货账单' when bill.type='7' then '收退货账单' else null end typeName,
+        case
+            when bill.type='0' then '收款单'
+            when bill.type='1' then '付款单'
+            when bill.type='2' then '减免单'
+            when bill.type='3' then '退款单'
+            when bill.type='4' then '发货账单'
+            when bill.type='5' then '退货账单'
+            when bill.type='6' then '收货账单'
+            when bill.type='7' then '收退货账单'
+        else null end typeName,
+
         bill.remark
         from vmes_finance_bill bill
         left join vmes_customer customer  on customer.id = bill.customer_id
