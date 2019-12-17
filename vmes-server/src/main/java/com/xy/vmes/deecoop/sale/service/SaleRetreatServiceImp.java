@@ -674,11 +674,10 @@ public class SaleRetreatServiceImp implements SaleRetreatService {
         retreat.setCuser(cuser);
 
         //退货单编号
-        //D+yyyyMMdd+00001 = 14位
-        String code = coderuleService.createCoderCdateByDate(companyID,
+        String code = coderuleService.createCoderCdateOnShortYearByDate(companyID,
                 "vmes_sale_retreat",
-                "yyyyMMdd",
-                "T");
+                "T",
+                Common.CODE_RULE_SALERETREAT_LENGTH_DEFAULT);
         retreat.setSysCode(code);
 
         //状态状态(0:待提交 1:待审核 2:待退款 3:已完成 -1:已取消)

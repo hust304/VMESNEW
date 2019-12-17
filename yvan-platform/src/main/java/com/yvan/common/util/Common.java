@@ -174,6 +174,8 @@ public class Common {
     public static final int CODE_RULE_SALEDELIVER_LENGTH_DEFAULT = CODE_RULE_LENGTH_3;
     //业务编码规则-销售(无订单)退货单-最小业务流水号长度(3位)
     public static final int CODE_RULE_SALEWARESRETREAT_LENGTH_DEFAULT = CODE_RULE_LENGTH_3;
+    //业务编码规则-销售退货单-最小业务流水号长度(3位)
+    public static final int CODE_RULE_SALERETREAT_LENGTH_DEFAULT = CODE_RULE_LENGTH_3;
 
     //业务编码规则-前补零
     public static final String CODE_RULE_BEFORE = "before";

@@ -19,7 +19,7 @@
         detail.price_unit priceUnit,
 
         round(ifnull(detail.price_count, 0), 2) priceCount,
-        round(ifnull(detail.product_price, 0), 2) productPrice,
+        round(ifnull(detail.product_price, 0), 4) productPrice,
         round(ifnull(detail.sum, 0), 2) sum,
         detail.deliver_date deliverDate,
         detail.cuser cuser,
@@ -56,7 +56,7 @@
         <!--发货明细id:(发货数量-退货数量:已生成退货单) -->
         round((ifnull(detail.order_count, 0) - ifnull(retreatDetail.order_count, 0)), 2) notRetreatCount,
         round((ifnull(detail.order_count, 0) - ifnull(retreatDetail.order_count, 0)), 2) retreatOrderCount,
-        round(((round((ifnull(detail.order_count, 0) - ifnull(retreatDetail.order_count, 0)), 2)) * ifnull(detail.product_price, 0)), 2) retreatOrderSum,
+        round(((round((ifnull(detail.order_count, 0) - ifnull(retreatDetail.order_count, 0)), 2)) * ifnull(detail.product_price, 4)), 2) retreatOrderSum,
 
         '' retreatRemark
         from vmes_sale_deliver_detail detail
