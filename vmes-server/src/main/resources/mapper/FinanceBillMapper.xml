@@ -300,7 +300,7 @@
         customer.name customerName,
         cuser.id cuser,
         cuser.user_name cuserName,
-        DATE_FORMAT(bill.cdate,'%Y-%m-%d %T') cdate,
+        DATE_FORMAT(bill.cdate,'%Y-%m-%d') cdate,
         suser.id suser,
         suser.user_name suserName,
         DATE_FORMAT(bill.sdate,'%Y-%m-%d %T') sdate,
