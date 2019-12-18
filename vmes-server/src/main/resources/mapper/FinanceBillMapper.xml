@@ -27,6 +27,7 @@
 		remark remark,<!-- 备注 -->
 		isdisable isdisable,<!-- 是否启用(0:已禁用 1:启用) -->
 		state state,<!-- 状态（0：待提交 1：待审核 2：已审核 -1：已取消） -->
+        attribute,
 		id id <!-- id -->
     </sql>
 

@@ -67,6 +67,10 @@ public class FinanceBill implements Serializable {
 	@TableField("period")
 	private String period;
 
+	//业务属性 1:销售订单退货 2:销售无订单退货
+	@TableField("attribute")
+	private String attribute;
+
 	public String getPeriod() {
 		return period;
 	}
@@ -169,8 +173,13 @@ public class FinanceBill implements Serializable {
 	public String getState() {
 		return state;
 	}
-
-/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+	public String getAttribute() {
+		return attribute;
+	}
+	public void setAttribute(String attribute) {
+		this.attribute = attribute;
+	}
+	/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 
 }
