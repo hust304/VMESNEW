@@ -5,7 +5,6 @@ import com.xy.vmes.entity.Customer;
 import com.xy.vmes.entity.SaleOrder;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -107,7 +106,7 @@ public interface SaleOrderService {
 
     List<SaleOrder> mapList2OrderList(List<Map<String, String>> mapList, List<SaleOrder> objectList);
 
-    ResultModel listPageSaleOrder(PageData pd, Pagination pg) throws Exception;
+    ResultModel listPageSaleOrder(PageData pd) throws Exception;
 
     ResultModel addSaleOrder(PageData pageData) throws Exception;
 
@@ -125,10 +124,7 @@ public interface SaleOrderService {
 
     ResultModel updateSaleOrderByLockCount(PageData pageData) throws Exception;
 
-    void exportExcelSaleOrders(PageData pd, Pagination pg) throws Exception;
-
-    ResultModel importExcelSaleOrders(MultipartFile file) throws Exception;
-
+    void exportExcelSaleOrder(PageData pd, Pagination pg) throws Exception;
 
     void updateOrderStateCompelete(String id) throws Exception;
 

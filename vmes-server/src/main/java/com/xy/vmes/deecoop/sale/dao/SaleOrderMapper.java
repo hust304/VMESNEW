@@ -43,6 +43,7 @@ public interface SaleOrderMapper extends BaseMapper<SaleOrder> {
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2018-12-05
      */
+    List<Map> getDataListPage(PageData pd);
     List<Map> getDataListPage(PageData pd, Pagination pg);
 
     void updateStateByOrder(PageData pd);

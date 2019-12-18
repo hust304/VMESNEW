@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 /**
 * 说明：vmes_sale_order:订单表Controller
@@ -26,8 +25,6 @@ public class SaleOrderController {
     private SaleOrderService saleOrderService;
     @Autowired
     private SaleOrderCollectService saleOrderCollectService;
-    @Autowired
-    private SaleOrderByChangeService saleOrderByChangeService;
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
     /**
@@ -39,8 +36,7 @@ public class SaleOrderController {
         logger.info("################/sale/saleOrder/listPageSaleOrder 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         PageData pd = HttpUtils.parsePageData();
-        Pagination pg = HttpUtils.parsePagination(pd);
-        ResultModel model = saleOrderService.listPageSaleOrder(pd,pg);
+        ResultModel model = saleOrderService.listPageSaleOrder(pd);
         Long endTime = System.currentTimeMillis();
         logger.info("################/sale/saleOrder/listPageSaleOrder 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
@@ -237,46 +233,9 @@ public class SaleOrderController {
 //        return model;
 //    }
 
-
-    /**
-    * Excel导出
-    * @author 陈刚 自动创建，可以修改
-    * @date 2018-12-05
-    */
-    @PostMapping("/sale/saleOrder/exportExcelSaleOrders")
-    public void exportExcelSaleOrders() throws Exception {
-        logger.info("################/sale/saleOrder/exportExcelSaleOrders 执行开始 ################# ");
-        Long startTime = System.currentTimeMillis();
-        PageData pd = HttpUtils.parsePageData();
-        Pagination pg = HttpUtils.parsePagination(pd);
-        saleOrderService.exportExcelSaleOrders(pd,pg);
-        Long endTime = System.currentTimeMillis();
-        logger.info("################/sale/saleOrder/exportExcelSaleOrders 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
-    }
-
-    /**
-    * Excel导入
-    *
-    * @author 陈刚 自动创建，可以修改
-    * @date 2018-12-05
-    */
-    @PostMapping("/sale/saleOrder/importExcelSaleOrders")
-    public ResultModel importExcelSaleOrders(@RequestParam(value="excelFile") MultipartFile file) throws Exception  {
-        logger.info("################/sale/saleOrder/importExcelSaleOrders 执行开始 ################# ");
-        Long startTime = System.currentTimeMillis();
-        ResultModel model = saleOrderService.importExcelSaleOrders(file);
-        Long endTime = System.currentTimeMillis();
-        logger.info("################/sale/saleOrder/importExcelSaleOrders 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
-        return model;
-    }
-
-
-
-
     @PostMapping("/sale/saleOrder/addCustomerBalance")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel addCustomerBalance()  throws Exception {
-
         logger.info("################/sale/saleOrder/addCustomerBalance 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         PageData pd = HttpUtils.parsePageData();
@@ -290,7 +249,6 @@ public class SaleOrderController {
     @PostMapping("/sale/saleOrder/updateCustomerBalance")
     @Transactional(rollbackFor=Exception.class)
     public ResultModel updateCustomerBalance()  throws Exception {
-
         logger.info("################/sale/saleOrder/updateCustomerBalance 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         PageData pd = HttpUtils.parsePageData();
@@ -298,6 +256,22 @@ public class SaleOrderController {
         Long endTime = System.currentTimeMillis();
         logger.info("################/sale/saleOrder/updateCustomerBalance 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
+    }
+
+    /**
+     * Excel导出
+     * @author 陈刚 自动创建，可以修改
+     * @date 2018-12-05
+     */
+    @PostMapping("/sale/saleOrder/exportExcelSaleOrder")
+    public void exportExcelSaleOrder() throws Exception {
+        logger.info("################/sale/saleOrder/exportExcelSaleOrder 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        Pagination pg = HttpUtils.parsePagination(pd);
+        saleOrderService.exportExcelSaleOrder(pd, pg);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleOrder/exportExcelSaleOrder 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
     }
 
 }
