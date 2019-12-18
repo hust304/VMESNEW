@@ -106,6 +106,8 @@ public interface SaleOrderService {
 
     List<SaleOrder> mapList2OrderList(List<Map<String, String>> mapList, List<SaleOrder> objectList);
 
+    List<Map> findListOrderByExport(PageData pd) throws Exception;
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ResultModel listPageSaleOrder(PageData pd) throws Exception;
 
     ResultModel addSaleOrder(PageData pageData) throws Exception;
@@ -124,9 +126,9 @@ public interface SaleOrderService {
 
     ResultModel updateSaleOrderByLockCount(PageData pageData) throws Exception;
 
-    void exportExcelSaleOrder(PageData pd, Pagination pg) throws Exception;
+    void exportExcelSaleOrder(PageData pd) throws Exception;
 
-    void updateOrderStateCompelete(String id) throws Exception;
+    //void updateOrderStateCompelete(String id) throws Exception;
 
     ResultModel addCustomerBalance(PageData pd) throws Exception;
 

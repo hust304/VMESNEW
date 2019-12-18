@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xy.vmes.deecoop.sale.dao.SaleOrderByExportMapper">
+    <insert id="saleOrderByExport" >
+    delete from vmes_column where model_code = 'saleOrderByExport' ;
+    insert into vmes_column (
+    id,model_code,title_key,title_name,serial_number,
+    isdisable,ishide,isedit,ismust,cdate,
+    cuser
+    ) VALUES
+        (replace(uuid(), '-', ''), 'saleOrderByExport', 'id', 'id', 0, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderByExport', 'sysCode', '订单编号', 1, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderByExport', 'orderDate', '下单日期', 2, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderByExport', 'orderSum', '订单金额(合计金额 - 折扣金额)', 3, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderByExport', 'expectDate', '约定交期', 4, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
+
+        (replace(uuid(), '-', ''), 'saleOrderByExport', 'receiptType', '发票类型id', 5, '1', '0', '1', '0', '2018-12-6 10:53:24', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderByExport', 'receiptTypeName', '发票类型', 6, '1', '0', '1', '0', '2018-12-6 10:53:24', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderByExport', 'priceType', '计价类型(1:先计价 2:后计价)', 7, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderByExport', 'priceTypeName', '计价类型', 8, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderByExport', 'state', '订单状态id', 9, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+
+        (replace(uuid(), '-', ''), 'saleOrderByExport', 'stateName', '订单状态', 10, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderByExport', 'makeId', '制单人id', 11, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderByExport', 'makeName', '制单人', 12, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderByExport', 'customerName', '客户名称', 13, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderByExport', 'customerId', '客户id', 14, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+
+        (replace(uuid(), '-', ''), 'saleOrderByExport', 'deliverDate', '约定交期', 15, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderByExport', 'orderCount', '订购数量', 16, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderByExport', 'productPrice', '单价', 17, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderByExport', 'productSum', '金额', 18, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderByExport', 'productId', '货品id', 19, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+
+        (replace(uuid(), '-', ''), 'saleOrderByExport', 'productCode', '货品编码', 20, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderByExport', 'productName', '货品名称', 21, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderByExport', 'productSpec', '规格型号', 22, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderByExport', 'productGenre', '货品属性id', 23, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderByExport', 'productProperty', '自定义属性', 24, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+
+        (replace(uuid(), '-', ''), 'saleOrderByExport', 'orderUnit', '单位id', 25, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderByExport', 'orderUnitName', '单位', 26, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+
+    </insert>
+
+    <select id="findListOrderByExport" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+            replace(uuid(), '-', '') id,
+            <!--订单表-->
+            saleOrder.sys_code sysCode,
+            DATE_FORMAT(saleOrder.order_date,'%Y-%m-%d') orderDate,
+            round(ifnull(saleOrder.order_sum, 0),2) orderSum,
+            DATE_FORMAT(saleOrder.expect_date,'%Y-%m-%d') expectDate,
+
+            saleOrder.receipt_type receiptType,
+            CASE
+                WHEN saleOrder.receipt_type = '1' THEN '不开票'
+                WHEN saleOrder.receipt_type = '2' THEN '增值税普通发票'
+                WHEN saleOrder.receipt_type = '3' THEN '增值税专用发票'
+            ELSE null
+            END receiptTypeName,
+
+            saleOrder.price_type priceType,
+            CASE
+            WHEN saleOrder.price_type = '1' THEN '先计价'
+            WHEN saleOrder.price_type = '2' THEN '后计价'
+            ELSE null
+            END priceTypeName,
+
+            saleOrder.state state,
+            CASE
+                WHEN saleOrder.state = '0' THEN '待提交'
+                WHEN saleOrder.state = '1' THEN '待审核'
+                WHEN saleOrder.state = '2' THEN '待出库'
+                WHEN saleOrder.state = '3' THEN '待发货'
+                WHEN saleOrder.state = '4' THEN '已发货'
+                WHEN saleOrder.state = '5' THEN '已完成'
+                WHEN saleOrder.state = '-1' THEN '已取消'
+            ELSE null
+            END stateName,
+
+            saleOrder.make_id makeId,
+            makeUser.user_name makeName,
+
+            saleOrder.customer_id customerId,
+            customer.name customerName,
+
+            <!--订单明细表-->
+            orderDetail.product_id productId,
+            DATE_FORMAT(orderDetail.deliver_date,'%Y-%m-%d') deliverDate,
+            round(ifnull(orderDetail.order_count, 0),2) orderCount,
+            orderDetail.order_unit orderUnit,
+            round(ifnull(orderDetail.product_price, 0),4) productPrice,
+            round(ifnull(orderDetail.product_sum, 0),2) productSum,
+
+            <!--货品表-->
+            product.code sysProductCode,
+            product.source_code custProductCode,
+            CASE
+            WHEN product.source_code is null THEN product.code
+            WHEN product.source_code is not null THEN product.source_code
+            ELSE null
+            END productCode,
+            product.name productName,
+            product.spec productSpec,
+            product.genre productGenre,
+            product.property productProperty,
+            orderUnit.name orderUnitName
+
+
+        from vmes_sale_order saleOrder
+            left join vmes_customer customer on saleOrder.customer_id = customer.id
+            left join vmes_user makeUser on saleOrder.make_id = makeUser.id
+
+            left join vmes_sale_order_detail orderDetail on saleOrder.id = orderDetail.parent_id
+            left join vmes_product product on orderDetail.product_id = product.id
+            left join vmes_dictionary orderUnit on orderDetail.order_unit = orderUnit.id
+            left join vmes_product_unit prodUnitPrice on (orderDetail.product_id = prodUnitPrice.product_id and orderDetail.order_unit = prodUnitPrice.unit)
+
+        <where>
+            <if test="companyId != null and companyId != ''" >
+                and saleOrder.company_id = #{companyId}
+            </if>
+
+        </where>
+        <if test="orderStr != null and orderStr != ''" >
+            order by ${orderStr}
+        </if>
+    </select>
+</mapper>

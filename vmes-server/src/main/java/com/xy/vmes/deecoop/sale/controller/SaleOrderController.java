@@ -268,8 +268,7 @@ public class SaleOrderController {
         logger.info("################/sale/saleOrder/exportExcelSaleOrder 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         PageData pd = HttpUtils.parsePageData();
-        Pagination pg = HttpUtils.parsePagination(pd);
-        saleOrderService.exportExcelSaleOrder(pd, pg);
+        saleOrderService.exportExcelSaleOrder(pd);
         Long endTime = System.currentTimeMillis();
         logger.info("################/sale/saleOrder/exportExcelSaleOrder 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
     }

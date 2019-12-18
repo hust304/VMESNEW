@@ -410,7 +410,7 @@ public class FinanceBillServiceImp implements FinanceBillService {
             String customerId = mapObject.get("id");
             FinanceBill financeBill = (FinanceBill) HttpUtils.pageData2Entity(mapObject, new FinanceBill());
 //            String code = coderuleService.createCoderCdateByDate(currentCompanyId,"vmes_finance_bill","yyyyMMdd","R");
-            String code = coderuleService.createCoderCdateOnShortYearByDate(currentCompanyId,"vmes_finance_invoice","R", Common.CODE_RULE_LENGTH_3);
+            String code = coderuleService.createCoderCdateOnShortYearByDate(currentCompanyId,"vmes_finance_bill","R", Common.CODE_RULE_LENGTH_3);
             financeBill.setCode(code);
             financeBill.setPeriod(period);
             financeBill.setCompanyId(currentCompanyId);
@@ -991,7 +991,7 @@ public class FinanceBillServiceImp implements FinanceBillService {
 
         //生成付款单编码
         //String code = coderuleService.createCoderCdateByDate(companyId,"vmes_finance_bill","yyyyMMdd","R");
-        String code = coderuleService.createCoderCdateOnShortYearByDate(customerId,"vmes_finance_invoice","R", Common.CODE_RULE_LENGTH_3);
+        String code = coderuleService.createCoderCdateOnShortYearByDate(customerId,"vmes_finance_bill","R", Common.CODE_RULE_LENGTH_3);
         addObject.setCode(code);
 
         //period 收/付款期间(yyyyMM)

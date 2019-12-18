@@ -3,6 +3,7 @@ package com.xy.vmes.deecoop.sale.service;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.*;
 import com.xy.vmes.common.util.rabbitmq.sender.ProductStockcountLockSender;
+import com.xy.vmes.deecoop.sale.dao.SaleOrderByExportMapper;
 import com.xy.vmes.deecoop.sale.dao.SaleOrderMapper;
 import com.xy.vmes.entity.*;
 import com.xy.vmes.service.*;
@@ -31,6 +32,9 @@ public class SaleOrderServiceImp implements SaleOrderService {
 
     @Autowired
     private SaleOrderMapper saleOrderMapper;
+    @Autowired
+    private SaleOrderByExportMapper saleOrderByExportMapper;
+
     @Autowired
     private SaleOrderDetailService saleOrderDetailService;
     @Autowired
@@ -250,6 +254,14 @@ public class SaleOrderServiceImp implements SaleOrderService {
         return objectList;
     }
 
+    public List<Map> findListOrderByExport(PageData pd) throws Exception {
+        List<Map> mapList = new ArrayList<Map>();
+        if (pd == null) {return mapList;}
+
+        return saleOrderByExportMapper.findListOrderByExport(pd);
+
+    }
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     @Override
     public ResultModel listPageSaleOrder(PageData pd) throws Exception {
         ResultModel model = new ResultModel();
@@ -957,36 +969,44 @@ public class SaleOrderServiceImp implements SaleOrderService {
     }
 
 
-    @Override
-    public void updateOrderStateCompelete(String id) throws Exception {
-        SaleOrder saleOrder = this.selectById(id);
-        if(saleOrder!=null){
-            //订单状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
-            if("3".equals(saleOrder.getState())){
+//    @Override
+//    public void updateOrderStateCompelete(String id) throws Exception {
+//        SaleOrder saleOrder = this.selectById(id);
+//        if(saleOrder!=null){
+//            //订单状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
+//            if("3".equals(saleOrder.getState())){
+//
+//            }
+//        }
+//    }
 
-            }
-        }
-    }
-
     @Override
-    public void exportExcelSaleOrder(PageData pd, Pagination pg) throws Exception {
-        List<Column> columnList = columnService.findColumnList("saleOrder");
+    public void exportExcelSaleOrder(PageData pd) throws Exception {
+        List<Column> columnList = columnService.findColumnList("saleOrderByExport");
         if (columnList == null || columnList.size() == 0) {
             throw new RestException("1","数据库没有生成TabCol，请联系管理员！");
         }
 
-        //根据查询条件获取业务数据List
-        String ids = (String)pd.getString("ids");
-        String queryStr = "";
-        if (ids != null && ids.trim().length() > 0) {
-            ids = StringUtil.stringTrimSpace(ids);
-            ids = "'" + ids.replace(",", "','") + "'";
-            queryStr = "id in (" + ids + ")";
+        //获取指定栏位字符串-重新调整List<Column>
+        String fieldCode = pd.getString("fieldCode");
+        if (fieldCode != null && fieldCode.trim().length() > 0) {
+            columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
         }
-        pd.put("queryStr", queryStr);
 
-        pg.setSize(100000);
-        List<Map> dataList = this.getDataListPage(pd, pg);
+        String companyId = pd.getString("currentCompanyId");
+        pd.put("companyId", companyId);
+
+//        //根据查询条件获取业务数据List
+//        String ids = (String)pd.getString("ids");
+//        String queryStr = "";
+//        if (ids != null && ids.trim().length() > 0) {
+//            ids = StringUtil.stringTrimSpace(ids);
+//            ids = "'" + ids.replace(",", "','") + "'";
+//            queryStr = "id in (" + ids + ")";
+//        }
+//        pd.put("queryStr", queryStr);
+
+        List<Map> dataList = this.findListOrderByExport(pd);
 
         //查询数据转换成Excel导出数据
         List<LinkedHashMap<String, String>> dataMapList = ColumnUtil.modifyDataList(columnList, dataList);
