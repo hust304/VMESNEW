@@ -232,11 +232,14 @@ public class SaleRetreatAuditServiceImp implements SaleRetreatAuditService {
             }
 
             //创建付款单
-            financeBillService.addFinanceBillBySys(companyId,
+            financeBillService.addFinanceBillBySys(retreat.getId(),
+                    companyId,
                     customerId,
                     cuser,
                     //type 单据类型 ( 0:收款单 1:付款单 2:减免单 3:退款单 4:发货账单 5:发退货账单 6:收货账单 7:收退货账单)
                     "5",
+                    //业务属性 1:销售订单退货 2:销售无订单退货
+                    "1",
                     retreatSum);
         }
 

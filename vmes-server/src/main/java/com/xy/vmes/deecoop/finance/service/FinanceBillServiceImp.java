@@ -945,11 +945,24 @@ public class FinanceBillServiceImp implements FinanceBillService {
         return model;
     }
 
-    public void addFinanceBillBySys(String companyId,
-                             String customerId,
-                             String userId,
-                             String type,
-                             BigDecimal amount) throws Exception {
+    /**
+     *
+     * @param businessId  业务单据id
+     * @param companyId   企业id
+     * @param customerId  客户id
+     * @param userId      用户id
+     * @param type        付款单类型(vmes_finance_bill.type)
+     * @param attribute   付款单属性(vmes_finance_bill.attribute)
+     * @param amount
+     * @throws Exception
+     */
+    public void addFinanceBillBySys(String businessId,
+                                    String companyId,
+                                    String customerId,
+                                    String userId,
+                                    String type,
+                                    String attribute,
+                                    BigDecimal amount) throws Exception {
         FinanceBill addObject = new FinanceBill();
         addObject.setCompanyId(companyId);
         addObject.setCustomerId(customerId);
@@ -963,6 +976,11 @@ public class FinanceBillServiceImp implements FinanceBillService {
         //amount 金额
         if (amount != null) {
             addObject.setAmount(amount);
+        }
+
+        //付款单属性(vmes_finance_bill.attribute) 反拉业务单据使用
+        if (attribute != null && attribute.trim().length() > 0) {
+            addObject.setAttribute(attribute);
         }
 
         //sdate 审核时间
