@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -869,6 +870,40 @@ public class FinanceBillServiceImp implements FinanceBillService {
             for(int i=0;i<financePeriodList.size();i++){
                 FinancePeriod financePeriod = financePeriodList.get(i);
                 if(i==0){
+
+                    //currentPeriod:当前期间(yyyymm) 与系统时间比较
+                    //系统时间(yyyymm)
+                    String sysMonthStr = DateFormat.date2String(new Date(), "yyyyMM");
+                    Date sysMonthDate = DateFormat.dateString2Date(sysMonthStr, "yyyyMM");
+                    long sysMonthLong = 0L;
+                    if (sysMonthDate != null) {
+                        sysMonthLong = sysMonthDate.getTime();
+                    }
+
+                    //currentPeriod:当前期间(yyyymm) 加1个月
+                    long currentPeriodLong = 0L;
+                    String addCurrentPeriodStr = new String();
+                    if (financePeriod.getCurrentPeriod() != null && financePeriod.getCurrentPeriod().trim().length() > 0) {
+                        String currentPeriodStr = financePeriod.getCurrentPeriod().trim();
+                        //当前期间(yyyymm) 加1个月
+                        addCurrentPeriodStr = DateFormat.getAddDay(currentPeriodStr, DateFormat.DEFAULT_MONTH, 1, "yyyyMM");
+
+                        Date addCurrentPeriodDate = DateFormat.dateString2Date(addCurrentPeriodStr, "yyyyMM");
+                        if (addCurrentPeriodDate != null) {
+                            currentPeriodLong = addCurrentPeriodDate.getTime();
+                        }
+                    }
+
+                    if (sysMonthLong != 0L
+                        && currentPeriodLong != 0L
+                        && (sysMonthLong < currentPeriodLong)
+                    ) {
+                        String msgTemp = "结账期间({0})不可大于当前自然月！";
+                        String msgStr = MessageFormat.format(msgTemp, addCurrentPeriodStr);
+                        model.putCode(Integer.valueOf(1));
+                        model.putMsg(msgStr);
+                        return model;
+                    }
 
                     //是否需要分页 true:需要分页 false:不需要分页
                     Map result = new HashMap();
