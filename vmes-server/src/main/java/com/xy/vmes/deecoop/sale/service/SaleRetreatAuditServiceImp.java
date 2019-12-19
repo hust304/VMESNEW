@@ -218,29 +218,29 @@ public class SaleRetreatAuditServiceImp implements SaleRetreatAuditService {
         //退货单id parentId 退货单id(parentId) 获取退货单表对象
         SaleRetreat retreat = saleRetreatService.findSaleRetreatById(parentId);
 
+        //生成付款单
+        BigDecimal retreatSum = BigDecimal.valueOf(0D);
+        if (retreat != null && retreat.getTotalSum() != null) {
+            retreatSum = retreat.getTotalSum();
+        }
+
+        //创建付款单
+        financeBillService.addFinanceBillBySys(retreat.getId(),
+                companyId,
+                customerId,
+                cuser,
+                //type 单据类型 ( 0:收款单 1:付款单 2:减免单 3:退款单 4:发货账单 5:发退货账单 6:收货账单 7:收退货账单)
+                "5",
+                //业务属性 1:销售订单退货 2:销售无订单退货
+                "1",
+                retreatSum);
+
         //根据退货类型
         //retreatRefund: f69839bbf2394846a65894f0da120df9 退货退款
         //retreatChange: c90c2081328c427e8d65014d98335601 退货换货
         if (Common.DICTIONARY_MAP.get("retreatRefund").equals(retreat.getType())) {
-            //1. 修改销售订单明细-变更订单明细(订购数量,货品金额)
+            //修改销售订单明细-变更订单明细(订购数量,货品金额)
             this.updateSaleOrder(retreatDtlMapList, orderDtlRetreatMap, orderDtlList);
-
-            //2. 生成付款单
-            BigDecimal retreatSum = BigDecimal.valueOf(0D);
-            if (retreat != null && retreat.getTotalSum() != null) {
-                retreatSum = retreat.getTotalSum();
-            }
-
-            //创建付款单
-            financeBillService.addFinanceBillBySys(retreat.getId(),
-                    companyId,
-                    customerId,
-                    cuser,
-                    //type 单据类型 ( 0:收款单 1:付款单 2:减免单 3:退款单 4:发货账单 5:发退货账单 6:收货账单 7:收退货账单)
-                    "5",
-                    //业务属性 1:销售订单退货 2:销售无订单退货
-                    "1",
-                    retreatSum);
         }
 
         //修改销售(订单,订单明细)状态
