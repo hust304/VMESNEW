@@ -18,7 +18,7 @@
 		business_id businessId,<!-- 业务ID -->
 		company_id companyId,<!-- 企业ID -->
 		customer_id customerId,<!-- 客户/供应商ID -->
-		type type,<!-- 单据类型 (0:收款单 1:付款单 2:减免单 3:退款单 4:发货账单 5:发退货账单 6:收货账单 7:收退货账单) -->
+		type type,<!-- 单据类型 (0:收款单 1:付款单 2:减免单 3:退款单 4:发货账单 5:退货账单 6:收货账单 7:收退货账单) -->
 		amount amount,<!-- 金额 -->
 		cuser cuser,<!-- 创建用户id -->
 		cdate cdate,<!-- 创建时间 -->
@@ -37,7 +37,7 @@
 		#{businessId},<!-- 业务ID -->
 		#{companyId},<!-- 企业ID -->
 		#{customerId},<!-- 客户/供应商ID -->
-		#{type},<!-- 单据类型 (0:收款单 1:付款单 2:减免单 3:退款单 4:发货账单 5:发退货账单 6:收货账单 7:收退货账单) -->
+		#{type},<!-- 单据类型 (0:收款单 1:付款单 2:减免单 3:退款单 4:发货账单 5:退货账单 6:收货账单 7:收退货账单) -->
 		#{amount},<!-- 金额 -->
 		#{cuser},<!-- 创建用户id -->
 		#{cdate},<!-- 创建时间 -->
@@ -56,7 +56,7 @@
         '业务ID'  businessId,
         '企业ID'  companyId,
         '客户/供应商ID'  customerId,
-        '单据类型 (0:收款单 1:付款单 2:减免单 3:退款单 4:发货账单 5:发退货账单 6:收货账单 7:收退货账单)'  type,
+        '单据类型 (0:收款单 1:付款单 2:减免单 3:退款单 4:发货账单 5:退货账单 6:收货账单 7:收退货账单)'  type,
         '金额'  amount,
         '创建用户id'  cuser,
         '创建时间'  cdate,
@@ -234,7 +234,7 @@
         business_id businessId,<!-- 业务ID -->
         company_id companyId,<!-- 企业ID -->
         customer_id customerId,<!-- 客户/供应商ID -->
-        type type,<!-- 单据类型 (0:收款单 1:付款单 2:减免单 3:退款单 4:发货账单 5:发退货账单 6:收货账单 7:收退货账单) -->
+        type type,<!-- 单据类型 (0:收款单 1:付款单 2:减免单 3:退款单 4:发货账单 5:退货账单 6:收货账单 7:收退货账单) -->
         amount amount,<!-- 金额 -->
         cuser cuser,<!-- 创建用户id -->
         cdate cdate,<!-- 创建时间 -->
@@ -253,7 +253,7 @@
             '业务ID'  businessId,
             '企业ID'  companyId,
             '客户/供应商ID'  customerId,
-            '单据类型 (0:收款单 1:付款单 2:减免单 3:退款单 4:发货账单 5:发退货账单 6:收货账单 7:收退货账单)'  type,
+            '单据类型 (0:收款单 1:付款单 2:减免单 3:退款单 4:发货账单 5:退货账单 6:收货账单 7:收退货账单)'  type,
             '金额'  amount,
             '创建用户id'  cuser,
             '创建时间'  cdate,
@@ -382,8 +382,17 @@
         bill.period,
         case when bill.type in ('0','2','3','5') then bill.amount else null end receiveAmount ,
         case when bill.type in ('4') then bill.amount else null end occurAmount ,
-        case when bill.type='0' then '收款单' when bill.type='1' then '付款单' when bill.type='2' then '减免单' when bill.type='3' then '退款单'
-        when bill.type='4' then '发货账单' when bill.type='5' then '发退货账单' when bill.type='6' then '收货账单' when bill.type='7' then '收退货账单' else null end typeName,
+        case
+            when bill.type='0' then '收款单'
+            when bill.type='1' then '付款单'
+            when bill.type='2' then '减免单'
+            when bill.type='3' then '退款单'
+            when bill.type='4' then '发货账单'
+            when bill.type='5' then '退货账单'
+            when bill.type='6' then '收货账单'
+            when bill.type='7' then '收退货账单'
+        else null
+        end typeName,
         bill.remark
         from vmes_customer customer
         left join vmes_finance_bill bill on customer.id = bill.customer_id
