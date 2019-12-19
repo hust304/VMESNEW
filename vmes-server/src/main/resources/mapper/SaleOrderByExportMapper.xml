@@ -119,8 +119,33 @@
             left join vmes_product_unit prodUnitPrice on (orderDetail.product_id = prodUnitPrice.product_id and orderDetail.order_unit = prodUnitPrice.unit)
 
         <where>
+            <if test="inIds != null and inIds != ''" >
+                and saleOrder.id in (${inIds})
+            </if>
             <if test="companyId != null and companyId != ''" >
                 and saleOrder.company_id = #{companyId}
+            </if>
+            <if test="priceType != null and priceType != ''" >
+                and saleOrder.price_type = #{priceType}
+            </if>
+            <if test="state != null and state != ''" >
+                and saleOrder.state = #{state}
+            </if>
+            <if test="sysCode != null and sysCode != ''" >
+                and saleOrder.sys_code = #{sysCode}
+            </if>
+
+            <if test="customerName != null and customerName != ''">
+                and customer.name LIKE CONCAT(CONCAT(#{customerName}),'%')
+            </if>
+            <if test="orderDateBegin != null and orderDateBegin != ''">
+                <![CDATA[ and saleOrder.order_date >= #{orderDateBegin} ]]>
+            </if>
+            <if test="orderDateEnd != null and orderDateEnd != ''">
+                <![CDATA[ and saleOrder.order_date <= #{orderDateEnd} ]]>
+            </if>
+            <if test="expectDate != null and expectDate != ''" >
+                and saleOrder.expect_date = #{expectDate}
             </if>
 
         </where>

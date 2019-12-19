@@ -996,15 +996,16 @@ public class SaleOrderServiceImp implements SaleOrderService {
         String companyId = pd.getString("currentCompanyId");
         pd.put("companyId", companyId);
 
-//        //根据查询条件获取业务数据List
-//        String ids = (String)pd.getString("ids");
-//        String queryStr = "";
-//        if (ids != null && ids.trim().length() > 0) {
-//            ids = StringUtil.stringTrimSpace(ids);
-//            ids = "'" + ids.replace(",", "','") + "'";
-//            queryStr = "id in (" + ids + ")";
-//        }
-//        pd.put("queryStr", queryStr);
+        //根据查询条件获取业务数据List
+        String ids = pd.getString("ids");
+        if (ids != null && ids.trim().length() > 0) {
+            if (pd != null) {pd.clear();}
+
+            String inIds = StringUtil.stringTrimSpace(ids);
+            pd.put("inIds", inIds);
+        } else if (ids == null || ids.trim().length() == 0) {
+            pd.put("inIds", null);
+        }
 
         List<Map> dataList = this.findListOrderByExport(pd);
 
