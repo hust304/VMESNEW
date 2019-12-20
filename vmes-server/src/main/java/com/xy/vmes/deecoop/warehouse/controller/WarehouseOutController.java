@@ -5,6 +5,7 @@ import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.WarehouseOut;
 import com.xy.vmes.service.WarehouseOutDetailExecuteService;
 import com.xy.vmes.service.WarehouseOutService;
+import com.xy.vmes.service.WarehouseToolService;
 import com.yvan.*;
 import com.yvan.springmvc.ResultModel;
 import lombok.extern.slf4j.Slf4j;
@@ -13,13 +14,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import org.apache.commons.lang.StringUtils;
 
 import java.math.BigDecimal;
 import java.util.*;
-
-
 
 /**
 * 说明：出库Controller
@@ -37,6 +35,8 @@ public class WarehouseOutController {
     @Autowired
     private WarehouseOutDetailExecuteService outDetailExecuteService;
 
+    @Autowired
+    private WarehouseToolService warehouseToolService;
 
     /**
     * @author 刘威 自动创建，禁止修改
@@ -348,6 +348,37 @@ public class WarehouseOutController {
         }
 
         model.put("isExistExecuteCount", isExistExecuteCount);
+        return model;
+    }
+
+    /**
+     * 是否存在业务数据-根据(出库单id,出库类型)
+     * 返回值：
+     *     isExist.true:  存在
+     *     isExist.false: 不存在
+     *
+     * @author 陈刚
+     * @date 2019-12-20
+     */
+    @PostMapping("/warehouse/warehouseOut/isExistBusinessByWarehouseOut")
+    public ResultModel isExistBusinessByWarehouseOut() throws Exception {
+        logger.info("################/warehouse/warehouseOut/isExistBusinessByWarehouseOut 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+
+        String parentId = pd.getString("parentId");
+        String type = pd.getString("type");
+
+        model.put("isExist", "false");
+        Boolean isExist = warehouseToolService.isExistBusinessByWarehouseOut(parentId, type);
+        if (isExist != null && isExist.booleanValue()) {
+            model.put("isExist", "true");
+        }
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/warehouse/warehouseOut/isExistBusinessByWarehouseOut 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 

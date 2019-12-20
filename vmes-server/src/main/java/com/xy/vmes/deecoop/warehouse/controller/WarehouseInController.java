@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.apache.commons.lang.StringUtils;
 
-import javax.servlet.http.HttpServletResponse;
 import java.util.*;
 
 
@@ -32,6 +31,10 @@ public class WarehouseInController {
 
     @Autowired
     private WarehouseInService warehouseInService;
+
+    @Autowired
+    private WarehouseToolService warehouseToolService;
+
     /**
     * @author 陈刚 自动创建，禁止修改
     * @date 2018-10-16
@@ -274,6 +277,37 @@ public class WarehouseInController {
         ResultModel model = warehouseInService.importExcelWarehouseIn(file);
         Long endTime = System.currentTimeMillis();
         logger.info("################warehouseIn/importExcelWarehouseIns 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 是否存在业务数据-根据(入库单id,入库类型)
+     * 返回值：
+     *     isExist.true:  存在
+     *     isExist.false: 不存在
+     *
+     * @author 陈刚
+     * @date 2019-12-20
+     */
+    @PostMapping("/warehouse/warehouseIn/isExistBusinessByWarehouseIn")
+    public ResultModel isExistBusinessByWarehouseIn() throws Exception {
+        logger.info("################/warehouse/warehouseIn/isExistBusinessByWarehouseIn 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+
+        String parentId = pd.getString("parentId");
+        String type = pd.getString("type");
+
+        model.put("isExist", "false");
+        Boolean isExist = warehouseToolService.isExistBusinessByWarehouseIn(parentId, type);
+        if (isExist != null && isExist.booleanValue()) {
+            model.put("isExist", "true");
+        }
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/warehouse/warehouseIn/isExistBusinessByWarehouseIn 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
