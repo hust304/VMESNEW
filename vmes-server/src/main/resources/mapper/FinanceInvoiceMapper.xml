@@ -414,6 +414,7 @@ group by customerId
                         and b.company_id = #{currentCompanyId}
                     </if>
                     <![CDATA[ and a.state <> '-1' ]]>
+                    <!--订单开票类型(1:不开票 2:增值税普通发票 3:增值税专用发票)-->
                     and b.receipt_type in ('2','3')
                 </where>
                 group by b.customer_id
@@ -431,6 +432,9 @@ group by customerId
                     </if>
                     <!--退货明细状态(0:待提交 1:待审核 2:待退款 3:已完成 -1:已取消)-->
                     and a.state = '3'
+                    <!--订单开票类型(1:不开票 2:增值税普通发票 3:增值税专用发票)-->
+                    and c.receipt_type in ('2','3')
+
                 </where>
                 group by c.customer_id
             ) retreat on customer.id = retreat.customer_id
