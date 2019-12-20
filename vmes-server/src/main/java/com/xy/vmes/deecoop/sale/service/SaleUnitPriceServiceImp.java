@@ -548,7 +548,7 @@ public class SaleUnitPriceServiceImp implements SaleUnitPriceService {
         if (objectList != null && objectList.size() > 0 && objectList.get(0).getProductPrice() != null) {
             BigDecimal productPrice = objectList.get(0).getProductPrice();
             //四舍五入到2位小数
-            productPrice = productPrice.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+            productPrice = productPrice.setScale(Common.SYS_PRICE_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
             model.set("productPrice", productPrice.toString());
         }
 

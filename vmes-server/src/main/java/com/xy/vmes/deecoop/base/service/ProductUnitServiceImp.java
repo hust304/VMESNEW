@@ -449,7 +449,7 @@ public class ProductUnitServiceImp implements ProductUnitService {
                 productPrice = (BigDecimal)mapObject.get("productPrice");
             }
             //四舍五入到2位小数
-            productPrice = productPrice.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+            productPrice = productPrice.setScale(Common.SYS_PRICE_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
             priceUnitMap.put("productPrice", productPrice.toString());
 
             //计量转换计价单位 数量转换公式 npFormula
