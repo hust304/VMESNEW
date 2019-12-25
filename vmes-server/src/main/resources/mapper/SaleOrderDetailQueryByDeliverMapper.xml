@@ -68,9 +68,9 @@
             round((orderDetaiQuery.stockCount - orderDetaiQuery.productLockCount), 2) productStockCount,
             <!--未发货数量-->
             orderDetaiQuery.notDeliverCount,
-            <!--本次发货数量-->
-            round(ifnull(orderDetaiQuery.orderDtlDeliverCount, 0), 2) orderDtlDeliverCount,
-            round(ifnull(orderDetaiQuery.orderDtlDeliverCount, 0) * orderDetaiQuery.productPrice ,2) productSum
+            <!--本次发货数量 java类获取数据(orderDtlDeliverCount,productSum)-->
+            '' orderDtlDeliverCount,
+            '' productSum
 
         from (
             select
@@ -144,19 +144,8 @@
                 round(ifnull(product.lock_count, 0), 2) productLockCount,
                 round(ifnull(deliverDtl.count, 0), 2) endDeliverCount,
                 <!--未发货数量 := 订购数量 - 未发货数量 + (退换货)退货数量 -->
-                round((ifnull(orderDtl.order_count, 0) - ifnull(deliverDtl.count, 0) + ifnull(retreatDtl.count, 0)), 2) notDeliverCount,
+                round((ifnull(orderDtl.order_count, 0) - ifnull(deliverDtl.count, 0) + ifnull(retreatDtl.count, 0)), 2) notDeliverCount
 
-                <!--本次发货数量-->
-                <!--本次发货数量:= 未发货数量 (可发货数量 >= 未发货数量) -->
-                <!--本次发货数量:= 可发货数量 (可发货数量 < 未发货数量) -->
-                CASE
-                  WHEN ifnull(orderDtl.need_deliver_count, 0) <![CDATA[>=]]> (ifnull(orderDtl.order_count, 0) - ifnull(deliverDtl.count, 0) + ifnull(retreatDtl.count, 0))
-                  THEN (ifnull(orderDtl.order_count, 0) - ifnull(deliverDtl.count, 0))
-
-                  WHEN ifnull(orderDtl.need_deliver_count, 0) <![CDATA[<]]> (ifnull(orderDtl.order_count, 0) - ifnull(deliverDtl.count, 0) + ifnull(retreatDtl.count, 0))
-                  THEN ifnull(orderDtl.need_deliver_count, 0)
-                ELSE 0.00
-                END orderDtlDeliverCount
             from vmes_sale_order_detail orderDtl
                 left join vmes_sale_order saleOrder on orderDtl.parent_id = saleOrder.id
                 left join vmes_customer customer on saleOrder.customer_id = customer.id
