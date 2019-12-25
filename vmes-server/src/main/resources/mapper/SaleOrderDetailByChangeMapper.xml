@@ -34,7 +34,7 @@
             orderDtl.price_unit priceUnit,
             orderDtl.product_id productId,
             round(ifnull(orderDtl.product_price, 0), 4) productPrice,
-            orderDtl.product_sum productSum,
+        <!--orderDtl.product_sum productSum,-->
             orderDtl.is_lock_warehouse isLockWarehouse,
 
             orderDtl.is_need_produce isNeedProduce,
@@ -71,12 +71,16 @@
             prodUnitPrice.np_formula n2pFormula,
             prodUnitPrice.pn_formula p2nFormula,
 
-            round(ifnull(deliverDtl.order_count, 0), 2) deliverCount,
+            <!--发货单数量: 发货单数量 - 退货数量-->
+            round((ifnull(orderDtl.order_count, 0) - ifnull(retreatDtl.order_count, 0)),2) deliverCount,
             round(ifnull(endDeliverDtl.order_count, 0), 2) endDeliverCount,
 
-            round(ifnull(orderDtl.order_count, 0),2) newOrderCount,
+            round((ifnull(orderDtl.order_count, 0) - ifnull(retreatDtl.order_count, 0)),2) newOrderCount,
             round(ifnull(orderDtl.product_price, 0), 4) newProductPrice,
-            orderDtl.deliver_date newDeliverDate
+            orderDtl.deliver_date newDeliverDate,
+
+            round(ifnull(retreatDtl.order_count, 0), 2) retreatCount,
+            round((ifnull(orderDtl.order_count, 0) - ifnull(retreatDtl.order_count, 0)) * ifnull(orderDtl.product_price, 0), 2) productSum
 
         from vmes_sale_order_detail orderDtl
             left join vmes_sale_order saleOrder on orderDtl.parent_id = saleOrder.id
@@ -100,7 +104,7 @@
                 group by order_detai_id
             ) endDeliverDtl on orderDtl.id = endDeliverDtl.order_detai_id
             left join (
-                select order_detail_id, sum(order_count) count
+                select order_detail_id, sum(order_count) order_count
                 from vmes_sale_retreat_detail
                 where state = '3'
                 group by order_detail_id
@@ -180,6 +184,8 @@
         (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'newOrderCount', '订购数量', 39, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'newProductPrice', '单价', 40, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'newDeliverDate', '约定交期', 41, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
+
+        (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'retreatCount', '退货数量', 42, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
     </insert>
 
 
