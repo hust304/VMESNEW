@@ -102,6 +102,9 @@ public class SaleOrderDetailQueryByDeliveServiceImp implements SaleOrderDetailQu
                 objectMap.put("orderDtlDeliverCount", orderDtlDeliverCount.toString());
 
                 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                //先计价订单：(单价,金额) 页面显示这2列
+                //后计价订单：(单价,金额) 页面这两列不显示
+
                 //productPrice 单价
                 BigDecimal productPrice = BigDecimal.valueOf(0D);
                 if (objectMap.get("productPrice") != null) {
