@@ -46,7 +46,7 @@
             (replace(uuid(), '-', ''),'saleOrderDetailChange','deliverDateAfter','约定交期(变更后)',8, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'saleOrderDetailChange','deliverCount','发货单数量(订单单位)',9, '1','1','1','0',now(), 'admin'),
 
-            (replace(uuid(), '-', ''),'saleOrderDetailChange','endDeliverCount','完成发货数量(订单单位)',10, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'saleOrderDetailChange','retreatCount','退货数量(订单单位)',10, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'saleOrderDetailChange','cuser','创建用户id',11, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'saleOrderDetailChange','cdate','创建时间',12, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'saleOrderDetailChange','uuser','修改用户id',13, '1','1','1','0',now(), 'admin'),
@@ -86,7 +86,7 @@
             deliver_date_after deliverDateAfter,
             deliver_count deliverCount,
 
-            end_deliver_count endDeliverCount,
+            retreat_count retreatCount,
             cuser cuser,
             cdate cdate,
             uuser uuser,
@@ -143,7 +143,7 @@
             DATE_FORMAT(dtlChange.deliver_date_after,'%Y-%m-%d') deliverDateAfter,
             round(ifnull(dtlChange.deliver_count, 0), 2) deliverCount,
 
-            round(ifnull(dtlChange.end_deliver_count, 0), 2) endDeliverCount,
+            round(ifnull(dtlChange.retreat_count, 0), 2) retreatCount,
             dtlChange.cuser cuser,
             dtlChange.cdate cdate,
             dtlChange.uuser uuser,

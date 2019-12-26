@@ -47,9 +47,9 @@ public class SaleOrderDetailChange implements Serializable {
 	@TableField("deliver_count")
 	private BigDecimal deliverCount;
 
-	//完成发货数量(订单单位)
-	@TableField("end_deliver_count")
-	private BigDecimal endDeliverCount;
+	//退货数量(订单单位)
+	@TableField("retreat_count")
+	private BigDecimal retreatCount;
 	//创建用户id
 	@TableField("cuser")
 	private String cuser;
@@ -131,11 +131,11 @@ public class SaleOrderDetailChange implements Serializable {
 	public BigDecimal getDeliverCount() {
 		return deliverCount;
 	}
-	public void setEndDeliverCount(BigDecimal endDeliverCount) {
-		this.endDeliverCount = endDeliverCount;
+	public BigDecimal getRetreatCount() {
+		return retreatCount;
 	}
-	public BigDecimal getEndDeliverCount() {
-		return endDeliverCount;
+	public void setRetreatCount(BigDecimal retreatCount) {
+		this.retreatCount = retreatCount;
 	}
 	public void setCuser(String cuser) {
 		this.cuser = cuser;
@@ -174,7 +174,9 @@ public class SaleOrderDetailChange implements Serializable {
 		return isdisable;
 	}
 
-/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+
+
+	/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 
 }

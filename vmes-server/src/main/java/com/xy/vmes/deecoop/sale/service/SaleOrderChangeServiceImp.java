@@ -407,19 +407,19 @@ public class SaleOrderChangeServiceImp implements SaleOrderChangeService {
                 deliverCount = deliverCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
                 addDtlChange.setDeliverCount(deliverCount);
 
-                //完成发货数量(订单单位) endDeliverCount
-                BigDecimal endDeliverCount = BigDecimal.valueOf(0D);
-                String endDeliverCountStr = mapObject.get("endDeliverCount");
-                if (endDeliverCountStr != null && endDeliverCountStr.trim().length() > 0) {
+                //退货数量(订单单位) retreatCount
+                BigDecimal retreatCount = BigDecimal.valueOf(0D);
+                String retreatCountStr = mapObject.get("retreatCount");
+                if (retreatCountStr != null && retreatCountStr.trim().length() > 0) {
                     try {
-                        endDeliverCount = new BigDecimal(endDeliverCountStr);
+                        retreatCount = new BigDecimal(retreatCountStr);
                     } catch (NumberFormatException e) {
                         e.printStackTrace();
                     }
                 }
                 //四舍五入到2位小数
-                endDeliverCount = endDeliverCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-                addDtlChange.setEndDeliverCount(endDeliverCount);
+                retreatCount = retreatCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                addDtlChange.setRetreatCount(retreatCount);
 
                 ordeDtlChangeService.save(addDtlChange);
             }
