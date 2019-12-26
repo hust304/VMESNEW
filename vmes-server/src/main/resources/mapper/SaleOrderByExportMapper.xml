@@ -91,7 +91,7 @@
             DATE_FORMAT(orderDetail.deliver_date,'%Y-%m-%d') deliverDate,
             round(ifnull(orderDetail.order_count, 0),2) orderCount,
             orderDetail.order_unit orderUnit,
-            round(ifnull(orderDetail.product_price, 0),4) productPrice,
+            round(ifnull(orderDetail.product_price, 0),<include refid="com.xy.vmes.deecoop.common.CommonMapper.SYS_PRICE_DEFAULT"></include>) productPrice,
             round(ifnull(orderDetail.product_sum, 0),2) productSum,
 
             <!--货品表-->

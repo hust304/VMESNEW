@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+说明：SQL 查询中全局常量定义
+创建人：陈刚
+创建时间：2019-12-26
+ -->
+<mapper namespace="com.xy.vmes.deecoop.common.CommonMapper">
+
+    <!--系统小数四舍五入-默认2位小数-->
+    <sql id="SYS_NUMBER_DEFAULT">2</sql>
+
+    <!--系统(价格)四舍五入-默认4位小数-->
+    <sql id="SYS_PRICE_DEFAULT">4</sql>
+
+</mapper>

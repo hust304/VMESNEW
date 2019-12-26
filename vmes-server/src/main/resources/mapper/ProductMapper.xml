@@ -338,7 +338,7 @@
             '1' ratio,
             '' prodProperty,
 
-            round(ifnull(produnit.product_price, 0), 4) price,
+            round(ifnull(produnit.product_price, 0), <include refid="com.xy.vmes.deecoop.common.CommonMapper.SYS_PRICE_DEFAULT"></include>) price,
             prod.type type,
             type.name typeName,
             prod.validity_days validityDays,
@@ -369,7 +369,7 @@
             produnit.p2n_decimal_count p2nDecimalCount
 
             <if test="'true' == isNeedCustomerPrice">
-                ,round(ifnull(customerPrice.product_price, 0), 4) customerPrice
+                ,round(ifnull(customerPrice.product_price, 0), <include refid="com.xy.vmes.deecoop.common.CommonMapper.SYS_PRICE_DEFAULT"></include>) customerPrice
             </if>
         from vmes_product prod
             left join vmes_product_unit produnit on produnit.product_id = prod.id and produnit.type = 1

@@ -234,7 +234,7 @@
             detail.price_unit priceUnit,
 
             round(ifnull(detail.price_count, 0), 2) priceCount,
-            round(ifnull(detail.product_price, 0), 4) productPrice,
+            round(ifnull(detail.product_price, 0), <include refid="com.xy.vmes.deecoop.common.CommonMapper.SYS_PRICE_DEFAULT"></include>) productPrice,
             round(ifnull(detail.sum, 0), 2) sum,
             DATE_FORMAT(detail.deliver_date,'%Y-%m-%d') deliverDate,
             detail.cuser cuser,

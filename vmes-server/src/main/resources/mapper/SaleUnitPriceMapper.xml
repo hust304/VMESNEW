@@ -348,7 +348,7 @@
             sup.product_id productId,
             sup.unit unit,
             sup.customer_id customerId,
-            round(ifnull(sup.product_price, 0), 4) custProdPrice,
+            round(ifnull(sup.product_price, 0), <include refid="com.xy.vmes.deecoop.common.CommonMapper.SYS_PRICE_DEFAULT"></include>) custProdPrice,
 
             sup.cuser cuser,
             sup.cdate cdate,
@@ -385,7 +385,7 @@
             ELSE null
             END unitIsdefaultName,
 
-            round(ifnull(prodUnit.product_price, 0), 4) prodPrice,
+            round(ifnull(prodUnit.product_price, 0), <include refid="com.xy.vmes.deecoop.common.CommonMapper.SYS_PRICE_DEFAULT"></include>) prodPrice,
 
             customer.name customerName
         from vmes_sale_unit_price sup

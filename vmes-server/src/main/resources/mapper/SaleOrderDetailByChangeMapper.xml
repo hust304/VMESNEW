@@ -33,7 +33,7 @@
 
             orderDtl.price_unit priceUnit,
             orderDtl.product_id productId,
-            round(ifnull(orderDtl.product_price, 0), 4) productPrice,
+            round(ifnull(orderDtl.product_price, 0), <include refid="com.xy.vmes.deecoop.common.CommonMapper.SYS_PRICE_DEFAULT"></include>) productPrice,
         <!--orderDtl.product_sum productSum,-->
             orderDtl.is_lock_warehouse isLockWarehouse,
 
@@ -77,7 +77,7 @@
 
             <!--(变更)订购数量: 发货单数量 - 退货数量-->
             round((ifnull(deliverDtl.order_count, 0) - ifnull(retreatDtl.order_count, 0)),2) newOrderCount,
-            round(ifnull(orderDtl.product_price, 0), 4) newProductPrice,
+            round(ifnull(orderDtl.product_price, 0), <include refid="com.xy.vmes.deecoop.common.CommonMapper.SYS_PRICE_DEFAULT"></include>) newProductPrice,
             orderDtl.deliver_date newDeliverDate,
 
             round(ifnull(retreatDtl.order_count, 0), 2) retreatCount,
