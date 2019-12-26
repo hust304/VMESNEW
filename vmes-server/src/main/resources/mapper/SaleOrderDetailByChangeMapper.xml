@@ -73,7 +73,6 @@
 
             <!--发货单数量-->
             round(ifnull(deliverDtl.order_count, 0), 2) deliverCount,
-            round(ifnull(endDeliverDtl.order_count, 0), 2) endDeliverCount,
 
             <!--最小允许变更数量: -->
             round((ifnull(deliverDtl.order_count, 0) - ifnull(retreatDtl.order_count, 0)),2) miniChangeCount,
@@ -100,13 +99,6 @@
                 where <![CDATA[ state <> '-1' ]]>
                 group by order_detai_id
             ) deliverDtl on orderDtl.id = deliverDtl.order_detai_id
-            <!--发货完成数量-->
-            left join (
-                select order_detai_id, sum(order_count) order_count
-                from vmes_sale_deliver_detail
-                where state = '1'
-                group by order_detai_id
-            ) endDeliverDtl on orderDtl.id = endDeliverDtl.order_detai_id
             left join (
                 select order_detail_id, sum(order_count) order_count
                 from vmes_sale_retreat_detail
