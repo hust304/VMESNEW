@@ -343,6 +343,12 @@ public class SaleOrderDetailChangeServiceImp implements SaleOrderDetailChangeSer
             deliverCount = (BigDecimal)objectMap.get("deliverCount");
         }
 
+        //退货数量
+        BigDecimal retreatCount = BigDecimal.valueOf(0D);
+        if (objectMap.get("retreatCount") != null) {
+            retreatCount = (BigDecimal)objectMap.get("retreatCount");
+        }
+
         //发货数量:=0 无需拆分订单明细 直接修改该订单明细
         if (0D == deliverCount.doubleValue()) {
             SaleOrderDetail editObject = new SaleOrderDetail();
@@ -389,7 +395,7 @@ public class SaleOrderDetailChangeServiceImp implements SaleOrderDetailChangeSer
             this.findOrderDetailByPrice(productPriceBefore, editObject);
 
             //设置订单明细:添加
-            addObject = this.findAddOrderDetail(objectMap, deliverCount, orderCountAfter, orderDetail, addObject);
+            addObject = this.findAddOrderDetail(objectMap, deliverCount, retreatCount, orderCountAfter, orderDetail, addObject);
             this.findOrderDetailByPrice(productPriceAfter, addObject);
             addObject.setDeliverDate(deliverDateAfter);
         }
@@ -409,7 +415,7 @@ public class SaleOrderDetailChangeServiceImp implements SaleOrderDetailChangeSer
 
             //设置订单明细:添加
             if (addObject == null) {
-                addObject = this.findAddOrderDetail(objectMap, deliverCount, orderCountAfter, orderDetail, addObject);
+                addObject = this.findAddOrderDetail(objectMap, deliverCount, retreatCount, orderCountAfter, orderDetail, addObject);
             }
             this.findOrderDetailByPrice(productPriceAfter, addObject);
             addObject.setDeliverDate(deliverDateAfter);
@@ -488,6 +494,12 @@ public class SaleOrderDetailChangeServiceImp implements SaleOrderDetailChangeSer
             deliverCount = (BigDecimal)objectMap.get("deliverCount");
         }
 
+        //退货数量
+        BigDecimal retreatCount = BigDecimal.valueOf(0D);
+        if (objectMap.get("retreatCount") != null) {
+            retreatCount = (BigDecimal)objectMap.get("retreatCount");
+        }
+
         //发货数量:=0 无需拆分订单明细 直接修改该订单明细
         if (0D == deliverCount.doubleValue()) {
             SaleOrderDetail editObject = new SaleOrderDetail();
@@ -539,7 +551,7 @@ public class SaleOrderDetailChangeServiceImp implements SaleOrderDetailChangeSer
             this.findOrderDetailByPrice(productPriceBefore, editObject);
 
             //设置订单明细:添加
-            addObject = this.findAddOrderDetail(objectMap, deliverCount, orderCountAfter, orderDetailDB, addObject);
+            addObject = this.findAddOrderDetail(objectMap, deliverCount, retreatCount, orderCountAfter, orderDetailDB, addObject);
             //priceCount 后计价结算数量
             addObject.setPriceCount(BigDecimal.valueOf(0D));
 
@@ -622,17 +634,18 @@ public class SaleOrderDetailChangeServiceImp implements SaleOrderDetailChangeSer
     }
 
     private SaleOrderDetail findAddOrderDetail(Map<String, Object> objectMap,
-                                    BigDecimal deliverCount,
-                                    BigDecimal orderCountAfter,
-                                    SaleOrderDetail orderDetail,
-                                    SaleOrderDetail addObject) {
+                                               BigDecimal deliverCount,
+                                               BigDecimal retreatCount,
+                                               BigDecimal orderCountAfter,
+                                               SaleOrderDetail orderDetail,
+                                               SaleOrderDetail addObject) {
         if (addObject == null) {addObject = new SaleOrderDetail();}
 
         //单位转换公式: (计价转换计量)单位
         String p2nFormula = (String)objectMap.get("p2nFormula");
 
-        //订单明细-订购数量:= (变更后)订购数量 - 发货数量
-        BigDecimal orderCountAdd = BigDecimal.valueOf(orderCountAfter.doubleValue() - deliverCount.doubleValue());
+        //订单明细-订购数量:= (变更后)订购数量 - (发货数量 - 退货数量)
+        BigDecimal orderCountAdd = BigDecimal.valueOf(orderCountAfter.doubleValue() - (deliverCount.doubleValue() - retreatCount.doubleValue()));
 
         //订购数量:(转换计量单位) P(计价单位) --> N(计量单位)
         BigDecimal productCountAdd = BigDecimal.valueOf(0D);
