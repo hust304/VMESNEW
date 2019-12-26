@@ -71,17 +71,19 @@
             prodUnitPrice.np_formula n2pFormula,
             prodUnitPrice.pn_formula p2nFormula,
 
-            <!--发货单数量: 发货单数量 - 退货数量-->
-            round((ifnull(deliverDtl.order_count, 0) - ifnull(retreatDtl.order_count, 0)),2) deliverCount,
+            <!--发货单数量-->
+            round(ifnull(deliverDtl.order_count, 0), 2) deliverCount,
             round(ifnull(endDeliverDtl.order_count, 0), 2) endDeliverCount,
 
+            <!--最小允许变更数量: -->
+            round((ifnull(deliverDtl.order_count, 0) - ifnull(retreatDtl.order_count, 0)),2) miniChangeCount,
             <!--(变更)订购数量: 发货单数量 - 退货数量-->
             round((ifnull(deliverDtl.order_count, 0) - ifnull(retreatDtl.order_count, 0)),2) newOrderCount,
             round(ifnull(orderDtl.product_price, 0), <include refid="com.xy.vmes.deecoop.common.CommonMapper.SYS_PRICE_DEFAULT"></include>) newProductPrice,
             orderDtl.deliver_date newDeliverDate,
 
             round(ifnull(retreatDtl.order_count, 0), 2) retreatCount,
-            <!--金额: 订购数量 * 单价-->
+            <!--金额: (发货单数量 - 退货数量) * 单价-->
             round((ifnull(deliverDtl.order_count, 0) - ifnull(retreatDtl.order_count, 0)) * ifnull(orderDtl.product_price, 0), 2) productSum
 
         from vmes_sale_order_detail orderDtl
@@ -188,6 +190,7 @@
         (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'newDeliverDate', '约定交期', 41, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
 
         (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'retreatCount', '退货数量', 42, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'miniChangeCount', '最小允许变更数量', 43, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
     </insert>
 
 
