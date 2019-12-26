@@ -353,8 +353,8 @@ public class SaleOrderChangeServiceImp implements SaleOrderChangeService {
                         e.printStackTrace();
                     }
                 }
-                //四舍五入到2位小数
-                productPriceBefore = productPriceBefore.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                //四舍五入到4位小数
+                productPriceBefore = productPriceBefore.setScale(Common.SYS_PRICE_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
                 addDtlChange.setProductPriceBefore(productPriceBefore);
 
                 //货品单价(变更后) productPriceAfter
@@ -367,8 +367,8 @@ public class SaleOrderChangeServiceImp implements SaleOrderChangeService {
                         e.printStackTrace();
                     }
                 }
-                //四舍五入到2位小数
-                productPriceAfter = productPriceAfter.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                //四舍五入到4位小数
+                productPriceAfter = productPriceAfter.setScale(Common.SYS_PRICE_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
                 addDtlChange.setProductPriceAfter(productPriceAfter);
 
                 //约定交期(变更前) deliverDateBefore
