@@ -72,15 +72,17 @@
             prodUnitPrice.pn_formula p2nFormula,
 
             <!--发货单数量: 发货单数量 - 退货数量-->
-            round((ifnull(orderDtl.order_count, 0) - ifnull(retreatDtl.order_count, 0)),2) deliverCount,
+            round((ifnull(deliverDtl.order_count, 0) - ifnull(retreatDtl.order_count, 0)),2) deliverCount,
             round(ifnull(endDeliverDtl.order_count, 0), 2) endDeliverCount,
 
-            round((ifnull(orderDtl.order_count, 0) - ifnull(retreatDtl.order_count, 0)),2) newOrderCount,
+            <!--(变更)订购数量: 发货单数量 - 退货数量-->
+            round((ifnull(deliverDtl.order_count, 0) - ifnull(retreatDtl.order_count, 0)),2) newOrderCount,
             round(ifnull(orderDtl.product_price, 0), 4) newProductPrice,
             orderDtl.deliver_date newDeliverDate,
 
             round(ifnull(retreatDtl.order_count, 0), 2) retreatCount,
-            round((ifnull(orderDtl.order_count, 0) - ifnull(retreatDtl.order_count, 0)) * ifnull(orderDtl.product_price, 0), 2) productSum
+            <!--金额: 订购数量 * 单价-->
+            round((ifnull(deliverDtl.order_count, 0) - ifnull(retreatDtl.order_count, 0)) * ifnull(orderDtl.product_price, 0), 2) productSum
 
         from vmes_sale_order_detail orderDtl
             left join vmes_sale_order saleOrder on orderDtl.parent_id = saleOrder.id
