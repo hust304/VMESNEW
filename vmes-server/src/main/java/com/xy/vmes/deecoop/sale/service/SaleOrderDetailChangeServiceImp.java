@@ -573,8 +573,8 @@ public class SaleOrderDetailChangeServiceImp implements SaleOrderDetailChangeSer
     private void findOrderDetailByPrice(BigDecimal productPrice, SaleOrderDetail orderDetail) {
         if (productPrice == null) {productPrice = BigDecimal.valueOf(0D);}
 
-        //四舍五入到2位小数
-        productPrice = productPrice.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+        //四舍五入到4位小数
+        productPrice = productPrice.setScale(Common.SYS_PRICE_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
         orderDetail.setProductPrice(productPrice);
 
         //订单订购数量 orderCount

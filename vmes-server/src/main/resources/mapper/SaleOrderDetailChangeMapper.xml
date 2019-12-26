@@ -137,8 +137,8 @@
             round(ifnull(dtlChange.order_count_before, 0), 2) orderCountBefore,
             round(ifnull(dtlChange.order_count_after, 0), 2) orderCountAfter,
 
-            round(ifnull(dtlChange.product_price_before, 0), 2) productPriceBefore,
-            round(ifnull(dtlChange.product_price_after, 0), 2) productPriceAfter,
+            round(ifnull(dtlChange.product_price_before, 0), <include refid="com.xy.vmes.deecoop.common.CommonMapper.SYS_PRICE_DEFAULT"></include>) productPriceBefore,
+            round(ifnull(dtlChange.product_price_after, 0), <include refid="com.xy.vmes.deecoop.common.CommonMapper.SYS_PRICE_DEFAULT"></include>) productPriceAfter,
             DATE_FORMAT(dtlChange.deliver_date_before,'%Y-%m-%d') deliverDateBefore,
             DATE_FORMAT(dtlChange.deliver_date_after,'%Y-%m-%d') deliverDateAfter,
             round(ifnull(dtlChange.deliver_count, 0), 2) deliverCount,
