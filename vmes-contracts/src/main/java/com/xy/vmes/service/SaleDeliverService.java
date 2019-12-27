@@ -120,7 +120,7 @@ public interface SaleDeliverService {
     String checkPricetypeByOrderDetailList(List<Map<String, String>> mapList);
 
     ///////////////////////////////////////////////////////////////////////////////////
-    ResultModel listPageSaleDeliver(PageData pd, Pagination pg) throws Exception;
+    ResultModel listPageSaleDeliver(PageData pd) throws Exception;
     ResultModel addSaleDeliver(PageData pd) throws Exception;
     ResultModel updateSaleDeliverByDeliverType(PageData pd) throws Exception;
     ResultModel deleteSaleDeliver(PageData pd) throws Exception;

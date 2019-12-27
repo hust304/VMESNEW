@@ -33,6 +33,8 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
     private SaleDeliverDetailService saleDeliverDetailService;
     @Autowired
     private SaleDeliverDetailByCollectService saleDeliverDetailByCollectService;
+    @Autowired
+    private SaleDeliverOutDetailService saleDeliverOutDetailService;
 
     @Autowired
     private SaleOrderService saleOrderService;
@@ -174,8 +176,17 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
      * 创建时间：2018-12-15
      */
     @Override
-    public List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception{
-        return saleDeliverMapper.getDataListPage(pd,pg);
+    public List<Map> getDataListPage(PageData pd, Pagination pg) throws Exception{
+        List<Map> mapList = new ArrayList<Map>();
+        if (pd == null) {return mapList;}
+
+        if (pg == null) {
+            return saleDeliverMapper.getDataListPage(pd);
+        } else if (pg != null) {
+            return saleDeliverMapper.getDataListPage(pd,pg);
+        }
+
+        return mapList;
     }
 
     /**
@@ -286,8 +297,9 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
     }
 
     ///////////////////////////////////////////////////////////////////////////////////
-    public ResultModel listPageSaleDeliver(PageData pd, Pagination pg) throws Exception {
+    public ResultModel listPageSaleDeliver(PageData pd) throws Exception {
         ResultModel model = new ResultModel();
+        Pagination pg = HttpUtils.parsePagination(pd);
 
         List<Column> columnList = columnService.findColumnList("saleDeliver");
         if (columnList == null || columnList.size() == 0) {
@@ -301,7 +313,6 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
         if (fieldCode != null && fieldCode.trim().length() > 0) {
             columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
         }
-        Map result = new HashMap();
         Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
 
         //结算状态 1:已结算 0:未结算
@@ -315,12 +326,59 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
         }
         pd.put("sumStateQueryStr", sumStateQueryStr);
 
-        List<Map> varList = this.getDataListPage(pd,pg);
+        //isNeedInfo:是否需要显示(出库详情,发货详情):'true'
+        String isNeedInfo = pd.getString("isNeedInfo");
+
+        //是否需要分页 true:需要分页 false:不需要分页
+        Map result = new HashMap();
+        String isNeedPage = pd.getString("isNeedPage");
+        if ("false".equals(isNeedPage)) {
+            pg = null;
+        } else {
+            result.put("pageData", pg);
+        }
+
+        List<Map> varList = this.getDataListPage(pd, pg);
+        if ("true".equals(isNeedInfo) && varList != null && varList.size() > 0) {
+            for (Map<String, Object> mapObject : varList) {
+                //发货详情(按钮) 是否显示
+                //isShowDeliver:发货详情 1:显示 0:不显示
+                mapObject.put("isShowDeliver", "0");
+
+                //根据vmes_sale_deliver.type 是否为空:发货类型(1:发货 2:送货 3:客户自提)
+                String type = (String)mapObject.get("type");
+                if (type != null && type.trim().length() > 0) {
+                    //isShowDeliver:发货详情 1:显示 0:不显示
+                    mapObject.put("isShowDeliver", "1");
+                }
+
+                ///////////////////////////////////////////////////////
+                //出库详情(按钮) 是否显示
+                //isShowOut:出库详情 1:显示 0:不显示
+                mapObject.put("isShowOut", "0");
+
+                String deliverId = (String)mapObject.get("id");
+                //SQL查询语句:SaleDeliverOutDetailMapper.findOutDetailByOrderDetail
+                List<Map<String, Object>> mapList = saleDeliverOutDetailService.findDeliverDetailListByDeliverId(deliverId);
+                if (mapList != null && mapList.size() > 0) {
+                    for (Map<String, Object> mapObj : mapList) {
+                        //出库执行数量:executeCount
+                        //BigDecimal executeCount = BigDecimal.valueOf(0D);
+                        if (mapObj.get("executeCount") != null && ((BigDecimal)mapObj.get("executeCount")).doubleValue() > 0) {
+                            //isShowOut:出库详情 1:显示 0:不显示
+                            mapObject.put("isShowOut", "1");
+                            break;
+                        }
+                    }
+                }
+                ///////////////////////////////////////////////////////
+            }
+        }
+
         List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
         result.put("hideTitles",titleMap.get("hideTitles"));
         result.put("titles",titleMap.get("titles"));
         result.put("varList",varMapList);
-        result.put("pageData", pg);
         model.putResult(result);
         return model;
     }

@@ -87,6 +87,8 @@
             (replace(uuid(), '-', ''),'saleDeliver','priceType','priceType',0, '1','1','1','0',now(), 'admin'),
 
             (replace(uuid(), '-', ''),'saleDeliver','pieceCount','件数',25, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'saleDeliver','isShowDeliver','是否显示出库详情',26, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'saleDeliver','isShowOut','是否显示发货详情',27, '1','1','1','0',now(), 'admin'),
 
 
     </insert>
@@ -216,7 +218,11 @@
             warehouse.name warehouseName,
             user.user_name outMakeName,
         </if>
-        address.address custAddress
+        address.address custAddress,
+
+        <!--java 类实现 1:显示 0:不显示 -->
+        '' isShowDeliver,
+        '' isShowOut
 
         from vmes_sale_deliver deliver
             left join vmes_sale_deliver_detail detail on deliver.id = detail.parent_id
