@@ -769,6 +769,261 @@ public class SaleOrderChangeServiceImp implements SaleOrderChangeService {
         return model;
     }
 
+    /**
+     * 验证销售订单变更
+     * @param pageData
+     * @return
+     * @throws Exception
+     */
+    public ResultModel checkSaleOrderChange(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+
+        //判断(发票类型)是否发生变更
+        //(变更前)发票类型
+        String receiptTypeBefore = pageData.getString("receiptTypeBefore");
+        //(变更后)发票类型
+        String receiptTypeAfter = pageData.getString("receiptTypeAfter");
+
+        if (!receiptTypeAfter.equals(receiptTypeBefore)) {
+            model.put("isChange", "true");
+            return model;
+        }
+
+        //////////////////////////////////////////////////////////////////////////////////////
+        String dtlJsonStr = pageData.getString("dtlJsonStr");
+        if (dtlJsonStr == null || dtlJsonStr.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("请至少选择一行数据！");
+            return model;
+        }
+
+        List<Map<String, String>> mapList = (List<Map<String, String>>) YvanUtil.jsonToList(dtlJsonStr);
+        if (mapList == null || mapList.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("Json字符串-转换成List错误！");
+            return model;
+        }
+
+        //当前系统时间()
+        String sysDateStr = DateFormat.date2String(new Date(), DateFormat.DEFAULT_DATE_FORMAT);
+        Date sysDate = DateFormat.dateString2Date(sysDateStr, DateFormat.DEFAULT_DATE_FORMAT);
+
+        if (mapList != null && mapList.size() > 0) {
+            for (Map<String, String> mapObject : mapList) {
+                //订单订购数量(变更前-订单单位) orderCountBefore
+                BigDecimal orderCountBefore = BigDecimal.valueOf(0D);
+                String orderCountBeforeStr = mapObject.get("orderCountBefore");
+                if (orderCountBeforeStr != null && orderCountBeforeStr.trim().length() > 0) {
+                    try {
+                        orderCountBefore = new BigDecimal(orderCountBeforeStr);
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                }
+                //四舍五入到2位小数
+                orderCountBefore = orderCountBefore.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+
+
+                //订单订购数量(变更后-订单单位) orderCountAfter
+                BigDecimal orderCountAfter = BigDecimal.valueOf(0D);
+                String orderCountAfterStr = mapObject.get("orderCountAfter");
+                if (orderCountAfterStr != null && orderCountAfterStr.trim().length() > 0) {
+                    try {
+                        orderCountAfter = new BigDecimal(orderCountAfterStr);
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                }
+                //四舍五入到2位小数
+                orderCountAfter = orderCountAfter.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+
+                //(变更前)订购数量 -- (变更后)订购数量 是否相同
+                //true : 发生变更
+                //false: 未发生变更
+                if (this.isChangeByBigDecimal(orderCountBefore, orderCountAfter)) {
+                    model.put("isChange", "true");
+                    return model;
+                }
+
+                //////////////////////////////////////////////////////////////////////////////////
+                //货品单价(变更前) productPriceBefore
+                BigDecimal productPriceBefore = BigDecimal.valueOf(0D);
+                String productPriceBeforeStr = mapObject.get("productPriceBefore");
+                if (productPriceBeforeStr != null && productPriceBeforeStr.trim().length() > 0) {
+                    try {
+                        productPriceBefore = new BigDecimal(productPriceBeforeStr);
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                }
+                //四舍五入到4位小数
+                productPriceBefore = productPriceBefore.setScale(Common.SYS_PRICE_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+
+                //货品单价(变更后) productPriceAfter
+                BigDecimal productPriceAfter = BigDecimal.valueOf(0D);
+                String productPriceAfterStr = mapObject.get("productPriceAfter");
+                if (productPriceAfterStr != null && productPriceAfterStr.trim().length() > 0) {
+                    try {
+                        productPriceAfter = new BigDecimal(productPriceAfterStr);
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                }
+                //四舍五入到4位小数
+                productPriceAfter = productPriceAfter.setScale(Common.SYS_PRICE_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+
+                //(变更前)货品单价 -- (变更后)货品单价 是否相同
+                //true : 发生变更
+                //false: 未发生变更
+                if (this.isChangeByBigDecimal(productPriceBefore, productPriceAfter)) {
+                    model.put("isChange", "true");
+                    return model;
+                }
+
+                //////////////////////////////////////////////////////////////////////////////////
+                //约定交期(变更前) deliverDateBefore
+                Date deliverDateBefore = sysDate;
+                String deliverDateBeforeStr = mapObject.get("deliverDateBefore");
+                if (deliverDateBeforeStr != null && deliverDateBeforeStr.trim().length() > 0) {
+                    Date dateTemp = DateFormat.dateString2Date(deliverDateBeforeStr, DateFormat.DEFAULT_DATE_FORMAT);
+                    if (dateTemp != null) {
+                        deliverDateBefore = dateTemp;
+                    }
+                }
+
+                //约定交期(变更后) deliverDateAfter
+                Date deliverDateAfter = sysDate;
+                String deliverDateAfterStr = mapObject.get("deliverDateAfter");
+                if (deliverDateAfterStr != null && deliverDateAfterStr.trim().length() > 0) {
+                    Date dateTemp = DateFormat.dateString2Date(deliverDateAfterStr, DateFormat.DEFAULT_DATE_FORMAT);
+                    if (dateTemp != null) {
+                        deliverDateAfter = dateTemp;
+                    }
+                }
+
+                //(变更前)约定交期 -- (变更后)约定交期 是否相同
+                //true : 发生变更
+                //false: 未发生变更
+                if (isChangeByDate(deliverDateBefore, deliverDateAfter)) {
+                    model.put("isChange", "true");
+                    return model;
+                }
+            }
+        }
+
+        return model;
+    }
+
+    /**
+     * (后计价)验证销售订单变更
+     * @param pageData
+     * @return
+     * @throws Exception
+     */
+    public ResultModel checkSaleOrderChangeByPrice(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+
+        //判断(发票类型)是否发生变更
+        //(变更前)发票类型
+        String receiptTypeBefore = pageData.getString("receiptTypeBefore");
+        //(变更后)发票类型
+        String receiptTypeAfter = pageData.getString("receiptTypeAfter");
+
+        if (!receiptTypeAfter.equals(receiptTypeBefore)) {
+            model.put("isChange", "true");
+            return model;
+        }
+
+        //////////////////////////////////////////////////////////////////////////////////////
+        String dtlJsonStr = pageData.getString("dtlJsonStr");
+        if (dtlJsonStr == null || dtlJsonStr.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("请至少选择一行数据！");
+            return model;
+        }
+
+        List<Map<String, String>> mapList = (List<Map<String, String>>) YvanUtil.jsonToList(dtlJsonStr);
+        if (mapList == null || mapList.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("Json字符串-转换成List错误！");
+            return model;
+        }
+
+        //当前系统时间()
+        String sysDateStr = DateFormat.date2String(new Date(), DateFormat.DEFAULT_DATE_FORMAT);
+        Date sysDate = DateFormat.dateString2Date(sysDateStr, DateFormat.DEFAULT_DATE_FORMAT);
+
+        if (mapList != null && mapList.size() > 0) {
+            for (Map<String, String> mapObject : mapList) {
+                //订单订购数量(变更前-订单单位) orderCountBefore
+                BigDecimal orderCountBefore = BigDecimal.valueOf(0D);
+                String orderCountBeforeStr = mapObject.get("orderCountBefore");
+                if (orderCountBeforeStr != null && orderCountBeforeStr.trim().length() > 0) {
+                    try {
+                        orderCountBefore = new BigDecimal(orderCountBeforeStr);
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                }
+                //四舍五入到2位小数
+                orderCountBefore = orderCountBefore.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+
+
+                //订单订购数量(变更后-订单单位) orderCountAfter
+                BigDecimal orderCountAfter = BigDecimal.valueOf(0D);
+                String orderCountAfterStr = mapObject.get("orderCountAfter");
+                if (orderCountAfterStr != null && orderCountAfterStr.trim().length() > 0) {
+                    try {
+                        orderCountAfter = new BigDecimal(orderCountAfterStr);
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                }
+                //四舍五入到2位小数
+                orderCountAfter = orderCountAfter.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+
+                //(变更前)订购数量 -- (变更后)订购数量 是否相同
+                //true : 发生变更
+                //false: 未发生变更
+                if (this.isChangeByBigDecimal(orderCountBefore, orderCountAfter)) {
+                    model.put("isChange", "true");
+                    return model;
+                }
+
+                //////////////////////////////////////////////////////////////////////////////////
+                //约定交期(变更前) deliverDateBefore
+                Date deliverDateBefore = sysDate;
+                String deliverDateBeforeStr = mapObject.get("deliverDateBefore");
+                if (deliverDateBeforeStr != null && deliverDateBeforeStr.trim().length() > 0) {
+                    Date dateTemp = DateFormat.dateString2Date(deliverDateBeforeStr, DateFormat.DEFAULT_DATE_FORMAT);
+                    if (dateTemp != null) {
+                        deliverDateBefore = dateTemp;
+                    }
+                }
+
+                //约定交期(变更后) deliverDateAfter
+                Date deliverDateAfter = sysDate;
+                String deliverDateAfterStr = mapObject.get("deliverDateAfter");
+                if (deliverDateAfterStr != null && deliverDateAfterStr.trim().length() > 0) {
+                    Date dateTemp = DateFormat.dateString2Date(deliverDateAfterStr, DateFormat.DEFAULT_DATE_FORMAT);
+                    if (dateTemp != null) {
+                        deliverDateAfter = dateTemp;
+                    }
+                }
+
+                //(变更前)约定交期 -- (变更后)约定交期 是否相同
+                //true : 发生变更
+                //false: 未发生变更
+                if (isChangeByDate(deliverDateBefore, deliverDateAfter)) {
+                    model.put("isChange", "true");
+                    return model;
+                }
+            }
+        }
+
+        return model;
+    }
+
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //订单变更审核 私有方法
 

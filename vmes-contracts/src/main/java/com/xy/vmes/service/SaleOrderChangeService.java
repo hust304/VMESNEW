@@ -133,6 +133,20 @@ public interface SaleOrderChangeService {
      */
     ResultModel auditDisagreeSaleOrderChange(PageData pageData) throws Exception;
 
+    /**
+     * 验证销售订单变更
+     * @param pageData
+     * @return
+     * @throws Exception
+     */
+    ResultModel checkSaleOrderChange(PageData pageData) throws Exception;
+    /**
+     * (后计价)验证销售订单变更
+     * @param pageData
+     * @return
+     * @throws Exception
+     */
+    ResultModel checkSaleOrderChangeByPrice(PageData pageData) throws Exception;
 
 }
 

@@ -40,6 +40,38 @@ public class SaleOrderChangeController {
     }
 
     /**
+     * 验证销售订单变更
+     * @return
+     * @throws Exception
+     */
+    @PostMapping("/sale/saleOrderChange/checkSaleOrderChange")
+    public ResultModel checkSaleOrderChange() throws Exception {
+        logger.info("################/sale/saleOrderChange/checkSaleOrderChange 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = saleOrdeChangeService.checkSaleOrderChange(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleOrderChange/checkSaleOrderChange 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * (后计价)验证销售订单变更
+     * @return
+     * @throws Exception
+     */
+    @PostMapping("/sale/saleOrderChange/checkSaleOrderChangeByPrice")
+    public ResultModel checkSaleOrderChangeByPrice() throws Exception {
+        logger.info("################/sale/saleOrderChange/checkSaleOrderChangeByPrice 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = saleOrdeChangeService.checkSaleOrderChangeByPrice(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleOrderChange/checkSaleOrderChangeByPrice 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
      * 添加订单变更记录
      * @author 陈刚
      * @date 2019-11-05
