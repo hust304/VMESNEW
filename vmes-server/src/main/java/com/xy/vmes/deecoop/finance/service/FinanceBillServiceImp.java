@@ -991,7 +991,7 @@ public class FinanceBillServiceImp implements FinanceBillService {
 
         //生成付款单编码
         //String code = coderuleService.createCoderCdateByDate(companyId,"vmes_finance_bill","yyyyMMdd","R");
-        String code = coderuleService.createCoderCdateOnShortYearByDate(customerId,"vmes_finance_bill","R", Common.CODE_RULE_LENGTH_3);
+        String code = coderuleService.createCoderCdateOnShortYearByDate(companyId,"vmes_finance_bill","R", Common.CODE_RULE_LENGTH_3);
         addObject.setCode(code);
 
         //period 收/付款期间(yyyyMM)
