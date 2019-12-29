@@ -117,6 +117,10 @@ public class Product implements Serializable {
 	@TableField("property")
 	private String property;
 
+	//采购检验方式 (1:全检 2:抽检)
+	@TableField("purchase_quality_type")
+	private String purchaseQualityType;
+
 	public void setId(String id) {
 		this.id = id;
 	}
@@ -302,6 +306,12 @@ public class Product implements Serializable {
 	}
 	public void setProperty(String property) {
 		this.property = property;
+	}
+	public String getPurchaseQualityType() {
+		return purchaseQualityType;
+	}
+	public void setPurchaseQualityType(String purchaseQualityType) {
+		this.purchaseQualityType = purchaseQualityType;
 	}
 /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
