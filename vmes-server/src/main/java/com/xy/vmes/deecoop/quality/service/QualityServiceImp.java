@@ -360,6 +360,7 @@ public class QualityServiceImp implements QualityService {
         addQuality.setCompanyId(companyId);
         addQuality.setCuser(cuser);
 
+        addQuality.setProductId(productId);
         addQuality.setName(name);
         addQuality.setCriterion(criterion);
         addQuality.setBusiness(business);
