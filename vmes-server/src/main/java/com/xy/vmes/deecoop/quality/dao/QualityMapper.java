@@ -32,6 +32,13 @@ public interface QualityMapper extends BaseMapper<Quality> {
     void updateToDisableByIds(String[] ids);
 
     /**
+     * 修改货品表-(采购)货品质验方式
+     * 修改货品表(vmes_product.purchase_quality_type)字段
+     * PageData(purchaseQualityType, productIds)
+     */
+    void updateProductQualityByPurchase(PageData pd);
+
+    /**
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2019-12-28
      */
@@ -44,6 +51,9 @@ public interface QualityMapper extends BaseMapper<Quality> {
     List<Map> getDataListPage(PageData pd, Pagination pg);
     List<Map> getDataListPage(PageData pd);
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+
+    List<Map> findListProductByQuality(PageData pd, Pagination pg);
+    List<Map> findListProductByQuality(PageData pd);
 }
 
 

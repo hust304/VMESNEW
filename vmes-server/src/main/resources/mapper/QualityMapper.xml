@@ -16,7 +16,6 @@
         </foreach>
     </delete>
 
-
     <!-- 自动创建，禁止修改-->
     <update id="updateToDisableByIds" parameterType="java.lang.String" >
         update vmes_quality
@@ -27,28 +26,16 @@
         </foreach>
     </update>
 
-    <!-- ***************************************************以上为自动生成代码禁止修改，请在下面添加业务代码************************************************* -->
-    <insert id="insertColumn" >
-        delete from vmes_column where model_code = 'quality' ;
-        insert into vmes_column (
-        id,model_code,title_key,title_name,serial_number,
-        isdisable,ishide,isedit,ismust,cdate,
-        cuser
-        ) VALUES
-            (replace(uuid(), '-', ''),'quality','id','id',0, '1','1','1','0',now(), 'admin')
-            (replace(uuid(), '-', ''),'quality','companyId','企业id',1, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'quality','productId','货品id',2, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'quality','sysCode','系统编号(系统生成)',3, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'quality','name','质检项',4, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'quality','criterion','检验标准',5, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'quality','cuser','创建用户id',6, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'quality','cdate','创建时间',7, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'quality','uuser','修改用户id',8, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'quality','udate','修改时间',9, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'quality','remark','备注',10, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'quality','isdisable','是否启用(0:已禁用 1:启用)',11, '1','1','1','0',now(), 'admin'),
-    </insert>
-
+    <!-- 修改(采购)货品质验方式-->
+    <update id="updateProductQualityByPurchase" parameterType="com.yvan.PageData" >
+        update vmes_product set
+        purchase_quality_type = #{purchaseQualityType}
+        <where>
+            <if test="productIds != null and productIds != ''" >
+                and id in (${productIds})
+            </if>
+        </where>
+    </update>
 
     <!-- 列表(全部) 自动创建，禁止修改-->
     <select id="dataList" parameterType="com.yvan.PageData" resultType="com.xy.vmes.entity.Quality">
@@ -94,8 +81,29 @@
         </if>
     </select>
 
-    <!-- 自动创建，可以修改 -->
-    <select id="getDataListPage" parameterType="com.yvan.PageData"  resultType="java.util.Map">
+    <!-- **************************************************************************************************** -->
+    <insert id="insertColumn" >
+        delete from vmes_column where model_code = 'quality' ;
+        insert into vmes_column (
+        id,model_code,title_key,title_name,serial_number,
+        isdisable,ishide,isedit,ismust,cdate,
+        cuser
+        ) VALUES
+        (replace(uuid(), '-', ''),'quality','id','id',0, '1','1','1','0',now(), 'admin')
+        (replace(uuid(), '-', ''),'quality','companyId','企业id',1, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'quality','productId','货品id',2, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'quality','sysCode','系统编号(系统生成)',3, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'quality','name','质检项',4, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'quality','criterion','检验标准',5, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'quality','cuser','创建用户id',6, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'quality','cdate','创建时间',7, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'quality','uuser','修改用户id',8, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'quality','udate','修改时间',9, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'quality','remark','备注',10, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'quality','isdisable','是否启用(0:已禁用 1:启用)',11, '1','1','1','0',now(), 'admin'),
+    </insert>
+
+    <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
         id id,
         company_id companyId,
@@ -110,7 +118,8 @@
         udate udate,
 
         remark remark,
-        isdisable isdisable
+        isdisable isdisable,
+        business business
         from vmes_quality
         <where>
             <!--queryStr 自定义sql查询语句-->
@@ -129,7 +138,93 @@
         </if>
     </select>
 
+    <!-- **************************************************************************************************** -->
+    <insert id="productByQuality" >
+        delete from vmes_column where model_code = 'productByQuality';
+        insert into vmes_column (
+        id,model_code,title_key,title_name,serial_number,
+        isdisable,ishide,isedit,ismust,cdate,
+        cuser
+        ) VALUES
+            (replace(uuid(), '-', ''),'productByQuality','id','id',0, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''), 'productByQuality', 'productId', '货品id', 1, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'productByQuality', 'productCode', '货品编码', 2, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'productByQuality', 'productName', '货品名称', 3, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'productByQuality', 'productSpec', '规格型号', 4, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'productByQuality','productUnitName','计量单位',5, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''), 'productByQuality', 'productProperty', '自定义属性', 6, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'productByQuality', 'purchaseQualityType', '采购检验方式id', 7, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'productByQuality', 'purchaseQualityTypeName', '检验方式', 8, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'productByQuality', 'isShowPurchaseSetup', '是否显示(采购检验方式)设置按钮', 9, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'productByQuality', 'setupPurchase', '设置状态', 10, '1', '1', '1', '0', now(), 'admin'),
 
 
+    </insert>
+
+    <!--货品质检通用查询 sql查询语句-->
+    <select id="findListProductByQuality" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+            replace(uuid(), '-', '') id,
+            product.id productId,
+            product.code sysProductCode,
+            product.source_code custProductCode,
+            CASE
+                WHEN product.source_code is null THEN product.code
+                WHEN product.source_code is not null THEN product.source_code
+            ELSE null
+            END productCode,
+            product.name productName,
+            product.spec productSpec,
+            product.genre productGenre,
+            product.property productProperty,
+            prodUnitName.name productUnitName,
+
+            <!--采购检验方式 (1:全检 2:抽检)-->
+            product.purchase_quality_type purchaseQualityType,
+            CASE
+                WHEN product.purchase_quality_type = '1' THEN '全检'
+                WHEN product.purchase_quality_type = '2' THEN '抽检'
+            ELSE null
+            END purchaseQualityTypeName,
+
+            <!--是否设置(采购检验方式)-->
+            <!--是否显示(采购检验方式)设置按钮 1:显示 0:不显示-->
+            CASE
+                WHEN product.purchase_quality_type is not null THEN '1'
+                WHEN product.purchase_quality_type is null or CHAR_LENGTH(TRIM(product.purchase_quality_type)) = 0 THEN '0'
+            ELSE null
+            END isShowPurchaseSetup
+
+
+
+        from vmes_product product
+            left join vmes_product_unit prodUnit on product.id = prodUnit.product_id and prodUnit.type = 1
+            left join vmes_dictionary prodUnitName on prodUnit.unit = prodUnitName.id
+        <where>
+            <if test="companyId != null and companyId != ''" >
+                and product.company_id = #{companyId}
+            </if>
+
+            <if test="purchaseQualityType != null and purchaseQualityType != ''" >
+                and product.purchase_quality_type = #{purchaseQualityType}
+            </if>
+
+            <!--界面查询框 -->
+            <if test="productCode != null and productCode != ''">
+                and (product.source_code LIKE CONCAT('%',CONCAT(#{productCode}),'%') or product.code LIKE CONCAT('%',CONCAT(#{productCode}),'%'))
+            </if>
+            <if test="productName != null and productName != ''">
+                and product.name LIKE CONCAT('%',CONCAT(#{productName}),'%')
+            </if>
+            <if test="productSpec != null and productSpec != ''" >
+                and product.spec LIKE CONCAT('%',CONCAT(#{productSpec}),'%')
+            </if>
+            <if test="productProperty != null and productProperty != ''">
+                and product.property LIKE CONCAT('%',CONCAT(#{productProperty}),'%')
+            </if>
+
+
+        </where>
+    </select>
 
 </mapper>

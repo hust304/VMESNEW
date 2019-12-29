@@ -79,6 +79,7 @@ public interface QualityService {
      * 创建时间：2019-12-28
      */
     List<Map> getDataListPage(PageData pd, Pagination pg) throws Exception;
+    List<Map> findListProductByQuality(PageData pd, Pagination pg) throws Exception;
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
     /**
@@ -97,7 +98,26 @@ public interface QualityService {
     Quality findQualityById(String id) throws Exception;
     List<Quality> findQualityList(PageData object) throws Exception;
 
+    /**
+     * 修改货品表
+     * purchase:采购:(vmes_product.purchase_quality_type)字段
+     *
+     * @param business     业务名称 (purchase:采购)
+     * @param productIds   货品id ','逗号分隔的字符串
+     * @param qualityType  质验方式
+     */
+    void updateProductQuality(String business, String productIds, String qualityType);
+
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /**
+     * (质量-采购质检)分页查询
+     *
+     * @param pd    查询参数对象PageData
+     * @return      返回对象ResultModel
+     * @throws Exception
+     */
+    ResultModel listPageProductByQuality(PageData pd) throws Exception;
+
     /**
     * 分页查询
     * @param pd    查询参数对象PageData
@@ -106,7 +126,7 @@ public interface QualityService {
     */
     ResultModel listPageQuality(PageData pd) throws Exception;
 
-
+    ResultModel addQuality(PageData pd) throws Exception;
 }
 
 
