@@ -76,8 +76,8 @@
 
             <!--最小允许变更数量: -->
             round((ifnull(deliverDtl.order_count, 0) - ifnull(retreatDtl.order_count, 0)),2) miniChangeCount,
-            <!--(变更)订购数量: 发货单数量 - 退货数量-->
-            round((ifnull(deliverDtl.order_count, 0) - ifnull(retreatDtl.order_count, 0)),2) newOrderCount,
+            <!--(变更)订购数量: 原订购数-->
+            round(ifnull(orderDtl.order_count, 0), 2) newOrderCount,
             round(ifnull(orderDtl.product_price, 0), <include refid="com.xy.vmes.deecoop.common.CommonMapper.SYS_PRICE_DEFAULT"></include>) newProductPrice,
             orderDtl.deliver_date newDeliverDate,
 
