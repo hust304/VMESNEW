@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.annotations.TableName;
 
 import java.io.Serializable;
 import java.util.*;
-import java.math.BigDecimal;
 
 /** 
  * 说明：vmes_purchase_sign:采购签收 实体类
@@ -16,18 +15,21 @@ import java.math.BigDecimal;
 public class PurchaseSign implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	//
 	@TableField("id")
 	private String id;
-	//企业ID-组织架构
+	//采购订单id
+	@TableField("order_id")
+	private String orderId;
+	//企业id
 	@TableField("company_id")
 	private String companyId;
-	//签收人
+	//签收人(系统用户id)
 	@TableField("sign_id")
 	private String signId;
 	//签收时间
 	@TableField("sdate")
 	private Date sdate;
+
 	//创建用户id
 	@TableField("cuser")
 	private String cuser;
@@ -43,31 +45,20 @@ public class PurchaseSign implements Serializable {
 	//备注
 	@TableField("remark")
 	private String remark;
+
 	//是否启用(0:已禁用 1:启用)
 	@TableField("isdisable")
 	private String isdisable;
-	//签收人
-	@TableField("order_id")
-	private String orderId;
-	//签收人
-	@TableField("in_id")
-	private String inId;
+	//签收单号(系统生成)
+	@TableField("sys_code")
+	private String sysCode;
+	//签收单号(系统生成)
+	@TableField("cust_code")
+	private String custCode;
+	//状态(1:检验中 2:已完成 -1:已取消)
+	@TableField("state")
+	private String state;
 
-	public String getOrderId() {
-		return orderId;
-	}
-
-	public void setOrderId(String orderId) {
-		this.orderId = orderId;
-	}
-
-	public String getInId() {
-		return inId;
-	}
-
-	public void setInId(String inId) {
-		this.inId = inId;
-	}
 
 	public void setId(String id) {
 		this.id = id;
@@ -128,6 +119,30 @@ public class PurchaseSign implements Serializable {
 	}
 	public String getIsdisable() {
 		return isdisable;
+	}
+	public String getOrderId() {
+		return orderId;
+	}
+	public void setOrderId(String orderId) {
+		this.orderId = orderId;
+	}
+	public String getSysCode() {
+		return sysCode;
+	}
+	public void setSysCode(String sysCode) {
+		this.sysCode = sysCode;
+	}
+	public String getCustCode() {
+		return custCode;
+	}
+	public void setCustCode(String custCode) {
+		this.custCode = custCode;
+	}
+	public String getState() {
+		return state;
+	}
+	public void setState(String state) {
+		this.state = state;
 	}
 
 /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
