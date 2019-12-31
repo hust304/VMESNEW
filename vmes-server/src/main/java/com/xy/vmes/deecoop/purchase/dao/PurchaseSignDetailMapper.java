@@ -7,7 +7,6 @@ import com.yvan.PageData;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -20,71 +19,30 @@ import java.util.Map;
 @Repository
 public interface PurchaseSignDetailMapper extends BaseMapper<PurchaseSignDetail> {
 
-
-	/**
-	* 创建人：刘威 自动创建，禁止修改
-	* 创建时间：2019-03-12
-	*/
-    List<PurchaseSignDetail> dataListPage(PageData pd,Pagination pg);
+    /**
+     * 创建人：陈刚 自动创建，禁止修改
+     * 创建时间：2019-12-28
+     */
+    void deleteByIds(String[] ids);
 
     /**
-    * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2019-03-12
-    */
-	List<PurchaseSignDetail> dataList(PageData pd);
-
-	/**
-	* 创建人：刘威 自动创建，禁止修改
-	* 创建时间：2019-03-12
-	*/
-	void deleteByIds(String[] ids);
-
-    /**
-    * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2019-03-12
-    */
-    List<LinkedHashMap> findColumnList();
-
-
-    /**
-    * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2019-03-12
-    */
-    List<Map> findDataList(PageData pd);
-
-
-    /**
-    * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2019-03-12
-    */
-    List<LinkedHashMap> getColumnList();
-
-
-    /**
-    * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2019-03-12
-    */
-    List<Map> getDataList(PageData pd);
-
-
-    /**
-    * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2019-03-12
-    */
-    List<Map> getDataListPage(PageData pd,Pagination pg);
-
-
-    /**
-    * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2019-03-12
-    */
+     * 创建人：陈刚 自动创建，禁止修改
+     * 创建时间：2019-12-28
+     */
     void updateToDisableByIds(String[] ids);
 
     /**
-    * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2019-03-12
-    */
-    void updateByDefined(PageData pd);
+     * 创建人：陈刚 自动创建，禁止修改
+     * 创建时间：2019-12-28
+     */
+    List<PurchaseSignDetail> dataList(PageData pd);
+
+    /**
+     * 创建人：陈刚 自动创建，禁止修改
+     * 创建时间：2019-12-28
+     */
+    List<Map> getDataListPage(PageData pd, Pagination pg);
+    List<Map> getDataListPage(PageData pd);
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 }
 
