@@ -272,6 +272,8 @@
             product.name productName,
             product.spec productSpec,
             product.genre productGenre,
+            product.property property,
+            product.picture_code pictureCode,
             genre.name productGenreName,
 
             <!--发货单明细货品单位: 单位换算公式-->

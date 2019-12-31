@@ -158,6 +158,7 @@
         deliver.id parentId,
         deliver.deliver_code deliverCode,
         deliver.company_id companyId,
+        company.name companyName,
         deliver.customer_id customerId,
         deliver.state state,
         CASE
@@ -231,6 +232,7 @@
             left join vmes_customer customer on deliver.customer_id = customer.id
             left join vmes_customer_address address on deliver.custome_address_id = address.id
             left join vmes_dictionary custType on customer.type = custType.id
+            left join vmes_department company on company.id = deliver.company_id
         <!--获取出库单id-->
 
             <!--获取出库单id-->
