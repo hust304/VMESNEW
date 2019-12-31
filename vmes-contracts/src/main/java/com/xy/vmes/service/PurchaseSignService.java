@@ -4,8 +4,6 @@ import com.xy.vmes.entity.PurchaseSign;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
-import org.springframework.web.multipart.MultipartFile;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -16,109 +14,71 @@ import java.util.Map;
 */
 public interface PurchaseSignService {
 
+    /**
+     * 创建人：陈刚 自动创建，禁止修改
+     * 创建时间：2019-12-28
+     */
+    void save(PurchaseSign object) throws Exception;
 
     /**
-    * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2019-03-12
-    */
-    void save(PurchaseSign purchaseSign) throws Exception;
+     * 创建人：陈刚 自动创建，禁止修改
+     * 创建时间：2019-12-28
+     */
+    void update(PurchaseSign object) throws Exception;
 
     /**
-    * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2019-03-12
-    */
-    void update(PurchaseSign purchaseSign) throws Exception;
+     * 创建人：陈刚 自动创建，禁止修改
+     * 创建时间：2019-12-28
+     */
+    void updateAll(PurchaseSign object) throws Exception;
 
     /**
-    * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2019-03-12
-    */
-    void updateAll(PurchaseSign purchaseSign) throws Exception;
-
-    /**
-    * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2019-03-12
-    */
-    void deleteById(String id) throws Exception;
-
-    /**
-    * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2019-03-12
-    */
-    void deleteByIds(String[] ids) throws Exception;
-
-    /**
-    * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2019-03-12
-    */
-    PurchaseSign selectById(String id) throws Exception;
-
-    /**
-    * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2019-03-12
-    */
-    List<PurchaseSign> dataListPage(PageData pd,Pagination pg) throws Exception;
-
-    /**
-    * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2019-03-12
-    */
-    List<PurchaseSign> dataList(PageData pd) throws Exception;
-
-    /**
-    * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2019-03-12
-    */
-    List<LinkedHashMap> findColumnList() throws Exception;
-
-    /**
-    * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2019-03-12
-    */
-    List<Map> findDataList(PageData pd) throws Exception;
-
-    /**
-    * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2019-03-12
-    */
-    void deleteByColumnMap(Map columnMap) throws Exception;
-
-    /**
-    * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2019-03-12
-    */
-    List<PurchaseSign> selectByColumnMap(Map columnMap) throws Exception;
-
-
-    /**
-    * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2019-03-12
-    */
-    List<LinkedHashMap> getColumnList() throws Exception;
-
-    /**
-    * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2019-03-12
-    */
-    List<Map> getDataList(PageData pd) throws Exception;
-
-    /**
-    * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2019-03-12
-    */
-    List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception;
-
-    /**
-    * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2019-03-12
-    */
+     * 创建人：陈刚 自动创建，禁止修改
+     * 创建时间：2019-12-28
+     */
     void updateToDisableByIds(String[] ids)throws Exception;
 
     /**
-    * 创建人：刘威 自动创建，禁止修改
-    * 创建时间：2019-03-12
-    */
-    void updateByDefined(PageData pd)throws Exception;
+     * 创建人：陈刚 自动创建，禁止修改
+     * 创建时间：2019-12-28
+     */
+    void deleteById(String id) throws Exception;
+
+    /**
+     * 创建人：陈刚 自动创建，禁止修改
+     * 创建时间：2019-12-28
+     */
+    void deleteByIds(String[] ids) throws Exception;
+
+    /**
+     * 创建人：陈刚 自动创建，禁止修改
+     * 创建时间：2019-12-28
+     */
+    void deleteByColumnMap(Map columnMap) throws Exception;
+
+    /**
+     * 创建人：陈刚 自动创建，禁止修改
+     * 创建时间：2019-12-28
+     */
+    PurchaseSign selectById(String id) throws Exception;
+
+    /**
+     * 创建人：陈刚 自动创建，禁止修改
+     * 创建时间：2019-12-28
+     */
+    List<PurchaseSign> selectByColumnMap(Map columnMap) throws Exception;
+
+    /**
+     * 创建人：陈刚 自动创建，禁止修改
+     * 创建时间：2019-12-28
+     */
+    List<PurchaseSign> dataList(PageData pd) throws Exception;
+
+    /**
+     * 创建人：陈刚 自动创建，禁止修改
+     * 创建时间：2019-12-28
+     */
+    List<Map> getDataListPage(PageData pd, Pagination pg) throws Exception;
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
     /**
@@ -133,29 +93,17 @@ public interface PurchaseSignService {
      */
     List<PurchaseSign> findDataList(PageData pageData, Boolean isQueryAll) throws Exception;
 
+    PurchaseSign findPurchaseSign(PageData object) throws Exception;
+    PurchaseSign findPurchaseSignById(String id) throws Exception;
+    List<PurchaseSign> findPurchaseSignList(PageData object) throws Exception;
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**
     * 分页查询
     * @param pd    查询参数对象PageData
-    * @param pg    分页参数对象Pagination
     * @return      返回对象ResultModel
     * @throws Exception
     */
-    ResultModel listPagePurchaseSigns(PageData pd,Pagination pg) throws Exception;
-
-    /**
-    * 导出
-    * @param pd    查询参数对象PageData
-    * @param pg    分页参数对象Pagination
-    * @throws Exception
-    */
-    void exportExcelPurchaseSigns(PageData pd,Pagination pg) throws Exception;
-
-    /**
-    * 导入
-    * @return      返回对象ResultModel
-    * @throws Exception
-    */
-    ResultModel importExcelPurchaseSigns(MultipartFile file) throws Exception;
+    ResultModel listPagePurchaseSign(PageData pd) throws Exception;
 
     //////////////////////////////////////////////////////////////////////////////////
     /**
