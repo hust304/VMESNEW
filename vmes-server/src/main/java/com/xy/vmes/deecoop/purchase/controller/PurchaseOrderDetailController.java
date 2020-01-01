@@ -1,6 +1,7 @@
 package com.xy.vmes.deecoop.purchase.controller;
 
 import com.xy.vmes.service.PurchaseOrderDetailByRetreatService;
+import com.xy.vmes.service.PurchaseOrderDetailQueryBySignService;
 import com.xy.vmes.service.PurchaseOrderDetailService;
 import com.xy.vmes.entity.PurchaseOrderDetail;
 
@@ -16,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-
 /**
 * 说明：vmes_purchase_order_detail:采购订单明细Controller
 * @author 刘威 自动生成
@@ -25,11 +25,12 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @Slf4j
 public class PurchaseOrderDetailController {
-
     private Logger logger = LoggerFactory.getLogger(PurchaseOrderDetailController.class);
 
     @Autowired
     private PurchaseOrderDetailService purchaseOrderDetailService;
+    @Autowired
+    private PurchaseOrderDetailQueryBySignService orderDetailQueryBySignService;
 
     @Autowired
     private PurchaseOrderDetailByRetreatService purchaseOrderDetailByRetreatService;
@@ -223,6 +224,18 @@ public class PurchaseOrderDetailController {
         ResultModel model = purchaseOrderDetailService.cancelPurchaseOrderDetail(pageData);
         Long endTime = System.currentTimeMillis();
         logger.info("################/purchase/purchaseOrderDetail/cancelPurchaseOrderDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    ////////////////////////////////////////////////////////////////////////
+    @PostMapping("/purchase/purchaseOrderDetail/listPageOrderDetailQueryBySign")
+    public ResultModel listPageOrderDetailQueryBySign() throws Exception {
+        logger.info("################/purchase/purchaseOrderDetail/listPageOrderDetailQueryBySign 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = orderDetailQueryBySignService.listPageOrderDetailQueryBySign(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/purchase/purchaseOrderDetail/listPageOrderDetailQueryBySign 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 

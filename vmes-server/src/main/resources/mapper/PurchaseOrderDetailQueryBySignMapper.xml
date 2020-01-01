@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+说明：采购订单明细查询汇总 Mapper.xml
+采购-采购收货-生成收货单-收货-弹出界面查询
+创建人：陈刚
+创建时间：2019-12-31
+ -->
+<mapper namespace="com.xy.vmes.deecoop.purchase.dao.PurchaseOrderDetailQueryBySignMapper">
+    <select id="listOrderDetaiQueryBySign" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+        <!--采购订单明细-->
+        orderDtl.id id,
+        orderDtl.parent_id orderId,
+        round(ifnull(orderDtl.count, 0), 2) orderCount,
+
+        <!--货品表-->
+        product_id productId,
+        product.code sysProductCode,
+        product.source_code custProductCode,
+        CASE
+        WHEN product.source_code is null THEN product.code
+        WHEN product.source_code is not null THEN product.source_code
+        ELSE null
+        END productCode,
+        product.name productName,
+        product.spec productSpec,
+        product.genre productGenre,
+        product.property productProperty,
+
+        orderDtl.unit orderUnit,
+        orderUnit.name orderUnitName,
+
+        <!--采购签收明细-->
+        round(ifnull(signDtl.signCount, 0), 2) signCount,
+
+        <!--未签收数量: 采购数量 - (已生成签收单)签收数量 -->
+        round((ifnull(orderDtl.count, 0) - ifnull(signDtl.signCount, 0)), 2) maxAarriveCount,
+        <!--默认签收数量: 采购数量 - (已生成签收单)签收数量 -->
+        round((ifnull(orderDtl.count, 0) - ifnull(signDtl.signCount, 0)), 2) arriveCount,
+        <!--质检属性 (1:免检 2:检验)-->
+        '检验' quality
+
+        from vmes_purchase_order_detail orderDtl
+        left join vmes_product product on orderDtl.product_id = product.id
+        left join vmes_dictionary orderUnit on orderDtl.unit = orderUnit.id
+
+        <!--获取(已生成签收单)签收数量 根据采购订单明细id汇总查询(采购签收明细) 已生成签收单数量-->
+        left join (
+        select order_detail_id, sum(arrive_count) signCount
+        from vmes_purchase_sign_detail
+        where <![CDATA[ state <> '-1' ]]>
+        group by order_detail_id
+        ) signDtl on orderDtl.id = signDtl.order_detail_id
+        <where>
+            <if test="orderId != null and orderId != ''">
+                and orderDtl.parent_id = #{orderId}
+            </if>
+        </where>
+    </select>
+
+    <insert id="purchaseOrderDetailQueryBySign" >
+        delete from vmes_column where model_code = 'purchaseOrderDetailQueryBySign';
+        insert into vmes_column (
+        id,model_code,title_key,title_name,serial_number,
+        isdisable,ishide,isedit,ismust,cdate,
+        cuser
+        ) VALUES
+        (replace(uuid(), '-', ''),'purchaseOrderDetailQueryBySign','id','id',0, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'purchaseOrderDetailQueryBySign','orderId','采购订单id',1, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''), 'purchaseOrderDetailQueryBySign', 'productId', '货品id', 2, '1', '0', '1', '0', now(), 'admin'),
+        (replace(uuid(), '-', ''), 'purchaseOrderDetailQueryBySign', 'productCode', '货品编码', 3, '1', '1', '1', '0', now(), 'admin'),
+        (replace(uuid(), '-', ''), 'purchaseOrderDetailQueryBySign', 'productName', '货品名称', 4, '1', '1', '1', '0', now(), 'admin'),
+        (replace(uuid(), '-', ''), 'purchaseOrderDetailQueryBySign', 'productSpec', '规格型号', 5, '1', '1', '1', '0', now(), 'admin'),
+        (replace(uuid(), '-', ''), 'purchaseOrderDetailQueryBySign','orderUnitName','单位',6, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''), 'purchaseOrderDetailQueryBySign', 'productProperty', '自定义属性', 7, '1', '1', '1', '0', now(), 'admin'),
+        (replace(uuid(), '-', ''),'purchaseOrderDetailQueryBySign','orderCount','采购数量',8, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''), 'purchaseOrderDetailQueryBySign', 'signCount', '签收单数量', 9, '1', '1', '1', '0', now(), 'admin'),
+        (replace(uuid(), '-', ''), 'purchaseOrderDetailQueryBySign', 'maxAarriveCount', '未签收数量', 10, '1', '1', '1', '0', now(), 'admin'),
+        (replace(uuid(), '-', ''), 'purchaseOrderDetailQueryBySign', 'arriveCount', '签收数量', 11, '1', '1', '1', '0', now(), 'admin'),
+        (replace(uuid(), '-', ''), 'purchaseOrderDetailQueryBySign', 'quality', '质检属性', 12, '1', '1', '1', '0', now(), 'admin')
+    </insert>
+</mapper>
