@@ -369,214 +369,214 @@ public class SaleOrderByChangeServiceImp implements SaleOrderByChangeService {
         }
     }
 
-    /**
-     * 订单明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
-     * 3:待出库 readyOut
-     *
-     * 修改订单明细(订购数量,金额,货品数量(计量单位),可发货数量(计价单位),锁定货品数量(计量单位))
-     * 修改货品表(lockCount:lock_count:锁定库存数量)
-     *
-     * @param objectList
-     */
-    public void orderChangeByReadyOut(List<SaleOrderDetailEntity> objectList, String companyId) throws Exception {
-        if (objectList == null || objectList.size() == 0) {return;}
-        //3:待出库
-        List<SaleOrderDetailEntity> readyOutList = this.findOrderDetailListByState(objectList, "3");
-        if (readyOutList == null || readyOutList.size() == 0) {return;}
-
-        //获取企业id对应的锁定库存时长(毫秒)
-        Long lockTime = saleLockDateService.findLockDateMillisecondByCompanyId(companyId);
-
-        for (SaleOrderDetailEntity orderDtlEntity : readyOutList) {
-            SaleOrderDetail orderDtl = this.orderDtlEntity2OrderDtl(orderDtlEntity, null);
-
-            //newLockCount 变更后-锁定货品数量(计量单位)
-            BigDecimal newLockCount = orderDtlEntity.getNewLockCount();
-            if (newLockCount != null) {
-                //oldLockCount 变更前-锁定货品数量(计量单位)
-                BigDecimal oldLockCount = orderDtlEntity.getOldLockCount();
-                BigDecimal changeLockCount = BigDecimal.valueOf(newLockCount.doubleValue() - oldLockCount.doubleValue());
-
-                //productId 货品ID
-                String productId = orderDtlEntity.getProductId();
-
-                //修改锁定库存数量
-                Product oldProduct = new Product();
-                oldProduct.setId(productId);
-                oldProduct.setLockCount(oldLockCount);
-                productService.updateLockCount(
-                        productId,
-                        oldProduct,
-                        changeLockCount,
-                        null);
-
-                //isLockWarehouse 是否锁定仓库(0:未锁定 1:已锁定)
-                orderDtl.setIsLockWarehouse("1");
-                //lockCount 锁定货品数量(计量单位)
-                orderDtl.setLockCount(newLockCount);
-
-                //versionLockCount
-                Integer versionLockCount = orderDtlEntity.getVersionLockCount();
-
-                if (versionLockCount != null) {
-                    versionLockCount = Integer.valueOf(versionLockCount.intValue() + 1);
-                    orderDtl.setVersionLockCount(versionLockCount);
-
-                    //信息队列信息:(订单明细id,锁定库存版本号,,)
-                    String orderDtl_activeMQ_temp = "{0},{1}";
-                    String orderDtl_activeMQ_msg = MessageFormat.format(orderDtl_activeMQ_temp,
-                            orderDtl.getId(),
-                            orderDtl.getVersionLockCount());
-
-                    //发送消息队列信息
-                    if (lockTime != null && lockTime.longValue() > 0) {
-                        firstSender.sendMsg(orderDtl_activeMQ_msg, lockTime.intValue());
-                    }
-                }
-            }
-
-            saleOrderDetailService.update(orderDtl);
-        }
-    }
-
-    /**
-     * 订单明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
-     * 4:待发货 readyDeliver
-     *
-     * 修改订单明细(订购数量,金额,货品数量(计量单位),可发货数量(计价单位),锁定货品数量(计量单位))
-     * 修改货品表(lockCount:lock_count:锁定库存数量)
-     *
-     * @param objectList
-     * @param companyId
-     */
-    public void orderChangeByReadyDeliver(List<SaleOrderDetailEntity> objectList, String companyId) throws Exception {
-        if (objectList == null || objectList.size() == 0) {return;}
-        //4:待发货
-        List<SaleOrderDetailEntity> readyDeliverList = this.findOrderDetailListByState(objectList, "4");
-        if (readyDeliverList == null || readyDeliverList.size() == 0) {return;}
-
-        //获取企业id对应的锁定库存时长(毫秒)
-        Long lockTime = saleLockDateService.findLockDateMillisecondByCompanyId(companyId);
-
-        for (SaleOrderDetailEntity orderDtlEntity : readyDeliverList) {
-            SaleOrderDetail orderDtl = this.orderDtlEntity2OrderDtl(orderDtlEntity, null);
-
-            //newLockCount 变更后-锁定货品数量(计量单位)
-            BigDecimal newLockCount = orderDtlEntity.getNewLockCount();
-            if (newLockCount != null) {
-                //oldLockCount 变更前-锁定货品数量(计量单位)
-                BigDecimal oldLockCount = orderDtlEntity.getOldLockCount();
-                BigDecimal changeLockCount = BigDecimal.valueOf(newLockCount.doubleValue() - oldLockCount.doubleValue());
-
-                //productId 货品ID
-                String productId = orderDtlEntity.getProductId();
-
-                //修改锁定库存数量
-                Product oldProduct = new Product();
-                oldProduct.setId(productId);
-                oldProduct.setLockCount(oldLockCount);
-                productService.updateLockCount(
-                        productId,
-                        oldProduct,
-                        changeLockCount,
-                        null);
-
-                //isLockWarehouse 是否锁定仓库(0:未锁定 1:已锁定)
-                orderDtl.setIsLockWarehouse("1");
-                //lockCount 锁定货品数量(计量单位)
-                orderDtl.setLockCount(newLockCount);
-
-                //versionLockCount
-                Integer versionLockCount = orderDtlEntity.getVersionLockCount();
-
-                if (versionLockCount != null) {
-                    versionLockCount = Integer.valueOf(versionLockCount.intValue() + 1);
-                    orderDtl.setVersionLockCount(versionLockCount);
-
-                    //信息队列信息:(订单明细id,锁定库存版本号,,)
-                    String orderDtl_activeMQ_temp = "{0},{1}";
-                    String orderDtl_activeMQ_msg = MessageFormat.format(orderDtl_activeMQ_temp,
-                            orderDtl.getId(),
-                            orderDtl.getVersionLockCount());
-
-                    //发送消息队列信息
-                    if (lockTime != null && lockTime.longValue() > 0) {
-                        firstSender.sendMsg(orderDtl_activeMQ_msg, lockTime.intValue());
-                    }
-                }
-            }
-
-            saleOrderDetailService.update(orderDtl);
-        }
-
-//        //(订单id, 0:待发货) 查询发货明细表(vmes_sale_deliver_detail)
-//        //发货明细状态(0:待发货 1:已发货 -1:已取消)
-//        List<Map<String, Object>> mapList = saleDeliverOutDetailService.findDeliverDetailListByOrderId(orderId, "0");
+//    /**
+//     * 订单明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
+//     * 3:待出库 readyOut
+//     *
+//     * 修改订单明细(订购数量,金额,货品数量(计量单位),可发货数量(计价单位),锁定货品数量(计量单位))
+//     * 修改货品表(lockCount:lock_count:锁定库存数量)
+//     *
+//     * @param objectList
+//     */
+//    public void orderChangeByReadyOut(List<SaleOrderDetailEntity> objectList, String companyId) throws Exception {
+//        if (objectList == null || objectList.size() == 0) {return;}
+//        //3:待出库
+//        List<SaleOrderDetailEntity> readyOutList = this.findOrderDetailListByState(objectList, "3");
+//        if (readyOutList == null || readyOutList.size() == 0) {return;}
 //
-//        //获取出库单Map
-//        Map<String, Map<String, String>> warehouseOutMap = this.findWarehouseOutMap(mapList);
-//        if (warehouseOutMap == null || warehouseOutMap.size() == 0) {return;}
-//        for (Iterator firstIterator = warehouseOutMap.keySet().iterator(); firstIterator.hasNext();) {
-//            //出库单ID
-//            String outId = (String) firstIterator.next();
-//            String remark = "订单(订购数量)变更，取消该出库单";
+//        //获取企业id对应的锁定库存时长(毫秒)
+//        Long lockTime = saleLockDateService.findLockDateMillisecondByCompanyId(companyId);
 //
-//            Map<String, String> outDtlMap = warehouseOutMap.get(outId);
-//            for (Iterator secondIterator = outDtlMap.keySet().iterator(); secondIterator.hasNext();) {
-//                //出库单明细ID
-//                String outDtlId = (String) secondIterator.next();
+//        for (SaleOrderDetailEntity orderDtlEntity : readyOutList) {
+//            SaleOrderDetail orderDtl = this.orderDtlEntity2OrderDtl(orderDtlEntity, null);
 //
-//                PageData pageData = new PageData();
-//                pageData.put("id", outDtlId);
-//                pageData.put("cuser", cuser);
-//                pageData.put("currentCompanyId", companyId);
-//                pageData.put("rebackBillReason", remark);
-//                warehouseOutDetailService.rebackWarehouseOutDetail(pageData);
+//            //newLockCount 变更后-锁定货品数量(计量单位)
+//            BigDecimal newLockCount = orderDtlEntity.getNewLockCount();
+//            if (newLockCount != null) {
+//                //oldLockCount 变更前-锁定货品数量(计量单位)
+//                BigDecimal oldLockCount = orderDtlEntity.getOldLockCount();
+//                BigDecimal changeLockCount = BigDecimal.valueOf(newLockCount.doubleValue() - oldLockCount.doubleValue());
 //
-//                WarehouseOutDetail outDetail = new WarehouseOutDetail();
-//                outDetail.setId(outDtlId);
-//                //出库明细状态(0:待派单 1:执行中 2:已完成 -1.已取消)
-//                outDetail.setState("-1");
-//                warehouseOutDetailService.update(outDetail);
+//                //productId 货品ID
+//                String productId = orderDtlEntity.getProductId();
+//
+//                //修改锁定库存数量
+//                Product oldProduct = new Product();
+//                oldProduct.setId(productId);
+//                oldProduct.setLockCount(oldLockCount);
+//                productService.updateLockCount(
+//                        productId,
+//                        oldProduct,
+//                        changeLockCount,
+//                        null);
+//
+//                //isLockWarehouse 是否锁定仓库(0:未锁定 1:已锁定)
+//                orderDtl.setIsLockWarehouse("1");
+//                //lockCount 锁定货品数量(计量单位)
+//                orderDtl.setLockCount(newLockCount);
+//
+//                //versionLockCount
+//                Integer versionLockCount = orderDtlEntity.getVersionLockCount();
+//
+//                if (versionLockCount != null) {
+//                    versionLockCount = Integer.valueOf(versionLockCount.intValue() + 1);
+//                    orderDtl.setVersionLockCount(versionLockCount);
+//
+//                    //信息队列信息:(订单明细id,锁定库存版本号,,)
+//                    String orderDtl_activeMQ_temp = "{0},{1}";
+//                    String orderDtl_activeMQ_msg = MessageFormat.format(orderDtl_activeMQ_temp,
+//                            orderDtl.getId(),
+//                            orderDtl.getVersionLockCount());
+//
+//                    //发送消息队列信息
+//                    if (lockTime != null && lockTime.longValue() > 0) {
+//                        firstSender.sendMsg(orderDtl_activeMQ_msg, lockTime.intValue());
+//                    }
+//                }
 //            }
 //
-//            WarehouseOut warehouseOut = new WarehouseOut();
-//            warehouseOut.setId(outId);
-//            warehouseOut.setRemark(remark);
-//            //出库状态(0:未完成 1:已完成 -1:已取消)
-//            warehouseOut.setState("-1");
-//            warehouseOutService.update(warehouseOut);
+//            saleOrderDetailService.update(orderDtl);
 //        }
+//    }
 
-//        //获取发货单Map
-//        Map<String, Map<String, String>> deliverMap = this.findDeliverMap(mapList);
-//        if (deliverMap == null || deliverMap.size() == 0) {return;}
-//        for (Iterator firstIterator = deliverMap.keySet().iterator(); firstIterator.hasNext();) {
-//            //发货单ID
-//            String deliverId = (String) firstIterator.next();
-//            String remark = "订单(订购数量)变更，取消该发货单";
+//    /**
+//     * 订单明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
+//     * 4:待发货 readyDeliver
+//     *
+//     * 修改订单明细(订购数量,金额,货品数量(计量单位),可发货数量(计价单位),锁定货品数量(计量单位))
+//     * 修改货品表(lockCount:lock_count:锁定库存数量)
+//     *
+//     * @param objectList
+//     * @param companyId
+//     */
+//    public void orderChangeByReadyDeliver(List<SaleOrderDetailEntity> objectList, String companyId) throws Exception {
+//        if (objectList == null || objectList.size() == 0) {return;}
+//        //4:待发货
+//        List<SaleOrderDetailEntity> readyDeliverList = this.findOrderDetailListByState(objectList, "4");
+//        if (readyDeliverList == null || readyDeliverList.size() == 0) {return;}
 //
-//            Map<String, String> deliverDtlMap = deliverMap.get(deliverId);
-//            for (Iterator secondIterator = deliverDtlMap.keySet().iterator(); secondIterator.hasNext();) {
-//                //发货单明细ID
-//                String deliverDtlId = (String) secondIterator.next();
+//        //获取企业id对应的锁定库存时长(毫秒)
+//        Long lockTime = saleLockDateService.findLockDateMillisecondByCompanyId(companyId);
 //
-//                SaleDeliverDetail deliverDetail = new SaleDeliverDetail();
-//                deliverDetail.setId(deliverDtlId);
-//                //发货明细状态(0:待发货 1:已发货 -1:已取消)
-//                deliverDetail.setState("-1");
-//                deliverDetail.setRemark(remark);
-//                saleDeliverDetailService.update(deliverDetail);
+//        for (SaleOrderDetailEntity orderDtlEntity : readyDeliverList) {
+//            SaleOrderDetail orderDtl = this.orderDtlEntity2OrderDtl(orderDtlEntity, null);
+//
+//            //newLockCount 变更后-锁定货品数量(计量单位)
+//            BigDecimal newLockCount = orderDtlEntity.getNewLockCount();
+//            if (newLockCount != null) {
+//                //oldLockCount 变更前-锁定货品数量(计量单位)
+//                BigDecimal oldLockCount = orderDtlEntity.getOldLockCount();
+//                BigDecimal changeLockCount = BigDecimal.valueOf(newLockCount.doubleValue() - oldLockCount.doubleValue());
+//
+//                //productId 货品ID
+//                String productId = orderDtlEntity.getProductId();
+//
+//                //修改锁定库存数量
+//                Product oldProduct = new Product();
+//                oldProduct.setId(productId);
+//                oldProduct.setLockCount(oldLockCount);
+//                productService.updateLockCount(
+//                        productId,
+//                        oldProduct,
+//                        changeLockCount,
+//                        null);
+//
+//                //isLockWarehouse 是否锁定仓库(0:未锁定 1:已锁定)
+//                orderDtl.setIsLockWarehouse("1");
+//                //lockCount 锁定货品数量(计量单位)
+//                orderDtl.setLockCount(newLockCount);
+//
+//                //versionLockCount
+//                Integer versionLockCount = orderDtlEntity.getVersionLockCount();
+//
+//                if (versionLockCount != null) {
+//                    versionLockCount = Integer.valueOf(versionLockCount.intValue() + 1);
+//                    orderDtl.setVersionLockCount(versionLockCount);
+//
+//                    //信息队列信息:(订单明细id,锁定库存版本号,,)
+//                    String orderDtl_activeMQ_temp = "{0},{1}";
+//                    String orderDtl_activeMQ_msg = MessageFormat.format(orderDtl_activeMQ_temp,
+//                            orderDtl.getId(),
+//                            orderDtl.getVersionLockCount());
+//
+//                    //发送消息队列信息
+//                    if (lockTime != null && lockTime.longValue() > 0) {
+//                        firstSender.sendMsg(orderDtl_activeMQ_msg, lockTime.intValue());
+//                    }
+//                }
 //            }
 //
-//            SaleDeliver deliver = new SaleDeliver();
-//            deliver.setId(deliverId);
-//            //发货状态(0:待发货 1:已发货 -1:已取消)
-//            deliver.setState("-1");
-//            deliver.setRemark(remark);
-//            saleDeliverService.update(deliver);
+//            saleOrderDetailService.update(orderDtl);
 //        }
-    }
+//
+////        //(订单id, 0:待发货) 查询发货明细表(vmes_sale_deliver_detail)
+////        //发货明细状态(0:待发货 1:已发货 -1:已取消)
+////        List<Map<String, Object>> mapList = saleDeliverOutDetailService.findDeliverDetailListByOrderId(orderId, "0");
+////
+////        //获取出库单Map
+////        Map<String, Map<String, String>> warehouseOutMap = this.findWarehouseOutMap(mapList);
+////        if (warehouseOutMap == null || warehouseOutMap.size() == 0) {return;}
+////        for (Iterator firstIterator = warehouseOutMap.keySet().iterator(); firstIterator.hasNext();) {
+////            //出库单ID
+////            String outId = (String) firstIterator.next();
+////            String remark = "订单(订购数量)变更，取消该出库单";
+////
+////            Map<String, String> outDtlMap = warehouseOutMap.get(outId);
+////            for (Iterator secondIterator = outDtlMap.keySet().iterator(); secondIterator.hasNext();) {
+////                //出库单明细ID
+////                String outDtlId = (String) secondIterator.next();
+////
+////                PageData pageData = new PageData();
+////                pageData.put("id", outDtlId);
+////                pageData.put("cuser", cuser);
+////                pageData.put("currentCompanyId", companyId);
+////                pageData.put("rebackBillReason", remark);
+////                warehouseOutDetailService.rebackWarehouseOutDetail(pageData);
+////
+////                WarehouseOutDetail outDetail = new WarehouseOutDetail();
+////                outDetail.setId(outDtlId);
+////                //出库明细状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+////                outDetail.setState("-1");
+////                warehouseOutDetailService.update(outDetail);
+////            }
+////
+////            WarehouseOut warehouseOut = new WarehouseOut();
+////            warehouseOut.setId(outId);
+////            warehouseOut.setRemark(remark);
+////            //出库状态(0:未完成 1:已完成 -1:已取消)
+////            warehouseOut.setState("-1");
+////            warehouseOutService.update(warehouseOut);
+////        }
+//
+////        //获取发货单Map
+////        Map<String, Map<String, String>> deliverMap = this.findDeliverMap(mapList);
+////        if (deliverMap == null || deliverMap.size() == 0) {return;}
+////        for (Iterator firstIterator = deliverMap.keySet().iterator(); firstIterator.hasNext();) {
+////            //发货单ID
+////            String deliverId = (String) firstIterator.next();
+////            String remark = "订单(订购数量)变更，取消该发货单";
+////
+////            Map<String, String> deliverDtlMap = deliverMap.get(deliverId);
+////            for (Iterator secondIterator = deliverDtlMap.keySet().iterator(); secondIterator.hasNext();) {
+////                //发货单明细ID
+////                String deliverDtlId = (String) secondIterator.next();
+////
+////                SaleDeliverDetail deliverDetail = new SaleDeliverDetail();
+////                deliverDetail.setId(deliverDtlId);
+////                //发货明细状态(0:待发货 1:已发货 -1:已取消)
+////                deliverDetail.setState("-1");
+////                deliverDetail.setRemark(remark);
+////                saleDeliverDetailService.update(deliverDetail);
+////            }
+////
+////            SaleDeliver deliver = new SaleDeliver();
+////            deliver.setId(deliverId);
+////            //发货状态(0:待发货 1:已发货 -1:已取消)
+////            deliver.setState("-1");
+////            deliver.setRemark(remark);
+////            saleDeliverService.update(deliver);
+////        }
+//    }
 
     ///////////////////////////////////////////////////////////////////////////////////////////
     private List<SaleOrderDetailEntity> findOrderDetailListByState(List<SaleOrderDetailEntity> objectList, String state) {
@@ -593,36 +593,36 @@ public class SaleOrderByChangeServiceImp implements SaleOrderByChangeService {
         return outList;
     }
 
-    private SaleOrderDetail orderDtlEntity2OrderDtl(SaleOrderDetailEntity orderDtlEntity, SaleOrderDetail orderDtl) {
-        if (orderDtl == null) {orderDtl = new SaleOrderDetail();}
-        if (orderDtlEntity == null) {return orderDtl;}
-
-        orderDtl.setId(orderDtlEntity.getId());
-
-        //修改订单属性
-        //orderCount 订购数量
-        orderDtl.setOrderCount(orderDtlEntity.getOrderCount());
-        orderDtl.setPriceCount(orderDtlEntity.getOrderCount());
-        //productSum 金额
-        orderDtl.setProductSum(orderDtlEntity.getProductSum());
-        //productCount 货品数量(计量单位)
-        orderDtl.setProductCount(orderDtlEntity.getProductCount());
-
-        //needDeliverCount 可发货数量(计价单位)
-        if (orderDtlEntity.getNeedDeliverCount() != null) {
-            orderDtl.setNeedDeliverCount(orderDtlEntity.getNeedDeliverCount());
-
-            //lockCount 锁定货品数量(计量单位) := newLockCount 变更后-锁定货品数量(计量单位)
-            orderDtl.setLockCount(orderDtlEntity.getNewLockCount());
-
-            //isLockWarehouse 是否锁定仓库(0:未锁定 1:已锁定)
-            if (orderDtl.getNeedDeliverCount() != null && orderDtl.getNeedDeliverCount().doubleValue() > 0) {
-                orderDtl.setIsLockWarehouse("1");
-            }
-        }
-
-        return orderDtl;
-    }
+//    private SaleOrderDetail orderDtlEntity2OrderDtl(SaleOrderDetailEntity orderDtlEntity, SaleOrderDetail orderDtl) {
+//        if (orderDtl == null) {orderDtl = new SaleOrderDetail();}
+//        if (orderDtlEntity == null) {return orderDtl;}
+//
+//        orderDtl.setId(orderDtlEntity.getId());
+//
+//        //修改订单属性
+//        //orderCount 订购数量
+//        orderDtl.setOrderCount(orderDtlEntity.getOrderCount());
+//        orderDtl.setPriceCount(orderDtlEntity.getOrderCount());
+//        //productSum 金额
+//        orderDtl.setProductSum(orderDtlEntity.getProductSum());
+//        //productCount 货品数量(计量单位)
+//        orderDtl.setProductCount(orderDtlEntity.getProductCount());
+//
+//        //needDeliverCount 可发货数量(计价单位)
+//        if (orderDtlEntity.getNeedDeliverCount() != null) {
+//            orderDtl.setNeedDeliverCount(orderDtlEntity.getNeedDeliverCount());
+//
+//            //lockCount 锁定货品数量(计量单位) := newLockCount 变更后-锁定货品数量(计量单位)
+//            orderDtl.setLockCount(orderDtlEntity.getNewLockCount());
+//
+//            //isLockWarehouse 是否锁定仓库(0:未锁定 1:已锁定)
+//            if (orderDtl.getNeedDeliverCount() != null && orderDtl.getNeedDeliverCount().doubleValue() > 0) {
+//                orderDtl.setIsLockWarehouse("1");
+//            }
+//        }
+//
+//        return orderDtl;
+//    }
 
     /**
      * 生成出库单 Map<出库单id,Map<出库单明细id,出库单明细id>

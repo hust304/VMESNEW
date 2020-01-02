@@ -1211,306 +1211,306 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
         return model;
     }
 
-    public ResultModel changeSaleOrderByDetail(PageData pageData) throws Exception {
-        ResultModel model = new ResultModel();
-
-        String cuser = pageData.getString("cuser");
-        String companyId = pageData.getString("currentCompanyId");
-
-        String orderId = pageData.getString("orderId");
-        if (orderId == null || orderId.trim().length() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("订单id为空或空字符串！");
-            return model;
-        }
-
-        String orderDtlId = pageData.getString("orderDtlId");
-        if (orderDtlId == null || orderDtlId.trim().length() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("订单明细id为空或空字符串！");
-            return model;
-        }
-
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////
-        String dtlJsonStr = pageData.getString("dtlJsonStr");
-        if (dtlJsonStr == null || dtlJsonStr.trim().length() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("订单明细为空！");
-            return model;
-        }
-
-        List<Map<String, String>> mapList = (List<Map<String, String>>) YvanUtil.jsonToList(dtlJsonStr);
-        if (mapList == null || mapList.size() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("订单明细Json字符串-转换成List错误！");
-            return model;
-        }
-
-        //单位换算(变更后订购数量)--货品数量:转换计量单位数量
-        List<SaleOrderDetailEntity> orderDtlEntityList = saleOrderByChangeService.orderChangeMapList2OrderDtlList(mapList, null);
-        if (orderDtlEntityList == null || orderDtlEntityList.size() == 0 || orderDtlEntityList.get(0) == null) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("订单明细Json字符串-转换成订单明细实体类SaleOrderDetailEntity错误！");
-            return model;
-        }
-
-        //修改订单明细(订单明细订购金额, 订单明细货品数量)
-        //2:待生产
-        saleOrderByChangeService.orderChangeByReadyProduce(orderDtlEntityList);
-        //3:待出库
-        saleOrderByChangeService.orderChangeByReadyOut(orderDtlEntityList, companyId);
-        //4:待发货
-        saleOrderByChangeService.orderChangeByReadyDeliver(orderDtlEntityList, companyId);
-
-        //根据订单明细id 查询(vmes_warehouse_out_detail) 获取出库单明细id
-        PageData findMap = new PageData();
-        findMap.put("orderDtlId", orderDtlId);
-        //发货状态(0:待发货 1:已发货 -1:已取消)
-        findMap.put("state", "0");
-        List<SaleDeliverDetail> deliverDtlList = saleDeliverDetailService.findSaleDeliverDetailList(findMap);
-
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //取消发货单
-        if (deliverDtlList != null && deliverDtlList.size() > 0) {
-            //发货单明细id
-            Map<String, String> deliverMap = new LinkedHashMap<String, String>();
-            //发货单id
-            Map<String, String> deliverDtlMap = new LinkedHashMap<String, String>();
-            for (SaleDeliverDetail deliverDtl : deliverDtlList) {
-                String detailId = deliverDtl.getId();
-                deliverDtlMap.put(detailId, detailId);
-
-                String parentId = deliverDtl.getParentId();
-                deliverMap.put(parentId, parentId);
-
-//                String inDetailId = deliverDtl.getInDetailId();
-//                if (inDetailId != null && inDetailId.trim().length() > 0
-//                    && detailId != null && detailId.trim().length() > 0
-//                    && parentId != null && parentId.trim().length() > 0
-//                ) {
-//                    deliverDtlMap.put(detailId, detailId);
-//                    deliverMap.put(parentId, parentId);
+//    public ResultModel changeSaleOrderByDetail(PageData pageData) throws Exception {
+//        ResultModel model = new ResultModel();
+//
+//        String cuser = pageData.getString("cuser");
+//        String companyId = pageData.getString("currentCompanyId");
+//
+//        String orderId = pageData.getString("orderId");
+//        if (orderId == null || orderId.trim().length() == 0) {
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg("订单id为空或空字符串！");
+//            return model;
+//        }
+//
+//        String orderDtlId = pageData.getString("orderDtlId");
+//        if (orderDtlId == null || orderDtlId.trim().length() == 0) {
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg("订单明细id为空或空字符串！");
+//            return model;
+//        }
+//
+//        /////////////////////////////////////////////////////////////////////////////////////////////////////////
+//        String dtlJsonStr = pageData.getString("dtlJsonStr");
+//        if (dtlJsonStr == null || dtlJsonStr.trim().length() == 0) {
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg("订单明细为空！");
+//            return model;
+//        }
+//
+//        List<Map<String, String>> mapList = (List<Map<String, String>>) YvanUtil.jsonToList(dtlJsonStr);
+//        if (mapList == null || mapList.size() == 0) {
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg("订单明细Json字符串-转换成List错误！");
+//            return model;
+//        }
+//
+//        //单位换算(变更后订购数量)--货品数量:转换计量单位数量
+//        List<SaleOrderDetailEntity> orderDtlEntityList = saleOrderByChangeService.orderChangeMapList2OrderDtlList(mapList, null);
+//        if (orderDtlEntityList == null || orderDtlEntityList.size() == 0 || orderDtlEntityList.get(0) == null) {
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg("订单明细Json字符串-转换成订单明细实体类SaleOrderDetailEntity错误！");
+//            return model;
+//        }
+//
+//        //修改订单明细(订单明细订购金额, 订单明细货品数量)
+//        //2:待生产
+//        saleOrderByChangeService.orderChangeByReadyProduce(orderDtlEntityList);
+//        //3:待出库
+//        saleOrderByChangeService.orderChangeByReadyOut(orderDtlEntityList, companyId);
+//        //4:待发货
+//        saleOrderByChangeService.orderChangeByReadyDeliver(orderDtlEntityList, companyId);
+//
+//        //根据订单明细id 查询(vmes_warehouse_out_detail) 获取出库单明细id
+//        PageData findMap = new PageData();
+//        findMap.put("orderDtlId", orderDtlId);
+//        //发货状态(0:待发货 1:已发货 -1:已取消)
+//        findMap.put("state", "0");
+//        List<SaleDeliverDetail> deliverDtlList = saleDeliverDetailService.findSaleDeliverDetailList(findMap);
+//
+//        /////////////////////////////////////////////////////////////////////////////////////////////////////////
+//        //取消发货单
+//        if (deliverDtlList != null && deliverDtlList.size() > 0) {
+//            //发货单明细id
+//            Map<String, String> deliverMap = new LinkedHashMap<String, String>();
+//            //发货单id
+//            Map<String, String> deliverDtlMap = new LinkedHashMap<String, String>();
+//            for (SaleDeliverDetail deliverDtl : deliverDtlList) {
+//                String detailId = deliverDtl.getId();
+//                deliverDtlMap.put(detailId, detailId);
+//
+//                String parentId = deliverDtl.getParentId();
+//                deliverMap.put(parentId, parentId);
+//
+////                String inDetailId = deliverDtl.getInDetailId();
+////                if (inDetailId != null && inDetailId.trim().length() > 0
+////                    && detailId != null && detailId.trim().length() > 0
+////                    && parentId != null && parentId.trim().length() > 0
+////                ) {
+////                    deliverDtlMap.put(detailId, detailId);
+////                    deliverMap.put(parentId, parentId);
+////                }
+//            }
+//
+//            //取消发货单明细
+//            for (Iterator iterator = deliverDtlMap.keySet().iterator(); iterator.hasNext();) {
+//                String detailId = iterator.next().toString().trim();
+//
+//                SaleDeliverDetail editDeliverDtl = new SaleDeliverDetail();
+//                editDeliverDtl.setId(detailId);
+//                //发货明细状态(0:待发货 1:已发货 -1:已取消)
+//                editDeliverDtl.setState("-1");
+//                saleDeliverDetailService.update(editDeliverDtl);
+//            }
+//
+//            //取消发货单
+//            for (Iterator iterator = deliverMap.keySet().iterator(); iterator.hasNext();) {
+//                String parentId = iterator.next().toString().trim();
+//
+//                //获取发货单状态
+//                String parentState = null;
+//                List<SaleDeliverDetail> detailList = saleDeliverDetailService.findSaleDeliverDetailListByParentId(parentId);
+//                if (detailList != null && detailList.size() > 0) {
+//                    parentState = saleDeliverDetailService.findParentStateByDetailList(detailList);
 //                }
-            }
-
-            //取消发货单明细
-            for (Iterator iterator = deliverDtlMap.keySet().iterator(); iterator.hasNext();) {
-                String detailId = iterator.next().toString().trim();
-
-                SaleDeliverDetail editDeliverDtl = new SaleDeliverDetail();
-                editDeliverDtl.setId(detailId);
-                //发货明细状态(0:待发货 1:已发货 -1:已取消)
-                editDeliverDtl.setState("-1");
-                saleDeliverDetailService.update(editDeliverDtl);
-            }
-
-            //取消发货单
-            for (Iterator iterator = deliverMap.keySet().iterator(); iterator.hasNext();) {
-                String parentId = iterator.next().toString().trim();
-
-                //获取发货单状态
-                String parentState = null;
-                List<SaleDeliverDetail> detailList = saleDeliverDetailService.findSaleDeliverDetailListByParentId(parentId);
-                if (detailList != null && detailList.size() > 0) {
-                    parentState = saleDeliverDetailService.findParentStateByDetailList(detailList);
-                }
-
-                if (parentState != null) {
-                    SaleDeliver editDeliver = new SaleDeliver();
-                    editDeliver.setId(parentId);
-                    //发货状态(0:待发货 1:已发货 -1:已取消)
-                    editDeliver.setState(parentState);
-                    saleDeliverService.update(editDeliver);
-                }
-            }
-        }
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //修改订单
-        SaleOrder saleOrder = saleOrderService.findSaleOrderById(orderId);
-
-        String customerId = new String();
-        if (saleOrder != null && saleOrder.getCustomerId() != null) {
-            customerId = saleOrder.getCustomerId().trim();
-        }
-
-        //修改订单明细状态(订单明细货品数量 与 订单明细已发货数量 比较)
-        //按订单id-获取<订单明细id, 发货信息Map> - (orderDtlCount:订单明细订购数量, checkCount: 验证数量(发货数量-退货数量))
-
-        // <订单明细id, 发货信息Map>
-        //     发货信息Map
-        //         orderId
-        //         orderDtlCount:订单明细订购数量
-        //         orderDtlSum: 订单明细货品金额
-        //         checkCount: 验证数量(发货数量-退货数量)
-        //         checkSum: (发货金额-退货金额)
-        Map<String, Map<String, Object>> orderDtlMap = saleDeliverDetailByCollectService.findMapOrderDetaiCountByOrderId(orderId);
-
-        //修改订单明细状态
-        SaleOrderDetail editOrderDtl = new SaleOrderDetail();
-        editOrderDtl.setId(orderDtlId);
-
-        Map<String, Object> valueMap = orderDtlMap.get(orderDtlId);
-        //orderDtlCount:订单明细订购数量,
-        BigDecimal orderDtlCount = (BigDecimal)valueMap.get("orderDtlCount");
-        //checkCount: 验证数量(发货数量-退货数量)
-        BigDecimal checkCount = (BigDecimal)valueMap.get("checkCount");
-
-        if (checkCount.doubleValue() >= orderDtlCount.doubleValue()) {
-            //明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
-            editOrderDtl.setState("5");
-        }
-        this.update(editOrderDtl);
-
-        //修改订单状态
-        List<SaleOrderDetail> orderDtlList = this.findSaleOrderDetailListByParentId(orderId);
-        SaleOrder order_old = saleOrderService.findSaleOrderById(orderId);
-        //修改前: orderSum_old(订单金额)
-        BigDecimal orderSum_old = BigDecimal.valueOf(0D);
-        if (order_old != null && order_old.getOrderSum() != null) {
-            orderSum_old = order_old.getOrderSum();
-        }
-
-        SaleOrder orderEdit = new SaleOrder();
-        orderEdit.setId(orderId);
-        //discountSum 折扣金额
-        orderEdit.setDiscountSum(BigDecimal.valueOf(0D));
-        BigDecimal totalSum = this.findTotalSumByPrice(orderDtlList);
-        //totalSum 合计金额
-        orderEdit.setTotalSum(totalSum);
-        //orderSum 订单金额
-        orderEdit.setOrderSum(totalSum);
-        //修改后: orderSum_new(订单金额)
-        BigDecimal orderSum_new = totalSum;
-
-        //订单变更金额 := (修改后)订单金额 - (修改前)订单金额
-        BigDecimal orderSum_change = BigDecimal.valueOf(orderSum_new.doubleValue() - orderSum_old.doubleValue());
-        //四舍五入到2位小数
-        orderSum_change = orderSum_change.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-
-        String remarkTemp = "订单编号:{0} 变更订单金额:{1}";
-        String remark = MessageFormat.format(remarkTemp,
-                order_old.getSysCode(),
-                BigDecimal.valueOf(orderSum_change.doubleValue()).toString());
-        orderEdit.setRemark(remark);
-        saleOrderService.update(orderEdit);
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        //生成负数的付款单
-        //1. (负数)付款金额:=0                            变更后订单金额 >= 订单已付金额
-        //2. (负数)付款金额:= (变更后订单金额-订单已付金额)   变更后订单金额 <  订单已付金额
-
-        //获取订单付款信息<订单id, 订单付款信息Map> - (receiveSum: 付款金额)
-        Map<String, Map<String, BigDecimal>> orderReceiveMap = saleReceiveDetailService.findMapOrderReceiveByOrderId(orderId, "1");
-        Map<String, BigDecimal> receiveMap = orderReceiveMap.get(orderId);
-        //订单id-订单已完成付款金额
-        BigDecimal receiveSum = BigDecimal.valueOf(0D);
-        if (receiveMap != null && receiveMap.get("receiveSum") != null) {
-            receiveSum = receiveMap.get("receiveSum");
-        }
-
-        //(负数)付款金额
-        BigDecimal ReceiveSum = BigDecimal.valueOf(0D);
-        //(负数)付款金额:= (变更后订单金额-订单已付金额)   变更后订单金额 <  订单已付金额
-        if (orderSum_new.doubleValue() < receiveSum.doubleValue()) {
-            ReceiveSum = BigDecimal.valueOf(orderSum_new.doubleValue() - receiveSum.doubleValue());;
-        }
-
-        if (ReceiveSum.doubleValue() != 0) {
-            //四舍五入到2位小数
-            ReceiveSum = ReceiveSum.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-            if (ReceiveSum.doubleValue() < 0) {
-                //ReceiveSum < 0 退钱给客户
-                saleReceiveRecordService.editCustomerBalanceByOrder(
-                        customerId,
-                        null,
-                        //操作类型 (0:变更 1:录入收款 2:预付款 3:退货退款 4:订单变更退款 -1:费用分摊)
-                        "4",
-                        BigDecimal.valueOf(ReceiveSum.doubleValue() * -1),
-                        cuser,
-                        remark);
-            }
-
-            //收款单类型(0:预收款 1:普通收款 2:发货退款 3:订单退款)
-            SaleReceive receive = saleReceiveService.createReceive(customerId,
-                    cuser,
-                    companyId,
-                    "3");
-            receive.setReceiveSum(BigDecimal.valueOf(ReceiveSum.doubleValue()));
-            saleReceiveService.save(receive);
-
-            //2. 创建收款单明细
-            //获取 <订单id, 退货金额>
-            SaleReceiveDetail receiveDtl = new SaleReceiveDetail();
-            receiveDtl.setOrderId(orderId);
-            //收款单状态(0:待收款 1:已收款 -1:已取消)
-            receiveDtl.setState("1");
-            //receiveAmount 实收金额
-            receiveDtl.setReceiveAmount(BigDecimal.valueOf(ReceiveSum.doubleValue()));
-            //discountAmount 折扣金额
-            receiveDtl.setDiscountAmount(BigDecimal.valueOf(0D));
-
-            List<SaleReceiveDetail> receiveDtlList = new ArrayList<SaleReceiveDetail>();
-            receiveDtlList.add(receiveDtl);
-            saleReceiveDetailService.addReceiveDetail(receive, receiveDtlList);
-        }
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //修改订单状态
-        SaleOrder parent = new SaleOrder();
-        parent.setId(orderId);
-        this.updateParentStateByDetailList(parent, orderDtlList);
-
-        //获取订单付款信息<订单id, 订单付款信息Map> - (receiveSum: 付款金额)
-        orderReceiveMap.clear();
-        orderReceiveMap = saleReceiveDetailService.findMapOrderReceiveByOrderId(orderId, "1");
-        Map<String, BigDecimal> receiveMap_1 = orderReceiveMap.get(orderId);
-        //订单id-订单已完成付款金额
-        receiveSum = BigDecimal.valueOf(0D);
-        if (receiveMap_1 != null && receiveMap_1.get("receiveSum") != null) {
-            receiveSum = receiveMap_1.get("receiveSum");
-        }
-
-        SaleOrder editOrderByPayState = new SaleOrder();
-        editOrderByPayState.setId(orderId);
-        if (receiveSum.doubleValue() >= orderSum_new.doubleValue()) {
-            //付款完成日期 payDate
-            editOrderByPayState.setPayDate(new Date());
-            //付款状态(0:未付款 1:付款中 2:已付款) pay_state
-            editOrderByPayState.setPayState("2");
-            saleOrderService.update(editOrderByPayState);
-        } else if (receiveSum.doubleValue() < orderSum_new.doubleValue()) {
-            //付款完成日期 payDate
-            editOrderByPayState.setPayDate(null);
-            //付款状态(0:未付款 1:付款中 2:已付款) pay_state
-            editOrderByPayState.setPayState("1");
-            saleOrderService.update(editOrderByPayState);
-        }
-
-        //订单状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
-        String orderState = this.findParentStateByDetail(orderDtlList);
-        if ("3".equals(orderState)) {
-            SaleOrder editOrder = new SaleOrder();
-            editOrder.setId(orderId);
-            if (receiveSum.doubleValue() >= orderSum_new.doubleValue()) {
-                //订单状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
-                editOrder.setState("4");
-                saleOrderService.update(editOrder);
-            }
-        }
-
-//        if (this.isAllExistStateByDetailList("5", orderDtlList)) {
-//            if (orderId != null) {
-//                SaleOrder editOrder = new SaleOrder();
-//                editOrder.setId(orderId);
-//                if (receiveSum.doubleValue() >= orderSum_new.doubleValue()) {
-//                    //订单状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
-//                    editOrder.setState("4");
-//                    saleOrderService.update(editOrder);
+//
+//                if (parentState != null) {
+//                    SaleDeliver editDeliver = new SaleDeliver();
+//                    editDeliver.setId(parentId);
+//                    //发货状态(0:待发货 1:已发货 -1:已取消)
+//                    editDeliver.setState(parentState);
+//                    saleDeliverService.update(editDeliver);
 //                }
 //            }
 //        }
-
-        return model;
-    }
+//        /////////////////////////////////////////////////////////////////////////////////////////////////////////
+//        //修改订单
+//        SaleOrder saleOrder = saleOrderService.findSaleOrderById(orderId);
+//
+//        String customerId = new String();
+//        if (saleOrder != null && saleOrder.getCustomerId() != null) {
+//            customerId = saleOrder.getCustomerId().trim();
+//        }
+//
+//        //修改订单明细状态(订单明细货品数量 与 订单明细已发货数量 比较)
+//        //按订单id-获取<订单明细id, 发货信息Map> - (orderDtlCount:订单明细订购数量, checkCount: 验证数量(发货数量-退货数量))
+//
+//        // <订单明细id, 发货信息Map>
+//        //     发货信息Map
+//        //         orderId
+//        //         orderDtlCount:订单明细订购数量
+//        //         orderDtlSum: 订单明细货品金额
+//        //         checkCount: 验证数量(发货数量-退货数量)
+//        //         checkSum: (发货金额-退货金额)
+//        Map<String, Map<String, Object>> orderDtlMap = saleDeliverDetailByCollectService.findMapOrderDetaiCountByOrderId(orderId);
+//
+//        //修改订单明细状态
+//        SaleOrderDetail editOrderDtl = new SaleOrderDetail();
+//        editOrderDtl.setId(orderDtlId);
+//
+//        Map<String, Object> valueMap = orderDtlMap.get(orderDtlId);
+//        //orderDtlCount:订单明细订购数量,
+//        BigDecimal orderDtlCount = (BigDecimal)valueMap.get("orderDtlCount");
+//        //checkCount: 验证数量(发货数量-退货数量)
+//        BigDecimal checkCount = (BigDecimal)valueMap.get("checkCount");
+//
+//        if (checkCount.doubleValue() >= orderDtlCount.doubleValue()) {
+//            //明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
+//            editOrderDtl.setState("5");
+//        }
+//        this.update(editOrderDtl);
+//
+//        //修改订单状态
+//        List<SaleOrderDetail> orderDtlList = this.findSaleOrderDetailListByParentId(orderId);
+//        SaleOrder order_old = saleOrderService.findSaleOrderById(orderId);
+//        //修改前: orderSum_old(订单金额)
+//        BigDecimal orderSum_old = BigDecimal.valueOf(0D);
+//        if (order_old != null && order_old.getOrderSum() != null) {
+//            orderSum_old = order_old.getOrderSum();
+//        }
+//
+//        SaleOrder orderEdit = new SaleOrder();
+//        orderEdit.setId(orderId);
+//        //discountSum 折扣金额
+//        orderEdit.setDiscountSum(BigDecimal.valueOf(0D));
+//        BigDecimal totalSum = this.findTotalSumByPrice(orderDtlList);
+//        //totalSum 合计金额
+//        orderEdit.setTotalSum(totalSum);
+//        //orderSum 订单金额
+//        orderEdit.setOrderSum(totalSum);
+//        //修改后: orderSum_new(订单金额)
+//        BigDecimal orderSum_new = totalSum;
+//
+//        //订单变更金额 := (修改后)订单金额 - (修改前)订单金额
+//        BigDecimal orderSum_change = BigDecimal.valueOf(orderSum_new.doubleValue() - orderSum_old.doubleValue());
+//        //四舍五入到2位小数
+//        orderSum_change = orderSum_change.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+//
+//        String remarkTemp = "订单编号:{0} 变更订单金额:{1}";
+//        String remark = MessageFormat.format(remarkTemp,
+//                order_old.getSysCode(),
+//                BigDecimal.valueOf(orderSum_change.doubleValue()).toString());
+//        orderEdit.setRemark(remark);
+//        saleOrderService.update(orderEdit);
+//        /////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+//        //生成负数的付款单
+//        //1. (负数)付款金额:=0                            变更后订单金额 >= 订单已付金额
+//        //2. (负数)付款金额:= (变更后订单金额-订单已付金额)   变更后订单金额 <  订单已付金额
+//
+//        //获取订单付款信息<订单id, 订单付款信息Map> - (receiveSum: 付款金额)
+//        Map<String, Map<String, BigDecimal>> orderReceiveMap = saleReceiveDetailService.findMapOrderReceiveByOrderId(orderId, "1");
+//        Map<String, BigDecimal> receiveMap = orderReceiveMap.get(orderId);
+//        //订单id-订单已完成付款金额
+//        BigDecimal receiveSum = BigDecimal.valueOf(0D);
+//        if (receiveMap != null && receiveMap.get("receiveSum") != null) {
+//            receiveSum = receiveMap.get("receiveSum");
+//        }
+//
+//        //(负数)付款金额
+//        BigDecimal ReceiveSum = BigDecimal.valueOf(0D);
+//        //(负数)付款金额:= (变更后订单金额-订单已付金额)   变更后订单金额 <  订单已付金额
+//        if (orderSum_new.doubleValue() < receiveSum.doubleValue()) {
+//            ReceiveSum = BigDecimal.valueOf(orderSum_new.doubleValue() - receiveSum.doubleValue());;
+//        }
+//
+//        if (ReceiveSum.doubleValue() != 0) {
+//            //四舍五入到2位小数
+//            ReceiveSum = ReceiveSum.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+//            if (ReceiveSum.doubleValue() < 0) {
+//                //ReceiveSum < 0 退钱给客户
+//                saleReceiveRecordService.editCustomerBalanceByOrder(
+//                        customerId,
+//                        null,
+//                        //操作类型 (0:变更 1:录入收款 2:预付款 3:退货退款 4:订单变更退款 -1:费用分摊)
+//                        "4",
+//                        BigDecimal.valueOf(ReceiveSum.doubleValue() * -1),
+//                        cuser,
+//                        remark);
+//            }
+//
+//            //收款单类型(0:预收款 1:普通收款 2:发货退款 3:订单退款)
+//            SaleReceive receive = saleReceiveService.createReceive(customerId,
+//                    cuser,
+//                    companyId,
+//                    "3");
+//            receive.setReceiveSum(BigDecimal.valueOf(ReceiveSum.doubleValue()));
+//            saleReceiveService.save(receive);
+//
+//            //2. 创建收款单明细
+//            //获取 <订单id, 退货金额>
+//            SaleReceiveDetail receiveDtl = new SaleReceiveDetail();
+//            receiveDtl.setOrderId(orderId);
+//            //收款单状态(0:待收款 1:已收款 -1:已取消)
+//            receiveDtl.setState("1");
+//            //receiveAmount 实收金额
+//            receiveDtl.setReceiveAmount(BigDecimal.valueOf(ReceiveSum.doubleValue()));
+//            //discountAmount 折扣金额
+//            receiveDtl.setDiscountAmount(BigDecimal.valueOf(0D));
+//
+//            List<SaleReceiveDetail> receiveDtlList = new ArrayList<SaleReceiveDetail>();
+//            receiveDtlList.add(receiveDtl);
+//            saleReceiveDetailService.addReceiveDetail(receive, receiveDtlList);
+//        }
+//        /////////////////////////////////////////////////////////////////////////////////////////////////////////
+//        //修改订单状态
+//        SaleOrder parent = new SaleOrder();
+//        parent.setId(orderId);
+//        this.updateParentStateByDetailList(parent, orderDtlList);
+//
+//        //获取订单付款信息<订单id, 订单付款信息Map> - (receiveSum: 付款金额)
+//        orderReceiveMap.clear();
+//        orderReceiveMap = saleReceiveDetailService.findMapOrderReceiveByOrderId(orderId, "1");
+//        Map<String, BigDecimal> receiveMap_1 = orderReceiveMap.get(orderId);
+//        //订单id-订单已完成付款金额
+//        receiveSum = BigDecimal.valueOf(0D);
+//        if (receiveMap_1 != null && receiveMap_1.get("receiveSum") != null) {
+//            receiveSum = receiveMap_1.get("receiveSum");
+//        }
+//
+//        SaleOrder editOrderByPayState = new SaleOrder();
+//        editOrderByPayState.setId(orderId);
+//        if (receiveSum.doubleValue() >= orderSum_new.doubleValue()) {
+//            //付款完成日期 payDate
+//            editOrderByPayState.setPayDate(new Date());
+//            //付款状态(0:未付款 1:付款中 2:已付款) pay_state
+//            editOrderByPayState.setPayState("2");
+//            saleOrderService.update(editOrderByPayState);
+//        } else if (receiveSum.doubleValue() < orderSum_new.doubleValue()) {
+//            //付款完成日期 payDate
+//            editOrderByPayState.setPayDate(null);
+//            //付款状态(0:未付款 1:付款中 2:已付款) pay_state
+//            editOrderByPayState.setPayState("1");
+//            saleOrderService.update(editOrderByPayState);
+//        }
+//
+//        //订单状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
+//        String orderState = this.findParentStateByDetail(orderDtlList);
+//        if ("3".equals(orderState)) {
+//            SaleOrder editOrder = new SaleOrder();
+//            editOrder.setId(orderId);
+//            if (receiveSum.doubleValue() >= orderSum_new.doubleValue()) {
+//                //订单状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
+//                editOrder.setState("4");
+//                saleOrderService.update(editOrder);
+//            }
+//        }
+//
+////        if (this.isAllExistStateByDetailList("5", orderDtlList)) {
+////            if (orderId != null) {
+////                SaleOrder editOrder = new SaleOrder();
+////                editOrder.setId(orderId);
+////                if (receiveSum.doubleValue() >= orderSum_new.doubleValue()) {
+////                    //订单状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
+////                    editOrder.setState("4");
+////                    saleOrderService.update(editOrder);
+////                }
+////            }
+////        }
+//
+//        return model;
+//    }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //    @Override

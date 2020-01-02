@@ -213,8 +213,8 @@ public interface SaleOrderDetailService {
 
     //ResultModel importExcelSaleOrderDetails(MultipartFile file) throws Exception;
 
-    //订单变更-按变更订单明细变更
-    ResultModel changeSaleOrderByDetail(PageData pageData) throws Exception;
+//    //订单变更-按变更订单明细变更
+//    ResultModel changeSaleOrderByDetail(PageData pageData) throws Exception;
 }
 
 

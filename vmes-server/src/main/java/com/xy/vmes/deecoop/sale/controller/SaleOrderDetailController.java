@@ -337,28 +337,28 @@ public class SaleOrderDetailController {
         return model;
     }
 
-    /**
-     * 订单变更-按变更订单明细变更
-     * 该订单明细id: 是否允许(订单变更)已经验证
-     * 验证方法: (/sale/saleOrderDetail/checkOrderDetailOnOutExecuteByNotChangeOrder)
-     *
-     * @author 陈刚
-     * @date 2019-03-05
-     * @throws Exception
-     */
-    @PostMapping("/sale/saleOrderDetail/changeSaleOrderByDetail")
-    @Transactional(rollbackFor=Exception.class)
-    public ResultModel changeSaleOrderByDetail() throws Exception {
-        logger.info("################/sale/saleOrderDetail/changeSaleOrderByDetail 执行开始 ################# ");
-        Long startTime = System.currentTimeMillis();
-
-        PageData pageData = HttpUtils.parsePageData();
-        ResultModel model = saleOrderDetailService.changeSaleOrderByDetail(pageData);
-
-        Long endTime = System.currentTimeMillis();
-        logger.info("################/sale/saleOrderDetail/changeSaleOrderByDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
-        return model;
-    }
+//    /**
+//     * 订单变更-按变更订单明细变更
+//     * 该订单明细id: 是否允许(订单变更)已经验证
+//     * 验证方法: (/sale/saleOrderDetail/checkOrderDetailOnOutExecuteByNotChangeOrder)
+//     *
+//     * @author 陈刚
+//     * @date 2019-03-05
+//     * @throws Exception
+//     */
+//    @PostMapping("/sale/saleOrderDetail/changeSaleOrderByDetail")
+//    @Transactional(rollbackFor=Exception.class)
+//    public ResultModel changeSaleOrderByDetail() throws Exception {
+//        logger.info("################/sale/saleOrderDetail/changeSaleOrderByDetail 执行开始 ################# ");
+//        Long startTime = System.currentTimeMillis();
+//
+//        PageData pageData = HttpUtils.parsePageData();
+//        ResultModel model = saleOrderDetailService.changeSaleOrderByDetail(pageData);
+//
+//        Long endTime = System.currentTimeMillis();
+//        logger.info("################/sale/saleOrderDetail/changeSaleOrderByDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+//        return model;
+//    }
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////
     private StringBuffer findOutMessageByOutIdList(List<String> outIdList, String productInfo) {

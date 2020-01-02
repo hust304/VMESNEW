@@ -45,26 +45,26 @@ public interface SaleOrderByChangeService {
      */
     void orderChangeByReadyProduce(List<SaleOrderDetailEntity> objectList) throws Exception;
 
-    /**
-     * 订单明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
-     * 3:待出库 readyOut
-     *
-     * 修改订单明细(订购数量,金额,货品数量(计量单位),可发货数量(计价单位),锁定货品数量(计量单位))
-     * 修改货品表(lockCount:lock_count:锁定库存数量)
-     *
-     * @param objectList
-     */
-    void orderChangeByReadyOut(List<SaleOrderDetailEntity> objectList, String companyId) throws Exception;
+//    /**
+//     * 订单明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
+//     * 3:待出库 readyOut
+//     *
+//     * 修改订单明细(订购数量,金额,货品数量(计量单位),可发货数量(计价单位),锁定货品数量(计量单位))
+//     * 修改货品表(lockCount:lock_count:锁定库存数量)
+//     *
+//     * @param objectList
+//     */
+//    void orderChangeByReadyOut(List<SaleOrderDetailEntity> objectList, String companyId) throws Exception;
 
-    /**
-     * 订单明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
-     * 4:待发货 readyDeliver
-     *
-     * 修改订单明细(订购数量,金额,货品数量(计量单位),可发货数量(计价单位),锁定货品数量(计量单位))
-     * 修改货品表(lockCount:lock_count:锁定库存数量)
-     *
-     * @param objectList
-     * @param companyId
-     */
-    void orderChangeByReadyDeliver(List<SaleOrderDetailEntity> objectList, String companyId) throws Exception;
+//    /**
+//     * 订单明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
+//     * 4:待发货 readyDeliver
+//     *
+//     * 修改订单明细(订购数量,金额,货品数量(计量单位),可发货数量(计价单位),锁定货品数量(计量单位))
+//     * 修改货品表(lockCount:lock_count:锁定库存数量)
+//     *
+//     * @param objectList
+//     * @param companyId
+//     */
+//    void orderChangeByReadyDeliver(List<SaleOrderDetailEntity> objectList, String companyId) throws Exception;
 }
