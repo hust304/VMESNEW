@@ -31,7 +31,7 @@
             orderDetaiQuery.isNeedProduce,
             orderDetaiQuery.lockCount,
             <!--可发货数量-->
-            orderDetaiQuery.needDeliverCount,
+            <!--orderDetaiQuery.needDeliverCount,-->
             orderDetaiQuery.lockDate,
             orderDetaiQuery.planDetailId,
 
@@ -42,8 +42,6 @@
             orderDetaiQuery.remark,
             orderDetaiQuery.isdisable,
 
-            orderDetaiQuery.npFormula,
-            orderDetaiQuery.pnFormula,
             orderDetaiQuery.customerId,
             orderDetaiQuery.priceType,
             orderDetaiQuery.customerName,
@@ -61,14 +59,27 @@
             orderDetaiQuery.orderUnitName,
             orderDetaiQuery.productGenreName,
 
-            orderDetaiQuery.stockCount,
-            orderDetaiQuery.productLockCount,
-            orderDetaiQuery.endDeliverCount,
+            orderDetaiQuery.npFormula,
+            orderDetaiQuery.pnFormula,
+            orderDetaiQuery.n2pIsScale,
+            orderDetaiQuery.n2pDecimalCount,
 
-            round((orderDetaiQuery.stockCount - orderDetaiQuery.productLockCount), 2) productStockCount,
+            orderDetaiQuery.p2nIsScale,
+            orderDetaiQuery.p2nDecimalCount,
+
+            <!--(计量单位)货品数量 -->
+            orderDetaiQuery.stockCount, <!--库存数量-->
+            orderDetaiQuery.productLockCount, <!--货品锁库数量-->
+            <!--可用库存数量: 库存数量 - 货品锁库数量 + (销售订单)货品锁库数量-->
+            orderDetaiQuery.allowStockCount, <!--可用库存数量 allowStockCount-->
+
+            <!--(订单单位)货品数量 -->
+            orderDetaiQuery.endDeliverCount,  <!--已生成发货单数量-->
             <!--未发货数量-->
-            orderDetaiQuery.notDeliverCount,
+            orderDetaiQuery.notDeliverCount,  <!--未发货数量-->
+
             <!--本次发货数量 java类获取数据(orderDtlDeliverCount,productSum)-->
+            '' needDeliverCount,
             '' orderDtlDeliverCount,
             '' productSum
 
@@ -103,8 +114,8 @@
                 orderDtl.is_lock_warehouse isLockWarehouse,
 
                 orderDtl.is_need_produce isNeedProduce,
-                round(ifnull(orderDtl.lock_count, 0),2) lockCount,
-                round(ifnull(orderDtl.need_deliver_count, 0),2) needDeliverCount,
+                <!--round(ifnull(orderDtl.lock_count, 0),2) lockCount,-->
+                <!--round(ifnull(orderDtl.need_deliver_count, 0),2) needDeliverCount,-->
                 orderDtl.lock_date lockDate,
                 orderDtl.plan_detail_id planDetailId,
 
@@ -116,8 +127,6 @@
 
                 orderDtl.isdisable isdisable,
 
-                unit.np_formula npFormula,
-                unit.pn_formula pnFormula,
                 saleOrder.customer_id customerId,
                 saleOrder.price_type priceType,
                 customer.name customerName,
@@ -140,9 +149,25 @@
                 orderUnit.name orderUnitName,
                 genre.name productGenreName,
 
-                round(ifnull(product.stock_count, 0), 2) stockCount,
-                round(ifnull(product.lock_count, 0), 2) productLockCount,
-                round(ifnull(deliverDtl.count, 0), 2) endDeliverCount,
+                <!--货品订单(单位) 单位换算公式 -->
+                unit.np_formula npFormula,
+                unit.pn_formula pnFormula,
+
+                unit.n2p_is_scale n2pIsScale,
+                unit.n2p_decimal_count n2pDecimalCount,
+
+                unit.p2n_is_scale p2nIsScale,
+                unit.p2n_decimal_count p2nDecimalCount,
+
+                <!--(计量单位)货品数量 -->
+                round(ifnull(product.stock_count, 0), 2) stockCount, <!--库存数量-->
+                round(ifnull(product.lock_count, 0), 2) productLockCount, <!--货品锁库数量-->
+                round(ifnull(orderDtl.lock_count, 0),2) lockCount, <!--(销售订单)货品锁库数量-->
+                <!--可用库存数量: 库存数量 - 货品锁库数量 + (销售订单)货品锁库数量-->
+                round((ifnull(product.stock_count, 0) - ifnull(product.lock_count, 0) + ifnull(orderDtl.lock_count, 0)),2) allowStockCount,
+
+                <!--(订单单位)货品数量 -->
+                round(ifnull(deliverDtl.count, 0), 2) endDeliverCount, <!--已生成发货单数量-->
                 <!--未发货数量 := 订购数量 - 未发货数量 + (退换货)退货数量 -->
                 round((ifnull(orderDtl.order_count, 0) - ifnull(deliverDtl.count, 0) + ifnull(retreatDtl.count, 0)), 2) notDeliverCount
 
@@ -230,7 +255,7 @@
         (replace(uuid(), '-', ''), 'saleOrderDetailQueryByDeliver', 'priceUnit', '计价单位id', 10, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderDetailQueryByDeliver', 'priceUnitName', '计价单位', 10, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderDetailQueryByDeliver', 'stockCount', '库存数量', 12, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
-        (replace(uuid(), '-', ''), 'saleOrderDetailQueryByDeliver', 'productStockCount', '库存可用数量', 13, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailQueryByDeliver', 'allowStockCount', '可用库存数量', 13, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderDetailQueryByDeliver', 'productLockCount', '库存锁定数量', 14, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderDetailQueryByDeliver', 'endDeliverCount', '生成发货单数量', 15, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderDetailQueryByDeliver', 'notDeliverCount', '未发货数量', 16, '1', '1', '1', '0', '2018-12-6 09:16:39', 'admin'),
@@ -256,6 +281,12 @@
         (replace(uuid(), '-', ''), 'saleOrderDetailQueryByDeliver', 'planDetailId', '生产计划明细ID', 34, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderDetailQueryByDeliver', 'customerId', 'customerId', 35, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderDetailQueryByDeliver', 'customerName', 'customerName', 36, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
+
+        (replace(uuid(), '-', ''), 'saleOrderDetailQueryByDeliver', 'n2pIsScale', 'n2p:是否需要四舍五入', 37, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailQueryByDeliver', 'n2pDecimalCount', 'n2p:保留小数位数', 38, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+
+        (replace(uuid(), '-', ''), 'saleOrderDetailQueryByDeliver', 'p2nIsScale', 'p2n:是否需要四舍五入', 39, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailQueryByDeliver', 'p2nDecimalCount', 'p2n:保留小数位数', 40, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
 
 
 

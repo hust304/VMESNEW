@@ -2,6 +2,7 @@ package com.xy.vmes.deecoop.sale.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
+import com.xy.vmes.common.util.EvaluateUtil;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.sale.dao.SaleOrderDetailQueryByDeliverMapper;
 import com.xy.vmes.entity.Column;
@@ -75,11 +76,33 @@ public class SaleOrderDetailQueryByDeliveServiceImp implements SaleOrderDetailQu
         List<Map> varList = this.listOrderDetaiQueryByDeliver(pd);
         if (varList != null && varList.size() > 0) {
             for (Map<String, Object> objectMap : varList) {
-                //productStockCount 可发货数量
-                BigDecimal productStockCount = BigDecimal.valueOf(0D);
-                if (objectMap.get("productStockCount") != null) {
-                    productStockCount = (BigDecimal)objectMap.get("productStockCount");
+                //(计量单位)货品数量///////////////////////////////////////////////////////////////////////////////////////////
+                //allowStockCount (计量单位)可用库存数量: 库存数量 - 货品锁库数量 + (销售订单)货品锁库数量
+                BigDecimal allowStockCount = BigDecimal.valueOf(0D);
+                if (objectMap.get("allowStockCount") != null) {
+                    allowStockCount = (BigDecimal)objectMap.get("allowStockCount");
                 }
+
+                //单位换算公式 计量转换计价
+                String n2pFormula = (String)objectMap.get("npFormula");
+
+                //n2pIsScale 是否需要四舍五入(Y:需要四舍五入 N:无需四舍五入)
+                String n2pIsScale = new String();
+                if (objectMap.get("n2pIsScale") != null) {
+                    n2pIsScale = objectMap.get("n2pIsScale").toString().trim();
+                }
+
+                //n2pDecimalCount 小数位数 (最小:0位 最大:4位)
+                Integer n2pDecimalCount = Integer.valueOf(2);
+                if (objectMap.get("n2pDecimalCount") != null) {
+                    n2pDecimalCount = (Integer)objectMap.get("n2pDecimalCount");
+                }
+
+                //(单据单位)货品数量///////////////////////////////////////////////////////////////////////////////////////////
+                //needDeliverCount 可发货数量:= (allowStockCount)可用库存数量 -- 单位换算成(单据单位)
+                BigDecimal needDeliverCount = EvaluateUtil.countFormulaN2P(allowStockCount, n2pFormula);
+                needDeliverCount = StringUtil.scaleDecimal(needDeliverCount, n2pIsScale, n2pDecimalCount);
+                objectMap.put("needDeliverCount", needDeliverCount.toString());
 
                 //notDeliverCount   未发货数量
                 BigDecimal notDeliverCount = BigDecimal.valueOf(0D);
@@ -91,10 +114,10 @@ public class SaleOrderDetailQueryByDeliveServiceImp implements SaleOrderDetailQu
                 //1. (可发货数量 >= 未发货数量) 本次发货数量:= 未发货数量
                 //2. (可发货数量 < 未发货数量) 本次发货数量:= 可发货数量
                 BigDecimal orderDtlDeliverCount = BigDecimal.valueOf(0D);
-                if (productStockCount.doubleValue() >= notDeliverCount.doubleValue()) {
+                if (needDeliverCount.doubleValue() >= notDeliverCount.doubleValue()) {
                     orderDtlDeliverCount = notDeliverCount;
-                } else if (productStockCount.doubleValue() < notDeliverCount.doubleValue()) {
-                    orderDtlDeliverCount = productStockCount;
+                } else if (needDeliverCount.doubleValue() < notDeliverCount.doubleValue()) {
+                    orderDtlDeliverCount = needDeliverCount;
                 }
 
                 //四舍五入到2位小数
