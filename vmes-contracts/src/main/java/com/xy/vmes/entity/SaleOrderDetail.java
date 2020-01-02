@@ -70,7 +70,7 @@ public class SaleOrderDetail implements Serializable {
 	//锁定货品数量(计量单位)
 	@TableField("lock_count")
 	private BigDecimal lockCount;
-	//可发货数量(计价单位)
+	//可发货数量(计价单位)-(暂停该字段的维护(2020-01-02)-禁止使用该字段)
 	@TableField("need_deliver_count")
 	private BigDecimal needDeliverCount;
 	//锁定开始时间
