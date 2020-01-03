@@ -51,13 +51,21 @@
             detail.version_lock_count versionLockCount,
 
             orderUnit.name orderUnitName,
+
             <!--货品表-->
-            product.code productCode,
+            product.code sysProductCode,
+            product.source_code custProductCode,
+            CASE
+            WHEN product.source_code is null THEN product.code
+            WHEN product.source_code is not null THEN product.source_code
+            ELSE null
+            END productCode,
             product.name productName,
             product.spec productSpec,
             product.genre productGenre,
             genre.name productGenreName,
             product.type productType,
+            product.property productProperty,
 
             <!--(单据)货品单位-->
             prodUnitPrice.np_formula n2pFormula,
@@ -197,6 +205,8 @@
 
         (replace(uuid(), '-', ''), 'saleOrderDetailByLockCount', 'p2nIsScale', 'p2n:是否需要四舍五入', 39, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderDetailByLockCount', 'p2nDecimalCount', 'p2n:保留小数位数', 40, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+
+        (replace(uuid(), '-', ''), 'saleOrderDetailByLockCount', 'productProperty', '自定义属性', 41, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
 
     </insert>
 
