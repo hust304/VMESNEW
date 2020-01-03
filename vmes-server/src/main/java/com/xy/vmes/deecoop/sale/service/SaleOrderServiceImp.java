@@ -836,15 +836,8 @@ public class SaleOrderServiceImp implements SaleOrderService {
     public ResultModel updateSaleOrderByLockCount(PageData pageData) throws Exception {
         ResultModel model = new ResultModel();
 
-        String orderId = pageData.getString("orderId");
-        if (orderId == null || orderId.trim().length() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("订单id为空或空字符串！");
-            return model;
-        }
-
         String companyId = pageData.getString("currentCompanyId");
-        if (orderId == null || orderId.trim().length() == 0) {
+        if (companyId == null || companyId.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("企业id为空或空字符串！");
             return model;
@@ -870,43 +863,70 @@ public class SaleOrderServiceImp implements SaleOrderService {
         for (Map<String, String> mapObject : mapList) {
             String detail_id = mapObject.get("id");
             String productId = mapObject.get("productId");
-            String productLockCount_str = mapObject.get("productLockCount");
-            String lockCount_str = mapObject.get("lockCount");
-            String needDeliverCount_str = mapObject.get("needDeliverCount");
-            String p2nFormula = mapObject.get("p2nFormula");
-            //String n2pFormula = mapObject.get("n2pFormula");
 
+
+            //(p2n:计价转换计量)///////////////////////////////////////////////////////////////////////////////////////////
+            String p2nFormula = mapObject.get("p2nFormula");
+
+            //p2nIsScale 是否需要四舍五入(Y:需要四舍五入 N:无需四舍五入)
+            String p2nIsScale = new String();
+            if (mapObject.get("p2nIsScale") != null) {
+                p2nIsScale = mapObject.get("p2nIsScale").toString().trim();
+            }
+
+            //p2nDecimalCount 小数位数 (最小:0位 最大:4位)
+            Integer p2nDecimalCount = Integer.valueOf(2);
+            String p2nDecimalCountStr = mapObject.get("p2nDecimalCount");
+            if (p2nDecimalCountStr != null) {
+                try {
+                    p2nDecimalCount = Integer.valueOf(p2nDecimalCountStr);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            //(单据单位)货品数量///////////////////////////////////////////////////////////////////////////////////////////
+            //变更后-订单锁定数量
+            BigDecimal editLockCount = BigDecimal.valueOf(0D);
+            String editLockCountStr = mapObject.get("editLockCount");
+            if (editLockCountStr != null && editLockCountStr.trim().length() > 0) {
+                try {
+                    editLockCount = new BigDecimal(editLockCountStr);
+                } catch(NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            //(计量单位)货品数量///////////////////////////////////////////////////////////////////////////////////////////
             //产品锁定库存数量
             BigDecimal productLockCount = BigDecimal.valueOf(0D);
-            if (productLockCount_str != null && productLockCount_str.trim().length() > 0) {
+            String productLockCountStr = mapObject.get("productLockCount");
+            if (productLockCountStr != null && productLockCountStr.trim().length() > 0) {
                 try {
-                    productLockCount = new BigDecimal(productLockCount_str);
+                    productLockCount = new BigDecimal(productLockCountStr);
                 } catch(NumberFormatException e) {
                     e.printStackTrace();
                 }
             }
 
+            //变更前-订单锁定数量(计量单位)
             BigDecimal lockCount = BigDecimal.valueOf(0D);
-            if (lockCount_str != null && lockCount_str.trim().length() > 0) {
+            String lockCountStr = mapObject.get("lockCount");
+            if (lockCountStr != null && lockCountStr.trim().length() > 0) {
                 try {
-                    lockCount = new BigDecimal(lockCount_str);
+                    lockCount = new BigDecimal(lockCountStr);
                 } catch(NumberFormatException e) {
                     e.printStackTrace();
                 }
             }
 
-            BigDecimal needDeliverCount = BigDecimal.valueOf(0D);
-            if (needDeliverCount_str != null && needDeliverCount_str.trim().length() > 0) {
-                try {
-                    needDeliverCount = new BigDecimal(needDeliverCount_str);
-                } catch(NumberFormatException e) {
-                    e.printStackTrace();
-                }
-            }
+            //editLockCount (变更后)订单锁定数量 -- (p2nFormula)计价单位转换计量单位
+            editLockCount = EvaluateUtil.countFormulaP2N(editLockCount, p2nFormula);
+            editLockCount = StringUtil.scaleDecimal(editLockCount, p2nIsScale, p2nDecimalCount);
 
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             BigDecimal lockCount_new = BigDecimal.valueOf(0D);
-            BigDecimal bigDecimal = EvaluateUtil.countFormulaP2N(needDeliverCount, p2nFormula);
-            if (bigDecimal != null) {lockCount_new = bigDecimal;}
+            if (editLockCount != null) {lockCount_new = editLockCount;}
 
             if (lockCount_new.doubleValue() != lockCount.doubleValue()) {
                 //1. 修改产品锁定库存数量
@@ -914,16 +934,18 @@ public class SaleOrderServiceImp implements SaleOrderService {
                 product.setId(productId);
 
                 BigDecimal lockCount_product = BigDecimal.valueOf(productLockCount.doubleValue() + (lockCount_new.doubleValue() - lockCount.doubleValue()));
+                if (lockCount_product.doubleValue() < 0D) {
+                    lockCount_product = BigDecimal.valueOf(0D);
+                }
+
                 //四舍五入到2位小数
                 lockCount_product = lockCount_product.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
                 product.setLockCount(lockCount_product);
-
                 productService.update(product);
 
                 //2. 修改订单明细产品锁定库存数量
                 SaleOrderDetail orderDetail = new SaleOrderDetail();
                 orderDetail.setId(detail_id);
-                orderDetail.setNeedDeliverCount(needDeliverCount);
                 orderDetail.setLockCount(lockCount_new);
                 //是否锁定仓库(0:未锁定 1:已锁定) isLockWarehouse is_lock_warehouse
                 orderDetail.setIsLockWarehouse("0");
@@ -961,9 +983,6 @@ public class SaleOrderServiceImp implements SaleOrderService {
                 saleOrderDetailService.update(orderDetail);
             }
         }
-
-        //3. 订单明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
-//        saleOrderDetailService.updateDetailStateByOrderId(orderId, null);
 
         return model;
     }
