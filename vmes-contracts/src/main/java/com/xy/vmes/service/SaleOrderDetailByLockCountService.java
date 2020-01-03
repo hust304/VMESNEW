@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 public interface SaleOrderDetailByLockCountService {
-    List<Map> findListOrderDetailByLockCount(PageData pd) throws Exception;
     List<Map> findListOrderDetailByLockCount(PageData pd, Pagination pg) throws Exception;
 
     ResultModel listPageOrderDetailByLockCount(PageData pd) throws Exception;
