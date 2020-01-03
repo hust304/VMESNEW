@@ -951,6 +951,7 @@ public class SaleOrderServiceImp implements SaleOrderService {
                 orderDetail.setIsLockWarehouse("0");
                 if (lockCount_new.doubleValue() > 0) {
                     orderDetail.setIsLockWarehouse("1");
+                    orderDetail.setLockDate(new Date());
                 }
 
                 //versionLockCount
