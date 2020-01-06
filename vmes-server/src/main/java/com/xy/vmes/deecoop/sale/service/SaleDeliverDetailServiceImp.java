@@ -2,6 +2,7 @@ package com.xy.vmes.deecoop.sale.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
+import com.xy.vmes.common.util.rabbitmq.sender.ProductStockcountLockSender;
 import com.xy.vmes.service.*;
 import com.yvan.common.util.Common;
 import com.xy.vmes.common.util.EvaluateUtil;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.text.MessageFormat;
 import java.util.*;
 
 /**
@@ -39,8 +41,14 @@ public class SaleDeliverDetailServiceImp implements SaleDeliverDetailService {
 
     @Autowired
     private WarehouseOutDetailService warehouseOutDetailService;
+
     @Autowired
     private ColumnService columnService;
+    @Autowired
+    private SaleLockDateService saleLockDateService;
+    //消息队列
+    @Autowired
+    private ProductStockcountLockSender sirstSender;
 
     /**
     * 创建人：陈刚 自动创建，禁止修改
@@ -884,6 +892,14 @@ public class SaleDeliverDetailServiceImp implements SaleDeliverDetailService {
         ResultModel model = new ResultModel();
 
         String cuser = pageData.getString("cuser");
+
+        String companyId = pageData.getString("currentCompanyId");
+        if (companyId == null || companyId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("企业id为空或空字符串！");
+            return model;
+        }
+
         String deliverId = pageData.getString("deliverId");
         if (deliverId == null || deliverId.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
@@ -935,6 +951,9 @@ public class SaleDeliverDetailServiceImp implements SaleDeliverDetailService {
         saleDeliverService.update(saleDeliver);
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //获取企业id对应的锁定库存时长(毫秒)
+        Long lockTime = saleLockDateService.findLockDateMillisecondByCompanyId(companyId);
+
         //根据发货单id 拆分订单明细
 
         //根据(发货单id) 关联查询(vmes_sale_deliver_detail, vmes_sale_order_detail)
@@ -949,8 +968,12 @@ public class SaleDeliverDetailServiceImp implements SaleDeliverDetailService {
             String orderId = (String)objectMap.get("orderId");
             orderIdMap.put(orderId, orderId);
 
+            //销售订单明细id
+            String orderDtlId = (String)objectMap.get("orderDetaiId");
+            SaleOrderDetail orderDetailDB = saleOrderDetailService.findSaleOrderDetailById(orderDtlId);
+
             //根据发货单明细-拆分订单明细
-            Map<String, SaleOrderDetail> valueMap = this.findSaleOrderDetailByChangeMap(objectMap);
+            Map<String, SaleOrderDetail> valueMap = this.findSaleOrderDetailByChangeMap(objectMap, orderDetailDB);
 
             //   返回值:Map<String, SaleOrderDetail>
             //     editOrderDetail: 修改订单明细对象
@@ -965,6 +988,18 @@ public class SaleDeliverDetailServiceImp implements SaleDeliverDetailService {
                 if (addOrderDetail != null) {
                     addOrderDetail.setCuser(cuser);
                     saleOrderDetailService.save(addOrderDetail);
+
+                    //发送消息队列
+                    //信息队列信息:(订单明细id,锁定库存版本号)
+                    String orderDtl_activeMQ_temp = "{0},{1}";
+                    String orderDtl_activeMQ_msg = MessageFormat.format(orderDtl_activeMQ_temp,
+                            addOrderDetail.getId(),
+                            addOrderDetail.getVersionLockCount());
+
+                    //将订单明细id作为消息体放入消息队列中，消息时长(毫秒)-根据企业id查询(vmes_sale_lock_date)
+                    if (lockTime != null && lockTime.longValue() > 0) {
+                        sirstSender.sendMsg(orderDtl_activeMQ_msg, lockTime.intValue());
+                    }
                 }
             }
         }
@@ -1154,13 +1189,32 @@ public class SaleDeliverDetailServiceImp implements SaleDeliverDetailService {
      *
      * @throws Exception
      */
-    private Map<String, SaleOrderDetail> findSaleOrderDetailByChangeMap(Map<String, Object> objectMap) throws Exception {
+    private Map<String, SaleOrderDetail> findSaleOrderDetailByChangeMap(Map<String, Object> objectMap, SaleOrderDetail orderDetailDB) throws Exception {
         Map<String, SaleOrderDetail> valueMap = new HashMap<>();
 
         SaleOrderDetail editObject = this.findEditOrderDetail(objectMap);
+        //修改锁库数量
+        editObject.setLockCount(BigDecimal.valueOf(0D));
+        //是否锁定仓库(0:未锁定 1:已锁定)
+        editObject.setIsLockWarehouse("0");
+
+        if (orderDetailDB != null && orderDetailDB.getVersionLockCount() != null) {
+            Integer versionLockCount = orderDetailDB.getVersionLockCount();
+            versionLockCount = Integer.valueOf(versionLockCount.intValue() + 1);
+            editObject.setVersionLockCount(versionLockCount);
+        }
         valueMap.put("editOrderDetail", editObject);
 
-        SaleOrderDetail addObject = this.findAddOrderDetail(objectMap);
+        ////////////////////////////////////////////////////////////////////////////////////////////////
+        SaleOrderDetail addObject = this.findAddOrderDetail(objectMap, orderDetailDB);
+        //修改锁库数量
+        if (orderDetailDB != null && orderDetailDB.getLockCount() != null && orderDetailDB.getLockCount().doubleValue() > 0) {
+            addObject.setLockCount(orderDetailDB.getLockCount());
+            //是否锁定仓库(0:未锁定 1:已锁定)
+            addObject.setIsLockWarehouse("1");
+            addObject.setVersionLockCount(Integer.valueOf(1));
+            addObject.setLockDate(new Date());
+        }
         valueMap.put("addOrderDetail", addObject);
 
         return valueMap;
@@ -1245,12 +1299,12 @@ public class SaleDeliverDetailServiceImp implements SaleDeliverDetailService {
      * @param objectMap
      * @return
      */
-    private SaleOrderDetail findAddOrderDetail(Map<String, Object> objectMap) throws Exception {
+    private SaleOrderDetail findAddOrderDetail(Map<String, Object> objectMap, SaleOrderDetail orderDetailDB) throws Exception {
         if (objectMap == null) {return null;}
 
         //订单明细id
-        String orderDtlId = (String)objectMap.get("orderDetaiId");
-        SaleOrderDetail orderDetailDB = saleOrderDetailService.findSaleOrderDetailById(orderDtlId);
+        //String orderDtlId = (String)objectMap.get("orderDetaiId");
+        //SaleOrderDetail orderDetailDB = saleOrderDetailService.findSaleOrderDetailById(orderDtlId);
 
         //订单明细订购数量(订单单位) orderDetailCount
         BigDecimal orderDetailCount = BigDecimal.valueOf(0D);
