@@ -966,6 +966,7 @@ public class FinanceBillServiceImp implements FinanceBillService {
         FinanceBill addObject = new FinanceBill();
         addObject.setCompanyId(companyId);
         addObject.setCustomerId(customerId);
+        addObject.setBusinessId(businessId);
 
         addObject.setCuser(userId);
         //suser 审核用户id
