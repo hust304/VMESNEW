@@ -63,6 +63,7 @@ public class KanbanVisualizationController {
         ResultModel model = new ResultModel();
         PageData pd = HttpUtils.parsePageData();
         KanbanVisualization kanbanVisualization = (KanbanVisualization)HttpUtils.pageData2Entity(pd, new KanbanVisualization());
+        kanbanVisualization.setCompanyId(pd.getString("currentCompanyId"));
         kanbanVisualizationService.save(kanbanVisualization);
         Long endTime = System.currentTimeMillis();
         logger.info("################/kanban/visualization/addUserEditedKanban 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
