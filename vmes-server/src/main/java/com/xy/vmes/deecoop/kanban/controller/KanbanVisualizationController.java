@@ -7,6 +7,7 @@ import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,19 +70,47 @@ public class KanbanVisualizationController {
     }
 
 
+    /**
+     * @author 刘威 自动创建，禁止修改
+     * @date 2020-01-06
+     */
+    @PostMapping("/kanban/visualization/updateUserKanban")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel updateUserKanban()  throws Exception {
+
+        logger.info("################/kanban/visualization/updateUserKanban 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+        KanbanVisualization kanbanVisualization = (KanbanVisualization)HttpUtils.pageData2Entity(pd, new KanbanVisualization());
+        kanbanVisualizationService.update(kanbanVisualization);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/kanban/visualization/updateUserKanban 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
 
     /**
     * @author 刘威 自动创建，禁止修改
     * @date 2020-01-06
     */
-    @GetMapping("/kanban/visualization/deleteUserKanban/{id}")
+    @PostMapping("/kanban/visualization/deleteUserKanban")
     @Transactional(rollbackFor=Exception.class)
-    public ResultModel deleteUserKanban(@PathVariable("id") String id)  throws Exception {
+    public ResultModel deleteUserKanban()  throws Exception {
 
         logger.info("################/kanban/visualization/deleteUserKanban 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         ResultModel model = new ResultModel();
-        kanbanVisualizationService.deleteById(id);
+        PageData pd = HttpUtils.parsePageData();
+        String id = pd.getString("id");
+        if(!StringUtils.isEmpty(id)){
+            kanbanVisualizationService.deleteById(pd.getString("id"));
+        }else{
+            model.putCode("1");
+            model.putMsg("删除对象不能为空！");
+        }
+
         Long endTime = System.currentTimeMillis();
         logger.info("################/kanban/visualization/deleteUserKanban 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
@@ -99,12 +128,10 @@ public class KanbanVisualizationController {
         ResultModel model = new ResultModel();
         PageData pageData = new PageData();
         pageData.put("company_id",pd.getString("currentCompanyId"));
+        pageData.put("cuser",pd.getString("currentUserId"));
         List<KanbanVisualization> kanbanVisualizationList = kanbanVisualizationService.selectByColumnMap(pageData);
         if(kanbanVisualizationList!=null&&kanbanVisualizationList.size()>0){
             model.putResult(kanbanVisualizationList);
-        }else{
-            model.putCode("1");
-            model.putMsg("查询失败！");
         }
         Long endTime = System.currentTimeMillis();
         logger.info("################/kanban/visualization/listUserEditedKanban 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
@@ -112,6 +139,27 @@ public class KanbanVisualizationController {
     }
 
 
+
+    /**
+     * @author 刘威 自动创建，可以修改
+     * @date 2020-01-06
+     */
+    @PostMapping("/kanban/visualization/userKanbanList")
+    public ResultModel userKanbanList()  throws Exception {
+        logger.info("################/kanban/visualization/userKanbanList 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = new ResultModel();
+        PageData pageData = new PageData();
+        pageData.put("company_id",pd.getString("currentCompanyId"));
+        List<KanbanVisualization> kanbanVisualizationList = kanbanVisualizationService.selectByColumnMap(pageData);
+        if(kanbanVisualizationList!=null&&kanbanVisualizationList.size()>0){
+            model.putResult(kanbanVisualizationList);
+        }
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/kanban/visualization/userKanbanList 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
 
 }
 
