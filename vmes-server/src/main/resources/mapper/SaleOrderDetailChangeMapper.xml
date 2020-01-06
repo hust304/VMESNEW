@@ -69,6 +69,8 @@
             (replace(uuid(), '-', ''), 'saleOrderDetailChange', 'priceSumBefore', '金额(前)', 27, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
             (replace(uuid(), '-', ''), 'saleOrderDetailChange', 'priceSumAfter', '金额(后)', 28, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
 
+            (replace(uuid(), '-', ''), 'saleOrderDetailChange', 'nowDeliverCount', '当前发货单数量', 29, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin')
+
     </insert>
 
     <!-- 列表(全部) 自动创建，禁止修改-->
@@ -154,6 +156,8 @@
 
             round((ifnull(dtlChange.order_count_before, 0) * ifnull(dtlChange.product_price_before, 0)), 2) priceSumBefore,
             round((ifnull(dtlChange.order_count_after, 0) * ifnull(dtlChange.product_price_after, 0)), 2) priceSumAfter,
+            <!--nowDeliverCount:当前发货数量:= 发货单数量 - 已退货数量-->
+            round((ifnull(dtlChange.deliver_count, 0) - ifnull(dtlChange.retreat_count, 0)), 2) nowDeliverCount,
 
             <!--货品表-->
             product.code sysProductCode,
