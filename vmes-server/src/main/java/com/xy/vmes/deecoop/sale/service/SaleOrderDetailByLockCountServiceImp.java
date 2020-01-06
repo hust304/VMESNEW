@@ -1,8 +1,10 @@
 package com.xy.vmes.deecoop.sale.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
-import com.yvan.common.util.Common;
+import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.EvaluateUtil;
+import com.xy.vmes.common.util.StringUtil;
+import com.yvan.HttpUtils;
 import com.xy.vmes.common.util.rabbitmq.sender.ProductStockcountLockSender;
 import com.xy.vmes.deecoop.sale.dao.SaleOrderDetailByLockCountMapper;
 import com.xy.vmes.entity.Column;
@@ -12,6 +14,7 @@ import com.xy.vmes.service.SaleLockDateService;
 import com.xy.vmes.service.SaleOrderDetailByLockCountService;
 import com.xy.vmes.service.SaleOrderDetailService;
 import com.yvan.PageData;
+import com.yvan.common.util.Common;
 import com.yvan.springmvc.ResultModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,15 +40,22 @@ public class SaleOrderDetailByLockCountServiceImp implements SaleOrderDetailByLo
     @Autowired
     private ProductStockcountLockSender firstSender;
 
-    public List<Map> findListOrderDetailByLockCount(PageData pd) throws Exception {
-        return saleOrderDetailByLockCountMapper.findListOrderDetailByLockCount(pd);
-    }
     public List<Map> findListOrderDetailByLockCount(PageData pd, Pagination pg) throws Exception {
-        return saleOrderDetailByLockCountMapper.findListOrderDetailByLockCount(pd, pg);
+        List<Map> mapList = new ArrayList();
+        if (pd == null) {return mapList;}
+
+        if (pg == null) {
+            return saleOrderDetailByLockCountMapper.findListOrderDetailByLockCount(pd);
+        } else if (pg != null) {
+            return saleOrderDetailByLockCountMapper.findListOrderDetailByLockCount(pd, pg);
+        }
+
+        return mapList;
     }
 
     public ResultModel listPageOrderDetailByLockCount(PageData pd) throws Exception {
         ResultModel model = new ResultModel();
+        Pagination pg = HttpUtils.parsePagination(pd);
 
         List<Column> columnList = columnService.findColumnList("saleOrderDetailByLockCount");
         if (columnList == null || columnList.size() == 0) {
@@ -59,31 +69,7 @@ public class SaleOrderDetailByLockCountServiceImp implements SaleOrderDetailByLo
         if (fieldCode != null && fieldCode.trim().length() > 0) {
             columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
         }
-
-        List<LinkedHashMap> titlesList = new ArrayList<LinkedHashMap>();
-        List<String> titlesHideList = new ArrayList<String>();
-        Map<String, String> varModelMap = new HashMap<String, String>();
-        if(columnList!=null&&columnList.size()>0){
-            for (Column column : columnList) {
-                if(column!=null){
-                    if("0".equals(column.getIshide())){
-                        titlesHideList.add(column.getTitleKey());
-                    }
-                    LinkedHashMap titlesLinkedMap = new LinkedHashMap();
-                    titlesLinkedMap.put(column.getTitleKey(),column.getTitleName());
-                    varModelMap.put(column.getTitleKey(),"");
-                    titlesList.add(titlesLinkedMap);
-                }
-            }
-        }
-        Map result = new HashMap();
-        result.put("hideTitles",titlesHideList);
-        result.put("titles",titlesList);
-
-        String queryStr = pd.getString("queryStr");
-        if (queryStr != null && queryStr.trim().length() > 0) {
-            pd.put("queryStr", queryStr.trim());
-        }
+        Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
 
         //设置查询排序
         pd.put("orderStr", "detail.cdate asc");
@@ -92,85 +78,176 @@ public class SaleOrderDetailByLockCountServiceImp implements SaleOrderDetailByLo
             pd.put("orderStr", orderStr);
         }
 
-        List<Map> varMapList = new ArrayList();
-        List<Map> varList = this.findListOrderDetailByLockCount(pd);
-        if(varList!=null&&varList.size()>0){
-            for(int i=0;i<varList.size();i++){
-                Map map = varList.get(i);
-                Map<String, String> varMap = new HashMap<String, String>();
-                varMap.putAll(varModelMap);
-                for (Map.Entry<String, String> entry : varMap.entrySet()) {
-                    varMap.put(entry.getKey(),map.get(entry.getKey())!=null?map.get(entry.getKey()).toString():"");
-                }
-                varMapList.add(varMap);
-            }
+        //是否需要分页 true:需要分页 false:不需要分页
+        Map result = new HashMap();
+        String isNeedPage = pd.getString("isNeedPage");
+        if ("false".equals(isNeedPage)) {
+            pg = null;
+        } else {
+            result.put("pageData", pg);
         }
 
-        //遍历结果集
-        //(计量单位)(库存数量,库存可用数量) 单位换算公式(n2pFormula) (计价单位)(库存数量,库存可用数量)
-        for (Map mapObject : varMapList) {
-            //n2pFormula (计量单位转换计价单位公式)
-            String n2pFormula = (String)mapObject.get("n2pFormula");
+        List<Map> varList = this.findListOrderDetailByLockCount(pd, pg);
+        if (varList != null && varList.size() > 0) {
+            for (Map<String, Object> objectMap : varList) {
+                //(n2p:计量转换计价)///////////////////////////////////////////////////////////////////////////////////////////
+                String n2pFormula = (String)objectMap.get("npFormula");
 
-//            //stockCount (计量单位)库存数量
-//            String stockCount_str = (String)mapObject.get("stockCount");
-//            //stockCountByPrice        (计价单位)库存数量
-//            if (n2pFormula != null && stockCount_str != null) {
-//                Map<String, Object> formulaParmMap = new HashMap<String, Object>();
-//                formulaParmMap.put("N", new BigDecimal(stockCount_str));
-//
-//                BigDecimal valueBig = EvaluateUtil.formulaReckon(formulaParmMap, n2pFormula);
-//                mapObject.put("stockCountByPrice", valueBig);
-//            }
-
-            //productStockCount (计量单位)库存可用数量
-            BigDecimal productStockCount = BigDecimal.valueOf(0D);
-            String productStockCount_str = (String)mapObject.get("productStockCount");
-            if (productStockCount_str != null && productStockCount_str.trim().length() > 0) {
-                try {
-                    productStockCount = new BigDecimal(productStockCount_str);
-                } catch (NumberFormatException e) {
-                    e.printStackTrace();
+                //n2pIsScale 是否需要四舍五入(Y:需要四舍五入 N:无需四舍五入)
+                String n2pIsScale = new String();
+                if (objectMap.get("n2pIsScale") != null) {
+                    n2pIsScale = objectMap.get("n2pIsScale").toString().trim();
                 }
-            }
 
-            //productStockCountByPrice (计价单位)库存可用数量
-            BigDecimal valueBig = EvaluateUtil.countFormulaN2P(productStockCount, n2pFormula);
-            mapObject.put("productStockCountByPrice", valueBig);
-
-            //orderCount 订购数量
-            BigDecimal orderCount = BigDecimal.valueOf(0D);
-            if (mapObject.get("orderCount") != null && mapObject.get("orderCount").toString().trim().length() > 0) {
-                String orderCount_str = (String)mapObject.get("orderCount");
-                try {
-                    orderCount = new BigDecimal(orderCount_str);
-                } catch(NumberFormatException e) {
-                    e.printStackTrace();
+                //n2pDecimalCount 小数位数 (最小:0位 最大:4位)
+                Integer n2pDecimalCount = Integer.valueOf(2);
+                if (objectMap.get("n2pDecimalCount") != null) {
+                    n2pDecimalCount = (Integer)objectMap.get("n2pDecimalCount");
                 }
-            }
 
-            //deliverCount 发货完成数量
-            BigDecimal deliverCount = BigDecimal.valueOf(0D);
-            if (mapObject.get("deliverCount") != null && mapObject.get("deliverCount").toString().trim().length() > 0) {
-                String deliverCount_str = (String)mapObject.get("deliverCount");
-                try {
-                    deliverCount = new BigDecimal(deliverCount_str);
-                } catch(NumberFormatException e) {
-                    e.printStackTrace();
+                //(计量单位)货品数量///////////////////////////////////////////////////////////////////////////////////////////
+                //allowStockCount (计量单位)可用库存数量: 库存数量 - 货品锁库数量 + (销售订单)货品锁库数量
+                BigDecimal allowStockCount = BigDecimal.valueOf(0D);
+                if (objectMap.get("allowStockCount") != null) {
+                    allowStockCount = (BigDecimal)objectMap.get("allowStockCount");
                 }
+
+                //lockCount (销售订单)货品锁库数量
+                BigDecimal lockCount = BigDecimal.valueOf(0D);
+                if (objectMap.get("lockCount") != null) {
+                    lockCount = (BigDecimal)objectMap.get("lockCount");
+                }
+
+                //(单据单位)货品数量///////////////////////////////////////////////////////////////////////////////////////////
+                //orderCount 订购数量
+                BigDecimal orderCount = BigDecimal.valueOf(0D);
+                if (objectMap.get("orderCount") != null) {
+                    orderCount = (BigDecimal)objectMap.get("orderCount");
+                }
+
+                //deliverCount 发货完成数量 := 已发货数量 - 已退货数量
+                BigDecimal deliverCount = BigDecimal.valueOf(0D);
+                if (objectMap.get("deliverCount") != null) {
+                    deliverCount = (BigDecimal)objectMap.get("deliverCount");
+                }
+
+                //allowStockCount (计量单位)可用库存数量 -- (n2pFormula)计量单位转换计价单位
+                allowStockCount = EvaluateUtil.countFormulaN2P(allowStockCount, n2pFormula);
+                allowStockCount = StringUtil.scaleDecimal(allowStockCount, n2pIsScale, n2pDecimalCount);
+                objectMap.put("allowStockCount", allowStockCount.toString());
+
+                //lockCount (销售订单)货品锁库数量 -- (n2pFormula)计量单位转换计价单位
+                lockCount = EvaluateUtil.countFormulaN2P(lockCount, n2pFormula);
+                lockCount = StringUtil.scaleDecimal(lockCount, n2pIsScale, n2pDecimalCount);
+                objectMap.put("lockCount", lockCount.toString());
+
+                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                //最大订单订购数量: 订购数量 - 发货完成数量
+                BigDecimal maxOrderCount = BigDecimal.valueOf(0D);
+                if ((orderCount.doubleValue() - deliverCount.doubleValue()) >= 0 ) {
+                    maxOrderCount = BigDecimal.valueOf(orderCount.doubleValue() - deliverCount.doubleValue());
+                }
+                //四舍五入到2位小数
+                maxOrderCount = maxOrderCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+
+                //maxLockCount 可锁数量
+                //1. (可用库存数量 >= 最大订单订购数量) 可锁数量:= 最大订单订购数量
+                //2. (可用库存数量 < 最大订单订购数量) 可锁数量:= 可用库存数量
+                BigDecimal maxLockCount = BigDecimal.valueOf(0D);
+                if (allowStockCount.doubleValue() >= maxOrderCount.doubleValue()) {
+                    maxLockCount = maxOrderCount;
+                } else if (allowStockCount.doubleValue() < maxOrderCount.doubleValue()) {
+                    maxLockCount = allowStockCount;
+                }
+                //四舍五入到2位小数
+                maxLockCount = maxLockCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                objectMap.put("maxLockCount", maxLockCount.toString());
+
+                //editLockCount 修改锁库(默认值)
+                //1. (可锁数量 >= (销售订单)货品锁库数量) 修改锁库(默认值):= (销售订单)货品锁库数量
+                //2. (可锁数量 < (销售订单)货品锁库数量) 修改锁库(默认值):= 可锁数量
+                BigDecimal editLockCount = BigDecimal.valueOf(0D);
+                if (maxLockCount.doubleValue() >= lockCount.doubleValue()) {
+                    editLockCount = lockCount;
+                } else if (maxLockCount.doubleValue() < lockCount.doubleValue()) {
+                    editLockCount = maxLockCount;
+                }
+                //四舍五入到2位小数
+                editLockCount = editLockCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                objectMap.put("editLockCount", editLockCount.toString());
             }
-
-            //maxLockCount 最大锁定数量 (订购数量 - 发货完成数量)
-            BigDecimal maxLockCount = BigDecimal.valueOf(orderCount.doubleValue() - deliverCount.doubleValue());
-            //四舍五入到2位小数
-            maxLockCount = maxLockCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-            mapObject.put("maxLockCount", maxLockCount);
-
         }
+        List<Map> varMapList = ColumnUtil.getVarMapList(varList, titleMap);
+
+        result.put("hideTitles",titleMap.get("hideTitles"));
+        result.put("titles",titleMap.get("titles"));
         result.put("varList",varMapList);
 
         model.putResult(result);
         return model;
+
+
+//        //遍历结果集
+//        //(计量单位)(库存数量,库存可用数量) 单位换算公式(n2pFormula) (计价单位)(库存数量,库存可用数量)
+//        for (Map mapObject : varMapList) {
+//            //n2pFormula (计量单位转换计价单位公式)
+//            String n2pFormula = (String)mapObject.get("n2pFormula");
+//
+////            //stockCount (计量单位)库存数量
+////            String stockCount_str = (String)mapObject.get("stockCount");
+////            //stockCountByPrice        (计价单位)库存数量
+////            if (n2pFormula != null && stockCount_str != null) {
+////                Map<String, Object> formulaParmMap = new HashMap<String, Object>();
+////                formulaParmMap.put("N", new BigDecimal(stockCount_str));
+////
+////                BigDecimal valueBig = EvaluateUtil.formulaReckon(formulaParmMap, n2pFormula);
+////                mapObject.put("stockCountByPrice", valueBig);
+////            }
+//
+//            //productStockCount (计量单位)库存可用数量
+//            BigDecimal productStockCount = BigDecimal.valueOf(0D);
+//            String productStockCount_str = (String)mapObject.get("productStockCount");
+//            if (productStockCount_str != null && productStockCount_str.trim().length() > 0) {
+//                try {
+//                    productStockCount = new BigDecimal(productStockCount_str);
+//                } catch (NumberFormatException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//            //productStockCountByPrice (计价单位)库存可用数量
+//            BigDecimal valueBig = EvaluateUtil.countFormulaN2P(productStockCount, n2pFormula);
+//            mapObject.put("productStockCountByPrice", valueBig);
+//
+//            //orderCount 订购数量
+//            BigDecimal orderCount = BigDecimal.valueOf(0D);
+//            if (mapObject.get("orderCount") != null && mapObject.get("orderCount").toString().trim().length() > 0) {
+//                String orderCount_str = (String)mapObject.get("orderCount");
+//                try {
+//                    orderCount = new BigDecimal(orderCount_str);
+//                } catch(NumberFormatException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//            //deliverCount 发货完成数量
+//            BigDecimal deliverCount = BigDecimal.valueOf(0D);
+//            if (mapObject.get("deliverCount") != null && mapObject.get("deliverCount").toString().trim().length() > 0) {
+//                String deliverCount_str = (String)mapObject.get("deliverCount");
+//                try {
+//                    deliverCount = new BigDecimal(deliverCount_str);
+//                } catch(NumberFormatException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//            //maxLockCount 最大锁定数量 (订购数量 - 发货完成数量)
+//            BigDecimal maxLockCount = BigDecimal.valueOf(orderCount.doubleValue() - deliverCount.doubleValue());
+//            //四舍五入到2位小数
+//            maxLockCount = maxLockCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+//            mapObject.put("maxLockCount", maxLockCount);
+//
+//        }
     }
 
     /**

@@ -37,8 +37,8 @@
             detail.is_lock_warehouse isLockWarehouse,
 
             detail.is_need_produce isNeedProduce,
-            round(ifnull(detail.lock_count, 0), 2) lockCount,
-            round(ifnull(detail.need_deliver_count, 0), 2) needDeliverCount,
+            <!--round(ifnull(detail.lock_count, 0), 2) lockCount,-->
+            <!--round(ifnull(detail.need_deliver_count, 0), 2) needDeliverCount,-->
             detail.lock_date lockDate,
             detail.plan_detail_id planDetailId,
 
@@ -51,31 +51,48 @@
             detail.version_lock_count versionLockCount,
 
             orderUnit.name orderUnitName,
+
             <!--货品表-->
-            product.code productCode,
+            product.code sysProductCode,
+            product.source_code custProductCode,
+            CASE
+            WHEN product.source_code is null THEN product.code
+            WHEN product.source_code is not null THEN product.source_code
+            ELSE null
+            END productCode,
             product.name productName,
             product.spec productSpec,
             product.genre productGenre,
             genre.name productGenreName,
             product.type productType,
+            product.property productProperty,
 
-            round(ifnull(product.lock_count, 0), 2) productLockCount,
-            round(ifnull(product.stock_count, 0), 2) stockCount,
-            '' stockCountByPrice,
+            <!--(单据)货品单位-->
+            prodUnitPrice.np_formula n2pFormula,
+            prodUnitPrice.pn_formula p2nFormula,
 
-            round((ifnull(product.stock_count, 0) - ifnull(product.lock_count, 0)), 2) productStockCount,
-            '' productStockCountByPrice,
+            prodUnitPrice.n2p_is_scale n2pIsScale,
+            prodUnitPrice.n2p_decimal_count n2pDecimalCount,
 
-            '' maxLockCount,
+            prodUnitPrice.p2n_is_scale p2nIsScale,
+            prodUnitPrice.p2n_decimal_count p2nDecimalCount,
 
+            <!--(计量单位)货品数量 -->
+            round(ifnull(product.stock_count, 0), 2) stockCount, <!--库存数量-->
+            round(ifnull(product.lock_count, 0), 2) productLockCount, <!--货品锁库数量-->
+            round(ifnull(detail.lock_count, 0), 2) lockCount, <!--(销售订单)货品锁库数量-->
+            <!--可用库存数量: 库存数量 - 货品锁库数量 + (销售订单)货品锁库数量 allowStockCount -->
+            round((ifnull(product.stock_count, 0) - ifnull(product.lock_count, 0) + ifnull(detail.lock_count, 0)),2) allowStockCount,
+
+            <!--(订单单位)货品数量 -->
             <!--退货明细汇总-->
             round(ifnull(retreatDtl.retreatCount, 0), 2) retreatCount,
             <!--deliverCount 发货完成数量 := 已发货数量 - 已退货数量-->
             round((ifnull(deliver.deliverCount, 0) - ifnull(retreatDtl.retreatCount, 0)), 2) deliverCount,
 
-            <!--货品计量单位-->
-            prodUnitPrice.np_formula n2pFormula,
-            prodUnitPrice.pn_formula p2nFormula
+            <!--java类获取数据(maxLockCount,editLockCount)-->
+            '' maxLockCount, <!--可锁数量-->
+            '' editLockCount
 
         from vmes_sale_order_detail detail
             left join vmes_product product on detail.product_id = product.id
@@ -151,8 +168,8 @@
         (replace(uuid(), '-', ''), 'saleOrderDetailByLockCount', 'isLockWarehouse', '是否锁定仓库(0:无锁定 1:锁定)', 14, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
 
         (replace(uuid(), '-', ''), 'saleOrderDetailByLockCount', 'isneedproduce', '是否需要生产(0:无需 1:需要 库存不够)', 15, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
-        (replace(uuid(), '-', ''), 'saleOrderDetailByLockCount', 'lockCount', '锁定货品数量(计量单位)', 16, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
-        (replace(uuid(), '-', ''), 'saleOrderDetailByLockCount', 'needDeliverCount', '锁定货品数量', 16, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailByLockCount', 'lockCount', '已锁库', 16, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailByLockCount', 'editLockCount', '修改锁库', 16, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderDetailByLockCount', 'lockDate', '锁定开始时间', 17, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderDetailByLockCount', 'planDetailId', '生产计划明细ID', 18, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
 
@@ -174,16 +191,23 @@
         (replace(uuid(), '-', ''), 'saleOrderDetailByLockCount', 'deliverCount', 'deliverCount', 30, '1', '1', '1', '0', '2018-12-6 09:16:39', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderDetailByLockCount', 'productLockCount', 'productLockCount', 30, '1', '1', '1', '0', '2018-12-6 09:16:39', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderDetailByLockCount', 'stockCount', '库存数量(计量单位)', 31, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
-        (replace(uuid(), '-', ''), 'saleOrderDetailByLockCount', 'stockCountByPrice', '库存数量', 31, '1', '1', '1', '0', '2018-12-6 09:16:39', 'admin'),
 
-        (replace(uuid(), '-', ''), 'saleOrderDetailByLockCount', 'productStockCount', '库存可用数量(计量单位)', 32, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
-        (replace(uuid(), '-', ''), 'saleOrderDetailByLockCount', 'productStockCountByPrice', '库存可用数量', 32, '1', '1', '1', '0', '2018-12-6 09:16:39', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailByLockCount', 'allowStockCount', '可用库存数量', 32, '1', '1', '1', '0', '2018-12-6 09:16:39', 'admin'),
 
         (replace(uuid(), '-', ''), 'saleOrderDetailByLockCount', 'p2nFormula', 'p2nFormula', 33, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderDetailByLockCount', 'n2pFormula', 'n2pFormula', 33, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
 
-        (replace(uuid(), '-', ''), 'saleOrderDetailByLockCount', 'maxLockCount', '最大锁定数量', 34, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin')
-        (replace(uuid(), '-', ''), 'saleOrderDetailByLockCount', 'versionLockCount', 'versionLockCount', 36, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin')
+        (replace(uuid(), '-', ''), 'saleOrderDetailByLockCount', 'maxLockCount', '可锁数量', 34, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin')
+        (replace(uuid(), '-', ''), 'saleOrderDetailByLockCount', 'versionLockCount', 'versionLockCount', 36, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
+
+        (replace(uuid(), '-', ''), 'saleOrderDetailByLockCount', 'n2pIsScale', 'n2p:是否需要四舍五入', 37, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailByLockCount', 'n2pDecimalCount', 'n2p:保留小数位数', 38, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+
+        (replace(uuid(), '-', ''), 'saleOrderDetailByLockCount', 'p2nIsScale', 'p2n:是否需要四舍五入', 39, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailByLockCount', 'p2nDecimalCount', 'p2n:保留小数位数', 40, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+
+        (replace(uuid(), '-', ''), 'saleOrderDetailByLockCount', 'productProperty', '自定义属性', 41, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+
     </insert>
 
 

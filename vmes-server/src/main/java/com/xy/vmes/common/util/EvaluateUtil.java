@@ -113,7 +113,8 @@ public class EvaluateUtil {
      */
     public static BigDecimal countFormulaN2P(BigDecimal count, String formula) {
         if (count == null) {return BigDecimal.valueOf(0D);}
-        if (formula == null || formula.trim().length() == 0) {return BigDecimal.valueOf(0D);}
+        //如果没有设置(单位换算公式)-系统默认(按照 1:1)输出
+        if (formula == null || formula.trim().length() == 0) {return count;}
 
         Map<String, Object> parmMap = new HashMap<String, Object>();
         parmMap.put("N", count);
@@ -129,6 +130,7 @@ public class EvaluateUtil {
      */
     public static BigDecimal countFormulaP2N(BigDecimal count, String formula) {
         if (count == null) {return BigDecimal.valueOf(0D);}
+        //如果没有设置(单位换算公式)-系统默认(按照 1:1)输出
         if (formula == null || formula.trim().length() == 0) {return count;}
 
         Map<String, Object> parmMap = new HashMap<String, Object>();
