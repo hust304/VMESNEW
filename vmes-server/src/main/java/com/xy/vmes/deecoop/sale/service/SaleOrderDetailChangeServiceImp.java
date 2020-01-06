@@ -337,17 +337,23 @@ public class SaleOrderDetailChangeServiceImp implements SaleOrderDetailChangeSer
             deliverDateAfter = DateFormat.dateString2Date(deliverDateAfterStr, DateFormat.DEFAULT_DATE_FORMAT);
         }
 
-        //发货数量
+        //发货单数量
         BigDecimal deliverCount = BigDecimal.valueOf(0D);
         if (objectMap.get("deliverCount") != null) {
             deliverCount = (BigDecimal)objectMap.get("deliverCount");
         }
 
-        //退货数量
-        BigDecimal retreatCount = BigDecimal.valueOf(0D);
-        if (objectMap.get("retreatCount") != null) {
-            retreatCount = (BigDecimal)objectMap.get("retreatCount");
+        //nowDeliverCount:当前发货数量:= 发货单数量 - 已退货数量
+        BigDecimal nowDeliverCount = BigDecimal.valueOf(0D);
+        if (objectMap.get("nowDeliverCount") != null) {
+            nowDeliverCount = (BigDecimal)objectMap.get("nowDeliverCount");
         }
+
+//        //退货数量
+//        //BigDecimal retreatCount = BigDecimal.valueOf(0D);
+//        if (objectMap.get("retreatCount") != null) {
+//            retreatCount = (BigDecimal)objectMap.get("retreatCount");
+//        }
 
         //发货数量:=0 无需拆分订单明细 直接修改该订单明细
         if (0D == deliverCount.doubleValue()) {
@@ -391,11 +397,11 @@ public class SaleOrderDetailChangeServiceImp implements SaleOrderDetailChangeSer
         //          (插入)订购数量:2  单价:1
         if (this.isChangeByBigDecimal(orderCountBefore, orderCountAfter)) {
             //设置订单明细:修改
-            editObject = this.findEditOrderDetail(objectMap, deliverCount, editObject);
+            editObject = this.findEditOrderDetail(objectMap, nowDeliverCount, editObject);
             this.findOrderDetailByPrice(productPriceBefore, editObject);
 
             //设置订单明细:添加
-            addObject = this.findAddOrderDetail(objectMap, deliverCount, retreatCount, orderCountAfter, orderDetail, addObject);
+            addObject = this.findAddOrderDetail(objectMap, nowDeliverCount, orderCountAfter, orderDetail, addObject);
             this.findOrderDetailByPrice(productPriceAfter, addObject);
             addObject.setDeliverDate(deliverDateAfter);
         }
@@ -409,13 +415,13 @@ public class SaleOrderDetailChangeServiceImp implements SaleOrderDetailChangeSer
         if (this.isChangeByBigDecimal(productPriceBefore, productPriceAfter)) {
             //设置订单明细:修改
             if (editObject == null) {
-                editObject = this.findEditOrderDetail(objectMap, deliverCount, editObject);
+                editObject = this.findEditOrderDetail(objectMap, nowDeliverCount, editObject);
                 this.findOrderDetailByPrice(productPriceBefore, editObject);
             }
 
             //设置订单明细:添加
             if (addObject == null) {
-                addObject = this.findAddOrderDetail(objectMap, deliverCount, retreatCount, orderCountAfter, orderDetail, addObject);
+                addObject = this.findAddOrderDetail(objectMap, nowDeliverCount, orderCountAfter, orderDetail, addObject);
             }
             this.findOrderDetailByPrice(productPriceAfter, addObject);
             addObject.setDeliverDate(deliverDateAfter);
@@ -443,7 +449,6 @@ public class SaleOrderDetailChangeServiceImp implements SaleOrderDetailChangeSer
         return valueMap;
     }
 
-    //后计价订单变更(拆分订单明细)
     public Map<String, SaleOrderDetail> findSaleOrderDetailByPriceChangeMap(Map<String, Object> objectMap) throws Exception {
         Map<String, SaleOrderDetail> valueMap = new HashMap<>();
         valueMap.put("editOrderDetail", null);
@@ -494,11 +499,11 @@ public class SaleOrderDetailChangeServiceImp implements SaleOrderDetailChangeSer
             deliverCount = (BigDecimal)objectMap.get("deliverCount");
         }
 
-        //退货数量
-        BigDecimal retreatCount = BigDecimal.valueOf(0D);
-        if (objectMap.get("retreatCount") != null) {
-            retreatCount = (BigDecimal)objectMap.get("retreatCount");
-        }
+//        //退货数量
+//        BigDecimal retreatCount = BigDecimal.valueOf(0D);
+//        if (objectMap.get("retreatCount") != null) {
+//            retreatCount = (BigDecimal)objectMap.get("retreatCount");
+//        }
 
         //发货数量:=0 无需拆分订单明细 直接修改该订单明细
         if (0D == deliverCount.doubleValue()) {
@@ -542,7 +547,7 @@ public class SaleOrderDetailChangeServiceImp implements SaleOrderDetailChangeSer
         //          (插入)订购数量:2  单价:1
         if (this.isChangeByBigDecimal(orderCountBefore, orderCountAfter)) {
             //设置订单明细:修改
-            editObject = this.findEditOrderDetail(objectMap, deliverCount, editObject);
+            editObject = this.findEditOrderDetail(objectMap, orderCountAfter, editObject);
             if (orderDetailDB != null) {
                 //priceCount 后计价结算数量 -- 货品数量(计价数量)
                 editObject.setPriceCount(orderDetailDB.getPriceCount());
@@ -550,13 +555,13 @@ public class SaleOrderDetailChangeServiceImp implements SaleOrderDetailChangeSer
 
             this.findOrderDetailByPrice(productPriceBefore, editObject);
 
-            //设置订单明细:添加
-            addObject = this.findAddOrderDetail(objectMap, deliverCount, retreatCount, orderCountAfter, orderDetailDB, addObject);
-            //priceCount 后计价结算数量
-            addObject.setPriceCount(BigDecimal.valueOf(0D));
-
-            this.findOrderDetailByPrice(BigDecimal.valueOf(0D), addObject);
-            addObject.setDeliverDate(deliverDateAfter);
+//            //设置订单明细:添加
+//            addObject = this.findAddOrderDetail(objectMap, deliverCount, retreatCount, orderCountAfter, orderDetailDB, addObject);
+//            //priceCount 后计价结算数量
+//            addObject.setPriceCount(BigDecimal.valueOf(0D));
+//
+//            this.findOrderDetailByPrice(BigDecimal.valueOf(0D), addObject);
+//            addObject.setDeliverDate(deliverDateAfter);
         }
 
         //C. 约定交期发生变更:
@@ -602,7 +607,7 @@ public class SaleOrderDetailChangeServiceImp implements SaleOrderDetailChangeSer
         orderDetail.setProductSum(productSum);
     }
 
-    private SaleOrderDetail findEditOrderDetail(Map<String, Object> objectMap, BigDecimal deliverCount, SaleOrderDetail editObject) {
+    private SaleOrderDetail findEditOrderDetail(Map<String, Object> objectMap, BigDecimal orderCount, SaleOrderDetail editObject) {
         if (editObject == null) {editObject = new SaleOrderDetail();}
 
         //订单明细id
@@ -613,16 +618,16 @@ public class SaleOrderDetailChangeServiceImp implements SaleOrderDetailChangeSer
         editObject.setId(orderDtlId);
 
         //订单明细-订购数量:= 发货数量(订单单位-计价单位)
-        editObject.setOrderCount(deliverCount);
+        editObject.setOrderCount(orderCount);
         //priceCount 货品数量(计价数量)
-        editObject.setPriceCount(deliverCount);
+        editObject.setPriceCount(orderCount);
 
         //发货数量(计量数量)-productCountDeliver
         BigDecimal productCountDeliver = BigDecimal.valueOf(0D);
 
         //发货数量:(转换计量单位) P(计价单位) --> N(计量单位)
         if (p2nFormula != null && p2nFormula.trim().length() > 0) {
-            productCountDeliver = EvaluateUtil.countFormulaP2N(deliverCount, p2nFormula);
+            productCountDeliver = EvaluateUtil.countFormulaP2N(orderCount, p2nFormula);
         }
         //四舍五入到2位小数
         productCountDeliver = productCountDeliver.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
@@ -634,8 +639,7 @@ public class SaleOrderDetailChangeServiceImp implements SaleOrderDetailChangeSer
     }
 
     private SaleOrderDetail findAddOrderDetail(Map<String, Object> objectMap,
-                                               BigDecimal deliverCount,
-                                               BigDecimal retreatCount,
+                                               BigDecimal nowDeliverCount,
                                                BigDecimal orderCountAfter,
                                                SaleOrderDetail orderDetail,
                                                SaleOrderDetail addObject) {
@@ -644,8 +648,8 @@ public class SaleOrderDetailChangeServiceImp implements SaleOrderDetailChangeSer
         //单位转换公式: (计价转换计量)单位
         String p2nFormula = (String)objectMap.get("p2nFormula");
 
-        //订单明细-订购数量:= (变更后)订购数量 - (发货数量 - 退货数量)
-        BigDecimal orderCountAdd = BigDecimal.valueOf(orderCountAfter.doubleValue() - (deliverCount.doubleValue() - retreatCount.doubleValue()));
+        //订单明细-订购数量:= (变更后)订购数量 - 当前发货数量  当前发货数量:=(发货数量 - 退货数量)
+        BigDecimal orderCountAdd = BigDecimal.valueOf(orderCountAfter.doubleValue() - nowDeliverCount.doubleValue());
 
         //订购数量:(转换计量单位) P(计价单位) --> N(计量单位)
         BigDecimal productCountAdd = BigDecimal.valueOf(0D);
