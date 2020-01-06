@@ -388,33 +388,31 @@ public class SaleOrderDetailChangeServiceImp implements SaleOrderDetailChangeSer
         SaleOrderDetail editObject = null;
         SaleOrderDetail addObject = null;
 
-        //单价发生变更
+        //发货数量: 不等于零
+        //A. 订购数量发生变更: 拆分订单明细
+        // 订购数量:10 单价:1 发货数量:5
+        // 情况2：只有订购数量变更 订购数量: 10 变更为 7
+        // 订单明细: (修改)订购数量:10 单价:1 (订购数量:10 修改为 5)
+        //        (修改后)订购数量:5 单价:1
+        //          (插入)订购数量:2  单价:1
+        if (this.isChangeByBigDecimal(orderCountBefore, orderCountAfter)) {
+            //设置订单明细:修改
+            editObject = this.findEditOrderDetail(objectMap, nowDeliverCount, editObject);
+            this.findOrderDetailByPrice(productPriceBefore, editObject);
+
+            //设置订单明细:添加
+            addObject = this.findAddOrderDetail(objectMap, nowDeliverCount, orderCountAfter, orderDetail, addObject);
+            this.findOrderDetailByPrice(productPriceAfter, addObject);
+            addObject.setDeliverDate(deliverDateAfter);
+        }
+
+        //B. 单价发生变更: 拆分订单明细
+        // 订购数量:10 单价:1 发货数量:5
+        // 情况1：只有价格变更 单价: 1 变更为 2
+        // 订单明细: (修改)订购数量:10 单价:1 (订购数量:10 修改为 5)
+        //        (修改后)订购数量:5 单价:1
+        //          (插入)订购数量:5  单价:2
         if (this.isChangeByBigDecimal(productPriceBefore, productPriceAfter)) {
-            //发货数量: 不等于零
-            //A. 订购数量发生变更: 拆分订单明细
-            // 订购数量:10 单价:1 发货数量:5
-            // 情况2：只有订购数量变更 订购数量: 10 变更为 7
-            // 订单明细: (修改)订购数量:10 单价:1 (订购数量:10 修改为 5)
-            //        (修改后)订购数量:5 单价:1
-            //          (插入)订购数量:2  单价:1
-            if (this.isChangeByBigDecimal(orderCountBefore, orderCountAfter)) {
-                //设置订单明细:修改
-                editObject = this.findEditOrderDetail(objectMap, nowDeliverCount, editObject);
-                this.findOrderDetailByPrice(productPriceBefore, editObject);
-
-                //设置订单明细:添加
-                addObject = this.findAddOrderDetail(objectMap, nowDeliverCount, orderCountAfter, orderDetail, addObject);
-                this.findOrderDetailByPrice(productPriceAfter, addObject);
-                addObject.setDeliverDate(deliverDateAfter);
-            }
-
-            //B. 单价发生变更: 拆分订单明细
-            // 订购数量:10 单价:1 发货数量:5
-            // 情况1：只有价格变更 单价: 1 变更为 2
-            // 订单明细: (修改)订购数量:10 单价:1 (订购数量:10 修改为 5)
-            //        (修改后)订购数量:5 单价:1
-            //          (插入)订购数量:5  单价:2
-
             //设置订单明细:修改
             if (editObject == null) {
                 editObject = this.findEditOrderDetail(objectMap, nowDeliverCount, editObject);
@@ -427,15 +425,6 @@ public class SaleOrderDetailChangeServiceImp implements SaleOrderDetailChangeSer
             }
             this.findOrderDetailByPrice(productPriceAfter, addObject);
             addObject.setDeliverDate(deliverDateAfter);
-        }
-
-        //数量发生变更 单价未发生变更
-        if (this.isChangeByBigDecimal(orderCountBefore, orderCountAfter)
-            && !this.isChangeByBigDecimal(productPriceBefore, productPriceAfter)
-        ) {
-            //设置订单明细:修改
-            editObject = this.findEditOrderDetail(objectMap, orderCountAfter, editObject);
-            this.findOrderDetailByPrice(productPriceBefore, editObject);
         }
 
         //C. 约定交期发生变更:
