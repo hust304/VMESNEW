@@ -384,7 +384,8 @@ public class WarehouseOutServiceImp implements WarehouseOutService {
     public WarehouseOut createWarehouseOut(String deptId, String deptName, String cuser, String companyId, String outType) {
         WarehouseOut warehouseOut = new WarehouseOut();
         //出库单编号
-        String code = coderuleService.createCoder(companyId, "vmes_warehouse_out", "O");
+        //String code = coderuleService.createCoder(companyId, "vmes_warehouse_out", "O");
+        String code = coderuleService.createCoderCdateOnShortYearByDate(companyId, "vmes_warehouse_out", "O", Common.CODE_RULE_LENGTH_SHORTYEAR);
         warehouseOut.setCode(code);
 
         warehouseOut.setCompanyId(companyId);
@@ -505,7 +506,8 @@ public class WarehouseOutServiceImp implements WarehouseOutService {
         warehouseOut.setState("0");
         warehouseOut.setCompanyId(companyID);
         //出库单编号
-        String code = coderuleService.createCoder(companyID, "vmes_warehouse_out", "O");
+        //String code = coderuleService.createCoder(companyID, "vmes_warehouse_out", "O");
+        String code = coderuleService.createCoderCdateOnShortYearByDate(companyID, "vmes_warehouse_out", "O", Common.CODE_RULE_LENGTH_SHORTYEAR);
         warehouseOut.setCode(code);
         //warehouseAttribute 仓库属性(warehouse:(简版,复杂版)仓库 spare:备件库)
         warehouseOut.setWarehouseAttribute("warehouse");

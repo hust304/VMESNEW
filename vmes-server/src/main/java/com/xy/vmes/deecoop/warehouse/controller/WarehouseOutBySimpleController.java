@@ -108,7 +108,8 @@ public class WarehouseOutBySimpleController {
         warehouseOut.setState("0");
         warehouseOut.setCompanyId(companyID);
         //出库单编号
-        String code = coderuleService.createCoder(companyID, "vmes_warehouse_out", "O");
+        //String code = coderuleService.createCoder(companyID, "vmes_warehouse_out", "O");
+        String code = coderuleService.createCoderCdateOnShortYearByDate(companyID, "vmes_warehouse_out", "O", Common.CODE_RULE_LENGTH_SHORTYEAR);
         warehouseOut.setCode(code);
 
         //warehouseAttribute 仓库属性(warehouse:(简版,复杂版)仓库 spare:备件库 office:办公出库)
