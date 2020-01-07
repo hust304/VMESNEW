@@ -156,7 +156,7 @@
 
             round((ifnull(dtlChange.order_count_before, 0) * ifnull(dtlChange.product_price_before, 0)), 2) priceSumBefore,
             round((ifnull(dtlChange.order_count_after, 0) * ifnull(dtlChange.product_price_after, 0)), 2) priceSumAfter,
-            <!--nowDeliverCount:当前发货数量:= 发货单数量 - 已退货数量-->
+            <!--nowDeliverCount:当前发货数量:= 发货单数量 - (退货退款)已退货数量-->
             round((ifnull(dtlChange.deliver_count, 0) - ifnull(dtlChange.retreat_count, 0)), 2) nowDeliverCount,
 
             <!--货品表-->

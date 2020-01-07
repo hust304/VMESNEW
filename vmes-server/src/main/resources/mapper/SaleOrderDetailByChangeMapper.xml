@@ -82,6 +82,8 @@
             orderDtl.deliver_date newDeliverDate,
 
             round(ifnull(retreatDtl.order_count, 0), 2) retreatCount,
+            <!--(退货退款)退货数量-->
+            round(ifnull(retreatDtl_1.order_count, 0), 2) retreatMoneyCount,
             <!--金额: (发货单数量 - 退货数量) * 单价-->
             round((ifnull(deliverDtl.order_count, 0) - ifnull(retreatDtl.order_count, 0)) * ifnull(orderDtl.product_price, 0), 2) productSum
 
@@ -99,12 +101,22 @@
                 where <![CDATA[ state <> '-1' ]]>
                 group by order_detai_id
             ) deliverDtl on orderDtl.id = deliverDtl.order_detai_id
+            <!--已完成退货数量-->
             left join (
                 select order_detail_id, sum(order_count) order_count
                 from vmes_sale_retreat_detail
                 where state = '3'
                 group by order_detail_id
             ) retreatDtl on orderDtl.id = retreatDtl.order_detail_id
+            <!--(退货退款:f69839bbf2394846a65894f0da120df9)退货数量-->
+            left join (
+                select a.order_detail_id,sum(a.order_count) order_count
+                from vmes_sale_retreat_detail a
+                  left join vmes_sale_retreat b on a.parent_id = b.id
+                where b.type = 'f69839bbf2394846a65894f0da120df9' and  a.state = '3'
+                group by a.order_detail_id
+            ) retreatDtl_1 on orderDtl.id = retreatDtl_1.order_detail_id
+
         <where>
             <if test="parentId != null and parentId != ''" >
                 and orderDtl.parent_id = #{parentId}
@@ -183,6 +195,7 @@
 
         (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'retreatCount', '退货数量', 42, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'miniChangeCount', '最小允许变更数量', 43, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'retreatMoneyCount', '(退货退款)退货数量', 44, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
     </insert>
 
 
