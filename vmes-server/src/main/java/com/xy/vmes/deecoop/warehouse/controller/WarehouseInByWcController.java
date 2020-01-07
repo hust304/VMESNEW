@@ -12,6 +12,7 @@ import com.yvan.Conv;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.YvanUtil;
+import com.yvan.common.util.Common;
 import com.yvan.springmvc.ResultModel;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -114,7 +115,8 @@ public class WarehouseInByWcController {
         warehouseIn.setState("0");
         warehouseIn.setCompanyId(companyID);
         //入库单编号
-        String code = coderuleService.createCoder(companyID, "vmes_warehouse_in", "I");
+        //String code = coderuleService.createCoder(companyID, "vmes_warehouse_in", "I");
+        String code = coderuleService.createCoderCdateOnShortYearByDate(companyID, "vmes_warehouse_in", "I", Common.CODE_RULE_LENGTH_SHORTYEAR);
         warehouseIn.setCode(code);
         //warehouseAttribute 仓库属性(warehouse:(简版,复杂版)仓库 spare:备件库)
         warehouseIn.setWarehouseAttribute("warehouse");

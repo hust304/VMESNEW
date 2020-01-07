@@ -227,7 +227,8 @@ public class WarehouseInServiceImp implements WarehouseInService {
         WarehouseIn warehouseIn = new WarehouseIn();
         warehouseIn.setId(Conv.createUuid());
         //入库单编号
-        String code = coderuleService.createCoder(companyId, "vmes_warehouse_in", "I");
+        //String code = coderuleService.createCoder(companyId, "vmes_warehouse_in", "I");
+        String code = coderuleService.createCoderCdateOnShortYearByDate(companyId, "vmes_warehouse_in", "I", Common.CODE_RULE_LENGTH_SHORTYEAR);
         warehouseIn.setCode(code);
 
         warehouseIn.setCompanyId(companyId);
@@ -407,7 +408,8 @@ public class WarehouseInServiceImp implements WarehouseInService {
         warehouseIn.setState("0");
         warehouseIn.setCompanyId(companyID);
         //入库单编号
-        String code = coderuleService.createCoder(companyID, "vmes_warehouse_in", "I");
+        //String code = coderuleService.createCoder(companyID, "vmes_warehouse_in", "I");
+        String code = coderuleService.createCoderCdateOnShortYearByDate(companyID, "vmes_warehouse_in", "I", Common.CODE_RULE_LENGTH_SHORTYEAR);
         warehouseIn.setCode(code);
         //warehouseAttribute 仓库属性(warehouse:(简版,复杂版)仓库 spare:备件库)
         warehouseIn.setWarehouseAttribute("warehouse");
