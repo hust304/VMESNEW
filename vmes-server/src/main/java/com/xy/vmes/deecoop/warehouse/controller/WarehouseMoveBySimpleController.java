@@ -101,7 +101,8 @@ public class WarehouseMoveBySimpleController {
         warehouseMove.setState("0");
         warehouseMove.setCompanyId(companyId);
         //移库单编号
-        String code = coderuleService.createCoder(companyId, "vmes_warehouse_move", "M");
+        //String code = coderuleService.createCoder(companyId, "vmes_warehouse_move", "M");
+        String code = coderuleService.createCoderCdateOnShortYearByDate(companyId, "vmes_warehouse_move", "M", Common.CODE_RULE_LENGTH_SHORTYEAR);
         warehouseMove.setCode(code);
         //isSimple 是否简版仓库 Y:是简版 N:非简版 is null:非简版
         //warehouseMove.setIsSimple("Y");

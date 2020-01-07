@@ -7,6 +7,7 @@ import com.xy.vmes.deecoop.warehouse.dao.WarehouseMoveMapper;
 import com.xy.vmes.entity.*;
 import com.xy.vmes.service.*;
 import com.yvan.*;
+import com.yvan.common.util.Common;
 import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
 import org.apache.commons.lang.StringUtils;
@@ -380,7 +381,8 @@ public class WarehouseMoveServiceImp implements WarehouseMoveService {
         warehouseMove.setCuser(currentUserId);
         warehouseMove.setWarehouseId(warehouseId);
         //出库单编号
-        String code = coderuleService.createCoder(companyID, "vmes_warehouse_move", "M");
+        //String code = coderuleService.createCoder(companyID, "vmes_warehouse_move", "M");
+        String code = coderuleService.createCoderCdateOnShortYearByDate(companyID, "vmes_warehouse_move", "M", Common.CODE_RULE_LENGTH_SHORTYEAR);
         warehouseMove.setCode(code);
         this.save(warehouseMove);
 
