@@ -90,7 +90,8 @@ public class WarehouseCheckBySimpleController {
         warehouseCheck.setState("0");
         warehouseCheck.setCompanyId(companyId);
         //盘点单编号
-        String code = coderuleService.createCoder(companyId, "vmes_warehouse_check", "C");
+        //String code = coderuleService.createCoder(companyId, "vmes_warehouse_check", "C");
+        String code = coderuleService.createCoderCdateOnShortYearByDate(companyId, "vmes_warehouse_check", "C", Common.CODE_RULE_LENGTH_SHORTYEAR);
         warehouseCheck.setCode(code);
         //isSimple 是否简版仓库 Y:是简版 N:非简版 is null:非简版
         //warehouseCheck.setIsSimple("Y");

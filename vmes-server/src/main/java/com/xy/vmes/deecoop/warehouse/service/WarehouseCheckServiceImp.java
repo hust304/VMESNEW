@@ -7,6 +7,7 @@ import com.xy.vmes.deecoop.warehouse.dao.WarehouseCheckMapper;
 import com.xy.vmes.entity.*;
 import com.xy.vmes.service.*;
 import com.yvan.*;
+import com.yvan.common.util.Common;
 import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -310,9 +311,10 @@ public class WarehouseCheckServiceImp implements WarehouseCheckService {
 
         //盘点单编号
         warehouseCheck.setCompanyId(companyId);
-        String code = coderuleService.createCoder(companyId, "vmes_warehouse_check", "C");
-        warehouseCheck.setMakeId(warehouseCheck.getCuser());
+        //String code = coderuleService.createCoder(companyId, "vmes_warehouse_check", "C");
+        String code = coderuleService.createCoderCdateOnShortYearByDate(companyId, "vmes_warehouse_check", "C", Common.CODE_RULE_LENGTH_SHORTYEAR);
         warehouseCheck.setCode(code);
+        warehouseCheck.setMakeId(warehouseCheck.getCuser());
         //state:状态(0:未完成 1:已完成 -1:已取消)
         warehouseCheck.setState("0");
         this.save(warehouseCheck);
