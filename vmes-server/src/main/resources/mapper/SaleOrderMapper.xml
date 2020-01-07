@@ -304,70 +304,20 @@
                 and lastOneOrderChange.state = #{changeState}
             </if>
 
-            <!--过滤出订单-订单明细id汇总(订购数量 > (发货数量-退货数量))-->
+            <!--获取(允许生成发货单)的订单id-->
             <if test="'true' == isBydeliver" >
-                and saleOrder.id in (
-                    select orderDeliver.parent_id
-                    from (
-                        select
-                            orderDtl.id,
-                            orderDtl.parent_id,
-                            <!--订单明细-订购数量-->
-                            round(ifnull(orderDtl.order_count, 0),2) orderCount,
-                            <!--订单明细id汇总已生成的发货数量-->
-                            round(ifnull(deliver.order_count, 0),2) deliverCount,
-                            <!--订单明细id汇总已生成的退货数量-->
-                            round(ifnull(retreat.order_count, 0),2) retreatCount,
-                            CASE
-                              WHEN ifnull(orderDtl.order_count, 0) > (ifnull(deliver.order_count, 0) - ifnull(retreat.order_count, 0)) THEN 'Y'
-                              WHEN ifnull(orderDtl.order_count, 0) <![CDATA[<=]]> (ifnull(deliver.order_count, 0) - ifnull(retreat.order_count, 0)) THEN 'N'
-                            ELSE null
-                            END isShowOrder
-                        from (
-                            select id,order_count,parent_id
-                            from vmes_sale_order_detail
-                            where parent_id in (
-                                select id
-                                from vmes_sale_order
-                                <where>
-                                    <if test="currentCompanyId != null and currentCompanyId != ''">
-                                        and company_id = #{currentCompanyId}
-                                    </if>
-                                </where>
-                            )
-                        ) orderDtl
-                            left join (
-                                <!--订单明细id汇总已生成的发货数量-->
-                                select order_detai_id,sum(order_count) order_count
-                                from vmes_sale_deliver_detail
-                                where parent_id in (
-                                    select id
-                                    from vmes_sale_deliver
-                                    <where>
-                                        <if test="currentCompanyId != null and currentCompanyId != ''" >
-                                            and company_id = #{currentCompanyId}
-                                        </if>
-                                    </where>
-                                ) and state <![CDATA[<>]]> '-1'
-                                group by order_detai_id
-                            ) deliver on orderDtl.id = deliver.order_detai_id
-                            left join (
-                                <!--订单明细id汇总已生成的退货数量-->
-                                select order_detail_id,sum(order_count) order_count
-                                from vmes_sale_retreat_detail
-                                where parent_id in (
-                                    select id
-                                    from vmes_sale_retreat
-                                    <where>
-                                        <if test="currentCompanyId != null and currentCompanyId != ''" >
-                                            and company_id = #{currentCompanyId}
-                                        </if>
-                                    </where>
-                                ) and state <![CDATA[<>]]> '-1'
-                                group by order_detail_id
-                            ) retreat on orderDtl.id = retreat.order_detail_id
-                    ) orderDeliver
-                    where orderDeliver.isShowOrder = 'Y'
+                and saleOrder.id not in (
+                    select a.order_id
+                    from vmes_sale_deliver_detail a
+                    left join vmes_sale_deliver b on a.parent_id = b.id
+                    <where>
+                        <if test="currentCompanyId != null and currentCompanyId != ''" >
+                            and b.company_id = #{currentCompanyId}
+                        </if>
+                        <!--发货状态(0:待发货 1:已发货 -1:已取消)-->
+                         and a.state = '0'
+                    </where>
+                    group by a.order_id
                 )
             </if>
 
