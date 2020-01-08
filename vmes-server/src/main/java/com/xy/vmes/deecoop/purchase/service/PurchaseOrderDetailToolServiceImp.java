@@ -62,6 +62,28 @@ public class PurchaseOrderDetailToolServiceImp implements PurchaseOrderDetailToo
         return detailMap;
     }
 
+    public Map<String, Map<String, Object>> findPurchaseOrderDetailMap(PageData findMap) {
+        Map<String, Map<String, Object>> detailMap = new HashMap<String, Map<String, Object>>();
+        if (findMap == null || findMap.size() == 0) {return detailMap;}
+
+        List<Map<String, Object>> mapList = new ArrayList<Map<String, Object>>();
+        try {
+            mapList = purchaseOrderDetailCollectMapper.findPurchaseOrderDetailCollect(findMap);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if (mapList != null && mapList.size() > 0) {
+            for (Map<String, Object> objectMap : mapList) {
+                //detailId: 采购订单明细id
+                String detailId = (String)objectMap.get("detailId");
+                detailMap.put(detailId, objectMap);
+            }
+        }
+
+        return detailMap;
+    }
+
 //    /**
 //     * 获取(采购明细id,采购数量,签收数量,退货数量[已完成])Map<String, Map<String, Object>>结构体
 //     * 根据(采购订单明细id)采购订单明细汇总查询

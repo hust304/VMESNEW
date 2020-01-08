@@ -13,27 +13,34 @@
             detail.id detailId,
             detail.parent_id parentId,
             <!--采购数量 -->
-            detail.count detailCount,
+            round(ifnull(detail.count, 0), 2) detailCount,
 
             <!--签收数量 -->
             round(ifnull(signDetail.arrive_count, 0), 2) signCount,
             <!--(已完成)退货数量 -->
             round(ifnull(retreatDetail.count, 0), 2) retreatCount,
             <!--到货数量:= 签收数量 - (已完成)退货数量 -->
-            round((ifnull(signDetail.arrive_count, 0) - ifnull(retreatDetail.count, 0)), 2) arriveCount
+            round((ifnull(signDetail.arrive_count, 0) - ifnull(retreatDetail.count, 0)), 2) arriveCount,
+
+            <!--采购计划 -->
+            detail.plan_id planDtlId,
+            planDtl.parent_id planId
 
         from vmes_purchase_order_detail detail
+            left join vmes_purchase_plan_detail planDtl on detail.plan_id = planDtl.id
             <!--签收数量 (采购订单明细id)采购签收明细汇总 vmes_purchase_sign_detail-->
             left join (
                 select order_detail_id, sum(arrive_count) arrive_count
                 from vmes_purchase_sign_detail
-                where isdisable = '1'
+                <!--签收明细状态(1:检验中 2:已完成 -1:已取消)-->
+                where state = '2'
                 group by order_detail_id
             ) signDetail on detail.id = signDetail.order_detail_id
             <!--(已完成)退货数量 (采购订单明细id)退货明细汇总 vmes_purchase_retreat_detail-->
             left join (
                 select order_detail_id, sum(count) count
                 from vmes_purchase_retreat_detail
+                <!--采购退货明细状态(1:待审核 2:待退货 3:已完成 -1:已取消)-->
                 where state = '3'
                 group by order_detail_id
             ) retreatDetail on detail.id = retreatDetail.order_detail_id

@@ -1,5 +1,7 @@
 package com.xy.vmes.service;
 
+import com.yvan.PageData;
+
 import java.util.Map;
 
 /**
@@ -26,6 +28,7 @@ public interface PurchaseOrderDetailToolService {
      * @return
      */
     Map<String, Map<String, Object>> findPurchaseOrderDetailMap(String purchaseOrderId);
+    Map<String, Map<String, Object>> findPurchaseOrderDetailMap(PageData findMap);
 
 //    /**
 //     * 获取(采购明细id,采购数量,签收数量,退货数量[已完成])Map<String, Map<String, Object>>结构体
