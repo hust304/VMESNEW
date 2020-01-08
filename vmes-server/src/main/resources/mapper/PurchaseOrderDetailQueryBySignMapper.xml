@@ -9,49 +9,55 @@
 <mapper namespace="com.xy.vmes.deecoop.purchase.dao.PurchaseOrderDetailQueryBySignMapper">
     <select id="listOrderDetaiQueryBySign" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
-        <!--采购订单明细-->
-        orderDtl.id id,
-        orderDtl.parent_id orderId,
-        round(ifnull(orderDtl.count, 0), 2) orderCount,
+            <!--采购订单明细-->
+            orderDtl.id id,
+            orderDtl.parent_id orderId,
+            round(ifnull(orderDtl.count, 0), 2) orderCount,
 
-        <!--货品表-->
-        product_id productId,
-        product.code sysProductCode,
-        product.source_code custProductCode,
-        CASE
-        WHEN product.source_code is null THEN product.code
-        WHEN product.source_code is not null THEN product.source_code
-        ELSE null
-        END productCode,
-        product.name productName,
-        product.spec productSpec,
-        product.genre productGenre,
-        product.property productProperty,
+            <!--货品表-->
+            product_id productId,
+            product.code sysProductCode,
+            product.source_code custProductCode,
+            CASE
+                WHEN product.source_code is null THEN product.code
+                WHEN product.source_code is not null THEN product.source_code
+            ELSE null
+            END productCode,
+            product.name productName,
+            product.spec productSpec,
+            product.genre productGenre,
+            product.property productProperty,
 
-        orderDtl.unit orderUnit,
-        orderUnit.name orderUnitName,
+            orderDtl.unit orderUnit,
+            orderUnit.name orderUnitName,
 
-        <!--采购签收明细-->
-        round(ifnull(signDtl.signCount, 0), 2) signCount,
+            <!--采购签收明细-->
+            round(ifnull(signDtl.signCount, 0), 2) signCount,
 
-        <!--未签收数量: 采购数量 - (已生成签收单)签收数量 -->
-        round((ifnull(orderDtl.count, 0) - ifnull(signDtl.signCount, 0)), 2) maxAarriveCount,
-        <!--默认签收数量: 采购数量 - (已生成签收单)签收数量 -->
-        round((ifnull(orderDtl.count, 0) - ifnull(signDtl.signCount, 0)), 2) arriveCount,
-        <!--质检属性 (1:免检 2:检验)-->
-        '检验' quality
+            <!--未签收数量: 采购数量 - (已生成签收单)签收数量 -->
+            round((ifnull(orderDtl.count, 0) - ifnull(signDtl.signCount, 0)), 2) maxAarriveCount,
+            <!--默认签收数量: 采购数量 - (已生成签收单)签收数量 -->
+            round((ifnull(orderDtl.count, 0) - ifnull(signDtl.signCount, 0)), 2) arriveCount,
+
+            <!--quality:质检属性 (1:免检 2:检验)-->
+            <!--product.purchase_quality_type 1:全检-->
+            <!--product.purchase_quality_type 2:抽检-->
+            CASE
+            WHEN product.purchase_quality_type is null or CHAR_LENGTH(TRIM(product.purchase_quality_type)) = 0 THEN '免检'
+            ELSE '检验'
+            END quality
 
         from vmes_purchase_order_detail orderDtl
-        left join vmes_product product on orderDtl.product_id = product.id
-        left join vmes_dictionary orderUnit on orderDtl.unit = orderUnit.id
+            left join vmes_product product on orderDtl.product_id = product.id
+            left join vmes_dictionary orderUnit on orderDtl.unit = orderUnit.id
 
-        <!--获取(已生成签收单)签收数量 根据采购订单明细id汇总查询(采购签收明细) 已生成签收单数量-->
-        left join (
-        select order_detail_id, sum(arrive_count) signCount
-        from vmes_purchase_sign_detail
-        where <![CDATA[ state <> '-1' ]]>
-        group by order_detail_id
-        ) signDtl on orderDtl.id = signDtl.order_detail_id
+            <!--获取(已生成签收单)签收数量 根据采购订单明细id汇总查询(采购签收明细) 已生成签收单数量-->
+            left join (
+                select order_detail_id, sum(arrive_count) signCount
+                from vmes_purchase_sign_detail
+                where <![CDATA[ state <> '-1' ]]>
+                group by order_detail_id
+            ) signDtl on orderDtl.id = signDtl.order_detail_id
         <where>
             <if test="orderId != null and orderId != ''">
                 and orderDtl.parent_id = #{orderId}
