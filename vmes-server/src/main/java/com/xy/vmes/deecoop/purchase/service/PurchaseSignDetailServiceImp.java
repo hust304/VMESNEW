@@ -8,7 +8,6 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.service.ColumnService;
-import com.yvan.Conv;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
@@ -36,7 +35,6 @@ public class PurchaseSignDetailServiceImp implements PurchaseSignDetailService {
      */
     @Override
     public void save(PurchaseSignDetail object) throws Exception {
-        object.setId(Conv.createUuid());
         object.setCdate(new Date());
         object.setUdate(new Date());
         purchaseSignDetailMapper.insert(object);
@@ -194,6 +192,52 @@ public class PurchaseSignDetailServiceImp implements PurchaseSignDetailService {
 
         return this.findSignDetailList(findMap);
     }
+
+    /**
+     * 获取签收单状态-根据签收单明细状态
+     * 签收单单状态(1:检验中 2:已完成 -1:已取消)
+     * 签收单明细状态(1:检验中 2:已完成 -1:已取消)
+     *
+     * @param objectList      采购签收单明细List<PurchaseSignDetail>
+     * @return
+     */
+    public String findParentStateByDetailList(List<PurchaseSignDetail> objectList) {
+        if (objectList == null || objectList.size() == 0) {return null;}
+
+        //签收单明细状态(1:检验中 2:已完成 -1:已取消)
+        int jyz = 0; //1:检验中
+        int ywc = 0; //2:已完成
+        int yqx = 0; //-1:已取消
+
+        if (objectList != null && objectList.size() > 0) {
+            for (PurchaseSignDetail detail : objectList) {
+                if ("-1".equals(detail.getState())) {
+                    yqx = yqx + 1;
+                } else if ("1".equals(detail.getState())) {
+                    jyz = jyz + 1;
+                } else if ("2".equals(detail.getState())) {
+                    ywc = ywc + 1;
+                }
+            }
+        }
+
+        //签收单明细状态:-1:已取消 全是已取消状态  签收单状态:-1:已取消
+        if (yqx > 0 && yqx == objectList.size()) {
+            return "-1";
+
+            //签收单明细状态:2:已完成(发货) 全是已完成  签收单状态:2:已完成
+        } else if (ywc > 0 && yqx >= 0 && jyz == 0) {
+            return "2";
+
+            //签收单明细状态:1:检验中 一条或多条  签收单状态:1:检验中
+        } else if (jyz > 0) {
+            return "1";
+        }
+
+        return null;
+    }
+
+
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**
     *

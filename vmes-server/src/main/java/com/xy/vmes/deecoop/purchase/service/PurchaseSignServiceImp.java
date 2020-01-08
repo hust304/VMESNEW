@@ -36,17 +36,16 @@ public class PurchaseSignServiceImp implements PurchaseSignService {
     @Autowired
     private PurchaseSignDetailService purchaseSignDetailService;
 
-//    /**
-//     * 创建人：陈刚 自动创建，禁止修改
-//     * 创建时间：2019-12-05
-//     */
-//    @Override
-//    public void save(PurchaseSign object) throws Exception {
-//        object.setId(Conv.createUuid());
-//        object.setCdate(new Date());
-//        object.setUdate(new Date());
-//        purchaseSignMapper.insert(object);
-//    }
+    /**
+     * 创建人：陈刚 自动创建，禁止修改
+     * 创建时间：2019-12-05
+     */
+    @Override
+    public void save(PurchaseSign object) throws Exception {
+        object.setCdate(new Date());
+        object.setUdate(new Date());
+        purchaseSignMapper.insert(object);
+    }
 
     /**
      * 创建人：陈刚 自动创建，禁止修改

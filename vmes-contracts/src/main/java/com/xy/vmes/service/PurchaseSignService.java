@@ -18,7 +18,7 @@ public interface PurchaseSignService {
      * 创建人：陈刚 自动创建，禁止修改
      * 创建时间：2019-12-28
      */
-    //void save(PurchaseSign object) throws Exception;
+    void save(PurchaseSign object) throws Exception;
 
     /**
      * 创建人：陈刚 自动创建，禁止修改

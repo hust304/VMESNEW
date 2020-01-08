@@ -99,6 +99,16 @@ public interface PurchaseSignDetailService {
     List<PurchaseSignDetail> findSignDetailList(PageData object) throws Exception;
     List<PurchaseSignDetail> findSignDetailListByParentId(String parentId) throws Exception;
 
+    /**
+     * 获取签收单状态-根据签收单明细状态
+     * 签收单单状态(1:检验中 2:已完成 -1:已取消)
+     * 签收单明细状态(1:检验中 2:已完成 -1:已取消)
+     *
+     * @param objectList      采购签收单明细List<PurchaseSignDetail>
+     * @return
+     */
+    String findParentStateByDetailList(List<PurchaseSignDetail> objectList);
+
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**
     * 分页查询

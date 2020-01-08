@@ -84,6 +84,7 @@
         (replace(uuid(), '-', ''), 'purchaseOrderDetailQueryBySign', 'signCount', '签收单数量', 9, '1', '1', '1', '0', now(), 'admin'),
         (replace(uuid(), '-', ''), 'purchaseOrderDetailQueryBySign', 'maxAarriveCount', '未签收数量', 10, '1', '1', '1', '0', now(), 'admin'),
         (replace(uuid(), '-', ''), 'purchaseOrderDetailQueryBySign', 'arriveCount', '签收数量', 11, '1', '1', '1', '0', now(), 'admin'),
-        (replace(uuid(), '-', ''), 'purchaseOrderDetailQueryBySign', 'quality', '质检属性', 12, '1', '1', '1', '0', now(), 'admin')
+        (replace(uuid(), '-', ''), 'purchaseOrderDetailQueryBySign', 'quality', '质检属性', 12, '1', '1', '1', '0', now(), 'admin'),
+        (replace(uuid(), '-', ''), 'purchaseOrderDetailQueryBySign','orderUnit','单位id',6, '1','1','1','0',now(), 'admin'),
     </insert>
 </mapper>
