@@ -85,6 +85,9 @@ public class PurchaseSignDetail implements Serializable {
 	//状态(1:检验中 2:已完成 -1:已取消)
 	@TableField("state")
 	private String state;
+	//单据单位id(采购订单单位)
+	@TableField("order_unit")
+	private String orderUnit;
 
 
 	public void setId(String id) {
@@ -219,7 +222,12 @@ public class PurchaseSignDetail implements Serializable {
 	public void setState(String state) {
 		this.state = state;
 	}
-
+	public String getOrderUnit() {
+		return orderUnit;
+	}
+	public void setOrderUnit(String orderUnit) {
+		this.orderUnit = orderUnit;
+	}
 /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 
