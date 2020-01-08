@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+说明：
+创建人：刘威 自动创建
+创建时间：2020-01-06
+ -->
+<mapper namespace="com.xy.vmes.deecoop.kanban.dao.KanbanWarehouseMapper">
+
+
+    <!-- 自动创建，可以修改 -->
+    <select id="listWarehouseDetailKanban"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
+
+
+        select id,cdate,type,object,count,state from (
+
+            select c.id id,c.cdate cdate,'盘点' type,maker.user_name object,round(sum(ifnull(d.stock_count,0)),2) count,
+            case when c.state='1' then '已完成' when c.state='0' then '未完成' when c.state='-1' then '已取消' end state
+            from vmes_warehouse_check c
+            left join vmes_warehouse_check_detail d on d.parent_id = c.id
+            left join vmes_user maker on maker.id = c.make_id
+            <where>
+                <if test='currentCompanyId != null and currentCompanyId != ""'>
+                    and c.company_id = #{currentCompanyId}
+                </if>
+                and c.state in ('0','1')
+            </where>
+            group by c.id
+
+            union all
+
+            select i.id id,i.cdate cdate,dict.name type,i.dept_name object,round(sum(ifnull(d.count,0)),2) count,
+            case when i.state='1' then '已完成' when i.state='0' then '未完成' when i.state='-1' then '已取消' end state
+            from vmes_warehouse_in i
+            left join vmes_warehouse_in_detail d on d.parent_id = i.id
+            left join vmes_dictionary dict on dict.id = i.type
+            <if test='currentCompanyId != null and currentCompanyId != ""'>
+                and i.company_id = #{currentCompanyId}
+            </if>
+            and i.state in ('0','1')
+            group by i.id
+
+            union all
+
+            select o.id id,o.cdate cdate,dict.name type,o.dept_name object,round(sum(ifnull(d.count,0)),2) count,
+            case when o.state='1' then '已完成' when o.state='0' then '未完成' when o.state='-1' then '已取消' end state
+            from vmes_warehouse_out o
+            left join vmes_warehouse_out_detail d on d.parent_id = o.id
+            left join vmes_dictionary dict on dict.id = o.type
+            <if test='currentCompanyId != null and currentCompanyId != ""'>
+                and o.company_id = #{currentCompanyId}
+            </if>
+            and o.state in ('0','1')
+            group by o.id
+
+        )tab
+
+        order by tab.cdate desc
+
+
+    </select>
+
+
+
+
+</mapper>
