@@ -171,8 +171,10 @@
             product.code productCode,
             product.name productName,
             product.spec productSpec,
+            product.property property,
             orderUnit.name orderUnitName,
             genre.name productGenreName,
+
 
             round(ifnull(product.stock_count, 0), 2) prodStockCount,
             round(ifnull(product.lock_count, 0), 2) prodLockCount,
