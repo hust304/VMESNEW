@@ -309,7 +309,6 @@ public class PurchaseSignController {
         //根据质检属性 (1:免检 2:检验) 过滤出两个结构体
         List<PurchaseSignDetail> notQualityList = new ArrayList<>();
         List<PurchaseSignDetail> qualityList = new ArrayList<>();
-        String productIds = new String();
         if (signDtlList != null && signDtlList.size() > 0) {
             for (PurchaseSignDetail signDetail : signDtlList) {
                 //quality 质检属性 (1:免检 2:检验)
@@ -322,12 +321,6 @@ public class PurchaseSignController {
                     //quality 质检属性:2:检验 (1:免检 2:检验)
                 } else if ("2".equals(quality)) {
                     qualityList.add(signDetail);
-                }
-
-                //productId 货品id
-                String productId = signDetail.getProductId();
-                if (productId != null && productId.trim().length() > 0) {
-                    productIds = productIds + productId.trim() + ",";
                 }
             }
         }
@@ -400,6 +393,18 @@ public class PurchaseSignController {
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //质检属性:2:检验 (1:免检 2:检验) --推送采购检验项
         Map<String, List<Quality>> prodQualityMap = new HashMap<>();
+
+        //遍历(质检属性:2:检验) 采购签收明细
+        String productIds = new String();
+        if (qualityList != null && qualityList.size() > 0) {
+            for (PurchaseSignDetail signDetail : qualityList) {
+                //productId 货品id
+                String productId = signDetail.getProductId();
+                if (productId != null && productId.trim().length() > 0) {
+                    productIds = productIds + productId.trim() + ",";
+                }
+            }
+        }
 
         if (productIds != null && productIds.trim().length() > 0) {
             productIds = StringUtil.stringTrimSpace(productIds);
