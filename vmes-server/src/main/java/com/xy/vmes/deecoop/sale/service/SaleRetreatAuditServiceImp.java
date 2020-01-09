@@ -223,7 +223,7 @@ public class SaleRetreatAuditServiceImp implements SaleRetreatAuditService {
         if (retreat != null && retreat.getTotalSum() != null) {
             retreatSum = retreat.getTotalSum();
         }
-
+        String remark = "退货单号："+retreat.getSysCode();
         //创建付款单
         financeBillService.addFinanceBillBySys(retreat.getId(),
                 companyId,
@@ -233,7 +233,8 @@ public class SaleRetreatAuditServiceImp implements SaleRetreatAuditService {
                 "5",
                 //业务属性 1:销售订单退货 2:销售无订单退货
                 "1",
-                retreatSum);
+                retreatSum,
+                remark);
 
         //根据退货类型
         //retreatRefund: f69839bbf2394846a65894f0da120df9 退货退款

@@ -105,8 +105,16 @@ public class SaleOrderDetail implements Serializable {
 	//发生订单变更记录 0:未变更(默认值) 1:已变更
 	@TableField("isOrderChange")
 	private String isOrderChange;
+	@TableField("sequence")
+	private Long sequence;
 
 
+	public Long getSequence() {
+		return sequence;
+	}
+	public void setSequence(Long sequence) {
+		this.sequence = sequence;
+	}
 	public void setId(String id) {
 		this.id = id;
 	}

@@ -994,7 +994,7 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
         }
 
         //设置查询排序
-        pd.put("orderStr", "detail.cdate asc");
+        pd.put("orderStr", "detail.sequence asc");
         String orderStr = pd.getString("orderStr");
         if (orderStr != null && orderStr.trim().length() > 0) {
             pd.put("orderStr", orderStr);

@@ -426,9 +426,10 @@ public class SaleOrderServiceImp implements SaleOrderService {
 
                 detail.setParentId(order.getId());
                 detail.setCuser(order.getCuser());
-
+                detail.setSequence((new Date()).getTime());
                 //计价类型(1:先计价 2:后计价)
                 if (order.getPriceType() != null && "2".equals(order.getPriceType().trim())) {
+
                     //计价单位id
                     detail.setPriceUnit(null);
                     //货品数量(计价数量)

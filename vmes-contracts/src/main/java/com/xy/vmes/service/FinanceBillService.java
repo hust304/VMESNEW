@@ -205,7 +205,8 @@ public interface FinanceBillService {
                              String userId,
                              String type,
                              String attribute,
-                             BigDecimal amount) throws Exception;
+                             BigDecimal amount,
+                             String remark) throws Exception;
 }
 
 
