@@ -758,10 +758,11 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService {
             return model;
         }
         String companyID = pd.getString("currentCompanyId");
-        String code = coderuleService.createCoderCdateByDate(companyID,
-                "vmes_purchase_order",
-                "yyyyMMdd",
-                "O");
+//        String code = coderuleService.createCoderCdateByDate(companyID,
+//                "vmes_purchase_order",
+//                "yyyyMMdd",
+//                "O");
+        String code = coderuleService.createCoderCdateOnShortYearByDate(companyID, "vmes_purchase_order", "O", Common.CODE_RULE_LENGTH_SHORTYEAR);
         purchaseOrder.setCode(code);
         purchaseOrder.setCompanyId(companyID);
 
