@@ -13,9 +13,9 @@
             orderDtl.id id,
             orderDtl.parent_id orderId,
             round(ifnull(orderDtl.count, 0), 2) orderCount,
+            orderDtl.product_id productId,
 
             <!--货品表-->
-            product_id productId,
             product.code sysProductCode,
             product.source_code custProductCode,
             CASE
@@ -30,6 +30,16 @@
 
             orderDtl.unit orderUnit,
             orderUnit.name orderUnitName,
+
+            <!--(单据单位)货品单位换算-->
+            prodUnitPrice.np_formula n2pFormula,
+            prodUnitPrice.pn_formula p2nFormula,
+
+            prodUnitPrice.n2p_is_scale n2pIsScale,
+            prodUnitPrice.n2p_decimal_count n2pDecimalCount,
+
+            prodUnitPrice.p2n_is_scale p2nIsScale,
+            prodUnitPrice.p2n_decimal_count p2nDecimalCount,
 
             <!--采购签收明细-->
             round(ifnull(signDtl.signCount, 0), 2) signCount,
@@ -50,6 +60,7 @@
         from vmes_purchase_order_detail orderDtl
             left join vmes_product product on orderDtl.product_id = product.id
             left join vmes_dictionary orderUnit on orderDtl.unit = orderUnit.id
+            left join vmes_product_unit prodUnitPrice on (orderDtl.product_id = prodUnitPrice.product_id and orderDtl.unit = prodUnitPrice.unit)
 
             <!--获取(已生成签收单)签收数量 根据采购订单明细id汇总查询(采购签收明细) 已生成签收单数量-->
             left join (
@@ -86,5 +97,14 @@
         (replace(uuid(), '-', ''), 'purchaseOrderDetailQueryBySign', 'arriveCount', '签收数量', 11, '1', '1', '1', '0', now(), 'admin'),
         (replace(uuid(), '-', ''), 'purchaseOrderDetailQueryBySign', 'quality', '质检属性', 12, '1', '1', '1', '0', now(), 'admin'),
         (replace(uuid(), '-', ''), 'purchaseOrderDetailQueryBySign','orderUnit','单位id',6, '1','1','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''), 'purchaseOrderDetailQueryBySign', 'n2pFormula', 'n2pFormula', 13, '1', '0', '1', '0', now(), 'admin'),
+        (replace(uuid(), '-', ''), 'purchaseOrderDetailQueryBySign', 'n2pIsScale', 'n2p:是否需要四舍五入', 14, '1', '0', '1', '0', now(), 'admin'),
+        (replace(uuid(), '-', ''), 'purchaseOrderDetailQueryBySign', 'n2pDecimalCount', 'n2p:保留小数位数', 15, '1', '0', '1', '0', now(), 'admin'),
+
+        (replace(uuid(), '-', ''), 'purchaseOrderDetailQueryBySign', 'p2nFormula', 'p2nFormula', 16, '1', '0', '1', '0', now(), 'admin'),
+        (replace(uuid(), '-', ''), 'purchaseOrderDetailQueryBySign', 'p2nIsScale', 'p2n:是否需要四舍五入', 17, '1', '0', '1', '0', now(), 'admin'),
+        (replace(uuid(), '-', ''), 'purchaseOrderDetailQueryBySign', 'p2nDecimalCount', 'p2n:保留小数位数', 18, '1', '0', '1', '0', now(), 'admin'),
+
     </insert>
 </mapper>

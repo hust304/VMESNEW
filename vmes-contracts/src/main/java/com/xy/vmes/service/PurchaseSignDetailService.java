@@ -109,6 +109,19 @@ public interface PurchaseSignDetailService {
      */
     String findParentStateByDetailList(List<PurchaseSignDetail> objectList);
 
+    /**
+     * 返回业务货品入库Map
+     * 业务货品入库Map<业务单id, 货品Map<String, Object>> 业务单id-业务明细id (订单明细id,发货单明细id)
+     * 货品Map<String, Object>
+     *     productId: 货品id
+     *     inDtlId:   入库明细id
+     *     inCount:   入库数量
+     *
+     * @param objectList
+     * @return
+     */
+    Map<String, Map<String, Object>> findBusinessProducMapByIn(List<PurchaseSignDetail> objectList);
+
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**
     * 分页查询

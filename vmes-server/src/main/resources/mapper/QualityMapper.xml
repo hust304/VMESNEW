@@ -72,6 +72,16 @@
                 </choose>
             </if>
 
+            <if test="productId != null and productId != ''" >
+                and product_id = #{productId}
+            </if>
+            <if test="productIds != null and productIds != ''" >
+                and product_id in (${productIds})
+            </if>
+            <if test="business != null and business != ''" >
+                and business = #{business}
+            </if>
+
             <!--queryStr 自定义sql查询语句-->
             <if test='queryStr != null and queryStr != ""'>
                 and ${queryStr}
@@ -126,6 +136,9 @@
         <where>
             <if test="productId != null and productId != ''" >
                 and product_id = #{productId}
+            </if>
+            <if test="productIds != null and productIds != ''" >
+                and product_id in (${productIds})
             </if>
             <if test="business != null and business != ''" >
                 and business = #{business}

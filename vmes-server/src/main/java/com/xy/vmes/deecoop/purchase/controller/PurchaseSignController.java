@@ -1,10 +1,7 @@
 package com.xy.vmes.deecoop.purchase.controller;
 
 import com.xy.vmes.common.util.StringUtil;
-import com.xy.vmes.entity.PurchaseOrderDetail;
-import com.xy.vmes.entity.PurchasePlanDetail;
-import com.xy.vmes.entity.PurchaseSignDetail;
-import com.xy.vmes.entity.PurchaseSign;
+import com.xy.vmes.entity.*;
 import com.xy.vmes.service.*;
 
 import com.yvan.Conv;
@@ -50,6 +47,15 @@ public class PurchaseSignController {
     @Autowired
     private PurchasePlanDetailService planDetailService;
 
+    @Autowired
+    private QualityService qualityService;
+    @Autowired
+    private PurchaseQualityDetailService purchaseQualityDetailService;
+
+    @Autowired
+    private WarehouseInCreateService warehouseInCreateService;
+    @Autowired
+    private RoleMenuService roleMenuService;
     @Autowired
     private CoderuleService coderuleService;
 
@@ -109,21 +115,29 @@ public class PurchaseSignController {
             return model;
         }
 
-        //        //创建(复杂版,简版)仓库-入库单-需要的参数///////////////////////////////////////////////////////////////////////////////////
-//        String roleId = pageData.getString("roleId");
-//        if (roleId == null || roleId.trim().length() == 0) {
-//            model.putCode(Integer.valueOf(1));
-//            model.putMsg("当前用户角色id为空或空字符串！");
-//            return model;
-//        }
-//        //供应商(供应商id,供应商名称)
-//        String supplierName = pageData.getString("supplierName");
-//        String supplierId = pageData.getString("supplierId");
-//        if (supplierId == null || supplierId.trim().length() == 0) {
-//            model.putCode(Integer.valueOf(1));
-//            model.putMsg("供应商id为空或空字符串！");
-//            return model;
-//        }
+        //创建(复杂版,简版)仓库-入库单-需要的参数///////////////////////////////////////////////////////////////////////////////////
+        String roleId = pageData.getString("roleId");
+        if (roleId == null || roleId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("当前用户角色id为空或空字符串！");
+            return model;
+        }
+        //供应商(供应商id,供应商名称)
+        String supplierName = pageData.getString("supplierName");
+        String supplierId = pageData.getString("supplierId");
+        if (supplierId == null || supplierId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("供应商id为空或空字符串！");
+            return model;
+        }
+
+        //根据(用户角色id)获取仓库属性(复杂版仓库,简版仓库)
+        String warehouse = roleMenuService.findWarehouseAttribute(roleId);
+        if (warehouse == null || warehouse.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("当前用户角色无(复杂版仓库，简版仓库)菜单，请与管理员联系！");
+            return model;
+        }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //创建签收单 (签收单-签收单明细)
@@ -137,6 +151,35 @@ public class PurchaseSignController {
                 PurchaseSignDetail addSignDtl = (PurchaseSignDetail)HttpUtils.pageData2Entity(objectMap, new PurchaseSignDetail());
                 addSignDtl.setId(Conv.createUuid());
 
+                ///////////////////////////////////////////////////////////////////////////////////////////////
+                //单位换算
+                //p2nFormula 单位换算公式:计价单位转换计量单位:
+                String p2nFormula = new String();
+                if (objectMap.get("p2nFormula") != null) {
+                    p2nFormula = objectMap.get("p2nFormula").trim();
+                }
+                addSignDtl.setP2nFormula(p2nFormula);
+
+                //p2nIsScale 是否需要四舍五入(Y:需要四舍五入 N:无需四舍五入)
+                String p2nIsScale = new String();
+                if (objectMap.get("p2nIsScale") != null) {
+                    p2nIsScale = objectMap.get("p2nIsScale").trim();
+                }
+                addSignDtl.setP2nIsScale(p2nIsScale);
+
+                //小数位数 (最小:0位 最大:4位)
+                Integer p2nDecimalCount = Integer.valueOf(2);
+                String p2nDecimalCountStr = objectMap.get("p2nDecimalCount");
+                if (p2nDecimalCountStr != null) {
+                    try {
+                        p2nDecimalCount = Integer.valueOf(p2nDecimalCountStr);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                addSignDtl.setP2nDecimalCount(p2nDecimalCount);
+
+                ///////////////////////////////////////////////////////////////////////////////////////////////
                 addSignDtl.setParentId(addSignId);
                 //quality 质检属性 (1:免检 2:检验)
                 String quality = "1";
@@ -194,6 +237,7 @@ public class PurchaseSignController {
         if (orderDtlIds != null && orderDtlIds.trim().length() > 0) {
             String detailIds = orderDtlIds.trim();
             detailIds = StringUtil.stringTrimSpace(detailIds);
+            detailIds = "'" + detailIds.replace(",", "','") + "'";
 
             //SQL语句: PurchaseOrderDetailCollectMapper.findPurchaseOrderDetailCollect
             PageData findMap = new PageData();
@@ -262,12 +306,149 @@ public class PurchaseSignController {
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //TODO 根据质检属性 (1:免检 2:检验) 过滤出两个结构体
+        //根据质检属性 (1:免检 2:检验) 过滤出两个结构体
+        List<PurchaseSignDetail> notQualityList = new ArrayList<>();
+        List<PurchaseSignDetail> qualityList = new ArrayList<>();
+        String productIds = new String();
+        if (signDtlList != null && signDtlList.size() > 0) {
+            for (PurchaseSignDetail signDetail : signDtlList) {
+                //quality 质检属性 (1:免检 2:检验)
+                String quality = signDetail.getQuality();
+
+                //quality 质检属性:1:免检 (1:免检 2:检验)
+                if ("1".equals(quality)) {
+                    notQualityList.add(signDetail);
+
+                    //quality 质检属性:2:检验 (1:免检 2:检验)
+                } else if ("2".equals(quality)) {
+                    qualityList.add(signDetail);
+                }
+
+                //productId 货品id
+                String productId = signDetail.getProductId();
+                if (productId != null && productId.trim().length() > 0) {
+                    productIds = productIds + productId.trim() + ",";
+                }
+            }
+        }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //质检属性:1:免检 (1:免检 2:检验) --推送入库单
+        if (notQualityList.size() > 0 && Common.SYS_WAREHOUSE_COMPLEX.equals(warehouse)) {
+            //复杂版仓库:warehouseByComplex:Common.SYS_WAREHOUSE_COMPLEX
+
+            Map<String, Map<String, Object>> businessByInMap = signDetailService.findBusinessProducMapByIn(notQualityList);
+            warehouseInCreateService.createWarehouseInBusinessByComplex(supplierId,
+                    supplierName,
+                    //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
+                    Common.DICTIONARY_MAP.get("warehouseEntity"),
+                    cuser,
+                    companyId,
+                    //d78ceba5beef41f5be16f0ceee775399 采购入库:purchaseIn
+                    Common.DICTIONARY_MAP.get("purchaseIn"),
+                    businessByInMap);
+
+            if (businessByInMap != null) {
+                for (Iterator iterator = businessByInMap.keySet().iterator(); iterator.hasNext();) {
+                    PurchaseSignDetail editSignDetail = new PurchaseSignDetail();
+
+                    //signDtlId 采购签收id
+                    String signDtlId = (String)iterator.next();
+                    editSignDetail.setId(signDtlId);
+
+                    Map<String, Object> mapValue = businessByInMap.get(signDtlId);
+                    //inDtlId:   入库明细id
+                    String inDtlId = (String)mapValue.get("inDtlId");
+                    editSignDetail.setInDetailId(inDtlId);
+
+                    signDetailService.update(editSignDetail);
+                }
+            }
+
+        } else if (notQualityList.size() > 0 && Common.SYS_WAREHOUSE_SIMPLE.equals(warehouse)) {
+            //简版仓库:warehouseBySimple:Common.SYS_WAREHOUSE_SIMPLE
+
+            Map<String, Map<String, Object>> businessByInMap = signDetailService.findBusinessProducMapByIn(notQualityList);
+            warehouseInCreateService.createWarehouseInBusinessBySimple(supplierId,
+                    supplierName,
+                    //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
+                    Common.DICTIONARY_MAP.get("warehouseEntity"),
+                    cuser,
+                    companyId,
+                    //d78ceba5beef41f5be16f0ceee775399 采购入库:purchaseIn
+                    Common.DICTIONARY_MAP.get("purchaseIn"),
+                    businessByInMap);
+
+            if (businessByInMap != null) {
+                for (Iterator iterator = businessByInMap.keySet().iterator(); iterator.hasNext();) {
+                    PurchaseSignDetail editSignDetail = new PurchaseSignDetail();
+
+                    //signDtlId 采购签收id
+                    String signDtlId = (String)iterator.next();
+                    editSignDetail.setId(signDtlId);
+
+                    Map<String, Object> mapValue = businessByInMap.get(signDtlId);
+                    //inDtlId:   入库明细id
+                    String inDtlId = (String)mapValue.get("inDtlId");
+                    editSignDetail.setInDetailId(inDtlId);
+
+                    signDetailService.update(editSignDetail);
+                }
+            }
+        }
+
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //质检属性:2:检验 (1:免检 2:检验) --推送入库单
+        //质检属性:2:检验 (1:免检 2:检验) --推送采购检验项
+        Map<String, List<Quality>> prodQualityMap = new HashMap<>();
+
+        if (productIds != null && productIds.trim().length() > 0) {
+            productIds = StringUtil.stringTrimSpace(productIds);
+            productIds = "'" + productIds.replace(",", "','") + "'";
+
+            PageData findMap = new PageData();
+            findMap.put("productIds", productIds);
+            //业务名称 (purchase:采购)
+            findMap.put("business", "purchase");
+            findMap.put("orderStr", "product_id asc");
+            List<Quality> prodQualityList = qualityService.findQualityList(findMap);
+
+            if (prodQualityList != null && prodQualityList.size() > 0) {
+                for (Quality quality : prodQualityList) {
+                    String productId = quality.getProductId();
+
+                    if (prodQualityMap.get(productId) == null) {
+                        List<Quality> tempList = new ArrayList<>();
+                        tempList.add(quality);
+                        prodQualityMap.put(productId, tempList);
+                    } else if (prodQualityMap.get(productId) != null) {
+                        List<Quality> tempList = prodQualityMap.get(productId);
+                        tempList.add(quality);
+                    }
+                }
+            }
+        }
+
+        if (signDtlList != null && signDtlList.size() > 0) {
+            for (PurchaseSignDetail signDetail : signDtlList) {
+                PurchaseQualityDetail addQualityDtl = new PurchaseQualityDetail();
+                addQualityDtl.setSignDetailId(signDetail.getId());
+                addQualityDtl.setOrderUnit(signDetail.getOrderUnit());
+
+                //货品id productId
+                String productId = signDetail.getProductId();
+                addQualityDtl.setProductId(productId);
+
+                //qualityId 质检项id
+                List<Quality> prodQualityList = prodQualityMap.get(productId);
+                if (prodQualityList != null && prodQualityList.size() > 0) {
+                    for (Quality quality : prodQualityList) {
+                        addQualityDtl.setQualityId(quality.getId());
+                    }
+                }
+
+                purchaseQualityDetailService.save(addQualityDtl);
+            }
+        }
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         Long endTime = System.currentTimeMillis();

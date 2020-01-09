@@ -1,5 +1,7 @@
 package com.xy.vmes.deecoop.purchase.service;
 
+import com.xy.vmes.common.util.EvaluateUtil;
+import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.purchase.dao.PurchaseSignDetailMapper;
 import com.xy.vmes.entity.PurchaseSignDetail;
 import com.xy.vmes.service.PurchaseSignDetailService;
@@ -14,6 +16,8 @@ import com.yvan.springmvc.ResultModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
 import java.util.*;
 
 /**
@@ -237,7 +241,55 @@ public class PurchaseSignDetailServiceImp implements PurchaseSignDetailService {
         return null;
     }
 
+    /**
+     * 返回业务货品入库Map
+     * 业务货品入库Map<业务单id, 货品Map<String, Object>> 业务单id-业务明细id (订单明细id,发货单明细id)
+     * 货品Map<String, Object>
+     *     productId: 货品id
+     *     inDtlId:   入库明细id
+     *     inCount:   入库数量
+     *
+     * @param objectList
+     * @return
+     */
+    public Map<String, Map<String, Object>> findBusinessProducMapByIn(List<PurchaseSignDetail> objectList) {
+        Map<String, Map<String, Object>> productByInMap = new HashMap<String, Map<String, Object>>();
+        if (objectList == null || objectList.size() == 0) {return productByInMap;}
 
+        for (PurchaseSignDetail signDetail : objectList) {
+            //signDtlId 采购签收明细id
+            String signDtlId = signDetail.getId();
+
+            //productId 货品id
+            String productId = signDetail.getProductId();
+
+            //count 签收数量(arriveCount) count := inCount 入库数量
+            BigDecimal count = BigDecimal.valueOf(0D);
+            if (signDetail.getArriveCount() != null) {
+                count = signDetail.getArriveCount();
+            }
+
+            //p2nFormula (计价单位转换计量单位公式)
+            String p2nFormula = signDetail.getP2nFormula();
+            //p2nIsScale 是否需要四舍五入(Y:需要四舍五入 N:无需四舍五入)
+            String p2nIsScale = signDetail.getP2nIsScale();
+            //小数位数 (最小:0位 最大:4位)
+            Integer p2nDecimalCount = signDetail.getP2nDecimalCount();
+
+            //(计量单位)入库数量 - 单位换算公式(p2nFormula)
+            BigDecimal prodCount = EvaluateUtil.countFormulaP2N(count, p2nFormula);
+            prodCount = StringUtil.scaleDecimal(prodCount, p2nIsScale, p2nDecimalCount);
+
+            Map<String, Object> productMap = new HashMap<String, Object>();
+            productMap.put("productId", productId);
+            productMap.put("inDtlId", null);
+            productMap.put("inCount", prodCount);
+
+            productByInMap.put(signDtlId, productMap);
+        }
+
+        return productByInMap;
+    }
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**
     *
