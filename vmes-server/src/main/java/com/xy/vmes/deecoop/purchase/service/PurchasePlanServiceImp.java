@@ -14,6 +14,7 @@ import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.service.ColumnService;
 import com.yvan.*;
+import com.yvan.common.util.Common;
 import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
 import org.apache.commons.lang.StringUtils;
@@ -401,10 +402,11 @@ public class PurchasePlanServiceImp implements PurchasePlanService {
             return model;
         }
         String companyID = pd.getString("currentCompanyId");
-        String code = coderuleService.createCoderCdateByDate(companyID,
-                "vmes_purchase_plan",
-                "yyyyMMdd",
-                "P");
+//        String code = coderuleService.createCoderCdateByDate(companyID,
+//                "vmes_purchase_plan",
+//                "yyyyMMdd",
+//                "P");
+        String code = coderuleService.createCoderCdateOnShortYearByDate(companyID, "vmes_purchase_plan", "P", Common.CODE_RULE_LENGTH_SHORTYEAR);
         purchasePlan.setCode(code);
         purchasePlan.setCompanyId(companyID);
 
