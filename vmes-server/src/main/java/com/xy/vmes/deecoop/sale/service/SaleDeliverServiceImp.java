@@ -684,7 +684,7 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
         //amount 金额
         //获取当前发货单金额
         BigDecimal deliverTotalSum = saleDeliverDetailService.findTotalSumByDetailList(deliverDtlList);
-
+        String remark = "发货单号："+saleDeliver.getDeliverCode();
         financeBillService.addFinanceBillBySys(deliverId,
                 companyId,
                 customerId,
@@ -692,7 +692,8 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
                 //type 单据类型 ( 0:收款单 1:付款单 2:减免单 3:退款单 4:发货账单 5:发退货账单 6:收货账单 7:收退货账单)
                 "4",
                 null,
-                deliverTotalSum);
+                deliverTotalSum,
+                remark);
 
 
 

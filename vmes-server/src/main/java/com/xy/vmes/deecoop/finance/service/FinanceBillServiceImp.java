@@ -962,7 +962,8 @@ public class FinanceBillServiceImp implements FinanceBillService {
                                     String userId,
                                     String type,
                                     String attribute,
-                                    BigDecimal amount) throws Exception {
+                                    BigDecimal amount,
+                                    String remark) throws Exception {
         FinanceBill addObject = new FinanceBill();
         addObject.setCompanyId(companyId);
         addObject.setCustomerId(customerId);
@@ -989,7 +990,7 @@ public class FinanceBillServiceImp implements FinanceBillService {
 
         //state 状态（0：待提交 1：待审核 2：已审核 -1：已取消）
         addObject.setState("2");
-
+        addObject.setRemark(remark);
         //生成付款单编码
         //String code = coderuleService.createCoderCdateByDate(companyId,"vmes_finance_bill","yyyyMMdd","R");
         String code = coderuleService.createCoderCdateOnShortYearByDate(companyId,"vmes_finance_bill","R", Common.CODE_RULE_LENGTH_3);

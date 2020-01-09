@@ -676,7 +676,7 @@ public class SaleWaresRetreatServiceImp implements SaleWaresRetreatService {
             if (retreatDB != null && retreatDB.getTotalSum() != null) {
                 retreatSum = retreatDB.getTotalSum();
             }
-
+            String remark = "无订单退货单号："+editRetreat.getSysCode() ;
             //创建付款单
             financeBillService.addFinanceBillBySys(retreatDB.getId(),
                     retreatDB.getCompanyId(),
@@ -686,7 +686,8 @@ public class SaleWaresRetreatServiceImp implements SaleWaresRetreatService {
                     "5",
                     //业务属性 1:销售订单退货 2:销售无订单退货
                     "2",
-                    retreatSum);
+                    retreatSum,
+                    remark);
         }
 
         return model;

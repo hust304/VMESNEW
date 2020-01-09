@@ -340,107 +340,107 @@
             customer.id,
             customer.id customerId,
             customer.code customerCode,
-            customer.name customerName,
+            customer.name customerName
 
-            round(ifnull(deliver.order_sum,0),2) allAmount,
-            round(ifnull(invoice.order_sum,0),2) invoiceAmount,
-            <!--发货金额-退货金额-退款金额-减免金额-开票金额 -->
-            round((ifnull(deliver.order_sum,0) - ifnull(retreat.order_sum,0)  - ifnull(finance.order_sum,0) - ifnull(invoice.order_sum,0)),2) uninvoiceAmount
+            <!--round(ifnull(deliver.order_sum,0),2) allAmount,-->
+            <!--round(ifnull(invoice.order_sum,0),2) invoiceAmount,-->
+            <!--&lt;!&ndash;发货金额-退货金额-退款金额-减免金额-开票金额 &ndash;&gt;-->
+            <!--round((ifnull(deliver.order_sum,0) - ifnull(retreat.order_sum,0)  - ifnull(finance.order_sum,0) - ifnull(invoice.order_sum,0)),2) uninvoiceAmount-->
 
         from vmes_customer customer
-            left join (
-                <!--获取发货金额 按(客户id) 汇总查询(发货单明细表)-->
+            <!--left join (-->
+                <!--&lt;!&ndash;获取发货金额 按(客户id) 汇总查询(发货单明细表)&ndash;&gt;-->
 
-                select bill.customer_id, round(sum(bill.amount),2) order_sum
-                from vmes_finance_bill bill
-                left join vmes_sale_deliver deliver on deliver.id = bill.business_id
-                <where>
-                    <if test="currentCompanyId != null and currentCompanyId != ''" >
-                        and bill.company_id = #{currentCompanyId}
-                    </if>
-                    and bill.state = '2'
-                    and bill.isdisable = '1'
-                    and bill.type = '4'
-                </where>
-                group by bill.customer_id
+                <!--select bill.customer_id, round(sum(bill.amount),2) order_sum-->
+                <!--from vmes_finance_bill bill-->
+                <!--left join vmes_sale_deliver deliver on deliver.id = bill.business_id-->
+                <!--<where>-->
+                    <!--<if test="currentCompanyId != null and currentCompanyId != ''" >-->
+                        <!--and bill.company_id = #{currentCompanyId}-->
+                    <!--</if>-->
+                    <!--and bill.state = '2'-->
+                    <!--and bill.isdisable = '1'-->
+                    <!--and bill.type = '4'-->
+                <!--</where>-->
+                <!--group by bill.customer_id-->
 
-        <!-- select b.customer_id, round(sum(a.sum),2) order_sum
-         from vmes_sale_deliver_detail a
-         left join vmes_sale_order b on a.order_id = b.id
-         <where>
-             <if test="currentCompanyId != null and currentCompanyId != ''" >
-                 and b.company_id = #{currentCompanyId}
-             </if>
-             <![CDATA[ and a.state <> '-1' ]]>
-                    and b.receipt_type in ('2','3')
-                </where>
-                group by b.customer_id
-                -->
-            ) deliver on customer.id = deliver.customer_id
+        <!--&lt;!&ndash; select b.customer_id, round(sum(a.sum),2) order_sum-->
+         <!--from vmes_sale_deliver_detail a-->
+         <!--left join vmes_sale_order b on a.order_id = b.id-->
+         <!--<where>-->
+             <!--<if test="currentCompanyId != null and currentCompanyId != ''" >-->
+                 <!--and b.company_id = #{currentCompanyId}-->
+             <!--</if>-->
+             <!--<![CDATA[ and a.state <> '-1' ]]>-->
+                    <!--and b.receipt_type in ('2','3')-->
+                <!--</where>-->
+                <!--group by b.customer_id-->
+                <!--&ndash;&gt;-->
+            <!--) deliver on customer.id = deliver.customer_id-->
 
-            left join (
-                <!--获取退货金额 按(客户id) 汇总查询 vmes_sale_retreat_detail vmes_sale_order_detail vmes_sale_order-->
+            <!--left join (-->
+                <!--&lt;!&ndash;获取退货金额 按(客户id) 汇总查询 vmes_sale_retreat_detail vmes_sale_order_detail vmes_sale_order&ndash;&gt;-->
 
-                select bill.customer_id, round(sum(bill.amount),2) order_sum
-                from vmes_finance_bill bill
-                left join vmes_sale_retreat retreat on retreat.id = bill.business_id
-                <where>
-                    <if test="currentCompanyId != null and currentCompanyId != ''" >
-                        and bill.company_id = #{currentCompanyId}
-                    </if>
-                    and bill.state = '2'
-                    and bill.isdisable = '1'
-                    and bill.type = '5'
-                </where>
-                group by bill.customer_id
+                <!--select bill.customer_id, round(sum(bill.amount),2) order_sum-->
+                <!--from vmes_finance_bill bill-->
+                <!--left join vmes_sale_retreat retreat on retreat.id = bill.business_id-->
+                <!--<where>-->
+                    <!--<if test="currentCompanyId != null and currentCompanyId != ''" >-->
+                        <!--and bill.company_id = #{currentCompanyId}-->
+                    <!--</if>-->
+                    <!--and bill.state = '2'-->
+                    <!--and bill.isdisable = '1'-->
+                    <!--and bill.type = '5'-->
+                <!--</where>-->
+                <!--group by bill.customer_id-->
 
-                <!--
-                select c.customer_id, round(sum(a.order_sum),2) order_sum
-                from vmes_sale_retreat_detail a
-                    left join vmes_sale_order_detail b on a.order_detail_id = b.id
-                    left join vmes_sale_order c on b.parent_id = c.id
-                <where>
-                    <if test="currentCompanyId != null and currentCompanyId != ''" >
-                        and c.company_id = #{currentCompanyId}
-                    </if>
-                    and a.state = '3'
-                    and c.receipt_type in ('2','3')
+                <!--&lt;!&ndash;-->
+                <!--select c.customer_id, round(sum(a.order_sum),2) order_sum-->
+                <!--from vmes_sale_retreat_detail a-->
+                    <!--left join vmes_sale_order_detail b on a.order_detail_id = b.id-->
+                    <!--left join vmes_sale_order c on b.parent_id = c.id-->
+                <!--<where>-->
+                    <!--<if test="currentCompanyId != null and currentCompanyId != ''" >-->
+                        <!--and c.company_id = #{currentCompanyId}-->
+                    <!--</if>-->
+                    <!--and a.state = '3'-->
+                    <!--and c.receipt_type in ('2','3')-->
 
-                </where>
-                group by c.customer_id
-                -->
-            ) retreat on customer.id = retreat.customer_id
-
-
-            left join (
-                <!--获取退款金额和减免金额 按(客户id) 汇总查询(发货单明细表)-->
-                select bill.customer_id, round(sum(bill.amount),2) order_sum
-                from vmes_finance_bill bill
-                <where>
-                    <if test="currentCompanyId != null and currentCompanyId != ''" >
-                        and bill.company_id = #{currentCompanyId}
-                    </if>
-                    and bill.state = '2'
-                    and bill.isdisable = '1'
-                    and bill.type in ('2','3')
-                </where>
-                group by bill.customer_id
-            ) finance on customer.id = finance.customer_id
+                <!--</where>-->
+                <!--group by c.customer_id-->
+                <!--&ndash;&gt;-->
+            <!--) retreat on customer.id = retreat.customer_id-->
 
 
+            <!--left join (-->
+                <!--&lt;!&ndash;获取退款金额和减免金额 按(客户id) 汇总查询(发货单明细表)&ndash;&gt;-->
+                <!--select bill.customer_id, round(sum(bill.amount),2) order_sum-->
+                <!--from vmes_finance_bill bill-->
+                <!--<where>-->
+                    <!--<if test="currentCompanyId != null and currentCompanyId != ''" >-->
+                        <!--and bill.company_id = #{currentCompanyId}-->
+                    <!--</if>-->
+                    <!--and bill.state = '2'-->
+                    <!--and bill.isdisable = '1'-->
+                    <!--and bill.type in ('2','3')-->
+                <!--</where>-->
+                <!--group by bill.customer_id-->
+            <!--) finance on customer.id = finance.customer_id-->
 
-            left join (
-                <!--获取开票金额 按(客户id) 汇总查询-->
-                select customer_id,round(sum(amount),2) order_sum
-                from vmes_finance_invoice
-                <where>
-                    <if test="currentCompanyId != null and currentCompanyId != ''" >
-                        and company_id = #{currentCompanyId}
-                    </if>
-                    <![CDATA[ and state <> '-1' ]]>
-                </where>
-                group by customer_id
-            ) invoice on customer.id = invoice.customer_id
+
+
+            <!--left join (-->
+                <!--&lt;!&ndash;获取开票金额 按(客户id) 汇总查询&ndash;&gt;-->
+                <!--select customer_id,round(sum(amount),2) order_sum-->
+                <!--from vmes_finance_invoice-->
+                <!--<where>-->
+                    <!--<if test="currentCompanyId != null and currentCompanyId != ''" >-->
+                        <!--and company_id = #{currentCompanyId}-->
+                    <!--</if>-->
+                    <!--<![CDATA[ and state <> '-1' ]]>-->
+                <!--</where>-->
+                <!--group by customer_id-->
+            <!--) invoice on customer.id = invoice.customer_id-->
 
         <where>
             <if test='customerId != null and customerId != ""'>
