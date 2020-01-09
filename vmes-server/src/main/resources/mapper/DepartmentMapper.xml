@@ -197,10 +197,10 @@
                         and pid=#{pid}
                     </if>
                     <if test="code != null and code!=''" >
-                        and code=#{code}
+                        and code LIKE CONCAT(CONCAT('%', #{code}),'%')
                     </if>
                     <if test="name != null and name!=''" >
-                        and name=#{name}
+                        and name LIKE CONCAT(CONCAT('%', #{name}),'%')
                     </if>
                     <if test="cuser != null and cuser != ''" >
                         and cuser = #{cuser}

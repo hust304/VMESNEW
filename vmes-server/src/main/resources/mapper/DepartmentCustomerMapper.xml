@@ -85,10 +85,10 @@
         ) a
         <where>
             <if test="code != null and code != ''">
-                and a.code=#{code}
+                and a.code LIKE CONCAT(CONCAT('%', #{code}),'%')
             </if>
             <if test="name != null and name != ''">
-                and a.name=#{name}
+                and a.name LIKE CONCAT(CONCAT('%', #{name}),'%')
             </if>
 
             <if test="type != null and type != ''">
