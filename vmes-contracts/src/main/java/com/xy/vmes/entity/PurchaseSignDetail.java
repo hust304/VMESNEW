@@ -60,7 +60,7 @@ public class PurchaseSignDetail implements Serializable {
 	@TableField("quality")
 	private String quality;
 	//检验方式 (1:全检 2:抽检)
-	@TableField("quality")
+	@TableField("quality_type")
 	private String qualityType;
 
 	//(实际)检验数量

@@ -34,25 +34,55 @@
         isdisable,ishide,isedit,ismust,cdate,
         cuser
         ) VALUES
-            (replace(uuid(), '-', ''),'PurchaseSignDetail','productCode','产品编码',1, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'PurchaseSignDetail','productName','产品名称',2, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'PurchaseSignDetail','spec','规格/型号',3, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'PurchaseSignDetail','genre','属性',4, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'PurchaseSignDetail','genreId','属性ID',5, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'PurchaseSignDetail','unit','单位',6, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'PurchaseSignDetail','unitId','单位ID',7, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'PurchaseSignDetail','arriveCount','到货数量',8, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'PurchaseSignDetail','parentId','采购签收单ID',9, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'PurchaseSignDetail','orderDetailId','采购订单明细ID',10, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'PurchaseSignDetail','inDetailId','入库单明细id',11, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'PurchaseSignDetail','productId','产品ID',12, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'PurchaseSignDetail','cuser','创建用户id',13, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'PurchaseSignDetail','cdate','创建时间',14, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'PurchaseSignDetail','uuser','修改用户id',15, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'PurchaseSignDetail','udate','修改时间',16, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'PurchaseSignDetail','remark','备注',17, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'PurchaseSignDetail','isdisable','是否启用(0:已禁用 1:启用)',18, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'PurchaseSignDetail','id','id',0, '1','0','1','0',now(), 'admin')
+            (replace(uuid(), '-', ''),'PurchaseSignDetail','id','id',0, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'PurchaseSignDetail','parentId','采购签收单ID',1, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'PurchaseSignDetail','orderDetailId','采购订单明细ID',2, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'PurchaseSignDetail','inDetailId','入库单明细id',3, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'PurchaseSignDetail','productId','产品ID',4, '1','0','1','0',now(), 'admin'),
+
+            (replace(uuid(), '-', ''),'PurchaseSignDetail','arriveCount','到货数量',5, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'PurchaseSignDetail','cuser','创建用户id',6, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'PurchaseSignDetail','cdate','创建时间',7, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'PurchaseSignDetail','uuser','修改用户id',8, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'PurchaseSignDetail','udate','修改时间',9, '1','0','1','0',now(), 'admin'),
+
+            (replace(uuid(), '-', ''),'PurchaseSignDetail','remark','备注',10, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'PurchaseSignDetail','isdisable','是否启用(0:已禁用 1:启用)',11, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'PurchaseSignDetail','orderId','采购订单id',12, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'PurchaseSignDetail','quality','质检属性id (1:免检 2:检验)',13, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'PurchaseSignDetail','qualityType','检验方式id (1:全检 2:抽检)',14, '1','0','1','0',now(), 'admin'),
+
+            (replace(uuid(), '-', ''),'PurchaseSignDetail','qualityCount','(实际)检验数量',15, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'PurchaseSignDetail','badCount','(检验)不合格数量',16, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'PurchaseSignDetail','retreatCount','(检验)退货数量',17, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'PurchaseSignDetail','receiveCount','(检验)让步接收数量',18, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'PurchaseSignDetail','qualityInDtlId','(检验入库)入库单明细id',19, '1','0','1','0',now(), 'admin'),
+
+            (replace(uuid(), '-', ''),'PurchaseSignDetail','receiveInDtlId','(检验让步接收入库)入库单明细id',20, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'PurchaseSignDetail','state','签收明细状态id',21, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'PurchaseSignDetail','orderUnit','单据单位id',22, '1','0','1','0',now(), 'admin'),
+
+            (replace(uuid(), '-', ''), 'PurchaseSignDetail', 'productCode', '货品编码', 23, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'PurchaseSignDetail', 'productName', '货品名称', 24, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'PurchaseSignDetail', 'productSpec', '规格型号', 25, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'PurchaseSignDetail', 'productGenre', '货品属性id', 26, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'PurchaseSignDetail', 'productGenreName', '货品属性', 27, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+
+            (replace(uuid(), '-', ''), 'PurchaseSignDetail', 'productProperty', '自定义属性', 28, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'PurchaseSignDetail', 'orderUnitName', '单位', 29, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
+
+            (replace(uuid(), '-', ''), 'PurchaseSignDetail', 'n2pFormula', 'n2pFormula', 30, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'PurchaseSignDetail', 'n2pIsScale', 'n2p:是否需要四舍五入', 31, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'PurchaseSignDetail', 'n2pDecimalCount', 'n2p:保留小数位数', 32, '1', '0', '1', '0', now(), 'admin'),
+
+            (replace(uuid(), '-', ''), 'PurchaseSignDetail', 'p2nFormula', 'p2nFormula', 33, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'PurchaseSignDetail', 'p2nIsScale', 'p2n:是否需要四舍五入', 34, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'PurchaseSignDetail', 'p2nDecimalCount', 'p2n:保留小数位数', 35, '1', '0', '1', '0', now(), 'admin'),
+
+            (replace(uuid(), '-', ''), 'PurchaseSignDetail', 'qualityName', '是否质检', 36, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'PurchaseSignDetail', 'qualityTypeName', '检验方式', 37, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'PurchaseSignDetail', 'stateName', '状态', 38, '1', '0', '1', '0', now(), 'admin'),
+
     </insert>
 
     <!-- 列表(全部) 自动创建，禁止修改-->
@@ -115,70 +145,94 @@
     <!-- 自动创建，可以修改 -->
     <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
-        detail.id id,
-        detail.parent_id parentId,
-        detail.order_detail_id orderDetailId,
-        detail.in_detail_id inDetailId,
-        detail.product_id productId,
+            detail.id id,
+            detail.parent_id parentId,
+            detail.order_detail_id orderDetailId,
+            detail.in_detail_id inDetailId,
+            detail.product_id productId,
 
-        detail.arrive_count arriveCount,
-        detail.cuser cuser,
-        detail.cdate cdate,
-        detail.uuser uuser,
-        detail.udate udate,
+            detail.arrive_count arriveCount,
+            detail.cuser cuser,
+            detail.cdate cdate,
+            detail.uuser uuser,
+            detail.udate udate,
 
-        detail.remark remark,
-        detail.isdisable isdisable,
-        detail.order_id orderId,
-        detail.quality quality,
-        detail.quality_type qualityType,
+            detail.remark remark,
+            detail.isdisable isdisable,
+            detail.order_id orderId,
+            detail.quality quality,
+            detail.quality_type qualityType,
 
-        detail.quality_count qualityCount,
-        detail.bad_count badCount,
-        detail.retreat_count retreatCount,
-        detail.receive_count receiveCount,
-        detail.quality_inDtl_id qualityInDtlId,
+            detail.quality_count qualityCount,
+            detail.bad_count badCount,
+            detail.retreat_count retreatCount,
+            detail.receive_count receiveCount,
+            detail.quality_inDtl_id qualityInDtlId,
 
-        detail.receive_inDtl_id receiveInDtlId,
-        detail.state state,
-        order_unit orderUnit,
+            detail.receive_inDtl_id receiveInDtlId,
+            detail.state state,
+            detail.order_unit orderUnit,
 
-        <!--货品表-->
-        product.code sysProductCode,
-        product.source_code custProductCode,
-        CASE
-          WHEN product.source_code is null THEN product.code
-          WHEN product.source_code is not null THEN product.source_code
-        ELSE null
-        END productCode,
-        product.name productName,
-        product.spec,
-        genre.name genre,
-        genre.id genreId,
-        unit.name unit,
-        unit.id unitId,
+            CASE
+            WHEN detail.quality = '1' THEN '免检'
+            WHEN detail.quality = '2' THEN '检验'
+            ELSE null
+            END qualityName,
 
-        <!--到货数量:= 签收数量 - (已完成)退货数量 -->
-        round((ifnull(detail.arrive_count, 0) - ifnull(retreatDetail.count, 0)), 2) arriveCount
+            CASE
+            WHEN detail.quality_type = '1' THEN '全检'
+            WHEN detail.quality_type = '2' THEN '抽检'
+            ELSE null
+            END qualityTypeName,
 
-        from
-        vmes_purchase_sign_detail detail
-        left join vmes_product product on product.id = detail.product_id
-        left join vmes_product_unit produnit on produnit.product_id = product.id and produnit.type = 1
-        left join vmes_dictionary genre on product.genre = genre.id
-        left join vmes_dictionary unit on produnit.unit = unit.id
-        left join vmes_dictionary type on product.type = type.id
+            CASE
+            WHEN detail.state = '1' THEN '检验中'
+            WHEN detail.state = '2' THEN '已完成'
+            WHEN detail.state = '-1' THEN '已取消'
+            ELSE null
+            END stateName,
 
-        <!--(采购订单明细id)-退货完成数量-退货明细汇总-->
-        left join (
-        select
-            order_detail_id,
-            sum(count) count,
-            sum(amount) amount
-            from vmes_purchase_retreat_detail
-            where state = '3'
-            group by order_detail_id
-        ) retreatDetail on detail.order_detail_id = retreatDetail.order_detail_id
+            <!--货品表-->
+            product.code sysProductCode,
+            product.source_code custProductCode,
+            CASE
+              WHEN product.source_code is null THEN product.code
+              WHEN product.source_code is not null THEN product.source_code
+            ELSE null
+            END productCode,
+            product.name productName,
+            product.spec productSpec,
+            product.property productProperty,
+            product.genre productGenre,
+            genre.name productGenreName,
+            orderUnit.name orderUnitName,
+
+            <!--发货单明细货品单位: 单位换算公式-->
+            prodUnitPrice.np_formula n2pFormula,
+            prodUnitPrice.pn_formula p2nFormula,
+
+            prodUnitPrice.n2p_is_scale n2pIsScale,
+            prodUnitPrice.n2p_decimal_count n2pDecimalCount,
+
+            prodUnitPrice.p2n_is_scale p2nIsScale,
+            prodUnitPrice.p2n_decimal_count p2nDecimalCount
+
+        from vmes_purchase_sign_detail detail
+            left join vmes_dictionary orderUnit on detail.order_unit = orderUnit.id
+            left join vmes_product product on detail.product_id = product.id
+            left join vmes_dictionary genre on product.genre = genre.id
+            left join vmes_product_unit prodUnitPrice on (detail.product_id = prodUnitPrice.product_id and detail.order_unit = prodUnitPrice.unit)
+
+            <!--(采购订单明细id)-退货完成数量-退货明细汇总-->
+            left join (
+            select
+                order_detail_id,
+                sum(count) count,
+                sum(amount) amount
+                from vmes_purchase_retreat_detail
+                where state = '3'
+                group by order_detail_id
+            ) retreatDetail on detail.order_detail_id = retreatDetail.order_detail_id
 
         <where>
             <if test="parentId != null and parentId != ''">

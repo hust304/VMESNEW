@@ -80,46 +80,80 @@
         isdisable,ishide,isedit,ismust,cdate,
         cuser
         ) VALUES
-        (replace(uuid(), '-', ''),'PurchaseSign','companyId','企业ID-组织架构',1, '1','0','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'PurchaseSign','signId','签收人ID',2, '1','0','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'PurchaseSign','signName','签收人',3, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'PurchaseSign','sdate','签收时间',4, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'PurchaseSign','warehouseInCode','入库单号',5, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'PurchaseSign','cuser','创建用户id',6, '1','0','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'PurchaseSign','cdate','创建时间',7, '1','0','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'PurchaseSign','uuser','修改用户id',8, '1','0','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'PurchaseSign','udate','修改时间',9, '1','0','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'PurchaseSign','remark','备注',10, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'PurchaseSign','isdisable','是否启用(0:已禁用 1:启用)',11, '1','0','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'PurchaseSign','id','id',0, '1','0','1','0',now(), 'admin')
+        (replace(uuid(), '-', ''),'PurchaseSign','id','id',0, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'PurchaseSign','orderId','采购订单id',1, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'PurchaseSign','companyId','企业id',2, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'PurchaseSign','signId','签收人id',3, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'PurchaseSign','sdate','完成日期',4, '1','1','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'PurchaseSign','cuser','创建用户id',5, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'PurchaseSign','cdate','签收日期',6, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'PurchaseSign','uuser','修改用户id',7, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'PurchaseSign','udate','修改时间',8, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'PurchaseSign','remark','备注',9, '1','1','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'PurchaseSign','isdisable','是否启用(0:已禁用 1:启用)',10, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'PurchaseSign','sysCode','签收单号',11, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'PurchaseSign','custCode','签收单号(用户定义)',12, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'PurchaseSign','state','签收状态id',13, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'PurchaseSign','stateName','签收状态',14, '1','0','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'PurchaseSign','supplierId','供应商id',15, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'PurchaseSign','supplierName','供应商',16, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'PurchaseSign','signUserName','签收人',17, '1','0','1','0',now(), 'admin'),
+
     </insert>
 
     <!-- 自动创建，可以修改 -->
     <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
-        id id,
-        order_id orderId,
-        company_id companyId,
-        sign_id signId,
-        sdate sdate,
+            sign.id id,
+            sign.order_id orderId,
+            sign.company_id companyId,
+            sign.sign_id signId,
+            DATE_FORMAT(sign.sdate,'%Y-%m-%d') sdate,
 
-        cuser cuser,
-        cdate cdate,
-        uuser uuser,
-        udate udate,
-        remark remark,
+            sign.cuser cuser,
+            DATE_FORMAT(sign.cdate,'%Y-%m-%d') cdate,
+            sign.uuser uuser,
+            sign.udate udate,
+            sign.remark remark,
 
-        isdisable isdisable,
-        sys_code sysCode,
-        cust_code custCode,
-        state state
+            sign.isdisable isdisable,
+            sign.sys_code sysCode,
+            sign.cust_code custCode,
+            sign.state state,
+
+            CASE
+                WHEN sign.state = '1' THEN '检验中'
+                WHEN sign.state = '2' THEN '已完成'
+                WHEN sign.state = '-1' THEN '已取消'
+            ELSE null
+            END stateName,
+
+            purchaseOrder.supplier_id supplierId,
+            supplier.name supplierName,
+            signUser.user_name signUserName
+
         from vmes_purchase_sign sign
-        left join vmes_user vmesuser on vmesuser.id = sign.sign_id
+            left join vmes_purchase_order purchaseOrder on sign.order_id = purchaseOrder.id
+            left join vmes_customer supplier on purchaseOrder.supplier_id = supplier.id
+            left join vmes_user signUser on sign.sign_id = signUser.id
         <where>
-
+            <if test="currentCompanyId != null and currentCompanyId != ''" >
+                and sign.company_id = #{currentCompanyId}
+            </if>
             <if test="orderId != null and orderId != ''">
                 and sign.order_id = #{orderId}
             </if>
+
+            <if test="sysCode != null and sysCode != ''">
+                and sign.sys_code LIKE CONCAT(CONCAT('%', #{sysCode}),'%')
+            </if>
+            <if test="supplierName != null and supplierName != ''">
+                and supplier.name LIKE CONCAT(CONCAT('%', #{supplierName}),'%')
+            </if>
+
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >
                 and ${queryStr}
@@ -129,8 +163,6 @@
             order by ${orderStr}
         </if>
     </select>
-
-    <!-- ==================================================================================================================================== -->
 
 
 </mapper>
