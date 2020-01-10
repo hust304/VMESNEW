@@ -102,13 +102,16 @@
         (replace(uuid(), '-', ''),'PurchaseSign','supplierName','供应商',16, '1','0','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'PurchaseSign','signUserName','签收人',17, '1','0','1','0',now(), 'admin'),
 
-        (replace(uuid(), '-', ''),'PurchaseSign','isShowEdit','是否显示修改按钮',17, '1','0','1','0',now(), 'admin')
+        (replace(uuid(), '-', ''),'PurchaseSign','isShowEdit','是否显示修改按钮',18, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'PurchaseSign','orderCode','采购单号',19, '1','0','1','0',now(), 'admin'),
+
 
     </insert>
 
     <!-- 自动创建，可以修改 -->
     <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
+            distinct
             sign.id id,
             sign.order_id orderId,
             sign.company_id companyId,
@@ -133,6 +136,8 @@
             ELSE null
             END stateName,
 
+            <!-- 采购单 -->
+            purchaseOrder.code orderCode,
             purchaseOrder.supplier_id supplierId,
             supplier.name supplierName,
             signUser.user_name signUserName,
@@ -144,6 +149,8 @@
             left join vmes_purchase_order purchaseOrder on sign.order_id = purchaseOrder.id
             left join vmes_customer supplier on purchaseOrder.supplier_id = supplier.id
             left join vmes_user signUser on sign.sign_id = signUser.id
+
+            left join vmes_purchase_sign_detail detail on sign.id = detail.parent_id
         <where>
             <if test="currentCompanyId != null and currentCompanyId != ''" >
                 and sign.company_id = #{currentCompanyId}
@@ -152,8 +159,20 @@
                 and sign.order_id = #{orderId}
             </if>
 
+            <!-- 界面查询条件 -->
             <if test="sysCode != null and sysCode != ''">
                 and sign.sys_code LIKE CONCAT(CONCAT('%', #{sysCode}),'%')
+            </if>
+            <if test="signState != null and signState != ''">
+                and sign.state = #{signState}
+            </if>
+
+            <if test="quality != null and quality != ''">
+                and detail.quality = #{quality}
+            </if>
+
+            <if test="orderCode != null and orderCode != ''">
+                and purchaseOrder.code LIKE CONCAT(CONCAT('%', #{orderCode}),'%')
             </if>
             <if test="supplierName != null and supplierName != ''">
                 and supplier.name LIKE CONCAT(CONCAT('%', #{supplierName}),'%')

@@ -164,7 +164,7 @@
             detail.in_detail_id inDetailId,
             detail.product_id productId,
 
-            detail.arrive_count arriveCount,
+            round(ifnull(detail.arrive_count, 0), 2) arriveCount,
             detail.cuser cuser,
             detail.cdate cdate,
             detail.uuser uuser,
@@ -176,10 +176,10 @@
             detail.quality quality,
             detail.quality_type qualityType,
 
-            detail.quality_count qualityCount,
-            detail.bad_count badCount,
-            detail.retreat_count retreatCount,
-            detail.receive_count receiveCount,
+            round(ifnull(detail.quality_count, 0), 2) qualityCount,
+            round(ifnull(detail.bad_count, 0), 2) badCount,
+            round(ifnull(detail.retreat_count, 0), 2) retreatCount,
+            round(ifnull(detail.receive_count, 0), 2) receiveCount,
             detail.quality_inDtl_id qualityInDtlId,
 
             detail.receive_inDtl_id receiveInDtlId,
