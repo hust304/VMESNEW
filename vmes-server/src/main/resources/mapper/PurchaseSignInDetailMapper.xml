@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+说明：采购签收明细关联入库明细 Mapper.xml
+创建人：陈刚
+创建时间：2020-01-10
+ -->
+<mapper namespace="com.xy.vmes.deecoop.purchase.dao.PurchaseSignInDetailMapper">
+    <select id="findSignDetailByInDetail" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+        signDetail.id signDtlId,
+        signDetail.parent_id signId,
+        round(ifnull(signDetail.arrive_count, 0), 2) arriveCount,
+        round(ifnull(signDetail.quality_count, 0), 2) qualityCount,
+
+        <!--获取(免检)入库执行-->
+        round(ifnull(inExecute.executeCount, 0), 2) executeCount
+
+        from vmes_purchase_sign_detail signDetail
+            left join vmes_purchase_sign sign on signDetail.parent_id = sign.id
+            <!--获取(免检)入库执行-->
+            left join (
+                select detail_id, sum(count) executeCount
+                from vmes_warehouse_in_execute
+                where isdisable = '1'
+                group by detail_id
+            ) inExecute on signDetail.in_detail_id: = outDetail.id
+
+        <!--获取(检验入库)入库执行-->
+        <!--获取(检验让步接收)入库执行-->
+        <where>
+            <if test="currentCompanyId != null and currentCompanyId != ''" >
+                and sign.company_id = #{currentCompanyId}
+            </if>
+            <if test="signId != null and signId != ''" >
+                and signDetail.parent_id = #{signId}
+            </if>
+            <if test="signDtlIds != null and signDtlIds != ''" >
+                and signDetail.id in (${signDtlIds})
+            </if>
+        </where>
+    </select>
+
+</mapper>

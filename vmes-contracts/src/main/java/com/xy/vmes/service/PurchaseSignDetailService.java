@@ -122,6 +122,13 @@ public interface PurchaseSignDetailService {
      */
     Map<String, Map<String, Object>> findBusinessProducMapByIn(List<PurchaseSignDetail> objectList);
 
+    /**
+     * 获取采购签收明细入库执行情况
+     * 查询SQL语句: PurchaseSignInDetailMapper.findSignDetailByInDetail
+     * @param object
+     * @return
+     */
+    List<Map<String, Object>> findSignDetailByInDetail(PageData object) throws Exception;
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**
     * 分页查询

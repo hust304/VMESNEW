@@ -3,6 +3,7 @@ package com.xy.vmes.deecoop.purchase.service;
 import com.xy.vmes.common.util.EvaluateUtil;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.purchase.dao.PurchaseSignDetailMapper;
+import com.xy.vmes.deecoop.purchase.dao.PurchaseSignInDetailMapper;
 import com.xy.vmes.entity.PurchaseSignDetail;
 import com.xy.vmes.service.PurchaseSignDetailService;
 
@@ -30,6 +31,9 @@ import java.util.*;
 public class PurchaseSignDetailServiceImp implements PurchaseSignDetailService {
     @Autowired
     private PurchaseSignDetailMapper purchaseSignDetailMapper;
+    @Autowired
+    private PurchaseSignInDetailMapper purchaseSignInDetailMapper;
+
     @Autowired
     private ColumnService columnService;
 
@@ -289,6 +293,16 @@ public class PurchaseSignDetailServiceImp implements PurchaseSignDetailService {
         }
 
         return productByInMap;
+    }
+
+    /**
+     * 获取采购签收明细入库执行情况
+     * 查询SQL语句: PurchaseSignInDetailMapper.findSignDetailByInDetail
+     * @param object
+     * @return
+     */
+    public List<Map<String, Object>> findSignDetailByInDetail(PageData object) throws Exception {
+        return purchaseSignInDetailMapper.findSignDetailByInDetail(object);
     }
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**
