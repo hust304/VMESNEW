@@ -89,15 +89,6 @@ public class PurchaseSignDetail implements Serializable {
 	@TableField("order_unit")
 	private String orderUnit;
 
-	//非表字段 传值使用
-	private String n2pFormula;
-	private String	n2pIsScale;
-	private Integer n2pDecimalCount;
-
-	private String p2nFormula;
-	private String	p2nIsScale;
-	private Integer p2nDecimalCount;
-
 
 	public void setId(String id) {
 		this.id = id;
@@ -239,43 +230,42 @@ public class PurchaseSignDetail implements Serializable {
 	}
 
 	//////////////////////////////////////////////////////////////////
-	public String getN2pFormula() {
-		return n2pFormula;
-	}
-	public void setN2pFormula(String n2pFormula) {
-		this.n2pFormula = n2pFormula;
-	}
-	public String getN2pIsScale() {
-		return n2pIsScale;
-	}
-	public void setN2pIsScale(String n2pIsScale) {
-		this.n2pIsScale = n2pIsScale;
-	}
-	public Integer getN2pDecimalCount() {
-		return n2pDecimalCount;
-	}
-	public void setN2pDecimalCount(Integer n2pDecimalCount) {
-		this.n2pDecimalCount = n2pDecimalCount;
-	}
-	public String getP2nFormula() {
-		return p2nFormula;
-	}
-	public void setP2nFormula(String p2nFormula) {
-		this.p2nFormula = p2nFormula;
-	}
-	public String getP2nIsScale() {
-		return p2nIsScale;
-	}
-	public void setP2nIsScale(String p2nIsScale) {
-		this.p2nIsScale = p2nIsScale;
-	}
-	public Integer getP2nDecimalCount() {
-		return p2nDecimalCount;
-	}
-
-	public void setP2nDecimalCount(Integer p2nDecimalCount) {
-		this.p2nDecimalCount = p2nDecimalCount;
-	}
+//	public String getN2pFormula() {
+//		return n2pFormula;
+//	}
+//	public void setN2pFormula(String n2pFormula) {
+//		this.n2pFormula = n2pFormula;
+//	}
+//	public String getN2pIsScale() {
+//		return n2pIsScale;
+//	}
+//	public void setN2pIsScale(String n2pIsScale) {
+//		this.n2pIsScale = n2pIsScale;
+//	}
+//	public Integer getN2pDecimalCount() {
+//		return n2pDecimalCount;
+//	}
+//	public void setN2pDecimalCount(Integer n2pDecimalCount) {
+//		this.n2pDecimalCount = n2pDecimalCount;
+//	}
+//	public String getP2nFormula() {
+//		return p2nFormula;
+//	}
+//	public void setP2nFormula(String p2nFormula) {
+//		this.p2nFormula = p2nFormula;
+//	}
+//	public String getP2nIsScale() {
+//		return p2nIsScale;
+//	}
+//	public void setP2nIsScale(String p2nIsScale) {
+//		this.p2nIsScale = p2nIsScale;
+//	}
+//	public Integer getP2nDecimalCount() {
+//		return p2nDecimalCount;
+//	}
+//	public void setP2nDecimalCount(Integer p2nDecimalCount) {
+//		this.p2nDecimalCount = p2nDecimalCount;
+//	}
 /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 

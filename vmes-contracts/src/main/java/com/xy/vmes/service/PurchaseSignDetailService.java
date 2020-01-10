@@ -122,7 +122,7 @@ public interface PurchaseSignDetailService {
      * @param objectList
      * @return
      */
-    Map<String, Map<String, Object>> findBusinessProducMapByIn(List<PurchaseSignDetail> objectList);
+    Map<String, Map<String, Object>> findBusinessProducMapByIn(List<Map<String, String>> objectList);
 
     /**
      * 获取采购签收明细入库执行情况

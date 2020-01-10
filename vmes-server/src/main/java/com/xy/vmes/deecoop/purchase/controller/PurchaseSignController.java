@@ -156,35 +156,7 @@ public class PurchaseSignController {
             for (Map<String, String> objectMap : jsonMapList) {
                 PurchaseSignDetail addSignDtl = (PurchaseSignDetail)HttpUtils.pageData2Entity(objectMap, new PurchaseSignDetail());
                 addSignDtl.setId(Conv.createUuid());
-
-                ///////////////////////////////////////////////////////////////////////////////////////////////
-                //单位换算
-                //p2nFormula 单位换算公式:计价单位转换计量单位:
-                String p2nFormula = new String();
-                if (objectMap.get("p2nFormula") != null) {
-                    p2nFormula = objectMap.get("p2nFormula").trim();
-                }
-                addSignDtl.setP2nFormula(p2nFormula);
-
-                //p2nIsScale 是否需要四舍五入(Y:需要四舍五入 N:无需四舍五入)
-                String p2nIsScale = new String();
-                if (objectMap.get("p2nIsScale") != null) {
-                    p2nIsScale = objectMap.get("p2nIsScale").trim();
-                }
-                addSignDtl.setP2nIsScale(p2nIsScale);
-
-                //小数位数 (最小:0位 最大:4位)
-                Integer p2nDecimalCount = Integer.valueOf(2);
-                String p2nDecimalCountStr = objectMap.get("p2nDecimalCount");
-                if (p2nDecimalCountStr != null) {
-                    try {
-                        p2nDecimalCount = Integer.valueOf(p2nDecimalCountStr);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-                addSignDtl.setP2nDecimalCount(p2nDecimalCount);
-
+                objectMap.put("signDtlId", addSignDtl.getId());
                 ///////////////////////////////////////////////////////////////////////////////////////////////
                 addSignDtl.setParentId(addSignId);
                 //quality 质检属性 (1:免检 2:检验)
@@ -312,27 +284,19 @@ public class PurchaseSignController {
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //根据质检属性 (1:免检 2:检验) 过滤出两个结构体
-        List<PurchaseSignDetail> notQualityList = new ArrayList<>();
-        List<PurchaseSignDetail> qualityList = new ArrayList<>();
-        if (signDtlList != null && signDtlList.size() > 0) {
-            for (PurchaseSignDetail signDetail : signDtlList) {
+        //质检属性:1:免检 (1:免检 2:检验) --推送入库单
+        List<Map<String, String>> notQualityList = new ArrayList<>();
+
+        if (jsonMapList != null && jsonMapList.size() > 0) {
+            for (Map<String, String> objectMap : jsonMapList) {
                 //quality 质检属性 (1:免检 2:检验)
-                String quality = signDetail.getQuality();
-
-                //quality 质检属性:1:免检 (1:免检 2:检验)
+                String quality = objectMap.get("quality");
                 if ("1".equals(quality)) {
-                    notQualityList.add(signDetail);
-
-                    //quality 质检属性:2:检验 (1:免检 2:检验)
-                } else if ("2".equals(quality)) {
-                    qualityList.add(signDetail);
+                    notQualityList.add(objectMap);
                 }
             }
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //质检属性:1:免检 (1:免检 2:检验) --推送入库单
         if (notQualityList.size() > 0 && Common.SYS_WAREHOUSE_COMPLEX.equals(warehouse)) {
             //复杂版仓库:warehouseByComplex:Common.SYS_WAREHOUSE_COMPLEX
 
@@ -397,6 +361,19 @@ public class PurchaseSignController {
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //根据质检属性 (1:免检 2:检验) 过滤出两个结构体
+        List<PurchaseSignDetail> qualityList = new ArrayList<>();
+        if (signDtlList != null && signDtlList.size() > 0) {
+            for (PurchaseSignDetail signDetail : signDtlList) {
+                //quality 质检属性 (1:免检 2:检验)
+                String quality = signDetail.getQuality();
+                //quality 质检属性:2:检验 (1:免检 2:检验)
+                if ("2".equals(quality)) {
+                    qualityList.add(signDetail);
+                }
+            }
+        }
+
         //质检属性:2:检验 (1:免检 2:检验) --推送采购检验项
         Map<String, List<Quality>> prodQualityMap = new HashMap<>();
 

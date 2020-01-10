@@ -260,29 +260,53 @@ public class PurchaseSignDetailServiceImp implements PurchaseSignDetailService {
      * @param objectList
      * @return
      */
-    public Map<String, Map<String, Object>> findBusinessProducMapByIn(List<PurchaseSignDetail> objectList) {
+    public Map<String, Map<String, Object>> findBusinessProducMapByIn(List<Map<String, String>> objectList) {
         Map<String, Map<String, Object>> productByInMap = new HashMap<String, Map<String, Object>>();
         if (objectList == null || objectList.size() == 0) {return productByInMap;}
 
-        for (PurchaseSignDetail signDetail : objectList) {
+        for (Map<String, String> objectMap : objectList) {
+            //单位换算
+            //p2nFormula 单位换算公式:计价单位转换计量单位:
+            String p2nFormula = new String();
+            if (objectMap.get("p2nFormula") != null) {
+                p2nFormula = objectMap.get("p2nFormula").trim();
+            }
+
+            //p2nIsScale 是否需要四舍五入(Y:需要四舍五入 N:无需四舍五入)
+            String p2nIsScale = new String();
+            if (objectMap.get("p2nIsScale") != null) {
+                p2nIsScale = objectMap.get("p2nIsScale").trim();
+            }
+
+            //小数位数 (最小:0位 最大:4位)
+            Integer p2nDecimalCount = Integer.valueOf(2);
+            String p2nDecimalCountStr = objectMap.get("p2nDecimalCount");
+            if (p2nDecimalCountStr != null) {
+                try {
+                    p2nDecimalCount = Integer.valueOf(p2nDecimalCountStr);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            ///////////////////////////////////////////////////////////////////////////////////////////////
+
             //signDtlId 采购签收明细id
-            String signDtlId = signDetail.getId();
+            String signDtlId = objectMap.get("signDtlId");
 
             //productId 货品id
-            String productId = signDetail.getProductId();
+            String productId = objectMap.get("productId");
 
             //count 签收数量(arriveCount) count := inCount 入库数量
             BigDecimal count = BigDecimal.valueOf(0D);
-            if (signDetail.getArriveCount() != null) {
-                count = signDetail.getArriveCount();
+            String arriveCountStr = objectMap.get("arriveCount");
+            if (arriveCountStr != null && arriveCountStr.trim().length() > 0) {
+                try {
+                    count = new BigDecimal(arriveCountStr);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
             }
-
-            //p2nFormula (计价单位转换计量单位公式)
-            String p2nFormula = signDetail.getP2nFormula();
-            //p2nIsScale 是否需要四舍五入(Y:需要四舍五入 N:无需四舍五入)
-            String p2nIsScale = signDetail.getP2nIsScale();
-            //小数位数 (最小:0位 最大:4位)
-            Integer p2nDecimalCount = signDetail.getP2nDecimalCount();
 
             //(计量单位)入库数量 - 单位换算公式(p2nFormula)
             BigDecimal prodCount = EvaluateUtil.countFormulaP2N(count, p2nFormula);
